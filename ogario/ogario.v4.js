@@ -4786,6 +4786,235 @@ window.rebuildAgarConfigIndex = function () {
 
         /*
          * ═══════════════════════════════════════════════════════════════
+         * VISUAL - LEAGUES
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Do NOT confuse this with:
+         *
+         *      Leagues - Tiers
+         *
+         * Leagues - Tiers:
+         *      player-level range / spread / top-size rules.
+         *
+         * Visual - Leagues:
+         *      icon / localeTag / configured outline color / tiered flag.
+         *
+         * Weekly prize state remains authoritative from the official
+         * league API. Nothing in this index modifies league prizes.
+         */
+        visualLeagueRows:
+            [],
+
+        visualLeagueByName:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * VISUAL - MINIMAP
+         * ═══════════════════════════════════════════════════════════════
+         */
+        visualMinimapSettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * VISUAL - REWARD POP-UPS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * These are presentation templates.
+         *
+         * They are NOT Wallet - Bonus Rewards and they do not create,
+         * claim or credit any reward.
+         */
+        rewardPopupByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * VISUAL - POPUP PRIORITIES
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * popupId alone is NOT unique.
+         *
+         * The same popup may have a different priority in a different
+         * stateId, therefore keep:
+         *
+         *      state + popup composite index
+         *      popup -> rows
+         *      state -> rows
+         */
+        popupPriorityRows:
+            [],
+
+        popupPriorityByCompositeKey:
+            Object.create(null),
+
+        popupPrioritiesByPopupId:
+            Object.create(null),
+
+        popupPrioritiesByStateId:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * VISUAL - HELP SETTINGS
+         * ═══════════════════════════════════════════════════════════════
+         */
+        helpSettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * VISUAL - PRODUCT SPINE ANIMATIONS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Preserve ALL of:
+         *
+         *      productId
+         *      action
+         *      spineAnimationName
+         *      spineFileName
+         *
+         * The old SpineSkinMap remains only a compatibility projection.
+         */
+        spineAnimationsByProductId:
+            Object.create(null),
+
+        spineAnimationByProductAndAction:
+            Object.create(null),
+
+        spineFileByProductId:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * DEFAULT SETTINGS - GAMEPLAY
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * One row per key, with mode-specific columns:
+         *
+         *      free_for_all
+         *      party
+         *      battle_royale
+         *      rush_mode
+         *      teams
+         *      team_rush
+         *      experimental
+         *
+         * These are configuration metadata / client prediction defaults.
+         *
+         * NEVER use these to override authoritative server physics.
+         */
+        gameplaySettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * DEFAULT SETTINGS - USER
+         * ═══════════════════════════════════════════════════════════════
+         */
+        userSettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * DEFAULT SETTINGS - CONTROLS
+         * ═══════════════════════════════════════════════════════════════
+         */
+        controlSettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * DEFAULT SETTINGS - CELL COLOR
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * The JSON exposes packed numeric "origin" values.
+         *
+         * Keep their raw numeric representation. Do NOT invent an
+         * RGBA endian interpretation here.
+         */
+        cellColorRows:
+            [],
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * DEFAULT SETTINGS - BATTLE R.
+         * ═══════════════════════════════════════════════════════════════
+         */
+        battleRoyaleSettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * DEFAULT SETTINGS - LEAGUES
+         * ═══════════════════════════════════════════════════════════════
+         */
+        leagueSettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * DEFAULT SETTINGS - COMM.
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Native UDP settings stay metadata only in the browser client.
+         * LM does NOT turn WebSocket transport into fake UDP.
+         */
+        commSettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * GAMEPLAY - FREE SKINS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * FreskinsMap remains the legacy projection.
+         */
+        freeSkinRows:
+            [],
+
+        freeSkinById:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * MYSTERY SKINS - TYPES
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Actual schema:
+         *
+         *      productIdForGrouping
+         *      type
+         *
+         * A type contains many grouping product ids.
+         */
+        mysterySkinTypeRows:
+            [],
+
+        mysterySkinTypeByGroupingProductId:
+            Object.create(null),
+
+        mysterySkinRowsByType:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
          * NORMAL GAMEPLAY BOOSTS
          * ═══════════════════════════════════════════════════════════════
          */
@@ -5765,6 +5994,742 @@ window.rebuildAgarConfigIndex = function () {
 
 
     /*
+     * ═════════════════════════════════════════════════════════════════════
+     * GAMECONFIGURATION VISUAL / CLIENT-DEFAULT INDEXES
+     * ═════════════════════════════════════════════════════════════════════
+     */
+
+
+    /*
+     * Small local helper for the many:
+     *
+     *      { key: "...", value: ... }
+     *
+     * sections.
+     *
+     * Store the entire source row rather than only row.value so future
+     * GameConfiguration versions may add useful metadata without requiring
+     * another structural migration.
+     */
+    function indexKeyValueSection(
+        sectionName,
+        destination
+    ) {
+        var sectionRows =
+            rows(
+                sectionName
+            );
+
+        for (
+            var sectionIndex = 0;
+            sectionIndex <
+                sectionRows.length;
+            sectionIndex++
+        ) {
+            var sectionRow =
+                sectionRows[
+                    sectionIndex
+                ];
+
+            if (
+                !sectionRow ||
+                sectionRow.key ===
+                    undefined ||
+                sectionRow.key ===
+                    null
+            ) {
+                continue;
+            }
+
+            var sectionKey =
+                String(
+                    sectionRow.key
+                ).trim();
+
+            if (!sectionKey) {
+                continue;
+            }
+
+            destination[
+                sectionKey
+            ] =
+                sectionRow;
+        }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Visual - Leagues
+     * ─────────────────────────────────────────────────────────────
+     */
+    list =
+        rows(
+            'Visual - Leagues'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.leagueName
+        ) {
+            continue;
+        }
+
+        var visualLeagueKey =
+            String(
+                row.leagueName
+            )
+                .trim()
+                .toLowerCase();
+
+        if (!visualLeagueKey) {
+            continue;
+        }
+
+        index
+            .visualLeagueRows
+            .push(
+                row
+            );
+
+        index
+            .visualLeagueByName[
+                visualLeagueKey
+            ] =
+            row;
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Visual - Minimap
+     * ─────────────────────────────────────────────────────────────
+     */
+    indexKeyValueSection(
+        'Visual - Minimap',
+        index
+            .visualMinimapSettingByKey
+    );
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Visual - Reward Pop-Ups
+     * ─────────────────────────────────────────────────────────────
+     */
+    list =
+        rows(
+            'Visual - Reward Pop-Ups'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            row.key ===
+                undefined ||
+            row.key ===
+                null
+        ) {
+            continue;
+        }
+
+        var rewardPopupKey =
+            String(
+                row.key
+            ).trim();
+
+        if (!rewardPopupKey) {
+            continue;
+        }
+
+        index
+            .rewardPopupByKey[
+                rewardPopupKey
+            ] =
+            row;
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Visual - Popup Priorities
+     * ─────────────────────────────────────────────────────────────
+     *
+     * IMPORTANT:
+     *
+     * popupId is not globally unique.
+     *
+     * Example:
+     *      the same popup can appear in state 1 and state 13.
+     */
+    list =
+        rows(
+            'Visual - Popup Priorities'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            row.popupId ===
+                undefined ||
+            row.popupId ===
+                null ||
+            row.stateId ===
+                undefined ||
+            row.stateId ===
+                null
+        ) {
+            continue;
+        }
+
+        var popupId =
+            String(
+                row.popupId
+            );
+
+        var popupStateId =
+            String(
+                row.stateId
+            );
+
+        var popupCompositeKey =
+            popupStateId +
+            ':' +
+            popupId;
+
+
+        index
+            .popupPriorityRows
+            .push(
+                row
+            );
+
+
+        if (
+            !index
+                .popupPriorityByCompositeKey[
+                    popupCompositeKey
+                ]
+        ) {
+            index
+                .popupPriorityByCompositeKey[
+                    popupCompositeKey
+                ] =
+                [];
+        }
+
+        index
+            .popupPriorityByCompositeKey[
+                popupCompositeKey
+            ]
+            .push(
+                row
+            );
+
+
+        if (
+            !index
+                .popupPrioritiesByPopupId[
+                    popupId
+                ]
+        ) {
+            index
+                .popupPrioritiesByPopupId[
+                    popupId
+                ] =
+                [];
+        }
+
+        index
+            .popupPrioritiesByPopupId[
+                popupId
+            ]
+            .push(
+                row
+            );
+
+
+        if (
+            !index
+                .popupPrioritiesByStateId[
+                    popupStateId
+                ]
+        ) {
+            index
+                .popupPrioritiesByStateId[
+                    popupStateId
+                ] =
+                [];
+        }
+
+        index
+            .popupPrioritiesByStateId[
+                popupStateId
+            ]
+            .push(
+                row
+            );
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Visual - Help Settings
+     * ─────────────────────────────────────────────────────────────
+     */
+    indexKeyValueSection(
+        'Visual - Help Settings',
+        index
+            .helpSettingByKey
+    );
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Visual - Prod. Spine Animations
+     * ─────────────────────────────────────────────────────────────
+     *
+     * The previous implementation reduced:
+     *
+     *      product + action + animation + file
+     *
+     * to only:
+     *
+     *      product -> file
+     *
+     * Keep the complete configuration now.
+     */
+    list =
+        rows(
+            'Visual - Prod. Spine Animations'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.productId
+        ) {
+            continue;
+        }
+
+        var spineProductId =
+            String(
+                row.productId
+            ).trim();
+
+        if (!spineProductId) {
+            continue;
+        }
+
+
+        if (
+            !index
+                .spineAnimationsByProductId[
+                    spineProductId
+                ]
+        ) {
+            index
+                .spineAnimationsByProductId[
+                    spineProductId
+                ] =
+                [];
+        }
+
+        index
+            .spineAnimationsByProductId[
+                spineProductId
+            ]
+            .push(
+                row
+            );
+
+
+        if (
+            !index
+                .spineAnimationByProductAndAction[
+                    spineProductId
+                ]
+        ) {
+            index
+                .spineAnimationByProductAndAction[
+                    spineProductId
+                ] =
+                Object.create(
+                    null
+                );
+        }
+
+
+        if (
+            row.action !==
+                undefined &&
+            row.action !==
+                null
+        ) {
+            var spineAction =
+                String(
+                    row.action
+                ).trim();
+
+            if (spineAction) {
+                index
+                    .spineAnimationByProductAndAction[
+                        spineProductId
+                    ][
+                        spineAction
+                    ] =
+                    row;
+            }
+        }
+
+
+        /*
+         * Every animation of one product normally points to the same
+         * Spine file. Retain a cheap compatibility/file lookup.
+         */
+        if (
+            row.spineFileName &&
+            !index
+                .spineFileByProductId[
+                    spineProductId
+                ]
+        ) {
+            index
+                .spineFileByProductId[
+                    spineProductId
+                ] =
+                row
+                    .spineFileName;
+        }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Default Settings - Gameplay
+     * ─────────────────────────────────────────────────────────────
+     *
+     * Do NOT flatten to one value:
+     *
+     * the values are mode-specific.
+     */
+    list =
+        rows(
+            'Default Settings - Gameplay'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            row.key ===
+                undefined ||
+            row.key ===
+                null
+        ) {
+            continue;
+        }
+
+        var gameplayKey =
+            String(
+                row.key
+            ).trim();
+
+        if (!gameplayKey) {
+            continue;
+        }
+
+        index
+            .gameplaySettingByKey[
+                gameplayKey
+            ] =
+            row;
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Default Settings - User
+     * ─────────────────────────────────────────────────────────────
+     */
+    indexKeyValueSection(
+        'Default Settings - User',
+        index
+            .userSettingByKey
+    );
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Default Settings - Controls
+     * ─────────────────────────────────────────────────────────────
+     */
+    indexKeyValueSection(
+        'Default Settings - Controls',
+        index
+            .controlSettingByKey
+    );
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Default Settings - Cell Color
+     * ─────────────────────────────────────────────────────────────
+     *
+     * Preserve raw origin numbers.
+     */
+    list =
+        rows(
+            'Default Settings - Cell Color'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            row.origin ===
+                undefined ||
+            row.origin ===
+                null
+        ) {
+            continue;
+        }
+
+        index
+            .cellColorRows
+            .push(
+                row
+            );
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Default Settings - Battle R.
+     * ─────────────────────────────────────────────────────────────
+     */
+    indexKeyValueSection(
+        'Default Settings - Battle R.',
+        index
+            .battleRoyaleSettingByKey
+    );
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Default Settings - Leagues
+     * ─────────────────────────────────────────────────────────────
+     */
+    indexKeyValueSection(
+        'Default Settings - Leagues',
+        index
+            .leagueSettingByKey
+    );
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Default Settings - Comm.
+     * ─────────────────────────────────────────────────────────────
+     */
+    indexKeyValueSection(
+        'Default Settings - Comm.',
+        index
+            .commSettingByKey
+    );
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Gameplay - Free Skins
+     * ─────────────────────────────────────────────────────────────
+     */
+    list =
+        rows(
+            'Gameplay - Free Skins'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (!row) {
+            continue;
+        }
+
+        index
+            .freeSkinRows
+            .push(
+                row
+            );
+
+        if (
+            row.id !==
+                undefined &&
+            row.id !==
+                null
+        ) {
+            var freeSkinId =
+                String(
+                    row.id
+                ).trim();
+
+            if (freeSkinId) {
+                index
+                    .freeSkinById[
+                        freeSkinId
+                    ] =
+                    row;
+
+                index
+                    .freeSkinById[
+                        freeSkinId
+                            .toLowerCase()
+                    ] =
+                    row;
+            }
+        }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Mystery Skins - Types
+     * ─────────────────────────────────────────────────────────────
+     *
+     * Do NOT pretend productIdForGrouping is the final skin id.
+     * It identifies the grouping/piece product.
+     */
+    list =
+        rows(
+            'Mystery Skins - Types'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.productIdForGrouping
+        ) {
+            continue;
+        }
+
+        var mysteryGroupingId =
+            String(
+                row.productIdForGrouping
+            ).trim();
+
+        var mysteryType =
+            String(
+                row.type ||
+                ''
+            )
+                .trim()
+                .toLowerCase();
+
+        if (!mysteryGroupingId) {
+            continue;
+        }
+
+
+        index
+            .mysterySkinTypeRows
+            .push(
+                row
+            );
+
+
+        index
+            .mysterySkinTypeByGroupingProductId[
+                mysteryGroupingId
+            ] =
+            row;
+
+        index
+            .mysterySkinTypeByGroupingProductId[
+                mysteryGroupingId
+                    .toLowerCase()
+            ] =
+            row;
+
+
+        if (mysteryType) {
+            if (
+                !index
+                    .mysterySkinRowsByType[
+                        mysteryType
+                    ]
+            ) {
+                index
+                    .mysterySkinRowsByType[
+                        mysteryType
+                    ] =
+                    [];
+            }
+
+            index
+                .mysterySkinRowsByType[
+                    mysteryType
+                ]
+                .push(
+                    row
+                );
+        }
+    }
+
+
+    /*
      * ─────────────────────────────────────────────────────────────
      * Leagues - Tiers
      * ─────────────────────────────────────────────────────────────
@@ -6536,6 +7501,1005 @@ window.getAgarConfigIndex =
             window
                 .rebuildAgarConfigIndex()
         );
+    };
+
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * GAMECONFIGURATION VISUAL + CLIENT DEFAULT RESOLVERS
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+
+
+/*
+ * Only the literal GameConfiguration sentinel "undefined" is treated as
+ * missing here.
+ *
+ * Do NOT globally treat "na" as missing because "na" is also used as a
+ * meaningful configured visual/string value in several sections.
+ */
+window.isAgarUnavailableConfigValue =
+    function (
+        value
+    ) {
+        if (
+            value ===
+                undefined ||
+            value ===
+                null
+        ) {
+            return true;
+        }
+
+        return (
+            typeof value ===
+                'string' &&
+            value
+                .trim()
+                .toLowerCase() ===
+                'undefined'
+        );
+    };
+
+
+/*
+ * Convert explicit Agar YES/NO fields.
+ *
+ * Anything else is returned as fallback rather than guessed.
+ */
+window.parseAgarConfigBoolean =
+    function (
+        value,
+        fallback
+    ) {
+        if (
+            value === true ||
+            value === false
+        ) {
+            return value;
+        }
+
+        var normalized =
+            String(
+                value ===
+                    undefined ||
+                value ===
+                    null
+                    ? ''
+                    : value
+            )
+                .trim()
+                .toUpperCase();
+
+        if (
+            normalized ===
+            'YES'
+        ) {
+            return true;
+        }
+
+        if (
+            normalized ===
+            'NO'
+        ) {
+            return false;
+        }
+
+        return fallback;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * COLOR DECODERS
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+
+
+/*
+ * Visual - Leagues uses values such as:
+ *
+ *      0xca8f0100
+ *
+ * Existing LM league colors and the visible RGB bytes show that the
+ * first six digits are the configured league RGB value.
+ *
+ * Do NOT interpret the trailing league byte as alpha. Doing so would make
+ * the configured tier outlines completely transparent.
+ */
+window.parseAgarLeagueColor =
+    function (
+        value
+    ) {
+        var raw =
+            value ===
+                undefined ||
+            value ===
+                null
+                ? ''
+                : String(
+                    value
+                ).trim();
+
+        if (
+            !raw ||
+            raw.toLowerCase() ===
+                'na'
+        ) {
+            return {
+                valid:
+                    false,
+
+                raw:
+                    value,
+
+                css:
+                    null,
+
+                r:
+                    null,
+
+                g:
+                    null,
+
+                b:
+                    null
+            };
+        }
+
+        var hex =
+            raw
+                .replace(
+                    /^0x/i,
+                    ''
+                )
+                .replace(
+                    /^#/,
+                    ''
+                );
+
+        /*
+         * Leagues may contain RRGGBB or RRGGBB00-style values.
+         */
+        if (
+            hex.length ===
+            8
+        ) {
+            hex =
+                hex.substring(
+                    0,
+                    6
+                );
+        }
+
+        if (
+            !/^[0-9a-fA-F]{6}$/
+                .test(
+                    hex
+                )
+        ) {
+            return {
+                valid:
+                    false,
+
+                raw:
+                    value,
+
+                css:
+                    null,
+
+                r:
+                    null,
+
+                g:
+                    null,
+
+                b:
+                    null
+            };
+        }
+
+        var colorInt =
+            parseInt(
+                hex,
+                16
+            );
+
+        var r =
+            (
+                colorInt >>
+                16
+            ) &
+            255;
+
+        var g =
+            (
+                colorInt >>
+                8
+            ) &
+            255;
+
+        var b =
+            colorInt &
+            255;
+
+        return {
+            valid:
+                true,
+
+            raw:
+                value,
+
+            hex:
+                hex
+                    .toLowerCase(),
+
+            css:
+                '#' +
+                hex
+                    .toLowerCase(),
+
+            r:
+                r,
+
+            g:
+                g,
+
+            b:
+                b
+        };
+    };
+
+
+/*
+ * Visual - Minimap clearly uses RRGGBBAA:
+ *
+ *      0x00000040     black with partial alpha
+ *      0xff000040     red with partial alpha
+ *      0xff0000ff     red opaque
+ *      0x00ff00ff     green opaque
+ *
+ * Reject unsupported lengths instead of truncating them.
+ *
+ * This intentionally means the current odd:
+ *
+ *      playerDotColor = 0xfffffffff
+ *
+ * remains raw/invalid rather than silently "fixed."
+ */
+window.parseAgarRgbaColor =
+    function (
+        value
+    ) {
+        var raw =
+            value ===
+                undefined ||
+            value ===
+                null
+                ? ''
+                : String(
+                    value
+                ).trim();
+
+        if (
+            !raw ||
+            raw.toLowerCase() ===
+                'na'
+        ) {
+            return {
+                valid:
+                    false,
+
+                raw:
+                    value,
+
+                css:
+                    null
+            };
+        }
+
+        var hex =
+            raw
+                .replace(
+                    /^0x/i,
+                    ''
+                )
+                .replace(
+                    /^#/,
+                    ''
+                );
+
+        if (
+            !/^[0-9a-fA-F]+$/
+                .test(
+                    hex
+                )
+        ) {
+            return {
+                valid:
+                    false,
+
+                raw:
+                    value,
+
+                css:
+                    null
+            };
+        }
+
+        if (
+            hex.length !==
+                6 &&
+            hex.length !==
+                8
+        ) {
+            return {
+                valid:
+                    false,
+
+                raw:
+                    value,
+
+                css:
+                    null
+            };
+        }
+
+
+        var r =
+            parseInt(
+                hex.substring(
+                    0,
+                    2
+                ),
+                16
+            );
+
+        var g =
+            parseInt(
+                hex.substring(
+                    2,
+                    4
+                ),
+                16
+            );
+
+        var b =
+            parseInt(
+                hex.substring(
+                    4,
+                    6
+                ),
+                16
+            );
+
+        var a =
+            hex.length ===
+                8
+                ? (
+                    parseInt(
+                        hex.substring(
+                            6,
+                            8
+                        ),
+                        16
+                    ) /
+                    255
+                )
+                : 1;
+
+
+        return {
+            valid:
+                true,
+
+            raw:
+                value,
+
+            r:
+                r,
+
+            g:
+                g,
+
+            b:
+                b,
+
+            a:
+                a,
+
+            hex:
+                hex
+                    .toLowerCase(),
+
+            css:
+                (
+                    a >=
+                    0.999
+                )
+                    ? (
+                        '#' +
+                        hex.substring(
+                            0,
+                            6
+                        )
+                            .toLowerCase()
+                    )
+                    : (
+                        'rgba(' +
+                        r +
+                        ',' +
+                        g +
+                        ',' +
+                        b +
+                        ',' +
+                        Number(
+                            a.toFixed(
+                                4
+                            )
+                        ) +
+                        ')'
+                    )
+        };
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * VISUAL - LEAGUES
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarVisualLeague =
+    function (
+        leagueName
+    ) {
+        var name =
+            String(
+                leagueName ||
+                ''
+            )
+                .trim()
+                .toLowerCase();
+
+        if (!name) {
+            return null;
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (!index) {
+            return null;
+        }
+
+        var row =
+            index
+                .visualLeagueByName[
+                    name
+                ] ||
+            null;
+
+        if (!row) {
+            return null;
+        }
+
+        var parsed =
+            window
+                .parseAgarLeagueColor(
+                    row.outlineColor
+                );
+
+        return {
+            leagueName:
+                row
+                    .leagueName,
+
+            localeTag:
+                row
+                    .localeTag ||
+                null,
+
+            icon:
+                row
+                    .icon ||
+                null,
+
+            isTiered:
+                window
+                    .parseAgarConfigBoolean(
+                        row.isTiered,
+                        false
+                    ),
+
+            outlineColor:
+                parsed,
+
+            css:
+                parsed.valid
+                    ? parsed.css
+                    : null,
+
+            raw:
+                row
+        };
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * VISUAL - MINIMAP
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarMinimapSetting =
+    function (
+        key,
+        fallback
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .visualMinimapSettingByKey
+        ) {
+            return fallback;
+        }
+
+        var row =
+            index
+                .visualMinimapSettingByKey[
+                    key
+                ];
+
+        if (
+            !row ||
+            window
+                .isAgarUnavailableConfigValue(
+                    row.value
+                )
+        ) {
+            return fallback;
+        }
+
+        return row.value;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * VISUAL - POPUP PRIORITIES
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarPopupPriority =
+    function (
+        popupId,
+        stateId
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (!index) {
+            return null;
+        }
+
+        if (
+            stateId !==
+                undefined &&
+            stateId !==
+                null
+        ) {
+            var compositeKey =
+                String(stateId) +
+                ':' +
+                String(popupId);
+
+            var rows =
+                index
+                    .popupPriorityByCompositeKey[
+                        compositeKey
+                    ];
+
+            return rows && rows.length
+                ? rows[0]
+                : null;
+        }
+
+        var byPopup =
+            index
+                .popupPrioritiesByPopupId[
+                    String(popupId)
+                ];
+
+        return byPopup && byPopup.length
+            ? byPopup[0]
+            : null;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * VISUAL - HELP SETTINGS
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarHelpSetting =
+    function (
+        key,
+        fallback
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .helpSettingByKey
+        ) {
+            return fallback;
+        }
+
+        var row =
+            index
+                .helpSettingByKey[
+                    key
+                ];
+
+        if (
+            !row ||
+            window
+                .isAgarUnavailableConfigValue(
+                    row.value
+                )
+        ) {
+            return fallback;
+        }
+
+        return row.value;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * VISUAL - SPINE ANIMATIONS
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarSpineAnimations =
+    function (
+        productId
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (!index) {
+            return null;
+        }
+
+        return (
+            index
+                .spineAnimationsByProductId[
+                    productId
+                ] ||
+            null
+        );
+    };
+
+
+window.getAgarSpineAnimation =
+    function (
+        productId,
+        action
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (!index) {
+            return null;
+        }
+
+        var byProduct =
+            index
+                .spineAnimationByProductAndAction[
+                    productId
+                ];
+
+        if (!byProduct) {
+            return null;
+        }
+
+        return (
+            byProduct[
+                action
+            ] ||
+            null
+        );
+    };
+
+
+window.getAgarSpineFile =
+    function (
+        productId
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (!index) {
+            return null;
+        }
+
+        return (
+            index
+                .spineFileByProductId[
+                    productId
+                ] ||
+            null
+        );
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * DEFAULT SETTINGS - GAMEPLAY
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarGameplaySetting =
+    function (
+        key,
+        mode
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .gameplaySettingByKey
+        ) {
+            return undefined;
+        }
+
+        var row =
+            index
+                .gameplaySettingByKey[
+                    key
+                ];
+
+        if (!row) {
+            return undefined;
+        }
+
+        if (
+            mode &&
+            row[mode] !==
+                undefined
+        ) {
+            return row[mode];
+        }
+
+        return row;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * DEFAULT SETTINGS - USER
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarUserSetting =
+    function (
+        key,
+        fallback
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .userSettingByKey
+        ) {
+            return fallback;
+        }
+
+        var row =
+            index
+                .userSettingByKey[
+                    key
+                ];
+
+        if (
+            !row ||
+            window
+                .isAgarUnavailableConfigValue(
+                    row.value
+                )
+        ) {
+            return fallback;
+        }
+
+        return row.value;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * DEFAULT SETTINGS - CONTROLS
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * IMPORTANT: these must NOT blindly replace desktop LM control settings.
+ * They are advisory / initial defaults from the server configuration.
+ */
+window.getAgarControlSetting =
+    function (
+        key,
+        fallback
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .controlSettingByKey
+        ) {
+            return fallback;
+        }
+
+        var row =
+            index
+                .controlSettingByKey[
+                    key
+                ];
+
+        if (
+            !row ||
+            window
+                .isAgarUnavailableConfigValue(
+                    row.value
+                )
+        ) {
+            return fallback;
+        }
+
+        return row.value;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * DEFAULT SETTINGS - BATTLE R.
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarBattleRoyaleSetting =
+    function (
+        key,
+        fallback
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .battleRoyaleSettingByKey
+        ) {
+            return fallback;
+        }
+
+        var row =
+            index
+                .battleRoyaleSettingByKey[
+                    key
+                ];
+
+        if (
+            !row ||
+            window
+                .isAgarUnavailableConfigValue(
+                    row.value
+                )
+        ) {
+            return fallback;
+        }
+
+        return row.value;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * DEFAULT SETTINGS - LEAGUES
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+window.getAgarLeagueDefaultSetting =
+    function (
+        key,
+        fallback
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .leagueSettingByKey
+        ) {
+            return fallback;
+        }
+
+        var row =
+            index
+                .leagueSettingByKey[
+                    key
+                ];
+
+        if (
+            !row ||
+            window
+                .isAgarUnavailableConfigValue(
+                    row.value
+                )
+        ) {
+            return fallback;
+        }
+
+        return row.value;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * DEFAULT SETTINGS - COMM.
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * Metadata only. LM does NOT turn WebSocket into fake UDP.
+ */
+window.getAgarCommSetting =
+    function (
+        key,
+        fallback
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .commSettingByKey
+        ) {
+            return fallback;
+        }
+
+        var row =
+            index
+                .commSettingByKey[
+                    key
+                ];
+
+        if (
+            !row ||
+            window
+                .isAgarUnavailableConfigValue(
+                    row.value
+                )
+        ) {
+            return fallback;
+        }
+
+        return row.value;
     };
 
 
