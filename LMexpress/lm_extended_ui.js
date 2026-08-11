@@ -7720,9 +7720,30 @@
                 }
 
 
+                /*
+                 * Disable immediately + visual feedback.
+                 *
+                 * Do NOT re-enable on success:
+                 * the panel re-render will replace the entire DOM,
+                 * and the new quest state won't have a skip button.
+                 *
+                 * Only re-enable on failure so the user can retry.
+                 */
+                var originalText =
+                    button.text();
+
                 button.prop(
                     'disabled',
                     true
+                );
+
+                button.css({
+                    opacity: '.55',
+                    cursor: 'not-allowed'
+                });
+
+                button.text(
+                    'Working\u2026'
                 );
 
 
@@ -7741,12 +7762,12 @@
 
                             onSuccess:
                                 function () {
-                                    button.prop(
-                                        'disabled',
-                                        false
-                                    );
-
-
+                                    /*
+                                     * Button stays disabled.
+                                     *
+                                     * The re-render below rebuilds
+                                     * the entire panel from live state.
+                                     */
                                     if (
                                         typeof window
                                             .renderAgarEconomyPanel ===
@@ -7764,6 +7785,15 @@
                                     button.prop(
                                         'disabled',
                                         false
+                                    );
+
+                                    button.css({
+                                        opacity: '1',
+                                        cursor: 'pointer'
+                                    });
+
+                                    button.text(
+                                        originalText
                                     );
 
 
