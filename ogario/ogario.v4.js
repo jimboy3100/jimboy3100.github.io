@@ -4626,6 +4626,166 @@ window.rebuildAgarConfigIndex = function () {
 
         /*
          * ═══════════════════════════════════════════════════════════════
+         * GENERIC WALLET / VISUAL PRODUCTS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Wallet - Products
+         *
+         *      id
+         *      type
+         *      visual
+         *      localizedName
+         *      productFamily
+         *
+         * Visual - Products
+         *
+         *      productId
+         *      visualSource
+         *      imageType
+         *
+         * IMPORTANT:
+         *
+         * Wallet - Products is keyed by `id`, NOT `productId`.
+         */
+        walletProductById:
+            Object.create(null),
+
+        visualProductById:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * SKIN SHOP / GAMEPLAY SKINS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Shop - Skins
+         *
+         *      productIdToQuantify
+         *
+         * Gameplay - Equippable Skins
+         *
+         *      productId
+         */
+        shopSkinByProductId:
+            Object.create(null),
+
+        gameplaySkinByProductId:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * SKIN GROUPS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Shop - Skin Groups:
+         *
+         *      productIdForGrouping
+         *      productIdSkinFrom
+         *      productIdSkinTo
+         *
+         * Keep the complete list because progressive skin membership
+         * may be represented by an inclusive _level_N range.
+         */
+        shopSkinGroups:
+            [],
+
+        shopSkinGroupsByGroupingId:
+            Object.create(null),
+
+        shopSkinGroupsByEndpointProductId:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * SKIN SHOP TABS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Visual - Shop Skins Tabs:
+         *
+         *      tabDescription
+         *      tabName
+         *      tabOrder
+         *
+         * Visual - Tabs Associations:
+         *
+         *      skinType
+         *      tabDescription
+         *
+         * One skinType may appear in more than one tab.
+         */
+        skinTabs:
+            [],
+
+        skinTabByDescription:
+            Object.create(null),
+
+        skinTabAssociationsBySkinType:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * BUNDLE CONDITIONS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Wallet - Product Bundles Cond.:
+         *
+         *      bundleId
+         *      productId
+         *      quantity
+         *
+         * Multiple requirements can belong to one bundle.
+         */
+        bundleConditionsByBundleId:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * CUSTOM SKIN EDITOR SETTINGS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Default Settings - Custom Skins:
+         *
+         *      key
+         *      value
+         *
+         * Values may be primitive OR experiment descriptors.
+         * Do not collapse experiment objects into arbitrary branches.
+         */
+        customSkinSettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * SKIN EDITOR PALETTE
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Visual - Skin Editor Colors:
+         *
+         *      colorPositionId
+         *
+         *      rCell
+         *      gCell
+         *      bCell
+         *
+         *      rBorder
+         *      gBorder
+         *      bBorder
+         */
+        skinEditorColors:
+            [],
+
+        skinEditorColorByPositionId:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
          * NORMAL GAMEPLAY BOOSTS
          * ═══════════════════════════════════════════════════════════════
          */
@@ -5661,6 +5821,703 @@ window.rebuildAgarConfigIndex = function () {
     }
 
 
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * WALLET - PRODUCTS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Official WalletProductVO:
+     *
+     *      id
+     *      type
+     *      visual
+     *      localizedName
+     *      productFamily
+     *
+     * IMPORTANT:
+     *
+     * The primary key is `id`.
+     * Do NOT change this to productId.
+     */
+    list =
+        rows(
+            'Wallet - Products'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.id
+        ) {
+            continue;
+        }
+
+        index
+            .walletProductById[
+                String(
+                    row.id
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * VISUAL - PRODUCTS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Official VisualProductVO:
+     *
+     *      productId
+     *      visualSource
+     *      imageType
+     */
+    list =
+        rows(
+            'Visual - Products'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.productId
+        ) {
+            continue;
+        }
+
+        index
+            .visualProductById[
+                String(
+                    row.productId
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * GAMEPLAY - EQUIPPABLE SKINS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Keep gameplay metadata separate from shop metadata.
+     *
+     * A skin may exist in gameplay configuration even when its current
+     * shop presentation is different or unavailable.
+     */
+    list =
+        rows(
+            'Gameplay - Equippable Skins'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.productId
+        ) {
+            continue;
+        }
+
+        index
+            .gameplaySkinByProductId[
+                String(
+                    row.productId
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * SHOP - SKINS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * ShopSkinItemVO identifies the wallet/gameplay product through:
+     *
+     *      productIdToQuantify
+     *
+     * NOT through the shop purchase id/referenceValue.
+     */
+    list =
+        rows(
+            'Shop - Skins'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.productIdToQuantify
+        ) {
+            continue;
+        }
+
+        index
+            .shopSkinByProductId[
+                String(
+                    row.productIdToQuantify
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * SHOP - SKIN GROUPS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Exact official fields:
+     *
+     *      productIdForGrouping
+     *      productIdSkinFrom
+     *      productIdSkinTo
+     *
+     * We preserve:
+     *
+     *      1. complete ordered rows
+     *      2. grouping-product lookup
+     *      3. direct endpoint lookup
+     *
+     * Progressive range membership is resolved later.
+     */
+    list =
+        rows(
+            'Shop - Skin Groups'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (!row) {
+            continue;
+        }
+
+        index
+            .shopSkinGroups
+            .push(
+                row
+            );
+
+
+        if (
+            row.productIdForGrouping
+        ) {
+            var groupingId =
+                String(
+                    row
+                        .productIdForGrouping
+                );
+
+            if (
+                !index
+                    .shopSkinGroupsByGroupingId[
+                        groupingId
+                    ]
+            ) {
+                index
+                    .shopSkinGroupsByGroupingId[
+                        groupingId
+                    ] =
+                    [];
+            }
+
+            index
+                .shopSkinGroupsByGroupingId[
+                    groupingId
+                ]
+                .push(
+                    row
+                );
+        }
+
+
+        /*
+         * Direct indexing of explicit range endpoints.
+         */
+        var skinGroupEndpoints = [
+            row.productIdSkinFrom,
+            row.productIdSkinTo
+        ];
+
+        for (
+            var skinEndpointIndex = 0;
+            skinEndpointIndex <
+                skinGroupEndpoints.length;
+            skinEndpointIndex++
+        ) {
+            if (
+                !skinGroupEndpoints[
+                    skinEndpointIndex
+                ]
+            ) {
+                continue;
+            }
+
+            var endpointProductId =
+                String(
+                    skinGroupEndpoints[
+                        skinEndpointIndex
+                    ]
+                );
+
+            if (
+                !index
+                    .shopSkinGroupsByEndpointProductId[
+                        endpointProductId
+                    ]
+            ) {
+                index
+                    .shopSkinGroupsByEndpointProductId[
+                        endpointProductId
+                    ] =
+                    [];
+            }
+
+            index
+                .shopSkinGroupsByEndpointProductId[
+                    endpointProductId
+                ]
+                .push(
+                    row
+                );
+        }
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * VISUAL - SHOP SKINS TABS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Example:
+     *
+     *      {
+     *          tabDescription: "PREMIUM",
+     *          tabName: "...",
+     *          tabOrder: ...
+     *      }
+     */
+    list =
+        rows(
+            'Visual - Shop Skins Tabs'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.tabDescription
+        ) {
+            continue;
+        }
+
+        index
+            .skinTabs
+            .push(
+                row
+            );
+
+        index
+            .skinTabByDescription[
+                String(
+                    row.tabDescription
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * Preserve configured tab order.
+     *
+     * Invalid/missing order goes after configured rows.
+     */
+    index
+        .skinTabs
+        .sort(
+            function (
+                a,
+                b
+            ) {
+                var aOrder =
+                    Number(
+                        a &&
+                        a.tabOrder
+                    );
+
+                var bOrder =
+                    Number(
+                        b &&
+                        b.tabOrder
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        aOrder
+                    )
+                ) {
+                    aOrder =
+                        Number.MAX_SAFE_INTEGER;
+                }
+
+
+                if (
+                    !Number.isFinite(
+                        bOrder
+                    )
+                ) {
+                    bOrder =
+                        Number.MAX_SAFE_INTEGER;
+                }
+
+
+                if (
+                    aOrder !==
+                    bOrder
+                ) {
+                    return (
+                        aOrder -
+                        bOrder
+                    );
+                }
+
+
+                return String(
+                    (
+                        a &&
+                        a.tabDescription
+                    ) ||
+                    ''
+                )
+                    .localeCompare(
+                        String(
+                            (
+                                b &&
+                                b.tabDescription
+                            ) ||
+                            ''
+                        )
+                    );
+            }
+        );
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * VISUAL - TABS ASSOCIATIONS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Correct relation:
+     *
+     *      Shop - Skins.skinType
+     *
+     *              ↓
+     *
+     *      Visual - Tabs Associations.skinType
+     *
+     *              ↓
+     *
+     *      tabDescription
+     *
+     *              ↓
+     *
+     *      Visual - Shop Skins Tabs.tabDescription
+     *
+     * A skinType may deliberately belong to MORE THAN ONE tab.
+     *
+     * Example in current configuration:
+     *
+     *      XMAS → PREMIUM
+     *      XMAS → XMAS
+     */
+    list =
+        rows(
+            'Visual - Tabs Associations'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.skinType
+        ) {
+            continue;
+        }
+
+        var associatedSkinType =
+            String(
+                row.skinType
+            );
+
+        if (
+            !index
+                .skinTabAssociationsBySkinType[
+                    associatedSkinType
+                ]
+        ) {
+            index
+                .skinTabAssociationsBySkinType[
+                    associatedSkinType
+                ] =
+                [];
+        }
+
+        index
+            .skinTabAssociationsBySkinType[
+                associatedSkinType
+            ]
+            .push(
+                row
+            );
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * WALLET - PRODUCT BUNDLES COND.
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Official schema:
+     *
+     *      bundleId
+     *      productId
+     *      quantity
+     *
+     * There can be multiple condition rows for the same bundle.
+     */
+    list =
+        rows(
+            'Wallet - Product Bundles Cond.'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.bundleId
+        ) {
+            continue;
+        }
+
+        var conditionBundleId =
+            String(
+                row.bundleId
+            );
+
+        if (
+            !index
+                .bundleConditionsByBundleId[
+                    conditionBundleId
+                ]
+        ) {
+            index
+                .bundleConditionsByBundleId[
+                    conditionBundleId
+                ] =
+                [];
+        }
+
+        index
+            .bundleConditionsByBundleId[
+                conditionBundleId
+            ]
+            .push(
+                row
+            );
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * DEFAULT SETTINGS - CUSTOM SKINS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Current configuration includes:
+     *
+     *      brushSizeLarge
+     *      brushSizeMedium
+     *      brushSizeSmall
+     *      skinBorderSize
+     *      operationStackSize
+     *      imageUrlPrefix
+     *      imageUrlSuffix
+     *      metaUrlSuffix
+     *      maxSkinNameSize
+     *      outlineColorForEntryPoint
+     *      shouldAnimateSoftbody
+     *      isServiceActiveIOS
+     *      isServiceActiveAndroid
+     *      autoSaveSkinInterval
+     *      shouldAutoSave
+     *      createUserSkinsPurchaseID
+     *
+     * `value` may be an experiment descriptor object.
+     */
+    list =
+        rows(
+            'Default Settings - Custom Skins'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.key
+        ) {
+            continue;
+        }
+
+        index
+            .customSkinSettingByKey[
+                String(
+                    row.key
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * VISUAL - SKIN EDITOR COLORS
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * This is the official configured editor palette.
+     *
+     * Do NOT duplicate it with another hand-written list of CSS colors.
+     */
+    list =
+        rows(
+            'Visual - Skin Editor Colors'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            row.colorPositionId ===
+                undefined ||
+            row.colorPositionId ===
+                null
+        ) {
+            continue;
+        }
+
+        var skinEditorPositionKey =
+            String(
+                row.colorPositionId
+            );
+
+        index
+            .skinEditorColors
+            .push(
+                row
+            );
+
+        index
+            .skinEditorColorByPositionId[
+                skinEditorPositionKey
+            ] =
+            row;
+    }
+
+
+    /*
+     * Always return palette in official position order.
+     */
+    index
+        .skinEditorColors
+        .sort(
+            function (
+                a,
+                b
+            ) {
+                return (
+                    (
+                        Number(
+                            a &&
+                            a.colorPositionId
+                        ) ||
+                        0
+                    ) -
+                    (
+                        Number(
+                            b &&
+                            b.colorPositionId
+                        ) ||
+                        0
+                    )
+                );
+            }
+        );
+
+
     window._agarConfigIndex =
         index;
 
@@ -5679,6 +6536,1025 @@ window.getAgarConfigIndex =
             window
                 .rebuildAgarConfigIndex()
         );
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * GENERIC AGAR PRODUCT / VISUAL / SKIN CONFIGURATION RESOLVERS
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * These are READ-ONLY configuration resolvers.
+ *
+ * They do NOT:
+ *
+ *      - buy products
+ *      - credit wallet products
+ *      - equip skins
+ *      - decide experiment assignments
+ *      - override live wallet state
+ *
+ * GameConfiguration supplies metadata.
+ * Live Agar.io state/server responses remain authoritative.
+ */
+
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * VISUAL SOURCE NORMALIZER
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
+ * VisualProductVO.visualSource can be represented by a source object.
+ *
+ * Preserve the original raw value but expose the actual source string when
+ * available.
+ */
+window.getAgarVisualSourceValue =
+    function (
+        visualProduct
+    ) {
+        if (!visualProduct) {
+            return '';
+        }
+
+        var source =
+            visualProduct
+                .visualSource;
+
+
+        if (
+            typeof source ===
+            'string'
+        ) {
+            return source;
+        }
+
+
+        if (
+            source &&
+            typeof source ===
+                'object' &&
+            typeof source.source ===
+                'string'
+        ) {
+            return source.source;
+        }
+
+
+        return '';
+    };
+
+
+/*
+ * Exact Wallet - Products row.
+ *
+ * IMPORTANT:
+ *
+ * WalletProductVO uses:
+ *
+ *      id
+ *
+ * not:
+ *
+ *      productId
+ */
+window.getAgarWalletProductInfo =
+    function (
+        productId
+    ) {
+        var id =
+            String(
+                productId ||
+                ''
+            ).trim();
+
+
+        if (!id) {
+            return null;
+        }
+
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+
+        if (
+            !index ||
+            !index.walletProductById
+        ) {
+            return null;
+        }
+
+
+        return (
+            index
+                .walletProductById[
+                    id
+                ] ||
+            null
+        );
+    };
+
+
+/*
+ * Exact Visual - Products row.
+ */
+window.getAgarVisualProductInfo =
+    function (
+        productId
+    ) {
+        var id =
+            String(
+                productId ||
+                ''
+            ).trim();
+
+
+        if (!id) {
+            return null;
+        }
+
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+
+        if (
+            !index ||
+            !index.visualProductById
+        ) {
+            return null;
+        }
+
+
+        return (
+            index
+                .visualProductById[
+                    id
+                ] ||
+            null
+        );
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * GENERIC PRODUCT
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * Resolve:
+ *
+ *      Wallet - Products
+ *
+ *                  +
+ *
+ *      Visual - Products
+ *
+ * into one non-lossy LM object.
+ *
+ * WalletProductVO.visual is respected first as a visual lookup key.
+ * Direct productId lookup is retained as a config-derived fallback.
+ *
+ * We deliberately DO NOT use:
+ *
+ *      productId.indexOf("coin")
+ *      productId.indexOf("dna")
+ *      productId.startsWith("skin")
+ *
+ * to invent product semantics.
+ */
+window.getAgarProductInfo =
+    function (
+        productId
+    ) {
+        var id =
+            String(
+                productId ||
+                ''
+            ).trim();
+
+
+        if (!id) {
+            return null;
+        }
+
+
+        var wallet =
+            window
+                .getAgarWalletProductInfo(
+                    id
+                );
+
+
+        var visualKey =
+            (
+                wallet &&
+                wallet.visual
+            )
+                ? String(
+                    wallet.visual
+                )
+                : '';
+
+
+        var visual =
+            null;
+
+
+        /*
+         * Wallet metadata may explicitly reference another visual key.
+         */
+        if (visualKey) {
+            visual =
+                window
+                    .getAgarVisualProductInfo(
+                        visualKey
+                    );
+        }
+
+
+        /*
+         * Many products simply use their own product ID as the visual key.
+         */
+        if (!visual) {
+            visual =
+                window
+                    .getAgarVisualProductInfo(
+                        id
+                    );
+        }
+
+
+        if (
+            !wallet &&
+            !visual
+        ) {
+            return null;
+        }
+
+
+        return {
+            productId:
+                id,
+
+            type:
+                (
+                    wallet &&
+                    wallet.type != null
+                )
+                    ? wallet.type
+                    : '',
+
+            productFamily:
+                (
+                    wallet &&
+                    wallet.productFamily !=
+                        null
+                )
+                    ? wallet.productFamily
+                    : '',
+
+            localizedName:
+                (
+                    wallet &&
+                    wallet.localizedName !=
+                        null
+                )
+                    ? wallet.localizedName
+                    : '',
+
+            walletVisualKey:
+                visualKey,
+
+            imageType:
+                (
+                    visual &&
+                    visual.imageType !=
+                        null
+                )
+                    ? visual.imageType
+                    : '',
+
+            visualSource:
+                visual
+                    ? visual.visualSource
+                    : null,
+
+            visualUrl:
+                window
+                    .getAgarVisualSourceValue(
+                        visual
+                    ),
+
+            rawWallet:
+                wallet,
+
+            rawVisual:
+                visual
+        };
+    };
+
+
+/*
+ * Return every product known to either Wallet - Products
+ * or Visual - Products, once.
+ */
+window.getAgarProductCatalog =
+    function () {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+
+        if (!index) {
+            return [];
+        }
+
+
+        var seen =
+            Object.create(
+                null
+            );
+
+        var ids =
+            [];
+
+
+        function collect(
+            object
+        ) {
+            if (!object) {
+                return;
+            }
+
+            var keys =
+                Object.keys(
+                    object
+                );
+
+            for (
+                var i = 0;
+                i < keys.length;
+                i++
+            ) {
+                var id =
+                    keys[i];
+
+                if (
+                    seen[id]
+                ) {
+                    continue;
+                }
+
+                seen[id] =
+                    true;
+
+                ids.push(
+                    id
+                );
+            }
+        }
+
+
+        collect(
+            index
+                .walletProductById
+        );
+
+        collect(
+            index
+                .visualProductById
+        );
+
+
+        ids.sort();
+
+
+        var result =
+            [];
+
+        for (
+            var i = 0;
+            i < ids.length;
+            i++
+        ) {
+            var info =
+                window
+                    .getAgarProductInfo(
+                        ids[i]
+                    );
+
+            if (info) {
+                result.push(
+                    info
+                );
+            }
+        }
+
+        return result;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * GENERIC LIVE WALLET BALANCE READER
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * This NEVER derives a product from its name.
+ *
+ * Only exact product ID matches are accepted.
+ *
+ * Unknown state returns null rather than incorrectly returning zero.
+ */
+
+
+/*
+ * Read one wallet/inventory record.
+ */
+window._readAgarBalanceRecord =
+    function (
+        record,
+        productId
+    ) {
+        if (
+            !record ||
+            typeof record !==
+                'object'
+        ) {
+            return null;
+        }
+
+        var recordId =
+            record.productId !=
+                null
+                ? record.productId
+                : record.id;
+
+        if (
+            recordId ==
+                null ||
+            String(
+                recordId
+            ) !==
+                productId
+        ) {
+            return null;
+        }
+
+        var fields = [
+            'balance',
+            'amount',
+            'quantity',
+            'count'
+        ];
+
+        for (
+            var i = 0;
+            i < fields.length;
+            i++
+        ) {
+            var field =
+                fields[i];
+
+            if (
+                record[field] ===
+                    undefined ||
+                record[field] ===
+                    null
+            ) {
+                continue;
+            }
+
+            var value =
+                Number(
+                    record[field]
+                );
+
+            if (
+                Number.isFinite(
+                    value
+                )
+            ) {
+                return Math.max(
+                    0,
+                    value
+                );
+            }
+        }
+
+        return null;
+    };
+
+
+/*
+ * Read an array/map style inventory container.
+ */
+window._readAgarBalanceContainer =
+    function (
+        container,
+        productId
+    ) {
+        if (!container) {
+            return null;
+        }
+
+        if (
+            Array.isArray(
+                container
+            )
+        ) {
+            for (
+                var i = 0;
+                i < container.length;
+                i++
+            ) {
+                var arrayValue =
+                    window
+                        ._readAgarBalanceRecord(
+                            container[i],
+                            productId
+                        );
+
+                if (
+                    arrayValue !==
+                    null
+                ) {
+                    return arrayValue;
+                }
+            }
+
+            return null;
+        }
+
+        if (
+            typeof container !==
+                'object'
+        ) {
+            return null;
+        }
+
+        if (
+            Object
+                .prototype
+                .hasOwnProperty
+                .call(
+                    container,
+                    productId
+                )
+        ) {
+            var exact =
+                container[
+                    productId
+                ];
+
+            if (
+                typeof exact ===
+                    'number' ||
+                typeof exact ===
+                    'string'
+            ) {
+                var numericExact =
+                    Number(exact);
+
+                if (
+                    Number.isFinite(
+                        numericExact
+                    )
+                ) {
+                    return Math.max(
+                        0,
+                        numericExact
+                    );
+                }
+            }
+
+            var exactRecord =
+                window
+                    ._readAgarBalanceRecord(
+                        exact,
+                        productId
+                    );
+
+            if (
+                exactRecord !==
+                null
+            ) {
+                return exactRecord;
+            }
+
+            if (
+                exact &&
+                typeof exact ===
+                    'object'
+            ) {
+                var valueFields = [
+                    'balance',
+                    'amount',
+                    'quantity',
+                    'count'
+                ];
+
+                for (
+                    var valueIndex = 0;
+                    valueIndex <
+                        valueFields.length;
+                    valueIndex++
+                ) {
+                    var valueField =
+                        valueFields[
+                            valueIndex
+                        ];
+
+                    if (
+                        exact[
+                            valueField
+                        ] ==
+                        null
+                    ) {
+                        continue;
+                    }
+
+                    var exactValue =
+                        Number(
+                            exact[
+                                valueField
+                            ]
+                        );
+
+                    if (
+                        Number.isFinite(
+                            exactValue
+                        )
+                    ) {
+                        return Math.max(
+                            0,
+                            exactValue
+                        );
+                    }
+                }
+            }
+        }
+
+        return null;
+    };
+
+
+/*
+ * Read exact live product balance from the currently available LM/Agar user.
+ *
+ * Returns:
+ *
+ *      number  → known
+ *      null    → currently unknown
+ *
+ * Never substitute zero for unknown.
+ */
+window.getAgarLiveProductBalance =
+    function (
+        productId
+    ) {
+        var id =
+            String(
+                productId ||
+                ''
+            ).trim();
+
+        if (!id) {
+            return null;
+        }
+
+        var users =
+            [];
+
+        if (
+            window.application &&
+            window.application.user
+        ) {
+            users.push(
+                window
+                    .application
+                    .user
+            );
+        }
+
+        if (
+            window.LM &&
+            window.LM.user &&
+            users.indexOf(
+                window.LM.user
+            ) ===
+                -1
+        ) {
+            users.push(
+                window.LM.user
+            );
+        }
+
+        if (
+            window.legendmod &&
+            window.legendmod.user &&
+            users.indexOf(
+                window
+                    .legendmod
+                    .user
+            ) ===
+                -1
+        ) {
+            users.push(
+                window
+                    .legendmod
+                    .user
+            );
+        }
+
+        for (
+            var userIndex = 0;
+            userIndex <
+                users.length;
+            userIndex++
+        ) {
+            var user =
+                users[
+                    userIndex
+                ];
+
+            var containers = [
+                user.wallet,
+                user.products,
+                user.inventory,
+                user.items
+            ];
+
+            for (
+                var containerIndex = 0;
+                containerIndex <
+                    containers.length;
+                containerIndex++
+            ) {
+                var balance =
+                    window
+                        ._readAgarBalanceContainer(
+                            containers[
+                                containerIndex
+                            ],
+                            id
+                        );
+
+                if (
+                    balance !==
+                    null
+                ) {
+                    return balance;
+                }
+            }
+        }
+
+        return null;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * WALLET - PRODUCT BUNDLE CONDITIONS
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * The official VO exposes only:
+ *
+ *      bundleId
+ *      productId
+ *      quantity
+ *
+ * Therefore the UI can inspect the configured product/quantity requirement,
+ * but MUST NOT treat this as stronger authority than the server.
+ */
+
+
+/*
+ * Raw configured requirements.
+ */
+window.getAgarBundleConditions =
+    function (
+        bundleId
+    ) {
+        var id =
+            String(
+                bundleId ||
+                ''
+            ).trim();
+
+        if (!id) {
+            return [];
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index.bundleConditionsByBundleId
+        ) {
+            return [];
+        }
+
+        return (
+            index
+                .bundleConditionsByBundleId[
+                    id
+                ] ||
+            []
+        );
+    };
+
+
+/*
+ * Evaluate the current UI projection of bundle requirements.
+ *
+ * quantity is treated as the minimum configured quantity requirement.
+ *
+ * If live wallet data cannot be resolved:
+ *
+ *      eligible = null
+ *
+ * NEVER:
+ *
+ *      eligible = false
+ *
+ * merely because LM does not currently know the balance.
+ *
+ * The actual server purchase response is always authoritative.
+ */
+window.evaluateAgarBundleConditions =
+    function (
+        bundleId,
+        balanceResolver
+    ) {
+        var id =
+            String(
+                bundleId ||
+                ''
+            ).trim();
+
+        if (!id) {
+            return null;
+        }
+
+        var conditionRows =
+            window
+                .getAgarBundleConditions(
+                    id
+                );
+
+        var resolver =
+            typeof balanceResolver ===
+                'function'
+                ? balanceResolver
+                : window
+                    .getAgarLiveProductBalance;
+
+        var conditions =
+            [];
+
+        var allKnown =
+            true;
+
+        var allMet =
+            true;
+
+        for (
+            var i = 0;
+            i <
+                conditionRows.length;
+            i++
+        ) {
+            var row =
+                conditionRows[i];
+
+            var productId =
+                String(
+                    (
+                        row &&
+                        row.productId
+                    ) ||
+                    ''
+                ).trim();
+
+            var required =
+                Math.max(
+                    0,
+                    Number(
+                        row &&
+                        row.quantity
+                    ) ||
+                    0
+                );
+
+            var liveBalance =
+                productId
+                    ? resolver(
+                        productId
+                    )
+                    : null;
+
+            var known =
+                Number.isFinite(
+                    Number(
+                        liveBalance
+                    )
+                );
+
+            var numericBalance =
+                known
+                    ? Math.max(
+                        0,
+                        Number(
+                            liveBalance
+                        )
+                    )
+                    : null;
+
+            var met =
+                known
+                    ? (
+                        numericBalance >=
+                        required
+                    )
+                    : null;
+
+            if (!known) {
+                allKnown =
+                    false;
+            }
+
+            if (
+                known &&
+                !met
+            ) {
+                allMet =
+                    false;
+            }
+
+            conditions.push({
+                productId:
+                    productId,
+
+                requiredQuantity:
+                    required,
+
+                balance:
+                    numericBalance,
+
+                known:
+                    known,
+
+                met:
+                    met,
+
+                product:
+                    window
+                        .getAgarProductInfo(
+                            productId
+                        ),
+
+                raw:
+                    row
+            });
+        }
+
+        return {
+            bundleId:
+                id,
+
+            hasConditions:
+                conditionRows.length >
+                0,
+
+            known:
+                conditionRows.length ===
+                    0
+                    ? true
+                    : allKnown,
+
+            /*
+             * true:  requirements known and satisfied
+             * false: requirements known and not satisfied
+             * null:  LM lacks sufficient live wallet state
+             */
+            eligible:
+                conditionRows.length ===
+                    0
+                    ? true
+                    : (
+                        allKnown
+                            ? allMet
+                            : null
+                    ),
+
+            conditions:
+                conditions
+        };
     };
 
 
@@ -27545,6 +29421,8 @@ function thelegendmodproject() {
                     }
 
                     /* ═══ CHALLENGES ═══ */
+                    /* Cache for lazy modal evaluation */
+                    window._lmLastGameOverField = u;
                     try {
                         if (typeof window.evaluateAgarChallenges === 'function') {
                             window.evaluateAgarChallenges(

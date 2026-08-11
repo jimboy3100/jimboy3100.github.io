@@ -5221,7 +5221,14 @@
                 var baseName = pid.replace(/^potion_/i, '').replace(/_/g, ' ')
                     .replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
 
-                var buyDisabled = !info.purchaseId ? ' disabled style="opacity:.4;"' : '';
+                var _ppCanAfford = info.purchaseId && info.price != null
+                    ? (window._lmGetCurrencyBalance(info.currency) >= Number(info.price))
+                    : true;
+                var buyDisabled = !info.purchaseId
+                    ? ' disabled style="opacity:.4;cursor:not-allowed;"'
+                    : (!_ppCanAfford
+                        ? ' disabled style="opacity:.45;cursor:not-allowed;filter:grayscale(40%);"'
+                        : '');
 
                 cardsHtml +=
                     '<div style="position:relative;flex:1;min-width:140px;max-width:180px;border-radius:14px;padding:16px 12px;border:2px solid ' + colors.border + ';background:' + colors.bg + ';display:flex;flex-direction:column;align-items:center;text-align:center;">' +
@@ -6999,6 +7006,21 @@
         };
 
 
+    /*
+     * Returns the player's current balance for a given currency productId.
+     * Falls back to 0 if user data is unavailable.
+     */
+    window._lmGetCurrencyBalance =
+        function (currencyId) {
+            var u = (window.LM && window.LM.user) || null;
+            if (!u) return 0;
+            var cid = String(currencyId || '').trim().toLowerCase();
+            if (cid === 'coin') return Number(u.coins) || 0;
+            if (cid === 'dna') return Number(u.dna) || 0;
+            return 0;
+        };
+
+
     window.renderAgarEconomyPanel =
         function (
             currentLevel
@@ -7544,6 +7566,10 @@
                 dailyInfo.purchaseId &&
                 dailyPriceText
             ) {
+                var _dailyCanAfford = dailyPrice != null
+                    ? (window._lmGetCurrencyBalance(dailyInfo.currency) >= dailyPrice)
+                    : true;
+
                 dailyButtonHtml =
                     '<button ' +
                         'type="button" ' +
@@ -7556,6 +7582,7 @@
                                         .purchaseId
                                 ) +
                         '" ' +
+                        (_dailyCanAfford ? '' : 'disabled ') +
                         'style="' +
                             'margin-left:6px;' +
                             'font-size:9px;' +
@@ -7574,7 +7601,9 @@
                             ';' +
                             'border:0;' +
                             'white-space:nowrap;' +
+                            (_dailyCanAfford ? '' : 'opacity:.45;cursor:not-allowed;filter:grayscale(40%);') +
                         '"' +
+                        (_dailyCanAfford ? '' : ' title="Not enough ' + window._lmEconomyEscape(dailyInfo.currency || 'currency') + '"') +
                     '>' +
                         'New Quest \u2014 ' +
                         window
@@ -8604,6 +8633,33 @@
         var evaluation = typeof window.getAgarLastChallengeEvaluation === 'function'
             ? window.getAgarLastChallengeEvaluation() : null;
 
+        /*
+         * If no evaluation cached yet (before first game-over this session),
+         * try to evaluate from whatever gameOverField data may exist
+         * (e.g. from a previous game in the same page load).
+         */
+        if (!evaluation && typeof window.evaluateAgarChallenges === 'function') {
+            try {
+                var gof = (window.LM && window.LM.lastGameOver) || window._lmLastGameOverField || null;
+                if (gof && gof.gameSessionStats) {
+                    var ctx = { gameEnded: true };
+                    if (gof.xpLevelUpdates && gof.xpLevelUpdates.length) {
+                        for (var xli = 0; xli < gof.xpLevelUpdates.length; xli++) {
+                            if (gof.xpLevelUpdates[xli] && gof.xpLevelUpdates[xli].finalLevel) {
+                                ctx.finalLevel = Number(gof.xpLevelUpdates[xli].finalLevel);
+                                break;
+                            }
+                        }
+                    }
+                    evaluation = window.evaluateAgarChallenges(gof.gameSessionStats, ctx);
+                }
+            } catch (evalErr) {
+                console.warn('[LM Challenges] Lazy evaluation failed:', evalErr);
+            }
+        }
+
+        var hasGameData = !!(evaluation && evaluation.knownThresholdCount > 0);
+
         var modal = document.createElement('div');
         modal.id = 'lm-challenges-modal';
         modal.className = 'lm-modal-overlay';
@@ -8660,6 +8716,16 @@
         if (challengeTypes.length === 0) {
             body.innerHTML = '<div style="text-align:center;padding:30px 0;color:' + t.tc2 + ';font-size:14px;">No Challenges configured.<br><span style="font-size:11px;opacity:.6;">Waiting for GameConfiguration\u2026</span></div>';
         } else {
+            /* Show a banner when config exists but no game data yet */
+            if (!hasGameData) {
+                var noDataBanner = document.createElement('div');
+                noDataBanner.style.cssText = 'text-align:center;padding:14px 20px;margin-bottom:12px;border-radius:8px;background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.2);';
+                noDataBanner.innerHTML =
+                    '<div style="font-size:13px;font-weight:700;color:#ffd54f;">\uD83C\uDFAE Play a game to see your progress</div>' +
+                    '<div style="font-size:10px;color:' + t.tc2 + ';margin-top:4px;">Challenges are evaluated from your game session stats after each match.</div>';
+                body.appendChild(noDataBanner);
+            }
+
             for (var ti = 0; ti < challengeTypes.length; ti++) {
                 var type = challengeTypes[ti];
                 var pres = window._lmGetChallengePresentation(type);
