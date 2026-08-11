@@ -4515,15 +4515,56 @@ window.rebuildAgarConfigIndex = function () {
     }
 
     var index = {
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * WALLET / ECONOMY
+         * ═══════════════════════════════════════════════════════════════
+         */
         softPurchaseById:
             Object.create(null),
 
+        bonusRewardById:
+            Object.create(null),
+
+        bundleProductsById:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * NORMAL GAMEPLAY BOOSTS
+         * ═══════════════════════════════════════════════════════════════
+         */
         gameplayBoostByProductId:
             Object.create(null),
 
         shopBoostByProductId:
             Object.create(null),
 
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * RUSH BOOSTS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Gameplay - Rush Boosts
+         *      productId -> addition
+         *
+         * Shop - Rush Boosts
+         *      productIdToQuantify -> purchaseId / position
+         */
+        rushGameplayByProductId:
+            Object.create(null),
+
+        rushShopByProductId:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * POTIONS / TIMED PRICES / EVENTS
+         * ═══════════════════════════════════════════════════════════════
+         */
         potionTimerByProductId:
             Object.create(null),
 
@@ -4539,17 +4580,90 @@ window.rebuildAgarConfigIndex = function () {
         timedEventById:
             Object.create(null),
 
-        bonusRewardById:
-            Object.create(null),
 
-        bundleProductsById:
-            Object.create(null),
-
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * QUESTS
+         * ═══════════════════════════════════════════════════════════════
+         */
         visualQuestByType:
             Object.create(null),
 
+
         /*
-         * Leagues - Tiers
+         * ═══════════════════════════════════════════════════════════════
+         * SUBSCRIPTIONS / VIP
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * subscriptionByType:
+         *
+         *      vip_weekly -> Subscriptions row
+         *
+         * subscriptionRuleById:
+         *
+         *      rewardPopupsColorTheme -> visual-rule row
+         */
+        subscriptionByType:
+            Object.create(null),
+
+        subscriptionRuleById:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * PARTY MODE
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * key -> complete Default Settings - Party Mode row
+         */
+        partySettingByKey:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * ACHIEVEMENTS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * IMPORTANT:
+         *
+         * One achievement type has MULTIPLE thresholds.
+         *
+         * Example:
+         *
+         * normal_cells_eaten
+         *      goal 1
+         *      goal 10
+         *      goal 50
+         *
+         * Therefore:
+         *
+         *      type -> ARRAY
+         */
+        achievementsByType:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * BATTLE ROYALE KILL REASONS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * One reason maps to multiple possible localized message tags.
+         *
+         * Therefore:
+         *
+         *      reason -> ARRAY
+         */
+        battleRoyaleKillReasonsByReason:
+            Object.create(null),
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * LEAGUES
+         * ═══════════════════════════════════════════════════════════════
          *
          * Array because tier ranges are naturally ordered records rather
          * than a product-id dictionary.
@@ -4947,6 +5061,328 @@ window.rebuildAgarConfigIndex = function () {
 
 
     /*
+     * ═════════════════════════════════════════════════════════════════════
+     * GAMEPLAY - RUSH BOOSTS
+     * ═════════════════════════════════════════════════════════════════════
+     */
+    list =
+        rows(
+            'Gameplay - Rush Boosts'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.productId
+        ) {
+            continue;
+        }
+
+        index
+            .rushGameplayByProductId[
+                String(
+                    row.productId
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * SHOP - RUSH BOOSTS
+     * ═════════════════════════════════════════════════════════════════════
+     */
+    list =
+        rows(
+            'Shop - Rush Boosts'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.productIdToQuantify
+        ) {
+            continue;
+        }
+
+        index
+            .rushShopByProductId[
+                String(
+                    row.productIdToQuantify
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * SUBSCRIPTIONS
+     * ═════════════════════════════════════════════════════════════════════
+     */
+    list =
+        rows(
+            'Subscriptions'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.type
+        ) {
+            continue;
+        }
+
+        index
+            .subscriptionByType[
+                String(
+                    row.type
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * SUBSCRIPTIONS - VISUAL RULES
+     * ═════════════════════════════════════════════════════════════════════
+     */
+    list =
+        rows(
+            'Subscriptions - Visual Rules'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.ruleId
+        ) {
+            continue;
+        }
+
+        index
+            .subscriptionRuleById[
+                String(
+                    row.ruleId
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * DEFAULT SETTINGS - PARTY MODE
+     * ═════════════════════════════════════════════════════════════════════
+     */
+    list =
+        rows(
+            'Default Settings - Party Mode'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.key
+        ) {
+            continue;
+        }
+
+        index
+            .partySettingByKey[
+                String(
+                    row.key
+                )
+            ] =
+            row;
+    }
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * ACHIEVEMENTS
+     * ═════════════════════════════════════════════════════════════════════
+     */
+    list =
+        rows(
+            'Achievements'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.type
+        ) {
+            continue;
+        }
+
+        var achievementType =
+            String(
+                row.type
+            );
+
+        if (
+            !index
+                .achievementsByType[
+                    achievementType
+                ]
+        ) {
+            index
+                .achievementsByType[
+                    achievementType
+                ] =
+                [];
+        }
+
+        index
+            .achievementsByType[
+                achievementType
+            ]
+            .push(
+                row
+            );
+    }
+
+
+    /*
+     * Keep threshold order deterministic regardless of the source row order.
+     */
+    Object
+        .keys(
+            index
+                .achievementsByType
+        )
+        .forEach(
+            function (
+                achievementType
+            ) {
+                index
+                    .achievementsByType[
+                        achievementType
+                    ]
+                    .sort(
+                        function (
+                            a,
+                            b
+                        ) {
+                            return (
+                                (
+                                    Number(
+                                        a.goal
+                                    ) ||
+                                    0
+                                ) -
+                                (
+                                    Number(
+                                        b.goal
+                                    ) ||
+                                    0
+                                )
+                            );
+                        }
+                    );
+            }
+        );
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * BATTLE ROYALE - KILL REASONS
+     * ═════════════════════════════════════════════════════════════════════
+     */
+    list =
+        rows(
+            'Battle Royale - Kill Reasons'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            !row ||
+            !row.reason
+        ) {
+            continue;
+        }
+
+        var killReason =
+            String(
+                row.reason
+            );
+
+        if (
+            !index
+                .battleRoyaleKillReasonsByReason[
+                    killReason
+                ]
+        ) {
+            index
+                .battleRoyaleKillReasonsByReason[
+                    killReason
+                ] =
+                [];
+        }
+
+        index
+            .battleRoyaleKillReasonsByReason[
+                killReason
+            ]
+            .push(
+                row
+            );
+    }
+
+
+    /*
      * ─────────────────────────────────────────────────────────────
      * Leagues - Tiers
      * ─────────────────────────────────────────────────────────────
@@ -5021,6 +5457,1177 @@ window.getAgarConfigIndex =
             window
                 .rebuildAgarConfigIndex()
         );
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * EXTENDED GAMECONFIGURATION RESOLVERS
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * RUSH BOOST
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
+ * Resolve:
+ *
+ *      Gameplay - Rush Boosts
+ *              +
+ *      Shop - Rush Boosts
+ *              +
+ *      Wallet - Soft Purchases
+ *
+ * into one useful object.
+ */
+window.getAgarRushBoostInfo =
+    function (
+        productId
+    ) {
+        var id =
+            String(
+                productId || ''
+            ).trim();
+
+        if (!id) {
+            return null;
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (!index) {
+            return null;
+        }
+
+        var gameplay =
+            index
+                .rushGameplayByProductId
+                ? (
+                    index
+                        .rushGameplayByProductId[
+                            id
+                        ] ||
+                    null
+                )
+                : null;
+
+        var shop =
+            index
+                .rushShopByProductId
+                ? (
+                    index
+                        .rushShopByProductId[
+                            id
+                        ] ||
+                    null
+                )
+                : null;
+
+        if (
+            !gameplay &&
+            !shop
+        ) {
+            return null;
+        }
+
+        var purchaseId =
+            shop &&
+            shop.purchaseId
+                ? String(
+                    shop.purchaseId
+                )
+                : '';
+
+        var purchase =
+            (
+                purchaseId &&
+                index.softPurchaseById
+            )
+                ? (
+                    index
+                        .softPurchaseById[
+                            purchaseId
+                        ] ||
+                    null
+                )
+                : null;
+
+        var addition =
+            gameplay &&
+            gameplay.addition !==
+                undefined &&
+            gameplay.addition !==
+                null
+                ? Number(
+                    gameplay.addition
+                )
+                : 0;
+
+        if (
+            !Number.isFinite(
+                addition
+            )
+        ) {
+            addition =
+                0;
+        }
+
+        var price =
+            purchase &&
+            purchase.currencyAmount !==
+                undefined &&
+            purchase.currencyAmount !==
+                null
+                ? Number(
+                    purchase
+                        .currencyAmount
+                )
+                : null;
+
+        if (
+            price !== null &&
+            !Number.isFinite(
+                price
+            )
+        ) {
+            price =
+                null;
+        }
+
+        return {
+            productId:
+                id,
+
+            addition:
+                addition,
+
+            purchaseId:
+                purchaseId,
+
+            price:
+                price,
+
+            currency:
+                purchase &&
+                purchase.currencyProductId
+                    ? String(
+                        purchase
+                            .currencyProductId
+                    )
+                    : '',
+
+            family:
+                purchase &&
+                purchase.family
+                    ? String(
+                        purchase.family
+                    )
+                    : '',
+
+            position:
+                shop &&
+                shop.position
+                    ? String(
+                        shop.position
+                    )
+                    : '',
+
+            visibility:
+                shop &&
+                shop.visibility
+                    ? String(
+                        shop.visibility
+                    )
+                    : '',
+
+            rawGameplay:
+                gameplay,
+
+            rawShop:
+                shop,
+
+            rawPurchase:
+                purchase
+        };
+    };
+
+
+/*
+ * Return every configured Rush boost.
+ */
+window.getAgarRushBoostCatalog =
+    function () {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .rushGameplayByProductId
+        ) {
+            return [];
+        }
+
+        var result =
+            [];
+
+        Object
+            .keys(
+                index
+                    .rushGameplayByProductId
+            )
+            .forEach(
+                function (
+                    productId
+                ) {
+                    var info =
+                        window
+                            .getAgarRushBoostInfo(
+                                productId
+                            );
+
+                    if (info) {
+                        result.push(
+                            info
+                        );
+                    }
+                }
+            );
+
+        result.sort(
+            function (
+                a,
+                b
+            ) {
+                var order = {
+                    left:
+                        0,
+
+                    right:
+                        1
+                };
+
+                var aOrder =
+                    order[
+                        a.position
+                    ];
+
+                var bOrder =
+                    order[
+                        b.position
+                    ];
+
+                if (
+                    aOrder ===
+                    undefined
+                ) {
+                    aOrder =
+                        99;
+                }
+
+                if (
+                    bOrder ===
+                    undefined
+                ) {
+                    bOrder =
+                        99;
+                }
+
+                if (
+                    aOrder !==
+                    bOrder
+                ) {
+                    return (
+                        aOrder -
+                        bOrder
+                    );
+                }
+
+                return (
+                    (
+                        Number(
+                            a.addition
+                        ) ||
+                        0
+                    ) -
+                    (
+                        Number(
+                            b.addition
+                        ) ||
+                        0
+                    )
+                );
+            }
+        );
+
+        return result;
+    };
+
+
+/*
+ * Buy one configured Rush boost.
+ *
+ * IMPORTANT:
+ *
+ * There is deliberately NO raw protobuf table here.
+ *
+ * window.softPurchase() already owns:
+ *
+ *      application.softPurchase()
+ *      opcode 70 fallback
+ *      pending-purchase tracking
+ *      success/failure callbacks
+ *      timeout callbacks
+ */
+window.buyAgarRushBoost =
+    function (
+        productId
+    ) {
+        if (
+            typeof window
+                .validateShopIntegrity ===
+                'function' &&
+            !window
+                .validateShopIntegrity(
+                    'buy rush boost'
+                )
+        ) {
+            return false;
+        }
+
+        var info =
+            window
+                .getAgarRushBoostInfo(
+                    productId
+                );
+
+        if (
+            !info ||
+            !info.purchaseId
+        ) {
+            console.error(
+                '[LM RUSH] Configured purchase was not found:',
+                productId
+            );
+
+            if (
+                window.toastr
+            ) {
+                toastr.error(
+                    '<b>[RUSH BOOST]:</b> Purchase configuration unavailable.'
+                );
+            }
+
+            return false;
+        }
+
+        if (
+            typeof window
+                .softPurchase !==
+                'function'
+        ) {
+            console.error(
+                '[LM RUSH] softPurchase() is unavailable.'
+            );
+
+            if (
+                window.toastr
+            ) {
+                toastr.error(
+                    '<b>[RUSH BOOST]:</b> Purchase transport unavailable.'
+                );
+            }
+
+            return false;
+        }
+
+        if (
+            typeof window
+                ._lmHasPendingSoftPurchase ===
+                'function' &&
+            window
+                ._lmHasPendingSoftPurchase(
+                    info.purchaseId
+                )
+        ) {
+            if (
+                window.toastr
+            ) {
+                toastr.info(
+                    '<b>[RUSH BOOST]:</b> Purchase is already pending.'
+                );
+            }
+
+            return false;
+        }
+
+        return window
+            .softPurchase(
+                info.purchaseId,
+                {
+                    kind:
+                        'rush-boost',
+
+                    productId:
+                        info.productId,
+
+                    purchaseId:
+                        info.purchaseId,
+
+                    config:
+                        info,
+
+                    onSuccess:
+                        function (
+                            response,
+                            pendingPurchase
+                        ) {
+                            console.log(
+                                '[LM RUSH] Purchase successful:',
+                                info.productId,
+                                response
+                            );
+
+                            if (
+                                window.toastr
+                            ) {
+                                toastr.success(
+                                    '<b>[RUSH BOOST]:</b> +' +
+                                    info.addition +
+                                    ' mass boost purchased.'
+                                );
+                            }
+
+                            try {
+                                document
+                                    .dispatchEvent(
+                                        new CustomEvent(
+                                            'lm-rush-boost-purchased',
+                                            {
+                                                detail: {
+                                                    info:
+                                                        info,
+
+                                                    response:
+                                                        response,
+
+                                                    pendingPurchase:
+                                                        pendingPurchase
+                                                }
+                                            }
+                                        )
+                                    );
+                            } catch (
+                                eventError
+                            ) {
+                            }
+                        },
+
+                    onFailure:
+                        function (
+                            result,
+                            response,
+                            pendingPurchase
+                        ) {
+                            console.warn(
+                                '[LM RUSH] Purchase failed:',
+                                {
+                                    productId:
+                                        info.productId,
+
+                                    purchaseId:
+                                        info.purchaseId,
+
+                                    result:
+                                        result,
+
+                                    response:
+                                        response,
+
+                                    pendingPurchase:
+                                        pendingPurchase
+                                }
+                            );
+
+                            if (
+                                window.toastr
+                            ) {
+                                if (
+                                    Number(
+                                        result
+                                    ) ===
+                                    2
+                                ) {
+                                    toastr.error(
+                                        '<b>[RUSH BOOST]:</b> Not enough ' +
+                                        (
+                                            info.currency ||
+                                            'currency'
+                                        ) +
+                                        '.'
+                                    );
+
+                                } else if (
+                                    Number(
+                                        result
+                                    ) ===
+                                    3
+                                ) {
+                                    toastr.error(
+                                        '<b>[RUSH BOOST]:</b> This boost is not currently available.'
+                                    );
+
+                                } else {
+                                    toastr.warning(
+                                        '<b>[RUSH BOOST]:</b> Purchase failed.'
+                                    );
+                                }
+                            }
+                        },
+
+                    onTimeout:
+                        function (
+                            pendingPurchase
+                        ) {
+                            console.warn(
+                                '[LM RUSH] Purchase timeout:',
+                                info.productId,
+                                pendingPurchase
+                            );
+
+                            if (
+                                window.toastr
+                            ) {
+                                toastr.warning(
+                                    '<b>[RUSH BOOST]:</b> No purchase response was received.'
+                                );
+                            }
+                        }
+                }
+            );
+    };
+
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * SUBSCRIPTIONS
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+
+/*
+ * Get one static subscription definition.
+ */
+window.getAgarSubscription =
+    function (
+        type
+    ) {
+        var subscriptionType =
+            String(
+                type ||
+                'vip_weekly'
+            ).trim();
+
+        if (!subscriptionType) {
+            return null;
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .subscriptionByType
+        ) {
+            return null;
+        }
+
+        return (
+            index
+                .subscriptionByType[
+                    subscriptionType
+                ] ||
+            null
+        );
+    };
+
+
+/*
+ * Return all configured subscription types.
+ */
+window.getAgarSubscriptions =
+    function () {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .subscriptionByType
+        ) {
+            return [];
+        }
+
+        return Object
+            .keys(
+                index
+                    .subscriptionByType
+            )
+            .map(
+                function (
+                    type
+                ) {
+                    return index
+                        .subscriptionByType[
+                            type
+                        ];
+                }
+            );
+    };
+
+
+/*
+ * Resolve one Subscriptions - Visual Rules entry.
+ *
+ * If Agar.io config returns an experiment object, preserve it.
+ *
+ * configDefault is useful as a safe display fallback but must NOT
+ * be described as the user's assigned experiment branch.
+ */
+window.getAgarSubscriptionRule =
+    function (
+        ruleId,
+        type
+    ) {
+        var id =
+            String(
+                ruleId || ''
+            ).trim();
+
+        var subscriptionType =
+            String(
+                type ||
+                'vip_weekly'
+            ).trim();
+
+        if (
+            !id ||
+            !subscriptionType
+        ) {
+            return null;
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        var row =
+            index &&
+            index
+                .subscriptionRuleById
+                ? (
+                    index
+                        .subscriptionRuleById[
+                            id
+                        ] ||
+                    null
+                )
+                : null;
+
+        if (!row) {
+            return null;
+        }
+
+        var rawValue =
+            row[
+                subscriptionType
+            ];
+
+        var isExperiment =
+            !!(
+                rawValue &&
+                typeof rawValue ===
+                    'object' &&
+                !Array.isArray(
+                    rawValue
+                )
+            );
+
+        var configDefault =
+            rawValue;
+
+        if (
+            isExperiment
+        ) {
+            if (
+                rawValue.default !==
+                    undefined
+            ) {
+                configDefault =
+                    rawValue.default;
+
+            } else if (
+                rawValue.Control !==
+                    undefined
+            ) {
+                configDefault =
+                    rawValue.Control;
+
+            } else {
+                configDefault =
+                    null;
+            }
+        }
+
+        return {
+            ruleId:
+                id,
+
+            subscriptionType:
+                subscriptionType,
+
+            value:
+                configDefault,
+
+            configDefault:
+                configDefault,
+
+            isExperiment:
+                isExperiment,
+
+            experimentName:
+                isExperiment &&
+                rawValue.name
+                    ? String(
+                        rawValue.name
+                    )
+                    : '',
+
+            rawValue:
+                rawValue,
+
+            raw:
+                row
+        };
+    };
+
+
+/*
+ * Live VIP state.
+ *
+ * GameConfiguration tells us what VIP IS.
+ * The account object tells us whether THIS USER currently has it.
+ */
+window.getAgarVipStatus =
+    function () {
+        var officialUser =
+            null;
+
+        try {
+            if (
+                window.agarApp &&
+                window.agarApp.API &&
+                typeof window
+                    .agarApp
+                    .API
+                    .getUserInfo ===
+                    'function'
+            ) {
+                officialUser =
+                    window
+                        .agarApp
+                        .API
+                        .getUserInfo();
+            }
+        } catch (
+            officialUserError
+        ) {
+            officialUser =
+                null;
+        }
+
+        if (
+            officialUser &&
+            typeof officialUser
+                .hasVIPSubscription ===
+                'boolean'
+        ) {
+            return {
+                known:
+                    true,
+
+                active:
+                    officialUser
+                        .hasVIPSubscription,
+
+                source:
+                    'agarApp.API.getUserInfo',
+
+                subscription:
+                    window
+                        .getAgarSubscription(
+                            'vip_weekly'
+                        ),
+
+                raw:
+                    officialUser
+            };
+        }
+
+        try {
+            if (
+                window.Core &&
+                window.Core.user &&
+                typeof window.Core
+                    .user
+                    .hasVIPSubscription ===
+                    'boolean'
+            ) {
+                return {
+                    known:
+                        true,
+
+                    active:
+                        window.Core
+                            .user
+                            .hasVIPSubscription,
+
+                    source:
+                        'Core.user',
+
+                    subscription:
+                        window
+                            .getAgarSubscription(
+                                'vip_weekly'
+                            ),
+
+                    raw:
+                        window.Core.user
+                };
+            }
+        } catch (
+            coreUserError
+        ) {
+        }
+
+        return {
+            known:
+                false,
+
+            active:
+                false,
+
+            source:
+                '',
+
+            subscription:
+                window
+                    .getAgarSubscription(
+                        'vip_weekly'
+                    ),
+
+            raw:
+                null
+        };
+    };
+
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * PARTY MODE
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+
+/*
+ * Exact static Party setting.
+ */
+window.getAgarPartySetting =
+    function (
+        key,
+        fallbackValue
+    ) {
+        var id =
+            String(
+                key || ''
+            ).trim();
+
+        if (!id) {
+            return fallbackValue;
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        var row =
+            index &&
+            index
+                .partySettingByKey
+                ? (
+                    index
+                        .partySettingByKey[
+                            id
+                        ] ||
+                    null
+                )
+                : null;
+
+        if (
+            !row ||
+            row.value ===
+                undefined
+        ) {
+            return fallbackValue;
+        }
+
+        return row.value;
+    };
+
+
+/*
+ * Full Party configuration as one plain object.
+ */
+window.getAgarPartySettings =
+    function () {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        var output =
+            Object.create(null);
+
+        if (
+            !index ||
+            !index
+                .partySettingByKey
+        ) {
+            return output;
+        }
+
+        Object
+            .keys(
+                index
+                    .partySettingByKey
+            )
+            .forEach(
+                function (
+                    key
+                ) {
+                    var row =
+                        index
+                            .partySettingByKey[
+                                key
+                            ];
+
+                    if (
+                        row &&
+                        row.value !==
+                            undefined
+                    ) {
+                        output[key] =
+                            row.value;
+                    }
+                }
+            );
+
+        return output;
+    };
+
+
+/*
+ * Build the OFFICIAL configured short Party URL.
+ *
+ * The live Party token supplied by Agar.io remains authoritative.
+ */
+window.buildAgarPartyInviteUrl =
+    function (
+        partyToken
+    ) {
+        var token =
+            String(
+                partyToken || ''
+            ).trim();
+
+        if (!token) {
+            return '';
+        }
+
+        var prefix =
+            String(
+                window
+                    .getAgarPartySetting(
+                        'partyLinkUrlPrefix',
+                        'https://agar.io'
+                    ) ||
+                'https://agar.io'
+            );
+
+        var query =
+            String(
+                window
+                    .getAgarPartySetting(
+                        'partyLinkQuery',
+                        '#'
+                    ) ||
+                '#'
+            );
+
+        return (
+            prefix +
+            query +
+            token
+        );
+    };
+
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * ACHIEVEMENTS
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+
+/*
+ * Return all configured achievement thresholds for one type.
+ *
+ * Returns an array sorted by goal (ascending).
+ */
+window.getAgarAchievements =
+    function (
+        type
+    ) {
+        var achievementType =
+            String(
+                type || ''
+            ).trim();
+
+        if (!achievementType) {
+            return [];
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .achievementsByType
+        ) {
+            return [];
+        }
+
+        return (
+            index
+                .achievementsByType[
+                    achievementType
+                ] ||
+            []
+        );
+    };
+
+
+/*
+ * Return every configured achievement type.
+ */
+window.getAgarAchievementTypes =
+    function () {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .achievementsByType
+        ) {
+            return [];
+        }
+
+        return Object
+            .keys(
+                index
+                    .achievementsByType
+            );
+    };
+
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * BATTLE ROYALE - KILL REASONS
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+
+/*
+ * Return all configured message-tag entries for one kill reason.
+ */
+window.getAgarBRKillReasonMessages =
+    function (
+        reason
+    ) {
+        var killReason =
+            String(
+                reason || ''
+            ).trim();
+
+        if (!killReason) {
+            return [];
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .battleRoyaleKillReasonsByReason
+        ) {
+            return [];
+        }
+
+        return (
+            index
+                .battleRoyaleKillReasonsByReason[
+                    killReason
+                ] ||
+            []
+        );
+    };
+
+
+/*
+ * Return every configured BR kill reason type.
+ */
+window.getAgarBRKillReasonTypes =
+    function () {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .battleRoyaleKillReasonsByReason
+        ) {
+            return [];
+        }
+
+        return Object
+            .keys(
+                index
+                    .battleRoyaleKillReasonsByReason
+            );
     };
 
 
