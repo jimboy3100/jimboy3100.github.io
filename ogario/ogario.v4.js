@@ -17923,6 +17923,18 @@ function thelegendmodproject() {
                 'width': defaultSettings.miniMapWidth,
                 'height': defaultSettings.miniMapWidth + defaultSettings.miniMapTop
             });
+            /* Expanding Land: circular minimap */
+            if (window.LM && window.LM.isLegendWorld) {
+                $('#minimap-hud').css({
+                    'border-radius': '50%',
+                    'overflow': 'hidden'
+                });
+            } else {
+                $('#minimap-hud').css({
+                    'border-radius': '0',
+                    'overflow': 'visible'
+                });
+            }
             if (application) {
                 application.resetMiniMapSectors();
             }
@@ -22781,11 +22793,11 @@ function thelegendmodproject() {
                     /* ── Expanding Land: Draw zone on minimap (all phases) ── */
                     if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4)) {
                         var me = LM.mapEvent;
-                        var targetHalf = me.targetSize / 2;
-                        var tMinX = ((me.centerX || 0) - targetHalf + r) * n;
-                        var tMinY = ((me.centerY || 0) - targetHalf + l) * n;
-                        var tW = me.targetSize * n;
-                        var tH = me.targetSize * n;
+                        /* Circular zone: r = size / sqrt(pi) to match server equal-area */
+                        var targetRadius = me.targetSize / Math.sqrt(Math.PI);
+                        var tcx = Math.round(((me.centerX || 0) + r) * n);
+                        var tcy = Math.round(((me.centerY || 0) + l) * n);
+                        var tr = Math.round(targetRadius * n);
                         var mmCtx = this.miniMapCtx;
                         mmCtx.save();
                         if (me.phase === 1) {
@@ -22796,7 +22808,9 @@ function thelegendmodproject() {
                             mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
                         }
                         mmCtx.lineWidth = 1;
-                        mmCtx.strokeRect(tMinX, tMinY, tW, tH);
+                        mmCtx.beginPath();
+                        mmCtx.arc(tcx, tcy, tr, 0, this.pi2, false);
+                        mmCtx.stroke();
                         mmCtx.restore();
                     }
                     if (window.LM && window.LM.safeAreaRing && window.LM.safeAreaRing.radius > 0) {
