@@ -121,6 +121,9 @@ window.OgVer = 3.499;
             }
         }
 
+        /*
+         * NORMAL SHOP LOGIN STATE
+         */
         if (
             typeof window.updateShopLoginState ===
             "function"
@@ -131,6 +134,26 @@ window.OgVer = 3.499;
                 console.warn(
                     "[LM UID] Shop UI refresh failed:",
                     error
+                );
+            }
+        }
+
+        /*
+         * VIP LIVE ACCOUNT STATE
+         *
+         * The account identity source just changed.
+         * Re-read officialUser.hasVIPSubscription.
+         */
+        if (
+            typeof window.refreshAgarVipStatus ===
+            "function"
+        ) {
+            try {
+                window.refreshAgarVipStatus(false);
+            } catch (vipRefreshError) {
+                console.warn(
+                    "[LM VIP] VIP refresh after identity update failed:",
+                    vipRefreshError
                 );
             }
         }
@@ -6537,6 +6560,238 @@ window.getAgarVipStatus =
                 null
         };
     };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * VIP / SUBSCRIPTION AGGREGATE
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * STATIC:   GameConfiguration (subscription type, IAP product, rules)
+ * LIVE:     Agar.io account object (hasVIPSubscription)
+ * PURCHASE: openOfficialAgarIAP() — NOT softPurchase / opcode 70
+ *
+ * Never persist VIP-active state to localStorage.
+ * Never infer VIP-active from GameConfiguration.
+ * Never send subscription IAP through softPurchase().
+ */
+
+
+window.getAgarVipInfo =
+    function (type) {
+        var subscriptionType = String(type || 'vip_weekly').trim() || 'vip_weekly';
+
+        var subscription =
+            typeof window.getAgarSubscription === 'function'
+                ? window.getAgarSubscription(subscriptionType)
+                : null;
+
+        var status =
+            typeof window.getAgarVipStatus === 'function'
+                ? window.getAgarVipStatus()
+                : { known: false, active: false, source: '', subscription: subscription, raw: null };
+
+        function resolveTimedEvent(eventId) {
+            if (typeof window.getAgarTimedEventInfo !== 'function') return null;
+            try { return window.getAgarTimedEventInfo(eventId); }
+            catch (e) { return null; }
+        }
+
+        var ruleIds = [
+            'buttonCycleWhenSubscribed',
+            'buttonCycleShowForSeconds',
+            'buttonCycleHideForSeconds',
+            'popupQueueWhenSubscribed',
+            'popupQueueRequiredLevel',
+            'popupQueueSessionRecurrence',
+            'popupQueueAfterMatch',
+            'popupQueueAfterMatchForNewUser',
+            'popupQueueAfterLoginPriority',
+            'popupQueueAfterMatchPriority',
+            'activationInFullScreen',
+            'rewardPopupsSuppressed',
+            'rewardPopupsColorTheme',
+            'popupShowSaveCustomSkinIOS',
+            'popupShowSaveCustomSkinAndroid'
+        ];
+
+        var rules = Object.create(null);
+        for (var ri = 0; ri < ruleIds.length; ri++) {
+            rules[ruleIds[ri]] =
+                typeof window.getAgarSubscriptionRule === 'function'
+                    ? window.getAgarSubscriptionRule(ruleIds[ri], subscriptionType)
+                    : null;
+        }
+
+        return {
+            type: subscriptionType,
+            configured: !!subscription,
+            purchaseId: subscription && subscription.purchaseId ? String(subscription.purchaseId) : '',
+            customSkinPurchaseId: subscription && subscription.purchaseForCustomSkinToken
+                ? String(subscription.purchaseForCustomSkinToken) : '',
+            availability: {
+                android: subscription && subscription.availabilityAndroid !== undefined
+                    ? String(subscription.availabilityAndroid) : '',
+                ios: subscription && subscription.availabilityIOS !== undefined
+                    ? String(subscription.availabilityIOS) : ''
+            },
+            status: status,
+            dailyEvent: resolveTimedEvent('weeklySubscriptionDaily'),
+            weeklyEvent: resolveTimedEvent('weeklySubscriptionWeekly'),
+            rules: rules,
+            raw: subscription
+        };
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * LIVE VIP STATUS EVENT CACHE
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+
+window._lmVipStatusCache = window._lmVipStatusCache || null;
+
+window.refreshAgarVipStatus =
+    function (force) {
+        var next =
+            typeof window.getAgarVipStatus === 'function'
+                ? window.getAgarVipStatus()
+                : { known: false, active: false, source: '', subscription: null, raw: null };
+
+        if (!next || typeof next !== 'object') {
+            next = { known: false, active: false, source: '', subscription: null, raw: null };
+        }
+
+        var previous = window._lmVipStatusCache;
+
+        function getPurchaseId(s) {
+            return (s && s.subscription && s.subscription.purchaseId)
+                ? String(s.subscription.purchaseId) : '';
+        }
+
+        var changed = !!force || !previous ||
+            !!previous.known !== !!next.known ||
+            !!previous.active !== !!next.active ||
+            String((previous && previous.source) || '') !== String(next.source || '') ||
+            getPurchaseId(previous) !== getPurchaseId(next);
+
+        window._lmVipStatusCache = next;
+
+        if (changed) {
+            try {
+                document.dispatchEvent(
+                    new CustomEvent('lm-vip-status-updated', {
+                        detail: { current: next, previous: previous || null }
+                    })
+                );
+            } catch (e) {}
+        }
+
+        return next;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * VIP REAL-MONEY PURCHASE BRIDGE
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * CORRECT: openOfficialAgarIAP(purchaseId)
+ * WRONG:   softPurchase() / opcode 70
+ */
+
+window.buyAgarSubscription =
+    function (type) {
+        var subscriptionType = String(type || 'vip_weekly').trim() || 'vip_weekly';
+
+        var info =
+            typeof window.getAgarVipInfo === 'function'
+                ? window.getAgarVipInfo(subscriptionType)
+                : null;
+
+        if (!info || !info.configured || !info.purchaseId) {
+            if (window.toastr) toastr.error('<b>[VIP]:</b> No configured VIP subscription product from Agar.io.');
+            return false;
+        }
+
+        if (typeof window.validateShopIntegrity === 'function' &&
+            !window.validateShopIntegrity('buy VIP subscription')) {
+            return false;
+        }
+
+        if (typeof window.checkUserLoggedIn === 'function' && !window.checkUserLoggedIn()) {
+            if (window.toastr) toastr.warning('<b>[VIP]:</b> Log in to your Agar.io account first.');
+            return false;
+        }
+
+        var status = info.status || { known: false, active: false };
+
+        if (status.known && status.active) {
+            if (window.toastr) toastr.info('<b>[VIP]:</b> VIP is already active on this account.');
+            return false;
+        }
+
+        if (!status.known) {
+            if (typeof window.refreshAgarVipStatus === 'function') window.refreshAgarVipStatus(true);
+            if (window.toastr) toastr.warning('<b>[VIP]:</b> VIP status not ready yet. Wait for profile to load.');
+            return false;
+        }
+
+        if (typeof window.openOfficialAgarIAP !== 'function') {
+            if (window.toastr) toastr.error('<b>[VIP]:</b> Official Agar.io purchase bridge not loaded.');
+            return false;
+        }
+
+        return window.openOfficialAgarIAP(info.purchaseId, { description: 'Agar.io VIP Weekly Subscription' });
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * VIP RUNTIME LISTENERS
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+
+if (!window._lmVipRuntimeListenersInstalled) {
+    window._lmVipRuntimeListenersInstalled = true;
+
+    document.addEventListener('lm-agar-config-index-ready', function () {
+        if (typeof window.refreshAgarVipStatus === 'function') window.refreshAgarVipStatus(false);
+    }, false);
+
+    window.addEventListener('focus', function () {
+        if (typeof window.refreshAgarVipStatus === 'function') window.refreshAgarVipStatus(false);
+    }, false);
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && typeof window.refreshAgarVipStatus === 'function')
+            window.refreshAgarVipStatus(false);
+    }, false);
+
+    document.addEventListener('logout', function () {
+        var prev = window._lmVipStatusCache;
+        var next = { known: false, active: false, source: 'logout',
+            subscription: typeof window.getAgarSubscription === 'function'
+                ? window.getAgarSubscription('vip_weekly') : null, raw: null };
+        window._lmVipStatusCache = next;
+        try { document.dispatchEvent(new CustomEvent('lm-vip-status-updated',
+            { detail: { current: next, previous: prev || null } })); } catch (e) {}
+    }, false);
+
+    document.addEventListener('accountDomainRuntimeReset', function () {
+        window._lmVipStatusCache = null;
+        try { document.dispatchEvent(new CustomEvent('lm-vip-status-updated',
+            { detail: { current: { known: false, active: false, source: 'runtime-reset',
+                subscription: typeof window.getAgarSubscription === 'function'
+                    ? window.getAgarSubscription('vip_weekly') : null, raw: null },
+                previous: null } })); } catch (e) {}
+    }, false);
+
+    setTimeout(function () {
+        if (typeof window.refreshAgarVipStatus === 'function') window.refreshAgarVipStatus(true);
+    }, 0);
+}
 
 
 /*

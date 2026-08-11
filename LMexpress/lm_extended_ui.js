@@ -5870,6 +5870,305 @@
 
 
     /*
+     * ═══════════════════════════════════════════════════════════════════════
+     * VIP / WEEKLY SUBSCRIPTION MODAL
+     * ═══════════════════════════════════════════════════════════════════════
+     *
+     * STATIC:   GameConfiguration
+     * LIVE:     getAgarVipStatus()
+     * PURCHASE: openOfficialAgarIAP() — NOT softPurchase / opcode 70
+     */
+
+    window._lmVipCountdownTimer = window._lmVipCountdownTimer || null;
+
+    window._lmFormatVipTimer = function (seconds) {
+        var v = Math.max(0, Math.ceil(Number(seconds) || 0));
+        if (typeof window.formatAgarDurationSeconds === 'function')
+            return window.formatAgarDurationSeconds(v, false);
+        var d = Math.floor(v / 86400);
+        var h = Math.floor((v % 86400) / 3600);
+        var m = Math.floor((v % 3600) / 60);
+        var s = v % 60;
+        var p = [];
+        if (d > 0) p.push(d + 'd');
+        if (h > 0 || d > 0) p.push(h + 'h');
+        if (m > 0 || h > 0 || d > 0) p.push(m + 'm');
+        p.push(s + 's');
+        return p.join(' ');
+    };
+
+    window._lmUpdateVipCountdownText = function () {
+        function updateOne(eventId, elId) {
+            var el = document.getElementById(elId);
+            if (!el) return;
+            var rem = typeof window.getLiveTimedEventSecondsRemaining === 'function'
+                ? window.getLiveTimedEventSecondsRemaining(eventId) : null;
+            if (!Number.isFinite(Number(rem))) { el.textContent = 'Waiting for server'; return; }
+            rem = Math.max(0, Number(rem));
+            el.textContent = rem <= 0 ? 'Ready!' : window._lmFormatVipTimer(rem);
+        }
+        updateOne('weeklySubscriptionDaily', 'lm-vip-daily-timer');
+        updateOne('weeklySubscriptionWeekly', 'lm-vip-weekly-timer');
+    };
+
+    window._lmStopVipCountdownLoop = function () {
+        if (!window._lmVipCountdownTimer) return;
+        clearInterval(window._lmVipCountdownTimer);
+        window._lmVipCountdownTimer = null;
+    };
+
+    window._lmStartVipCountdownLoop = function () {
+        window._lmStopVipCountdownLoop();
+        window._lmUpdateVipCountdownText();
+        window._lmVipCountdownTimer = setInterval(function () {
+            if (!document.getElementById('lm-vip-subscription-modal')) {
+                window._lmStopVipCountdownLoop();
+                return;
+            }
+            window._lmUpdateVipCountdownText();
+        }, 1000);
+    };
+
+    window.showVipSubscriptionModal = function () {
+        injectStyles();
+
+        var old = document.getElementById('lm-vip-subscription-modal');
+        if (old) old.remove();
+        window._lmStopVipCountdownLoop();
+
+        var t = getTheme();
+
+        var info = typeof window.getAgarVipInfo === 'function'
+            ? window.getAgarVipInfo('vip_weekly') : null;
+
+        if (!info || !info.configured) {
+            if (window.toastr) toastr.warning('<b>[VIP]:</b> VIP configuration not available yet.');
+            return false;
+        }
+
+        var status = info.status || { known: false, active: false, source: '' };
+        var loggedIn = typeof window.checkUserLoggedIn === 'function'
+            ? window.checkUserLoggedIn() : !!window.loggedIn;
+
+        /* --- MODAL SHELL --- */
+        var modal = document.createElement('div');
+        modal.id = 'lm-vip-subscription-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.addEventListener('click', function (ev) { if (ev.target === modal) { modal.remove(); window._lmStopVipCountdownLoop(); } });
+
+        var shell = document.createElement('div');
+        shell.className = 'lm-modal-container';
+        shell.style.cssText = 'background:' + t.pc + ';color:' + t.tc + ';width:680px;max-width:94vw;';
+
+        var header = document.createElement('div');
+        header.className = 'lm-modal-header';
+
+        var title = document.createElement('div');
+        title.className = 'lm-modal-title';
+        title.textContent = '\uD83D\uDC51 Agar.io VIP';
+
+        var closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'lm-modal-close';
+        closeBtn.textContent = '\u00D7';
+        closeBtn.onclick = function () { modal.remove(); window._lmStopVipCountdownLoop(); };
+
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+
+        var body = document.createElement('div');
+        body.className = 'lm-modal-body';
+        body.style.cssText = 'display:flex;flex-direction:column;gap:12px;';
+
+        /* --- STATUS HERO --- */
+        var hero = document.createElement('div');
+        hero.style.cssText = 'padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,.12);' +
+            'background:linear-gradient(135deg,rgba(255,193,7,.18),rgba(255,112,67,.10));';
+
+        var statusRow = document.createElement('div');
+        statusRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;';
+
+        var statusTitle = document.createElement('div');
+        statusTitle.style.cssText = 'font-size:20px;font-weight:900;color:' + t.tc + ';';
+        statusTitle.textContent = 'Weekly VIP';
+
+        var pill = document.createElement('span');
+        pill.style.cssText = 'padding:5px 10px;border-radius:999px;font-size:11px;font-weight:900;';
+
+        if (status.known && status.active) {
+            pill.textContent = 'ACTIVE';
+            pill.style.background = 'rgba(0,230,118,.16)';
+            pill.style.color = '#00e676';
+            pill.style.border = '1px solid rgba(0,230,118,.45)';
+        } else if (status.known) {
+            pill.textContent = 'NOT ACTIVE';
+            pill.style.background = 'rgba(255,152,0,.15)';
+            pill.style.color = '#ffb300';
+            pill.style.border = '1px solid rgba(255,179,0,.45)';
+        } else {
+            pill.textContent = 'LOADING...';
+            pill.style.background = 'rgba(158,158,158,.15)';
+            pill.style.color = t.tc2;
+            pill.style.border = '1px solid rgba(158,158,158,.35)';
+        }
+
+        statusRow.appendChild(statusTitle);
+        statusRow.appendChild(pill);
+        hero.appendChild(statusRow);
+
+        var sourceNote = document.createElement('div');
+        sourceNote.style.cssText = 'margin-top:7px;font-size:11px;line-height:1.5;color:' + t.tc2 + ';';
+        sourceNote.textContent = status.known
+            ? ('Live account state from: ' + (status.source || 'Agar.io'))
+            : 'Waiting for authenticated Agar.io account data.';
+        hero.appendChild(sourceNote);
+        body.appendChild(hero);
+
+        /* --- PRODUCT ID --- */
+        var prodCard = document.createElement('div');
+        prodCard.style.cssText = 'padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);';
+        prodCard.innerHTML =
+            '<div style="font-size:13px;font-weight:800;color:' + t.tc + ';margin-bottom:4px;">\uD83D\uDED2 Subscription Product</div>' +
+            '<div style="font-size:11px;color:' + t.tc2 + ';word-break:break-all;">' +
+                (info.purchaseId || '<span style="color:#ff5252;">Not configured</span>') +
+            '</div>';
+        body.appendChild(prodCard);
+
+        /* --- BENEFITS --- */
+        var benefitsData = [
+            { icon: '\uD83E\uDDEC', text: 'Daily VIP reward' },
+            { icon: '\uD83C\uDFA8', text: 'VIP-exclusive custom skin token' },
+            { icon: '\u2728', text: 'VIP badge & visual perks' },
+            { icon: '\uD83D\uDEAB', text: 'Suppressed reward popups (configured)' }
+        ];
+        var benefitsCard = document.createElement('div');
+        benefitsCard.style.cssText = 'padding:14px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);';
+        var benefitsTitle = document.createElement('div');
+        benefitsTitle.style.cssText = 'font-size:13px;font-weight:800;color:' + t.tc + ';margin-bottom:8px;';
+        benefitsTitle.textContent = '\u2B50 VIP Benefits';
+        benefitsCard.appendChild(benefitsTitle);
+
+        for (var bi = 0; bi < benefitsData.length; bi++) {
+            var bRow = document.createElement('div');
+            bRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px;color:' + t.tc2 + ';';
+            bRow.innerHTML = '<span style="font-size:14px;">' + benefitsData[bi].icon + '</span> ' + benefitsData[bi].text;
+            benefitsCard.appendChild(bRow);
+        }
+        body.appendChild(benefitsCard);
+
+        /* --- DAILY VIP TIMER --- */
+        if (info.dailyEvent) {
+            var dailyCard = document.createElement('div');
+            dailyCard.style.cssText = 'padding:12px 16px;border-radius:10px;border:1px solid rgba(124,77,255,.25);background:rgba(124,77,255,.06);';
+            var dailyBonusId = (info.dailyEvent.raw && info.dailyEvent.raw.bonusId)
+                ? String(info.dailyEvent.raw.bonusId) : (info.dailyEvent.bonusId || '');
+            var dailyRewardText = dailyBonusId && typeof window.formatAgarReward === 'function'
+                ? window.formatAgarReward(dailyBonusId) : (dailyBonusId || 'Configured by Agar.io');
+
+            dailyCard.innerHTML =
+                '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+                    '<div>' +
+                        '<div style="font-size:12px;font-weight:800;color:#b388ff;">\uD83C\uDF81 Daily VIP Reward</div>' +
+                        '<div style="font-size:11px;color:' + t.tc2 + ';margin-top:2px;">' + dailyRewardText + '</div>' +
+                    '</div>' +
+                    '<div id="lm-vip-daily-timer" style="font-size:13px;font-weight:900;color:#b388ff;font-variant-numeric:tabular-nums;">—</div>' +
+                '</div>';
+            body.appendChild(dailyCard);
+        }
+
+        /* --- WEEKLY TIMER (metadata only, bonusId=noReward) --- */
+        if (info.weeklyEvent) {
+            var weeklyCard = document.createElement('div');
+            weeklyCard.style.cssText = 'padding:12px 16px;border-radius:10px;border:1px solid rgba(255,193,7,.2);background:rgba(255,193,7,.04);';
+            weeklyCard.innerHTML =
+                '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+                    '<div>' +
+                        '<div style="font-size:12px;font-weight:800;color:#ffd54f;">\uD83D\uDD04 Weekly Cycle</div>' +
+                        '<div style="font-size:10px;color:' + t.tc2 + ';margin-top:2px;">Subscription renewal cycle</div>' +
+                    '</div>' +
+                    '<div id="lm-vip-weekly-timer" style="font-size:13px;font-weight:900;color:#ffd54f;font-variant-numeric:tabular-nums;">—</div>' +
+                '</div>';
+            body.appendChild(weeklyCard);
+        }
+
+        /* --- CUSTOM SKIN TOKEN ROUTE --- */
+        if (info.customSkinPurchaseId) {
+            var skinCard = document.createElement('div');
+            skinCard.style.cssText = 'padding:12px 16px;border-radius:10px;border:1px solid rgba(255,64,129,.2);background:rgba(255,64,129,.05);';
+            skinCard.innerHTML =
+                '<div style="font-size:12px;font-weight:800;color:#ff4081;margin-bottom:3px;">\uD83C\uDFA8 VIP Custom Skin Token</div>' +
+                '<div style="font-size:10px;color:' + t.tc2 + ';word-break:break-all;">Purchase route: ' + info.customSkinPurchaseId + '</div>';
+            body.appendChild(skinCard);
+        }
+
+        /* --- PURCHASE BUTTON --- */
+        var buySection = document.createElement('div');
+        buySection.style.cssText = 'padding:14px 0 4px;display:flex;flex-direction:column;align-items:center;gap:8px;';
+
+        if (!loggedIn) {
+            var loginNote = document.createElement('div');
+            loginNote.style.cssText = 'font-size:11px;color:#ff5252;font-weight:600;';
+            loginNote.textContent = '\u26A0\uFE0F Log in to your Agar.io account to purchase VIP.';
+            buySection.appendChild(loginNote);
+        } else if (status.known && status.active) {
+            var activeNote = document.createElement('div');
+            activeNote.style.cssText = 'font-size:12px;color:#00e676;font-weight:700;';
+            activeNote.textContent = '\u2705 VIP is active on this account!';
+            buySection.appendChild(activeNote);
+        } else {
+            var buyBtn = document.createElement('button');
+            buyBtn.type = 'button';
+            buyBtn.className = 'btn';
+            buyBtn.style.cssText =
+                'padding:10px 32px;border-radius:10px;font-weight:800;font-size:13px;' +
+                'background:linear-gradient(135deg,#ffc107,#ff6d00);color:#000;border:none;cursor:pointer;' +
+                'box-shadow:0 4px 16px rgba(255,193,7,.3);transition:transform .15s,box-shadow .15s;';
+            buyBtn.textContent = '\uD83D\uDC51 Subscribe to VIP';
+
+            buyBtn.onmouseenter = function () { this.style.transform = 'scale(1.04)'; this.style.boxShadow = '0 6px 24px rgba(255,193,7,.45)'; };
+            buyBtn.onmouseleave = function () { this.style.transform = 'scale(1)'; this.style.boxShadow = '0 4px 16px rgba(255,193,7,.3)'; };
+
+            buyBtn.onclick = function () {
+                this.disabled = true;
+                this.style.opacity = '.5';
+                this.textContent = 'Opening...';
+                if (typeof window.buyAgarSubscription === 'function') {
+                    window.buyAgarSubscription('vip_weekly');
+                }
+                var self = this;
+                setTimeout(function () { self.disabled = false; self.style.opacity = '1'; self.textContent = '\uD83D\uDC51 Subscribe to VIP'; }, 4000);
+            };
+
+            buySection.appendChild(buyBtn);
+
+            var disclaimer = document.createElement('div');
+            disclaimer.style.cssText = 'font-size:9px;color:' + t.tc2 + ';text-align:center;max-width:320px;line-height:1.4;opacity:.7;';
+            disclaimer.textContent = 'Opens the official Agar.io / Xsolla payment flow. LegendMod does not process payments directly.';
+            buySection.appendChild(disclaimer);
+        }
+
+        body.appendChild(buySection);
+
+        /* --- ASSEMBLE --- */
+        shell.appendChild(header);
+        shell.appendChild(body);
+        modal.appendChild(shell);
+        document.body.appendChild(modal);
+
+        window._lmStartVipCountdownLoop();
+        return true;
+    };
+
+    /* VIP status change auto-refreshes an open modal */
+    document.addEventListener('lm-vip-status-updated', function () {
+        if (document.getElementById('lm-vip-subscription-modal') &&
+            typeof window.showVipSubscriptionModal === 'function') {
+            window.showVipSubscriptionModal();
+        }
+    });
+
+
+    /*
      * CONFIGURED BOOST SHOP LIVE REFRESH
      */
     window._lmRefreshOpenBoostShop = function () {
@@ -8528,6 +8827,9 @@
             <button id="lm-challenges-btn" class="btn btn-success btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="View Challenges / Achievements">
                 \uD83C\uDFC5 Challenges
             </button>
+            <button id="lm-vip-btn" class="btn btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer; background: linear-gradient(135deg, #ffc107, #ff6d00); color: #000; border: none;" title="VIP Subscription">
+                \uD83D\uDC51 VIP
+            </button>
         `;
 
         if (targetContainer.find('#potions, .potions-container').length) {
@@ -9840,6 +10142,14 @@
             e.preventDefault();
             if (typeof window.showChallengesModal === 'function') {
                 window.showChallengesModal();
+            }
+        });
+
+        /* VIP button */
+        $(document).off('click', '#lm-vip-btn').on('click', '#lm-vip-btn', function(e) {
+            e.preventDefault();
+            if (typeof window.showVipSubscriptionModal === 'function') {
+                window.showVipSubscriptionModal();
             }
         });
 
