@@ -16,5 +16,23 @@
             "urlFilter": "||sigmally.com/ws/",
             "resourceTypes": ["websocket"]
         }
+    },
+    {
+        "id": 2,
+        "priority": 1,
+        "action": {
+            "type": "modifyHeaders",
+            "requestHeaders": [
+                {
+                    "header": "Origin",
+                    "operation": "set",
+                    "value": "https://senpa.io"
+                }
+            ]
+        },
+        "condition": {
+            "requestDomains": ["senpa.io", "mi.com"],
+            "resourceTypes": ["websocket"]
+        }
     }
 ]

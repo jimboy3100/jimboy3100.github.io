@@ -2237,6 +2237,24 @@ function deleteGamemode(temp) {
         }, {
             text: 'Sigmally Tournaments',
             value: 10005
+        }, {
+            text: 'Senpa EU FFA',
+            value: 10010
+        }, {
+            text: 'Senpa EU Macro',
+            value: 10011
+        }, {
+            text: 'Senpa EU Multibox',
+            value: 10012
+        }, {
+            text: 'Senpa NA FFA',
+            value: 10013
+        }, {
+            text: 'Senpa NA Instant',
+            value: 10014
+        }, {
+            text: 'Senpa AS FFA',
+            value: 10015
         }
         /* Other private servers (commented out)
         , {
@@ -2486,6 +2504,26 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 10005) {
             legendmod.gameMode = ':ffa';
             core.connect('wss://tourney.sigmally.com/ws/');
+        }
+        // Senpa servers (10010-10015)
+        else if ($('#gamemode').val() == 10010) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://eu.mi.com:2001');
+        } else if ($('#gamemode').val() == 10011) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://eu.mi.com:6001');
+        } else if ($('#gamemode').val() == 10012) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://eu.mi.com:1200');
+        } else if ($('#gamemode').val() == 10013) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://us.mi.com:2001');
+        } else if ($('#gamemode').val() == 10014) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://us.mi.com:3001');
+        } else if ($('#gamemode').val() == 10015) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://asia.senpa.io:2001');
         } else {
             if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
             if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
@@ -29321,8 +29359,9 @@ function thelegendmodproject() {
                     : t.includes('agar2.com') ? 'agar2'
                         : t.includes('garix.io') ? 'garix'
                             : t.includes('sigmally.com') ? 'sigmally'
-                                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
-                                    : 'private';
+                                : (t.includes('senpa.io') || t.includes('mi.com')) ? 'senpa'
+                                    : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                                        : 'private';
 
             /*
              * Keep a pending World Spectate request only for the exact
@@ -29573,6 +29612,16 @@ function thelegendmodproject() {
                 clearInterval(this.sigPingInterval);
                 this.sigPingInterval = null;
             }
+            // Senpa state reset
+            this._senpaClients = {};
+            this._senpaPlayers = {};
+            this._senpaMyClientID = -1;
+            this._senpaSpectate = false;
+            this._senpaAuthSent = false;
+            if (this._senpaPingInterval) {
+                clearInterval(this._senpaPingInterval);
+                this._senpaPingInterval = null;
+            }
             this.ws = t;
             this.integrity = (this.ws.indexOf('agario.miniclippt') > -1 || this.ws.indexOf('agar.io') > -1 || (this.ws.indexOf('live-arena') > -1 && this.ws.indexOf('agar2.com') === -1)); // 2026 JIMBOY3100
             this.serverType = _earlyType;
@@ -29657,6 +29706,37 @@ function thelegendmodproject() {
                 // Sigmally: standard WebSocket, no fingerprint needed
                 // Handshake is hello-based (sent from onOpen), not 254/255
                 var self = this;
+                self.socket = new WebSocket(t);
+                self.socket.binaryType = 'arraybuffer';
+                self.socket.onopen = function () { app.onOpen(); };
+                self.socket.onmessage = function (t) { app.onMessage(t); };
+                self.socket.onerror = function (t) { app.onError(t); };
+                self.socket.onclose = function (t) { app.onClose(t); };
+                application.getWS(self.ws);
+                application.sendServerJoin();
+                application.sendServerData();
+                application.displayLeaderboard('');
+                application.displayPartyBots();
+                application.setUniversalChat();
+                application.setAnimatedRainbowColor();
+                if (window.master && window.master.onConnect) window.master.onConnect();
+                self.play = false;
+                self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
+                if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
+                self.replayfunctions();
+                return;
+            }
+
+            if (this.serverType === 'senpa') {
+                // Senpa: standard WebSocket, server sends init first (opcode 0)
+                // No handshake/fingerprint needed from client side
+                var self = this;
+                // Senpa client/player stores
+                self._senpaClients = {};  // clientID -> {name, color, team, isBot}
+                self._senpaPlayers = {};  // playerID -> {clientID, color, skin}
+                self._senpaMyClientID = -1;
+                self._senpaSpectate = false;
+                self._senpaAuthSent = false;
                 self.socket = new WebSocket(t);
                 self.socket.binaryType = 'arraybuffer';
                 self.socket.onopen = function () { app.onOpen(); };
@@ -29798,6 +29878,23 @@ function thelegendmodproject() {
                     }
                 }, 5000);
                 console.log('%c[Sigmally]%c Handshake: sent hello "' + hello + '"', 'color:#3af', 'color:inherit');
+            }
+            // ===== Senpa Handshake: server sends init first, no client hello =====
+            else if (this.serverType === 'senpa') {
+                this.connectionOpened = true;
+                // Start Senpa ping interval (every 5 seconds)
+                var self = this;
+                if (this._senpaPingInterval) clearInterval(this._senpaPingInterval);
+                this._senpaPingInterval = setInterval(function () {
+                    if (self.isSocketOpen()) {
+                        var pw = new ArrayBuffer(1);
+                        var pv = new DataView(pw);
+                        pv.setUint8(0, 30); // Senpa ping opcode
+                        self.socket.send(pw);
+                        self.pingTime = Date.now();
+                    }
+                }, 5000);
+                console.log('%c[Senpa]%c Connected, waiting for server init', 'color:#fa3', 'color:inherit');
             }
             // ===== Garix Handshake: opcode 171 instead of 254/255 =====
             else if (this.serverType === 'garix') {
@@ -30036,6 +30133,416 @@ function thelegendmodproject() {
                 return;
             }
 
+            // ===== Senpa Protocol Handling =====
+            if (this.serverType === 'senpa') {
+                var raw = new Uint8Array(message.data);
+                if (raw.length < 1) return;
+                // Simple Reader for sequential binary parsing
+                var _off = { v: 0 };
+                var dv = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
+                function rU8() { var v = dv.getUint8(_off.v); _off.v += 1; return v; }
+                function rU16() { var v = dv.getUint16(_off.v, true); _off.v += 2; return v; }
+                function rI32() { var v = dv.getInt32(_off.v, true); _off.v += 4; return v; }
+                function rU32() { var v = dv.getUint32(_off.v, true); _off.v += 4; return v; }
+                function rU24() { var b0 = dv.getUint8(_off.v); var b1 = dv.getUint8(_off.v+1); var b2 = dv.getUint8(_off.v+2); _off.v += 3; return (b0 << 16) | (b1 << 8) | b2; }
+                function rUTF16Len() {
+                    var len = rU16();
+                    var s = '';
+                    for (var i = 0; i < len; i++) s += String.fromCharCode(rU16());
+                    return s;
+                }
+                function rZTStringLen() {
+                    var len = rU16();
+                    var s = '';
+                    for (var i = 0; i < len; i++) {
+                        var ch = rU8();
+                        if (ch === 0) break;
+                        s += String.fromCharCode(ch);
+                    }
+                    return s;
+                }
+
+                var opcode = rU8();
+                var self = this;
+
+                switch (opcode) {
+                    case 0: { // Init
+                        var worldSize = rU32();
+                        var clientID = rU16();
+                        var count = rU8();
+                        self._senpaMyClientID = clientID;
+
+                        // Set map bounds (senpa uses 0..worldSize)
+                        self.mapMinX = 0;
+                        self.mapMinY = 0;
+                        self.mapMaxX = worldSize;
+                        self.mapMaxY = worldSize;
+                        self.mapOffsetX = worldSize / 2;
+                        self.mapOffsetY = worldSize / 2;
+                        self.mapOffsetFixed = true;
+                        self.mapSizeW = worldSize;
+                        self.mapSizeH = worldSize;
+                        ogario.mapOffsetX = self.mapOffsetX;
+                        ogario.mapOffsetY = self.mapOffsetY;
+                        ogario.mapMinX = 0;
+                        ogario.mapMinY = 0;
+                        ogario.mapMaxX = worldSize;
+                        ogario.mapMaxY = worldSize;
+                        ogario.mapSizeW = worldSize;
+                        ogario.mapSizeH = worldSize;
+
+                        // Read player IDs
+                        for (var pi = 0; pi < count; pi++) {
+                            rU16(); // playerID — unused for now
+                        }
+
+                        // Send auth after init
+                        if (!self._senpaAuthSent) {
+                            // Send opcode 13: auth token
+                            var authToken = 'null';
+                            var authBuf = new ArrayBuffer(1 + 2 + authToken.length * 2);
+                            var authDV = new DataView(authBuf);
+                            var ao = 0;
+                            authDV.setUint8(ao, 13); ao += 1;
+                            authDV.setUint16(ao, authToken.length, true); ao += 2;
+                            for (var ai = 0; ai < authToken.length; ai++) {
+                                authDV.setUint16(ao, authToken.charCodeAt(ai), true);
+                                ao += 2;
+                            }
+                            self.socket.send(authBuf);
+                            self._senpaAuthSent = true;
+                        }
+
+                        console.log('%c[Senpa]%c Init: worldSize=' + worldSize + ' clientID=' + clientID + ' count=' + count, 'color:#fa3', 'color:inherit');
+                        break;
+                    }
+                    case 1: { // Map resize
+                        var worldSize = rU32();
+                        self.mapMinX = 0;
+                        self.mapMinY = 0;
+                        self.mapMaxX = worldSize;
+                        self.mapMaxY = worldSize;
+                        self.mapOffsetX = worldSize / 2;
+                        self.mapOffsetY = worldSize / 2;
+                        self.mapSizeW = worldSize;
+                        self.mapSizeH = worldSize;
+                        ogario.mapOffsetX = self.mapOffsetX;
+                        ogario.mapOffsetY = self.mapOffsetY;
+                        ogario.mapMaxX = worldSize;
+                        ogario.mapMaxY = worldSize;
+                        ogario.mapSizeW = worldSize;
+                        ogario.mapSizeH = worldSize;
+                        break;
+                    }
+                    case 7: { // Captcha request
+                        var loggedUsersOnly = rU8();
+                        var captchaVersion = rU8();
+                        console.warn('%c[Senpa]%c Captcha requested (version=' + captchaVersion + ', loggedOnly=' + loggedUsersOnly + ') — not implemented', 'color:#fa3', 'color:inherit');
+                        break;
+                    }
+                    case 8: { // Handshake done → send auth
+                        if (!self._senpaAuthSent) {
+                            var authToken = 'null';
+                            var authBuf = new ArrayBuffer(1 + 2 + authToken.length * 2);
+                            var authDV = new DataView(authBuf);
+                            var ao = 0;
+                            authDV.setUint8(ao, 13); ao += 1;
+                            authDV.setUint16(ao, authToken.length, true); ao += 2;
+                            for (var ai = 0; ai < authToken.length; ai++) {
+                                authDV.setUint16(ao, authToken.charCodeAt(ai), true);
+                                ao += 2;
+                            }
+                            self.socket.send(authBuf);
+                            self._senpaAuthSent = true;
+                        }
+                        console.log('%c[Senpa]%c Handshake done, auth sent', 'color:#fa3', 'color:inherit');
+                        break;
+                    }
+                    case 10: { // Clients update
+                        var added = rU8();
+                        while (added-- > 0) {
+                            var cid = rU16();
+                            var isBot = rU8();
+                            var nick = rUTF16Len();
+                            var team = rUTF16Len();
+                            var color = rU24();
+                            var hasReserved = rU8();
+                            self._senpaClients[cid] = { name: nick, color: color, team: team, isBot: !!isBot };
+                        }
+                        var updated = rU8();
+                        while (updated-- > 0) {
+                            var cid = rU16();
+                            var flags = rU8();
+                            var hasNick = !!(flags & 1);
+                            var hasTeam = !!(flags & 2);
+                            var hasColor = !!(flags & 4);
+                            var nick = hasNick ? rUTF16Len() : null;
+                            var team = hasTeam ? rUTF16Len() : null;
+                            var color = hasColor ? rU24() : 0;
+                            var hasReserved = hasColor ? rU8() : 0;
+                            var c = self._senpaClients[cid];
+                            if (c) {
+                                if (hasNick) c.name = nick;
+                                if (hasTeam) c.team = team;
+                                if (hasColor) c.color = color;
+                            }
+                        }
+                        var removed = rU8();
+                        while (removed-- > 0) {
+                            var cid = rU16();
+                            delete self._senpaClients[cid];
+                        }
+                        break;
+                    }
+                    case 11: { // Players update
+                        var added = rU8();
+                        while (added-- > 0) {
+                            var pid = rU16();
+                            var cid = rU16();
+                            var color = rU24();
+                            var skin = rZTStringLen();
+                            self._senpaPlayers[pid] = { clientID: cid, color: color, skin: skin };
+                        }
+                        var updated = rU8();
+                        while (updated-- > 0) {
+                            var pid = rU16();
+                            var flags = rU8();
+                            var hasColor = !!(flags & 1);
+                            var hasSkin = !!(flags & 2);
+                            var color = hasColor ? rU24() : 0;
+                            var skin = hasSkin ? rZTStringLen() : null;
+                            var p = self._senpaPlayers[pid];
+                            if (p) {
+                                if (hasColor) p.color = color;
+                                if (hasSkin) p.skin = skin;
+                            }
+                        }
+                        var removed = rU8();
+                        while (removed-- > 0) {
+                            var pid = rU16();
+                            delete self._senpaPlayers[pid];
+                        }
+                        break;
+                    }
+                    case 20: { // World updates (cells)
+                        // Eat events
+                        var eatenCount = rU16();
+                        while (eatenCount-- > 0) {
+                            var eaterID = rU32();
+                            var victimID = rU32();
+                            // Remove victim cell, merge into eater
+                            var eater = self.cells[eaterID];
+                            var victim = self.cells[victimID];
+                            if (victim) {
+                                if (eater) {
+                                    eater.ox = eater.x;
+                                    eater.oy = eater.y;
+                                    eater.oSize = eater.size;
+                                }
+                                victim.destroy();
+                                delete self.cells[victimID];
+                            }
+                        }
+                        // Added cells
+                        var addedCount = rU16();
+                        while (addedCount-- > 0) {
+                            var cellID = rU32();
+                            var cx = rI32();
+                            var cy = rI32();
+                            var cSize = rU16();
+                            var cellType = rU8();
+                            var isFood = (cellType === 3);
+                            var isVirus = (cellType === 1);
+                            var cellColor = 0xFF00FF;
+                            var cellName = '';
+                            var cellSkin = '';
+
+                            if (isFood) {
+                                // Food color from hash
+                                cellColor = Math.abs(((cellID % 360) * 314159) % 360);
+                                // HSL to approximate color
+                                cellColor = 0x00FF00; // green placeholder for food
+                            } else if (isVirus) {
+                                cellColor = 0x33FF33; // virus green
+                            } else if (cellType === 0) {
+                                // Player cell — read extra data
+                                var playerID = rU16();
+                                cellColor = rU24();
+                                // Resolve name from player → client
+                                var pInfo = self._senpaPlayers[playerID];
+                                if (pInfo) {
+                                    var cInfo = self._senpaClients[pInfo.clientID];
+                                    if (cInfo) cellName = cInfo.name || '';
+                                }
+                            } else if (cellType === 2) {
+                                // Ejected mass
+                                cellColor = rU24();
+                            } else if (cellType === 5) {
+                                // Anti-cheat challenge array (WASM needed)
+                                var acLen = rU16();
+                                _off.v += acLen; // skip the array
+                                console.warn('%c[Senpa]%c Anti-cheat challenge (type 5) skipped — WASM not available', 'color:#fa3', 'color:inherit');
+                            }
+
+                            if (cellID === 5024) continue; // Senpa sentinel skip
+
+                            // Create/update cell
+                            var cell = self.cells[cellID];
+                            if (!cell) {
+                                cell = new Cell(cellID, cx, cy, cSize, cellColor, isFood, isVirus, cellName, cellSkin);
+                                self.cells[cellID] = cell;
+                            } else {
+                                cell.nx = cx;
+                                cell.ny = cy;
+                                cell.nSize = cSize;
+                            }
+                            cell.isFood = isFood;
+                            cell.isVirus = isVirus;
+                            if (cellColor !== 0xFF00FF) cell.color = cellColor;
+                            if (cellName) cell.name = cellName;
+
+                            // Track own cells
+                            if (cellType === 0) {
+                                var pInfo = self._senpaPlayers[playerID];
+                                if (pInfo && pInfo.clientID === self._senpaMyClientID) {
+                                    if (self.playerCellIDs.indexOf(cellID) === -1) {
+                                        self.playerCellIDs.push(cellID);
+                                        if (self._playerCellIDSet) self._playerCellIDSet.add(cellID);
+                                    }
+                                    if (!self.play) {
+                                        self.play = true;
+                                        self.isSpectateEnabled = false;
+                                        application.hideMenu();
+                                        self.playerColor = null;
+                                        application.onPlayerSpawn();
+                                        window.userBots.isAlive = true;
+                                        if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+                                    }
+                                }
+                            }
+                        }
+                        // Updated cells
+                        var updatedCount = rU16();
+                        while (updatedCount-- > 0) {
+                            var cellID = rU32();
+                            var cx = rI32();
+                            var cy = rI32();
+                            var cSize = rU16();
+                            var cell = self.cells[cellID];
+                            if (cell) {
+                                cell.ox = cell.x;
+                                cell.oy = cell.y;
+                                cell.oSize = cell.size;
+                                cell.nx = cx;
+                                cell.ny = cy;
+                                cell.nSize = cSize;
+                                cell.updateTime = Date.now();
+                            }
+                        }
+                        // Removed cells
+                        var removedCount = rU16();
+                        while (removedCount-- > 0) {
+                            var cellID = rU32();
+                            if (cellID === 0) break;
+                            var cell = self.cells[cellID];
+                            if (cell) {
+                                cell.destroy();
+                                delete self.cells[cellID];
+                            }
+                            // Remove from own cells
+                            var idx = self.playerCellIDs.indexOf(cellID);
+                            if (idx !== -1) {
+                                self.playerCellIDs.splice(idx, 1);
+                                if (self._playerCellIDSet) self._playerCellIDSet.delete(cellID);
+                            }
+                        }
+                        break;
+                    }
+                    case 21: { // Leaderboard
+                        var lbCount = rU8();
+                        var leaderboard = [];
+                        for (var li = 0; li < lbCount; li++) {
+                            var lbClientID = rU16();
+                            var totalMass = rU32();
+                            var ci = self._senpaClients[lbClientID];
+                            leaderboard.push({
+                                index: li,
+                                nick: ci ? (ci.name || '') : '',
+                                id: lbClientID,
+                                isFriend: false,
+                                isBot: ci ? ci.isBot : false,
+                                isPlayer: (lbClientID === self._senpaMyClientID)
+                            });
+                        }
+                        // Update ogario leaderboard display
+                        if (typeof ogario !== 'undefined') {
+                            ogario.leaderboard = leaderboard;
+                            ogario.leaderboardType = 'ffa';
+                        }
+                        break;
+                    }
+                    case 22: { // Minimap
+                        var mapCount = rU8();
+                        var ghostCells = [];
+                        for (var mi = 0; mi < mapCount; mi++) {
+                            var playerID = rU16();
+                            var mx = rI32();
+                            var my = rI32();
+                            var mSize = rU16();
+                            var pInfo = self._senpaPlayers[playerID];
+                            var pName = '';
+                            if (pInfo) {
+                                var cInfo = self._senpaClients[pInfo.clientID];
+                                if (cInfo) pName = cInfo.name || '';
+                            }
+                            ghostCells.push({
+                                x: mx, y: my,
+                                rx: mx, ry: my,
+                                name: pName,
+                                size: mSize,
+                                mass: 0,
+                                inView: false
+                            });
+                        }
+                        if (typeof ogario !== 'undefined') {
+                            ogario.ghostCells = ghostCells;
+                        }
+                        break;
+                    }
+                    case 23: { // Spectate point
+                        if (!self.play) {
+                            var sx = rI32() - self.mapMaxX / 2;
+                            var sy = rI32() - self.mapMaxY / 2;
+                            self.viewX = sx;
+                            self.viewY = sy;
+                            self.viewXTrue = sx;
+                            self.viewYTrue = sy;
+                        }
+                        break;
+                    }
+                    case 30: { // Pong
+                        if (self.pingTime) {
+                            self.ping = Date.now() - self.pingTime;
+                        }
+                        break;
+                    }
+                    case 5: { // Time left
+                        rU32(); // timeLeft / 1000
+                        break;
+                    }
+                    case 40:
+                    case 41:
+                    case 42:
+                    case 43:
+                        // Chat, server messages, server info/config — skip for now
+                        break;
+                    default:
+                        console.log('%c[Senpa]%c Unknown opcode: ' + opcode, 'color:#fa3', 'color:inherit');
+                        break;
+                }
+                return;
+            }
+
             message = new DataView(message.data);
             if (this.protocolKey) {
                 message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
@@ -30061,6 +30568,7 @@ function thelegendmodproject() {
             ogario.elBotCount = null;
             ogario.serverHz = 0;
             if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
+            if (this._senpaPingInterval) { clearInterval(this._senpaPingInterval); this._senpaPingInterval = null; }
             // Only trigger agar.io reconnect logic for official servers.
             // For private servers (agar2, imsolo, garix), master.onDisconnect()
             // would redirect to agar.io servers instead of staying on the private server.
@@ -30074,7 +30582,9 @@ function thelegendmodproject() {
                 lastWs.indexOf('ffa.legendmod') !== -1 ||
                 lastWs.indexOf('agar2.com') !== -1 ||
                 lastWs.indexOf('imsolo.pro') !== -1 ||
-                lastWs.indexOf('sigmally.com') !== -1)) {
+                lastWs.indexOf('sigmally.com') !== -1 ||
+                lastWs.indexOf('senpa.io') !== -1 ||
+                lastWs.indexOf('mi.com') !== -1)) {
                 if (!this._reconnAttempts) this._reconnAttempts = 0;
                 var maxAttempts = 5;
                 if (this._reconnAttempts < maxAttempts) {
@@ -30219,6 +30729,10 @@ function thelegendmodproject() {
         },
         sendSpectate() {
             this.isSpectateEnabled = true;
+            if (this.serverType === 'senpa') {
+                this._senpaSpectate = true;
+                return; // Senpa spectate is toggled by mouse position opcode
+            }
             this.sendAction(1);
         },
         sendFreeSpectate() {
@@ -30245,14 +30759,42 @@ function thelegendmodproject() {
         },
         sendEject() {
             this.sendPosition();
+            if (this.serverType === 'senpa') {
+                // Senpa eject: opcode 23 + unitId(u8) + isMacro(u8)=0
+                var ejBuf = new ArrayBuffer(3);
+                var ejDV = new DataView(ejBuf);
+                ejDV.setUint8(0, 23);
+                ejDV.setUint8(1, 0); // unitId
+                ejDV.setUint8(2, 0); // isMacro = false
+                this.socket.send(ejBuf);
+                return;
+            }
             this.sendAction(21);
         },
         sendSplit() {
             this.sendPosition();
+            if (this.serverType === 'senpa') {
+                // Senpa split: opcode 22 + unitId(u8) + count(u8)=1
+                var spBuf = new ArrayBuffer(3);
+                var spDV = new DataView(spBuf);
+                spDV.setUint8(0, 22);
+                spDV.setUint8(1, 0); // unitId
+                spDV.setUint8(2, 1); // split count = 1
+                this.socket.send(spBuf);
+                return;
+            }
             this.sendAction(17);
         },
         // Multi-protocol split macros for Imsolo/Agar2/Garix (opcodes 0x1A, 0x1B, 0x1C)
         sendDoubleSplit() {
+            if (this.serverType === 'senpa') {
+                this.sendPosition();
+                var spBuf = new ArrayBuffer(3);
+                var spDV = new DataView(spBuf);
+                spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 2);
+                this.socket.send(spBuf);
+                return;
+            }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(28); // 0x1C
@@ -30261,6 +30803,14 @@ function thelegendmodproject() {
             }
         },
         sendTripleSplit() {
+            if (this.serverType === 'senpa') {
+                this.sendPosition();
+                var spBuf = new ArrayBuffer(3);
+                var spDV = new DataView(spBuf);
+                spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 3);
+                this.socket.send(spBuf);
+                return;
+            }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(26); // 0x1A
@@ -30269,6 +30819,14 @@ function thelegendmodproject() {
             }
         },
         sendQuadSplit() {
+            if (this.serverType === 'senpa') {
+                this.sendPosition();
+                var spBuf = new ArrayBuffer(3);
+                var spDV = new DataView(spBuf);
+                spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 4);
+                this.socket.send(spBuf);
+                return;
+            }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(27); // 0x1B
@@ -30358,6 +30916,41 @@ function thelegendmodproject() {
                 sjArr[1 + spawnJSON.length] = 0; // null terminator
                 this.socket.send(sjBuf);
                 console.log('%c[Sigmally]%c Spawn sent: ' + nick, 'color:#3af', 'color:inherit');
+                return;
+            }
+
+            // ===== Senpa join: opcode 10 (nick) + 11 (tag) + 12 (code) + 0 (spawn) =====
+            if (this.serverType === 'senpa') {
+                this.playerNick = nick;
+                // Send nick (opcode 10)
+                var nickBuf = new ArrayBuffer(1 + 2 + nick.length * 2);
+                var nickDV = new DataView(nickBuf);
+                var nOff = 0;
+                nickDV.setUint8(nOff, 10); nOff += 1;
+                nickDV.setUint16(nOff, nick.length, true); nOff += 2;
+                for (var ni = 0; ni < nick.length; ni++) {
+                    nickDV.setUint16(nOff, nick.charCodeAt(ni), true); nOff += 2;
+                }
+                this.socket.send(nickBuf);
+                // Send tag (opcode 11) — empty
+                var tagBuf = new ArrayBuffer(1 + 2);
+                var tagDV = new DataView(tagBuf);
+                tagDV.setUint8(0, 11);
+                tagDV.setUint16(1, 0, true);
+                this.socket.send(tagBuf);
+                // Send code (opcode 12) — empty
+                var codeBuf = new ArrayBuffer(1 + 2);
+                var codeDV = new DataView(codeBuf);
+                codeDV.setUint8(0, 12);
+                codeDV.setUint16(1, 0, true);
+                this.socket.send(codeBuf);
+                // Send spawn (opcode 0 + unitID 0)
+                var spawnBuf = new ArrayBuffer(2);
+                var spawnDV = new DataView(spawnBuf);
+                spawnDV.setUint8(0, 0);
+                spawnDV.setUint8(1, 0); // unitId = 0
+                this.socket.send(spawnBuf);
+                console.log('%c[Senpa]%c Spawn sent: ' + nick, 'color:#fa3', 'color:inherit');
                 return;
             }
 
@@ -30705,6 +31298,19 @@ function thelegendmodproject() {
                     sigDv.setInt32(5, cursorY, true);
                     sigDv.setUint32(9, 0, true);
                     this.socket.send(sigBuf);
+                } else if (this.serverType === 'senpa') {
+                    // Senpa: opcode 20 + spectate(u8) + [unitId(u8) if !spectate] + x(i32) + y(i32)
+                    var isSpec = this._senpaSpectate ? 1 : 0;
+                    var senpaBufLen = isSpec ? 10 : 11; // 1+1+4+4 or 1+1+1+4+4
+                    var senpaBuf = new ArrayBuffer(senpaBufLen);
+                    var senpaDv = new DataView(senpaBuf);
+                    var so = 0;
+                    senpaDv.setUint8(so, 20); so += 1;
+                    senpaDv.setUint8(so, isSpec); so += 1;
+                    if (!isSpec) { senpaDv.setUint8(so, 0); so += 1; } // unitId = 0
+                    senpaDv.setInt32(so, cursorX, true); so += 4;
+                    senpaDv.setInt32(so, cursorY, true);
+                    this.socket.send(senpaBuf);
                 } else if (this.serverType === 'garix') {
                     // Garix: mouse packet includes tabID at bytes 1-2
                     // Server uses message.length to pick precision: 11=Int16, 15=Int32, 23=Float64

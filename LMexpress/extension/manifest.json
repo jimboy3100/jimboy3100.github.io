@@ -31,7 +31,9 @@
         "https://deltav4.glitch.me/*",
         "https://jimboy3100.github.io/*",
         "https://www.legendmod.ml/*",
-        "https://*.sigmally.com/*"
+        "https://*.sigmally.com/*",
+        "https://*.senpa.io/*",
+        "https://*.mi.com/*"
     ],
     "declarative_net_request": {
         "rule_resources": [
