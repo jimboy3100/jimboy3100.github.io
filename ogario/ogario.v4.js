@@ -6638,18 +6638,123 @@ window.getAgarPartySettings =
 
 
 /*
- * Build the OFFICIAL configured short Party URL.
+ * ═══════════════════════════════════════════════════════════════════
+ * PARTY TOKEN NORMALIZATION / VALIDATION
+ * ═══════════════════════════════════════════════════════════════════
  *
- * The live Party token supplied by Agar.io remains authoritative.
+ * Accept all representations:
+ *
+ *      ABCDEF
+ *      #ABCDEF
+ *      https://agar.io/#ABCDEF
+ *      https://r.agar.io/?party=ABCDEF
+ *
+ * GameConfiguration is authoritative for partyCodeLength,
+ * partyLinkUrlPrefix, and partyLinkQuery.
+ */
+window.normalizeAgarPartyToken =
+    function (
+        partyToken
+    ) {
+        var value =
+            String(
+                partyToken || ''
+            ).trim();
+
+        if (!value) {
+            return '';
+        }
+
+        /* 1. Hash representation: #ABCDEF or https://agar.io/#ABCDEF */
+        var hashIndex =
+            value.lastIndexOf('#');
+
+        if (hashIndex !== -1) {
+            value = value.substring(hashIndex + 1);
+
+        } else {
+            /* 2. Configured short-link: https://r.agar.io/?party=ABCDEF */
+            try {
+                var parsedUrl =
+                    new URL(value, window.location.href);
+
+                var queryName =
+                    String(
+                        window.getAgarPartySetting(
+                            'partyLinkQuery', 'party'
+                        ) || 'party'
+                    ).trim().replace(/^\?+/, '').replace(/=+$/, '');
+
+                var queryToken =
+                    parsedUrl.searchParams.get(queryName);
+
+                if (queryToken) {
+                    value = queryToken;
+                }
+            } catch (parseError) {
+                /* Plain tokens will fail URL parsing; expected */
+            }
+        }
+
+        value = String(value || '').trim().replace(/^#+/, '');
+
+
+        var expectedLength =
+            Number(
+                window.getAgarPartySetting('partyCodeLength', 6)
+            );
+
+        if (!Number.isFinite(expectedLength) || expectedLength <= 0) {
+            expectedLength = 6;
+        }
+        expectedLength = Math.floor(expectedLength);
+
+
+        /* M-prefixed 7-char code = mobile Party code */
+        if (
+            value.length === expectedLength + 1 &&
+            value.charAt(0).toUpperCase() === 'M'
+        ) {
+            try {
+                if (
+                    window.agarApp &&
+                    window.agarApp.API &&
+                    typeof window.agarApp.API.showMobilePartyCodeDialog === 'function'
+                ) {
+                    window.agarApp.API.showMobilePartyCodeDialog();
+                }
+            } catch (mobileDialogError) {
+                console.warn('[LM PARTY] Mobile dialog error:', mobileDialogError);
+            }
+            return '';
+        }
+
+
+        if (value.length !== expectedLength) {
+            return '';
+        }
+
+        return value;
+    };
+
+
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * CONFIGURED SHORT PARTY INVITE
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * GameConfiguration:
+ *      partyLinkUrlPrefix = https://r.agar.io
+ *      partyLinkQuery     = party
+ *
+ * Result: https://r.agar.io/?party=ABCDEF
  */
 window.buildAgarPartyInviteUrl =
     function (
         partyToken
     ) {
         var token =
-            String(
-                partyToken || ''
-            ).trim();
+            window.normalizeAgarPartyToken(partyToken);
 
         if (!token) {
             return '';
@@ -6657,29 +6762,142 @@ window.buildAgarPartyInviteUrl =
 
         var prefix =
             String(
-                window
-                    .getAgarPartySetting(
-                        'partyLinkUrlPrefix',
-                        'https://agar.io'
-                    ) ||
-                'https://agar.io'
-            );
+                window.getAgarPartySetting(
+                    'partyLinkUrlPrefix', 'https://r.agar.io'
+                ) || 'https://r.agar.io'
+            ).trim().replace(/\/+$/, '');
 
         var query =
             String(
-                window
-                    .getAgarPartySetting(
-                        'partyLinkQuery',
-                        '#'
-                    ) ||
-                '#'
-            );
+                window.getAgarPartySetting(
+                    'partyLinkQuery', 'party'
+                ) || 'party'
+            ).trim().replace(/^\?+/, '').replace(/=+$/, '');
+
+        if (!prefix || !query) {
+            return 'https://agar.io/#' + encodeURIComponent(token);
+        }
 
         return (
-            prefix +
-            query +
-            token
+            prefix + '/?' +
+            encodeURIComponent(query) + '=' +
+            encodeURIComponent(token)
         );
+    };
+
+
+/*
+ * Standard web-client representation.
+ */
+window.buildAgarPartyDirectUrl =
+    function (
+        partyToken
+    ) {
+        var token =
+            window.normalizeAgarPartyToken(partyToken);
+
+        if (!token) {
+            return '';
+        }
+
+        return 'https://agar.io/#' + encodeURIComponent(token);
+    };
+
+
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * OFFICIAL PARTY JOIN
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * Uses agarApp.API.joinParty(token, success, failure).
+ */
+window.joinAgarPartyToken =
+    function (
+        partyToken,
+        onSuccess,
+        onError
+    ) {
+        var token =
+            window.normalizeAgarPartyToken(partyToken);
+
+        if (!token) {
+            if (window.toastr) {
+                toastr.warning('<b>[PARTY]:</b> Invalid Agar.io Party code.');
+            }
+            if (typeof onError === 'function') onError('invalid_code');
+            return false;
+        }
+
+
+        /* Authoritative official client path */
+        if (
+            window.agarApp &&
+            window.agarApp.API &&
+            typeof window.agarApp.API.joinParty === 'function'
+        ) {
+            try {
+                window.agarApp.API.joinParty(
+                    token,
+
+                    function () {
+                        try {
+                            if (
+                                window.agarApp && window.agarApp.API &&
+                                typeof window.agarApp.API.setPartyToken === 'function'
+                            ) {
+                                window.agarApp.API.setPartyToken(token);
+                            }
+                        } catch (setErr) {
+                            console.warn('[LM PARTY] setPartyToken failed:', setErr);
+                        }
+
+                        try {
+                            if (window.history && typeof window.history.replaceState === 'function') {
+                                window.history.replaceState(null, '', '#' + token);
+                            } else {
+                                window.location.hash = token;
+                            }
+                        } catch (histErr) { }
+
+                        if (typeof onSuccess === 'function') onSuccess(token);
+                    },
+
+                    function (reason) {
+                        console.warn('[LM PARTY] Join rejected:', reason);
+                        if (window.toastr) {
+                            toastr.warning(
+                                '<b>[PARTY]:</b> Could not join Party' +
+                                (reason ? ': ' + String(reason) : '.')
+                            );
+                        }
+                        if (typeof onError === 'function') onError(reason);
+                    }
+                );
+
+                return true;
+            } catch (joinErr) {
+                console.warn('[LM PARTY] agarApp.API.joinParty failed:', joinErr);
+            }
+        }
+
+
+        /* Legacy LM DOM fallback */
+        try {
+            $('#party-token, #joinPartyToken').val(token);
+            var legacyBtn = document.getElementById('join-party-btn');
+            if (legacyBtn) {
+                legacyBtn.click();
+                return true;
+            }
+        } catch (legacyErr) {
+            console.warn('[LM PARTY] Legacy fallback failed:', legacyErr);
+        }
+
+        if (window.toastr) {
+            toastr.warning('<b>[PARTY]:</b> Party API is not available yet.');
+        }
+        if (typeof onError === 'function') onError('party_api_unavailable');
+        return false;
     };
 
 

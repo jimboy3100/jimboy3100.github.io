@@ -5228,7 +5228,7 @@
                         '<button onclick="if(window.showPotionDetailModal) window.showPotionDetailModal(\'' + pid + '\');" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="Potion Info">?</button>' +
                         '<div style="width:80px;height:80px;border-radius:50%;margin:8px 0 10px;display:flex;align-items:center;justify-content:center;font-size:38px;background:radial-gradient(circle,' + colors.border + '22,' + colors.border + '44);border:3px solid ' + colors.border + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' +
                         '<div style="font-size:15px;font-weight:900;color:#333;margin-bottom:4px;">' + baseName + '</div>' +
-                        '<button class="btn lm-buy-premium-potion" data-product-id="' + pid + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;cursor:pointer;width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>\uD83E\uDDEC ' + priceText + '</button>' +
+                        '<button class="btn lm-buy-premium-potion" data-product-id="' + pid + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;cursor:pointer;width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
                     '</div>';
             });
         }
@@ -5241,29 +5241,54 @@
                 '</div>' +
             '</div>';
 
-        /* Wire buy buttons via delegation */
+        /*
+         * Wire Premium Potion purchases.
+         *
+         * productId  = potion_mythical
+         * purchaseId = 1_potion_mythical
+         *
+         * Pending registry is keyed by purchaseId, not productId.
+         */
         modal.addEventListener('click', function (e) {
             var btn = e.target.closest('.lm-buy-premium-potion');
             if (!btn || btn.disabled) return;
 
-            var pid = btn.getAttribute('data-product-id');
-            if (!pid || typeof window.buyAgarPremiumPotion !== 'function') return;
+            var productId = String(btn.getAttribute('data-product-id') || '').trim();
+            if (!productId || typeof window.buyAgarPremiumPotion !== 'function') return;
 
+            /* Re-resolve from GameConfiguration */
+            var potionInfo = typeof window.getAgarPremiumPotionInfo === 'function'
+                ? window.getAgarPremiumPotionInfo(productId) : null;
+
+            if (!potionInfo || !potionInfo.purchaseId) {
+                if (window.toastr) toastr.warning('<b>[POTION]:</b> Purchase configuration unavailable.');
+                return false;
+            }
+
+            var purchaseId = String(potionInfo.purchaseId).trim();
+
+            /* Correct key: e.g. 1_potion_mythical */
             if (typeof window._lmHasPendingSoftPurchase === 'function' &&
-                window._lmHasPendingSoftPurchase(pid)) {
-                if (window.toastr) toastr.info('This purchase is already pending.');
-                return;
+                window._lmHasPendingSoftPurchase(purchaseId)) {
+                if (window.toastr) toastr.info('<b>[POTION]:</b> This purchase is already pending.');
+                return false;
             }
 
             var originalHtml = btn.innerHTML;
             btn.disabled = true;
+            btn.style.opacity = '.55';
+            btn.style.cursor = 'not-allowed';
             btn.textContent = 'BUYING...';
 
-            var sent = window.buyAgarPremiumPotion(pid);
+            var sent = window.buyAgarPremiumPotion(productId);
             if (!sent) {
                 btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
                 btn.innerHTML = originalHtml;
             }
+
+            return false;
         });
 
         document.body.appendChild(modal);
@@ -6144,17 +6169,56 @@
                     btn.className = 'btn';
                     btn.style.cssText = 'background: ' + t.b1 + '; color: ' + t.btc + '; padding: 4px 12px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer;';
                     btn.textContent = '🎮 Join Party';
-                    btn.onclick = function() {
-                        $('#party-token, #joinPartyToken').val(partyToken);
-                        if (window.app && typeof window.app.joinParty === 'function') {
-                            window.app.joinParty();
-                        } else {
-                            $('#join-party-btn').click();
+                    btn.onclick = function () {
+                        /* Prefer centralized official Party path */
+                        if (typeof window.joinAgarPartyToken === 'function') {
+                            window.joinAgarPartyToken(partyToken, function () {
+                                var friendsModal = document.getElementById('lm-friends-modal');
+                                if (friendsModal) friendsModal.remove();
+                            });
+                            return false;
                         }
-                        var m = document.getElementById('lm-friends-modal');
-                        if (m) m.remove();
+
+                        /* Very old LM fallback */
+                        $('#party-token, #joinPartyToken').val(partyToken);
+                        var legacyButton = document.getElementById('join-party-btn');
+                        if (legacyButton) legacyButton.click();
+                        return false;
                     };
+                    rightBox.style.cssText = 'display:flex;align-items:center;gap:6px;';
                     rightBox.appendChild(btn);
+
+                    /* Config-driven official short invite copy */
+                    var copyInviteBtn = document.createElement('button');
+                    copyInviteBtn.className = 'btn';
+                    copyInviteBtn.style.cssText = 'background:' + t.b3 + ';color:' + t.btc + ';padding:4px 10px;border-radius:6px;font-weight:700;border:none;cursor:pointer;font-size:11px;';
+                    copyInviteBtn.textContent = '\uD83D\uDD17 Copy';
+                    copyInviteBtn.title = 'Copy Party invite link';
+                    copyInviteBtn.onclick = function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        var inviteUrl = typeof window.buildAgarPartyInviteUrl === 'function'
+                            ? window.buildAgarPartyInviteUrl(partyToken) : '';
+
+                        if (!inviteUrl) {
+                            if (window.toastr) toastr.warning('<b>[PARTY]:</b> Could not build Party invite.');
+                            return false;
+                        }
+
+                        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                            navigator.clipboard.writeText(inviteUrl).then(function () {
+                                if (window.toastr) toastr.success('<b>[PARTY]:</b> Invite copied.');
+                            }).catch(function () {
+                                window.prompt('Copy Party invite:', inviteUrl);
+                            });
+                            return false;
+                        }
+
+                        window.prompt('Copy Party invite:', inviteUrl);
+                        return false;
+                    };
+                    rightBox.appendChild(copyInviteBtn);
                 } else {
                     var statusSpan = document.createElement('span');
                     statusSpan.style.cssText = 'font-size: 12px; color: ' + t.tc2 + ';';
