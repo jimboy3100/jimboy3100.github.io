@@ -1700,10 +1700,9 @@
       }
 
       function fmtScale(rawScale) {
-        /* Server map_scale = mapSize / 12.5.
-         * Area multiplier = (mapSize / 14142)² relative to standard agar.io. */
-        var mapSize = rawScale * 12.5;
-        var ratio = (mapSize / 14142) * (mapSize / 14142);
+        /* Server sends map_scale_x100: area ratio × 100 relative to
+         * standard agar.io (14142²). e.g. 200 = 2× area. */
+        var ratio = rawScale / 100.0;
         if (ratio <= 0.37) return '1/4×';
         if (ratio <= 0.75) return '1/2×';
         return Math.round(ratio) + '×';
