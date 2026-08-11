@@ -21198,6 +21198,10 @@ function thelegendmodproject() {
                 ogario.showFood = true
             };
 
+            /* Expanding Land: trigger a spawn pulse animation */
+            if (LM && LM.isLegendWorld && typeof drawRender !== 'undefined') {
+                drawRender._spawnPulseStart = Date.now();
+            }
 
         },
         onSpectate() {
@@ -21266,6 +21270,25 @@ function thelegendmodproject() {
                 return;
             }
             LegendModSpawn();
+
+            /* Expanding Land: trigger spawn burst animation */
+            if (typeof drawRender !== 'undefined' && drawRender.triggerSpawnEffect) {
+                var _spawnX = this.getPlayerX ? this.getPlayerX() : 0;
+                var _spawnY = this.getPlayerY ? this.getPlayerY() : 0;
+                /* Position may be 0 on first frame — retry after a short delay */
+                if (_spawnX === 0 && _spawnY === 0) {
+                    var _app = this;
+                    setTimeout(function () {
+                        drawRender.triggerSpawnEffect(
+                            _app.getPlayerX ? _app.getPlayerX() : 0,
+                            _app.getPlayerY ? _app.getPlayerY() : 0,
+                            ogario.playerColor || '#00ccff'
+                        );
+                    }, 150);
+                } else {
+                    drawRender.triggerSpawnEffect(_spawnX, _spawnY, ogario.playerColor || '#00ccff');
+                }
+            }
 
             // Force re-register skins for main player and all multibox profiles on spawn
             var self = this;
@@ -40818,6 +40841,88 @@ function pickPlayerCellBySize(players, selectBiggest) {
         lastRenderingDelay: 0,
         pelletColored: [],
         cellsColored: [],
+        /* ── Expanding Land: Spawn burst animation ── */
+        _spawnEffect: {
+            active: false,
+            startTime: 0,
+            x: 0,
+            y: 0,
+            color: '#00ccff',
+            duration: 800,
+            numRays: 12
+        },
+        triggerSpawnEffect(worldX, worldY, color) {
+            if (!LM || !LM.isLegendWorld) return;
+            this._spawnEffect.active = true;
+            this._spawnEffect.startTime = Date.now();
+            this._spawnEffect.x = worldX;
+            this._spawnEffect.y = worldY;
+            this._spawnEffect.color = color || '#00ccff';
+        },
+        drawSpawnEffect(ctx) {
+            var fx = this._spawnEffect;
+            if (!fx.active) return;
+            var elapsed = Date.now() - fx.startTime;
+            var t = elapsed / fx.duration;
+            if (t >= 1.0) { fx.active = false; return; }
+
+            /* Easing: fast start, slow end */
+            var ease = 1.0 - Math.pow(1.0 - t, 3);
+            var fadeOut = 1.0 - t;
+
+            ctx.save();
+
+            /* --- Outer expanding ring --- */
+            var maxRadius = 600;
+            var ringRadius = ease * maxRadius;
+            var ringWidth = Math.max(2, (1.0 - ease) * 18);
+            ctx.beginPath();
+            ctx.arc(fx.x, fx.y, ringRadius, 0, 2 * Math.PI, false);
+            ctx.strokeStyle = fx.color;
+            ctx.lineWidth = ringWidth;
+            ctx.globalAlpha = fadeOut * 0.7;
+            ctx.stroke();
+
+            /* --- Inner glow ring --- */
+            var innerRadius = ease * maxRadius * 0.5;
+            ctx.beginPath();
+            ctx.arc(fx.x, fx.y, innerRadius, 0, 2 * Math.PI, false);
+            ctx.lineWidth = Math.max(1, (1.0 - ease) * 8);
+            ctx.globalAlpha = fadeOut * 0.4;
+            ctx.stroke();
+
+            /* --- Radial light rays --- */
+            var rayLen = ease * maxRadius * 1.2;
+            var rayInner = ease * 40;
+            ctx.lineWidth = Math.max(1, (1.0 - ease) * 4);
+            ctx.globalAlpha = fadeOut * 0.5;
+            for (var r = 0; r < fx.numRays; r++) {
+                var angle = (r / fx.numRays) * 2 * Math.PI + t * 0.5;
+                var cosA = Math.cos(angle);
+                var sinA = Math.sin(angle);
+                ctx.beginPath();
+                ctx.moveTo(fx.x + cosA * rayInner, fx.y + sinA * rayInner);
+                ctx.lineTo(fx.x + cosA * rayLen, fx.y + sinA * rayLen);
+                ctx.stroke();
+            }
+
+            /* --- Central flash --- */
+            if (t < 0.3) {
+                var flashAlpha = (1.0 - t / 0.3) * 0.3;
+                var flashR = ease * 120;
+                var grad = ctx.createRadialGradient(fx.x, fx.y, 0, fx.x, fx.y, flashR);
+                grad.addColorStop(0, fx.color);
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.globalAlpha = flashAlpha;
+                ctx.beginPath();
+                ctx.arc(fx.x, fx.y, flashR, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            ctx.globalAlpha = 1.0;
+            ctx.restore();
+        },
         setCanvas() {
             this.canvas =
                 document.getElementById(
@@ -41659,6 +41764,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                          *
                          * Fragment must be:
                          *     inside target AND outside current
+                         *
+                         * Enhanced with a bright shockwave ring that
+                         * sweeps from old border to new border.
                          */
                         bool inTarget =
                             distFromCenter <=
@@ -41680,19 +41788,49 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             currentHalf;
 
                         /*
-                         * Blue-cyan expansion glow.
+                         * Blue-cyan expansion glow with
+                         * animated shockwave ring.
                          */
+                        float bandWidth =
+                            targetHalf - currentHalf;
+
+                        /* Shockwave ring: bright band that travels
+                         * from old edge toward new edge */
+                        float ringPos =
+                            currentHalf +
+                            u_zoneProgress *
+                            bandWidth;
+
+                        float ringDist =
+                            abs(distFromCenter - ringPos);
+
+                        float ringWidth =
+                            max(80.0, bandWidth * 0.08);
+
+                        float ring =
+                            smoothstep(
+                                ringWidth,
+                                0.0,
+                                ringDist
+                            );
+
+                        /* Animated energy particles along the ring */
+                        float angle = atan(dy, dx);
+                        float sparkle =
+                            sin(angle * 12.0 + u_time * 8.0) *
+                            0.5 + 0.5;
+
                         baseColor =
-                            vec3(
-                                0.13,
-                                0.67,
-                                1.0
+                            mix(
+                                vec3(0.13, 0.67, 1.0),
+                                vec3(0.6, 0.9, 1.0),
+                                ring * 0.7
                             );
 
                         baseAlpha =
                             0.06 +
-                            pulse *
-                            0.04;
+                            pulse * 0.04 +
+                            ring * (0.25 + sparkle * 0.1);
                     }
                     else {
                         /*
@@ -41728,25 +41866,46 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             2.5
                         ) {
                             /*
-                             * Danger / shrinking: red tint.
+                             * Danger / shrinking: red tint with
+                             * animated radial scanlines + border ring.
                              */
+
+                            /* Radial scanlines sweeping inward */
+                            float angle = atan(dy, dx);
+                            float scan =
+                                sin(distFromCenter * 0.05 - u_time * 4.0) *
+                                0.5 + 0.5;
+
+                            /* Bright warning ring at the target edge */
+                            float edgeDist =
+                                abs(distFromCenter - targetHalf);
+                            float edgeRing =
+                                smoothstep(60.0, 0.0, edgeDist);
+
                             baseColor =
-                                vec3(
-                                    0.9,
-                                    0.1,
-                                    0.1
+                                mix(
+                                    vec3(0.9, 0.1, 0.1),
+                                    vec3(1.0, 0.3, 0.1),
+                                    edgeRing * 0.6
                                 );
 
                             baseAlpha =
                                 0.15 +
-                                pulse *
-                                0.1;
+                                pulse * 0.1 +
+                                scan * 0.06 +
+                                edgeRing * (0.3 + pulse * 0.15);
                         }
                         else {
                             /*
-                             * Warning: green-yellow tint
-                             * matching the Canvas2D original.
+                             * Warning: green-yellow tint with
+                             * subtle animated hash pattern.
                              */
+
+                            /* Subtle crosshatch pattern */
+                            float hash =
+                                sin(distFromCenter * 0.03 + u_time * 2.0) *
+                                0.5 + 0.5;
+
                             baseColor =
                                 vec3(
                                     0.27,
@@ -41756,8 +41915,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                             baseAlpha =
                                 0.12 +
-                                pulse *
-                                0.06;
+                                pulse * 0.06 +
+                                hash * 0.03;
                         }
                     }
 
@@ -49327,6 +49486,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 //this.drawCommander(this.ctx);  // disabled — spawn effects unwanted
                 //this.drawCommander2(this.ctx); // disabled — spawn effects unwanted
+
+                /* Expanding Land: spawn pulse effect */
+                if (LM.isLegendWorld && this._spawnPulseStart) {
+                    this.drawSpawnPulse(this.ctx);
+                }
+
                 if (defaultmapsettings.virusesRange) {
                     this.drawVirusesRange(this.ctx, LM.viruses);
                 }
@@ -49685,6 +49850,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * underneath cells and viruses by drawHelpers().
                  */
                 this.drawPostCellOverlays();
+                /* Expanding Land: spawn burst effect (drawn above cells) */
+                if (this._spawnEffect && this._spawnEffect.active) {
+                    this.drawSpawnEffect(this.ctx);
+                }
                 var _tMini = performance.now();
                 this.drawMiscRings();
                 if (defaultmapsettings.jellyPhisycs) {
@@ -50773,19 +50942,101 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     ctx.lineTo(text - ctx.lineWidth, x1 - ctx.lineWidth);
                 }
 
-                if (defaultmapsettings.borderGlow) {
-                    ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
-                    ctx.shadowColor = defaultSettings.borderGlowColor || ctx.strokeStyle;
+                if (LM && LM.isLegendWorld) {
+                    /* Expanding Land: always-on animated breathing glow */
+                    var now = Date.now() / 1000.0;
+                    var breathe = Math.sin(now * 1.5) * 0.5 + 0.5;
+                    ctx.shadowBlur = 12 + breathe * 18;
+                    ctx.shadowColor = defaultSettings.borderGlowColor || '#00aaff';
+                    ctx.stroke();
+                    /* Double-stroke for extra glow intensity */
+                    ctx.shadowBlur = 6 + breathe * 8;
+                    ctx.globalAlpha = 0.4 + breathe * 0.2;
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
                 } else {
-                    "skrrt";
+                    if (defaultmapsettings.borderGlow) {
+                        ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
+                        ctx.shadowColor = defaultSettings.borderGlowColor || ctx.strokeStyle;
+                    } else {
+                        "skrrt";
+                    }
+                    ctx.stroke();
                 }
-                ctx.stroke();
             }
-            if (defaultmapsettings.borderGlow) {
+            if (defaultmapsettings.borderGlow || (LM && LM.isLegendWorld)) {
                 ctx.shadowBlur = 0;
             } else {
                 "skrrt";
             }
+        },
+
+        /* ── Expanding Land: Spawn pulse animation ── */
+        drawSpawnPulse(ctx) {
+            if (!this._spawnPulseStart) return;
+
+            var elapsed = (Date.now() - this._spawnPulseStart) / 1000.0;
+            var duration = 1.8; /* seconds */
+
+            if (elapsed > duration) {
+                this._spawnPulseStart = null;
+                return;
+            }
+
+            var progress = elapsed / duration;
+            var eased = 1.0 - Math.pow(1.0 - progress, 3); /* ease-out cubic */
+
+            ctx.save();
+
+            /* Draw from the player's spawn position (camera center) */
+            var cx = this.camX || 0;
+            var cy = this.camY || 0;
+            var maxRadius = 3000 / (this.scale || 0.1);
+
+            /* 3 concentric expanding rings with stagger */
+            for (var ring = 0; ring < 3; ring++) {
+                var ringDelay = ring * 0.12;
+                var ringProgress = Math.max(0, (progress - ringDelay) / (1.0 - ringDelay));
+                if (ringProgress <= 0) continue;
+
+                var ringEased = 1.0 - Math.pow(1.0 - ringProgress, 2.5);
+                var radius = ringEased * maxRadius;
+                var alpha = (1.0 - ringProgress) * (0.5 - ring * 0.12);
+
+                if (alpha <= 0.01) continue;
+
+                /* Outer glow ring */
+                var gradient = ctx.createRadialGradient(
+                    cx, cy, Math.max(0, radius - 80),
+                    cx, cy, radius + 30
+                );
+                gradient.addColorStop(0, 'rgba(0, 180, 255, 0)');
+                gradient.addColorStop(0.4, 'rgba(0, 200, 255, ' + (alpha * 0.6) + ')');
+                gradient.addColorStop(0.7, 'rgba(100, 220, 255, ' + alpha + ')');
+                gradient.addColorStop(1, 'rgba(0, 180, 255, 0)');
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius + 30, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            /* Central flash (very brief) */
+            if (progress < 0.3) {
+                var flashAlpha = (1.0 - progress / 0.3) * 0.25;
+                var flashGrad = ctx.createRadialGradient(
+                    cx, cy, 0,
+                    cx, cy, maxRadius * 0.3
+                );
+                flashGrad.addColorStop(0, 'rgba(200, 240, 255, ' + flashAlpha + ')');
+                flashGrad.addColorStop(1, 'rgba(0, 100, 200, 0)');
+                ctx.fillStyle = flashGrad;
+                ctx.beginPath();
+                ctx.arc(cx, cy, maxRadius * 0.3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
         },
 
         /* ── Expanding Land: WebGL zone overlay ── */
