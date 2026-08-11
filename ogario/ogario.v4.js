@@ -2207,6 +2207,7 @@ function deleteGamemode(temp) {
         }, {
             text: 'Agar2 NA Party',
             value: 8008
+        /* Garix servers (commented out)
         }, {
             text: 'Garix Teams',
             value: 9001
@@ -2222,6 +2223,7 @@ function deleteGamemode(temp) {
         }, {
             text: 'Garix Selffeed',
             value: 9005
+        */
         }, {
             text: 'Sigmally US-1',
             value: 10001
