@@ -7182,7 +7182,22 @@
              * ─────────────────────────────────────────────────────────
              * POTION SLOTS
              * ─────────────────────────────────────────────────────────
+             *
+             * The profile already renders live potion state in:
+             *
+             *      #potion1   #potion2   #potion3
+             *
+             * Each has:
+             *
+             *      <img src="...potion_common.png" style="border-color: red;">
+             *      <div style="border-color: red;">brew</div>
+             *            or
+             *      <div style="border-color: yellow;">04:09</div>
+             *
+             * Read directly from those elements so the economy panel
+             * always matches the real profile.
              */
+
             var potionStates =
                 (
                     window.LM &&
@@ -7192,25 +7207,20 @@
                 ) ||
                 {};
 
-
             for (
                 var slot = 1;
                 slot <= 3;
                 slot++
             ) {
-                var potionKey =
-                    'potion' +
-                    slot;
+                var potionEl =
+                    document
+                        .getElementById(
+                            'potion' +
+                            slot
+                        );
 
 
-                var potion =
-                    potionStates[
-                        potionKey
-                    ] ||
-                    null;
-
-
-                if (!potion) {
+                if (!potionEl) {
                     html +=
                         buildRow(
                             '\u2697\uFE0F',
@@ -7220,219 +7230,316 @@
                             ''
                         );
 
-
                     continue;
                 }
 
 
-                var productId =
-                    potion.productId ||
-                    potion.type ||
-                    '';
-
-
-                var status =
-                    Number(
-                        potion.status
-                    ) ||
-                    0;
-
-
-                var potionSeconds =
-                    window
-                        .getLivePotionSecondsRemaining(
-                            potion
+                /*
+                 * Extract the image source to determine potion rarity.
+                 */
+                var potionImg =
+                    potionEl
+                        .querySelector(
+                            'img'
                         );
 
-
-                var potionName =
-                    typeof window
-                        .formatAgarProduct ===
-                        'function'
-                        ? window
-                            .formatAgarProduct(
-                                productId,
-                                1
-                            )
-                        : String(
-                            productId
-                        );
+                var potionSrc =
+                    potionImg
+                        ? String(
+                            potionImg.src ||
+                            ''
+                        )
+                        : '';
 
 
-                var potionStatusText;
+                /*
+                 * Derive a display name from the image filename.
+                 *
+                 *      potion_common.png   -> Common
+                 *      potion_exotic.png   -> Exotic
+                 *      potion_rare.png     -> Rare
+                 *      potion_legendary.png -> Legendary
+                 */
+                var potionRarity =
+                    'Potion';
 
+                var srcMatch =
+                    potionSrc.match(
+                        /potion_([a-z]+)\./i
+                    );
 
                 if (
-                    status === 1
+                    srcMatch &&
+                    srcMatch[1]
                 ) {
-                    potionStatusText =
-                        'Ready to brew';
-                } else if (
-                    status === 2
-                ) {
-                    potionStatusText =
-                        'Brewing';
-
-
-                    if (
-                        potionSeconds !==
-                            null
-                    ) {
-                        potionStatusText +=
-                            ' \u2014 ' +
-                            window
-                                ._formatLmEconomySeconds(
-                                    potionSeconds
-                                );
-                    }
-                } else if (
-                    status === 3
-                ) {
-                    potionStatusText =
-                        'Ready to open';
-                } else {
-                    potionStatusText =
-                        'Status ' +
-                        status;
+                    potionRarity =
+                        srcMatch[1]
+                            .charAt(0)
+                            .toUpperCase() +
+                        srcMatch[1]
+                            .slice(1);
                 }
 
 
-                var potionInfo =
-                    (
-                        status === 2 &&
-                        typeof window
-                            .getAgarPotionInfo ===
-                            'function'
+                /*
+                 * Extract the status text from the inner <div>.
+                 *
+                 *      "brew"   -> Ready to brew
+                 *      "04:09"  -> Brewing timer
+                 *      "open"   -> Ready to open
+                 */
+                var potionStatusDiv =
+                    potionEl
+                        .querySelector(
+                            'div'
+                        );
+
+                var potionRawText =
+                    potionStatusDiv
+                        ? String(
+                            potionStatusDiv
+                                .textContent ||
+                            ''
+                        ).trim()
+                            .toLowerCase()
+                        : '';
+
+                var potionBorderColor =
+                    potionStatusDiv
+                        ? String(
+                            potionStatusDiv
+                                .style
+                                .borderColor ||
+                            ''
+                        ).trim()
+                            .toLowerCase()
+                        : '';
+
+
+                var potionStatusText;
+                var potionIcon;
+
+
+                if (
+                    potionRawText === 'brew' ||
+                    potionRawText === 'ready'
+                ) {
+                    potionStatusText =
+                        potionRarity +
+                        ' \u2014 Ready to brew';
+
+                    potionIcon =
+                        '\u2697\uFE0F';
+
+                } else if (
+                    potionRawText === 'open'
+                ) {
+                    potionStatusText =
+                        potionRarity +
+                        ' \u2014 Ready to open';
+
+                    potionIcon =
+                        '\uD83E\uDDEA';
+
+                } else if (
+                    /\d/.test(
+                        potionRawText
                     )
-                        ? window
-                            .getAgarPotionInfo(
-                                productId,
-                                slot,
-                                potionSeconds ===
-                                    null
-                                    ? undefined
-                                    : potionSeconds
-                            )
-                        : null;
+                ) {
+                    /*
+                     * Timer text like "04:09" or "1:23:45"
+                     */
+                    potionStatusText =
+                        potionRarity +
+                        ' \u2014 Brewing ' +
+                        potionRawText;
+
+                    potionIcon =
+                        '\u2697\uFE0F';
+
+                } else if (
+                    potionRawText
+                ) {
+                    potionStatusText =
+                        potionRarity +
+                        ' \u2014 ' +
+                        potionRawText;
+
+                    potionIcon =
+                        '\u2697\uFE0F';
+
+                } else {
+                    potionStatusText =
+                        'Empty';
+
+                    potionIcon =
+                        '\u2697\uFE0F';
+                }
 
 
+                /*
+                 * Potion skip button for brewing potions.
+                 *
+                 * Only show if we still have the rich potionStates
+                 * with price information.
+                 */
                 var potionButtonHtml =
                     '';
 
 
+                var potionKey =
+                    'potion' +
+                    slot;
+
+                var potion =
+                    potionStates[
+                        potionKey
+                    ] ||
+                    null;
+
+
                 if (
-                    status === 2 &&
-                    potionInfo &&
-                    potionInfo.purchaseId &&
-                    potionInfo.currentPrice !==
-                        null &&
-                    potionInfo.currentPrice !==
-                        undefined
+                    potion &&
+                    Number(
+                        potion.status
+                    ) === 2
                 ) {
-                    var potionPrice =
-                        Math.max(
-                            0,
-                            Number(
-                                potionInfo
-                                    .currentPrice
-                            ) ||
-                            0
-                        );
+                    var potionProductId =
+                        potion.productId ||
+                        potion.type ||
+                        '';
 
+                    var potionSeconds =
+                        window
+                            .getLivePotionSecondsRemaining(
+                                potion
+                            );
 
-                    var potionPriceText =
+                    var potionInfo =
                         typeof window
-                            .formatAgarCurrency ===
+                            .getAgarPotionInfo ===
                             'function'
                             ? window
-                                .formatAgarCurrency(
-                                    potionPrice,
-                                    potionInfo
-                                        .currency
+                                .getAgarPotionInfo(
+                                    potionProductId,
+                                    slot,
+                                    potionSeconds ===
+                                        null
+                                        ? undefined
+                                        : potionSeconds
                                 )
-                            : (
-                                String(
-                                    potionPrice
-                                ) +
-                                (
+                            : null;
+
+
+                    if (
+                        potionInfo &&
+                        potionInfo.purchaseId &&
+                        potionInfo.currentPrice !==
+                            null &&
+                        potionInfo.currentPrice !==
+                            undefined
+                    ) {
+                        var potionPrice =
+                            Math.max(
+                                0,
+                                Number(
                                     potionInfo
-                                        .currency
-                                        ? (
-                                            ' ' +
-                                            potionInfo
-                                                .currency
-                                        )
-                                        : ''
-                                )
+                                        .currentPrice
+                                ) ||
+                                0
                             );
 
 
-                    potionButtonHtml =
-                        '<button ' +
-                            'type="button" ' +
-                            'class="btn btn-xs lm-potion-skip-buy" ' +
-
-                            'data-potion-id="' +
-                                window
-                                    ._lmEconomyEscape(
-                                        productId
-                                    ) +
-                            '" ' +
-
-                            'data-slot="' +
-                                slot +
-                            '" ' +
-
-                            'data-purchase-id="' +
-                                window
-                                    ._lmEconomyEscape(
+                        var potionPriceText =
+                            typeof window
+                                .formatAgarCurrency ===
+                                'function'
+                                ? window
+                                    .formatAgarCurrency(
+                                        potionPrice,
                                         potionInfo
-                                            .purchaseId
+                                            .currency
+                                    )
+                                : (
+                                    String(
+                                        potionPrice
                                     ) +
-                            '" ' +
+                                    (
+                                        potionInfo
+                                            .currency
+                                            ? (
+                                                ' ' +
+                                                potionInfo
+                                                    .currency
+                                            )
+                                            : ''
+                                    )
+                                );
 
-                            'style="' +
-                                'margin-left:6px;' +
-                                'font-size:9px;' +
-                                'padding:3px 6px;' +
-                                'background:' +
+
+                        potionButtonHtml =
+                            '<button ' +
+                                'type="button" ' +
+                                'class="btn btn-xs lm-potion-skip-buy" ' +
+
+                                'data-potion-id="' +
                                     window
                                         ._lmEconomyEscape(
-                                            theme.b3
+                                            potionProductId
                                         ) +
-                                ';' +
-                                'color:' +
+                                '" ' +
+
+                                'data-slot="' +
+                                    slot +
+                                '" ' +
+
+                                'data-purchase-id="' +
                                     window
                                         ._lmEconomyEscape(
-                                            theme.btc
+                                            potionInfo
+                                                .purchaseId
                                         ) +
-                                ';' +
-                                'border:0;' +
-                                'white-space:nowrap;' +
-                            '"' +
+                                '" ' +
 
-                        '>' +
-                            'Skip \u2014 ' +
-                            window
-                                ._lmEconomyEscape(
-                                    potionPriceText
-                                ) +
-                        '</button>';
+                                'style="' +
+                                    'margin-left:6px;' +
+                                    'font-size:9px;' +
+                                    'padding:3px 6px;' +
+                                    'background:' +
+                                        window
+                                            ._lmEconomyEscape(
+                                                theme.b3
+                                            ) +
+                                    ';' +
+                                    'color:' +
+                                        window
+                                            ._lmEconomyEscape(
+                                                theme.btc
+                                            ) +
+                                    ';' +
+                                    'border:0;' +
+                                    'white-space:nowrap;' +
+                                '"' +
+
+                            '>' +
+                                'Skip \u2014 ' +
+                                window
+                                    ._lmEconomyEscape(
+                                        potionPriceText
+                                    ) +
+                            '</button>';
+                    }
                 }
 
 
                 html +=
                     buildRow(
-                        status === 3
-                            ? '\uD83E\uDDEA'
-                            : '\u2697\uFE0F',
+                        potionIcon,
 
                         'Potion ' +
                             slot,
 
-                        potionName +
-                            ' \u2014 ' +
-                            potionStatusText,
+                        potionStatusText,
 
                         potionButtonHtml
                     );
