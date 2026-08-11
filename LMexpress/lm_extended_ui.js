@@ -7452,14 +7452,29 @@
                 }
 
 
+                /* Clickable for brew/open states */
+                var pActionClass = '';
+                var pActionAttr = '';
+                var pCursor = '';
+
+                if (pState === 'brew') {
+                    pActionClass = ' lm-potion-action';
+                    pActionAttr = ' data-slot="' + slot + '" data-action="brew"';
+                    pCursor = 'cursor:pointer;';
+                } else if (pState === 'open') {
+                    pActionClass = ' lm-potion-action';
+                    pActionAttr = ' data-slot="' + slot + '" data-action="open"';
+                    pCursor = 'cursor:pointer;';
+                }
+
                 html +=
-                    '<div style="' +
+                    '<div class="' + pActionClass.trim() + '"' + pActionAttr + ' style="' +
                         'flex:1;display:flex;flex-direction:column;align-items:center;' +
                         'padding:5px 2px 4px;border-radius:8px;' +
                         'border:1px solid ' + pBorder + ';' +
                         'background:' + pBg + ';' +
                         'box-shadow:' + pGlow + ';' +
-                        'transition:box-shadow .3s;min-width:0;' +
+                        'transition:box-shadow .3s,opacity .2s;min-width:0;' + pCursor +
                     '">' +
                         '<div style="margin-bottom:2px;line-height:0;">' + pSvg + '</div>' +
                         pStatus +
@@ -7806,6 +7821,195 @@
                                 }
                         }
                     );
+
+
+                return false;
+            }
+        );
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────
+     * POTION BREW / OPEN — Direct bottle click actions
+     * ─────────────────────────────────────────────────────────────────
+     *
+     * BREW  = Start brewing a potion in this slot.
+     *         Calls window.brewPotion(slot) → opcode 122.
+     *         Server responds opcode 123 → updatePotions → re-render.
+     *
+     * OPEN  = Open/consume a ready potion.
+     *         Calls window.openPotion(slot, true) → opcode 124.
+     *         Server responds opcode 125 → updatePotions → re-render.
+     *
+     * In both cases: disable on click, server response triggers
+     * lm-potions-updated which re-renders the entire panel.
+     */
+    $(document)
+        .off(
+            'click.lmPotionAction',
+            '.lm-potion-action'
+        )
+        .on(
+            'click.lmPotionAction',
+            '.lm-potion-action',
+            function (
+                event
+            ) {
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                var el =
+                    $(this);
+
+
+                if (
+                    el.hasClass(
+                        'lm-potion-busy'
+                    )
+                ) {
+                    return false;
+                }
+
+
+                var slot =
+                    parseInt(
+                        el.attr(
+                            'data-slot'
+                        ),
+                        10
+                    );
+
+
+                var action =
+                    String(
+                        el.attr(
+                            'data-action'
+                        ) ||
+                        ''
+                    );
+
+
+                if (
+                    !slot ||
+                    slot < 1 ||
+                    slot > 3 ||
+                    !action
+                ) {
+                    return false;
+                }
+
+
+                /*
+                 * Visual feedback: dim + busy flag.
+                 *
+                 * The panel re-render from lm-potions-updated
+                 * will replace this entire DOM, so we never
+                 * need to manually un-dim.
+                 */
+                el.addClass(
+                    'lm-potion-busy'
+                );
+
+
+                el.css({
+                    opacity: '.45',
+                    cursor: 'not-allowed',
+                    'pointer-events': 'none'
+                });
+
+
+                if (
+                    action ===
+                    'brew'
+                ) {
+                    if (
+                        typeof window
+                            .brewPotion ===
+                            'function'
+                    ) {
+                        window
+                            .brewPotion(
+                                slot
+                            );
+
+
+                        if (
+                            window.toastr
+                        ) {
+                            toastr.info(
+                                '<b>[POTION]:</b> Brewing slot ' +
+                                    slot +
+                                    '\u2026'
+                            );
+                        }
+
+                    } else {
+                        if (
+                            window.toastr
+                        ) {
+                            toastr.error(
+                                '<b>[POTION]:</b> Brew transport not available.'
+                            );
+                        }
+                    }
+
+
+                } else if (
+                    action ===
+                    'open'
+                ) {
+                    if (
+                        typeof window
+                            .openPotion ===
+                            'function'
+                    ) {
+                        window
+                            .openPotion(
+                                slot,
+                                true
+                            );
+
+
+                        if (
+                            window.toastr
+                        ) {
+                            toastr.info(
+                                '<b>[POTION]:</b> Opening slot ' +
+                                    slot +
+                                    '\u2026'
+                            );
+                        }
+
+                    } else {
+                        if (
+                            window.toastr
+                        ) {
+                            toastr.error(
+                                '<b>[POTION]:</b> Open transport not available.'
+                            );
+                        }
+                    }
+                }
+
+
+                /*
+                 * Safety re-render after 5s in case server
+                 * does not respond (e.g. already brewing).
+                 */
+                setTimeout(
+                    function () {
+                        if (
+                            typeof window
+                                .renderAgarEconomyPanel ===
+                                'function'
+                        ) {
+                            window
+                                .renderAgarEconomyPanel();
+                        }
+                    },
+                    5000
+                );
 
 
                 return false;
