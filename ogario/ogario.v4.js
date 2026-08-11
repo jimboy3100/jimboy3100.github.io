@@ -4642,6 +4642,24 @@ window.rebuildAgarConfigIndex = function () {
         potionPurchaseByKey:
             Object.create(null),
 
+
+        /*
+         * Premium Potion Shop:
+         *
+         * Potions - Types
+         * Shop - Potions
+         * Visual - Potion Help
+         */
+        potionTypeByProductId:
+            Object.create(null),
+
+        shopPotionByProductId:
+            Object.create(null),
+
+        visualPotionHelpByProductId:
+            Object.create(null),
+
+
         timeVariablePriceByPurchaseId:
             Object.create(null),
 
@@ -4921,6 +4939,111 @@ window.rebuildAgarConfigIndex = function () {
                     '|' +
                     row.slot
                 ] = row;
+        }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Potions - Types
+     * ─────────────────────────────────────────────────────────────
+     *
+     * potionId -> regular / premium / promotional
+     */
+    list =
+        rows(
+            'Potions - Types'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            row &&
+            row.potionId
+        ) {
+            index
+                .potionTypeByProductId[
+                    String(
+                        row.potionId
+                    )
+                ] =
+                row;
+        }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Shop - Potions
+     * ─────────────────────────────────────────────────────────────
+     *
+     * productIdToQuantify -> exact purchaseId
+     */
+    list =
+        rows(
+            'Shop - Potions'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            row &&
+            row.productIdToQuantify
+        ) {
+            index
+                .shopPotionByProductId[
+                    String(
+                        row.productIdToQuantify
+                    )
+                ] =
+                row;
+        }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Visual - Potion Help
+     * ─────────────────────────────────────────────────────────────
+     *
+     * potionId -> exact configured reward-description metadata
+     */
+    list =
+        rows(
+            'Visual - Potion Help'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+        if (
+            row &&
+            row.potionId
+        ) {
+            index
+                .visualPotionHelpByProductId[
+                    String(
+                        row.potionId
+                    )
+                ] =
+                row;
         }
     }
 
@@ -7524,6 +7647,205 @@ window.getAgarPotionInfo =
             rawVariablePrice:
                 variable
         };
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * PREMIUM POTION SHOP
+ * ═════════════════════════════════════════════════════════════════════════════
+ */
+
+
+window.getAgarPremiumPotionInfo =
+    function (potionId) {
+        var id = String(potionId || '').trim();
+        if (!id) return null;
+
+        var index = window.getAgarConfigIndex();
+        if (!index) return null;
+
+        var typeRow = (index.potionTypeByProductId && index.potionTypeByProductId[id])
+            ? index.potionTypeByProductId[id] : null;
+
+        var shopRow = (index.shopPotionByProductId && index.shopPotionByProductId[id])
+            ? index.shopPotionByProductId[id] : null;
+
+        var visualRow = (index.visualPotionHelpByProductId && index.visualPotionHelpByProductId[id])
+            ? index.visualPotionHelpByProductId[id] : null;
+
+        if (!typeRow && !shopRow && !visualRow) return null;
+
+        var purchaseId = (shopRow && shopRow.purchaseId)
+            ? String(shopRow.purchaseId).trim() : '';
+
+        var purchase = (purchaseId && index.softPurchaseById)
+            ? (index.softPurchaseById[purchaseId] || null) : null;
+
+        var price = (purchase && purchase.currencyAmount !== undefined && purchase.currencyAmount !== null)
+            ? Number(purchase.currencyAmount) : null;
+        if (price !== null && !Number.isFinite(price)) price = null;
+
+        var orderInShop = (shopRow && shopRow.orderInShop !== undefined && shopRow.orderInShop !== null)
+            ? Number(shopRow.orderInShop) : 999;
+        if (!Number.isFinite(orderInShop)) orderInShop = 999;
+
+        var skinPieces = (visualRow && visualRow.skinPieces !== undefined && visualRow.skinPieces !== null)
+            ? Number(visualRow.skinPieces) : 0;
+        if (!Number.isFinite(skinPieces)) skinPieces = 0;
+
+        var minSpecialPieces = (visualRow && visualRow.minSpecialPieces !== undefined && visualRow.minSpecialPieces !== null)
+            ? Number(visualRow.minSpecialPieces) : 0;
+        if (!Number.isFinite(minSpecialPieces)) minSpecialPieces = 0;
+
+        var coinText = (visualRow && visualRow.coinText)
+            ? String(visualRow.coinText).trim() : '';
+        if (coinText.toLowerCase() === 'na') coinText = '';
+
+        return {
+            productId: id,
+            type: (typeRow && typeRow.type) ? String(typeRow.type) : '',
+            purchaseId: purchaseId,
+            price: price,
+            currency: (purchase && purchase.currencyProductId) ? String(purchase.currencyProductId) : '',
+            family: (purchase && purchase.family) ? String(purchase.family) : '',
+            orderInShop: orderInShop,
+            visibility: (shopRow && shopRow.visibility) ? String(shopRow.visibility) : '',
+            coinText: coinText,
+            skinPieces: Math.max(0, skinPieces),
+            minSpecialPieces: Math.max(0, minSpecialPieces),
+            rawType: typeRow,
+            rawShop: shopRow,
+            rawPurchase: purchase,
+            rawVisualHelp: visualRow
+        };
+    };
+
+
+window.getAgarPremiumPotionCatalog =
+    function () {
+        var index = window.getAgarConfigIndex();
+        if (!index || !index.shopPotionByProductId) return [];
+
+        var result = [];
+
+        Object.keys(index.shopPotionByProductId).forEach(function (productId) {
+            var info = window.getAgarPremiumPotionInfo(productId);
+            if (!info || info.type !== 'premium') return;
+
+            var visibility = String(info.visibility || '').trim().toLowerCase();
+            if (visibility && visibility !== 'default' && visibility !== 'visible') return;
+
+            result.push(info);
+        });
+
+        result.sort(function (a, b) {
+            return (Number(a.orderInShop) || 999) - (Number(b.orderInShop) || 999);
+        });
+
+        return result;
+    };
+
+
+window.buyAgarPremiumPotion =
+    function (productId) {
+        if (typeof window.validateShopIntegrity === 'function' &&
+            !window.validateShopIntegrity('buy premium potion')) {
+            return false;
+        }
+
+        var info = window.getAgarPremiumPotionInfo(productId);
+
+        if (!info || info.type !== 'premium' || !info.purchaseId) {
+            console.error('[LM POTION] Premium potion purchase configuration unavailable:', productId);
+            if (window.toastr) toastr.error('<b>[POTION]:</b> Purchase configuration unavailable.');
+            return false;
+        }
+
+        if (typeof window.softPurchase !== 'function') {
+            if (window.toastr) toastr.error('<b>[POTION]:</b> Purchase transport unavailable.');
+            return false;
+        }
+
+        if (typeof window._lmHasPendingSoftPurchase === 'function' &&
+            window._lmHasPendingSoftPurchase(info.purchaseId)) {
+            if (window.toastr) toastr.info('<b>[POTION]:</b> This purchase is already pending.');
+            return false;
+        }
+
+        function dispatchState(state, extra) {
+            try {
+                document.dispatchEvent(new CustomEvent('lm-premium-potion-purchase-finished', {
+                    detail: { state: state, info: info, extra: extra || null }
+                }));
+            } catch (eventError) {}
+        }
+
+        return window.softPurchase(info.purchaseId, {
+            kind: 'premium-potion',
+            productId: info.productId,
+            purchaseId: info.purchaseId,
+            config: info,
+
+            onSuccess: function (response, pendingPurchase) {
+                var openSent = false;
+
+                try {
+                    if (window.application &&
+                        typeof window.application.openPotionForProduct === 'function') {
+                        openSent = window.application.openPotionForProduct(info.productId) !== false;
+                    } else if (typeof window.openPotionForProduct === 'function') {
+                        openSent = window.openPotionForProduct(info.productId) !== false;
+                    }
+                } catch (openError) {
+                    console.error('[LM POTION] Automatic open failed:', openError);
+                    openSent = false;
+                }
+
+                if (window.toastr) {
+                    if (openSent) {
+                        toastr.success('<b>[POTION]:</b> Purchased successfully. Opening potion...');
+                    } else {
+                        toastr.warning('<b>[POTION]:</b> Purchased successfully, but automatic opening could not start.');
+                    }
+                }
+
+                dispatchState('success', {
+                    response: response,
+                    pendingPurchase: pendingPurchase,
+                    openSent: openSent
+                });
+            },
+
+            onFailure: function (result, response, pendingPurchase) {
+                console.warn('[LM POTION] Purchase failed:', {
+                    productId: info.productId,
+                    purchaseId: info.purchaseId,
+                    result: result,
+                    response: response
+                });
+
+                if (window.toastr) {
+                    if (Number(result) === 2) {
+                        toastr.error('<b>[POTION]:</b> Not enough ' + (info.currency || 'currency') + '.');
+                    } else if (Number(result) === 3) {
+                        toastr.error('<b>[POTION]:</b> This potion is not currently available.');
+                    } else {
+                        toastr.warning('<b>[POTION]:</b> Purchase failed.');
+                    }
+                }
+
+                dispatchState('failure', {
+                    result: result, response: response, pendingPurchase: pendingPurchase
+                });
+            },
+
+            onTimeout: function (pendingPurchase) {
+                console.warn('[LM POTION] Purchase timeout:', info.productId);
+                if (window.toastr) toastr.warning('<b>[POTION]:</b> No purchase response was received.');
+                dispatchState('timeout', { pendingPurchase: pendingPurchase });
+            }
+        });
     };
 
 

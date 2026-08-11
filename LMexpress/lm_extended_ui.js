@@ -151,24 +151,40 @@
 
     // ─── Theme Resolver Helper ───
     function getTheme() {
-        if (typeof window.getShopTheme === 'function') {
-            return window.getShopTheme();
-        }
         var ds = window.defaultSettings || {};
-        return {
-            mc:  ds.menuMainColor   || '#01d9cc',
-            pc:  ds.menuPanelColor  || '#00243e',
-            pc2: ds.menuPanelColor2 || '#002f52',
-            tc:  ds.menuTextColor   || '#ffffff',
-            tc2: ds.menuTextColor2  || '#8096a7',
-            b1:  ds.btn1Color       || '#018cf6',
-            b1h: ds.btn1Color2      || '#0176ce',
-            b2:  ds.btn2Color       || '#00b9e8',
-            b3:  ds.btn3Color       || '#8d5fe6',
-            b4:  ds.btn4Color       || '#bf00aa',
-            b4h: ds.btn4Color2      || '#a80096',
-            btc: ds.menuBtnTextColor|| '#ffffff'
+        var external = {};
+
+        if (typeof window.getShopTheme === 'function') {
+            try { external = window.getShopTheme() || {}; }
+            catch (themeError) {
+                console.warn('[LM UI] getShopTheme() failed:', themeError);
+                external = {};
+            }
+        }
+
+        var theme = {
+            mc:  external.mc  || ds.menuMainColor    || '#01d9cc',
+            pc:  external.pc  || external.bg || ds.menuPanelColor  || '#00243e',
+            pc2: external.pc2 || external.panelBg || ds.menuPanelColor2 || '#002f52',
+            tc:  external.tc  || external.tc1 || ds.menuTextColor  || '#ffffff',
+            tc2: external.tc2 || ds.menuTextColor2   || '#8096a7',
+            b1:  external.b1  || ds.btn1Color        || '#018cf6',
+            b1h: external.b1h || ds.btn1Color2       || '#0176ce',
+            b2:  external.b2  || ds.btn2Color        || '#00b9e8',
+            b3:  external.b3  || ds.btn3Color        || '#8d5fe6',
+            b4:  external.b4  || ds.btn4Color        || '#bf00aa',
+            b4h: external.b4h || ds.btn4Color2       || '#a80096',
+            btc: external.btc || ds.menuBtnTextColor  || '#ffffff'
         };
+
+        /* Compatibility aliases for newer Shop renderers */
+        theme.bg      = external.bg      || theme.pc;
+        theme.panelBg = external.panelBg || theme.pc2;
+        theme.cardBg  = external.cardBg  || theme.pc;
+        theme.tc1     = external.tc1     || theme.tc;
+        theme.border  = external.border  || 'rgba(255,255,255,0.12)';
+
+        return theme;
     }
 
     // ─── Inject Base CSS Styles ───
@@ -5065,38 +5081,49 @@
         document.body.appendChild(modal);
     };
 
-    window.showPotionDetailModal = function(potionType) {
+    /*
+     * CONFIG-DRIVEN PREMIUM POTION SHOP
+     *
+     * Catalogue:  getAgarPremiumPotionCatalog()
+     * Detail:     getAgarPremiumPotionInfo(id)
+     * Purchase:   buyAgarPremiumPotion(id)
+     *
+     * No hardcoded potion IDs, prices, or reward ranges.
+     */
+
+
+    window.showPotionDetailModal = function (potionType) {
         injectStyles();
-        var t = getTheme();
-        var pType = potionType || 'potion_epic';
 
-        var potionHelpItems = (window.PotionHelpConfig && window.PotionHelpConfig.length) ? window.PotionHelpConfig :
-                              ((window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Potion Help"]) ||
-                               (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Potion Help"]));
+        var info = typeof window.getAgarPremiumPotionInfo === 'function'
+            ? window.getAgarPremiumPotionInfo(potionType) : null;
 
-        var ph = (potionHelpItems || []).find(function(item) {
-            if (!item || !item.potionId) return false;
-            var id = String(item.potionId).toLowerCase();
-            var target = String(pType).toLowerCase();
-            return id === target || id === ('potion_' + target) || id.replace('potion_', '') === target.replace('potion_', '');
-        });
+        if (!info) {
+            if (window.toastr) toastr.warning('<b>[POTION]:</b> Potion configuration is not available yet.');
+            return false;
+        }
 
-        var tierColors = { "potion_superior": "#4caf50", "potion_epic": "#00bcd4", "potion_legendary": "#e91e63", "potion_mystical": "#ffb300" };
-        var pColor = tierColors[pType] || tierColors['potion_' + pType] || '#00bcd4';
-        
-        var nameStr = (ph && ph.potionId) ? ph.potionId.replace('potion_', '').replace(/\b\w/g, function(c){return c.toUpperCase();}) + ' Potion' : (pType.replace('potion_', '').replace(/\b\w/g, function(c){return c.toUpperCase();}) + ' Potion');
-        var coinsStr = (ph && ph.coinText && ph.coinText !== 'na') ? ph.coinText : ((pType.indexOf('superior') !== -1) ? '150 - 300' : ((pType.indexOf('epic') !== -1) ? '420 - 650' : ((pType.indexOf('legendary') !== -1) ? '720 - 900' : '950 - 1500')));
-        var piecesStr = (ph && ph.skinPieces) ? ('x' + ph.skinPieces) : 'x2';
-        var specialPiecesStr = (ph && ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ('x' + ph.minSpecialPieces + ' Special') : '';
+        var productId = String(info.productId || '');
+        var baseName = productId.replace(/^potion_/i, '').replace(/_/g, ' ')
+            .replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
+        var name = baseName + ' Potion';
 
-        var p = {
-            name: nameStr,
-            icon: '🧪',
-            iconColor: pColor,
-            coins: coinsStr,
-            skinPieces: piecesStr,
-            specialText: specialPiecesStr
+        var tierColors = {
+            potion_superior: '#4caf50', potion_epic: '#00bcd4',
+            potion_legendary: '#e91e63', potion_mythical: '#ffb300'
         };
+        var potionColor = tierColors[productId] || '#00bcd4';
+
+        var coinText = info.coinText || '\u2014';
+        var skinPiecesText = info.skinPieces > 0 ? ('x' + info.skinPieces) : '\u2014';
+        var specialPiecesText = info.minSpecialPieces > 0
+            ? ('x' + info.minSpecialPieces + ' Special') : '';
+
+        var priceText = (info.price !== null && info.price !== undefined)
+            ? (typeof window.formatAgarCurrency === 'function'
+                ? window.formatAgarCurrency(info.price, info.currency)
+                : (String(info.price) + (info.currency ? (' ' + info.currency) : '')))
+            : '\u2014';
 
         var old = document.getElementById('lm-potion-detail-modal');
         if (old) old.remove();
@@ -5105,186 +5132,143 @@
         modal.id = 'lm-potion-detail-modal';
         modal.className = 'lm-modal-overlay';
         modal.style.zIndex = '1000010';
-        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+        modal.addEventListener('click', function (e) { if (e.target === modal) modal.remove(); });
 
-        var specialItemHtml = p.specialText ? `
-            <div style="background: #ffffff; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06); text-align: center;">
-                <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px;">At least:</div>
-                <div style="font-size: 16px; font-weight: 900; color: #f57f17; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #ffb300; background: #fff8e1;"></span>
-                    <span>${p.specialText}</span>
-                </div>
-            </div>
-        ` : '';
+        var specialHtml = specialPiecesText
+            ? '<div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:12px;border:1px solid rgba(0,0,0,.06);text-align:center;">' +
+                '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">At least</div>' +
+                '<div style="font-size:16px;font-weight:900;color:#f57f17;display:flex;align-items:center;justify-content:center;gap:8px;">' +
+                    '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:3px solid #ffb300;background:#fff8e1;"></span>' +
+                    '<span>' + specialPiecesText + '</span></div></div>' : '';
 
-        modal.innerHTML = `
-            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 440px; padding: 24px; position: relative; box-shadow: 0 12px 48px rgba(0,0,0,0.5); text-align: center;">
-                <button onclick="document.getElementById('lm-potion-detail-modal').remove();" style="position: absolute; right: 16px; top: 16px; background: none; border: none; font-size: 22px; color: #aaa; cursor: pointer; font-weight: 900;">&times;</button>
-                
-                <div style="font-size: 22px; font-weight: 900; color: #333; margin-bottom: 16px;">${p.name}</div>
-
-                <div style="background: #f0f3f6; border-radius: 14px; padding: 20px; display: flex; align-items: center; gap: 20px; justify-content: space-between; margin-bottom: 16px;">
-                    <div style="font-size: 80px; text-shadow: 0 6px 16px rgba(0,0,0,0.15); flex: 1;">
-                        ${p.icon}
-                    </div>
-
-                    <div style="flex: 1.2; text-align: center;">
-                        <div style="background: #ffffff; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06);">
-                            <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px;">Coins</div>
-                            <div style="font-size: 15px; font-weight: 900; color: #f57f17; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                <span>💰</span>
-                                <span>${p.coins}</span>
-                            </div>
-                        </div>
-
-                        <div style="background: #ffffff; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06);">
-                            <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px;">Skin Pieces</div>
-                            <div style="font-size: 15px; font-weight: 900; color: #0288d1; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #00bcd4;"></span>
-                                <span>${p.skinPieces}</span>
-                            </div>
-                        </div>
-
-                        ${specialItemHtml}
-
-                        <div style="font-size: 11px; font-weight: 600; color: #999; margin-top: 4px;">and more!</div>
-                    </div>
-                </div>
-
-                <div style="font-size: 15px; font-weight: 800; color: #555;">Opens immediately</div>
-            </div>
-        `;
+        modal.innerHTML =
+            '<div class="lm-modal-container" style="background:#fff;border-radius:16px;width:440px;padding:24px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.5);text-align:center;">' +
+                '<button type="button" onclick="document.getElementById(\'lm-potion-detail-modal\').remove();" style="position:absolute;right:16px;top:16px;background:none;border:none;font-size:22px;color:#aaa;cursor:pointer;font-weight:900;">&times;</button>' +
+                '<div style="font-size:22px;font-weight:900;color:#333;margin-bottom:16px;">' + name + '</div>' +
+                '<div style="background:#f0f3f6;border-radius:14px;padding:20px;margin-bottom:18px;">' +
+                    '<div style="width:90px;height:90px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:42px;background:radial-gradient(circle,' + potionColor + '22,' + potionColor + '44);border:3px solid ' + potionColor + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' +
+                    '<div style="display:flex;justify-content:center;gap:20px;margin-bottom:12px;">' +
+                        '<div style="text-align:center;"><div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;">Coins</div><div style="font-size:16px;font-weight:900;color:#333;">' + coinText + '</div></div>' +
+                        '<div style="text-align:center;"><div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;">Skin Pieces</div><div style="font-size:16px;font-weight:900;color:#333;">' + skinPiecesText + '</div></div>' +
+                    '</div>' + specialHtml +
+                '</div>' +
+                '<div style="font-size:13px;font-weight:700;color:#888;margin-bottom:8px;">Price: ' + priceText + '</div>' +
+            '</div>';
 
         document.body.appendChild(modal);
+        return true;
     };
 
-    window.showPremiumPotionsModal = function() {
+
+    window.showPremiumPotionsModal = function () {
         injectStyles();
         var t = getTheme();
 
         var old = document.getElementById('lm-premium-potions-modal');
         if (old) old.remove();
 
-        var dnaBalance = (window.application && window.application.user && window.application.user.dna !== undefined && window.application.user.dna !== null) ? window.application.user.dna : (window.userDna || 0);
-        var coinsBalance = (window.application && window.application.user && window.application.user.coins !== undefined && window.application.user.coins !== null) ? window.application.user.coins : (window.userCoins || 0);
+        var catalog = typeof window.getAgarPremiumPotionCatalog === 'function'
+            ? window.getAgarPremiumPotionCatalog() : [];
+
+        var appUser = (window.application && window.application.user) || {};
+        var dnaBalance = Number(appUser.dna) || 0;
+        var coinsBalance = Number(appUser.coins) || 0;
+
+        var tierColors = {
+            potion_superior:  { bg: '#e8f5e9', border: '#4caf50', gradient: 'linear-gradient(180deg,#66bb6a,#388e3c)' },
+            potion_epic:      { bg: '#e0f7fa', border: '#00bcd4', gradient: 'linear-gradient(180deg,#26c6da,#00838f)' },
+            potion_legendary: { bg: '#fce4ec', border: '#e91e63', gradient: 'linear-gradient(180deg,#ec407a,#c2185b)' },
+            potion_mythical:  { bg: '#fff8e1', border: '#ffb300', gradient: 'linear-gradient(180deg,#ffca28,#ff8f00)' }
+        };
 
         var modal = document.createElement('div');
         modal.id = 'lm-premium-potions-modal';
         modal.className = 'lm-modal-overlay';
         modal.style.zIndex = '1000000';
-        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+        modal.addEventListener('click', function (e) { if (e.target === modal) modal.remove(); });
 
-        var potionsData = [
-            {
-                id: 'potion_superior',
-                name: 'Superior',
-                dnaCost: 60,
-                color: '#4caf50',
-                bgGradient: 'linear-gradient(180deg, #f0f7ed 0%, #e8f5e9 100%)',
-                btnGradient: 'linear-gradient(180deg, #7cb342 0%, #689f38 100%)',
-                flaskIcon: '🧪',
-                flaskColor: '#4caf50'
-            },
-            {
-                id: 'potion_epic',
-                name: 'Epic',
-                dnaCost: 120,
-                color: '#00bcd4',
-                bgGradient: 'linear-gradient(180deg, #e0f7fa 0%, #b2ebf2 100%)',
-                btnGradient: 'linear-gradient(180deg, #7cb342 0%, #689f38 100%)',
-                flaskIcon: '🧪',
-                flaskColor: '#00bcd4'
-            },
-            {
-                id: 'potion_legendary',
-                name: 'Legendary',
-                dnaCost: 350,
-                color: '#e91e63',
-                bgGradient: 'linear-gradient(180deg, #fce4ec 0%, #f8bbd0 100%)',
-                btnGradient: 'linear-gradient(180deg, #7cb342 0%, #689f38 100%)',
-                flaskIcon: '🧪',
-                flaskColor: '#e91e63'
-            },
-            {
-                id: 'potion_mystical',
-                name: 'Mystical',
-                dnaCost: 750,
-                color: '#ffb300',
-                bgGradient: 'linear-gradient(180deg, #fff8e1 0%, #ffecb3 100%)',
-                btnGradient: 'linear-gradient(180deg, #7cb342 0%, #689f38 100%)',
-                flaskIcon: '🧪',
-                flaskColor: '#ffb300'
-            }
-        ];
+        /* Build header */
+        var headerHtml =
+            '<div style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid ' + t.border + ';">' +
+                '<div style="display:flex;align-items:center;gap:12px;">' +
+                    '<button onclick="document.getElementById(\'lm-premium-potions-modal\').remove(); if(window.showShopModal) window.showShopModal();" style="width:32px;height:32px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;font-size:18px;cursor:pointer;" title="Back to Shop">\u2039</button>' +
+                    '<div style="font-size:22px;font-weight:900;color:' + t.tc1 + ';">Premium Potions</div>' +
+                '</div>' +
+                '<div style="display:flex;align-items:center;gap:10px;">' +
+                    '<div style="background:' + t.cardBg + ';border:2px solid #8bc34a;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800;color:#558b2f;">\uD83E\uDDEC ' + dnaBalance.toLocaleString() + '</div>' +
+                    '<div style="background:' + t.cardBg + ';border:2px solid #fbc02d;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800;color:#f57f17;">\uD83D\uDCB0 ' + coinsBalance.toLocaleString() + '</div>' +
+                    '<button onclick="document.getElementById(\'lm-premium-potions-modal\').remove();" style="background:none;border:none;font-size:24px;color:' + t.tc2 + ';cursor:pointer;font-weight:900;margin-left:8px;">&times;</button>' +
+                '</div>' +
+            '</div>';
+
+        var infoBarHtml = '<div style="margin:16px 20px 0;background:' + t.panelBg + ';border-radius:10px;padding:12px;text-align:center;font-size:13px;font-weight:700;color:' + t.tc2 + ';">Potions purchased in the shop will open immediately!</div>';
 
         var cardsHtml = '';
-        potionsData.forEach(function(p) {
-            cardsHtml += `
-                <div style="flex: 1; background: #f5f7fa; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 16px 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <button onclick="if(window.showPotionDetailModal) window.showPotionDetailModal('${p.id}'); else if(window.showPotionsHelpModal) window.showPotionsHelpModal('rewards');" style="position: absolute; right: 10px; top: 10px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" title="Potion Info">?</button>
-                    
-                    <div>
-                        <div style="font-size: 16px; font-weight: 900; color: #444; margin-bottom: 14px; letter-spacing: 0.3px;">${p.name}</div>
-                        <div style="font-size: 56px; margin: 10px 0; text-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                            ${p.flaskIcon}
-                        </div>
-                    </div>
 
-                    <button class="btn" onclick="window.buyAndOpenPremiumPotion('${p.id}', ${p.dnaCost});" style="background: ${p.btnGradient}; color: #fff; font-weight: 900; font-size: 15px; padding: 10px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4); display: flex; align-items: center; justify-content: center; gap: 6px;">
-                        <span>${p.dnaCost}</span>
-                        <span style="font-size: 14px;">🧬</span>
-                    </button>
-                </div>
-            `;
-        });
+        if (catalog.length === 0) {
+            cardsHtml = '<div style="padding:35px;text-align:center;color:' + t.tc2 + ';font-size:14px;width:100%;">Agar.io has not supplied the premium potion catalogue yet.</div>';
+        } else {
+            catalog.forEach(function (info) {
+                var pid = info.productId;
+                var colors = tierColors[pid] || { bg: '#f5f5f5', border: '#999', gradient: 'linear-gradient(180deg,#bbb,#888)' };
 
-        window.buyAndOpenPremiumPotion = function(productId, cost) {
-            if (dnaBalance < cost) {
-                if (window.toastr) window.toastr.warning('<b>[SHOP]:</b> Not enough DNA to purchase ' + productId);
+                var priceText = (info.price !== null && info.price !== undefined)
+                    ? (typeof window.formatAgarCurrency === 'function'
+                        ? window.formatAgarCurrency(info.price, info.currency)
+                        : (String(info.price) + (info.currency ? (' ' + info.currency) : '')))
+                    : 'Unavailable';
+
+                var baseName = pid.replace(/^potion_/i, '').replace(/_/g, ' ')
+                    .replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
+
+                var buyDisabled = !info.purchaseId ? ' disabled style="opacity:.4;"' : '';
+
+                cardsHtml +=
+                    '<div style="position:relative;flex:1;min-width:140px;max-width:180px;border-radius:14px;padding:16px 12px;border:2px solid ' + colors.border + ';background:' + colors.bg + ';display:flex;flex-direction:column;align-items:center;text-align:center;">' +
+                        '<button onclick="if(window.showPotionDetailModal) window.showPotionDetailModal(\'' + pid + '\');" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="Potion Info">?</button>' +
+                        '<div style="width:80px;height:80px;border-radius:50%;margin:8px 0 10px;display:flex;align-items:center;justify-content:center;font-size:38px;background:radial-gradient(circle,' + colors.border + '22,' + colors.border + '44);border:3px solid ' + colors.border + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' +
+                        '<div style="font-size:15px;font-weight:900;color:#333;margin-bottom:4px;">' + baseName + '</div>' +
+                        '<button class="btn lm-buy-premium-potion" data-product-id="' + pid + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;cursor:pointer;width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>\uD83E\uDDEC ' + priceText + '</button>' +
+                    '</div>';
+            });
+        }
+
+        modal.innerHTML =
+            '<div class="lm-modal-container" style="background:' + t.bg + ';border-radius:16px;width:720px;max-width:94vw;padding:0;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.6);">' +
+                headerHtml + infoBarHtml +
+                '<div style="padding:20px;display:flex;gap:14px;background:' + t.bg + ';flex-wrap:wrap;justify-content:center;">' +
+                    cardsHtml +
+                '</div>' +
+            '</div>';
+
+        /* Wire buy buttons via delegation */
+        modal.addEventListener('click', function (e) {
+            var btn = e.target.closest('.lm-buy-premium-potion');
+            if (!btn || btn.disabled) return;
+
+            var pid = btn.getAttribute('data-product-id');
+            if (!pid || typeof window.buyAgarPremiumPotion !== 'function') return;
+
+            if (typeof window._lmHasPendingSoftPurchase === 'function' &&
+                window._lmHasPendingSoftPurchase(pid)) {
+                if (window.toastr) toastr.info('This purchase is already pending.');
                 return;
             }
-            if (typeof window.openPotionForProduct === 'function') {
-                window.openPotionForProduct(productId);
-            } else if (window.application && typeof window.application.openPotionForProduct === 'function') {
-                window.application.openPotionForProduct(productId);
-            } else {
-                if (window.toastr) window.toastr.success('<b>[SHOP]:</b> Opened ' + productId + '! (-' + cost + ' DNA)');
+
+            var originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.textContent = 'BUYING...';
+
+            var sent = window.buyAgarPremiumPotion(pid);
+            if (!sent) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
             }
-        };
-
-        modal.innerHTML = `
-            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 720px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
-                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <button onclick="document.getElementById('lm-premium-potions-modal').remove(); if(window.showShopModal) window.showShopModal();" style="width: 32px; height: 32px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,211,255,0.4);" title="Back to Shop">‹</button>
-                        <div style="font-size: 22px; font-weight: 900; color: #444; letter-spacing: 0.5px;">Premium Potions</div>
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
-                            <span>🧬 ${dnaBalance.toLocaleString()}</span>
-                            <span style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
-                        </div>
-                        <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
-                            <span>💰 ${coinsBalance.toLocaleString()}</span>
-                            <span style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
-                        </div>
-                        <button onclick="document.getElementById('lm-premium-potions-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
-                    </div>
-                </div>
-
-                <div style="margin: 16px 20px 0 20px; background: #eef2f5; border-radius: 10px; padding: 12px; text-align: center; font-size: 13px; font-weight: 700; color: #555;">
-                    Potions purchased in the shop will open immediately!
-                </div>
-
-                <div style="padding: 20px; display: flex; gap: 14px; background: #ffffff;">
-                    ${cardsHtml}
-                </div>
-            </div>
-        `;
+        });
 
         document.body.appendChild(modal);
     };
+
 
     /*
      * ═══════════════════════════════════════════════════════════════════
@@ -5860,20 +5844,89 @@
         };
 
 
-    window.openShop = function(cat) {
-        if (cat === 'potions' || cat === 'flasks') {
-            if (typeof window.showPremiumPotionsModal === 'function') window.showPremiumPotionsModal();
-            else if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
-        } else if (cat === 'coins' || cat === 'deals') {
-            if (typeof window.SpecialDeals === 'function') window.SpecialDeals('deals');
-            else if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
-        } else if (cat === 'skins') {
-            if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
-        } else if (cat === 'rush') {
-            if (typeof window.showRushBoostModal === 'function') window.showRushBoostModal();
-        } else {
-            window.showShopModal();
+    /*
+     * CONFIGURED BOOST SHOP LIVE REFRESH
+     */
+    window._lmRefreshOpenBoostShop = function () {
+        if (document.getElementById('lm-xp-boost-modal')) {
+            if (typeof window.showConfiguredBoostModal === 'function')
+                window.showConfiguredBoostModal('xp');
+            return;
         }
+        if (document.getElementById('lm-mass-boost-modal')) {
+            if (typeof window.showConfiguredBoostModal === 'function')
+                window.showConfiguredBoostModal('mass');
+        }
+    };
+
+    window._lmRefreshOpenRushShop = function () {
+        if (document.getElementById('lm-rush-boost-modal') &&
+            typeof window.showRushBoostModal === 'function') {
+            window.showRushBoostModal();
+        }
+    };
+
+    document.addEventListener('lm-boost-inventory-updated', function () {
+        window._lmRefreshOpenBoostShop();
+    });
+    document.addEventListener('lm-configured-boost-purchased', function () {
+        window._lmRefreshOpenBoostShop();
+    });
+    document.addEventListener('lm-rush-inventory-updated', function () {
+        window._lmRefreshOpenRushShop();
+    });
+    document.addEventListener('lm-rush-boost-purchased', function () {
+        window._lmRefreshOpenRushShop();
+    });
+
+
+    window.openShop = function (cat) {
+        cat = String(cat || '').trim().toLowerCase();
+
+        if (cat === 'potions' || cat === 'flasks') {
+            if (typeof window.showPremiumPotionsModal === 'function')
+                window.showPremiumPotionsModal();
+            else if (typeof window.showPotionsHelpModal === 'function')
+                window.showPotionsHelpModal('rewards');
+            return;
+        }
+
+        if (cat === 'coins' || cat === 'dna' || cat === 'deals') {
+            if (typeof window.SpecialDeals === 'function')
+                window.SpecialDeals('deals');
+            else if (typeof window.BeforeSpecialDeals === 'function')
+                window.BeforeSpecialDeals();
+            return;
+        }
+
+        if (cat === 'skins') {
+            if (typeof window.BeforeSpecialDeals === 'function')
+                window.BeforeSpecialDeals();
+            else if (typeof window.SpecialDeals === 'function')
+                window.SpecialDeals('skins');
+            return;
+        }
+
+        if (cat === 'xp') {
+            if (typeof window.showConfiguredBoostModal === 'function')
+                window.showConfiguredBoostModal('xp');
+            return;
+        }
+
+        if (cat === 'mass') {
+            if (typeof window.showConfiguredBoostModal === 'function')
+                window.showConfiguredBoostModal('mass');
+            return;
+        }
+
+        if (cat === 'rush') {
+            if (typeof window.showRushBoostModal === 'function')
+                window.showRushBoostModal();
+            return;
+        }
+
+        if (typeof window.showShopModal === 'function')
+            window.showShopModal();
     };
 
     /*
@@ -9237,34 +9290,36 @@
     document.addEventListener(
         'lm-agar-config-index-ready',
         function () {
-            if (
-                typeof window
-                    .initBoostDropdown ===
-                    'function'
-            ) {
-                window
-                    .initBoostDropdown(
-                        true
-                    );
+            /* Compact profile Boost selector */
+            if (typeof window.initBoostDropdown === 'function') {
+                window.initBoostDropdown(true);
             }
 
-
-            if (
-                typeof window
-                    .syncProfileTabUI ===
-                    'function'
-            ) {
-                try {
-                    window
-                        .syncProfileTabUI();
-                } catch (
-                    syncError
-                ) {
-                    console.warn(
-                        '[LM BOOST] Profile refresh after configuration failed:',
-                        syncError
-                    );
+            /* Profile data block */
+            if (typeof window.syncProfileTabUI === 'function') {
+                try { window.syncProfileTabUI(); }
+                catch (syncError) {
+                    console.warn('[LM BOOST] Profile refresh after configuration failed:', syncError);
                 }
+            }
+
+            /* Rebuild already-open XP / Mass shop */
+            if (typeof window._lmRefreshOpenBoostShop === 'function') {
+                try { window._lmRefreshOpenBoostShop(); }
+                catch (e) { console.warn('[LM BOOST SHOP] Config refresh failed:', e); }
+            }
+
+            /* Rebuild already-open Rush shop */
+            if (typeof window._lmRefreshOpenRushShop === 'function') {
+                try { window._lmRefreshOpenRushShop(); }
+                catch (e) { console.warn('[LM RUSH SHOP] Config refresh failed:', e); }
+            }
+
+            /* Premium Potion catalog refresh */
+            if (document.getElementById('lm-premium-potions-modal') &&
+                typeof window.showPremiumPotionsModal === 'function') {
+                try { window.showPremiumPotionsModal(); }
+                catch (e) { console.warn('[LM POTION SHOP] Config refresh failed:', e); }
             }
         }
     );
