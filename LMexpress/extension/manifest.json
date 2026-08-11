@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Legend Express Agar.io Extension",
-    "version": "1.8.1",
+    "version": "1.8.2",
     "description": "Powerful Agar.io mod featuring Legend, Ogario, Kitty, skins, and 60+ macros/hotkeys for competitive play.",
     "author": "Jimboy3100",
     "homepage_url": "https://jimboy3100.github.io",
@@ -19,7 +19,8 @@
         "128": "icon128.png"
     },
     "permissions": [
-        "storage"
+        "storage",
+        "declarativeNetRequest"
     ],
     "host_permissions": [
         "https://agar.io/*",
@@ -29,8 +30,18 @@
         "https://cdn.ogario.ovh/*",
         "https://deltav4.glitch.me/*",
         "https://jimboy3100.github.io/*",
-        "https://www.legendmod.ml/*"
+        "https://www.legendmod.ml/*",
+        "https://*.sigmally.com/*"
     ],
+    "declarative_net_request": {
+        "rule_resources": [
+            {
+                "id": "sigmally_origin",
+                "enabled": true,
+                "path": "rules_sigmally.json"
+            }
+        ]
+    },
     "content_scripts": [
         {
             "matches": [

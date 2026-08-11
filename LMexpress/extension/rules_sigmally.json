@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "modifyHeaders",
+            "requestHeaders": [
+                {
+                    "header": "Origin",
+                    "operation": "set",
+                    "value": "https://sigmally.com"
+                }
+            ]
+        },
+        "condition": {
+            "urlFilter": "||sigmally.com/ws/",
+            "resourceTypes": ["websocket"]
+        }
+    }
+]
