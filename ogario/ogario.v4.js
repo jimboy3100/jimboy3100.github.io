@@ -5114,6 +5114,21 @@ window.rebuildAgarConfigIndex = function () {
         shopBoostByProductId:
             Object.create(null),
 
+        /*
+         * Shop - Boost Categories:
+         *
+         *      shopId
+         *      position
+         *      title
+         *      description
+         *      image
+         *      spritesheet
+         *
+         * Keyed by shopId → array of rows sorted by position.
+         */
+        boostCategoryByShopId:
+            Object.create(null),
+
 
         /*
          * ═══════════════════════════════════════════════════════════════
@@ -5274,7 +5289,23 @@ window.rebuildAgarConfigIndex = function () {
          * than a product-id dictionary.
          */
         leagueTiers:
-            []
+            [],
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * LOCALIZATION
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Localization - Overrides:
+         *
+         *      origin   → original localization key
+         *      override → replacement localization key
+         *
+         * Keyed by origin → override string.
+         */
+        localizationOverrideByOrigin:
+            Object.create(null)
     };
 
 
@@ -5445,6 +5476,89 @@ window.rebuildAgarConfigIndex = function () {
                         .productIdToQuantify
                 ] = row;
         }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Shop - Boost Categories
+     * ─────────────────────────────────────────────────────────────
+     *
+     * shopId       xp_boost / mass_boost
+     * position     1 = 2x, 2 = 3x
+     * title        localization key
+     * description  localization key
+     * image        spritesheet asset name
+     * spritesheet  e.g. "menusShopUI"
+     */
+    list =
+        rows(
+            'Shop - Boost Categories'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row = list[i];
+
+        if (
+            row &&
+            row.shopId
+        ) {
+            var shopKey =
+                String(
+                    row.shopId
+                );
+
+            if (
+                !index
+                    .boostCategoryByShopId[
+                        shopKey
+                    ]
+            ) {
+                index
+                    .boostCategoryByShopId[
+                        shopKey
+                    ] = [];
+            }
+
+            index
+                .boostCategoryByShopId[
+                    shopKey
+                ]
+                .push(row);
+        }
+    }
+
+    /*
+     * Sort each shopId group by position
+     * so categories render in official order.
+     */
+    var shopKeys =
+        Object.keys(
+            index
+                .boostCategoryByShopId
+        );
+
+    for (
+        i = 0;
+        i < shopKeys.length;
+        i++
+    ) {
+        index
+            .boostCategoryByShopId[
+                shopKeys[i]
+            ]
+            .sort(
+                function (a, b) {
+                    return (
+                        (Number(a.position) || 0) -
+                        (Number(b.position) || 0)
+                    );
+                }
+            );
     }
 
 
@@ -6939,6 +7053,48 @@ window.rebuildAgarConfigIndex = function () {
             .push(
                 row
             );
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Localization - Overrides
+     * ─────────────────────────────────────────────────────────────
+     *
+     * origin   → the product / UI localization key
+     * override → replacement key to use instead
+     *
+     * Allows the server to alias localization keys
+     * (e.g. xp_boost_2x_1h_tag → boost_1_hour)
+     * without changing the underlying string table.
+     */
+    list =
+        rows(
+            'Localization - Overrides'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row = list[i];
+
+        if (
+            row &&
+            row.origin &&
+            row.override
+        ) {
+            index
+                .localizationOverrideByOrigin[
+                    String(
+                        row.origin
+                    )
+                ] =
+                String(
+                    row.override
+                );
+        }
     }
 
 
@@ -12794,6 +12950,83 @@ window.getAgarBoostInfo =
                 : null;
 
 
+        /*
+         * Match this boost to its Shop - Boost Category.
+         *
+         * shopId is type + '_boost' (xp_boost, mass_boost).
+         * Category position maps to multiplier:
+         *   position 1 = 2x, position 2 = 3x.
+         */
+        var boostMultiplier =
+            gameplay
+                ? (
+                    Number(
+                        gameplay
+                            .multiplier
+                    ) || 1
+                )
+                : 1;
+
+        var boostType =
+            gameplay
+                ? gameplay.type
+                : (
+                    String(
+                        productId
+                    )
+                        .indexOf(
+                            'mass_'
+                        ) === 0
+                        ? 'mass'
+                        : 'xp'
+                );
+
+        var category = null;
+
+        if (
+            index
+                .boostCategoryByShopId
+        ) {
+            var catShopId =
+                boostType + '_boost';
+
+            var catList =
+                index
+                    .boostCategoryByShopId[
+                        catShopId
+                    ];
+
+            if (
+                catList
+            ) {
+                /*
+                 * Match multiplier to position:
+                 * position 1 = 2x, position 2 = 3x.
+                 */
+                var catPosition =
+                    boostMultiplier - 1;
+
+                for (
+                    var ci = 0;
+                    ci < catList.length;
+                    ci++
+                ) {
+                    if (
+                        Number(
+                            catList[ci]
+                                .position
+                        ) ===
+                        catPosition
+                    ) {
+                        category =
+                            catList[ci];
+                        break;
+                    }
+                }
+            }
+        }
+
+
         return {
             productId:
                 productId,
@@ -12802,28 +13035,10 @@ window.getAgarBoostInfo =
                 purchaseId,
 
             type:
-                gameplay
-                    ? gameplay.type
-                    : (
-                        String(
-                            productId
-                        )
-                            .indexOf(
-                                'mass_'
-                            ) === 0
-                            ? 'mass'
-                            : 'xp'
-                    ),
+                boostType,
 
             multiplier:
-                gameplay
-                    ? (
-                        Number(
-                            gameplay
-                                .multiplier
-                        ) || 1
-                    )
-                    : 1,
+                boostMultiplier,
 
             durationMins:
                 gameplay
@@ -12862,6 +13077,34 @@ window.getAgarBoostInfo =
                         'YES'
                 ),
 
+            /*
+             * Official Shop - Boost Category presentation.
+             */
+            categoryTitle:
+                category
+                    ? category.title
+                    : null,
+
+            categoryDescription:
+                category
+                    ? category.description
+                    : null,
+
+            categoryImage:
+                category
+                    ? category.image
+                    : null,
+
+            categoryPosition:
+                category
+                    ? (
+                        Number(
+                            category
+                                .position
+                        ) || 0
+                    )
+                    : null,
+
             rawGameplay:
                 gameplay,
 
@@ -12869,7 +13112,10 @@ window.getAgarBoostInfo =
                 shop,
 
             rawPurchase:
-                purchase
+                purchase,
+
+            rawCategory:
+                category
         };
     };
 
@@ -12968,6 +13214,99 @@ window.getAgarBoostCatalog =
         );
 
         return result;
+    };
+
+
+/*
+ * Return the official boost category rows for a given boost type.
+ *
+ * boostType is 'xp' or 'mass'.
+ * Returns an array of category objects sorted by position,
+ * or an empty array if the section is unavailable.
+ */
+window.getAgarBoostCategories =
+    function (
+        boostType
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .boostCategoryByShopId
+        ) {
+            return [];
+        }
+
+        var shopId =
+            String(
+                boostType || ''
+            )
+                .toLowerCase() +
+            '_boost';
+
+        return (
+            index
+                .boostCategoryByShopId[
+                    shopId
+                ] ||
+            []
+        );
+    };
+
+
+/*
+ * Resolve a localization key through
+ * Localization - Overrides.
+ *
+ * If the key has an official override, the override
+ * key is returned.  Otherwise the original key is
+ * returned unchanged.
+ *
+ * This is a key-to-key alias resolver, not a
+ * string-localization function.  It tells callers
+ * which canonical localization key to look up in
+ * their string table.
+ *
+ * Example:
+ *   resolveLocalizationKey('xp_boost_2x_1h_tag')
+ *     → 'boost_1_hour'
+ */
+window.resolveLocalizationKey =
+    function (
+        key
+    ) {
+        if (
+            !key
+        ) {
+            return key;
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .localizationOverrideByOrigin
+        ) {
+            return key;
+        }
+
+        var override =
+            index
+                .localizationOverrideByOrigin[
+                    key
+                ];
+
+        return (
+            override != null
+                ? override
+                : key
+        );
     };
 
 

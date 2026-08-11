@@ -5469,6 +5469,18 @@
                 })
                 : [];
 
+            /*
+             * Sort by official Shop - Boost Categories position,
+             * then multiplier, then duration.
+             */
+            catalog.sort(function (a, b) {
+                var pa = (a.categoryPosition != null) ? a.categoryPosition : 99;
+                var pb = (b.categoryPosition != null) ? b.categoryPosition : 99;
+                if (pa !== pb) return pa - pb;
+                if (a.multiplier !== b.multiplier) return a.multiplier - b.multiplier;
+                return (a.durationMins || 0) - (b.durationMins || 0);
+            });
+
             var appUser = (window.application && window.application.user) || {};
             var dnaBalance = Number(appUser.dna) || 0;
             var coinsBalance = Number(appUser.coins) || 0;
@@ -5592,6 +5604,13 @@
                         'border-radius:14px;padding:17px;' +
                         'border:1px solid ' + t.border + ';' +
                         'display:flex;flex-direction:column;min-height:215px;';
+
+                    /* Attach official category metadata */
+                    card.dataset.productId = info.productId || '';
+                    if (info.categoryTitle) card.dataset.categoryTitle = info.categoryTitle;
+                    if (info.categoryDescription) card.dataset.categoryDescription = info.categoryDescription;
+                    if (info.categoryImage) card.dataset.categoryImage = info.categoryImage;
+                    if (info.categoryPosition != null) card.dataset.categoryPosition = info.categoryPosition;
 
                     if (info.bestDeal) {
                         var bestTag = document.createElement('div');
