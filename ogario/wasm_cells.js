@@ -38,7 +38,7 @@ var WasmCellParser = (function () {
         if (ready) return;
 
         try {
-            var wasmUrl = 'https://jimboy3100.github.io/wasm/cell_parser.wasm';
+            var wasmUrl = 'https://legendmod.ml/wasm/cell_parser.wasm';
             var importObject = {
                 env: {
                     memory: new WebAssembly.Memory({ initial: 16 }) /* 1MB */
