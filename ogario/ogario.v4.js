@@ -674,12 +674,20 @@ function readLocalStorageJSON(key, fallbackValue) {
                     self.db = e.target.result;
                     self.ready = true;
                     if (navigator.storage && navigator.storage.persist) {
-                        navigator.storage.persist().then(function (granted) {
-                            if (granted) {
-                                console.log('[LM Skin Storage] Persistent storage granted \u2014 cache will survive browser restarts.');
-                            } else {
-                                console.warn('[LM Skin Storage] Persistent storage denied \u2014 cache may be evicted by Chrome.');
+                        navigator.storage.persisted().then(function (already) {
+                            if (already) {
+                                console.log('[LM Skin Storage] Storage is already persistent.');
+                                return;
                             }
+                            navigator.storage.persist().then(function (granted) {
+                                if (granted) {
+                                    console.log('[LM Skin Storage] Persistent storage granted \u2014 cache will survive browser restarts.');
+                                } else {
+                                    /* Normal on most sites — cache still works, just not guaranteed
+                                       to survive extreme storage pressure from Chrome. */
+                                    console.log('[LM Skin Storage] Persistent storage not granted \u2014 cache works normally but may be evicted under extreme storage pressure.');
+                                }
+                            });
                         });
                     }
                     while (self.queue.length > 0) {
