@@ -7231,372 +7231,180 @@
                 );
 
 
-            /*
-             * ─────────────────────────────────────────────────────────
-             * POTION SLOTS
-             * ─────────────────────────────────────────────────────────
+/*
+             * POTION SLOTS — Horizontal visual strip
              *
-             * The profile already renders live potion state in:
-             *
-             *      #potion1   #potion2   #potion3
-             *
-             * Each has:
-             *
-             *      <img src="...potion_common.png" style="border-color: red;">
-             *      <div style="border-color: red;">brew</div>
-             *            or
-             *      <div style="border-color: yellow;">04:09</div>
-             *
-             * Read directly from those elements so the economy panel
-             * always matches the real profile.
+             * Reads live state from existing #potion1/2/3 DOM.
+             * Renders 3 visual potion bottles side by side.
              */
 
             var potionStates =
-                (
-                    window.LM &&
-                    window.LM.user &&
-                    window.LM.user
-                        .potionsStatus
-                ) ||
-                {};
+                (window.LM && window.LM.user && window.LM.user.potionsStatus) || {};
 
-            for (
-                var slot = 1;
-                slot <= 3;
-                slot++
-            ) {
-                var potionEl =
-                    document
-                        .getElementById(
-                            'potion' +
-                            slot
-                        );
+            var _pvEmpty = '<svg viewBox="0 0 40 56" width="28" height="38">' +
+                '<rect x="14" y="0" width="12" height="8" rx="2" fill="#667" opacity=".5"/>' +
+                '<path d="M12 8 L10 20 Q8 28 8 34 L8 48 Q8 54 14 54 L26 54 Q32 54 32 48 L32 34 Q32 28 30 20 L28 8 Z" fill="none" stroke="#556" stroke-width="1.5" opacity=".35"/>' +
+                '</svg>';
+
+            var _pvBrew = '<svg viewBox="0 0 40 56" width="28" height="38">' +
+                '<rect x="14" y="0" width="12" height="8" rx="2" fill="#a0522d"/>' +
+                '<path d="M12 8 L10 20 Q8 28 8 34 L8 48 Q8 54 14 54 L26 54 Q32 54 32 48 L32 34 Q32 28 30 20 L28 8 Z" fill="#2e7d32" opacity=".85" stroke="#388e3c" stroke-width="1"/>' +
+                '<ellipse cx="20" cy="14" rx="5" ry="2" fill="#4caf50" opacity=".6"/>' +
+                '</svg>';
+
+            var _pvBrewing = '<svg viewBox="0 0 40 56" width="28" height="38">' +
+                '<rect x="14" y="0" width="12" height="8" rx="2" fill="#a0522d"/>' +
+                '<path d="M12 8 L10 20 Q8 28 8 34 L8 48 Q8 54 14 54 L26 54 Q32 54 32 48 L32 34 Q32 28 30 20 L28 8 Z" fill="#e65100" opacity=".75" stroke="#ff6d00" stroke-width="1"/>' +
+                '<circle cx="15" cy="38" r="2" fill="#ffab00" opacity=".7"><animate attributeName="cy" values="38;30;38" dur="1.8s" repeatCount="indefinite"/></circle>' +
+                '<circle cx="22" cy="42" r="1.5" fill="#ffab00" opacity=".6"><animate attributeName="cy" values="42;32;42" dur="2.2s" repeatCount="indefinite"/></circle>' +
+                '<circle cx="26" cy="40" r="1.8" fill="#ffab00" opacity=".5"><animate attributeName="cy" values="40;28;40" dur="2s" repeatCount="indefinite"/></circle>' +
+                '</svg>';
+
+            var _pvOpen = '<svg viewBox="0 0 40 56" width="28" height="38">' +
+                '<rect x="14" y="0" width="12" height="8" rx="2" fill="#b8860b"/>' +
+                '<path d="M12 8 L10 20 Q8 28 8 34 L8 48 Q8 54 14 54 L26 54 Q32 54 32 48 L32 34 Q32 28 30 20 L28 8 Z" fill="#7b1fa2" opacity=".85" stroke="#9c27b0" stroke-width="1"/>' +
+                '<polygon points="20,6 22,2 24,6 22,4" fill="#ffeb3b" opacity=".9"><animate attributeName="opacity" values=".9;.4;.9" dur="1s" repeatCount="indefinite"/></polygon>' +
+                '<polygon points="16,4 18,0 20,4 18,2" fill="#ffc107" opacity=".7"><animate attributeName="opacity" values=".7;.3;.7" dur="1.2s" repeatCount="indefinite"/></polygon>' +
+                '<ellipse cx="20" cy="14" rx="5" ry="2" fill="#ce93d8" opacity=".5"/>' +
+                '</svg>';
+
+            var _rarityAccents = {
+                common: '#78909c', exotic: '#26c6da', rare: '#42a5f5',
+                superior: '#66bb6a', epic: '#ab47bc', legendary: '#ef5350',
+                mythical: '#ffb300', mystical: '#7e57c2'
+            };
 
 
-                if (!potionEl) {
-                    html +=
-                        buildRow(
-                            '\u2697\uFE0F',
-                            'Potion ' +
-                                slot,
-                            'Empty',
-                            ''
-                        );
+            html +=
+                '<div style="display:flex;gap:6px;padding:6px 4px;border-top:1px solid rgba(255,255,255,0.07);">';
 
-                    continue;
+
+            for (var slot = 1; slot <= 3; slot++) {
+                var potionEl = document.getElementById('potion' + slot);
+                var pState = 'empty';
+                var pRarity = '';
+                var pTimer = '';
+                var pSkipHtml = '';
+                var pSvg = _pvEmpty;
+                var pGlow = 'none';
+                var pBorder = 'rgba(255,255,255,0.08)';
+                var pBg = 'rgba(255,255,255,0.02)';
+
+                if (potionEl) {
+                    var pImg = potionEl.querySelector('img');
+                    var pSrc = pImg ? String(pImg.src || '') : '';
+                    var pMatch = pSrc.match(/potion_([a-z]+)\./i);
+                    if (pMatch && pMatch[1]) pRarity = pMatch[1].toLowerCase();
+
+                    var pDiv = potionEl.querySelector('div');
+                    var pText = pDiv ? String(pDiv.textContent || '').trim().toLowerCase() : '';
+
+                    if (pText === 'brew' || pText === 'ready') {
+                        pState = 'brew';
+                        pSvg = _pvBrew;
+                        pGlow = '0 0 8px rgba(76,175,80,0.5)';
+                        pBorder = '#4caf50';
+                        pBg = 'rgba(76,175,80,0.08)';
+                    } else if (pText === 'open') {
+                        pState = 'open';
+                        pSvg = _pvOpen;
+                        pGlow = '0 0 12px rgba(156,39,176,0.6), 0 0 4px rgba(255,235,59,0.4)';
+                        pBorder = '#9c27b0';
+                        pBg = 'rgba(156,39,176,0.1)';
+                    } else if (/\d/.test(pText)) {
+                        pState = 'brewing';
+                        pTimer = pText;
+                        pSvg = _pvBrewing;
+                        pGlow = '0 0 8px rgba(255,152,0,0.5)';
+                        pBorder = '#ff9800';
+                        pBg = 'rgba(255,152,0,0.08)';
+                    } else if (pText) {
+                        pState = 'brew';
+                        pSvg = _pvBrew;
+                        pBorder = '#4caf50';
+                        pBg = 'rgba(76,175,80,0.06)';
+                    }
                 }
 
+                var pAccent = (pRarity && _rarityAccents[pRarity]) ? _rarityAccents[pRarity] : '';
+                if (pAccent) pBorder = pAccent;
 
-                /*
-                 * Extract the image source to determine potion rarity.
-                 */
-                var potionImg =
-                    potionEl
-                        .querySelector(
-                            'img'
-                        );
-
-                var potionSrc =
-                    potionImg
-                        ? String(
-                            potionImg.src ||
-                            ''
-                        )
-                        : '';
+                var pRarityLabel = pRarity
+                    ? (pRarity.charAt(0).toUpperCase() + pRarity.slice(1))
+                    : '';
 
 
-                /*
-                 * Derive a display name from the image filename.
-                 *
-                 *      potion_common.png   -> Common
-                 *      potion_exotic.png   -> Exotic
-                 *      potion_rare.png     -> Rare
-                 *      potion_legendary.png -> Legendary
-                 */
-                var potionRarity =
-                    'Potion';
+                /* Skip button for brewing potions */
+                if (pState === 'brewing') {
+                    var pk = 'potion' + slot;
+                    var pp = potionStates[pk] || null;
 
-                var srcMatch =
-                    potionSrc.match(
-                        /potion_([a-z]+)\./i
-                    );
-
-                if (
-                    srcMatch &&
-                    srcMatch[1]
-                ) {
-                    potionRarity =
-                        srcMatch[1]
-                            .charAt(0)
-                            .toUpperCase() +
-                        srcMatch[1]
-                            .slice(1);
-                }
-
-
-                /*
-                 * Extract the status text from the inner <div>.
-                 *
-                 *      "brew"   -> Ready to brew
-                 *      "04:09"  -> Brewing timer
-                 *      "open"   -> Ready to open
-                 */
-                var potionStatusDiv =
-                    potionEl
-                        .querySelector(
-                            'div'
-                        );
-
-                var potionRawText =
-                    potionStatusDiv
-                        ? String(
-                            potionStatusDiv
-                                .textContent ||
-                            ''
-                        ).trim()
-                            .toLowerCase()
-                        : '';
-
-                var potionBorderColor =
-                    potionStatusDiv
-                        ? String(
-                            potionStatusDiv
-                                .style
-                                .borderColor ||
-                            ''
-                        ).trim()
-                            .toLowerCase()
-                        : '';
-
-
-                var potionStatusText;
-                var potionIcon;
-
-
-                if (
-                    potionRawText === 'brew' ||
-                    potionRawText === 'ready'
-                ) {
-                    potionStatusText =
-                        potionRarity +
-                        ' \u2014 Ready to brew';
-
-                    potionIcon =
-                        '\u2697\uFE0F';
-
-                } else if (
-                    potionRawText === 'open'
-                ) {
-                    potionStatusText =
-                        potionRarity +
-                        ' \u2014 Ready to open';
-
-                    potionIcon =
-                        '\uD83E\uDDEA';
-
-                } else if (
-                    /\d/.test(
-                        potionRawText
-                    )
-                ) {
-                    /*
-                     * Timer text like "04:09" or "1:23:45"
-                     */
-                    potionStatusText =
-                        potionRarity +
-                        ' \u2014 Brewing ' +
-                        potionRawText;
-
-                    potionIcon =
-                        '\u2697\uFE0F';
-
-                } else if (
-                    potionRawText
-                ) {
-                    potionStatusText =
-                        potionRarity +
-                        ' \u2014 ' +
-                        potionRawText;
-
-                    potionIcon =
-                        '\u2697\uFE0F';
-
-                } else {
-                    potionStatusText =
-                        'Empty';
-
-                    potionIcon =
-                        '\u2697\uFE0F';
-                }
-
-
-                /*
-                 * Potion skip button for brewing potions.
-                 *
-                 * Only show if we still have the rich potionStates
-                 * with price information.
-                 */
-                var potionButtonHtml =
-                    '';
-
-
-                var potionKey =
-                    'potion' +
-                    slot;
-
-                var potion =
-                    potionStates[
-                        potionKey
-                    ] ||
-                    null;
-
-
-                if (
-                    potion &&
-                    Number(
-                        potion.status
-                    ) === 2
-                ) {
-                    var potionProductId =
-                        potion.productId ||
-                        potion.type ||
-                        '';
-
-                    var potionSeconds =
-                        window
-                            .getLivePotionSecondsRemaining(
-                                potion
-                            );
-
-                    var potionInfo =
-                        typeof window
-                            .getAgarPotionInfo ===
-                            'function'
-                            ? window
-                                .getAgarPotionInfo(
-                                    potionProductId,
-                                    slot,
-                                    potionSeconds ===
-                                        null
-                                        ? undefined
-                                        : potionSeconds
-                                )
+                    if (pp && Number(pp.status) === 2) {
+                        var ppId = pp.productId || pp.type || '';
+                        var ppSec = window.getLivePotionSecondsRemaining(pp);
+                        var ppInfo = typeof window.getAgarPotionInfo === 'function'
+                            ? window.getAgarPotionInfo(ppId, slot, ppSec === null ? undefined : ppSec)
                             : null;
 
+                        if (ppInfo && ppInfo.purchaseId &&
+                            ppInfo.currentPrice !== null && ppInfo.currentPrice !== undefined) {
+                            var ppPrice = Math.max(0, Number(ppInfo.currentPrice) || 0);
+                            var ppPriceText = typeof window.formatAgarCurrency === 'function'
+                                ? window.formatAgarCurrency(ppPrice, ppInfo.currency)
+                                : (String(ppPrice) + (ppInfo.currency ? (' ' + ppInfo.currency) : ''));
 
-                    if (
-                        potionInfo &&
-                        potionInfo.purchaseId &&
-                        potionInfo.currentPrice !==
-                            null &&
-                        potionInfo.currentPrice !==
-                            undefined
-                    ) {
-                        var potionPrice =
-                            Math.max(
-                                0,
-                                Number(
-                                    potionInfo
-                                        .currentPrice
-                                ) ||
-                                0
-                            );
-
-
-                        var potionPriceText =
-                            typeof window
-                                .formatAgarCurrency ===
-                                'function'
-                                ? window
-                                    .formatAgarCurrency(
-                                        potionPrice,
-                                        potionInfo
-                                            .currency
-                                    )
-                                : (
-                                    String(
-                                        potionPrice
-                                    ) +
-                                    (
-                                        potionInfo
-                                            .currency
-                                            ? (
-                                                ' ' +
-                                                potionInfo
-                                                    .currency
-                                            )
-                                            : ''
-                                    )
-                                );
-
-
-                        potionButtonHtml =
-                            '<button ' +
-                                'type="button" ' +
-                                'class="btn btn-xs lm-potion-skip-buy" ' +
-
-                                'data-potion-id="' +
-                                    window
-                                        ._lmEconomyEscape(
-                                            potionProductId
-                                        ) +
-                                '" ' +
-
-                                'data-slot="' +
-                                    slot +
-                                '" ' +
-
-                                'data-purchase-id="' +
-                                    window
-                                        ._lmEconomyEscape(
-                                            potionInfo
-                                                .purchaseId
-                                        ) +
-                                '" ' +
-
-                                'style="' +
-                                    'margin-left:6px;' +
-                                    'font-size:9px;' +
-                                    'padding:3px 6px;' +
-                                    'background:' +
-                                        window
-                                            ._lmEconomyEscape(
-                                                theme.b3
-                                            ) +
-                                    ';' +
-                                    'color:' +
-                                        window
-                                            ._lmEconomyEscape(
-                                                theme.btc
-                                            ) +
-                                    ';' +
-                                    'border:0;' +
-                                    'white-space:nowrap;' +
-                                '"' +
-
-                            '>' +
-                                'Skip \u2014 ' +
-                                window
-                                    ._lmEconomyEscape(
-                                        potionPriceText
-                                    ) +
-                            '</button>';
+                            pSkipHtml =
+                                '<button type="button" class="btn btn-xs lm-potion-skip-buy" ' +
+                                    'data-potion-id="' + window._lmEconomyEscape(ppId) + '" ' +
+                                    'data-slot="' + slot + '" ' +
+                                    'data-purchase-id="' + window._lmEconomyEscape(ppInfo.purchaseId) + '" ' +
+                                    'style="font-size:8px;padding:2px 5px;background:' +
+                                        window._lmEconomyEscape(theme.b3) + ';color:' +
+                                        window._lmEconomyEscape(theme.btc) +
+                                        ';border:0;border-radius:4px;white-space:nowrap;margin-top:2px;cursor:pointer;"' +
+                                '>Skip ' + window._lmEconomyEscape(ppPriceText) + '</button>';
+                        }
                     }
                 }
 
 
+                /* Status line */
+                var pStatus = '';
+                if (pState === 'empty') {
+                    pStatus = '<div style="font-size:9px;color:#667;font-weight:600;">Empty</div>';
+                } else if (pState === 'brew') {
+                    pStatus =
+                        (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
+                        '<div style="font-size:8px;color:#8bc34a;font-weight:700;">\u25B6 BREW</div>';
+                } else if (pState === 'brewing') {
+                    pStatus =
+                        (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
+                        '<div style="font-size:10px;color:#ff9800;font-weight:900;font-variant-numeric:tabular-nums;">' + pTimer + '</div>' +
+                        pSkipHtml;
+                } else if (pState === 'open') {
+                    pStatus =
+                        (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
+                        '<div style="font-size:8px;color:#ce93d8;font-weight:800;">\u2728 OPEN</div>';
+                }
+
+
                 html +=
-                    buildRow(
-                        potionIcon,
-
-                        'Potion ' +
-                            slot,
-
-                        potionStatusText,
-
-                        potionButtonHtml
-                    );
+                    '<div style="' +
+                        'flex:1;display:flex;flex-direction:column;align-items:center;' +
+                        'padding:5px 2px 4px;border-radius:8px;' +
+                        'border:1px solid ' + pBorder + ';' +
+                        'background:' + pBg + ';' +
+                        'box-shadow:' + pGlow + ';' +
+                        'transition:box-shadow .3s;min-width:0;' +
+                    '">' +
+                        '<div style="margin-bottom:2px;line-height:0;">' + pSvg + '</div>' +
+                        pStatus +
+                    '</div>';
             }
+
+            html += '</div>';
+
+
 
 
             panel.html(
