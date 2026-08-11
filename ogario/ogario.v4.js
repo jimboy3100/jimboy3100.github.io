@@ -50720,30 +50720,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ctx.strokeStyle = radius || defaultSettings.bordersColor || "#FF0000";
                 var baseLw = canvas || defaultSettings.bordersWidth || 20;
                 ctx.lineWidth = Math.max(baseLw, 3 / Math.max(this.scale || 1, 0.001));
+
+                /* Circular map border */
+                var cx = (text + x0) / 2;
+                var cy = (x1 + y0) / 2;
+                var r = (x0 - text) / 2;
                 ctx.beginPath();
-                ctx.moveTo(text + ctx.lineWidth, x1);
-                ctx.lineTo(x0 - ctx.lineWidth, x1);
-
-                ctx.moveTo(x0, x1);
-                ctx.lineTo(x0 + ctx.lineWidth, x1 - ctx.lineWidth);
-
-                ctx.moveTo(x0, x1 + ctx.lineWidth);
-                ctx.lineTo(x0, y0 - ctx.lineWidth);
-
-                ctx.moveTo(x0, y0);
-                ctx.lineTo(x0 + ctx.lineWidth, y0 + ctx.lineWidth);
-
-                ctx.moveTo(x0 - ctx.lineWidth, y0);
-                ctx.lineTo(text + ctx.lineWidth, y0);
-
-                ctx.moveTo(text, y0);
-                ctx.lineTo(text - ctx.lineWidth, y0 + ctx.lineWidth);
-
-                ctx.moveTo(text, y0 - ctx.lineWidth);
-                ctx.lineTo(text, x1 + ctx.lineWidth);
-
-                ctx.moveTo(text, x1);
-                ctx.lineTo(text - ctx.lineWidth, x1 - ctx.lineWidth);
+                ctx.arc(cx, cy, r, 0, 2 * Math.PI, false);
 
                 if (defaultmapsettings.borderGlow) {
                     ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
@@ -50759,6 +50742,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 "skrrt";
             }
         },
+
         /* ── Expanding Land: WebGL zone overlay ── */
         drawWebGLZone() {
             var gl =
