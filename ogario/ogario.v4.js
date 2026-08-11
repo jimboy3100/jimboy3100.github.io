@@ -29730,6 +29730,9 @@ function thelegendmodproject() {
             if (this.serverType === 'senpa') {
                 // Senpa: standard WebSocket, server sends init first (opcode 0)
                 // No handshake/fingerprint needed from client side
+                // Delta rewrites mi.com → senpa.io (mi.com is an alias that doesn't accept WS)
+                t = t.replace('mi.com', 'senpa.io');
+                this.ws = t;
                 var self = this;
                 // Senpa client/player stores
                 self._senpaClients = {};  // clientID -> {name, color, team, isBot}
