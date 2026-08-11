@@ -17923,18 +17923,7 @@ function thelegendmodproject() {
                 'width': defaultSettings.miniMapWidth,
                 'height': defaultSettings.miniMapWidth + defaultSettings.miniMapTop
             });
-            /* Expanding Land: circular minimap */
-            if (window.LM && window.LM.isLegendWorld) {
-                $('#minimap-hud').css({
-                    'border-radius': '50%',
-                    'overflow': 'hidden'
-                });
-            } else {
-                $('#minimap-hud').css({
-                    'border-radius': '0',
-                    'overflow': 'visible'
-                });
-            }
+
             if (application) {
                 application.resetMiniMapSectors();
             }
@@ -22729,7 +22718,7 @@ function thelegendmodproject() {
         },
         drawMiniMap() {
             /* Expanding Land: circular minimap clipping (reverts on server switch) */
-            var _isCircle = !!(window.LM && window.LM.isLegendWorld);
+            var _isCircle = !!(LM && LM.isLegendWorld);
             if (this._miniMapCircle !== _isCircle) {
                 this._miniMapCircle = _isCircle;
                 $('#minimap-hud').css({
@@ -50744,7 +50733,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var baseLw = canvas || defaultSettings.bordersWidth || 20;
                 ctx.lineWidth = Math.max(baseLw, 3 / Math.max(this.scale || 1, 0.001));
 
-                if (window.LM && window.LM.isLegendWorld) {
+                if (LM && LM.isLegendWorld) {
                     /* Expanding Land: circular map border */
                     var cx = (text + x0) / 2;
                     var cy = (x1 + y0) / 2;
