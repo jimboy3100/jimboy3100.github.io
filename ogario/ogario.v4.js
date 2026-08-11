@@ -2222,6 +2222,21 @@ function deleteGamemode(temp) {
         }, {
             text: 'Garix Selffeed',
             value: 9005
+        }, {
+            text: 'Sigmally US-1',
+            value: 10001
+        }, {
+            text: 'Sigmally US-2',
+            value: 10002
+        }, {
+            text: 'Sigmally US-3',
+            value: 10003
+        }, {
+            text: 'Sigmally Europe-1',
+            value: 10004
+        }, {
+            text: 'Sigmally Tournaments',
+            value: 10005
         }
         /* Other private servers (commented out)
         , {
@@ -2454,6 +2469,23 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 9005) {
             legendmod.gameMode = ':ffa';
             core.connect('wss://garix.io:8090');
+        }
+        // Sigmally servers (10001-10005)
+        else if ($('#gamemode').val() == 10001) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://ca0.sigmally.com/ws/');
+        } else if ($('#gamemode').val() == 10002) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://ca1.sigmally.com/ws/');
+        } else if ($('#gamemode').val() == 10003) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://ca2.sigmally.com/ws/');
+        } else if ($('#gamemode').val() == 10004) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://eu0.sigmally.com/ws/');
+        } else if ($('#gamemode').val() == 10005) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://tourney.sigmally.com/ws/');
         } else {
             if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
             if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
@@ -29288,8 +29320,9 @@ function thelegendmodproject() {
                 : t.includes('imsolo.pro') ? 'imsolo'
                     : t.includes('agar2.com') ? 'agar2'
                         : t.includes('garix.io') ? 'garix'
-                            : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
-                                : 'private';
+                            : t.includes('sigmally.com') ? 'sigmally'
+                                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                                    : 'private';
 
             /*
              * Keep a pending World Spectate request only for the exact
@@ -29531,6 +29564,15 @@ function thelegendmodproject() {
                 clearInterval(this.garixPingInterval);
                 this.garixPingInterval = null;
             }
+            // Sigmally state reset
+            this.sigOpcodeMap = null;        // qe - 256-byte outgoing opcode mapping
+            this.sigOpcodeMapInverse = null; // Re - 256-byte incoming opcode decode
+            this.sigHandshakeDone = false;   // true after hello echo + mapping received
+            this.sigPingId = 0;
+            if (this.sigPingInterval) {
+                clearInterval(this.sigPingInterval);
+                this.sigPingInterval = null;
+            }
             this.ws = t;
             this.integrity = (this.ws.indexOf('agario.miniclippt') > -1 || this.ws.indexOf('agar.io') > -1 || (this.ws.indexOf('live-arena') > -1 && this.ws.indexOf('agar2.com') === -1)); // 2026 JIMBOY3100
             this.serverType = _earlyType;
@@ -29608,6 +29650,31 @@ function thelegendmodproject() {
                     if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
                     self.replayfunctions();
                 })();
+                return;
+            }
+
+            if (this.serverType === 'sigmally') {
+                // Sigmally: standard WebSocket, no fingerprint needed
+                // Handshake is hello-based (sent from onOpen), not 254/255
+                var self = this;
+                self.socket = new WebSocket(t);
+                self.socket.binaryType = 'arraybuffer';
+                self.socket.onopen = function () { app.onOpen(); };
+                self.socket.onmessage = function (t) { app.onMessage(t); };
+                self.socket.onerror = function (t) { app.onError(t); };
+                self.socket.onclose = function (t) { app.onClose(t); };
+                application.getWS(self.ws);
+                application.sendServerJoin();
+                application.sendServerData();
+                application.displayLeaderboard('');
+                application.displayPartyBots();
+                application.setUniversalChat();
+                application.setAnimatedRainbowColor();
+                if (window.master && window.master.onConnect) window.master.onConnect();
+                self.play = false;
+                self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
+                if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
+                self.replayfunctions();
                 return;
             }
 
@@ -29708,8 +29775,32 @@ function thelegendmodproject() {
             if (!window.customProtol) window.customProtol = 6
             if (!window.customClient) window.customClient = 1
 
+            // ===== Sigmally Handshake: send "SIG 0.0.1\0" =====
+            if (this.serverType === 'sigmally') {
+                var hello = 'SIG 0.0.1';
+                var hBuf = new ArrayBuffer(hello.length + 1);
+                var hArr = new Uint8Array(hBuf);
+                for (var hi = 0; hi < hello.length; hi++) hArr[hi] = hello.charCodeAt(hi);
+                hArr[hello.length] = 0; // null terminator
+                this.socket.send(hBuf);
+                this.connectionOpened = true;
+                // Start Sigmally ping interval (every 5 seconds)
+                var self = this;
+                if (this.sigPingInterval) clearInterval(this.sigPingInterval);
+                this.sigPingInterval = setInterval(function () {
+                    if (self.isSocketOpen() && self.sigOpcodeMap && self.sigHandshakeDone) {
+                        var pw = new ArrayBuffer(3);
+                        var pv = new DataView(pw);
+                        pv.setUint8(0, self.sigOpcodeMap[254]);
+                        pv.setUint16(1, (self.sigPingId = (self.sigPingId + 1) % 65536), true);
+                        self.socket.send(pw);
+                        self.pingTime = Date.now();
+                    }
+                }, 5000);
+                console.log('%c[Sigmally]%c Handshake: sent hello "' + hello + '"', 'color:#3af', 'color:inherit');
+            }
             // ===== Garix Handshake: opcode 171 instead of 254/255 =====
-            if (this.serverType === 'garix') {
+            else if (this.serverType === 'garix') {
                 this.garixProtocol = 1;
                 this.garixClientTime = Math.floor(Date.now() / 1000);
                 var gView = this.createView(9);
@@ -29814,6 +29905,137 @@ function thelegendmodproject() {
         onMessage(message) {
 
             //console.log(message.data)
+
+            // ===== Sigmally Protocol Handling =====
+            if (this.serverType === 'sigmally') {
+                var raw = new Uint8Array(message.data);
+                if (!this.sigHandshakeDone) {
+                    // First message: hello echo + 256-byte opcode mapping table
+                    // Read zero-terminated hello string
+                    var helloEnd = 0;
+                    while (helloEnd < raw.length && raw[helloEnd] !== 0) helloEnd++;
+                    var textDec = window._textDecoderSIMD || (window._textDecoderSIMD = new TextDecoder('utf-8'));
+                    var helloStr = textDec.decode(raw.subarray(0, helloEnd));
+                    if (helloStr !== 'SIG 0.0.1') {
+                        console.warn('%c[Sigmally]%c Invalid hello response: "' + helloStr + '", disconnecting', 'color:#3af', 'color:inherit');
+                        this.socket.close();
+                        return;
+                    }
+                    // Next 256 bytes are the opcode mapping table (qe)
+                    var mapStart = helloEnd + 1; // skip null terminator
+                    if (raw.length < mapStart + 256) {
+                        console.warn('%c[Sigmally]%c Hello response too short for opcode map', 'color:#3af', 'color:inherit');
+                        this.socket.close();
+                        return;
+                    }
+                    this.sigOpcodeMap = new Uint8Array(256); // qe: outgoing encode
+                    this.sigOpcodeMapInverse = new Uint8Array(256); // Re: incoming decode
+                    for (var mi = 0; mi < 256; mi++) {
+                        this.sigOpcodeMap[mi] = raw[mapStart + mi];
+                    }
+                    for (var ri = 0; ri < 256; ri++) {
+                        this.sigOpcodeMapInverse[this.sigOpcodeMap[ri]] = ri;
+                    }
+                    this.sigHandshakeDone = true;
+                    console.log('%c[Sigmally]%c Handshake complete — opcode map received', 'color:#3af', 'color:inherit');
+                    return;
+                }
+
+                // Subsequent messages: decode opcode byte 0 through inverse map
+                // Modify in-place before creating DataView
+                raw[0] = this.sigOpcodeMapInverse[raw[0]];
+                var data = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
+                var opcode = data.getUint8(0);
+
+                switch (opcode) {
+                    case 16:
+                        // Sigmally cell update (different format from agar.io)
+                        this._handleSigmallyCellUpdate(data);
+                        break;
+                    case 17: {
+                        // Viewport: same as agar.io — Float32 x, y, scale
+                        if (data.byteLength < 13) break;
+                        var vx = data.getFloat32(1, true);
+                        var vy = data.getFloat32(5, true);
+                        var vs = data.getFloat32(9, true);
+                        if (!window.multiboxPlayerEnabled) {
+                            this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(vx) : vx;
+                            this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(vy) : vy;
+                        }
+                        this.viewXTrue = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(vx) : vx;
+                        this.viewYTrue = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(vy) : vy;
+                        this.scale = vs;
+                        break;
+                    }
+                    case 32: {
+                        // Own cell ID
+                        if (data.byteLength < 5) break;
+                        var cellId = data.getUint32(1, true);
+                        this.playerCellIDs.push(cellId);
+                        if (this._playerCellIDSet) this._playerCellIDSet.add(cellId);
+                        if (!this.play) {
+                            this.play = true;
+                            this.isSpectateEnabled = false;
+                            application.hideMenu();
+                            this.playerColor = null;
+                            application.onPlayerSpawn();
+                            window.userBots.isAlive = true;
+                            if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+                        }
+                        break;
+                    }
+                    case 49: {
+                        // Sigmally leaderboard: [count:u32] then per-entry [id:u32][nick:utf8\0][u32][u32]
+                        this._handleSigmallyLeaderboard(data);
+                        break;
+                    }
+                    case 64: {
+                        // Map bounds: 4x Float64
+                        if (data.byteLength < 33) break;
+                        var minX = data.getFloat64(1, true);
+                        var minY = data.getFloat64(9, true);
+                        var maxX = data.getFloat64(17, true);
+                        var maxY = data.getFloat64(25, true);
+                        this.mapMinX = minX;
+                        this.mapMinY = minY;
+                        this.mapMaxX = maxX;
+                        this.mapMaxY = maxY;
+                        this.mapOffsetX = (maxX + minX) / 2;
+                        this.mapOffsetY = (maxY + minY) / 2;
+                        this.mapOffsetFixed = true;
+                        this.mapSizeW = maxX - minX;
+                        this.mapSizeH = maxY - minY;
+                        ogario.mapOffsetX = this.mapOffsetX;
+                        ogario.mapOffsetY = this.mapOffsetY;
+                        ogario.mapMinX = minX;
+                        ogario.mapMinY = minY;
+                        ogario.mapMaxX = maxX;
+                        ogario.mapMaxY = maxY;
+                        ogario.mapSizeW = this.mapSizeW;
+                        ogario.mapSizeH = this.mapSizeH;
+                        console.log('%c[Sigmally]%c Map bounds: ' + minX + ',' + minY + ' → ' + maxX + ',' + maxY, 'color:#3af', 'color:inherit');
+                        break;
+                    }
+                    case 18:
+                    case 20:
+                        // Clear cells
+                        this.flushCellsData(false);
+                        break;
+                    case 254: {
+                        // Pong response
+                        if (this.pingTime) {
+                            this.ping = Date.now() - this.pingTime;
+                        }
+                        break;
+                    }
+                    default:
+                        // For any other opcodes, pass through to normal handler
+                        // (opcode already decoded, DataView is ready)
+                        break;
+                }
+                return;
+            }
+
             message = new DataView(message.data);
             if (this.protocolKey) {
                 message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
@@ -29851,7 +30073,8 @@ function thelegendmodproject() {
                 lastWs.indexOf('expanding.land') !== -1 ||
                 lastWs.indexOf('ffa.legendmod') !== -1 ||
                 lastWs.indexOf('agar2.com') !== -1 ||
-                lastWs.indexOf('imsolo.pro') !== -1)) {
+                lastWs.indexOf('imsolo.pro') !== -1 ||
+                lastWs.indexOf('sigmally.com') !== -1)) {
                 if (!this._reconnAttempts) this._reconnAttempts = 0;
                 var maxAttempts = 5;
                 if (this._reconnAttempts < maxAttempts) {
@@ -29918,6 +30141,11 @@ function thelegendmodproject() {
                 clearInterval(this.garixHeartbeatInterval);
                 this.garixHeartbeatInterval = null;
             }
+            // Clear Sigmally ping interval on disconnect
+            if (this.sigPingInterval) {
+                clearInterval(this.sigPingInterval);
+                this.sigPingInterval = null;
+            }
             if (this.socket) {
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
@@ -29970,6 +30198,13 @@ function thelegendmodproject() {
             if (!this.isSocketOpen()) {
                 return;
             }
+            // Sigmally: encode opcode through shuffle table
+            if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
+                var sv = new ArrayBuffer(1);
+                new Uint8Array(sv)[0] = this.sigOpcodeMap[action];
+                this.socket.send(sv);
+                return;
+            }
             // Garix: split (17) and eject (21) require tabID
             if (this.serverType === 'garix' && (action === 17 || action === 21)) {
                 var gv = this.createView(3);
@@ -29988,6 +30223,13 @@ function thelegendmodproject() {
         },
         sendFreeSpectate() {
             this.isFreeSpectate = !this.isFreeSpectate;
+            // Sigmally: free spectate requires two opcodes: qe[18] + qe[19] with delay
+            if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
+                this.sendAction(18);
+                var self = this;
+                setTimeout(function () { self.sendAction(19); }, 100);
+                return;
+            }
             this.sendAction(18);
         },
         sendQuitGame() {
@@ -30094,6 +30336,28 @@ function thelegendmodproject() {
                 gv.setUint8(3 + encoded.length, 0); // null terminator
                 this.sendBuffer(gv);
                 console.log('%c[Garix]%c Join sent (tabID=' + (this.garixTabID1 || 0) + ' nick=' + nick + ')', 'color:#f8a', 'color:inherit');
+                return;
+            }
+
+            // ===== Sigmally join: JSON spawn via opcode qe[0] =====
+            if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
+                this.playerNick = nick;
+                var spawnJSON = JSON.stringify({
+                    name: nick,
+                    skin: '',
+                    showClanmates: true,
+                    password: ''
+                });
+                // Build: [qe[0]] + JSON string + null terminator
+                var sjBuf = new ArrayBuffer(1 + spawnJSON.length + 1);
+                var sjArr = new Uint8Array(sjBuf);
+                sjArr[0] = this.sigOpcodeMap[0]; // opcode 0 = spawn, encoded
+                for (var sji = 0; sji < spawnJSON.length; sji++) {
+                    sjArr[1 + sji] = spawnJSON.charCodeAt(sji);
+                }
+                sjArr[1 + spawnJSON.length] = 0; // null terminator
+                this.socket.send(sjBuf);
+                console.log('%c[Sigmally]%c Spawn sent: ' + nick, 'color:#3af', 'color:inherit');
                 return;
             }
 
@@ -30432,9 +30696,18 @@ function thelegendmodproject() {
                     this.distX = cursorX - this.viewXTrue
                     this.distY = cursorY - this.viewYTrue
                 }
-                // Garix: mouse packet includes tabID at bytes 1-2
-                // Server uses message.length to pick precision: 11=Int16, 15=Int32, 23=Float64
-                if (this.serverType === 'garix') {
+                // Sigmally: cursor position via qe[16] + Int32 x,y + UInt32 0
+                if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
+                    var sigBuf = new ArrayBuffer(13);
+                    var sigDv = new DataView(sigBuf);
+                    sigDv.setUint8(0, this.sigOpcodeMap[16]);
+                    sigDv.setInt32(1, cursorX, true);
+                    sigDv.setInt32(5, cursorY, true);
+                    sigDv.setUint32(9, 0, true);
+                    this.socket.send(sigBuf);
+                } else if (this.serverType === 'garix') {
+                    // Garix: mouse packet includes tabID at bytes 1-2
+                    // Server uses message.length to pick precision: 11=Int16, 15=Int32, 23=Float64
                     var gv = this.createView(15); // 15 bytes → server reads Int32
                     gv.setUint8(0, 16);
                     gv.setUint16(1, this.garixTabID1 || 0, true);
@@ -37909,6 +38182,287 @@ Most cells eaten   : ${mostCellsEaten}
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
 
 
+        },
+        /* ═══════════════════════════════════════════════════════════════
+         * Sigmally cell update parser (opcode 16 after decode)
+         * Format (from ProtocolSigmally.ts reference):
+         *   Eat list:   u16 count → [u32 eater (break if 0), u32 victim]
+         *   Cell loop:  u32 id (0=end) → i16 x, i16 y, u16 size,
+         *               u8 flags, u8, u8, u8, utf8z,
+         *               ext_flags if flags&128, color/skin/name per flags
+         *   Remove list: u16 count → u32 id
+         * ═══════════════════════════════════════════════════════════════ */
+        _handleSigmallyCellUpdate(data) {
+            this.megaFFAscore();
+            var offset = 1; // skip opcode byte
+
+            var textDecoder = window._textDecoderSIMD || (window._textDecoderSIMD = new TextDecoder('utf-8'));
+            var encode = function () {
+                var start = offset;
+                while (offset < data.byteLength && data.getUint8(offset) !== 0) offset++;
+                var slice = new Uint8Array(data.buffer, data.byteOffset + start, offset - start);
+                if (offset < data.byteLength) offset++; // skip null terminator
+                try {
+                    return decodeURIComponent(escape(textDecoder.decode(slice)));
+                } catch (e) {
+                    return textDecoder.decode(slice);
+                }
+            };
+
+            this.time = Date.now();
+            this.removePlayerCell = false;
+
+            // Build player cell ID set for O(1) lookup
+            if (!this._playerCellIDSet) {
+                this._playerCellIDSet = new Set();
+            } else {
+                this._playerCellIDSet.clear();
+            }
+            if (this.playerCellIDs && this.playerCellIDs.length) {
+                for (var _pidx = 0; _pidx < this.playerCellIDs.length; _pidx++) {
+                    this._playerCellIDSet.add(this.playerCellIDs[_pidx]);
+                }
+            }
+
+            // 1. Eat events: u16 count, then [u32 eater, u32 victim]
+            var eatCount = data.getUint16(offset, true); offset += 2;
+            for (var ei = 0; ei < eatCount && offset + 7 < data.byteLength; ei++) {
+                var eaterID = data.getUint32(offset, true);
+                if (eaterID === 0) { offset += 4; break; }
+                var victimID = data.getUint32(offset + 4, true);
+                offset += 8;
+                var eater = this.indexedCells[eaterID];
+                var victim = this.indexedCells[victimID];
+                if (victim) {
+                    if (eater) {
+                        victim.targetX = eater.x;
+                        victim.targetY = eater.y;
+                        victim.targetSize = victim.size;
+                    }
+                    victim.time = this.time;
+                    victim.removeCell();
+                }
+            }
+
+            // 2. Cell update/add loop: u32 id (0 = terminator)
+            while (offset + 3 < data.byteLength) {
+                var id = data.getUint32(offset, true); offset += 4;
+                if (id === 0) break;
+                if (offset + 7 >= data.byteLength) break;
+
+                // Sigmally uses Int16 for x,y (not Int32 like agar.io)
+                var x = data.getInt16(offset, true); offset += 2;
+                var y = data.getInt16(offset, true); offset += 2;
+                var size = data.getUint16(offset, true); offset += 2;
+
+                var flags = data.getUint8(offset++);
+
+                // 3 mystery bytes + 1 zero-terminated string (Sigmally-specific)
+                if (offset + 2 < data.byteLength) {
+                    offset++; // u8 unknown
+                    offset++; // u8 boolean g
+                    offset++; // u8 boolean p
+                }
+                encode(); // string v (unknown purpose, skip)
+
+                var ext_flags = (flags & 128) ? data.getUint8(offset++) : 0;
+
+                var isVirus = !!(flags & 1) || !!(flags & 16);
+                var isEjected = !!(flags & 32);
+                var isFood = 0;
+
+                var color = null;
+                var skin = null;
+                var name = '';
+                var namePresent = false;
+
+                if (flags & 2) {
+                    // Has color
+                    if (offset + 2 < data.byteLength) {
+                        var r = data.getUint8(offset++);
+                        var g = data.getUint8(offset++);
+                        var b = data.getUint8(offset++);
+                        color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
+                    }
+                }
+
+                if (flags & 4) {
+                    // Has skin
+                    skin = encode();
+                    // Sigmally skins: "1%skinname" → full URL
+                    if (skin && skin.startsWith('1%')) {
+                        skin = 'https://sigmally.com/static/skins/' + skin.slice(2) + '.png';
+                    }
+                }
+
+                if (flags & 8) {
+                    // Has name
+                    name = encode();
+                    namePresent = true;
+                }
+
+                // Food detection: small nameless non-virus cells
+                if (size <= 30 && !isVirus && !name) isFood = 1;
+                if (ext_flags & 1) isFood = 1;
+
+                // ext_flags & 4 → accountID
+                var accountID = null;
+                if (ext_flags & 4) {
+                    if (offset + 4 <= data.byteLength) {
+                        accountID = data.getUint32(offset, true); offset += 4;
+                    }
+                }
+
+                if (skin || namePresent) {
+                    if (this.gameMode !== ':teams') {
+                        this.vanillaskins(name, skin, color);
+                    }
+                }
+
+                // Create or update cell
+                var cellObj = this.indexedCells[id];
+                if (cellObj) {
+                    // Existing cell: update color if not food/virus
+                    if (color && !cellObj.isFood && !cellObj.isVirus) {
+                        cellObj.color = color;
+                    }
+                } else {
+                    // New cell
+                    cellObj = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    cellObj.time = this.time;
+                    cellObj.spectator = false;
+                    if (!isFood) {
+                        if (isVirus && defaultmapsettings.virusesRange) {
+                            this.viruses.push(cellObj);
+                        }
+                        this.cells.push(cellObj);
+                        this._cellsDirty = true;
+
+                        var isOwnPlayerCell = this._playerCellIDSet ? this._playerCellIDSet.has(id) : (this.playerCellIDs.indexOf(id) !== -1);
+                        if (isEjected) {
+                            isOwnPlayerCell = false;
+                            if (this._playerCellIDSet) this._playerCellIDSet.delete(id);
+                        }
+                        if (!isEjected && isOwnPlayerCell && this.playerCells.indexOf(cellObj) === -1) {
+                            cellObj.isPlayerCell = true;
+                            cellObj.rawServerColor = color;
+                            this.playerColor = color || this.playerColor;
+                            cellObj.color = this.playerColor || color;
+                            this.playerRawServerColor = color;
+                            this.playerCells.push(cellObj);
+                        }
+                    } else {
+                        this.food.push(cellObj);
+                    }
+                    this.indexedCells[id] = cellObj;
+                }
+
+                if (cellObj.isPlayerCell) {
+                    name = this.playerNick;
+                }
+                if (name || namePresent) {
+                    cellObj.targetNick = name;
+                }
+                cellObj.startX = cellObj.x;
+                cellObj.startY = cellObj.y;
+                cellObj.startSize = cellObj.size;
+                cellObj.targetX = x;
+                cellObj.targetY = y;
+                cellObj.targetSize = size;
+                cellObj.updateTime = this.time || Date.now();
+                cellObj.isFood = isFood;
+                cellObj.isVirus = isVirus;
+                cellObj.isEjected = isEjected;
+                if (isEjected) {
+                    cellObj.isPlayerCell = false;
+                    cellObj.targetNick = '';
+                    cellObj.skin = null;
+                }
+                if (skin && !isEjected) {
+                    cellObj.skin = skin;
+                }
+            }
+
+            // 3. Remove events: u16 count, then u32 per cell
+            if (offset + 2 <= data.byteLength) {
+                var removeCount = data.getUint16(offset, true); offset += 2;
+                for (var ri = 0; ri < removeCount && offset + 4 <= data.byteLength; ri++) {
+                    var removeID = data.getUint32(offset, true); offset += 4;
+                    var rcell = this.indexedCells[removeID];
+                    if (rcell) rcell.removeCell();
+                }
+            }
+
+            // Death check
+            if (this.removePlayerCell && !this.playerCells.length) {
+                this.play = false;
+                application.onPlayerDeath();
+                if (!LM.multiBoxPlayerExists) {
+                    application.showMenu(300);
+                } else {
+                    if (!window.multiboxPlayerEnabled) {
+                        application.multiboxswap();
+                    }
+                }
+                window.userBots.isAlive = false;
+                if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+            }
+            if (window.autoPlay && legendmod.play) calcTarget();
+            if (defaultmapsettings.reverseTrick) reverseTrick.check();
+            this.countPps();
+        },
+        /* ═══════════════════════════════════════════════════════════════
+         * Sigmally leaderboard (opcode 49 after decode)
+         * Format: [u32 count] then per entry:
+         *   [u32 id][utf8z nick][u32 unknown][u32 unknown]
+         * id === 1 means the entry is the local player.
+         * ═══════════════════════════════════════════════════════════════ */
+        _handleSigmallyLeaderboard(data) {
+            var offset = 1; // skip opcode
+            var textDecoder = window._textDecoderSIMD || (window._textDecoderSIMD = new TextDecoder('utf-8'));
+            var encode = function () {
+                var start = offset;
+                while (offset < data.byteLength && data.getUint8(offset) !== 0) offset++;
+                var slice = new Uint8Array(data.buffer, data.byteOffset + start, offset - start);
+                if (offset < data.byteLength) offset++;
+                try {
+                    return decodeURIComponent(escape(textDecoder.decode(slice)));
+                } catch (e) {
+                    return textDecoder.decode(slice);
+                }
+            };
+
+            this.leaderboard = [];
+            this.playerPosition = 0;
+
+            if (offset + 4 > data.byteLength) return;
+            var count = data.getUint32(offset, true); offset += 4;
+            if (count > 200) return; // sanity
+
+            for (var i = 0; i < count && offset + 4 <= data.byteLength; i++) {
+                var id = data.getUint32(offset, true); offset += 4;
+                var nick = encode();
+                // Skip two unknown u32 values per entry
+                if (offset + 8 <= data.byteLength) {
+                    offset += 4;
+                    offset += 4;
+                }
+
+                var isMe = (id === 1);
+                if (isMe) {
+                    nick = this.playerNick;
+                    this.playerPosition = i + 1;
+                }
+
+                this.leaderboard.push({
+                    nick: nick,
+                    id: isMe ? 'isPlayer' : id,
+                    isFriend: false,
+                    isFBFriend: false
+                });
+            }
+
+            this.handleLeaderboard();
         },
         updateCells(view, offset) {
 
