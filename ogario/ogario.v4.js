@@ -5483,7 +5483,16 @@ window.rebuildAgarConfigIndex = function () {
 
 
     /*
-     * Keep threshold order deterministic regardless of the source row order.
+     * ACHIEVEMENT PROGRESSION ORDER
+     *
+     * Most types become harder as the number increases:
+     *     normal_cells_eaten: 1 -> 10 -> 50
+     *     time_total:         1 -> 10 -> 30
+     *     final_level:        5 -> 20 -> 50 -> 100
+     *
+     * Ranking challenges are inverted (lower is better):
+     *     top_position:    30 -> 10 -> 1
+     *     final_position:  10 -> 1
      */
     Object
         .keys(
@@ -5494,6 +5503,10 @@ window.rebuildAgarConfigIndex = function () {
             function (
                 achievementType
             ) {
+                var lowerIsBetter =
+                    achievementType === 'top_position' ||
+                    achievementType === 'final_position';
+
                 index
                     .achievementsByType[
                         achievementType
@@ -5503,20 +5516,12 @@ window.rebuildAgarConfigIndex = function () {
                             a,
                             b
                         ) {
-                            return (
-                                (
-                                    Number(
-                                        a.goal
-                                    ) ||
-                                    0
-                                ) -
-                                (
-                                    Number(
-                                        b.goal
-                                    ) ||
-                                    0
-                                )
-                            );
+                            var aGoal = Number(a && a.goal) || 0;
+                            var bGoal = Number(b && b.goal) || 0;
+
+                            return lowerIsBetter
+                                ? (bGoal - aGoal)
+                                : (aGoal - bGoal);
                         }
                     );
             }
@@ -6970,6 +6975,272 @@ window.getAgarAchievementTypes =
                 index
                     .achievementsByType
             );
+    };
+
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SERVER-AUTHORITATIVE CHALLENGES / ACHIEVEMENTS
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Definitions come from GameConfiguration Achievements.
+ * Actual per-game values come from the server's game-over response
+ * (gameOverField.gameSessionStats + xpLevelUpdates).
+ *
+ * Mapping:
+ *   normal_cells_eaten -> gameSessionStats.normalCellsEaten
+ *   time_total         -> gameSessionStats.timeTotal
+ *   final_level        -> xpLevelUpdates.finalLevel
+ *   top_position       -> gameSessionStats.topPosition
+ *   game_ended         -> receipt of gameOverField itself
+ *   final_position     -> gameSessionStats.finalPosition
+ */
+
+
+window._lmLastChallengeEvaluation =
+    window._lmLastChallengeEvaluation || null;
+
+
+window.getAgarChallengeDirection =
+    function (type) {
+        type = String(type || '').trim().toLowerCase();
+        if (type === 'top_position' || type === 'final_position') {
+            return 'lower';
+        }
+        return 'higher';
+    };
+
+
+/*
+ * Read a numeric field without converting missing into zero.
+ */
+window._lmReadChallengeNumber =
+    function (object, fieldNames, positiveOnly) {
+        if (!object || typeof object !== 'object') {
+            return { known: false, value: null, field: '' };
+        }
+        if (!Array.isArray(fieldNames)) {
+            fieldNames = [fieldNames];
+        }
+        for (var i = 0; i < fieldNames.length; i++) {
+            var field = fieldNames[i];
+            if (!field || object[field] === undefined || object[field] === null) {
+                continue;
+            }
+            var raw = object[field];
+            var value;
+            if (raw && typeof raw === 'object' && typeof raw.toNumber === 'function') {
+                value = raw.toNumber();
+            } else {
+                value = Number(raw);
+            }
+            if (!Number.isFinite(value)) continue;
+            if (positiveOnly && value <= 0) continue;
+            return { known: true, value: value, field: field };
+        }
+        return { known: false, value: null, field: '' };
+    };
+
+
+/*
+ * Resolve the ONE authoritative raw value for one challenge type.
+ */
+window.getAgarChallengeMetric =
+    function (type, gameSessionStats, context) {
+        type = String(type || '').trim().toLowerCase();
+        gameSessionStats = (gameSessionStats && typeof gameSessionStats === 'object') ? gameSessionStats : {};
+        context = (context && typeof context === 'object') ? context : {};
+
+        var result;
+
+        switch (type) {
+            case 'normal_cells_eaten':
+                result = window._lmReadChallengeNumber(gameSessionStats, ['normalCellsEaten'], false);
+                break;
+
+            case 'time_total':
+                result = window._lmReadChallengeNumber(gameSessionStats, ['timeTotal', 'longestTimeAlive'], false);
+                break;
+
+            case 'final_level':
+                result = window._lmReadChallengeNumber(context, ['finalLevel'], false);
+                if (!result.known) {
+                    result = window._lmReadChallengeNumber(gameSessionStats, ['finalLevel'], false);
+                }
+                break;
+
+            case 'top_position':
+                result = window._lmReadChallengeNumber(gameSessionStats, ['topPosition'], true);
+                break;
+
+            case 'game_ended':
+                if (context.gameEnded === true) {
+                    result = { known: true, value: 1, field: 'gameOverField' };
+                } else {
+                    result = { known: false, value: null, field: '' };
+                }
+                break;
+
+            case 'final_position':
+                result = window._lmReadChallengeNumber(gameSessionStats, ['finalPosition'], true);
+                break;
+
+            default:
+                result = { known: false, value: null, field: '' };
+                break;
+        }
+
+        return {
+            type: type,
+            known: !!result.known,
+            rawValue: result.known ? result.value : null,
+            sourceField: result.field || '',
+            direction: window.getAgarChallengeDirection(type)
+        };
+    };
+
+
+/*
+ * Evaluate every configured Challenge against one game-over snapshot.
+ */
+window.evaluateAgarChallenges =
+    function (gameSessionStats, context) {
+        gameSessionStats = (gameSessionStats && typeof gameSessionStats === 'object') ? gameSessionStats : {};
+        context = (context && typeof context === 'object') ? context : {};
+
+        var challengeTypes = typeof window.getAgarAchievementTypes === 'function'
+            ? window.getAgarAchievementTypes() : [];
+
+        var evaluation = {
+            evaluatedAt: Date.now(),
+            source: 'gameOverField',
+            persistentUnlockKnown: false,
+            gameSessionStats: gameSessionStats,
+            context: {
+                gameEnded: context.gameEnded === true,
+                finalLevel: Number.isFinite(Number(context.finalLevel))
+                    ? Number(context.finalLevel) : null
+            },
+            types: [],
+            byType: Object.create(null),
+            metThresholds: [],
+            knownThresholdCount: 0,
+            metThresholdCount: 0
+        };
+
+        for (var typeIndex = 0; typeIndex < challengeTypes.length; typeIndex++) {
+            var type = String(challengeTypes[typeIndex] || '').trim();
+            if (!type) continue;
+
+            var definitions = typeof window.getAgarAchievements === 'function'
+                ? window.getAgarAchievements(type).slice() : [];
+            if (definitions.length === 0) continue;
+
+            var metric = window.getAgarChallengeMetric(type, gameSessionStats, context);
+            var direction = metric.direction;
+            var thresholds = [];
+            var metCount = 0;
+            var firstDivisor = 1;
+
+            for (var thresholdIndex = 0; thresholdIndex < definitions.length; thresholdIndex++) {
+                var definition = definitions[thresholdIndex];
+                if (!definition) continue;
+
+                var goal = Number(definition.goal);
+                if (!Number.isFinite(goal)) continue;
+
+                var divisor = Number(definition.serverConversionDivisor);
+                if (!Number.isFinite(divisor) || divisor <= 0) divisor = 1;
+                if (thresholdIndex === 0) firstDivisor = divisor;
+
+                var displayValue = metric.known ? (metric.rawValue / divisor) : null;
+                var met = false;
+
+                if (metric.known) {
+                    if (direction === 'lower') {
+                        met = displayValue > 0 && displayValue <= goal;
+                    } else {
+                        met = displayValue >= goal;
+                    }
+                }
+
+                var progressRatio = 0;
+                if (metric.known) {
+                    if (direction === 'lower') {
+                        if (displayValue > 0) {
+                            progressRatio = met ? 1 : Math.max(0, Math.min(1, goal / displayValue));
+                        }
+                    } else if (goal > 0) {
+                        progressRatio = Math.max(0, Math.min(1, displayValue / goal));
+                    }
+                }
+
+                var threshold = {
+                    type: type,
+                    goal: goal,
+                    playGamesId: definition.playGamesId ? String(definition.playGamesId) : '',
+                    serverConversionDivisor: divisor,
+                    rawValue: metric.known ? metric.rawValue : null,
+                    displayValue: displayValue,
+                    known: metric.known,
+                    metThisGame: met,
+                    progressRatio: progressRatio,
+                    raw: definition
+                };
+
+                thresholds.push(threshold);
+                if (metric.known) evaluation.knownThresholdCount++;
+                if (met) {
+                    metCount++;
+                    evaluation.metThresholdCount++;
+                    evaluation.metThresholds.push(threshold);
+                }
+            }
+
+            var convertedMetricValue = metric.known ? (metric.rawValue / firstDivisor) : null;
+
+            var nextThreshold = null;
+            for (var nextIndex = 0; nextIndex < thresholds.length; nextIndex++) {
+                if (!thresholds[nextIndex].metThisGame) {
+                    nextThreshold = thresholds[nextIndex];
+                    break;
+                }
+            }
+
+            var group = {
+                type: type,
+                known: metric.known,
+                rawValue: metric.known ? metric.rawValue : null,
+                displayValue: convertedMetricValue,
+                sourceField: metric.sourceField,
+                direction: direction,
+                serverConversionDivisor: firstDivisor,
+                thresholds: thresholds,
+                metCount: metCount,
+                thresholdCount: thresholds.length,
+                nextThreshold: nextThreshold,
+                allMetThisGame: (metric.known && thresholds.length > 0 && metCount === thresholds.length)
+            };
+
+            evaluation.types.push(group);
+            evaluation.byType[type] = group;
+        }
+
+        window._lmLastChallengeEvaluation = evaluation;
+
+        try {
+            document.dispatchEvent(
+                new CustomEvent('lm-challenges-evaluated', { detail: evaluation })
+            );
+        } catch (challengeEventError) { }
+
+        return evaluation;
+    };
+
+
+window.getAgarLastChallengeEvaluation =
+    function () {
+        return window._lmLastChallengeEvaluation || null;
     };
 
 
@@ -26981,19 +27252,32 @@ function thelegendmodproject() {
                     }
                     break;
                 case 62:
+                    /* GAME OVER — authoritative source for stats, level, challenges */
                     var u = r.uncompressedData.gameOverField;
+                    if (!u) {
+                        console.warn('[LM GAMEOVER] Opcode 62 contained no gameOverField.');
+                        break;
+                    }
+
                     this.displayStats(u.userStats);
+
+                    var challengeFinalLevel = null;
+
+                    /* Extract finalLevel from gameSessionStats if available */
+                    if (u.gameSessionStats && u.gameSessionStats.finalLevel !== undefined && u.gameSessionStats.finalLevel !== null) {
+                        var sessionFinalLevel = Number(u.gameSessionStats.finalLevel);
+                        if (Number.isFinite(sessionFinalLevel)) challengeFinalLevel = sessionFinalLevel;
+                    }
+
                     if (u.xpLevelUpdates && u.xpLevelUpdates.length) {
                         var iXp = u.xpLevelUpdates[0];
-                        var gLevel = iXp.finalLevel || 1;
-                        var gXp = iXp.finalXpForLevel || 0;
-                        var gcEntry = window.getAgarXpEntry
-                            ? window.getAgarXpEntry(gLevel)
-                            : null;
-                        var gNextXp =
-                            (gcEntry && gcEntry.xpToNextLevel > 0)
-                                ? gcEntry.xpToNextLevel
-                                : this.agarExp(gLevel);
+                        var gLevel = Number(iXp.finalLevel) || 1;
+                        var gXp = Number(iXp.finalXpForLevel) || 0;
+                        challengeFinalLevel = gLevel;
+
+                        var gcEntry = window.getAgarXpEntry ? window.getAgarXpEntry(gLevel) : null;
+                        var gNextXp = (gcEntry && gcEntry.xpToNextLevel > 0)
+                            ? gcEntry.xpToNextLevel : this.agarExp(gLevel);
                         var exp = gLevel >= 150 ? 100 : ~~(gXp * 100 / gNextXp);
 
                         if (this.user) {
@@ -27002,13 +27286,26 @@ function thelegendmodproject() {
                             this.user.nextLevelXp = gNextXp;
                         }
                         window.agarioLEVEL = gLevel;
-
                         window.updateOfficialXpPanel(gLevel, exp);
                     }
+
+                    /* ═══ CHALLENGES ═══ */
+                    try {
+                        if (typeof window.evaluateAgarChallenges === 'function') {
+                            window.evaluateAgarChallenges(
+                                u.gameSessionStats || {},
+                                { gameEnded: true, finalLevel: challengeFinalLevel }
+                            );
+                        }
+                    } catch (challengeEvaluationError) {
+                        console.error('[LM CHALLENGES] Game-over evaluation failed:', challengeEvaluationError);
+                    }
+
                     this.updateProducts(u.productUpdates);
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
                         this.newPotion(u.potionInfo.newUserPotion);
-                    };
+                    }
+
                     if ((defaultmapsettings.gameOverStats || window._forceGameOverStats) && u.gameSessionStats) {
                         this.showSessionStats(u.gameSessionStats);
                         window._forceGameOverStats = false;

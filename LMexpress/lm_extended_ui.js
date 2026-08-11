@@ -7904,6 +7904,263 @@
 
 
 
+    /*
+     * ═══════════════════════════════════════════════════════════════════════
+     * CHALLENGES / ACHIEVEMENTS
+     * ═══════════════════════════════════════════════════════════════════════
+     *
+     * Definitions:  GameConfiguration -> Achievements
+     * Last-game:    server gameOverField.gameSessionStats
+     *
+     * Says "met this game" — not "permanently unlocked" — because persistent
+     * Play Games achievement state is not exposed by the current sources.
+     */
+
+    window._lmChallengePresentation = {
+        normal_cells_eaten: { icon: '\uD83D\uDFE2', title: 'Cells Eaten', subtitle: 'Eat normal player cells in one game.' },
+        time_total:         { icon: '\u23F1\uFE0F',  title: 'Survival Time', subtitle: 'Stay alive for the configured time.' },
+        final_level:        { icon: '\u2B50',         title: 'Final Level', subtitle: 'Finish the game at or above the configured level.' },
+        top_position:       { icon: '\uD83D\uDC51', title: 'Best Position', subtitle: 'Reach the configured leaderboard position or better.' },
+        game_ended:         { icon: '\uD83C\uDFC1', title: 'Finish a Game', subtitle: 'Complete a game session.' },
+        final_position:     { icon: '\uD83C\uDFC6', title: 'Final Position', subtitle: 'Finish at the configured position or better.' }
+    };
+
+    window._lmGetChallengePresentation = function (type) {
+        type = String(type || '').trim();
+        var configured = window._lmChallengePresentation[type];
+        if (configured) return configured;
+        var readable = type.replace(/_/g, ' ').replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
+        return { icon: '\uD83C\uDFAF', title: readable || 'Challenge', subtitle: 'Configured Agar.io Challenge.' };
+    };
+
+    window._lmFormatChallengeValue = function (type, value) {
+        if (value === undefined || value === null || !Number.isFinite(Number(value))) return '\u2014';
+        value = Number(value);
+        switch (type) {
+            case 'time_total':      return value.toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' min';
+            case 'final_level':     return 'Lv ' + Math.floor(value);
+            case 'top_position':
+            case 'final_position':  return '#' + Math.floor(value);
+            case 'game_ended':      return value >= 1 ? 'Finished' : 'Not finished';
+            default:                return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+        }
+    };
+
+    window._lmFormatChallengeGoal = function (type, goal) {
+        goal = Number(goal);
+        if (!Number.isFinite(goal)) return '\u2014';
+        switch (type) {
+            case 'normal_cells_eaten': return goal + (goal === 1 ? ' cell' : ' cells');
+            case 'time_total':         return goal + (goal === 1 ? ' minute' : ' minutes');
+            case 'final_level':        return 'Level ' + goal;
+            case 'top_position':
+            case 'final_position':     return '#' + goal;
+            case 'game_ended':         return 'Finish game';
+            default:                   return String(goal);
+        }
+    };
+
+
+    window.showChallengesModal = function () {
+        injectStyles();
+        var t = getTheme();
+
+        var old = document.getElementById('lm-challenges-modal');
+        if (old) old.remove();
+
+        var challengeTypes = typeof window.getAgarAchievementTypes === 'function'
+            ? window.getAgarAchievementTypes() : [];
+
+        var evaluation = typeof window.getAgarLastChallengeEvaluation === 'function'
+            ? window.getAgarLastChallengeEvaluation() : null;
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-challenges-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '1000000';
+        modal.addEventListener('click', function (event) {
+            if (event.target === modal) modal.remove();
+        });
+
+        var shell = document.createElement('div');
+        shell.className = 'lm-modal-container';
+        shell.style.cssText = 'background:' + t.pc + ';border-color:' + t.mc + ';width:680px;max-width:94vw;';
+
+        /* ─── HEADER ─── */
+        var header = document.createElement('div');
+        header.className = 'lm-modal-header';
+        header.style.cssText = 'background:' + t.pc2 + ';padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between;';
+
+        var headerLeft = document.createElement('div');
+        headerLeft.style.cssText = 'display:flex;align-items:center;gap:10px;font-size:18px;font-weight:900;color:' + t.tc + ';';
+        headerLeft.innerHTML = '\uD83C\uDFC5 Challenges';
+
+        var closeBtn = document.createElement('button');
+        closeBtn.className = 'btn';
+        closeBtn.style.cssText = 'background:transparent;border:none;color:' + t.tc2 + ';font-size:22px;cursor:pointer;padding:0 4px;';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.onclick = function () { modal.remove(); };
+
+        header.appendChild(headerLeft);
+        header.appendChild(closeBtn);
+        shell.appendChild(header);
+
+        /* ─── SUMMARY BAR ─── */
+        if (evaluation) {
+            var summaryBar = document.createElement('div');
+            summaryBar.style.cssText = 'padding:10px 20px;background:rgba(255,215,0,.08);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:' + t.tc2 + ';';
+
+            var summaryLeft = document.createElement('span');
+            summaryLeft.innerHTML = 'Last game: <b style="color:' + t.b2 + ';">' + evaluation.metThresholdCount + '</b> / ' + evaluation.knownThresholdCount + ' thresholds met';
+
+            var summaryRight = document.createElement('span');
+            summaryRight.style.cssText = 'font-size:10px;opacity:.6;';
+            var evalDate = new Date(evaluation.evaluatedAt);
+            summaryRight.textContent = evalDate.toLocaleTimeString();
+
+            summaryBar.appendChild(summaryLeft);
+            summaryBar.appendChild(summaryRight);
+            shell.appendChild(summaryBar);
+        }
+
+        /* ─── BODY ─── */
+        var body = document.createElement('div');
+        body.style.cssText = 'padding:16px 20px;max-height:60vh;overflow-y:auto;';
+
+        if (challengeTypes.length === 0) {
+            body.innerHTML = '<div style="text-align:center;padding:30px 0;color:' + t.tc2 + ';font-size:14px;">No Challenges configured.<br><span style="font-size:11px;opacity:.6;">Waiting for GameConfiguration\u2026</span></div>';
+        } else {
+            for (var ti = 0; ti < challengeTypes.length; ti++) {
+                var type = challengeTypes[ti];
+                var pres = window._lmGetChallengePresentation(type);
+                var group = evaluation && evaluation.byType ? evaluation.byType[type] : null;
+                var definitions = typeof window.getAgarAchievements === 'function'
+                    ? window.getAgarAchievements(type) : [];
+
+                /* Type section */
+                var section = document.createElement('div');
+                section.style.cssText = 'margin-bottom:18px;border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;';
+
+                /* Type header */
+                var typeHeader = document.createElement('div');
+                typeHeader.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);';
+
+                var typeIcon = document.createElement('span');
+                typeIcon.style.fontSize = '22px';
+                typeIcon.textContent = pres.icon;
+
+                var typeInfo = document.createElement('div');
+                typeInfo.style.flex = '1';
+                typeInfo.innerHTML = '<div style="font-weight:800;font-size:14px;color:' + t.tc + ';">' + pres.title + '</div>' +
+                    '<div style="font-size:11px;color:' + t.tc2 + ';margin-top:1px;">' + pres.subtitle + '</div>';
+
+                /* Current value badge */
+                var valueBadge = document.createElement('div');
+                valueBadge.style.cssText = 'text-align:right;font-size:12px;font-weight:700;color:' + t.b2 + ';';
+                if (group && group.known) {
+                    valueBadge.textContent = window._lmFormatChallengeValue(type, group.displayValue);
+                } else {
+                    valueBadge.innerHTML = '<span style="opacity:.4;">No data</span>';
+                }
+
+                typeHeader.appendChild(typeIcon);
+                typeHeader.appendChild(typeInfo);
+                typeHeader.appendChild(valueBadge);
+                section.appendChild(typeHeader);
+
+                /* Thresholds */
+                for (var di = 0; di < definitions.length; di++) {
+                    var def = definitions[di];
+                    var goal = Number(def.goal);
+
+                    var threshold = null;
+                    if (group && group.thresholds) {
+                        for (var si = 0; si < group.thresholds.length; si++) {
+                            if (Number(group.thresholds[si].goal) === goal) {
+                                threshold = group.thresholds[si];
+                                break;
+                            }
+                        }
+                    }
+
+                    var met = threshold ? threshold.metThisGame : false;
+                    var progress = threshold ? threshold.progressRatio : 0;
+
+                    var row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);' +
+                        (met ? 'background:rgba(76,175,80,.08);' : '');
+
+                    /* Status icon */
+                    var statusIcon = document.createElement('div');
+                    statusIcon.style.cssText = 'width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;';
+                    if (met) {
+                        statusIcon.style.background = 'linear-gradient(135deg,#4caf50,#66bb6a)';
+                        statusIcon.textContent = '\u2713';
+                        statusIcon.style.color = '#fff';
+                        statusIcon.style.fontWeight = '900';
+                    } else if (threshold && threshold.known) {
+                        statusIcon.style.background = 'rgba(255,255,255,.08)';
+                        statusIcon.style.border = '2px solid rgba(255,255,255,.15)';
+                    } else {
+                        statusIcon.style.background = 'rgba(255,255,255,.04)';
+                        statusIcon.style.border = '2px dashed rgba(255,255,255,.1)';
+                    }
+
+                    /* Goal text */
+                    var goalLabel = document.createElement('div');
+                    goalLabel.style.cssText = 'flex:1;font-size:13px;color:' + (met ? '#4caf50' : t.tc) + ';font-weight:' + (met ? '700' : '500') + ';';
+                    goalLabel.textContent = window._lmFormatChallengeGoal(type, goal);
+
+                    /* Progress bar */
+                    var progressWrap = document.createElement('div');
+                    progressWrap.style.cssText = 'width:100px;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;flex-shrink:0;';
+                    var progressFill = document.createElement('div');
+                    var pct = Math.round(progress * 100);
+                    progressFill.style.cssText = 'height:100%;border-radius:3px;transition:width .3s;width:' + pct + '%;background:' +
+                        (met ? 'linear-gradient(90deg,#4caf50,#66bb6a)' : 'linear-gradient(90deg,' + t.b1 + ',' + t.b2 + ')') + ';';
+                    progressWrap.appendChild(progressFill);
+
+                    /* Percentage */
+                    var pctLabel = document.createElement('div');
+                    pctLabel.style.cssText = 'width:36px;text-align:right;font-size:11px;font-weight:700;color:' + (met ? '#4caf50' : t.tc2) + ';flex-shrink:0;';
+                    pctLabel.textContent = threshold && threshold.known ? pct + '%' : '\u2014';
+
+                    row.appendChild(statusIcon);
+                    row.appendChild(goalLabel);
+                    row.appendChild(progressWrap);
+                    row.appendChild(pctLabel);
+                    section.appendChild(row);
+                }
+
+                body.appendChild(section);
+            }
+        }
+
+        shell.appendChild(body);
+
+        /* ─── FOOTER ─── */
+        var footer = document.createElement('div');
+        footer.style.cssText = 'padding:10px 20px;border-top:1px solid rgba(255,255,255,.08);text-align:center;';
+        footer.innerHTML = '<span style="font-size:10px;color:' + t.tc2 + ';opacity:.5;">Progress shown is from your last completed game. Thresholds from GameConfiguration.</span>';
+        shell.appendChild(footer);
+
+        modal.appendChild(shell);
+        document.body.appendChild(modal);
+    };
+
+
+    /* Listen for challenge evaluation and optionally auto-show toast */
+    document.addEventListener('lm-challenges-evaluated', function (e) {
+        var ev = e && e.detail;
+        if (!ev || ev.metThresholdCount <= 0) return;
+
+        if (window.toastr) {
+            var msg = '<b>\uD83C\uDFC5 Challenges:</b> ' + ev.metThresholdCount + ' threshold' + (ev.metThresholdCount > 1 ? 's' : '') + ' met!';
+            toastr.success(msg, '', { onclick: function () { if (typeof window.showChallengesModal === 'function') window.showChallengesModal(); } });
+        }
+    });
+
+
     // Inject "Official Offer", "Leagues", and "Friends" buttons into Profile Tab (#profile) panel
     function initMenuButtons() {
         var profileTab = $('#profile');
@@ -7936,6 +8193,9 @@
             <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
                 <i class="fa fa-users"></i> Friends
                 <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY NEEDED</div>
+            </button>
+            <button id="lm-challenges-btn" class="btn btn-success btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="View Challenges / Achievements">
+                \uD83C\uDFC5 Challenges
             </button>
         `;
 
@@ -9242,6 +9502,14 @@
         $(document).off('click', '#lm-claim-all-btn').on('click', '#lm-claim-all-btn', function(e) {
             e.preventDefault();
             if (typeof window.claimAllRewardsAndGifts === 'function') window.claimAllRewardsAndGifts();
+        });
+
+        /* Challenges button */
+        $(document).off('click', '#lm-challenges-btn').on('click', '#lm-challenges-btn', function(e) {
+            e.preventDefault();
+            if (typeof window.showChallengesModal === 'function') {
+                window.showChallengesModal();
+            }
         });
 
         $(document).off('click', '#lm-leagues-btn').on('click', '#lm-leagues-btn', function(e) {
