@@ -30415,7 +30415,11 @@ function thelegendmodproject() {
                         0
                 ) {
                     renderRadius +=
-                        5;
+                        (
+                            defaultSettings
+                                .virusSpikesSize ||
+                            6
+                        );
                 }
 
 
@@ -55020,116 +55024,159 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * Compute averaged edge normal at every point.
+             * Compute edge normals at every point.
+             *
+             * VIRUS CELLS:
+             *     Use RADIAL normals (center → point) so the alternating
+             *     inner/outer spike points produce sharp, miter-like stroke
+             *     tips instead of the smoothed average that hides the spikes.
+             *
+             * NORMAL CELLS:
+             *     Averaged edge normals from neighboring tangent for smooth
+             *     jelly curves.
              */
+            var isVirusStroke =
+                !!(
+                    cell.isVirus
+                );
+
             for (
                 var i = 0;
                 i <
                     n;
                 i++
             ) {
-                var prev =
-                    points[
-                        (
-                            i -
-                            1 +
-                            n
-                        ) %
-                        n
-                    ];
-
-
                 var cur =
                     points[
                         i
                     ];
 
-
-                var next =
-                    points[
-                        (
-                            i +
-                            1
-                        ) %
-                        n
-                    ];
-
-
-                var tx =
-                    next.x -
-                    prev.x;
-
-
-                var ty =
-                    next.y -
-                    prev.y;
-
-
-                var x =
-                    ty;
-
-
-                var y =
-                    -tx;
-
-
-                var rx =
-                    cur.x -
-                    cell.x;
-
-
-                var ry =
-                    cur.y -
-                    cell.y;
-
-
-                /*
-                 * Force outward orientation.
-                 */
-                if (
-                    x *
-                        rx +
-                    y *
-                        ry <
-                    0
-                ) {
-                    x =
-                        -x;
-
-                    y =
-                        -y;
-                }
-
-
-                var len =
-                    Math.sqrt(
-                        x *
-                            x +
-                        y *
-                            y
-                    );
-
+                var x, y, len;
 
                 if (
-                    !len ||
-                    !isFinite(
-                        len
-                    )
+                    isVirusStroke
                 ) {
+                    /*
+                     * Radial normal: center → point.
+                     *
+                     * This preserves the alternating inner/outer spike geometry
+                     * created by movePoints() (+virusSpikesSize on even indices).
+                     */
                     x =
-                        rx;
+                        cur.x -
+                        cell.x;
 
                     y =
-                        ry;
+                        cur.y -
+                        cell.y;
 
                     len =
                         Math.sqrt(
-                            rx *
-                                rx +
-                            ry *
-                                ry
+                            x *
+                                x +
+                            y *
+                                y
                         ) ||
                         1;
+                }
+                else {
+                    var prev =
+                        points[
+                            (
+                                i -
+                                1 +
+                                n
+                            ) %
+                            n
+                        ];
+
+
+                    var next =
+                        points[
+                            (
+                                i +
+                                1
+                            ) %
+                            n
+                        ];
+
+
+                    var tx =
+                        next.x -
+                        prev.x;
+
+
+                    var ty =
+                        next.y -
+                        prev.y;
+
+
+                    x =
+                        ty;
+
+
+                    y =
+                        -tx;
+
+
+                    var rx =
+                        cur.x -
+                        cell.x;
+
+
+                    var ry =
+                        cur.y -
+                        cell.y;
+
+
+                    /*
+                     * Force outward orientation.
+                     */
+                    if (
+                        x *
+                            rx +
+                        y *
+                            ry <
+                        0
+                    ) {
+                        x =
+                            -x;
+
+                        y =
+                            -y;
+                    }
+
+
+                    len =
+                        Math.sqrt(
+                            x *
+                                x +
+                            y *
+                                y
+                        );
+
+
+                    if (
+                        !len ||
+                        !isFinite(
+                            len
+                        )
+                    ) {
+                        x =
+                            rx;
+
+                        y =
+                            ry;
+
+                        len =
+                            Math.sqrt(
+                                rx *
+                                    rx +
+                                ry *
+                                    ry
+                            ) ||
+                            1;
+                    }
                 }
 
 
