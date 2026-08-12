@@ -56275,69 +56275,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (
                         cell.isVirus
                     ) {
-                        /*
-                         * TEMPORARY DIAGNOSTIC — remove after verification.
-                         */
-                        if (
-                            !this._virusJellyDiagFrame
-                        ) {
-                            this._virusJellyDiagFrame =
-                                0;
-                        }
-
-                        this._virusJellyDiagFrame++;
-
-                        if (
-                            this._virusJellyDiagFrame %
-                                600 ===
-                            1
-                        ) {
-                            var minRl =
-                                Infinity;
-
-                            var maxRl =
-                                -Infinity;
-
-                            for (
-                                var diagI = 0;
-                                diagI <
-                                    pointCount;
-                                diagI++
-                            ) {
-                                var diagRl =
-                                    points[
-                                        diagI
-                                    ].rl;
-
-                                if (
-                                    diagRl <
-                                    minRl
-                                ) {
-                                    minRl =
-                                        diagRl;
-                                }
-
-                                if (
-                                    diagRl >
-                                    maxRl
-                                ) {
-                                    maxRl =
-                                        diagRl;
-                                }
-                            }
-
-                            console.log(
-                                '[JELLY VIRUS DIAG]',
-                                'id:', cell.id,
-                                'size:', cell.size,
-                                'targetSize:', cell.targetSize,
-                                'points:', pointCount,
-                                'minRl:', minRl.toFixed(2),
-                                'maxRl:', maxRl.toFixed(2),
-                                'spread:', (maxRl - minRl).toFixed(2),
-                                'renderer: WebGL'
-                            );
-                        }
                         var rawVirusMass =
                             ~~(
                                 cell.size *
