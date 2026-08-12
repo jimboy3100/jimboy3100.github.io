@@ -51095,29 +51095,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     ctx.lineTo(text - ctx.lineWidth, x1 - ctx.lineWidth);
                 }
 
-                if (LM && LM.isLegendWorld) {
-                    /* Expanding Land: always-on animated breathing glow */
-                    var now = Date.now() / 1000.0;
-                    var breathe = Math.sin(now * 1.5) * 0.5 + 0.5;
-                    ctx.shadowBlur = 12 + breathe * 18;
-                    ctx.shadowColor = defaultSettings.borderGlowColor || '#00aaff';
-                    ctx.stroke();
-                    /* Double-stroke for extra glow intensity */
-                    ctx.shadowBlur = 6 + breathe * 8;
-                    ctx.globalAlpha = 0.4 + breathe * 0.2;
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
+                if (defaultmapsettings.borderGlow) {
+                    ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
+                    ctx.shadowColor = defaultSettings.borderGlowColor || ctx.strokeStyle;
                 } else {
-                    if (defaultmapsettings.borderGlow) {
-                        ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
-                        ctx.shadowColor = defaultSettings.borderGlowColor || ctx.strokeStyle;
-                    } else {
-                        "skrrt";
-                    }
-                    ctx.stroke();
+                    "skrrt";
                 }
+                ctx.stroke();
             }
-            if (defaultmapsettings.borderGlow || (LM && LM.isLegendWorld)) {
+            if (defaultmapsettings.borderGlow) {
                 ctx.shadowBlur = 0;
             } else {
                 "skrrt";
