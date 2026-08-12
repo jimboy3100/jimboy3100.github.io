@@ -29244,6 +29244,119 @@ function thelegendmodproject() {
      *     Core game state manager — WebSocket connection, protocol parsing,
      *     cell arrays, map bounds, viewport, leaderboard, and the game loop.
      * ═══════════════════════════════════════════════════════════════════════════ */
+
+    /* ── Expanding Land: one-shot entrance animation ── */
+    var _elEntrancePlayed = false;
+    function showExpandingLandEntrance() {
+        if (_elEntrancePlayed) return;
+        _elEntrancePlayed = true;
+
+        /* Inject CSS once */
+        if (!document.getElementById('el-entrance-css')) {
+            var style = document.createElement('style');
+            style.id = 'el-entrance-css';
+            style.textContent = [
+                '#el-entrance-overlay {',
+                '  position:fixed;top:0;left:0;width:100vw;height:100vh;',
+                '  z-index:999999;pointer-events:none;',
+                '  display:flex;align-items:center;justify-content:center;',
+                '  animation:elFade 3.8s ease-out forwards;',
+                '}',
+                '@keyframes elFade{0%{opacity:0}8%{opacity:1}60%{opacity:1}100%{opacity:0}}',
+                '.el-e-bg{',
+                '  position:absolute;top:0;left:0;width:100%;height:100%;',
+                '  background:radial-gradient(ellipse at center,rgba(0,20,40,0.65) 0%,rgba(0,0,0,0.25) 60%,transparent 100%);',
+                '}',
+                '.el-e-ring{',
+                '  position:absolute;top:50%;left:50%;width:10px;height:10px;',
+                '  margin-top:-5px;margin-left:-5px;border:2px solid rgba(0,200,255,0.7);',
+                '  border-radius:50%;animation:elRing 2.5s ease-out forwards;',
+                '  box-shadow:0 0 25px rgba(0,200,255,0.3),inset 0 0 25px rgba(0,200,255,0.08);',
+                '}',
+                '.el-e-ring2{animation-delay:0.3s;border-color:rgba(0,150,255,0.4);animation-duration:3s}',
+                '@keyframes elRing{',
+                '  0%{width:10px;height:10px;margin-top:-5px;margin-left:-5px;opacity:1}',
+                '  100%{width:80vmin;height:80vmin;margin-top:-40vmin;margin-left:-40vmin;opacity:0}',
+                '}',
+                '.el-e-content{position:relative;text-align:center;z-index:2;animation:elReveal 3.2s ease-out forwards}',
+                '@keyframes elReveal{',
+                '  0%{transform:scale(0.7);opacity:0;filter:blur(8px)}',
+                '  12%{transform:scale(1.04);opacity:1;filter:blur(0)}',
+                '  22%{transform:scale(1)}',
+                '  65%{opacity:1}',
+                '  100%{opacity:0;transform:scale(1.08)}',
+                '}',
+                '.el-e-sub{',
+                '  font-family:"Inter","Segoe UI",sans-serif;font-size:1.1em;font-weight:300;',
+                '  color:rgba(150,220,255,0.85);letter-spacing:0.4em;text-transform:uppercase;',
+                '  margin-bottom:6px;text-shadow:0 0 15px rgba(0,150,255,0.4);',
+                '}',
+                '.el-e-title{',
+                '  font-family:"Inter","Segoe UI",sans-serif;font-size:3.8em;font-weight:900;',
+                '  color:#fff;letter-spacing:0.12em;',
+                '  text-shadow:0 0 35px rgba(0,180,255,0.5),0 0 70px rgba(0,100,255,0.25),0 2px 4px rgba(0,0,0,0.4);',
+                '  background:linear-gradient(180deg,#fff 0%,#88ddff 100%);',
+                '  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;',
+                '}',
+                '.el-e-tag{',
+                '  font-family:"Inter","Segoe UI",sans-serif;font-size:0.9em;font-weight:400;',
+                '  color:rgba(180,220,255,0.6);letter-spacing:0.2em;text-transform:uppercase;margin-top:10px;',
+                '}',
+                '.el-e-particles{position:absolute;top:50%;left:50%;width:0;height:0;z-index:1}',
+                '.el-p{',
+                '  position:absolute;width:3px;height:3px;background:rgba(100,200,255,0.8);',
+                '  border-radius:50%;box-shadow:0 0 6px rgba(100,200,255,0.5);',
+                '}',
+                '@keyframes elPMove{0%{transform:translate(0,0);opacity:1}100%{transform:translate(var(--px),var(--py));opacity:0}}'
+            ].join('\n');
+            document.head.appendChild(style);
+        }
+
+        /* Build overlay DOM */
+        var ov = document.createElement('div');
+        ov.id = 'el-entrance-overlay';
+        ov.innerHTML =
+            '<div class="el-e-bg"></div>' +
+            '<div class="el-e-ring"></div>' +
+            '<div class="el-e-ring el-e-ring2"></div>' +
+            '<div class="el-e-content">' +
+                '<div class="el-e-sub">Welcome to</div>' +
+                '<div class="el-e-title">EXPANDING LAND</div>' +
+                '<div class="el-e-tag">Survive the shrink. Dominate the growth.</div>' +
+            '</div>' +
+            '<div class="el-e-particles"></div>';
+
+        document.body.appendChild(ov);
+
+        /* Particle burst */
+        var pc = ov.querySelector('.el-e-particles');
+        for (var i = 0; i < 20; i++) {
+            var dot = document.createElement('div');
+            dot.className = 'el-p';
+            var a = (i / 20) * Math.PI * 2;
+            var d = 100 + Math.random() * 180;
+            var dur = (1.4 + Math.random() * 0.8).toFixed(2);
+            var del = (Math.random() * 0.35).toFixed(2);
+            dot.style.cssText =
+                'animation:elPMove ' + dur + 's ease-out ' + del + 's forwards;' +
+                '--px:' + (Math.cos(a) * d).toFixed(1) + 'px;' +
+                '--py:' + (Math.sin(a) * d).toFixed(1) + 'px;';
+            pc.appendChild(dot);
+        }
+
+        /* Auto-remove after animation */
+        setTimeout(function() {
+            if (ov.parentNode) ov.parentNode.removeChild(ov);
+        }, 4200);
+    }
+
+    function resetExpandingLandEntrance() { _elEntrancePlayed = false; }
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §7  LEGENDMOD (LM) OBJECT
+     *     Core game state manager — WebSocket connection, protocol parsing,
+     *     cell arrays, map bounds, viewport, leaderboard, and the game loop.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     var LM = {
         integrity: true,
         quadtree: null,
@@ -29700,6 +29813,7 @@ function thelegendmodproject() {
             this.mapOffsetFixed = false;
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
+            resetExpandingLandEntrance(); // allow entrance animation to replay on next connect
             LM.mapEvent.active = false;
             LM.mapEvent.phase = 0;
             LM.decayInfo.active = false;
@@ -33700,6 +33814,9 @@ function thelegendmodproject() {
                             //console.log('[LW Auth] Triggering master.login() after LW beacon');
                             window.master.login();
                         }
+
+                        /* Show one-shot entrance animation */
+                        showExpandingLandEntrance();
                     } else if (LM.isLegendWorld && _lwOp === 200 && data.byteLength >= 42) {
                         /* Map Event (needs 42 bytes: 1 opcode + 1 type + 4×8 f64 + 2×4 u32) */
                         var s2 = 1;
