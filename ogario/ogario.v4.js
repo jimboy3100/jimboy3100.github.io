@@ -20568,8 +20568,7 @@ function thelegendmodproject() {
 
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').show();
-                $('.menu-panel').hide();
-                $('#main-panel').show();
+
                 if (!ogario.play && !this.skipStats) {
                     $('#stats').show();
                 }
@@ -22318,6 +22317,9 @@ function thelegendmodproject() {
                     legendmod.sendAction(
                         55
                     );
+                    legendmod._isWorldSpectating = true;
+                    legendmod._worldSpecPanX = 0;
+                    legendmod._worldSpecPanY = 0;
                 } else {
                     legendmod._worldSpectatePending =
                         true;
@@ -33088,6 +33090,9 @@ function thelegendmodproject() {
         accessTokenSent: false,
         _worldSpectatePending: false,
         _worldSpectatePendingUrl: null,
+        _isWorldSpectating: false,
+        _worldSpecPanX: 0,
+        _worldSpecPanY: 0,
         //clientVersion: 30604,
         clientVersion: master.clientVersion,
         protocolVersion: master.protocolVersion,
@@ -33626,6 +33631,9 @@ function thelegendmodproject() {
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
             LM._elWorldEntrance = null;  // reset world entrance animation
+            this._isWorldSpectating = false;
+            this._worldSpecPanX = 0;
+            this._worldSpecPanY = 0;
 
             LM.mapEvent.active = false;
             LM.mapEvent.phase = 0;
@@ -34113,6 +34121,9 @@ function thelegendmodproject() {
                 this.sendAction(
                     55
                 );
+                this._isWorldSpectating = true;
+                this._worldSpecPanX = 0;
+                this._worldSpecPanY = 0;
             }
 
             /* Show/hide World Spectate button reactively on server connect.
@@ -34194,6 +34205,9 @@ function thelegendmodproject() {
                         if (!this.play) {
                             this.play = true;
                             this.isSpectateEnabled = false;
+                            this._isWorldSpectating = false;
+                            this._worldSpecPanX = 0;
+                            this._worldSpecPanY = 0;
                             application.hideMenu();
                             this.playerColor = null;
                             application.onPlayerSpawn();
@@ -42672,6 +42686,9 @@ Most cells eaten   : ${mostCellsEaten}
         flushSpecsData() {
             this.isSpectateEnabled = false;
             this.isFreeSpectate = false;
+            this._isWorldSpectating = false;
+            this._worldSpecPanX = 0;
+            this._worldSpecPanY = 0;
             if (window.spects) {
                 window.spects.forEach((spect) => {
                     spect.closeConnection()
@@ -58174,6 +58191,43 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             var targetCamX = LM.viewX;
             var targetCamY = LM.viewY;
+
+            /* ═══ World Spectate: mouse-driven panning with center dead zone ═══
+             * When in World Spectate on an Expanding Land server, the mouse
+             * position drives camera panning.  The center 20 % of the screen
+             * is a dead zone where the camera holds its current position.
+             * Outside that zone the camera pans at a speed matching free
+             * spectate, proportional to how far the mouse is from center. */
+            if (LM._isWorldSpectating && LM.isLegendWorld && !LM.play) {
+                var _wsCW = this.canvasWidth  || window.innerWidth  || 1;
+                var _wsCH = this.canvasHeight || window.innerHeight || 1;
+                var _wsMX = Number.isFinite(LM.clientX) ? LM.clientX : _wsCW * 0.5;
+                var _wsMY = Number.isFinite(LM.clientY) ? LM.clientY : _wsCH * 0.5;
+
+                // Normalized mouse offset from center: [-1, 1]
+                var _wsNX = (_wsMX - _wsCW * 0.5) / (_wsCW * 0.5);
+                var _wsNY = (_wsMY - _wsCH * 0.5) / (_wsCH * 0.5);
+
+                // Dead zone: center 20 % → ±0.2 normalized
+                var _wsDZ = 0.2;
+                var _wsPanDX = 0, _wsPanDY = 0;
+
+                if (Math.abs(_wsNX) > _wsDZ) {
+                    _wsPanDX = (_wsNX > 0 ? _wsNX - _wsDZ : _wsNX + _wsDZ) / (1 - _wsDZ);
+                }
+                if (Math.abs(_wsNY) > _wsDZ) {
+                    _wsPanDY = (_wsNY > 0 ? _wsNY - _wsDZ : _wsNY + _wsDZ) / (1 - _wsDZ);
+                }
+
+                // Pan speed: ~50 game units/frame at full displacement
+                var _wsPanSpeed = 50;
+                LM._worldSpecPanX += _wsPanDX * _wsPanSpeed;
+                LM._worldSpecPanY += _wsPanDY * _wsPanSpeed;
+
+                targetCamX += LM._worldSpecPanX;
+                targetCamY += LM._worldSpecPanY;
+            }
+
 
             if (defaultmapsettings.middleMultiView) {
                 var sumX = 0, sumY = 0, count = 0;
