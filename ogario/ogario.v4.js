@@ -30721,11 +30721,7 @@ function thelegendmodproject() {
                                     eater.ox = eater.x;
                                     eater.oy = eater.y;
                                     eater.oSize = eater.size;
-                                    /* ── Death particles + eater pulse ── */
-                                    if (victim.size && victim.size > 36) {
-                                        _spawnDeathBurst(victim.x, victim.y, victim.size, victim.color || '#808080');
-                                    }
-                                    if (defaultmapsettings.eatPulse) eater._eatPulseTime = Date.now();
+
                                 }
                                 victim.destroy();
                                 delete self.cells[victimID];
@@ -32681,7 +32677,7 @@ function thelegendmodproject() {
                         if (this._playerCellIDSet) this._playerCellIDSet.clear();
                         window.userBots.isAlive = false;
                         if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, 0]).buffer);
-                        setTimeout(function() { application.showMenu(); }, 500);
+                        application.showMenu();
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
@@ -39304,11 +39300,7 @@ Most cells eaten   : ${mostCellsEaten}
                         victim.targetX = eater.x;
                         victim.targetY = eater.y;
                         victim.targetSize = victim.size;
-                        /* ── Death particles + eater pulse ── */
-                        if (!victim.isFood && !victim.isEjected && victim.size > 36) {
-                            _spawnDeathBurst(victim.x, victim.y, victim.size, victim.color);
-                        }
-                        if (defaultmapsettings.eatPulse) eater._eatPulseTime = Date.now();
+
                     }
                     victim.time = this.time;
                     victim.removeCell();
@@ -39469,7 +39461,7 @@ Most cells eaten   : ${mostCellsEaten}
                 this.play = false;
                 application.onPlayerDeath();
                 if (!LM.multiBoxPlayerExists) {
-                    setTimeout(function() { application.showMenu(300); }, 500);
+                    application.showMenu(300);
                 } else {
                     if (!window.multiboxPlayerEnabled) {
                         application.multiboxswap();
@@ -39599,11 +39591,7 @@ Most cells eaten   : ${mostCellsEaten}
                         victimID.targetX = eaterID.x;
                         victimID.targetY = eaterID.y;
                         victimID.targetSize = victimID.size;
-                        /* ── Death particles + eater pulse ── */
-                        if (!victimID.isFood && !victimID.isEjected && victimID.size > 36) {
-                            _spawnDeathBurst(victimID.x, victimID.y, victimID.size, victimID.color);
-                        }
-                        if (defaultmapsettings.eatPulse) eaterID._eatPulseTime = Date.now();
+
                     }
                     victimID.time = this.time;
                     victimID.removeCell();
@@ -39898,7 +39886,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 application.onPlayerDeath();
                 if (!LM.multiBoxPlayerExists) {
-                    setTimeout(function() { application.showMenu(300); }, 500);
+                    application.showMenu(300);
                 } else {
                     if (!window.multiboxPlayerEnabled) {
                         application.multiboxswap();
