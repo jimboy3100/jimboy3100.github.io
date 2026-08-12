@@ -19497,7 +19497,16 @@ function thelegendmodproject() {
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').show();
                 $('.menu-panel').hide();
-                if (!ogario.play && !this.skipStats) {
+                if (
+                    typeof legendmod !== 'undefined' &&
+                    legendmod &&
+                    legendmod.serverType === 'expandingland'
+                ) {
+                    if (!ogario.play && !this.skipStats) {
+                        $('#stats').show();
+                    }
+                    $('#main-panel').show();
+                } else if (!ogario.play && !this.skipStats) {
                     $('#stats').show();
                 } else {
                     $('#main-panel').show();
@@ -38426,6 +38435,15 @@ function thelegendmodproject() {
         },
         showSessionStats(u) {
             if (!u) return;
+
+            /* On Expanding Land, #main-panel must remain visible when showing game-over stats */
+            if (
+                typeof legendmod !== 'undefined' &&
+                legendmod &&
+                legendmod.serverType === 'expandingland'
+            ) {
+                $('#main-panel').stop(true, true).show();
+            }
 
             /* Remove any previous modal */
             var old = document.getElementById('lm-gameover-modal');
