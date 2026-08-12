@@ -29756,7 +29756,7 @@ function thelegendmodproject() {
                                     //s = true;
                                 }
                                 if (legendmod.gameMode != ":teams") {
-                                    if (defaultmapsettings.jellyPhisycs) {
+                                    if (defaultmapsettings.jellyPhisycs && this.points && this.points.length >= 3) {
                                         var lineWidth = Math.max(~~(y / 50), 10);
                                         style.save();
                                         try {
