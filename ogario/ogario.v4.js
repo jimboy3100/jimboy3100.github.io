@@ -22547,6 +22547,26 @@ function thelegendmodproject() {
                     false;
 
 
+                /*
+                 * A new life invalidates any Game Stats callback
+                 * belonging to the previous death.
+                 */
+                if (
+                    window
+                        ._elGameOverStatsTimer
+                ) {
+                    clearTimeout(
+                        window
+                            ._elGameOverStatsTimer
+                    );
+
+
+                    window
+                        ._elGameOverStatsTimer =
+                        null;
+                }
+
+
                 _elDeathVisual =
                     null;
 
@@ -38184,23 +38204,22 @@ function thelegendmodproject() {
                      * GAME-OVER SESSION STATS
                      * ========================================================
                      *
-                     * Expanding Land has a single-owner cinematic death
-                     * lifecycle.
+                     * Normal servers:
+                     *      show immediately, exactly as before.
                      *
-                     * NEVER let the protobuf Game Over packet insert its
-                     * session-stats modal while the 600 ms death animation
-                     * owns the screen.
+                     * Expanding Land:
+                     *      if the death cinematic is active, keep the
+                     *      authoritative protobuf stats and show them
+                     *      automatically when the cinematic lock expires.
                      *
-                     * The packet may arrive:
+                     * IMPORTANT:
                      *
-                     *      before opcode-16 final removal
-                     *      during the cinematic
-                     *      after the cinematic
+                     * Do NOT depend on updateCells() reaching a second
+                     * callback to display these stats.
                      *
-                     * Therefore:
-                     *
-                     *      during cinematic -> cache the stats
-                     *      after cinematic  -> display immediately
+                     * case 62 is the authoritative owner of
+                     * gameSessionStats, therefore it also owns the
+                     * guaranteed delayed presentation.
                      */
                     if (
                         (
@@ -38211,57 +38230,247 @@ function thelegendmodproject() {
                         ) &&
                         u.gameSessionStats
                     ) {
-                        var _isElGameOverStatsLocked =
+                        var _gameOverStatsData =
+                            u.gameSessionStats;
+
+
+                        var _gameOverStatsForced =
+                            !!window
+                                ._forceGameOverStats;
+
+
+                        var _isElGameOver =
                             typeof legendmod !==
                                 'undefined' &&
                             legendmod &&
                             _isExpandingLandClient(
                                 legendmod
-                            ) &&
+                            );
+
+
+                        var _elStatsLockUntil =
                             Number(
                                 window
                                     ._elDeathUiLockedUntil
-                            ) >
-                                Date.now();
+                            ) || 0;
 
 
+                        /*
+                         * Normal servers or Expanding Land after the
+                         * cinematic lock has already finished.
+                         */
                         if (
-                            _isElGameOverStatsLocked
+                            !_isElGameOver ||
+                            _elStatsLockUntil <=
+                                Date.now()
                         ) {
-                            /*
-                             * Preserve the authoritative server stats.
-                             *
-                             * updateCells() will display them after the
-                             * cinematic completes.
-                             */
-                            window
-                                ._elPendingGameSessionStats =
-                                u.gameSessionStats;
-
-
-                            window
-                                ._elPendingGameSessionStatsForced =
-                                !!window
-                                    ._forceGameOverStats;
-
-
-                            console.log(
-                                '[EL DEATH] Game-over session stats deferred until cinematic completes'
-                            );
-                        }
-                        else {
-                            /*
-                             * Normal servers, or Expanding Land after the
-                             * cinematic already finished.
-                             */
                             this.showSessionStats(
-                                u.gameSessionStats
+                                _gameOverStatsData
                             );
 
 
                             window
                                 ._forceGameOverStats =
                                 false;
+
+
+                            window
+                                ._elPendingGameSessionStats =
+                                null;
+
+
+                            window
+                                ._elPendingGameSessionStatsForced =
+                                false;
+                        }
+
+                        /*
+                         * Expanding Land cinematic still running.
+                         */
+                        else {
+                            window
+                                ._elPendingGameSessionStats =
+                                _gameOverStatsData;
+
+
+                            window
+                                ._elPendingGameSessionStatsForced =
+                                _gameOverStatsForced;
+
+
+                            /*
+                             * Only one delayed game-stats callback may
+                             * exist for one death.
+                             */
+                            if (
+                                window
+                                    ._elGameOverStatsTimer
+                            ) {
+                                clearTimeout(
+                                    window
+                                        ._elGameOverStatsTimer
+                                );
+
+
+                                window
+                                    ._elGameOverStatsTimer =
+                                    null;
+                            }
+
+
+                            /*
+                             * Wait until AFTER the death cinematic/UI
+                             * lock expires.
+                             *
+                             * Add 40 ms so the ordinary death menu has
+                             * one frame to finish its own DOM changes.
+                             */
+                            var _elStatsDelay =
+                                Math.max(
+                                    0,
+                                    _elStatsLockUntil -
+                                    Date.now()
+                                ) +
+                                40;
+
+
+                            window
+                                ._elGameOverStatsTimer =
+                                setTimeout(
+                                    function () {
+                                        window
+                                            ._elGameOverStatsTimer =
+                                            null;
+
+
+                                        var _pendingStats =
+                                            window
+                                                ._elPendingGameSessionStats;
+
+
+                                        var _pendingForced =
+                                            !!window
+                                                ._elPendingGameSessionStatsForced;
+
+
+                                        if (
+                                            !_pendingStats
+                                        ) {
+                                            return;
+                                        }
+
+
+                                        /*
+                                         * A new life invalidates the previous
+                                         * death modal.
+                                         */
+                                        if (
+                                            typeof legendmod !==
+                                                'undefined' &&
+                                            legendmod &&
+                                            legendmod.play
+                                        ) {
+                                            window
+                                                ._elPendingGameSessionStats =
+                                                null;
+
+
+                                            window
+                                                ._elPendingGameSessionStatsForced =
+                                                false;
+
+
+                                            return;
+                                        }
+
+
+                                        /*
+                                         * Respect the setting at DISPLAY
+                                         * time too.
+                                         */
+                                        if (
+                                            !defaultmapsettings
+                                                .gameOverStats &&
+                                            !_pendingForced
+                                        ) {
+                                            window
+                                                ._elPendingGameSessionStats =
+                                                null;
+
+
+                                            window
+                                                ._elPendingGameSessionStatsForced =
+                                                false;
+
+
+                                            window
+                                                ._forceGameOverStats =
+                                                false;
+
+
+                                            return;
+                                        }
+
+
+                                        /*
+                                         * Consume before showing so another
+                                         * death-finalization path cannot show
+                                         * the same stats twice.
+                                         */
+                                        window
+                                            ._elPendingGameSessionStats =
+                                            null;
+
+
+                                        window
+                                            ._elPendingGameSessionStatsForced =
+                                            false;
+
+
+                                        window
+                                            ._forceGameOverStats =
+                                            false;
+
+
+                                        /*
+                                         * The cinematic is finished.
+                                         *
+                                         * Make sure the normal menu parent is
+                                         * visible before inserting the modal.
+                                         */
+                                        $('#overlays')
+                                            .stop(
+                                                true,
+                                                true
+                                            )
+                                            .show();
+
+
+                                        $('#main-panel')
+                                            .stop(
+                                                true,
+                                                true
+                                            )
+                                            .show();
+
+
+                                        application
+                                            .showSessionStats(
+                                                _pendingStats
+                                            );
+
+
+                                        console.log(
+                                            '[EL GAMEOVER] Session stats shown after death cinematic'
+                                        );
+                                    },
+                                    _elStatsDelay
+                                );
+
+
+                            console.log(
+                                '[EL GAMEOVER] Session stats queued for after death cinematic'
+                            );
                         }
                     }
                     break;
@@ -44873,59 +45082,16 @@ Most cells eaten   : ${mostCellsEaten}
 
 
                                 /*
-                                 * =================================================
-                                 * DEFERRED AUTHORITATIVE GAME-OVER STATS
-                                 * =================================================
+                                 * gameSessionStats are owned by protobuf
+                                 * Game Over case 62.
                                  *
-                                 * The protobuf Game Over packet may have arrived
-                                 * during the cinematic.
+                                 * case 62 now schedules their guaranteed
+                                 * post-cinematic presentation itself.
                                  *
-                                 * Only NOW is it allowed to create the dedicated
-                                 * game-over statistics modal.
+                                 * Never show them from updateCells(), or two
+                                 * independent death paths can race and create
+                                 * duplicate Game Stats modals.
                                  */
-                                if (
-                                    window
-                                        ._elPendingGameSessionStats
-                                ) {
-                                    var _pendingElStats =
-                                        window
-                                            ._elPendingGameSessionStats;
-
-
-                                    var _pendingElStatsForced =
-                                        !!window
-                                            ._elPendingGameSessionStatsForced;
-
-
-                                    window
-                                        ._elPendingGameSessionStats =
-                                        null;
-
-                                    window
-                                        ._elPendingGameSessionStatsForced =
-                                        false;
-
-
-                                    if (
-                                        defaultmapsettings
-                                            .gameOverStats ||
-                                        _pendingElStatsForced
-                                    ) {
-                                        application
-                                            .showSessionStats(
-                                                _pendingElStats
-                                            );
-                                    }
-
-
-                                    /*
-                                     * forceGameOverStats belongs to this completed
-                                     * death generation.
-                                     */
-                                    window
-                                        ._forceGameOverStats =
-                                        false;
-                                }
 
 
                                 console.log(
