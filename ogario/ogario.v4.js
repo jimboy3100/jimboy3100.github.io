@@ -20569,19 +20569,9 @@ function thelegendmodproject() {
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').show();
                 $('.menu-panel').hide();
-                if (
-                    typeof legendmod !== 'undefined' &&
-                    legendmod &&
-                    legendmod.serverType === 'expandingland'
-                ) {
-                    if (!ogario.play && !this.skipStats) {
-                        $('#stats').show();
-                    }
-                    $('#main-panel').show();
-                } else if (!ogario.play && !this.skipStats) {
+                $('#main-panel').show();
+                if (!ogario.play && !this.skipStats) {
                     $('#stats').show();
-                } else {
-                    $('#main-panel').show();
                 }
                 window.MC.showNickDialog(300);
                 if ($('#oferwallContainer').is(':visible')) window.closeOfferwall();
@@ -44837,6 +44827,12 @@ Most cells eaten   : ${mostCellsEaten}
                                 $('.menu-panel')
                                     .hide();
 
+                                $('#main-panel')
+                                    .stop(
+                                        true,
+                                        true
+                                    )
+                                    .show();
 
                                 if (
                                     !application
@@ -44847,10 +44843,6 @@ Most cells eaten   : ${mostCellsEaten}
                                             true,
                                             true
                                         )
-                                        .show();
-                                }
-                                else {
-                                    $('#main-panel')
                                         .show();
                                 }
 
