@@ -17001,6 +17001,1159 @@ var _DEATH_SLOWMO_ANIM = 600;         /* ms — stretched eat animation for dyin
 
 var _deathParticles = [];
 
+/*
+ * =====================================================================
+ * EXPANDING LAND — GUARANTEED SCREEN-SPACE DEATH CINEMATIC
+ * =====================================================================
+ *
+ * The server may remove/flush the complete world on death.
+ *
+ * Therefore the FINAL local-player death FX must NOT depend on:
+ *
+ *      LM.cells
+ *      LM.indexedCells
+ *      LM.removedCells
+ *      current camera after death
+ *      WebGL/Canvas z-order
+ *
+ * We remember the last live player in SCREEN COORDINATES and render the
+ * death cinematic on overlayCanvas, which is above Canvas + WebGL.
+ */
+var _elDeathVisual =
+    null;
+
+
+function _isExpandingLandClient(
+    client
+) {
+    return !!(
+        client &&
+        (
+            client.serverType ===
+                'expandingland' ||
+
+            client.isLegendWorld ===
+                true ||
+
+            client.gameMode ===
+                ':expandingland'
+        )
+    );
+}
+
+
+/*
+ * =====================================================================
+ * HARD UI LOCK
+ * =====================================================================
+ *
+ * application.hideMenu() is not enough by itself.
+ *
+ * MC.showNickDialog or another queued callback may try to show part of
+ * the Agar/LM menu again during the cinematic.
+ *
+ * This body class makes that impossible for 650 ms.
+ */
+function _setExpandingLandDeathUiSuppressed(
+    active
+) {
+    var styleId =
+        'lm-el-death-ui-lock-style';
+
+
+    if (active) {
+        if (
+            !document.getElementById(
+                styleId
+            )
+        ) {
+            var style =
+                document.createElement(
+                    'style'
+                );
+
+            style.id =
+                styleId;
+
+
+            style.textContent =
+                'body.lm-el-death-cinematic #overlays,' +
+                'body.lm-el-death-cinematic #helloContainer,' +
+                'body.lm-el-death-cinematic .ogario-menu,' +
+                'body.lm-el-death-cinematic #main-menu,' +
+                'body.lm-el-death-cinematic .menu-panel,' +
+                'body.lm-el-death-cinematic #stats,' +
+                'body.lm-el-death-cinematic #lm-gameover-modal{' +
+                    'display:none!important;' +
+                    'visibility:hidden!important;' +
+                    'opacity:0!important;' +
+                '}';
+
+
+            document.head.appendChild(
+                style
+            );
+        }
+
+
+        if (
+            document.body
+        ) {
+            document.body
+                .classList
+                .add(
+                    'lm-el-death-cinematic'
+                );
+        }
+
+
+        if (
+            typeof application !==
+                'undefined' &&
+            application &&
+            typeof application.hideMenu ===
+                'function'
+        ) {
+            application.hideMenu(
+                0
+            );
+        }
+
+
+        $(
+            '#overlays, ' +
+            '#helloContainer, ' +
+            '.ogario-menu, ' +
+            '#main-menu, ' +
+            '.menu-panel, ' +
+            '#stats, ' +
+            '#lm-gameover-modal'
+        )
+            .stop(
+                true,
+                true
+            )
+            .hide();
+
+
+        return;
+    }
+
+
+    if (
+        document.body
+    ) {
+        document.body
+            .classList
+            .remove(
+                'lm-el-death-cinematic'
+            );
+    }
+}
+
+
+function _elCanDrawImageNode(
+    node
+) {
+    if (!node) {
+        return false;
+    }
+
+
+    /*
+     * Video skin.
+     */
+    if (
+        typeof node.readyState ===
+            'number' &&
+        typeof node.videoWidth ===
+            'number'
+    ) {
+        return (
+            node.readyState >= 2 &&
+            node.videoWidth > 0
+        );
+    }
+
+
+    /*
+     * Image / canvas.
+     */
+    return !!(
+        Number(
+            node.naturalWidth
+        ) ||
+
+        Number(
+            node.videoWidth
+        ) ||
+
+        Number(
+            node.width
+        )
+    );
+}
+
+
+function _elResolveDeathSkinNode(
+    cell
+) {
+    if (
+        !cell ||
+        !cell.targetNick ||
+        typeof application ===
+            'undefined' ||
+        !application ||
+        typeof application
+            .getCustomSkin !==
+            'function'
+    ) {
+        return null;
+    }
+
+
+    try {
+        var node =
+            application
+                .getCustomSkin(
+                    cell.targetNick,
+                    cell.color,
+                    cell.skin
+                );
+
+
+        return _elCanDrawImageNode(
+            node
+        )
+            ? node
+            : null;
+    }
+    catch (error) {
+        return null;
+    }
+}
+
+
+function _elScreenSnapshotForCell(
+    cell,
+    renderer
+) {
+    if (
+        !cell ||
+        !renderer
+    ) {
+        return null;
+    }
+
+
+    var scale =
+        Number(
+            renderer.scale
+        ) > 0
+            ? Number(
+                renderer.scale
+            )
+            : 1;
+
+
+    var camX =
+        Number.isFinite(
+            Number(
+                renderer.camX
+            )
+        )
+            ? Number(
+                renderer.camX
+            )
+            : 0;
+
+
+    var camY =
+        Number.isFinite(
+            Number(
+                renderer.camY
+            )
+        )
+            ? Number(
+                renderer.camY
+            )
+            : 0;
+
+
+    var width =
+        Number(
+            renderer.canvasWidth
+        ) ||
+        window.innerWidth ||
+        1;
+
+
+    var height =
+        Number(
+            renderer.canvasHeight
+        ) ||
+        window.innerHeight ||
+        1;
+
+
+    return {
+        id:
+            cell.id,
+
+        screenX:
+            (
+                Number(
+                    cell.x
+                ) -
+                camX
+            ) *
+                scale +
+            width *
+                0.5,
+
+        screenY:
+            (
+                Number(
+                    cell.y
+                ) -
+                camY
+            ) *
+                scale +
+            height *
+                0.5,
+
+        screenR:
+            Math.max(
+                1,
+                Number(
+                    cell.size ||
+                    0
+                ) *
+                    scale
+            ),
+
+        worldX:
+            Number(
+                cell.x
+            ) || 0,
+
+        worldY:
+            Number(
+                cell.y
+            ) || 0,
+
+        worldR:
+            Number(
+                cell.size
+            ) || 0,
+
+        color:
+            (
+                typeof cell.color ===
+                    'string' &&
+                cell.color
+            )
+                ? cell.color
+                : '#808080',
+
+        skinNode:
+            _elResolveDeathSkinNode(
+                cell
+            )
+    };
+}
+
+
+/*
+ * Remember the player every live frame BEFORE a death packet is capable
+ * of deleting the player's cells.
+ */
+function _rememberExpandingLandPlayerVisual(
+    client
+) {
+    if (
+        !client ||
+        !_isExpandingLandClient(
+            client
+        ) ||
+        !client.play ||
+        !client.playerCells ||
+        !client.playerCells.length ||
+        !window.drawRender
+    ) {
+        return;
+    }
+
+
+    var renderer =
+        window.drawRender;
+
+    var pieces =
+        [];
+
+    var largestCell =
+        null;
+
+
+    for (
+        var i = 0;
+        i <
+            client.playerCells.length;
+        i++
+    ) {
+        var playerCell =
+            client.playerCells[
+                i
+            ];
+
+
+        if (
+            !playerCell ||
+            playerCell.removed ||
+            playerCell.isFood ||
+            playerCell.isEjected
+        ) {
+            continue;
+        }
+
+
+        var snapshot =
+            _elScreenSnapshotForCell(
+                playerCell,
+                renderer
+            );
+
+
+        if (!snapshot) {
+            continue;
+        }
+
+
+        pieces.push(
+            snapshot
+        );
+
+
+        if (
+            !largestCell ||
+            Number(
+                playerCell.size
+            ) >
+                Number(
+                    largestCell.size
+                )
+        ) {
+            largestCell =
+                playerCell;
+        }
+    }
+
+
+    if (
+        !pieces.length ||
+        !largestCell
+    ) {
+        return;
+    }
+
+
+    /*
+     * Search for the most plausible eater WHILE the live world still
+     * exists.
+     */
+    var eaterCell =
+        null;
+
+    var bestDistSq =
+        Infinity;
+
+
+    for (
+        var j = 0;
+        client.cells &&
+        j < client.cells.length;
+        j++
+    ) {
+        var candidate =
+            client.cells[
+                j
+            ];
+
+
+        if (
+            !candidate ||
+            candidate ===
+                largestCell ||
+            candidate.removed ||
+            candidate.invisible ||
+            candidate.isFood ||
+            candidate.isEjected ||
+            candidate.isVirus ||
+            candidate.isPlayerCell ||
+            candidate.isPlayerCellMulti ||
+            Number(
+                candidate.size
+            ) <=
+                Number(
+                    largestCell.size
+                ) *
+                    1.10
+        ) {
+            continue;
+        }
+
+
+        var dx =
+            Number(
+                candidate.x
+            ) -
+            Number(
+                largestCell.x
+            );
+
+
+        var dy =
+            Number(
+                candidate.y
+            ) -
+            Number(
+                largestCell.y
+            );
+
+
+        var distSq =
+            dx *
+                dx +
+            dy *
+                dy;
+
+
+        var maxDistance =
+            Number(
+                candidate.size
+            ) +
+            Number(
+                largestCell.size
+            ) *
+                1.75;
+
+
+        if (
+            distSq >
+            maxDistance *
+                maxDistance
+        ) {
+            continue;
+        }
+
+
+        if (
+            distSq <
+            bestDistSq
+        ) {
+            bestDistSq =
+                distSq;
+
+            eaterCell =
+                candidate;
+        }
+    }
+
+
+    client
+        ._elLastPlayerVisualSnapshot =
+        {
+            capturedAt:
+                Date.now(),
+
+            pieces:
+                pieces,
+
+            eater:
+                eaterCell
+                    ? _elScreenSnapshotForCell(
+                        eaterCell,
+                        renderer
+                    )
+                    : null
+        };
+}
+
+
+/*
+ * Start the guaranteed top-layer death effect.
+ *
+ * This may be called from:
+ *
+ *      protobuf Game Over
+ *      eat-pair
+ *      final remove-list condition
+ *
+ * Duplicate calls are ignored.
+ */
+function _startExpandingLandDeathVisual(
+    client,
+    reason
+) {
+    if (
+        !client ||
+        !_isExpandingLandClient(
+            client
+        ) ||
+        !window.drawRender
+    ) {
+        return false;
+    }
+
+
+    var now =
+        Date.now();
+
+
+    /*
+     * One cinematic per death.
+     */
+    if (
+        _elDeathVisual &&
+        _elDeathVisual.active &&
+        now -
+            _elDeathVisual
+                .startTime <
+            _DEATH_SLOWMO_ANIM +
+                150
+    ) {
+        return true;
+    }
+
+
+    /*
+     * If Game Over arrived before opcode 16, the player still exists.
+     * Capture it immediately.
+     */
+    _rememberExpandingLandPlayerVisual(
+        client
+    );
+
+
+    var remembered =
+        client
+            ._elLastPlayerVisualSnapshot;
+
+
+    var renderer =
+        window.drawRender;
+
+
+    /*
+     * LAST RESORT.
+     *
+     * A valid player death must never again result in ZERO visible FX.
+     *
+     * If packet ordering somehow prevented us from obtaining a cell
+     * snapshot, render a fallback at the camera center.
+     */
+    if (
+        !remembered ||
+        !remembered.pieces ||
+        !remembered.pieces.length ||
+        now -
+            Number(
+                remembered
+                    .capturedAt ||
+                0
+            ) >
+            2000
+    ) {
+        var fallbackScale =
+            Number(
+                renderer.scale
+            ) > 0
+                ? Number(
+                    renderer.scale
+                )
+                : 1;
+
+
+        remembered =
+            {
+                capturedAt:
+                    now,
+
+                pieces:
+                    [
+                        {
+                            id:
+                                0,
+
+                            screenX:
+                                (
+                                    Number(
+                                        renderer
+                                            .canvasWidth
+                                    ) ||
+                                    window.innerWidth ||
+                                    1
+                                ) *
+                                    0.5,
+
+                            screenY:
+                                (
+                                    Number(
+                                        renderer
+                                            .canvasHeight
+                                    ) ||
+                                    window.innerHeight ||
+                                    1
+                                ) *
+                                    0.5,
+
+                            screenR:
+                                Math.max(
+                                    24,
+                                    Math.min(
+                                        140,
+                                        Number(
+                                            client
+                                                .playerSize ||
+                                            60
+                                        ) *
+                                            fallbackScale
+                                    )
+                                ),
+
+                            color:
+                                client.playerColor ||
+                                '#808080',
+
+                            skinNode:
+                                null
+                        }
+                    ],
+
+                eater:
+                    null
+            };
+    }
+
+
+    var pieces =
+        [];
+
+    var largestPiece =
+        null;
+
+
+    for (
+        var k = 0;
+        k <
+            remembered.pieces.length;
+        k++
+    ) {
+        var src =
+            remembered.pieces[
+                k
+            ];
+
+
+        var piece =
+            {
+                id:
+                    src.id,
+
+                screenX:
+                    src.screenX,
+
+                screenY:
+                    src.screenY,
+
+                screenR:
+                    src.screenR,
+
+                color:
+                    src.color,
+
+                skinNode:
+                    src.skinNode
+            };
+
+
+        pieces.push(
+            piece
+        );
+
+
+        if (
+            !largestPiece ||
+            piece.screenR >
+                largestPiece.screenR
+        ) {
+            largestPiece =
+                piece;
+        }
+    }
+
+
+    var eater =
+        remembered.eater
+            ? {
+                id:
+                    remembered
+                        .eater
+                        .id,
+
+                screenX:
+                    remembered
+                        .eater
+                        .screenX,
+
+                screenY:
+                    remembered
+                        .eater
+                        .screenY,
+
+                screenR:
+                    remembered
+                        .eater
+                        .screenR,
+
+                color:
+                    remembered
+                        .eater
+                        .color,
+
+                skinNode:
+                    remembered
+                        .eater
+                        .skinNode
+            }
+            : null;
+
+
+    var targetX =
+        eater
+            ? eater.screenX
+            : largestPiece
+                .screenX;
+
+
+    var targetY =
+        eater
+            ? eater.screenY
+            : largestPiece
+                .screenY;
+
+
+    var particles =
+        [];
+
+
+    if (
+        typeof defaultmapsettings ===
+            'undefined' ||
+        defaultmapsettings
+            .deathParticles !==
+            false
+    ) {
+        var baseR =
+            Math.max(
+                3,
+                Math.min(
+                    28,
+                    largestPiece
+                        .screenR *
+                        _DEATH_PARTICLE_SIZE_RATIO
+                )
+            );
+
+
+        for (
+            var p = 0;
+            p <
+                _DEATH_PARTICLE_COUNT;
+            p++
+        ) {
+            var angle =
+                Math.random() *
+                Math.PI *
+                2;
+
+
+            var speed =
+                _DEATH_PARTICLE_SPEED *
+                (
+                    0.45 +
+                    Math.random() *
+                        0.55
+                );
+
+
+            particles.push(
+                {
+                    x:
+                        largestPiece
+                            .screenX,
+
+                    y:
+                        largestPiece
+                            .screenY,
+
+                    vx:
+                        Math.cos(
+                            angle
+                        ) *
+                        speed,
+
+                    vy:
+                        Math.sin(
+                            angle
+                        ) *
+                        speed,
+
+                    r:
+                        baseR *
+                        (
+                            0.65 +
+                            Math.random() *
+                                0.70
+                        ),
+
+                    color:
+                        largestPiece
+                            .color ||
+                        '#808080',
+
+                    duration:
+                        _DEATH_PARTICLE_DURATION *
+                        (
+                            0.85 +
+                            Math.random() *
+                                0.30
+                        )
+                }
+            );
+        }
+    }
+
+
+    /*
+     * The overlay owns the final player's particle burst.
+     *
+     * Throw away lower world-space particles so we cannot get a duplicate
+     * burst underneath the guaranteed overlay.
+     */
+    _deathParticles.length =
+        0;
+
+
+    _elDeathVisual =
+        {
+            active:
+                true,
+
+            startTime:
+                now,
+
+            duration:
+                _DEATH_SLOWMO_ANIM,
+
+            pieces:
+                pieces,
+
+            eater:
+                eater,
+
+            targetX:
+                targetX,
+
+            targetY:
+                targetY,
+
+            particles:
+                particles,
+
+            reason:
+                reason ||
+                'death'
+        };
+
+
+    /*
+     * Also pulse the real surviving eater when it is still available.
+     */
+    if (
+        eater &&
+        client.indexedCells &&
+        client.indexedCells[
+            eater.id
+        ] &&
+        defaultmapsettings
+            .eatPulse !==
+            false
+    ) {
+        client.indexedCells[
+            eater.id
+        ]
+            ._eatPulseTime =
+            now;
+    }
+
+
+    /*
+     * COMPLETE render-stack shake.
+     */
+    _screenShakeStart =
+        now;
+
+
+    /*
+     * Nothing from the death UI is permitted to appear before 650 ms.
+     */
+    window
+        ._elDeathUiLockedUntil =
+        Math.max(
+            Number(
+                window
+                    ._elDeathUiLockedUntil
+            ) ||
+                0,
+
+            now +
+                _DEATH_SLOWMO_ANIM +
+                50
+        );
+
+
+    _setExpandingLandDeathUiSuppressed(
+        true
+    );
+
+
+    console.log(
+        '[EL DEATH FX] guaranteed cinematic started',
+        {
+            reason:
+                _elDeathVisual
+                    .reason,
+
+            pieces:
+                pieces.length,
+
+            eaterId:
+                eater
+                    ? eater.id
+                    : null
+        }
+    );
+
+
+    return true;
+}
+
+
+function _drawExpandingLandDeathSnapshotCell(
+    ctx,
+    snapshot,
+    x,
+    y,
+    radius,
+    alpha
+) {
+    if (
+        !ctx ||
+        !snapshot ||
+        radius <= 0 ||
+        alpha <= 0
+    ) {
+        return;
+    }
+
+
+    ctx.save();
+
+
+    ctx.globalAlpha =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                alpha
+            )
+        );
+
+
+    /*
+     * Always draw a real color body first.
+     *
+     * A skin failure must NEVER make the cinematic cell transparent.
+     */
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        radius,
+        0,
+        Math.PI *
+            2
+    );
+
+    ctx.fillStyle =
+        snapshot.color ||
+        '#808080';
+
+    ctx.fill();
+
+
+    /*
+     * Optional skin.
+     */
+    if (
+        snapshot.skinNode &&
+        _elCanDrawImageNode(
+            snapshot.skinNode
+        )
+    ) {
+        try {
+            ctx.save();
+
+            ctx.beginPath();
+
+            ctx.arc(
+                x,
+                y,
+                radius,
+                0,
+                Math.PI *
+                    2
+            );
+
+            ctx.clip();
+
+            ctx.drawImage(
+                snapshot.skinNode,
+                x -
+                    radius,
+                y -
+                    radius,
+                radius *
+                    2,
+                radius *
+                    2
+            );
+
+            ctx.restore();
+        }
+        catch (error) {
+            /*
+             * Color body already exists.
+             */
+        }
+    }
+
+
+    ctx.restore();
+}
+
 /* Pre-rendered blob cache — one tiny canvas per colour. */
 var _particleBlobCache = {};
 function _getParticleBlob(color) {
@@ -17025,7 +18178,30 @@ function _getParticleBlob(color) {
 }
 
 function _spawnDeathBurst(wx, wy, victimSize, victimColor) {
-    if (!defaultmapsettings.deathParticles) return;
+    /*
+     * During the final Expanding Land local-player cinematic, the dedicated
+     * top overlay owns the particle burst.
+     */
+    if (
+        _elDeathVisual &&
+        _elDeathVisual.active &&
+        _isExpandingLandClient(
+            typeof LM !==
+                'undefined'
+                ? LM
+                : null
+        )
+    ) {
+        return;
+    }
+
+
+    if (
+        !defaultmapsettings
+            .deathParticles
+    ) {
+        return;
+    }
     var col = victimColor || '#808080';
     var baseR = victimSize * _DEATH_PARTICLE_SIZE_RATIO;
     for (var i = 0; i < _DEATH_PARTICLE_COUNT; i++) {
@@ -36591,9 +37767,30 @@ function thelegendmodproject() {
                             console.error('[LW 102 FALLBACK] onMobileData error:', e102f);
                         }
                     } else if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
-                        /* LW Beacon — sets isLegendWorld (Expanding Land) */
+                        /*
+                         * =====================================================
+                         * AUTHORITATIVE EXPANDING LAND SERVER IDENTIFICATION
+                         * =====================================================
+                         *
+                         * Do NOT rely only on the websocket hostname.
+                         *
+                         * connect() initially guesses serverType from the URL.
+                         * A proxy/direct websocket can therefore be classified
+                         * as "private".
+                         *
+                         * THIS LW beacon is authoritative.
+                         */
                         LM.isLegendWorld = true;
-                        this.gameMode = ':expandingland';
+                        this.isLegendWorld = true;
+
+                        this.serverType =
+                            'expandingland';
+
+                        LM.serverType =
+                            'expandingland';
+
+                        this.gameMode =
+                            ':expandingland';
 
                         /*
                          * The server currently queues SetBorder before this LW
@@ -42351,8 +43548,27 @@ Most cells eaten   : ${mostCellsEaten}
                     return text;
                 }
             };
-            this.time = Date.now();
-            this.removePlayerCell = false;
+            this.time =
+                Date.now();
+
+            this.removePlayerCell =
+                false;
+
+
+            /*
+             * ============================================================
+             * EXPANDING LAND — CAPTURE BEFORE ANY REMOVE
+             * ============================================================
+             *
+             * This packet may contain the player's final deletion.
+             *
+             * Capture the last visible screen-space state NOW, while the
+             * playerCells still exist.
+             */
+            _rememberExpandingLandPlayerVisual(
+                this
+            );
+
 
             /* Pre-build O(1) lookup structures once per packet instead of
              * O(N) forEach/indexOf inside the per-cell loop. */
@@ -42414,8 +43630,9 @@ Most cells eaten   : ${mostCellsEaten}
              * to the Expanding Land game protocol.
              */
             var _isExpandingLandEatFx =
-                this.serverType ===
-                'expandingland';
+                _isExpandingLandClient(
+                    this
+                );
 
 
             for (
@@ -42674,6 +43891,16 @@ Most cells eaten   : ${mostCellsEaten}
                          */
                         _screenShakeStart =
                             Date.now();
+
+
+                        /*
+                         * Launch overlay top-layer snapshot cinematic so death FX is
+                         * visible regardless of WebGL/Canvas rendering mode or server cell removals.
+                         */
+                        _startExpandingLandDeathVisual(
+                            this,
+                            'eat-pair'
+                        );
 
 
                         /*
@@ -43085,8 +44312,7 @@ Most cells eaten   : ${mostCellsEaten}
                  * ========================================================
                  */
                 if (
-                    this.serverType ===
-                        'expandingland' &&
+                    _isExpandingLandClient(this) &&
                     _isFinalRemovedPlayer &&
                     !cell._deathSlowMo
                 ) {
@@ -43296,6 +44522,16 @@ Most cells eaten   : ${mostCellsEaten}
                      */
                     _screenShakeStart =
                         Date.now();
+
+
+                    /*
+                     * Launch overlay top-layer snapshot cinematic so death FX is
+                     * visible regardless of WebGL/Canvas rendering mode or server cell removals.
+                     */
+                    _startExpandingLandDeathVisual(
+                        this,
+                        'remove-list'
+                    );
 
 
                     /*
@@ -58627,15 +59863,83 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.averageRenderTime = (drawRender.renderTime / drawRender.counterTime).toFixed(2)
 
                 }
-                drawRender.counterTime = 0
-                drawRender.renderTime = 0
-
             }
-            //console.log(performance.now() - this.renderStarted, (performance.now() - this.renderStarted) * drawRender.fps)
-            //window.updateCellsClock=false
 
-            //drawRender.render();
+            /*
+             * ============================================================
+             * EXPANDING LAND — TOP OVERLAY DEATH CINEMATIC PASS
+             * ============================================================
+             *
+             * overlayCanvas sits on top of WebGL + main Canvas2D.
+             *
+             * Rendering the death effect HERE guarantees:
+             *
+             *   1. The cinematic is visible over WebGL cells, Canvas cells, and
+             *      background maps.
+             *   2. It survives even if LM.cells, LM.indexedCells, or
+             *      LM.removedCells are completely emptied by the server.
+             */
+            if (this.overlayCanvas) {
+                var oCtx = this.overlayCanvas.getContext('2d');
+                if (oCtx) {
+                    var oW = this.canvasWidth || window.innerWidth;
+                    var oH = this.canvasHeight || window.innerHeight;
+                    if (this.overlayCanvas.width !== oW || this.overlayCanvas.height !== oH) {
+                        this.overlayCanvas.width = oW;
+                        this.overlayCanvas.height = oH;
+                    }
+                    oCtx.clearRect(0, 0, oW, oH);
 
+                    if (_elDeathVisual && _elDeathVisual.active) {
+                        var dNow = Date.now();
+                        var dElapsed = dNow - _elDeathVisual.startTime;
+
+                        if (dElapsed >= _elDeathVisual.duration + 100) {
+                            _elDeathVisual.active = false;
+                            _elDeathVisual = null;
+                            _setExpandingLandDeathUiSuppressed(false);
+                        } else {
+                            var dProgress = Math.max(0, Math.min(1, dElapsed / _elDeathVisual.duration));
+                            var easeProgress = 1 - Math.pow(1 - dProgress, 3);
+                            var pieceScale = Math.max(0, 1 - easeProgress * 0.95);
+                            var alpha = Math.max(0, 1 - easeProgress * 1.05);
+
+                            for (var pIdx = 0; pIdx < _elDeathVisual.pieces.length; pIdx++) {
+                                var pCell = _elDeathVisual.pieces[pIdx];
+                                var curX = pCell.screenX + (_elDeathVisual.targetX - pCell.screenX) * easeProgress;
+                                var curY = pCell.screenY + (_elDeathVisual.targetY - pCell.screenY) * easeProgress;
+                                var curR = pCell.screenR * pieceScale;
+                                _drawExpandingLandDeathSnapshotCell(oCtx, pCell, curX, curY, curR, alpha);
+                            }
+
+                            if (_elDeathVisual.particles && _elDeathVisual.particles.length > 0) {
+                                var pAlive = 0;
+                                for (var pI = 0; pI < _elDeathVisual.particles.length; pI++) {
+                                    var pt = _elDeathVisual.particles[pI];
+                                    var ptAge = dNow - _elDeathVisual.startTime;
+                                    if (ptAge >= pt.duration) continue;
+                                    var ptT = ptAge / pt.duration;
+                                    var ptPosT = 1 - (1 - ptT) * (1 - ptT);
+                                    var ptX = pt.x + pt.vx * ptPosT * (pt.duration / 1000);
+                                    var ptY = pt.y + pt.vy * ptPosT * (pt.duration / 1000);
+                                    var ptAlpha = ptT < 0.3 ? 1.0 : 1.0 - (ptT - 0.3) / 0.7;
+                                    var ptR = pt.r * (1.0 - ptT * 0.35);
+
+                                    oCtx.save();
+                                    oCtx.globalAlpha = Math.max(0, Math.min(1, ptAlpha * alpha));
+                                    var blob = _getParticleBlob(pt.color);
+                                    oCtx.drawImage(blob, ptX - ptR, ptY - ptR, ptR * 2, ptR * 2);
+                                    oCtx.restore();
+
+                                    if (pAlive !== pI) _elDeathVisual.particles[pAlive] = pt;
+                                    pAlive++;
+                                }
+                                _elDeathVisual.particles.length = pAlive;
+                            }
+                        }
+                    }
+                }
+            }
         },
         drawHelpers() {
             if (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) {
