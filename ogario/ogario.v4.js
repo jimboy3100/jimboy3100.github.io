@@ -27564,14 +27564,53 @@ function thelegendmodproject() {
             this.isFood = isFood;
             this.isVirus = isVirus;
             this.isPlayerCell = isPlayer;
+            this.shortMass = shortMass;
+            this.virMassShots = virusMassShots;
             this.updateTime = Date.now();
             this.time = 0;
+
+            /*
+             * IMPORTANT:
+             *
+             * Cells are pooled and reused.
+             *
+             * Jelly state belongs to the OLD logical cell and MUST NOT
+             * survive when this JavaScript object is recycled for another ID.
+             *
+             * Without this reset:
+             *   - a normal cell can inherit a virus' 100-point perimeter;
+             *   - a virus can inherit another cell's radial velocities;
+             *   - maxPointRad can belong to a completely different body;
+             *   - skins can briefly clip against an old polygon.
+             */
+            if (this.points) {
+                this.points.length = 0;
+            }
+            else {
+                this.points = [];
+            }
+
+            if (this.pointsVel) {
+                this.pointsVel.length = 0;
+            }
+            else {
+                this.pointsVel = [];
+            }
+
+            this.maxPointRad = 0;
+
             return this;
         };
-        //lylko
-        this.points = []
-        this.pointsVel = []
-        this.maxPointRad = 0
+
+        /*
+         * Jelly physics state.
+         *
+         * The point objects are kept directly on each cell, matching the
+         * Delta-style CPU perimeter simulation.
+         */
+        this.points = [];
+        this.pointsVel = [];
+        this.maxPointRad = 0;
 
 
         this.oldAlpha = 0;
@@ -27634,112 +27673,460 @@ function thelegendmodproject() {
         this.virusStroke = null;
         //this.nHeight = 6;
 
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * JELLY PHYSICS — POINT COUNT
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Normal cells:
+         *     point count depends on visible radius / render scale.
+         *
+         * Viruses:
+         *     ALWAYS use 100 points.
+         *
+         * This is intentionally global. It has absolutely no dependency on
+         * Expanding Land or any particular server type.
+         */
         this.updateNumPoints = function () {
-            //adjustment of the number of contacts
-            var numPoints = this.size * drawRender.scale | 0;
-            numPoints = Math.max(numPoints, 5);
-            numPoints = Math.min(numPoints, 120);
-            if (this.isVirus) numPoints = 100;
-            while (this.points.length > numPoints) {
-                var i = Math.random() * this.points.length | 0;
-                this.points.splice(i, 1);
-                this.pointsVel.splice(i, 1);
+            var numPoints =
+                this.size *
+                drawRender.scale |
+                0;
+
+            numPoints =
+                Math.max(
+                    numPoints,
+                    5
+                );
+
+            numPoints =
+                Math.min(
+                    numPoints,
+                    120
+                );
+
+            /*
+             * Delta-style virus perimeter density.
+             *
+             * 100 points means alternating points can produce the dense
+             * inner/outer virus edge while still participating in jelly
+             * deformation.
+             */
+            if (this.isVirus) {
+                numPoints = 100;
             }
-            if (this.points.length === 0 && numPoints != 0) {
+
+            /*
+             * Keep pointsVel exactly aligned with points.
+             */
+            while (
+                this.points.length >
+                numPoints
+            ) {
+                var removeIndex =
+                    Math.random() *
+                    this.points.length |
+                    0;
+
+                this.points.splice(
+                    removeIndex,
+                    1
+                );
+
+                this.pointsVel.splice(
+                    removeIndex,
+                    1
+                );
+            }
+
+            /*
+             * Initialize a fresh perimeter.
+             */
+            if (
+                this.points.length === 0 &&
+                numPoints !== 0
+            ) {
                 this.points.push({
                     x: this.x,
                     y: this.y,
                     rl: this.size,
-                    parent: this //?
-                });
-                this.pointsVel.push(Math.random() - 0.5);
-            }
-            while (this.points.length < numPoints) {
-                var i = Math.random() * this.points.length | 0;
-                var point = this.points[i];
-                var vel = this.pointsVel[i];
-                this.points.splice(i, 0, {
-                    x: point.x,
-                    y: point.y,
-                    rl: point.rl,
                     parent: this
                 });
-                this.pointsVel.splice(i, 0, vel);
+
+                this.pointsVel.push(
+                    Math.random() -
+                    0.5
+                );
             }
-        }
+
+            /*
+             * Increase point count without causing a visible discontinuity:
+             * duplicate an existing neighboring point and velocity.
+             */
+            while (
+                this.points.length <
+                numPoints
+            ) {
+                var insertIndex =
+                    Math.random() *
+                    this.points.length |
+                    0;
+
+                var point =
+                    this.points[
+                        insertIndex
+                    ];
+
+                var velocity =
+                    this.pointsVel[
+                        insertIndex
+                    ];
+
+                this.points.splice(
+                    insertIndex,
+                    0,
+                    {
+                        x: point.x,
+                        y: point.y,
+                        rl: point.rl,
+                        parent: this
+                    }
+                );
+
+                this.pointsVel.splice(
+                    insertIndex,
+                    0,
+                    velocity
+                );
+            }
+        };
+
+
         this.sqDist = function (a, b) {
-            return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
-        }
+            var dx =
+                a.x -
+                b.x;
+
+            var dy =
+                a.y -
+                b.y;
+
+            return (
+                dx * dx +
+                dy * dy
+            );
+        };
+
+
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * JELLY PHYSICS — SIMULATION
+         * ═══════════════════════════════════════════════════════════════
+         */
         this.movePoints = function () {
-            /* Avoid .slice() array copy — track prev velocity inline (#4) */
-            var pv = this.pointsVel;
-            var len = this.points.length;
-            if (len === 0) return;
-            var savedPrev = pv[len - 1]; // wrap-around: "previous" of element 0
-            for (var i = 0; i < len; ++i) {
-                var curVal = pv[i];
-                var nextVel = pv[i + 1 < len ? i + 1 : 0];
-                var newVel = (curVal + Math.random() - 0.5) * 0.7;
-                if (newVel > 10) newVel = 10; else if (newVel < -10) newVel = -10;
-                pv[i] = (savedPrev + nextVel + 8 * newVel) / 10;
-                savedPrev = curVal; // save unmodified value for next iteration's "prev"
+            var points =
+                this.points;
+
+            var velocity =
+                this.pointsVel;
+
+            var len =
+                points.length;
+
+            if (
+                len === 0 ||
+                velocity.length !== len
+            ) {
+                return;
             }
-            this.maxPointRad = 0
-            for (var i = 0; i < len; ++i) {
-                var curP = this.points[i];
-                var curRl = curP.rl;
-                var prevRl = this.points[(i - 1 + len) % len].rl;
-                var nextRl = this.points[(i + 1) % len].rl;
-                var self = this;
-                var affected
-                if (LM.quadtree) {
-                    affected = LM.quadtree.some({
-                        x: curP.x - 5,
-                        y: curP.y - 5,
-                        w: 10,
-                        h: 10
-                    }, function (item) {
-                        return item.parent != self && this.sqDist(item, curP) <= 25;
-                    }.bind(this));
+
+
+            /*
+             * ───────────────────────────────────────────────────────────
+             * PASS A — VELOCITY WAVE
+             * ───────────────────────────────────────────────────────────
+             *
+             * Do this without allocating velocity.slice() every frame.
+             *
+             * IMPORTANT:
+             * the final point's "next" neighbor must use the ORIGINAL
+             * velocity[0], not the value already overwritten during this
+             * loop.
+             */
+            var originalFirstVelocity =
+                velocity[0];
+
+            var previousOriginalVelocity =
+                velocity[
+                    len - 1
+                ];
+
+            for (
+                var i = 0;
+                i < len;
+                i++
+            ) {
+                var currentOriginalVelocity =
+                    velocity[i];
+
+                var nextOriginalVelocity =
+                    (
+                        i + 1 <
+                        len
+                    )
+                        ? velocity[
+                            i + 1
+                        ]
+                        : originalFirstVelocity;
+
+                var newVelocity =
+                    (
+                        currentOriginalVelocity +
+                        Math.random() -
+                        0.5
+                    ) *
+                    0.7;
+
+                if (
+                    newVelocity > 10
+                ) {
+                    newVelocity = 10;
                 }
-                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
-
-                //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
-                //curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
-
-
-                //(curP.x < LM.viewMinX || curP.y < LM.viewMaxY ||
-                //curP.x > LM.viewMaxX || curP.y > LM.viewMinY))
-
-                /*if (!affected &&
-                    (curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
-                    curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
-                {
-                    affected = true;
-                }*/
-                if (affected) {
-                    //console.log('affected!!!!!')
-                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
-                    this.pointsVel[i] -= 1;
-                }
-                curRl += this.pointsVel[i];
-                curRl = Math.max(curRl, 0);
-
-                curRl = (9 * curRl + this.size) / 10; //??????
-
-                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
-
-                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
-
-                var angle = 2 * Math.PI * i / len;
-                var rl = curP.rl;
-                if (rl > this.maxPointRad) this.maxPointRad = rl
-                if (this.isVirus && i % 2 === 0) {
-                    rl += 5;
+                else if (
+                    newVelocity < -10
+                ) {
+                    newVelocity = -10;
                 }
 
-                curP.x = this.x + Math.cos(angle) * rl;
-                curP.y = this.y + Math.sin(angle) * rl;
+                velocity[i] =
+                    (
+                        previousOriginalVelocity +
+                        nextOriginalVelocity +
+                        8 *
+                        newVelocity
+                    ) /
+                    10;
+
+                previousOriginalVelocity =
+                    currentOriginalVelocity;
+            }
+
+
+            /*
+             * ───────────────────────────────────────────────────────────
+             * PASS B — RADIAL PERIMETER
+             * ───────────────────────────────────────────────────────────
+             */
+            this.maxPointRad = 0;
+
+            var self =
+                this;
+
+            for (
+                var pointIndex = 0;
+                pointIndex < len;
+                pointIndex++
+            ) {
+                var curP =
+                    points[
+                        pointIndex
+                    ];
+
+                var curRl =
+                    curP.rl;
+
+                var prevRl =
+                    points[
+                        (
+                            pointIndex -
+                            1 +
+                            len
+                        ) %
+                        len
+                    ].rl;
+
+                var nextRl =
+                    points[
+                        (
+                            pointIndex +
+                            1
+                        ) %
+                        len
+                    ].rl;
+
+
+                /*
+                 * Collision pressure against jelly points belonging to
+                 * OTHER cells.
+                 */
+                var affected =
+                    false;
+
+                if (
+                    LM.quadtree
+                ) {
+                    affected =
+                        LM.quadtree.some(
+                            {
+                                x:
+                                    curP.x -
+                                    5,
+
+                                y:
+                                    curP.y -
+                                    5,
+
+                                w: 10,
+                                h: 10
+                            },
+
+                            function (
+                                item
+                            ) {
+                                return (
+                                    item &&
+                                    item.parent !==
+                                        self &&
+                                    self.sqDist(
+                                        item,
+                                        curP
+                                    ) <=
+                                        25
+                                );
+                            }
+                        );
+                }
+
+
+                if (
+                    affected
+                ) {
+                    /*
+                     * Push the perimeter inward where another cell is touching.
+                     */
+                    velocity[
+                        pointIndex
+                    ] =
+                        Math.min(
+                            velocity[
+                                pointIndex
+                            ],
+                            0
+                        );
+
+                    velocity[
+                        pointIndex
+                    ] -= 1;
+                }
+
+
+                curRl +=
+                    velocity[
+                        pointIndex
+                    ];
+
+                curRl =
+                    Math.max(
+                        curRl,
+                        0
+                    );
+
+
+                /*
+                 * Elastic attraction back toward the interpolated cell size.
+                 */
+                curRl =
+                    (
+                        9 *
+                        curRl +
+                        this.size
+                    ) /
+                    10;
+
+
+                /*
+                 * CRITICAL FIX:
+                 *
+                 * The old LM code calculated `nextRl` and then ignored it:
+                 *
+                 *     (prevRl + this.size + 8 * curRl) / 10
+                 *
+                 * That kills neighbor-to-neighbor wave propagation.
+                 *
+                 * Jelly smoothing MUST use both neighboring radii.
+                 */
+                curP.rl =
+                    (
+                        prevRl +
+                        nextRl +
+                        8 *
+                        curRl
+                    ) /
+                    10;
+
+
+                var angle =
+                    2 *
+                    Math.PI *
+                    pointIndex /
+                    len;
+
+
+                var renderRadius =
+                    curP.rl;
+
+
+                /*
+                 * Delta-style virus jaggedness.
+                 *
+                 * Every second perimeter point extends outward.
+                 * Because the base radius itself is jelly-simulated, these
+                 * spikes wobble with the virus instead of forming a rigid
+                 * polygon.
+                 */
+                if (
+                    this.isVirus &&
+                    (
+                        pointIndex &
+                        1
+                    ) ===
+                        0
+                ) {
+                    renderRadius +=
+                        5;
+                }
+
+
+                /*
+                 * maxPointRad is used for skin sizing.
+                 *
+                 * Include the ACTUAL rendered virus extension instead of only
+                 * curP.rl; otherwise skins/body bounds can be slightly smaller
+                 * than the jelly virus perimeter.
+                 */
+                if (
+                    renderRadius >
+                    this.maxPointRad
+                ) {
+                    this.maxPointRad =
+                        renderRadius;
+                }
+
+
+                curP.x =
+                    this.x +
+                    Math.cos(
+                        angle
+                    ) *
+                    renderRadius;
+
+                curP.y =
+                    this.y +
+                    Math.sin(
+                        angle
+                    ) *
+                    renderRadius;
             }
         };
 
@@ -28855,10 +29242,32 @@ function thelegendmodproject() {
                          */
                         style.beginPath();
 
+                        /*
+                         * A valid dynamic jelly perimeter exists only when
+                         * jelly physics has prepared at least three points for
+                         * this active cell during the current frame.
+                         */
+                        var _useDynamicJellyPath =
+                            !!(
+                                defaultmapsettings
+                                    .jellyPhisycs &&
+                                !this.removed &&
+                                this.points &&
+                                this.points.length >=
+                                    3
+                            );
+
+
                         if (
-                            defaultmapsettings.jellyPhisycs &&
-                            this.points.length
+                            _useDynamicJellyPath
                         ) {
+                            /*
+                             * NORMAL CELLS AND VIRUSES USE THE SAME AUTHORITATIVE
+                             * JELLY PERIMETER.
+                             *
+                             * Viruses already received alternating outward
+                             * jaggedness inside movePoints().
+                             */
                             var point =
                                 this.points[0];
 
@@ -28868,12 +29277,18 @@ function thelegendmodproject() {
                             );
 
                             for (
-                                var i = 1;
-                                i < this.points.length;
-                                ++i
+                                var jellyPointIndex =
+                                    1;
+
+                                jellyPointIndex <
+                                this.points.length;
+
+                                jellyPointIndex++
                             ) {
                                 point =
-                                    this.points[i];
+                                    this.points[
+                                        jellyPointIndex
+                                    ];
 
                                 style.lineTo(
                                     point.x,
@@ -28882,9 +29297,18 @@ function thelegendmodproject() {
                             }
                         }
                         else if (
-                            defaultmapsettings.jellyPhisycs &&
+                            defaultmapsettings
+                                .jellyPhisycs &&
                             this.isVirus
                         ) {
+                            /*
+                             * STATIC VIRUS FALLBACK.
+                             *
+                             * This exists only for a virus that does not have a
+                             * valid dynamic jelly perimeter yet.
+                             *
+                             * It must NOT replace a working jelly virus.
+                             */
                             style.lineJoin =
                                 "miter";
 
@@ -28949,15 +29373,22 @@ function thelegendmodproject() {
                             );
 
                             for (
-                                var i = 1;
-                                i < 120;
-                                i++
+                                var staticVirusIndex =
+                                    1;
+
+                                staticVirusIndex <
+                                120;
+
+                                staticVirusIndex++
                             ) {
                                 var dist =
                                     this.size -
                                     3 +
                                     (
-                                        (i & 1)
+                                        (
+                                            staticVirusIndex &
+                                            1
+                                        )
                                             ? 0
                                             : 6
                                     );
@@ -28965,11 +29396,15 @@ function thelegendmodproject() {
                                 style.lineTo(
                                     this.x +
                                     dist *
-                                    _vSin[i],
+                                    _vSin[
+                                        staticVirusIndex
+                                    ],
 
                                     this.y +
                                     dist *
-                                    _vCos[i]
+                                    _vCos[
+                                        staticVirusIndex
+                                    ]
                                 );
                             }
 
@@ -28993,11 +29428,24 @@ function thelegendmodproject() {
 
                         style.closePath();
 
+
                         /*
-                         * Viruses retain their dedicated fill, stroke, alpha,
-                         * spikes and glow implementation.
+                         * ═══════════════════════════════════════════════════
+                         * VIRUS BODY
+                         * ═══════════════════════════════════════════════════
+                         *
+                         * CRITICAL RULE:
+                         *
+                         * If the virus has an active jelly perimeter, FILL AND
+                         * STROKE THAT SAME PATH.
+                         *
+                         * Do NOT paint createStrokeVirusPath() over it, because
+                         * that is a rigid independent polygon and visually hides
+                         * the wobbling perimeter.
                          */
-                        if (this.isVirus) {
+                        if (
+                            this.isVirus
+                        ) {
                             if (
                                 defaultmapsettings
                                     .transparentViruses &&
@@ -29011,6 +29459,7 @@ function thelegendmodproject() {
 
                                 s = true;
                             }
+
 
                             if (
                                 defaultmapsettings
@@ -29043,18 +29492,27 @@ function thelegendmodproject() {
                                     "#2ca52c";
                             }
 
+
+                            /*
+                             * Fill the SAME path constructed above.
+                             */
                             style.fill();
 
-                            if (s) {
+
+                            if (
+                                s
+                            ) {
                                 style.globalAlpha =
                                     value;
 
                                 s = false;
                             }
 
+
                             style.lineWidth =
                                 defaultSettings
                                     .virusStrokeSize;
+
 
                             if (
                                 defaultmapsettings
@@ -29069,10 +29527,30 @@ function thelegendmodproject() {
                                         .virusGlowColor;
                             }
 
+
                             if (
+                                _useDynamicJellyPath
+                            ) {
+                                /*
+                                 * JELLY VIRUS:
+                                 *
+                                 * Stroke its real simulated perimeter.
+                                 *
+                                 * The spike/jagged shape already exists in
+                                 * this.points because movePoints() adds radius
+                                 * to alternating virus points.
+                                 */
+                                style.stroke();
+                            }
+                            else if (
                                 defaultmapsettings
                                     .virusSpikes
                             ) {
+                                /*
+                                 * NON-JELLY / POINTLESS FALLBACK:
+                                 *
+                                 * Keep the old static spike stroke behavior.
+                                 */
                                 style.stroke(
                                     this
                                         .createStrokeVirusPath(
@@ -29089,19 +29567,24 @@ function thelegendmodproject() {
                                 style.stroke();
                             }
 
+
                             if (
                                 defaultmapsettings
                                     .showMass
                             ) {
                                 this.setDrawing();
+
                                 this.setDrawingScale();
+
                                 this.setMass(
                                     this.size
                                 );
+
                                 this.drawMass(
                                     style
                                 );
                             }
+
 
                             return;
                         }
