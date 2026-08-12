@@ -21178,9 +21178,19 @@ function thelegendmodproject() {
         onPlay() {
             //                this.play(), this.hideMenu(), window.addKeyListeners && window.addKeyListeners(), defaultmapsettings.autoHideFood && (i.showFood = true), window['ga'] && window['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), window['ga'] && window['ga']('ogarioTracker.send', 'pageview');
 
-            /* Clear stale spectate/world-map cells before spawning.
-             * Without this, cells from the previous viewport linger as grey
-             * blobs (no color data) until the server's first ClearAll arrives. */
+            /* ── Grey-cell fix: spawn transit gate ──
+             * The server does NOT send ClearAll (opcode 0x12) during
+             * World-Spectate → Play because that triggers a client reconnect.
+             * Instead it sets force_full_diff on the next tick.  But between
+             * clicking Play and receiving opcode 32 (spawn), regular cell
+             * updates (opcode 16) can inject stale spectate-viewport cells
+             * that appear grey (no color data in UPDATE-only records).
+             *
+             * Fix: gate all opcode-16 processing until opcode 32 arrives.
+             * At opcode-32 time we flush everything, so the very next
+             * cell update (the server's force_full_diff) starts from a
+             * clean slate with full ADD records including color/skin/name. */
+            legendmod._spawnTransitGate = true;
             legendmod.cells = [];
             legendmod.indexedCells = {};
             legendmod.removedCells = [];
@@ -21188,6 +21198,15 @@ function thelegendmodproject() {
             legendmod.viruses = [];
             legendmod.playerCells = [];
             if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
+
+            /* Safety timeout: auto-clear the gate after 3s in case the server
+             * never responds with opcode 32 (e.g. spawn failure, packet loss).
+             * Without this, a failed spawn would permanently block cell updates. */
+            if (legendmod._spawnGateTimer) clearTimeout(legendmod._spawnGateTimer);
+            legendmod._spawnGateTimer = setTimeout(function () {
+                legendmod._spawnTransitGate = false;
+                legendmod._spawnGateTimer = null;
+            }, 3000);
 
             this.play();
             this.hideMenu();
@@ -32123,6 +32142,25 @@ function thelegendmodproject() {
                         break;
                     }
                     window.testobjectsOpcode32 = data;
+                    /* Grey-cell fix: when spawn confirmation arrives, flush
+                     * ALL remaining stale cells and open the gate so the
+                     * next opcode-16 (force_full_diff from server) populates
+                     * a clean world with proper color/skin/name ADDs. */
+                    if (this._spawnTransitGate) {
+                        this.cells = [];
+                        this.indexedCells = {};
+                        this.removedCells = [];
+                        this.food = [];
+                        this.viruses = [];
+                        this.playerCells = [];
+                        this.playerCellsMulti = [];
+                        if (this._cellsDirty !== undefined) this._cellsDirty = true;
+                        this._spawnTransitGate = false;
+                        if (this._spawnGateTimer) {
+                            clearTimeout(this._spawnGateTimer);
+                            this._spawnGateTimer = null;
+                        }
+                    }
                     this.playerCellIDs.push(data.getUint32(s, true));
                     if (this._playerCellIDSet) this._playerCellIDSet.add(this.playerCellIDs[this.playerCellIDs.length - 1]);
                     if (!this.play) {
@@ -33570,6 +33608,10 @@ function thelegendmodproject() {
                 case 16: //2020 jimboy3100 specific private servers
                     // Skip main client's cell updates when dead and multibox spect is active
                     if (window.mainPlayerDeadMbActive) break;
+                    /* Grey-cell fix: while the spawn transit gate is active,
+                     * drop ALL cell updates so stale spectate-viewport cells
+                     * can't leak back in before the authoritative snapshot. */
+                    if (this._spawnTransitGate) break;
                     try {
                         // Garix: use dedicated parser for protocol 6-10 format
                         if (this.serverType === 'garix') {
