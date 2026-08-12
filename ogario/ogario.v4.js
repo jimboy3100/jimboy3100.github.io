@@ -42718,10 +42718,14 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 this.mapSize = newMapSize;
 
+                /* The server uses a circular map: border diameter = 2 * size / √π.
+                 * Convert back to the internal map size before comparing
+                 * against tier thresholds so the display matches the server. */
+                var internalSize = newMapSize * Math.sqrt(Math.PI) / 2;
                 var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000, 226274, 320000, 452548];
                 var derivedTier = 0;
                 for (var ti = tierSizes.length - 1; ti >= 0; ti--) {
-                    if (newMapSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
+                    if (internalSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
                 }
                 LM.mapTier = derivedTier;
             } else if (this.connectionIntegrity || temp2) {
