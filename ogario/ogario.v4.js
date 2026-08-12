@@ -19472,6 +19472,28 @@ function thelegendmodproject() {
         },
         /* ─── §4.5 Menu & Settings ─── */
         showMenu(value) {
+            /*
+             * ============================================================
+             * EXPANDING LAND CINEMATIC LOCK
+             * ============================================================
+             *
+             * While a 600 ms death absorption, particle burst or screen
+             * shake is playing, showMenu() MUST NOT interrupt the canvas by
+             * prematurely fading in overlays or statistics.
+             */
+            if (
+                typeof legendmod !== 'undefined' &&
+                legendmod &&
+                legendmod.serverType === 'expandingland' &&
+                Number(window._elDeathUiLockedUntil) > Date.now()
+            ) {
+                console.log(
+                    '[EL DEATH] showMenu() ignored during cinematic window'
+                );
+
+                return;
+            }
+
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').show();
                 $('.menu-panel').hide();
@@ -24190,10 +24212,29 @@ function thelegendmodproject() {
                         ].alive = isAlive;
                     }
 
+                    /*
+                     * PPv7 flag 8 carries the sender's map-orientation
+                     * fingerprint (bgpi) for Legend Mod.
+                     *
+                     * Keep .quadrant for compatibility with anything
+                     * external that may inspect it, but lbgpi is the value
+                     * consumed by updatevnr().
+                     */
                     if (quadrant !== undefined) {
                         this.teamPlayers[
                             existingIdx
-                        ].quadrant = quadrant;
+                        ].quadrant =
+                            quadrant;
+
+                        if (
+                            quadrant >= 0 &&
+                            quadrant <= 3
+                        ) {
+                            this.teamPlayers[
+                                existingIdx
+                            ].lbgpi =
+                                quadrant;
+                        }
                     }
                 } else if (activeNick) {
                     var skinName =
@@ -24226,9 +24267,25 @@ function thelegendmodproject() {
                         map.alive = isAlive;
                     }
 
+                    /*
+                     * New teammate: initialise orientation immediately.
+                     *
+                     * Do NOT transform map.x/map.y here.  These coordinates
+                     * are the reference coordinates sent by the teammate.
+                     * updatevnr() rotates OUR local Agar.io world into that
+                     * reference frame.
+                     */
                     if (quadrant !== undefined) {
                         map.quadrant =
                             quadrant;
+
+                        if (
+                            quadrant >= 0 &&
+                            quadrant <= 3
+                        ) {
+                            map.lbgpi =
+                                quadrant;
+                        }
                     }
 
                     this.teamPlayers.push(
@@ -24506,52 +24563,333 @@ function thelegendmodproject() {
             off = writeUTF16Len(partyToken, view, off);
             ws.send(buffer);
         },
+        /*
+         * Send our complete relay player state.
+         *
+         * IMPORTANT:
+         * PPv7 already defines flagsTopLevel bit 8 as the optional
+         * "quadrant" byte.  Legend Mod uses that byte for bgpi, i.e.
+         * the Agar.io map-orientation fingerprint.
+         *
+         * This replaces the dead old SLG rotation-data path:
+         *
+         *     sendSimpleLegendSDATA() { }
+         *     sendSLG() { }
+         *
+         * Position and orientation therefore travel through the SAME
+         * relay protocol and cannot silently disagree.
+         */
         sendDeltaPlayerUpdate() {
-            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
-            if (!ws || ws.readyState !== 1 || !this.playerID) return;
-            var nick = (ogarcopythelb.nick || '').substring(0, 255);
-            var skin = (ogarcopythelb.skinURL || '').substring(0, 255);
-            var color = parseInt((ogarcopythelb.color || '#000000').replace('#', ''), 16) || 0;
-            var px = this.getPlayerX() || 0;
-            var py = this.getPlayerY() || 0;
-            var mass = (typeof ogario.playerMass !== 'undefined') ? ogario.playerMass : (this.playerMass || 0);
+            var ws =
+                window.ogarioWS ||
+                (
+                    this.isSocketOpen()
+                        ? this.socket
+                        : null
+                );
 
-            function writeUTF16Len(str, view, offset) {
-                view.setUint8(offset++, str.length & 0xFF);
-                for (var i = 0; i < str.length; i++) {
-                    view.setUint16(offset, str.charCodeAt(i), true);
+            if (
+                !ws ||
+                ws.readyState !== 1 ||
+                !this.playerID
+            ) {
+                return;
+            }
+
+            var nick =
+                String(
+                    ogarcopythelb.nick || ''
+                ).substring(
+                    0,
+                    255
+                );
+
+            var skin =
+                String(
+                    ogarcopythelb.skinURL || ''
+                ).substring(
+                    0,
+                    255
+                );
+
+            var color =
+                parseInt(
+                    String(
+                        ogarcopythelb.color ||
+                        '#000000'
+                    ).replace(
+                        '#',
+                        ''
+                    ),
+                    16
+                ) || 0;
+
+            /*
+             * These are the same normalized coordinates used by the
+             * ordinary teammate-position packet.
+             */
+            var px =
+                Number(
+                    this.getPlayerX()
+                ) || 0;
+
+            var py =
+                Number(
+                    this.getPlayerY()
+                ) || 0;
+
+            var mass =
+                typeof ogario.playerMass !==
+                    'undefined'
+                    ? ogario.playerMass
+                    : (
+                        this.playerMass ||
+                        0
+                    );
+
+            /*
+             * bgpi is valid only in the four real map quadrants.
+             *
+             * 4 means "unknown / close to map centre".
+             * We transmit -1 in that case so another client will NOT
+             * use an unreliable centre reading to change orientation.
+             */
+            var bgpi =
+                Number(
+                    window.legendmod.bgpi
+                );
+
+            if (
+                bgpi < 0 ||
+                bgpi > 3 ||
+                !Number.isFinite(bgpi)
+            ) {
+                bgpi = -1;
+            }
+
+            function writeUTF16Len(
+                str,
+                view,
+                offset
+            ) {
+                view.setUint8(
+                    offset++,
+                    str.length & 0xFF
+                );
+
+                for (
+                    var i = 0;
+                    i < str.length;
+                    i++
+                ) {
+                    view.setUint16(
+                        offset,
+                        str.charCodeAt(i),
+                        true
+                    );
+
                     offset += 2;
                 }
+
                 return offset;
             }
 
-            var flagsTopLevel = 1 | 2 | 4;
-            var flagsDownLevel = 2 | 4 | 8;
+            /*
+             * PPv7 top-level flags:
+             *
+             * 1 = normal player data
+             * 2 = position + mass
+             * 4 = alive state
+             * 8 = quadrant/orientation byte
+             *
+             * Bit 8 was ALREADY IMPLEMENTED in readPpv7(), but the
+             * sender never enabled it.  That was one reason lbgpi
+             * never reached teammates through the active protocol.
+             */
+            var flagsTopLevel =
+                1 |
+                2 |
+                4 |
+                8;
 
-            var size = 1 + 2 + 1 + 1 + (1 + nick.length * 2) + (1 + skin.length * 2) + 3 + (2 + 2 + 4) + 1 + 2;
-            var buffer = new ArrayBuffer(size);
-            var view = new DataView(buffer);
-            view.setUint8(0, 16); // Opcode 16: Delta ppv7
-            var off = 1;
-            view.setUint16(off, this.playerID & 0xFFFF, true); off += 2;
-            view.setUint8(off++, flagsTopLevel);
-            view.setUint8(off++, flagsDownLevel);
+            /*
+             * Existing lower-level payload:
+             *
+             * 2 = nick
+             * 4 = custom skin
+             * 8 = custom color
+             */
+            var flagsDownLevel =
+                2 |
+                4 |
+                8;
 
-            off = writeUTF16Len(nick, view, off);
-            off = writeUTF16Len(skin, view, off);
+            /*
+             * Existing packet size
+             * + 1 byte for bgpi/quadrant.
+             */
+            var size =
+                1 +                     // opcode
+                2 +                     // player ID
+                1 +                     // top flags
+                1 +                     // lower flags
+                (
+                    1 +
+                    nick.length * 2
+                ) +
+                (
+                    1 +
+                    skin.length * 2
+                ) +
+                3 +                     // RGB
+                (
+                    2 +
+                    2 +
+                    4
+                ) +                     // x, y, mass
+                1 +                     // alive
+                1 +                     // bgpi / quadrant
+                2;                      // existing trailing data
 
-            view.setUint8(off++, (color >> 16) & 0xFF);
-            view.setUint8(off++, (color >> 8) & 0xFF);
-            view.setUint8(off++, color & 0xFF);
+            var buffer =
+                new ArrayBuffer(
+                    size
+                );
 
-            view.setInt16(off, px & 0xFFFF, true); off += 2;
-            view.setInt16(off, py & 0xFFFF, true); off += 2;
-            view.setUint32(off, mass, true); off += 4;
+            var view =
+                new DataView(
+                    buffer
+                );
 
-            view.setUint8(off++, ogario.play ? 1 : 0);
-            view.setUint16(off, 0, true); off += 2;
+            var off = 0;
 
-            ws.send(buffer);
+            /*
+             * Opcode 16 = PPv7 teammate update.
+             */
+            view.setUint8(
+                off++,
+                16
+            );
+
+            view.setUint16(
+                off,
+                this.playerID & 0xFFFF,
+                true
+            );
+
+            off += 2;
+
+            view.setUint8(
+                off++,
+                flagsTopLevel
+            );
+
+            view.setUint8(
+                off++,
+                flagsDownLevel
+            );
+
+            off =
+                writeUTF16Len(
+                    nick,
+                    view,
+                    off
+                );
+
+            off =
+                writeUTF16Len(
+                    skin,
+                    view,
+                    off
+                );
+
+            view.setUint8(
+                off++,
+                (
+                    color >>
+                    16
+                ) &
+                0xFF
+            );
+
+            view.setUint8(
+                off++,
+                (
+                    color >>
+                    8
+                ) &
+                0xFF
+            );
+
+            view.setUint8(
+                off++,
+                color &
+                0xFF
+            );
+
+            /*
+             * PPv7 uses signed 16-bit position fields.
+             * Preserve the existing packet format.
+             */
+            view.setInt16(
+                off,
+                px,
+                true
+            );
+
+            off += 2;
+
+            view.setInt16(
+                off,
+                py,
+                true
+            );
+
+            off += 2;
+
+            view.setUint32(
+                off,
+                Math.max(
+                    0,
+                    mass >>> 0
+                ),
+                true
+            );
+
+            off += 4;
+
+            view.setUint8(
+                off++,
+                ogario.play
+                    ? 1
+                    : 0
+            );
+
+            /*
+             * THIS IS THE IMPORTANT NEW BYTE.
+             *
+             * readPpv7() already knows how to read it whenever
+             * flagsTopLevel & 8 is set.
+             */
+            view.setInt8(
+                off++,
+                bgpi
+            );
+
+            /*
+             * Preserve the existing trailing uint16.
+             */
+            view.setUint16(
+                off,
+                0,
+                true
+            );
+
+            off += 2;
+
+            ws.send(
+                buffer
+            );
         },
         sendPartyData() {
             this.sendPlayerClanTag();
@@ -25117,142 +25455,916 @@ function thelegendmodproject() {
                     this.targeting && this.targetID && e === this.targetID && this.updateTarget(n.nick, n.skinURL, s, o, n.mass, n.color, n.lbgpi);
             }
         },
-        //Sonia3 Added 3 fuctions below
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * MAP ORIENTATION / MINIMAP COORDINATE SYNCHRONISATION
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Agar.io can expose equivalent worlds with X and/or Y mirrored.
+         *
+         * Legend Mod represents the four transformations as:
+         *
+         *     vnr 0 = [0, 0]   normal
+         *     vnr 1 = [1, 0]   mirror X
+         *     vnr 2 = [1, 1]   mirror X + Y
+         *     vnr 3 = [0, 1]   mirror Y
+         *
+         * IMPORTANT:
+         *
+         * window.legendmod.vector is a LOOKUP TABLE.
+         *
+         * It must never be modified to represent current state.
+         * The old implementation did:
+         *
+         *     var mat = vector[vnr];
+         *     mat[0] = ...
+         *
+         * which modifies the lookup-table row itself because arrays are
+         * references in JavaScript.  After several rotations, vector[] can
+         * therefore stop meaning [normal, X, XY, Y].
+         *
+         * The code below treats vector as immutable and changes ONLY vnr.
+         */
+
         dematrix(mat) {
-            return !mat[0] && !mat[1] ? 0 : mat[0] && !mat[1] ? 1 : mat[0] && mat[1] ? 2 : 3;
+            if (
+                !mat ||
+                mat.length < 2
+            ) {
+                return 0;
+            }
+
+            var flipX =
+                !!mat[0];
+
+            var flipY =
+                !!mat[1];
+
+            if (
+                !flipX &&
+                !flipY
+            ) {
+                return 0;
+            }
+
+            if (
+                flipX &&
+                !flipY
+            ) {
+                return 1;
+            }
+
+            if (
+                flipX &&
+                flipY
+            ) {
+                return 2;
+            }
+
+            return 3;
         },
+
+        /*
+         * Return canonical flip state without trusting a possibly modified
+         * vector[] row left by old/hot-reloaded code.
+         */
+        _getRotationMatrix(vnr) {
+            switch (
+                Number(vnr)
+            ) {
+                case 1:
+                    return [
+                        true,
+                        false
+                    ];
+
+                case 2:
+                    return [
+                        true,
+                        true
+                    ];
+
+                case 3:
+                    return [
+                        false,
+                        true
+                    ];
+
+                case 0:
+                default:
+                    return [
+                        false,
+                        false
+                    ];
+            }
+        },
+
+        /*
+         * Restore the public vector lookup table to its canonical values.
+         *
+         * This also repairs a table already corrupted by the previous
+         * setvnr()/settechvnr() implementation during a hot reload.
+         */
+        _resetRotationVectorTable() {
+            window.legendmod.vector = [
+                [
+                    0,
+                    0
+                ],
+                [
+                    1,
+                    0
+                ],
+                [
+                    1,
+                    1
+                ],
+                [
+                    0,
+                    1
+                ]
+            ];
+        },
+
+        /*
+         * Change local world orientation to an ABSOLUTE vnr.
+         *
+         * Friend/minimap coordinates are deliberately NOT transformed.
+         * They are the external reference frame that our world must match.
+         */
+        _applyAbsoluteVnr(newVnr) {
+            newVnr =
+                Number(newVnr);
+
+            if (
+                !Number.isFinite(
+                    newVnr
+                ) ||
+                newVnr < 0 ||
+                newVnr > 3
+            ) {
+                return false;
+            }
+
+            newVnr =
+                newVnr | 0;
+
+            var oldVnr =
+                Number(
+                    window.legendmod.vnr
+                );
+
+            if (
+                !Number.isFinite(
+                    oldVnr
+                ) ||
+                oldVnr < 0 ||
+                oldVnr > 3
+            ) {
+                oldVnr = 0;
+            }
+
+            oldVnr =
+                oldVnr | 0;
+
+            var oldMat =
+                this._getRotationMatrix(
+                    oldVnr
+                );
+
+            var newMat =
+                this._getRotationMatrix(
+                    newVnr
+                );
+
+            /*
+             * Always repair the canonical public table before exposing
+             * the new vnr.
+             */
+            this._resetRotationVectorTable();
+
+            if (
+                oldVnr === newVnr
+            ) {
+                window.legendmod.vnr =
+                    newVnr;
+
+                return false;
+            }
+
+            /*
+             * Convert every LOCAL world-coordinate store from the old
+             * orientation into the new one.
+             *
+             * translateX/translateY are self-inverse, so an axis changes
+             * exactly when oldFlip XOR newFlip is true.
+             */
+            this._retranslateAllOnFlip(
+                oldMat[0],
+                oldMat[1],
+                newMat
+            );
+
+            window.legendmod.vnr =
+                newVnr;
+
+            return true;
+        },
+
+        /*
+         * Automatically align our local Agar.io orientation with the
+         * orientation reported by a teammate.
+         *
+         * b = teammate bgpi/lbgpi
+         *
+         * window.legendmod.bgpi = our own RAW Agar.io quadrant fingerprint.
+         *
+         * The necessary transform is simply whether sender and receiver
+         * disagree on the horizontal and/or vertical half of the map.
+         */
         setvnr(b) {
-            window.legendmod.setrot = 1;
-            window.legendmod.rotcnt = 0;
-            var mat = window.legendmod.vector[window.legendmod.vnr];
-            var oldFlipX = !!mat[0];
-            var oldFlipY = !!mat[1];
-            //window.legendmod.prevvnr = window.legendmod.vnr; //jimboy31001
-            if ((b === 0 || b === 3) && (window.legendmod.bgpi === 1 || window.legendmod.bgpi === 2)) mat[0] = !mat[0];
-            if ((b === 1 || b === 2) && (window.legendmod.bgpi === 0 || window.legendmod.bgpi === 3)) mat[0] = !mat[0];
-            if ((b === 0 || b === 1) && (window.legendmod.bgpi === 2 || window.legendmod.bgpi === 3)) mat[1] = !mat[1];
-            if ((b === 2 || b === 3) && (window.legendmod.bgpi === 1 || window.legendmod.bgpi === 0)) mat[1] = !mat[1];
-            window.legendmod.vnr = this.dematrix(mat);
+            b =
+                Number(b);
 
-            this._retranslateAllOnFlip(oldFlipX, oldFlipY, mat);
+            var own =
+                Number(
+                    window.legendmod.bgpi
+                );
+
+            if (
+                !Number.isFinite(b) ||
+                b < 0 ||
+                b > 3 ||
+                !Number.isFinite(own) ||
+                own < 0 ||
+                own > 3
+            ) {
+                return false;
+            }
+
+            b =
+                b | 0;
+
+            own =
+                own | 0;
+
+            /*
+             * Quadrants from calculatebgpi():
+             *
+             *     0 = right / top
+             *     1 = left  / top
+             *     2 = left  / bottom
+             *     3 = right / bottom
+             */
+            var friendIsLeft =
+                (
+                    b === 1 ||
+                    b === 2
+                );
+
+            var ownIsLeft =
+                (
+                    own === 1 ||
+                    own === 2
+                );
+
+            var friendIsBottom =
+                (
+                    b === 2 ||
+                    b === 3
+                );
+
+            var ownIsBottom =
+                (
+                    own === 2 ||
+                    own === 3
+                );
+
+            var needFlipX =
+                friendIsLeft !==
+                ownIsLeft;
+
+            var needFlipY =
+                friendIsBottom !==
+                ownIsBottom;
+
+            var targetVnr;
+
+            if (
+                !needFlipX &&
+                !needFlipY
+            ) {
+                targetVnr = 0;
+            } else if (
+                needFlipX &&
+                !needFlipY
+            ) {
+                targetVnr = 1;
+            } else if (
+                needFlipX &&
+                needFlipY
+            ) {
+                targetVnr = 2;
+            } else {
+                targetVnr = 3;
+            }
+
+            window.legendmod.setrot =
+                1;
+
+            window.legendmod.rotcnt =
+                0;
+
+            this._applyAbsoluteVnr(
+                targetVnr
+            );
+
+            return true;
         },
-        /* Shared helper: when a rotation axis flips, re-translate EVERY
-         * coordinate store so nothing keeps stale pre-flip positions.
-         * translateX/translateY are self-inverse (applying twice = identity),
-         * so this works for both flip-on and flip-off transitions. */
-        _retranslateAllOnFlip(oldFlipX, oldFlipY, mat) {
-            var xFlipped = (!!mat[0]) !== oldFlipX;
-            var yFlipped = (!!mat[1]) !== oldFlipY;
-            if (!xFlipped && !yFlipped) return;
 
-            /* 1. All game cells (players, food, viruses, ejected mass) */
-            if (legendmod.indexedCells) {
-                for (var cid in legendmod.indexedCells) {
-                    if (!legendmod.indexedCells.hasOwnProperty(cid)) continue;
-                    var cell = legendmod.indexedCells[cid];
+        /*
+         * Re-translate all LOCAL world coordinate stores when one or both
+         * orientation axes change.
+         *
+         * DO NOT add application.teamPlayers here.
+         *
+         * Their coordinates came from the relay and are the reference
+         * coordinates against which our local world is being corrected.
+         */
+        _retranslateAllOnFlip(
+            oldFlipX,
+            oldFlipY,
+            newMat
+        ) {
+            var legendmod =
+                window.legendmod;
+
+            if (
+                !legendmod ||
+                !newMat
+            ) {
+                return;
+            }
+
+            var newFlipX =
+                !!newMat[0];
+
+            var newFlipY =
+                !!newMat[1];
+
+            var xFlipped =
+                !!oldFlipX !==
+                newFlipX;
+
+            var yFlipped =
+                !!oldFlipY !==
+                newFlipY;
+
+            if (
+                !xFlipped &&
+                !yFlipped
+            ) {
+                return;
+            }
+
+            /*
+             * 1. ALL indexed live/removed world cells.
+             *
+             * Update both interpolated and target positions.
+             */
+            if (
+                legendmod.indexedCells
+            ) {
+                for (
+                    var id in
+                    legendmod.indexedCells
+                ) {
+                    if (
+                        !Object.prototype
+                            .hasOwnProperty
+                            .call(
+                                legendmod.indexedCells,
+                                id
+                            )
+                    ) {
+                        continue;
+                    }
+
+                    var cell =
+                        legendmod.indexedCells[
+                            id
+                        ];
+
+                    if (!cell) {
+                        continue;
+                    }
+
                     if (xFlipped) {
-                        cell.x = legendmod.translateX(cell.x);
-                        cell.targetX = legendmod.translateX(cell.targetX);
-                        cell.startX = legendmod.translateX(cell.startX);
+                        if (
+                            cell.x != null
+                        ) {
+                            cell.x =
+                                legendmod.translateX(
+                                    cell.x
+                                );
+                        }
+
+                        if (
+                            cell.targetX != null
+                        ) {
+                            cell.targetX =
+                                legendmod.translateX(
+                                    cell.targetX
+                                );
+                        }
+
+                        if (
+                            cell.oldX != null
+                        ) {
+                            cell.oldX =
+                                legendmod.translateX(
+                                    cell.oldX
+                                );
+                        }
                     }
+
                     if (yFlipped) {
-                        cell.y = legendmod.translateY(cell.y);
-                        cell.targetY = legendmod.translateY(cell.targetY);
-                        cell.startY = legendmod.translateY(cell.startY);
+                        if (
+                            cell.y != null
+                        ) {
+                            cell.y =
+                                legendmod.translateY(
+                                    cell.y
+                                );
+                        }
+
+                        if (
+                            cell.targetY != null
+                        ) {
+                            cell.targetY =
+                                legendmod.translateY(
+                                    cell.targetY
+                                );
+                        }
+
+                        if (
+                            cell.oldY != null
+                        ) {
+                            cell.oldY =
+                                legendmod.translateY(
+                                    cell.oldY
+                                );
+                        }
                     }
                 }
             }
 
-            /* 2. Ghost cells (leaderboard position markers) */
-            if (legendmod.ghostCells) {
-                for (var gi = 0; gi < legendmod.ghostCells.length; gi++) {
-                    var gc = legendmod.ghostCells[gi];
-                    if (xFlipped) gc.x = legendmod.translateX(gc.x);
-                    if (yFlipped) gc.y = legendmod.translateY(gc.y);
-                }
-            }
+            /*
+             * 2. Ghost cells.
+             */
+            if (
+                legendmod.ghostCells
+            ) {
+                for (
+                    var gi = 0;
+                    gi <
+                    legendmod.ghostCells.length;
+                    gi++
+                ) {
+                    var ghost =
+                        legendmod.ghostCells[
+                            gi
+                        ];
 
-            /* 3. Predicted ghost cells */
-            if (window.predictedGhostCells) {
-                for (var pi = 0; pi < window.predictedGhostCells.length; pi++) {
-                    var pg = window.predictedGhostCells[pi];
-                    if (pg) {
-                        if (xFlipped) pg.x = legendmod.translateX(pg.x);
-                        if (yFlipped) pg.y = legendmod.translateY(pg.y);
+                    if (!ghost) {
+                        continue;
+                    }
+
+                    if (
+                        xFlipped &&
+                        ghost.x != null
+                    ) {
+                        ghost.x =
+                            legendmod.translateX(
+                                ghost.x
+                            );
+                    }
+
+                    if (
+                        yFlipped &&
+                        ghost.y != null
+                    ) {
+                        ghost.y =
+                            legendmod.translateY(
+                                ghost.y
+                            );
                     }
                 }
             }
 
-            /* 4. Camera position (prevents one-frame jolt) */
+            /*
+             * 3. Predicted ghost cells.
+             */
+            if (
+                window.predictedGhostCells
+            ) {
+                for (
+                    var pi = 0;
+                    pi <
+                    window.predictedGhostCells.length;
+                    pi++
+                ) {
+                    var predicted =
+                        window.predictedGhostCells[
+                            pi
+                        ];
+
+                    if (!predicted) {
+                        continue;
+                    }
+
+                    if (
+                        xFlipped &&
+                        predicted.x != null
+                    ) {
+                        predicted.x =
+                            legendmod.translateX(
+                                predicted.x
+                            );
+                    }
+
+                    if (
+                        yFlipped &&
+                        predicted.y != null
+                    ) {
+                        predicted.y =
+                            legendmod.translateY(
+                                predicted.y
+                            );
+                    }
+                }
+            }
+
+            /*
+             * 4. Primary player aggregate coordinates.
+             *
+             * These are derived from world-cell coordinates but may survive
+             * until the next player-position calculation, so keep them
+             * synchronous with the flip.
+             */
             if (xFlipped) {
-                if (legendmod.viewX != null) legendmod.viewX = legendmod.translateX(legendmod.viewX);
-                if (legendmod.viewXTrue != null) legendmod.viewXTrue = legendmod.translateX(legendmod.viewXTrue);
+                if (
+                    legendmod.playerX != null
+                ) {
+                    legendmod.playerX =
+                        legendmod.translateX(
+                            legendmod.playerX
+                        );
+                }
+
+                if (
+                    legendmod.playerXTrue != null
+                ) {
+                    legendmod.playerXTrue =
+                        legendmod.translateX(
+                            legendmod.playerXTrue
+                        );
+                }
             }
+
             if (yFlipped) {
-                if (legendmod.viewY != null) legendmod.viewY = legendmod.translateY(legendmod.viewY);
-                if (legendmod.viewYTrue != null) legendmod.viewYTrue = legendmod.translateY(legendmod.viewYTrue);
+                if (
+                    legendmod.playerY != null
+                ) {
+                    legendmod.playerY =
+                        legendmod.translateY(
+                            legendmod.playerY
+                        );
+                }
+
+                if (
+                    legendmod.playerYTrue != null
+                ) {
+                    legendmod.playerYTrue =
+                        legendmod.translateY(
+                            legendmod.playerYTrue
+                        );
+                }
+            }
+
+            /*
+             * 5. Camera position.
+             *
+             * Without this the cells are correct but one frame can jump to
+             * the opposite side of the map.
+             */
+            if (xFlipped) {
+                if (
+                    legendmod.viewX != null
+                ) {
+                    legendmod.viewX =
+                        legendmod.translateX(
+                            legendmod.viewX
+                        );
+                }
+
+                if (
+                    legendmod.viewXTrue != null
+                ) {
+                    legendmod.viewXTrue =
+                        legendmod.translateX(
+                            legendmod.viewXTrue
+                        );
+                }
+            }
+
+            if (yFlipped) {
+                if (
+                    legendmod.viewY != null
+                ) {
+                    legendmod.viewY =
+                        legendmod.translateY(
+                            legendmod.viewY
+                        );
+                }
+
+                if (
+                    legendmod.viewYTrue != null
+                ) {
+                    legendmod.viewYTrue =
+                        legendmod.translateY(
+                            legendmod.viewYTrue
+                        );
+                }
+            }
+
+            /*
+             * Keep renderer camera cache synchronous if it currently exists.
+             */
+            if (
+                typeof drawRender !==
+                    'undefined' &&
+                drawRender
+            ) {
+                if (
+                    xFlipped &&
+                    drawRender.camX != null
+                ) {
+                    drawRender.camX =
+                        legendmod.translateX(
+                            drawRender.camX
+                        );
+                }
+
+                if (
+                    yFlipped &&
+                    drawRender.camY != null
+                ) {
+                    drawRender.camY =
+                        legendmod.translateY(
+                            drawRender.camY
+                        );
+                }
             }
         },
-        settechvnr(b) { //jimboy3100's 5/5/2020
-            var mat = window.legendmod.vector[window.legendmod.vnr];
-            var oldFlipX = !!mat[0];
-            var oldFlipY = !!mat[1];
-            if (b === 0) {
-                mat[1] = 0;
-                mat[0] = 0;
+
+        /*
+         * Manual minimap/world orientation selector.
+         *
+         * OLD BUG:
+         *
+         *     var mat = vector[vnr];
+         *     mat[0] = ...
+         *
+         * changed the vector lookup-table row itself and did NOT reliably
+         * make vnr equal to b.
+         *
+         * This version applies b as an absolute canonical orientation.
+         */
+        settechvnr(b) {
+            b =
+                Number(b);
+
+            if (
+                !Number.isFinite(b) ||
+                b < 0 ||
+                b > 3
+            ) {
+                return false;
             }
-            if (b === 1) {
-                mat[1] = 0;
-                mat[0] = 1;
-            }
-            if (b === 2) {
-                mat[1] = 1;
-                mat[0] = 0;
-            }
-            if (b === 3) {
-                mat[1] = 1;
-                mat[0] = 1;
-            }
-            this._retranslateAllOnFlip(oldFlipX, oldFlipY, mat);
+
+            return this._applyAbsoluteVnr(
+                b | 0
+            );
         },
+
+        /*
+         * Automatically reconcile our world orientation against a teammate.
+         *
+         * Expanding Land / Legend World is intentionally excluded because
+         * its coordinates are authoritative and do not use official
+         * Agar.io's mirrored-coordinate behaviour.
+         *
+         * IMPORTANT:
+         * FFA and Experimental MUST NOT return here.  The screenshot bug
+         * occurs specifically because the previous code disabled this logic
+         * in FFA, leaving teammate positions and our local world in different
+         * coordinate orientations.
+         */
         updatevnr() {
-            /* Disable map rotation on Expanding Land server */
-            if (window.legendmod.ws && (window.legendmod.ws.includes("expanding.land") || window.legendmod.ws.includes("legendmod.ml"))) return;
-            /* Disable map rotation on FFA and Experimental modes — the map
-             * rotates in those modes which breaks multibox coordinate mapping */
-            if (window.legendmod.gameMode === ":ffa" || window.legendmod.gameMode === ":experimental") return;
-            var mm = 0;
-            var max = 4;
-            for (var i = 0; i < this.teamPlayers.length; i++) {
-                var k = this.teamPlayers[i];
-                if (k.mass > mm) {
-                    if (k.lbgpi <= 3 && k.lbgpi >= 0) {
-                        mm = k.mass;
-                        max = k.lbgpi;
-                    }
+            if (
+                window.legendmod.ws &&
+                (
+                    window.legendmod.ws.includes(
+                        "expanding.land"
+                    ) ||
+                    window.legendmod.ws.includes(
+                        "legendmod.ml"
+                    )
+                )
+            ) {
+                return;
+            }
+
+            /*
+             * Need a trustworthy local orientation.
+             *
+             * calculatebgpi() deliberately returns 4 while crossing the
+             * centre / during its stabilisation window.  Never rotate from
+             * that ambiguous state.
+             */
+            if (
+                window.legendmod.bgpi < 0 ||
+                window.legendmod.bgpi > 3
+            ) {
+                return;
+            }
+
+            var bestMass = 0;
+            var bestLbgpi = -1;
+
+            /*
+             * Use the largest alive teammate carrying a valid orientation.
+             * This preserves the intent of the original implementation while
+             * ignoring stale/invalid -1, -2 and 4 states.
+             */
+            for (
+                var i = 0;
+                i <
+                this.teamPlayers.length;
+                i++
+            ) {
+                var teammate =
+                    this.teamPlayers[i];
+
+                if (
+                    !teammate ||
+                    !teammate.alive
+                ) {
+                    continue;
+                }
+
+                var teammateBgpi =
+                    Number(
+                        teammate.lbgpi
+                    );
+
+                if (
+                    !Number.isFinite(
+                        teammateBgpi
+                    ) ||
+                    teammateBgpi < 0 ||
+                    teammateBgpi > 3
+                ) {
+                    continue;
+                }
+
+                var teammateMass =
+                    Number(
+                        teammate.mass
+                    ) || 0;
+
+                if (
+                    teammateMass >
+                    bestMass
+                ) {
+                    bestMass =
+                        teammateMass;
+
+                    bestLbgpi =
+                        teammateBgpi | 0;
                 }
             }
-            if (window.legendmod.gameMode !== ":party" && mm > 0 && (!window.legendmod.play || mm > window.legendmod.playerMass) && max <= 3 && window.legendmod.bgpi <= 3 && !window.legendmod.setrot) {
-                if (!spects.length) {
-                    //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " VMR UPDATE:", window.legendmod.vnr, mm, window.legendmod.playerMass, max, window.legendmod.bgpi);
-                    this.setvnr(max);
-                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map fixed with LM players. POS:', max);
-                } else if (!window.announceSpectNotifOnce) {
-                    window.announceSpectNotifOnce = true;
-                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Rotation can work only before the creation of Multi-Viewports");
-                }
+
+            if (
+                bestMass <= 0 ||
+                bestLbgpi < 0 ||
+                bestLbgpi > 3
+            ) {
+                return;
             }
+
+            /*
+             * Do not fight a user-selected manual orientation.
+             */
+            if (
+                window.manualRotationLocked
+            ) {
+                return;
+            }
+
+            /*
+             * Preserve the old "strongest reference player" rule:
+             * while alive, only let a larger teammate become the automatic
+             * orientation authority.  While spectating, any valid teammate
+             * can establish it.
+             */
+            if (
+                window.legendmod.play &&
+                bestMass <=
+                    (
+                        Number(
+                            window.legendmod.playerMass
+                        ) || 0
+                    ) &&
+                window.legendmod.setrot
+            ) {
+                return;
+            }
+
+            /*
+             * Multi-viewports already own several coordinate consumers.
+             * Preserve the existing safety restriction.
+             */
+            if (
+                typeof spects !==
+                    'undefined' &&
+                spects &&
+                spects.length
+            ) {
+                if (
+                    !window.announceSpectNotifOnce
+                ) {
+                    window.announceSpectNotifOnce =
+                        true;
+
+                    toastr.warning(
+                        "<b>[" +
+                        Premadeletter123 +
+                        "]:</b> " +
+                        "Rotation can work only before the creation of Multi-Viewports"
+                    );
+                }
+
+                return;
+            }
+
+            /*
+             * setvnr() now computes the ABSOLUTE transform. Calling it again
+             * with the same relationship is harmless; no cumulative toggling
+             * and no vector[] corruption can occur.
+             */
+            this.setvnr(
+                bestLbgpi
+            );
         },
         updateTeamPlayers() {
+            /*
+             * Normal high-frequency teammate position packet.
+             */
             this.sendPlayerPosition();
-            //this.sendSuperLegendSDATA();
-            this.sendSimpleLegendSDATA(); //SEND ROTATION INFO
 
-            //this.sendSLGQinfo(),
+            /*
+             * Also refresh PPv7 state.
+             *
+             * sendDeltaPlayerUpdate() now carries bgpi through the already
+             * supported top-level flag 8 field.
+             *
+             * DO NOT restore:
+             *
+             *     sendSuperLegendSDATA()
+             *     sendSimpleLegendSDATA()
+             *
+             * The current SLG sender path is dead:
+             *
+             *     sendSimpleLegendSDATA() { }
+             *     sendSLG() { }
+             *
+             * Having one active transport for orientation avoids the old
+             * position/rotation desynchronisation.
+             */
+            this.sendDeltaPlayerUpdate();
 
             this.chatUsers = {};
-            this.top5 = []; //Sonia3
-            this.updatevnr(); //Sonia3
+            this.top5 = [];
+
+            /*
+             * Run AFTER receiving/sending current state so any newly learned
+             * teammate lbgpi can immediately align the local world.
+             *
+             * This now also operates in :ffa and :experimental.
+             */
+            this.updatevnr();
             if (window.legendmod.delstate >= 0) { //Sonia3
                 window.legendmod.delstate += 1; //Sonia3
                 //if (window.legendmod.delstate > 3) window.legendmod.delstate = -1; //Sonia3
@@ -31225,20 +32337,143 @@ function thelegendmodproject() {
                     preEmbPassword()
                 }
             }, 100);
-            window.legendmod.vnr = 0; //Sonia3
-            window.legendmod.bgpi = 4; //Sonia3
-            window.legendmod.lbgpi = 4; //Sonia3
+            /*
+             * ═══════════════════════════════════════════════════════════════
+             * RESET MAP ORIENTATION STATE FOR THE NEW ARENA
+             * ═══════════════════════════════════════════════════════════════
+             *
+             * A VNR transformation belongs to ONE Agar.io arena coordinate
+             * system only.
+             *
+             * Never carry:
+             *
+             *      vnr
+             *      bgpi
+             *      manualRotation
+             *      manualRotationLocked
+             *
+             * into another connection.
+             *
+             * Different Agar.io arena connections can expose different
+             * mirrored coordinate orientations, so the new arena must be
+             * detected independently.
+             */
+
+
+            /*
+             * Start with canonical unmirrored local coordinates.
+             */
+            window.legendmod.vnr =
+                0;
+
+
+            /*
+             * bgpi = 4 means:
+             *
+             *      orientation/quadrant not yet safely known
+             *
+             * calculatebgpi() will replace it after receiving enough valid
+             * raw server-coordinate information.
+             */
+            window.legendmod.bgpi =
+                4;
+
+            window.legendmod.lbgpi =
+                4;
+
+
+            /*
+             * Canonical immutable VNR lookup table.
+             *
+             * Do NOT mutate an individual row to represent state.
+             *
+             * Current state lives exclusively in legendmod.vnr.
+             */
             window.legendmod.vector = [
-                [0, 0],
-                [1, 0],
-                [1, 1],
-                [0, 1]
-            ]; //Sonia3
-            window.legendmod.setrot = false; //Sonia3
-            window.legendmod.delstate = -1; //Sonia3			
-            /* Cancel any pending auto-reconnect timer from a previous onClose */
-            if (this._reconnTimer) { clearTimeout(this._reconnTimer); this._reconnTimer = null; }
-            this._reconnAttempts = 0;
+                [
+                    0,
+                    0
+                ],
+                [
+                    1,
+                    0
+                ],
+                [
+                    1,
+                    1
+                ],
+                [
+                    0,
+                    1
+                ]
+            ];
+
+
+            /*
+             * No automatic/manual orientation has yet been established for
+             * this arena.
+             */
+            window.legendmod.setrot =
+                false;
+
+            window.legendmod.rotcnt =
+                0;
+
+            window.legendmod.delstate =
+                -1;
+
+
+            /*
+             * CRITICAL:
+             *
+             * Manual rotation applies only to the arena in which the user
+             * selected it.
+             *
+             * Without this reset:
+             *
+             *      arena A:
+             *          user manually rotates
+             *          manualRotationLocked = true
+             *
+             *      arena B:
+             *          updatevnr()
+             *          sees manualRotationLocked
+             *          returns forever
+             *
+             * and automatic friend/minimap orientation would silently stop
+             * working after switching servers.
+             */
+            window.manualRotation =
+                undefined;
+
+            window.manualRotationLocked =
+                false;
+
+
+            /*
+             * Allow a new Multi-Viewport warning in the new arena.
+             */
+            window.announceSpectNotifOnce =
+                false;
+
+
+            /*
+             * Cancel any pending automatic reconnect timer belonging to the
+             * previous connection before beginning the new one.
+             */
+            if (
+                this._reconnTimer
+            ) {
+                clearTimeout(
+                    this._reconnTimer
+                );
+
+                this._reconnTimer =
+                    null;
+            }
+
+            this._reconnAttempts =
+                0;
 
             /*
              * Capture the old socket BEFORE closeConnection() nulls it.
@@ -34718,11 +35953,84 @@ function thelegendmodproject() {
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Game Arena State", option, response);
                                 break;
                             case 62:
-                                window.testobjects10262 = node;
-                                //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Game over");
+                                window.testobjects10262 =
+                                    node;
+
+                                /*
+                                 * ========================================================
+                                 * GAME OVER
+                                 * ========================================================
+                                 *
+                                 * IMPORTANT FOR EXPANDING LAND:
+                                 *
+                                 * Expanding Land death finalization is owned by the normal
+                                 * opcode-16 updateCells() path.
+                                 *
+                                 * updateCells() is responsible for:
+                                 *
+                                 *      1. starting the cinematic
+                                 *      2. retaining the dying cell
+                                 *      3. waiting 600 ms
+                                 *      4. calling application.onPlayerDeath() ONCE
+                                 *      5. showing the death UI ONCE
+                                 *
+                                 * Calling onPlayerDeath() from opcode 102 / option 62 as
+                                 * well creates TWO independent death lifecycles:
+                                 *
+                                 *      option 62
+                                 *          -> onPlayerDeath()
+                                 *
+                                 *      updateCells delayed callback
+                                 *          -> onPlayerDeath()
+                                 *
+                                 * which causes:
+                                 *
+                                 *      stats show
+                                 *      stats hide
+                                 *      stats show again
+                                 *      helloContainer timing mismatch
+                                 *
+                                 * Therefore option 62 is notification-only for
+                                 * Expanding Land.
+                                 */
                                 LegendModDeath();
-                                if (window.application) application.onPlayerDeath();
-                                //$('#pause-hud').text("PAUSE!");							
+
+                                if (
+                                    window.application
+                                ) {
+                                    if (
+                                        typeof legendmod !==
+                                            'undefined' &&
+                                        legendmod &&
+                                        legendmod.serverType ===
+                                            'expandingland'
+                                    ) {
+                                        /*
+                                         * Record it for diagnostics only.
+                                         *
+                                         * DO NOT:
+                                         *
+                                         *      application.onPlayerDeath()
+                                         *      application.showMenu()
+                                         *
+                                         * here.
+                                         */
+                                        window._elGameOverPacketAt =
+                                            Date.now();
+
+                                        console.log(
+                                            '[EL DEATH] Game-over packet received; UI finalization belongs to updateCells()'
+                                        );
+                                    }
+                                    else {
+                                        /*
+                                         * All other server types preserve the old
+                                         * behavior exactly.
+                                         */
+                                        application.onPlayerDeath();
+                                    }
+                                }
+
                                 break;
                             case 63:
                                 window.testobjects10263 = node;
@@ -41068,8 +42376,29 @@ Most cells eaten   : ${mostCellsEaten}
                 var _victimStartSize =
                     victimID.size;
 
+                /*
+                 * ========================================================
+                 * AUTHORITATIVE LOCAL-PLAYER DETECTION
+                 * ========================================================
+                 *
+                 * Do not trust only cell.isPlayerCell here.
+                 *
+                 * The ownership flag can already have become stale during
+                 * the same update packet. updateCells() made
+                 * _playerCellIDSet at packet entry specifically so we retain
+                 * authoritative ownership information throughout parsing.
+                 */
                 var _victimWasPlayer =
-                    !!victimID.isPlayerCell;
+                    !!victimID.isPlayerCell ||
+                    this.playerCells.indexOf(
+                        victimID
+                    ) !== -1 ||
+                    (
+                        this._playerCellIDSet &&
+                        this._playerCellIDSet.has(
+                            victimRawID
+                        )
+                    );
 
 
                 /*
@@ -41183,11 +42512,21 @@ Most cells eaten   : ${mostCellsEaten}
                      *
                      * over _DEATH_SLOWMO_ANIM (600 ms).
                      */
-                    if (_victimWasPlayer) {
+                    if (
+                        _victimWasPlayer
+                    ) {
+                        /*
+                         * ====================================================
+                         * EXPANDING LAND — AUTHORITATIVE PLAYER DEATH FX
+                         * ====================================================
+                         */
+
                         victimID._deathSlowMo =
                             true;
 
-
+                        /*
+                         * Start from the CURRENT rendered state.
+                         */
                         victimID.startX =
                             _victimStartX;
 
@@ -41198,6 +42537,9 @@ Most cells eaten   : ${mostCellsEaten}
                             _victimStartSize;
 
 
+                        /*
+                         * Eat-pair packets give us the real eater, so use it.
+                         */
                         victimID.targetX =
                             eaterID
                                 ? eaterID.x
@@ -41208,19 +42550,16 @@ Most cells eaten   : ${mostCellsEaten}
                                 ? eaterID.y
                                 : _victimStartY;
 
+                        /*
+                         * Complete absorption.
+                         */
                         victimID.targetSize =
                             0;
 
 
                         /*
-                         * Explicitly restart interpolation NOW.
-                         *
-                         * This is better than relying on:
-                         *
-                         *     updateTime = null
-                         *
-                         * because moveCell() already has a well-defined
-                         * timestamp source.
+                         * Restart the 600 ms interpolation exactly at the
+                         * current update packet time.
                          */
                         victimID.time =
                             this.time;
@@ -41228,14 +42567,47 @@ Most cells eaten   : ${mostCellsEaten}
                         victimID.updateTime =
                             this.time;
 
+                        victimID.alpha =
+                            0;
+
 
                         /*
-                         * ------------------------------------------------
-                         * 4. SCREEN SHAKE
-                         * ------------------------------------------------
+                         * Screen shake begins NOW.
                          */
                         _screenShakeStart =
                             Date.now();
+
+
+                        /*
+                         * From this moment until the cinematic completes,
+                         * NO other death path is allowed to open stats,
+                         * overlays or helloContainer.
+                         */
+                        window._elDeathUiLockedUntil =
+                            Date.now() +
+                            _DEATH_SLOWMO_ANIM +
+                            50;
+
+
+                        console.log(
+                            '[EL DEATH FX] eater/victim path fired',
+                            {
+                                eaterID:
+                                    eaterRawID,
+
+                                victimID:
+                                    victimRawID,
+
+                                x:
+                                    _victimStartX,
+
+                                y:
+                                    _victimStartY,
+
+                                size:
+                                    _victimStartSize
+                            }
+                        );
                     }
                 }
 
@@ -41509,53 +42881,402 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            eatEventsLength = view.readUInt16LE(offset);
+            /*
+             * ============================================================
+             * FINAL REMOVE-ID LIST
+             * ============================================================
+             *
+             * This is NOT the eater/victim list above.
+             *
+             * Expanding Land can send the final local-player disappearance
+             * through THIS list.
+             *
+             * The old implementation simply did:
+             *
+             *      cell.removeCell();
+             *
+             * which meant:
+             *
+             *      player dies                 YES
+             *      removePlayerCell set        YES
+             *      death screen shown          YES
+             *
+             * but:
+             *
+             *      particle burst              NO
+             *      slow-motion absorption      NO
+             *      eater pulse                 NO
+             *      screen shake                NO
+             *
+             * That precisely explains a death UI with ZERO visual FX.
+             */
+            eatEventsLength =
+                view.readUInt16LE(
+                    offset
+                );
+
             offset += 2;
 
-            for (length = 0; length < eatEventsLength; length++) {
-                var id = view.readUInt32LE(offset);
-                offset += 4;
-                cell = this.indexedCells[id];
 
-                if (cell) {
-                    cell.removeCell();
+            for (
+                length = 0;
+                length < eatEventsLength;
+                length++
+            ) {
+                var id =
+                    view.readUInt32LE(
+                        offset
+                    );
+
+                offset += 4;
+
+
+                cell =
+                    this.indexedCells[
+                        id
+                    ];
+
+
+                if (!cell) {
+                    continue;
                 }
+
+
+                /*
+                 * --------------------------------------------------------
+                 * SNAPSHOT OWNERSHIP BEFORE removeCell()
+                 * --------------------------------------------------------
+                 *
+                 * removeCell() immediately modifies playerCells and
+                 * indexedCells, so ownership must be established first.
+                 */
+                var _removedWasPlayer =
+                    !!cell.isPlayerCell ||
+                    this.playerCells.indexOf(
+                        cell
+                    ) !== -1 ||
+                    (
+                        this._playerCellIDSet &&
+                        this._playerCellIDSet.has(
+                            id
+                        )
+                    );
+
+
+                /*
+                 * Only the FINAL player cell gets the cinematic.
+                 *
+                 * If we have several split cells and one ordinary piece
+                 * disappears, do not treat that as player death.
+                 */
+                var _playerCellsBeforeRemove =
+                    this.playerCells
+                        ? this.playerCells.length
+                        : 0;
+
+
+                var _isFinalRemovedPlayer =
+                    _removedWasPlayer &&
+                    _playerCellsBeforeRemove <=
+                        1;
+
+
+                /*
+                 * ========================================================
+                 * EXPANDING LAND — REMOVE-LIST DEATH FALLBACK
+                 * ========================================================
+                 */
+                if (
+                    this.serverType ===
+                        'expandingland' &&
+                    _isFinalRemovedPlayer &&
+                    !cell._deathSlowMo
+                ) {
+                    var _removeStartX =
+                        cell.x;
+
+                    var _removeStartY =
+                        cell.y;
+
+                    var _removeStartSize =
+                        cell.size;
+
+
+                    /*
+                     * ----------------------------------------------------
+                     * FIND THE MOST PLAUSIBLE EATER
+                     * ----------------------------------------------------
+                     *
+                     * The remove-ID list does not include an eater ID.
+                     *
+                     * Search ONLY nearby live normal cells that are larger
+                     * than the victim.
+                     *
+                     * If none exists, the cell still shrinks/fades in place;
+                     * therefore the cinematic can never silently disappear
+                     * merely because no eater ID was supplied.
+                     */
+                    var _fallbackEater =
+                        null;
+
+                    var _fallbackEatDistSq =
+                        Infinity;
+
+
+                    for (
+                        var _efi = 0;
+                        _efi <
+                            this.cells.length;
+                        _efi++
+                    ) {
+                        var _candidate =
+                            this.cells[
+                                _efi
+                            ];
+
+
+                        if (
+                            !_candidate ||
+                            _candidate ===
+                                cell ||
+                            _candidate.removed ||
+                            _candidate.invisible ||
+                            _candidate.isFood ||
+                            _candidate.isEjected ||
+                            _candidate.isVirus ||
+                            _candidate.size <=
+                                _removeStartSize *
+                                1.10
+                        ) {
+                            continue;
+                        }
+
+
+                        var _edx =
+                            _candidate.x -
+                            _removeStartX;
+
+                        var _edy =
+                            _candidate.y -
+                            _removeStartY;
+
+
+                        var _ed2 =
+                            _edx *
+                                _edx +
+                            _edy *
+                                _edy;
+
+
+                        /*
+                         * Never pick some unrelated big cell on the other
+                         * side of the map.
+                         *
+                         * Candidate must be spatially close enough to have
+                         * plausibly consumed the removed cell.
+                         */
+                        var _maxEatVisualDistance =
+                            _candidate.size +
+                            _removeStartSize *
+                            1.5;
+
+
+                        if (
+                            _ed2 >
+                            _maxEatVisualDistance *
+                                _maxEatVisualDistance
+                        ) {
+                            continue;
+                        }
+
+
+                        if (
+                            _ed2 <
+                            _fallbackEatDistSq
+                        ) {
+                            _fallbackEatDistSq =
+                                _ed2;
+
+                            _fallbackEater =
+                                _candidate;
+                        }
+                    }
+
+
+                    /*
+                     * ----------------------------------------------------
+                     * PARTICLE BURST
+                     * ----------------------------------------------------
+                     */
+                    if (
+                        !cell.isFood &&
+                        !cell.isEjected &&
+                        _removeStartSize >
+                            36
+                    ) {
+                        _spawnDeathBurst(
+                            _removeStartX,
+                            _removeStartY,
+                            _removeStartSize,
+                            cell.color ||
+                            '#808080'
+                        );
+                    }
+
+
+                    /*
+                     * ----------------------------------------------------
+                     * EATER PULSE
+                     * ----------------------------------------------------
+                     */
+                    if (
+                        _fallbackEater &&
+                        defaultmapsettings
+                            .eatPulse
+                    ) {
+                        _fallbackEater
+                            ._eatPulseTime =
+                            Date.now();
+                    }
+
+
+                    /*
+                     * ----------------------------------------------------
+                     * 600 ms PLAYER ABSORPTION
+                     * ----------------------------------------------------
+                     */
+                    cell._deathSlowMo =
+                        true;
+
+
+                    cell.startX =
+                        _removeStartX;
+
+                    cell.startY =
+                        _removeStartY;
+
+                    cell.startSize =
+                        _removeStartSize;
+
+
+                    cell.targetX =
+                        _fallbackEater
+                            ? _fallbackEater.x
+                            : _removeStartX;
+
+                    cell.targetY =
+                        _fallbackEater
+                            ? _fallbackEater.y
+                            : _removeStartY;
+
+
+                    cell.targetSize =
+                        0;
+
+
+                    cell.time =
+                        this.time;
+
+                    cell.updateTime =
+                        this.time;
+
+
+                    /*
+                     * Removed-cell alpha is removal PROGRESS.
+                     *
+                     * 0 = fully visible
+                     * 1 = completely faded
+                     */
+                    cell.alpha =
+                        0;
+
+
+                    /*
+                     * ----------------------------------------------------
+                     * SCREEN SHAKE
+                     * ----------------------------------------------------
+                     */
+                    _screenShakeStart =
+                        Date.now();
+
+
+                    /*
+                     * ----------------------------------------------------
+                     * LOCK DEATH UI UNTIL CINEMATIC FINISHES
+                     * ----------------------------------------------------
+                     */
+                    window
+                        ._elDeathUiLockedUntil =
+                        Date.now() +
+                        _DEATH_SLOWMO_ANIM +
+                        50;
+
+
+                    /*
+                     * Keep this diagnostic for the first test.
+                     *
+                     * If this appears in DevTools, we know conclusively that
+                     * Expanding Land killed the final cell through the
+                     * remove-ID path.
+                     */
+                    console.log(
+                        '[EL DEATH FX] remove-list fallback fired',
+                        {
+                            cellId:
+                                id,
+
+                            size:
+                                _removeStartSize,
+
+                            x:
+                                _removeStartX,
+
+                            y:
+                                _removeStartY,
+
+                            eaterId:
+                                _fallbackEater
+                                    ? _fallbackEater.id
+                                    : null
+                        }
+                    );
+                }
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * _deathSlowMo was set BEFORE this call.
+                 *
+                 * removeCell() therefore preserves the cinematic cell in
+                 * LM.removedCells instead of throwing it away.
+                 */
+                cell.removeCell();
             }
+
 
             /*
              * ============================================================
              * PLAYER DEATH FINALIZATION
              * ============================================================
-             *
-             * IMPORTANT:
-             *
-             * Expanding Land's cinematic death begins earlier in THIS SAME
-             * updateCells() packet, inside the eater/victim eat-event loop.
-             *
-             * At that point:
-             *
-             *      victim._deathSlowMo = true
-             *      victim.targetSize = 0
-             *      _screenShakeStart = Date.now()
-             *
-             * and removeCell() preserves the dying cell in removedCells.
-             *
-             * Therefore we must NOT immediately open helloContainer here.
-             *
-             * Normal servers keep their original immediate death behavior.
              */
             if (
                 this.removePlayerCell &&
                 !this.playerCells.length
             ) {
                 /*
-                 * Gameplay state itself changes immediately.
+                 * Gameplay ends immediately.
                  *
-                 * We only postpone the visual death/menu finalization.
+                 * Rendering itself continues, therefore removedCells,
+                 * particles and screen shake can finish.
                  */
-                this.play = false;
+                this.play =
+                    false;
 
-                window.userBots.isAlive = false;
+
+                window.userBots.isAlive =
+                    false;
+
 
                 if (
                     window.userBots.startedBots
@@ -41564,63 +43285,196 @@ Most cells eaten   : ${mostCellsEaten}
                         new Uint8Array([
                             5,
                             Number(
-                                window.userBots.isAlive
+                                window.userBots
+                                    .isAlive
                             )
                         ]).buffer
                     );
                 }
 
+
                 /*
                  * ========================================================
                  * EXPANDING LAND
                  * ========================================================
-                 *
-                 * Slow-motion absorption lasts 600 ms.
-                 *
-                 * Give it another 50 ms of breathing room before bringing
-                 * back the statistics and helloContainer.
                  */
                 if (
-                    this.serverType === 'expandingland' &&
+                    this.serverType ===
+                        'expandingland' &&
                     !LM.multiBoxPlayerExists
                 ) {
-                    var _elDeadClient = this;
+                    var _elDeadClient =
+                        this;
+
 
                     /*
-                     * Prevent duplicate timers if multiple death-related
-                     * packets happen to arrive during the same final death.
+                     * Regardless of which death packet arrived first,
+                     * nothing is allowed to show during the 600 ms FX.
                      */
-                    if (this._elDeathUiTimer) {
+                    window
+                        ._elDeathUiLockedUntil =
+                        Math.max(
+                            Number(
+                                window
+                                    ._elDeathUiLockedUntil
+                            ) || 0,
+
+                            Date.now() +
+                                _DEATH_SLOWMO_ANIM +
+                                50
+                        );
+
+
+                    /*
+                     * Kill every queued jQuery animation left behind by a
+                     * previous death/menu callback.
+                     *
+                     * This prevents:
+                     *
+                     *      stats show
+                     *      stats hide
+                     *      stats show again
+                     */
+                    $('#overlays, #helloContainer, #stats')
+                        .stop(
+                            true,
+                            true
+                        )
+                        .hide();
+
+
+                    if (
+                        this._elDeathUiTimer
+                    ) {
                         clearTimeout(
                             this._elDeathUiTimer
                         );
 
-                        this._elDeathUiTimer = null;
+                        this._elDeathUiTimer =
+                            null;
                     }
 
+
+                    /*
+                     * ONE timer.
+                     * ONE onPlayerDeath().
+                     * ONE death-screen presentation.
+                     */
                     this._elDeathUiTimer =
                         setTimeout(
                             function () {
-                                _elDeadClient._elDeathUiTimer =
+                                _elDeadClient
+                                    ._elDeathUiTimer =
                                     null;
 
+
                                 /*
-                                 * If the player already respawned during the
-                                 * cinematic window, never reopen the old death
-                                 * screen over the new game.
+                                 * Release the menu lock first.
+                                 */
+                                window
+                                    ._elDeathUiLockedUntil =
+                                    0;
+
+
+                                /*
+                                 * If already alive again, this death belongs
+                                 * to an old generation. Do nothing.
                                  */
                                 if (
                                     _elDeadClient.play ||
-                                    _elDeadClient.serverType !==
+                                    _elDeadClient
+                                        .serverType !==
                                         'expandingland'
                                 ) {
                                     return;
                                 }
 
-                                application.onPlayerDeath();
 
-                                application.showMenu(
-                                    300
+                                /*
+                                 * Finalize the death exactly once.
+                                 *
+                                 * Expanding Land's option-62 handler above
+                                 * no longer calls this independently.
+                                 */
+                                application
+                                    .onPlayerDeath();
+
+
+                                /*
+                                 * Auto-respawn owns the screen when enabled.
+                                 *
+                                 * onPlayerDeath() -> autoResp() may start a
+                                 * new spawn. Never reopen death UI over it.
+                                 */
+                                if (
+                                    defaultmapsettings
+                                        .autoResp ||
+                                    _elDeadClient.play
+                                ) {
+                                    return;
+                                }
+
+
+                                /*
+                                 * =================================================
+                                 * SHOW THE LM DEATH SCREEN DIRECTLY
+                                 * =================================================
+                                 *
+                                 * DO NOT call:
+                                 *
+                                 *      application.showMenu(300)
+                                 *
+                                 * here.
+                                 *
+                                 * showMenu() contains an MC.showNickDialog branch
+                                 * which independently hides/shows .menu-panel and
+                                 * #stats. That is exactly what we do NOT want in
+                                 * this single-owner death lifecycle.
+                                 */
+
+                                $('#overlays')
+                                    .stop(
+                                        true,
+                                        true
+                                    )
+                                    .show();
+
+
+                                $('#helloContainer')
+                                    .stop(
+                                        true,
+                                        true
+                                    )
+                                    .show();
+
+
+                                $('.ogario-menu')
+                                    .show();
+
+
+                                $('.menu-panel')
+                                    .hide();
+
+
+                                if (
+                                    !application
+                                        .skipStats
+                                ) {
+                                    $('#stats')
+                                        .stop(
+                                            true,
+                                            true
+                                        )
+                                        .show();
+                                }
+                                else {
+                                    $('#main-panel')
+                                        .show();
+                                }
+
+
+                                console.log(
+                                    '[EL DEATH] cinematic finished; death UI shown once'
                                 );
                             },
                             _DEATH_SLOWMO_ANIM +
@@ -41628,27 +43482,31 @@ Most cells eaten   : ${mostCellsEaten}
                         );
                 }
 
+
                 /*
                  * ========================================================
-                 * ALL OTHER SERVERS
+                 * ALL OTHER SERVERS — UNCHANGED
                  * ========================================================
-                 *
-                 * Preserve their existing behavior exactly.
                  */
                 else {
-                    application.onPlayerDeath();
+                    application
+                        .onPlayerDeath();
+
 
                     if (
-                        !LM.multiBoxPlayerExists
+                        !LM
+                            .multiBoxPlayerExists
                     ) {
                         application.showMenu(
                             300
                         );
                     }
                     else if (
-                        !window.multiboxPlayerEnabled
+                        !window
+                            .multiboxPlayerEnabled
                     ) {
-                        application.multiboxswap();
+                        application
+                            .multiboxswap();
                     }
                 }
             }
@@ -46308,6 +48166,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.glSkinAlphaMode = new WeakMap();
                 this.glSkinNextLayer = 0;
 
+                /*
+                 * Delta-style dynamic jelly polygons use the SAME raw WebGL2
+                 * context and the SAME skin TEXTURE_2D_ARRAY as normal cells.
+                 *
+                 * Physics itself remains CPU-side:
+                 *
+                 *      updateNumPoints()
+                 *      updateQuadtree()
+                 *      movePoints()
+                 *
+                 * The renderer below only consumes the resulting cell.points[].
+                 */
+                this.initWebGLJellyRenderer(
+                    gl,
+                    createAndLinkProgram
+                );
+
                 // ===== WebGL2 Text Shader (textured quad with depth Z) =====
                 var textVsSource = `#version 300 es
                 in vec2 a_pos;      // [-1,1] unit quad
@@ -50344,6 +52219,2594 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
         },
+        /*
+         * ================================================================
+         * DELTA-STYLE RAW WEBGL JELLY RENDERER
+         * ================================================================
+         *
+         * CPU physics stays authoritative.
+         *
+         *      updateNumPoints()
+         *      updateQuadtree()
+         *      movePoints()
+         *             |
+         *             v
+         *        cell.points[]
+         *             |
+         *             v
+         *        dynamic VBO
+         *             |
+         *             v
+         *      gl.TRIANGLE_FAN
+         *
+         * No Canvas geometry is used when this batch succeeds.
+         */
+        initWebGLJellyRenderer(
+            gl,
+            createAndLinkProgram
+        ) {
+            try {
+                /*
+                 * ========================================================
+                 * JELLY FILL + SKIN PROGRAM
+                 * ========================================================
+                 */
+                var jellyVS = `#version 300 es
+                precision highp float;
+
+                in vec2 a_position;
+                in vec2 a_uv;
+                in vec4 a_color;
+                in float a_skinLayer;
+                in float a_skinAlpha;
+                in float a_z;
+
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+
+                out vec2 v_uv;
+                out vec4 v_color;
+
+                flat out float v_skinLayer;
+                flat out float v_skinAlpha;
+
+                void main() {
+                    vec2 clip =
+                        (a_position - u_viewCenter) *
+                        u_viewScale;
+
+                    gl_Position =
+                        vec4(
+                            clip.x,
+                            -clip.y,
+                            a_z,
+                            1.0
+                        );
+
+                    v_uv =
+                        a_uv;
+
+                    v_color =
+                        a_color;
+
+                    v_skinLayer =
+                        a_skinLayer;
+
+                    v_skinAlpha =
+                        a_skinAlpha;
+                }`;
+
+
+                var jellyFS = `#version 300 es
+                precision highp float;
+                precision highp sampler2DArray;
+
+                in vec2 v_uv;
+                in vec4 v_color;
+
+                flat in float v_skinLayer;
+                flat in float v_skinAlpha;
+
+                uniform sampler2DArray u_skinArray;
+
+                out vec4 fragColor;
+
+                void main() {
+                    float bodyA =
+                        clamp(
+                            v_color.a,
+                            0.0,
+                            1.0
+                        );
+
+                    vec3 rgb =
+                        v_color.rgb;
+
+                    float outA =
+                        bodyA;
+
+                    /*
+                     * skinLayer < 0 means:
+                     *
+                     *      body only
+                     *
+                     * skinLayer >= 0 means:
+                     *
+                     *      body + texture-array skin
+                     */
+                    if (
+                        v_skinLayer >=
+                        0.0
+                    ) {
+                        vec4 skin =
+                            texture(
+                                u_skinArray,
+                                vec3(
+                                    clamp(
+                                        v_uv,
+                                        vec2(0.0),
+                                        vec2(1.0)
+                                    ),
+                                    v_skinLayer
+                                )
+                            );
+
+                        float skinA =
+                            clamp(
+                                skin.a *
+                                v_skinAlpha,
+                                0.0,
+                                1.0
+                            );
+
+                        outA =
+                            skinA +
+                            bodyA *
+                            (
+                                1.0 -
+                                skinA
+                            );
+
+                        if (
+                            outA >
+                            0.00001
+                        ) {
+                            rgb =
+                                (
+                                    skin.rgb *
+                                    skinA +
+
+                                    v_color.rgb *
+                                    bodyA *
+                                    (
+                                        1.0 -
+                                        skinA
+                                    )
+                                ) /
+                                outA;
+                        }
+                    }
+
+                    /*
+                     * Do not allow completely transparent geometry to poison
+                     * the depth buffer.
+                     */
+                    if (
+                        outA <=
+                        0.001
+                    ) {
+                        discard;
+                    }
+
+                    fragColor =
+                        vec4(
+                            rgb,
+                            outA
+                        );
+                }`;
+
+
+                var jellyProgram =
+                    createAndLinkProgram(
+                        gl,
+                        jellyVS,
+                        jellyFS
+                    );
+
+                if (
+                    !jellyProgram
+                ) {
+                    throw new Error(
+                        'jelly fill shader failed'
+                    );
+                }
+
+
+                this.glJellyProgram =
+                    jellyProgram;
+
+
+                this.u_jelly_viewCenter =
+                    gl.getUniformLocation(
+                        jellyProgram,
+                        'u_viewCenter'
+                    );
+
+
+                this.u_jelly_viewScale =
+                    gl.getUniformLocation(
+                        jellyProgram,
+                        'u_viewScale'
+                    );
+
+
+                this.u_jelly_skinArray =
+                    gl.getUniformLocation(
+                        jellyProgram,
+                        'u_skinArray'
+                    );
+
+
+                /*
+                 * ========================================================
+                 * FILL VERTEX FORMAT
+                 * ========================================================
+                 *
+                 * 11 Float32 values:
+                 *
+                 *  0  world x
+                 *  1  world y
+                 *
+                 *  2  skin u
+                 *  3  skin v
+                 *
+                 *  4  body red
+                 *  5  body green
+                 *  6  body blue
+                 *  7  body alpha
+                 *
+                 *  8  texture-array layer
+                 *     -1 = no skin
+                 *
+                 *  9  skin alpha
+                 *
+                 * 10  depth Z
+                 */
+                this.glJellyStride =
+                    11;
+
+
+                this.glJellyVertexCapacity =
+                    65536;
+
+
+                this.glJellyVertexData =
+                    new Float32Array(
+                        this.glJellyVertexCapacity *
+                        this.glJellyStride
+                    );
+
+
+                this.glJellyVAO =
+                    gl.createVertexArray();
+
+
+                this.glJellyVBO =
+                    gl.createBuffer();
+
+
+                gl.bindVertexArray(
+                    this.glJellyVAO
+                );
+
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.glJellyVBO
+                );
+
+
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    this.glJellyVertexData
+                        .byteLength,
+                    gl.DYNAMIC_DRAW
+                );
+
+
+                var fillStride =
+                    this.glJellyStride *
+                    4;
+
+
+                var loc =
+                    gl.getAttribLocation(
+                        jellyProgram,
+                        'a_position'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    fillStride,
+                    0
+                );
+
+
+                loc =
+                    gl.getAttribLocation(
+                        jellyProgram,
+                        'a_uv'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    fillStride,
+                    2 * 4
+                );
+
+
+                loc =
+                    gl.getAttribLocation(
+                        jellyProgram,
+                        'a_color'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    4,
+                    gl.FLOAT,
+                    false,
+                    fillStride,
+                    4 * 4
+                );
+
+
+                loc =
+                    gl.getAttribLocation(
+                        jellyProgram,
+                        'a_skinLayer'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    fillStride,
+                    8 * 4
+                );
+
+
+                loc =
+                    gl.getAttribLocation(
+                        jellyProgram,
+                        'a_skinAlpha'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    fillStride,
+                    9 * 4
+                );
+
+
+                loc =
+                    gl.getAttribLocation(
+                        jellyProgram,
+                        'a_z'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    fillStride,
+                    10 * 4
+                );
+
+
+                gl.bindVertexArray(
+                    null
+                );
+
+
+                /*
+                 * One range for every cell:
+                 *
+                 *      [center]
+                 *      [point 0]
+                 *      [point 1]
+                 *      ...
+                 *      [point N]
+                 *      [point 0 again]
+                 *
+                 * Each range is drawn using:
+                 *
+                 *      gl.TRIANGLE_FAN
+                 */
+                this.glJellyDrawCapacity =
+                    8192;
+
+
+                this.glJellyDrawStarts =
+                    new Int32Array(
+                        this.glJellyDrawCapacity
+                    );
+
+
+                this.glJellyDrawCounts =
+                    new Int32Array(
+                        this.glJellyDrawCapacity
+                    );
+
+
+                /*
+                 * ========================================================
+                 * JELLY STROKE / VIRUS BORDER / VIRUS GLOW
+                 * ========================================================
+                 *
+                 * Do NOT use gl.lineWidth().
+                 *
+                 * Browser WebGL implementations commonly clamp lineWidth to
+                 * exactly 1px.
+                 *
+                 * Instead generate real triangle bands from the same current
+                 * jelly points.
+                 */
+                var strokeVS = `#version 300 es
+                precision highp float;
+
+                in vec2 a_position;
+                in vec4 a_color;
+                in float a_z;
+
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+
+                out vec4 v_color;
+
+                void main() {
+                    vec2 clip =
+                        (a_position - u_viewCenter) *
+                        u_viewScale;
+
+                    gl_Position =
+                        vec4(
+                            clip.x,
+                            -clip.y,
+                            a_z,
+                            1.0
+                        );
+
+                    v_color =
+                        a_color;
+                }`;
+
+
+                var strokeFS = `#version 300 es
+                precision highp float;
+
+                in vec4 v_color;
+
+                out vec4 fragColor;
+
+                void main() {
+                    if (
+                        v_color.a <=
+                        0.001
+                    ) {
+                        discard;
+                    }
+
+                    fragColor =
+                        v_color;
+                }`;
+
+
+                var strokeProgram =
+                    createAndLinkProgram(
+                        gl,
+                        strokeVS,
+                        strokeFS
+                    );
+
+
+                if (
+                    !strokeProgram
+                ) {
+                    throw new Error(
+                        'jelly stroke shader failed'
+                    );
+                }
+
+
+                this.glJellyStrokeProgram =
+                    strokeProgram;
+
+
+                this.u_jellyStroke_viewCenter =
+                    gl.getUniformLocation(
+                        strokeProgram,
+                        'u_viewCenter'
+                    );
+
+
+                this.u_jellyStroke_viewScale =
+                    gl.getUniformLocation(
+                        strokeProgram,
+                        'u_viewScale'
+                    );
+
+
+                /*
+                 * Stroke format:
+                 *
+                 * 0 x
+                 * 1 y
+                 * 2 red
+                 * 3 green
+                 * 4 blue
+                 * 5 alpha
+                 * 6 z
+                 */
+                this.glJellyStrokeStride =
+                    7;
+
+
+                this.glJellyStrokeVertexCapacity =
+                    131072;
+
+
+                this.glJellyStrokeVertexData =
+                    new Float32Array(
+                        this.glJellyStrokeVertexCapacity *
+                        this.glJellyStrokeStride
+                    );
+
+
+                this.glJellyStrokeVAO =
+                    gl.createVertexArray();
+
+
+                this.glJellyStrokeVBO =
+                    gl.createBuffer();
+
+
+                gl.bindVertexArray(
+                    this.glJellyStrokeVAO
+                );
+
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.glJellyStrokeVBO
+                );
+
+
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    this.glJellyStrokeVertexData
+                        .byteLength,
+                    gl.DYNAMIC_DRAW
+                );
+
+
+                var strokeStride =
+                    this.glJellyStrokeStride *
+                    4;
+
+
+                loc =
+                    gl.getAttribLocation(
+                        strokeProgram,
+                        'a_position'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    strokeStride,
+                    0
+                );
+
+
+                loc =
+                    gl.getAttribLocation(
+                        strokeProgram,
+                        'a_color'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    4,
+                    gl.FLOAT,
+                    false,
+                    strokeStride,
+                    2 * 4
+                );
+
+
+                loc =
+                    gl.getAttribLocation(
+                        strokeProgram,
+                        'a_z'
+                    );
+
+
+                gl.enableVertexAttribArray(
+                    loc
+                );
+
+
+                gl.vertexAttribPointer(
+                    loc,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    strokeStride,
+                    6 * 4
+                );
+
+
+                gl.bindVertexArray(
+                    null
+                );
+
+
+                /*
+                 * Reused normal buffers.
+                 *
+                 * Normal jelly cells generally need far fewer than 128 points.
+                 * Viruses currently use 100.
+                 *
+                 * These arrays grow automatically if that ever changes.
+                 */
+                this.glJellyNormX =
+                    new Float32Array(
+                        128
+                    );
+
+
+                this.glJellyNormY =
+                    new Float32Array(
+                        128
+                    );
+
+
+                console.log(
+                    '[LegendMod WebGL] Delta-style jelly TRIANGLE_FAN renderer initialized.'
+                );
+            }
+            catch (
+                e
+            ) {
+                /*
+                 * Do NOT destroy normal WebGL rendering just because the jelly
+                 * shader could not initialize.
+                 *
+                 * Non-jelly glCellProgram remains available.
+                 */
+                console.warn(
+                    '[LegendMod WebGL] Jelly renderer unavailable; Canvas jelly fallback remains active:',
+                    e
+                );
+
+
+                this.glJellyProgram =
+                    null;
+
+
+                this.glJellyStrokeProgram =
+                    null;
+
+
+                this.glJellyVAO =
+                    null;
+
+
+                this.glJellyVBO =
+                    null;
+
+
+                this.glJellyStrokeVAO =
+                    null;
+
+
+                this.glJellyStrokeVBO =
+                    null;
+            }
+        },
+
+
+        /*
+         * Grow persistent CPU/GPU scratch only when required.
+         *
+         * There are NO per-frame large allocations once capacity has reached
+         * the current world size.
+         */
+        ensureWebGLJellyCapacity(
+            needFill,
+            needStroke,
+            needDraws
+        ) {
+            if (
+                !this.gl
+            ) {
+                return false;
+            }
+
+
+            var gl =
+                this.gl;
+
+
+            try {
+                if (
+                    needFill >
+                    this.glJellyVertexCapacity
+                ) {
+                    var fillCap =
+                        Math.max(
+                            this.glJellyVertexCapacity ||
+                                65536,
+                            65536
+                        );
+
+
+                    while (
+                        fillCap <
+                        needFill
+                    ) {
+                        fillCap *=
+                            2;
+                    }
+
+
+                    this.glJellyVertexCapacity =
+                        fillCap;
+
+
+                    this.glJellyVertexData =
+                        new Float32Array(
+                            fillCap *
+                            this.glJellyStride
+                        );
+
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        this.glJellyVBO
+                    );
+
+
+                    gl.bufferData(
+                        gl.ARRAY_BUFFER,
+                        this.glJellyVertexData
+                            .byteLength,
+                        gl.DYNAMIC_DRAW
+                    );
+                }
+
+
+                if (
+                    needStroke >
+                    this.glJellyStrokeVertexCapacity
+                ) {
+                    var strokeCap =
+                        Math.max(
+                            this.glJellyStrokeVertexCapacity ||
+                                131072,
+                            131072
+                        );
+
+
+                    while (
+                        strokeCap <
+                        needStroke
+                    ) {
+                        strokeCap *=
+                            2;
+                    }
+
+
+                    this.glJellyStrokeVertexCapacity =
+                        strokeCap;
+
+
+                    this.glJellyStrokeVertexData =
+                        new Float32Array(
+                            strokeCap *
+                            this.glJellyStrokeStride
+                        );
+
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        this.glJellyStrokeVBO
+                    );
+
+
+                    gl.bufferData(
+                        gl.ARRAY_BUFFER,
+                        this.glJellyStrokeVertexData
+                            .byteLength,
+                        gl.DYNAMIC_DRAW
+                    );
+                }
+
+
+                if (
+                    needDraws >
+                    this.glJellyDrawCapacity
+                ) {
+                    var drawCap =
+                        Math.max(
+                            this.glJellyDrawCapacity ||
+                                8192,
+                            8192
+                        );
+
+
+                    while (
+                        drawCap <
+                        needDraws
+                    ) {
+                        drawCap *=
+                            2;
+                    }
+
+
+                    this.glJellyDrawCapacity =
+                        drawCap;
+
+
+                    this.glJellyDrawStarts =
+                        new Int32Array(
+                            drawCap
+                        );
+
+
+                    this.glJellyDrawCounts =
+                        new Int32Array(
+                            drawCap
+                        );
+                }
+
+
+                return true;
+            }
+            catch (
+                e
+            ) {
+                console.error(
+                    '[WEBGL JELLY] capacity growth failed:',
+                    e
+                );
+
+
+                return false;
+            }
+        },
+
+
+        writeWebGLJellyVertex(
+            x,
+            y,
+            u,
+            v,
+            r,
+            g,
+            b,
+            a,
+            skinLayer,
+            skinAlpha,
+            z
+        ) {
+            var i =
+                this._glJellyVertexCount++ *
+                this.glJellyStride;
+
+
+            var d =
+                this.glJellyVertexData;
+
+
+            d[i] =
+                x;
+
+            d[i + 1] =
+                y;
+
+            d[i + 2] =
+                u;
+
+            d[i + 3] =
+                v;
+
+            d[i + 4] =
+                r;
+
+            d[i + 5] =
+                g;
+
+            d[i + 6] =
+                b;
+
+            d[i + 7] =
+                a;
+
+            d[i + 8] =
+                skinLayer;
+
+            d[i + 9] =
+                skinAlpha;
+
+            d[i + 10] =
+                z;
+        },
+
+
+        writeWebGLJellyStrokeVertex(
+            x,
+            y,
+            r,
+            g,
+            b,
+            a,
+            z
+        ) {
+            var i =
+                this._glJellyStrokeVertexCount++ *
+                this.glJellyStrokeStride;
+
+
+            var d =
+                this.glJellyStrokeVertexData;
+
+
+            d[i] =
+                x;
+
+            d[i + 1] =
+                y;
+
+            d[i + 2] =
+                r;
+
+            d[i + 3] =
+                g;
+
+            d[i + 4] =
+                b;
+
+            d[i + 5] =
+                a;
+
+            d[i + 6] =
+                z;
+        },
+
+
+        /*
+         * Build a real thick perimeter from the final jelly polygon.
+         *
+         * Averaged edge normals keep:
+         *
+         * - normal cells smooth;
+         * - virus spike tips sharp;
+         * - line thickness stable around deformed sections.
+         */
+        writeWebGLJellyStrokeBand(
+            cell,
+            points,
+            innerOffset,
+            outerOffset,
+            r,
+            g,
+            b,
+            innerA,
+            outerA,
+            z
+        ) {
+            var n =
+                points
+                    ? points.length
+                    : 0;
+
+
+            if (
+                !cell ||
+                n <
+                3
+            ) {
+                return;
+            }
+
+
+            if (
+                !this.glJellyNormX ||
+                this.glJellyNormX.length <
+                    n
+            ) {
+                var cap =
+                    128;
+
+
+                while (
+                    cap <
+                    n
+                ) {
+                    cap *=
+                        2;
+                }
+
+
+                this.glJellyNormX =
+                    new Float32Array(
+                        cap
+                    );
+
+
+                this.glJellyNormY =
+                    new Float32Array(
+                        cap
+                    );
+            }
+
+
+            var nx =
+                this.glJellyNormX;
+
+
+            var ny =
+                this.glJellyNormY;
+
+
+            /*
+             * Compute averaged edge normal at every point.
+             */
+            for (
+                var i = 0;
+                i <
+                    n;
+                i++
+            ) {
+                var prev =
+                    points[
+                        (
+                            i -
+                            1 +
+                            n
+                        ) %
+                        n
+                    ];
+
+
+                var cur =
+                    points[
+                        i
+                    ];
+
+
+                var next =
+                    points[
+                        (
+                            i +
+                            1
+                        ) %
+                        n
+                    ];
+
+
+                var tx =
+                    next.x -
+                    prev.x;
+
+
+                var ty =
+                    next.y -
+                    prev.y;
+
+
+                var x =
+                    ty;
+
+
+                var y =
+                    -tx;
+
+
+                var rx =
+                    cur.x -
+                    cell.x;
+
+
+                var ry =
+                    cur.y -
+                    cell.y;
+
+
+                /*
+                 * Force outward orientation.
+                 */
+                if (
+                    x *
+                        rx +
+                    y *
+                        ry <
+                    0
+                ) {
+                    x =
+                        -x;
+
+                    y =
+                        -y;
+                }
+
+
+                var len =
+                    Math.sqrt(
+                        x *
+                            x +
+                        y *
+                            y
+                    );
+
+
+                if (
+                    !len ||
+                    !isFinite(
+                        len
+                    )
+                ) {
+                    x =
+                        rx;
+
+                    y =
+                        ry;
+
+                    len =
+                        Math.sqrt(
+                            rx *
+                                rx +
+                            ry *
+                                ry
+                        ) ||
+                        1;
+                }
+
+
+                nx[i] =
+                    x /
+                    len;
+
+
+                ny[i] =
+                    y /
+                    len;
+            }
+
+
+            /*
+             * Six vertices per polygon edge:
+             *
+             *     inner0 -------- inner1
+             *       |           /   |
+             *       |         /     |
+             *     outer0 -------- outer1
+             */
+            for (
+                var e = 0;
+                e <
+                    n;
+                e++
+            ) {
+                var j =
+                    (
+                        e +
+                        1
+                    ) %
+                    n;
+
+
+                var p0 =
+                    points[e];
+
+
+                var p1 =
+                    points[j];
+
+
+                var i0x =
+                    p0.x +
+                    nx[e] *
+                    innerOffset;
+
+
+                var i0y =
+                    p0.y +
+                    ny[e] *
+                    innerOffset;
+
+
+                var o0x =
+                    p0.x +
+                    nx[e] *
+                    outerOffset;
+
+
+                var o0y =
+                    p0.y +
+                    ny[e] *
+                    outerOffset;
+
+
+                var i1x =
+                    p1.x +
+                    nx[j] *
+                    innerOffset;
+
+
+                var i1y =
+                    p1.y +
+                    ny[j] *
+                    innerOffset;
+
+
+                var o1x =
+                    p1.x +
+                    nx[j] *
+                    outerOffset;
+
+
+                var o1y =
+                    p1.y +
+                    ny[j] *
+                    outerOffset;
+
+
+                this.writeWebGLJellyStrokeVertex(
+                    i0x,
+                    i0y,
+                    r,
+                    g,
+                    b,
+                    innerA,
+                    z
+                );
+
+
+                this.writeWebGLJellyStrokeVertex(
+                    o0x,
+                    o0y,
+                    r,
+                    g,
+                    b,
+                    outerA,
+                    z
+                );
+
+
+                this.writeWebGLJellyStrokeVertex(
+                    o1x,
+                    o1y,
+                    r,
+                    g,
+                    b,
+                    outerA,
+                    z
+                );
+
+
+                this.writeWebGLJellyStrokeVertex(
+                    i0x,
+                    i0y,
+                    r,
+                    g,
+                    b,
+                    innerA,
+                    z
+                );
+
+
+                this.writeWebGLJellyStrokeVertex(
+                    o1x,
+                    o1y,
+                    r,
+                    g,
+                    b,
+                    outerA,
+                    z
+                );
+
+
+                this.writeWebGLJellyStrokeVertex(
+                    i1x,
+                    i1y,
+                    r,
+                    g,
+                    b,
+                    innerA,
+                    z
+                );
+            }
+        },
+
+
+        /*
+         * Return true when this is only the duplicated spectator copy of a
+         * cell already present on the main socket.
+         */
+        _isDuplicateWebGLSpectatorCell(
+            cell
+        ) {
+            if (
+                !cell ||
+                !cell.spectator ||
+                cell.spectator <=
+                    0 ||
+                cell.isPlayerCell ||
+                cell.isPlayerCellMulti
+            ) {
+                return false;
+            }
+
+
+            var rawID =
+                cell.id %
+                1000000000;
+
+
+            var master =
+                LM.indexedCells[
+                    rawID
+                ];
+
+
+            if (
+                !master
+            ) {
+                for (
+                    var n = 1;
+                    n <
+                        cell.spectator;
+                    n++
+                ) {
+                    var candidate =
+                        LM.indexedCells[
+                            rawID +
+                            n *
+                            1000000000
+                        ];
+
+
+                    if (
+                        candidate &&
+                        !candidate.removed
+                    ) {
+                        master =
+                            candidate;
+
+                        break;
+                    }
+                }
+            }
+
+
+            return !!(
+                master &&
+                master !==
+                    cell &&
+                !master.removed
+            );
+        },
+
+
+        /*
+         * Resolve the same texture-array skin source used by the existing raw
+         * WebGL cell renderer.
+         *
+         * IMPORTANT:
+         *
+         * If the requested skin is not GPU-ready, return requested=true with
+         * layer=-1. The caller then aborts the WHOLE GPU world for that frame.
+         */
+        _resolveWebGLJellySkin(
+            cell,
+            isParty,
+            skinArrayAtStart
+        ) {
+            var result = {
+                requested:
+                    false,
+
+                layer:
+                    -1,
+
+                alpha:
+                    1.0,
+
+                arrayChanged:
+                    false
+            };
+
+
+            if (
+                !defaultmapsettings
+                    .customSkins ||
+                !LM.showCustomSkins ||
+                !cell ||
+                cell.isVirus ||
+                cell.isEjected ||
+                (
+                    !cell.targetNick &&
+                    !cell.skin
+                )
+            ) {
+                return result;
+            }
+
+
+            var skinUrl =
+                null;
+
+
+            if (
+                cell.targetNick
+            ) {
+                var mode =
+                    isParty
+                        ? cell.targetNick +
+                            cell.color
+                        : cell.targetNick;
+
+
+                var cleanNick =
+                    cell.targetNick
+                        .replace(
+                            /\[.*?\]/g,
+                            ''
+                        )
+                        .trim();
+
+
+                skinUrl =
+                    application
+                        .customSkinsMap[
+                            mode
+                        ] ||
+
+                    application
+                        .customSkinsMap[
+                            cell.targetNick
+                        ] ||
+
+                    application
+                        .customSkinsMap[
+                            cell.targetNick +
+                            '#000000'
+                        ] ||
+
+                    (
+                        cleanNick
+                            ? (
+                                application
+                                    .customSkinsMap[
+                                        cleanNick
+                                    ] ||
+
+                                application
+                                    .customSkinsMap[
+                                        cleanNick +
+                                        '#000000'
+                                    ] ||
+
+                                application
+                                    .customSkinsMap[
+                                        cleanNick +
+                                        cell.color
+                                    ]
+                            )
+                            : null
+                    );
+            }
+
+
+            if (
+                !skinUrl &&
+                cell.skin
+            ) {
+                skinUrl =
+                    application
+                        .customSkinsMap[
+                            cell.skin
+                        ] ||
+
+                    (
+                        window
+                            .VanillaSkinUrlMap
+                            ? (
+                                window
+                                    .VanillaSkinUrlMap[
+                                        cell.skin
+                                    ] ||
+
+                                window
+                                    .VanillaSkinUrlMap[
+                                        '%' +
+                                        cell.skin
+                                    ] ||
+
+                                window
+                                    .VanillaSkinUrlMap[
+                                        String(
+                                            cell.skin
+                                        )
+                                            .toLowerCase()
+                                    ]
+                            )
+                            : null
+                    );
+            }
+
+
+            if (
+                !skinUrl
+            ) {
+                return result;
+            }
+
+
+            result.requested =
+                true;
+
+
+            /*
+             * Video skins remain Canvas-only.
+             */
+            if (
+                typeof skinUrl ===
+                    'string' &&
+                /\.(mp4|webm|ogv)(?:[?#]|$)/i
+                    .test(
+                        skinUrl
+                    )
+            ) {
+                return result;
+            }
+
+
+            if (
+                !application
+                    .customSkinsCache
+                    .hasOwnProperty(
+                        skinUrl
+                    )
+            ) {
+                application.loadSkin(
+                    application.customSkinsCache,
+                    skinUrl,
+                    undefined,
+                    true
+                );
+            }
+
+
+            var activeKey =
+                (
+                    this._skinHalf &&
+                    this.glSkinMap[
+                        skinUrl +
+                        '_cached3'
+                    ] !==
+                        undefined
+                )
+                    ? (
+                        skinUrl +
+                        '_cached3'
+                    )
+                    : skinUrl;
+
+
+            var node =
+                application
+                    .customSkinsCache[
+                        skinUrl +
+                        '_cached3'
+                    ] ||
+
+                application
+                    .customSkinsCache[
+                        skinUrl +
+                        '_cached'
+                    ] ||
+
+                application
+                    .customSkinsCache[
+                        skinUrl
+                    ];
+
+
+            var layer =
+                this.glSkinMap[
+                    activeKey
+                ];
+
+
+            if (
+                layer ===
+                    undefined &&
+                node &&
+                !node._failed &&
+                (
+                    node.naturalWidth >
+                        0 ||
+                    node.width >
+                        0
+                )
+            ) {
+                layer =
+                    this.uploadSkinTexture(
+                        activeKey,
+                        node
+                    );
+            }
+
+
+            /*
+             * uploadSkinTexture() can recreate the complete texture array after
+             * exhausting all layers. If that happened halfway through a frame,
+             * previously resolved layer indices are stale.
+             */
+            result.arrayChanged =
+                this.glSkinArray !==
+                skinArrayAtStart;
+
+
+            if (
+                typeof layer ===
+                    'number' &&
+                layer >=
+                    0
+            ) {
+                result.layer =
+                    layer;
+            }
+
+
+            /*
+             * Skin transparency is independent from body transparency.
+             */
+            if (
+                (
+                    (
+                        defaultmapsettings
+                            .transparentSkins &&
+                        !(
+                            cell.isPlayerCell &&
+                            !defaultmapsettings
+                                .myTransparentSkin
+                        )
+                    ) ||
+                    (
+                        cell.isPlayerCell &&
+                        defaultmapsettings
+                            .myTransparentSkin
+                    )
+                ) &&
+                defaultSettings.skinsAlpha <
+                    0.99
+            ) {
+                result.alpha =
+                    defaultSettings
+                        .skinsAlpha;
+            }
+
+
+            return result;
+        },
+
+
+        /*
+         * ================================================================
+         * RAW WEBGL JELLY WORLD
+         * ================================================================
+         */
+        drawWebGLJellyBatch(
+            cellsArray
+        ) {
+            var _tGL =
+                performance.now();
+
+
+            if (
+                !this.gl ||
+                !this.glJellyProgram ||
+                !this.glJellyStrokeProgram ||
+                !this.glJellyVAO ||
+                !this.glJellyVBO ||
+                !cellsArray ||
+                !cellsArray.length
+            ) {
+                return false;
+            }
+
+
+            var gl =
+                this.gl;
+
+
+            /*
+             * All-or-nothing GPU ownership.
+             *
+             * Never put one body on Canvas and one body on WebGL because they
+             * are separate DOM layers and can no longer interleave according
+             * to global cell size.
+             */
+            var abortBatch =
+                function () {
+                    for (
+                        var a = 0;
+                        a <
+                            cellsArray.length;
+                        a++
+                    ) {
+                        var c =
+                            cellsArray[a];
+
+
+                        if (
+                            !c
+                        ) {
+                            continue;
+                        }
+
+
+                        c._webglRendered =
+                            false;
+
+
+                        if (
+                            c._webglZ !==
+                            undefined
+                        ) {
+                            delete c
+                                ._webglZ;
+                        }
+                    }
+
+
+                    return false;
+                };
+
+
+            var showSkins =
+                defaultmapsettings
+                    .customSkins &&
+                LM.showCustomSkins;
+
+
+            var isParty =
+                ':party' ===
+                application.gameMode;
+
+
+            var virusStroke =
+                Math.max(
+                    0,
+                    Number(
+                        defaultSettings
+                            .virusStrokeSize
+                    ) ||
+                    0
+                );
+
+
+            var virusGlow =
+                defaultmapsettings
+                    .virusGlow
+                    ? Math.max(
+                        0,
+                        Number(
+                            defaultSettings
+                                .virusGlowSize
+                        ) ||
+                        0
+                    )
+                    : 0;
+
+
+            var glowRGB =
+                this.parseWebGLOverlayColor(
+                    defaultSettings
+                        .virusGlowColor,
+
+                    defaultSettings
+                        .virusStrokeColor ||
+                        '#33ff33'
+                );
+
+
+            var needFill =
+                0;
+
+
+            var needStroke =
+                0;
+
+
+            var needDraws =
+                0;
+
+
+            /*
+             * ============================================================
+             * PASS 1
+             *
+             * Count geometry.
+             *
+             * CRITICAL:
+             *
+             * Use the SAME isInView() gate as CPU jelly preparation.
+             * Therefore every GPU-visible body is guaranteed to have a current
+             * post-updateNumPoints() perimeter.
+             * ============================================================
+             */
+            for (
+                var ci = 0;
+                ci <
+                    cellsArray.length;
+                ci++
+            ) {
+                var cc =
+                    cellsArray[ci];
+
+
+                if (
+                    !cc ||
+                    cc.invisible ||
+                    cc.removed ||
+                    cc.isFood ||
+                    this
+                        ._isDuplicateWebGLSpectatorCell(
+                            cc
+                        )
+                ) {
+                    continue;
+                }
+
+
+                if (
+                    LM.hideSmallBots &&
+                    cc.size <=
+                        36
+                ) {
+                    continue;
+                }
+
+
+                if (
+                    typeof cc.isInView ===
+                        'function' &&
+                    !cc.isInView()
+                ) {
+                    continue;
+                }
+
+
+                if (
+                    !cc.points ||
+                    cc.points.length <
+                        3
+                ) {
+                    return abortBatch();
+                }
+
+
+                needFill +=
+                    cc.points.length +
+                    2;
+
+
+                needDraws++;
+
+
+                if (
+                    cc.isVirus
+                ) {
+                    if (
+                        virusStroke >
+                        0
+                    ) {
+                        needStroke +=
+                            cc.points.length *
+                            6;
+                    }
+
+
+                    if (
+                        virusGlow >
+                        0
+                    ) {
+                        needStroke +=
+                            cc.points.length *
+                            6;
+                    }
+                }
+            }
+
+
+            if (
+                !this.ensureWebGLJellyCapacity(
+                    needFill,
+                    needStroke,
+                    needDraws
+                )
+            ) {
+                return abortBatch();
+            }
+
+
+            this._glJellyVertexCount =
+                0;
+
+            this._glJellyStrokeVertexCount =
+                0;
+
+
+            var drawCount =
+                0;
+
+
+            var skinArrayAtStart =
+                this.glSkinArray;
+
+
+            var viewScale =
+                this.scale ||
+                1;
+
+
+            /*
+             * ============================================================
+             * PASS 2
+             *
+             * Write VBO buffers for fill & stroke.
+             * ============================================================
+             */
+            for (
+                var p2 = 0;
+                p2 <
+                    cellsArray.length;
+                p2++
+            ) {
+                var cell =
+                    cellsArray[p2];
+
+
+                if (
+                    !cell ||
+                    cell.invisible ||
+                    cell.removed ||
+                    cell.isFood ||
+                    this
+                        ._isDuplicateWebGLSpectatorCell(
+                            cell
+                        )
+                ) {
+                    continue;
+                }
+
+
+                if (
+                    LM.hideSmallBots &&
+                    cell.size <=
+                        36
+                ) {
+                    continue;
+                }
+
+
+                if (
+                    typeof cell.isInView ===
+                        'function' &&
+                    !cell.isInView()
+                ) {
+                    continue;
+                }
+
+
+                var z =
+                    1.0 -
+                    (
+                        p2 +
+                        1
+                    ) /
+                    (
+                        cellsArray.length +
+                        1
+                    );
+
+
+                cell._webglRendered =
+                    true;
+
+                cell._webglZ =
+                    z;
+
+
+                var skinRes =
+                    this._resolveWebGLJellySkin(
+                        cell,
+                        isParty,
+                        skinArrayAtStart
+                    );
+
+
+                if (
+                    skinRes.requested &&
+                    skinRes.layer <
+                        0
+                ) {
+                    return abortBatch();
+                }
+
+
+                if (
+                    skinRes.arrayChanged
+                ) {
+                    skinArrayAtStart =
+                        this.glSkinArray;
+
+                    skinRes =
+                        this._resolveWebGLJellySkin(
+                            cell,
+                            isParty,
+                            skinArrayAtStart
+                        );
+
+
+                    if (
+                        skinRes.requested &&
+                        skinRes.layer <
+                            0
+                    ) {
+                        return abortBatch();
+                    }
+                }
+
+
+                /*
+                 * Parse color & body alpha.
+                 */
+                var bodyHex =
+                    cell.isVirus
+                        ? (
+                            cell.virusColor ||
+                            defaultSettings
+                                .virusColor ||
+                            '#33ff33'
+                        )
+                        : (
+                            cell.color ||
+                            '#808080'
+                        );
+
+
+                var bodyRGB =
+                    this.parseWebGLOverlayColor(
+                        bodyHex,
+                        cell.isVirus
+                            ? '#33ff33'
+                            : '#808080'
+                    );
+
+
+                var bodyA =
+                    1.0;
+
+
+                if (
+                    cell.isVirus &&
+                    defaultmapsettings
+                        .transparentViruses &&
+                    defaultSettings
+                        .virusesAlpha <
+                        0.99
+                ) {
+                    bodyA =
+                        defaultSettings
+                            .virusesAlpha;
+                }
+                else if (
+                    !cell.isVirus &&
+                    defaultmapsettings
+                        .transparentCells &&
+                    defaultSettings
+                        .cellsAlpha <
+                        0.99
+                ) {
+                    bodyA =
+                        defaultSettings
+                            .cellsAlpha;
+                }
+
+
+                var pts =
+                    cell.points;
+
+                var nPts =
+                    pts.length;
+
+
+                var fillStart =
+                    this._glJellyVertexCount;
+
+
+                /*
+                 * Center vertex.
+                 */
+                this.writeWebGLJellyVertex(
+                    cell.x,
+                    cell.y,
+                    0.5,
+                    0.5,
+                    bodyRGB[0],
+                    bodyRGB[1],
+                    bodyRGB[2],
+                    bodyA,
+                    skinRes.layer,
+                    skinRes.alpha,
+                    z
+                );
+
+
+                /*
+                 * Perimeter vertices.
+                 */
+                var minPx =
+                    pts[0].x;
+
+                var maxPx =
+                    pts[0].x;
+
+                var minPy =
+                    pts[0].y;
+
+                var maxPy =
+                    pts[0].y;
+
+
+                for (
+                    var pi = 0;
+                    pi <
+                        nPts;
+                    pi++
+                ) {
+                    var px =
+                        pts[pi].x;
+
+                    var py =
+                        pts[pi].y;
+
+
+                    if (
+                        px <
+                        minPx
+                    ) {
+                        minPx =
+                            px;
+                    }
+
+                    if (
+                        px >
+                        maxPx
+                    ) {
+                        maxPx =
+                            px;
+                    }
+
+                    if (
+                        py <
+                        minPy
+                    ) {
+                        minPy =
+                            py;
+                    }
+
+                    if (
+                        py >
+                        maxPy
+                    ) {
+                        maxPy =
+                            py;
+                    }
+                }
+
+
+                var spanX =
+                    Math.max(
+                        1,
+                        maxPx -
+                            minPx
+                    );
+
+                var spanY =
+                    Math.max(
+                        1,
+                        maxPy -
+                            minPy
+                    );
+
+
+                for (
+                    var ptI = 0;
+                    ptI <
+                        nPts;
+                    ptI++
+                ) {
+                    var pPt =
+                        pts[ptI];
+
+
+                    var u =
+                        (
+                            pPt.x -
+                            minPx
+                        ) /
+                        spanX;
+
+                    var v =
+                        (
+                            pPt.y -
+                            minPy
+                        ) /
+                        spanY;
+
+
+                    this.writeWebGLJellyVertex(
+                        pPt.x,
+                        pPt.y,
+                        u,
+                        v,
+                        bodyRGB[0],
+                        bodyRGB[1],
+                        bodyRGB[2],
+                        bodyA,
+                        skinRes.layer,
+                        skinRes.alpha,
+                        z
+                    );
+                }
+
+
+                /*
+                 * Repeat first point to close fan.
+                 */
+                var u0 =
+                    (
+                        pts[0].x -
+                        minPx
+                    ) /
+                    spanX;
+
+                var v0 =
+                    (
+                        pts[0].y -
+                        minPy
+                    ) /
+                    spanY;
+
+
+                this.writeWebGLJellyVertex(
+                    pts[0].x,
+                    pts[0].y,
+                    u0,
+                    v0,
+                    bodyRGB[0],
+                    bodyRGB[1],
+                    bodyRGB[2],
+                    bodyA,
+                    skinRes.layer,
+                    skinRes.alpha,
+                    z
+                );
+
+
+                this.glJellyDrawStarts[
+                    drawCount
+                ] =
+                    fillStart;
+
+                this.glJellyDrawCounts[
+                    drawCount
+                ] =
+                    nPts +
+                    2;
+
+                drawCount++;
+
+
+                /*
+                 * Virus outlines / glow bands.
+                 */
+                if (
+                    cell.isVirus
+                ) {
+                    var strokeHex =
+                        cell.virusStroke ||
+                        defaultSettings
+                            .virusStrokeColor ||
+                        bodyHex;
+
+
+                    var strokeRGB =
+                        this.parseWebGLOverlayColor(
+                            strokeHex,
+                            '#33ff33'
+                        );
+
+
+                    if (
+                        virusGlow >
+                        0
+                    ) {
+                        this.writeWebGLJellyStrokeBand(
+                            cell,
+                            pts,
+                            0,
+                            virusGlow,
+                            glowRGB[0],
+                            glowRGB[1],
+                            glowRGB[2],
+                            glowRGB[3] *
+                                bodyA,
+                            0.0,
+                            z
+                        );
+                    }
+
+
+                    if (
+                        virusStroke >
+                        0
+                    ) {
+                        this.writeWebGLJellyStrokeBand(
+                            cell,
+                            pts,
+                            -virusStroke *
+                                0.5,
+                            virusStroke *
+                                0.5,
+                            strokeRGB[0],
+                            strokeRGB[1],
+                            strokeRGB[2],
+                            bodyA,
+                            bodyA,
+                            z
+                        );
+                    }
+                }
+            }
+
+
+            /*
+             * ============================================================
+             * PASS 3
+             *
+             * Upload & Draw.
+             * ============================================================
+             */
+            if (
+                this._glJellyVertexCount >
+                0
+            ) {
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.glJellyVBO
+                );
+
+
+                gl.bufferSubData(
+                    gl.ARRAY_BUFFER,
+                    0,
+                    this.glJellyVertexData.subarray(
+                        0,
+                        this._glJellyVertexCount *
+                            this.glJellyStride
+                    )
+                );
+
+
+                gl.useProgram(
+                    this.glJellyProgram
+                );
+
+
+                gl.uniform2f(
+                    this.u_jelly_viewCenter,
+                    this.camX,
+                    this.camY
+                );
+
+
+                gl.uniform2f(
+                    this.u_jelly_viewScale,
+                    2.0 *
+                        viewScale /
+                        this.canvasWidth,
+                    2.0 *
+                        viewScale /
+                        this.canvasHeight
+                );
+
+
+                gl.activeTexture(
+                    gl.TEXTURE0
+                );
+
+
+                gl.bindTexture(
+                    gl.TEXTURE_2D_ARRAY,
+                    this.glSkinArray
+                );
+
+
+                gl.uniform1i(
+                    this.u_jelly_skinArray,
+                    0
+                );
+
+
+                gl.bindVertexArray(
+                    this.glJellyVAO
+                );
+
+
+                for (
+                    var dIdx = 0;
+                    dIdx <
+                        drawCount;
+                    dIdx++
+                ) {
+                    gl.drawArrays(
+                        gl.TRIANGLE_FAN,
+                        this.glJellyDrawStarts[
+                            dIdx
+                        ],
+                        this.glJellyDrawCounts[
+                            dIdx
+                        ]
+                    );
+                }
+            }
+
+
+            if (
+                this._glJellyStrokeVertexCount >
+                0
+            ) {
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.glJellyStrokeVBO
+                );
+
+
+                gl.bufferSubData(
+                    gl.ARRAY_BUFFER,
+                    0,
+                    this.glJellyStrokeVertexData.subarray(
+                        0,
+                        this._glJellyStrokeVertexCount *
+                            this.glJellyStrokeStride
+                    )
+                );
+
+
+                gl.useProgram(
+                    this.glJellyStrokeProgram
+                );
+
+
+                gl.uniform2f(
+                    this.u_jellyStroke_viewCenter,
+                    this.camX,
+                    this.camY
+                );
+
+
+                gl.uniform2f(
+                    this.u_jellyStroke_viewScale,
+                    2.0 *
+                        viewScale /
+                        this.canvasWidth,
+                    2.0 *
+                        viewScale /
+                        this.canvasHeight
+                );
+
+
+                gl.bindVertexArray(
+                    this.glJellyStrokeVAO
+                );
+
+
+                gl.drawArrays(
+                    gl.TRIANGLES,
+                    0,
+                    this._glJellyStrokeVertexCount
+                );
+            }
+
+
+            gl.bindVertexArray(
+                null
+            );
+
+
+            return true;
+        },
+
         drawWebGLCellBatch(cellsArray) {
             var _tGL = performance.now();
             if (!this.gl || !this.glCellProgram || !cellsArray || !cellsArray.length) return false;
@@ -57248,18 +61711,237 @@ function legendformIframe() {
     $("body").append(s);
 }
 
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * MANUAL MINIMAP / WORLD ROTATION
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * Manual rotation works in the SAME canonical VNR coordinate system used by:
+ *
+ *      settechvnr()
+ *      _applyAbsoluteVnr()
+ *      updatevnr()
+ *
+ * Canonical orientations:
+ *
+ *      0 = normal
+ *      1 = mirror X
+ *      2 = mirror X + Y
+ *      3 = mirror Y
+ *
+ * IMPORTANT:
+ *
+ * The previous implementation had two independent bugs:
+ *
+ *  1. It used:
+ *
+ *         if (!window.manualRotation)
+ *
+ *     but 0 is a VALID rotation value and JavaScript considers 0 falsy.
+ *     Therefore rotation 0 was repeatedly treated as "uninitialised".
+ *
+ *  2. It initialized manualRotation from bgpi.
+ *
+ *         manualRotation = legendmod.bgpi
+ *
+ *     bgpi is NOT the current transformation.
+ *
+ *     bgpi = raw world quadrant fingerprint
+ *     vnr  = current coordinate transformation
+ *
+ *     settechvnr() expects a VNR, therefore the correct starting value
+ *     is legendmod.vnr.
+ *
+ * Manual rotation also locks automatic teammate-based correction until
+ * the next server connection. Otherwise updatevnr() could immediately
+ * undo the user's explicit rotation.
+ */
 function rotateminimapsectors() {
-    if (!spects.length) {
-        if (!window.manualRotation) window.manualRotation = window.legendmod.bgpi
-        window.manualRotation--
-        if (window.manualRotation < 0) {
-            window.manualRotation = 3
+
+    /*
+     * Rotation is intentionally unavailable after Multi-Viewports exist.
+     *
+     * Each additional viewport owns coordinate state derived from the
+     * orientation active when that viewport was created. Reorienting only
+     * the main world afterwards would desynchronise those views.
+     */
+    if (
+        typeof spects !== "undefined" &&
+        spects &&
+        spects.length
+    ) {
+        if (
+            !window.announceSpectNotifOnce
+        ) {
+            window.announceSpectNotifOnce =
+                true;
+
+            toastr.warning(
+                "<b>[" +
+                Premadeletter123 +
+                "]:</b> " +
+                "Rotation can work only before the creation of Multi-Viewports"
+            );
         }
-        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map rotated.Tech POS:', window.manualRotation);
-        application.settechvnr(window.manualRotation)
-    } else if (!window.announceSpectNotifOnce) {
-        window.announceSpectNotifOnce = true;
-        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Rotation can work only before the creation of Multi-Viewports");
+
+        return;
+    }
+
+
+    /*
+     * Read the ACTUAL currently selected map transformation.
+     *
+     * Do not initialise from bgpi.
+     *
+     * bgpi tells us where the untransformed server coordinates place
+     * the player. It is an orientation fingerprint used for comparison
+     * between clients.
+     *
+     * vnr tells us which X/Y mirror operation is currently applied.
+     */
+    var currentVnr =
+        Number(
+            window.legendmod &&
+            window.legendmod.vnr
+        );
+
+
+    /*
+     * Defensive recovery.
+     *
+     * vnr should always be one of 0,1,2,3 after the new canonical
+     * orientation implementation, but never propagate corrupted legacy
+     * state into the manual selector.
+     */
+    if (
+        !Number.isFinite(
+            currentVnr
+        ) ||
+        currentVnr < 0 ||
+        currentVnr > 3
+    ) {
+        currentVnr =
+            0;
+    }
+
+    currentVnr =
+        currentVnr | 0;
+
+
+    /*
+     * Initialise manualRotation ONLY when it genuinely does not contain
+     * a valid orientation.
+     *
+     * Explicit numeric validation is required because:
+     *
+     *     0
+     *
+     * is a perfectly valid orientation.
+     */
+    var manualVnr =
+        Number(
+            window.manualRotation
+        );
+
+    if (
+        !Number.isFinite(
+            manualVnr
+        ) ||
+        manualVnr < 0 ||
+        manualVnr > 3
+    ) {
+        manualVnr =
+            currentVnr;
+    } else {
+        manualVnr =
+            manualVnr | 0;
+    }
+
+
+    /*
+     * Preserve the original Legend Mod button direction:
+     *
+     *      0 -> 3 -> 2 -> 1 -> 0
+     *
+     * This changes only the selected transformation. The actual coordinate
+     * conversion remains centralized inside settechvnr() /
+     * _applyAbsoluteVnr().
+     */
+    manualVnr--;
+
+    if (
+        manualVnr < 0
+    ) {
+        manualVnr =
+            3;
+    }
+
+    window.manualRotation =
+        manualVnr;
+
+
+    /*
+     * Explicit user rotation wins over automatic teammate reconciliation.
+     *
+     * updatevnr() in the new implementation already contains:
+     *
+     *      if (window.manualRotationLocked) {
+     *          return;
+     *      }
+     *
+     * The old button never actually SET that state, making the check useless.
+     */
+    window.manualRotationLocked =
+        true;
+
+
+    /*
+     * Keep the legacy "rotation established" state coherent as well.
+     *
+     * Automatic setvnr() sets these values when it chooses an orientation,
+     * therefore a manual selection should represent the same established
+     * state.
+     */
+    if (
+        window.legendmod
+    ) {
+        window.legendmod.setrot =
+            1;
+
+        window.legendmod.rotcnt =
+            0;
+    }
+
+
+    console.log(
+        "\x1b[32m%s\x1b[34m%s\x1b[0m",
+        consoleMsgLM,
+        " Map manually rotated. VNR:",
+        window.manualRotation
+    );
+
+
+    /*
+     * settechvnr() now accepts an ABSOLUTE VNR and routes through
+     * _applyAbsoluteVnr().
+     *
+     * Do not manipulate:
+     *
+     *      vector[]
+     *      teamPlayers[].x/y
+     *      mapOffset
+     *      minimapCell coordinates
+     *
+     * here.
+     */
+    if (
+        application &&
+        typeof application.settechvnr ===
+            "function"
+    ) {
+        application.settechvnr(
+            window.manualRotation
+        );
     }
 }
 
