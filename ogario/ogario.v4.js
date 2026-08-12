@@ -45656,7 +45656,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var viewScale =
                 Number(
                     this.scale
-                );
+                ) * (this._elEntranceScale || 1.0);
 
             if (
                 !Number.isFinite(
@@ -45905,12 +45905,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
 
+            /* Multiply entrance alpha into grid opacity */
+            var _gridEntranceAlpha = this._elEntranceAlpha || 1.0;
+
             gl.uniform4f(
                 this.grid_u_gridColor,
                 rgba[0],
                 rgba[1],
                 rgba[2],
-                alpha
+                alpha * _gridEntranceAlpha
             );
 
             /*
@@ -49447,27 +49450,63 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * Modifies the ACTUAL world transform so that the entire game world
              * (grid, border, cells, food, viruses — everything) physically scales
              * from the map center outward. No overlay effects — the map itself expands.
-             * Applied AFTER the normal camera transform as an additional
-             * scale-around-map-center operation. */
+             *
+             * Features:
+             *   • Damped spring physics for scale (multiple satisfying bounces)
+             *   • Rotation unwind (world starts slightly rotated, spirals to 0°)
+             *   • Alpha fade-in (world fades from transparent)
+             *   • Entrance scale stored on `this` so WebGL grid can sync
+             */
+            this._elEntranceScale = 1.0;  // default: no effect
+            this._elEntranceRotation = 0; // default: no rotation
+            this._elEntranceAlpha = 1.0;  // default: full opacity
+
             if (LM._elWorldEntrance && LM._elWorldEntrance.active) {
                 var _elFx = LM._elWorldEntrance;
                 var _elElapsed = Date.now() - _elFx.startTime;
-                var _EL_DURATION = 2500; // ms
+                var _EL_DURATION = 3500; // ms — longer for dramatic multi-bounce
+
                 if (_elElapsed >= _EL_DURATION) {
                     _elFx.active = false;
                 } else {
                     var _elT = _elElapsed / _EL_DURATION; // 0→1
-                    /* Elastic ease-out: slight overshoot then settle to 1.0
-                     * f(t) = 1 - cos(t * π/2 * 5) * (1-t)^3
-                     * Gives a fast expand with a gentle bounce at the end */
-                    var _elEaseBase = 1.0 - Math.pow(1.0 - _elT, 3);
-                    var _elBounce = Math.cos(_elT * Math.PI * 2.5) * Math.pow(1.0 - _elT, 3) * 0.15;
-                    var _elScale = Math.max(0.01, _elEaseBase - _elBounce);
 
-                    /* Scale around the map center so that the map expands from its origin */
+                    /* ── Damped spring for scale ──
+                     * x(t) = 1 - e^(-ζt) * cos(ωt)
+                     * ζ (damping) = 5.5, ω (frequency) = 4π
+                     * Gives ~2 visible bounces that decay naturally */
+                    var _spring_zeta = 5.5;
+                    var _spring_omega = 4.0 * Math.PI;
+                    var _spring_t = _elT * 3.0; // scale time for spring feel
+                    var _elScale = 1.0 - Math.exp(-_spring_zeta * _spring_t) *
+                        Math.cos(_spring_omega * _spring_t);
+                    _elScale = Math.max(0.001, _elScale);
+                    this._elEntranceScale = _elScale;
+
+                    /* ── Rotation unwind ──
+                     * Starts at ~12° (0.21 rad) and springs back to 0°.
+                     * Uses the same damped spring envelope for consistency. */
+                    var _rotAmplitude = 0.21; // ~12 degrees
+                    var _rot_omega = 3.0 * Math.PI;
+                    var _elRotation = _rotAmplitude * Math.exp(-_spring_zeta * _spring_t) *
+                        Math.sin(_rot_omega * _spring_t);
+                    this._elEntranceRotation = _elRotation;
+
+                    /* ── Alpha fade-in ──
+                     * World fades from 0 → 1 in the first 15% of the animation.
+                     * Quick fade so the spring bounce is fully visible. */
+                    var _alphaT = Math.min(1.0, _elT / 0.15);
+                    var _elAlpha = _alphaT * _alphaT; // quadratic ease-in
+                    this._elEntranceAlpha = _elAlpha;
+                    this.ctx.globalAlpha = _elAlpha;
+
+                    /* ── Apply transforms around the map center ──
+                     * translate(center) → rotate → scale → translate(-center)
+                     * This makes the entire world spring open from its origin. */
                     var _mapCX = (LM.mapMinX + LM.mapMaxX) / 2;
                     var _mapCY = (LM.mapMinY + LM.mapMaxY) / 2;
                     this.ctx.translate(_mapCX, _mapCY);
+                    this.ctx.rotate(_elRotation);
                     this.ctx.scale(_elScale, _elScale);
                     this.ctx.translate(-_mapCX, -_mapCY);
                 }
@@ -49507,6 +49546,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         (this.canvasHeight / 2) - (this.camY * this.scale)
                     );
                     this.backgroundCtx.scale(this.scale, this.scale);
+                    /* Sync background canvas with entrance animation */
+                    if (this._elEntranceScale !== 1.0 || this._elEntranceRotation !== 0) {
+                        var _bgMapCX = (LM.mapMinX + LM.mapMaxX) / 2;
+                        var _bgMapCY = (LM.mapMinY + LM.mapMaxY) / 2;
+                        this.backgroundCtx.globalAlpha = this._elEntranceAlpha;
+                        this.backgroundCtx.translate(_bgMapCX, _bgMapCY);
+                        this.backgroundCtx.rotate(this._elEntranceRotation);
+                        this.backgroundCtx.scale(this._elEntranceScale, this._elEntranceScale);
+                        this.backgroundCtx.translate(-_bgMapCX, -_bgMapCY);
+                    }
                     this.drawCustomBackgrounds(this.backgroundCtx);
                     this.backgroundCtx.restore();
                 } else if (this.backgroundCtx) {
