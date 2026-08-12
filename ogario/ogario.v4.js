@@ -2658,6 +2658,80 @@ function _isValidSkin(s) {
     return false;
 }
 
+/* ── Fallback gradient avatar for skinless cells ──
+ * Generates a deterministic radial gradient canvas from a player name hash.
+ * Replaces the flat #808080 grey with unique, visually distinct cell colors.
+ *
+ * Cache: LRU Map capped at 200 entries (one 128×128 canvas ≈ 65KB each).
+ */
+var _fallbackGradientCache = new Map();
+var _FALLBACK_GRADIENT_MAX = 200;
+var _FALLBACK_GRADIENT_SIZE = 128; /* px — small since it's stretched over the cell */
+
+function _djb2Hash(str) {
+    var hash = 5381;
+    for (var i = 0; i < str.length; i++) {
+        hash = ((hash << 5) + hash) + str.charCodeAt(i); /* hash * 33 + c */
+        hash = hash & hash; /* convert to 32-bit int */
+    }
+    return Math.abs(hash);
+}
+
+function _getFallbackGradient(nameOrId) {
+    var key = String(nameOrId || 'cell');
+
+    /* LRU hit: move to end */
+    if (_fallbackGradientCache.has(key)) {
+        var cached = _fallbackGradientCache.get(key);
+        _fallbackGradientCache.delete(key);
+        _fallbackGradientCache.set(key, cached);
+        return cached;
+    }
+
+    /* Generate deterministic colors from name hash */
+    var hash = _djb2Hash(key);
+    var hue1 = hash % 360;
+    var hue2 = (hue1 + 35 + (hash >> 8) % 30) % 360; /* offset 35–65° for contrast */
+    var sat = 55 + (hash >> 16) % 25;  /* 55–80% saturation — vibrant but not neon */
+    var lit1 = 45 + (hash >> 12) % 15; /* 45–60% lightness — rich, not washed out */
+    var lit2 = 35 + (hash >> 20) % 15; /* 35–50% for the outer ring — darker edge */
+
+    var color1 = 'hsl(' + hue1 + ',' + sat + '%,' + lit1 + '%)';
+    var color2 = 'hsl(' + hue2 + ',' + (sat - 10) + '%,' + lit2 + '%)';
+
+    /* Render gradient canvas */
+    var sz = _FALLBACK_GRADIENT_SIZE;
+    var cvs = document.createElement('canvas');
+    cvs.width = sz;
+    cvs.height = sz;
+    var gCtx = cvs.getContext('2d');
+    var grad = gCtx.createRadialGradient(sz / 2, sz / 2, 0, sz / 2, sz / 2, sz / 2);
+    grad.addColorStop(0, color1);
+    grad.addColorStop(0.7, color2);
+    grad.addColorStop(1, color2);
+    gCtx.fillStyle = grad;
+    gCtx.fillRect(0, 0, sz, sz);
+
+    /* Clip to circle for clean edges when drawn as drawImage */
+    var cvs2 = document.createElement('canvas');
+    cvs2.width = sz;
+    cvs2.height = sz;
+    var gCtx2 = cvs2.getContext('2d');
+    gCtx2.beginPath();
+    gCtx2.arc(sz / 2, sz / 2, sz / 2, 0, Math.PI * 2);
+    gCtx2.clip();
+    gCtx2.drawImage(cvs, 0, 0);
+
+    /* LRU eviction */
+    if (_fallbackGradientCache.size >= _FALLBACK_GRADIENT_MAX) {
+        var oldestKey = _fallbackGradientCache.keys().next().value;
+        if (oldestKey) _fallbackGradientCache.delete(oldestKey);
+    }
+
+    _fallbackGradientCache.set(key, cvs2);
+    return cvs2;
+}
+
 function removeEmojis(string) {
     _RE_EMOJI.lastIndex = 0;
     return string.replace(_RE_EMOJI, '');
@@ -16901,6 +16975,71 @@ textLanguage['hk-scanTrick'] =
     textLanguage['hk-scanTrick'] ||
     'Macro Scan trick';
 
+/* ═══════════════════════════════════════════════════════════════════════
+ * §3.1a  Death Particle Burst System
+ * ═══════════════════════════════════════════════════════════════════════
+ * Cosmetic particle FX when a non-food cell is eaten.
+ * - _deathParticles[]   : live particle pool (pruned each frame)
+ * - _spawnDeathBurst()  : called from eat-event parsers
+ * - _getParticleBlob()  : returns a pre-rendered radial-gradient canvas
+ * - _EAT_PULSE_*        : config for the eater scale-pulse effect
+ */
+var _DEATH_PARTICLE_COUNT = 10;       /* fragments per death */
+var _DEATH_PARTICLE_SPEED = 350;      /* px/s max radial velocity */
+var _DEATH_PARTICLE_DURATION = 350;   /* ms lifespan */
+var _DEATH_PARTICLE_SIZE_RATIO = 0.18;/* fraction of victim radius */
+var _EAT_PULSE_DURATION = 150;        /* ms for eater size overshoot */
+var _EAT_PULSE_MAGNITUDE = 0.08;      /* 8% radius increase at peak */
+
+var _deathParticles = [];
+
+/* Pre-rendered blob cache — one tiny canvas per colour. */
+var _particleBlobCache = {};
+function _getParticleBlob(color) {
+    if (_particleBlobCache[color]) return _particleBlobCache[color];
+    var sz = 32;
+    var c = document.createElement('canvas');
+    c.width = c.height = sz;
+    var cx = c.getContext('2d');
+    var g = cx.createRadialGradient(sz / 2, sz / 2, 0, sz / 2, sz / 2, sz / 2);
+    g.addColorStop(0, color);
+    g.addColorStop(0.6, color);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    cx.fillStyle = g;
+    cx.beginPath();
+    cx.arc(sz / 2, sz / 2, sz / 2, 0, Math.PI * 2);
+    cx.fill();
+    /* Limit cache to ~100 entries */
+    var keys = Object.keys(_particleBlobCache);
+    if (keys.length > 100) delete _particleBlobCache[keys[0]];
+    _particleBlobCache[color] = c;
+    return c;
+}
+
+function _spawnDeathBurst(wx, wy, victimSize, victimColor) {
+    if (!defaultmapsettings.deathParticles) return;
+    var col = victimColor || '#808080';
+    var baseR = victimSize * _DEATH_PARTICLE_SIZE_RATIO;
+    for (var i = 0; i < _DEATH_PARTICLE_COUNT; i++) {
+        var angle = Math.random() * Math.PI * 2;
+        var speed = _DEATH_PARTICLE_SPEED * (0.4 + Math.random() * 0.6);
+        _deathParticles.push({
+            x: wx,
+            y: wy,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            r: baseR * (0.6 + Math.random() * 0.8),
+            color: col,
+            born: Date.now(),
+            duration: _DEATH_PARTICLE_DURATION * (0.7 + Math.random() * 0.6)
+        });
+    }
+    /* Hard cap to avoid runaway memory in mass-eat scenarios */
+    if (_deathParticles.length > 300) {
+        _deathParticles.splice(0, _deathParticles.length - 300);
+    }
+}
+
 /* ─── §3.2 defaultmapsettings — Gameplay Toggles ─── */
 var defaultmapsettings = {
     positionClass: "toast-bottom-left",
@@ -16916,6 +17055,8 @@ var defaultmapsettings = {
     quickResp: true,
     autoResp: false,
     spawnSpecialEffects: false,
+    deathParticles: true,         /* particle burst when a cell is eaten */
+    eatPulse: true,               /* brief size pulse on the eater cell */
     animatedRainbowColor: false,
     autoZoom: false,
     unlockedFPS: false,
@@ -16966,7 +17107,8 @@ var defaultmapsettings = {
     showGhostCells: false,
     showGhostCellsInfo: false,
     showCellShadows: false,
-
+    deathParticles: true,
+    eatPulse: true,
     /*
      * ═══════════════════════════════════════════════════════════════════════
      * SCAN TRICK SETTINGS
@@ -28565,6 +28707,19 @@ function thelegendmodproject() {
                     var s = false;
                     var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
 
+                    /* ── Eater scale pulse ──
+                     * Brief visual size overshoot when this cell eats another.
+                     * Purely cosmetic — does not affect this.size or game logic. */
+                    if (this._eatPulseTime) {
+                        var _pulseElapsed = Date.now() - this._eatPulseTime;
+                        if (_pulseElapsed < _EAT_PULSE_DURATION) {
+                            var _pT = 1 - _pulseElapsed / _EAT_PULSE_DURATION;
+                            y *= 1 + _EAT_PULSE_MAGNITUDE * _pT * _pT; /* quadratic ease-out */
+                        } else {
+                            this._eatPulseTime = 0; /* clear — no longer pulsing */
+                        }
+                    }
+
                     /* WebGL2 hybrid: if body+text were already drawn on the GPU, skip body+text.
                      * Depth testing in WebGL handles z-ordering, no Canvas2D mask needed. */
                     var _wasWebGL = this._webglRendered;
@@ -28642,12 +28797,15 @@ function thelegendmodproject() {
                          * Resolve the body color after all player/opponent overrides.
                          *
                          * A missing, malformed or explicitly transparent color must
-                         * never produce an invisible ordinary cell.
+                         * never produce an invisible ordinary cell. Instead of flat
+                         * #808080 grey, use a deterministic gradient avatar.
                          */
                         var color2 = this.color;
+                        var _useFallbackGradient = false;
 
                         if (typeof color2 !== "string") {
                             color2 = "#808080";
+                            _useFallbackGradient = true;
                         }
                         else {
                             color2 = color2.trim();
@@ -28665,6 +28823,7 @@ function thelegendmodproject() {
                                 )
                             ) {
                                 color2 = "#808080";
+                                _useFallbackGradient = true;
                             }
                         }
 
@@ -28974,52 +29133,73 @@ function thelegendmodproject() {
                             style.fill();
                         }
                         else {
-                            var _bodyTexture =
-                                window
-                                    .drawRender
-                                    .cellsColored[
-                                        color2
-                                    ];
-
-                            /*
-                             * preDrawCellsColors() is synchronous because it now
-                             * stores the canvas directly. Retrieve and draw it
-                             * during the same frame instead of waiting until the
-                             * next frame.
-                             */
-                            if (!_bodyTexture) {
-                                window
-                                    .drawRender
-                                    .preDrawCellsColors(
-                                        color2
+                            /* ── Fallback gradient for grey cells ──
+                             * When the server sends no valid color, draw a unique
+                             * radial gradient from the player's name hash instead
+                             * of flat #808080 grey. Only for non-food cells with
+                             * a name or player identity. */
+                            if (_useFallbackGradient && !this.isFood && !this.isEjected) {
+                                var _gradCvs = _getFallbackGradient(this.targetNick || this.id);
+                                if (_gradCvs) {
+                                    style.drawImage(
+                                        _gradCvs,
+                                        this.x - y,
+                                        this.y - y,
+                                        y * 2,
+                                        y * 2
                                     );
-
-                                _bodyTexture =
+                                } else {
+                                    style.fillStyle = color2;
+                                    style.fill();
+                                }
+                            } else {
+                                var _bodyTexture =
                                     window
                                         .drawRender
                                         .cellsColored[
                                             color2
                                         ];
-                            }
 
-                            if (_bodyTexture) {
-                                style.drawImage(
-                                    _bodyTexture,
-                                    this.x - y,
-                                    this.y - y,
-                                    y * 2,
-                                    y * 2
-                                );
-                            }
-                            else {
                                 /*
-                                 * Last-resort synchronous fill. Even if cache
-                                 * creation fails, the cell remains visible.
+                                 * preDrawCellsColors() is synchronous because it now
+                                 * stores the canvas directly. Retrieve and draw it
+                                 * during the same frame instead of waiting until the
+                                 * next frame.
                                  */
-                                style.fillStyle =
-                                    color2;
+                                if (!_bodyTexture) {
+                                    window
+                                        .drawRender
+                                        .preDrawCellsColors(
+                                            color2
+                                        );
 
-                                style.fill();
+                                    _bodyTexture =
+                                        window
+                                            .drawRender
+                                            .cellsColored[
+                                                color2
+                                            ];
+                                }
+
+                                if (_bodyTexture) {
+                                    style.drawImage(
+                                        _bodyTexture,
+                                        this.x - y,
+                                        this.y - y,
+                                        y * 2,
+                                        y * 2
+                                    );
+                                }
+                                else {
+                                    /*
+                                     * Last-resort synchronous fill. Even if cache
+                                     * creation fails, the cell remains visible.
+                                     */
+                                    style.fillStyle =
+                                        color2;
+
+                                    style.fill();
+                                }
                             }
                         }
 
@@ -30041,8 +30221,19 @@ function thelegendmodproject() {
         },
         onOpen() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket open');
-            this._reconnAttempts = 0; /* reset auto-reconnect counter on success */
             if (this._reconnTimer) { clearTimeout(this._reconnTimer); this._reconnTimer = null; }
+            /* Track when the connection opened — only reset reconnect counter
+             * after the connection has been stable for ≥5 seconds.
+             * This prevents the counter from resetting on flapping connections
+             * (open → immediate close → open → immediate close loops). */
+            this._connOpenTime = Date.now();
+            var self = this;
+            if (this._reconnStabilityTimer) clearTimeout(this._reconnStabilityTimer);
+            this._reconnStabilityTimer = setTimeout(function () {
+                self._reconnAttempts = 0;
+                self._reconnStartTime = 0;
+                self._reconnStabilityTimer = null;
+            }, 5000);
             this.time = Date.now();
             if (!window.customProtol) window.customProtol = 6
             if (!window.customClient) window.customClient = 1
@@ -30530,6 +30721,11 @@ function thelegendmodproject() {
                                     eater.ox = eater.x;
                                     eater.oy = eater.y;
                                     eater.oSize = eater.size;
+                                    /* ── Death particles + eater pulse ── */
+                                    if (victim.size && victim.size > 36) {
+                                        _spawnDeathBurst(victim.x, victim.y, victim.size, victim.color || '#808080');
+                                    }
+                                    if (defaultmapsettings.eatPulse) eater._eatPulseTime = Date.now();
                                 }
                                 victim.destroy();
                                 delete self.cells[victimID];
@@ -30761,24 +30957,52 @@ function thelegendmodproject() {
             ogario.serverHz = 0;
             if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
             if (this._senpaPingInterval) { clearInterval(this._senpaPingInterval); this._senpaPingInterval = null; }
-            // Only trigger agar.io reconnect logic for official servers.
-            // For private servers (agar2, imsolo, garix), master.onDisconnect()
-            // would redirect to agar.io servers instead of staying on the private server.
-            if (this.integrity && window.master && window.master.onDisconnect) {
-                window.master.onDisconnect();
-            }
-            /* ── Auto-reconnect on server restart ── */
+            /* Cancel the stability timer — connection wasn't stable */
+            if (this._reconnStabilityTimer) { clearTimeout(this._reconnStabilityTimer); this._reconnStabilityTimer = null; }
+            /* ── Reconnect with mutual exclusion ──
+             * Two reconnect systems exist:
+             *   1. master.onDisconnect() — for agar.io official servers (integrity)
+             *   2. Private server auto-reconnect — for expanding.land, legendmod, etc.
+             *
+             * Only ONE should fire per disconnect. For Expanding Land with integrity,
+             * prefer the private server path since master.onDisconnect() would try
+             * to find a new agar.io server instead of reconnecting to the same one.
+             */
             var lastWs = this.ws;
-            if (lastWs && (lastWs.indexOf('legendmod.ml') !== -1 ||
+            var _isPrivateServer = lastWs && (lastWs.indexOf('legendmod.ml') !== -1 ||
                 lastWs.indexOf('expanding.land') !== -1 ||
                 lastWs.indexOf('ffa.legendmod') !== -1 ||
                 lastWs.indexOf('agar2.com') !== -1 ||
                 lastWs.indexOf('imsolo.pro') !== -1 ||
                 lastWs.indexOf('sigmally.com') !== -1 ||
                 lastWs.indexOf('senpa.io') !== -1 ||
-                lastWs.indexOf('mi.com') !== -1)) {
+                lastWs.indexOf('mi.com') !== -1);
+
+            /* Master reconnect — only for official agar.io, NOT private servers */
+            if (this.integrity && window.master && window.master.onDisconnect && !_isPrivateServer) {
+                window.master.onDisconnect();
+            }
+
+            /* ── Private server auto-reconnect with proper backoff ── */
+            if (_isPrivateServer) {
+                /* Cancel any pending reconnect timer to prevent parallel chains */
+                if (this._reconnTimer) { clearTimeout(this._reconnTimer); this._reconnTimer = null; }
+
                 if (!this._reconnAttempts) this._reconnAttempts = 0;
+                if (!this._reconnStartTime) this._reconnStartTime = Date.now();
+
+                /* Total duration cap: give up after 2 minutes of continuous reconnecting */
+                var _reconnElapsed = Date.now() - this._reconnStartTime;
+                var _RECONN_MAX_DURATION = 120000; /* 2 minutes */
                 var maxAttempts = 5;
+
+                if (_reconnElapsed > _RECONN_MAX_DURATION) {
+                    console.log(consoleMsgLM + ' Auto-reconnect timed out after ' + Math.round(_reconnElapsed / 1000) + 's — server appears offline');
+                    this._reconnAttempts = 0;
+                    this._reconnStartTime = 0;
+                    return;
+                }
+
                 if (this._reconnAttempts < maxAttempts) {
                     this._reconnAttempts++;
                     var delay = Math.min(3000 * Math.pow(2, this._reconnAttempts - 1), 30000);
@@ -30794,6 +31018,7 @@ function thelegendmodproject() {
                 } else {
                     console.log(consoleMsgLM + ' Auto-reconnect exhausted (' + maxAttempts + ' attempts)');
                     this._reconnAttempts = 0;
+                    this._reconnStartTime = 0;
                 }
             }
         },
@@ -38876,6 +39101,11 @@ Most cells eaten   : ${mostCellsEaten}
                     eaten.targetY = eater.y;
                     eaten.targetSize = eaten.size;
                     eaten.time = this.time;
+                    /* ── Death particles + eater pulse ── */
+                    if (!eaten.isFood && !eaten.isEjected && eaten.size > 36) {
+                        _spawnDeathBurst(eaten.x, eaten.y, eaten.size, eaten.color);
+                    }
+                    if (defaultmapsettings.eatPulse) eater._eatPulseTime = Date.now();
                     eaten.removeCell();
                 }
             }
@@ -39074,6 +39304,11 @@ Most cells eaten   : ${mostCellsEaten}
                         victim.targetX = eater.x;
                         victim.targetY = eater.y;
                         victim.targetSize = victim.size;
+                        /* ── Death particles + eater pulse ── */
+                        if (!victim.isFood && !victim.isEjected && victim.size > 36) {
+                            _spawnDeathBurst(victim.x, victim.y, victim.size, victim.color);
+                        }
+                        if (defaultmapsettings.eatPulse) eater._eatPulseTime = Date.now();
                     }
                     victim.time = this.time;
                     victim.removeCell();
@@ -39364,6 +39599,11 @@ Most cells eaten   : ${mostCellsEaten}
                         victimID.targetX = eaterID.x;
                         victimID.targetY = eaterID.y;
                         victimID.targetSize = victimID.size;
+                        /* ── Death particles + eater pulse ── */
+                        if (!victimID.isFood && !victimID.isEjected && victimID.size > 36) {
+                            _spawnDeathBurst(victimID.x, victimID.y, victimID.size, victimID.color);
+                        }
+                        if (defaultmapsettings.eatPulse) eaterID._eatPulseTime = Date.now();
                     }
                     victimID.time = this.time;
                     victimID.removeCell();
@@ -49983,6 +50223,46 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
                     this.drawSpawnEffect(this.ctx);
+                }
+                /* ── Death particle burst rendering ──
+                 * Tick physics and draw all active particles. Dead ones are pruned. */
+                if (_deathParticles.length > 0) {
+                    var _dpNow = Date.now();
+                    var _dpAlive = 0;
+                    var _dpCtx = this.ctx;
+                    for (var _pi = 0; _pi < _deathParticles.length; _pi++) {
+                        var _dp = _deathParticles[_pi];
+                        var _dpAge = _dpNow - _dp.born;
+                        if (_dpAge >= _dp.duration) continue; /* dead — will be pruned below */
+
+                        /* Normalised progress 0→1 */
+                        var _dpT = _dpAge / _dp.duration;
+
+                        /* Quadratic ease-out position: fast start, slow end */
+                        var _dpPosT = 1 - (1 - _dpT) * (1 - _dpT);
+
+                        /* World position = start + velocity * posT * (duration/1000) */
+                        var _dpX = _dp.x + _dp.vx * _dpPosT * (_dp.duration / 1000);
+                        var _dpY = _dp.y + _dp.vy * _dpPosT * (_dp.duration / 1000);
+
+                        /* Fade out: full alpha for first 30%, then linear fade */
+                        var _dpAlpha = _dpT < 0.3 ? 1.0 : 1.0 - (_dpT - 0.3) / 0.7;
+
+                        /* Shrink near end */
+                        var _dpScale = 1.0 - _dpT * 0.4;
+                        var _dpR = _dp.r * _dpScale;
+
+                        _dpCtx.save();
+                        _dpCtx.globalAlpha *= _dpAlpha;
+                        var _blob = _getParticleBlob(_dp.color);
+                        _dpCtx.drawImage(_blob, _dpX - _dpR, _dpY - _dpR, _dpR * 2, _dpR * 2);
+                        _dpCtx.restore();
+
+                        /* Keep alive particles packed to front */
+                        if (_dpAlive !== _pi) _deathParticles[_dpAlive] = _dp;
+                        _dpAlive++;
+                    }
+                    _deathParticles.length = _dpAlive;
                 }
                 var _tMini = performance.now();
                 this.drawMiscRings();
