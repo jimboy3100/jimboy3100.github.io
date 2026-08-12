@@ -46548,127 +46548,366 @@ function pickPlayerCellBySize(players, selectBiggest) {
             };
         },
 
-        canUseWebGLScene(cellsArray) {
-            this._webglBackgroundActive = false;
+        canUseWebGLScene(
+            cellsArray
+        ) {
+            /*
+             * ================================================================
+             * UNIFIED WEBGL WORLD ELIGIBILITY
+             * ================================================================
+             *
+             * This function decides ONLY whether the detached WebGL world can
+             * safely own the complete active-cell body layer for this frame.
+             *
+             * It does NOT implement:
+             *
+             *      cell rendering
+             *      jelly rendering
+             *      virus rendering
+             *      skin rendering
+             *
+             * Those jobs belong to ONE authoritative function:
+             *
+             *      drawWebGLCellBatch(cellsArray)
+             *
+             *
+             * Most importantly, there is NO:
+             *
+             *      expandingLand
+             *      isLegendWorld
+             *      serverType
+             *      server URL
+             *
+             * selection here.
+             *
+             * Agar.io, Expanding Land, Agar2, ImSolo, Sigmally, etc. all enter
+             * the SAME renderer.
+             */
+            this._webglBackgroundActive =
+                false;
 
-            if (defaultmapsettings.webgl2Acceleration === false) return false;
-            if (this._webglDisabledUntil && Date.now() < this._webglDisabledUntil) return false;
 
+            /*
+             * User explicitly disabled raw WebGL2 acceleration.
+             */
+            if (
+                defaultmapsettings
+                    .webgl2Acceleration ===
+                false
+            ) {
+                return false;
+            }
+
+
+            /*
+             * Temporary GPU-failure cooldown.
+             */
+            if (
+                this._webglDisabledUntil &&
+                Date.now() <
+                    this._webglDisabledUntil
+            ) {
+                return false;
+            }
+
+
+            /*
+             * Shared base resources.
+             *
+             * Do NOT require glCellProgram here unconditionally.
+             *
+             * Jelly uses:
+             *
+             *      glJellyProgram
+             *
+             * Non-jelly uses:
+             *
+             *      glCellProgram
+             */
             if (
                 !this.gl ||
                 !this.glCanvas ||
-                !this.glCellProgram ||
                 !this.glTextProgram ||
                 !this.overlayCtx
             ) {
                 return false;
             }
 
-            if (!cellsArray || !cellsArray.length) return false;
 
             if (
-                this.glSkinNextLayer >= this.glSkinMaxLayers &&
-                !this._resetWebGLSkinTextureArray()
+                !cellsArray ||
+                !cellsArray.length
             ) {
                 return false;
             }
+
 
             /*
-             * These rendering paths cannot safely be reproduced by a detached WebGL
-             * canvas without changing Canvas clipping, compositing or draw order.
+             * ================================================================
+             * SELECT GPU GEOMETRY RESOURCES — NOT A SECOND RENDERER
+             * ================================================================
              */
-            if (LM.gameMode === ':teams') return false;
-            if (defaultmapsettings.jellyPhisycs || defaultmapsettings.cellContours) return false;
-
             if (
-                defaultmapsettings.transparentCells &&
-                defaultSettings.cellsAlpha < 0.999
+                defaultmapsettings
+                    .jellyPhisycs
+            ) {
+                /*
+                 * Variable-length Delta-style geometry.
+                 *
+                 * The actual draw still happens inside:
+                 *
+                 *      drawWebGLCellBatch()
+                 */
+                if (
+                    !this.glJellyProgram ||
+                    !this.glJellyStrokeProgram ||
+                    !this.glJellyVAO ||
+                    !this.glJellyVBO ||
+                    !this.glJellyStrokeVAO ||
+                    !this.glJellyStrokeVBO
+                ) {
+                    return false;
+                }
+            }
+            else {
+                /*
+                 * Fixed circle/SDF geometry.
+                 */
+                if (
+                    !this.glCellProgram
+                ) {
+                    return false;
+                }
+            }
+
+
+            /*
+             * Cell contours still use the incompatible Canvas geometry path.
+             *
+             * This is a presentation-feature fallback, NOT a server-specific
+             * jelly implementation.
+             */
+            if (
+                defaultmapsettings
+                    .cellContours
             ) {
                 return false;
             }
 
+
+            /*
+             * Keep the existing teams fallback until its detached-overlay
+             * semantics are intentionally migrated.
+             *
+             * This has NOTHING to do with Expanding Land or jelly physics.
+             */
             if (
-                defaultmapsettings.transparentSkins &&
-                defaultSettings.skinsAlpha < 0.999
+                LM.gameMode ===
+                ':teams'
             ) {
                 return false;
             }
 
+
+            /*
+             * ================================================================
+             * NON-JELLY LEGACY ALPHA RESTRICTIONS
+             * ================================================================
+             *
+             * The new jelly shaders already implement:
+             *
+             *      cellsAlpha
+             *      virusAlpha
+             *      skinsAlpha
+             *
+             * Therefore do NOT reject transparency just because jelly is ON.
+             *
+             * Preserve the historical restriction only for the old fixed-circle
+             * geometry until that path is deliberately upgraded separately.
+             */
             if (
-                defaultmapsettings.myTransparentSkin &&
-                defaultSettings.skinsAlpha < 0.999
+                !defaultmapsettings
+                    .jellyPhisycs
             ) {
-                return false;
+                if (
+                    defaultmapsettings
+                        .transparentCells &&
+                    defaultSettings
+                        .cellsAlpha <
+                        0.999
+                ) {
+                    return false;
+                }
+
+
+                if (
+                    defaultmapsettings
+                        .transparentSkins &&
+                    defaultSettings
+                        .skinsAlpha <
+                        0.999
+                ) {
+                    return false;
+                }
+
+
+                if (
+                    defaultmapsettings
+                        .myTransparentSkin &&
+                    defaultSettings
+                        .skinsAlpha <
+                        0.999
+                ) {
+                    return false;
+                }
             }
 
+
+            /*
+             * Replay post-processing belongs to Canvas.
+             */
             if (
                 LM.ws &&
-                LM.ws.indexOf('replay') !== -1 &&
+                LM.ws.indexOf(
+                    'replay'
+                ) !==
+                    -1 &&
                 (
-                    window.replayGreyScale ||
-                    window.replaySepia ||
-                    window.replayHueRotate
+                    window
+                        .replayGreyScale ||
+                    window
+                        .replaySepia ||
+                    window
+                        .replayHueRotate
                 )
             ) {
                 return false;
             }
 
+
+            /*
+             * These features contain Canvas-only body-attached effects whose
+             * DOM ordering cannot be reproduced atomically against a separate
+             * WebGL canvas.
+             */
             if (
-                dyinglight1load === 'yes' ||
-                defaultmapsettings.spawnSpecialEffects ||
-                defaultmapsettings.teammatesInd
+                dyinglight1load ===
+                    'yes' ||
+                defaultmapsettings
+                    .spawnSpecialEffects ||
+                defaultmapsettings
+                    .teammatesInd
             ) {
                 return false;
             }
 
-            if (defaultmapsettings.FBTracking) return false;
 
             if (
-                (defaultmapsettings.multiBoxShadow || defaultmapsettings.mbRings) &&
+                defaultmapsettings
+                    .FBTracking
+            ) {
+                return false;
+            }
+
+
+            if (
+                (
+                    defaultmapsettings
+                        .multiBoxShadow ||
+                    defaultmapsettings
+                        .mbRings
+                ) &&
                 LM.playerCellsMulti &&
-                LM.playerCellsMulti.length
+                LM.playerCellsMulti
+                    .length
             ) {
                 return false;
             }
 
+
             if (
-                defaultmapsettings.showChat &&
+                defaultmapsettings
+                    .showChat &&
                 this._chatLookup &&
                 this._chatLookup.size
             ) {
                 return false;
             }
 
+
             if (
-                window.ExternalScripts &&
-                window.legendmod5 &&
-                !window.legendmod5.optimizedMass
+                window
+                    .ExternalScripts &&
+                window
+                    .legendmod5 &&
+                !window
+                    .legendmod5
+                    .optimizedMass
             ) {
                 return false;
             }
 
-            var gpuCount = 0;
-            var minGpuSize = Infinity;
-            var maxCanvasCellSize = -Infinity;
-            var visibleCanvasCells = 0;
 
-            for (var i = 0; i < cellsArray.length; i++) {
-                var cell = cellsArray[i];
+            /*
+             * ================================================================
+             * CHECK ONLY BODY-ATTACHED CANVAS EFFECTS
+             * ================================================================
+             *
+             * DO NOT:
+             *
+             *      resolve skins here
+             *      upload skins here
+             *      classify viruses as Canvas
+             *      duplicate max-instance calculations here
+             *      reproduce jelly geometry checks here
+             *
+             * drawWebGLCellBatch() is authoritative and will atomically return
+             * false if its own geometry/skin upload cannot complete.
+             */
+            var visibleBodyCount =
+                0;
+
+
+            for (
+                var i = 0;
+                i <
+                    cellsArray.length;
+                i++
+            ) {
+                var cell =
+                    cellsArray[
+                        i
+                    ];
+
 
                 if (
                     !cell ||
                     cell.invisible ||
                     cell.removed ||
                     cell.isFood ||
-                    !this._isCellInsideFrame(cell, 250)
+                    !this
+                        ._isCellInsideFrame(
+                            cell,
+                            250
+                        )
                 ) {
                     continue;
                 }
 
-                if (LM.hideSmallBots && cell.size <= 36) {
+
+                if (
+                    LM.hideSmallBots &&
+                    cell.size <=
+                        36
+                ) {
                     continue;
                 }
 
+
+                /*
+                 * Cell-specific special effects still require Canvas ownership
+                 * of the complete body world.
+                 */
                 if (
                     cell.SpecialEffect ||
                     cell.SpecialEffect2 ||
@@ -46678,71 +46917,67 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     return false;
                 }
 
+
                 if (
                     cell.targetNick &&
-                    typeof SpecialEffectPlayers !== 'undefined' &&
-                    SpecialEffectPlayers[cell.targetNick]
+                    typeof SpecialEffectPlayers !==
+                        'undefined' &&
+                    SpecialEffectPlayers[
+                        cell.targetNick
+                    ]
                 ) {
                     return false;
                 }
 
-                if (cell.isVirus) {
-                    visibleCanvasCells++;
-                    maxCanvasCellSize = Math.max(
-                        maxCanvasCellSize,
-                        cell.size || 0
-                    );
-                    continue;
-                }
 
-                if (defaultmapsettings.videoSkins && cell.targetNick) {
-                    var videoUrl =
-                        application.gameMode === ':party'
-                            ? application.customSkinsMap[
-                            cell.targetNick + cell.color
-                            ]
-                            : application.customSkinsMap[cell.targetNick];
-
-                    if (
-                        typeof videoUrl === 'string' &&
-                        /\.(mp4|webm|ogv)(?:[?#]|$)/i.test(videoUrl)
-                    ) {
-                        return false;
-                    }
-                }
-
-                var skinInfo = this._resolveWebGLSkin(cell, true);
-
-                if (skinInfo.requested && skinInfo.layer < 0) {
-                    return false;
-                }
-
-                gpuCount++;
-
-                if (gpuCount > this.glCellMaxInstances) {
-                    return false;
-                }
-
-                minGpuSize = Math.min(
-                    minGpuSize,
-                    cell.size || 0
-                );
+                /*
+                 * IMPORTANT:
+                 *
+                 * VIRUSES ARE NOT SPECIAL-CASED HERE.
+                 *
+                 * Jelly ON:
+                 *
+                 *      virus.points[]
+                 *          ↓
+                 *      TRIANGLE_FAN
+                 *
+                 * Jelly OFF:
+                 *
+                 *      existing unified WebGL virus/cell geometry
+                 *
+                 * They belong to the SAME WebGL world/depth ordering.
+                 */
+                visibleBodyCount++;
             }
 
-            if (!gpuCount) return false;
 
-            /*
-             * Canvas viruses may remain beneath the GPU layer only when every GPU
-             * cell is strictly larger. Equality is unsafe because IDs break ties.
-             */
             if (
-                visibleCanvasCells &&
-                !(minGpuSize > maxCanvasCellSize)
+                visibleBodyCount ===
+                0
             ) {
                 return false;
             }
 
-            this._webglBackgroundActive = false;
+
+            /*
+             * Texture-array exhaustion may invalidate every layer number.
+             *
+             * Reset before the authoritative renderer starts writing this frame.
+             */
+            if (
+                this.glSkinNextLayer >=
+                    this.glSkinMaxLayers &&
+                !this
+                    ._resetWebGLSkinTextureArray()
+            ) {
+                return false;
+            }
+
+
+            this._webglBackgroundActive =
+                false;
+
+
             return true;
         },
 
@@ -57662,174 +57897,250 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 /*
                  * ============================================================
-                 * DELTA-STYLE WEBGL JELLY BODY PASS
+                 * ONE AUTHORITATIVE WEBGL WORLD CELL PASS
                  * ============================================================
                  *
-                 * THIS MUST BE AFTER movePoints().
+                 * THIS IS THE ONLY ACTIVE WORLD-CELL WEBGL CALL.
                  *
                  *
-                 * CPU PHYSICS
-                 * -----------
+                 * SERVER / DOMAIN DOES NOT CHOOSE THE IMPLEMENTATION
+                 * -------------------------------------------------
+                 *
+                 * There is intentionally NO:
+                 *
+                 *      expandingLand
+                 *      isLegendWorld
+                 *      serverType
+                 *      server URL
+                 *      connectionIntegrity
+                 *
+                 * condition here.
+                 *
+                 *
+                 * ALL SERVERS:
+                 *
+                 *      Agar.io
+                 *      Expanding Land
+                 *      Agar2
+                 *      ImSolo
+                 *      Sigmally
+                 *      etc.
+                 *
+                 * use:
+                 *
+                 *      drawWebGLCellBatch(LM.cells)
+                 *
+                 *
+                 * ============================================================
+                 * JELLY OFF
+                 * ============================================================
+                 *
+                 *      drawWebGLCellBatch()
+                 *
+                 *              ↓
+                 *
+                 *      existing fixed circle/SDF GPU geometry
+                 *
+                 *
+                 * ============================================================
+                 * JELLY ON
+                 * ============================================================
                  *
                  *      updateNumPoints()
                  *
-                 *             ↓
+                 *              ↓
                  *
-                 *      updateQuadtree()
+                 *      LM.updateQuadtree()
                  *
-                 *             ↓
+                 *              ↓
                  *
-                 *         movePoints()
+                 *      movePoints()
                  *
-                 *             ↓
+                 *              ↓
                  *
-                 *        cell.points[]
+                 *      CURRENT cell.points[]
                  *
+                 *              ↓
                  *
-                 * GPU
-                 * ---
+                 *      drawWebGLCellBatch()
                  *
-                 *             ↓
+                 *              ↓
                  *
                  *      dynamic Float32 VBO
                  *
-                 *             ↓
+                 *              ↓
                  *
                  *      gl.bufferSubData()
                  *
-                 *             ↓
+                 *              ↓
                  *
                  *      gl.TRIANGLE_FAN
                  *
                  *
-                 * This is the Delta architecture you originally supplied.
+                 * ============================================================
+                 * IMPORTANT
+                 * ============================================================
                  *
-                 * Canvas remains ONLY an atomic fallback.
+                 * drawWebGLJellyBatch() DOES NOT EXIST ANYMORE.
+                 *
+                 * Jelly is a geometry branch INSIDE drawWebGLCellBatch().
                  */
-                if (
-                    defaultmapsettings
-                        .jellyPhisycs &&
+                var unifiedWebGLWorldOK =
+                    false;
 
-                    this.gl &&
 
-                    this.glJellyProgram &&
-
-                    this.glJellyStrokeProgram &&
-
-                    !defaultmapsettings
-                        .cellContours &&
-
-                    (
-                        typeof defaultmapsettings
-                            .webgl2Acceleration ===
-                            'undefined' ||
-
-                        defaultmapsettings
-                            .webgl2Acceleration
-                    )
+                /*
+                 * ============================================================
+                 * RESET PREVIOUS FRAME OWNERSHIP
+                 * ============================================================
+                 *
+                 * Every frame begins undecided:
+                 *
+                 *      GPU success  -> _webglRendered = true
+                 *      GPU failure  -> _webglRendered = false
+                 *
+                 * Never let previous-frame ownership leak into this frame.
+                 */
+                for (
+                    var unifiedWebGLClearIndex = 0;
+                    unifiedWebGLClearIndex <
+                        LM.cells.length;
+                    unifiedWebGLClearIndex++
                 ) {
-                    /*
-                     * ====================================================
-                     * CLEAR STALE GPU OWNERSHIP
-                     * ====================================================
-                     */
-                    for (
-                        var jellyGpuClearIndex = 0;
-                        jellyGpuClearIndex <
-                            LM.cells.length;
-                        jellyGpuClearIndex++
+                    var unifiedWebGLClearCell =
+                        LM.cells[
+                            unifiedWebGLClearIndex
+                        ];
+
+
+                    if (
+                        !unifiedWebGLClearCell
                     ) {
-                        var jellyGpuClearCell =
-                            LM.cells[
-                                jellyGpuClearIndex
-                            ];
-
-
-                        if (
-                            !jellyGpuClearCell
-                        ) {
-                            continue;
-                        }
-
-
-                        jellyGpuClearCell
-                            ._webglRendered =
-                            false;
-
-
-                        if (
-                            jellyGpuClearCell
-                                ._webglCellIdx !==
-                            undefined
-                        ) {
-                            delete jellyGpuClearCell
-                                ._webglCellIdx;
-                        }
-
-
-                        if (
-                            jellyGpuClearCell
-                                ._webglZ !==
-                            undefined
-                        ) {
-                            delete jellyGpuClearCell
-                                ._webglZ;
-                        }
+                        continue;
                     }
 
 
-                    var jellyGl =
-                        this.gl;
-
-
-                    var jellyGpuWorldOK =
+                    unifiedWebGLClearCell
+                        ._webglRendered =
                         false;
 
 
+                    if (
+                        unifiedWebGLClearCell
+                            ._webglCellIdx !==
+                        undefined
+                    ) {
+                        delete unifiedWebGLClearCell
+                            ._webglCellIdx;
+                    }
+
+
+                    if (
+                        unifiedWebGLClearCell
+                            ._webglZ !==
+                        undefined
+                    ) {
+                        delete unifiedWebGLClearCell
+                            ._webglZ;
+                    }
+                }
+
+
+                /*
+                 * ============================================================
+                 * COMPLETE-WORLD ELIGIBILITY
+                 * ============================================================
+                 *
+                 * canUseWebGLScene() is only a capability/safety gate.
+                 *
+                 * It does NOT choose another renderer.
+                 */
+                var unifiedWebGLAllowed =
+                    !!(
+                        this.gl &&
+
+                        typeof this
+                            .drawWebGLCellBatch ===
+                            'function' &&
+
+                        typeof this
+                            .canUseWebGLScene ===
+                            'function' &&
+
+                        this
+                            .canUseWebGLScene(
+                                LM.cells
+                            )
+                    );
+
+
+                if (
+                    unifiedWebGLAllowed
+                ) {
+                    var worldGl =
+                        this.gl;
+
+
                     /*
-                     * ====================================================
-                     * DRAW FINAL CURRENT-FRAME JELLY POINTS
-                     * ====================================================
+                     * Standard blending shared by BOTH geometry modes.
+                     */
+                    worldGl.enable(
+                        worldGl.BLEND
+                    );
+
+
+                    worldGl.blendFunc(
+                        worldGl.SRC_ALPHA,
+                        worldGl.ONE_MINUS_SRC_ALPHA
+                    );
+
+
+                    /*
+                     * ========================================================
+                     * THE ONE AND ONLY WORLD CELL RENDERER CALL
+                     * ========================================================
                      */
                     try {
-                        jellyGpuWorldOK =
-                            this.drawWebGLJellyBatch(
-                                LM.cells
-                            );
+                        unifiedWebGLWorldOK =
+                            this
+                                .drawWebGLCellBatch(
+                                    LM.cells
+                                );
                     }
                     catch (
-                        jellyWebGLError
+                        unifiedWebGLWorldError
                     ) {
                         console.error(
-                            '[WEBGL JELLY] GPU batch failed; using complete Canvas fallback:',
-                            jellyWebGLError
+                            '[WEBGL WORLD] Unified drawWebGLCellBatch failed; complete Canvas fallback:',
+                            unifiedWebGLWorldError
                         );
 
 
-                        jellyGpuWorldOK =
+                        unifiedWebGLWorldOK =
                             false;
                     }
 
 
                     /*
-                     * ====================================================
-                     * ATOMIC CANVAS FALLBACK
-                     * ====================================================
+                     * ========================================================
+                     * ATOMIC FAILURE
+                     * ========================================================
+                     *
+                     * NEVER leave:
+                     *
+                     *      cell A -> WebGL
+                     *      cell B -> Canvas
+                     *
+                     * because these live on different DOM layers.
+                     *
+                     * If ONE required body cannot be rendered correctly, clear
+                     * the GPU body frame and let existing Cell.draw() own the
+                     * complete world.
                      */
                     if (
-                        !jellyGpuWorldOK
+                        !unifiedWebGLWorldOK
                     ) {
-                        /*
-                         * Never allow:
-                         *
-                         *     cell A = WebGL
-                         *     cell B = Canvas
-                         *
-                         * because glCanvas and normal Canvas are physically
-                         * different DOM layers and global size-based ordering
-                         * becomes impossible.
-                         */
-                        jellyGl.clearColor(
+                        worldGl.clearColor(
                             0,
                             0,
                             0,
@@ -57837,147 +58148,154 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         );
 
 
-                        jellyGl.clear(
-                            jellyGl.COLOR_BUFFER_BIT |
-                            jellyGl.DEPTH_BUFFER_BIT
+                        worldGl.clear(
+                            worldGl.COLOR_BUFFER_BIT |
+                            worldGl.DEPTH_BUFFER_BIT
                         );
 
 
                         for (
-                            var jellyGpuResetIndex = 0;
-                            jellyGpuResetIndex <
+                            var unifiedWebGLResetIndex = 0;
+                            unifiedWebGLResetIndex <
                                 LM.cells.length;
-                            jellyGpuResetIndex++
+                            unifiedWebGLResetIndex++
                         ) {
-                            var jellyGpuResetCell =
+                            var unifiedWebGLResetCell =
                                 LM.cells[
-                                    jellyGpuResetIndex
+                                    unifiedWebGLResetIndex
                                 ];
 
 
                             if (
-                                !jellyGpuResetCell
+                                !unifiedWebGLResetCell
                             ) {
                                 continue;
                             }
 
 
-                            jellyGpuResetCell
+                            unifiedWebGLResetCell
                                 ._webglRendered =
                                 false;
 
 
                             if (
-                                jellyGpuResetCell
+                                unifiedWebGLResetCell
                                     ._webglCellIdx !==
                                 undefined
                             ) {
-                                delete jellyGpuResetCell
+                                delete unifiedWebGLResetCell
                                     ._webglCellIdx;
                             }
 
 
                             if (
-                                jellyGpuResetCell
+                                unifiedWebGLResetCell
                                     ._webglZ !==
                                 undefined
                             ) {
-                                delete jellyGpuResetCell
+                                delete unifiedWebGLResetCell
                                     ._webglZ;
                             }
                         }
 
 
-                        jellyGl.disable(
-                            jellyGl.DEPTH_TEST
+                        worldGl.disable(
+                            worldGl.DEPTH_TEST
                         );
                     }
 
 
                     /*
-                     * ====================================================
-                     * WEBGL JELLY SUCCEEDED
-                     * ====================================================
+                     * ========================================================
+                     * GPU BODY SUCCESS -> SHARED WEBGL TEXT PASS
+                     * ========================================================
+                     *
+                     * Same text renderer for:
+                     *
+                     *      normal fixed cells
+                     *      dynamic jelly cells
+                     *      viruses
+                     *
+                     * There is NOT a jelly-specific text implementation.
                      */
                     else {
-                        /*
-                         * =================================================
-                         * WEBGL NICK + MASS
-                         * =================================================
-                         *
-                         * Cell.draw() sees _webglRendered and intentionally
-                         * skips its Canvas body + Canvas nickname + Canvas mass.
-                         *
-                         * Therefore render nickname/mass here on the SAME
-                         * depth buffer used by the GPU jelly body.
-                         */
                         if (
-                            this.glTextProgram
+                            this.glTextProgram &&
+                            this.glTextVAO
                         ) {
-                            var jellyTextStarted =
+                            var unifiedWebGLTextStarted =
                                 performance.now();
 
 
-                            jellyGl.enable(
-                                jellyGl.DEPTH_TEST
+                            worldGl.enable(
+                                worldGl.DEPTH_TEST
                             );
 
 
                             /*
-                             * Text uses the same Z as the cell body.
+                             * Text has the cell's body Z.
+                             *
+                             * LEQUAL allows it to appear over the body's equal
+                             * depth while still respecting foreground cells.
                              */
-                            jellyGl.depthFunc(
-                                jellyGl.LEQUAL
+                            worldGl.depthFunc(
+                                worldGl.LEQUAL
                             );
 
 
                             /*
-                             * Text should test against cell bodies but should
-                             * not rewrite body ordering.
+                             * Text tests against the completed body depth map
+                             * but must not modify world-cell depth ordering.
                              */
-                            jellyGl.depthMask(
+                            worldGl.depthMask(
                                 false
                             );
 
 
-                            var jellyTextScale =
+                            var unifiedWebGLTextScale =
                                 this.scale ||
                                 1;
 
 
-                            jellyGl.useProgram(
+                            worldGl.useProgram(
                                 this.glTextProgram
                             );
 
 
-                            jellyGl.uniform2f(
-                                this.u_text_viewCenter,
+                            worldGl.uniform2f(
+                                this
+                                    .u_text_viewCenter,
+
                                 this.camX,
                                 this.camY
                             );
 
 
-                            jellyGl.uniform2f(
-                                this.u_text_viewScale,
+                            worldGl.uniform2f(
+                                this
+                                    .u_text_viewScale,
 
                                 2.0 *
-                                    jellyTextScale /
+                                    unifiedWebGLTextScale /
                                     this.canvasWidth,
 
                                 2.0 *
-                                    jellyTextScale /
+                                    unifiedWebGLTextScale /
                                     this.canvasHeight
                             );
 
 
-                            jellyGl.uniform1i(
-                                this.u_text_tex,
+                            worldGl.uniform1i(
+                                this
+                                    .u_text_tex,
+
                                 0
                             );
 
 
-                            jellyGl.uniform1f(
-                                this.u_text_alpha,
+                            worldGl.uniform1f(
+                                this
+                                    .u_text_alpha,
 
                                 defaultSettings
                                     .textAlpha !=
@@ -57988,70 +58306,120 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             );
 
 
-                            jellyGl.bindVertexArray(
+                            worldGl.bindVertexArray(
                                 this.glTextVAO
                             );
 
 
+                            /*
+                             * Use the SAME authoritative cell array/order.
+                             *
+                             * Only cells actually rendered by the GPU receive
+                             * GPU nickname/mass.
+                             */
                             for (
-                                var jellyTextIndex = 0;
-                                jellyTextIndex <
+                                var unifiedWebGLTextIndex = 0;
+                                unifiedWebGLTextIndex <
                                     LM.cells.length;
-                                jellyTextIndex++
+                                unifiedWebGLTextIndex++
                             ) {
-                                var jellyTextCell =
+                                var unifiedWebGLTextCell =
                                     LM.cells[
-                                        jellyTextIndex
+                                        unifiedWebGLTextIndex
                                     ];
 
 
                                 if (
-                                    jellyTextCell &&
-                                    jellyTextCell
+                                    !unifiedWebGLTextCell ||
+                                    !unifiedWebGLTextCell
                                         ._webglRendered
                                 ) {
-                                    try {
-                                        this.drawWebGLCellText(
-                                            jellyTextCell
+                                    continue;
+                                }
+
+
+                                try {
+                                    this
+                                        .drawWebGLCellText(
+                                            unifiedWebGLTextCell
                                         );
-                                    }
-                                    catch (
-                                        jellyTextError
-                                    ) {
-                                    }
+                                }
+                                catch (
+                                    unifiedWebGLTextError
+                                ) {
+                                    /*
+                                     * One cached text item failing must not
+                                     * invalidate already-correct body geometry.
+                                     */
                                 }
                             }
 
 
-                            jellyGl.bindVertexArray(
+                            worldGl.bindVertexArray(
                                 null
                             );
 
 
-                            jellyGl.depthMask(
+                            worldGl.depthMask(
                                 true
                             );
 
 
+                            /*
+                             * Restore ordinary depth mode expected by other raw
+                             * WebGL passes.
+                             */
+                            worldGl.depthFunc(
+                                worldGl.LESS
+                            );
+
+
                             if (
-                                window.clientProfiler
+                                window
+                                    .clientProfiler
                             ) {
-                                window.clientProfiler.recordText(
-                                    performance.now() -
-                                    jellyTextStarted
-                                );
+                                window
+                                    .clientProfiler
+                                    .recordText(
+                                        performance.now() -
+                                        unifiedWebGLTextStarted
+                                    );
                             }
                         }
 
 
                         /*
-                         * Cell.draw() below now runs only its Canvas-attached
-                         * effects such as chat/merge/special overlays.
-                         *
-                         * The actual body/skin/name/mass stay WebGL.
+                         * Other Canvas/world overlay passes do not inherit raw
+                         * cell-body depth state.
                          */
-                        jellyGl.disable(
-                            jellyGl.DEPTH_TEST
+                        worldGl.disable(
+                            worldGl.DEPTH_TEST
+                        );
+                    }
+                }
+
+
+                /*
+                 * ============================================================
+                 * WEBGL NOT ELIGIBLE
+                 * ============================================================
+                 *
+                 * renderFrame() clears the raw GPU buffer at frame start.
+                 *
+                 * All _webglRendered flags are already false above, therefore
+                 * the normal Cell.draw() loop directly below becomes the
+                 * COMPLETE atomic Canvas fallback.
+                 */
+                else {
+                    unifiedWebGLWorldOK =
+                        false;
+
+
+                    if (
+                        this.gl
+                    ) {
+                        this.gl.disable(
+                            this.gl.DEPTH_TEST
                         );
                     }
                 }
