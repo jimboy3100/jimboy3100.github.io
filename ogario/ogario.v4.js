@@ -32681,7 +32681,7 @@ function thelegendmodproject() {
                         if (this._playerCellIDSet) this._playerCellIDSet.clear();
                         window.userBots.isAlive = false;
                         if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, 0]).buffer);
-                        application.showMenu();
+                        setTimeout(function() { application.showMenu(); }, 500);
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
@@ -39239,7 +39239,7 @@ Most cells eaten   : ${mostCellsEaten}
                 } else {
                     this.play = false;
                     application.onPlayerDeath();
-                    application.showMenu(300);
+                    setTimeout(function() { application.showMenu(300); }, 500);
                     window.userBots.isAlive = false;
                     if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
                 }
@@ -39469,7 +39469,7 @@ Most cells eaten   : ${mostCellsEaten}
                 this.play = false;
                 application.onPlayerDeath();
                 if (!LM.multiBoxPlayerExists) {
-                    application.showMenu(300);
+                    setTimeout(function() { application.showMenu(300); }, 500);
                 } else {
                     if (!window.multiboxPlayerEnabled) {
                         application.multiboxswap();
@@ -39898,7 +39898,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 application.onPlayerDeath();
                 if (!LM.multiBoxPlayerExists) {
-                    application.showMenu(300);
+                    setTimeout(function() { application.showMenu(300); }, 500);
                 } else {
                     if (!window.multiboxPlayerEnabled) {
                         application.multiboxswap();
