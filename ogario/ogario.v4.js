@@ -28140,42 +28140,173 @@ function thelegendmodproject() {
         };
         this.removeCell = function () {
             this.removed = true;
-            var cells = LM.cells.indexOf(this);
+
+
+            /*
+             * Remove from the authoritative active-cell collection.
+             */
+            var cells =
+                LM.cells.indexOf(
+                    this
+                );
+
             if (cells !== -1) {
-                quickSwapDelete(LM.cells, cells);
+                quickSwapDelete(
+                    LM.cells,
+                    cells
+                );
             }
-            if (this.isVirus || defaultmapsettings.virusesRange) {
-                var virIdx = LM.viruses.indexOf(this);
+
+
+            /*
+             * Virus collection.
+             */
+            if (
+                this.isVirus ||
+                defaultmapsettings
+                    .virusesRange
+            ) {
+                var virIdx =
+                    LM.viruses.indexOf(
+                        this
+                    );
+
                 if (virIdx !== -1) {
-                    quickSwapDelete(LM.viruses, virIdx);
+                    quickSwapDelete(
+                        LM.viruses,
+                        virIdx
+                    );
                 }
             }
-            var foodIdx = LM.food.indexOf(this);
+
+
+            /*
+             * Food collection.
+             */
+            var foodIdx =
+                LM.food.indexOf(
+                    this
+                );
+
             if (foodIdx !== -1) {
-                quickSwapDelete(LM.food, foodIdx);
+                quickSwapDelete(
+                    LM.food,
+                    foodIdx
+                );
             }
-            cells = LM.foodMulti.indexOf(this);
+
+
+            /*
+             * Multibox food collection.
+             */
+            cells =
+                LM.foodMulti.indexOf(
+                    this
+                );
+
             if (cells !== -1) {
-                quickSwapDelete(LM.foodMulti, cells);
+                quickSwapDelete(
+                    LM.foodMulti,
+                    cells
+                );
             }
-            cells = LM.playerCellsMulti.indexOf(this);
+
+
+            /*
+             * Multibox player collection.
+             */
+            cells =
+                LM.playerCellsMulti
+                    .indexOf(
+                        this
+                    );
+
             if (cells !== -1) {
-                quickSwapDelete(LM.playerCellsMulti, cells);
+                quickSwapDelete(
+                    LM.playerCellsMulti,
+                    cells
+                );
             }
-            cells = LM.playerCells.indexOf(this);
+
+
+            /*
+             * Main player's cells.
+             */
+            cells =
+                LM.playerCells.indexOf(
+                    this
+                );
+
             if (cells !== -1) {
-                LM.removePlayerCell = true;
-                quickSwapDelete(LM.playerCells, cells);
-                cells = LM.playerCellIDs.indexOf(this.id);
+                LM.removePlayerCell =
+                    true;
+
+                quickSwapDelete(
+                    LM.playerCells,
+                    cells
+                );
+
+
+                cells =
+                    LM.playerCellIDs
+                        .indexOf(
+                            this.id
+                        );
+
                 if (cells !== -1) {
-                    quickSwapDelete(LM.playerCellIDs, cells);
-                    if (LM._playerCellIDSet) LM._playerCellIDSet.delete(this.id);
+                    quickSwapDelete(
+                        LM.playerCellIDs,
+                        cells
+                    );
+
+                    if (
+                        LM._playerCellIDSet
+                    ) {
+                        LM._playerCellIDSet
+                            .delete(
+                                this.id
+                            );
+                    }
                 }
             }
-            if (this.redrawed) {
-                LM.removedCells.push(this);
+
+
+            /*
+             * ========================================================
+             * REMOVED-CELL VISUAL LIFETIME
+             * ========================================================
+             *
+             * Normal cells preserve the existing redrawed requirement.
+             *
+             * Cinematic player deaths MUST survive regardless of redrawed,
+             * because their entire 600 ms animation happens AFTER the
+             * authoritative cell has been removed.
+             */
+            if (
+                this.redrawed ||
+                this._deathSlowMo
+            ) {
+                if (
+                    LM.removedCells
+                        .indexOf(this) ===
+                    -1
+                ) {
+                    LM.removedCells.push(
+                        this
+                    );
+                }
             }
-            delete LM.indexedCells[this.id];
+
+
+            /*
+             * The authoritative lookup can still be removed immediately.
+             *
+             * removedCells owns the visual reference until moveCell()
+             * finishes the fade/shrink animation.
+             */
+            delete LM.indexedCells[
+                this.id
+            ];
         };
         this.moveCell = function () {
             // Snap duplicate spectator cells to the primary socket's cell position for 100% pixel-perfect overlap
@@ -28200,43 +28331,123 @@ function thelegendmodproject() {
                 }
             }
 
-            var anim = this._deathSlowMo ? _DEATH_SLOWMO_ANIM : (defaultmapsettings.animation || 120);
-            var time = LM.time - (this.updateTime || this.time);
+            var anim =
+                this._deathSlowMo
+                    ? _DEATH_SLOWMO_ANIM
+                    : (defaultmapsettings.animation || 120);
+
+            var time =
+                LM.time - (this.updateTime || this.time);
+
             var delay = time / anim;
+
             if (delay < 0) {
                 delay = 0;
             } else if (delay > 1) {
                 delay = 1;
             }
 
-            if (this.startX != null && this.targetX != null) {
-                this.x = this.startX + (this.targetX - this.startX) * delay;
-                this.y = this.startY + (this.targetY - this.startY) * delay;
+
+            /*
+             * Position interpolation.
+             *
+             * Start from initial captured coords if available.
+             */
+            if (
+                this.startX != null &&
+                this.targetX != null
+            ) {
+                this.x =
+                    this.startX +
+                    (this.targetX - this.startX) * delay;
+
+                this.y =
+                    this.startY +
+                    (this.targetY - this.startY) * delay;
             } else {
-                this.x += (this.targetX - this.x) * delay;
-                this.y += (this.targetY - this.y) * delay;
+                this.x +=
+                    (this.targetX - this.x) * delay;
+
+                this.y +=
+                    (this.targetY - this.y) * delay;
             }
 
-            if (!defaultmapsettings.suckAnimation) {
-                if (this.startSize != null && this.targetSize != null) {
-                    this.size = this.startSize + (this.targetSize - this.startSize) * delay;
+
+            /*
+             * Size interpolation.
+             *
+             * _deathSlowMo must shrink to targetSize=0 smoothly over the 600 ms,
+             * even if defaultmapsettings.suckAnimation is enabled.
+             */
+            if (this._deathSlowMo) {
+                if (
+                    this.startSize != null &&
+                    this.targetSize != null
+                ) {
+                    this.size =
+                        this.startSize +
+                        (this.targetSize - this.startSize) * delay;
                 } else {
-                    this.size += (this.targetSize - this.size) * delay;
+                    this.size +=
+                        (this.targetSize - this.size) * delay;
+                }
+                if (this.size < 0) this.size = 0;
+            } else if (!defaultmapsettings.suckAnimation) {
+                if (
+                    this.startSize != null &&
+                    this.targetSize != null
+                ) {
+                    this.size =
+                        this.startSize +
+                        (this.targetSize - this.startSize) * delay;
+                } else {
+                    this.size +=
+                        (this.targetSize - this.size) * delay;
                 }
             } else {
-                this.size += (this.targetSize - this.size) * (time / 800);
+                this.size +=
+                    (this.targetSize - this.size) * (time / 800);
+
                 if (this.size < 0) this.size = 0;
             }
-            this.alpha = delay;
+
+
+            /*
+             * Alpha handling.
+             *
+             * Dying player cells should stay fully visible (alpha = 1.0) while
+             * sliding & shrinking, whereas standard eaten cells fade via delay.
+             */
+            if (this._deathSlowMo) {
+                this.alpha = 1.0;
+            } else {
+                this.alpha = delay;
+            }
+
+
             if (!this.removed) {
                 return;
             }
+
+
+            /*
+             * Cleanup from removedCells once animation completes.
+             */
             if (delay >= 1) {
-                var removedIdx = LM.removedCells.indexOf(this);
+                var removedIdx =
+                    LM.removedCells.indexOf(this);
+
                 if (removedIdx !== -1) {
-                    var _rcLast = LM.removedCells.length - 1;
-                    if (removedIdx !== _rcLast) LM.removedCells[removedIdx] = LM.removedCells[_rcLast];
-                    LM.removedCells.length = _rcLast;
+                    var _rcLast =
+                        LM.removedCells.length - 1;
+
+                    if (removedIdx !== _rcLast) {
+                        LM.removedCells[removedIdx] =
+                            LM.removedCells[_rcLast];
+                    }
+
+                    LM.removedCells.length =
+                        _rcLast;
                 }
             }
         };
@@ -29590,16 +29801,21 @@ function thelegendmodproject() {
                         }
 
                         /*
-                         * Unconditional ordinary-cell body pass.
+                         * ═══════════════════════════════════════════════════
+                         * ORDINARY CELL BODY
+                         * ═══════════════════════════════════════════════════
                          *
-                         * This runs whether:
+                         * Use the SAME validity decision that created the path.
                          *
-                         * - no skin exists;
-                         * - a normal skin exists;
-                         * - the skin is transparent;
-                         * - the skin cache contains a blank canvas;
-                         * - image decoding is incomplete;
-                         * - drawing the skin later throws.
+                         * `_useDynamicJellyPath` means:
+                         *
+                         *      jelly enabled
+                         *      AND cell is active
+                         *      AND current points exist
+                         *      AND >= 3 perimeter vertices
+                         *
+                         * Never separately test merely `this.points.length`,
+                         * otherwise stale point arrays can become renderable.
                          */
                         if (
                             defaultmapsettings
@@ -29614,36 +29830,59 @@ function thelegendmodproject() {
                             style.stroke();
                         }
                         else if (
-                            defaultmapsettings
-                                .jellyPhisycs &&
-                            this.points.length
+                            _useDynamicJellyPath
                         ) {
+                            /*
+                             * The active path is already the current jelly
+                             * polygon from this.points.
+                             */
                             style.fillStyle =
                                 color2;
 
                             style.fill();
                         }
                         else {
-                            /* ── Fallback gradient for grey cells ──
-                             * When the server sends no valid color, draw a unique
-                             * radial gradient from the player's name hash instead
-                             * of flat #808080 grey. Only for non-food cells with
-                             * a name or player identity. */
-                            if (_useFallbackGradient && !this.isFood && !this.isEjected) {
-                                var _gradCvs = _getFallbackGradient(this.targetNick || this.id);
-                                if (_gradCvs) {
+                            /*
+                             * ───────────────────────────────────────────────
+                             * CIRCULAR / TEXTURE FALLBACK
+                             * ───────────────────────────────────────────────
+                             *
+                             * No valid current jelly perimeter exists.
+                             */
+                            if (
+                                _useFallbackGradient &&
+                                !this.isFood &&
+                                !this.isEjected
+                            ) {
+                                var _gradCvs =
+                                    _getFallbackGradient(
+                                        this.targetNick ||
+                                        this.id
+                                    );
+
+                                if (
+                                    _gradCvs
+                                ) {
                                     style.drawImage(
                                         _gradCvs,
-                                        this.x - y,
-                                        this.y - y,
-                                        y * 2,
-                                        y * 2
+                                        this.x -
+                                            y,
+                                        this.y -
+                                            y,
+                                        y *
+                                            2,
+                                        y *
+                                            2
                                     );
-                                } else {
-                                    style.fillStyle = color2;
+                                }
+                                else {
+                                    style.fillStyle =
+                                        color2;
+
                                     style.fill();
                                 }
-                            } else {
+                            }
+                            else {
                                 var _bodyTexture =
                                     window
                                         .drawRender
@@ -29746,62 +29985,341 @@ function thelegendmodproject() {
                             style.stroke();
                         }
                         //lylko
-                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                        if (
+                            defaultmapsettings.customSkins &&
+                            LM.showCustomSkins
+                        ) {
                             //node = application.getCustomSkin(this.targetNick, this.color);
-                            if (node) {
-                                //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
-                                if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha < 0.99) {
-                                    //console.log('transparent')
-                                    style.globalAlpha *= defaultSettings.skinsAlpha;
-                                    //s = true;
+                            if (
+                                node
+                            ) {
+                                /*
+                                 * Skin alpha remains independent from the jelly
+                                 * geometry decision.
+                                 */
+                                if (
+                                    (
+                                        defaultmapsettings
+                                            .transparentSkins &&
+                                        !(
+                                            this.isPlayerCell &&
+                                            !defaultmapsettings
+                                                .myTransparentSkin
+                                        )
+                                    ) ||
+                                    (
+                                        this.isPlayerCell &&
+                                        defaultmapsettings
+                                            .myTransparentSkin &&
+                                        defaultSettings
+                                            .skinsAlpha <
+                                            0.99
+                                    )
+                                ) {
+                                    style.globalAlpha *=
+                                        defaultSettings
+                                            .skinsAlpha;
                                 }
-                                if (legendmod.gameMode != ":teams") {
-                                    if (defaultmapsettings.jellyPhisycs && this.points && this.points.length >= 3) {
-                                        var lineWidth = Math.max(~~(y / 50), 10);
+
+
+                                if (
+                                    legendmod.gameMode !=
+                                    ":teams"
+                                ) {
+                                    /*
+                                     * ═══════════════════════════════════════
+                                     * CUSTOM SKIN + JELLY PERIMETER
+                                     * ═══════════════════════════════════════
+                                     *
+                                     * IMPORTANT:
+                                     *
+                                     * Use the SAME authoritative boolean that
+                                     * selected the body path.
+                                     *
+                                     * DO NOT independently use:
+                                     *
+                                     *   jellyPhisycs && points.length
+                                     *
+                                     * because an eaten/removed pooled cell can
+                                     * still possess old point objects even
+                                     * though those points are no longer the
+                                     * current rendered perimeter.
+                                     */
+                                    if (
+                                        _useDynamicJellyPath
+                                    ) {
+                                        var lineWidth =
+                                            Math.max(
+                                                ~~(
+                                                    y /
+                                                    50
+                                                ),
+                                                10
+                                            );
+
+
                                         style.save();
+
+
                                         try {
+                                            /*
+                                             * Current path is already the
+                                             * dynamically simulated jelly body.
+                                             */
                                             style.clip();
-                                            this.maxPointRad && (y = this.maxPointRad);
-                                            if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0 || node.videoWidth > 0)) {
-                                                style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
+
+
+                                            /*
+                                             * maxPointRad contains the largest
+                                             * actually rendered radial point,
+                                             * including the alternating virus
+                                             * extension where applicable.
+                                             *
+                                             * This branch is for normal skin
+                                             * cells, but keeping this generic
+                                             * prevents another independent
+                                             * geometry definition.
+                                             */
+                                            var jellySkinRadius =
+                                                (
+                                                    this.maxPointRad >
+                                                    0
+                                                )
+                                                    ? this.maxPointRad
+                                                    : y;
+
+
+                                            if (
+                                                node &&
+                                                !node._failed &&
+                                                (
+                                                    node.naturalWidth >
+                                                        0 ||
+                                                    node.width >
+                                                        0 ||
+                                                    node.videoWidth >
+                                                        0
+                                                )
+                                            ) {
+                                                style.drawImage(
+                                                    node,
+
+                                                    this.x -
+                                                        jellySkinRadius -
+                                                        lineWidth,
+
+                                                    this.y -
+                                                        jellySkinRadius -
+                                                        lineWidth,
+
+                                                    2 *
+                                                        jellySkinRadius +
+                                                        lineWidth *
+                                                        2,
+
+                                                    2 *
+                                                        jellySkinRadius +
+                                                        lineWidth *
+                                                        2
+                                                );
                                             }
-                                        } catch (eJellySkin) {
-                                            console.error('[OGARIO JELSKIN DRAW EXCEPTION]', eJellySkin);
-                                        } finally {
-                                            style.globalCompositeOperation = 'source-over';
-                                            style.lineWidth = lineWidth;
-                                            style.strokeStyle = color2;
+                                        }
+                                        catch (
+                                            eJellySkin
+                                        ) {
+                                            console.error(
+                                                '[OGARIO JELSKIN DRAW EXCEPTION]',
+                                                eJellySkin
+                                            );
+                                        }
+                                        finally {
+                                            style
+                                                .globalCompositeOperation =
+                                                'source-over';
+
+
+                                            style.lineWidth =
+                                                lineWidth;
+
+
+                                            style.strokeStyle =
+                                                color2;
+
+
+                                            /*
+                                             * Stroke the exact same jelly
+                                             * perimeter that was clipped.
+                                             */
                                             style.stroke();
-                                            style.globalCompositeOperation = 'source-over';
+
+
+                                            style
+                                                .globalCompositeOperation =
+                                                'source-over';
+
+
                                             style.restore();
                                         }
-                                    } else {
+                                    }
+                                    else {
+                                        /*
+                                         * No valid current jelly perimeter.
+                                         *
+                                         * This includes:
+                                         *
+                                         *   - jelly disabled;
+                                         *   - removed/eaten cells;
+                                         *   - cells whose point simulation has
+                                         *     not been prepared this frame;
+                                         *   - freshly created cells before a
+                                         *     perimeter exists.
+                                         *
+                                         * Always use the current circular
+                                         * geometry rather than old point state.
+                                         */
                                         style.save();
+
+
                                         try {
                                             style.beginPath();
-                                            style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
+
+
+                                            style.arc(
+                                                this.x,
+                                                this.y,
+                                                y,
+                                                0,
+                                                2 *
+                                                    Math.PI,
+                                                false
+                                            );
+
+
+                                            style.closePath();
+
+
                                             style.clip();
-                                            if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0 || node.videoWidth > 0)) {
-                                                style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+
+
+                                            if (
+                                                node &&
+                                                !node._failed &&
+                                                (
+                                                    node.naturalWidth >
+                                                        0 ||
+                                                    node.width >
+                                                        0 ||
+                                                    node.videoWidth >
+                                                        0
+                                                )
+                                            ) {
+                                                style.drawImage(
+                                                    node,
+
+                                                    this.x -
+                                                        y,
+
+                                                    this.y -
+                                                        y,
+
+                                                    2 *
+                                                        y,
+
+                                                    2 *
+                                                        y
+                                                );
                                             }
-                                        } catch (eSkinDraw) {
-                                            console.error('[OGARIO SKIN DRAW EXCEPTION]', eSkinDraw);
-                                        } finally {
+                                        }
+                                        catch (
+                                            eSkinDraw
+                                        ) {
+                                            console.error(
+                                                '[OGARIO SKIN DRAW EXCEPTION]',
+                                                eSkinDraw
+                                            );
+                                        }
+                                        finally {
                                             style.restore();
                                         }
                                     }
-                                    if (defaultmapsettings.FBTracking) {
-                                        var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
-                                        if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
-                                            var temp = nodeFb + "_cached4";
-                                            var nodeFB = application.customSkinsCache[temp];
-                                            if (nodeFB && !nodeFB._failed && (nodeFB.naturalWidth > 0 || nodeFB.width > 0)) {
+
+
+                                    /*
+                                     * Facebook tracking skin overlay.
+                                     *
+                                     * This is intentionally retained unchanged;
+                                     * it is unrelated to jelly perimeter
+                                     * simulation.
+                                     */
+                                    if (
+                                        defaultmapsettings
+                                            .FBTracking
+                                    ) {
+                                        var nodeFb =
+                                            application
+                                                .customSkinsMap[
+                                                    this.targetNick +
+                                                    "facebookskin"
+                                                ];
+
+
+                                        if (
+                                            nodeFb &&
+                                            application
+                                                .customSkinsCache[
+                                                    nodeFb +
+                                                    "_cached4"
+                                                ]
+                                        ) {
+                                            var temp =
+                                                nodeFb +
+                                                "_cached4";
+
+
+                                            var nodeFB =
+                                                application
+                                                    .customSkinsCache[
+                                                        temp
+                                                    ];
+
+
+                                            if (
+                                                nodeFB &&
+                                                !nodeFB._failed &&
+                                                (
+                                                    nodeFB
+                                                        .naturalWidth >
+                                                        0 ||
+                                                    nodeFB
+                                                        .width >
+                                                        0
+                                                )
+                                            ) {
                                                 try {
-                                                    style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
-                                                } catch (e) { }
+                                                    style.drawImage(
+                                                        nodeFB,
+
+                                                        this.x -
+                                                            1 /
+                                                            2 *
+                                                            y,
+
+                                                        this.y -
+                                                            y,
+
+                                                        y,
+                                                        y
+                                                    );
+                                                }
+                                                catch (
+                                                    e
+                                                ) {
+                                                }
                                             }
                                         }
                                     }
+
+
                                     //this.drawSpecialSkin(style, y)
                                 }
                             }
@@ -29925,31 +30443,278 @@ function thelegendmodproject() {
     var LM = {
         integrity: true,
         quadtree: null,
-        updateQuadtree: function (cells) {
-            var w = drawRender.canvasWidth / drawRender.scale;
-            var h = drawRender.canvasHeight / drawRender.scale;
-            var x = (this.viewX - w / 2);
-            var y = (this.viewY - h / 2);
+        updateQuadtree: function (
+            cells
+        ) {
+            /*
+             * ═══════════════════════════════════════════════════════════
+             * JELLY POINT COLLISION QUADTREE
+             * ═══════════════════════════════════════════════════════════
+             *
+             * Input must be the CURRENT FRAME'S already-prepared jelly
+             * cells, not the entire stale LM.cells collection.
+             */
 
-            /* WASM fast path: zero-allocation flat-memory quadtree */
-            if (typeof WasmQuadTree !== 'undefined' && WasmQuadTree.ready) {
-                if (WasmQuadTree.rebuild(x, y, w, h, cells)) {
-                    /* Create a thin wrapper so existing LM.quadtree.some() calls work */
-                    this.quadtree = {
-                        some: function (aabb, test) {
-                            return WasmQuadTree.some(aabb, test);
-                        }
-                    };
-                    return;
+
+            var renderScale =
+                Number(
+                    drawRender.scale
+                );
+
+
+            if (
+                !isFinite(
+                    renderScale
+                ) ||
+                renderScale <=
+                    0
+            ) {
+                /*
+                 * Never divide by zero or NaN during resize / reconnect.
+                 */
+                renderScale =
+                    0.01;
+            }
+
+
+            var canvasWidth =
+                Number(
+                    drawRender
+                        .canvasWidth
+                ) ||
+                1;
+
+            var canvasHeight =
+                Number(
+                    drawRender
+                        .canvasHeight
+                ) ||
+                1;
+
+
+            var w =
+                canvasWidth /
+                renderScale;
+
+            var h =
+                canvasHeight /
+                renderScale;
+
+
+            var centerX =
+                Number(
+                    this.viewX
+                );
+
+            var centerY =
+                Number(
+                    this.viewY
+                );
+
+
+            if (
+                !isFinite(
+                    centerX
+                )
+            ) {
+                centerX =
+                    0;
+            }
+
+            if (
+                !isFinite(
+                    centerY
+                )
+            ) {
+                centerY =
+                    0;
+            }
+
+
+            var x =
+                centerX -
+                w /
+                2;
+
+            var y =
+                centerY -
+                h /
+                2;
+
+
+            /*
+             * Empty frame = no jelly collision structure.
+             */
+            if (
+                !cells ||
+                !cells.length
+            ) {
+                this.quadtree =
+                    null;
+
+                return;
+            }
+
+
+            /*
+             * ═══════════════════════════════════════════════════════════
+             * WASM FAST PATH
+             * ═══════════════════════════════════════════════════════════
+             */
+            if (
+                typeof WasmQuadTree !==
+                    "undefined" &&
+                WasmQuadTree &&
+                WasmQuadTree.ready &&
+                typeof WasmQuadTree
+                    .rebuild ===
+                    "function" &&
+                typeof WasmQuadTree
+                    .some ===
+                    "function"
+            ) {
+                try {
+                    if (
+                        WasmQuadTree.rebuild(
+                            x,
+                            y,
+                            w,
+                            h,
+                            cells
+                        )
+                    ) {
+                        /*
+                         * Keep the API expected by movePoints():
+                         *
+                         *      LM.quadtree.some(aabb, callback)
+                         */
+                        this.quadtree = {
+                            some: function (
+                                aabb,
+                                test
+                            ) {
+                                return WasmQuadTree
+                                    .some(
+                                        aabb,
+                                        test
+                                    );
+                            }
+                        };
+
+                        return;
+                    }
+                }
+                catch (
+                    wasmQuadtreeError
+                ) {
+                    /*
+                     * The JS PointQuadTree fallback remains authoritative.
+                     */
                 }
             }
 
-            /* JS fallback */
-            this.quadtree = new PointQuadTree(x, y, w, h, 32);
-            for (var i = 0; i < cells.length; ++i) {
-                var cell = cells[i];
-                for (var n = 0; n < cell.points.length; ++n) {
-                    this.quadtree.insert(cell.points[n]);
+
+            /*
+             * ═══════════════════════════════════════════════════════════
+             * JAVASCRIPT FALLBACK
+             * ═══════════════════════════════════════════════════════════
+             */
+            if (
+                typeof PointQuadTree ===
+                    "undefined"
+            ) {
+                /*
+                 * Do not crash the frame if the optional quadtree helper has
+                 * failed to load.
+                 *
+                 * movePoints() already handles LM.quadtree === null.
+                 */
+                this.quadtree =
+                    null;
+
+                return;
+            }
+
+
+            this.quadtree =
+                new PointQuadTree(
+                    x,
+                    y,
+                    w,
+                    h,
+                    32
+                );
+
+
+            /*
+             * Insert only valid CURRENT point objects.
+             */
+            for (
+                var cellIndex = 0;
+                cellIndex <
+                    cells.length;
+                cellIndex++
+            ) {
+                var cell =
+                    cells[
+                        cellIndex
+                    ];
+
+
+                if (
+                    !cell ||
+                    cell.removed ||
+                    cell.isFood ||
+                    !cell.points ||
+                    cell.points.length <
+                        3
+                ) {
+                    continue;
+                }
+
+
+                for (
+                    var pointIndex = 0;
+                    pointIndex <
+                        cell.points.length;
+                    pointIndex++
+                ) {
+                    var point =
+                        cell.points[
+                            pointIndex
+                        ];
+
+
+                    if (
+                        !point ||
+                        !isFinite(
+                            point.x
+                        ) ||
+                        !isFinite(
+                            point.y
+                        )
+                    ) {
+                        continue;
+                    }
+
+
+                    /*
+                     * Collision filtering inside movePoints() depends on:
+                     *
+                     *      item.parent !== self
+                     *
+                     * Reassert ownership here because point arrays may have
+                     * been resized and their containing cell object may have
+                     * come from the object pool.
+                     */
+                    point.parent =
+                        cell;
+
+
+                    this.quadtree
+                        .insert(
+                            point
+                        );
                 }
             }
         },
@@ -39583,26 +40348,31 @@ Most cells eaten   : ${mostCellsEaten}
                 offset += 8;
                 var eater = this.indexedCells[eaterID];
                 var eaten = this.indexedCells[eatenID];
-                if (eater && eaten) {
-                    eaten.targetX = eater.x;
-                    eaten.targetY = eater.y;
-                    eaten.targetSize = eaten.size;
-                    eaten.time = this.time;
-                    /* ── Death particles + eater pulse ── */
-                    if (!eaten.isFood && !eaten.isEjected && eaten.size > 36) {
-                        _spawnDeathBurst(eaten.x, eaten.y, eaten.size, eaten.color);
-                    }
-                    if (defaultmapsettings.eatPulse) eater._eatPulseTime = Date.now();
-                    /* ── Slow-mo + screen shake if this is a PLAYER cell being eaten ── */
-                    if (eaten.isPlayerCell) {
-                        eaten._deathSlowMo = true;
-                        eaten.startX = eaten.x;
-                        eaten.startY = eaten.y;
-                        eaten.startSize = eaten.size;
-                        eaten.targetSize = 0;  /* shrink as absorbed */
-                        eaten.updateTime = null;  /* force moveCell to use this.time for fresh start */
-                        _screenShakeStart = Date.now();
-                    }
+                /*
+                 * Garix keeps its normal eat animation.
+                 *
+                 * Cinematic death effects are Expanding Land only and are
+                 * implemented in updateCells().
+                 */
+                if (
+                    eater &&
+                    eaten
+                ) {
+                    eaten.targetX =
+                        eater.x;
+
+                    eaten.targetY =
+                        eater.y;
+
+                    eaten.targetSize =
+                        eaten.size;
+
+                    eaten.time =
+                        this.time;
+
+                    eaten.updateTime =
+                        this.time;
+
                     eaten.removeCell();
                 }
             }
@@ -39735,10 +40505,14 @@ Most cells eaten   : ${mostCellsEaten}
                     this.removePlayerCell = false;
                 } else {
                     this.play = false;
-                    application.onPlayerDeath();
-                    setTimeout(function() { application.showMenu(300); }, 500);
-                    window.userBots.isAlive = false;
-                    if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+
+                    application
+                        .onPlayerDeath();
+
+                    application
+                        .showMenu(
+                            300
+                        );
                 }
             }
             if (window.autoPlay && legendmod.play) calcTarget();
@@ -40077,26 +40851,279 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            var eatEventsLength = view.readUInt16LE(offset);
+            /*
+             * ============================================================
+             * EAT EVENTS
+             * ============================================================
+             *
+             * IMPORTANT:
+             *
+             * Expanding Land uses THIS normal updateCells() parser.
+             *
+             * Cinematic death effects therefore belong HERE, not inside
+             * garixUpdateCells().
+             *
+             * Other servers continue using the exact normal eat animation.
+             */
+            var eatEventsLength =
+                view.readUInt16LE(
+                    offset
+                );
+
             offset += 2;
 
-            for (var length = 0; length < eatEventsLength; length++) {
-                var eaterRawID = view.readUInt32LE(offset);
-                var victimRawID = view.readUInt32LE(offset + 4);
-                var eaterID = this.indexedCells[eaterRawID],
-                    victimID = this.indexedCells[victimRawID];
+
+            /*
+             * Exact server isolation.
+             *
+             * Do NOT use:
+             *
+             *     legendModFromWebsite
+             *     location.hostname
+             *     connectionIntegrity
+             *
+             * because those are not equivalent to actually being connected
+             * to the Expanding Land game protocol.
+             */
+            var _isExpandingLandEatFx =
+                this.serverType ===
+                'expandingland';
+
+
+            for (
+                var length = 0;
+                length < eatEventsLength;
+                length++
+            ) {
+                var eaterRawID =
+                    view.readUInt32LE(
+                        offset
+                    );
+
+                var victimRawID =
+                    view.readUInt32LE(
+                        offset + 4
+                    );
 
                 offset += 8;
-                if (victimID) {
-                    if (eaterID) {
-                        victimID.targetX = eaterID.x;
-                        victimID.targetY = eaterID.y;
-                        victimID.targetSize = victimID.size;
 
-                    }
-                    victimID.time = this.time;
-                    victimID.removeCell();
+
+                var eaterID =
+                    this.indexedCells[
+                        eaterRawID
+                    ];
+
+                var victimID =
+                    this.indexedCells[
+                        victimRawID
+                    ];
+
+
+                /*
+                 * The victim may already have disappeared from our local
+                 * visibility table. In that case there is nothing visual
+                 * we can animate.
+                 */
+                if (!victimID) {
+                    continue;
                 }
+
+
+                /*
+                 * Capture the CURRENT interpolated/rendered victim state
+                 * BEFORE changing any target values.
+                 *
+                 * This is especially important for the 600 ms player
+                 * absorption animation. Starting from stale startX/startY
+                 * would make the dying cell visibly jump backwards first.
+                 */
+                var _victimStartX =
+                    victimID.x;
+
+                var _victimStartY =
+                    victimID.y;
+
+                var _victimStartSize =
+                    victimID.size;
+
+                var _victimWasPlayer =
+                    !!victimID.isPlayerCell;
+
+
+                /*
+                 * Start the eat animation from this packet's timestamp.
+                 *
+                 * Do not depend on an old updateTime left behind by the
+                 * victim's previous movement update.
+                 */
+                victimID.time =
+                    this.time;
+
+                victimID.updateTime =
+                    this.time;
+
+
+                /*
+                 * Normal eat destination.
+                 *
+                 * When the eater is unavailable, keep the victim at its
+                 * current position instead of throwing away the death FX.
+                 */
+                if (eaterID) {
+                    victimID.targetX =
+                        eaterID.x;
+
+                    victimID.targetY =
+                        eaterID.y;
+
+                    victimID.targetSize =
+                        victimID.size;
+                } else {
+                    victimID.targetX =
+                        victimID.x;
+
+                    victimID.targetY =
+                        victimID.y;
+
+                    victimID.targetSize =
+                        victimID.size;
+                }
+
+
+                /*
+                 * ========================================================
+                 * EXPANDING LAND CINEMATIC EAT EFFECTS
+                 * ========================================================
+                 */
+                if (_isExpandingLandEatFx) {
+
+                    /*
+                     * ----------------------------------------------------
+                     * 1. DEATH PARTICLES
+                     * ----------------------------------------------------
+                     *
+                     * Any meaningful normal cell can burst.
+                     *
+                     * Food and ejected mass are intentionally excluded.
+                     */
+                    if (
+                        !victimID.isFood &&
+                        !victimID.isEjected &&
+                        _victimStartSize > 36
+                    ) {
+                        _spawnDeathBurst(
+                            _victimStartX,
+                            _victimStartY,
+                            _victimStartSize,
+                            victimID.color ||
+                            '#808080'
+                        );
+                    }
+
+
+                    /*
+                     * ----------------------------------------------------
+                     * 2. EATER PULSE
+                     * ----------------------------------------------------
+                     *
+                     * The eater itself remains alive, therefore its
+                     * timestamp is consumed later by the render path.
+                     */
+                    if (
+                        eaterID &&
+                        defaultmapsettings
+                            .eatPulse
+                    ) {
+                        eaterID._eatPulseTime =
+                            Date.now();
+                    }
+
+
+                    /*
+                     * ----------------------------------------------------
+                     * 3. PLAYER-ONLY CINEMATIC ABSORPTION
+                     * ----------------------------------------------------
+                     *
+                     * Other cells continue using the normal animation
+                     * duration.
+                     *
+                     * Player cells:
+                     *
+                     *     current position
+                     *          ↓
+                     *     eater position
+                     *
+                     * while:
+                     *
+                     *     current radius
+                     *          ↓
+                     *          0
+                     *
+                     * over _DEATH_SLOWMO_ANIM (600 ms).
+                     */
+                    if (_victimWasPlayer) {
+                        victimID._deathSlowMo =
+                            true;
+
+
+                        victimID.startX =
+                            _victimStartX;
+
+                        victimID.startY =
+                            _victimStartY;
+
+                        victimID.startSize =
+                            _victimStartSize;
+
+
+                        victimID.targetX =
+                            eaterID
+                                ? eaterID.x
+                                : _victimStartX;
+
+                        victimID.targetY =
+                            eaterID
+                                ? eaterID.y
+                                : _victimStartY;
+
+                        victimID.targetSize =
+                            0;
+
+
+                        /*
+                         * Explicitly restart interpolation NOW.
+                         *
+                         * This is better than relying on:
+                         *
+                         *     updateTime = null
+                         *
+                         * because moveCell() already has a well-defined
+                         * timestamp source.
+                         */
+                        victimID.time =
+                            this.time;
+
+                        victimID.updateTime =
+                            this.time;
+
+
+                        /*
+                         * ------------------------------------------------
+                         * 4. SCREEN SHAKE
+                         * ------------------------------------------------
+                         */
+                        _screenShakeStart =
+                            Date.now();
+                    }
+                }
+
+
+                /*
+                 * removeCell() will remove it from authoritative active
+                 * collections, but _deathSlowMo victims are retained in
+                 * removedCells by the patch below.
+                 */
+                victimID.removeCell();
             }
 
             for (var cellIdx = 0; ;) {
@@ -50677,46 +51704,439 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         );
                 }
 
-                /* Compact-in-place: O(N) removal preserving z-order (replaces O(N²) splice) */
+                /*
+                 * ═══════════════════════════════════════════════════════════
+                 * ACTIVE CELL COMPACTION
+                 * ═══════════════════════════════════════════════════════════
+                 *
+                 * First build the authoritative active render list.
+                 *
+                 * IMPORTANT:
+                 *
+                 * DO NOT run movePoints() while compacting.
+                 *
+                 * Jelly physics needs EVERY cell's point array prepared before
+                 * the current-frame collision quadtree can be constructed.
+                 */
                 var _cW = 0;
-                for (i = 0; i < LM.cells.length; i++) {
-                    var cell = LM.cells[i];
-                    if (!cell || cell.removed) continue;
-                    // Suppressed copies remain in indexedCells and are restored by their next packet update.
-                    if (cell.spectator && cell.spectator > 0 && !cell.isPlayerCell && !cell.isPlayerCellMulti) {
-                        var rawID = cell.id % 1000000000;
-                        var master = LM.indexedCells[rawID];
+
+                for (
+                    i = 0;
+                    i < LM.cells.length;
+                    i++
+                ) {
+                    var cell =
+                        LM.cells[i];
+
+                    if (
+                        !cell ||
+                        cell.removed
+                    ) {
+                        continue;
+                    }
+
+
+                    /*
+                     * Suppressed spectator copies remain in indexedCells and
+                     * will be restored by their next authoritative packet.
+                     */
+                    if (
+                        cell.spectator &&
+                        cell.spectator > 0 &&
+                        !cell.isPlayerCell &&
+                        !cell.isPlayerCellMulti
+                    ) {
+                        var rawID =
+                            cell.id %
+                            1000000000;
+
+                        var master =
+                            LM.indexedCells[
+                                rawID
+                            ];
+
                         if (!master) {
-                            for (var sNum = 1; sNum < cell.spectator; sNum++) {
-                                var candidate = LM.indexedCells[rawID + sNum * 1000000000];
-                                if (candidate && !candidate.removed) { master = candidate; break; }
+                            for (
+                                var sNum = 1;
+                                sNum < cell.spectator;
+                                sNum++
+                            ) {
+                                var candidate =
+                                    LM.indexedCells[
+                                        rawID +
+                                        sNum *
+                                        1000000000
+                                    ];
+
+                                if (
+                                    candidate &&
+                                    !candidate.removed
+                                ) {
+                                    master =
+                                        candidate;
+
+                                    break;
+                                }
                             }
                         }
-                        if (master && master !== cell && !master.removed) {
-                            cell._renderSuppressed = true;
+
+
+                        if (
+                            master &&
+                            master !== cell &&
+                            !master.removed
+                        ) {
+                            cell._renderSuppressed =
+                                true;
+
                             continue;
                         }
                     }
-                    if (cell._renderSuppressed) cell._renderSuppressed = false;
-                    if (_cW !== i) LM.cells[_cW] = cell;
-                    _cW++;
 
-                    if (defaultmapsettings.jellyPhisycs) {
-                        try {
-                            if (cell.isInView()) {
-                                cell.updateNumPoints();
-                                cell.movePoints();
-                            }
-                        } catch (eJelly) { }
+
+                    if (
+                        cell._renderSuppressed
+                    ) {
+                        cell._renderSuppressed =
+                            false;
                     }
 
-                    cell.draw(this.ctx);
 
-                    if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, cell.x, cell.y, cell.size)) {
-                        LM.selected = cell.id;
+                    if (
+                        _cW !== i
+                    ) {
+                        LM.cells[
+                            _cW
+                        ] =
+                            cell;
+                    }
+
+                    _cW++;
+                }
+
+
+                if (
+                    _cW <
+                    LM.cells.length
+                ) {
+                    LM.cells.length =
+                        _cW;
+                }
+
+
+                /*
+                 * ═══════════════════════════════════════════════════════════
+                 * JELLY PHYSICS
+                 * CURRENT-FRAME PREPARATION
+                 * ═══════════════════════════════════════════════════════════
+                 *
+                 * Correct Delta-style order:
+                 *
+                 *      1. updateNumPoints() for ALL visible active cells
+                 *
+                 *      2. build quadtree from those CURRENT point arrays
+                 *
+                 *      3. movePoints() for ALL jelly cells
+                 *
+                 *      4. draw()
+                 *
+                 *
+                 * NEVER:
+                 *
+                 *      update -> move -> draw one cell
+                 *      update -> move -> draw next cell
+                 *
+                 * because the earlier cells then see a different physical
+                 * world than later cells.
+                 *
+                 *
+                 * This is GLOBAL jelly physics.
+                 *
+                 * There is intentionally NO:
+                 *
+                 *      expandingLand
+                 *      serverType
+                 *      gameMode
+                 *
+                 * condition here.
+                 */
+                var _jellyCells =
+                    this._jellyCellsScratch ||
+                    (
+                        this._jellyCellsScratch =
+                            []
+                    );
+
+                _jellyCells.length =
+                    0;
+
+
+                if (
+                    defaultmapsettings
+                        .jellyPhisycs
+                ) {
+                    /*
+                     * ───────────────────────────────────────────────────
+                     * PASS 1
+                     * Build/resize every visible jelly perimeter.
+                     * ───────────────────────────────────────────────────
+                     */
+                    for (
+                        var jellyPrepareIndex = 0;
+                        jellyPrepareIndex <
+                            LM.cells.length;
+                        jellyPrepareIndex++
+                    ) {
+                        var jellyPrepareCell =
+                            LM.cells[
+                                jellyPrepareIndex
+                            ];
+
+                        if (
+                            !jellyPrepareCell ||
+                            jellyPrepareCell.removed ||
+                            jellyPrepareCell.isFood ||
+                            typeof jellyPrepareCell
+                                .updateNumPoints !==
+                                "function"
+                        ) {
+                            continue;
+                        }
+
+
+                        var jellyInView =
+                            true;
+
+                        if (
+                            typeof jellyPrepareCell
+                                .isInView ===
+                                "function"
+                        ) {
+                            try {
+                                jellyInView =
+                                    jellyPrepareCell
+                                        .isInView();
+                            }
+                            catch (
+                                jellyViewError
+                            ) {
+                                /*
+                                 * Rendering must not die merely because one
+                                 * visibility helper threw.
+                                 */
+                                jellyInView =
+                                    true;
+                            }
+                        }
+
+
+                        if (
+                            !jellyInView
+                        ) {
+                            continue;
+                        }
+
+
+                        try {
+                            jellyPrepareCell
+                                .updateNumPoints();
+                        }
+                        catch (
+                            jellyPointCountError
+                        ) {
+                            console.error(
+                                "[JELLY PHYSICS] updateNumPoints failed:",
+                                jellyPrepareCell.id,
+                                jellyPointCountError
+                            );
+
+                            continue;
+                        }
+
+
+                        /*
+                         * Only valid current-frame point sets participate.
+                         *
+                         * Viruses ARE included.
+                         *
+                         * updateNumPoints() forces viruses to 100 points.
+                         */
+                        if (
+                            jellyPrepareCell
+                                .points &&
+                            jellyPrepareCell
+                                .points
+                                .length >=
+                                3 &&
+                            jellyPrepareCell
+                                .pointsVel &&
+                            jellyPrepareCell
+                                .pointsVel
+                                .length ===
+                                jellyPrepareCell
+                                    .points
+                                    .length
+                        ) {
+                            _jellyCells.push(
+                                jellyPrepareCell
+                            );
+                        }
+                    }
+
+
+                    /*
+                     * ───────────────────────────────────────────────────
+                     * PASS 2
+                     * Build CURRENT-FRAME collision geometry.
+                     * ───────────────────────────────────────────────────
+                     *
+                     * This MUST happen after updateNumPoints() and before
+                     * the first movePoints().
+                     */
+                    try {
+                        if (
+                            _jellyCells.length >
+                            0
+                        ) {
+                            LM.updateQuadtree(
+                                _jellyCells
+                            );
+                        }
+                        else {
+                            LM.quadtree =
+                                null;
+                        }
+                    }
+                    catch (
+                        jellyQuadtreeError
+                    ) {
+                        LM.quadtree =
+                            null;
+
+                        console.error(
+                            "[JELLY PHYSICS] quadtree rebuild failed:",
+                            jellyQuadtreeError
+                        );
+                    }
+
+
+                    /*
+                     * ───────────────────────────────────────────────────
+                     * PASS 3
+                     * Simulate each perimeter exactly once.
+                     * ───────────────────────────────────────────────────
+                     */
+                    var _tPhys =
+                        performance.now();
+
+                    for (
+                        var jellyMoveIndex = 0;
+                        jellyMoveIndex <
+                            _jellyCells.length;
+                        jellyMoveIndex++
+                    ) {
+                        var jellyMoveCell =
+                            _jellyCells[
+                                jellyMoveIndex
+                            ];
+
+                        if (
+                            !jellyMoveCell ||
+                            jellyMoveCell.removed ||
+                            typeof jellyMoveCell
+                                .movePoints !==
+                                "function"
+                        ) {
+                            continue;
+                        }
+
+
+                        try {
+                            jellyMoveCell
+                                .movePoints();
+                        }
+                        catch (
+                            jellyMoveError
+                        ) {
+                            console.error(
+                                "[JELLY PHYSICS] movePoints failed:",
+                                jellyMoveCell.id,
+                                jellyMoveError
+                            );
+                        }
+                    }
+
+
+                    if (
+                        window
+                            .clientProfiler
+                    ) {
+                        window
+                            .clientProfiler
+                            .recordPhysics(
+                                performance.now() -
+                                _tPhys
+                            );
                     }
                 }
-                if (_cW < LM.cells.length) LM.cells.length = _cW;
+                else {
+                    /*
+                     * Jelly was switched off.
+                     *
+                     * Never retain a collision field belonging to a previous
+                     * jelly frame.
+                     */
+                    LM.quadtree =
+                        null;
+                }
+
+
+                /*
+                 * ═══════════════════════════════════════════════════════════
+                 * CELL DRAW PASS
+                 * ═══════════════════════════════════════════════════════════
+                 *
+                 * Every jelly body is now fully simulated BEFORE anything
+                 * gets painted.
+                 */
+                for (
+                    var cellDrawIndex = 0;
+                    cellDrawIndex <
+                        LM.cells.length;
+                    cellDrawIndex++
+                ) {
+                    var drawCell =
+                        LM.cells[
+                            cellDrawIndex
+                        ];
+
+                    if (
+                        !drawCell ||
+                        drawCell.removed
+                    ) {
+                        continue;
+                    }
+
+
+                    drawCell.draw(
+                        this.ctx
+                    );
+
+
+                    if (
+                        drawRender.LMB &&
+                        this.pointInCircle(
+                            LM.cursorX,
+                            LM.cursorY,
+                            drawCell.x,
+                            drawCell.y,
+                            drawCell.size
+                        )
+                    ) {
+                        LM.selected =
+                            drawCell.id;
+                    }
+                }
 
                 /*
                  * Cursor and merge overlays remain above cells.
@@ -50769,17 +52189,54 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                     _deathParticles.length = _dpAlive;
                 }
-                var _tMini = performance.now();
+                var _tMini =
+                    performance.now();
+
                 this.drawMiscRings();
-                if (defaultmapsettings.jellyPhisycs) {
-                    var _tPhys = performance.now();
-                    LM.updateQuadtree(LM.cells);
-                    if (window.clientProfiler) window.clientProfiler.recordPhysics(performance.now() - _tPhys);
-                }
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * DO NOT rebuild LM.quadtree here.
+                 *
+                 * Jelly physics is already completely resolved BEFORE the
+                 * cell draw pass:
+                 *
+                 *      updateNumPoints()
+                 *          ↓
+                 *      LM.updateQuadtree()
+                 *          ↓
+                 *      movePoints()
+                 *          ↓
+                 *      cell.draw()
+                 *
+                 *
+                 * The old rebuild at this position generated geometry that
+                 * could only be consumed on the NEXT animation frame.
+                 *
+                 * That made jelly collision one frame stale and meant the
+                 * individual cells were not reacting to the same perimeter
+                 * state.
+                 */
+
 
                 this.drawRings();
+
                 this.drawRMB();
-                if (window.clientProfiler) window.clientProfiler.recordMinimap(performance.now() - _tMini);
+
+
+                if (
+                    window
+                        .clientProfiler
+                ) {
+                    window
+                        .clientProfiler
+                        .recordMinimap(
+                            performance.now() -
+                            _tMini
+                        );
+                }
 
                 if (defaultmapsettings.debug) {
                     this.drawViewPorts(this.ctx);
