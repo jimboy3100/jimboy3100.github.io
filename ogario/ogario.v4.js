@@ -21217,11 +21217,6 @@ function thelegendmodproject() {
                 ogario.showFood = true
             };
 
-            /* Expanding Land: trigger a spawn pulse animation */
-            if (LM && LM.isLegendWorld && typeof drawRender !== 'undefined') {
-                drawRender._spawnPulseStart = Date.now();
-            }
-
         },
         onSpectate() {
             this.onJoin();
@@ -41870,9 +41865,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             );
 
                         baseAlpha =
-                            0.06 +
-                            pulse * 0.04 +
-                            ring * (0.25 + sparkle * 0.1);
+                            0.04 +
+                            pulse * 0.02 +
+                            ring * (0.10 + sparkle * 0.04);
                     }
                     else {
                         /*
@@ -41932,10 +41927,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 );
 
                             baseAlpha =
-                                0.15 +
-                                pulse * 0.1 +
-                                scan * 0.06 +
-                                edgeRing * (0.3 + pulse * 0.15);
+                                0.08 +
+                                pulse * 0.04 +
+                                scan * 0.03 +
+                                edgeRing * (0.12 + pulse * 0.06);
                         }
                         else {
                             /*
@@ -41956,9 +41951,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 );
 
                             baseAlpha =
-                                0.12 +
-                                pulse * 0.06 +
-                                hash * 0.03;
+                                0.06 +
+                                pulse * 0.03 +
+                                hash * 0.02;
                         }
                     }
 
@@ -49529,10 +49524,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 //this.drawCommander(this.ctx);  // disabled — spawn effects unwanted
                 //this.drawCommander2(this.ctx); // disabled — spawn effects unwanted
 
-                /* Expanding Land: spawn pulse effect */
-                if (LM.isLegendWorld && this._spawnPulseStart) {
-                    this.drawSpawnPulse(this.ctx);
-                }
+
 
                 if (defaultmapsettings.virusesRange) {
                     this.drawVirusesRange(this.ctx, LM.viruses);
@@ -51013,73 +51005,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
 
-        /* ── Expanding Land: Spawn pulse animation ── */
-        drawSpawnPulse(ctx) {
-            if (!this._spawnPulseStart) return;
 
-            var elapsed = (Date.now() - this._spawnPulseStart) / 1000.0;
-            var duration = 1.8; /* seconds */
-
-            if (elapsed > duration) {
-                this._spawnPulseStart = null;
-                return;
-            }
-
-            var progress = elapsed / duration;
-            var eased = 1.0 - Math.pow(1.0 - progress, 3); /* ease-out cubic */
-
-            ctx.save();
-
-            /* Draw from the player's spawn position (camera center) */
-            var cx = this.camX || 0;
-            var cy = this.camY || 0;
-            var maxRadius = 3000 / (this.scale || 0.1);
-
-            /* 3 concentric expanding rings with stagger */
-            for (var ring = 0; ring < 3; ring++) {
-                var ringDelay = ring * 0.12;
-                var ringProgress = Math.max(0, (progress - ringDelay) / (1.0 - ringDelay));
-                if (ringProgress <= 0) continue;
-
-                var ringEased = 1.0 - Math.pow(1.0 - ringProgress, 2.5);
-                var radius = ringEased * maxRadius;
-                var alpha = (1.0 - ringProgress) * (0.5 - ring * 0.12);
-
-                if (alpha <= 0.01) continue;
-
-                /* Outer glow ring */
-                var gradient = ctx.createRadialGradient(
-                    cx, cy, Math.max(0, radius - 80),
-                    cx, cy, radius + 30
-                );
-                gradient.addColorStop(0, 'rgba(0, 180, 255, 0)');
-                gradient.addColorStop(0.4, 'rgba(0, 200, 255, ' + (alpha * 0.6) + ')');
-                gradient.addColorStop(0.7, 'rgba(100, 220, 255, ' + alpha + ')');
-                gradient.addColorStop(1, 'rgba(0, 180, 255, 0)');
-
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(cx, cy, radius + 30, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            /* Central flash (very brief) */
-            if (progress < 0.3) {
-                var flashAlpha = (1.0 - progress / 0.3) * 0.25;
-                var flashGrad = ctx.createRadialGradient(
-                    cx, cy, 0,
-                    cx, cy, maxRadius * 0.3
-                );
-                flashGrad.addColorStop(0, 'rgba(200, 240, 255, ' + flashAlpha + ')');
-                flashGrad.addColorStop(1, 'rgba(0, 100, 200, 0)');
-                ctx.fillStyle = flashGrad;
-                ctx.beginPath();
-                ctx.arc(cx, cy, maxRadius * 0.3, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            ctx.restore();
-        },
 
         /* ── Expanding Land: WebGL zone overlay ── */
         drawWebGLZone() {
