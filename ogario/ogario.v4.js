@@ -36939,9 +36939,89 @@ function thelegendmodproject() {
                         this.newPotion(u.potionInfo.newUserPotion);
                     }
 
-                    if ((defaultmapsettings.gameOverStats || window._forceGameOverStats) && u.gameSessionStats) {
-                        this.showSessionStats(u.gameSessionStats);
-                        window._forceGameOverStats = false;
+                    /*
+                     * ========================================================
+                     * GAME-OVER SESSION STATS
+                     * ========================================================
+                     *
+                     * Expanding Land has a single-owner cinematic death
+                     * lifecycle.
+                     *
+                     * NEVER let the protobuf Game Over packet insert its
+                     * session-stats modal while the 600 ms death animation
+                     * owns the screen.
+                     *
+                     * The packet may arrive:
+                     *
+                     *      before opcode-16 final removal
+                     *      during the cinematic
+                     *      after the cinematic
+                     *
+                     * Therefore:
+                     *
+                     *      during cinematic -> cache the stats
+                     *      after cinematic  -> display immediately
+                     */
+                    if (
+                        (
+                            defaultmapsettings
+                                .gameOverStats ||
+                            window
+                                ._forceGameOverStats
+                        ) &&
+                        u.gameSessionStats
+                    ) {
+                        var _isElGameOverStatsLocked =
+                            typeof legendmod !==
+                                'undefined' &&
+                            legendmod &&
+                            legendmod.serverType ===
+                                'expandingland' &&
+                            Number(
+                                window
+                                    ._elDeathUiLockedUntil
+                            ) >
+                                Date.now();
+
+
+                        if (
+                            _isElGameOverStatsLocked
+                        ) {
+                            /*
+                             * Preserve the authoritative server stats.
+                             *
+                             * updateCells() will display them after the
+                             * cinematic completes.
+                             */
+                            window
+                                ._elPendingGameSessionStats =
+                                u.gameSessionStats;
+
+
+                            window
+                                ._elPendingGameSessionStatsForced =
+                                !!window
+                                    ._forceGameOverStats;
+
+
+                            console.log(
+                                '[EL DEATH] Game-over session stats deferred until cinematic completes'
+                            );
+                        }
+                        else {
+                            /*
+                             * Normal servers, or Expanding Land after the
+                             * cinematic already finished.
+                             */
+                            this.showSessionStats(
+                                u.gameSessionStats
+                            );
+
+
+                            window
+                                ._forceGameOverStats =
+                                false;
+                        }
                     }
                     break;
                 case 71:
@@ -43343,6 +43423,27 @@ Most cells eaten   : ${mostCellsEaten}
                         .hide();
 
 
+                    /*
+                     * A previous Game Over modal must never survive into the new
+                     * Expanding Land death cinematic.
+                     */
+                    var _oldElGameOverModal =
+                        document.getElementById(
+                            'lm-gameover-modal'
+                        );
+
+                    if (
+                        _oldElGameOverModal &&
+                        _oldElGameOverModal.parentNode
+                    ) {
+                        _oldElGameOverModal
+                            .parentNode
+                            .removeChild(
+                                _oldElGameOverModal
+                            );
+                    }
+
+
                     if (
                         this._elDeathUiTimer
                     ) {
@@ -43470,6 +43571,62 @@ Most cells eaten   : ${mostCellsEaten}
                                 else {
                                     $('#main-panel')
                                         .show();
+                                }
+
+
+                                /*
+                                 * =================================================
+                                 * DEFERRED AUTHORITATIVE GAME-OVER STATS
+                                 * =================================================
+                                 *
+                                 * The protobuf Game Over packet may have arrived
+                                 * during the cinematic.
+                                 *
+                                 * Only NOW is it allowed to create the dedicated
+                                 * game-over statistics modal.
+                                 */
+                                if (
+                                    window
+                                        ._elPendingGameSessionStats
+                                ) {
+                                    var _pendingElStats =
+                                        window
+                                            ._elPendingGameSessionStats;
+
+
+                                    var _pendingElStatsForced =
+                                        !!window
+                                            ._elPendingGameSessionStatsForced;
+
+
+                                    window
+                                        ._elPendingGameSessionStats =
+                                        null;
+
+                                    window
+                                        ._elPendingGameSessionStatsForced =
+                                        false;
+
+
+                                    if (
+                                        defaultmapsettings
+                                            .gameOverStats ||
+                                        _pendingElStatsForced
+                                    ) {
+                                        application
+                                            .showSessionStats(
+                                                _pendingElStats
+                                            );
+                                    }
+
+
+                                    /*
+                                     * forceGameOverStats belongs to this completed
+                                     * death generation.
+                                     */
+                                    window
+                                        ._forceGameOverStats =
+                                        false;
                                 }
 
 
