@@ -49507,6 +49507,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 if (window.clientProfiler) window.clientProfiler.recordGrid(performance.now() - _tGrid);
                 /* ── Expanding Land: Draw warning/danger zone overlay ── */
+                /* Zone overlay disabled — too distracting
                 if (
                     LM.isLegendWorld &&
                     LM.mapEvent &&
@@ -49521,6 +49522,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ) {
                     this.drawWebGLZone();
                 }
+                */
                 //this.drawCommander(this.ctx);  // disabled — spawn effects unwanted
                 //this.drawCommander2(this.ctx); // disabled — spawn effects unwanted
 
