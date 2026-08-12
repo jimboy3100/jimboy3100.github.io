@@ -27542,32 +27542,81 @@ function thelegendmodproject() {
     function ogarbasicassembly(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
         this.reset = function (id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
             this.id = id;
+
             this.x = e;
             this.y = s;
+
             this.startX = e;
             this.startY = s;
+
             this.targetX = e;
             this.targetY = s;
+
             this.color = color;
             this.oppColor = null;
+
             this.size = size;
             this.targetSize = size;
             this.startSize = size;
+
             this.alpha = 1;
+
             this.nick = '';
             this.targetNick = '';
+
             this.mass = 0;
             this.lastMass = 0;
+
             this.removed = false;
             this.redrawed = false;
+
             this.splitTime = 0;
+
             this.isFood = isFood;
             this.isVirus = isVirus;
             this.isPlayerCell = isPlayer;
+
             this.shortMass = shortMass;
             this.virMassShots = virusMassShots;
-            this.updateTime = Date.now();
+
+            this.updateTime =
+                Date.now();
+
             this.time = 0;
+
+            /*
+             * ============================================================
+             * CINEMATIC TRANSIENT STATE
+             * ============================================================
+             *
+             * CRITICAL:
+             *
+             * ogarbasicassembly instances are pooled/reused.
+             *
+             * These properties belong to ONE logical cell lifetime only.
+             * Never allow a new server cell to inherit a previous dead
+             * player's 600 ms death state or an old eater's pulse timestamp.
+             */
+            this._deathSlowMo =
+                false;
+
+            this._eatPulseTime =
+                0;
+
+            /*
+             * Any previous transient GPU ownership must also be discarded.
+             */
+            this._webglRendered =
+                false;
+
+            this._pixiBodyRendered =
+                false;
+
+            this._skipCanvasSkin =
+                false;
+
+            this._pixiSkinId =
+                0;
 
             /*
              * IMPORTANT:
@@ -27653,24 +27702,57 @@ function thelegendmodproject() {
         this.isFood = isFood;
         this.isVirus = isVirus;
         this.isPlayerCell = isPlayer;
+
         this.shortMass = shortMass;
         this.virMassShots = virusMassShots;
+
         this.rescale = false;
+
         this.redrawNick = true;
         this.redrawMass = true;
         this.redrawMerge = true;
         this.redrawChat = true;
+
         this.optimizedNames = false;
         this.optimizedMass = false;
+
         this.strokeNick = false;
         this.strokeMass = false;
+
         this.removed = false;
         this.redrawed = 0;
+
         this.time = 0;
+
         this.skin = null;
+
         this.pi2 = 2 * Math.PI;
+
         this.virusColor = null;
         this.virusStroke = null;
+
+        /*
+         * ============================================================
+         * CINEMATIC TRANSIENT STATE — INITIAL CELL INSTANCE
+         * ============================================================
+         */
+        this._deathSlowMo =
+            false;
+
+        this._eatPulseTime =
+            0;
+
+        this._webglRendered =
+            false;
+
+        this._pixiBodyRendered =
+            false;
+
+        this._skipCanvasSkin =
+            false;
+
+        this._pixiSkinId =
+            0;
         //this.nHeight = 6;
 
 
@@ -28413,16 +28495,42 @@ function thelegendmodproject() {
 
 
             /*
-             * Alpha handling.
+             * ============================================================
+             * REMOVED-CELL FADE PROGRESS
+             * ============================================================
              *
-             * Dying player cells should stay fully visible (alpha = 1.0) while
-             * sliding & shrinking, whereas standard eaten cells fade via delay.
+             * draw() renders removed cells using:
+             *
+             *      style.globalAlpha *= 1 - this.alpha;
+             *
+             * Therefore this.alpha is NOT the actual visible opacity.
+             *
+             * It is the removal/fade PROGRESS:
+             *
+             *      delay = 0.00  -> visible alpha = 1.00
+             *      delay = 0.25  -> visible alpha = 0.75
+             *      delay = 0.50  -> visible alpha = 0.50
+             *      delay = 0.75  -> visible alpha = 0.25
+             *      delay = 1.00  -> visible alpha = 0.00
+             *
+             * This must also apply to _deathSlowMo.
+             *
+             * The cinematic player therefore simultaneously:
+             *
+             *      moves toward the eater
+             *      shrinks from startSize -> 0
+             *      fades from 100% -> 0%
+             *
+             * over _DEATH_SLOWMO_ANIM (600 ms).
+             *
+             * NEVER set this.alpha = 1.0 for _deathSlowMo here:
+             *
+             *      1 - 1.0 = 0
+             *
+             * which makes the dying cell completely invisible immediately.
              */
-            if (this._deathSlowMo) {
-                this.alpha = 1.0;
-            } else {
-                this.alpha = delay;
-            }
+            this.alpha =
+                delay;
 
 
             if (!this.removed) {
@@ -28431,19 +28539,33 @@ function thelegendmodproject() {
 
 
             /*
-             * Cleanup from removedCells once animation completes.
+             * Cleanup from removedCells once the interpolation/fade has
+             * completely finished.
              */
-            if (delay >= 1) {
+            if (
+                delay >= 1
+            ) {
                 var removedIdx =
-                    LM.removedCells.indexOf(this);
+                    LM.removedCells.indexOf(
+                        this
+                    );
 
-                if (removedIdx !== -1) {
+                if (
+                    removedIdx !== -1
+                ) {
                     var _rcLast =
-                        LM.removedCells.length - 1;
+                        LM.removedCells.length -
+                        1;
 
-                    if (removedIdx !== _rcLast) {
-                        LM.removedCells[removedIdx] =
-                            LM.removedCells[_rcLast];
+                    if (
+                        removedIdx !== _rcLast
+                    ) {
+                        LM.removedCells[
+                            removedIdx
+                        ] =
+                            LM.removedCells[
+                                _rcLast
+                            ];
                     }
 
                     LM.removedCells.length =
@@ -41394,43 +41516,159 @@ Most cells eaten   : ${mostCellsEaten}
                 var id = view.readUInt32LE(offset);
                 offset += 4;
                 cell = this.indexedCells[id];
+
                 if (cell) {
-
                     cell.removeCell();
-                } else {
-
                 }
             }
-            /*				
-                            for (eatEventsLength = view.readUInt16LE(offset), offset += 2, a = 0; a < eatEventsLength; a++) {
-                                id = view.readUInt32LE(offset);
-                                offset += 4,
-                                    (cellUpdateCells = this.indexedCells[id]) &&
-                                    cellUpdateCells.removeCell();
-                            }*/
-            //Sonia7
-            if (this.removePlayerCell && !this.playerCells.length) {
+
+            /*
+             * ============================================================
+             * PLAYER DEATH FINALIZATION
+             * ============================================================
+             *
+             * IMPORTANT:
+             *
+             * Expanding Land's cinematic death begins earlier in THIS SAME
+             * updateCells() packet, inside the eater/victim eat-event loop.
+             *
+             * At that point:
+             *
+             *      victim._deathSlowMo = true
+             *      victim.targetSize = 0
+             *      _screenShakeStart = Date.now()
+             *
+             * and removeCell() preserves the dying cell in removedCells.
+             *
+             * Therefore we must NOT immediately open helloContainer here.
+             *
+             * Normal servers keep their original immediate death behavior.
+             */
+            if (
+                this.removePlayerCell &&
+                !this.playerCells.length
+            ) {
+                /*
+                 * Gameplay state itself changes immediately.
+                 *
+                 * We only postpone the visual death/menu finalization.
+                 */
                 this.play = false;
 
-                application.onPlayerDeath();
-                if (!LM.multiBoxPlayerExists) {
-                    application.showMenu(300);
-                } else {
-                    if (!window.multiboxPlayerEnabled) {
+                window.userBots.isAlive = false;
+
+                if (
+                    window.userBots.startedBots
+                ) {
+                    window.connectionBots.send(
+                        new Uint8Array([
+                            5,
+                            Number(
+                                window.userBots.isAlive
+                            )
+                        ]).buffer
+                    );
+                }
+
+                /*
+                 * ========================================================
+                 * EXPANDING LAND
+                 * ========================================================
+                 *
+                 * Slow-motion absorption lasts 600 ms.
+                 *
+                 * Give it another 50 ms of breathing room before bringing
+                 * back the statistics and helloContainer.
+                 */
+                if (
+                    this.serverType === 'expandingland' &&
+                    !LM.multiBoxPlayerExists
+                ) {
+                    var _elDeadClient = this;
+
+                    /*
+                     * Prevent duplicate timers if multiple death-related
+                     * packets happen to arrive during the same final death.
+                     */
+                    if (this._elDeathUiTimer) {
+                        clearTimeout(
+                            this._elDeathUiTimer
+                        );
+
+                        this._elDeathUiTimer = null;
+                    }
+
+                    this._elDeathUiTimer =
+                        setTimeout(
+                            function () {
+                                _elDeadClient._elDeathUiTimer =
+                                    null;
+
+                                /*
+                                 * If the player already respawned during the
+                                 * cinematic window, never reopen the old death
+                                 * screen over the new game.
+                                 */
+                                if (
+                                    _elDeadClient.play ||
+                                    _elDeadClient.serverType !==
+                                        'expandingland'
+                                ) {
+                                    return;
+                                }
+
+                                application.onPlayerDeath();
+
+                                application.showMenu(
+                                    300
+                                );
+                            },
+                            _DEATH_SLOWMO_ANIM +
+                                50
+                        );
+                }
+
+                /*
+                 * ========================================================
+                 * ALL OTHER SERVERS
+                 * ========================================================
+                 *
+                 * Preserve their existing behavior exactly.
+                 */
+                else {
+                    application.onPlayerDeath();
+
+                    if (
+                        !LM.multiBoxPlayerExists
+                    ) {
+                        application.showMenu(
+                            300
+                        );
+                    }
+                    else if (
+                        !window.multiboxPlayerEnabled
+                    ) {
                         application.multiboxswap();
                     }
                 }
-                window.userBots.isAlive = false
-                if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer)
             }
+
             //window.counterCell=0;
-            if (window.autoPlay && legendmod.play) {
+            if (
+                window.autoPlay &&
+                legendmod.play
+            ) {
                 calcTarget();
             }
-            if (defaultmapsettings.reverseTrick) reverseTrick.check();
-            //if(defaultmapsettings.clickTargeting) clickTargeting.check();
 
-            //if (window.historystate && legendmod.play) {historystate();}	
+            if (
+                defaultmapsettings.reverseTrick
+            ) {
+                reverseTrick.check();
+            }
+
+            //if(defaultmapsettings.clickTargeting) clickTargeting.check();
+            //if (window.historystate && legendmod.play) {historystate();}
 
 
 
@@ -50213,25 +50451,110 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         '#33ff33'
                 );
 
-            for (var i = 0; i < cellsArray.length; i++) {
-                var cell = cellsArray[i];
-                if (!cell || cell.invisible) continue;
-                // Skip rendering duplicate spectator cell if primary socket is already drawing it
-                if (cell.spectator && cell.spectator > 0 && !cell.isPlayerCell && !cell.isPlayerCellMulti) {
-                    var rawID = cell.id % 1000000000;
-                    var master = LM.indexedCells[rawID];
+            /*
+             * One time sample for the complete GPU batch.
+             *
+             * Do not call Date.now() separately for every cell.
+             */
+            var _eatPulseRenderNow =
+                Date.now();
+
+
+            for (
+                var i = 0;
+                i < cellsArray.length;
+                i++
+            ) {
+                var cell =
+                    cellsArray[i];
+
+                if (
+                    !cell ||
+                    cell.invisible
+                ) {
+                    continue;
+                }
+
+
+                /*
+                 * Skip rendering duplicate spectator cell if the primary
+                 * socket is already drawing the same server cell.
+                 */
+                if (
+                    cell.spectator &&
+                    cell.spectator > 0 &&
+                    !cell.isPlayerCell &&
+                    !cell.isPlayerCellMulti
+                ) {
+                    var rawID =
+                        cell.id %
+                        1000000000;
+
+                    var master =
+                        LM.indexedCells[
+                            rawID
+                        ];
+
                     if (!master) {
-                        for (var sNum = 1; sNum < cell.spectator; sNum++) {
-                            var candidate = LM.indexedCells[rawID + sNum * 1000000000];
-                            if (candidate && !candidate.removed) { master = candidate; break; }
+                        for (
+                            var sNum = 1;
+                            sNum < cell.spectator;
+                            sNum++
+                        ) {
+                            var candidate =
+                                LM.indexedCells[
+                                    rawID +
+                                    sNum *
+                                    1000000000
+                                ];
+
+                            if (
+                                candidate &&
+                                !candidate.removed
+                            ) {
+                                master =
+                                    candidate;
+
+                                break;
+                            }
                         }
                     }
-                    if (master && master !== cell && !master.removed) continue;
-                }
-                if (LM.hideSmallBots && cell.size <= 36) continue;
-                if (cell.isFood) continue; // food cells use separate drawFood() path
 
-                if (cell.removed) continue; // removed cells need Canvas2D alpha fade
+                    if (
+                        master &&
+                        master !== cell &&
+                        !master.removed
+                    ) {
+                        continue;
+                    }
+                }
+
+
+                if (
+                    LM.hideSmallBots &&
+                    cell.size <= 36
+                ) {
+                    continue;
+                }
+
+
+                if (
+                    cell.isFood
+                ) {
+                    continue;
+                }
+
+
+                /*
+                 * Removed cells intentionally remain Canvas2D-owned because
+                 * the cinematic death path needs alpha fade + shrink while
+                 * living in LM.removedCells.
+                 */
+                if (
+                    cell.removed
+                ) {
+                    continue;
+                }
 
 
                 var x =
@@ -50243,14 +50566,87 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var r =
                     cell.size;
 
+
+                /*
+                 * ========================================================
+                 * EXPANDING LAND — EATER BODY PULSE
+                 * ========================================================
+                 *
+                 * The eat parser stores:
+                 *
+                 *      eater._eatPulseTime = Date.now()
+                 *
+                 * Cell.draw() already understands this for Canvas2D.
+                 *
+                 * GPU cell bodies bypass that Canvas radius, therefore
+                 * reproduce the exact same +8% spring-back here.
+                 *
+                 * Do not change cell.size itself. `r` is render-only.
+                 */
+                if (
+                    !cell.isVirus &&
+                    cell._eatPulseTime
+                ) {
+                    var _gpuPulseElapsed =
+                        _eatPulseRenderNow -
+                        cell._eatPulseTime;
+
+
+                    if (
+                        _gpuPulseElapsed >= 0 &&
+                        _gpuPulseElapsed <
+                            _EAT_PULSE_DURATION
+                    ) {
+                        /*
+                         * 1.0 at impact -> 0.0 at pulse end.
+                         */
+                        var _gpuPulseT =
+                            1 -
+                            (
+                                _gpuPulseElapsed /
+                                _EAT_PULSE_DURATION
+                            );
+
+
+                        /*
+                         * Quadratic spring-back.
+                         *
+                         * With _EAT_PULSE_MAGNITUDE = 0.08:
+                         *
+                         *      impact: radius * 1.08
+                         *      end:    radius * 1.00
+                         */
+                        r *=
+                            1 +
+                            (
+                                _EAT_PULSE_MAGNITUDE *
+                                _gpuPulseT *
+                                _gpuPulseT
+                            );
+                    }
+                    else {
+                        /*
+                         * Expired pulse. Clear the transient marker so this
+                         * branch becomes free on subsequent frames.
+                         */
+                        cell._eatPulseTime =
+                            0;
+                    }
+                }
+
+
                 /*
                  * Virus culling must include outline/glow.
+                 *
+                 * For ordinary cells use the pulsed render radius so an eater
+                 * near the viewport edge isn't clipped during its expansion.
                  */
                 var _cullRadius =
                     cell.isVirus
                         ? r +
                             _virusExtraRadius
                         : r;
+
 
                 if (
                     x + _cullRadius <
@@ -50264,6 +50660,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ) {
                     continue;
                 }
+
 
                 /* Video skins require Canvas2D. Abort the complete cell batch instead
                  * of allowing one video-skinned cell to fall behind the WebGL canvas. */
@@ -51197,27 +51594,195 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.ctx.save();
 
             this.ctx.translate(
-                (this.canvasWidth / 2) - (this.camX * this.scale),
-                (this.canvasHeight / 2) - (this.camY * this.scale)
+                (this.canvasWidth / 2) -
+                    (this.camX * this.scale),
+                (this.canvasHeight / 2) -
+                    (this.camY * this.scale)
             );
-            this.ctx.scale(this.scale, this.scale);
 
-            /* ── Screen Shake (Expanding Land death) ──
-             * Decaying random jitter applied after camera transform.
-             * Amplitude is in screen-px, divided by scale for world-space consistency. */
-            if (_screenShakeStart) {
-                var _shakeElapsed = Date.now() - _screenShakeStart;
-                if (_shakeElapsed < _SCREEN_SHAKE_DURATION) {
-                    var _shakeDecay = 1 - _shakeElapsed / _SCREEN_SHAKE_DURATION;
-                    _shakeDecay = _shakeDecay * _shakeDecay; /* quadratic falloff */
-                    var _shakeAmp = _SCREEN_SHAKE_AMPLITUDE / (this.scale || 1);
-                    var _shakeX = (Math.random() - 0.5) * 2 * _shakeAmp * _shakeDecay;
-                    var _shakeY = (Math.random() - 0.5) * 2 * _shakeAmp * _shakeDecay;
-                    this.ctx.translate(_shakeX, _shakeY);
-                } else {
-                    _screenShakeStart = 0;
+            this.ctx.scale(
+                this.scale,
+                this.scale
+            );
+
+
+            /*
+             * ============================================================
+             * EXPANDING LAND — COMPLETE RENDER-STACK SCREEN SHAKE
+             * ============================================================
+             *
+             * Do NOT shake only this.ctx.
+             *
+             * Legend Mod now has independent rendering surfaces:
+             *
+             *      backgroundCanvas
+             *      gridCanvas
+             *      canvas
+             *      glCanvas
+             *      overlayCanvas
+             *
+             * A Canvas2D translate therefore cannot move GPU-rendered cells.
+             *
+             * Shake all surfaces at DOM-compositor level instead.
+             *
+             * Values below are SCREEN pixels, so they must NOT be divided
+             * by camera zoom.
+             */
+            var _shakeScreenX =
+                0;
+
+            var _shakeScreenY =
+                0;
+
+
+            if (
+                _screenShakeStart
+            ) {
+                var _shakeElapsed =
+                    Date.now() -
+                    _screenShakeStart;
+
+
+                if (
+                    _shakeElapsed >= 0 &&
+                    _shakeElapsed <
+                        _SCREEN_SHAKE_DURATION
+                ) {
+                    /*
+                     * Linear time remaining:
+                     *
+                     *      1.0 at impact
+                     *      0.0 at 300 ms
+                     */
+                    var _shakeDecay =
+                        1 -
+                        (
+                            _shakeElapsed /
+                            _SCREEN_SHAKE_DURATION
+                        );
+
+
+                    /*
+                     * Quadratic decay makes the first impact strong but
+                     * rapidly settles instead of continuously vibrating.
+                     */
+                    _shakeDecay *=
+                        _shakeDecay;
+
+
+                    var _shakeAmplitude =
+                        _SCREEN_SHAKE_AMPLITUDE *
+                        _shakeDecay;
+
+
+                    _shakeScreenX =
+                        (
+                            Math.random() *
+                            2 -
+                            1
+                        ) *
+                        _shakeAmplitude;
+
+
+                    _shakeScreenY =
+                        (
+                            Math.random() *
+                            2 -
+                            1
+                        ) *
+                        _shakeAmplitude;
+                }
+                else {
+                    _screenShakeStart =
+                        0;
                 }
             }
+
+
+            /*
+             * Empty transform after the shake ends restores every layer to
+             * its exact normal location.
+             */
+            var _shakeCssTransform =
+                (
+                    _shakeScreenX !== 0 ||
+                    _shakeScreenY !== 0
+                )
+                    ? (
+                        'translate3d(' +
+                        _shakeScreenX.toFixed(2) +
+                        'px,' +
+                        _shakeScreenY.toFixed(2) +
+                        'px,0)'
+                    )
+                    : '';
+
+
+            /*
+             * Custom image/background world.
+             */
+            if (
+                this.backgroundCanvas &&
+                this.backgroundCanvas.style.transform !==
+                    _shakeCssTransform
+            ) {
+                this.backgroundCanvas.style.transform =
+                    _shakeCssTransform;
+            }
+
+
+            /*
+             * WebGL grid/background-world layer.
+             */
+            if (
+                this.gridCanvas &&
+                this.gridCanvas.style.transform !==
+                    _shakeCssTransform
+            ) {
+                this.gridCanvas.style.transform =
+                    _shakeCssTransform;
+            }
+
+
+            /*
+             * Main Canvas2D world.
+             */
+            if (
+                this.canvas &&
+                this.canvas.style.transform !==
+                    _shakeCssTransform
+            ) {
+                this.canvas.style.transform =
+                    _shakeCssTransform;
+            }
+
+
+            /*
+             * GPU/Pixi/WebGL world.
+             */
+            if (
+                this.glCanvas &&
+                this.glCanvas.style.transform !==
+                    _shakeCssTransform
+            ) {
+                this.glCanvas.style.transform =
+                    _shakeCssTransform;
+            }
+
+
+            /*
+             * Foreground render overlay.
+             */
+            if (
+                this.overlayCanvas &&
+                this.overlayCanvas.style.transform !==
+                    _shakeCssTransform
+            ) {
+                this.overlayCanvas.style.transform =
+                    _shakeCssTransform;
+            }
+
+
             /* ── Expanding Land: MAP-EXPAND entrance animation ──
              * Modifies the ACTUAL world transform so that the entire game world
              * (grid, border, cells, food, viruses — everything) physically scales
