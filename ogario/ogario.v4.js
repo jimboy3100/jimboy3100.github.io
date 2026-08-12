@@ -16991,6 +16991,14 @@ var _DEATH_PARTICLE_SIZE_RATIO = 0.18;/* fraction of victim radius */
 var _EAT_PULSE_DURATION = 150;        /* ms for eater size overshoot */
 var _EAT_PULSE_MAGNITUDE = 0.08;      /* 8% radius increase at peak */
 
+/* ── Screen Shake (Expanding Land death) ── */
+var _SCREEN_SHAKE_DURATION = 300;     /* ms */
+var _SCREEN_SHAKE_AMPLITUDE = 8;      /* max px offset (world-space) */
+var _screenShakeStart = 0;
+
+/* ── Death Slow-Mo (Expanding Land) ── */
+var _DEATH_SLOWMO_ANIM = 600;         /* ms — stretched eat animation for dying cell (vs normal 120) */
+
 var _deathParticles = [];
 
 /* Pre-rendered blob cache — one tiny canvas per colour. */
@@ -27805,7 +27813,7 @@ function thelegendmodproject() {
                 }
             }
 
-            var anim = defaultmapsettings.animation || 120;
+            var anim = this._deathSlowMo ? _DEATH_SLOWMO_ANIM : (defaultmapsettings.animation || 120);
             var time = LM.time - (this.updateTime || this.time);
             var delay = time / anim;
             if (delay < 0) {
@@ -39102,6 +39110,16 @@ Most cells eaten   : ${mostCellsEaten}
                         _spawnDeathBurst(eaten.x, eaten.y, eaten.size, eaten.color);
                     }
                     if (defaultmapsettings.eatPulse) eater._eatPulseTime = Date.now();
+                    /* ── Slow-mo + screen shake if this is a PLAYER cell being eaten ── */
+                    if (eaten.isPlayerCell) {
+                        eaten._deathSlowMo = true;
+                        eaten.startX = eaten.x;
+                        eaten.startY = eaten.y;
+                        eaten.startSize = eaten.size;
+                        eaten.targetSize = 0;  /* shrink as absorbed */
+                        eaten.updateTime = null;  /* force moveCell to use this.time for fresh start */
+                        _screenShakeStart = Date.now();
+                    }
                     eaten.removeCell();
                 }
             }
@@ -49674,6 +49692,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
             );
             this.ctx.scale(this.scale, this.scale);
 
+            /* ── Screen Shake (Expanding Land death) ──
+             * Decaying random jitter applied after camera transform.
+             * Amplitude is in screen-px, divided by scale for world-space consistency. */
+            if (_screenShakeStart) {
+                var _shakeElapsed = Date.now() - _screenShakeStart;
+                if (_shakeElapsed < _SCREEN_SHAKE_DURATION) {
+                    var _shakeDecay = 1 - _shakeElapsed / _SCREEN_SHAKE_DURATION;
+                    _shakeDecay = _shakeDecay * _shakeDecay; /* quadratic falloff */
+                    var _shakeAmp = _SCREEN_SHAKE_AMPLITUDE / (this.scale || 1);
+                    var _shakeX = (Math.random() - 0.5) * 2 * _shakeAmp * _shakeDecay;
+                    var _shakeY = (Math.random() - 0.5) * 2 * _shakeAmp * _shakeDecay;
+                    this.ctx.translate(_shakeX, _shakeY);
+                } else {
+                    _screenShakeStart = 0;
+                }
+            }
             /* ── Expanding Land: MAP-EXPAND entrance animation ──
              * Modifies the ACTUAL world transform so that the entire game world
              * (grid, border, cells, food, viruses — everything) physically scales
