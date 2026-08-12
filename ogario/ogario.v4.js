@@ -54123,417 +54123,427 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return result;
         },
 
-
-        /*
-         * ================================================================
-         * RAW WEBGL JELLY WORLD
-         * ================================================================
-         */
-        drawWebGLJellyBatch(
-            cellsArray
-        ) {
-            var _tGL =
-                performance.now();
-
+        drawWebGLCellBatch(cellsArray) {
+            var _tGL = performance.now();
 
             if (
                 !this.gl ||
-                !this.glJellyProgram ||
-                !this.glJellyStrokeProgram ||
-                !this.glJellyVAO ||
-                !this.glJellyVBO ||
                 !cellsArray ||
                 !cellsArray.length
             ) {
                 return false;
             }
 
-
             var gl =
                 this.gl;
 
 
             /*
-             * All-or-nothing GPU ownership.
-             *
-             * Never put one body on Canvas and one body on WebGL because they
-             * are separate DOM layers and can no longer interleave according
-             * to global cell size.
-             */
-            var abortBatch =
-                function () {
-                    for (
-                        var a = 0;
-                        a <
-                            cellsArray.length;
-                        a++
-                    ) {
-                        var c =
-                            cellsArray[a];
-
-
-                        if (
-                            !c
-                        ) {
-                            continue;
-                        }
-
-
-                        c._webglRendered =
-                            false;
-
-
-                        if (
-                            c._webglZ !==
-                            undefined
-                        ) {
-                            delete c
-                                ._webglZ;
-                        }
-                    }
-
-
-                    return false;
-                };
-
-
-            var showSkins =
-                defaultmapsettings
-                    .customSkins &&
-                LM.showCustomSkins;
-
-
-            var isParty =
-                ':party' ===
-                application.gameMode;
-
-
-            var virusStroke =
-                Math.max(
-                    0,
-                    Number(
-                        defaultSettings
-                            .virusStrokeSize
-                    ) ||
-                    0
-                );
-
-
-            var virusGlow =
-                defaultmapsettings
-                    .virusGlow
-                    ? Math.max(
-                        0,
-                        Number(
-                            defaultSettings
-                                .virusGlowSize
-                        ) ||
-                        0
-                    )
-                    : 0;
-
-
-            var glowRGB =
-                this.parseWebGLOverlayColor(
-                    defaultSettings
-                        .virusGlowColor,
-
-                    defaultSettings
-                        .virusStrokeColor ||
-                        '#33ff33'
-                );
-
-
-            var needFill =
-                0;
-
-
-            var needStroke =
-                0;
-
-
-            var needDraws =
-                0;
-
-
-            /*
              * ============================================================
-             * PASS 1
-             *
-             * Count geometry.
-             *
-             * CRITICAL:
-             *
-             * Use the SAME isInView() gate as CPU jelly preparation.
-             * Therefore every GPU-visible body is guaranteed to have a current
-             * post-updateNumPoints() perimeter.
+             * ONE AUTHORITATIVE WEBGL CELL RENDERER
              * ============================================================
+             *
+             * IMPORTANT:
+             *
+             * This is GLOBAL.
+             *
+             * There is intentionally NO:
+             *
+             *      expandingLand
+             *      isLegendWorld
+             *      serverType
+             *      server URL
+             *      game protocol
+             *
+             * condition here.
+             *
+             *
+             * SAME FUNCTION FOR EVERY SERVER:
+             *
+             *      drawWebGLCellBatch(cellsArray)
+             *
+             *
+             * Geometry only changes according to the USER'S jelly setting:
+             *
+             *
+             * JELLY OFF
+             * =========
+             *
+             *      existing instanced circle/SDF renderer
+             *
+             *
+             * JELLY ON
+             * ========
+             *
+             *      CPU:
+             *
+             *          updateNumPoints()
+             *          updateQuadtree()
+             *          movePoints()
+             *
+             *                  ↓
+             *
+             *             cell.points[]
+             *
+             *                  ↓
+             *
+             *      GPU dynamic vertex stream
+             *
+             *                  ↓
+             *
+             *          gl.TRIANGLE_FAN
+             *
+             *
+             * There is NOT a second world renderer.
              */
-            for (
-                var ci = 0;
-                ci <
-                    cellsArray.length;
-                ci++
-            ) {
-                var cc =
-                    cellsArray[ci];
-
-
-                if (
-                    !cc ||
-                    cc.invisible ||
-                    cc.removed ||
-                    cc.isFood ||
-                    this
-                        ._isDuplicateWebGLSpectatorCell(
-                            cc
-                        )
-                ) {
-                    continue;
-                }
-
-
-                if (
-                    LM.hideSmallBots &&
-                    cc.size <=
-                        36
-                ) {
-                    continue;
-                }
-
-
-                if (
-                    typeof cc.isInView ===
-                        'function' &&
-                    !cc.isInView()
-                ) {
-                    continue;
-                }
-
-
-                if (
-                    !cc.points ||
-                    cc.points.length <
-                        3
-                ) {
-                    return abortBatch();
-                }
-
-
-                needFill +=
-                    cc.points.length +
-                    2;
-
-
-                needDraws++;
-
-
-                if (
-                    cc.isVirus
-                ) {
-                    if (
-                        virusStroke >
-                        0
-                    ) {
-                        needStroke +=
-                            cc.points.length *
-                            6;
-                    }
-
-
-                    if (
-                        virusGlow >
-                        0
-                    ) {
-                        needStroke +=
-                            cc.points.length *
-                            6;
-                    }
-                }
-                else if (
-                    showSkins &&
-                    !cc.isEjected &&
-                    (
-                        cc.targetNick ||
-                        cc.skin
-                    )
-                ) {
-                    /*
-                     * Conservative capacity for the normal-cell skin perimeter.
-                     *
-                     * Canvas jelly skins finish by stroking the dynamic body
-                     * perimeter after clipping the skin. The WebGL path must
-                     * reserve enough triangle-band vertices to reproduce that.
-                     *
-                     * If no GPU skin actually resolves in PASS 2, these
-                     * vertices simply remain unused.
-                     */
-                    needStroke +=
-                        cc.points.length *
-                        6;
-                }
-            }
-
-
             if (
-                !this.ensureWebGLJellyCapacity(
-                    needFill,
-                    needStroke,
-                    needDraws
-                )
+                defaultmapsettings
+                    .jellyPhisycs
             ) {
-                return abortBatch();
-            }
-
-
-            this._glJellyVertexCount =
-                0;
-
-            this._glJellyStrokeVertexCount =
-                0;
-
-
-            var drawCount =
-                0;
-
-
-            var skinArrayAtStart =
-                this.glSkinArray;
-
-
-            var viewScale =
-                this.scale ||
-                1;
-
-
-            /*
-             * ============================================================
-             * PASS 2
-             *
-             * Write VBO buffers for fill & stroke.
-             * ============================================================
-             */
-            for (
-                var p2 = 0;
-                p2 <
-                    cellsArray.length;
-                p2++
-            ) {
-                var cell =
-                    cellsArray[p2];
-
-
+                /*
+                 * Jelly geometry requires its variable-length GPU resources.
+                 *
+                 * Failure means:
+                 *
+                 *      return false
+                 *
+                 * and the caller atomically falls back to Canvas for the whole
+                 * cell world.
+                 */
                 if (
-                    !cell ||
-                    cell.invisible ||
-                    cell.removed ||
-                    cell.isFood ||
-                    this
-                        ._isDuplicateWebGLSpectatorCell(
-                            cell
-                        )
+                    !this.glJellyProgram ||
+                    !this.glJellyStrokeProgram ||
+                    !this.glJellyVAO ||
+                    !this.glJellyVBO ||
+                    !this.glJellyStrokeVAO ||
+                    !this.glJellyStrokeVBO
                 ) {
-                    continue;
-                }
-
-
-                if (
-                    LM.hideSmallBots &&
-                    cell.size <=
-                        36
-                ) {
-                    continue;
-                }
-
-
-                if (
-                    typeof cell.isInView ===
-                        'function' &&
-                    !cell.isInView()
-                ) {
-                    continue;
-                }
-
-
-                var z =
-                    1.0 -
-                    (
-                        p2 +
-                        1
-                    ) /
-                    (
-                        cellsArray.length +
-                        1
-                    );
-
-
-                cell._webglRendered =
-                    true;
-
-                cell._webglZ =
-                    z;
-
-
-                var skinRes =
-                    this._resolveWebGLJellySkin(
-                        cell,
-                        isParty,
-                        skinArrayAtStart
-                    );
-
-
-                if (
-                    skinRes.requested &&
-                    skinRes.layer <
-                        0
-                ) {
-                    return abortBatch();
-                }
-
-
-                if (
-                    skinRes.arrayChanged
-                ) {
-                    /*
-                     * uploadSkinTexture() rebuilt the COMPLETE
-                     * TEXTURE_2D_ARRAY.
-                     *
-                     * Any texture-layer numbers already written for cells
-                     * earlier in this same GPU frame are now invalid.
-                     *
-                     * DO NOT continue with a mixture of old/new layer numbers.
-                     *
-                     * Abort this GPU frame atomically.
-                     * The next frame begins with the rebuilt array and resolves
-                     * every cell against the same texture array.
-                     */
-                    return abortBatch();
+                    return false;
                 }
 
 
                 /*
                  * ========================================================
-                 * BODY / STROKE COLOR + ALPHA
+                 * ATOMIC FAILURE
                  * ========================================================
                  *
-                 * IMPORTANT:
+                 * Never mix:
                  *
-                 * Jelly ON must NOT silently switch LegendMod to a different
-                 * color model.
+                 *      some cell bodies on Canvas
+                 *      some cell bodies on WebGL
                  *
-                 * Reproduce the same authoritative color rules already used
-                 * by Canvas and by the existing non-jelly WebGL renderer:
-                 *
-                 *     viruses
-                 *     mothercells
-                 *     virColors
-                 *     myCustomColor
-                 *     oppColors
-                 *     transparentCells
-                 *     transparentViruses
+                 * because these are separate DOM layers and global
+                 * small->large ordering would become impossible.
                  */
-                var bodyHex;
-                var strokeHex;
+                var abortCellBatch =
+                    function () {
+                        for (
+                            var abortIndex = 0;
+                            abortIndex <
+                                cellsArray.length;
+                            abortIndex++
+                        ) {
+                            var abortCell =
+                                cellsArray[
+                                    abortIndex
+                                ];
+
+
+                            if (
+                                !abortCell
+                            ) {
+                                continue;
+                            }
+
+
+                            abortCell
+                                ._webglRendered =
+                                false;
+
+
+                            if (
+                                abortCell
+                                    ._webglCellIdx !==
+                                undefined
+                            ) {
+                                delete abortCell
+                                    ._webglCellIdx;
+                            }
+
+
+                            if (
+                                abortCell
+                                    ._webglZ !==
+                                undefined
+                            ) {
+                                delete abortCell
+                                    ._webglZ;
+                            }
+                        }
+
+
+                        return false;
+                    };
+
+
+                var showSkins =
+                    defaultmapsettings
+                        .customSkins &&
+                    LM.showCustomSkins;
+
+
+                var isParty =
+                    ':party' ===
+                    application.gameMode;
+
+
+                /*
+                 * ========================================================
+                 * VIRUS VISUAL CONSTANTS
+                 * ========================================================
+                 */
+                var virusStroke =
+                    Math.max(
+                        0,
+                        Number(
+                            defaultSettings
+                                .virusStrokeSize
+                        ) ||
+                        0
+                    );
+
+
+                var virusGlow =
+                    defaultmapsettings
+                        .virusGlow
+                        ? Math.max(
+                            0,
+                            Number(
+                                defaultSettings
+                                    .virusGlowSize
+                            ) ||
+                            0
+                        )
+                        : 0;
+
+
+                var glowRGB =
+                    this.parseWebGLOverlayColor(
+                        defaultSettings
+                            .virusGlowColor,
+
+                        defaultSettings
+                            .virusStrokeColor ||
+                            '#33ff33'
+                    );
+
+
+                var needFill =
+                    0;
+
+
+                var needStroke =
+                    0;
+
+
+                var needDraws =
+                    0;
+
+
+                /*
+                 * ========================================================
+                 * PASS 1
+                 *
+                 * COUNT CURRENT DYNAMIC GEOMETRY
+                 * ========================================================
+                 *
+                 * At this point movePoints() has ALREADY run.
+                 *
+                 * Therefore cell.points contains this frame's final jelly
+                 * perimeter.
+                 */
+                for (
+                    var jellyCountIndex = 0;
+                    jellyCountIndex <
+                        cellsArray.length;
+                    jellyCountIndex++
+                ) {
+                    var jellyCountCell =
+                        cellsArray[
+                            jellyCountIndex
+                        ];
+
+
+                    if (
+                        !jellyCountCell ||
+                        jellyCountCell.invisible ||
+                        jellyCountCell.removed ||
+                        jellyCountCell.isFood ||
+                        this
+                            ._isDuplicateWebGLSpectatorCell(
+                                jellyCountCell
+                            )
+                    ) {
+                        continue;
+                    }
+
+
+                    if (
+                        LM.hideSmallBots &&
+                        jellyCountCell.size <=
+                            36
+                    ) {
+                        continue;
+                    }
+
+
+                    if (
+                        typeof jellyCountCell
+                            .isInView ===
+                            'function'
+                    ) {
+                        try {
+                            if (
+                                !jellyCountCell
+                                    .isInView()
+                            ) {
+                                continue;
+                            }
+                        }
+                        catch (
+                            jellyGpuViewError
+                        ) {
+                            /*
+                             * Do not kill the complete renderer because one
+                             * visibility helper threw.
+                             *
+                             * Treat the cell as potentially visible.
+                             */
+                        }
+                    }
+
+
+                    /*
+                     * A GPU jelly cell MUST have the current CPU perimeter.
+                     *
+                     * If not, Canvas owns the whole world for this frame.
+                     */
+                    if (
+                        !jellyCountCell.points ||
+                        jellyCountCell
+                            .points
+                            .length <
+                            3
+                    ) {
+                        return abortCellBatch();
+                    }
+
+
+                    needFill +=
+                        jellyCountCell
+                            .points
+                            .length +
+                        2;
+
+
+                    needDraws++;
+
+
+                    /*
+                     * Real thick outlines are triangle bands.
+                     *
+                     * Never depend on WebGL lineWidth because browser WebGL
+                     * commonly clamps it to one physical pixel.
+                     */
+                    if (
+                        jellyCountCell
+                            .isVirus
+                    ) {
+                        if (
+                            virusStroke >
+                            0
+                        ) {
+                            needStroke +=
+                                jellyCountCell
+                                    .points
+                                    .length *
+                                6;
+                        }
+
+
+                        if (
+                            virusGlow >
+                            0
+                        ) {
+                            needStroke +=
+                                jellyCountCell
+                                    .points
+                                    .length *
+                                6;
+                        }
+                    }
+                    else if (
+                        showSkins &&
+                        !jellyCountCell
+                            .isEjected &&
+                        (
+                            jellyCountCell
+                                .targetNick ||
+                            jellyCountCell
+                                .skin
+                        )
+                    ) {
+                        /*
+                         * Dynamic custom-skin perimeter.
+                         */
+                        needStroke +=
+                            jellyCountCell
+                                .points
+                                .length *
+                            6;
+                    }
+                }
+
+
+                if (
+                    !this
+                        .ensureWebGLJellyCapacity(
+                            needFill,
+                            needStroke,
+                            needDraws
+                        )
+                ) {
+                    return abortCellBatch();
+                }
+
+
+                this
+                    ._glJellyVertexCount =
+                    0;
+
+
+                this
+                    ._glJellyStrokeVertexCount =
+                    0;
+
+
+                var jellyDrawCount =
+                    0;
+
+
+                /*
+                 * Keep the identity of the texture array for this WHOLE frame.
+                 *
+                 * If uploadSkinTexture() has to rebuild the array mid-frame,
+                 * old layer numbers immediately become invalid.
+                 */
+                var skinArrayAtStart =
+                    this.glSkinArray;
+
+
+                var jellyViewScale =
+                    this.scale ||
+                    1;
 
 
                 var isPlaying =
@@ -54541,741 +54551,822 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         (
                             LM.play &&
                             LM.playerCells &&
-                            LM.playerCells.length
+                            LM.playerCells
+                                .length
                         ) ||
                         (
-                            window.multiboxPlayerEnabled &&
+                            window
+                                .multiboxPlayerEnabled &&
                             LM.playerCellsMulti &&
-                            LM.playerCellsMulti.length
+                            LM.playerCellsMulti
+                                .length
                         )
                     );
 
 
                 /*
                  * ========================================================
-                 * VIRUS COLOR
+                 * PASS 2
+                 *
+                 * WRITE FINAL cell.points[] TO THE GPU STREAM
                  * ========================================================
-                 */
-                if (
-                    cell.isVirus
-                ) {
-                    var rawVirusMass =
-                        ~~(
-                            cell.size *
-                            cell.size /
-                            100
-                        );
-
-
-                    cell.mass =
-                        rawVirusMass;
-
-
-                    /*
-                     * Preserve LegendMod's existing normal-virus /
-                     * mothercell thresholds.
-                     */
-                    if (
-                        rawVirusMass <=
-                        200
-                    ) {
-                        cell.virusColor =
-                            defaultSettings
-                                .virusColor;
-
-
-                        cell.virusStroke =
-                            defaultSettings
-                                .virusStrokeColor;
-                    }
-                    else if (
-                        rawVirusMass >
-                        220
-                    ) {
-                        cell.virusColor =
-                            defaultSettings
-                                .mVirusColor;
-
-
-                        cell.virusStroke =
-                            defaultSettings
-                                .mVirusStrokeColor;
-                    }
-
-
-                    /*
-                     * Dynamic virus colors override configured static colors.
-                     */
-                    if (
-                        defaultmapsettings
-                            .virColors &&
-                        LM.play
-                    ) {
-                        bodyHex =
-                            application
-                                .setVirusColor(
-                                    cell.size
-                                );
-
-
-                        strokeHex =
-                            application
-                                .setVirusStrokeColor(
-                                    cell.size
-                                );
-                    }
-                    else {
-                        bodyHex =
-                            cell.virusColor ||
-                            defaultSettings
-                                .virusColor ||
-                            '#33ff33';
-
-
-                        strokeHex =
-                            cell.virusStroke ||
-                            defaultSettings
-                                .virusStrokeColor ||
-                            bodyHex;
-                    }
-                }
-
-                /*
-                 * ========================================================
-                 * NORMAL CELL COLOR
-                 * ========================================================
-                 */
-                else {
-                    bodyHex =
-                        cell.color ||
-                        '#808080';
-
-
-                    if (
-                        isPlaying
-                    ) {
-                        /*
-                         * Own configured custom cell color.
-                         */
-                        if (
-                            (
-                                cell.isPlayerCell ||
-                                cell.playerCellsMulti
-                            ) &&
-                            defaultmapsettings
-                                .myCustomColor &&
-                            ogarcopythelb.color &&
-                            LM.gameMode !==
-                                ':teams'
-                        ) {
-                            bodyHex =
-                                ogarcopythelb
-                                    .color;
-                        }
-
-                        /*
-                         * Opponent classification color.
-                         */
-                        else if (
-                            defaultmapsettings
-                                .oppColors &&
-                            !defaultmapsettings
-                                .oppRings &&
-                            !defaultmapsettings
-                                .cellContours &&
-                            LM.gameMode !==
-                                ':teams' &&
-                            cell.oppColor
-                        ) {
-                            bodyHex =
-                                cell.oppColor;
-                        }
-                    }
-
-
-                    strokeHex =
-                        bodyHex;
-                }
-
-
-                /*
-                 * Never let malformed/transparent cell color make the entire
-                 * GPU cell disappear.
-                 */
-                if (
-                    typeof bodyHex !==
-                        'string' ||
-                    !bodyHex.trim() ||
-                    bodyHex
-                        .trim()
-                        .toLowerCase() ===
-                        'transparent'
-                ) {
-                    bodyHex =
-                        '#808080';
-                }
-
-
-                var bodyRGB =
-                    this.parseWebGLOverlayColor(
-                        bodyHex,
-                        cell.isVirus
-                            ? '#33ff33'
-                            : '#808080'
-                    );
-
-
-                var strokeRGB =
-                    this.parseWebGLOverlayColor(
-                        strokeHex,
-                        bodyHex
-                    );
-
-
-                /*
-                 * WebGL text occurs before Cell.draw() performs its normal
-                 * mass calculation, therefore keep mass current here.
-                 */
-                if (
-                    !cell.mass &&
-                    cell.size >
-                        40
-                ) {
-                    cell.mass =
-                        ~~(
-                            cell.size *
-                            cell.size /
-                            100
-                        );
-                }
-
-
-                /*
-                 * ========================================================
-                 * BODY ALPHA
-                 * ========================================================
-                 */
-                var bodyA =
-                    1.0;
-
-
-                if (
-                    cell.isVirus &&
-                    defaultmapsettings
-                        .transparentViruses &&
-                    defaultSettings
-                        .virusAlpha <
-                        0.99
-                ) {
-                    /*
-                     * CORRECT SETTING:
-                     *
-                     *     virusAlpha
-                     *
-                     * NOT:
-                     *
-                     *     virusesAlpha
-                     *
-                     * virusesAlpha does not exist in LegendMod's theme model.
-                     */
-                    bodyA =
-                        Math.max(
-                            0,
-                            Math.min(
-                                1,
-                                Number(
-                                    defaultSettings
-                                        .virusAlpha
-                                ) ||
-                                0
-                            )
-                        );
-                }
-                else if (
-                    !cell.isVirus &&
-                    defaultmapsettings
-                        .transparentCells &&
-                    defaultSettings
-                        .cellsAlpha <
-                        0.99
-                ) {
-                    bodyA =
-                        Math.max(
-                            0,
-                            Math.min(
-                                1,
-                                Number(
-                                    defaultSettings
-                                        .cellsAlpha
-                                ) ||
-                                0
-                            )
-                        );
-                }
-
-
-                /*
-                 * IMPORTANT:
-                 *
-                 * bodyA is ONLY the fill/body alpha.
-                 *
-                 * Canvas restores globalAlpha before drawing a virus stroke,
-                 * therefore virus border + glow below must NOT multiply by
-                 * bodyA.
-                 */
-
-
-                var pts =
-                    cell.points;
-
-                var nPts =
-                    pts.length;
-
-
-                var fillStart =
-                    this._glJellyVertexCount;
-
-
-                /*
-                 * Center vertex.
-                 */
-                this.writeWebGLJellyVertex(
-                    cell.x,
-                    cell.y,
-                    0.5,
-                    0.5,
-                    bodyRGB[0],
-                    bodyRGB[1],
-                    bodyRGB[2],
-                    bodyA,
-                    skinRes.layer,
-                    skinRes.alpha,
-                    z
-                );
-
-
-                /*
-                 * ========================================================
-                 * PERIMETER VERTICES + SKIN UV
-                 * ========================================================
-                 *
-                 * Dynamic geometry:
-                 *
-                 *      pPt.x / pPt.y
-                 *
-                 * Stable texture reference:
-                 *
-                 *      cell.x / cell.y / maxPointRad
-                 *
-                 * DO NOT normalize every frame against minX/maxX/minY/maxY.
-                 *
-                 * Bounding-box UV mapping causes the complete skin image to
-                 * breathe, resize and slide whenever one jelly point changes.
-                 *
-                 * Delta's WebGL renderer keeps texture coordinates associated
-                 * with the cell/perimeter rather than re-normalizing the whole
-                 * current polygon bounding box each frame.
-                 */
-
-
-                /*
-                 * Canvas jelly skins use:
-                 *
-                 *     maxPointRad + border
-                 *
-                 * as their image extent.
-                 */
-                var skinBorder =
-                    (
-                        skinRes.layer >=
-                        0
-                    )
-                        ? Math.max(
-                            ~~(
-                                cell.size /
-                                50
-                            ),
-                            10
-                        )
-                        : 0;
-
-
-                var texRadius =
-                    Math.max(
-                        1,
-
-                        Number(
-                            cell.maxPointRad
-                        ) ||
-
-                        Number(
-                            cell.size
-                        ) ||
-
-                        1
-                    ) +
-                    skinBorder;
-
-
-                /*
-                 * Current simulated perimeter.
                  */
                 for (
-                    var ptI = 0;
-                    ptI <
-                        nPts;
-                    ptI++
+                    var jellyIndex = 0;
+                    jellyIndex <
+                        cellsArray.length;
+                    jellyIndex++
                 ) {
-                    var pPt =
-                        pts[
-                            ptI
+                    var cell =
+                        cellsArray[
+                            jellyIndex
                         ];
 
 
+                    if (
+                        !cell ||
+                        cell.invisible ||
+                        cell.removed ||
+                        cell.isFood ||
+                        this
+                            ._isDuplicateWebGLSpectatorCell(
+                                cell
+                            )
+                    ) {
+                        continue;
+                    }
+
+
+                    if (
+                        LM.hideSmallBots &&
+                        cell.size <=
+                            36
+                    ) {
+                        continue;
+                    }
+
+
+                    if (
+                        typeof cell
+                            .isInView ===
+                            'function'
+                    ) {
+                        try {
+                            if (
+                                !cell.isInView()
+                            ) {
+                                continue;
+                            }
+                        }
+                        catch (
+                            jellyGpuCellViewError
+                        ) {
+                        }
+                    }
+
+
+                    if (
+                        !cell.points ||
+                        cell.points.length <
+                            3
+                    ) {
+                        return abortCellBatch();
+                    }
+
+
+                    var points =
+                        cell.points;
+
+
+                    var pointCount =
+                        points.length;
+
+
                     /*
-                     * Cell-centred UV.
+                     * ====================================================
+                     * GLOBAL Z
+                     * ====================================================
                      *
-                     * Point movement deforms the texture naturally without
-                     * rescaling the entire texture coordinate system.
+                     * LM.cells is already sorted:
+                     *
+                     *      small -> large
+                     *
+                     * Larger cells receive a lower depth value and therefore
+                     * appear over smaller cells.
+                     *
+                     * Use the original cellsArray index. Do not construct an
+                     * independent jelly-only ordering.
                      */
-                    var u =
-                        0.5 +
-                        (
-                            pPt.x -
-                            cell.x
-                        ) /
-                        (
-                            2 *
-                            texRadius
+                    var z =
+                        cellsArray.length >
+                            1
+                            ? 0.9 -
+                                (
+                                    jellyIndex /
+                                    (
+                                        cellsArray
+                                            .length -
+                                        1
+                                    )
+                                ) *
+                                0.89
+                            : 0.45;
+
+
+                    /*
+                     * ====================================================
+                     * SHARED LEGEND MOD COLOR RULES
+                     * ====================================================
+                     */
+                    var bodyHex;
+                    var strokeHex;
+
+
+                    /*
+                     * ---------------- VIRUS ----------------
+                     */
+                    if (
+                        cell.isVirus
+                    ) {
+                        var rawVirusMass =
+                            ~~(
+                                cell.size *
+                                cell.size /
+                                100
+                            );
+
+
+                        cell.mass =
+                            rawVirusMass;
+
+
+                        /*
+                         * Preserve normal-virus / mother-virus thresholds.
+                         */
+                        if (
+                            rawVirusMass <=
+                            200
+                        ) {
+                            cell.virusColor =
+                                defaultSettings
+                                    .virusColor;
+
+
+                            cell.virusStroke =
+                                defaultSettings
+                                    .virusStrokeColor;
+                        }
+                        else if (
+                            rawVirusMass >
+                            220
+                        ) {
+                            cell.virusColor =
+                                defaultSettings
+                                    .mVirusColor;
+
+
+                            cell.virusStroke =
+                                defaultSettings
+                                    .mVirusStrokeColor;
+                        }
+
+
+                        if (
+                            defaultmapsettings
+                                .virColors &&
+                            LM.play
+                        ) {
+                            bodyHex =
+                                application
+                                    .setVirusColor(
+                                        cell.size
+                                    );
+
+
+                            strokeHex =
+                                application
+                                    .setVirusStrokeColor(
+                                        cell.size
+                                    );
+                        }
+                        else {
+                            bodyHex =
+                                cell.virusColor ||
+                                defaultSettings
+                                    .virusColor ||
+                                '#33ff33';
+
+
+                            strokeHex =
+                                cell.virusStroke ||
+                                defaultSettings
+                                    .virusStrokeColor ||
+                                bodyHex;
+                        }
+                    }
+
+
+                    /*
+                     * ---------------- ORDINARY CELL ----------------
+                     */
+                    else {
+                        bodyHex =
+                            cell.color ||
+                            '#808080';
+
+
+                        if (
+                            isPlaying
+                        ) {
+                            /*
+                             * Own player color.
+                             */
+                            if (
+                                (
+                                    cell
+                                        .isPlayerCell ||
+                                    cell
+                                        .isPlayerCellMulti ||
+                                    cell
+                                        .playerCellsMulti
+                                ) &&
+                                defaultmapsettings
+                                    .myCustomColor &&
+                                ogarcopythelb
+                                    .color &&
+                                LM.gameMode !==
+                                    ':teams'
+                            ) {
+                                bodyHex =
+                                    ogarcopythelb
+                                        .color;
+                            }
+
+
+                            /*
+                             * Opponent classification color.
+                             */
+                            else if (
+                                defaultmapsettings
+                                    .oppColors &&
+                                !defaultmapsettings
+                                    .oppRings &&
+                                !defaultmapsettings
+                                    .cellContours &&
+                                LM.gameMode !==
+                                    ':teams' &&
+                                cell.oppColor
+                            ) {
+                                bodyHex =
+                                    cell
+                                        .oppColor;
+                            }
+                        }
+
+
+                        strokeHex =
+                            bodyHex;
+                    }
+
+
+                    /*
+                     * Never let a malformed/missing color make a GPU body
+                     * completely disappear.
+                     */
+                    if (
+                        typeof bodyHex !==
+                            'string' ||
+                        !bodyHex.trim() ||
+                        bodyHex
+                            .trim()
+                            .toLowerCase() ===
+                            'transparent'
+                    ) {
+                        bodyHex =
+                            '#808080';
+                    }
+
+
+                    var bodyRGB =
+                        this
+                            .parseWebGLOverlayColor(
+                                bodyHex,
+
+                                cell.isVirus
+                                    ? '#33ff33'
+                                    : '#808080'
+                            );
+
+
+                    var strokeRGB =
+                        this
+                            .parseWebGLOverlayColor(
+                                strokeHex,
+                                bodyHex
+                            );
+
+
+                    /*
+                     * WebGL text runs before Cell.draw() performs some of its
+                     * Canvas mass bookkeeping.
+                     */
+                    if (
+                        !cell.mass &&
+                        cell.size >
+                            40
+                    ) {
+                        cell.mass =
+                            ~~(
+                                cell.size *
+                                cell.size /
+                                100
+                            );
+                    }
+
+
+                    /*
+                     * ====================================================
+                     * BODY ALPHA
+                     * ====================================================
+                     */
+                    var bodyAlpha =
+                        1.0;
+
+
+                    if (
+                        cell.isVirus &&
+                        defaultmapsettings
+                            .transparentViruses &&
+                        defaultSettings
+                            .virusAlpha <
+                            0.99
+                    ) {
+                        /*
+                         * Correct setting is virusAlpha.
+                         *
+                         * Do NOT use virusesAlpha.
+                         */
+                        bodyAlpha =
+                            Math.max(
+                                0,
+                                Math.min(
+                                    1,
+                                    Number(
+                                        defaultSettings
+                                            .virusAlpha
+                                    ) ||
+                                    0
+                                )
+                            );
+                    }
+                    else if (
+                        !cell.isVirus &&
+                        defaultmapsettings
+                            .transparentCells &&
+                        defaultSettings
+                            .cellsAlpha <
+                            0.99
+                    ) {
+                        bodyAlpha =
+                            Math.max(
+                                0,
+                                Math.min(
+                                    1,
+                                    Number(
+                                        defaultSettings
+                                            .cellsAlpha
+                                    ) ||
+                                    0
+                                )
+                            );
+                    }
+
+
+                    /*
+                     * ====================================================
+                     * SKIN RESOLUTION
+                     * ====================================================
+                     */
+                    var skinRes =
+                        this
+                            ._resolveWebGLJellySkin(
+                                cell,
+                                isParty,
+                                skinArrayAtStart
+                            );
+
+
+                    /*
+                     * Texture array recreation invalidates every previous
+                     * texture layer already written this frame.
+                     *
+                     * Atomic fallback now.
+                     *
+                     * Next frame starts against the rebuilt array.
+                     */
+                    if (
+                        skinRes
+                            .arrayChanged
+                    ) {
+                        return abortCellBatch();
+                    }
+
+
+                    if (
+                        skinRes.requested &&
+                        skinRes.layer <
+                            0
+                    ) {
+                        return abortCellBatch();
+                    }
+
+
+                    /*
+                     * Canvas's jelly skin branch uses a visible perimeter
+                     * border of at least 10 world units.
+                     */
+                    var skinBorder =
+                        skinRes.layer >=
+                            0
+                            ? Math.max(
+                                ~~(
+                                    cell.size /
+                                    50
+                                ),
+                                10
+                            )
+                            : 0;
+
+
+                    /*
+                     * ====================================================
+                     * STABLE SKIN UV REFERENCE
+                     * ====================================================
+                     *
+                     * DO NOT normalize skin coordinates using each frame's:
+                     *
+                     *      minX / maxX / minY / maxY
+                     *
+                     * because that makes the entire skin image resize whenever
+                     * one jelly point moves.
+                     *
+                     * Keep the texture anchored on the cell center.
+                     */
+                    var textureRadius =
+                        Math.max(
+                            1,
+
+                            Number(
+                                cell
+                                    .maxPointRad
+                            ) ||
+
+                            Number(
+                                cell.size
+                            ) ||
+
+                            1
+                        ) +
+                        skinBorder;
+
+
+                    var fillStart =
+                        this
+                            ._glJellyVertexCount;
+
+
+                    /*
+                     * ====================================================
+                     * TRIANGLE FAN CENTER
+                     * ====================================================
+                     */
+                    this
+                        .writeWebGLJellyVertex(
+                            cell.x,
+                            cell.y,
+
+                            0.5,
+                            0.5,
+
+                            bodyRGB[0],
+                            bodyRGB[1],
+                            bodyRGB[2],
+                            bodyAlpha,
+
+                            skinRes.layer,
+                            skinRes.alpha,
+
+                            z
                         );
 
 
-                    var v =
-                        0.5 +
-                        (
-                            pPt.y -
-                            cell.y
-                        ) /
-                        (
-                            2 *
-                            texRadius
+                    /*
+                     * ====================================================
+                     * FINAL CURRENT-FRAME PERIMETER
+                     * ====================================================
+                     */
+                    for (
+                        var pointIndex = 0;
+                        pointIndex <
+                            pointCount;
+                        pointIndex++
+                    ) {
+                        var point =
+                            points[
+                                pointIndex
+                            ];
+
+
+                        var u =
+                            0.5 +
+                            (
+                                point.x -
+                                cell.x
+                            ) /
+                            (
+                                2 *
+                                textureRadius
+                            );
+
+
+                        var v =
+                            0.5 +
+                            (
+                                point.y -
+                                cell.y
+                            ) /
+                            (
+                                2 *
+                                textureRadius
+                            );
+
+
+                        this
+                            .writeWebGLJellyVertex(
+                                point.x,
+                                point.y,
+
+                                u,
+                                v,
+
+                                bodyRGB[0],
+                                bodyRGB[1],
+                                bodyRGB[2],
+                                bodyAlpha,
+
+                                skinRes.layer,
+                                skinRes.alpha,
+
+                                z
+                            );
+                    }
+
+
+                    /*
+                     * Explicitly close TRIANGLE_FAN with point zero.
+                     */
+                    var firstPoint =
+                        points[0];
+
+
+                    this
+                        .writeWebGLJellyVertex(
+                            firstPoint.x,
+                            firstPoint.y,
+
+                            0.5 +
+                            (
+                                firstPoint.x -
+                                cell.x
+                            ) /
+                            (
+                                2 *
+                                textureRadius
+                            ),
+
+                            0.5 +
+                            (
+                                firstPoint.y -
+                                cell.y
+                            ) /
+                            (
+                                2 *
+                                textureRadius
+                            ),
+
+                            bodyRGB[0],
+                            bodyRGB[1],
+                            bodyRGB[2],
+                            bodyAlpha,
+
+                            skinRes.layer,
+                            skinRes.alpha,
+
+                            z
                         );
 
 
-                    this.writeWebGLJellyVertex(
-                        pPt.x,
-                        pPt.y,
+                    this
+                        .glJellyDrawStarts[
+                            jellyDrawCount
+                        ] =
+                        fillStart;
 
-                        u,
-                        v,
 
-                        bodyRGB[0],
-                        bodyRGB[1],
-                        bodyRGB[2],
+                    this
+                        .glJellyDrawCounts[
+                            jellyDrawCount
+                        ] =
+                        pointCount +
+                        2;
 
-                        bodyA,
 
-                        skinRes.layer,
-                        skinRes.alpha,
+                    jellyDrawCount++;
 
-                        z
-                    );
+
+                    /*
+                     * ====================================================
+                     * VIRUS PERIMETER
+                     * ====================================================
+                     *
+                     * DO NOT build another rigid spike polygon.
+                     *
+                     * movePoints() has already generated the alternating
+                     * dynamic virus points.
+                     *
+                     * Therefore body, stroke and glow all follow SAME points[].
+                     */
+                    if (
+                        cell.isVirus
+                    ) {
+                        /*
+                         * Virus glow.
+                         *
+                         * virusAlpha controls body transparency only.
+                         */
+                        if (
+                            virusGlow >
+                            0
+                        ) {
+                            this
+                                .writeWebGLJellyStrokeBand(
+                                    cell,
+                                    points,
+
+                                    virusStroke *
+                                        0.5,
+
+                                    virusStroke *
+                                        0.5 +
+                                        virusGlow,
+
+                                    glowRGB[0],
+                                    glowRGB[1],
+                                    glowRGB[2],
+
+                                    0.45,
+                                    0.0,
+
+                                    z
+                                );
+                        }
+
+
+                        /*
+                         * Virus border.
+                         *
+                         * Full alpha intentionally, matching Canvas behavior.
+                         */
+                        if (
+                            virusStroke >
+                            0
+                        ) {
+                            this
+                                .writeWebGLJellyStrokeBand(
+                                    cell,
+                                    points,
+
+                                    -virusStroke *
+                                        0.5,
+
+                                    virusStroke *
+                                        0.5,
+
+                                    strokeRGB[0],
+                                    strokeRGB[1],
+                                    strokeRGB[2],
+
+                                    1.0,
+                                    1.0,
+
+                                    z
+                                );
+                        }
+                    }
+
+
+                    /*
+                     * ====================================================
+                     * NORMAL CUSTOM-SKIN PERIMETER
+                     * ====================================================
+                     */
+                    else if (
+                        skinRes.layer >=
+                            0
+                    ) {
+                        this
+                            .writeWebGLJellyStrokeBand(
+                                cell,
+                                points,
+
+                                -skinBorder *
+                                    0.5,
+
+                                skinBorder *
+                                    0.5,
+
+                                bodyRGB[0],
+                                bodyRGB[1],
+                                bodyRGB[2],
+
+                                skinRes.alpha,
+                                skinRes.alpha,
+
+                                z
+                            );
+                    }
+
+
+                    /*
+                     * Cell.draw() now knows the actual world body is GPU-owned.
+                     */
+                    cell
+                        ._webglRendered =
+                        true;
+
+
+                    cell._webglZ =
+                        z;
                 }
 
 
                 /*
-                 * TRIANGLE_FAN must explicitly close with point 0:
-                 *
-                 *      center
-                 *      p0
-                 *      p1
-                 *      ...
-                 *      pN
-                 *      p0
+                 * No visible world cells is still a successful GPU batch.
                  */
-                var u0 =
-                    0.5 +
-                    (
-                        pts[0].x -
-                        cell.x
-                    ) /
-                    (
-                        2 *
-                        texRadius
-                    );
-
-
-                var v0 =
-                    0.5 +
-                    (
-                        pts[0].y -
-                        cell.y
-                    ) /
-                    (
-                        2 *
-                        texRadius
-                    );
-
-
-                this.writeWebGLJellyVertex(
-                    pts[0].x,
-                    pts[0].y,
-
-                    u0,
-                    v0,
-
-                    bodyRGB[0],
-                    bodyRGB[1],
-                    bodyRGB[2],
-
-                    bodyA,
-
-                    skinRes.layer,
-                    skinRes.alpha,
-
-                    z
-                );
-
-
-                this.glJellyDrawStarts[
-                    drawCount
-                ] =
-                    fillStart;
-
-                this.glJellyDrawCounts[
-                    drawCount
-                ] =
-                    nPts +
-                    2;
-
-                drawCount++;
-
-
-                /*
-                 * ========================================================
-                 * PERIMETER BANDS
-                 * ========================================================
-                 *
-                 * Every band uses THIS EXACT FRAME'S points[].
-                 *
-                 * No createStrokeVirusPath().
-                 * No independent rigid virus polygon.
-                 */
-
-
                 if (
-                    cell.isVirus
-                ) {
-                    /*
-                     * ====================================================
-                     * VIRUS GLOW
-                     * ====================================================
-                     *
-                     * Canvas restores body transparency before stroke/glow.
-                     *
-                     * Therefore virusAlpha must NOT make glow disappear.
-                     */
-                    if (
-                        virusGlow >
-                        0
-                    ) {
-                        this.writeWebGLJellyStrokeBand(
-                            cell,
-                            pts,
-
-                            virusStroke *
-                                0.5,
-
-                            virusStroke *
-                                0.5 +
-                                virusGlow,
-
-                            glowRGB[0],
-                            glowRGB[1],
-                            glowRGB[2],
-
-                            0.45,
-                            0.0,
-
-                            z
-                        );
-                    }
-
-
-                    /*
-                     * ====================================================
-                     * VIRUS STROKE
-                     * ====================================================
-                     *
-                     * Full alpha intentionally.
-                     *
-                     * transparentViruses / virusAlpha affects the fill ONLY.
-                     */
-                    if (
-                        virusStroke >
-                        0
-                    ) {
-                        this.writeWebGLJellyStrokeBand(
-                            cell,
-                            pts,
-
-                            -virusStroke *
-                                0.5,
-
-                            virusStroke *
-                                0.5,
-
-                            strokeRGB[0],
-                            strokeRGB[1],
-                            strokeRGB[2],
-
-                            1.0,
-                            1.0,
-
-                            z
-                        );
-                    }
-                }
-
-
-                /*
-                 * ========================================================
-                 * NORMAL JELLY SKIN PERIMETER
-                 * ========================================================
-                 *
-                 * Canvas's dynamic-skin branch clips the skin to points[] and
-                 * then strokes that exact same path using the body color.
-                 *
-                 * Reproduce it here instead of silently losing the border in
-                 * WebGL mode.
-                 */
-                else if (
-                    skinRes.layer >=
+                    jellyDrawCount ===
                     0
                 ) {
-                    this.writeWebGLJellyStrokeBand(
-                        cell,
-                        pts,
-
-                        -skinBorder *
-                            0.5,
-
-                        skinBorder *
-                            0.5,
-
-                        bodyRGB[0],
-                        bodyRGB[1],
-                        bodyRGB[2],
-
-                        skinRes.alpha,
-                        skinRes.alpha,
-
-                        z
-                    );
+                    return true;
                 }
-            }
 
 
-            /*
-             * ============================================================
-             * PASS 3
-             *
-             * Upload & Draw.
-             * ============================================================
-             *
-             * IMPORTANT:
-             *
-             * The current Gemini version never enabled DEPTH_TEST inside the
-             * jelly renderer.
-             *
-             * The ordinary WebGL renderer is disabled whenever jelly is ON,
-             * therefore we CANNOT assume depth testing was enabled elsewhere.
-             *
-             * LEQUAL is intentional here.
-             *
-             * Each cell:
-             *
-             *     body Z   == stroke Z
-             *
-             * Therefore LESS would reject its own perimeter after the body
-             * wrote the same depth.
-             *
-             * With LEQUAL:
-             *
-             *     same-cell border passes;
-             *     larger cells still have smaller Z and cover smaller cells;
-             *     small-cell borders cannot paint over a larger foreground cell.
-             */
-            gl.enable(
-                gl.DEPTH_TEST
-            );
-
-
-            gl.depthFunc(
-                gl.LEQUAL
-            );
-
-
-            gl.depthMask(
-                true
-            );
-
-
-            gl.enable(
-                gl.BLEND
-            );
-
-
-            gl.blendFunc(
-                gl.SRC_ALPHA,
-                gl.ONE_MINUS_SRC_ALPHA
-            );
-
-
-            if (
-                this._glJellyVertexCount >
-                0
-            ) {
-                gl.bindBuffer(
-                    gl.ARRAY_BUFFER,
-                    this.glJellyVBO
+                /*
+                 * ========================================================
+                 * PASS 3
+                 *
+                 * ONE DYNAMIC VBO UPLOAD + VARIABLE TRIANGLE FANS
+                 * ========================================================
+                 */
+                gl.enable(
+                    gl.DEPTH_TEST
                 );
 
 
-                gl.bufferSubData(
-                    gl.ARRAY_BUFFER,
-                    0,
-                    this.glJellyVertexData.subarray(
-                        0,
-                        this._glJellyVertexCount *
-                            this.glJellyStride
-                    )
+                /*
+                 * Body Z and border Z are intentionally identical.
+                 *
+                 * LEQUAL:
+                 *
+                 *      lets a cell's own border render over its own body;
+                 *
+                 * while the global sorted Z values still stop smaller cells
+                 * from drawing over larger foreground cells.
+                 */
+                gl.depthFunc(
+                    gl.LEQUAL
                 );
 
 
-                gl.useProgram(
-                    this.glJellyProgram
+                gl.depthMask(
+                    true
                 );
 
 
-                gl.uniform2f(
-                    this.u_jelly_viewCenter,
-                    this.camX,
-                    this.camY
+                gl.enable(
+                    gl.BLEND
                 );
 
 
-                gl.uniform2f(
-                    this.u_jelly_viewScale,
-                    2.0 *
-                        viewScale /
-                        this.canvasWidth,
-                    2.0 *
-                        viewScale /
-                        this.canvasHeight
+                gl.blendFunc(
+                    gl.SRC_ALPHA,
+                    gl.ONE_MINUS_SRC_ALPHA
                 );
 
 
+                /*
+                 * Shared custom-skin texture array.
+                 */
                 gl.activeTexture(
                     gl.TEXTURE0
                 );
@@ -55287,9 +55378,65 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 );
 
 
+                /*
+                 * ---------------- JELLY FILL ----------------
+                 */
+                gl.useProgram(
+                    this.glJellyProgram
+                );
+
+
+                gl.uniform2f(
+                    this
+                        .u_jelly_viewCenter,
+
+                    this.camX,
+                    this.camY
+                );
+
+
+                gl.uniform2f(
+                    this
+                        .u_jelly_viewScale,
+
+                    2.0 *
+                    jellyViewScale /
+                    this.canvasWidth,
+
+                    2.0 *
+                    jellyViewScale /
+                    this.canvasHeight
+                );
+
+
                 gl.uniform1i(
-                    this.u_jelly_skinArray,
+                    this
+                        .u_jelly_skinArray,
+
                     0
+                );
+
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.glJellyVBO
+                );
+
+
+                gl.bufferSubData(
+                    gl.ARRAY_BUFFER,
+                    0,
+
+                    this
+                        .glJellyVertexData
+                        .subarray(
+                            0,
+
+                            this
+                                ._glJellyVertexCount *
+                            this
+                                .glJellyStride
+                        )
                 );
 
 
@@ -55298,98 +55445,184 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 );
 
 
+                /*
+                 * DELTA-STYLE VARIABLE LENGTH BODY DRAW.
+                 */
                 for (
-                    var dIdx = 0;
-                    dIdx <
-                        drawCount;
-                    dIdx++
+                    var drawIndex = 0;
+                    drawIndex <
+                        jellyDrawCount;
+                    drawIndex++
                 ) {
                     gl.drawArrays(
                         gl.TRIANGLE_FAN,
-                        this.glJellyDrawStarts[
-                            dIdx
-                        ],
-                        this.glJellyDrawCounts[
-                            dIdx
-                        ]
+
+                        this
+                            .glJellyDrawStarts[
+                                drawIndex
+                            ],
+
+                        this
+                            .glJellyDrawCounts[
+                                drawIndex
+                            ]
                     );
                 }
-            }
-
-
-            if (
-                this._glJellyStrokeVertexCount >
-                0
-            ) {
-                gl.bindBuffer(
-                    gl.ARRAY_BUFFER,
-                    this.glJellyStrokeVBO
-                );
-
-
-                gl.bufferSubData(
-                    gl.ARRAY_BUFFER,
-                    0,
-                    this.glJellyStrokeVertexData.subarray(
-                        0,
-                        this._glJellyStrokeVertexCount *
-                            this.glJellyStrokeStride
-                    )
-                );
-
-
-                gl.useProgram(
-                    this.glJellyStrokeProgram
-                );
-
-
-                gl.uniform2f(
-                    this.u_jellyStroke_viewCenter,
-                    this.camX,
-                    this.camY
-                );
-
-
-                gl.uniform2f(
-                    this.u_jellyStroke_viewScale,
-                    2.0 *
-                        viewScale /
-                        this.canvasWidth,
-                    2.0 *
-                        viewScale /
-                        this.canvasHeight
-                );
 
 
                 gl.bindVertexArray(
-                    this.glJellyStrokeVAO
+                    null
                 );
 
 
-                gl.drawArrays(
-                    gl.TRIANGLES,
-                    0,
-                    this._glJellyStrokeVertexCount
-                );
+                /*
+                 * ---------------- PERIMETER BANDS ----------------
+                 */
+                if (
+                    this
+                        ._glJellyStrokeVertexCount >
+                    0
+                ) {
+                    /*
+                     * Test against existing body depths but don't modify them.
+                     */
+                    gl.depthMask(
+                        false
+                    );
+
+
+                    gl.useProgram(
+                        this
+                            .glJellyStrokeProgram
+                    );
+
+
+                    gl.uniform2f(
+                        this
+                            .u_jellyStroke_viewCenter,
+
+                        this.camX,
+                        this.camY
+                    );
+
+
+                    gl.uniform2f(
+                        this
+                            .u_jellyStroke_viewScale,
+
+                        2.0 *
+                        jellyViewScale /
+                        this.canvasWidth,
+
+                        2.0 *
+                        jellyViewScale /
+                        this.canvasHeight
+                    );
+
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        this
+                            .glJellyStrokeVBO
+                    );
+
+
+                    gl.bufferSubData(
+                        gl.ARRAY_BUFFER,
+                        0,
+
+                        this
+                            .glJellyStrokeVertexData
+                            .subarray(
+                                0,
+
+                                this
+                                    ._glJellyStrokeVertexCount *
+                                this
+                                    .glJellyStrokeStride
+                            )
+                    );
+
+
+                    gl.bindVertexArray(
+                        this
+                            .glJellyStrokeVAO
+                    );
+
+
+                    gl.drawArrays(
+                        gl.TRIANGLES,
+                        0,
+
+                        this
+                            ._glJellyStrokeVertexCount
+                    );
+
+
+                    gl.bindVertexArray(
+                        null
+                    );
+
+
+                    gl.depthMask(
+                        true
+                    );
+                }
+
+
+                if (
+                    window.clientProfiler
+                ) {
+                    window.clientProfiler
+                        .recordWebGL(
+                            performance.now() -
+                            _tGL
+                        );
+                }
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * Return here.
+                 *
+                 * Do NOT fall through into the fixed-circle instance path.
+                 */
+                return true;
             }
 
 
-            gl.bindVertexArray(
-                null
-            );
+            /*
+             * ============================================================
+             * NORMAL NON-JELLY GEOMETRY
+             * ============================================================
+             *
+             * SAME authoritative function.
+             *
+             * Only the geometry backend below differs.
+             */
+            if (
+                !this.glCellProgram
+            ) {
+                return false;
+            }
 
 
-            return true;
-        },
+            var data =
+                this.glCellInstanceData;
 
-        drawWebGLCellBatch(cellsArray) {
-            var _tGL = performance.now();
-            if (!this.gl || !this.glCellProgram || !cellsArray || !cellsArray.length) return false;
-            var gl = this.gl;
-            var data = this.glCellInstanceData;
-            var count = 0;
-            var max = this.glCellMaxInstances;
-            var viewScale = this.scale || 1;
+
+            var count =
+                0;
+
+
+            var max =
+                this.glCellMaxInstances;
+
+
+            var viewScale =
+                this.scale ||
+                1;
 
             /* Atomic hybrid rendering: never mix ordinary Canvas2D cells with
              * WebGL cells in the same frame. The WebGL canvas is a separate DOM
@@ -57020,292 +57253,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                 }
 
-                /* sortCells() already sorted LM.cells earlier in this frame (line 29547).
-                 * No need to re-sort — removed redundant O(N²) insertion sort. */
 
-                /*
-                 * ============================================================
-                 * ATOMIC WEBGL WORLD BODY PASS
-                 * ============================================================
-                 *
-                 * Ordinary cells AND viruses must share one GL depth buffer.
-                 *
-                 * If either side cannot render safely, clear the GL surface and
-                 * fall back to the existing globally sorted Canvas cell.draw()
-                 * loop for the complete world.
-                 */
-                if (
-                    this.gl &&
-                    this.glCellProgram &&
-                    !defaultmapsettings
-                        .jellyPhisycs &&
-                    !defaultmapsettings
-                        .cellContours &&
-                    (
-                        typeof defaultmapsettings
-                            .webgl2Acceleration ===
-                            "undefined" ||
-                        defaultmapsettings
-                            .webgl2Acceleration
-                    )
-                ) {
-                    /*
-                     * Clear stale GPU flags from previous frame.
-                     */
-                    for (
-                        var _fi = 0;
-                        _fi <
-                        LM.cells.length;
-                        _fi++
-                    ) {
-                        if (
-                            LM.cells[
-                                _fi
-                            ]
-                        ) {
-                            LM.cells[
-                                _fi
-                            ]
-                                ._webglRendered =
-                                false;
-
-                            if (
-                                LM.cells[
-                                    _fi
-                                ]
-                                    ._webglZ !==
-                                    undefined
-                            ) {
-                                delete LM.cells[
-                                    _fi
-                                ]
-                                    ._webglZ;
-                            }
-                        }
-                    }
-
-                    var gl =
-                        this.gl;
-
-                    gl.enable(
-                        gl.BLEND
-                    );
-
-                    gl.blendFunc(
-                        gl.SRC_ALPHA,
-                        gl.ONE_MINUS_SRC_ALPHA
-                    );
-
-                    /*
-                     * ======================================================
-                     * ONE UNIFIED WEBGL BODY PASS
-                     * ======================================================
-                     *
-                     * LM.cells is already globally sorted small -> large.
-                     *
-                     * Ordinary cells AND viruses are now emitted into the
-                     * same WebGL instanced batch and therefore share:
-                     *
-                     * - one ordered instance stream
-                     * - one depth buffer
-                     * - one draw call
-                     * - one alpha model
-                     *
-                     * There is no separate Canvas virus body pass when
-                     * _webglRendered is true.
-                     */
-                    var _gpuWorldOK =
-                        this.drawWebGLCellBatch(
-                            LM.cells
-                        );
-
-                        if (
-                            !_gpuWorldOK
-                        ) {
-                            /*
-                             * Atomic fallback.
-                             *
-                             * Never leave half of the world on WebGL and half
-                             * on Canvas because DOM z-index would destroy
-                             * size ordering.
-                             */
-                            gl.clearColor(
-                                0,
-                                0,
-                                0,
-                                0
-                            );
-
-                            gl.clear(
-                                gl.COLOR_BUFFER_BIT |
-                                gl.DEPTH_BUFFER_BIT
-                            );
-
-                            for (
-                                var _rf = 0;
-                                _rf <
-                                LM.cells.length;
-                                _rf++
-                            ) {
-                                var _fallbackCell =
-                                    LM.cells[
-                                        _rf
-                                    ];
-
-                                if (
-                                    !_fallbackCell
-                                ) {
-                                    continue;
-                                }
-
-                                _fallbackCell
-                                    ._webglRendered =
-                                    false;
-
-                                if (
-                                    _fallbackCell
-                                        ._webglCellIdx !==
-                                        undefined
-                                ) {
-                                    delete _fallbackCell
-                                        ._webglCellIdx;
-                                }
-
-                                if (
-                                    _fallbackCell
-                                        ._webglZ !==
-                                        undefined
-                                ) {
-                                    delete _fallbackCell
-                                        ._webglZ;
-                                }
-                            }
-                        }
-                        else if (
-                            this.glTextProgram
-                        ) {
-                            /*
-                             * =================================================
-                             * WEBGL TEXT PASS
-                             * =================================================
-                             */
-                            var _tTxt =
-                                performance.now();
-
-                            gl.depthFunc(
-                                gl.LEQUAL
-                            );
-
-                            gl.depthMask(
-                                false
-                            );
-
-                            var _tvs =
-                                this
-                                    .scale ||
-                                1;
-
-                            gl.useProgram(
-                                this
-                                    .glTextProgram
-                            );
-
-                            gl.uniform2f(
-                                this
-                                    .u_text_viewCenter,
-                                this.camX,
-                                this.camY
-                            );
-
-                            gl.uniform2f(
-                                this
-                                    .u_text_viewScale,
-
-                                2.0 *
-                                _tvs /
-                                this
-                                    .canvasWidth,
-
-                                2.0 *
-                                _tvs /
-                                this
-                                    .canvasHeight
-                            );
-
-                            gl.uniform1i(
-                                this
-                                    .u_text_tex,
-                                0
-                            );
-
-                            gl.uniform1f(
-                                this
-                                    .u_text_alpha,
-
-                                defaultSettings.textAlpha !=
-                                    null
-                                    ? defaultSettings.textAlpha
-                                    : 1.0
-                            );
-
-                            gl.bindVertexArray(
-                                this
-                                    .glTextVAO
-                            );
-
-                            for (
-                                var ti = 0;
-                                ti <
-                                LM.cells
-                                    .length;
-                                ti++
-                            ) {
-                                var tCell =
-                                    LM.cells[
-                                        ti
-                                    ];
-
-                                if (
-                                    tCell &&
-                                    tCell._webglRendered
-                                ) {
-                                    try {
-                                        this.drawWebGLCellText(
-                                            tCell
-                                        );
-                                    }
-                                    catch (
-                                        eText
-                                    ) {}
-                                }
-                            }
-
-                            gl.bindVertexArray(
-                                null
-                            );
-
-                            gl.depthMask(
-                                true
-                            );
-
-                            gl.depthFunc(
-                                gl.LESS
-                            );
-
-                            if (
-                                window.clientProfiler
-                            ) {
-                                window.clientProfiler.recordText(
-                                    performance.now() -
-                                        _tTxt
-                                );
-                            }
-                        }
-
-                        gl.disable(
-                            gl.DEPTH_TEST
-                        );
-                }
 
                 /*
                  * ═══════════════════════════════════════════════════════════
