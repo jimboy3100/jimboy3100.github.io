@@ -17042,114 +17042,6 @@ function _isExpandingLandClient(
 }
 
 
-/*
- * =====================================================================
- * HARD UI LOCK
- * =====================================================================
- *
- * application.hideMenu() is not enough by itself.
- *
- * MC.showNickDialog or another queued callback may try to show part of
- * the Agar/LM menu again during the cinematic.
- *
- * This body class makes that impossible for 650 ms.
- */
-function _setExpandingLandDeathUiSuppressed(
-    active
-) {
-    var styleId =
-        'lm-el-death-ui-lock-style';
-
-
-    if (active) {
-        if (
-            !document.getElementById(
-                styleId
-            )
-        ) {
-            var style =
-                document.createElement(
-                    'style'
-                );
-
-            style.id =
-                styleId;
-
-
-            style.textContent =
-                'body.lm-el-death-cinematic #overlays,' +
-                'body.lm-el-death-cinematic #helloContainer,' +
-                'body.lm-el-death-cinematic .ogario-menu,' +
-                'body.lm-el-death-cinematic #main-menu,' +
-                'body.lm-el-death-cinematic .menu-panel,' +
-                'body.lm-el-death-cinematic #stats,' +
-                'body.lm-el-death-cinematic #lm-gameover-modal{' +
-                    'display:none!important;' +
-                    'visibility:hidden!important;' +
-                    'opacity:0!important;' +
-                '}';
-
-
-            document.head.appendChild(
-                style
-            );
-        }
-
-
-        if (
-            document.body
-        ) {
-            document.body
-                .classList
-                .add(
-                    'lm-el-death-cinematic'
-                );
-        }
-
-
-        if (
-            typeof application !==
-                'undefined' &&
-            application &&
-            typeof application.hideMenu ===
-                'function'
-        ) {
-            application.hideMenu(
-                0
-            );
-        }
-
-
-        $(
-            '#overlays, ' +
-            '#helloContainer, ' +
-            '.ogario-menu, ' +
-            '#main-menu, ' +
-            '.menu-panel, ' +
-            '#stats, ' +
-            '#lm-gameover-modal'
-        )
-            .stop(
-                true,
-                true
-            )
-            .hide();
-
-
-        return;
-    }
-
-
-    if (
-        document.body
-    ) {
-        document.body
-            .classList
-            .remove(
-                'lm-el-death-cinematic'
-            );
-    }
-}
 
 
 function _elCanDrawImageNode(
@@ -18023,9 +17915,6 @@ function _startExpandingLandDeathVisual(
         );
 
 
-    _setExpandingLandDeathUiSuppressed(
-        true
-    );
 
 
     console.log(
@@ -20658,10 +20547,17 @@ function thelegendmodproject() {
              * prematurely fading in overlays or statistics.
              */
             if (
-                typeof legendmod !== 'undefined' &&
+                typeof legendmod !==
+                    'undefined' &&
                 legendmod &&
-                legendmod.serverType === 'expandingland' &&
-                Number(window._elDeathUiLockedUntil) > Date.now()
+                _isExpandingLandClient(
+                    legendmod
+                ) &&
+                Number(
+                    window
+                        ._elDeathUiLockedUntil
+                ) >
+                    Date.now()
             ) {
                 console.log(
                     '[EL DEATH] showMenu() ignored during cinematic window'
@@ -22626,8 +22522,62 @@ function thelegendmodproject() {
             }, 100);
         },
         onPlayerSpawn() {
-            ogario.play = true;
-            window.mainPlayerDeadMbActive = false; // Re-enable main client cell updates
+            ogario.play =
+                true;
+
+
+            /*
+             * NEW EXPANDING LAND LIFE
+             *
+             * Never carry the previous death's visual, modal or UI lock
+             * into the next spawn.
+             */
+            if (
+                typeof legendmod !==
+                    'undefined' &&
+                legendmod &&
+                _isExpandingLandClient(
+                    legendmod
+                )
+            ) {
+                window
+                    ._elDeathUiLockedUntil =
+                    0;
+
+
+                window
+                    ._elPendingGameSessionStats =
+                    null;
+
+
+                window
+                    ._elPendingGameSessionStatsForced =
+                    false;
+
+
+                _elDeathVisual =
+                    null;
+
+
+
+
+                if (
+                    window.drawRender &&
+                    window.drawRender
+                        .overlayCanvas
+                ) {
+                    window
+                        .drawRender
+                        .overlayCanvas
+                        .style
+                        .display =
+                        'none';
+                }
+            }
+
+
+            window.mainPlayerDeadMbActive =
+                false; // Re-enable main client cell updates
             if (ogario.playerColor) {
                 this.sendPlayerSpawn();
                 if (!(defaultmapsettings.ownVanillaSkin && (!ogarcopythelb.skinURL || ogarcopythelb.skinURL === ''))) {
@@ -36087,6 +36037,33 @@ function thelegendmodproject() {
             var s = 0;
             var opcode = data.getUint8(s++);
             /* LW: opcode >= 200 are Expanding Land custom opcodes */
+            var _lwOp = data.getUint8(0);
+            if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
+                /*
+                 * =====================================================
+                 * AUTHORITATIVE EXPANDING LAND SERVER IDENTIFICATION
+                 * =====================================================
+                 *
+                 * Do NOT rely only on the websocket hostname.
+                 *
+                 * connect() initially guesses serverType from the URL.
+                 * A proxy/direct websocket can therefore be classified
+                 * as "private".
+                 *
+                 * THIS LW beacon is authoritative.
+                 */
+                LM.isLegendWorld = true;
+                this.isLegendWorld = true;
+
+                this.serverType =
+                    'expandingland';
+
+                LM.serverType =
+                    'expandingland';
+
+                this.gameMode =
+                    ':expandingland';
+            }
 
             switch (54 === opcode && (opcode = 53), opcode) {
 
@@ -37187,21 +37164,30 @@ function thelegendmodproject() {
                                         typeof legendmod !==
                                             'undefined' &&
                                         legendmod &&
-                                        legendmod.serverType ===
-                                            'expandingland'
+                                        _isExpandingLandClient(
+                                            legendmod
+                                        )
                                     ) {
                                         /*
-                                         * Record it for diagnostics only.
+                                         * Game Over can arrive before opcode 16.
                                          *
-                                         * DO NOT:
-                                         *
-                                         *      application.onPlayerDeath()
-                                         *      application.showMenu()
-                                         *
-                                         * here.
+                                         * Do not wait for the final remove packet
+                                         * to start the visible effect.
                                          */
+                                        _rememberExpandingLandPlayerVisual(
+                                            legendmod
+                                        );
+
+
+                                        _startExpandingLandDeathVisual(
+                                            legendmod,
+                                            'protobuf option 62'
+                                        );
+
+
                                         window._elGameOverPacketAt =
                                             Date.now();
+
 
                                         console.log(
                                             '[EL DEATH] Game-over packet received; UI finalization belongs to updateCells()'
@@ -38089,14 +38075,54 @@ function thelegendmodproject() {
                     }
                     break;
                 case 62:
-                    /* GAME OVER — authoritative source for stats, level, challenges */
-                    var u = r.uncompressedData.gameOverField;
+                    /*
+                     * GAME OVER authoritative source for stats, level,
+                     * challenges and Expanding Land death notification.
+                     */
+                    var u =
+                        r.uncompressedData
+                            .gameOverField;
+
+
                     if (!u) {
-                        console.warn('[LM GAMEOVER] Opcode 62 contained no gameOverField.');
+                        console.warn(
+                            '[LM GAMEOVER] Opcode 62 contained no gameOverField.'
+                        );
+
                         break;
                     }
 
-                    this.displayStats(u.userStats);
+
+                    /*
+                     * EXPANDING LAND START FX IMMEDIATELY
+                     *
+                     * Game Over may beat the final opcode-16 remove packet.
+                     *
+                     * Start from the last live snapshot now.
+                     *
+                     * The post-remove trigger may call the same function
+                     * later, but duplicate calls are ignored.
+                     */
+                    if (
+                        _isExpandingLandClient(
+                            this
+                        )
+                    ) {
+                        _rememberExpandingLandPlayerVisual(
+                            this
+                        );
+
+
+                        _startExpandingLandDeathVisual(
+                            this,
+                            'gameOverField case 62'
+                        );
+                    }
+
+
+                    this.displayStats(
+                        u.userStats
+                    );
 
                     var challengeFinalLevel = null;
 
@@ -38181,8 +38207,9 @@ function thelegendmodproject() {
                             typeof legendmod !==
                                 'undefined' &&
                             legendmod &&
-                            legendmod.serverType ===
-                                'expandingland' &&
+                            _isExpandingLandClient(
+                                legendmod
+                            ) &&
                             Number(
                                 window
                                     ._elDeathUiLockedUntil
@@ -44669,7 +44696,7 @@ Most cells eaten   : ${mostCellsEaten}
                      *      stats hide
                      *      stats show again
                      */
-                    $('#overlays, #helloContainer, #stats')
+                    $('#overlays, #stats')
                         .stop(
                             true,
                             true
@@ -44737,9 +44764,9 @@ Most cells eaten   : ${mostCellsEaten}
                                  */
                                 if (
                                     _elDeadClient.play ||
-                                    _elDeadClient
-                                        .serverType !==
-                                        'expandingland'
+                                    !_isExpandingLandClient(
+                                        _elDeadClient
+                                    )
                                 ) {
                                     return;
                                 }
@@ -46120,6 +46147,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
 }
 
     window.drawRender = {
+        resetDeathScreen() {
+            _elDeathVisual = null;
+        },
         canvas: null,
         ctx: null,
         overlayCanvas: null,
@@ -46168,6 +46198,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         triggerSpawnEffect(worldX, worldY, color) {
             if (!LM || !LM.isLegendWorld) return;
+            this.resetDeathScreen();
             this._spawnEffect.active = true;
             this._spawnEffect.startTime = Date.now();
             this._spawnEffect.x = worldX;
@@ -46177,6 +46208,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
         drawSpawnEffect(ctx) {
             var fx = this._spawnEffect;
             if (!fx.active) return;
+
+            /* Reset screen-space death animation on spawn */
+            if (t === 0 || elapsed < 30) {
+                _elDeathVisual = null;
+            }
+
             var elapsed = Date.now() - fx.startTime;
             var t = elapsed / fx.duration;
             if (t >= 1.0) { fx.active = false; return; }
@@ -46277,6 +46314,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * and assigns deterministic z-order to every renderer.
              */
             this.initOverlayCanvas();
+            this.resetDeathScreen();
 
             this.canvas.onmousemove =
                 function (event) {
@@ -59897,7 +59935,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (dElapsed >= _elDeathVisual.duration + 100) {
                             _elDeathVisual.active = false;
                             _elDeathVisual = null;
-                            _setExpandingLandDeathUiSuppressed(false);
                         } else {
                             var dProgress = Math.max(0, Math.min(1, dElapsed / _elDeathVisual.duration));
                             var easeProgress = 1 - Math.pow(1 - dProgress, 3);
