@@ -29707,6 +29707,7 @@ function thelegendmodproject() {
             this.mapOffsetFixed = false;
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
+            LM._elWorldEntrance = null;  // reset world entrance animation
 
             LM.mapEvent.active = false;
             LM.mapEvent.phase = 0;
@@ -33707,6 +33708,11 @@ function thelegendmodproject() {
                         if (window.master && window.master.login) {
                             //console.log('[LW Auth] Triggering master.login() after LW beacon');
                             window.master.login();
+                        }
+
+                        /* Expanding Land: trigger world-space entrance animation (once per connect) */
+                        if (!LM._elWorldEntrance || !LM._elWorldEntrance.active) {
+                            LM._elWorldEntrance = { active: true, startTime: Date.now() };
                         }
 
                     } else if (LM.isLegendWorld && _lwOp === 200 && data.byteLength >= 42) {
@@ -40967,6 +40973,152 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
             ctx.globalAlpha = 1.0;
+            ctx.restore();
+        },
+        /* ── Expanding Land: WORLD-SPACE entrance animation ──
+         * All drawing uses world coordinates (ctx already has the world transform).
+         * Multiple shockwave rings emanate from the map center outward to the border.
+         * A ground ripple sweeps across the map floor.  Border energy flares bloom
+         * as the wave reaches the edge.  Total duration: ~4 seconds. */
+        drawELWorldEntrance(ctx) {
+            var fx = LM._elWorldEntrance;
+            if (!fx || !fx.active) return;
+            var elapsed = Date.now() - fx.startTime;
+            var DURATION = 4000;
+            if (elapsed >= DURATION) {
+                fx.active = false;
+                return;
+            }
+            var t = elapsed / DURATION;  // 0→1
+
+            /* Map geometry in world coords */
+            var cx = (LM.mapMinX + LM.mapMaxX) / 2;
+            var cy = (LM.mapMinY + LM.mapMaxY) / 2;
+            var mapRadius = (LM.mapMaxX - LM.mapMinX) / 2;
+            if (mapRadius <= 0) mapRadius = 7071;
+
+            ctx.save();
+
+            /* ① Ground ripple — a radial gradient wave sweeping outward across the map floor.
+             * This is a wide, soft ring of light that expands from center to edge. */
+            var rippleProgress = Math.min(1.0, t * 1.5); // finishes at ~67% of total duration
+            var rippleEase = 1.0 - Math.pow(1.0 - rippleProgress, 2);
+            var rippleR = rippleEase * mapRadius * 1.1;
+            var rippleWidth = mapRadius * 0.25; // width of the bright band
+            var rippleInner = Math.max(0, rippleR - rippleWidth);
+            var rippleFade = (1.0 - rippleProgress);
+            if (rippleFade > 0.01) {
+                var rippleGrad = ctx.createRadialGradient(cx, cy, rippleInner, cx, cy, rippleR);
+                rippleGrad.addColorStop(0, 'rgba(0,180,255,0)');
+                rippleGrad.addColorStop(0.3, 'rgba(0,160,240,' + (rippleFade * 0.08).toFixed(4) + ')');
+                rippleGrad.addColorStop(0.7, 'rgba(0,200,255,' + (rippleFade * 0.12).toFixed(4) + ')');
+                rippleGrad.addColorStop(1.0, 'rgba(0,180,255,0)');
+                ctx.fillStyle = rippleGrad;
+                ctx.beginPath();
+                ctx.arc(cx, cy, rippleR, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            /* ② Concentric shockwave rings — 3 rings staggered in time.
+             * Each ring is a world-space arc centered on the map center. */
+            var NUM_RINGS = 3;
+            for (var ri = 0; ri < NUM_RINGS; ri++) {
+                var ringDelay = ri * 0.12; // staggered start
+                var ringT = Math.max(0, t - ringDelay);
+                if (ringT <= 0) continue;
+                var ringProgress = Math.min(1.0, ringT / (1.0 - ringDelay));
+                var ringEase = 1.0 - Math.pow(1.0 - ringProgress, 3);
+                var ringR = ringEase * mapRadius * (0.95 + ri * 0.08);
+                var ringAlpha = (1.0 - ringProgress) * (0.6 - ri * 0.15);
+                if (ringAlpha <= 0.005) continue;
+                var ringThickness = Math.max(3, (1.0 - ringEase) * (25 - ri * 6));
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, ringR, 0, 2 * Math.PI);
+                /* Each ring slightly different blue hue */
+                var rB = [255, 220, 200][ri] || 255;
+                var rG = [180, 140, 120][ri] || 180;
+                ctx.strokeStyle = 'rgba(0,' + rG + ',' + rB + ',' + ringAlpha.toFixed(4) + ')';
+                ctx.lineWidth = ringThickness;
+                ctx.stroke();
+            }
+
+            /* ③ Border energy flare — when the wave reaches the border (t > 0.5),
+             * draw a bright glow ring right on the border that pulses and fades. */
+            if (t > 0.35) {
+                var flareT = (t - 0.35) / 0.65; // 0→1 over remaining duration
+                var flareEase = Math.sin(flareT * Math.PI); // peak in middle, fade at ends
+                var flareAlpha = flareEase * 0.5;
+                if (flareAlpha > 0.005) {
+                    /* Outer glow band along the border */
+                    var glowWidth = mapRadius * 0.06 * (1 + flareEase * 0.5);
+                    var borderGrad = ctx.createRadialGradient(
+                        cx, cy, mapRadius - glowWidth,
+                        cx, cy, mapRadius + glowWidth * 0.3
+                    );
+                    borderGrad.addColorStop(0, 'rgba(0,180,255,0)');
+                    borderGrad.addColorStop(0.5, 'rgba(0,200,255,' + (flareAlpha * 0.25).toFixed(4) + ')');
+                    borderGrad.addColorStop(1.0, 'rgba(0,140,255,0)');
+                    ctx.fillStyle = borderGrad;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, mapRadius + glowWidth * 0.3, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    /* Bright border stroke pulse */
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, mapRadius, 0, 2 * Math.PI);
+                    ctx.strokeStyle = 'rgba(80,210,255,' + (flareAlpha * 0.6).toFixed(4) + ')';
+                    ctx.lineWidth = Math.max(4, 12 * flareEase);
+                    ctx.stroke();
+                }
+            }
+
+            /* ④ Energy streaks — 8 radial light rays from center outward,
+             * growing in length as the animation progresses. World-space lines. */
+            var NUM_STREAKS = 8;
+            var streakMaxLen = mapRadius * 0.9;
+            var streakT = Math.min(1.0, t * 1.3);
+            var streakEase = 1.0 - Math.pow(1.0 - streakT, 2);
+            var streakLen = streakEase * streakMaxLen;
+            var streakInnerR = streakEase * mapRadius * 0.05;
+            var streakAlpha = (1.0 - t) * 0.35;
+            if (streakAlpha > 0.005) {
+                ctx.lineWidth = Math.max(2, (1.0 - streakEase) * 8);
+                for (var si = 0; si < NUM_STREAKS; si++) {
+                    /* Slow rotation gives life */
+                    var angle = (si / NUM_STREAKS) * 2 * Math.PI + t * 0.3;
+                    var cosA = Math.cos(angle);
+                    var sinA = Math.sin(angle);
+                    /* Gradient along each ray: bright near center, fades outward */
+                    var x1 = cx + cosA * streakInnerR;
+                    var y1 = cy + sinA * streakInnerR;
+                    var x2 = cx + cosA * streakLen;
+                    var y2 = cy + sinA * streakLen;
+                    var rayGrad = ctx.createLinearGradient(x1, y1, x2, y2);
+                    rayGrad.addColorStop(0, 'rgba(100,220,255,' + streakAlpha.toFixed(4) + ')');
+                    rayGrad.addColorStop(1, 'rgba(0,140,255,0)');
+                    ctx.strokeStyle = rayGrad;
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                }
+            }
+
+            /* ⑤ Center flash — brief bright spot at the origin */
+            if (t < 0.25) {
+                var flashT = t / 0.25;
+                var flashAlpha = (1.0 - flashT) * 0.15;
+                var flashR = (1.0 - Math.pow(1.0 - flashT, 3)) * mapRadius * 0.2;
+                var flashGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, flashR);
+                flashGrad.addColorStop(0, 'rgba(150,230,255,' + flashAlpha.toFixed(4) + ')');
+                flashGrad.addColorStop(1, 'rgba(0,140,255,0)');
+                ctx.fillStyle = flashGrad;
+                ctx.beginPath();
+                ctx.arc(cx, cy, flashR, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
             ctx.restore();
         },
         setCanvas() {
@@ -49534,6 +49686,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 */
                 //this.drawCommander(this.ctx);  // disabled — spawn effects unwanted
                 //this.drawCommander2(this.ctx); // disabled — spawn effects unwanted
+
+                /* Expanding Land: world-space entrance animation (drawn under cells, above grid/border) */
+                if (LM._elWorldEntrance && LM._elWorldEntrance.active) {
+                    this.drawELWorldEntrance(this.ctx);
+                }
 
 
 
