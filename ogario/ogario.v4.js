@@ -29707,7 +29707,6 @@ function thelegendmodproject() {
             this.mapOffsetFixed = false;
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
-            LM._elEntranceStart = null;  // reset entrance animation
 
             LM.mapEvent.active = false;
             LM.mapEvent.phase = 0;
@@ -33708,11 +33707,6 @@ function thelegendmodproject() {
                         if (window.master && window.master.login) {
                             //console.log('[LW Auth] Triggering master.login() after LW beacon');
                             window.master.login();
-                        }
-
-                        /* Expanding Land: trigger canvas entrance effect */
-                        if (!LM._elEntranceStart) {
-                            LM._elEntranceStart = Date.now();
                         }
 
                     } else if (LM.isLegendWorld && _lwOp === 200 && data.byteLength >= 42) {
@@ -40973,97 +40967,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
             ctx.globalAlpha = 1.0;
-            ctx.restore();
-        },
-        /* ── Expanding Land: canvas-blended map entrance effect ──
-         * Draws directly on the game canvas in screen-space so it sits over
-         * the world but blends naturally with the map.  Lasts ~3 seconds. */
-        drawELEntrance(ctx) {
-            var start = LM._elEntranceStart;
-            if (!start) return;
-            var elapsed = Date.now() - start;
-            var DURATION = 3000;
-            if (elapsed >= DURATION) {
-                LM._elEntranceStart = null;
-                return;
-            }
-            var t = elapsed / DURATION;           // 0→1
-            var ease = 1.0 - Math.pow(1.0 - t, 3); // cubic ease-out
-
-            /* Save world transform — switch to screen coords */
-            ctx.save();
-            ctx.setTransform(this.dpr || 1, 0, 0, this.dpr || 1, 0, 0);
-
-            var W = this.canvasWidth;
-            var H = this.canvasHeight;
-            var cx = W / 2;
-            var cy = H / 2;
-            var maxDim = Math.max(W, H);
-
-            /* ① Vignette flash: dark → transparent (first 40%) */
-            if (t < 0.4) {
-                var vT = t / 0.4;
-                var vAlpha = (1.0 - vT) * 0.35;
-                var vGrad = ctx.createRadialGradient(cx, cy, maxDim * 0.15, cx, cy, maxDim * 0.7);
-                vGrad.addColorStop(0, 'transparent');
-                vGrad.addColorStop(1, 'rgba(0,8,20,' + vAlpha.toFixed(3) + ')');
-                ctx.fillStyle = vGrad;
-                ctx.fillRect(0, 0, W, H);
-            }
-
-            /* ② Expanding shockwave ring */
-            var ringMaxR = maxDim * 0.85;
-            var ringR = ease * ringMaxR;
-            var ringThickness = Math.max(2, (1.0 - ease) * 12);
-            var ringAlpha = (1.0 - t) * 0.65;
-            ctx.beginPath();
-            ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(0,180,255,' + ringAlpha.toFixed(3) + ')';
-            ctx.lineWidth = ringThickness;
-            ctx.stroke();
-
-            /* ③ Inner soft ring (follows slightly behind) */
-            var innerT = Math.max(0, t - 0.08);
-            var innerEase = 1.0 - Math.pow(1.0 - Math.min(innerT / 0.92, 1.0), 3);
-            var innerR = innerEase * ringMaxR * 0.7;
-            var innerAlpha = (1.0 - t) * 0.3;
-            ctx.beginPath();
-            ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(0,140,255,' + innerAlpha.toFixed(3) + ')';
-            ctx.lineWidth = Math.max(1, (1.0 - innerEase) * 6);
-            ctx.stroke();
-
-            /* ④ Center glow: soft radial wash */
-            if (t < 0.5) {
-                var gT = t / 0.5;
-                var glowR = ease * maxDim * 0.3;
-                var glowAlpha = (1.0 - gT) * 0.18;
-                var gGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
-                gGrad.addColorStop(0, 'rgba(0,200,255,' + glowAlpha.toFixed(3) + ')');
-                gGrad.addColorStop(1, 'transparent');
-                ctx.fillStyle = gGrad;
-                ctx.beginPath();
-                ctx.arc(cx, cy, glowR, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            /* ⑤ Subtle light streaks radiating from center */
-            var numStreaks = 12;
-            var streakLen = ease * maxDim * 0.45;
-            var streakInner = ease * 30;
-            var streakAlpha = (1.0 - t) * 0.25;
-            ctx.strokeStyle = 'rgba(100,210,255,' + streakAlpha.toFixed(3) + ')';
-            ctx.lineWidth = Math.max(0.5, (1.0 - ease) * 2.5);
-            for (var s = 0; s < numStreaks; s++) {
-                var angle = (s / numStreaks) * Math.PI * 2 + t * 0.8;
-                var cosA = Math.cos(angle);
-                var sinA = Math.sin(angle);
-                ctx.beginPath();
-                ctx.moveTo(cx + cosA * streakInner, cy + sinA * streakInner);
-                ctx.lineTo(cx + cosA * streakLen, cy + sinA * streakLen);
-                ctx.stroke();
-            }
-
             ctx.restore();
         },
         setCanvas() {
@@ -49992,10 +49895,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * underneath cells and viruses by drawHelpers().
                  */
                 this.drawPostCellOverlays();
-                /* Expanding Land: canvas-blended entrance effect */
-                if (LM._elEntranceStart) {
-                    this.drawELEntrance(this.ctx);
-                }
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
                     this.drawSpawnEffect(this.ctx);
