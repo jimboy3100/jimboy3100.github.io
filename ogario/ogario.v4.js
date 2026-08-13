@@ -53230,6 +53230,3201 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.gridGl.COLOR_BUFFER_BIT
             );
         },
+
+
+        /*
+         * ================================================================
+         * EXPANDING LAND — WEBGL MAP MATERIAL PIPELINE
+         * ================================================================
+         *
+         * IMPORTANT:
+         *
+         * This renderer uses:
+         *
+         *      this.gridGl
+         *      this.gridCanvas
+         *
+         * NOT:
+         *
+         *      this.gl
+         *      this.glCanvas
+         *
+         *
+         * DOM ORDER:
+         *
+         *      backgroundCanvas
+         *      gridCanvas        <-- THIS PIPELINE
+         *      canvas            <-- Canvas fallback cells
+         *      glCanvas          <-- WebGL cells / skins / text
+         *      overlayCanvas
+         *
+         *
+         * Therefore:
+         *
+         *      deformed grid
+         *      deformed sector lines
+         *      deformed map border
+         *      deformed food
+         *      map debris / streaks
+         *
+         * can NEVER cover player cells merely because the cell renderer
+         * switched between Canvas and WebGL.
+         *
+         *
+         * This system is STRICTLY Expanding Land only.
+         *
+         * It does NOT:
+         *
+         *      touch cell.points[]
+         *      touch jelly physics
+         *      touch quadtree
+         *      touch collision
+         *      touch network coordinates
+         *      alter authoritative map bounds
+         *      alter camX/camY
+         *
+         * It only consumes getLegendWorldMapRenderPoint(), which is the
+         * existing draw-only deformation field.
+         * ================================================================
+         */
+        ensureLegendWorldMapMaterialWebGL() {
+            var gl =
+                this.gridGl;
+
+            if (!gl) {
+                return false;
+            }
+
+            /*
+             * WebGL context restoration produces a NEW context object.
+             *
+             * Reuse the programs only when they belong to the exact current
+             * gridGl context.
+             */
+            if (
+                this._elMapMaterialContext === gl &&
+                this.gridGlMapMaterialProgram &&
+                this.gridGlMapMaterialVAO &&
+                this.gridGlMapMaterialVBO &&
+                this.gridGlMapFoodProgram &&
+                this.gridGlMapFoodVAO &&
+                this.gridGlMapFoodQuadVBO &&
+                this.gridGlMapFoodInstanceVBO
+            ) {
+                return true;
+            }
+
+            this._elMapMaterialContext =
+                null;
+
+            this.gridGlMapMaterialProgram =
+                null;
+
+            this.gridGlMapMaterialVAO =
+                null;
+
+            this.gridGlMapMaterialVBO =
+                null;
+
+            this.gridGlMapFoodProgram =
+                null;
+
+            this.gridGlMapFoodVAO =
+                null;
+
+            this.gridGlMapFoodQuadVBO =
+                null;
+
+            this.gridGlMapFoodInstanceVBO =
+                null;
+
+            this.grid_u_elMap_viewCenter =
+                null;
+
+            this.grid_u_elMap_viewScale =
+                null;
+
+            this.grid_u_elFood_viewCenter =
+                null;
+
+            this.grid_u_elFood_viewScale =
+                null;
+
+            this._elMapTriangleGpuBytes =
+                0;
+
+            this._elMapFoodGpuBytes =
+                0;
+
+            var self =
+                this;
+
+            function compileShader(
+                type,
+                source
+            ) {
+                var shader =
+                    gl.createShader(
+                        type
+                    );
+
+                gl.shaderSource(
+                    shader,
+                    source
+                );
+
+                gl.compileShader(
+                    shader
+                );
+
+                if (
+                    !gl.getShaderParameter(
+                        shader,
+                        gl.COMPILE_STATUS
+                    )
+                ) {
+                    var error =
+                        gl.getShaderInfoLog(
+                            shader
+                        );
+
+                    gl.deleteShader(
+                        shader
+                    );
+
+                    throw new Error(
+                        'Expanding Land map-material shader compile failed: ' +
+                        error
+                    );
+                }
+
+                return shader;
+            }
+
+            function createProgram(
+                vertexSource,
+                fragmentSource
+            ) {
+                var vertexShader =
+                    compileShader(
+                        gl.VERTEX_SHADER,
+                        vertexSource
+                    );
+
+                var fragmentShader =
+                    compileShader(
+                        gl.FRAGMENT_SHADER,
+                        fragmentSource
+                    );
+
+                var program =
+                    gl.createProgram();
+
+                gl.attachShader(
+                    program,
+                    vertexShader
+                );
+
+                gl.attachShader(
+                    program,
+                    fragmentShader
+                );
+
+                gl.linkProgram(
+                    program
+                );
+
+                gl.deleteShader(
+                    vertexShader
+                );
+
+                gl.deleteShader(
+                    fragmentShader
+                );
+
+                if (
+                    !gl.getProgramParameter(
+                        program,
+                        gl.LINK_STATUS
+                    )
+                ) {
+                    var error =
+                        gl.getProgramInfoLog(
+                            program
+                        );
+
+                    gl.deleteProgram(
+                        program
+                    );
+
+                    throw new Error(
+                        'Expanding Land map-material program link failed: ' +
+                        error
+                    );
+                }
+
+                return program;
+            }
+
+            try {
+                /*
+                 * ========================================================
+                 * POLYLINE / TRIANGLE PROGRAM
+                 * ========================================================
+                 *
+                 * Used for:
+                 *
+                 *      grid
+                 *      sector boundaries
+                 *      map border
+                 *      border glow
+                 *      debris streaks
+                 *
+                 *
+                 * Positions are already deformed in JavaScript by the
+                 * existing Expanding Land deformation field.
+                 */
+                var materialVertexSource =
+                    `#version 300 es
+
+                    precision highp float;
+
+                    layout(location = 0)
+                    in vec2 a_position;
+
+                    layout(location = 1)
+                    in vec4 a_color;
+
+                    uniform vec2 u_viewCenter;
+                    uniform vec2 u_viewScale;
+
+                    out vec4 v_color;
+
+                    void main() {
+                        vec2 clip =
+                            (
+                                a_position -
+                                u_viewCenter
+                            ) *
+                            u_viewScale;
+
+                        gl_Position =
+                            vec4(
+                                clip.x,
+                                -clip.y,
+                                0.0,
+                                1.0
+                            );
+
+                        v_color =
+                            a_color;
+                    }`;
+
+                var materialFragmentSource =
+                    `#version 300 es
+
+                    precision highp float;
+
+                    in vec4 v_color;
+
+                    out vec4 fragColor;
+
+                    void main() {
+                        if (
+                            v_color.a <=
+                            0.001
+                        ) {
+                            discard;
+                        }
+
+                        fragColor =
+                            v_color;
+                    }`;
+
+                var materialProgram =
+                    createProgram(
+                        materialVertexSource,
+                        materialFragmentSource
+                    );
+
+                this.gridGlMapMaterialProgram =
+                    materialProgram;
+
+                this.grid_u_elMap_viewCenter =
+                    gl.getUniformLocation(
+                        materialProgram,
+                        'u_viewCenter'
+                    );
+
+                this.grid_u_elMap_viewScale =
+                    gl.getUniformLocation(
+                        materialProgram,
+                        'u_viewScale'
+                    );
+
+                this.gridGlMapMaterialVBO =
+                    gl.createBuffer();
+
+                this.gridGlMapMaterialVAO =
+                    gl.createVertexArray();
+
+                gl.bindVertexArray(
+                    this.gridGlMapMaterialVAO
+                );
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.gridGlMapMaterialVBO
+                );
+
+                /*
+                 * Vertex layout:
+                 *
+                 *      x
+                 *      y
+                 *      r
+                 *      g
+                 *      b
+                 *      a
+                 *
+                 * 6 floats = 24 bytes.
+                 */
+                var mapMaterialStride =
+                    6 * 4;
+
+                gl.enableVertexAttribArray(
+                    0
+                );
+
+                gl.vertexAttribPointer(
+                    0,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    mapMaterialStride,
+                    0
+                );
+
+                gl.enableVertexAttribArray(
+                    1
+                );
+
+                gl.vertexAttribPointer(
+                    1,
+                    4,
+                    gl.FLOAT,
+                    false,
+                    mapMaterialStride,
+                    2 * 4
+                );
+
+                gl.bindVertexArray(
+                    null
+                );
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    null
+                );
+
+
+                /*
+                 * ========================================================
+                 * INSTANCED FOOD PROGRAM
+                 * ========================================================
+                 *
+                 * One four-vertex quad per pellet.
+                 *
+                 * The fragment shader analytically cuts an antialiased
+                 * circle out of the quad.
+                 *
+                 * Instance layout:
+                 *
+                 *      center.x
+                 *      center.y
+                 *      radius
+                 *      r
+                 *      g
+                 *      b
+                 *      a
+                 *
+                 * 7 floats = 28 bytes.
+                 */
+                var foodVertexSource =
+                    `#version 300 es
+
+                    precision highp float;
+
+                    layout(location = 0)
+                    in vec2 a_unitPosition;
+
+                    layout(location = 1)
+                    in vec2 i_center;
+
+                    layout(location = 2)
+                    in float i_radius;
+
+                    layout(location = 3)
+                    in vec4 i_color;
+
+                    uniform vec2 u_viewCenter;
+                    uniform vec2 u_viewScale;
+
+                    out vec2 v_unitPosition;
+                    out vec4 v_color;
+
+                    void main() {
+                        vec2 worldPosition =
+                            i_center +
+                            a_unitPosition *
+                            i_radius;
+
+                        vec2 clip =
+                            (
+                                worldPosition -
+                                u_viewCenter
+                            ) *
+                            u_viewScale;
+
+                        gl_Position =
+                            vec4(
+                                clip.x,
+                                -clip.y,
+                                0.0,
+                                1.0
+                            );
+
+                        v_unitPosition =
+                            a_unitPosition;
+
+                        v_color =
+                            i_color;
+                    }`;
+
+                var foodFragmentSource =
+                    `#version 300 es
+
+                    precision highp float;
+
+                    in vec2 v_unitPosition;
+                    in vec4 v_color;
+
+                    out vec4 fragColor;
+
+                    void main() {
+                        float distanceFromCenter =
+                            length(
+                                v_unitPosition
+                            );
+
+                        float aa =
+                            max(
+                                fwidth(
+                                    distanceFromCenter
+                                ),
+                                0.001
+                            );
+
+                        float bodyAlpha =
+                            1.0 -
+                            smoothstep(
+                                1.0 - aa,
+                                1.0 + aa,
+                                distanceFromCenter
+                            );
+
+                        if (
+                            bodyAlpha <=
+                            0.001
+                        ) {
+                            discard;
+                        }
+
+                        fragColor =
+                            vec4(
+                                v_color.rgb,
+                                v_color.a *
+                                bodyAlpha
+                            );
+                    }`;
+
+                var foodProgram =
+                    createProgram(
+                        foodVertexSource,
+                        foodFragmentSource
+                    );
+
+                this.gridGlMapFoodProgram =
+                    foodProgram;
+
+                this.grid_u_elFood_viewCenter =
+                    gl.getUniformLocation(
+                        foodProgram,
+                        'u_viewCenter'
+                    );
+
+                this.grid_u_elFood_viewScale =
+                    gl.getUniformLocation(
+                        foodProgram,
+                        'u_viewScale'
+                    );
+
+
+                /*
+                 * Static unit quad.
+                 *
+                 * TRIANGLE_STRIP order:
+                 *
+                 *      -1,-1
+                 *      +1,-1
+                 *      -1,+1
+                 *      +1,+1
+                 */
+                this.gridGlMapFoodQuadVBO =
+                    gl.createBuffer();
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.gridGlMapFoodQuadVBO
+                );
+
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    new Float32Array([
+                        -1, -1,
+                         1, -1,
+                        -1,  1,
+                         1,  1
+                    ]),
+                    gl.STATIC_DRAW
+                );
+
+                this.gridGlMapFoodInstanceVBO =
+                    gl.createBuffer();
+
+                this.gridGlMapFoodVAO =
+                    gl.createVertexArray();
+
+                gl.bindVertexArray(
+                    this.gridGlMapFoodVAO
+                );
+
+
+                /*
+                 * Attribute 0:
+                 *
+                 * static unit quad position.
+                 */
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.gridGlMapFoodQuadVBO
+                );
+
+                gl.enableVertexAttribArray(
+                    0
+                );
+
+                gl.vertexAttribPointer(
+                    0,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    2 * 4,
+                    0
+                );
+
+                gl.vertexAttribDivisor(
+                    0,
+                    0
+                );
+
+
+                /*
+                 * Instance attributes.
+                 */
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.gridGlMapFoodInstanceVBO
+                );
+
+                var foodStride =
+                    7 * 4;
+
+
+                /*
+                 * Attribute 1:
+                 *
+                 * centre XY.
+                 */
+                gl.enableVertexAttribArray(
+                    1
+                );
+
+                gl.vertexAttribPointer(
+                    1,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    foodStride,
+                    0
+                );
+
+                gl.vertexAttribDivisor(
+                    1,
+                    1
+                );
+
+
+                /*
+                 * Attribute 2:
+                 *
+                 * radius.
+                 */
+                gl.enableVertexAttribArray(
+                    2
+                );
+
+                gl.vertexAttribPointer(
+                    2,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    foodStride,
+                    2 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    2,
+                    1
+                );
+
+
+                /*
+                 * Attribute 3:
+                 *
+                 * RGBA.
+                 */
+                gl.enableVertexAttribArray(
+                    3
+                );
+
+                gl.vertexAttribPointer(
+                    3,
+                    4,
+                    gl.FLOAT,
+                    false,
+                    foodStride,
+                    3 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    3,
+                    1
+                );
+
+                gl.bindVertexArray(
+                    null
+                );
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    null
+                );
+
+
+                /*
+                 * Reusable CPU buffers.
+                 *
+                 * They grow only when required; there is no per-frame
+                 * Float32Array allocation.
+                 */
+                this._elMapTriangleData =
+                    new Float32Array(
+                        65536
+                    );
+
+                this._elMapTriangleWrite =
+                    0;
+
+                this._elMapFoodData =
+                    new Float32Array(
+                        8192 * 7
+                    );
+
+                this._elMapFoodColorCache =
+                    new Map();
+
+                this._elMapScratchColor =
+                    [
+                        1,
+                        1,
+                        1,
+                        1
+                    ];
+
+                this._elMapMaterialContext =
+                    gl;
+
+                return true;
+            }
+            catch (error) {
+                console.error(
+                    '[Expanding Land WebGL Map Material] Initialization failed:',
+                    error
+                );
+
+                this._elMapMaterialContext =
+                    null;
+
+                this.gridGlMapMaterialProgram =
+                    null;
+
+                this.gridGlMapMaterialVAO =
+                    null;
+
+                this.gridGlMapMaterialVBO =
+                    null;
+
+                this.gridGlMapFoodProgram =
+                    null;
+
+                this.gridGlMapFoodVAO =
+                    null;
+
+                this.gridGlMapFoodQuadVBO =
+                    null;
+
+                this.gridGlMapFoodInstanceVBO =
+                    null;
+
+                return false;
+            }
+        },
+
+
+        /*
+         * Grow the reusable triangle buffer.
+         */
+        _ensureLegendWorldMapTriangleCapacity(
+            additionalFloats
+        ) {
+            var writeIndex =
+                this._elMapTriangleWrite ||
+                0;
+
+            var required =
+                writeIndex +
+                additionalFloats;
+
+            var data =
+                this._elMapTriangleData;
+
+            if (
+                data &&
+                data.length >=
+                    required
+            ) {
+                return data;
+            }
+
+            var capacity =
+                data
+                    ? data.length
+                    : 65536;
+
+            while (
+                capacity <
+                required
+            ) {
+                capacity *=
+                    2;
+            }
+
+            var next =
+                new Float32Array(
+                    capacity
+                );
+
+            if (
+                data &&
+                writeIndex >
+                    0
+            ) {
+                next.set(
+                    data.subarray(
+                        0,
+                        writeIndex
+                    )
+                );
+            }
+
+            this._elMapTriangleData =
+                next;
+
+            return next;
+        },
+
+
+        /*
+         * Push one XY + RGBA vertex.
+         */
+        _writeLegendWorldMapVertex(
+            x,
+            y,
+            rgba
+        ) {
+            var data =
+                this
+                    ._ensureLegendWorldMapTriangleCapacity(
+                        6
+                    );
+
+            var index =
+                this._elMapTriangleWrite ||
+                0;
+
+            data[index++] =
+                x;
+
+            data[index++] =
+                y;
+
+            data[index++] =
+                rgba[0];
+
+            data[index++] =
+                rgba[1];
+
+            data[index++] =
+                rgba[2];
+
+            data[index++] =
+                rgba[3];
+
+            this._elMapTriangleWrite =
+                index;
+        },
+
+
+        /*
+         * Turn one world-space line segment into a six-vertex quad.
+         *
+         * We intentionally do NOT use gl.LINE_STRIP:
+         *
+         *      line widths > 1 are not portable in WebGL.
+         *
+         * Explicit triangles guarantee the requested world-space width.
+         */
+        _writeLegendWorldMapSegment(
+            x1,
+            y1,
+            x2,
+            y2,
+            lineWidth,
+            rgba
+        ) {
+            var dx =
+                x2 -
+                x1;
+
+            var dy =
+                y2 -
+                y1;
+
+            var length =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+            if (
+                !Number.isFinite(
+                    length
+                ) ||
+                length <
+                    0.0001
+            ) {
+                return;
+            }
+
+            var width =
+                Number(
+                    lineWidth
+                );
+
+            if (
+                !Number.isFinite(
+                    width
+                ) ||
+                width <=
+                    0
+            ) {
+                return;
+            }
+
+            var half =
+                width *
+                0.5;
+
+            var nx =
+                -dy /
+                length *
+                half;
+
+            var ny =
+                dx /
+                length *
+                half;
+
+            var ax =
+                x1 +
+                nx;
+
+            var ay =
+                y1 +
+                ny;
+
+            var bx =
+                x1 -
+                nx;
+
+            var by =
+                y1 -
+                ny;
+
+            var cx =
+                x2 +
+                nx;
+
+            var cy =
+                y2 +
+                ny;
+
+            var dx2 =
+                x2 -
+                nx;
+
+            var dy2 =
+                y2 -
+                ny;
+
+
+            /*
+             * Triangle 1.
+             */
+            this._writeLegendWorldMapVertex(
+                ax,
+                ay,
+                rgba
+            );
+
+            this._writeLegendWorldMapVertex(
+                bx,
+                by,
+                rgba
+            );
+
+            this._writeLegendWorldMapVertex(
+                cx,
+                cy,
+                rgba
+            );
+
+
+            /*
+             * Triangle 2.
+             */
+            this._writeLegendWorldMapVertex(
+                cx,
+                cy,
+                rgba
+            );
+
+            this._writeLegendWorldMapVertex(
+                bx,
+                by,
+                rgba
+            );
+
+            this._writeLegendWorldMapVertex(
+                dx2,
+                dy2,
+                rgba
+            );
+        },
+
+
+        /*
+         * Parse:
+         *
+         *      #RGB
+         *      #RRGGBB
+         *      #RRGGBBAA
+         *      rgb(...)
+         *      rgba(...)
+         *
+         * into normalized RGBA.
+         */
+        _legendWorldMapParseRGBA(
+            value,
+            fallback,
+            alphaMultiplier
+        ) {
+            var source =
+                typeof value ===
+                    'string'
+                    ? value.trim()
+                    : '';
+
+            var fallbackSource =
+                typeof fallback ===
+                    'string'
+                    ? fallback.trim()
+                    : '#ffffff';
+
+            var multiplier =
+                Number(
+                    alphaMultiplier
+                );
+
+            if (
+                !Number.isFinite(
+                    multiplier
+                )
+            ) {
+                multiplier =
+                    1;
+            }
+
+            multiplier =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        multiplier
+                    )
+                );
+
+
+            /*
+             * rgb()/rgba().
+             */
+            var rgbaMatch =
+                source.match(
+                    /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)$/i
+                );
+
+            if (rgbaMatch) {
+                var rr =
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            Number(
+                                rgbaMatch[1]
+                            ) ||
+                            0
+                        )
+                    ) /
+                    255;
+
+                var rg =
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            Number(
+                                rgbaMatch[2]
+                            ) ||
+                            0
+                        )
+                    ) /
+                    255;
+
+                var rb =
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            Number(
+                                rgbaMatch[3]
+                            ) ||
+                            0
+                        )
+                    ) /
+                    255;
+
+                var ra =
+                    rgbaMatch[4] !==
+                        undefined
+                        ? Number(
+                            rgbaMatch[4]
+                        )
+                        : 1;
+
+                if (
+                    !Number.isFinite(
+                        ra
+                    )
+                ) {
+                    ra =
+                        1;
+                }
+
+                return [
+                    rr,
+                    rg,
+                    rb,
+                    Math.max(
+                        0,
+                        Math.min(
+                            1,
+                            ra
+                        )
+                    ) *
+                        multiplier
+                ];
+            }
+
+
+            /*
+             * Hex.
+             */
+            function parseHex(
+                stringValue
+            ) {
+                var hex =
+                    String(
+                        stringValue ||
+                        ''
+                    )
+                        .trim()
+                        .replace(
+                            /^#/,
+                            ''
+                        );
+
+                if (
+                    hex.length ===
+                    3
+                ) {
+                    hex =
+                        hex[0] +
+                        hex[0] +
+                        hex[1] +
+                        hex[1] +
+                        hex[2] +
+                        hex[2];
+                }
+
+                var alpha =
+                    1;
+
+                if (
+                    hex.length ===
+                    8
+                ) {
+                    var alphaByte =
+                        parseInt(
+                            hex.slice(
+                                6,
+                                8
+                            ),
+                            16
+                        );
+
+                    if (
+                        Number.isFinite(
+                            alphaByte
+                        )
+                    ) {
+                        alpha =
+                            alphaByte /
+                            255;
+                    }
+
+                    hex =
+                        hex.slice(
+                            0,
+                            6
+                        );
+                }
+
+                if (
+                    !/^[0-9a-f]{6}$/i
+                        .test(hex)
+                ) {
+                    return null;
+                }
+
+                var color =
+                    parseInt(
+                        hex,
+                        16
+                    );
+
+                return [
+                    (
+                        (
+                            color >>
+                            16
+                        ) &
+                        255
+                    ) /
+                        255,
+
+                    (
+                        (
+                            color >>
+                            8
+                        ) &
+                        255
+                    ) /
+                        255,
+
+                    (
+                        color &
+                        255
+                    ) /
+                        255,
+
+                    alpha
+                ];
+            }
+
+            var parsed =
+                parseHex(
+                    source
+                );
+
+            if (!parsed) {
+                parsed =
+                    parseHex(
+                        fallbackSource
+                    );
+            }
+
+            if (!parsed) {
+                parsed =
+                    [
+                        1,
+                        1,
+                        1,
+                        1
+                    ];
+            }
+
+            parsed[3] *=
+                multiplier;
+
+            return parsed;
+        },
+
+
+        /*
+         * Upload and draw the currently-written triangle stream.
+         */
+        _flushLegendWorldMapTriangleBatch() {
+            if (
+                !this.ensureLegendWorldMapMaterialWebGL()
+            ) {
+                return false;
+            }
+
+            var usedFloats =
+                this._elMapTriangleWrite ||
+                0;
+
+            if (
+                usedFloats <=
+                0
+            ) {
+                return true;
+            }
+
+            var gl =
+                this.gridGl;
+
+            var viewScale =
+                Number(
+                    this.scale
+                );
+
+            if (
+                !Number.isFinite(
+                    viewScale
+                ) ||
+                viewScale <=
+                    0
+            ) {
+                return false;
+            }
+
+            var width =
+                Number(
+                    this.canvasWidth
+                );
+
+            var height =
+                Number(
+                    this.canvasHeight
+                );
+
+            if (
+                !Number.isFinite(width) ||
+                !Number.isFinite(height) ||
+                width <= 0 ||
+                height <= 0
+            ) {
+                return false;
+            }
+
+            gl.viewport(
+                0,
+                0,
+                this.gridCanvas.width,
+                this.gridCanvas.height
+            );
+
+            gl.disable(
+                gl.DEPTH_TEST
+            );
+
+            gl.disable(
+                gl.CULL_FACE
+            );
+
+            gl.enable(
+                gl.BLEND
+            );
+
+            gl.blendFunc(
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA
+            );
+
+            gl.useProgram(
+                this.gridGlMapMaterialProgram
+            );
+
+            gl.uniform2f(
+                this.grid_u_elMap_viewCenter,
+                this.camX || 0,
+                this.camY || 0
+            );
+
+            gl.uniform2f(
+                this.grid_u_elMap_viewScale,
+                2.0 *
+                    viewScale /
+                    width,
+                2.0 *
+                    viewScale /
+                    height
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                this.gridGlMapMaterialVBO
+            );
+
+            var usedBytes =
+                usedFloats *
+                4;
+
+            if (
+                this._elMapTriangleGpuBytes <
+                    usedBytes
+            ) {
+                var reserveBytes =
+                    this._elMapTriangleData
+                        .byteLength;
+
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    reserveBytes,
+                    gl.DYNAMIC_DRAW
+                );
+
+                this._elMapTriangleGpuBytes =
+                    reserveBytes;
+            }
+
+            gl.bufferSubData(
+                gl.ARRAY_BUFFER,
+                0,
+                this._elMapTriangleData
+                    .subarray(
+                        0,
+                        usedFloats
+                    )
+            );
+
+            gl.bindVertexArray(
+                this.gridGlMapMaterialVAO
+            );
+
+            gl.drawArrays(
+                gl.TRIANGLES,
+                0,
+                usedFloats /
+                    6
+            );
+
+            gl.bindVertexArray(
+                null
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                null
+            );
+
+            return true;
+        },
+
+
+        /*
+         * ================================================================
+         * DRAW DEFORMED GRID / SECTORS / BORDER
+         * ================================================================
+         */
+        drawLegendWorldMapMaterialWebGL() {
+            if (
+                !this.isLegendWorldMapDeformationVisible ||
+                !this.isLegendWorldMapDeformationVisible()
+            ) {
+                return false;
+            }
+
+            if (
+                !this.ensureLegendWorldMapMaterialWebGL()
+            ) {
+                return false;
+            }
+
+            var viewScale =
+                Number(
+                    this.scale
+                );
+
+            if (
+                !Number.isFinite(
+                    viewScale
+                ) ||
+                viewScale <=
+                    0
+            ) {
+                return false;
+            }
+
+            var mapMinX =
+                Number(
+                    LM.mapMinX
+                );
+
+            var mapMinY =
+                Number(
+                    LM.mapMinY
+                );
+
+            var mapMaxX =
+                Number(
+                    LM.mapMaxX
+                );
+
+            var mapMaxY =
+                Number(
+                    LM.mapMaxY
+                );
+
+            if (
+                !Number.isFinite(mapMinX) ||
+                !Number.isFinite(mapMinY) ||
+                !Number.isFinite(mapMaxX) ||
+                !Number.isFinite(mapMaxY) ||
+                mapMaxX <= mapMinX ||
+                mapMaxY <= mapMinY
+            ) {
+                return false;
+            }
+
+            this._elMapTriangleWrite =
+                0;
+
+            var self =
+                this;
+
+
+            /*
+             * Draw a logically straight world-space line as a CURVED
+             * polyline after passing every sample through the deformation
+             * field.
+             */
+            function appendDeformedCurve(
+                x1,
+                y1,
+                x2,
+                y2,
+                rgba,
+                lineWidth,
+                sampleCount
+            ) {
+                sampleCount =
+                    Math.max(
+                        1,
+                        Math.min(
+                            64,
+                            sampleCount |
+                                0
+                        )
+                    );
+
+                var pointA =
+                    self._elMapPointA;
+
+                var pointB =
+                    self._elMapPointB;
+
+                self.getLegendWorldMapRenderPoint(
+                    x1,
+                    y1,
+                    pointA
+                );
+
+                for (
+                    var sampleIndex = 1;
+                    sampleIndex <=
+                        sampleCount;
+                    sampleIndex++
+                ) {
+                    var t =
+                        sampleIndex /
+                        sampleCount;
+
+                    var rawX =
+                        x1 +
+                        (
+                            x2 -
+                            x1
+                        ) *
+                        t;
+
+                    var rawY =
+                        y1 +
+                        (
+                            y2 -
+                            y1
+                        ) *
+                        t;
+
+                    self.getLegendWorldMapRenderPoint(
+                        rawX,
+                        rawY,
+                        pointB
+                    );
+
+                    self._writeLegendWorldMapSegment(
+                        pointA.x,
+                        pointA.y,
+                        pointB.x,
+                        pointB.y,
+                        lineWidth,
+                        rgba
+                    );
+
+                    var swap =
+                        pointA;
+
+                    pointA =
+                        pointB;
+
+                    pointB =
+                        swap;
+                }
+            }
+
+
+            /*
+             * ============================================================
+             * VISIBLE WORLD BOUNDS
+             * ============================================================
+             *
+             * Grid and sector geometry is culled before tessellation.
+             *
+             * Border geometry is cheap enough to retain in full.
+             */
+            var halfViewW =
+                this.canvasWidth *
+                0.5 /
+                viewScale;
+
+            var halfViewH =
+                this.canvasHeight *
+                0.5 /
+                viewScale;
+
+            var viewMargin =
+                300 /
+                Math.max(
+                    viewScale,
+                    0.001
+                );
+
+            var viewMinX =
+                Math.max(
+                    mapMinX,
+                    (
+                        this.camX ||
+                        0
+                    ) -
+                        halfViewW -
+                        viewMargin
+                );
+
+            var viewMaxX =
+                Math.min(
+                    mapMaxX,
+                    (
+                        this.camX ||
+                        0
+                    ) +
+                        halfViewW +
+                        viewMargin
+                );
+
+            var viewMinY =
+                Math.max(
+                    mapMinY,
+                    (
+                        this.camY ||
+                        0
+                    ) -
+                        halfViewH -
+                        viewMargin
+                );
+
+            var viewMaxY =
+                Math.min(
+                    mapMaxY,
+                    (
+                        this.camY ||
+                        0
+                    ) +
+                        halfViewH +
+                        viewMargin
+                );
+
+
+            /*
+             * ============================================================
+             * DEFORMED GRID
+             * ============================================================
+             */
+            if (
+                defaultmapsettings.showGrid &&
+                viewMaxX >
+                    viewMinX &&
+                viewMaxY >
+                    viewMinY
+            ) {
+                /*
+                 * Preserve the existing 100-world-unit base grid.
+                 *
+                 * At extreme zoom-out use exact powers of two so the
+                 * retained lines stay anchored to the same world origin.
+                 */
+                var gridSpacing =
+                    100;
+
+                while (
+                    gridSpacing *
+                        viewScale <
+                    14
+                ) {
+                    gridSpacing *=
+                        2;
+                }
+
+                var gridRGBA =
+                    this._legendWorldMapParseRGBA(
+                        defaultSettings.gridColor ||
+                            'rgba(255,255,255,0.08)',
+                        '#ffffff',
+                        1
+                    );
+
+                var gridWidth =
+                    Math.max(
+                        0.5,
+                        1.15 /
+                            Math.max(
+                                viewScale,
+                                0.001
+                            )
+                    );
+
+                var visibleWidth =
+                    viewMaxX -
+                    viewMinX;
+
+                var visibleHeight =
+                    viewMaxY -
+                    viewMinY;
+
+                var verticalSamples =
+                    Math.max(
+                        4,
+                        Math.min(
+                            32,
+                            Math.ceil(
+                                visibleHeight /
+                                Math.max(
+                                    gridSpacing *
+                                        2,
+                                    400
+                                )
+                            )
+                        )
+                    );
+
+                var horizontalSamples =
+                    Math.max(
+                        4,
+                        Math.min(
+                            32,
+                            Math.ceil(
+                                visibleWidth /
+                                Math.max(
+                                    gridSpacing *
+                                        2,
+                                    400
+                                )
+                            )
+                        )
+                    );
+
+
+                /*
+                 * Vertical lines.
+                 */
+                var firstGridX =
+                    Math.floor(
+                        viewMinX /
+                        gridSpacing
+                    ) *
+                    gridSpacing;
+
+                var verticalGuard =
+                    0;
+
+                for (
+                    var gridX = firstGridX;
+                    gridX <= viewMaxX &&
+                    verticalGuard < 1024;
+                    gridX += gridSpacing,
+                    verticalGuard++
+                ) {
+                    if (
+                        gridX <
+                            mapMinX ||
+                        gridX >
+                            mapMaxX
+                    ) {
+                        continue;
+                    }
+
+                    appendDeformedCurve(
+                        gridX,
+                        viewMinY,
+                        gridX,
+                        viewMaxY,
+                        gridRGBA,
+                        gridWidth,
+                        verticalSamples
+                    );
+                }
+
+
+                /*
+                 * Horizontal lines.
+                 */
+                var firstGridY =
+                    Math.floor(
+                        viewMinY /
+                        gridSpacing
+                    ) *
+                    gridSpacing;
+
+                var horizontalGuard =
+                    0;
+
+                for (
+                    var gridY = firstGridY;
+                    gridY <= viewMaxY &&
+                    horizontalGuard < 1024;
+                    gridY += gridSpacing,
+                    horizontalGuard++
+                ) {
+                    if (
+                        gridY <
+                            mapMinY ||
+                        gridY >
+                            mapMaxY
+                    ) {
+                        continue;
+                    }
+
+                    appendDeformedCurve(
+                        viewMinX,
+                        gridY,
+                        viewMaxX,
+                        gridY,
+                        gridRGBA,
+                        gridWidth,
+                        horizontalSamples
+                    );
+                }
+            }
+
+
+            /*
+             * ============================================================
+             * DEFORMED SECTOR BOUNDARIES
+             * ============================================================
+             *
+             * Sector labels remain Canvas text because they are text, not
+             * map geometry. The lines themselves are WebGL material.
+             */
+            if (
+                defaultmapsettings.showBgSectors
+            ) {
+                var sectorsX =
+                    Number(
+                        defaultSettings.sectorsX
+                    );
+
+                var sectorsY =
+                    Number(
+                        defaultSettings.sectorsY
+                    );
+
+                if (
+                    !Number.isFinite(
+                        sectorsX
+                    ) ||
+                    sectorsX <
+                        1
+                ) {
+                    sectorsX =
+                        5;
+                }
+
+                if (
+                    !Number.isFinite(
+                        sectorsY
+                    ) ||
+                    sectorsY <
+                        1
+                ) {
+                    sectorsY =
+                        5;
+                }
+
+                sectorsX =
+                    Math.max(
+                        1,
+                        sectorsX |
+                            0
+                    );
+
+                sectorsY =
+                    Math.max(
+                        1,
+                        sectorsY |
+                            0
+                    );
+
+                var sectorWidth =
+                    Number(
+                        defaultSettings.sectorsWidth
+                    );
+
+                if (
+                    !Number.isFinite(
+                        sectorWidth
+                    ) ||
+                    sectorWidth <=
+                        0
+                ) {
+                    sectorWidth =
+                        2;
+                }
+
+                sectorWidth =
+                    Math.max(
+                        sectorWidth,
+                        1.2 /
+                            Math.max(
+                                viewScale,
+                                0.001
+                            )
+                    );
+
+                /*
+                 * drawSectors() currently uses gridColor as the sector LINE
+                 * colour and sectorsColor for labels. Preserve that.
+                 */
+                var sectorRGBA =
+                    this._legendWorldMapParseRGBA(
+                        defaultSettings.gridColor ||
+                            '#ffffff',
+                        '#ffffff',
+                        1
+                    );
+
+                var mapWidth =
+                    mapMaxX -
+                    mapMinX;
+
+                var mapHeight =
+                    mapMaxY -
+                    mapMinY;
+
+                var sectorStepX =
+                    mapWidth /
+                    sectorsX;
+
+                var sectorStepY =
+                    mapHeight /
+                    sectorsY;
+
+                var sectorVerticalSamples =
+                    Math.max(
+                        8,
+                        Math.min(
+                            40,
+                            Math.ceil(
+                                mapHeight /
+                                900
+                            )
+                        )
+                    );
+
+                var sectorHorizontalSamples =
+                    Math.max(
+                        8,
+                        Math.min(
+                            40,
+                            Math.ceil(
+                                mapWidth /
+                                900
+                            )
+                        )
+                    );
+
+                for (
+                    var sectorXIndex = 1;
+                    sectorXIndex <
+                        sectorsX;
+                    sectorXIndex++
+                ) {
+                    var sectorX =
+                        mapMinX +
+                        sectorStepX *
+                        sectorXIndex;
+
+                    /*
+                     * Cull completely invisible sector lines.
+                     */
+                    if (
+                        sectorX <
+                            viewMinX -
+                                sectorWidth ||
+                        sectorX >
+                            viewMaxX +
+                                sectorWidth
+                    ) {
+                        continue;
+                    }
+
+                    appendDeformedCurve(
+                        sectorX,
+                        mapMinY,
+                        sectorX,
+                        mapMaxY,
+                        sectorRGBA,
+                        sectorWidth,
+                        sectorVerticalSamples
+                    );
+                }
+
+                for (
+                    var sectorYIndex = 1;
+                    sectorYIndex <
+                        sectorsY;
+                    sectorYIndex++
+                ) {
+                    var sectorY =
+                        mapMinY +
+                        sectorStepY *
+                        sectorYIndex;
+
+                    if (
+                        sectorY <
+                            viewMinY -
+                                sectorWidth ||
+                        sectorY >
+                            viewMaxY +
+                                sectorWidth
+                    ) {
+                        continue;
+                    }
+
+                    appendDeformedCurve(
+                        mapMinX,
+                        sectorY,
+                        mapMaxX,
+                        sectorY,
+                        sectorRGBA,
+                        sectorWidth,
+                        sectorHorizontalSamples
+                    );
+                }
+            }
+
+
+            /*
+             * ============================================================
+             * DEFORMED MAP BORDER
+             * ============================================================
+             */
+            if (
+                defaultmapsettings.showMapBorders
+            ) {
+                var borderWidth =
+                    Number(
+                        defaultSettings.bordersWidth
+                    );
+
+                if (
+                    !Number.isFinite(
+                        borderWidth
+                    ) ||
+                    borderWidth <=
+                        0
+                ) {
+                    borderWidth =
+                        20;
+                }
+
+                /*
+                 * Same minimum visible thickness rule as the normal border.
+                 */
+                borderWidth =
+                    Math.max(
+                        borderWidth,
+                        3 /
+                            Math.max(
+                                viewScale,
+                                0.001
+                            )
+                    );
+
+                var halfBorder =
+                    borderWidth *
+                    0.5;
+
+                var borderMinX =
+                    mapMinX -
+                    halfBorder;
+
+                var borderMinY =
+                    mapMinY -
+                    halfBorder;
+
+                var borderMaxX =
+                    mapMaxX +
+                    halfBorder;
+
+                var borderMaxY =
+                    mapMaxY +
+                    halfBorder;
+
+                var borderRGBA =
+                    this._legendWorldMapParseRGBA(
+                        defaultSettings.bordersColor ||
+                            '#ff0000',
+                        '#ff0000',
+                        1
+                    );
+
+                var mapDimension =
+                    Math.max(
+                        mapMaxX -
+                            mapMinX,
+                        mapMaxY -
+                            mapMinY
+                    );
+
+                var borderSamples =
+                    Math.max(
+                        16,
+                        Math.min(
+                            64,
+                            Math.ceil(
+                                mapDimension /
+                                900
+                            )
+                        )
+                    );
+
+
+                /*
+                 * Optional glow pass FIRST.
+                 */
+                if (
+                    defaultmapsettings.borderGlow
+                ) {
+                    var glowSize =
+                        Number(
+                            defaultSettings
+                                .borderGlowSize
+                        );
+
+                    if (
+                        !Number.isFinite(
+                            glowSize
+                        ) ||
+                        glowSize <
+                            0
+                    ) {
+                        glowSize =
+                            15;
+                    }
+
+                    var glowRGBA =
+                        this._legendWorldMapParseRGBA(
+                            defaultSettings
+                                .borderGlowColor ||
+                                defaultSettings
+                                    .bordersColor ||
+                                '#ff0000',
+                            '#ff0000',
+                            0.22
+                        );
+
+                    var glowWidth =
+                        borderWidth +
+                        glowSize *
+                            2;
+
+                    appendDeformedCurve(
+                        borderMinX,
+                        borderMinY,
+                        borderMaxX,
+                        borderMinY,
+                        glowRGBA,
+                        glowWidth,
+                        borderSamples
+                    );
+
+                    appendDeformedCurve(
+                        borderMaxX,
+                        borderMinY,
+                        borderMaxX,
+                        borderMaxY,
+                        glowRGBA,
+                        glowWidth,
+                        borderSamples
+                    );
+
+                    appendDeformedCurve(
+                        borderMaxX,
+                        borderMaxY,
+                        borderMinX,
+                        borderMaxY,
+                        glowRGBA,
+                        glowWidth,
+                        borderSamples
+                    );
+
+                    appendDeformedCurve(
+                        borderMinX,
+                        borderMaxY,
+                        borderMinX,
+                        borderMinY,
+                        glowRGBA,
+                        glowWidth,
+                        borderSamples
+                    );
+                }
+
+
+                /*
+                 * Main solid border.
+                 */
+                appendDeformedCurve(
+                    borderMinX,
+                    borderMinY,
+                    borderMaxX,
+                    borderMinY,
+                    borderRGBA,
+                    borderWidth,
+                    borderSamples
+                );
+
+                appendDeformedCurve(
+                    borderMaxX,
+                    borderMinY,
+                    borderMaxX,
+                    borderMaxY,
+                    borderRGBA,
+                    borderWidth,
+                    borderSamples
+                );
+
+                appendDeformedCurve(
+                    borderMaxX,
+                    borderMaxY,
+                    borderMinX,
+                    borderMaxY,
+                    borderRGBA,
+                    borderWidth,
+                    borderSamples
+                );
+
+                appendDeformedCurve(
+                    borderMinX,
+                    borderMaxY,
+                    borderMinX,
+                    borderMinY,
+                    borderRGBA,
+                    borderWidth,
+                    borderSamples
+                );
+            }
+
+
+            return this
+                ._flushLegendWorldMapTriangleBatch();
+        },
+
+
+        /*
+         * ================================================================
+         * SECTOR LABELS ONLY
+         * ================================================================
+         *
+         * Geometry is WebGL.
+         *
+         * Text remains Canvas because raster text is not map geometry.
+         *
+         * Importantly, the label POSITION follows the same deformation
+         * field, so the text stays attached to its sector while the terrain
+         * flexes.
+         */
+        drawLegendWorldSectorLabelsOnly(
+            ctx
+        ) {
+            if (
+                !ctx ||
+                !defaultmapsettings.showBgSectors ||
+                !this.isLegendWorldMapDeformationVisible ||
+                !this.isLegendWorldMapDeformationVisible()
+            ) {
+                return;
+            }
+
+            /*
+             * Match drawSectors(type=true) behaviour.
+             */
+            if (
+                !LM.mapOffsetFixed
+            ) {
+                return;
+            }
+
+            var sectorsX =
+                Number(
+                    defaultSettings.sectorsX
+                ) ||
+                5;
+
+            var sectorsY =
+                Number(
+                    defaultSettings.sectorsY
+                ) ||
+                5;
+
+            sectorsX =
+                Math.max(
+                    1,
+                    sectorsX |
+                        0
+                );
+
+            sectorsY =
+                Math.max(
+                    1,
+                    sectorsY |
+                        0
+                );
+
+            var minX =
+                LM.mapMinX;
+
+            var minY =
+                LM.mapMinY;
+
+            var maxX =
+                LM.mapMaxX;
+
+            var maxY =
+                LM.mapMaxY;
+
+            var stepX =
+                (
+                    maxX -
+                    minX
+                ) /
+                sectorsX;
+
+            var stepY =
+                (
+                    maxY -
+                    minY
+                ) /
+                sectorsY;
+
+            ctx.save();
+
+            ctx.fillStyle =
+                defaultSettings.sectorsColor;
+
+            ctx.font =
+                defaultSettings.sectorsFontWeight +
+                    ' ' +
+                    defaultSettings.sectorsFontSize +
+                    'px ' +
+                    defaultSettings.sectorsFontFamily;
+
+            ctx.textAlign =
+                'center';
+
+            ctx.textBaseline =
+                'middle';
+
+            var labelPoint =
+                this._elMapScratch;
+
+            for (
+                var row = 0;
+                row <
+                    sectorsY;
+                row++
+            ) {
+                for (
+                    var column = 0;
+                    column <
+                        sectorsX;
+                    column++
+                ) {
+                    var rawX =
+                        minX +
+                        stepX *
+                            (
+                                column +
+                                0.5
+                            );
+
+                    var rawY =
+                        minY +
+                        stepY *
+                            (
+                                row +
+                                0.5
+                            );
+
+                    this.getLegendWorldMapRenderPoint(
+                        rawX,
+                        rawY,
+                        labelPoint
+                    );
+
+                    var label =
+                        String.fromCharCode(
+                            65 +
+                            row
+                        ) +
+                        (
+                            column +
+                            1
+                        );
+
+                    ctx.fillText(
+                        label,
+                        labelPoint.x,
+                        labelPoint.y
+                    );
+                }
+            }
+
+            ctx.restore();
+        },
+
+
+        /*
+         * Grow the reusable food-instance buffer.
+         */
+        _ensureLegendWorldMapFoodCapacity(
+            instanceCount
+        ) {
+            var requiredFloats =
+                Math.max(
+                    1,
+                    instanceCount
+                ) *
+                7;
+
+            var data =
+                this._elMapFoodData;
+
+            if (
+                data &&
+                data.length >=
+                    requiredFloats
+            ) {
+                return data;
+            }
+
+            var capacity =
+                data
+                    ? data.length
+                    : 8192 *
+                        7;
+
+            while (
+                capacity <
+                requiredFloats
+            ) {
+                capacity *=
+                    2;
+            }
+
+            var next =
+                new Float32Array(
+                    capacity
+                );
+
+            this._elMapFoodData =
+                next;
+
+            return next;
+        },
+
+
+        /*
+         * Draw currently-populated food instances.
+         */
+        _drawLegendWorldMapFoodInstances(
+            instanceCount
+        ) {
+            if (
+                !this.ensureLegendWorldMapMaterialWebGL()
+            ) {
+                return false;
+            }
+
+            if (
+                instanceCount <=
+                0
+            ) {
+                /*
+                 * Nothing visible, but the Expanding Land GPU food path
+                 * successfully handled the frame.
+                 */
+                return true;
+            }
+
+            var gl =
+                this.gridGl;
+
+            var viewScale =
+                Number(
+                    this.scale
+                );
+
+            if (
+                !Number.isFinite(
+                    viewScale
+                ) ||
+                viewScale <=
+                0
+            ) {
+                return false;
+            }
+
+            gl.viewport(
+                0,
+                0,
+                this.gridCanvas.width,
+                this.gridCanvas.height
+            );
+
+            gl.disable(
+                gl.DEPTH_TEST
+            );
+
+            gl.disable(
+                gl.CULL_FACE
+            );
+
+            gl.enable(
+                gl.BLEND
+            );
+
+            gl.blendFunc(
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA
+            );
+
+            gl.useProgram(
+                this.gridGlMapFoodProgram
+            );
+
+            gl.uniform2f(
+                this.grid_u_elFood_viewCenter,
+                this.camX || 0,
+                this.camY || 0
+            );
+
+            gl.uniform2f(
+                this.grid_u_elFood_viewScale,
+                2.0 *
+                    viewScale /
+                    this.canvasWidth,
+                2.0 *
+                    viewScale /
+                    this.canvasHeight
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                this.gridGlMapFoodInstanceVBO
+            );
+
+            var usedFloats =
+                instanceCount *
+                7;
+
+            var usedBytes =
+                usedFloats *
+                4;
+
+            if (
+                this._elMapFoodGpuBytes <
+                usedBytes
+            ) {
+                var reserveBytes =
+                    this._elMapFoodData
+                        .byteLength;
+
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    reserveBytes,
+                    gl.DYNAMIC_DRAW
+                );
+
+                this._elMapFoodGpuBytes =
+                    reserveBytes;
+            }
+
+            gl.bufferSubData(
+                gl.ARRAY_BUFFER,
+                0,
+                this._elMapFoodData
+                    .subarray(
+                        0,
+                        usedFloats
+                    )
+            );
+
+            gl.bindVertexArray(
+                this.gridGlMapFoodVAO
+            );
+
+            gl.drawArraysInstanced(
+                gl.TRIANGLE_STRIP,
+                0,
+                4,
+                instanceCount
+            );
+
+            gl.bindVertexArray(
+                null
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                null
+            );
+
+            return true;
+        },
+
+
+        /*
+         * ================================================================
+         * EXPANDING LAND — DEFORMED GPU FOOD
+         * ================================================================
+         */
+        drawLegendWorldMapFoodWebGL(
+            cellsArray
+        ) {
+            if (
+                !this.isLegendWorldMapDeformationVisible ||
+                !this.isLegendWorldMapDeformationVisible()
+            ) {
+                return false;
+            }
+
+            if (
+                !this.ensureLegendWorldMapMaterialWebGL()
+            ) {
+                return false;
+            }
+
+            if (
+                !cellsArray ||
+                !cellsArray.length
+            ) {
+                return true;
+            }
+
+            var viewScale =
+                Number(
+                    this.scale
+                );
+
+            if (
+                !Number.isFinite(
+                    viewScale
+                ) ||
+                viewScale <=
+                0
+            ) {
+                return false;
+            }
+
+            var data =
+                this
+                    ._ensureLegendWorldMapFoodCapacity(
+                        cellsArray.length
+                    );
+
+            var halfW =
+                this.canvasWidth *
+                0.5 /
+                viewScale +
+                250;
+
+            var halfH =
+                this.canvasHeight *
+                0.5 /
+                viewScale +
+                250;
+
+            var minX =
+                (
+                    this.camX ||
+                    0
+                ) -
+                halfW;
+
+            var maxX =
+                (
+                    this.camX ||
+                    0
+                ) +
+                halfW;
+
+            var minY =
+                (
+                    this.camY ||
+                    0
+                ) -
+                halfH;
+
+            var maxY =
+                (
+                    this.camY ||
+                    0
+                ) +
+                halfH;
+
+            /*
+             * Full-world spectator intentionally sees the complete map.
+             */
+            if (
+                window.fullSpectator
+            ) {
+                minX =
+                    (
+                        LM.mapMinX !=
+                            null
+                            ? LM.mapMinX
+                            : -7071
+                    ) -
+                    500;
+
+                maxX =
+                    (
+                        LM.mapMaxX !=
+                            null
+                            ? LM.mapMaxX
+                            : 7071
+                    ) +
+                    500;
+
+                minY =
+                    (
+                        LM.mapMinY !=
+                            null
+                            ? LM.mapMinY
+                            : -7071
+                    ) -
+                    500;
+
+                maxY =
+                    (
+                        LM.mapMaxY !=
+                            null
+                            ? LM.mapMaxY
+                            : 7071
+                    ) +
+                    500;
+            }
+
+            var defaultFoodColor =
+                defaultSettings.foodColor ||
+                '#FF0000';
+
+            var rainbowFood =
+                !!defaultmapsettings
+                    .rainbowFood;
+
+            var foodExtra =
+                Number(
+                    defaultSettings.foodSize
+                );
+
+            if (
+                !Number.isFinite(
+                    foodExtra
+                )
+            ) {
+                foodExtra =
+                    0;
+            }
+
+            var colorCache =
+                this._elMapFoodColorCache;
+
+            if (!colorCache) {
+                colorCache =
+                    this._elMapFoodColorCache =
+                    new Map();
+            }
+
+            /*
+             * Avoid an unbounded cache if a malicious/private server sends
+             * arbitrary colours.
+             */
+            if (
+                colorCache.size >
+                512
+            ) {
+                colorCache.clear();
+            }
+
+            var count =
+                0;
+
+            var point =
+                this._elMapScratch;
+
+            for (
+                var foodIndex = 0;
+                foodIndex <
+                    cellsArray.length;
+                foodIndex++
+            ) {
+                var food =
+                    cellsArray[
+                        foodIndex
+                    ];
+
+                if (
+                    !food ||
+                    food.invisible
+                ) {
+                    continue;
+                }
+
+                var rawX =
+                    Number(
+                        food.x
+                    );
+
+                var rawY =
+                    Number(
+                        food.y
+                    );
+
+                if (
+                    !Number.isFinite(rawX) ||
+                    !Number.isFinite(rawY)
+                ) {
+                    continue;
+                }
+
+                if (
+                    rawX <
+                        minX ||
+                    rawX >
+                        maxX ||
+                    rawY <
+                        minY ||
+                    rawY >
+                        maxY
+                ) {
+                    continue;
+                }
+
+                this.getLegendWorldMapRenderPoint(
+                    rawX,
+                    rawY,
+                    point
+                );
+
+                var baseRadius =
+                    Number(
+                        food.size
+                    );
+
+                if (
+                    !Number.isFinite(
+                        baseRadius
+                    ) ||
+                    baseRadius <=
+                    0
+                ) {
+                    baseRadius =
+                        10;
+                }
+
+                var localScale =
+                    Number(
+                        point.localScale
+                    );
+
+                if (
+                    !Number.isFinite(
+                        localScale
+                    )
+                ) {
+                    localScale =
+                        1;
+                }
+
+                /*
+                 * Map strain is intentionally tiny, but clamp any corrupt
+                 * state so a bad frame can never produce enormous pellets.
+                 */
+                localScale =
+                    Math.max(
+                        0.65,
+                        Math.min(
+                            1.35,
+                            localScale
+                        )
+                    );
+
+                var radius =
+                    Math.max(
+                        1,
+                        (
+                            baseRadius +
+                            foodExtra
+                        ) *
+                        localScale
+                    );
+
+                var colorString =
+                    rainbowFood
+                        ? (
+                            food.color ||
+                            defaultFoodColor
+                        )
+                        : defaultFoodColor;
+
+                var rgba =
+                    colorCache.get(
+                        colorString
+                    );
+
+                if (!rgba) {
+                    rgba =
+                        this
+                            ._legendWorldMapParseRGBA(
+                                colorString,
+                                defaultFoodColor,
+                                1
+                            );
+
+                    colorCache.set(
+                        colorString,
+                        rgba
+                    );
+                }
+
+                var offset =
+                    count *
+                    7;
+
+                data[offset] =
+                    point.x;
+
+                data[offset + 1] =
+                    point.y;
+
+                data[offset + 2] =
+                    radius;
+
+                data[offset + 3] =
+                    rgba[0];
+
+                data[offset + 4] =
+                    rgba[1];
+
+                data[offset + 5] =
+                    rgba[2];
+
+                data[offset + 6] =
+                    rgba[3];
+
+                count++;
+            }
+
+            return this
+                ._drawLegendWorldMapFoodInstances(
+                    count
+                );
+        },
+
+
+        /*
+         * ================================================================
+         * EXPANDING LAND — GPU MAP DEBRIS / DIRECTIONAL STREAKS
+         * ================================================================
+         *
+         * Expansion particles move OUTWARD.
+         *
+         * Contraction particles move INWARD.
+         *
+         * The existing simulation already provides vx/vy; this renderer
+         * converts that motion into short physical terrain streaks.
+         */
+        drawLegendWorldMapDebrisWebGL() {
+            if (
+                !this.isLegendWorldMapDeformationVisible ||
+                !this.isLegendWorldMapDeformationVisible()
+            ) {
+                return false;
+            }
+
+            if (
+                !this.ensureLegendWorldMapMaterialWebGL()
+            ) {
+                return false;
+            }
+
+            var particles =
+                this._elMapDebris;
+
+            if (
+                !particles ||
+                !particles.length
+            ) {
+                return true;
+            }
+
+            this._elMapTriangleWrite =
+                0;
+
+            var head =
+                this._elMapPointA;
+
+            var tail =
+                this._elMapPointB;
+
+            var rgba =
+                this._elMapScratchColor;
+
+            var viewScale =
+                Number(
+                    this.scale
+                ) ||
+                1;
+
+            for (
+                var particleIndex = 0;
+                particleIndex <
+                    particles.length;
+                particleIndex++
+            ) {
+                var particle =
+                    particles[
+                        particleIndex
+                    ];
+
+                if (!particle) {
+                    continue;
+                }
+
+                var life =
+                    Math.max(
+                        0,
+                        Math.min(
+                            1,
+                            Number(
+                                particle.life
+                            ) ||
+                            0
+                        )
+                    );
+
+                if (
+                    life <=
+                    0
+                ) {
+                    continue;
+                }
+
+                /*
+                 * Current particle position.
+                 */
+                this.getLegendWorldMapRenderPoint(
+                    particle.x,
+                    particle.y,
+                    head
+                );
+
+                /*
+                 * Position a short time BEHIND current velocity.
+                 *
+                 * This turns the old round Canvas particles into actual
+                 * directional expansion/contraction streaks.
+                 */
+                var tailTime =
+                    0.055;
+
+                this.getLegendWorldMapRenderPoint(
+                    particle.x -
+                        particle.vx *
+                            tailTime,
+
+                    particle.y -
+                        particle.vy *
+                            tailTime,
+
+                    tail
+                );
+
+                rgba[0] =
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            Number(
+                                particle.r
+                            ) ||
+                            255
+                        )
+                    ) /
+                    255;
+
+                rgba[1] =
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            Number(
+                                particle.g
+                            ) ||
+                            255
+                        )
+                    ) /
+                    255;
+
+                rgba[2] =
+                    Math.max(
+                        0,
+                        Math.min(
+                            255,
+                            Number(
+                                particle.b
+                            ) ||
+                            255
+                        )
+                    ) /
+                    255;
+
+                rgba[3] =
+                    life *
+                    0.72;
+
+                var streakWidth =
+                    Math.max(
+                        1.1 /
+                            Math.max(
+                                viewScale,
+                                0.001
+                            ),
+                        (
+                            Number(
+                                particle.size
+                            ) ||
+                            2
+                        ) *
+                            life *
+                            0.85
+                    );
+
+                this._writeLegendWorldMapSegment(
+                    tail.x,
+                    tail.y,
+                    head.x,
+                    head.y,
+                    streakWidth,
+                    rgba
+                );
+            }
+
+            return this
+                ._flushLegendWorldMapTriangleBatch();
+        },
+
+
+        /*
+         * ================================================================
+         * END OF NEW EXPANDING LAND WEBGL MATERIAL METHODS
+         * ================================================================
+         *
+         * The EXISTING drawWebGLBorders() function resumes immediately
+         * after this point.
+         */
         drawWebGLBorders(
             minX,
             minY,
