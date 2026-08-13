@@ -36096,6 +36096,24 @@ function thelegendmodproject() {
 
                 this.gameMode =
                     ':expandingland';
+
+                /*
+                 * Trigger physical map materialization
+                 * on the deformation system (same as
+                 * the second beacon site).
+                 */
+                if (
+                    window.drawRender &&
+                    typeof window.drawRender
+                        .onLegendWorldConnected ===
+                        'function'
+                ) {
+                    window.drawRender
+                        .onLegendWorldConnected(
+                            LM.mapEvent ||
+                                null
+                        );
+                }
             }
 
             switch (54 === opcode && (opcode = 53), opcode) {
@@ -37842,9 +37860,31 @@ function thelegendmodproject() {
                             window.master.login();
                         }
 
-                        /* Expanding Land: world entrance (legacy, kept for backwards compat) */
-                        if (!LM._elWorldEntrance || !LM._elWorldEntrance.active) {
-                            LM._elWorldEntrance = { active: true, startTime: Date.now() };
+                        /*
+                         * ================================================
+                         * EXPANDING LAND: PHYSICAL MAP MATERIALIZATION
+                         * ================================================
+                         *
+                         * Activate the deformation-based world-entry
+                         * displacement through the renderer.
+                         *
+                         * This replaces the old Canvas scale/rotate
+                         * _elWorldEntrance animation entirely.
+                         *
+                         * The method is idempotent (joinTriggered guard)
+                         * and resilient to missing drawRender.
+                         */
+                        if (
+                            window.drawRender &&
+                            typeof window.drawRender
+                                .onLegendWorldConnected ===
+                                'function'
+                        ) {
+                            window.drawRender
+                                .onLegendWorldConnected(
+                                    LM.mapEvent ||
+                                        null
+                                );
                         }
 
                     } else if (LM.isLegendWorld && _lwOp === 200 && data.byteLength >= 42) {
@@ -46411,19 +46451,90 @@ function pickPlayerCellBySize(players, selectBiggest) {
             targetStrain: 0,
             wavePhase: 0,
             waveEnergy: 0,
+            /*
+             * Current authoritative Expanding Land phase:
+             *
+             * 0 normal
+             * 1 expansion
+             * 2 contraction warning
+             * 3 contraction danger
+             * 4 shrinking
+             */
             phase: 0,
+
+
+            /*
+             * +1 expanding / outward material response
+             * -1 contracting / inward material response
+             *  0 completely settled
+             */
             direction: 0,
+
+
+            /*
+             * Whether the deformation field needs rendering.
+             */
             visible: false,
+
+
+            /*
+             * ============================================================
+             * EXPANDING LAND JOIN SYNCHRONIZATION
+             * ============================================================
+             *
+             * The LW beacon and opcode-200 resize event are independent
+             * packets.
+             *
+             * The server can already be expanding when the beacon finally
+             * establishes:
+             *
+             *      LM.isLegendWorld
+             *      LM.serverType === 'expandingland'
+             *
+             * Therefore the beacon must reconcile the renderer with any
+             * mapEvent state that was received immediately before it.
+             *
+             * joinTriggered also prevents duplicate LW beacon packets from
+             * restarting the physical effect.
+             */
+            joinTriggered: false,
+
+
+            /*
+             * Map-edge debris requested by join/reconciliation is deferred
+             * until the authoritative opcode-64 border has been accepted.
+             *
+             * Otherwise a very early LW beacon could emit debris from the
+             * old/default 14142 border.
+             */
+            joinDebrisPending: 0,
+
+            joinDebrisDirection: 1,
+
+            joinDebrisStrength: 0,
+
+
+            /*
+             * Current authoritative deformation origin and extents.
+             */
             centerX: 0,
             centerY: 0,
             halfW: 1,
             halfH: 1,
+
+
+            /*
+             * Fractional debris emission is accumulated here so behaviour
+             * does not depend on frame rate.
+             */
             debrisCarry: 0
         },
 
         _elMapDebris: [],
 
         _elMapScratch: { x: 0, y: 0 },
+        _elMapPointA: { x: 0, y: 0, localScale: 1, weight: 0 },
+        _elMapPointB: { x: 0, y: 0, localScale: 1, weight: 0 },
 
 
         isLegendWorldMapDeformationServer() {
@@ -46456,14 +46567,49 @@ function pickPlayerCellBySize(players, selectBiggest) {
             s.targetStrain = 0;
             s.wavePhase = 0;
             s.waveEnergy = 0;
-            s.phase = 0;
-            s.direction = 0;
-            s.visible = false;
-            s.centerX = 0;
-            s.centerY = 0;
-            s.halfW = 1;
-            s.halfH = 1;
-            s.debrisCarry = 0;
+            s.phase =
+                0;
+
+            s.direction =
+                0;
+
+            s.visible =
+                false;
+
+
+            /*
+             * A new authoritative Expanding Land connection is allowed to
+             * trigger the material-entry response again.
+             */
+            s.joinTriggered =
+                false;
+
+
+            s.joinDebrisPending =
+                0;
+
+            s.joinDebrisDirection =
+                1;
+
+            s.joinDebrisStrength =
+                0;
+
+
+            s.centerX =
+                0;
+
+            s.centerY =
+                0;
+
+            s.halfW =
+                1;
+
+            s.halfH =
+                1;
+
+
+            s.debrisCarry =
+                0;
             if (this._elMapDebris) {
                 this._elMapDebris.length = 0;
             }
@@ -46550,6 +46696,617 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     s.targetStrain = 0;
                     break;
             }
+        },
+
+
+        /*
+         * ================================================================
+         * EXPANDING LAND — AUTHORITATIVE CONNECTION MATERIALIZATION
+         * ================================================================
+         *
+         * Called ONLY after the LW beacon has positively identified the
+         * socket as Expanding Land.
+         *
+         *
+         * THIS IS NOT THE OLD ENTRANCE ANIMATION.
+         *
+         * We do NOT:
+         *
+         *      scale the Canvas
+         *      rotate the camera
+         *      fade an overlay
+         *      translate DOM elements
+         *      touch cell.points[]
+         *
+         *
+         * Instead we inject an initial physical displacement into the SAME
+         * map-material deformation field used by:
+         *
+         *      border
+         *      grid
+         *      sectors
+         *      custom terrain/background
+         *      food
+         *      ordinary non-jelly bodies
+         *      world debris
+         *
+         *
+         * The spring then returns the geometry naturally to equilibrium.
+         *
+         * If a real opcode-200 event was already received before the beacon,
+         * that event takes priority and we reconstruct its live deformation
+         * state instead of pretending the map is stable.
+         * ================================================================
+         */
+        onLegendWorldConnected(
+            mapEventSnapshot
+        ) {
+            /*
+             * HARD GATE.
+             *
+             * Even if some other private server accidentally calls this
+             * method, absolutely nothing happens.
+             */
+            if (
+                !this
+                    .isLegendWorldMapDeformationServer()
+            ) {
+                return false;
+            }
+
+
+            var state =
+                this._elMapDeform;
+
+
+            if (
+                !state
+            ) {
+                return false;
+            }
+
+
+            /*
+             * LW beacon can theoretically be repeated.
+             *
+             * Never restart the world-entry deformation on the same socket.
+             */
+            if (
+                state.joinTriggered
+            ) {
+                return false;
+            }
+
+
+            state.joinTriggered =
+                true;
+
+
+            /*
+             * ============================================================
+             * READ CURRENT PHYSICAL MAP
+             * ============================================================
+             */
+            var minX =
+                Number(
+                    LM.mapMinX
+                );
+
+
+            var minY =
+                Number(
+                    LM.mapMinY
+                );
+
+
+            var maxX =
+                Number(
+                    LM.mapMaxX
+                );
+
+
+            var maxY =
+                Number(
+                    LM.mapMaxY
+                );
+
+
+            /*
+             * Defensive fallback only.
+             *
+             * Normally opcode 64 supplies real borders.
+             */
+            if (
+                !Number.isFinite(
+                    minX
+                ) ||
+                !Number.isFinite(
+                    minY
+                ) ||
+                !Number.isFinite(
+                    maxX
+                ) ||
+                !Number.isFinite(
+                    maxY
+                ) ||
+                maxX <=
+                    minX ||
+                maxY <=
+                    minY
+            ) {
+                var fallbackSize =
+                    Number(
+                        LM.mapSize
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        fallbackSize
+                    ) ||
+                    fallbackSize <=
+                        0
+                ) {
+                    fallbackSize =
+                        14142;
+                }
+
+
+                var fallbackHalf =
+                    fallbackSize *
+                    0.5;
+
+
+                minX =
+                    -fallbackHalf;
+
+                minY =
+                    -fallbackHalf;
+
+                maxX =
+                    fallbackHalf;
+
+                maxY =
+                    fallbackHalf;
+            }
+
+
+            var mapWidth =
+                maxX -
+                minX;
+
+
+            var mapHeight =
+                maxY -
+                minY;
+
+
+            state.centerX =
+                (
+                    minX +
+                    maxX
+                ) *
+                0.5;
+
+
+            state.centerY =
+                (
+                    minY +
+                    maxY
+                ) *
+                0.5;
+
+
+            state.halfW =
+                Math.max(
+                    1,
+                    mapWidth *
+                        0.5
+                );
+
+
+            state.halfH =
+                Math.max(
+                    1,
+                    mapHeight *
+                        0.5
+                );
+
+
+            state.lastMapSize =
+                Math.max(
+                    1,
+                    (
+                        mapWidth +
+                        mapHeight
+                    ) *
+                        0.5
+                );
+
+
+            state.lastFrameTime =
+                performance.now();
+
+
+            state.filteredVelocity =
+                0;
+
+
+            state.debrisCarry =
+                0;
+
+
+            /*
+             * ============================================================
+             * RECONCILE AN OPCODE-200 EVENT THAT ARRIVED BEFORE THE BEACON
+             * ============================================================
+             *
+             * This is the important race fix.
+             */
+            var eventState =
+                mapEventSnapshot ||
+                (
+                    LM &&
+                    LM.mapEvent
+                        ? LM.mapEvent
+                        : null
+                );
+
+
+            var livePhase =
+                (
+                    eventState &&
+                    eventState.active
+                )
+                    ? Number(
+                        eventState.phase
+                    )
+                    : 0;
+
+
+            if (
+                livePhase >=
+                    1 &&
+                livePhase <=
+                    4
+            ) {
+                /*
+                 * Replay the already-known semantic phase NOW that the hard
+                 * Expanding Land server gate can succeed.
+                 */
+                this
+                    .onLegendWorldMapEvent(
+                        livePhase,
+
+                        Number(
+                            eventState.currentSize
+                        ) ||
+                            state.lastMapSize,
+
+                        Number(
+                            eventState.targetSize
+                        ) ||
+                            state.lastMapSize,
+
+                        Number.isFinite(
+                            Number(
+                                eventState.centerX
+                            )
+                        )
+                            ? Number(
+                                eventState.centerX
+                            )
+                            : state.centerX,
+
+                        Number.isFinite(
+                            Number(
+                                eventState.centerY
+                            )
+                        )
+                            ? Number(
+                                eventState.centerY
+                            )
+                            : state.centerY
+                    );
+
+
+                /*
+                 * ========================================================
+                 * PHYSICAL INITIAL CONDITION FOR THE LIVE PHASE
+                 * ========================================================
+                 *
+                 * We do not merely set "visible=true".
+                 *
+                 * The world receives momentum appropriate to what the server
+                 * is currently doing.
+                 */
+                if (
+                    livePhase ===
+                    1
+                ) {
+                    /*
+                     * EXPANDING:
+                     *
+                     * Begin slightly compressed, then the real outward target
+                     * tension pulls the map through equilibrium.
+                     */
+                    state.strain =
+                        Math.min(
+                            state.strain,
+                            -0.016
+                        );
+
+
+                    state.strainVelocity =
+                        Math.max(
+                            state.strainVelocity,
+                            0.23
+                        );
+
+
+                    state.direction =
+                        1;
+
+
+                    state.waveEnergy =
+                        Math.max(
+                            state.waveEnergy,
+                            0.010
+                        );
+
+
+                    state.joinDebrisPending =
+                        28;
+
+
+                    state.joinDebrisDirection =
+                        1;
+
+
+                    state.joinDebrisStrength =
+                        0.68;
+                }
+
+
+                else if (
+                    livePhase ===
+                    2
+                ) {
+                    /*
+                     * CONTRACTION WARNING:
+                     *
+                     * Very small outward pre-load before compression begins.
+                     */
+                    state.strain =
+                        Math.max(
+                            state.strain,
+                            0.0035
+                        );
+
+
+                    state.strainVelocity =
+                        Math.min(
+                            state.strainVelocity,
+                            -0.045
+                        );
+
+
+                    state.direction =
+                        -1;
+
+
+                    state.waveEnergy =
+                        Math.max(
+                            state.waveEnergy,
+                            0.002
+                        );
+
+
+                    state.joinDebrisPending =
+                        5;
+
+
+                    state.joinDebrisDirection =
+                        -1;
+
+
+                    state.joinDebrisStrength =
+                        0.18;
+                }
+
+
+                else if (
+                    livePhase ===
+                    3
+                ) {
+                    /*
+                     * DANGER:
+                     *
+                     * Map has visible accumulated compression.
+                     */
+                    state.strain =
+                        Math.max(
+                            state.strain,
+                            0.0055
+                        );
+
+
+                    state.strainVelocity =
+                        Math.min(
+                            state.strainVelocity,
+                            -0.08
+                        );
+
+
+                    state.direction =
+                        -1;
+
+
+                    state.waveEnergy =
+                        Math.max(
+                            state.waveEnergy,
+                            0.004
+                        );
+
+
+                    state.joinDebrisPending =
+                        12;
+
+
+                    state.joinDebrisDirection =
+                        -1;
+
+
+                    state.joinDebrisStrength =
+                        0.38;
+                }
+
+
+                else {
+                    /*
+                     * SHRINKING:
+                     *
+                     * Strong inward material impulse.
+                     */
+                    state.strain =
+                        Math.max(
+                            state.strain,
+                            0.013
+                        );
+
+
+                    state.strainVelocity =
+                        Math.min(
+                            state.strainVelocity,
+                            -0.22
+                        );
+
+
+                    state.direction =
+                        -1;
+
+
+                    state.waveEnergy =
+                        Math.max(
+                            state.waveEnergy,
+                            0.010
+                        );
+
+
+                    state.joinDebrisPending =
+                        28;
+
+
+                    state.joinDebrisDirection =
+                        -1;
+
+
+                    state.joinDebrisStrength =
+                        0.70;
+                }
+
+
+                state.visible =
+                    true;
+
+
+                return true;
+            }
+
+
+            /*
+             * ============================================================
+             * STABLE MAP JOIN
+             * ============================================================
+             *
+             * There is no live resize event.
+             *
+             * We STILL want the Expanding Land world itself to physically
+             * materialize when entering the server, as it did before.
+             *
+             * But instead of the obsolete:
+             *
+             *      Canvas scale
+             *      Canvas rotation
+             *      globalAlpha fade
+             *
+             * the terrain starts with a small inward elastic displacement.
+             *
+             * The SAME deformation field then expands:
+             *
+             *      border
+             *      grid
+             *      sectors
+             *      background mesh
+             *      food
+             *      non-jelly attached geometry
+             *
+             * outward toward its real coordinates.
+             *
+             * There is no fixed animation duration.
+             *
+             * The spring reaches equilibrium according to its actual physical
+             * state.
+             * ============================================================
+             */
+            state.phase =
+                0;
+
+
+            state.direction =
+                1;
+
+
+            state.targetStrain =
+                0;
+
+
+            /*
+             * Begin with outer terrain compressed toward the map centre.
+             */
+            state.strain =
+                -0.018;
+
+
+            /*
+             * Outward initial material momentum.
+             */
+            state.strainVelocity =
+                0.25;
+
+
+            /*
+             * Ripple propagates from map edge into the interior.
+             */
+            state.wavePhase =
+                0;
+
+
+            state.waveEnergy =
+                0.0105;
+
+
+            state.visible =
+                true;
+
+
+            /*
+             * Defer edge fragments until the real map border has definitely
+             * been accepted.
+             */
+            state.joinDebrisPending =
+                24;
+
+
+            state.joinDebrisDirection =
+                1;
+
+
+            state.joinDebrisStrength =
+                0.52;
+
+
+            return true;
         },
 
 
@@ -46696,6 +47453,65 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
 
+
+            /*
+             * ============================================================
+             * JOIN-DEBRIS BATCH SPAWNING
+             * ============================================================
+             *
+             * joinDebrisPending is set once by onLegendWorldConnected and
+             * never refilled.
+             *
+             * Each frame drains a portion proportional to the frame length
+             * and the current wave energy.
+             */
+            if (
+                s.joinDebrisPending >
+                    0
+            ) {
+                /*
+                 * Rate: higher wave energy = faster drain.
+                 *
+                 * Minimum 1 per frame so we always converge to 0.
+                 */
+                var joinRate =
+                    Math.max(
+                        1,
+                        Math.ceil(
+                            s.joinDebrisPending *
+                                Math.min(
+                                    0.35,
+                                    dt *
+                                        2.5
+                                )
+                        )
+                    );
+
+
+                var joinEmit =
+                    Math.min(
+                        joinRate,
+                        s.joinDebrisPending
+                    );
+
+
+                s.joinDebrisPending -=
+                    joinEmit;
+
+
+                if (
+                    joinEmit > 0
+                ) {
+                    this
+                        .spawnLegendWorldMapDebris(
+                            s.joinDebrisDirection,
+                            joinEmit,
+                            s.joinDebrisStrength
+                        );
+                }
+            }
+
+
             this.updateLegendWorldMapDebris(dt);
 
             /* Keep rendering while spring/debris settling */
@@ -46704,6 +47520,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 Math.abs(s.strainVelocity) > 0.0001 ||
                 s.waveEnergy > 0.0001 ||
                 s.phase > 0 ||
+                s.joinDebrisPending > 0 ||
                 this._elMapDebris.length > 0;
         },
 
@@ -46774,6 +47591,160 @@ function pickPlayerCellBySize(players, selectBiggest) {
             out.x = wx + unitX * displacement;
             out.y = wy + unitY * displacement;
             return out;
+        },
+
+
+        /*
+         * ================================================================
+         * EXPANDING LAND — TERRAIN RENDER POINT
+         * ================================================================
+         * Wrapper around deformWorldPoint that also provides localScale
+         * and weight for downstream consumers.
+         */
+        getLegendWorldMapRenderPoint(worldX, worldY, out) {
+            out = out || this._elMapScratch;
+            var x = Number(worldX);
+            var y = Number(worldY);
+            if (!Number.isFinite(x)) x = 0;
+            if (!Number.isFinite(y)) y = 0;
+
+            this.deformWorldPoint(x, y, out);
+
+            /* Compute local scale from strain + edge weight */
+            var s = this._elMapDeform;
+            if (s && s.visible) {
+                var nx = (x - s.centerX) / s.halfW;
+                var ny = (y - s.centerY) / s.halfH;
+                var edgeDist = Math.max(Math.abs(nx), Math.abs(ny));
+                var weight = edgeDist * edgeDist * edgeDist;
+                out.localScale = 1 + s.strain * weight;
+                out.weight = weight;
+            } else {
+                out.localScale = 1;
+                out.weight = 0;
+            }
+            return out;
+        },
+
+
+        /*
+         * ================================================================
+         * EXPANDING LAND — CELL-ATTACHED RENDER POSITION
+         * ================================================================
+         *
+         * When jelly physics is ON, cells move via jelly's own deformation
+         * system. We must NOT apply map deformation independently.
+         *
+         * When jelly is OFF and deformation is visible, cell-attached
+         * objects (rings, bubbles, cursor lines, merge rings, etc.)
+         * follow the Expanding Land deformation field.
+         */
+        getLegendWorldAttachedRenderPoint(worldX, worldY, out) {
+            out = out || {};
+            var x = Number(worldX);
+            var y = Number(worldY);
+
+            var jellyActive = !!(
+                typeof defaultmapsettings !== 'undefined' &&
+                defaultmapsettings &&
+                defaultmapsettings.jellyPhisycs
+            );
+
+            if (
+                jellyActive ||
+                !this.isLegendWorldMapDeformationVisible()
+            ) {
+                out.x = Number.isFinite(x) ? x : 0;
+                out.y = Number.isFinite(y) ? y : 0;
+                out.localScale = 1;
+                out.weight = 0;
+                return out;
+            }
+
+            return this.getLegendWorldMapRenderPoint(x, y, out);
+        },
+
+
+        /*
+         * ================================================================
+         * SYNCHRONOUS DRAW-ONLY CELL STATE
+         * ================================================================
+         *
+         * Temporarily expose deformed render coordinates ONLY while the
+         * synchronous Cell.draw() call executes. Restored in finally{}.
+         *
+         * Does NOT alter movement, network, collision, quadtree, or
+         * server truth. Jelly bypasses this completely.
+         */
+        withLegendWorldDeformedCellRenderState(cell, callback) {
+            if (!cell || typeof callback !== 'function') return;
+
+            var jellyActive = !!(
+                typeof defaultmapsettings !== 'undefined' &&
+                defaultmapsettings &&
+                defaultmapsettings.jellyPhisycs
+            );
+
+            if (
+                jellyActive ||
+                !this.isLegendWorldMapDeformationVisible()
+            ) {
+                return callback();
+            }
+
+            var oldX = cell.x;
+            var oldY = cell.y;
+            var oldTargetX = cell.targetX;
+            var oldTargetY = cell.targetY;
+
+            var centerPoint = this.getLegendWorldMapRenderPoint(
+                oldX, oldY, this._elMapPointA
+            );
+            cell.x = centerPoint.x;
+            cell.y = centerPoint.y;
+
+            var hasTarget =
+                Number.isFinite(Number(oldTargetX)) &&
+                Number.isFinite(Number(oldTargetY));
+
+            if (hasTarget) {
+                var targetPoint = this.getLegendWorldMapRenderPoint(
+                    oldTargetX, oldTargetY, this._elMapPointB
+                );
+                cell.targetX = targetPoint.x;
+                cell.targetY = targetPoint.y;
+            }
+
+            try {
+                return callback();
+            } finally {
+                cell.x = oldX;
+                cell.y = oldY;
+                cell.targetX = oldTargetX;
+                cell.targetY = oldTargetY;
+            }
+        },
+
+
+        /*
+         * ================================================================
+         * CANVAS CELL DRAW WRAPPER
+         * ================================================================
+         * Supports cell.draw(ctx), cell.draw(ctx, true), etc.
+         * Jelly remains untouched.
+         */
+        drawLegendWorldDeformedCanvasCell(cell, ctx) {
+            if (!cell || !ctx) return;
+            var self = this;
+            var extraArgs = Array.prototype.slice.call(arguments, 2);
+            return this.withLegendWorldDeformedCellRenderState(
+                cell,
+                function () {
+                    return cell.draw.apply(
+                        cell, [ctx].concat(extraArgs)
+                    );
+                }
+            );
         },
 
 
@@ -52465,6 +53436,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var x = p.x, y = p.y, r = p.size || 50;
                 if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
 
+                /* EXPANDING LAND: deform filled-batch position (jelly ON = no-op) */
+                var _fbPt = this.getLegendWorldAttachedRenderPoint(
+                    x, y, this._elMapPointA
+                );
+                x = _fbPt.x;
+                y = _fbPt.y;
+
                 var idx = count * 7;
                 data[idx] = x;
                 data[idx + 1] = y;
@@ -53259,6 +54237,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     continue;
                 }
 
+                /* EXPANDING LAND — deform render center (jelly ON = no-op) */
+                var ringRenderPoint =
+                    this.getLegendWorldAttachedRenderPoint(
+                        x, y, this._elMapPointA
+                    );
+                x = ringRenderPoint.x;
+                y = ringRenderPoint.y;
+
                 var pathRadius =
                     cellRadius *
                     sizeMultiplierValue +
@@ -53620,6 +54606,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     continue;
                 }
 
+                /* EXPANDING LAND — deform render center (jelly ON = no-op) */
+                var dashedRenderPoint =
+                    this.getLegendWorldAttachedRenderPoint(
+                        x, y, this._elMapPointA
+                    );
+                x = dashedRenderPoint.x;
+                y = dashedRenderPoint.y;
+
                 var pathRadius =
                     cellRadius *
                     sizeMultiplierValue +
@@ -53810,6 +54804,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var bx = t.x + sinR * offset;
                 var by = t.y - cosR * offset;
                 if (bx + bubbleR < minX || bx - bubbleR > maxX || by + bubbleR < minY || by - bubbleR > maxY) continue;
+                /* EXPANDING LAND — deform bubble center (jelly ON = no-op) */
+                var bubblePtA = this.getLegendWorldAttachedRenderPoint(bx, by, this._elMapPointA);
+                bx = bubblePtA.x;
+                by = bubblePtA.y;
                 // Gradient direction in unit-pos space: from solid (toward cell) to transparent (away)
                 // In rotated space, gradient goes along -Y to +Y, so gradDir = (sinR, -cosR) normalized
                 var idx = count * 9;
@@ -53875,6 +54873,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var bx = t.x + sinR * offset;
                 var by = t.y - cosR * offset;
                 if (bx + bubbleR < minX || bx - bubbleR > maxX || by + bubbleR < minY || by - bubbleR > maxY) continue;
+                /* EXPANDING LAND — deform cursor-bubble center (jelly ON = no-op) */
+                var bubblePtB = this.getLegendWorldAttachedRenderPoint(bx, by, this._elMapPointA);
+                bx = bubblePtB.x;
+                by = bubblePtB.y;
                 var idx = count * 9;
                 data[idx] = bx;
                 data[idx + 1] = by;
@@ -53981,20 +54983,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     return false;
                 }
 
+                /* EXPANDING LAND — deform both endpoints (jelly ON = no-op) */
+                var lineStartPt =
+                    this.getLegendWorldAttachedRenderPoint(
+                        player.x, player.y, this._elMapPointA
+                    );
+                var lineEndPt =
+                    this.getLegendWorldAttachedRenderPoint(
+                        cursorX, cursorY, this._elMapPointB
+                    );
+
                 var index =
                     count * 8;
 
                 data[index] =
-                    player.x;
+                    lineStartPt.x;
 
                 data[index + 1] =
-                    player.y;
+                    lineStartPt.y;
 
                 data[index + 2] =
-                    cursorX;
+                    lineEndPt.x;
 
                 data[index + 3] =
-                    cursorY;
+                    lineEndPt.y;
 
                 data[index + 4] =
                     color[0];
@@ -54270,6 +55282,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var halfH = worldH * 0.5;
 
             /* Program, viewCenter, viewScale, texture unit, and VAO are set once by caller */
+
+            /* EXPANDING LAND — deform text world position (jelly ON = no-op) */
+            var _txtPt = this.getLegendWorldAttachedRenderPoint(
+                worldX, worldY, this._elMapPointA
+            );
+            worldX = _txtPt.x;
+            worldY = _txtPt.y;
+
             gl.uniform2f(this.u_text_worldPos, worldX, worldY);
             gl.uniform2f(this.u_text_quadSize, halfW, halfH);
             /*
@@ -58701,6 +59721,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     count *
                     10;
 
+                /* EXPANDING LAND — deform cell render position (jelly ON = no-op) */
+                var _cellDefPt =
+                    this.getLegendWorldAttachedRenderPoint(
+                        x, y, this._elMapPointA
+                    );
+                x = _cellDefPt.x;
+                y = _cellDefPt.y;
+
                 data[idx] =
                     x;
 
@@ -59551,7 +60579,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var rCell = LM.removedCells[i];
                     if (rCell) {
                         try {
-                            rCell.draw(this.ctx, true);
+                            /* EXPANDING LAND — deform removed-cell render (jelly ON = no-op) */
+                            this.drawLegendWorldDeformedCanvasCell(rCell, this.ctx, true);
                         } catch (eRCell) { }
                     }
                 }
@@ -60521,7 +61550,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
 
-                    drawCell.draw(
+                    /* EXPANDING LAND — deform Canvas2D cell position (jelly ON = no-op) */
+                    this.drawLegendWorldDeformedCanvasCell(
+                        drawCell,
                         this.ctx
                     );
 
@@ -60925,61 +61956,81 @@ function pickPlayerCellBySize(players, selectBiggest) {
         drawSplitVectorGuide(ctx, playerCells) {
             if (!playerCells || !playerCells.length || isNaN(LM.cursorX) || isNaN(LM.cursorY)) return;
             ctx.save();
-            ctx.setLineDash([8, 6]);
-            ctx.lineWidth = 2;
-            for (var i = 0; i < playerCells.length; i++) {
-                var cell = playerCells[i];
-                if (!cell || !cell.isInView() || isNaN(cell.x) || isNaN(cell.y)) continue;
-                var angle = Math.atan2(LM.cursorY - cell.y, LM.cursorX - cell.x);
-                var splitDistance = Math.min(700, Math.hypot(LM.cursorX - cell.x, LM.cursorY - cell.y));
-                var targetX = cell.x + Math.cos(angle) * splitDistance;
-                var targetY = cell.y + Math.sin(angle) * splitDistance;
+            try {
+                ctx.setLineDash([8, 6]);
+                ctx.lineWidth = 2;
+                for (var i = 0; i < playerCells.length; i++) {
+                    var cell = playerCells[i];
+                    if (!cell || !cell.isInView() || isNaN(cell.x) || isNaN(cell.y)) continue;
 
-                ctx.beginPath();
-                ctx.moveTo(cell.x, cell.y);
-                ctx.lineTo(targetX, targetY);
-                ctx.strokeStyle = "rgba(0, 230, 255, 0.4)";
-                ctx.stroke();
+                    /* Gameplay calculation stays authoritative */
+                    var rawCellX = cell.x;
+                    var rawCellY = cell.y;
+                    var angle = Math.atan2(LM.cursorY - rawCellY, LM.cursorX - rawCellX);
+                    var splitDistance = Math.min(700, Math.hypot(LM.cursorX - rawCellX, LM.cursorY - rawCellY));
+                    var rawTargetX = rawCellX + Math.cos(angle) * splitDistance;
+                    var rawTargetY = rawCellY + Math.sin(angle) * splitDistance;
 
-                ctx.beginPath();
-                ctx.arc(targetX, targetY, Math.max(12, cell.size * 0.7), 0, Math.PI * 2);
-                ctx.strokeStyle = "rgba(0, 230, 255, 0.6)";
-                ctx.stroke();
+                    /* Only rendering positions are deformed */
+                    var fromPoint = this.getLegendWorldAttachedRenderPoint(rawCellX, rawCellY, this._elMapPointA);
+                    var targetPoint = this.getLegendWorldAttachedRenderPoint(rawTargetX, rawTargetY, this._elMapPointB);
+
+                    ctx.beginPath();
+                    ctx.moveTo(fromPoint.x, fromPoint.y);
+                    ctx.lineTo(targetPoint.x, targetPoint.y);
+                    ctx.strokeStyle = 'rgba(0, 230, 255, 0.4)';
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(targetPoint.x, targetPoint.y, Math.max(12, cell.size * 0.7), 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(0, 230, 255, 0.6)';
+                    ctx.stroke();
+                }
+            } finally {
+                ctx.setLineDash([]);
+                ctx.restore();
             }
-            ctx.restore();
         },
         drawMergeProgressRings(ctx, playerCells) {
             if (!playerCells || playerCells.length <= 1) return;
             var now = Date.now();
             ctx.save();
-            ctx.lineWidth = 4;
-            for (var i = 0; i < playerCells.length; i++) {
-                var cell = playerCells[i];
-                if (!cell || !cell.isInView()) continue;
-                if (!cell.splitTime) {
-                    cell.splitTime = now;
-                }
-                var mass = cell.mass || ~~(cell.size * cell.size / 100);
-                var duration = 30 + (mass * 0.02);
-                var elapsed = (now - cell.splitTime) / 1000;
-                var remaining = Math.max(0, duration - elapsed);
-                var progress = Math.min(1, elapsed / duration);
+            try {
+                ctx.lineWidth = 4;
+                for (var i = 0; i < playerCells.length; i++) {
+                    var cell = playerCells[i];
+                    if (!cell || !cell.isInView()) continue;
+                    if (!cell.splitTime) {
+                        cell.splitTime = now;
+                    }
+                    var mass = cell.mass || ~~(cell.size * cell.size / 100);
+                    var duration = 30 + (mass * 0.02);
+                    var elapsed = (now - cell.splitTime) / 1000;
+                    var remaining = Math.max(0, duration - elapsed);
+                    var progress = Math.min(1, elapsed / duration);
 
-                if (remaining > 0 && progress < 1) {
-                    var radius = cell.size + 6;
-                    var startAngle = -Math.PI / 2;
-                    var endAngle = startAngle + (progress * 2 * Math.PI);
-                    ctx.beginPath();
-                    ctx.arc(cell.x, cell.y, radius, startAngle, endAngle, false);
-                    ctx.strokeStyle = remaining < 5 ? "#00ff66" : (remaining < 15 ? "#ffcc00" : "#ff3333");
-                    ctx.stroke();
+                    if (remaining > 0 && progress < 1) {
+                        var radius = cell.size + 6;
+                        var startAngle = -Math.PI / 2;
+                        var endAngle = startAngle + (progress * 2 * Math.PI);
 
-                    if (window.playerCellsId && window.playerCellsId[cell.id]) {
-                        window.playerCellsId[cell.id].mergeTime = remaining;
+                        var renderPoint = this.getLegendWorldAttachedRenderPoint(
+                            cell.x, cell.y, this._elMapPointA
+                        );
+
+                        ctx.beginPath();
+                        ctx.arc(renderPoint.x, renderPoint.y, radius, startAngle, endAngle, false);
+                        ctx.strokeStyle = remaining < 5 ? '#00ff66' : (remaining < 15 ? '#ffcc00' : '#ff3333');
+                        ctx.stroke();
+
+                        if (window.playerCellsId && window.playerCellsId[cell.id]) {
+                            window.playerCellsId[cell.id].mergeTime = remaining;
+                        }
                     }
                 }
+            } finally {
+                ctx.restore();
             }
-            ctx.restore();
         },
         drawMiscRings() {
             if (LM.play || LM.playerCellsMulti.length) {
@@ -61429,7 +62480,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 let wColor = wave.color || "#00e6ff";
                 let transparentColor = (typeof wColor === "string" && wColor.startsWith("#") && wColor.length === 7) ? (wColor + "00") : "rgba(0,0,0,0)";
-                let gradient = this.ctx.createRadialGradient(wave.x, wave.y, innerR, wave.x, wave.y, r);
+
+                /* EXPANDING LAND — deform wave center (terrain-level) */
+                var _waveDefPt = this.deformWorldPoint(wave.x, wave.y, this._elMapScratch);
+                var _waveDX = _waveDefPt.x;
+                var _waveDY = _waveDefPt.y;
+
+                let gradient = this.ctx.createRadialGradient(_waveDX, _waveDY, innerR, _waveDX, _waveDY, r);
                 if (wave.moreAnimation && r > 1160 && r > (wave.wavelength + 760) / 2) {
                     let sColor = defaultSettings.splitRangeColor || "#00e6ff";
                     let sTransparent = (typeof sColor === "string" && sColor.startsWith("#") && sColor.length === 7) ? (sColor + "00") : "rgba(0,0,0,0)";
@@ -61443,13 +62500,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.ctx.strokeStyle = gradient;
                 this.ctx.lineWidth = Math.max(1, r / 4);
                 this.ctx.beginPath();
-                this.ctx.arc(wave.x, wave.y, Math.max(0.1, r - r / 8), 0, this.pi2, false);
+                this.ctx.arc(_waveDX, _waveDY, Math.max(0.1, r - r / 8), 0, this.pi2, false);
                 this.ctx.closePath();
                 this.ctx.stroke();
                 this.ctx.strokeStyle = defaultSettings.splitRangeColor || "#00e6ff";
                 this.ctx.lineWidth = 5;
                 this.ctx.beginPath();
-                this.ctx.arc(wave.x, wave.y, r, 0, this.pi2, false);
+                this.ctx.arc(_waveDX, _waveDY, r, 0, this.pi2, false);
                 this.ctx.closePath();
                 this.ctx.stroke();
                 /* Keep this wave */
@@ -61488,8 +62545,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 //Convert degrees to radian 
                 var rad = angl * Math.PI / 180;
 
+                /* EXPANDING LAND — deform cell center for rendering (jelly ON = no-op) */
+                var _fbPt = this.getLegendWorldAttachedRenderPoint(t.x, t.y, this._elMapPointA);
+
                 //Set the origin to the center of the image
-                ctx.translate(t.x, t.y);
+                ctx.translate(_fbPt.x, _fbPt.y);
 
                 //Rotate the canvas around the origin
                 ctx.rotate(rad);
@@ -62127,10 +63187,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
             for (var s = 0; s < e.length; s++) {
                 var v = e[s];
                 if (v && !v.invisible) {
-                    var o = v.x, a = v.y;
-                    if (o < minX || o > maxX || a < minY || a > maxY) continue;
-                    t.moveTo(o + v.size + 820, a);
-                    t.arc(o, a, v.size + 820, 0, this.pi2, false);
+                    /* Cull from authoritative coordinates */
+                    var rawX = v.x, rawY = v.y;
+                    if (rawX < minX || rawX > maxX || rawY < minY || rawY > maxY) continue;
+
+                    /* When jelly is ON this returns rawX/rawY unchanged */
+                    var renderPoint = this.getLegendWorldAttachedRenderPoint(
+                        rawX, rawY, this._elMapPointA
+                    );
+                    var radius = v.size + 820;
+                    t.moveTo(renderPoint.x + radius, renderPoint.y);
+                    t.arc(renderPoint.x, renderPoint.y, radius, 0, this.pi2, false);
                 }
             }
             t.fillStyle = defaultSettings.virusColor;
@@ -63339,6 +64406,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (ghost.id && LM.cellsId && LM.cellsId[ghost.id]) {
                         continue;
                     }
+
+                    /* EXPANDING LAND: deform ghost cell position (jelly ON = no-op) */
+                    var _ghostPt = this.getLegendWorldAttachedRenderPoint(
+                        x, y, this._elMapPointA
+                    );
+                    x = _ghostPt.x;
+                    y = _ghostPt.y;
 
                     this.ctx.moveTo(x, y);
                     this.ctx.arc(x, y, sz, 0, this.pi2, false);
