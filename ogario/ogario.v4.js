@@ -36583,6 +36583,14 @@ function thelegendmodproject() {
                             meWarnDur,
                             meTier
                         );
+
+                        /* Feed the world-space deformation system */
+                        if (window.drawRender && window.drawRender.onLegendWorldMapEvent) {
+                            window.drawRender.onLegendWorldMapEvent(
+                                meEventType, meCurrentSize, meTargetSize,
+                                meCenterX, meCenterY
+                            );
+                        }
                     }
                     break;
                 case 201: // 0xC9 — AuthSuccess (Agar2) / Pong (Garix)
