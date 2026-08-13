@@ -22606,21 +22606,16 @@ function thelegendmodproject() {
 
 
             /*
-             * EXPANDING LAND — REAL PLAYER JOIN
+             * ============================================================
+             * DO NOT START THE SERVER-JOIN WORLD ENTRANCE HERE
+             * ============================================================
              *
-             * This is the authoritative visible-spawn moment.
+             * The original working server-join effect is already triggered
+             * by the LW beacon.
              *
-             * No opcode 200 required.
+             * Keep only the separate player-centered spawn burst here,
+             * exactly as the working morning version did.
              */
-            if (
-                window.drawRender &&
-                typeof window.drawRender
-                    .onLegendWorldPlayerSpawn ===
-                    'function'
-            ) {
-                window.drawRender
-                    .onLegendWorldPlayerSpawn();
-            }
 
 
             /* Expanding Land: trigger spawn burst animation */
@@ -33675,13 +33670,23 @@ function thelegendmodproject() {
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
 
             /*
-             * _elWorldEntrance no longer exists.
+             * ============================================================
+             * EXPANDING LAND — SERVER-JOIN ENTRANCE
+             * ============================================================
              *
-             * Expanding Land join materialization is owned exclusively by:
+             * This is the original working joining effect from the morning
+             * version.
              *
-             *      drawRender._elMapDeform
-             *      drawRender.onLegendWorldConnected()
+             * It is deliberately independent from:
+             *
+             *      opcode 200
+             *      player spawn
+             *      map expansion state
+             *
+             * Every new websocket connection rearms it.
              */
+            LM._elWorldEntrance =
+                null;
             this._isWorldSpectating = false;
             this._worldSpecPanX = 0;
             this._worldSpecPanY = 0;
@@ -38052,19 +38057,50 @@ function thelegendmodproject() {
                             window.master.login();
                         }
 
+
+                        /*
+                         * =================================================
+                         * EXPANDING LAND — ORIGINAL SERVER-JOIN ENTRANCE
+                         * =================================================
+                         *
+                         * THIS IS THE WORKING MORNING-FILE TRIGGER.
+                         *
+                         * The authoritative LW beacon means:
+                         *
+                         *      "we have joined Expanding Land"
+                         *
+                         * Start the visual immediately.
+                         *
+                         * DO NOT WAIT FOR:
+                         *
+                         *      application.onPlayerSpawn()
+                         *      opcode 200
+                         *      map movement
+                         *      food/cell packets
+                         *
+                         * This is exactly why the old implementation worked
+                         * reliably on server join.
+                         */
+                        if (
+                            !LM._elWorldEntrance ||
+                            !LM._elWorldEntrance.active
+                        ) {
+                            LM._elWorldEntrance = {
+                                active: true,
+                                startTime: Date.now()
+                            };
+                        }
+
+
                         /*
                          * ================================================
                          * EXPANDING LAND: PHYSICAL MAP MATERIALIZATION
                          * ================================================
                          *
-                         * Activate the deformation-based world-entry
-                         * displacement through the renderer.
+                         * KEEP the newer deformation system too.
                          *
-                         * This replaces the old Canvas scale/rotate
-                         * _elWorldEntrance animation entirely.
-                         *
-                         * The method is idempotent (joinTriggered guard)
-                         * and resilient to missing drawRender.
+                         * It is useful for the real map material and
+                         * expansion/contraction behavior.
                          */
                         if (
                             window.drawRender &&
@@ -65001,67 +65037,508 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * Custom image/background world.
+             * ============================================================
+             * EXPANDING LAND — ORIGINAL WORKING SERVER-JOIN ENTRANCE
+             * ============================================================
+             *
+             * The working morning OLDogario.v4.js used:
+             *
+             *      LM._elWorldEntrance
+             *
+             * armed directly by the LW beacon.
+             *
+             * It then ran a 3500 ms:
+             *
+             *      scale spring
+             *      rotation unwind
+             *      alpha fade-in
+             *
+             * around the MAP CENTER.
+             *
+             *
+             * THAT is the joining effect that disappeared.
+             *
+             *
+             * The renderer has changed since that version:
+             *
+             *      backgroundCanvas
+             *      gridCanvas
+             *      canvas
+             *      glCanvas
+             *
+             * are now independent rendering surfaces.
+             *
+             * Therefore copying the old:
+             *
+             *      this.ctx.scale(...)
+             *
+             * literally would affect Canvas2D only and would leave the
+             * current WebGL world behind.
+             *
+             * Use the EXACT old timing/math, but apply the final visual
+             * transform to ALL WORLD SURFACES together.
+             *
+             *
+             * This changes VISUAL PRESENTATION ONLY.
+             *
+             * It does NOT modify:
+             *
+             *      LM.mapMinX / mapMaxX
+             *      cell coordinates
+             *      server coordinates
+             *      movement
+             *      collision
+             *      mouse coordinates
+             *      jelly points
+             *
+             * Opcode 200 is NOT involved.
+             * ============================================================
              */
+
+
+            /*
+             * Defaults when no entrance is active.
+             */
+            this._elEntranceScale =
+                1.0;
+
+
+            this._elEntranceRotation =
+                0.0;
+
+
+            this._elEntranceAlpha =
+                1.0;
+
+
+            var _elEntranceRunning =
+                false;
+
+
             if (
-                this.backgroundCanvas &&
-                this.backgroundCanvas.style.transform !==
-                    _shakeCssTransform
+                LM._elWorldEntrance &&
+                LM._elWorldEntrance.active
             ) {
-                this.backgroundCanvas.style.transform =
-                    _shakeCssTransform;
+                var _elFx =
+                    LM._elWorldEntrance;
+
+
+                var _elElapsed =
+                    Date.now() -
+                    _elFx.startTime;
+
+
+                /*
+                 * EXACT duration from OLDogario.v4.js.
+                 */
+                var _EL_DURATION =
+                    3500;
+
+
+                if (
+                    _elElapsed >=
+                        _EL_DURATION
+                ) {
+                    _elFx.active =
+                        false;
+                }
+
+                else {
+                    _elEntranceRunning =
+                        true;
+
+
+                    var _elT =
+                        _elElapsed /
+                        _EL_DURATION;
+
+
+                    /*
+                     * ====================================================
+                     * EXACT OLD DAMPED SCALE SPRING
+                     * ====================================================
+                     *
+                     * x(t) =
+                     *
+                     *      1 - exp(-ζt) * cos(ωt)
+                     *
+                     * Original values:
+                     *
+                     *      damping   = 5.5
+                     *      frequency = 4π
+                     *      time ×3
+                     */
+                    var _spring_zeta =
+                        5.5;
+
+
+                    var _spring_omega =
+                        4.0 *
+                        Math.PI;
+
+
+                    var _spring_t =
+                        _elT *
+                        3.0;
+
+
+                    var _elScale =
+                        1.0 -
+                        Math.exp(
+                            -_spring_zeta *
+                            _spring_t
+                        ) *
+                        Math.cos(
+                            _spring_omega *
+                            _spring_t
+                        );
+
+
+                    /*
+                     * Original implementation never allowed a literal zero
+                     * transform.
+                     */
+                    _elScale =
+                        Math.max(
+                            0.001,
+                            _elScale
+                        );
+
+
+                    this._elEntranceScale =
+                        _elScale;
+
+
+                    /*
+                     * ====================================================
+                     * EXACT OLD ROTATION UNWIND
+                     * ====================================================
+                     *
+                     * Starts around 12 degrees and springs back to zero.
+                     */
+                    var _rotAmplitude =
+                        0.21;
+
+
+                    var _rot_omega =
+                        3.0 *
+                        Math.PI;
+
+
+                    this._elEntranceRotation =
+                        _rotAmplitude *
+                        Math.exp(
+                            -_spring_zeta *
+                            _spring_t
+                        ) *
+                        Math.sin(
+                            _rot_omega *
+                            _spring_t
+                        );
+
+
+                    /*
+                     * ====================================================
+                     * EXACT OLD ALPHA FADE
+                     * ====================================================
+                     *
+                     * 0 -> 1 during first 15% of the entrance.
+                     */
+                    var _alphaT =
+                        Math.min(
+                            1.0,
+                            _elT /
+                            0.15
+                        );
+
+
+                    this._elEntranceAlpha =
+                        _alphaT *
+                        _alphaT;
+                }
             }
 
 
             /*
-             * WebGL grid/background-world layer.
+             * ============================================================
+             * CALCULATE THE MAP CENTER IN SCREEN COORDINATES
+             * ============================================================
+             *
+             * OLD code performed:
+             *
+             *      translate(mapCenter)
+             *      rotate()
+             *      scale()
+             *      translate(-mapCenter)
+             *
+             * CSS transform-origin gives the current multi-canvas renderer
+             * the same map-center pivot.
+             */
+            var _elMapCX =
+                (
+                    Number(
+                        LM.mapMinX
+                    ) +
+                    Number(
+                        LM.mapMaxX
+                    )
+                ) *
+                0.5;
+
+
+            var _elMapCY =
+                (
+                    Number(
+                        LM.mapMinY
+                    ) +
+                    Number(
+                        LM.mapMaxY
+                    )
+                ) *
+                0.5;
+
+
+            /*
+             * Defensive fallback.
              */
             if (
-                this.gridCanvas &&
-                this.gridCanvas.style.transform !==
-                    _shakeCssTransform
+                !Number.isFinite(
+                    _elMapCX
+                )
             ) {
-                this.gridCanvas.style.transform =
-                    _shakeCssTransform;
+                _elMapCX =
+                    this.camX ||
+                    0;
+            }
+
+
+            if (
+                !Number.isFinite(
+                    _elMapCY
+                )
+            ) {
+                _elMapCY =
+                    this.camY ||
+                    0;
             }
 
 
             /*
-             * Main Canvas2D world.
+             * Convert world map centre -> viewport CSS pixels.
              */
-            if (
-                this.canvas &&
-                this.canvas.style.transform !==
-                    _shakeCssTransform
-            ) {
-                this.canvas.style.transform =
-                    _shakeCssTransform;
-            }
+            var _elOriginX =
+                this.canvasWidth *
+                    0.5 +
+                (
+                    _elMapCX -
+                    (
+                        this.camX ||
+                        0
+                    )
+                ) *
+                this.scale;
+
+
+            var _elOriginY =
+                this.canvasHeight *
+                    0.5 +
+                (
+                    _elMapCY -
+                    (
+                        this.camY ||
+                        0
+                    )
+                ) *
+                this.scale;
+
+
+            var _elTransformOrigin =
+                _elOriginX.toFixed(
+                    2
+                ) +
+                'px ' +
+                _elOriginY.toFixed(
+                    2
+                ) +
+                'px';
 
 
             /*
-             * GPU/Pixi/WebGL world.
+             * Preserve the existing death screen shake.
+             *
+             * During entrance:
+             *
+             *      shake
+             *        +
+             *      old rotation
+             *        +
+             *      old spring scale
              */
+            var _worldCssTransform =
+                _shakeCssTransform;
+
+
             if (
-                this.glCanvas &&
-                this.glCanvas.style.transform !==
-                    _shakeCssTransform
+                _elEntranceRunning
             ) {
-                this.glCanvas.style.transform =
-                    _shakeCssTransform;
+                var _entranceTransform =
+                    'rotate(' +
+                    this
+                        ._elEntranceRotation
+                        .toFixed(
+                            6
+                        ) +
+                    'rad) scale(' +
+                    this
+                        ._elEntranceScale
+                        .toFixed(
+                            6
+                        ) +
+                    ')';
+
+
+                if (
+                    _worldCssTransform
+                ) {
+                    _worldCssTransform +=
+                        ' ' +
+                        _entranceTransform;
+                }
+
+                else {
+                    _worldCssTransform =
+                        _entranceTransform;
+                }
             }
 
 
+            var _worldOpacity =
+                String(
+                    this
+                        ._elEntranceAlpha
+                );
+
+
             /*
-             * Foreground render overlay.
+             * ============================================================
+             * ONE APPLICATION FUNCTION FOR THE COMPLETE WORLD STACK
+             * ============================================================
+             */
+            var _applyEntranceToWorldLayer =
+                function (
+                    layer
+                ) {
+                    if (
+                        !layer
+                    ) {
+                        return;
+                    }
+
+
+                    if (
+                        layer
+                            .style
+                            .transform !==
+                            _worldCssTransform
+                    ) {
+                        layer
+                            .style
+                            .transform =
+                            _worldCssTransform;
+                    }
+
+
+                    if (
+                        layer
+                            .style
+                            .transformOrigin !==
+                            _elTransformOrigin
+                    ) {
+                        layer
+                            .style
+                            .transformOrigin =
+                            _elTransformOrigin;
+                    }
+
+
+                    if (
+                        layer
+                            .style
+                            .opacity !==
+                            _worldOpacity
+                    ) {
+                        layer
+                            .style
+                            .opacity =
+                            _worldOpacity;
+                    }
+                };
+
+
+            /*
+             * Lowest custom-background layer.
+             */
+            _applyEntranceToWorldLayer(
+                this.backgroundCanvas
+            );
+
+
+            /*
+             * WebGL grid / map-material / food / map debris layer.
+             */
+            _applyEntranceToWorldLayer(
+                this.gridCanvas
+            );
+
+
+            /*
+             * Canvas world fallback / labels / helpers.
+             */
+            _applyEntranceToWorldLayer(
+                this.canvas
+            );
+
+
+            /*
+             * Main WebGL cell / virus / skin world.
+             */
+            _applyEntranceToWorldLayer(
+                this.glCanvas
+            );
+
+
+            /*
+             * ============================================================
+             * FOREGROUND OVERLAY IS NOT PART OF THE WORLD ENTRANCE
+             * ============================================================
+             *
+             * Death cinematic/UI overlay keeps only its existing shake.
              */
             if (
                 this.overlayCanvas &&
-                this.overlayCanvas.style.transform !==
+                this.overlayCanvas
+                    .style
+                    .transform !==
                     _shakeCssTransform
             ) {
-                this.overlayCanvas.style.transform =
+                this.overlayCanvas
+                    .style
+                    .transform =
                     _shakeCssTransform;
+            }
+
+
+            if (
+                this.overlayCanvas &&
+                this.overlayCanvas
+                    .style
+                    .opacity !==
+                    '1'
+            ) {
+                this.overlayCanvas
+                    .style
+                    .opacity =
+                    '1';
             }
 
 
