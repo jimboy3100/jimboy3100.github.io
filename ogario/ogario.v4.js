@@ -33654,7 +33654,15 @@ function thelegendmodproject() {
             this.mapOffsetFixed = false;
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
-            LM._elWorldEntrance = null;  // reset world entrance animation
+
+            /*
+             * _elWorldEntrance no longer exists.
+             *
+             * Expanding Land join materialization is owned exclusively by:
+             *
+             *      drawRender._elMapDeform
+             *      drawRender.onLegendWorldConnected()
+             */
             this._isWorldSpectating = false;
             this._worldSpecPanX = 0;
             this._worldSpecPanY = 0;
@@ -36069,52 +36077,6 @@ function thelegendmodproject() {
             };
             var s = 0;
             var opcode = data.getUint8(s++);
-            /* LW: opcode >= 200 are Expanding Land custom opcodes */
-            var _lwOp = data.getUint8(0);
-            if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
-                /*
-                 * =====================================================
-                 * AUTHORITATIVE EXPANDING LAND SERVER IDENTIFICATION
-                 * =====================================================
-                 *
-                 * Do NOT rely only on the websocket hostname.
-                 *
-                 * connect() initially guesses serverType from the URL.
-                 * A proxy/direct websocket can therefore be classified
-                 * as "private".
-                 *
-                 * THIS LW beacon is authoritative.
-                 */
-                LM.isLegendWorld = true;
-                this.isLegendWorld = true;
-
-                this.serverType =
-                    'expandingland';
-
-                LM.serverType =
-                    'expandingland';
-
-                this.gameMode =
-                    ':expandingland';
-
-                /*
-                 * Trigger physical map materialization
-                 * on the deformation system (same as
-                 * the second beacon site).
-                 */
-                if (
-                    window.drawRender &&
-                    typeof window.drawRender
-                        .onLegendWorldConnected ===
-                        'function'
-                ) {
-                    window.drawRender
-                        .onLegendWorldConnected(
-                            LM.mapEvent ||
-                                null
-                        );
-                }
-            }
 
             switch (54 === opcode && (opcode = 53), opcode) {
 
@@ -47757,82 +47719,614 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
         /*
-         * Spawn world-space debris particles from the moving border.
+         * ================================================================
+         * EXPANDING LAND — WORLD-SPACE BORDER DEBRIS
+         * ================================================================
+         *
+         * The authoritative map is rectangular/square.
+         *
+         * NEVER spawn debris around an imaginary circular border.
+         *
+         * Debris starts directly on one of the four actual map edges:
+         *
+         *      TOP
+         *      RIGHT
+         *      BOTTOM
+         *      LEFT
+         *
+         * Expansion:
+         *
+         *      edge normal × +1
+         *      -> material travels OUTWARD
+         *
+         * Contraction:
+         *
+         *      edge normal × -1
+         *      -> material travels INWARD
+         *
+         * The particles remain ordinary world-space state. Rendering is
+         * handled later by drawLegendWorldMapDebrisWebGL() on gridGl.
+         * ================================================================
          */
         spawnLegendWorldMapDebris(
-            direction, count, strength
+            direction,
+            count,
+            strength
         ) {
-            var s = this._elMapDeform;
-            if (!s) return;
+            var state =
+                this._elMapDeform;
 
-            var MAX_DEBRIS = 200;
-            if (this._elMapDebris.length >= MAX_DEBRIS) return;
 
-            var minX = Number(LM.mapMinX);
-            var maxX = Number(LM.mapMaxX);
-            var minY = Number(LM.mapMinY);
-            var maxY = Number(LM.mapMaxY);
-
-            if (!Number.isFinite(minX) || !Number.isFinite(maxX) ||
-                !Number.isFinite(minY) || !Number.isFinite(maxY)) {
+            if (
+                !state ||
+                !this.isLegendWorldMapDeformationServer()
+            ) {
                 return;
             }
 
-            var cx = s.centerX;
-            var cy = s.centerY;
 
-            /* Border is circular on Expanding Land */
-            var radius = (maxX - minX) * 0.5;
+            var particles =
+                this._elMapDebris;
 
-            var baseSpeed = 80 + Math.abs(
-                s.filteredVelocity
-            ) * 0.15;
 
-            for (var i = 0; i < count; i++) {
-                if (this._elMapDebris.length >= MAX_DEBRIS) break;
+            if (
+                !particles
+            ) {
+                return;
+            }
 
-                /* Random point on the border circle */
-                var angle = Math.random() * Math.PI * 2;
-                var bx = cx + Math.cos(angle) * radius;
-                var by = cy + Math.sin(angle) * radius;
 
-                /* Radial direction from center */
-                var ux = Math.cos(angle);
-                var uy = Math.sin(angle);
+            var MAX_DEBRIS =
+                200;
 
-                var speed = baseSpeed *
-                    (0.6 + Math.random() * 0.8);
 
-                /* Expansion: debris flies outward.
-                 * Contraction: debris flies inward. */
-                var vx = ux * speed * direction;
-                var vy = uy * speed * direction;
+            if (
+                particles.length >=
+                    MAX_DEBRIS
+            ) {
+                return;
+            }
 
-                /* Slight tangential scatter */
-                vx += (-uy) * (Math.random() - 0.5) * speed * 0.4;
-                vy += (ux) * (Math.random() - 0.5) * speed * 0.4;
 
-                var size = 2 + Math.random() * 4 +
-                    strength * 3;
+            var minX =
+                Number(
+                    LM.mapMinX
+                );
 
-                this._elMapDebris.push({
-                    x: bx,
-                    y: by,
-                    vx: vx,
-                    vy: vy,
-                    life: 1.0,
-                    decay: 0.7 + Math.random() * 0.6,
-                    size: size,
-                    /* Expansion: blue-cyan. Contraction: red-orange. */
-                    r: direction > 0
-                        ? 80 + ~~(Math.random() * 80)
-                        : 200 + ~~(Math.random() * 55),
-                    g: direction > 0
-                        ? 180 + ~~(Math.random() * 75)
-                        : 80 + ~~(Math.random() * 80),
-                    b: direction > 0
-                        ? 220 + ~~(Math.random() * 35)
-                        : 40 + ~~(Math.random() * 60)
+
+            var minY =
+                Number(
+                    LM.mapMinY
+                );
+
+
+            var maxX =
+                Number(
+                    LM.mapMaxX
+                );
+
+
+            var maxY =
+                Number(
+                    LM.mapMaxY
+                );
+
+
+            if (
+                !Number.isFinite(
+                    minX
+                ) ||
+                !Number.isFinite(
+                    minY
+                ) ||
+                !Number.isFinite(
+                    maxX
+                ) ||
+                !Number.isFinite(
+                    maxY
+                ) ||
+                maxX <=
+                    minX ||
+                maxY <=
+                    minY
+            ) {
+                return;
+            }
+
+
+            var mapWidth =
+                maxX -
+                minX;
+
+
+            var mapHeight =
+                maxY -
+                minY;
+
+
+            /*
+             * Choose sides proportional to their physical length.
+             *
+             * Rectangular maps therefore emit an equal density of particles
+             * per world unit rather than an equal particle count per side.
+             */
+            var perimeter =
+                (
+                    mapWidth +
+                    mapHeight
+                ) *
+                2;
+
+
+            if (
+                !Number.isFinite(
+                    perimeter
+                ) ||
+                perimeter <=
+                    0
+            ) {
+                return;
+            }
+
+
+            var dir =
+                direction <
+                    0
+                    ? -1
+                    : 1;
+
+
+            var normalizedStrength =
+                Number(
+                    strength
+                );
+
+
+            if (
+                !Number.isFinite(
+                    normalizedStrength
+                )
+            ) {
+                normalizedStrength =
+                    0;
+            }
+
+
+            normalizedStrength =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        normalizedStrength
+                    )
+                );
+
+
+            var velocityMagnitude =
+                Math.abs(
+                    Number(
+                        state.filteredVelocity
+                    ) ||
+                    0
+                );
+
+
+            /*
+             * Minimum motion ensures that the connection-entry material
+             * response still produces visible debris even when there has not
+             * yet been enough time to measure border velocity.
+             */
+            var baseSpeed =
+                95 +
+                velocityMagnitude *
+                    0.15 +
+                normalizedStrength *
+                    130;
+
+
+            count =
+                Math.max(
+                    0,
+                    Math.min(
+                        Number(
+                            count
+                        ) |
+                            0,
+                        MAX_DEBRIS -
+                            particles.length
+                    )
+                );
+
+
+            for (
+                var i = 0;
+                i <
+                    count;
+                i++
+            ) {
+                /*
+                 * ========================================================
+                 * SELECT A REAL BORDER POINT
+                 * ========================================================
+                 */
+                var perimeterPosition =
+                    Math.random() *
+                    perimeter;
+
+
+                var bx;
+                var by;
+
+
+                /*
+                 * Outward unit normal of the selected border.
+                 */
+                var normalX =
+                    0;
+
+
+                var normalY =
+                    0;
+
+
+                /*
+                 * Unit tangent running along that border.
+                 */
+                var tangentX =
+                    0;
+
+
+                var tangentY =
+                    0;
+
+
+                /*
+                 * TOP:
+                 *
+                 *      minX → maxX
+                 */
+                if (
+                    perimeterPosition <
+                    mapWidth
+                ) {
+                    var topT =
+                        perimeterPosition /
+                        mapWidth;
+
+
+                    bx =
+                        minX +
+                        mapWidth *
+                            topT;
+
+
+                    by =
+                        minY;
+
+
+                    normalX =
+                        0;
+
+                    normalY =
+                        -1;
+
+
+                    tangentX =
+                        1;
+
+                    tangentY =
+                        0;
+                }
+
+
+                /*
+                 * RIGHT:
+                 *
+                 *      minY → maxY
+                 */
+                else if (
+                    perimeterPosition <
+                    mapWidth +
+                        mapHeight
+                ) {
+                    var rightT =
+                        (
+                            perimeterPosition -
+                            mapWidth
+                        ) /
+                        mapHeight;
+
+
+                    bx =
+                        maxX;
+
+
+                    by =
+                        minY +
+                        mapHeight *
+                            rightT;
+
+
+                    normalX =
+                        1;
+
+                    normalY =
+                        0;
+
+
+                    tangentX =
+                        0;
+
+                    tangentY =
+                        1;
+                }
+
+
+                /*
+                 * BOTTOM:
+                 *
+                 *      maxX → minX
+                 */
+                else if (
+                    perimeterPosition <
+                    mapWidth *
+                        2 +
+                        mapHeight
+                ) {
+                    var bottomT =
+                        (
+                            perimeterPosition -
+                            mapWidth -
+                            mapHeight
+                        ) /
+                        mapWidth;
+
+
+                    bx =
+                        maxX -
+                        mapWidth *
+                            bottomT;
+
+
+                    by =
+                        maxY;
+
+
+                    normalX =
+                        0;
+
+                    normalY =
+                        1;
+
+
+                    tangentX =
+                        -1;
+
+                    tangentY =
+                        0;
+                }
+
+
+                /*
+                 * LEFT:
+                 *
+                 *      maxY → minY
+                 */
+                else {
+                    var leftT =
+                        (
+                            perimeterPosition -
+                            mapWidth *
+                                2 -
+                            mapHeight
+                        ) /
+                        mapHeight;
+
+
+                    bx =
+                        minX;
+
+
+                    by =
+                        maxY -
+                        mapHeight *
+                            leftT;
+
+
+                    normalX =
+                        -1;
+
+                    normalY =
+                        0;
+
+
+                    tangentX =
+                        0;
+
+                    tangentY =
+                        -1;
+                }
+
+
+                /*
+                 * ========================================================
+                 * MATERIAL VELOCITY
+                 * ========================================================
+                 */
+                var speed =
+                    baseSpeed *
+                    (
+                        0.65 +
+                        Math.random() *
+                            0.70
+                    );
+
+
+                /*
+                 * Expansion:
+                 *
+                 *      dir = +1
+                 *      outward normal
+                 *
+                 * Contraction:
+                 *
+                 *      dir = -1
+                 *      inward, opposite normal
+                 */
+                var vx =
+                    normalX *
+                    speed *
+                    dir;
+
+
+                var vy =
+                    normalY *
+                    speed *
+                    dir;
+
+
+                /*
+                 * Tangential breakup.
+                 *
+                 * The dominant motion still follows expansion/contraction,
+                 * while individual fragments do not look mechanically
+                 * identical.
+                 */
+                var tangentScatter =
+                    (
+                        Math.random() -
+                        0.5
+                    ) *
+                    speed *
+                    (
+                        0.15 +
+                        normalizedStrength *
+                            0.25
+                    );
+
+
+                vx +=
+                    tangentX *
+                    tangentScatter;
+
+
+                vy +=
+                    tangentY *
+                    tangentScatter;
+
+
+                /*
+                 * Tiny normal-position jitter.
+                 *
+                 * Expansion fragments begin just inside/on the material edge.
+                 * Contraction fragments begin just outside/on the edge and
+                 * are pulled inward.
+                 *
+                 * This avoids a mathematically perfect single-pixel emission
+                 * line without inventing a second visual layer.
+                 */
+                var edgeJitter =
+                    Math.random() *
+                    (
+                        2 +
+                        normalizedStrength *
+                            5
+                    );
+
+
+                bx -=
+                    normalX *
+                    edgeJitter *
+                    dir;
+
+
+                by -=
+                    normalY *
+                    edgeJitter *
+                    dir;
+
+
+                var size =
+                    2 +
+                    Math.random() *
+                        4 +
+                    normalizedStrength *
+                        3;
+
+
+                particles.push({
+                    x:
+                        bx,
+
+                    y:
+                        by,
+
+                    vx:
+                        vx,
+
+                    vy:
+                        vy,
+
+                    life:
+                        1.0,
+
+                    decay:
+                        0.70 +
+                        Math.random() *
+                            0.60,
+
+                    size:
+                        size,
+
+
+                    /*
+                     * Expansion:
+                     *      cyan / blue material fragments.
+                     *
+                     * Contraction:
+                     *      orange / red compression fragments.
+                     */
+                    r:
+                        dir >
+                            0
+                            ? 80 +
+                                ~~(
+                                    Math.random() *
+                                    80
+                                )
+                            : 200 +
+                                ~~(
+                                    Math.random() *
+                                    55
+                                ),
+
+                    g:
+                        dir >
+                            0
+                            ? 180 +
+                                ~~(
+                                    Math.random() *
+                                    75
+                                )
+                            : 80 +
+                                ~~(
+                                    Math.random() *
+                                    80
+                                ),
+
+                    b:
+                        dir >
+                            0
+                            ? 220 +
+                                ~~(
+                                    Math.random() *
+                                    35
+                                )
+                            : 40 +
+                                ~~(
+                                    Math.random() *
+                                    60
+                                )
                 });
             }
         },
