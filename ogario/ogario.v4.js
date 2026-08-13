@@ -38507,7 +38507,7 @@ function thelegendmodproject() {
                                             .show();
 
 
-                                        application
+                                        legendmod
                                             .showSessionStats(
                                                 _pendingStats
                                             );
