@@ -46729,39 +46729,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * ============================================================
-             * FIRST VISIBLE PLAYER JOIN
-             * ============================================================
-             *
-             * Completely independent from opcode 200.
-             *
-             * pending:
-             *      the REAL application.onPlayerSpawn() happened, but the
-             *      LW identification beacon may still be racing us.
-             *
-             * triggered:
-             *      this socket already played its one server-entry effect.
-             *
-             * active:
-             *      the guaranteed 2.6 second materialization timeline is
-             *      currently deforming the world.
-             */
-            joinSpawnPending: false,
-
-            joinSpawnTriggered: false,
-
-            joinSpawnActive: false,
-
-            joinSpawnStartedAt: 0,
-
-            joinSpawnDuration: 2600,
-
-            joinSpawnProgress: 1,
-
-            joinSpawnVisual: 0,
-
-
-            /*
              * Map-edge debris requested by join/reconciliation is deferred
              * until the authoritative opcode-64 border has been accepted.
              */
@@ -46841,37 +46808,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
              */
             s.joinTriggered =
                 false;
-
-
-            /*
-             * Rearm the visible world-entry effect for the next socket.
-             */
-            s.joinSpawnPending =
-                false;
-
-
-            s.joinSpawnTriggered =
-                false;
-
-
-            s.joinSpawnActive =
-                false;
-
-
-            s.joinSpawnStartedAt =
-                0;
-
-
-            s.joinSpawnDuration =
-                2600;
-
-
-            s.joinSpawnProgress =
-                1;
-
-
-            s.joinSpawnVisual =
-                0;
 
 
             s.joinDebrisPending =
@@ -47600,375 +47536,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
         /*
-         * ================================================================
-         * EXPANDING LAND — FIRST VISIBLE PLAYER ENTRY
-         * ================================================================
+         * onLegendWorldPlayerSpawn() and tryStartLegendWorldPlayerSpawnEffect()
+         * REMOVED — dead code from abandoned player-join deformation system.
          *
-         * onLegendWorldConnected() runs from the LW socket beacon.
+         * The server-join entrance is handled by:
          *
-         * That may happen while:
+         *      LW beacon → onLegendWorldConnected() → _elWorldEntrance
          *
-         *      helloContainer is still visible
-         *      player has not spawned
-         *      camera has not reached the new cell
+         * The player-centered cyan spawn burst is handled by:
          *
-         * Therefore the old dramatic entrance could be visually lost.
-         *
-         *
-         * This method runs from onPlayerSpawn(), i.e. when the player has
-         * ACTUALLY entered the visible world.
-         *
-         *
-         * IMPORTANT:
-         *
-         * This is NOT:
-         *
-         *      a Canvas transform
-         *      CSS animation
-         *      screen overlay
-         *      camera scale
-         *
-         * It injects energy into the SAME physical deformation field used
-         * by the WebGL:
-         *
-         *      grid
-         *      sectors
-         *      border
-         *      border glow
-         *      food
-         *      debris
-         *
-         * and the existing non-jelly attached world geometry.
-         *
-         *
-         * Once per socket only.
-         * ================================================================
+         *      onPlayerSpawn() → triggerSpawnEffect()
          */
-        onLegendWorldPlayerSpawn() {
-            var state =
-                this._elMapDeform;
-
-
-            if (!state) {
-                return false;
-            }
-
-
-            /*
-             * The authoritative client spawn callback has happened.
-             *
-             * ARM FIRST.
-             *
-             * Do not lose the effect merely because:
-             *
-             *      player-cell packet
-             *
-             * and:
-             *
-             *      LW identification beacon
-             *
-             * arrived in the opposite order.
-             */
-            if (
-                !state.joinSpawnTriggered
-            ) {
-                state.joinSpawnPending =
-                    true;
-            }
-
-
-            return this
-                .tryStartLegendWorldPlayerSpawnEffect();
-        },
-
-
-        /*
-         * ================================================================
-         * EXPANDING LAND — GUARANTEED FIRST VISIBLE JOIN MATERIALIZATION
-         * ================================================================
-         *
-         * Trigger source:
-         *
-         *      REAL application.onPlayerSpawn()
-         *
-         * NOT:
-         *
-         *      sendSpawn()
-         *      socket open
-         *      opcode 200
-         *
-         *
-         * If the LW beacon has not arrived yet:
-         *
-         *      pending remains TRUE
-         *
-         * renderFrame() will retry until the socket has been positively
-         * identified as Expanding Land.
-         *
-         *
-         * Nothing here modifies:
-         *
-         *      authoritative coordinates
-         *      map bounds
-         *      collision
-         *      movement
-         *      jelly points
-         *
-         * It changes render-only map material.
-         * ================================================================
-         */
-        tryStartLegendWorldPlayerSpawnEffect() {
-            var state =
-                this._elMapDeform;
-
-
-            if (
-                !state ||
-                !state.joinSpawnPending ||
-                state.joinSpawnTriggered
-            ) {
-                return false;
-            }
-
-
-            /*
-             * Do not CONSUME the pending one-shot until the connection is
-             * positively identified.
-             */
-            if (
-                !this
-                    .isLegendWorldMapDeformationServer()
-            ) {
-                return false;
-            }
-
-
-            /*
-             * Connecting to the server alone is not enough.
-             *
-             * This is the PLAYER ENTRY effect.
-             */
-            if (
-                typeof ogario !==
-                    'undefined' &&
-                ogario &&
-                ogario.play !==
-                    true
-            ) {
-                return false;
-            }
-
-
-            var minX =
-                Number(
-                    LM.mapMinX
-                );
-
-
-            var minY =
-                Number(
-                    LM.mapMinY
-                );
-
-
-            var maxX =
-                Number(
-                    LM.mapMaxX
-                );
-
-
-            var maxY =
-                Number(
-                    LM.mapMaxY
-                );
-
-
-            /*
-             * Wait for the real SetBorder data.
-             *
-             * Again: DO NOT clear pending if the map is not ready.
-             */
-            if (
-                !Number.isFinite(minX) ||
-                !Number.isFinite(minY) ||
-                !Number.isFinite(maxX) ||
-                !Number.isFinite(maxY) ||
-                maxX <=
-                    minX ||
-                maxY <=
-                    minY
-            ) {
-                return false;
-            }
-
-
-            var mapWidth =
-                maxX -
-                minX;
-
-
-            var mapHeight =
-                maxY -
-                minY;
-
-
-            var now =
-                performance.now();
-
-
-            state.centerX =
-                (
-                    minX +
-                    maxX
-                ) *
-                0.5;
-
-
-            state.centerY =
-                (
-                    minY +
-                    maxY
-                ) *
-                0.5;
-
-
-            state.halfW =
-                Math.max(
-                    1,
-                    mapWidth *
-                        0.5
-                );
-
-
-            state.halfH =
-                Math.max(
-                    1,
-                    mapHeight *
-                        0.5
-                );
-
-
-            state.lastMapSize =
-                Math.max(
-                    1,
-                    (
-                        mapWidth +
-                        mapHeight
-                    ) *
-                        0.5
-                );
-
-
-            state.lastFrameTime =
-                now;
-
-
-            /*
-             * ============================================================
-             * NOW CONSUME THE ONE-SHOT
-             * ============================================================
-             */
-            state.joinSpawnPending =
-                false;
-
-
-            state.joinSpawnTriggered =
-                true;
-
-
-            state.joinSpawnActive =
-                true;
-
-
-            state.joinSpawnStartedAt =
-                now;
-
-
-            state.joinSpawnDuration =
-                2600;
-
-
-            state.joinSpawnProgress =
-                0;
-
-
-            /*
-             * ============================================================
-             * STRONG GUARANTEED JOIN DEFORMATION
-             * ============================================================
-             *
-             * This component does NOT depend on map movement.
-             *
-             * Therefore even if the Expanding Land border is perfectly
-             * stationary, entering the server still produces the complete
-             * special effect.
-             */
-            state.joinSpawnVisual =
-                -0.042;
-
-
-            /*
-             * Give the normal physical spring outward momentum too.
-             */
-            state.strain =
-                Math.min(
-                    state.strain,
-                    -0.018
-                );
-
-
-            state.strainVelocity =
-                Math.max(
-                    state.strainVelocity,
-                    0.42
-                );
-
-
-            state.direction =
-                1;
-
-
-            /*
-             * Strong travelling material wave.
-             */
-            state.wavePhase =
-                0;
-
-
-            state.waveEnergy =
-                Math.max(
-                    state.waveEnergy,
-                    0.026
-                );
-
-
-            /*
-             * Strong rectangular-border fragments.
-             */
-            state.joinDebrisPending =
-                Math.max(
-                    state.joinDebrisPending,
-                    72
-                );
-
-
-            state.joinDebrisDirection =
-                1;
-
-
-            state.joinDebrisStrength =
-                Math.max(
-                    state.joinDebrisStrength,
-                    0.95
-                );
-
-
-            state.visible =
-                true;
-
-
-            return true;
-        },
 
 
         /*
@@ -48050,21 +47628,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 -1, Math.min(1, s.filteredVelocity / 3000)
             );
 
-            /*
-             * Initial player join is a local presentation effect.
-             * Opcode 200 controls resizing only AFTER the entrance.
-             */
             if (
-                s.joinSpawnActive
-            ) {
-                s.direction =
-                    1;
-
-                s.targetStrain =
-                    0;
-            }
-
-            else if (
                 s.phase === 1
             ) {
                 s.direction =
@@ -48119,21 +47683,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     0;
             }
 
-            /*
-             * Damped physical spring.
-             *
-             * Spawn-entrance uses a slightly looser spring constant so the
-             * initial world release has a distinct heavy release quality.
-             */
-            var springK =
-                s.joinSpawnActive
-                    ? 28.0
-                    : 52.0;
-
-            var dampingC =
-                s.joinSpawnActive
-                    ? 8.5
-                    : 13.0;
+            /* Damped physical spring. */
+            var springK = 52.0;
+            var dampingC = 13.0;
 
 
             var accel =
@@ -48165,99 +47717,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     )
                 );
 
-
-            /*
-             * ============================================================
-             * GUARANTEED JOIN MATERIALIZATION TIMELINE
-             * ============================================================
-             */
-            if (
-                s.joinSpawnActive
-            ) {
-                var joinDuration =
-                    Math.max(
-                        1,
-                        Number(
-                            s.joinSpawnDuration
-                        ) ||
-                            2600
-                    );
-
-
-                var joinT =
-                    (
-                        now -
-                        s.joinSpawnStartedAt
-                    ) /
-                    joinDuration;
-
-
-                joinT =
-                    Math.max(
-                        0,
-                        Math.min(
-                            1,
-                            joinT
-                        )
-                    );
-
-
-                s.joinSpawnProgress =
-                    joinT;
-
-
-                if (
-                    joinT >= 1
-                ) {
-                    s.joinSpawnActive =
-                        false;
-
-                    s.joinSpawnVisual =
-                        0;
-                }
-
-                else {
-                    var joinRemain =
-                        1 -
-                        joinT;
-
-
-                    var joinEnvelope =
-                        Math.pow(
-                            joinRemain,
-                            1.35
-                        );
-
-
-                    /*
-                     * Two visible elastic releases.
-                     */
-                    s.joinSpawnVisual =
-                        -0.042 *
-                        joinEnvelope *
-                        Math.cos(
-                            joinT *
-                            Math.PI *
-                            4
-                        );
-
-
-                    /*
-                     * Keep the travelling ripple alive for the entrance.
-                     */
-                    s.waveEnergy =
-                        Math.max(
-                            s.waveEnergy,
-                            0.018 *
-                                joinEnvelope
-                        );
-                }
-            }
-
-            else {
-                s.joinSpawnVisual =
-                    0;
-            }
 
             /* ── Travelling surface ripple ── */
             var relMove = Math.abs(deltaSize) /
@@ -48359,13 +47818,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             /* Keep rendering while spring/debris settling */
             s.visible =
-                s.joinSpawnPending ||
-                s.joinSpawnActive ||
-                Math.abs(
-                    s.joinSpawnVisual ||
-                    0
-                ) >
-                    0.0001 ||
                 Math.abs(
                     s.strain
                 ) >
@@ -48415,23 +47867,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Cubic ramp — center nearly still, edge strongest */
             var weight = edgeDist * edgeDist * edgeDist;
 
-            /*
-             * Strain: radial stretch/compress.
-             *
-             * INCLUDES GUARANTEED JOIN-ENTRY VISUAL DEFORMATION FIELD.
-             */
-            var joinVisualOffset =
-                Number(
-                    s.joinSpawnVisual ||
-                    0
-                );
-
-
+            /* Strain: radial stretch/compress. */
             var radialOffset =
-                (
-                    s.strain +
-                    joinVisualOffset
-                ) *
+                s.strain *
                 weight;
 
 
@@ -48494,13 +47932,838 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var ny = (y - s.centerY) / s.halfH;
                 var edgeDist = Math.max(Math.abs(nx), Math.abs(ny));
                 var weight = edgeDist * edgeDist * edgeDist;
-                out.localScale = 1 + (s.strain + (s.joinSpawnVisual || 0)) * weight;
+                out.localScale = 1 + s.strain * weight;
                 out.weight = weight;
             } else {
                 out.localScale = 1;
                 out.weight = 0;
             }
             return out;
+        },
+
+
+        /*
+         * ────────────────────────────────────────────────────────────────
+         * EXPANDING LAND — HOT-PATH HELPERS
+         * ────────────────────────────────────────────────────────────────
+         *
+         * These must live OUTSIDE getLegendWorldLandMaterialAlpha() to
+         * avoid allocating new function objects on every call.
+         *
+         * The material alpha function is invoked per grid segment, per
+         * sector segment, per food pellet, and per sector label every
+         * frame — thousands of times.
+         */
+        _elClamp01(
+            value
+        ) {
+            return Math.max(
+                0,
+                Math.min(
+                    1,
+                    value
+                )
+            );
+        },
+
+
+        _elSmooth01(
+            value
+        ) {
+            value =
+                this._elClamp01(
+                    value
+                );
+
+
+            return (
+                value *
+                value *
+                (
+                    3 -
+                    2 *
+                    value
+                )
+            );
+        },
+
+
+        /*
+         * ================================================================
+         * EXPANDING LAND — LAND MATERIALIZATION / DESTRUCTION FRONT
+         * ================================================================
+         *
+         * THIS IS NOT ANOTHER SHOCKWAVE SYSTEM.
+         *
+         * Existing systems remain authoritative for:
+         *
+         *      deformWorldPoint()
+         *      waveEnergy
+         *      _elMapDebris
+         *      drawWebGLZone()
+         *
+         * This only calculates how visually SOLID the existing land
+         * material should be at one raw world coordinate.
+         *
+         *
+         * EXPANSION:
+         *
+         *      old terrain                    = fully solid
+         *      newly exposed terrain          = fades in behind border
+         *      food                           = appears after terrain
+         *
+         *
+         * CONTRACTION:
+         *
+         *      safe target terrain            = fully solid
+         *      doomed outer terrain           = fractures near border
+         *      food                           = fades faster
+         *
+         *
+         * NEVER modifies:
+         *
+         *      LM.mapMinX / mapMaxX
+         *      cell.x / cell.y
+         *      food.x / food.y
+         *      collision
+         *      movement
+         *      network state
+         *      jelly physics
+         *      cell.points[]
+         * ================================================================
+         */
+        getLegendWorldLandMaterialAlpha(
+            worldX,
+            worldY,
+            materialKind
+        ) {
+            var s =
+                this._elMapDeform;
+
+
+            if (
+                !s ||
+                !s.visible ||
+                !this.isLegendWorldMapDeformationServer()
+            ) {
+                return 1;
+            }
+
+
+            /*
+             * Border is never hidden by the material front.
+             *
+             * Border presentation is changed separately below.
+             */
+            if (
+                materialKind ===
+                    'border'
+            ) {
+                return 1;
+            }
+
+
+            var me =
+                LM.mapEvent;
+
+
+            if (
+                !me ||
+                !me.active ||
+                s.phase <= 0
+            ) {
+                return 1;
+            }
+
+
+            var x =
+                Number(
+                    worldX
+                );
+
+
+            var y =
+                Number(
+                    worldY
+                );
+
+
+            if (
+                !Number.isFinite(x) ||
+                !Number.isFinite(y)
+            ) {
+                return 1;
+            }
+
+
+            var mapMinX =
+                Number(
+                    LM.mapMinX
+                );
+
+
+            var mapMinY =
+                Number(
+                    LM.mapMinY
+                );
+
+
+            var mapMaxX =
+                Number(
+                    LM.mapMaxX
+                );
+
+
+            var mapMaxY =
+                Number(
+                    LM.mapMaxY
+                );
+
+
+            if (
+                !Number.isFinite(mapMinX) ||
+                !Number.isFinite(mapMinY) ||
+                !Number.isFinite(mapMaxX) ||
+                !Number.isFinite(mapMaxY) ||
+                mapMaxX <= mapMinX ||
+                mapMaxY <= mapMinY
+            ) {
+                return 1;
+            }
+
+
+            /*
+             * Outside current authoritative map = void.
+             */
+            if (
+                x < mapMinX ||
+                x > mapMaxX ||
+                y < mapMinY ||
+                y > mapMaxY
+            ) {
+                return 0;
+            }
+
+
+            /*
+             * clamp01 / smooth01 moved to _elClamp01 / _elSmooth01
+             * renderer methods to avoid per-call allocation.
+             */
+
+
+            /*
+             * Distance from point to the CURRENT authoritative rectangular
+             * border.
+             *
+             *      0 = directly at border
+             *      increasing = further into established land
+             */
+            var depthToCurrentBorder =
+                Math.max(
+                    0,
+                    Math.min(
+                        x -
+                            mapMinX,
+
+                        mapMaxX -
+                            x,
+
+                        y -
+                            mapMinY,
+
+                        mapMaxY -
+                            y
+                    )
+                );
+
+
+            var alpha =
+                1;
+
+
+            /*
+             * ============================================================
+             * EXPANSION
+             * ============================================================
+             *
+             * The previous map rectangle is permanent/old land.
+             *
+             * Only material lying OUTSIDE the old rectangle but INSIDE the
+             * current rectangle is considered newly formed.
+             */
+            if (
+                s.phase ===
+                    1
+            ) {
+                var prevMinX =
+                    Number(
+                        me.prevMinX
+                    );
+
+
+                var prevMinY =
+                    Number(
+                        me.prevMinY
+                    );
+
+
+                var prevMaxX =
+                    Number(
+                        me.prevMaxX
+                    );
+
+
+                var prevMaxY =
+                    Number(
+                        me.prevMaxY
+                    );
+
+
+                var hasPreviousBorder =
+                    Number.isFinite(
+                        prevMinX
+                    ) &&
+                    Number.isFinite(
+                        prevMinY
+                    ) &&
+                    Number.isFinite(
+                        prevMaxX
+                    ) &&
+                    Number.isFinite(
+                        prevMaxY
+                    ) &&
+                    prevMaxX >
+                        prevMinX &&
+                    prevMaxY >
+                        prevMinY;
+
+
+                if (
+                    hasPreviousBorder
+                ) {
+                    var wasOldLand =
+                        x >=
+                            prevMinX &&
+                        x <=
+                            prevMaxX &&
+                        y >=
+                            prevMinY &&
+                        y <=
+                            prevMaxY;
+
+
+                    /*
+                     * Old land stays untouched.
+                     */
+                    if (
+                        !wasOldLand
+                    ) {
+                        var currentWidth =
+                            mapMaxX -
+                            mapMinX;
+
+
+                        var currentHeight =
+                            mapMaxY -
+                            mapMinY;
+
+
+                        var currentSize =
+                            (
+                                currentWidth +
+                                currentHeight
+                            ) *
+                            0.5;
+
+
+                        var targetSize =
+                            Number(
+                                me.targetSize
+                            );
+
+
+                        var remainingGrowth =
+                            Number.isFinite(
+                                targetSize
+                            ) &&
+                            targetSize >
+                                0
+                                ?
+                                Math.max(
+                                    0,
+                                    targetSize -
+                                        currentSize
+                                )
+                                :
+                                0;
+
+
+                        /*
+                         * Early expansion:
+                         *
+                         *      long materialization wake
+                         *
+                         * Near target:
+                         *
+                         *      wake tightens automatically
+                         *
+                         * This prevents a huge visible snap when opcode 200
+                         * reports RESIZE_COMPLETE.
+                         */
+                        var revealTail =
+                            Math.max(
+                                90,
+                                Math.min(
+                                    620,
+                                    110 +
+                                        remainingGrowth *
+                                            0.10
+                                )
+                            );
+
+
+                        /*
+                         * Directly at expanding border:
+                         *
+                         *      alpha ≈ 0
+                         *
+                         * Behind border:
+                         *
+                         *      alpha → 1
+                         */
+                        alpha =
+                            this._elSmooth01(
+                                depthToCurrentBorder /
+                                    revealTail
+                            );
+
+
+                        /*
+                         * FOOD APPEARS AFTER TERRAIN.
+                         *
+                         * Existing server food is not changed.
+                         *
+                         * We only delay visual opacity.
+                         */
+                        if (
+                            materialKind ===
+                                'food'
+                        ) {
+                            alpha =
+                                this._elSmooth01(
+                                    (
+                                        alpha -
+                                        0.24
+                                    ) /
+                                    0.76
+                                );
+                        }
+
+
+                        /*
+                         * Sector text follows its forming sector.
+                         */
+                        else if (
+                            materialKind ===
+                                'label'
+                        ) {
+                            alpha =
+                                this._elSmooth01(
+                                    (
+                                        alpha -
+                                        0.10
+                                    ) /
+                                    0.90
+                                );
+                        }
+                    }
+                }
+            }
+
+
+            /*
+             * ============================================================
+             * CONTRACTION
+             * ============================================================
+             *
+             * Determine which area survives using opcode-200 targetSize.
+             *
+             * Do not assume a circular map.
+             *
+             * Preserve the previous rectangle's aspect ratio.
+             */
+            else if (
+                s.phase ===
+                    2 ||
+                s.phase ===
+                    3 ||
+                s.phase ===
+                    4
+            ) {
+                var eventCenterX =
+                    Number(
+                        me.centerX
+                    );
+
+
+                var eventCenterY =
+                    Number(
+                        me.centerY
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        eventCenterX
+                    )
+                ) {
+                    eventCenterX =
+                        (
+                            mapMinX +
+                            mapMaxX
+                        ) *
+                        0.5;
+                }
+
+
+                if (
+                    !Number.isFinite(
+                        eventCenterY
+                    )
+                ) {
+                    eventCenterY =
+                        (
+                            mapMinY +
+                            mapMaxY
+                        ) *
+                        0.5;
+                }
+
+
+                var previousWidth =
+                    Number(
+                        me.prevMaxX
+                    ) -
+                    Number(
+                        me.prevMinX
+                    );
+
+
+                var previousHeight =
+                    Number(
+                        me.prevMaxY
+                    ) -
+                    Number(
+                        me.prevMinY
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        previousWidth
+                    ) ||
+                    previousWidth <=
+                        0
+                ) {
+                    previousWidth =
+                        mapMaxX -
+                        mapMinX;
+                }
+
+
+                if (
+                    !Number.isFinite(
+                        previousHeight
+                    ) ||
+                    previousHeight <=
+                        0
+                ) {
+                    previousHeight =
+                        mapMaxY -
+                        mapMinY;
+                }
+
+
+                var eventCurrentSize =
+                    Number(
+                        me.currentSize
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        eventCurrentSize
+                    ) ||
+                    eventCurrentSize <=
+                        0
+                ) {
+                    eventCurrentSize =
+                        (
+                            previousWidth +
+                            previousHeight
+                        ) *
+                        0.5;
+                }
+
+
+                var eventTargetSize =
+                    Number(
+                        me.targetSize
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        eventTargetSize
+                    ) ||
+                    eventTargetSize <=
+                        0
+                ) {
+                    eventTargetSize =
+                        eventCurrentSize;
+                }
+
+
+                /*
+                 * Preserve rectangular aspect ratio.
+                 */
+                var targetRatio =
+                    Math.max(
+                        0.001,
+                        eventTargetSize /
+                            Math.max(
+                                1,
+                                eventCurrentSize
+                            )
+                    );
+
+
+                var targetHalfW =
+                    previousWidth *
+                    0.5 *
+                    targetRatio;
+
+
+                var targetHalfH =
+                    previousHeight *
+                    0.5 *
+                    targetRatio;
+
+
+                var insideSafeTarget =
+                    Math.abs(
+                        x -
+                        eventCenterX
+                    ) <=
+                        targetHalfW &&
+                    Math.abs(
+                        y -
+                        eventCenterY
+                    ) <=
+                        targetHalfH;
+
+
+                /*
+                 * Never damage terrain that survives the contraction.
+                 */
+                if (
+                    !insideSafeTarget
+                ) {
+                    /*
+                     * WARNING PHASE:
+                     *
+                     * Keep actual terrain fully intact.
+                     *
+                     * drawWebGLZone() already owns the warning presentation.
+                     */
+                    if (
+                        s.phase ===
+                            2
+                    ) {
+                        alpha =
+                            1;
+                    }
+
+
+                    /*
+                     * DANGER PHASE:
+                     *
+                     * Start only a small pre-fade at the extreme border.
+                     */
+                    else if (
+                        s.phase ===
+                            3
+                    ) {
+                        alpha =
+                            0.82 +
+                            0.18 *
+                            this._elSmooth01(
+                                depthToCurrentBorder /
+                                    260
+                            );
+                    }
+
+
+                    /*
+                     * SHRINKING:
+                     *
+                     * The real moving authoritative border becomes the
+                     * destruction front.
+                     */
+                    else {
+                        var currentWidth2 =
+                            mapMaxX -
+                            mapMinX;
+
+
+                        var currentHeight2 =
+                            mapMaxY -
+                            mapMinY;
+
+
+                        var currentSize2 =
+                            (
+                                currentWidth2 +
+                                currentHeight2
+                            ) *
+                            0.5;
+
+
+                        var remainingShrink =
+                            Math.max(
+                                0,
+                                currentSize2 -
+                                    eventTargetSize
+                            );
+
+
+                        var destructionTail =
+                            Math.max(
+                                130,
+                                Math.min(
+                                    720,
+                                    180 +
+                                        remainingShrink *
+                                            0.08
+                                )
+                            );
+
+
+                        alpha =
+                            this._elSmooth01(
+                                depthToCurrentBorder /
+                                    destructionTail
+                            );
+
+
+                        /*
+                         * Food dissolves faster than terrain.
+                         */
+                        if (
+                            materialKind ===
+                                'food'
+                        ) {
+                            alpha =
+                                Math.pow(
+                                    alpha,
+                                    1.75
+                                );
+                        }
+
+
+                        /*
+                         * Existing grid/sector line gets broken into fragments
+                         * close to the destruction front.
+                         *
+                         * No new geometry subsystem.
+                         *
+                         * Deterministic hash means no flickering randomness
+                         * between frames.
+                         */
+                        if (
+                            materialKind ===
+                                'grid' ||
+                            materialKind ===
+                                'sector'
+                        ) {
+                            var edgeDamage =
+                                1 -
+                                alpha;
+
+
+                            if (
+                                edgeDamage >
+                                    0.08
+                            ) {
+                                var fractureCellX =
+                                    Math.floor(
+                                        x /
+                                            120
+                                    );
+
+
+                                var fractureCellY =
+                                    Math.floor(
+                                        y /
+                                            120
+                                    );
+
+
+                                var fractureHash =
+                                    Math.sin(
+                                        fractureCellX *
+                                            12.9898 +
+                                        fractureCellY *
+                                            78.233
+                                    ) *
+                                    43758.5453;
+
+
+                                fractureHash -=
+                                    Math.floor(
+                                        fractureHash
+                                    );
+
+
+                                /*
+                                 * More damage near moving edge =
+                                 * more missing grid fragments.
+                                 */
+                                var fractureThreshold =
+                                    0.88 -
+                                    edgeDamage *
+                                        0.46;
+
+
+                                if (
+                                    fractureHash >
+                                        fractureThreshold
+                                ) {
+                                    alpha *=
+                                        0.08;
+                                }
+                            }
+                        }
+
+
+                        if (
+                            materialKind ===
+                                'label'
+                        ) {
+                            alpha =
+                                Math.pow(
+                                    alpha,
+                                    1.35
+                                );
+                        }
+                    }
+                }
+            }
+
+
+            return this._elClamp01(
+                alpha
+            );
         },
 
 
@@ -49309,7 +49572,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
             numRays: 16
         },
         triggerSpawnEffect(worldX, worldY, color) {
-            if (!LM || !LM.isLegendWorld) return;
+            if (
+                !LM ||
+                (
+                    !LM.isLegendWorld &&
+                    LM.serverType !== 'expandingland'
+                )
+            ) {
+                return;
+            }
             this.resetDeathScreen();
             this._spawnEffect.active = true;
             this._spawnEffect.startTime = Date.now();
@@ -56241,6 +56512,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * polyline after passing every sample through the deformation
              * field.
              */
+            /*
+             * ============================================================
+             * DEFORMED + MATERIALIZED LINE
+             * ============================================================
+             *
+             * Geometry:
+             *
+             *      existing deformWorldPoint()
+             *
+             * Opacity/fracture:
+             *
+             *      getLegendWorldLandMaterialAlpha()
+             *
+             * No second geometry system.
+             */
             function appendDeformedCurve(
                 x1,
                 y1,
@@ -56248,7 +56534,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 y2,
                 rgba,
                 lineWidth,
-                sampleCount
+                sampleCount,
+                materialKind
             ) {
                 sampleCount =
                     Math.max(
@@ -56260,11 +56547,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         )
                     );
 
+
                 var pointA =
                     self._elMapPointA;
 
+
                 var pointB =
                     self._elMapPointB;
+
 
                 self.getLegendWorldMapRenderPoint(
                     x1,
@@ -56272,15 +56562,37 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     pointA
                 );
 
+
+                var previousRawX =
+                    x1;
+
+
+                var previousRawY =
+                    y1;
+
+
+                /*
+                 * Already-created reusable RGBA array.
+                 *
+                 * No per-segment allocation.
+                 */
+                var segmentRGBA =
+                    self._elMapScratchColor;
+
+
                 for (
-                    var sampleIndex = 1;
+                    var sampleIndex =
+                        1;
+
                     sampleIndex <=
                         sampleCount;
+
                     sampleIndex++
                 ) {
                     var t =
                         sampleIndex /
                         sampleCount;
+
 
                     var rawX =
                         x1 +
@@ -56290,6 +56602,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         ) *
                         t;
 
+
                     var rawY =
                         y1 +
                         (
@@ -56298,26 +56611,86 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         ) *
                         t;
 
+
                     self.getLegendWorldMapRenderPoint(
                         rawX,
                         rawY,
                         pointB
                     );
 
-                    self._writeLegendWorldMapSegment(
-                        pointA.x,
-                        pointA.y,
-                        pointB.x,
-                        pointB.y,
-                        lineWidth,
-                        rgba
-                    );
+
+                    /*
+                     * Test the middle of this line segment.
+                     */
+                    var materialAlpha =
+                        self.getLegendWorldLandMaterialAlpha(
+                            (
+                                previousRawX +
+                                rawX
+                            ) *
+                                0.5,
+
+                            (
+                                previousRawY +
+                                rawY
+                            ) *
+                                0.5,
+
+                            materialKind ||
+                                'grid'
+                        );
+
+
+                    /*
+                     * Skip fully destroyed/unformed fragments completely.
+                     */
+                    if (
+                        materialAlpha >
+                            0.002
+                    ) {
+                        segmentRGBA[0] =
+                            rgba[0];
+
+
+                        segmentRGBA[1] =
+                            rgba[1];
+
+
+                        segmentRGBA[2] =
+                            rgba[2];
+
+
+                        segmentRGBA[3] =
+                            rgba[3] *
+                            materialAlpha;
+
+
+                        self._writeLegendWorldMapSegment(
+                            pointA.x,
+                            pointA.y,
+                            pointB.x,
+                            pointB.y,
+                            lineWidth,
+                            segmentRGBA
+                        );
+                    }
+
+
+                    previousRawX =
+                        rawX;
+
+
+                    previousRawY =
+                        rawY;
+
 
                     var swap =
                         pointA;
 
+
                     pointA =
                         pointB;
+
 
                     pointB =
                         swap;
@@ -56521,7 +56894,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         viewMaxY,
                         gridRGBA,
                         gridWidth,
-                        verticalSamples
+                        verticalSamples,
+                        'grid'
                     );
                 }
 
@@ -56562,7 +56936,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         gridY,
                         gridRGBA,
                         gridWidth,
-                        horizontalSamples
+                        horizontalSamples,
+                        'grid'
                     );
                 }
             }
@@ -56735,7 +57110,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         mapMaxY,
                         sectorRGBA,
                         sectorWidth,
-                        sectorVerticalSamples
+                        sectorVerticalSamples,
+                        'sector'
                     );
                 }
 
@@ -56768,7 +57144,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         sectorY,
                         sectorRGBA,
                         sectorWidth,
-                        sectorHorizontalSamples
+                        sectorHorizontalSamples,
+                        'sector'
                     );
                 }
             }
@@ -56778,6 +57155,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * ============================================================
              * DEFORMED MAP BORDER
              * ============================================================
+             *
+             * Existing user border colour remains the base colour.
+             *
+             * Expanding Land phases temporarily blend that base toward:
+             *
+             *      expansion = cyan
+             *      warning   = yellow
+             *      danger    = orange
+             *      shrinking = red
+             *
+             * This is presentation only.
              */
             if (
                 defaultmapsettings.showMapBorders
@@ -56786,6 +57174,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     Number(
                         defaultSettings.bordersWidth
                     );
+
 
                 if (
                     !Number.isFinite(
@@ -56798,8 +57187,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         20;
                 }
 
+
                 /*
-                 * Same minimum visible thickness rule as the normal border.
+                 * Preserve minimum visible width at extreme zoom-out.
                  */
                 borderWidth =
                     Math.max(
@@ -56811,25 +57201,31 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             )
                     );
 
+
                 var halfBorder =
                     borderWidth *
                     0.5;
+
 
                 var borderMinX =
                     mapMinX -
                     halfBorder;
 
+
                 var borderMinY =
                     mapMinY -
                     halfBorder;
+
 
                 var borderMaxX =
                     mapMaxX +
                     halfBorder;
 
+
                 var borderMaxY =
                     mapMaxY +
                     halfBorder;
+
 
                 var borderRGBA =
                     this._legendWorldMapParseRGBA(
@@ -56839,13 +57235,195 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         1
                     );
 
+
+                /*
+                 * ========================================================
+                 * PHASE-REACTIVE BORDER MATERIAL
+                 * ========================================================
+                 */
+                var borderPhase =
+                    this._elMapDeform
+                        ?
+                        this._elMapDeform.phase
+                        :
+                        0;
+
+
+                var borderPulse =
+                    0.5 +
+                    0.5 *
+                    Math.sin(
+                        performance.now() *
+                            0.007
+                    );
+
+
+                /*
+                 * Default tint = user's own border.
+                 */
+                var phaseR =
+                    borderRGBA[0];
+
+
+                var phaseG =
+                    borderRGBA[1];
+
+
+                var phaseB =
+                    borderRGBA[2];
+
+
+                var phaseMix =
+                    0;
+
+
+                /*
+                 * Expansion.
+                 */
+                if (
+                    borderPhase ===
+                        1
+                ) {
+                    phaseR =
+                        0.18;
+
+                    phaseG =
+                        0.78;
+
+                    phaseB =
+                        1.00;
+
+                    phaseMix =
+                        0.68;
+                }
+
+
+                /*
+                 * Contraction warning.
+                 */
+                else if (
+                    borderPhase ===
+                        2
+                ) {
+                    phaseR =
+                        1.00;
+
+                    phaseG =
+                        0.82;
+
+                    phaseB =
+                        0.16;
+
+                    phaseMix =
+                        0.58;
+                }
+
+
+                /*
+                 * Danger.
+                 */
+                else if (
+                    borderPhase ===
+                        3
+                ) {
+                    phaseR =
+                        1.00;
+
+                    phaseG =
+                        0.34;
+
+                    phaseB =
+                        0.05;
+
+                    phaseMix =
+                        0.74;
+                }
+
+
+                /*
+                 * Active shrinking.
+                 */
+                else if (
+                    borderPhase ===
+                        4
+                ) {
+                    phaseR =
+                        1.00;
+
+                    phaseG =
+                        0.08;
+
+                    phaseB =
+                        0.03;
+
+                    phaseMix =
+                        0.84;
+                }
+
+
+                /*
+                 * Blend rather than replace user theme.
+                 */
+                if (
+                    phaseMix >
+                        0
+                ) {
+                    var pulseMix =
+                        Math.min(
+                            0.94,
+                            phaseMix +
+                                borderPulse *
+                                    0.08
+                        );
+
+
+                    borderRGBA[0] =
+                        borderRGBA[0] *
+                            (
+                                1 -
+                                pulseMix
+                            ) +
+                        phaseR *
+                            pulseMix;
+
+
+                    borderRGBA[1] =
+                        borderRGBA[1] *
+                            (
+                                1 -
+                                pulseMix
+                            ) +
+                        phaseG *
+                            pulseMix;
+
+
+                    borderRGBA[2] =
+                        borderRGBA[2] *
+                            (
+                                1 -
+                                pulseMix
+                            ) +
+                        phaseB *
+                            pulseMix;
+
+
+                    borderRGBA[3] =
+                        Math.max(
+                            borderRGBA[3],
+                            0.90
+                        );
+                }
+
+
                 var mapDimension =
                     Math.max(
                         mapMaxX -
                             mapMinX,
+
                         mapMaxY -
                             mapMinY
                     );
+
 
                 var borderSamples =
                     Math.max(
@@ -56854,14 +57432,41 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             64,
                             Math.ceil(
                                 mapDimension /
-                                900
+                                    900
                             )
                         )
                     );
 
 
                 /*
-                 * Optional glow pass FIRST.
+                 * Circle center + radius for round border.
+                 */
+                var _borderCX =
+                    (
+                        mapMinX +
+                        mapMaxX
+                    ) *
+                    0.5;
+
+
+                var _borderCY =
+                    (
+                        mapMinY +
+                        mapMaxY
+                    ) *
+                    0.5;
+
+
+                var _borderR =
+                    mapDimension *
+                    0.5 +
+                    halfBorder;
+
+
+                /*
+                 * ========================================================
+                 * PHASE-REACTIVE GLOW
+                 * ========================================================
                  */
                 if (
                     defaultmapsettings.borderGlow
@@ -56871,6 +57476,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             defaultSettings
                                 .borderGlowSize
                         );
+
 
                     if (
                         !Number.isFinite(
@@ -56883,6 +57489,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             15;
                     }
 
+
                     var glowRGBA =
                         this._legendWorldMapParseRGBA(
                             defaultSettings
@@ -56890,99 +57497,235 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 defaultSettings
                                     .bordersColor ||
                                 '#ff0000',
+
                             '#ff0000',
+
                             0.22
                         );
+
+
+                    /*
+                     * Same phase colour as physical border.
+                     */
+                    if (
+                        phaseMix >
+                            0
+                    ) {
+                        var glowPhaseMix =
+                            Math.min(
+                                0.96,
+                                phaseMix +
+                                    0.10
+                            );
+
+
+                        glowRGBA[0] =
+                            glowRGBA[0] *
+                                (
+                                    1 -
+                                    glowPhaseMix
+                                ) +
+                            phaseR *
+                                glowPhaseMix;
+
+
+                        glowRGBA[1] =
+                            glowRGBA[1] *
+                                (
+                                    1 -
+                                    glowPhaseMix
+                                ) +
+                            phaseG *
+                                glowPhaseMix;
+
+
+                        glowRGBA[2] =
+                            glowRGBA[2] *
+                                (
+                                    1 -
+                                    glowPhaseMix
+                                ) +
+                            phaseB *
+                                glowPhaseMix;
+
+
+                        /*
+                         * Intensify glow during active phases.
+                         */
+                        glowRGBA[3] =
+                            Math.min(
+                                0.60,
+                                glowRGBA[3] +
+                                    phaseMix *
+                                        0.18 +
+                                    borderPulse *
+                                        0.06
+                            );
+                    }
+
+
+                    /*
+                     * During active shrink, enlarge the glow.
+                     */
+                    var phaseGlowBoost =
+                        0;
+
+
+                    if (
+                        borderPhase ===
+                            3
+                    ) {
+                        phaseGlowBoost =
+                            glowSize *
+                            0.35;
+                    }
+
+
+                    else if (
+                        borderPhase ===
+                            4
+                    ) {
+                        phaseGlowBoost =
+                            glowSize *
+                            0.65 +
+                            borderPulse *
+                                glowSize *
+                                0.20;
+                    }
+
 
                     var glowWidth =
                         borderWidth +
                         glowSize *
-                            2;
+                            2 +
+                        phaseGlowBoost;
 
-                    appendDeformedCurve(
-                        borderMinX,
-                        borderMinY,
-                        borderMaxX,
-                        borderMinY,
-                        glowRGBA,
-                        glowWidth,
-                        borderSamples
-                    );
 
-                    appendDeformedCurve(
-                        borderMaxX,
-                        borderMinY,
-                        borderMaxX,
-                        borderMaxY,
-                        glowRGBA,
-                        glowWidth,
-                        borderSamples
-                    );
+                    /*
+                     * Circular glow ring.
+                     */
+                    var _glowSegs =
+                        borderSamples *
+                        4;
 
-                    appendDeformedCurve(
-                        borderMaxX,
-                        borderMaxY,
-                        borderMinX,
-                        borderMaxY,
-                        glowRGBA,
-                        glowWidth,
-                        borderSamples
-                    );
+                    var _glowStep =
+                        (
+                            Math.PI *
+                            2
+                        ) /
+                        _glowSegs;
 
-                    appendDeformedCurve(
-                        borderMinX,
-                        borderMaxY,
-                        borderMinX,
-                        borderMinY,
-                        glowRGBA,
-                        glowWidth,
-                        borderSamples
-                    );
+                    for (
+                        var _gi = 0;
+                        _gi < _glowSegs;
+                        _gi++
+                    ) {
+                        var _gA0 =
+                            _gi *
+                            _glowStep;
+
+                        var _gA1 =
+                            (
+                                _gi +
+                                1
+                            ) *
+                            _glowStep;
+
+                        appendDeformedCurve(
+                            _borderCX +
+                                Math.cos(
+                                    _gA0
+                                ) *
+                                _borderR,
+
+                            _borderCY +
+                                Math.sin(
+                                    _gA0
+                                ) *
+                                _borderR,
+
+                            _borderCX +
+                                Math.cos(
+                                    _gA1
+                                ) *
+                                _borderR,
+
+                            _borderCY +
+                                Math.sin(
+                                    _gA1
+                                ) *
+                                _borderR,
+
+                            glowRGBA,
+                            glowWidth,
+                            2,
+                            'border'
+                        );
+                    }
                 }
 
 
                 /*
-                 * Main solid border.
+                 * Main solid border — circular.
                  */
-                appendDeformedCurve(
-                    borderMinX,
-                    borderMinY,
-                    borderMaxX,
-                    borderMinY,
-                    borderRGBA,
-                    borderWidth,
-                    borderSamples
-                );
+                var _borderSegs =
+                    borderSamples *
+                    4;
 
-                appendDeformedCurve(
-                    borderMaxX,
-                    borderMinY,
-                    borderMaxX,
-                    borderMaxY,
-                    borderRGBA,
-                    borderWidth,
-                    borderSamples
-                );
+                var _borderStep =
+                    (
+                        Math.PI *
+                        2
+                    ) /
+                    _borderSegs;
 
-                appendDeformedCurve(
-                    borderMaxX,
-                    borderMaxY,
-                    borderMinX,
-                    borderMaxY,
-                    borderRGBA,
-                    borderWidth,
-                    borderSamples
-                );
+                for (
+                    var _bi = 0;
+                    _bi < _borderSegs;
+                    _bi++
+                ) {
+                    var _bA0 =
+                        _bi *
+                        _borderStep;
 
-                appendDeformedCurve(
-                    borderMinX,
-                    borderMaxY,
-                    borderMinX,
-                    borderMinY,
-                    borderRGBA,
-                    borderWidth,
-                    borderSamples
-                );
+                    var _bA1 =
+                        (
+                            _bi +
+                            1
+                        ) *
+                        _borderStep;
+
+                    appendDeformedCurve(
+                        _borderCX +
+                            Math.cos(
+                                _bA0
+                            ) *
+                            _borderR,
+
+                        _borderCY +
+                            Math.sin(
+                                _bA0
+                            ) *
+                            _borderR,
+
+                        _borderCX +
+                            Math.cos(
+                                _bA1
+                            ) *
+                            _borderR,
+
+                        _borderCY +
+                            Math.sin(
+                                _bA1
+                            ) *
+                            _borderR,
+
+                        borderRGBA,
+                        borderWidth,
+                        2,
+                        'border'
+                    );
+                }
             }
 
 
@@ -57141,6 +57884,62 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             column +
                             1
                         );
+
+
+                    /*
+                     * ====================================================
+                     * EXPANDING LAND — SECTOR LABEL MATERIALIZATION
+                     * ====================================================
+                     *
+                     * Sector text belongs to the land underneath it.
+                     *
+                     * EXPANSION:
+                     *
+                     *      grid forms
+                     *          ↓
+                     *      sector structure forms
+                     *          ↓
+                     *      sector label fades in
+                     *
+                     *
+                     * CONTRACTION:
+                     *
+                     *      label begins disappearing
+                     *          ↓
+                     *      sector structure fractures
+                     *          ↓
+                     *      land disappears
+                     *
+                     *
+                     * This affects presentation only.
+                     *
+                     * No map coordinates or sector calculations change.
+                     */
+                    var labelAlpha =
+                        this
+                            .getLegendWorldLandMaterialAlpha(
+                                rawX,
+                                rawY,
+                                'label'
+                            );
+
+
+                    /*
+                     * Completely invisible label:
+                     *
+                     * don't submit Canvas text at all.
+                     */
+                    if (
+                        labelAlpha <=
+                            0.01
+                    ) {
+                        continue;
+                    }
+
+
+                    ctx.globalAlpha =
+                        labelAlpha;
+
 
                     ctx.fillText(
                         label,
@@ -57654,6 +58453,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         colorString
                     );
 
+
                 if (!rgba) {
                     rgba =
                         this
@@ -57663,36 +58463,116 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 1
                             );
 
+
                     colorCache.set(
                         colorString,
                         rgba
                     );
                 }
 
+
+                /*
+                 * ========================================================
+                 * EXPANDING LAND — FOOD MATERIALIZATION / DISSOLUTION
+                 * ========================================================
+                 *
+                 * Food remains completely server-authoritative.
+                 *
+                 * We DO NOT:
+                 *
+                 *      create food
+                 *      delete food
+                 *      move food authoritatively
+                 *      delay network packets
+                 *      modify food.size
+                 *
+                 *
+                 * We only modify render alpha.
+                 *
+                 *
+                 * EXPANSION:
+                 *
+                 *      void
+                 *        ↓
+                 *      grid begins forming
+                 *        ↓
+                 *      sectors form
+                 *        ↓
+                 *      food gradually appears
+                 *
+                 *
+                 * CONTRACTION:
+                 *
+                 *      food fades first
+                 *        ↓
+                 *      grid/sector fractures
+                 *        ↓
+                 *      terrain disappears
+                 *
+                 *
+                 * getLegendWorldLandMaterialAlpha() already owns the
+                 * timing/front calculation.
+                 *
+                 * DO NOT create another food transition system here.
+                 */
+                var materialAlpha =
+                    this
+                        .getLegendWorldLandMaterialAlpha(
+                            rawX,
+                            rawY,
+                            'food'
+                        );
+
+
+                /*
+                 * Practically invisible food should not be uploaded to
+                 * the GPU instance buffer at all.
+                 */
+                if (
+                    materialAlpha <=
+                        0.01
+                ) {
+                    continue;
+                }
+
+
                 var offset =
                     count *
                     7;
 
+
                 data[offset] =
                     point.x;
+
 
                 data[offset + 1] =
                     point.y;
 
+
                 data[offset + 2] =
                     radius;
+
 
                 data[offset + 3] =
                     rgba[0];
 
+
                 data[offset + 4] =
                     rgba[1];
+
 
                 data[offset + 5] =
                     rgba[2];
 
+
+                /*
+                 * Preserve the user's/server food colour alpha and multiply
+                 * only by the Expanding Land material front.
+                 */
                 data[offset + 6] =
-                    rgba[3];
+                    rgba[3] *
+                    materialAlpha;
+
 
                 count++;
             }
@@ -65548,22 +66428,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * Does NOT apply any Canvas transform — deformWorldPoint() is used
              * individually by border, grid, food, and debris drawing code.
              */
-            /*
-             * If the real player spawn beat the LW beacon,
-             * keep the one-shot pending until Expanding Land
-             * identification and map borders are ready.
-             */
-            if (
-                this._elMapDeform &&
-                this._elMapDeform
-                    .joinSpawnPending &&
-                typeof this
-                    .tryStartLegendWorldPlayerSpawnEffect ===
-                    'function'
-            ) {
-                this
-                    .tryStartLegendWorldPlayerSpawnEffect();
-            }
 
 
             if (
