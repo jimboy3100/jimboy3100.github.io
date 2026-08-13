@@ -35193,6 +35193,9 @@ function thelegendmodproject() {
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
                     self.flushCellsData(true);
+                    if (window.drawRender && typeof window.drawRender.onLegendWorldPlayerSpawn === 'function') {
+                        window.drawRender.onLegendWorldPlayerSpawn();
+                    }
                 }
                 self.sendMessage(view);
             }
@@ -35209,6 +35212,9 @@ function thelegendmodproject() {
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
                     self.flushCellsData(true);
+                    if (window.drawRender && typeof window.drawRender.onLegendWorldPlayerSpawn === 'function') {
+                        window.drawRender.onLegendWorldPlayerSpawn();
+                    }
                 }
                 self.sendMessage(view);
             }
@@ -46555,6 +46561,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 false;
 
 
+            /*
+             * Rearm the visible world-entry effect for the next socket.
+             */
+            s.joinSpawnTriggered =
+                false;
+
+
+            s.joinSpawnActive =
+                false;
+
+
             s.joinDebrisPending =
                 0;
 
@@ -47281,6 +47298,302 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
         /*
+         * ================================================================
+         * EXPANDING LAND — FIRST VISIBLE PLAYER ENTRY
+         * ================================================================
+         *
+         * onLegendWorldConnected() runs from the LW socket beacon.
+         *
+         * That may happen while:
+         *
+         *      helloContainer is still visible
+         *      player has not spawned
+         *      camera has not reached the new cell
+         *
+         * Therefore the old dramatic entrance could be visually lost.
+         *
+         *
+         * This method runs from onPlayerSpawn(), i.e. when the player has
+         * ACTUALLY entered the visible world.
+         *
+         *
+         * IMPORTANT:
+         *
+         * This is NOT:
+         *
+         *      a Canvas transform
+         *      CSS animation
+         *      screen overlay
+         *      camera scale
+         *
+         * It injects energy into the SAME physical deformation field used
+         * by the WebGL:
+         *
+         *      grid
+         *      sectors
+         *      border
+         *      border glow
+         *      food
+         *      debris
+         *
+         * and the existing non-jelly attached world geometry.
+         *
+         *
+         * Once per socket only.
+         * ================================================================
+         */
+        onLegendWorldPlayerSpawn() {
+            if (
+                !this
+                    .isLegendWorldMapDeformationServer()
+            ) {
+                return false;
+            }
+
+
+            var state =
+                this._elMapDeform;
+
+
+            if (!state) {
+                return false;
+            }
+
+
+            /*
+             * Respawning after death must NOT replay the whole server-entry
+             * effect.
+             */
+            if (
+                state.joinSpawnTriggered
+            ) {
+                return false;
+            }
+
+
+            state.joinSpawnTriggered =
+                true;
+
+
+            state.joinSpawnActive =
+                true;
+
+
+            /*
+             * Refresh physical map information at the exact visible-spawn
+             * moment.
+             */
+            var minX =
+                Number(
+                    LM.mapMinX
+                );
+
+            var minY =
+                Number(
+                    LM.mapMinY
+                );
+
+            var maxX =
+                Number(
+                    LM.mapMaxX
+                );
+
+            var maxY =
+                Number(
+                    LM.mapMaxY
+                );
+
+
+            if (
+                Number.isFinite(minX) &&
+                Number.isFinite(minY) &&
+                Number.isFinite(maxX) &&
+                Number.isFinite(maxY) &&
+                maxX >
+                    minX &&
+                maxY >
+                    minY
+            ) {
+                var mapWidth =
+                    maxX -
+                    minX;
+
+                var mapHeight =
+                    maxY -
+                    minY;
+
+
+                state.centerX =
+                    (
+                        minX +
+                        maxX
+                    ) *
+                    0.5;
+
+
+                state.centerY =
+                    (
+                        minY +
+                        maxY
+                    ) *
+                    0.5;
+
+
+                state.halfW =
+                    Math.max(
+                        1,
+                        mapWidth *
+                            0.5
+                    );
+
+
+                state.halfH =
+                    Math.max(
+                        1,
+                        mapHeight *
+                            0.5
+                    );
+
+
+                state.lastMapSize =
+                    Math.max(
+                        1,
+                        (
+                            mapWidth +
+                            mapHeight
+                        ) *
+                            0.5
+                    );
+            }
+
+
+            state.lastFrameTime =
+                performance.now();
+
+
+            /*
+             * ============================================================
+             * DIRECTION OF ENTRY IMPULSE
+             * ============================================================
+             *
+             * Stable / expanding map:
+             *
+             *      compressed -> releases OUTWARD
+             *
+             * Contraction warning/danger/shrink:
+             *
+             *      stretched -> collapses INWARD
+             *
+             * Therefore joining during a real contraction still feels
+             * physically consistent with what the server is doing.
+             */
+            var enteringContraction =
+                state.phase === 2 ||
+                state.phase === 3 ||
+                state.phase === 4;
+
+
+            if (
+                enteringContraction
+            ) {
+                /*
+                 * Start slightly stretched and snap inward.
+                 */
+                state.strain =
+                    Math.max(
+                        state.strain,
+                        0.030
+                    );
+
+
+                state.strainVelocity =
+                    Math.min(
+                        state.strainVelocity,
+                        -0.42
+                    );
+
+
+                state.direction =
+                    -1;
+
+
+                state.joinDebrisDirection =
+                    -1;
+            }
+            else {
+                /*
+                 * Start strongly compressed and release outward.
+                 *
+                 * -0.035 is already the established safety limit of the
+                 * deformation field.
+                 */
+                state.strain =
+                    Math.min(
+                        state.strain,
+                        -0.035
+                    );
+
+
+                state.strainVelocity =
+                    Math.max(
+                        state.strainVelocity,
+                        0.46
+                    );
+
+
+                state.direction =
+                    1;
+
+
+                state.joinDebrisDirection =
+                    1;
+            }
+
+
+            /*
+             * Larger than the beacon-time ripple because THIS is the effect
+             * that the player is actually supposed to see.
+             */
+            state.waveEnergy =
+                Math.max(
+                    state.waveEnergy,
+                    0.022
+                );
+
+
+            state.wavePhase =
+                0;
+
+
+            /*
+             * Strong WebGL border fragments.
+             *
+             * These use the rectangular border-emission system already
+             * fixed earlier.
+             */
+            state.joinDebrisPending =
+                Math.max(
+                    state.joinDebrisPending,
+                    48
+                );
+
+
+            state.joinDebrisStrength =
+                Math.max(
+                    state.joinDebrisStrength,
+                    0.82
+                );
+
+
+            state.visible =
+                true;
+
+
+            return true;
+        },
+
+
+        /*
          * Per-frame deformation physics.
          * Measures actual border movement and drives a damped spring.
          */
@@ -47378,13 +47691,65 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 s.targetStrain = 0;
             }
 
-            /* ── Critically damped spring ── */
-            var accel = (s.targetStrain - s.strain) * 52 -
-                s.strainVelocity * 13;
-            s.strainVelocity += accel * dt;
-            s.strain += s.strainVelocity * dt;
-            s.strain = Math.max(-0.035,
-                Math.min(0.035, s.strain));
+            /*
+             * Damped physical spring.
+             *
+             * Spawn-entrance uses a slightly looser spring constant so the
+             * initial world release has a distinct heavy release quality.
+             */
+            var springK =
+                s.joinSpawnActive
+                    ? 28.0
+                    : 52.0;
+
+            var dampingC =
+                s.joinSpawnActive
+                    ? 8.5
+                    : 13.0;
+
+
+            var accel =
+                (
+                    s.targetStrain -
+                    s.strain
+                ) *
+                springK -
+                s.strainVelocity *
+                dampingC;
+
+
+            s.strainVelocity +=
+                accel *
+                dt;
+
+
+            s.strain +=
+                s.strainVelocity *
+                dt;
+
+
+            s.strain =
+                Math.max(
+                    -0.035,
+                    Math.min(
+                        0.035,
+                        s.strain
+                    )
+                );
+
+
+            /*
+             * Return to authoritative tighter spring once the entrance strain
+             * has visually settled.
+             */
+            if (
+                s.joinSpawnActive &&
+                Math.abs(s.strain) < 0.0015 &&
+                Math.abs(s.strainVelocity) < 0.02
+            ) {
+                s.joinSpawnActive =
+                    false;
+            }
 
             /* ── Travelling surface ripple ── */
             var relMove = Math.abs(deltaSize) /
