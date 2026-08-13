@@ -48149,6 +48149,57 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                             self.gridGlDashedRingInstanceVBO =
                                 null;
+
+
+                            /*
+                             * =================================================
+                             * EXPANDING LAND MAP-MATERIAL PIPELINE
+                             * =================================================
+                             *
+                             * All WebGL objects belong to the lost gridGl
+                             * context. Never reuse them after restoration.
+                             */
+                            self._elMapMaterialContext =
+                                null;
+
+                            self.gridGlMapMaterialProgram =
+                                null;
+
+                            self.gridGlMapMaterialVAO =
+                                null;
+
+                            self.gridGlMapMaterialVBO =
+                                null;
+
+                            self.gridGlMapFoodProgram =
+                                null;
+
+                            self.gridGlMapFoodVAO =
+                                null;
+
+                            self.gridGlMapFoodQuadVBO =
+                                null;
+
+                            self.gridGlMapFoodInstanceVBO =
+                                null;
+
+                            self.grid_u_elMap_viewCenter =
+                                null;
+
+                            self.grid_u_elMap_viewScale =
+                                null;
+
+                            self.grid_u_elFood_viewCenter =
+                                null;
+
+                            self.grid_u_elFood_viewScale =
+                                null;
+
+                            self._elMapTriangleGpuBytes =
+                                0;
+
+                            self._elMapFoodGpuBytes =
+                                0;
                         },
                         false
                     );
@@ -63640,29 +63691,105 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _tGrid = performance.now();
 
                 /*
-                 * DEDICATED WEBGL GRID
+                 * ============================================================
+                 * EXPANDING LAND — ACTUAL WEBGL MAP MATERIAL
+                 * ============================================================
+                 *
+                 * Normal servers:
+                 *
+                 *      existing procedural WebGL grid
+                 *      existing Canvas sectors
+                 *      existing Canvas map border
+                 *
+                 *
+                 * Expanding Land while the material field is active:
+                 *
+                 *      deformed grid       -> gridGl
+                 *      deformed sectors    -> gridGl
+                 *      deformed border     -> gridGl
+                 *
+                 *
+                 * gridGl is physically BELOW both possible cell backends,
+                 * so these objects cannot cover player cells.
                  */
-                if (
-                    defaultmapsettings.showGrid
-                ) {
-                    /* During active deformation, use Canvas2D deformed grid
-                     * instead of the WebGL shader (which is screen-space). */
-                    var _gridDeformFallback =
+                var _elMapMaterialActive =
+                    !!(
                         this.isLegendWorldMapDeformationVisible &&
-                        this.isLegendWorldMapDeformationVisible();
+                        this.isLegendWorldMapDeformationVisible()
+                    );
 
-                    if (_gridDeformFallback) {
-                        this.clearWebGLGrid();
-                        this.drawGrid(this.ctx);
-                    } else {
+                var _elMapMaterialHandled =
+                    false;
+
+
+                if (
+                    _elMapMaterialActive
+                ) {
+                    /*
+                     * One clean lower-layer frame.
+                     *
+                     * drawLegendWorldMapMaterialWebGL() then repopulates it
+                     * with the deformed grid / sectors / border.
+                     */
+                    this.clearWebGLGrid();
+
+                    try {
+                        _elMapMaterialHandled =
+                            this
+                                .drawLegendWorldMapMaterialWebGL();
+                    }
+                    catch (
+                        elMapMaterialError
+                    ) {
+                        console.error(
+                            '[Expanding Land WebGL Map Material] Draw failed; using Canvas fallback:',
+                            elMapMaterialError
+                        );
+
+                        _elMapMaterialHandled =
+                            false;
+                    }
+
+
+                    /*
+                     * Functionality-preserving emergency fallback.
+                     *
+                     * This is NOT the normal active path.
+                     */
+                    if (
+                        !_elMapMaterialHandled &&
+                        defaultmapsettings.showGrid
+                    ) {
+                        this.drawGrid(
+                            this.ctx
+                        );
+                    }
+                }
+                else {
+                    /*
+                     * Every non-Expanding-Land server keeps the existing
+                     * renderer unchanged.
+                     */
+                    if (
+                        defaultmapsettings.showGrid
+                    ) {
                         this.drawWebGLGridShader();
                     }
-                } else {
-                    this.clearWebGLGrid();
+                    else {
+                        this.clearWebGLGrid();
+                    }
                 }
 
+
                 /*
+                 * ============================================================
                  * DEDICATED BACKGROUND IMAGE CANVAS
+                 * ============================================================
+                 *
+                 * Keep custom bitmap backgrounds untouched.
+                 *
+                 * They are the lowest background layer and are NOT the
+                 * deformation geometry itself.
                  */
                 if (
                     this.backgroundCtx &&
@@ -63674,20 +63801,36 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         this.canvasWidth * (this.dpr || 1),
                         this.canvasHeight * (this.dpr || 1)
                     );
+
                     this.backgroundCtx.save();
-                    this.backgroundCtx.scale(this.dpr || 1, this.dpr || 1);
-                    this.backgroundCtx.translate(
-                        (this.canvasWidth / 2) - (this.camX * this.scale),
-                        (this.canvasHeight / 2) - (this.camY * this.scale)
+
+                    this.backgroundCtx.scale(
+                        this.dpr || 1,
+                        this.dpr || 1
                     );
-                    this.backgroundCtx.scale(this.scale, this.scale);
-                    /*
-                     * Expanding Land map deformation is NOT a global Canvas transform.
-                     * The background bitmap stays in authoritative world coordinates.
-                     */
-                    this.drawCustomBackgrounds(this.backgroundCtx);
+
+                    this.backgroundCtx.translate(
+                        (this.canvasWidth / 2) -
+                            (this.camX * this.scale),
+
+                        (this.canvasHeight / 2) -
+                            (this.camY * this.scale)
+                    );
+
+                    this.backgroundCtx.scale(
+                        this.scale,
+                        this.scale
+                    );
+
+                    this.drawCustomBackgrounds(
+                        this.backgroundCtx
+                    );
+
                     this.backgroundCtx.restore();
-                } else if (this.backgroundCtx) {
+                }
+                else if (
+                    this.backgroundCtx
+                ) {
                     this.backgroundCtx.clearRect(
                         0,
                         0,
@@ -63696,27 +63839,101 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     );
                 }
 
-                if (defaultmapsettings.showBgSectors) {
-                    this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
-                }
-                if (LM.gameMode === ':battleroyale') {
-                    this.drawBattleArea(this.ctx);
-                }
-                if (defaultmapsettings.showMapBorders) {
-                    var tempborderwidthradius = (defaultSettings.bordersWidth || 20) / 2;
-                    var _bMinX = LM.mapMinX - tempborderwidthradius;
-                    var _bMinY = LM.mapMinY - tempborderwidthradius;
-                    var _bMaxX = LM.mapMaxX + tempborderwidthradius;
-                    var _bMaxY = LM.mapMaxY + tempborderwidthradius;
 
-                    /*
-                     * Keep the map border on the Canvas2D background layer.
-                     *
-                     * The WebGL canvas is a separate DOM layer above Canvas2D. When the
-                     * atomic WebGL cell batch falls back, cells are rendered on Canvas2D;
-                     * therefore a WebGL border would always cover those cells regardless
-                     * of WebGL depth values.
-                     */
+                /*
+                 * ============================================================
+                 * SECTORS
+                 * ============================================================
+                 *
+                 * Expanding Land GPU material:
+                 *
+                 *      lines  -> already rendered by gridGl
+                 *      labels -> draw only the text at deformed positions
+                 *
+                 * All other cases retain existing drawSectors().
+                 */
+                if (
+                    _elMapMaterialHandled
+                ) {
+                    if (
+                        defaultmapsettings.showBgSectors
+                    ) {
+                        this.drawLegendWorldSectorLabelsOnly(
+                            this.ctx
+                        );
+                    }
+                }
+                else if (
+                    defaultmapsettings.showBgSectors
+                ) {
+                    this.drawSectors(
+                        this.ctx,
+                        LM.mapOffsetFixed,
+                        defaultSettings.sectorsX,
+                        defaultSettings.sectorsY,
+                        LM.mapMinX,
+                        LM.mapMinY,
+                        LM.mapMaxX,
+                        LM.mapMaxY,
+                        defaultSettings.gridColor,
+                        defaultSettings.sectorsColor,
+                        defaultSettings.sectorsWidth,
+                        true
+                    );
+                }
+
+
+                /*
+                 * Battle Royale remains completely unrelated.
+                 */
+                if (
+                    LM.gameMode ===
+                    ':battleroyale'
+                ) {
+                    this.drawBattleArea(
+                        this.ctx
+                    );
+                }
+
+
+                /*
+                 * ============================================================
+                 * MAP BORDER
+                 * ============================================================
+                 *
+                 * When the Expanding Land material renderer succeeded,
+                 * the border has ALREADY been rendered as deformable WebGL
+                 * geometry on gridCanvas.
+                 *
+                 * Do not paint a second rigid Canvas rectangle over it.
+                 */
+                if (
+                    !_elMapMaterialHandled &&
+                    defaultmapsettings.showMapBorders
+                ) {
+                    var tempborderwidthradius =
+                        (
+                            defaultSettings.bordersWidth ||
+                            20
+                        ) /
+                        2;
+
+                    var _bMinX =
+                        LM.mapMinX -
+                        tempborderwidthradius;
+
+                    var _bMinY =
+                        LM.mapMinY -
+                        tempborderwidthradius;
+
+                    var _bMaxX =
+                        LM.mapMaxX +
+                        tempborderwidthradius;
+
+                    var _bMaxY =
+                        LM.mapMaxY +
+                        tempborderwidthradius;
+
                     this.drawMapBorders(
                         this.ctx,
                         LM.mapOffsetFixed,
@@ -63765,17 +63982,67 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawHelpers();
                 this.drawFood();
 
-                /* ── Expanding Land: world-space debris ──
-                 * Drawn after food, before cells, so debris is in
-                 * the world layer and occluded by player cells. */
+
+                /*
+                 * ============================================================
+                 * EXPANDING LAND — GPU WORLD-MATERIAL DEBRIS
+                 * ============================================================
+                 *
+                 * Drawn after food but before cells.
+                 *
+                 * Because both food and debris live on the lower gridGl
+                 * layer, player cells always occlude them.
+                 *
+                 * Expansion:
+                 *
+                 *      velocity points outward
+                 *      -> streak points outward
+                 *
+                 * Contraction:
+                 *
+                 *      velocity points inward
+                 *      -> streak points inward
+                 */
                 if (
                     this.isLegendWorldMapDeformationVisible &&
                     this.isLegendWorldMapDeformationVisible() &&
                     this._elMapDebris &&
-                    this._elMapDebris.length > 0
+                    this._elMapDebris.length >
+                        0
                 ) {
-                    this.drawLegendWorldMapDebris(this.ctx);
+                    var _elDebrisWebGLHandled =
+                        false;
+
+                    try {
+                        _elDebrisWebGLHandled =
+                            !!this
+                                .drawLegendWorldMapDebrisWebGL();
+                    }
+                    catch (
+                        elDebrisWebGLError
+                    ) {
+                        console.error(
+                            '[Expanding Land WebGL Debris] Falling back to Canvas:',
+                            elDebrisWebGLError
+                        );
+
+                        _elDebrisWebGLHandled =
+                            false;
+                    }
+
+
+                    /*
+                     * Only a WebGL failure uses the old Canvas implementation.
+                     */
+                    if (
+                        !_elDebrisWebGLHandled
+                    ) {
+                        this.drawLegendWorldMapDebris(
+                            this.ctx
+                        );
+                    }
                 }
+
 
                 this.drawGhostCells();
                 for (var i = LM.removedCells.length - 1; i >= 0; i--) {
@@ -66497,34 +66764,111 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         drawFood() {
 
-            if (!LM.showFood) {
+            if (
+                !LM.showFood
+            ) {
                 return;
             }
-            if (defaultmapsettings.autoHideFoodOnZoom && this.scale < 0.2) {
+
+            if (
+                defaultmapsettings
+                    .autoHideFoodOnZoom &&
+                this.scale <
+                    0.2
+            ) {
                 return;
             }
-            if (defaultmapsettings.autoHideFood && !LM.foodIsHidden && LM.playerMass > 1000) {
-                LM.showFood = false;
-                LM.foodIsHidden = true;
+
+            if (
+                defaultmapsettings
+                    .autoHideFood &&
+                !LM.foodIsHidden &&
+                LM.playerMass >
+                    1000
+            ) {
+                LM.showFood =
+                    false;
+
+                LM.foodIsHidden =
+                    true;
+
                 return;
             }
-            /* WebGL2 GPU batch: 1 draw call for all food dots.
-             * DISABLED: WebGL food renders on the GL canvas (base + 3) which overlays
-             * the Canvas2D canvas (base + 2). Since viruses are drawn on Canvas2D (they need
-             * glow/spikes), WebGL food would appear ON TOP of viruses.
-             * Canvas2D food is drawn first (before cell loop), so it correctly
-             * appears behind viruses on the same compositing layer. */
-            // if (this.gl && !defaultSettings.customBackground && this.drawWebGLFoodBatch(LM.food)) return;
-            this.drawCachedFood(this.ctx, LM.food, this.scale);
-            //return;
-            //}
-            /*for (let length = 0; length < LM.food.length; length++) {
-                LM.food[length].moveCell();
-                if (!LM.food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) LM.food[length].invisible = true
-                if (!LM.food[length].invisible) {
-                    LM.food[length].draw(this.ctx);
+
+
+            /*
+             * ============================================================
+             * EXPANDING LAND — GPU TERRAIN-ATTACHED FOOD
+             * ============================================================
+             *
+             * IMPORTANT:
+             *
+             * Do NOT use the normal main WebGL cell canvas here.
+             *
+             * The normal glCanvas is above Canvas fallback cells.
+             *
+             * The Expanding Land implementation instead uses gridGl,
+             * physically BELOW both cell backends.
+             *
+             * Therefore:
+             *
+             *      food
+             *          ↓
+             *      gridCanvas / WebGL2
+             *          ↓
+             *      Canvas cells OR WebGL cells
+             *
+             * preserves correct compositing.
+             */
+            var _elDeformedFood =
+                !!(
+                    this.isLegendWorldMapDeformationVisible &&
+                    this.isLegendWorldMapDeformationVisible()
+                );
+
+            if (
+                _elDeformedFood &&
+                typeof this
+                    .drawLegendWorldMapFoodWebGL ===
+                    'function'
+            ) {
+                try {
+                    if (
+                        this
+                            .drawLegendWorldMapFoodWebGL(
+                                LM.food
+                            )
+                    ) {
+                        return;
+                    }
                 }
-            }*/
+                catch (
+                    elFoodWebGLError
+                ) {
+                    console.error(
+                        '[Expanding Land WebGL Food] Falling back to Canvas:',
+                        elFoodWebGLError
+                    );
+                }
+            }
+
+
+            /*
+             * ============================================================
+             * ALL OTHER SERVERS / EMERGENCY FALLBACK
+             * ============================================================
+             *
+             * Preserve the existing Canvas implementation exactly.
+             *
+             * drawCachedFood() already knows how to deform Expanding Land
+             * coordinates, so even a WebGL context failure does not remove
+             * functionality.
+             */
+            this.drawCachedFood(
+                this.ctx,
+                LM.food,
+                this.scale
+            );
         },
         drawCachedFood(ctx, food, scale, reset) {
             if (!food || !food.length) {
