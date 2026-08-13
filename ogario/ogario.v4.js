@@ -22604,6 +22604,25 @@ function thelegendmodproject() {
             }
             LegendModSpawn();
 
+
+            /*
+             * EXPANDING LAND — REAL PLAYER JOIN
+             *
+             * This is the authoritative visible-spawn moment.
+             *
+             * No opcode 200 required.
+             */
+            if (
+                window.drawRender &&
+                typeof window.drawRender
+                    .onLegendWorldPlayerSpawn ===
+                    'function'
+            ) {
+                window.drawRender
+                    .onLegendWorldPlayerSpawn();
+            }
+
+
             /* Expanding Land: trigger spawn burst animation */
             if (typeof drawRender !== 'undefined' && drawRender.triggerSpawnEffect) {
                 var _spawnX = this.getPlayerX ? this.getPlayerX() : 0;
@@ -35175,49 +35194,246 @@ function thelegendmodproject() {
                 return skinForJoin ? ('<' + skinForJoin + '>') : '';
             };
 
+            /*
+             * ================================================================
+             * SPAWN REQUEST
+             * ================================================================
+             *
+             * IMPORTANT:
+             *
+             * Sending a spawn request does NOT mean that the player has
+             * entered the world yet.
+             *
+             * Never start the Expanding Land visual-entry effect from here.
+             *
+             * The server must first acknowledge/create our player cell.
+             * application.onPlayerSpawn() is the authoritative client-side
+             * moment when that has happened.
+             * ================================================================
+             */
             var sendSpawn = function (token) {
-                //console.log(token);
-                //var token = grecaptcha.getResponse();
-                //console.log(self.playerNick);
-                var skinPrefix = _getSkinPrefix();
-                nick = skinPrefix + window.unescape(window.encodeURIComponent(self.playerNick));
-                //console.log(nick);
-                var view = self.createView(1 + nick.length + 1 + token.length + 1);
+                var skinPrefix =
+                    _getSkinPrefix();
 
-                var pos = 1
-                //"???".codePointAt(length)
-                for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
-                //for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
-                pos++
-                for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
-                //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
-                if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
-                    self.flushCellsData(true);
-                    if (window.drawRender && typeof window.drawRender.onLegendWorldPlayerSpawn === 'function') {
-                        window.drawRender.onLegendWorldPlayerSpawn();
-                    }
+
+                nick =
+                    skinPrefix +
+                    window.unescape(
+                        window.encodeURIComponent(
+                            self.playerNick
+                        )
+                    );
+
+
+                var view =
+                    self.createView(
+                        1 +
+                        nick.length +
+                        1 +
+                        token.length +
+                        1
+                    );
+
+
+                var pos =
+                    1;
+
+
+                for (
+                    let length = 0;
+                    length < nick.length;
+                    length++,
+                    pos++
+                ) {
+                    view.setUint8(
+                        pos,
+                        nick.codePointAt(
+                            length
+                        )
+                    );
                 }
-                self.sendMessage(view);
-            }
-            var sendSpawnPrivateServer = function () {
-                var token = '0'
-                var skinPrefix = _getSkinPrefix();
-                nick = skinPrefix + window.unescape(window.encodeURIComponent(self.playerNick));
-                var view = self.createView(1 + nick.length + 1 + token.length + 1);
-                var pos = 1
-                for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
-                //for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
-                pos++
-                for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
-                //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
-                if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
-                    self.flushCellsData(true);
-                    if (window.drawRender && typeof window.drawRender.onLegendWorldPlayerSpawn === 'function') {
-                        window.drawRender.onLegendWorldPlayerSpawn();
-                    }
+
+
+                /*
+                 * Null separator between nickname and token.
+                 */
+                pos++;
+
+
+                for (
+                    let length = 0;
+                    length < token.length;
+                    length++,
+                    pos++
+                ) {
+                    view.setUint8(
+                        pos,
+                        token.codePointAt(
+                            length
+                        )
+                    );
                 }
-                self.sendMessage(view);
-            }
+
+
+                /*
+                 * Expanding Land still needs its old-cell flush BEFORE
+                 * requesting a new life.
+                 *
+                 * But DO NOT start the join visual effect here.
+                 */
+                var serverTokenElement =
+                    document.getElementById(
+                        'server-token'
+                    );
+
+
+                var isExpandingLandSpawnRequest =
+                    self.isLegendWorld ===
+                        true ||
+                    self.serverType ===
+                        'expandingland' ||
+                    (
+                        serverTokenElement &&
+                        String(
+                            serverTokenElement.value ||
+                            ''
+                        ).includes(
+                            'expanding.land'
+                        )
+                    );
+
+
+                if (
+                    isExpandingLandSpawnRequest
+                ) {
+                    self.flushCellsData(
+                        true
+                    );
+                }
+
+
+                /*
+                 * Only transmit the request.
+                 *
+                 * The visible join effect will start later from
+                 * application.onPlayerSpawn().
+                 */
+                self.sendMessage(
+                    view
+                );
+            };
+
+
+            var sendSpawnPrivateServer =
+                function () {
+                    var token =
+                        '0';
+
+
+                    var skinPrefix =
+                        _getSkinPrefix();
+
+
+                    nick =
+                        skinPrefix +
+                        window.unescape(
+                            window.encodeURIComponent(
+                                self.playerNick
+                            )
+                        );
+
+
+                    var view =
+                        self.createView(
+                            1 +
+                            nick.length +
+                            1 +
+                            token.length +
+                            1
+                        );
+
+
+                    var pos =
+                        1;
+
+
+                    for (
+                        let length = 0;
+                        length < nick.length;
+                        length++,
+                        pos++
+                    ) {
+                        view.setUint8(
+                            pos,
+                            nick.codePointAt(
+                                length
+                            )
+                        );
+                    }
+
+
+                    /*
+                     * Null separator between nickname and token.
+                     */
+                    pos++;
+
+
+                    for (
+                        let length = 0;
+                        length < token.length;
+                        length++,
+                        pos++
+                    ) {
+                        view.setUint8(
+                            pos,
+                            token.codePointAt(
+                                length
+                            )
+                        );
+                    }
+
+
+                    var serverTokenElement =
+                        document.getElementById(
+                            'server-token'
+                        );
+
+
+                    var isExpandingLandSpawnRequest =
+                        self.isLegendWorld ===
+                            true ||
+                        self.serverType ===
+                            'expandingland' ||
+                        (
+                            serverTokenElement &&
+                            String(
+                                serverTokenElement.value ||
+                                ''
+                            ).includes(
+                                'expanding.land'
+                            )
+                        );
+
+
+                    if (
+                        isExpandingLandSpawnRequest
+                    ) {
+                        self.flushCellsData(
+                            true
+                        );
+                    }
+
+
+                    /*
+                     * Again: request only.
+                     *
+                     * Do NOT trigger the visual entrance until the server
+                     * confirms the player cell.
+                     */
+                    self.sendMessage(
+                        view
+                    );
+                };
 
             if (!LM.integrity) {
                 //token = '0';
@@ -46477,11 +46693,41 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
+             * ============================================================
+             * FIRST VISIBLE PLAYER JOIN
+             * ============================================================
+             *
+             * Completely independent from opcode 200.
+             *
+             * pending:
+             *      the REAL application.onPlayerSpawn() happened, but the
+             *      LW identification beacon may still be racing us.
+             *
+             * triggered:
+             *      this socket already played its one server-entry effect.
+             *
+             * active:
+             *      the guaranteed 2.6 second materialization timeline is
+             *      currently deforming the world.
+             */
+            joinSpawnPending: false,
+
+            joinSpawnTriggered: false,
+
+            joinSpawnActive: false,
+
+            joinSpawnStartedAt: 0,
+
+            joinSpawnDuration: 2600,
+
+            joinSpawnProgress: 1,
+
+            joinSpawnVisual: 0,
+
+
+            /*
              * Map-edge debris requested by join/reconciliation is deferred
              * until the authoritative opcode-64 border has been accepted.
-             *
-             * Otherwise a very early LW beacon could emit debris from the
-             * old/default 14142 border.
              */
             joinDebrisPending: 0,
 
@@ -46564,12 +46810,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /*
              * Rearm the visible world-entry effect for the next socket.
              */
+            s.joinSpawnPending =
+                false;
+
+
             s.joinSpawnTriggered =
                 false;
 
 
             s.joinSpawnActive =
                 false;
+
+
+            s.joinSpawnStartedAt =
+                0;
+
+
+            s.joinSpawnDuration =
+                2600;
+
+
+            s.joinSpawnProgress =
+                1;
+
+
+            s.joinSpawnVisual =
+                0;
 
 
             s.joinDebrisPending =
@@ -47343,14 +47609,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * ================================================================
          */
         onLegendWorldPlayerSpawn() {
-            if (
-                !this
-                    .isLegendWorldMapDeformationServer()
-            ) {
-                return false;
-            }
-
-
             var state =
                 this._elMapDeform;
 
@@ -47361,14 +47619,221 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * Respawning after death must NOT replay the whole server-entry
-             * effect.
+             * The authoritative client spawn callback has happened.
+             *
+             * ARM FIRST.
+             *
+             * Do not lose the effect merely because:
+             *
+             *      player-cell packet
+             *
+             * and:
+             *
+             *      LW identification beacon
+             *
+             * arrived in the opposite order.
              */
             if (
+                !state.joinSpawnTriggered
+            ) {
+                state.joinSpawnPending =
+                    true;
+            }
+
+
+            return this
+                .tryStartLegendWorldPlayerSpawnEffect();
+        },
+
+
+        /*
+         * ================================================================
+         * EXPANDING LAND — GUARANTEED FIRST VISIBLE JOIN MATERIALIZATION
+         * ================================================================
+         *
+         * Trigger source:
+         *
+         *      REAL application.onPlayerSpawn()
+         *
+         * NOT:
+         *
+         *      sendSpawn()
+         *      socket open
+         *      opcode 200
+         *
+         *
+         * If the LW beacon has not arrived yet:
+         *
+         *      pending remains TRUE
+         *
+         * renderFrame() will retry until the socket has been positively
+         * identified as Expanding Land.
+         *
+         *
+         * Nothing here modifies:
+         *
+         *      authoritative coordinates
+         *      map bounds
+         *      collision
+         *      movement
+         *      jelly points
+         *
+         * It changes render-only map material.
+         * ================================================================
+         */
+        tryStartLegendWorldPlayerSpawnEffect() {
+            var state =
+                this._elMapDeform;
+
+
+            if (
+                !state ||
+                !state.joinSpawnPending ||
                 state.joinSpawnTriggered
             ) {
                 return false;
             }
+
+
+            /*
+             * Do not CONSUME the pending one-shot until the connection is
+             * positively identified.
+             */
+            if (
+                !this
+                    .isLegendWorldMapDeformationServer()
+            ) {
+                return false;
+            }
+
+
+            /*
+             * Connecting to the server alone is not enough.
+             *
+             * This is the PLAYER ENTRY effect.
+             */
+            if (
+                typeof ogario !==
+                    'undefined' &&
+                ogario &&
+                ogario.play !==
+                    true
+            ) {
+                return false;
+            }
+
+
+            var minX =
+                Number(
+                    LM.mapMinX
+                );
+
+
+            var minY =
+                Number(
+                    LM.mapMinY
+                );
+
+
+            var maxX =
+                Number(
+                    LM.mapMaxX
+                );
+
+
+            var maxY =
+                Number(
+                    LM.mapMaxY
+                );
+
+
+            /*
+             * Wait for the real SetBorder data.
+             *
+             * Again: DO NOT clear pending if the map is not ready.
+             */
+            if (
+                !Number.isFinite(minX) ||
+                !Number.isFinite(minY) ||
+                !Number.isFinite(maxX) ||
+                !Number.isFinite(maxY) ||
+                maxX <=
+                    minX ||
+                maxY <=
+                    minY
+            ) {
+                return false;
+            }
+
+
+            var mapWidth =
+                maxX -
+                minX;
+
+
+            var mapHeight =
+                maxY -
+                minY;
+
+
+            var now =
+                performance.now();
+
+
+            state.centerX =
+                (
+                    minX +
+                    maxX
+                ) *
+                0.5;
+
+
+            state.centerY =
+                (
+                    minY +
+                    maxY
+                ) *
+                0.5;
+
+
+            state.halfW =
+                Math.max(
+                    1,
+                    mapWidth *
+                        0.5
+                );
+
+
+            state.halfH =
+                Math.max(
+                    1,
+                    mapHeight *
+                        0.5
+                );
+
+
+            state.lastMapSize =
+                Math.max(
+                    1,
+                    (
+                        mapWidth +
+                        mapHeight
+                    ) *
+                        0.5
+                );
+
+
+            state.lastFrameTime =
+                now;
+
+
+            /*
+             * ============================================================
+             * NOW CONSUME THE ONE-SHOT
+             * ============================================================
+             */
+            state.joinSpawnPending =
+                false;
 
 
             state.joinSpawnTriggered =
@@ -47379,209 +47844,86 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 true;
 
 
-            /*
-             * Refresh physical map information at the exact visible-spawn
-             * moment.
-             */
-            var minX =
-                Number(
-                    LM.mapMinX
-                );
-
-            var minY =
-                Number(
-                    LM.mapMinY
-                );
-
-            var maxX =
-                Number(
-                    LM.mapMaxX
-                );
-
-            var maxY =
-                Number(
-                    LM.mapMaxY
-                );
+            state.joinSpawnStartedAt =
+                now;
 
 
-            if (
-                Number.isFinite(minX) &&
-                Number.isFinite(minY) &&
-                Number.isFinite(maxX) &&
-                Number.isFinite(maxY) &&
-                maxX >
-                    minX &&
-                maxY >
-                    minY
-            ) {
-                var mapWidth =
-                    maxX -
-                    minX;
-
-                var mapHeight =
-                    maxY -
-                    minY;
+            state.joinSpawnDuration =
+                2600;
 
 
-                state.centerX =
-                    (
-                        minX +
-                        maxX
-                    ) *
-                    0.5;
-
-
-                state.centerY =
-                    (
-                        minY +
-                        maxY
-                    ) *
-                    0.5;
-
-
-                state.halfW =
-                    Math.max(
-                        1,
-                        mapWidth *
-                            0.5
-                    );
-
-
-                state.halfH =
-                    Math.max(
-                        1,
-                        mapHeight *
-                            0.5
-                    );
-
-
-                state.lastMapSize =
-                    Math.max(
-                        1,
-                        (
-                            mapWidth +
-                            mapHeight
-                        ) *
-                            0.5
-                    );
-            }
-
-
-            state.lastFrameTime =
-                performance.now();
-
-
-            /*
-             * ============================================================
-             * DIRECTION OF ENTRY IMPULSE
-             * ============================================================
-             *
-             * Stable / expanding map:
-             *
-             *      compressed -> releases OUTWARD
-             *
-             * Contraction warning/danger/shrink:
-             *
-             *      stretched -> collapses INWARD
-             *
-             * Therefore joining during a real contraction still feels
-             * physically consistent with what the server is doing.
-             */
-            var enteringContraction =
-                state.phase === 2 ||
-                state.phase === 3 ||
-                state.phase === 4;
-
-
-            if (
-                enteringContraction
-            ) {
-                /*
-                 * Start slightly stretched and snap inward.
-                 */
-                state.strain =
-                    Math.max(
-                        state.strain,
-                        0.030
-                    );
-
-
-                state.strainVelocity =
-                    Math.min(
-                        state.strainVelocity,
-                        -0.42
-                    );
-
-
-                state.direction =
-                    -1;
-
-
-                state.joinDebrisDirection =
-                    -1;
-            }
-            else {
-                /*
-                 * Start strongly compressed and release outward.
-                 *
-                 * -0.035 is already the established safety limit of the
-                 * deformation field.
-                 */
-                state.strain =
-                    Math.min(
-                        state.strain,
-                        -0.035
-                    );
-
-
-                state.strainVelocity =
-                    Math.max(
-                        state.strainVelocity,
-                        0.46
-                    );
-
-
-                state.direction =
-                    1;
-
-
-                state.joinDebrisDirection =
-                    1;
-            }
-
-
-            /*
-             * Larger than the beacon-time ripple because THIS is the effect
-             * that the player is actually supposed to see.
-             */
-            state.waveEnergy =
-                Math.max(
-                    state.waveEnergy,
-                    0.022
-                );
-
-
-            state.wavePhase =
+            state.joinSpawnProgress =
                 0;
 
 
             /*
-             * Strong WebGL border fragments.
+             * ============================================================
+             * STRONG GUARANTEED JOIN DEFORMATION
+             * ============================================================
              *
-             * These use the rectangular border-emission system already
-             * fixed earlier.
+             * This component does NOT depend on map movement.
+             *
+             * Therefore even if the Expanding Land border is perfectly
+             * stationary, entering the server still produces the complete
+             * special effect.
+             */
+            state.joinSpawnVisual =
+                -0.042;
+
+
+            /*
+             * Give the normal physical spring outward momentum too.
+             */
+            state.strain =
+                Math.min(
+                    state.strain,
+                    -0.018
+                );
+
+
+            state.strainVelocity =
+                Math.max(
+                    state.strainVelocity,
+                    0.42
+                );
+
+
+            state.direction =
+                1;
+
+
+            /*
+             * Strong travelling material wave.
+             */
+            state.wavePhase =
+                0;
+
+
+            state.waveEnergy =
+                Math.max(
+                    state.waveEnergy,
+                    0.026
+                );
+
+
+            /*
+             * Strong rectangular-border fragments.
              */
             state.joinDebrisPending =
                 Math.max(
                     state.joinDebrisPending,
-                    48
+                    72
                 );
+
+
+            state.joinDebrisDirection =
+                1;
 
 
             state.joinDebrisStrength =
                 Math.max(
                     state.joinDebrisStrength,
-                    0.82
+                    0.95
                 );
 
 
@@ -47672,23 +48014,73 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 -1, Math.min(1, s.filteredVelocity / 3000)
             );
 
-            /* ── Target stress from phase + measured velocity ── */
-            if (s.phase === 1) {
-                s.direction = 1;
-                s.targetStrain = 0.006 +
-                    Math.max(0, motion) * 0.014;
-            } else if (s.phase === 2) {
-                s.direction = -1;
-                s.targetStrain = -0.0015;
-            } else if (s.phase === 3) {
-                s.direction = -1;
-                s.targetStrain = -0.0035;
-            } else if (s.phase === 4) {
-                s.direction = -1;
-                s.targetStrain = -0.008 -
-                    Math.max(0, -motion) * 0.017;
-            } else {
-                s.targetStrain = 0;
+            /*
+             * Initial player join is a local presentation effect.
+             * Opcode 200 controls resizing only AFTER the entrance.
+             */
+            if (
+                s.joinSpawnActive
+            ) {
+                s.direction =
+                    1;
+
+                s.targetStrain =
+                    0;
+            }
+
+            else if (
+                s.phase === 1
+            ) {
+                s.direction =
+                    1;
+
+                s.targetStrain =
+                    0.006 +
+                    Math.max(
+                        0,
+                        motion
+                    ) *
+                    0.014;
+            }
+
+            else if (
+                s.phase === 2
+            ) {
+                s.direction =
+                    -1;
+
+                s.targetStrain =
+                    -0.0015;
+            }
+
+            else if (
+                s.phase === 3
+            ) {
+                s.direction =
+                    -1;
+
+                s.targetStrain =
+                    -0.0035;
+            }
+
+            else if (
+                s.phase === 4
+            ) {
+                s.direction =
+                    -1;
+
+                s.targetStrain =
+                    -0.008 -
+                    Math.max(
+                        0,
+                        -motion
+                    ) *
+                    0.017;
+            }
+
+            else {
+                s.targetStrain =
+                    0;
             }
 
             /*
@@ -47739,16 +48131,96 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * Return to authoritative tighter spring once the entrance strain
-             * has visually settled.
+             * ============================================================
+             * GUARANTEED JOIN MATERIALIZATION TIMELINE
+             * ============================================================
              */
             if (
-                s.joinSpawnActive &&
-                Math.abs(s.strain) < 0.0015 &&
-                Math.abs(s.strainVelocity) < 0.02
+                s.joinSpawnActive
             ) {
-                s.joinSpawnActive =
-                    false;
+                var joinDuration =
+                    Math.max(
+                        1,
+                        Number(
+                            s.joinSpawnDuration
+                        ) ||
+                            2600
+                    );
+
+
+                var joinT =
+                    (
+                        now -
+                        s.joinSpawnStartedAt
+                    ) /
+                    joinDuration;
+
+
+                joinT =
+                    Math.max(
+                        0,
+                        Math.min(
+                            1,
+                            joinT
+                        )
+                    );
+
+
+                s.joinSpawnProgress =
+                    joinT;
+
+
+                if (
+                    joinT >= 1
+                ) {
+                    s.joinSpawnActive =
+                        false;
+
+                    s.joinSpawnVisual =
+                        0;
+                }
+
+                else {
+                    var joinRemain =
+                        1 -
+                        joinT;
+
+
+                    var joinEnvelope =
+                        Math.pow(
+                            joinRemain,
+                            1.35
+                        );
+
+
+                    /*
+                     * Two visible elastic releases.
+                     */
+                    s.joinSpawnVisual =
+                        -0.042 *
+                        joinEnvelope *
+                        Math.cos(
+                            joinT *
+                            Math.PI *
+                            4
+                        );
+
+
+                    /*
+                     * Keep the travelling ripple alive for the entrance.
+                     */
+                    s.waveEnergy =
+                        Math.max(
+                            s.waveEnergy,
+                            0.018 *
+                                joinEnvelope
+                        );
+                }
+            }
+
+            else {
+                s.joinSpawnVisual =
+                    0;
             }
 
             /* ── Travelling surface ripple ── */
@@ -47851,12 +48323,29 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             /* Keep rendering while spring/debris settling */
             s.visible =
-                Math.abs(s.strain) > 0.0001 ||
-                Math.abs(s.strainVelocity) > 0.0001 ||
-                s.waveEnergy > 0.0001 ||
-                s.phase > 0 ||
-                s.joinDebrisPending > 0 ||
-                this._elMapDebris.length > 0;
+                s.joinSpawnPending ||
+                s.joinSpawnActive ||
+                Math.abs(
+                    s.joinSpawnVisual ||
+                    0
+                ) >
+                    0.0001 ||
+                Math.abs(
+                    s.strain
+                ) >
+                    0.0001 ||
+                Math.abs(
+                    s.strainVelocity
+                ) >
+                    0.0001 ||
+                s.waveEnergy >
+                    0.0001 ||
+                s.phase >
+                    0 ||
+                s.joinDebrisPending >
+                    0 ||
+                this._elMapDebris.length >
+                    0;
         },
 
 
@@ -47890,8 +48379,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Cubic ramp — center nearly still, edge strongest */
             var weight = edgeDist * edgeDist * edgeDist;
 
-            /* Strain: radial stretch/compress */
-            var radialOffset = s.strain * weight;
+            /*
+             * Strain: radial stretch/compress.
+             *
+             * INCLUDES GUARANTEED JOIN-ENTRY VISUAL DEFORMATION FIELD.
+             */
+            var joinVisualOffset =
+                Number(
+                    s.joinSpawnVisual ||
+                    0
+                );
+
+
+            var radialOffset =
+                (
+                    s.strain +
+                    joinVisualOffset
+                ) *
+                weight;
+
 
             /* Travelling ripple */
             var ripple = 0;
@@ -47952,7 +48458,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var ny = (y - s.centerY) / s.halfH;
                 var edgeDist = Math.max(Math.abs(nx), Math.abs(ny));
                 var weight = edgeDist * edgeDist * edgeDist;
-                out.localScale = 1 + s.strain * weight;
+                out.localScale = 1 + (s.strain + (s.joinSpawnVisual || 0)) * weight;
                 out.weight = weight;
             } else {
                 out.localScale = 1;
@@ -48763,8 +49269,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             x: 0,
             y: 0,
             color: '#00ccff',
-            duration: 800,
-            numRays: 12
+            duration: 1400,
+            numRays: 16
         },
         triggerSpawnEffect(worldX, worldY, color) {
             if (!LM || !LM.isLegendWorld) return;
@@ -48776,17 +49282,45 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this._spawnEffect.color = color || '#00ccff';
         },
         drawSpawnEffect(ctx) {
-            var fx = this._spawnEffect;
-            if (!fx.active) return;
+            var fx =
+                this._spawnEffect;
 
-            /* Reset screen-space death animation on spawn */
-            if (t === 0 || elapsed < 30) {
-                _elDeathVisual = null;
+            if (
+                !fx.active
+            ) {
+                return;
             }
 
-            var elapsed = Date.now() - fx.startTime;
-            var t = elapsed / fx.duration;
-            if (t >= 1.0) { fx.active = false; return; }
+
+            var elapsed =
+                Date.now() -
+                fx.startTime;
+
+
+            var t =
+                elapsed /
+                fx.duration;
+
+
+            if (
+                elapsed <
+                    30
+            ) {
+                if (typeof window !== 'undefined' && typeof window._elDeathVisual !== 'undefined') {
+                    window._elDeathVisual = null;
+                }
+            }
+
+
+            if (
+                t >=
+                    1
+            ) {
+                fx.active =
+                    false;
+
+                return;
+            }
 
             /* Easing: fast start, slow end */
             var ease = 1.0 - Math.pow(1.0 - t, 3);
@@ -64537,6 +65071,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * Does NOT apply any Canvas transform — deformWorldPoint() is used
              * individually by border, grid, food, and debris drawing code.
              */
+            /*
+             * If the real player spawn beat the LW beacon,
+             * keep the one-shot pending until Expanding Land
+             * identification and map borders are ready.
+             */
+            if (
+                this._elMapDeform &&
+                this._elMapDeform
+                    .joinSpawnPending &&
+                typeof this
+                    .tryStartLegendWorldPlayerSpawnEffect ===
+                    'function'
+            ) {
+                this
+                    .tryStartLegendWorldPlayerSpawnEffect();
+            }
+
+
             if (
                 this.isLegendWorldMapDeformationServer &&
                 this.isLegendWorldMapDeformationServer()
