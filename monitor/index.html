@@ -247,6 +247,7 @@
                         <th data-col="nickname" class="sorted">Nick ▼</th>
                         <th data-col="tag">Tag</th>
                         <th data-col="name">Name</th>
+                        <th data-col="agario_uid">Agar UID</th>
                         <th data-col="server_id">Server</th>
                         <th data-col="region">Region</th>
                         <th data-col="mode">Mode</th>
@@ -256,7 +257,7 @@
                     </tr>
                 </thead>
                 <tbody id="players-body">
-                <tr><td colspan="9" class="no-players"><div class="emoji">🌐</div>Connecting...</td></tr>
+                <tr><td colspan="10" class="no-players"><div class="emoji">🌐</div>Connecting...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -447,7 +448,7 @@ function updateUI() {
     const countries = new Set();
 
     if (sorted.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="no-players"><div class="emoji">😴</div>No players online</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="no-players"><div class="emoji">😴</div>No players online</td></tr>';
     } else {
         tbody.innerHTML = sorted.map(p => {
             const isPlaying = !!p.isPlaying;
@@ -460,6 +461,7 @@ function updateUI() {
             const srv = p._srv;
             const level = parseInt(p.agario_level) || 0;
             const name = p.name || '';
+            const uid = p.agario_uid || '';
             const ago = p.updated ? timeAgo(p.updated) : '';
             const flagSpan = cc !== 'un'
                 ? `<span class="flag-icon flag-icon-${cc}"></span>`
@@ -472,6 +474,7 @@ function updateUI() {
                 <td><span class="status-dot ${isPlaying ? 'playing' : 'idle'}"></span><span class="nick ${isPlaying ? 'playing' : 'idle'}">${esc(p.nickname || '—')}</span></td>
                 <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
                 <td class="name-text">${esc(name)}</td>
+                <td><span style="font-size:11px; font-family:monospace; color:#636e72; max-width:120px; overflow:hidden; text-overflow:ellipsis; display:inline-block;">${esc(uid)}</span></td>
                 <td>${hasServer ? '<a href="https://agar.io/?ip=' + encodeURI(p.server) + '" target="_blank" style="font-size:11px; color:#0984e3; background:#f0f4ff; padding:2px 6px; border-radius:3px; text-decoration:none; font-family:monospace;" title="Click to join server">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
                 <td class="server-text">${hasServer ? esc(srv.region) : ''}</td>
                 <td>${hasServer ? '<span style="display:inline-block; background:' + modeColor + '15; color:' + modeColor + '; font-weight:600; padding:2px 8px; border-radius:4px; font-size:11px;">' + esc(srv.mode.toUpperCase()) + '</span>' : ''}</td>
