@@ -391,7 +391,7 @@
         <button class="btn btn-secondary" id="btn-clear">Clear</button>
     </div>
 
-    <!-- Results: Player List -->
+    <!-- Results: Player List (shown on text search) -->
     <div class="table-wrap" id="results-section">
         <div class="table-container">
             <table>
@@ -407,7 +407,7 @@
                     </tr>
                 </thead>
                 <tbody id="results-body">
-                    <tr><td colspan="7" class="no-results"><div class="emoji">🔍</div>Search for players by nickname, name, UID, or browse the timeline</td></tr>
+                    <tr><td colspan="7" class="no-results"><div class="emoji">🔍</div>Search by nickname, name, or Agar ID — or click Search with empty box to see recent play sessions</td></tr>
                 </tbody>
             </table>
         </div>
@@ -423,14 +423,13 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Event</th>
-                            <th>Time</th>
+                            <th>Started</th>
+                            <th>Ended</th>
+                            <th>Duration</th>
                             <th>Nick</th>
-                            <th>Tag</th>
                             <th>Server</th>
                             <th>Region</th>
                             <th>Mode</th>
-                            <th>State</th>
                             <th>Level</th>
                             <th>Country</th>
                         </tr>
@@ -624,37 +623,41 @@ async function doSearch() {
             }).join('');
 
         } else {
-            // Timeline query: search by date range, region, state
+            // Play sessions query: shows each time someone played with duration
             const fromTs = fromEl ? Math.floor(new Date(fromEl).getTime() / 1000) : Math.floor(Date.now() / 1000) - 86400;
             const toTs = toEl ? Math.floor(new Date(toEl).getTime() / 1000) : Math.floor(Date.now() / 1000) + 3600;
-            console.log('Timeline query:', { fromTs, toTs, region, state, fromDate: new Date(fromTs*1000).toISOString(), toDate: new Date(toTs*1000).toISOString() });
-            const params = new URLSearchParams({ from: fromTs, to: toTs, region, playing: state });
-            const resp = await fetch(API + '/history/timeline?' + params);
+            const params = new URLSearchParams({ from: fromTs, to: toTs });
+            if (region) params.set('region', region);
+            const resp = await fetch(API + '/history/play-sessions?' + params);
             const results = await resp.json();
 
-            // Update header for event results
+            // Update header for session results
             document.getElementById('results-header').innerHTML =
-                '<th>Nick</th><th>Tag</th><th>Server</th><th>Region</th><th>Mode</th><th>State</th><th>Level</th><th>Country</th><th>Time</th>';
+                '<th>Nick</th><th>Agar ID</th><th>Started</th><th>Ended</th><th>Duration</th><th>Server</th><th>Region</th><th>Mode</th><th>Level</th><th>Country</th>';
 
             if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="no-results"><div class="emoji">😐</div>No events found for this time range</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" class="no-results"><div class="emoji">😐</div>No play sessions found for this time range</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = results.map(e => {
-                const cc = (e.country || 'un').toLowerCase();
-                const srv = parseServer(e.server);
-                const mc = modeColors[e.mode] || '#636e72';
-                return `<tr class="clickable" data-pid="${esc(e.player_id)}">
-                    <td class="nick">${esc(e.nickname || '—')}</td>
-                    <td>${e.tag ? '<span class="tag-badge">' + esc(e.tag) + '</span>' : ''}</td>
+            tbody.innerHTML = results.map(s => {
+                const cc = (s.country || 'un').toLowerCase();
+                const srv = parseServer(s.server);
+                const mc = modeColors[s.mode] || '#636e72';
+                const durText = s.ongoing
+                    ? '<span style="color:#00b894;font-weight:600">▶ ' + formatDuration(s.duration_secs) + '</span>'
+                    : formatDuration(s.duration_secs);
+                return `<tr class="clickable" data-pid="${esc(s.player_id)}">
+                    <td class="nick">${esc(s.nickname || '—')}</td>
+                    <td><span style="font-size:11px; font-family:monospace; color:#636e72;">${esc(s.aid || '')}</span></td>
+                    <td class="time-text">${formatTime(s.started_at)}</td>
+                    <td class="time-text">${s.ended_at ? formatTime(s.ended_at) : '<span style="color:#00b894;font-weight:600">Now</span>'}</td>
+                    <td>${durText}</td>
                     <td>${srv.id ? '<span class="server-link">' + esc(srv.id) + '</span>' : '<span style="color:#dfe6e9">—</span>'}</td>
-                    <td class="name-text">${esc(e.region || '')}</td>
-                    <td>${e.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(e.mode.toUpperCase()) + '</span>' : ''}</td>
-                    <td>${e.is_playing ? '<span style="color:#00b894;font-weight:600">Playing</span>' : '<span style="color:#b2bec3">Spectating</span>'}</td>
-                    <td>${e.agario_level ? '<span class="level-badge">⭐ ' + esc(e.agario_level) + '</span>' : ''}</td>
+                    <td class="name-text">${esc(s.region || '')}</td>
+                    <td>${s.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(s.mode.toUpperCase()) + '</span>' : ''}</td>
+                    <td>${s.agario_level ? '<span class="level-badge">⭐ ' + esc(s.agario_level) + '</span>' : ''}</td>
                     <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
-                    <td class="time-text">${formatTime(e.timestamp)}</td>
                 </tr>`;
             }).join('');
         }
@@ -679,8 +682,12 @@ async function loadPlayer(playerId) {
     eventsBody.innerHTML = '';
 
     try {
-        const resp = await fetch(API + '/history/player?id=' + encodeURIComponent(playerId));
-        const data = await resp.json();
+        const [profResp, sessResp] = await Promise.all([
+            fetch(API + '/history/player?id=' + encodeURIComponent(playerId)),
+            fetch(API + '/history/play-sessions?player=' + encodeURIComponent(playerId))
+        ]);
+        const data = await profResp.json();
+        const playSessions = await sessResp.json();
 
         if (!data.profile) {
             detailHeader.innerHTML = '<p>Player not found</p>';
@@ -693,8 +700,7 @@ async function loadPlayer(playerId) {
         detailHeader.innerHTML = `
             <h2>${esc(p.first_nickname || '—')} ${name ? '— <span>' + esc(name) + '</span>' : ''}</h2>
             <div class="detail-meta">
-                <span><strong>Player ID:</strong> ${esc(p.player_id)}</span>
-                ${p.agario_uid ? '<span><strong>Agar UID:</strong> ' + esc(p.agario_uid) + '</span>' : ''}
+                ${p.aid ? '<span><strong>Agar ID:</strong> ' + esc(p.aid) + '</span>' : ''}
                 <span><strong>First Seen:</strong> ${formatTime(p.first_seen)}</span>
                 <span><strong>Last Seen:</strong> ${formatTime(p.last_seen)}</span>
                 <span><strong>Total Play Time:</strong> ${formatDuration(p.total_play_secs)}</span>
@@ -710,32 +716,28 @@ async function loadPlayer(playerId) {
             ` : ''}
         `;
 
-        // Sessions summary
-        if (data.sessions && data.sessions.length > 0) {
-            // Show sessions as a mini-table above events
-        }
-
-        // Events
-        if (!data.events || data.events.length === 0) {
-            eventsBody.innerHTML = '<tr><td colspan="10" class="no-results">No events recorded yet</td></tr>';
+        // Show play sessions
+        if (!playSessions || playSessions.length === 0) {
+            eventsBody.innerHTML = '<tr><td colspan="9" class="no-results">No play sessions recorded yet</td></tr>';
             return;
         }
 
-        eventsBody.innerHTML = data.events.map(e => {
-            const cc = (e.country || 'un').toLowerCase();
-            const srv = parseServer(e.server);
-            const mc = modeColors[e.mode] || '#636e72';
-            const eventLabel = (e.event_type || '').replace('_', ' ');
+        eventsBody.innerHTML = playSessions.map(s => {
+            const cc = (s.country || 'un').toLowerCase();
+            const srv = parseServer(s.server);
+            const mc = modeColors[s.mode] || '#636e72';
+            const durText = s.ongoing
+                ? '<span style="color:#00b894;font-weight:600">▶ ' + formatDuration(s.duration_secs) + '</span>'
+                : formatDuration(s.duration_secs);
             return `<tr>
-                <td><span class="event-badge ${e.event_type}">${esc(eventLabel)}</span></td>
-                <td class="time-text">${formatTime(e.timestamp)}</td>
-                <td class="nick">${esc(e.nickname || '—')}</td>
-                <td>${e.tag ? '<span class="tag-badge">' + esc(e.tag) + '</span>' : ''}</td>
-                <td>${srv.id ? '<a href="https://agar.io/?ip=' + encodeURI(e.server) + '" target="_blank" class="server-link">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
-                <td class="name-text">${esc(e.region || '')}</td>
-                <td>${e.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(e.mode.toUpperCase()) + '</span>' : ''}</td>
-                <td>${e.is_playing ? '<span style="color:#00b894;font-weight:600">Playing</span>' : '<span style="color:#b2bec3">Spectating</span>'}</td>
-                <td>${e.agario_level ? '<span class="level-badge">⭐ ' + esc(e.agario_level) + '</span>' : ''}</td>
+                <td class="time-text">${formatTime(s.started_at)}</td>
+                <td class="time-text">${s.ended_at ? formatTime(s.ended_at) : '<span style="color:#00b894;font-weight:600">Playing now</span>'}</td>
+                <td>${durText}</td>
+                <td class="nick">${esc(s.nickname || '—')}</td>
+                <td>${srv.id ? '<a href="https://agar.io/?ip=' + encodeURI(s.server) + '" target="_blank" class="server-link">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
+                <td class="name-text">${esc(s.region || '')}</td>
+                <td>${s.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(s.mode.toUpperCase()) + '</span>' : ''}</td>
+                <td>${s.agario_level ? '<span class="level-badge">⭐ ' + esc(s.agario_level) + '</span>' : ''}</td>
                 <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
             </tr>`;
         }).join('');
