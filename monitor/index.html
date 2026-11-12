@@ -229,10 +229,6 @@
             <div class="value green" id="online-count">0</div>
         </div>
         <div class="stat-card">
-            <div class="label">Playing</div>
-            <div class="value blue" id="playing-count">0</div>
-        </div>
-        <div class="stat-card">
             <div class="label">Servers</div>
             <div class="value purple" id="server-count">0</div>
         </div>
@@ -448,14 +444,14 @@ function updateUI() {
     const tbody = document.getElementById('players-body');
     const servers = new Set();
     const countries = new Set();
-    let playingCount = 0;
 
     if (sorted.length === 0) {
         tbody.innerHTML = '<tr><td colspan="9" class="no-players"><div class="emoji">😴</div>No players online</td></tr>';
     } else {
         tbody.innerHTML = sorted.map(p => {
-            const isPlaying = p.server && p.server.length > 5;
-            if (isPlaying) { servers.add(p.server); playingCount++; }
+            const isPlaying = !!p.isPlaying;
+            const hasServer = p.server && p.server.length > 5;
+            if (hasServer) { servers.add(p.server); }
 
             const cc = (p.country || p.extra?.ip_info?.country || 'un').toLowerCase();
             if (cc !== 'un') countries.add(cc);
@@ -475,9 +471,9 @@ function updateUI() {
                 <td><span class="status-dot ${isPlaying ? 'playing' : 'idle'}"></span><span class="nick ${isPlaying ? 'playing' : 'idle'}">${esc(p.nickname || '—')}</span></td>
                 <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
                 <td class="name-text">${esc(name)}</td>
-                <td>${isPlaying ? '<a href="https://agar.io/?ip=' + encodeURI(p.server) + '" target="_blank" style="font-size:11px; color:#0984e3; background:#f0f4ff; padding:2px 6px; border-radius:3px; text-decoration:none; font-family:monospace;" title="Click to join server">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
-                <td class="server-text">${isPlaying ? esc(srv.region) : ''}</td>
-                <td>${isPlaying ? '<span style="display:inline-block; background:' + modeColor + '15; color:' + modeColor + '; font-weight:600; padding:2px 8px; border-radius:4px; font-size:11px;">' + esc(srv.mode.toUpperCase()) + '</span>' : ''}</td>
+                <td>${hasServer ? '<a href="https://agar.io/?ip=' + encodeURI(p.server) + '" target="_blank" style="font-size:11px; color:#0984e3; background:#f0f4ff; padding:2px 6px; border-radius:3px; text-decoration:none; font-family:monospace;" title="Click to join server">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
+                <td class="server-text">${hasServer ? esc(srv.region) : ''}</td>
+                <td>${hasServer ? '<span style="display:inline-block; background:' + modeColor + '15; color:' + modeColor + '; font-weight:600; padding:2px 8px; border-radius:4px; font-size:11px;">' + esc(srv.mode.toUpperCase()) + '</span>' : ''}</td>
                 <td>${level > 0 ? '<span class="level-badge">⭐ ' + level + '</span>' : ''}</td>
                 <td><div class="country-cell">${flagSpan} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
                 <td class="time-ago">${ago}</td>
@@ -486,7 +482,6 @@ function updateUI() {
     }
 
     document.getElementById('online-count').textContent = sorted.length;
-    document.getElementById('playing-count').textContent = playingCount;
     document.getElementById('server-count').textContent = servers.size;
     document.getElementById('country-count').textContent = countries.size;
 }

@@ -5447,7 +5447,8 @@ function SNEZServers() {
         hidecountry: false,
         userfirstname: null,
         userlastname: null,
-        agarioUID: null
+        agarioUID: null,
+        isPlaying: false
     };
     var elements = {
         nickname: "nick",
@@ -5507,7 +5508,8 @@ function SNEZServers() {
             //state.tag = tag.value;
             if (state.nickname != nick.value ||
                 state.server != servertemp ||
-                state.tag != tag.value)
+                state.tag != tag.value ||
+                state.isPlaying != (window.ogario && window.ogario.play))
 
             /*if (state.nickname != nick.value ||
                 state.server != servertemp)			no1: I stoped this*/ {
@@ -5521,6 +5523,7 @@ function SNEZServers() {
                 state.userlastname = window.userlastname;
                 state.agarioUID = window.agarioUID;
                 state.agarioLEVEL = window.agarioLEVEL;
+                state.isPlaying = !!(window.ogario && window.ogario.play);
                 //state.tag="RespectPrivacy"; no2: I stoped this
                 socket.updateServerDetails();
             }
