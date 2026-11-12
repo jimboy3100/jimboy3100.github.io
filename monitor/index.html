@@ -1,137 +1,270 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="robots" content="noindex">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legend Mod - Player Monitor</title>
+    <title>Legend Mod — Player Monitor</title>
+    <link rel="icon" href="https://jimboy3100.github.io/banners/icon48.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #1a1a2e;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            color: #2d3436;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-size: 13px;
         }
+
+        /* --- Header --- */
         .header {
-            background: linear-gradient(135deg, #16213e, #0f3460);
-            padding: 12px 20px;
+            background: #fff;
+            padding: 16px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 2px solid #e94560;
+            border-bottom: 1px solid #e8eaed;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
-        .header h1 {
-            font-size: 18px;
-            color: #fff;
-        }
-        .header h1 span { color: #e94560; }
-        .header .status {
+        .header-left {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 12px;
         }
-        .header .status .dot {
+        .header-left img { height: 28px; }
+        .header h1 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .header h1 span { color: #e94560; }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+            color: #999;
+        }
+        .live-dot {
             width: 8px; height: 8px;
             border-radius: 50%;
             display: inline-block;
+            margin-right: 4px;
         }
-        .dot.online { background: #4ecca3; }
-        .dot.offline { background: #e94560; }
-        .stats-bar {
-            background: #16213e;
-            padding: 8px 20px;
+        .live-dot.on { background: #00b894; animation: pulse 2s infinite; }
+        .live-dot.off { background: #d63031; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* --- Stats Cards --- */
+        .stats-row {
             display: flex;
-            gap: 20px;
-            font-size: 12px;
-            color: #8a8a9a;
-            border-bottom: 1px solid #2a2a4a;
+            gap: 16px;
+            padding: 20px 24px;
+            flex-wrap: wrap;
         }
-        .stats-bar .stat-val { color: #4ecca3; font-weight: bold; }
-        .container { padding: 10px; }
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px 20px;
+            flex: 1;
+            min-width: 140px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #e8eaed;
+        }
+        .stat-card .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .stat-card .value.green { color: #00b894; }
+        .stat-card .value.blue { color: #0984e3; }
+        .stat-card .value.purple { color: #6c5ce7; }
+        .stat-card .value.orange { color: #e17055; }
+
+        /* --- Table --- */
+        .table-wrap {
+            padding: 0 24px 24px;
+        }
+        .table-container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #e8eaed;
+            overflow: hidden;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        th {
-            background: #16213e;
-            padding: 8px 10px;
+        thead th {
+            background: #fafbfc;
+            padding: 10px 14px;
             text-align: left;
-            color: #8a8a9a;
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: #999;
+            font-weight: 600;
+            border-bottom: 1px solid #e8eaed;
             cursor: pointer;
             user-select: none;
-            border-bottom: 2px solid #2a2a4a;
             position: sticky;
             top: 0;
             z-index: 1;
-        }
-        th:hover { color: #e94560; }
-        th.sorted { color: #e94560; }
-        td {
-            padding: 6px 10px;
-            border-bottom: 1px solid #2a2a4a;
             white-space: nowrap;
         }
-        tr:hover { background: rgba(78, 204, 163, 0.05); }
-        .flag { width: 16px; height: 12px; vertical-align: middle; margin-right: 4px; }
-        .playing { color: #4ecca3; }
-        .idle { color: #555; }
-        .server-link { color: #5b9bd5; text-decoration: none; font-size: 11px; }
-        .server-link:hover { text-decoration: underline; }
-        .tag { color: #e94560; font-weight: bold; }
-        .no-players {
-            text-align: center;
-            padding: 40px;
-            color: #555;
-            font-size: 16px;
+        thead th:hover { color: #e94560; }
+        thead th.sorted { color: #e94560; }
+        tbody td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #f0f1f3;
+            white-space: nowrap;
+            font-size: 13px;
         }
-        .refresh-btn {
-            background: none;
-            border: 1px solid #4ecca3;
-            color: #4ecca3;
-            padding: 4px 12px;
-            border-radius: 3px;
-            cursor: pointer;
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #f8f9fb; }
+
+        .nick { font-weight: 600; color: #2d3436; }
+        .nick.playing { color: #00b894; }
+        .nick.idle { color: #b2bec3; }
+        .tag-badge {
+            display: inline-block;
+            background: #ffedf0;
+            color: #e94560;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
             font-size: 11px;
         }
-        .refresh-btn:hover { background: rgba(78, 204, 163, 0.1); }
-        #last-update { color: #555; font-size: 11px; }
+        .server-text {
+            color: #636e72;
+            font-size: 12px;
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: #f0f4ff;
+            color: #0984e3;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .country-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .country-code {
+            color: #999;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .time-ago {
+            color: #b2bec3;
+            font-size: 12px;
+        }
+        .name-text {
+            color: #636e72;
+            font-size: 12px;
+        }
+        .status-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-dot.playing { background: #00b894; }
+        .status-dot.idle { background: #dfe6e9; }
+
+        .no-players {
+            text-align: center;
+            padding: 48px;
+            color: #b2bec3;
+            font-size: 15px;
+        }
+        .no-players .emoji { font-size: 32px; margin-bottom: 8px; }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            padding: 16px;
+            color: #b2bec3;
+            font-size: 11px;
+        }
+        .footer a { color: #0984e3; text-decoration: none; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Legend <span>Mod</span> — Player Monitor</h1>
-        <div class="status">
+        <div class="header-left">
+            <img src="https://jimboy3100.github.io/banners/icon48.png" alt="LM">
+            <h1>Legend <span>Mod</span> — Player Monitor</h1>
+        </div>
+        <div class="header-right">
             <span id="last-update"></span>
-            <button class="refresh-btn" onclick="fetchStats()">↻ Refresh</button>
-            <span><span class="dot" id="ws-dot"></span> <span id="ws-status">Connecting...</span></span>
+            <span><span class="live-dot" id="ws-dot"></span><span id="ws-status">Connecting...</span></span>
         </div>
     </div>
-    <div class="stats-bar">
-        <span>Online: <span class="stat-val" id="online-count">0</span></span>
-        <span>Playing: <span class="stat-val" id="playing-count">0</span></span>
-        <span>Servers: <span class="stat-val" id="server-count">0</span></span>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="label">Online</div>
+            <div class="value green" id="online-count">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Playing</div>
+            <div class="value blue" id="playing-count">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Servers</div>
+            <div class="value purple" id="server-count">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Countries</div>
+            <div class="value orange" id="country-count">0</div>
+        </div>
     </div>
-    <div class="container">
-        <table>
-            <thead>
-                <tr>
-                    <th data-col="nickname" class="sorted">Nick ▼</th>
-                    <th data-col="tag">Tag</th>
-                    <th data-col="server">Server</th>
-                    <th data-col="agario_level">Level</th>
-                    <th data-col="country">Country</th>
-                    <th data-col="updated">Last Seen</th>
-                </tr>
-            </thead>
-            <tbody id="players-body">
-                <tr><td colspan="6" class="no-players">Connecting...</td></tr>
-            </tbody>
-        </table>
+
+    <div class="table-wrap">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th data-col="nickname" class="sorted">Nick ▼</th>
+                        <th data-col="tag">Tag</th>
+                        <th data-col="name">Name</th>
+                        <th data-col="server">Server</th>
+                        <th data-col="agario_level">Level</th>
+                        <th data-col="country">Country</th>
+                        <th data-col="updated">Last Seen</th>
+                    </tr>
+                </thead>
+                <tbody id="players-body">
+                    <tr><td colspan="7" class="no-players"><div class="emoji">🌐</div>Connecting...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="https://www.legendmod.ml">legendmod.ml</a> — Player tracker auto-refreshes every 5 seconds
     </div>
 
 <script>
@@ -143,36 +276,53 @@ let sortCol = 'nickname';
 let sortAsc = true;
 let ws = null;
 
-// --- Fetch stats via HTTP ---
+// --- Parse server string to readable format ---
+function parseServer(raw) {
+    if (!raw || raw.length < 5) return { display: 'Idle', region: '', mode: '' };
+    try {
+        const parts = raw.split('&');
+        let region = '', mode = '';
+        parts.forEach(p => {
+            if (p.startsWith('r=')) region = p.substring(2);
+            if (p.startsWith('m=')) mode = p.substring(2).replace(':', '');
+        });
+        return {
+            display: [region, mode].filter(Boolean).join(' · ') || raw.split('.')[0],
+            region: region,
+            mode: mode
+        };
+    } catch (e) {
+        return { display: raw.substring(0, 30), region: '', mode: '' };
+    }
+}
+
+// --- Auto-refresh via HTTP ---
 async function fetchStats() {
     try {
         const resp = await fetch(API_URL);
         const data = await resp.json();
         players = data.players || [];
         updateUI();
-        document.getElementById('last-update').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
     } catch (e) {
         console.error('Stats fetch failed:', e);
     }
 }
 
-// --- WebSocket for live updates ---
+// --- WebSocket live connection ---
 function connectWS() {
     const dot = document.getElementById('ws-dot');
     const status = document.getElementById('ws-status');
 
-    try {
-        ws = new WebSocket(WS_URL);
-    } catch (e) {
-        dot.className = 'dot offline';
+    try { ws = new WebSocket(WS_URL); } catch (e) {
+        dot.className = 'live-dot off';
         status.textContent = 'Error';
         return;
     }
 
     ws.onopen = function() {
-        dot.className = 'dot online';
+        dot.className = 'live-dot on';
         status.textContent = 'Live';
-        // Request player list
         ws.send(JSON.stringify({ type: 'search', data: '' }));
     };
 
@@ -182,23 +332,22 @@ function connectWS() {
             if (msg.type === 'players_list') {
                 players = msg.data || [];
                 updateUI();
-                document.getElementById('last-update').textContent = 'Live: ' + new Date().toLocaleTimeString();
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
             } else if (msg.type === 'ping') {
                 ws.send(JSON.stringify({ type: 'pong' }));
-                // Also re-request the player list periodically
                 ws.send(JSON.stringify({ type: 'search', data: '' }));
             }
         } catch (e) {}
     };
 
     ws.onclose = function() {
-        dot.className = 'dot offline';
-        status.textContent = 'Disconnected';
+        dot.className = 'live-dot off';
+        status.textContent = 'Reconnecting...';
         setTimeout(connectWS, 5000);
     };
 
     ws.onerror = function() {
-        dot.className = 'dot offline';
+        dot.className = 'live-dot off';
         status.textContent = 'Error';
     };
 }
@@ -207,13 +356,10 @@ function connectWS() {
 document.querySelectorAll('th[data-col]').forEach(th => {
     th.addEventListener('click', function() {
         const col = this.dataset.col;
-        if (sortCol === col) {
-            sortAsc = !sortAsc;
-        } else {
-            sortCol = col;
-            sortAsc = true;
-        }
-        document.querySelectorAll('th').forEach(h => {
+        if (sortCol === col) sortAsc = !sortAsc;
+        else { sortCol = col; sortAsc = true; }
+
+        document.querySelectorAll('th[data-col]').forEach(h => {
             h.classList.remove('sorted');
             h.textContent = h.textContent.replace(/ [▲▼]$/, '');
         });
@@ -228,6 +374,7 @@ function updateUI() {
     const sorted = [...players].sort((a, b) => {
         let va = (a[sortCol] || '').toString().toLowerCase();
         let vb = (b[sortCol] || '').toString().toLowerCase();
+        if (sortCol === 'agario_level') { va = parseInt(va) || 0; vb = parseInt(vb) || 0; }
         if (va < vb) return sortAsc ? -1 : 1;
         if (va > vb) return sortAsc ? 1 : -1;
         return 0;
@@ -235,33 +382,35 @@ function updateUI() {
 
     const tbody = document.getElementById('players-body');
     const servers = new Set();
+    const countries = new Set();
     let playingCount = 0;
 
     if (sorted.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="no-players">No players online</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="no-players"><div class="emoji">😴</div>No players online</td></tr>';
     } else {
         tbody.innerHTML = sorted.map(p => {
             const isPlaying = p.server && p.server.length > 5;
-            if (isPlaying) {
-                servers.add(p.server);
-                playingCount++;
-            }
-            const country = (p.country || p.extra?.ip_info?.country || 'un').toLowerCase();
-            const flagUrl = country !== 'un'
-                ? `https://flagcdn.com/16x12/${country}.png`
-                : '';
-            const flagImg = flagUrl
-                ? `<img class="flag" src="${flagUrl}" alt="${country}">`
-                : country;
+            if (isPlaying) { servers.add(p.server); playingCount++; }
+
+            const cc = (p.country || p.extra?.ip_info?.country || 'un').toLowerCase();
+            if (cc !== 'un') countries.add(cc);
+
+            const srv = parseServer(p.server);
+            const level = parseInt(p.agario_level) || 0;
+            const name = p.name || '';
             const ago = p.updated ? timeAgo(p.updated) : '';
+            const flagSpan = cc !== 'un'
+                ? `<span class="flag-icon flag-icon-${cc}"></span>`
+                : '🌐';
 
             return `<tr>
-                <td class="${isPlaying ? 'playing' : 'idle'}">${esc(p.nickname || '—')}</td>
-                <td class="tag">${esc(p.tag || '')}</td>
-                <td><span class="server-link">${esc(p.server || 'idle')}</span></td>
-                <td>${esc(p.agario_level || '')}</td>
-                <td>${flagImg}</td>
-                <td>${ago}</td>
+                <td><span class="status-dot ${isPlaying ? 'playing' : 'idle'}"></span><span class="nick ${isPlaying ? 'playing' : 'idle'}">${esc(p.nickname || '—')}</span></td>
+                <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
+                <td class="name-text">${esc(name)}</td>
+                <td class="server-text" title="${esc(p.server || '')}">${isPlaying ? esc(srv.display) : '<span style="color:#dfe6e9">—</span>'}</td>
+                <td>${level > 0 ? '<span class="level-badge">⭐ ' + level + '</span>' : ''}</td>
+                <td><div class="country-cell">${flagSpan} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
+                <td class="time-ago">${ago}</td>
             </tr>`;
         }).join('');
     }
@@ -269,28 +418,23 @@ function updateUI() {
     document.getElementById('online-count').textContent = sorted.length;
     document.getElementById('playing-count').textContent = playingCount;
     document.getElementById('server-count').textContent = servers.size;
+    document.getElementById('country-count').textContent = countries.size;
 }
 
 function timeAgo(unixTs) {
     const diff = Math.floor(Date.now() / 1000) - unixTs;
-    if (diff < 10) return 'now';
+    if (diff < 5) return 'just now';
     if (diff < 60) return diff + 's ago';
     if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
     return Math.floor(diff / 3600) + 'h ago';
 }
 
-function esc(str) {
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
-}
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
 // --- Init ---
 fetchStats();
 connectWS();
-// Refresh via HTTP every 30s as fallback
-setInterval(fetchStats, 30000);
+setInterval(fetchStats, 5000);
 </script>
 </body>
 </html>
-
