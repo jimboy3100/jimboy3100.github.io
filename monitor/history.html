@@ -355,7 +355,7 @@
     <div class="search-panel">
         <div class="search-group">
             <label>Search (nick, name, Agar ID)</label>
-            <input type="text" id="search-q" placeholder="e.g. DZIEBRY, Yauhen, agar_38289..." autocomplete="off">
+            <input type="search" id="search-q" name="lm-history-search" placeholder="e.g. DZIEBRY, Yauhen, agar_38289..." autocomplete="off" role="searchbox">
         </div>
         <div class="search-group">
             <label>From</label>
@@ -392,6 +392,7 @@
             <table>
                 <thead>
                     <tr id="results-header">
+                        <th>#</th>
                         <th>Nick</th>
                         <th>Tag</th>
                         <th>Name</th>
@@ -418,6 +419,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Started</th>
                             <th>Ended</th>
                             <th>Duration</th>
@@ -447,8 +449,8 @@
             <img src="https://jimboy3100.github.io/banners/icon48.png" style="height:40px; margin-bottom:12px;">
             <h2 style="font-size:18px; margin-bottom:4px; color:#1a1a2e;">Legend <span style="color:#e94560">Mod</span> History</h2>
             <p style="color:#999; font-size:12px; margin-bottom:20px;">Enter credentials to access</p>
-            <input id="login-user" type="text" placeholder="Username" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:8px; font-family:inherit; outline:none;">
-            <input id="login-pass" type="password" placeholder="Password" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:16px; font-family:inherit; outline:none;">
+            <input id="login-user" type="text" placeholder="Username" autocomplete="username" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:8px; font-family:inherit; outline:none;">
+            <input id="login-pass" type="password" placeholder="Password" autocomplete="current-password" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:16px; font-family:inherit; outline:none;">
             <button id="login-btn" style="width:100%; padding:10px; background:#e94560; color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">Sign In</button>
             <p id="login-error" style="color:#d63031; font-size:12px; margin-top:10px; display:none;">Invalid credentials</p>
         </div>
@@ -551,7 +553,7 @@ document.getElementById('btn-clear').addEventListener('click', () => {
     document.getElementById('search-to').value = '';
     document.getElementById('search-region').value = '';
     document.getElementById('results-header').innerHTML =
-        '<th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
+        '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
     document.getElementById('results-body').innerHTML =
         '<tr><td colspan="20" class="no-results"><div class="emoji">🔍</div>Search by nickname, name, or Agar ID — or click Search with empty box to see recent play sessions</td></tr>';
     showSection('results');
@@ -597,18 +599,19 @@ async function doSearch() {
 
             // Update header for player results
             document.getElementById('results-header').innerHTML =
-                '<th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
+                '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
 
             if (merged.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No players found for "' + esc(q) + '"</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = merged.map(p => {
+            tbody.innerHTML = merged.map((p, i) => {
                 const cc = (p.country || 'un').toLowerCase();
                 const name = p.first_name ? [p.first_name, p.last_name].filter(Boolean).join(' ') : '';
                 const uid = p.aid || p.agario_uid || '';
                 return `<tr class="clickable" data-pid="${esc(p.player_id)}">
+                    <td style="color:#b2bec3;font-size:11px">${i + 1}</td>
                     <td class="nick">${esc(p.nickname || p.first_nickname || '—')}</td>
                     <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
                     <td class="name-text">${esc(name)}</td>
@@ -630,14 +633,14 @@ async function doSearch() {
 
             // Update header for session results
             document.getElementById('results-header').innerHTML =
-                '<th>Nick</th><th>Agar ID</th><th>Started</th><th>Ended</th><th>Duration</th><th>Server</th><th>Region</th><th>Mode</th><th>Level</th><th>Country</th>';
+                '<th>#</th><th>Nick</th><th>Agar ID</th><th>Started</th><th>Ended</th><th>Duration</th><th>Server</th><th>Region</th><th>Mode</th><th>Level</th><th>Country</th>';
 
             if (results.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No play sessions found for this time range</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = results.map(s => {
+            tbody.innerHTML = results.map((s, i) => {
                 const cc = (s.country || 'un').toLowerCase();
                 const srv = parseServer(s.server);
                 const mc = modeColors[s.mode] || '#636e72';
@@ -645,6 +648,7 @@ async function doSearch() {
                     ? '<span style="color:#00b894;font-weight:600">▶ ' + formatDuration(s.duration_secs) + '</span>'
                     : formatDuration(s.duration_secs);
                 return `<tr class="clickable" data-pid="${esc(s.player_id)}">
+                    <td style="color:#b2bec3;font-size:11px">${i + 1}</td>
                     <td class="nick">${esc(s.nickname || '—')}</td>
                     <td><span style="font-size:11px; font-family:monospace; color:#636e72;">${esc(s.aid || '')}</span></td>
                     <td class="time-text">${formatTime(s.started_at)}</td>
@@ -719,7 +723,7 @@ async function loadPlayer(playerId) {
             return;
         }
 
-        eventsBody.innerHTML = playSessions.map(s => {
+        eventsBody.innerHTML = playSessions.map((s, i) => {
             const cc = (s.country || 'un').toLowerCase();
             const srv = parseServer(s.server);
             const mc = modeColors[s.mode] || '#636e72';
@@ -727,6 +731,7 @@ async function loadPlayer(playerId) {
                 ? '<span style="color:#00b894;font-weight:600">▶ ' + formatDuration(s.duration_secs) + '</span>'
                 : formatDuration(s.duration_secs);
             return `<tr>
+                <td style="color:#b2bec3;font-size:11px">${i + 1}</td>
                 <td class="time-text">${formatTime(s.started_at)}</td>
                 <td class="time-text">${s.ended_at ? formatTime(s.ended_at) : '<span style="color:#00b894;font-weight:600">Playing now</span>'}</td>
                 <td>${durText}</td>
