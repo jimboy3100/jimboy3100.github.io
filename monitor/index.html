@@ -212,7 +212,7 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="header" id="main-content" style="display:none;">
         <div class="header-left">
             <img src="https://jimboy3100.github.io/banners/icon48.png" alt="LM">
             <h1>Legend <span>Mod</span> — Player Monitor</h1>
@@ -268,9 +268,10 @@
     <div class="footer">
         <a href="https://www.legendmod.ml">legendmod.ml</a> — Player tracker auto-refreshes every 5 seconds
     </div>
+    </div><!-- end main-content -->
 
     <!-- Login overlay -->
-    <div id="login-overlay" style="display:none; position:fixed; inset:0; background:#f5f6fa; z-index:1000; display:flex; align-items:center; justify-content:center;">
+    <div id="login-overlay" style="position:fixed; inset:0; background:#f5f6fa; z-index:1000; display:flex; align-items:center; justify-content:center;">
         <div style="background:#fff; border-radius:12px; padding:36px 40px; box-shadow:0 4px 24px rgba(0,0,0,0.08); border:1px solid #e8eaed; text-align:center; min-width:320px;">
             <img src="https://jimboy3100.github.io/banners/icon48.png" style="height:40px; margin-bottom:12px;">
             <h2 style="font-size:18px; margin-bottom:4px; color:#1a1a2e;">Legend <span style="color:#e94560">Mod</span> Monitor</h2>
@@ -297,8 +298,13 @@ const VALID_USER = 'Jan';
 const VALID_PASS = 'Jan';
 
 function checkAuth() {
-    if (sessionStorage.getItem(AUTH_KEY) === '1') return true;
+    if (localStorage.getItem(AUTH_KEY) === '1') {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-content').style.display = '';
+        return true;
+    }
     document.getElementById('login-overlay').style.display = 'flex';
+    document.getElementById('main-content').style.display = 'none';
     return false;
 }
 
@@ -310,8 +316,9 @@ function doLogin() {
     const u = document.getElementById('login-user').value;
     const p = document.getElementById('login-pass').value;
     if (u === VALID_USER && p === VALID_PASS) {
-        sessionStorage.setItem(AUTH_KEY, '1');
+        localStorage.setItem(AUTH_KEY, '1');
         document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-content').style.display = '';
         startApp();
     } else {
         document.getElementById('login-error').style.display = 'block';
