@@ -322,8 +322,11 @@ function doLogin() {
 // --- Parse agar.io server string ---
 // Format: "live-arena-XXXXX.agar.io&r=REGION&m=:MODE"
 function parseServer(raw) {
-    if (!raw || raw.length < 5) return { id: '', region: '', mode: '', display: '' };
+    if (!raw || raw.length < 5) return { id: '', host: '', region: '', mode: '', display: '' };
     try {
+        // Extract host: everything before the first &
+        const host = raw.split('&')[0] || '';
+
         // Extract server ID: between "live-arena-" and ".agar.io"
         let id = '';
         const idMatch = raw.match(/live-arena-([^.]+)/);
@@ -339,9 +342,9 @@ function parseServer(raw) {
         const mMatch = raw.match(/[&?]m=:?([^&]+)/);
         if (mMatch) mode = mMatch[1];
 
-        return { id, region, mode, display: raw };
+        return { id, host, region, mode, display: raw };
     } catch (e) {
-        return { id: '', region: '', mode: '', display: raw };
+        return { id: '', host: '', region: '', mode: '', display: raw };
     }
 }
 
@@ -465,7 +468,7 @@ function updateUI() {
                 <td><span class="status-dot ${isPlaying ? 'playing' : 'idle'}"></span><span class="nick ${isPlaying ? 'playing' : 'idle'}">${esc(p.nickname || '—')}</span></td>
                 <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
                 <td class="name-text">${esc(name)}</td>
-                <td><code style="font-size:11px; color:#636e72; background:#f5f6fa; padding:2px 6px; border-radius:3px;">${isPlaying ? esc(srv.id) : '—'}</code></td>
+                <td>${isPlaying ? '<a href="https://agar.io/?ip=' + esc(srv.host) + '" target="_blank" style="font-size:11px; color:#0984e3; background:#f0f4ff; padding:2px 6px; border-radius:3px; text-decoration:none; font-family:monospace;" title="Click to join server">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
                 <td class="server-text">${isPlaying ? esc(srv.region) : ''}</td>
                 <td>${isPlaying ? '<span style="display:inline-block; background:' + modeColor + '15; color:' + modeColor + '; font-weight:600; padding:2px 8px; border-radius:4px; font-size:11px;">' + esc(srv.mode.toUpperCase()) + '</span>' : ''}</td>
                 <td>${level > 0 ? '<span class="level-badge">⭐ ' + level + '</span>' : ''}</td>
