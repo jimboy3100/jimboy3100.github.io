@@ -2054,7 +2054,7 @@ function SNEZOgarDownload() {
     if (userid == "" || userid == null) {
         alert('Please use a valid Social ID')
     } else {
-        getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings");
+        getSNEZ("https://api.legendmod.ml/lm-settings", userid, "LMSettings");
         var responseSNEZ = xhttp.response;
         $('#export-settings').val(unescape(responseSNEZ));
     }

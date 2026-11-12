@@ -325,7 +325,7 @@ function AgarVersionDestinations() {
 
     window.agarversionDestinations = {};
     window.agarversionDestinations[Object.keys(agarversionDestinations).length - 1] = version;
-    getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
+    getSNEZ("https://api.legendmod.ml/lm-settings", "LMConfigVersion", "LMConfigVersionPass");
 }
 
 function AgarVersionDestinations2(custom) {

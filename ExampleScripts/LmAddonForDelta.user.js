@@ -8,8 +8,7 @@
 // @match        https://agar.io/*
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
-// @connect      lmsettings.snez.org
-// @connect      agar.snez.org
+// @connect      api.legendmod.ml
 // @connect      discord.com
 // @connect      discordapp.com
 // @connect      ipapi.co
@@ -19,7 +18,7 @@
 const win = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
 win.LOG_TAG = "[LM-OVERLORD] ";
 win.FALLBACK_ICON = "https://deltav4.gitlab.io/v7/assets/map-logo-old.png";
-win.SNEZ_WS_URL = "wss://agar.snez.org:63051/";
+win.SNEZ_WS_URL = "wss://api.legendmod.ml/lm-ws";
 win.FLAG_CSS_LIB = "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css";
 // 1. Initializer (Put this near the top of your script)
 win
@@ -1120,7 +1119,7 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
 // ==========================================================================
 // [SNEZ CLOUD] Delta full bundle Export/Import + UI buttons
 // Upload/Download must talk to SNEZ server (NO file pickers)
-// Endpoint: https://lmsettings.snez.org/
+// Endpoint: https://api.legendmod.ml/lm-settings
 // Auth headers: username=<uid>, password=LMSettings
 // ==========================================================================
 
@@ -1130,7 +1129,7 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
     // IMPORTANT: use the same unsafeWindow-backed reference as the rest of your script
     const win = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
 
-    const ENDPOINT = "https://lmsettings.snez.org/";
+    const ENDPOINT = "https://api.legendmod.ml/lm-settings";
     const PASS = "LMSettings";
 
     // -------------------------

@@ -5394,7 +5394,7 @@ function SNEZOgarUpload() {
     }
     else {
         //postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", $('#export-settings').val());
-        postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", escape($('#export-settings').val()));
+        postSNEZ("https://api.legendmod.ml/lm-settings", userid, "LMSettings", escape($('#export-settings').val()));
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter129 + ". " + Languageletter363 + ": <font color='yellow'><b>" + userid + "</b></font>");
     }
 }
@@ -5405,7 +5405,7 @@ function SNEZOgarDownload() {
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
     }
     else {
-        getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", function (xhttp) {
+        getSNEZ("https://api.legendmod.ml/lm-settings", userid, "LMSettings", function (xhttp) {
             if (!xhttp) return;
             var responseSNEZ = xhttp.response;
             $('#import-settings').val(unescape(responseSNEZ));
@@ -5458,7 +5458,7 @@ function SNEZServers() {
 
     var socket = {
         //server: "wss://agar.snez.org:3051/",
-        server: "wss://agar.snez.org:63051/",
+        server: "wss://api.legendmod.ml/lm-ws",
         client: null,
         connect: function () {
             socket.client = new WebSocket(socket.server);
@@ -5941,7 +5941,7 @@ function getSNEZServers(ifcalled) {
 
     var client = {
         server:
-            "wss://agar.snez.org:63051/",
+            "wss://api.legendmod.ml/lm-ws",
 
         ws: null,
         isOpen: false,
@@ -8067,7 +8067,7 @@ function AgarVersionDestinations() {
     //postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
 
     try {
-        getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass", function (xhttp) {
+        getSNEZ("https://api.legendmod.ml/lm-settings", "LMConfigVersion", "LMConfigVersionPass", function (xhttp) {
             try {
                 if (!xhttp || !xhttp.response || xhttp.response.length === 0) return;
                 var responseagarversionDestinations = JSON.parse(xhttp.response);
@@ -8083,7 +8083,7 @@ function AgarVersionDestinations() {
                 } else if (window.agarversionDestinationFound == false && isObject(responseagarversionDestinations)) {
                     window.agarversionDestinations = responseagarversionDestinations;
                     window.agarversionDestinations[Object.keys(responseagarversionDestinations).length] = window.agarversion;
-                    postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
+                    postSNEZ('https://api.legendmod.ml/lm-settings', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
                 }
                 /* Populate the version dropdown now that data is ready (async-safe) */
                 if (typeof populateLibConfig === 'function') populateLibConfig();
@@ -8122,7 +8122,7 @@ function UIDcontroller() {
 function AgarBannedUIDs() {
     //postSNEZ('https://lmsettings.snez.org/', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
     try {
-        getSNEZ("https://lmsettings.snez.org/", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass", function (xhttp) {
+        getSNEZ("https://api.legendmod.ml/lm-settings", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass", function (xhttp) {
             try {
                 if (!xhttp || !xhttp.response) return;
                 var responseLMAgarBannedUIDs = JSON.parse(xhttp.response);
@@ -8147,7 +8147,7 @@ function AddAgarBannedUIDs(UID) {
 
         if (!window.bannedUserUIDs.includes(UID) && UID != null && UID != "" && window.agarioUID.includes('-')) {
             window.bannedUserUIDs[window.bannedUserUIDs.length] = UID;
-            postSNEZ('https://lmsettings.snez.org/', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify(window.bannedUserUIDs));
+            postSNEZ('https://api.legendmod.ml/lm-settings', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify(window.bannedUserUIDs));
         }
     }
 }
@@ -8160,7 +8160,7 @@ function RemoveAgarBannedUIDs(UID) {
                     bannedUserUIDs.splice(i, 1);
                 }
             }
-            postSNEZ('https://lmsettings.snez.org/', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify(window.bannedUserUIDs));
+            postSNEZ('https://api.legendmod.ml/lm-settings', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify(window.bannedUserUIDs));
         }
     }
 }
@@ -8562,7 +8562,7 @@ function disconnectnow() {
     window.open('https://analytics.google.com/analytics/web/?hl=el&pli=1#realtime/rt-content/a92655864w165988480p166491055/', '_blank');
 }*/
 function showstatsphp2() {
-    window.open('http://agar.snez.org/', '_blank');
+    window.open('https://www.legendmod.ml/monitor/', '_blank');
 }
 function dosendadmincommand() {
     if (AdminRights == 1) {
