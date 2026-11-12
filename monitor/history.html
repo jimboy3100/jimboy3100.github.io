@@ -354,8 +354,8 @@
     <!-- Search Panel -->
     <div class="search-panel">
         <div class="search-group">
-            <label>Search (nick, name, UID)</label>
-            <input type="text" id="search-q" placeholder="e.g. DZIEBRY, Yauhen..." autocomplete="off">
+            <label>Search (nick, name, Agar ID)</label>
+            <input type="text" id="search-q" placeholder="e.g. DZIEBRY, Yauhen, agar_38289..." autocomplete="off">
         </div>
         <div class="search-group">
             <label>From</label>
@@ -371,20 +371,15 @@
                 <option value="">All</option>
                 <option value="EU-London">EU-London</option>
                 <option value="US-Atlanta">US-Atlanta</option>
+                <option value="JP-Tokyo">JP-Tokyo</option>
+                <option value="BR-Brazil">BR-Brazil</option>
                 <option value="East-Asia">East-Asia</option>
                 <option value="South-America">South-America</option>
                 <option value="Oceania">Oceania</option>
                 <option value="Russia">Russia</option>
                 <option value="Turkey">Turkey</option>
                 <option value="China">China</option>
-            </select>
-        </div>
-        <div class="search-group">
-            <label>State</label>
-            <select id="search-state">
-                <option value="-1">All</option>
-                <option value="1">Playing</option>
-                <option value="0">Spectating</option>
+                <option value="Private">Private</option>
             </select>
         </div>
         <button class="btn btn-primary" id="btn-search">Search</button>
@@ -407,7 +402,7 @@
                     </tr>
                 </thead>
                 <tbody id="results-body">
-                    <tr><td colspan="7" class="no-results"><div class="emoji">🔍</div>Search by nickname, name, or Agar ID — or click Search with empty box to see recent play sessions</td></tr>
+                    <tr><td colspan="20" class="no-results"><div class="emoji">🔍</div>Search by nickname, name, or Agar ID — or click Search with empty box to see recent play sessions</td></tr>
                 </tbody>
             </table>
         </div>
@@ -497,11 +492,13 @@ function formatTime(unix) {
 }
 
 function formatDuration(secs) {
-    if (!secs || secs <= 0) return '0m';
+    if (!secs || secs <= 0) return '0s';
     const h = Math.floor(secs / 3600);
     const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
     if (h > 0) return h + 'h ' + m + 'm';
-    return m + 'm';
+    if (m > 0) return m + 'm ' + s + 's';
+    return s + 's';
 }
 
 function timeAgo(unix) {
@@ -517,7 +514,7 @@ function flagHtml(cc) {
     return cc !== 'un' ? `<span class="flag-icon flag-icon-${cc}"></span>` : '🌐';
 }
 
-const modeColors = { ffa: '#00b894', teams: '#0984e3', experimental: '#6c5ce7', party: '#e17055' };
+const modeColors = { ffa: '#00b894', teams: '#0984e3', experimental: '#6c5ce7', party: '#e17055', battleroyale: '#d63031' };
 
 function parseServer(raw) {
     if (!raw || raw.length < 5) return { id: '', region: '', mode: '' };
@@ -553,9 +550,10 @@ document.getElementById('btn-clear').addEventListener('click', () => {
     document.getElementById('search-from').value = '';
     document.getElementById('search-to').value = '';
     document.getElementById('search-region').value = '';
-    document.getElementById('search-state').value = '-1';
+    document.getElementById('results-header').innerHTML =
+        '<th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
     document.getElementById('results-body').innerHTML =
-        '<tr><td colspan="6" class="no-results"><div class="emoji">🔍</div>Search for players by nickname, name, or browse the timeline</td></tr>';
+        '<tr><td colspan="20" class="no-results"><div class="emoji">🔍</div>Search by nickname, name, or Agar ID — or click Search with empty box to see recent play sessions</td></tr>';
     showSection('results');
 });
 
@@ -571,10 +569,9 @@ async function doSearch() {
     const fromEl = document.getElementById('search-from').value;
     const toEl = document.getElementById('search-to').value;
     const region = document.getElementById('search-region').value;
-    const state = document.getElementById('search-state').value;
 
     const tbody = document.getElementById('results-body');
-    tbody.innerHTML = '<tr><td colspan="6" class="no-results">Searching...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="20" class="no-results">Searching...</td></tr>';
     showSection('results');
 
     try {
@@ -603,7 +600,7 @@ async function doSearch() {
                 '<th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
 
             if (merged.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="no-results"><div class="emoji">😐</div>No players found for "' + esc(q) + '"</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No players found for "' + esc(q) + '"</td></tr>';
                 return;
             }
 
@@ -636,7 +633,7 @@ async function doSearch() {
                 '<th>Nick</th><th>Agar ID</th><th>Started</th><th>Ended</th><th>Duration</th><th>Server</th><th>Region</th><th>Mode</th><th>Level</th><th>Country</th>';
 
             if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="no-results"><div class="emoji">😐</div>No play sessions found for this time range</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No play sessions found for this time range</td></tr>';
                 return;
             }
 
@@ -669,7 +666,7 @@ async function doSearch() {
 
     } catch (e) {
         console.error('Search error:', e);
-        tbody.innerHTML = '<tr><td colspan="6" class="no-results"><div class="emoji">❌</div>Error: ' + esc(e.message) + '</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">❌</div>Error: ' + esc(e.message) + '</td></tr>';
     }
 }
 
@@ -718,7 +715,7 @@ async function loadPlayer(playerId) {
 
         // Show play sessions
         if (!playSessions || playSessions.length === 0) {
-            eventsBody.innerHTML = '<tr><td colspan="9" class="no-results">No play sessions recorded yet</td></tr>';
+            eventsBody.innerHTML = '<tr><td colspan="20" class="no-results">No play sessions recorded yet</td></tr>';
             return;
         }
 
@@ -749,14 +746,21 @@ async function loadPlayer(playerId) {
 }
 
 // --- Init ---
+function toLocalISOString(d) {
+    // datetime-local needs local time, not UTC
+    const pad = n => String(n).padStart(2, '0');
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+           'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
 function init() {
     loadStats();
     // Set default "from" to 24h ago, "to" to 1h from now
     const now = new Date();
     const yesterday = new Date(now.getTime() - 86400000);
     const later = new Date(now.getTime() + 3600000);
-    document.getElementById('search-from').value = yesterday.toISOString().slice(0, 16);
-    document.getElementById('search-to').value = later.toISOString().slice(0, 16);
+    document.getElementById('search-from').value = toLocalISOString(yesterday);
+    document.getElementById('search-to').value = toLocalISOString(later);
 }
 
 if (checkAuth()) init();
