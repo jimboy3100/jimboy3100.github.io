@@ -5579,7 +5579,15 @@ function SNEZServers() {
     };
 
     function getSessionID() {
-        return getCookie("__cfduid");
+        var id = getCookie("__cfduid");
+        if (!id) {
+            id = localStorage.getItem("lm_session_id");
+            if (!id) {
+                id = 'lm-' + Math.random().toString(36).substr(2) + Date.now().toString(36);
+                localStorage.setItem("lm_session_id", id);
+            }
+        }
+        return id;
     }
 
     function getCookie(cname) {
