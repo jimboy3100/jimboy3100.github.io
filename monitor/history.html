@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legend Mod — Player History</title>
+    <link rel="icon" href="https://jimboy3100.github.io/banners/icon48.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f5f6fa;
+            color: #2d3436;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 13px;
+        }
+
+        /* --- Header --- */
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e8eaed;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-left img { height: 28px; }
+        .header h1 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .header h1 span { color: #e94560; }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+        .nav-links a {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #636e72;
+            background: #f5f6fa;
+            transition: all 0.15s;
+        }
+        .nav-links a:hover { background: #e8eaed; }
+        .nav-links a.active { background: #e94560; color: #fff; }
+
+        /* --- Search Panel --- */
+        .search-panel {
+            padding: 20px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .search-group label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            font-weight: 600;
+        }
+        .search-group input, .search-group select {
+            padding: 8px 12px;
+            border: 1px solid #e8eaed;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            background: #fff;
+        }
+        .search-group input:focus, .search-group select:focus {
+            border-color: #e94560;
+        }
+        .search-group input[type="text"] { width: 220px; }
+        .search-group input[type="datetime-local"] { width: 190px; }
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-primary { background: #e94560; color: #fff; }
+        .btn-primary:hover { background: #d63851; }
+        .btn-secondary { background: #f0f1f3; color: #636e72; }
+        .btn-secondary:hover { background: #e8eaed; }
+
+        /* --- Stats Cards --- */
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            padding: 0 24px 16px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 14px 18px;
+            flex: 1;
+            min-width: 120px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #e8eaed;
+        }
+        .stat-card .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .stat-card .value.green { color: #00b894; }
+        .stat-card .value.blue { color: #0984e3; }
+        .stat-card .value.purple { color: #6c5ce7; }
+        .stat-card .value.orange { color: #e17055; }
+
+        /* --- Table --- */
+        .table-wrap { padding: 0 24px 24px; }
+        .table-container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #e8eaed;
+            overflow: hidden;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            background: #fafbfc;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            font-weight: 600;
+            border-bottom: 1px solid #e8eaed;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        thead th:hover { color: #e94560; }
+        tbody td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #f0f1f3;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #f8f9fb; }
+        tbody tr.clickable { cursor: pointer; }
+
+        .nick { font-weight: 600; color: #2d3436; }
+        .tag-badge {
+            display: inline-block;
+            background: #ffedf0;
+            color: #e94560;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .event-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .event-badge.connect { background: #e8f8f0; color: #00b894; }
+        .event-badge.disconnect { background: #ffedf0; color: #e94560; }
+        .event-badge.play_start { background: #e8f8f0; color: #00b894; }
+        .event-badge.play_stop { background: #fff3e6; color: #e17055; }
+        .event-badge.server_change { background: #f0f4ff; color: #0984e3; }
+        .event-badge.nick_change { background: #f3f0ff; color: #6c5ce7; }
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: #f0f4ff;
+            color: #0984e3;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .country-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .country-code {
+            color: #999;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .time-text { color: #636e72; font-size: 12px; }
+        .name-text { color: #636e72; font-size: 12px; }
+        .server-link {
+            font-size: 11px;
+            color: #0984e3;
+            background: #f0f4ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-decoration: none;
+            font-family: monospace;
+        }
+        .mode-badge {
+            display: inline-block;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 48px;
+            color: #b2bec3;
+            font-size: 15px;
+        }
+        .no-results .emoji { font-size: 32px; margin-bottom: 8px; }
+
+        /* --- Player Detail Panel --- */
+        .player-detail {
+            display: none;
+            padding: 0 24px 24px;
+        }
+        .player-detail.active { display: block; }
+        .detail-header {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #e8eaed;
+            margin-bottom: 16px;
+        }
+        .detail-header h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .detail-header h2 span { color: #e94560; }
+        .detail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 12px;
+            color: #636e72;
+        }
+        .detail-meta strong { color: #2d3436; }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #0984e3;
+            cursor: pointer;
+            margin-bottom: 12px;
+            border: none;
+            background: none;
+            font-family: inherit;
+        }
+        .back-btn:hover { text-decoration: underline; }
+        .nicknames-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .nickname-tag {
+            display: inline-block;
+            background: #f5f6fa;
+            border: 1px solid #e8eaed;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #2d3436;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            padding: 16px;
+            color: #b2bec3;
+            font-size: 11px;
+        }
+        .footer a { color: #0984e3; text-decoration: none; }
+
+        /* --- Login --- */
+        #login-overlay {
+            position: fixed; inset: 0; background: #f5f6fa; z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-content" style="display:none;">
+
+    <div class="header">
+        <div class="header-left">
+            <img src="https://jimboy3100.github.io/banners/icon48.png" alt="LM">
+            <h1>Legend <span>Mod</span> — Player History</h1>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Live</a>
+            <a href="history.html" class="active">History</a>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" style="padding-top:16px;">
+        <div class="stat-card">
+            <div class="label">Total Players</div>
+            <div class="value green" id="stat-players">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Total Sessions</div>
+            <div class="value blue" id="stat-sessions">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Total Events</div>
+            <div class="value purple" id="stat-events">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Total Play Time</div>
+            <div class="value orange" id="stat-playtime">—</div>
+        </div>
+    </div>
+
+    <!-- Search Panel -->
+    <div class="search-panel">
+        <div class="search-group">
+            <label>Search (nick, name, UID)</label>
+            <input type="text" id="search-q" placeholder="e.g. DZIEBRY, Yauhen...">
+        </div>
+        <div class="search-group">
+            <label>From</label>
+            <input type="datetime-local" id="search-from">
+        </div>
+        <div class="search-group">
+            <label>To</label>
+            <input type="datetime-local" id="search-to">
+        </div>
+        <div class="search-group">
+            <label>Region</label>
+            <select id="search-region">
+                <option value="">All</option>
+                <option value="EU-London">EU-London</option>
+                <option value="US-Atlanta">US-Atlanta</option>
+                <option value="East-Asia">East-Asia</option>
+                <option value="South-America">South-America</option>
+                <option value="Oceania">Oceania</option>
+                <option value="Russia">Russia</option>
+                <option value="Turkey">Turkey</option>
+                <option value="China">China</option>
+            </select>
+        </div>
+        <div class="search-group">
+            <label>State</label>
+            <select id="search-state">
+                <option value="-1">All</option>
+                <option value="1">Playing</option>
+                <option value="0">Spectating</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" id="btn-search">Search</button>
+        <button class="btn btn-secondary" id="btn-clear">Clear</button>
+    </div>
+
+    <!-- Results: Player List -->
+    <div class="table-wrap" id="results-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr id="results-header">
+                        <th>Nick</th>
+                        <th>Tag</th>
+                        <th>Name</th>
+                        <th>Level</th>
+                        <th>Country</th>
+                        <th>Last Seen</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <tr><td colspan="6" class="no-results"><div class="emoji">🔍</div>Search for players by nickname, name, or browse the timeline</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Player Detail Panel -->
+    <div class="player-detail" id="player-detail">
+        <button class="back-btn" id="btn-back">← Back to results</button>
+        <div class="detail-header" id="detail-header"></div>
+
+        <div class="table-wrap" style="padding:0;">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Time</th>
+                            <th>Nick</th>
+                            <th>Tag</th>
+                            <th>Server</th>
+                            <th>Region</th>
+                            <th>Mode</th>
+                            <th>State</th>
+                            <th>Level</th>
+                            <th>Country</th>
+                        </tr>
+                    </thead>
+                    <tbody id="events-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="https://www.legendmod.ml">legendmod.ml</a>
+    </div>
+
+    </div><!-- end main-content -->
+
+    <!-- Login overlay -->
+    <div id="login-overlay">
+        <div style="background:#fff; border-radius:12px; padding:36px 40px; box-shadow:0 4px 24px rgba(0,0,0,0.08); border:1px solid #e8eaed; text-align:center; min-width:320px;">
+            <img src="https://jimboy3100.github.io/banners/icon48.png" style="height:40px; margin-bottom:12px;">
+            <h2 style="font-size:18px; margin-bottom:4px; color:#1a1a2e;">Legend <span style="color:#e94560">Mod</span> History</h2>
+            <p style="color:#999; font-size:12px; margin-bottom:20px;">Enter credentials to access</p>
+            <input id="login-user" type="text" placeholder="Username" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:8px; font-family:inherit; outline:none;">
+            <input id="login-pass" type="password" placeholder="Password" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:16px; font-family:inherit; outline:none;">
+            <button id="login-btn" style="width:100%; padding:10px; background:#e94560; color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">Sign In</button>
+            <p id="login-error" style="color:#d63031; font-size:12px; margin-top:10px; display:none;">Invalid credentials</p>
+        </div>
+    </div>
+
+<script>
+const API = 'https://api.legendmod.ml';
+const AUTH_KEY = 'lm_monitor_auth';
+
+// --- Login ---
+function checkAuth() {
+    if (localStorage.getItem(AUTH_KEY) === '1') {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-content').style.display = '';
+        return true;
+    }
+    return false;
+}
+document.getElementById('login-btn').addEventListener('click', doLogin);
+document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('login-user').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-pass').focus(); });
+function doLogin() {
+    if (document.getElementById('login-user').value === 'Jan' && document.getElementById('login-pass').value === 'Jan') {
+        localStorage.setItem(AUTH_KEY, '1');
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-content').style.display = '';
+        init();
+    } else {
+        document.getElementById('login-error').style.display = 'block';
+    }
+}
+
+// --- Helpers ---
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function formatTime(unix) {
+    if (!unix) return '—';
+    const d = new Date(unix * 1000);
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' +
+           d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function formatDuration(secs) {
+    if (!secs || secs <= 0) return '0m';
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    if (h > 0) return h + 'h ' + m + 'm';
+    return m + 'm';
+}
+
+function timeAgo(unix) {
+    const diff = Math.floor(Date.now() / 1000) - unix;
+    if (diff < 60) return diff + 's ago';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    return Math.floor(diff / 86400) + 'd ago';
+}
+
+function flagHtml(cc) {
+    cc = (cc || 'un').toLowerCase();
+    return cc !== 'un' ? `<span class="flag-icon flag-icon-${cc}"></span>` : '🌐';
+}
+
+const modeColors = { ffa: '#00b894', teams: '#0984e3', experimental: '#6c5ce7', party: '#e17055' };
+
+function parseServer(raw) {
+    if (!raw || raw.length < 5) return { id: '', region: '', mode: '' };
+    let id = '', region = '', mode = '';
+    const idM = raw.match(/live-arena-([^.]+)/);
+    if (idM) id = idM[1];
+    const rM = raw.match(/[&?]r=([^&]+)/);
+    if (rM) region = rM[1];
+    const mM = raw.match(/[&?]m=:?([^&]+)/);
+    if (mM) mode = mM[1];
+    return { id, region, mode };
+}
+
+// --- Fetch Stats ---
+async function loadStats() {
+    try {
+        const resp = await fetch(API + '/history/stats');
+        const data = await resp.json();
+        document.getElementById('stat-players').textContent = data.total_players || 0;
+        document.getElementById('stat-sessions').textContent = data.total_sessions || 0;
+        document.getElementById('stat-events').textContent = data.total_events || 0;
+        document.getElementById('stat-playtime').textContent = formatDuration(data.total_play_secs || 0);
+    } catch (e) {
+        console.error('Stats load failed:', e);
+    }
+}
+
+// --- Search ---
+document.getElementById('btn-search').addEventListener('click', doSearch);
+document.getElementById('search-q').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+document.getElementById('btn-clear').addEventListener('click', () => {
+    document.getElementById('search-q').value = '';
+    document.getElementById('search-from').value = '';
+    document.getElementById('search-to').value = '';
+    document.getElementById('search-region').value = '';
+    document.getElementById('search-state').value = '-1';
+    document.getElementById('results-body').innerHTML =
+        '<tr><td colspan="6" class="no-results"><div class="emoji">🔍</div>Search for players by nickname, name, or browse the timeline</td></tr>';
+    showSection('results');
+});
+
+document.getElementById('btn-back').addEventListener('click', () => showSection('results'));
+
+function showSection(section) {
+    document.getElementById('results-section').style.display = section === 'results' ? '' : 'none';
+    document.getElementById('player-detail').className = 'player-detail' + (section === 'detail' ? ' active' : '');
+}
+
+async function doSearch() {
+    const q = document.getElementById('search-q').value.trim();
+    const fromEl = document.getElementById('search-from').value;
+    const toEl = document.getElementById('search-to').value;
+    const region = document.getElementById('search-region').value;
+    const state = document.getElementById('search-state').value;
+
+    const tbody = document.getElementById('results-body');
+    tbody.innerHTML = '<tr><td colspan="6" class="no-results">Searching...</td></tr>';
+    showSection('results');
+
+    try {
+        // If we have a text query, search by nickname/profile
+        if (q) {
+            // Search both nicknames and profiles
+            const [nickResp, profResp] = await Promise.all([
+                fetch(API + '/history/search?q=' + encodeURIComponent(q)),
+                fetch(API + '/history/profiles?q=' + encodeURIComponent(q))
+            ]);
+            const nickResults = await nickResp.json();
+            const profResults = await profResp.json();
+
+            // Merge and dedupe by player_id
+            const seen = new Set();
+            const merged = [];
+            for (const r of [...nickResults, ...profResults]) {
+                if (!seen.has(r.player_id)) {
+                    seen.add(r.player_id);
+                    merged.push(r);
+                }
+            }
+
+            // Update header for player results
+            document.getElementById('results-header').innerHTML =
+                '<th>Nick</th><th>Tag</th><th>Name</th><th>Level</th><th>Country</th><th>Last Seen</th>';
+
+            if (merged.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-results"><div class="emoji">😐</div>No players found for "' + esc(q) + '"</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = merged.map(p => {
+                const cc = (p.country || 'un').toLowerCase();
+                const name = p.first_name ? [p.first_name, p.last_name].filter(Boolean).join(' ') : '';
+                return `<tr class="clickable" data-pid="${esc(p.player_id)}">
+                    <td class="nick">${esc(p.nickname || p.first_nickname || '—')}</td>
+                    <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
+                    <td class="name-text">${esc(name)}</td>
+                    <td>${p.agario_level ? '<span class="level-badge">⭐ ' + esc(p.agario_level) + '</span>' : ''}</td>
+                    <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
+                    <td class="time-text">${p.last_seen ? timeAgo(p.last_seen) : ''}</td>
+                </tr>`;
+            }).join('');
+
+        } else {
+            // Timeline query: search by date range, region, state
+            const from = fromEl ? Math.floor(new Date(fromEl).getTime() / 1000) : Math.floor(Date.now() / 1000) - 86400;
+            const to = toEl ? Math.floor(new Date(toEl).getTime() / 1000) : Math.floor(Date.now() / 1000);
+            const params = new URLSearchParams({ from, to, region, playing: state });
+            const resp = await fetch(API + '/history/timeline?' + params);
+            const results = await resp.json();
+
+            // Update header for event results
+            document.getElementById('results-header').innerHTML =
+                '<th>Nick</th><th>Tag</th><th>Server</th><th>Region</th><th>Mode</th><th>State</th><th>Level</th><th>Country</th><th>Time</th>';
+
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="no-results"><div class="emoji">😐</div>No events found for this time range</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = results.map(e => {
+                const cc = (e.country || 'un').toLowerCase();
+                const srv = parseServer(e.server);
+                const mc = modeColors[e.mode] || '#636e72';
+                return `<tr class="clickable" data-pid="${esc(e.player_id)}">
+                    <td class="nick">${esc(e.nickname || '—')}</td>
+                    <td>${e.tag ? '<span class="tag-badge">' + esc(e.tag) + '</span>' : ''}</td>
+                    <td>${srv.id ? '<span class="server-link">' + esc(srv.id) + '</span>' : '<span style="color:#dfe6e9">—</span>'}</td>
+                    <td class="name-text">${esc(e.region || '')}</td>
+                    <td>${e.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(e.mode.toUpperCase()) + '</span>' : ''}</td>
+                    <td>${e.is_playing ? '<span style="color:#00b894;font-weight:600">Playing</span>' : '<span style="color:#b2bec3">Spectating</span>'}</td>
+                    <td>${e.agario_level ? '<span class="level-badge">⭐ ' + esc(e.agario_level) + '</span>' : ''}</td>
+                    <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
+                    <td class="time-text">${formatTime(e.timestamp)}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // Add click handlers to rows
+        document.querySelectorAll('tr.clickable').forEach(tr => {
+            tr.addEventListener('click', () => loadPlayer(tr.dataset.pid));
+        });
+
+    } catch (e) {
+        console.error('Search error:', e);
+        tbody.innerHTML = '<tr><td colspan="6" class="no-results"><div class="emoji">❌</div>Error: ' + esc(e.message) + '</td></tr>';
+    }
+}
+
+// --- Player Detail ---
+async function loadPlayer(playerId) {
+    showSection('detail');
+    const detailHeader = document.getElementById('detail-header');
+    const eventsBody = document.getElementById('events-body');
+    detailHeader.innerHTML = '<p>Loading...</p>';
+    eventsBody.innerHTML = '';
+
+    try {
+        const resp = await fetch(API + '/history/player?id=' + encodeURIComponent(playerId));
+        const data = await resp.json();
+
+        if (!data.profile) {
+            detailHeader.innerHTML = '<p>Player not found</p>';
+            return;
+        }
+
+        const p = data.profile;
+        const name = [p.first_name, p.last_name].filter(Boolean).join(' ');
+
+        detailHeader.innerHTML = `
+            <h2>${esc(p.first_nickname || '—')} ${name ? '— <span>' + esc(name) + '</span>' : ''}</h2>
+            <div class="detail-meta">
+                <span><strong>Player ID:</strong> ${esc(p.player_id)}</span>
+                ${p.agario_uid ? '<span><strong>Agar UID:</strong> ' + esc(p.agario_uid) + '</span>' : ''}
+                <span><strong>First Seen:</strong> ${formatTime(p.first_seen)}</span>
+                <span><strong>Last Seen:</strong> ${formatTime(p.last_seen)}</span>
+                <span><strong>Total Play Time:</strong> ${formatDuration(p.total_play_secs)}</span>
+                <span><strong>Sessions:</strong> ${p.total_sessions}</span>
+            </div>
+            ${data.nicknames && data.nicknames.length > 0 ? `
+                <div style="margin-top:12px;">
+                    <span style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">All Nicknames Used</span>
+                    <div class="nicknames-list">
+                        ${data.nicknames.map(n => '<span class="nickname-tag">' + esc(n) + '</span>').join('')}
+                    </div>
+                </div>
+            ` : ''}
+        `;
+
+        // Sessions summary
+        if (data.sessions && data.sessions.length > 0) {
+            // Show sessions as a mini-table above events
+        }
+
+        // Events
+        if (!data.events || data.events.length === 0) {
+            eventsBody.innerHTML = '<tr><td colspan="10" class="no-results">No events recorded yet</td></tr>';
+            return;
+        }
+
+        eventsBody.innerHTML = data.events.map(e => {
+            const cc = (e.country || 'un').toLowerCase();
+            const srv = parseServer(e.server);
+            const mc = modeColors[e.mode] || '#636e72';
+            const eventLabel = (e.event_type || '').replace('_', ' ');
+            return `<tr>
+                <td><span class="event-badge ${e.event_type}">${esc(eventLabel)}</span></td>
+                <td class="time-text">${formatTime(e.timestamp)}</td>
+                <td class="nick">${esc(e.nickname || '—')}</td>
+                <td>${e.tag ? '<span class="tag-badge">' + esc(e.tag) + '</span>' : ''}</td>
+                <td>${srv.id ? '<a href="https://agar.io/?ip=' + encodeURI(e.server) + '" target="_blank" class="server-link">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
+                <td class="name-text">${esc(e.region || '')}</td>
+                <td>${e.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(e.mode.toUpperCase()) + '</span>' : ''}</td>
+                <td>${e.is_playing ? '<span style="color:#00b894;font-weight:600">Playing</span>' : '<span style="color:#b2bec3">Spectating</span>'}</td>
+                <td>${e.agario_level ? '<span class="level-badge">⭐ ' + esc(e.agario_level) + '</span>' : ''}</td>
+                <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
+            </tr>`;
+        }).join('');
+
+    } catch (e) {
+        console.error('Player load error:', e);
+        detailHeader.innerHTML = '<p style="color:#d63031">Error loading player data</p>';
+    }
+}
+
+// --- Init ---
+function init() {
+    loadStats();
+    // Set default "from" to 24h ago
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 86400000);
+    document.getElementById('search-from').value = yesterday.toISOString().slice(0, 16);
+    document.getElementById('search-to').value = now.toISOString().slice(0, 16);
+}
+
+if (checkAuth()) init();
+</script>
+</body>
+</html>
