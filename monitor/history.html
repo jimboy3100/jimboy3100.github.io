@@ -375,8 +375,8 @@
             <div class="value purple" id="stat-events">—</div>
         </div>
         <div class="stat-card">
-            <div class="label">Total Play Time</div>
-            <div class="value orange" id="stat-playtime">—</div>
+            <div class="label">Avg Session</div>
+            <div class="value orange" id="stat-avgsession">—</div>
         </div>
     </div>
 
@@ -428,7 +428,9 @@
                         <th>Agar ID</th>
                         <th>Level</th>
                         <th>Country</th>
-                        <th>Last Seen</th>
+                        <th>Play Time</th>
+                        <th>Sessions</th>
+                        <th>Last Active</th>
                     </tr>
                 </thead>
                 <tbody id="results-body">
@@ -619,7 +621,8 @@ async function loadStats() {
         document.getElementById('stat-players').textContent = data.total_players || 0;
         document.getElementById('stat-sessions').textContent = data.total_sessions || 0;
         document.getElementById('stat-events').textContent = data.total_events || 0;
-        document.getElementById('stat-playtime').textContent = formatDuration(data.total_play_secs || 0);
+        const avgSecs = (data.total_sessions > 0) ? Math.round((data.total_play_secs || 0) / data.total_sessions) : 0;
+        document.getElementById('stat-avgsession').textContent = formatDuration(avgSecs);
     } catch (e) {
         console.error('Stats load failed:', e);
     }
@@ -636,7 +639,7 @@ document.getElementById('btn-clear').addEventListener('click', () => {
     lastSearchResults = null;
     resultsPage = 0;
     document.getElementById('results-header').innerHTML =
-        '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
+        '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Play Time</th><th>Sessions</th><th>Last Active</th>';
     document.getElementById('results-body').innerHTML =
         '<tr><td colspan="20" class="no-results"><div class="emoji">🔍</div>Search by nickname, name, or Agar ID — or click Search with empty box to see recent play sessions</td></tr>';
     document.getElementById('results-pagination').innerHTML = '';
@@ -710,7 +713,7 @@ function renderResultsPage() {
 
     if (type === 'players') {
         document.getElementById('results-header').innerHTML =
-            '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
+            '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Play Time</th><th>Sessions</th><th>Last Active</th>';
 
         if (data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No players found</td></tr>';
@@ -723,6 +726,8 @@ function renderResultsPage() {
             const cc = (p.country || 'un').toLowerCase();
             const name = p.first_name ? [p.first_name, p.last_name].filter(Boolean).join(' ') : '';
             const uid = p.aid || p.agario_uid || '';
+            const playTimeSecs = p.total_play_secs || 0;
+            const totalSessions = p.total_sessions || 0;
             return `<tr class="clickable" data-pid="${esc(p.player_id)}">
                 <td style="color:#b2bec3;font-size:11px">${globalIdx}</td>
                 <td class="nick">${esc(p.nickname || p.first_nickname || '—')}</td>
@@ -731,7 +736,9 @@ function renderResultsPage() {
                 <td><span style="font-size:11px; font-family:monospace; color:#636e72;">${esc(uid)}</span></td>
                 <td>${p.agario_level ? '<span class="level-badge">⭐ ' + esc(p.agario_level) + '</span>' : ''}</td>
                 <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
-                <td class="time-text">${p.last_seen ? formatTime(p.last_seen) : ''}</td>
+                <td style="font-size:12px;font-weight:600;color:#e17055">${formatDuration(playTimeSecs)}</td>
+                <td style="font-size:12px;color:#636e72">${totalSessions}</td>
+                <td class="time-text">${p.last_seen ? timeAgo(p.last_seen) : '—'}</td>
             </tr>`;
         }).join('');
 
