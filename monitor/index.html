@@ -247,7 +247,7 @@
                         <th data-col="nickname" class="sorted">Nick ▼</th>
                         <th data-col="tag">Tag</th>
                         <th data-col="name">Name</th>
-                        <th data-col="agario_uid">Agar UID</th>
+                        <th data-col="aid">Agar ID</th>
                         <th data-col="server_id">Server</th>
                         <th data-col="region">Region</th>
                         <th data-col="mode">Mode</th>
@@ -461,7 +461,7 @@ function updateUI() {
             const srv = p._srv;
             const level = parseInt(p.agario_level) || 0;
             const name = p.name || '';
-            const uid = p.agario_uid || '';
+            const uid = p.aid || '';
             const ago = p.updated ? timeAgo(p.updated) : '';
             const flagSpan = cc !== 'un'
                 ? `<span class="flag-icon flag-icon-${cc}"></span>`
