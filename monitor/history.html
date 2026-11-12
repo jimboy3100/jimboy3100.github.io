@@ -616,15 +616,16 @@ async function doSearch() {
                     <td class="name-text">${esc(name)}</td>
                     <td>${p.agario_level ? '<span class="level-badge">⭐ ' + esc(p.agario_level) + '</span>' : ''}</td>
                     <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
-                    <td class="time-text">${p.last_seen ? timeAgo(p.last_seen) : ''}</td>
+                    <td class="time-text">${p.last_seen ? formatTime(p.last_seen) : ''}</td>
                 </tr>`;
             }).join('');
 
         } else {
             // Timeline query: search by date range, region, state
-            const from = fromEl ? Math.floor(new Date(fromEl).getTime() / 1000) : Math.floor(Date.now() / 1000) - 86400;
-            const to = toEl ? Math.floor(new Date(toEl).getTime() / 1000) : Math.floor(Date.now() / 1000);
-            const params = new URLSearchParams({ from, to, region, playing: state });
+            const fromTs = fromEl ? Math.floor(new Date(fromEl).getTime() / 1000) : Math.floor(Date.now() / 1000) - 86400;
+            const toTs = toEl ? Math.floor(new Date(toEl).getTime() / 1000) : Math.floor(Date.now() / 1000) + 3600;
+            console.log('Timeline query:', { fromTs, toTs, region, state, fromDate: new Date(fromTs*1000).toISOString(), toDate: new Date(toTs*1000).toISOString() });
+            const params = new URLSearchParams({ from: fromTs, to: toTs, region, playing: state });
             const resp = await fetch(API + '/history/timeline?' + params);
             const results = await resp.json();
 
@@ -745,11 +746,12 @@ async function loadPlayer(playerId) {
 // --- Init ---
 function init() {
     loadStats();
-    // Set default "from" to 24h ago
+    // Set default "from" to 24h ago, "to" to 1h from now
     const now = new Date();
     const yesterday = new Date(now.getTime() - 86400000);
+    const later = new Date(now.getTime() + 3600000);
     document.getElementById('search-from').value = yesterday.toISOString().slice(0, 16);
-    document.getElementById('search-to').value = now.toISOString().slice(0, 16);
+    document.getElementById('search-to').value = later.toISOString().slice(0, 16);
 }
 
 if (checkAuth()) init();
