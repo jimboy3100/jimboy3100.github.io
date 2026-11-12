@@ -301,6 +301,35 @@
             color: #2d3436;
         }
 
+        /* --- Pagination --- */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 12px 24px;
+        }
+        .pagination button {
+            padding: 6px 12px;
+            border: 1px solid #e8eaed;
+            border-radius: 6px;
+            background: #fff;
+            color: #2d3436;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .pagination button:hover { background: #f5f6fa; border-color: #ddd; }
+        .pagination button.active { background: #e94560; color: #fff; border-color: #e94560; }
+        .pagination button:disabled { opacity: 0.4; cursor: default; }
+        .pagination .page-info {
+            font-size: 12px;
+            color: #999;
+            margin: 0 8px;
+        }
+
         /* --- Footer --- */
         .footer {
             text-align: center;
@@ -407,6 +436,7 @@
                 </tbody>
             </table>
         </div>
+        <div class="pagination" id="results-pagination"></div>
     </div>
 
     <!-- Player Detail Panel -->
@@ -434,6 +464,7 @@
                     <tbody id="events-body"></tbody>
                 </table>
             </div>
+            <div class="pagination" id="detail-pagination"></div>
         </div>
     </div>
 
@@ -459,6 +490,13 @@
 <script>
 const API = 'https://api.legendmod.ml';
 const AUTH_KEY = 'lm_monitor_auth';
+const PAGE_SIZE = 50;
+
+// Pagination state
+let lastSearchResults = null; // { type: 'players'|'sessions', data: [] }
+let lastPlayerSessions = null; // [] for detail view
+let resultsPage = 0;
+let detailPage = 0;
 
 // --- Login ---
 function checkAuth() {
@@ -518,6 +556,49 @@ function flagHtml(cc) {
 
 const modeColors = { ffa: '#00b894', teams: '#0984e3', experimental: '#6c5ce7', party: '#e17055', battleroyale: '#d63031' };
 
+function renderPagination(containerId, totalItems, currentPage, onPageClick) {
+    const container = document.getElementById(containerId);
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+    let html = '';
+    html += `<button ${currentPage === 0 ? 'disabled' : ''} data-page="${currentPage - 1}">‹ Prev</button>`;
+
+    const maxButtons = 7;
+    let pages = [];
+    if (totalPages <= maxButtons) {
+        for (let i = 0; i < totalPages; i++) pages.push(i);
+    } else {
+        pages.push(0);
+        let start = Math.max(1, currentPage - 2);
+        let end = Math.min(totalPages - 2, currentPage + 2);
+        if (currentPage <= 3) end = Math.min(5, totalPages - 2);
+        if (currentPage >= totalPages - 4) start = Math.max(1, totalPages - 6);
+        if (start > 1) pages.push(-1);
+        for (let i = start; i <= end; i++) pages.push(i);
+        if (end < totalPages - 2) pages.push(-1);
+        pages.push(totalPages - 1);
+    }
+
+    for (const p of pages) {
+        if (p === -1) html += '<span class="page-info">…</span>';
+        else html += `<button class="${p === currentPage ? 'active' : ''}" data-page="${p}">${p + 1}</button>`;
+    }
+
+    html += `<button ${currentPage === totalPages - 1 ? 'disabled' : ''} data-page="${currentPage + 1}">Next ›</button>`;
+    const from = currentPage * PAGE_SIZE + 1;
+    const to = Math.min((currentPage + 1) * PAGE_SIZE, totalItems);
+    html += `<span class="page-info">${from}–${to} of ${totalItems}</span>`;
+
+    container.innerHTML = html;
+    container.querySelectorAll('button[data-page]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const page = parseInt(btn.dataset.page);
+            if (page >= 0 && page < totalPages) onPageClick(page);
+        });
+    });
+}
+
 function parseServer(raw) {
     if (!raw || raw.length < 5) return { id: '', region: '', mode: '' };
     let id = '', region = '', mode = '';
@@ -552,10 +633,13 @@ document.getElementById('btn-clear').addEventListener('click', () => {
     document.getElementById('search-from').value = '';
     document.getElementById('search-to').value = '';
     document.getElementById('search-region').value = '';
+    lastSearchResults = null;
+    resultsPage = 0;
     document.getElementById('results-header').innerHTML =
         '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
     document.getElementById('results-body').innerHTML =
         '<tr><td colspan="20" class="no-results"><div class="emoji">🔍</div>Search by nickname, name, or Agar ID — or click Search with empty box to see recent play sessions</td></tr>';
+    document.getElementById('results-pagination').innerHTML = '';
     showSection('results');
 });
 
@@ -574,12 +658,11 @@ async function doSearch() {
 
     const tbody = document.getElementById('results-body');
     tbody.innerHTML = '<tr><td colspan="20" class="no-results">Searching...</td></tr>';
+    document.getElementById('results-pagination').innerHTML = '';
     showSection('results');
 
     try {
-        // If we have a text query, search by nickname/profile
         if (q) {
-            // Search both nicknames and profiles
             const [nickResp, profResp] = await Promise.all([
                 fetch(API + '/history/search?q=' + encodeURIComponent(q)),
                 fetch(API + '/history/profiles?q=' + encodeURIComponent(q))
@@ -587,7 +670,6 @@ async function doSearch() {
             const nickResults = await nickResp.json();
             const profResults = await profResp.json();
 
-            // Merge and dedupe by player_id
             const seen = new Set();
             const merged = [];
             for (const r of [...nickResults, ...profResults]) {
@@ -597,33 +679,11 @@ async function doSearch() {
                 }
             }
 
-            // Update header for player results
-            document.getElementById('results-header').innerHTML =
-                '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
-
-            if (merged.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No players found for "' + esc(q) + '"</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = merged.map((p, i) => {
-                const cc = (p.country || 'un').toLowerCase();
-                const name = p.first_name ? [p.first_name, p.last_name].filter(Boolean).join(' ') : '';
-                const uid = p.aid || p.agario_uid || '';
-                return `<tr class="clickable" data-pid="${esc(p.player_id)}">
-                    <td style="color:#b2bec3;font-size:11px">${i + 1}</td>
-                    <td class="nick">${esc(p.nickname || p.first_nickname || '—')}</td>
-                    <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
-                    <td class="name-text">${esc(name)}</td>
-                    <td><span style="font-size:11px; font-family:monospace; color:#636e72;">${esc(uid)}</span></td>
-                    <td>${p.agario_level ? '<span class="level-badge">⭐ ' + esc(p.agario_level) + '</span>' : ''}</td>
-                    <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
-                    <td class="time-text">${p.last_seen ? formatTime(p.last_seen) : ''}</td>
-                </tr>`;
-            }).join('');
+            lastSearchResults = { type: 'players', data: merged };
+            resultsPage = 0;
+            renderResultsPage();
 
         } else {
-            // Play sessions query: shows each time someone played with duration
             const fromTs = fromEl ? Math.floor(new Date(fromEl).getTime() / 1000) : Math.floor(Date.now() / 1000) - 86400;
             const toTs = toEl ? Math.floor(new Date(toEl).getTime() / 1000) : Math.floor(Date.now() / 1000) + 3600;
             const params = new URLSearchParams({ from: fromTs, to: toTs });
@@ -631,47 +691,94 @@ async function doSearch() {
             const resp = await fetch(API + '/history/play-sessions?' + params);
             const results = await resp.json();
 
-            // Update header for session results
-            document.getElementById('results-header').innerHTML =
-                '<th>#</th><th>Nick</th><th>Agar ID</th><th>Started</th><th>Ended</th><th>Duration</th><th>Server</th><th>Region</th><th>Mode</th><th>Level</th><th>Country</th>';
-
-            if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No play sessions found for this time range</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = results.map((s, i) => {
-                const cc = (s.country || 'un').toLowerCase();
-                const srv = parseServer(s.server);
-                const mc = modeColors[s.mode] || '#636e72';
-                const durText = s.ongoing
-                    ? '<span style="color:#00b894;font-weight:600">▶ ' + formatDuration(s.duration_secs) + '</span>'
-                    : formatDuration(s.duration_secs);
-                return `<tr class="clickable" data-pid="${esc(s.player_id)}">
-                    <td style="color:#b2bec3;font-size:11px">${i + 1}</td>
-                    <td class="nick">${esc(s.nickname || '—')}</td>
-                    <td><span style="font-size:11px; font-family:monospace; color:#636e72;">${esc(s.aid || '')}</span></td>
-                    <td class="time-text">${formatTime(s.started_at)}</td>
-                    <td class="time-text">${s.ended_at ? formatTime(s.ended_at) : '<span style="color:#00b894;font-weight:600">Now</span>'}</td>
-                    <td>${durText}</td>
-                    <td>${srv.id ? '<span class="server-link">' + esc(srv.id) + '</span>' : '<span style="color:#dfe6e9">—</span>'}</td>
-                    <td class="name-text">${esc(s.region || '')}</td>
-                    <td>${s.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(s.mode.toUpperCase()) + '</span>' : ''}</td>
-                    <td>${s.agario_level ? '<span class="level-badge">⭐ ' + esc(s.agario_level) + '</span>' : ''}</td>
-                    <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
-                </tr>`;
-            }).join('');
+            lastSearchResults = { type: 'sessions', data: results };
+            resultsPage = 0;
+            renderResultsPage();
         }
-
-        // Add click handlers to rows
-        document.querySelectorAll('tr.clickable').forEach(tr => {
-            tr.addEventListener('click', () => loadPlayer(tr.dataset.pid));
-        });
-
     } catch (e) {
         console.error('Search error:', e);
         tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">❌</div>Error: ' + esc(e.message) + '</td></tr>';
     }
+}
+
+function renderResultsPage() {
+    if (!lastSearchResults) return;
+    const { type, data } = lastSearchResults;
+    const tbody = document.getElementById('results-body');
+    const start = resultsPage * PAGE_SIZE;
+    const pageItems = data.slice(start, start + PAGE_SIZE);
+
+    if (type === 'players') {
+        document.getElementById('results-header').innerHTML =
+            '<th>#</th><th>Nick</th><th>Tag</th><th>Name</th><th>Agar ID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No players found</td></tr>';
+            document.getElementById('results-pagination').innerHTML = '';
+            return;
+        }
+
+        tbody.innerHTML = pageItems.map((p, idx) => {
+            const globalIdx = start + idx + 1;
+            const cc = (p.country || 'un').toLowerCase();
+            const name = p.first_name ? [p.first_name, p.last_name].filter(Boolean).join(' ') : '';
+            const uid = p.aid || p.agario_uid || '';
+            return `<tr class="clickable" data-pid="${esc(p.player_id)}">
+                <td style="color:#b2bec3;font-size:11px">${globalIdx}</td>
+                <td class="nick">${esc(p.nickname || p.first_nickname || '—')}</td>
+                <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
+                <td class="name-text">${esc(name)}</td>
+                <td><span style="font-size:11px; font-family:monospace; color:#636e72;">${esc(uid)}</span></td>
+                <td>${p.agario_level ? '<span class="level-badge">⭐ ' + esc(p.agario_level) + '</span>' : ''}</td>
+                <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
+                <td class="time-text">${p.last_seen ? formatTime(p.last_seen) : ''}</td>
+            </tr>`;
+        }).join('');
+
+    } else {
+        document.getElementById('results-header').innerHTML =
+            '<th>#</th><th>Nick</th><th>Agar ID</th><th>Started</th><th>Ended</th><th>Duration</th><th>Server</th><th>Region</th><th>Mode</th><th>Level</th><th>Country</th>';
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="20" class="no-results"><div class="emoji">😐</div>No play sessions found for this time range</td></tr>';
+            document.getElementById('results-pagination').innerHTML = '';
+            return;
+        }
+
+        tbody.innerHTML = pageItems.map((s, idx) => {
+            const globalIdx = start + idx + 1;
+            const cc = (s.country || 'un').toLowerCase();
+            const srv = parseServer(s.server);
+            const mc = modeColors[s.mode] || '#636e72';
+            const durText = s.ongoing
+                ? '<span style="color:#00b894;font-weight:600">▶ ' + formatDuration(s.duration_secs) + '</span>'
+                : formatDuration(s.duration_secs);
+            return `<tr class="clickable" data-pid="${esc(s.player_id)}">
+                <td style="color:#b2bec3;font-size:11px">${globalIdx}</td>
+                <td class="nick">${esc(s.nickname || '—')}</td>
+                <td><span style="font-size:11px; font-family:monospace; color:#636e72;">${esc(s.aid || '')}</span></td>
+                <td class="time-text">${formatTime(s.started_at)}</td>
+                <td class="time-text">${s.ended_at ? formatTime(s.ended_at) : '<span style="color:#00b894;font-weight:600">Now</span>'}</td>
+                <td>${durText}</td>
+                <td>${srv.id ? '<span class="server-link">' + esc(srv.id) + '</span>' : '<span style="color:#dfe6e9">—</span>'}</td>
+                <td class="name-text">${esc(s.region || '')}</td>
+                <td>${s.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(s.mode.toUpperCase()) + '</span>' : ''}</td>
+                <td>${s.agario_level ? '<span class="level-badge">⭐ ' + esc(s.agario_level) + '</span>' : ''}</td>
+                <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Add click handlers
+    document.querySelectorAll('tr.clickable').forEach(tr => {
+        tr.addEventListener('click', () => loadPlayer(tr.dataset.pid));
+    });
+
+    // Render pagination
+    renderPagination('results-pagination', data.length, resultsPage, page => {
+        resultsPage = page;
+        renderResultsPage();
+    });
 }
 
 // --- Player Detail ---
@@ -681,6 +788,7 @@ async function loadPlayer(playerId) {
     const eventsBody = document.getElementById('events-body');
     detailHeader.innerHTML = '<p>Loading...</p>';
     eventsBody.innerHTML = '';
+    document.getElementById('detail-pagination').innerHTML = '';
 
     try {
         const [profResp, sessResp] = await Promise.all([
@@ -717,37 +825,54 @@ async function loadPlayer(playerId) {
             ` : ''}
         `;
 
-        // Show play sessions
-        if (!playSessions || playSessions.length === 0) {
-            eventsBody.innerHTML = '<tr><td colspan="20" class="no-results">No play sessions recorded yet</td></tr>';
-            return;
-        }
-
-        eventsBody.innerHTML = playSessions.map((s, i) => {
-            const cc = (s.country || 'un').toLowerCase();
-            const srv = parseServer(s.server);
-            const mc = modeColors[s.mode] || '#636e72';
-            const durText = s.ongoing
-                ? '<span style="color:#00b894;font-weight:600">▶ ' + formatDuration(s.duration_secs) + '</span>'
-                : formatDuration(s.duration_secs);
-            return `<tr>
-                <td style="color:#b2bec3;font-size:11px">${i + 1}</td>
-                <td class="time-text">${formatTime(s.started_at)}</td>
-                <td class="time-text">${s.ended_at ? formatTime(s.ended_at) : '<span style="color:#00b894;font-weight:600">Playing now</span>'}</td>
-                <td>${durText}</td>
-                <td class="nick">${esc(s.nickname || '—')}</td>
-                <td>${srv.id ? '<a href="https://agar.io/?ip=' + encodeURI(s.server) + '" target="_blank" class="server-link">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
-                <td class="name-text">${esc(s.region || '')}</td>
-                <td>${s.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(s.mode.toUpperCase()) + '</span>' : ''}</td>
-                <td>${s.agario_level ? '<span class="level-badge">⭐ ' + esc(s.agario_level) + '</span>' : ''}</td>
-                <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
-            </tr>`;
-        }).join('');
+        // Store and paginate play sessions
+        lastPlayerSessions = playSessions || [];
+        detailPage = 0;
+        renderDetailPage();
 
     } catch (e) {
         console.error('Player load error:', e);
         detailHeader.innerHTML = '<p style="color:#d63031">Error loading player data</p>';
     }
+}
+
+function renderDetailPage() {
+    const eventsBody = document.getElementById('events-body');
+    if (!lastPlayerSessions || lastPlayerSessions.length === 0) {
+        eventsBody.innerHTML = '<tr><td colspan="20" class="no-results">No play sessions recorded yet</td></tr>';
+        document.getElementById('detail-pagination').innerHTML = '';
+        return;
+    }
+
+    const start = detailPage * PAGE_SIZE;
+    const pageItems = lastPlayerSessions.slice(start, start + PAGE_SIZE);
+
+    eventsBody.innerHTML = pageItems.map((s, idx) => {
+        const globalIdx = start + idx + 1;
+        const cc = (s.country || 'un').toLowerCase();
+        const srv = parseServer(s.server);
+        const mc = modeColors[s.mode] || '#636e72';
+        const durText = s.ongoing
+            ? '<span style="color:#00b894;font-weight:600">▶ ' + formatDuration(s.duration_secs) + '</span>'
+            : formatDuration(s.duration_secs);
+        return `<tr>
+            <td style="color:#b2bec3;font-size:11px">${globalIdx}</td>
+            <td class="time-text">${formatTime(s.started_at)}</td>
+            <td class="time-text">${s.ended_at ? formatTime(s.ended_at) : '<span style="color:#00b894;font-weight:600">Playing now</span>'}</td>
+            <td>${durText}</td>
+            <td class="nick">${esc(s.nickname || '—')}</td>
+            <td>${srv.id ? '<a href="https://agar.io/?ip=' + encodeURI(s.server) + '" target="_blank" class="server-link">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
+            <td class="name-text">${esc(s.region || '')}</td>
+            <td>${s.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(s.mode.toUpperCase()) + '</span>' : ''}</td>
+            <td>${s.agario_level ? '<span class="level-badge">⭐ ' + esc(s.agario_level) + '</span>' : ''}</td>
+            <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
+        </tr>`;
+    }).join('');
+
+    renderPagination('detail-pagination', lastPlayerSessions.length, detailPage, page => {
+        detailPage = page;
+        renderDetailPage();
+    });
 }
 
 // --- Init ---

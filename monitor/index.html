@@ -201,6 +201,35 @@
         }
         .no-players .emoji { font-size: 32px; margin-bottom: 8px; }
 
+        /* --- Pagination --- */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 12px 24px;
+        }
+        .pagination button {
+            padding: 6px 12px;
+            border: 1px solid #e8eaed;
+            border-radius: 6px;
+            background: #fff;
+            color: #2d3436;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .pagination button:hover { background: #f5f6fa; border-color: #ddd; }
+        .pagination button.active { background: #e94560; color: #fff; border-color: #e94560; }
+        .pagination button:disabled { opacity: 0.4; cursor: default; }
+        .pagination .page-info {
+            font-size: 12px;
+            color: #999;
+            margin: 0 8px;
+        }
+
         /* --- Footer --- */
         .footer {
             text-align: center;
@@ -244,6 +273,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th data-col="nickname" class="sorted">Nick ▼</th>
                         <th data-col="tag">Tag</th>
                         <th data-col="name">Name</th>
@@ -257,11 +287,13 @@
                     </tr>
                 </thead>
                 <tbody id="players-body">
-                <tr><td colspan="10" class="no-players"><div class="emoji">🌐</div>Connecting...</td></tr>
+                <tr><td colspan="20" class="no-players"><div class="emoji">🌐</div>Connecting...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div class="pagination" id="pagination"></div>
 
     <div class="footer">
         <a href="https://www.legendmod.ml">legendmod.ml</a>
@@ -289,6 +321,8 @@ let players = [];
 let sortCol = 'nickname';
 let sortAsc = true;
 let ws = null;
+const PAGE_SIZE = 50;
+let currentPage = 0;
 
 // --- Login Gate ---
 const AUTH_KEY = 'lm_monitor_auth';
@@ -447,16 +481,28 @@ function updateUI() {
     const servers = new Set();
     const countries = new Set();
 
+    // Count stats from ALL players
+    sorted.forEach(p => {
+        if (p.server && p.server.length > 5) servers.add(p.server);
+        const cc = (p.country || p.extra?.ip_info?.country || 'un').toLowerCase();
+        if (cc !== 'un') countries.add(cc);
+    });
+
     if (sorted.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="no-players"><div class="emoji">😴</div>No players online</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="20" class="no-players"><div class="emoji">😴</div>No players online</td></tr>';
+        document.getElementById('pagination').innerHTML = '';
     } else {
-        tbody.innerHTML = sorted.map(p => {
+        const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
+        if (currentPage >= totalPages) currentPage = totalPages - 1;
+        const start = currentPage * PAGE_SIZE;
+        const pageItems = sorted.slice(start, start + PAGE_SIZE);
+
+        tbody.innerHTML = pageItems.map((p, idx) => {
+            const globalIdx = start + idx + 1;
             const isPlaying = !!p.isPlaying;
             const hasServer = p.server && p.server.length > 5;
-            if (hasServer) { servers.add(p.server); }
 
             const cc = (p.country || p.extra?.ip_info?.country || 'un').toLowerCase();
-            if (cc !== 'un') countries.add(cc);
 
             const srv = p._srv;
             const level = parseInt(p.agario_level) || 0;
@@ -467,10 +513,11 @@ function updateUI() {
                 ? `<span class="flag-icon flag-icon-${cc}"></span>`
                 : '🌐';
 
-            const modeColors = { ffa: '#00b894', 'teams': '#0984e3', 'experimental': '#6c5ce7', 'party': '#e17055' };
+            const modeColors = { ffa: '#00b894', 'teams': '#0984e3', 'experimental': '#6c5ce7', 'party': '#e17055', 'battleroyale': '#d63031' };
             const modeColor = modeColors[srv.mode] || '#636e72';
 
             return `<tr>
+                <td style="color:#b2bec3;font-size:11px">${globalIdx}</td>
                 <td><span class="status-dot ${isPlaying ? 'playing' : 'idle'}"></span><span class="nick ${isPlaying ? 'playing' : 'idle'}">${esc(p.nickname || '—')}</span></td>
                 <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
                 <td class="name-text">${esc(name)}</td>
@@ -483,11 +530,59 @@ function updateUI() {
                 <td class="time-ago">${ago}</td>
             </tr>`;
         }).join('');
+
+        renderPagination('pagination', sorted.length, currentPage, page => {
+            currentPage = page;
+            updateUI();
+        });
     }
 
     document.getElementById('online-count').textContent = sorted.length;
     document.getElementById('server-count').textContent = servers.size;
     document.getElementById('country-count').textContent = countries.size;
+}
+
+function renderPagination(containerId, totalItems, current, onPageClick) {
+    const container = document.getElementById(containerId);
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+    let html = '';
+    html += `<button ${current === 0 ? 'disabled' : ''} data-page="${current - 1}">‹ Prev</button>`;
+
+    const maxButtons = 7;
+    let pages = [];
+    if (totalPages <= maxButtons) {
+        for (let i = 0; i < totalPages; i++) pages.push(i);
+    } else {
+        pages.push(0);
+        let start = Math.max(1, current - 2);
+        let end = Math.min(totalPages - 2, current + 2);
+        if (current <= 3) end = Math.min(5, totalPages - 2);
+        if (current >= totalPages - 4) start = Math.max(1, totalPages - 6);
+        if (start > 1) pages.push(-1);
+        for (let i = start; i <= end; i++) pages.push(i);
+        if (end < totalPages - 2) pages.push(-1);
+        pages.push(totalPages - 1);
+    }
+
+    for (const p of pages) {
+        if (p === -1) html += '<span class="page-info">…</span>';
+        else html += `<button class="${p === current ? 'active' : ''}" data-page="${p}">${p + 1}</button>`;
+    }
+
+    html += `<button ${current === totalPages - 1 ? 'disabled' : ''} data-page="${current + 1}">Next ›</button>`;
+    const from = current * PAGE_SIZE + 1;
+    const to = Math.min((current + 1) * PAGE_SIZE, totalItems);
+    html += `<span class="page-info">${from}–${to} of ${totalItems}</span>`;
+
+    container.innerHTML = html;
+    container.querySelectorAll('button[data-page]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const page = parseInt(btn.dataset.page);
+            if (page >= 0 && page < totalPages) onPageClick(page);
+        });
+    });
 }
 
 function timeAgo(unixTs) {
