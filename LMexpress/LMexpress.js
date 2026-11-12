@@ -5509,7 +5509,9 @@ function SNEZServers() {
             if (state.nickname != nick.value ||
                 state.server != servertemp ||
                 state.tag != tag.value ||
-                state.isPlaying != (window.ogario && window.ogario.play))
+                state.isPlaying != (window.ogario && window.ogario.play) ||
+                state.agarioLEVEL != window.agarioLEVEL ||
+                state.agarioUID != window.agarioUID)
 
             /*if (state.nickname != nick.value ||
                 state.server != servertemp)			no1: I stoped this*/ {
