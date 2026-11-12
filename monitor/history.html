@@ -400,13 +400,14 @@
                         <th>Nick</th>
                         <th>Tag</th>
                         <th>Name</th>
+                        <th>Agar UID</th>
                         <th>Level</th>
                         <th>Country</th>
                         <th>Last Seen</th>
                     </tr>
                 </thead>
                 <tbody id="results-body">
-                    <tr><td colspan="6" class="no-results"><div class="emoji">🔍</div>Search for players by nickname, name, or browse the timeline</td></tr>
+                    <tr><td colspan="7" class="no-results"><div class="emoji">🔍</div>Search for players by nickname, name, UID, or browse the timeline</td></tr>
                 </tbody>
             </table>
         </div>
@@ -600,20 +601,22 @@ async function doSearch() {
 
             // Update header for player results
             document.getElementById('results-header').innerHTML =
-                '<th>Nick</th><th>Tag</th><th>Name</th><th>Level</th><th>Country</th><th>Last Seen</th>';
+                '<th>Nick</th><th>Tag</th><th>Name</th><th>Agar UID</th><th>Level</th><th>Country</th><th>Last Seen</th>';
 
             if (merged.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="no-results"><div class="emoji">😐</div>No players found for "' + esc(q) + '"</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="no-results"><div class="emoji">😐</div>No players found for "' + esc(q) + '"</td></tr>';
                 return;
             }
 
             tbody.innerHTML = merged.map(p => {
                 const cc = (p.country || 'un').toLowerCase();
                 const name = p.first_name ? [p.first_name, p.last_name].filter(Boolean).join(' ') : '';
+                const uid = p.agario_uid || '';
                 return `<tr class="clickable" data-pid="${esc(p.player_id)}">
                     <td class="nick">${esc(p.nickname || p.first_nickname || '—')}</td>
                     <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
                     <td class="name-text">${esc(name)}</td>
+                    <td><span style="font-size:11px; font-family:monospace; color:#636e72;">${esc(uid)}</span></td>
                     <td>${p.agario_level ? '<span class="level-badge">⭐ ' + esc(p.agario_level) + '</span>' : ''}</td>
                     <td><div class="country-cell">${flagHtml(cc)} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
                     <td class="time-text">${p.last_seen ? formatTime(p.last_seen) : ''}</td>
