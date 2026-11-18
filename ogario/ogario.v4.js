@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.502;
+window.OgVer = 3.503;
 
 
 /*
@@ -2971,6 +2971,19 @@ window._lmPendingSoftPurchases =
     window._lmPendingSoftPurchases ||
     Object.create(null);
 
+/*
+ * A timed-out purchase may still be processed by the server. Keep blocking a
+ * resend for 60 s (tombstone) so a retry cannot spend the currency twice.
+ */
+window._lmLiveSoftPurchaseEntry = function (key) {
+    var entry = window._lmPendingSoftPurchases[key];
+    if (entry && entry.tombstoneUntil && entry.tombstoneUntil <= Date.now()) {
+        delete window._lmPendingSoftPurchases[key];
+        return null;
+    }
+    return entry || null;
+};
+
 window._lmHasPendingSoftPurchase =
     function (purchaseId) {
         var key =
@@ -2980,9 +2993,7 @@ window._lmHasPendingSoftPurchase =
 
         return !!(
             key &&
-            window._lmPendingSoftPurchases[
-                key
-            ]
+            window._lmLiveSoftPurchaseEntry(key)
         );
     };
 
@@ -2998,9 +3009,7 @@ window._lmRegisterSoftPurchase =
         }
 
         if (
-            window._lmPendingSoftPurchases[
-                key
-            ]
+            window._lmLiveSoftPurchaseEntry(key)
         ) {
             return false;
         }
@@ -3025,10 +3034,14 @@ window._lmRegisterSoftPurchase =
                     return;
                 }
 
-                delete window
-                    ._lmPendingSoftPurchases[
-                        key
-                    ];
+                /* keep a tombstone instead of deleting (see _lmLiveSoftPurchaseEntry) */
+                window._lmPendingSoftPurchases[key] = {
+                    purchaseId: entry.purchaseId,
+                    context: null,
+                    createdAt: entry.createdAt,
+                    timeoutId: null,
+                    tombstoneUntil: Date.now() + 60000
+                };
 
                 var timeoutHandler =
                     entry.context &&
@@ -42805,8 +42818,9 @@ Most cells eaten   : ${mostCellsEaten}
             var quests = Number(ac.questsCompleted) || 0;
             var skins = Number(ac.skinsCreated) || 0;
             var accountAge = ~~((Number(i.accountAge) || 0) / 3600 / 24);
-            var country = i.latestCountryCode || 'N/A';
-            var gameName = i.displayName || 'Player';
+            /* server strings: escape before .html() */
+            var country = application.escapeHTML(String(i.latestCountryCode || 'N/A'));
+            var gameName = application.escapeHTML(String(i.displayName || 'Player'));
 
             $("#user-info").html(
                 'Account age     : ' + accountAge + 'D<br/>' +

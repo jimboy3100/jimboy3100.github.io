@@ -598,7 +598,7 @@ message userQuest {
 ///
 }
 message userTimedEventUpdatesField {
-    userTimedEvents userTimedEvents = 1;
+    repeated userTimedEvents userTimedEvents = 1;
 ///
 }
 
@@ -607,6 +607,8 @@ message activateUserRewardsRequestField {
 }
 
 message activateUserRewardsResponseField {
+    userRewards userRewards = 1;
+    repeated productUpdates productUpdates = 2;
 ///
 }
 
