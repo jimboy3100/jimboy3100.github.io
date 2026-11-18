@@ -344,7 +344,7 @@ function SpecialDeals(defaultTab) {
             // === 2. Custom Skin Uploader tab ===
             '<div class="' + uploadPaneClass + '" id="tab-upload">' +
             '<div class="modal-body" style="text-align: center;">' +
-            '<h5 style="color: ' + mc + '; font-weight: 700; margin-top: 0;">Upload Custom Skin (90 DNA)</h5>' +
+            '<h5 style="color: ' + mc + '; font-weight: 700; margin-top: 0;">Upload Custom Skin</h5>' +
             '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid ' + mc + '4d;">🧬 DNA: <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="coinsCountModal">0</span></div>' +
             '<div class="upload-drop-zone" id="uploadDropZone">' +
 
@@ -642,7 +642,21 @@ function SpecialDeals(defaultTab) {
                         ''
                     ).length > 0;
 
-                if (
+                /* A token purchase or upload is in flight: keep the button locked. */
+                var uploadBusy = !!(
+                    (window._lmSkinUploadState && window._lmSkinUploadState.busy) ||
+                    window._lmSkinCreatePending
+                );
+
+                if (uploadBusy) {
+                    uploadBtn
+                        .prop('disabled', true)
+                        .attr({
+                            title: 'Upload in progress...',
+                            'aria-label': 'Upload in progress...'
+                        })
+                        .css({ opacity: 0.5, cursor: 'not-allowed' });
+                } else if (
                     processedBufferModal &&
                     hasRequiredSkinName
                 ) {
@@ -1490,8 +1504,15 @@ function SpecialDeals(defaultTab) {
                 ctx.imageSmoothingQuality = 'high';
             }
 
+            /* Center square crop so non-square images are not squashed. */
+            var srcW = img.naturalWidth || img.width;
+            var srcH = img.naturalHeight || img.height;
+            var srcSize = Math.min(srcW, srcH);
+            var srcX = Math.round((srcW - srcSize) / 2);
+            var srcY = Math.round((srcH - srcSize) / 2);
+
             if (detailScale >= 1) {
-                ctx.drawImage(img, 0, 0, 512, 512);
+                ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, 512, 512);
                 return;
             }
 
@@ -1506,7 +1527,7 @@ function SpecialDeals(defaultTab) {
             if ('imageSmoothingQuality' in tctx) {
                 tctx.imageSmoothingQuality = 'high';
             }
-            tctx.drawImage(img, 0, 0, size, size);
+            tctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, size, size);
             ctx.drawImage(tmp, 0, 0, 512, 512);
         }
 
@@ -2209,27 +2230,33 @@ function SpecialDeals(defaultTab) {
                 return;
             }
 
-            // Disable button immediately to prevent double-click
-            btn.prop('disabled', true).css('opacity', 0.5);
-            var cooldown = 30;
-            var origText = btn.text();
-            btn.text("Please wait... " + cooldown + "s");
-            var timer = setInterval(function() {
-                cooldown--;
-                if (cooldown <= 0) {
-                    clearInterval(timer);
-                    btn.text(origText);
-                    updateShopLoginState(); // re-check login before re-enabling
-                } else {
-                    btn.text("Please wait... " + cooldown + "s");
-                }
-            }, 1000);
+            /*
+             * A token purchase or upload is already in flight. The busy state
+             * is set by uploadCustomSkin() and cleared by the opcode 71/151
+             * handlers or their timeouts.
+             */
+            if (
+                (window._lmSkinUploadState && window._lmSkinUploadState.busy) ||
+                window._lmSkinCreatePending
+            ) {
+                toastr.warning('<b>[SKIN]:</b> An upload is already in progress.');
+                return;
+            }
+
+            // Disable immediately to block a double click
+            btn.prop('disabled', true).css({ opacity: 0.5, cursor: 'not-allowed' });
 
             // Always use autonomous protocol upload (no canvas injection)
+            var uploadStarted = false;
             if (window.application && typeof window.application.uploadCustomSkin === 'function') {
-                window.application.uploadCustomSkin(processedBufferModal, name, color);
+                uploadStarted = window.application.uploadCustomSkin(processedBufferModal, name, color) === true;
             } else {
                 toastr.warning("<b>[SERVER]:</b> Not connected. Play a game first.");
+            }
+
+            if (!uploadStarted) {
+                // Validation or connection failed before anything was sent
+                updateShopLoginState();
             }
         });
 

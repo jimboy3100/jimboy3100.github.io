@@ -28564,7 +28564,7 @@ function thelegendmodproject() {
              *   this.user.skinCreateVIPTokens — VIP skin token balance
              *   getAgarCustomSkinPurchaseId() — config-driven purchaseId
              *   getAgarSoftPurchaseInfo() — price/currency from config
-             *   app.softPurchase() — sends opcode 70 via mesega
+             *   window.softPurchase() — sends opcode 70 and waits for opcode 71
              */
             var app = this;
 
@@ -28617,15 +28617,42 @@ function thelegendmodproject() {
             var configuredCurrency =
                 "dna";
 
-            if (vipTokenBalance > 0) {
+            /*
+             * Purchase actually sent before the upload. Same order as the
+             * official client: a weekly VIP token is used only while the
+             * VIP subscription is active, and it is first converted into a
+             * create_skin_token through its own soft purchase.
+             */
+            var tokenPurchaseId =
+                standardTokenPurchaseId;
+
+            var vipStatus =
+                typeof window.getAgarVipStatus ===
+                    'function'
+                    ? window.getAgarVipStatus()
+                    : null;
+
+            var vipSubscriptionActive =
+                !!(vipStatus && vipStatus.active === true);
+
+            if (
+                vipTokenBalance > 0 &&
+                vipSubscriptionActive
+            ) {
                 indexedSubscriptions.push(
                     "vip_weekly"
                 );
 
+                needsTokenPurchase =
+                    true;
+
+                tokenPurchaseId =
+                    "1_create_skin_token_for_vip_weekly";
+
                 console.log(
-                    "[LM SKIN] Using existing VIP skin token (" +
+                    "[LM SKIN] Converting a VIP skin token (" +
                     vipTokenBalance +
-                    ")."
+                    " available)."
                 );
             } else if (
                 standardTokenBalance > 0
@@ -29075,6 +29102,22 @@ function thelegendmodproject() {
             if (needsTokenPurchase) {
                 if (
                     typeof window
+                        ._lmHasPendingSoftPurchase ===
+                        "function" &&
+                    window
+                        ._lmHasPendingSoftPurchase(
+                            tokenPurchaseId
+                        )
+                ) {
+                    toastr.warning(
+                        "<b>[SKIN]:</b> A skin-token purchase is already pending."
+                    );
+
+                    return false;
+                }
+
+                if (
+                    typeof window
                         ._lmSetSkinUploadBusy ===
                         "function"
                 ) {
@@ -29084,9 +29127,14 @@ function thelegendmodproject() {
                         );
                 }
 
+                /*
+                 * window.softPurchase registers the callbacks for the
+                 * matching opcode 71 response. application.softPurchase
+                 * only sends the request and would drop them.
+                 */
                 var purchaseSent =
-                    app.softPurchase(
-                        standardTokenPurchaseId,
+                    window.softPurchase(
+                        tokenPurchaseId,
                         {
                             kind:
                                 "skin-token",
@@ -29181,7 +29229,7 @@ function thelegendmodproject() {
                     "[LM SKIN] Waiting for opcode 71 before sending opcode 150:",
                     {
                         purchaseId:
-                            standardTokenPurchaseId,
+                            tokenPurchaseId,
                         cost:
                             configuredCost,
                         currency:
@@ -39812,7 +39860,11 @@ function thelegendmodproject() {
                         this.user.skipBrew[items[i].productId] = items[i].amount;
                         break;
                     case 10:
-                        //this.user.skinCreateTokens = items[i].amount;
+                        /* skin_create_token wallet type: create_skin_token */
+                        if (items[i].productId === "create_skin_token") {
+                            this.user.skinCreateTokens = items[i].amount;
+                            console.log("[LM] Skin creation tokens: " + items[i].amount);
+                        }
                         break;
                     case 11:
                         var skin = this.getLink(items[i].productId);
