@@ -3098,8 +3098,17 @@ window.softPurchase =
             return false;
         }
 
-        if (window._lmRegisterSoftPurchase) {
-            window._lmRegisterSoftPurchase(purchaseId, context);
+        /*
+         * One request per purchase ID at a time. A second click (or a button
+         * re-rendered as enabled) must not send a second opcode 70 and spend
+         * currency twice while the first opcode 71 is still pending.
+         */
+        if (
+            window._lmRegisterSoftPurchase &&
+            !window._lmRegisterSoftPurchase(purchaseId, context)
+        ) {
+            console.warn('[LM] Soft purchase already pending, not sending again:', purchaseId);
+            return false;
         }
 
         if (
@@ -3107,7 +3116,11 @@ window.softPurchase =
             typeof window.application.softPurchase === 'function'
         ) {
             try {
-                return window.application.softPurchase(purchaseId) !== false;
+                if (window.application.softPurchase(purchaseId) !== false) {
+                    return true;
+                }
+                /* Not sent (not connected / protocol not ready): fall through to the
+                 * mesega path, and cancel below if that is unavailable too. */
             } catch (appErr) {
                 console.warn('[LM] application.softPurchase threw error, falling back to mesega:', appErr);
             }

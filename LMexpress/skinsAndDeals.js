@@ -2346,6 +2346,8 @@ function SpecialDeals(defaultTab) {
         });
         $("#GameConfigurationUrl").blur(function() {
             var newUrl = $("#GameConfigurationUrl").val();
+            /* Blur without a change must not wipe the loaded config. */
+            if (!newUrl || newUrl === window.MiniclipConfigDestination) return;
             window.MiniclipConfigDestination = newUrl;
 
             /* Invalidate cached config so a fresh fetch is forced */
@@ -2458,7 +2460,8 @@ function SpecialDeals(defaultTab) {
         });
 
         $(document).off('keydown.shopModal').on('keydown.shopModal', function(e) {
-            if (e.which === 27 && $('#specialShopModal').length) {
+            /* The modal stays in the DOM after closing; only react while it is visible. */
+            if (e.which === 27 && $('#specialShopModal').is(':visible')) {
                 window.closeSpecialShopModal();
             }
         });
@@ -2763,10 +2766,9 @@ function populateDealsGrid() {
             window.GameConfiguration = window.master.GameConfiguration;
         } else {
             grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals...</div>';
-            if (!window._isLoadingGameConfig) {
-                window._isLoadingGameConfig = true;
-                LoadGameConfiguration();
-            }
+            /* LoadGameConfiguration() manages _isLoadingGameConfig itself; setting the
+             * flag here made it return immediately, so the deals never loaded. */
+            LoadGameConfiguration();
             return;
         }
     }
@@ -2827,7 +2829,7 @@ function populateDealsGrid() {
         })(deal.priceTier);
         var desc = (bundleInfo.description && bundleInfo.description !== 'na')
             ? bundleInfo.description.replace(/_/g, ' ').replace(' name', '')
-            : deal.bundleId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
+            : String(deal.bundleId || deal.id || '').replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
 
         // Resolve skins via Gameplay - Equippable Skins for proper names
         var resolvedSkins = getDealSkinEntries(deal.bundleId);
@@ -4358,7 +4360,7 @@ function buyDealSoft(purchaseId, cost, currencyType) {
     if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy deal')) {
         return;
     }
-    if (!window.application || !window.application.softPurchase) {
+    if (typeof window.softPurchase !== 'function') {
         toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Join a game session first!');
         return;
     }
@@ -4376,10 +4378,7 @@ function buyDealSoft(purchaseId, cost, currencyType) {
             allBtns[i].style.pointerEvents = 'none';
         }
 
-        toastr.info('<b>[SHOP]:</b> Sending purchase request...');
-        window.application.softPurchase(purchaseId);
-
-        window._dealSoftTimeout = setTimeout(function() {
+        function reenableDealButtons() {
             var btns = document.querySelectorAll('#dealsGrid .btn');
             for (var j = 0; j < btns.length; j++) {
                 btns[j].disabled = false;
@@ -4387,7 +4386,34 @@ function buyDealSoft(purchaseId, cost, currencyType) {
                 btns[j].style.pointerEvents = 'auto';
             }
             updateDealsBalance();
-        }, 10000);
+        }
+
+        toastr.info('<b>[SHOP]:</b> Sending purchase request...');
+        /*
+         * Re-enable the buttons only when Agar.io answered (opcode 71) or the
+         * request timed out. The old fixed 10s re-enable was shorter than the
+         * 20s purchase timeout and allowed buying the same deal twice.
+         */
+        var dealSent = window.softPurchase(purchaseId, {
+            kind: 'deal',
+            onSuccess: function () {
+                toastr.success('<b>[SHOP]:</b> Purchase successful!');
+                reenableDealButtons();
+            },
+            onFailure: function (resultCode) {
+                toastr.error('<b>[SHOP]:</b> ' + (resultCode === 2 ? 'Purchase failed \u2014 not enough DNA/coins.' : 'Purchase failed.'));
+                reenableDealButtons();
+            },
+            onTimeout: function () {
+                toastr.error('<b>[SHOP]:</b> Agar.io did not confirm the purchase. Check your wallet before trying again.');
+                reenableDealButtons();
+            }
+        }) === true;
+
+        if (!dealSent) {
+            toastr.error('<b>[SHOP]:</b> Could not send the purchase request.');
+            reenableDealButtons();
+        }
     });
 }
 window.buyDealSoft = buyDealSoft;
@@ -7856,52 +7882,43 @@ function _executeSkinPurchase(
         }
     );
 
+    /*
+     * window.softPurchase registers these callbacks for the matching opcode 71
+     * reply (application.softPurchase only sends and dropped the callback),
+     * and refuses a second request while this purchase is still pending.
+     */
     var requested =
-        window.application.softPurchase(
+        typeof window.softPurchase === 'function' &&
+        window.softPurchase(
             purchaseInfo.purchaseId,
-            function (
-                result
-            ) {
-                setSkinBuyButtonPending(
-                    productId,
-                    false
-                );
+            {
+                kind: 'skin',
 
-                if (
-                    result &&
-                    result.success
-                ) {
-                    toastr.success(
-                        '<b>[SHOP]:</b> Purchase successful!'
-                    );
-
-                    equipSkin(
-                        productId
-                    );
-
-                    if (
-                        typeof window
-                            .renderSkinPage ===
-                            'function'
-                    ) {
-                        window.renderSkinPage(
-                            false
-                        );
+                onSuccess: function () {
+                    setSkinBuyButtonPending(productId, false);
+                    toastr.success('<b>[SHOP]:</b> Purchase successful!');
+                    equipSkin(productId);
+                    if (typeof window.renderSkinPage === 'function') {
+                        window.renderSkinPage(false);
                     }
-                } else {
+                },
+
+                onFailure: function (resultCode) {
+                    setSkinBuyButtonPending(productId, false);
                     toastr.error(
                         '<b>[SHOP]:</b> ' +
-                        (
-                            (
-                                result &&
-                                result.error
-                            ) ||
-                            'Purchase failed.'
-                        )
+                        (resultCode === 2
+                            ? 'Purchase failed \u2014 not enough DNA/coins.'
+                            : 'Purchase failed.')
                     );
+                },
+
+                onTimeout: function () {
+                    setSkinBuyButtonPending(productId, false);
+                    toastr.error('<b>[SHOP]:</b> Agar.io did not confirm the purchase. Check your wallet before trying again.');
                 }
             }
-        );
+        ) === true;
 
     if (!requested) {
         setSkinBuyButtonPending(

@@ -1881,7 +1881,20 @@ function YoutubeEmbPlayer(pastedDataorNot) {
     }
 }
 
+/* Chat shortcodes come from other players: escape every value put into HTML
+ * and accept only plain http(s) links (no quotes, spaces or brackets). */
+function _lmEscHtml(value) {
+    return String(value == null ? '' : value).replace(/[&<>"'`]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' }[c];
+    });
+}
+
+function _lmSafeChatUrl(value) {
+    return /^https?:\/\/[^\s"'<>`\\]+$/i.test(String(value || ''));
+}
+
 function MsgCommands1(MSGCOMMANDS, MSGNICK) {
+    MSGNICK = _lmEscHtml(MSGNICK);
 
     if (MSGCOMMANDS.includes("[url]")) {
         if ($("#nick").val().includes("url") == false) {
@@ -1893,6 +1906,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
+        if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
@@ -1908,7 +1922,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         MSGCOMMANDS = MSGCOMMANDS.split("[tag]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/tag]')[0];
         if (MSGCOMMANDS != "") {
-            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63a + ': <i id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63a + ': <i id="visiturl" href=' + _lmEscHtml(MSGCOMMANDS) + ' target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
@@ -1918,7 +1932,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
                 newsubmit();
             });
         } else {
-            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63b + ': <i id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63b + ': <i id="visiturl" href=' + _lmEscHtml(MSGCOMMANDS) + ' target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
@@ -1938,6 +1952,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
+        if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + getParameterByName("v", MSGCOMMANDS) + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
@@ -1958,6 +1973,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
+        if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("join.skype.com/")) {
             toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 10000,
@@ -1977,6 +1993,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("http://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTP://") == false) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
+        if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg") || MSGCOMMANDS.includes("discord.com")) {
             toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
@@ -2023,7 +2040,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
 
         //with confirmation
         else if (commandMsg == "HideAll") {
-            toastr.warning(Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
@@ -2031,7 +2048,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
                 $("#HideAllBthn").click();
             });
         } else if (commandMsg == "NamePerm") {
-            toastr.warning(Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter26 + ': ' + playerMsg + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter26 + ': ' + _lmEscHtml(playerMsg) + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
@@ -2041,7 +2058,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
                 newsubmit();
             });
         } else if (commandMsg == "dTroll2") {
-            toastr.warning(Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
@@ -2049,7 +2066,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
                 settrolling();
             });
         } else if (commandMsg == "Youtube") {
-            toastr.warning(Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
@@ -7411,13 +7428,23 @@ function initializeLM(modVersion) {
      * OLD: DOMNodeInserted / DOMSubtreeModified (deprecated, removed from modern browsers).
      * NEW: MutationObserver — standard API, works in all browsers. */
     var _chatObserverActive = false;
+    var _lastProcessedChatEmbed = null;
     function _processChatEmbeds() {
         if (_chatObserverActive) return;
         _chatObserverActive = true;
         setTimeout(function() {
             MSGCOMMANDS = $(".toast.toast-success").last().text() || $(".message-text").last().text();
             MSGNICK = $(".message-nick").last().text().replace(": ", "");
-            if (MSGCOMMANDS) MsgCommands1(MSGCOMMANDS, MSGNICK);
+            /*
+             * The toast container also changes when MsgCommands1 shows its own
+             * warning toast; re-reading the same last message then looped
+             * forever. Process each message once.
+             */
+            var _embedKey = MSGNICK + '\u0000' + MSGCOMMANDS;
+            if (MSGCOMMANDS && _embedKey !== _lastProcessedChatEmbed) {
+                _lastProcessedChatEmbed = _embedKey;
+                MsgCommands1(MSGCOMMANDS, MSGNICK);
+            }
             _chatObserverActive = false;
         }, 50);
     }
@@ -7617,7 +7644,8 @@ function joinSERVERfindinfo() {
     var searchedtoken =
         $("#server-token").val();
 
-    if (searchedtoken != null) {
+    /* .val() returns "" (never null) when empty; "" matched every player in the search. */
+    if (searchedtoken && String(searchedtoken).trim().length >= 4) {
         $("#searchInput").val(
             searchedtoken
         );
@@ -8222,7 +8250,8 @@ function AgarBannedUIDs() {
 function AddAgarBannedUIDs(UID) {
     if (window.bannedUserUIDs && window.AgarBannedUIDsAdded) {
 
-        if (!window.bannedUserUIDs.includes(UID) && UID != null && UID != "" && window.agarioUID.includes('-')) {
+        /* Validate the UID being banned (it used to check the admin's own agarioUID). */
+        if (!window.bannedUserUIDs.includes(UID) && UID != null && UID != "" && String(UID).includes('-')) {
             window.bannedUserUIDs[window.bannedUserUIDs.length] = UID;
             postSNEZ('https://api.legendmod.ml/lm-settings', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify(window.bannedUserUIDs));
         }
@@ -8276,7 +8305,8 @@ function BannedUIDS() {
                 var temp = $("#Bannedagario_uid_input").val()
                 if (!bannedUserUIDs.includes(temp) && temp != null && temp != "" && temp.includes('-')) {
                     AddAgarBannedUIDs(temp);
-                    bannedUserUIDs.push(temp);
+                    /* AddAgarBannedUIDs already appended it; avoid a duplicate entry. */
+                    if (!bannedUserUIDs.includes(temp)) bannedUserUIDs.push(temp);
                     var opt = document.createElement("option");
                     opt.text = temp;
                     document.getElementById('ss-select-BannedUIDS').options.add(opt);
