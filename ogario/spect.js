@@ -1032,7 +1032,8 @@ class Spect {
                 const ping = view.getUint16(1, true);
                 view = this.createView(3);
                 view.setUint8(0, 227);
-                view.setUint16(1, ping);
+                /* little-endian, like the read above (main client and Delta do the same) */
+                view.setUint16(1, ping, true);
                 this.sendMessage(view);
 
                 break;

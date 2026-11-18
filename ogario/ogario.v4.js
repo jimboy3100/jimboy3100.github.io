@@ -33447,6 +33447,12 @@ function thelegendmodproject() {
                 _earlyType === 'agario'
             );
 
+            /*
+             * Connection sequence: a delayed resume from an older connect()
+             * (the close-wait below) must not open a second agar.io socket.
+             */
+            this._connectSeq = (this._connectSeq || 0) + 1;
+            var _connectSeq = this._connectSeq;
             this.closeConnection();
             this.flushCellsData();
             this.protocolKey = null;
@@ -33744,6 +33750,8 @@ function thelegendmodproject() {
                     _resumed = true;
                     clearTimeout(_fallbackTimer);
                     _oldSocket.onclose = null;
+                    /* A newer connect() already replaced this one. */
+                    if (_self._connectSeq !== _connectSeq) return;
                     //console.log('[LM] Old socket closed, creating new connection to: ' + _connectUrl);
                     _self._finishConnect(_connectUrl, app);
                 }
@@ -33764,6 +33772,16 @@ function thelegendmodproject() {
          * onclose fires (agario-to-agario server switch).
          */
         _finishConnect(url, app) {
+            /* Never leave a previous game socket alive and bound to our handlers. */
+            if (this.socket) {
+                try {
+                    this.socket.onopen = null;
+                    this.socket.onmessage = null;
+                    this.socket.onerror = null;
+                    this.socket.onclose = null;
+                    this.socket.close();
+                } catch (e) { }
+            }
             this.socket = new WebSocket(url);
             this.connectionIntegrity = typeof this.socket._lwIntegrity === "boolean" ? this.socket._lwIntegrity : Boolean(this.integrity);
             this.socket.binaryType = 'arraybuffer';
@@ -37547,8 +37565,14 @@ function thelegendmodproject() {
                     }
                     break;
                 case 104:
-                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Logout forced');
-                    logout();
+                    /*
+                     * Do NOT log out here. Delta ignores opcode 104 too. Calling
+                     * logout() signed the user out of Google/Facebook and dropped
+                     * the session ("Logout forced" -> "logout called, not
+                     * reconnecting" -> socket close -> guest). The social token is
+                     * kept fresh by master.refreshSocialToken() instead.
+                     */
+                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Logout forced (ignored)');
                     window.testobjectsOpcode104 = data;
                     break;
                 case 112:
@@ -38162,6 +38186,8 @@ function thelegendmodproject() {
                 case 20:
                     var u = r.uncompressedData.disconnectField;
                     this.disconnectMessage(u.reason);
+                    /* Read by master.onDisconnect() to avoid reconnect loops on fatal reasons. */
+                    window._lmLastDisconnect = { reason: u && u.reason, time: Date.now() };
 
                     //window.loggedIn = false;
                     //window.logout && window.logout();

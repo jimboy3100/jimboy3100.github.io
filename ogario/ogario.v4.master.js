@@ -1309,6 +1309,27 @@ function legendmaster(self) {
                 return;
             }
 
+            /*
+             * Reason sent by the server (protobuf type 20) just before closing.
+             * 3 login elsewhere, 5 banned, 10 user deleted: reconnecting only
+             * kicks the other session again / fails again, so stop.
+             * 14 invalid token, 15 expired token: reconnect as guest instead of
+             * resending the same dead token in a loop.
+             */
+            var lastDisconnect = window._lmLastDisconnect;
+            window._lmLastDisconnect = null;
+            var serverReason =
+                lastDisconnect && Date.now() - lastDisconnect.time < 10000
+                    ? lastDisconnect.reason
+                    : null;
+
+            if (serverReason === 3 || serverReason === 5 || serverReason === 10) {
+                console.log("[Master] Not reconnecting: server disconnect reason " + serverReason);
+                return;
+            }
+
+            var dropToken = serverReason === 14 || serverReason === 15;
+
             console.log("[Master] Unexpected disconnect; reconnecting");
 
             window._lwReconnecting = true;
@@ -1316,6 +1337,15 @@ function legendmaster(self) {
             var savedToken = this.accessToken;
             var savedContext = this.context;
             var savedLoggedIn = window.loggedIn;
+
+            if (dropToken) {
+                this.accessToken = null;
+                window.loggedIn = false;
+                savedToken = null;
+                if (typeof toastr !== "undefined") {
+                    toastr.warning("<b>[SERVER]:</b> Your login expired. Please log in again.");
+                }
+            }
 
             this.reconnect(false, "unexpected-disconnect");
 
@@ -1397,11 +1427,58 @@ function legendmaster(self) {
         },
         doLoginWithFB(session) {
             this.context = "facebook";
-            this.accessToken = session;		
+            this.accessToken = session;
+            this._tokenTime = Date.now();
+            this._startTokenRefresh();
         },
         doLoginWithGPlus(value) {
             this.context = "google";
-            this.accessToken = value;	
+            this.accessToken = value;
+            this._tokenTime = Date.now();
+            this._startTokenRefresh();
+        },
+        /*
+         * Like Delta's AccountManager: refresh the provider token before it
+         * expires (Google id_token lives ~1 hour). Otherwise every reconnect
+         * after an hour sent an expired token and the session was dropped.
+         * The current connection stays logged in; the fresh token is used by
+         * the next login() on a new connection.
+         */
+        _startTokenRefresh() {
+            if (this._tokenRefreshTimer) return;
+            var m = this;
+            this._tokenRefreshTimer = setInterval(function () {
+                m.refreshSocialToken();
+            }, 5 * 60 * 1000);
+        },
+        refreshSocialToken() {
+            if (!this.accessToken || Date.now() - (this._tokenTime || 0) < 40 * 60 * 1000) return;
+            var m = this;
+            try {
+                if (this.context === "google" && self.gapi && self.gapi.auth2) {
+                    var authInstance = self.gapi.auth2.getAuthInstance();
+                    var googleUser = authInstance && authInstance.isSignedIn.get() ? authInstance.currentUser.get() : null;
+                    if (googleUser && typeof googleUser.reloadAuthResponse === "function") {
+                        googleUser.reloadAuthResponse().then(function (auth) {
+                            if (auth && auth.id_token && m.context === "google") {
+                                m.accessToken = auth.id_token;
+                                m._tokenTime = Date.now();
+                            }
+                        }).catch(function (err) {
+                            console.warn("[Master] Google token refresh failed:", err);
+                        });
+                    }
+                } else if (this.context === "facebook" && self.FB && typeof self.FB.getLoginStatus === "function") {
+                    self.FB.getLoginStatus(function (res) {
+                        if (res && res.status === "connected" && res.authResponse && res.authResponse.accessToken && m.context === "facebook") {
+                            m.accessToken = res.authResponse.accessToken;
+                            m._tokenTime = Date.now();
+                        }
+                    }, true);
+                }
+            } catch (refreshErr) {
+                console.warn("[Master] Token refresh error:", refreshErr);
+            }
         },
         login() {
             if (this.accessToken) {
@@ -1418,6 +1495,11 @@ function legendmaster(self) {
 			this.context = "";
 			/* Allow the next login on this connection to send its token. */
 			if (window.legendmod) window.legendmod.accessTokenSent = false;
+			if (this._tokenRefreshTimer) {
+				clearInterval(this._tokenRefreshTimer);
+				this._tokenRefreshTimer = null;
+			}
+			this._tokenTime = 0;
             console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " logout called, not reconnecting");
 			window.loggedIn=false;
             //            this.reconnect();
