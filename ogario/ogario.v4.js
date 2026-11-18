@@ -3424,17 +3424,24 @@ function ReqPing() {
         return;
     }
 
+    /* Not established yet (no 241 key): sendMessage() would drop it anyway. */
+    if (legendmod.connectionIntegrity && !legendmod.clientKey) {
+        return;
+    }
+
+    /*
+     * Same values as Delta's working ping: a small pingId and
+     * previousRoundtrip = 1. The old random 31-bit previousRoundtrip told
+     * the server the last round trip took up to ~24 days.
+     */
     var pingId =
         Math.floor(
             Math.random() *
-            0x7fffffff
+            1000
         );
 
     var previousRoundtrip =
-        Math.floor(
-            Math.random() *
-            0x7fffffff
-        );
+        1;
 
     var pingPayload = [8]
         .concat(
@@ -33881,7 +33888,8 @@ function thelegendmodproject() {
                     view.setUint32(1, this.clientVersion, true);
                     window.gameBots.clientVersion = this.clientVersion;
                     //new
-                    if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
+                    /* 3s, the same cadence Delta uses on official servers */
+                    if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 3000);
                     //this.sendPong();				
                 }
 
@@ -35533,7 +35541,21 @@ function thelegendmodproject() {
             // Removed legendmod.integrity guard — auth tokens should always
             // be sent, even on private servers. Integrity only gates
             // recaptcha/client key, not social login.
+            /*
+             * Send the login token at most once per connection (same rule as
+             * Delta). setNick() calls master.login() on every Play/respawn;
+             * re-sending the token on an already-authenticated agar.io socket
+             * gets the session disconnected. The flag is reset by connect()
+             * and by master.logout().
+             */
             if (LM.accessTokenSent) {
+                return;
+            }
+            if (!this.isSocketOpen()) {
+                return;
+            }
+            /* sendMessage() silently drops packets until the 241 key exists. */
+            if (this.connectionIntegrity && !this.clientKey) {
                 return;
             }
             if (!oW) {
@@ -35566,6 +35588,7 @@ function thelegendmodproject() {
             data = new Uint8Array(data);
             var raw_basefont = new DataView(data.buffer);
             this.sendMessage(raw_basefont);
+            LM.accessTokenSent = true;
         },
         sendFbToken(token) {
             //                console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Facebook token: " + token);
@@ -37978,6 +38001,8 @@ function thelegendmodproject() {
                         window._wasLoggedInOfficial = true;
                     }
                     window.loggedIn = true;
+                    /* The server accepted the login: never resend the token on this socket. */
+                    LM.accessTokenSent = true;
                     var u = r.uncompressedData.loginResponseField;
                     /* Preserve previous coins/dna/trophy across re-login to prevent
                      * the UI from flashing to 0 between reset and updateWalletInfo */

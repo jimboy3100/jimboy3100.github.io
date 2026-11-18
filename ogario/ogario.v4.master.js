@@ -1416,6 +1416,8 @@ function legendmaster(self) {
         logout() {
             this.accessToken = null;
 			this.context = "";
+			/* Allow the next login on this connection to send its token. */
+			if (window.legendmod) window.legendmod.accessTokenSent = false;
             console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " logout called, not reconnecting");
 			window.loggedIn=false;
             //            this.reconnect();

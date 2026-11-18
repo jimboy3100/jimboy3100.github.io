@@ -1858,10 +1858,16 @@ window.sendAction = action => {
 };
 
 function MultiTokenReady(spector) {
-    if (spector && master.accessTokenFB) {
-        spector.sendFbToken(master.accessTokenFB)
-    } else if (spector && master.accessTokenGPlus) {
+    if (!spector) return;
+    /*
+     * The multibox player must log in with the OTHER provider's account.
+     * Sending the main account's token logs the main connection out
+     * ("Login elsewhere"), so pick the token by the main login context.
+     */
+    if (master.context === "facebook" && master.accessTokenGPlus) {
         spector.sendGplusToken(master.accessTokenGPlus)
+    } else if (master.context === "google" && master.accessTokenFB) {
+        spector.sendFbToken(master.accessTokenFB)
     }
 }
 
