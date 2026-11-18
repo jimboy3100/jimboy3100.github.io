@@ -1239,6 +1239,7 @@ function legendmaster(self) {
 
             try {
                 self.core.connect(this.ws);
+                this._lastConnectAt = Date.now();
                 /*
                  * LM.connect() already unbound and closed the previous socket, so
                  * its onclose can no longer consume this flag. Clear it now, or a
@@ -1346,6 +1347,20 @@ function legendmaster(self) {
                     ? lastDisconnect.reason
                     : null;
 
+            /*
+             * Right after a server switch the old session can briefly overlap and
+             * cause reason 3 on the new socket: reconnect once in that case.
+             * The retry is re-armed by the next successful login (type 11).
+             */
+            if (
+                serverReason === 3 &&
+                Date.now() - (this._lastConnectAt || 0) < 5000 &&
+                !this._reason3Retried
+            ) {
+                this._reason3Retried = true;
+                serverReason = null;
+            }
+
             if (serverReason === 3 || serverReason === 5 || serverReason === 10) {
                 console.log("[Master] Not reconnecting: server disconnect reason " + serverReason);
                 return;
@@ -1450,12 +1465,18 @@ function legendmaster(self) {
         },
         doLoginWithFB(session) {
             this.context = "facebook";
+            /* A new token may be sent while this connection is not logged in yet
+             * (an earlier attempt got no login response). */
+            if (window.legendmod && !window.legendmod.loginConfirmed) window.legendmod.accessTokenSent = false;
             this.accessToken = session;
             this._tokenTime = Date.now();
             this._startTokenRefresh();
         },
         doLoginWithGPlus(value) {
             this.context = "google";
+            /* A new token may be sent while this connection is not logged in yet
+             * (an earlier attempt got no login response). */
+            if (window.legendmod && !window.legendmod.loginConfirmed) window.legendmod.accessTokenSent = false;
             this.accessToken = value;
             this._tokenTime = Date.now();
             this._startTokenRefresh();

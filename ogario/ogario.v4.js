@@ -3142,9 +3142,7 @@ window.softPurchase =
         /* Never send an account request before this connection's login is confirmed. */
         if (typeof window.lmAccountReady === 'function' && !window.lmAccountReady()) {
             console.warn('[LM] Soft purchase skipped: login not confirmed on this connection yet.', purchaseId);
-            if (context && typeof context.onFailure === 'function') {
-                try { context.onFailure('not_logged_in'); } catch (e) { }
-            }
+            /* Not sent: callers handle the false return (no onFailure, which showed a second toast). */
             return false;
         }
 
@@ -20272,8 +20270,6 @@ function thelegendmodproject() {
             if (defaultmapsettings.showTime) {
                 var time = new Date().toLocaleString();
                 this.timeHUD.textContent = time;
-                /* It was hidden when the option was turned off; show it again. */
-                $('#time-hud').show();
                 if (!this._displayTimeInterval) {
                     var app = this;
                     this._displayTimeInterval = setInterval(function () {
@@ -20800,6 +20796,9 @@ function thelegendmodproject() {
                         this.setTargetingHUD();
                         break;
                     case 'showTime':
+                        /* Show once when enabled from the settings checkbox (not on every
+                         * 1 s tick, which would undo "Hide All"). */
+                        if (defaultmapsettings.showTime) $('#time-hud').show();
                         this.displayTime();
                         break;
                     case 'centeredLb':
@@ -38180,16 +38179,21 @@ function thelegendmodproject() {
                     LM.loginConfirmed = true;
                     /* Lets the auto-login retry tell a fresh login from stale flags. */
                     window._lmLoginResponseAt = Date.now();
+                    if (window.master) window.master._reason3Retried = false;
                     var u = r.uncompressedData.loginResponseField;
                     /* Preserve previous coins/dna/trophy across re-login to prevent
                      * the UI from flashing to 0 between reset and updateWalletInfo */
-                    var prevCoins = (this.user && this.user.coins) || 0;
-                    var prevDna = (this.user && this.user.dna) || 0;
-                    var prevTrophy = (this.user && this.user.trophy) || 0;
-                    var prevSkins = (this.user && this.user.skins) || {};
-                    var prevLevel = (this.user && this.user.level) || window.agarioLEVEL || 1;
-                    var prevXp = (this.user && this.user.xp) || 0;
-                    var prevNextXp = (this.user && this.user.nextLevelXp) || 1000;
+                    /* Only carry values over for the SAME account; after an account
+                     * switch the previous account's skins/trophy/level stayed visible. */
+                    var _newUserId = u && u.userInfo && u.userInfo.userId;
+                    var _prevUser = (this.user && (!this.user.userId || !_newUserId || this.user.userId === _newUserId)) ? this.user : null;
+                    var prevCoins = (_prevUser && _prevUser.coins) || 0;
+                    var prevDna = (_prevUser && _prevUser.dna) || 0;
+                    var prevTrophy = (_prevUser && _prevUser.trophy) || 0;
+                    var prevSkins = (_prevUser && _prevUser.skins) || {};
+                    var prevLevel = (_prevUser && _prevUser.level) || (u && u.userInfo && u.userInfo.level) || window.agarioLEVEL || 1;
+                    var prevXp = (_prevUser && _prevUser.xp) || 0;
+                    var prevNextXp = (_prevUser && _prevUser.nextLevelXp) || 0;
                     this.user = {
                         coins: prevCoins,
                         dna: prevDna,
@@ -40003,8 +40007,10 @@ function thelegendmodproject() {
                             if (!this._questActivationSent) this._questActivationSent = {};
                             var _questKey = items[i].productId || 'quest';
                             if (!this._questActivationSent[_questKey]) {
-                                this._questActivationSent[_questKey] = true;
-                                window.activateQuest();
+                                /* Only remember it if the request was actually sent. */
+                                if (window.activateQuest() !== false) {
+                                    this._questActivationSent[_questKey] = true;
+                                }
                             }
                         }
                         break;
@@ -42646,11 +42652,17 @@ Most cells eaten   : ${mostCellsEaten}
             var gcEntry = window.getAgarXpEntry
                 ? window.getAgarXpEntry(level)
                 : null;
+            /*
+             * The config value for THIS level wins. The cached user.nextLevelXp is
+             * seeded with 1000 (or the previous level's value) at login, which made
+             * the bar show e.g. 2000% for a level-30 player.
+             */
             var nextLevelXp =
-                (this.user && this.user.nextLevelXp)
-                || (gcEntry && gcEntry.xpToNextLevel > 0
+                (gcEntry && gcEntry.xpToNextLevel > 0
                     ? gcEntry.xpToNextLevel
-                    : this.agarExp(level));
+                    : 0)
+                || (this.user && this.user.level === level && this.user.nextLevelXp)
+                || this.agarExp(level);
             var exp = level >= 150 ? 100 : (nextLevelXp > 0 ? ~~(xp * 100 / nextLevelXp) : 0);
 
             if (this.user) {
@@ -71406,8 +71418,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
         /* Typing in any text field (input, textarea such as #import-settings, select, contenteditable) must not trigger hotkeys. */
         var _hkTarget = event.target || {};
-        var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.tagName === 'SELECT' || _hkTarget.isContentEditable === true;
-        if ((!_isTypingTarget || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
+        var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.isContentEditable === true;
+        /* ESC always reaches the handler (opening the menu), as before. */
+        var _isEscOutsideInput = pressedKey === 'ESC' && _hkTarget.tagName !== 'INPUT';
+        if ((!_isTypingTarget || _isEscOutsideInput || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
 
             if (keyBlind[pressedKey] = true, 'ESC' === pressedKey) {
                 return event.preventDefault(), void (application && application.showMenu());
@@ -71805,8 +71819,31 @@ function pickPlayerCellBySize(players, selectBiggest) {
             } else if (src[0] === 102 && src[1] === 8) {
                 data = new Uint8Array(src);
             } else {
-                console.warn("[32m%s[34m%s[0m", consoleMsgLM, " ProxyMobileData: not a protobuf envelope, not sent: ", arr);
+                console.warn("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData: not a protobuf envelope, not sent: ", arr);
                 return;
+            }
+            /*
+             * Account messages (everything but ping type 30) are dropped on an
+             * official connection until its login response arrived. Covers the
+             * raw-byte senders (online status, skin equip, potion/quest fallbacks)
+             * that bypass sendProto. Layout: [102][8,ct][18,len][8,type]...
+             */
+            if (typeof window.lmAccountReady === 'function' && !window.lmAccountReady()) {
+                var _pmType = -1;
+                try {
+                    var _pp = 1;
+                    var _rv = function () {
+                        var v = 0, sh = 0, b;
+                        do { b = data[_pp++]; v += (b & 127) * Math.pow(2, sh); sh += 7; } while (b & 128 && sh < 35);
+                        return v;
+                    };
+                    if (data[_pp] === 8) { _pp++; _rv(); }
+                    if (data[_pp] === 18) { _pp++; _rv(); if (data[_pp] === 8) { _pp++; _pmType = _rv(); } }
+                } catch (e) { _pmType = -1; }
+                if (_pmType !== 30) {
+                    console.warn("[LM] Account message type " + _pmType + " not sent: login not confirmed on this connection yet.");
+                    return;
+                }
             }
             LM.sendMessage(new DataView(data.buffer));
         },

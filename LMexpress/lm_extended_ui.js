@@ -1,3 +1,20 @@
+/*
+ * Re-enable a "BUYING..." button once the soft purchase is no longer pending
+ * (opcode 71 success/failure or the 20 s timeout). The buttons used to stay
+ * disabled after a failure or timeout until the modal was reopened.
+ */
+window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
+    var started = Date.now();
+    var timer = setInterval(function () {
+        var pending = typeof window._lmHasPendingSoftPurchase === 'function' &&
+            window._lmHasPendingSoftPurchase(purchaseId);
+        if (!pending || Date.now() - started > 30000) {
+            clearInterval(timer);
+            try { restore(); } catch (e) { }
+        }
+    }, 500);
+};
+
 /**
  * Legend Mod Extended Features UI Module (LMexpress)
  * Implements Weekly Leagues, Friends & Party Joiner, Battle Royale HUD & Danger Circle,
@@ -5387,12 +5404,17 @@
             btn.style.cursor = 'not-allowed';
             btn.textContent = 'BUYING...';
 
-            var sent = window.buyAgarPremiumPotion(productId);
-            if (!sent) {
+            var restorePotionBtn = function () {
                 btn.disabled = false;
                 btn.style.opacity = '1';
                 btn.style.cursor = 'pointer';
                 btn.innerHTML = originalHtml;
+            };
+            var sent = window.buyAgarPremiumPotion(productId);
+            if (!sent) {
+                restorePotionBtn();
+            } else {
+                window._lmRestoreWhenPurchaseSettled(purchaseId, restorePotionBtn);
             }
 
             return false;
@@ -5690,10 +5712,15 @@
                             btn.disabled = true;
                             btn.textContent = 'BUYING...';
 
-                            var sent = window.buyConfiguredBoost(capturedInfo.productId);
-                            if (!sent) {
+                            var restoreBoostBtn = function () {
                                 btn.disabled = false;
                                 btn.textContent = 'BUY ' + capturedPriceText;
+                            };
+                            var sent = window.buyConfiguredBoost(capturedInfo.productId);
+                            if (!sent) {
+                                restoreBoostBtn();
+                            } else {
+                                window._lmRestoreWhenPurchaseSettled(capturedInfo.purchaseId, restoreBoostBtn);
                             }
 
                             return false;
@@ -5969,10 +5996,15 @@
                             btn.disabled = true;
                             btn.textContent = 'BUYING...';
 
-                            var sent = window.buyAgarRushBoost(capturedInfo.productId);
-                            if (!sent) {
+                            var restoreRushBtn = function () {
                                 btn.disabled = false;
                                 btn.textContent = 'BUY ' + capturedPriceText;
+                            };
+                            var sent = window.buyAgarRushBoost(capturedInfo.productId);
+                            if (!sent) {
+                                restoreRushBtn();
+                            } else {
+                                window._lmRestoreWhenPurchaseSettled(capturedInfo.purchaseId, restoreRushBtn);
                             }
 
                             return false;
@@ -9486,6 +9518,7 @@
                 var originalText =
                     button.text();
 
+                var _skipOriginalText = button.text();
                 button.prop(
                     'disabled',
                     true
@@ -9499,6 +9532,12 @@
                 button.text(
                     'Working\u2026'
                 );
+                /* Restore when the purchase settles or the call is refused. */
+                window._lmRestoreWhenPurchaseSettled(purchaseId, function () {
+                    button.prop('disabled', false);
+                    button.css({ opacity: '', cursor: '' });
+                    button.text(_skipOriginalText);
+                });
 
 
                 window

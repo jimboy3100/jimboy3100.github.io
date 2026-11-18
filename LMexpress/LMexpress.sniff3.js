@@ -123,10 +123,18 @@ var textspeach="";
                 recognition.addEventListener('result', function(event) {
                     var text_to = event.results.item(0).item(0).transcript;
                     textspeach = text_to;
-                    application.sendChatMessage(101, "🎤 " + text_to);
+                    /* use the configured prefix (was hard-coded) */
+                    application.sendChatMessage(101, (cfg.prefix ? cfg.prefix + " " : "🎤 ") + text_to);
                 }, false);
                 recognition.addEventListener('end', function(event) {
                     fn_recognition_end();
+                }, false);
+                /* Denied microphone: stop the auto-restart instead of retrying every 500 ms forever. */
+                recognition.addEventListener('error', function(event) {
+                    if (event && (event.error === 'not-allowed' || event.error === 'service-not-allowed')) {
+                        window.voiceStarted = null;
+                        toastr.warning("Microphone access is blocked; voice chat stopped.");
+                    }
                 }, false);
             } else {
                 console.warn("SpeechRecognition API is not supported in this browser.");
@@ -196,7 +204,7 @@ var textspeach="";
                 cfg.lang = $("#voice-lang").val();
 				localStorage.setItem("lang", cfg.lang);	
                 //GM_setValue("lang", cfg.lang);
-                if (cfg.lang !== "default") {
+                if (cfg.lang !== "default" && recognition) {
                     recognition.lang = cfg.lang;
                 }
                 /*cfg.unpause = $("#voice-unpause").prop('checked');

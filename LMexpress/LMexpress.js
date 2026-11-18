@@ -907,7 +907,7 @@ function findIP(searchIP) {
             var numTries = 0;
             var numAttempts = 0;
             var maxAttempts = 2;
-            toastr["success"](Premadeletter21 + " \'wss://" + searchIP + "\'...").css("width", "210px");
+            toastr["success"](Premadeletter21 + " \'wss://" + _lmEscHtml(searchIP) + "\'...").css("width", "210px");
             numTries++;
             if (currentIP == searchIP) {
                 $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
@@ -932,6 +932,7 @@ function findIP(searchIP) {
                             searching = false;
                             hideCancelSearch();
                             toastr.error(Premadeletter31).css("width", "210px");
+                            return; /* gave up: do not hop to another server */
                         }
                         if (currentIP == searchIP) {
                             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
@@ -976,7 +977,7 @@ function searchPlayer(searchString) {
             var minNamesFound = 3;
             var numAttempts = 0;
             var maxAttempts = 2;
-            toastr["success"](Premadeletter30 + " \'" + searchString + "\'...").css("width", "210px");
+            toastr["success"](Premadeletter30 + " \'" + _lmEscHtml(searchString) + "\'...").css("width", "210px");
             var leaderboard = $("#leaderboard-positions").text();
             var names = searchString.split(/[1-9]\.\s|10\.\s/g).filter(function (el) {
                 return el.length != 0;
@@ -1029,6 +1030,7 @@ function searchPlayer(searchString) {
                             searching = false;
                             //                            hideCancelSearch();
                             toastr.error(Premadeletter31).css("width", "210px");
+                            return; /* gave up: do not hop to another server */
                         }
                         if (found) {
                             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
@@ -2829,7 +2831,7 @@ function universalchat() {
     };
     my.atConnect = function () {
         my.atDisconnect();
-        stat.comebackTimeout = 5000;
+        /* backoff is reset in onopen only; resetting here kept retries at 5 s */
         console.log("%c[LM AgarTool]%c Connecting to " + stat.AgarToolServer, "color:green", "color:inherit");
         try {
             stat.atSocket = new WebSocket(stat.AgarToolServer);
@@ -3344,16 +3346,17 @@ function universalchat() {
             //
             var flag = false;
             if (defaultmapsettings.top5skins) {
-                //sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = ' + (application.customSkinsMap[ball.name] ? application.customSkinsMap[ball.name] : "https://www.legendmod.ml/banners/iconagariotool.png") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+                //sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + _lmEscHtml(key) + '"style="background-color: ' + _lmEscHtml(ball.color) + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = ' + (application.customSkinsMap[ball.name] ? application.customSkinsMap[ball.name] : "https://www.legendmod.ml/banners/iconagariotool.png") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
                 if (application.customSkinsMap[ball.name] && application.customSkinsCache[application.customSkinsMap[ball.name] + "_cached2"]) {
-                    sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' + application.customSkinsCache[application.customSkinsMap[ball.name] + "_cached2"].outerHTML + '</span> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+                    sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + _lmEscHtml(key) + '"style="background-color: ' + _lmEscHtml(ball.color) + '; width: 30px; height:40px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' + application.customSkinsCache[application.customSkinsMap[ball.name] + "_cached2"].outerHTML + '</span> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
                 }
                 else {
-                    sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = "https://www.legendmod.ml/banners/iconagariotool.png" alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+                    sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + _lmEscHtml(key) + '"style="background-color: ' + _lmEscHtml(ball.color) + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = "https://www.legendmod.ml/banners/iconagariotool.png" alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
                 }
             }
             for (var e = 0; e < legendmod.ghostCells.length; e++) {
-                if (legendmod.leaderboard[e] && escapeHtml(ball.name) == legendmod.leaderboard[e].nick) {
+                /* predictedGhostCells is often empty: guard like ogario does (TypeError every tick) */
+                if (legendmod.leaderboard[e] && window.predictedGhostCells && window.predictedGhostCells[e] && escapeHtml(ball.name) == legendmod.leaderboard[e].nick) {
                     if (flag == false) {
                         sep = sep + ('<span class="hud-main-color">[' + application.calculateMapSector(window.predictedGhostCells[e].x, window.predictedGhostCells[e].y) + "]</span>");
                         sep = sep + ('<span class="top5-mass-color">[' + application.shortMassFormat(window.predictedGhostCells[e].mass) + "]</span> ");
@@ -3744,7 +3747,7 @@ function connectto(message2) {
     $('#server-token').val(message2);
     $('#server-join').click();
     setTimeout(function () {
-        if ($('#server-token').val() != $('#searchInput').val()) {
+        if ($('#server-token').val() != message2) { /* #searchInput may hold a nickname */
             toastr.error("Server not available!");
         }
     }, 1500);
@@ -7435,21 +7438,22 @@ function initializeLM(modVersion) {
      * OLD: DOMNodeInserted / DOMSubtreeModified (deprecated, removed from modern browsers).
      * NEW: MutationObserver — standard API, works in all browsers. */
     var _chatObserverActive = false;
-    var _lastProcessedChatEmbed = null;
     function _processChatEmbeds() {
         if (_chatObserverActive) return;
         _chatObserverActive = true;
         setTimeout(function() {
-            MSGCOMMANDS = $(".toast.toast-success").last().text() || $(".message-text").last().text();
+            var _toastEl = $(".toast.toast-success").last();
+            var _msgEl = _toastEl.length ? _toastEl : $(".message-text").last();
+            MSGCOMMANDS = _msgEl.text();
             MSGNICK = $(".message-nick").last().text().replace(": ", "");
             /*
              * The toast container also changes when MsgCommands1 shows its own
              * warning toast; re-reading the same last message then looped
-             * forever. Process each message once.
+             * forever. Process each message ELEMENT once (a teammate may send
+             * the same command twice in a row).
              */
-            var _embedKey = MSGNICK + '\u0000' + MSGCOMMANDS;
-            if (MSGCOMMANDS && _embedKey !== _lastProcessedChatEmbed) {
-                _lastProcessedChatEmbed = _embedKey;
+            if (MSGCOMMANDS && _msgEl.length && !_msgEl.attr('data-lm-done')) {
+                _msgEl.attr('data-lm-done', '1');
                 MsgCommands1(MSGCOMMANDS, MSGNICK);
             }
             _chatObserverActive = false;
@@ -8188,7 +8192,8 @@ function AgarVersionDestinations() {
                  * Record a newly seen version. This also creates the record
                  * when the server has none yet (404).
                  */
-                if (currentAdded && xhttp && (xhttp.status === 200 || xhttp.status === 404)) {
+                /* Never overwrite the shared history with an unparsable 200 reply. */
+                if (currentAdded && xhttp && ((xhttp.status === 200 && history) || xhttp.status === 404)) {
                     postSNEZ('https://api.legendmod.ml/lm-settings', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
                 }
 

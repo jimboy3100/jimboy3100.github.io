@@ -186,23 +186,28 @@ $("#userscripts").hide();
 
 
 $('#UserscriptA').blur(function(){
-if ($("#UserscriptA").val()!=""){
+/* reload only when the URL changed (re-injected the script on every blur) */
+if ($("#UserscriptA").val()!="" && $("#UserscriptA").val()!==Userscript1){
 Userscript1=$("#UserscriptA").val();localStorage.setItem("Userscript1", Userscript1);
 $("#Userscripttexture1").load(Userscript1, function() { $("#userscriptBtn1").click(); }); }return false;});
 $('#UserscriptB').blur(function(){
-if ($("#UserscriptB").val()!=""){
+/* reload only when the URL changed (re-injected the script on every blur) */
+if ($("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){
 Userscript2=$("#UserscriptB").val();localStorage.setItem("Userscript2", Userscript2);
 $("#Userscripttexture2").load(Userscript2, function() { $("#userscriptBtn2").click(); }); }return false;});
 $('#UserscriptC').blur(function(){
-if ($("#UserscriptC").val()!=""){
+/* reload only when the URL changed (re-injected the script on every blur) */
+if ($("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){
 Userscript3=$("#UserscriptC").val();localStorage.setItem("Userscript3", Userscript3);
 $("#Userscripttexture3").load(Userscript3, function() { $("#userscriptBtn3").click(); }); }return false;});
 $('#UserscriptD').blur(function(){
-if ($("#UserscriptD").val()!=""){
+/* reload only when the URL changed (re-injected the script on every blur) */
+if ($("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){
 Userscript4=$("#UserscriptD").val();localStorage.setItem("Userscript4", Userscript4);
 $("#Userscripttexture4").load(Userscript4, function() { $("#userscriptBtn4").click(); }); }return false;});
 $('#UserscriptE').blur(function(){
-if ($("#UserscriptE").val()!=""){
+/* reload only when the URL changed (re-injected the script on every blur) */
+if ($("#UserscriptE").val()!="" && $("#UserscriptE").val()!==Userscript5){
 Userscript5=$("#UserscriptE").val();localStorage.setItem("Userscript5", Userscript5);
 $("#Userscripttexture5").load(Userscript5, function() { $("#userscriptBtn5").click(); }); }return false;});
 
@@ -258,16 +263,16 @@ $("#userscriptBtn5").click(function() {
 	datatooltipfix();
 }
 
-function Userscripttext11(){ Userscripttext11=$("#UserscripttextA").val();localStorage.setItem("Userscripttext11", Userscripttext11);
-if (Userscripttext11!=""){$('#Userscriptpages3>option:nth-child(1)').text(Userscripttext11);}}
-function Userscripttext12(){ Userscripttext12=$("#UserscripttextB").val();localStorage.setItem("Userscripttext12", Userscripttext12);
-if (Userscripttext12!=""){$('#Userscriptpages3>option:nth-child(2)').text(Userscripttext12);}}
-function Userscripttext13(){ Userscripttext13=$("#UserscripttextC").val();localStorage.setItem("Userscripttext13", Userscripttext13);
-if (Userscripttext13!=""){$('#Userscriptpages3>option:nth-child(3)').text(Userscripttext13);}}
-function Userscripttext14(){ Userscripttext14=$("#UserscripttextD").val();localStorage.setItem("Userscripttext14", Userscripttext14);
-if (Userscripttext14!=""){$('#Userscriptpages3>option:nth-child(4)').text(Userscripttext14);}}
-function Userscripttext15(){ Userscripttext15=$("#UserscripttextE").val();localStorage.setItem("Userscripttext15", Userscripttext15);
-if (Userscripttext15!=""){$('#Userscriptpages3>option:nth-child(5)').text(Userscripttext15);}}
+function Userscripttext11(){ /* local value: assigning the global replaced this function with a string */ var _name=$("#UserscripttextA").val();localStorage.setItem("Userscripttext11", _name);
+if (_name!=""){$('#Userscriptpages3>option:nth-child(1)').text(_name);}}
+function Userscripttext12(){ /* local value: assigning the global replaced this function with a string */ var _name=$("#UserscripttextB").val();localStorage.setItem("Userscripttext12", _name);
+if (_name!=""){$('#Userscriptpages3>option:nth-child(2)').text(_name);}}
+function Userscripttext13(){ /* local value: assigning the global replaced this function with a string */ var _name=$("#UserscripttextC").val();localStorage.setItem("Userscripttext13", _name);
+if (_name!=""){$('#Userscriptpages3>option:nth-child(3)').text(_name);}}
+function Userscripttext14(){ /* local value: assigning the global replaced this function with a string */ var _name=$("#UserscripttextD").val();localStorage.setItem("Userscripttext14", _name);
+if (_name!=""){$('#Userscriptpages3>option:nth-child(4)').text(_name);}}
+function Userscripttext15(){ /* local value: assigning the global replaced this function with a string */ var _name=$("#UserscripttextE").val();localStorage.setItem("Userscripttext15", _name);
+if (_name!=""){$('#Userscriptpages3>option:nth-child(5)').text(_name);}}
 
 function closeuserscripts(){
 $("#main-menu").show();	
