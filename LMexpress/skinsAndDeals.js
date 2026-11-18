@@ -8193,14 +8193,17 @@ function _fetchConfigFallback(callback) {
 function populateLibConfig() {
     var x = document.getElementById("ss-select-agarVersionDestinations");
     if (!window.agarversionDestinations || !x) return;
-    //for (i = 0; i < Object.keys(window.agarversionDestinations).length; i++) {
-    for (var i = Object.keys(window.agarversionDestinations).length - 1; i > 0; i--) {
-        //if (window.agarversionDestinations[i].includes(window.getLatestconfigVersion)) {
-            var opt = document.createElement("option");
-			opt.text = window.agarversionDestinations[i];
-			x.add(opt);
-			//x.options[x.options.length] = new Option(window.agarversionDestinations[i])
-        //}
+    /* Rebuild (this runs again when the server history arrives). Newest first. */
+    x.innerHTML = '';
+    var keys = Object.keys(window.agarversionDestinations);
+    for (var i = keys.length - 1; i >= 0; i--) {
+        var value = window.agarversionDestinations[keys[i]];
+        if (!value) continue;
+        var opt = document.createElement("option");
+        opt.text = value;
+        opt.value = value;
+        if (value === window.agarversion) opt.selected = true;
+        x.add(opt);
     }
 }
 

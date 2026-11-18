@@ -8073,33 +8073,62 @@ function isEquivalent(a, b) {
 
 //Snez Agar Version Destinations
 function AgarVersionDestinations() {
+    /*
+     * The current config version always comes from agar.io itself
+     * (window.agarversion, refreshed from the login response). The shared
+     * LMConfigVersion record only adds previously seen versions to the
+     * Advanced dropdown, so a missing record (404) must not break anything.
+     */
     window.agarversionDestinationFound = false;
-    window.agarversionDestinations = {};
-    window.agarversionDestinations[Object.keys(agarversionDestinations).length - 1] = window.agarversion;
+    window.agarversionDestinations = { 0: window.agarversion };
 
-    //postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
+    function refreshDropdown() {
+        if (typeof populateLibConfig === 'function') populateLibConfig();
+    }
+
+    refreshDropdown();
 
     try {
         getSNEZ("https://api.legendmod.ml/lm-settings", "LMConfigVersion", "LMConfigVersionPass", function (xhttp) {
             try {
-                if (!xhttp || !xhttp.response || xhttp.response.length === 0) return;
-                var responseagarversionDestinations = JSON.parse(xhttp.response);
-                for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
-                    if (responseagarversionDestinations[i] == window.agarversion) {
-                        window.agarversionDestinationFound = true;
-                    }
+                var history = null;
+
+                if (xhttp && xhttp.status === 200 && xhttp.response) {
+                    var parsed = JSON.parse(xhttp.response);
+                    if (isObject(parsed)) history = parsed;
                 }
 
-                if (window.agarversionDestinationFound == true) {
-                    window.agarversionDestinations = responseagarversionDestinations;
-                    window.agarversionDestinationFound = false;
-                } else if (window.agarversionDestinationFound == false && isObject(responseagarversionDestinations)) {
-                    window.agarversionDestinations = responseagarversionDestinations;
-                    window.agarversionDestinations[Object.keys(responseagarversionDestinations).length] = window.agarversion;
+                /* Rebuild as an ordered list: stored versions + agar.io's current one. */
+                var versions = [];
+                if (history) {
+                    Object.keys(history).forEach(function (key) {
+                        var value = history[key];
+                        if (typeof value === 'string' && value && versions.indexOf(value) === -1) {
+                            versions.push(value);
+                        }
+                    });
+                }
+
+                var currentAdded = false;
+                if (window.agarversion && versions.indexOf(window.agarversion) === -1) {
+                    versions.push(window.agarversion);
+                    currentAdded = true;
+                }
+
+                window.agarversionDestinations = {};
+                versions.forEach(function (value, index) {
+                    window.agarversionDestinations[index] = value;
+                });
+
+                /*
+                 * Record a newly seen version. This also creates the record
+                 * when the server has none yet (404).
+                 */
+                if (currentAdded && xhttp && (xhttp.status === 200 || xhttp.status === 404)) {
                     postSNEZ('https://api.legendmod.ml/lm-settings', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
                 }
-                /* Populate the version dropdown now that data is ready (async-safe) */
-                if (typeof populateLibConfig === 'function') populateLibConfig();
+
+                refreshDropdown();
             } catch (e) { }
         });
     } catch (e) { }
@@ -8137,7 +8166,13 @@ function AgarBannedUIDs() {
     try {
         getSNEZ("https://api.legendmod.ml/lm-settings", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass", function (xhttp) {
             try {
-                if (!xhttp || !xhttp.response) return;
+                if (!xhttp) return;
+                /* No record on the server yet (404) means an empty ban list. */
+                if (xhttp.status === 404) {
+                    window.AgarBannedUIDsAdded = true;
+                    return;
+                }
+                if (xhttp.status !== 200 || !xhttp.response) return;
                 var responseLMAgarBannedUIDs = JSON.parse(xhttp.response);
                 for (var i = 0; i < Object.keys(responseLMAgarBannedUIDs).length; i++) {
                     if (window.bannedUserUIDs) {
