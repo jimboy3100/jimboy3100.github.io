@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.500;
+window.OgVer = 3.501;
 
 
 /*
@@ -29984,6 +29984,10 @@ function thelegendmodproject() {
                 return;
             }
 
+            /* Points below are recomputed around the current this.x/this.y now. */
+            this._jellyFrameId =
+                drawRender._jellyFrameId;
+
 
             /*
              * ───────────────────────────────────────────────────────────
@@ -31652,7 +31656,10 @@ function thelegendmodproject() {
                                 !this.removed &&
                                 this.points &&
                                 this.points.length >=
-                                    3
+                                    3 &&
+                                /* never draw a stale perimeter */
+                                this._jellyFrameId ===
+                                    drawRender._jellyFrameId
                             );
 
 
@@ -65545,6 +65552,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
 
         renderFrame() {
+            /* Frame id: lets cell.draw() tell whether jelly points were updated this frame. */
+            this._jellyFrameId = (this._jellyFrameId || 0) + 1;
             /* Clear WebGL with transparent black each frame — the GL canvas (base + 3)
              * must be transparent so the Canvas2D background (base) and grid (base + 1) show through. */
             if (this.gl) {
@@ -69368,8 +69377,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (!food || !food.length) return;
             var tempX = legendmod.viewXTrue;
             var tempY = legendmod.viewYTrue;
-            var minX = tempX, maxX = tempX;
-            var minY = tempY, maxY = tempY;
+            /*
+             * Start from the camera rectangle computed earlier this frame and
+             * only GROW it with the food box. Replacing it with the food box made
+             * cell.isInView() false for on-screen cells, so their jelly perimeter
+             * stopped updating while Canvas2D still filled the body from it: the
+             * cell colour froze in place while skin and name moved on.
+             */
+            var minX = Number.isFinite(LM.camMinX) ? Math.min(tempX, LM.camMinX) : tempX;
+            var maxX = Number.isFinite(LM.camMaxX) ? Math.max(tempX, LM.camMaxX) : tempX;
+            var minY = Number.isFinite(LM.camMinY) ? Math.min(tempY, LM.camMinY) : tempY;
+            var maxY = Number.isFinite(LM.camMaxY) ? Math.max(tempY, LM.camMaxY) : tempY;
             var foodOffset = 10 + defaultSettings.foodSize;
             var len = food.length;
 
