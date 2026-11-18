@@ -18990,7 +18990,7 @@ function thelegendmodproject() {
         },
         setFonts() {
             this.setFont('namesFont', defaultSettings.namesFont);
-            this.setFont('massFont', defaultSettings.namesFont);
+            this.setFont('massFont', defaultSettings.massFont);
             this.setFont('sectorsFont', defaultSettings.sectorsFont);
         },
         setBgColor() {
@@ -19883,7 +19883,9 @@ function thelegendmodproject() {
                     if (!spects[spectIdx].active) {
                         spects[spectIdx].respawn();
                     }
-                    var pSlot = (application.mbSlots && spectIdx < application.mbSlots.length) ? application.mbSlots[spectIdx] : application.selectedOldProfile;
+                    /* mbSlots is indexed by the unit number (0 = main), same as spect.js */
+                    var unitNo = spects[spectIdx].number || nextIdx;
+                    var pSlot = (application.mbSlots && unitNo < application.mbSlots.length) ? application.mbSlots[unitNo] : application.selectedOldProfile;
                     if (profiles[pSlot] && profiles[pSlot].skinURL) {
                         this.cacheCustomSkin(profiles[pSlot].nick, profiles[pSlot].color || '#000000', profiles[pSlot].skinURL);
                     }
@@ -19926,7 +19928,9 @@ function thelegendmodproject() {
                     if (!spects[spectIdx2].active) {
                         spects[spectIdx2].respawn();
                     }
-                    var pSlot2 = (application.mbSlots && spectIdx2 < application.mbSlots.length) ? application.mbSlots[spectIdx2] : application.selectedOldProfile;
+                    /* mbSlots is indexed by the unit number (0 = main), same as spect.js */
+                    var unitNo2 = spects[spectIdx2].number || prevIdx;
+                    var pSlot2 = (application.mbSlots && unitNo2 < application.mbSlots.length) ? application.mbSlots[unitNo2] : application.selectedOldProfile;
                     if (profiles[pSlot2] && profiles[pSlot2].skinURL) {
                         this.cacheCustomSkin(profiles[pSlot2].nick, profiles[pSlot2].color || '#000000', profiles[pSlot2].skinURL);
                     }
@@ -20205,6 +20209,8 @@ function thelegendmodproject() {
             if (defaultmapsettings.showTime) {
                 var time = new Date().toLocaleString();
                 this.timeHUD.textContent = time;
+                /* It was hidden when the option was turned off; show it again. */
+                $('#time-hud').show();
                 if (!this._displayTimeInterval) {
                     var app = this;
                     this._displayTimeInterval = setInterval(function () {
@@ -20369,7 +20375,7 @@ function thelegendmodproject() {
                                 teamboardImgSrc = isValidSkinUrl ? skinUrl : "https://www.legendmod.ml/banners/icon32croped.ico.gif";
                             }
                             t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + p.id + '" style="background-color: ' + p.color +
-                                '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt=""><img src="' + teamboardImgSrc + '" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover;" alt=""/></span></a><div style="margin-top: -30px; margin-left: 32px;">');
+                                '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt=""><img src="' + this.escapeHTML(teamboardImgSrc) + '" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover;" alt=""/></span></a><div style="margin-top: -30px; margin-left: 32px;">');
                             // t = t + ('<div><img src=' + teamboardskin.src + 'class="player-skin" style="border: solid 3px' + this.top5[o].color + '">' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
 
                             /* if (defaultmapsettings["showTargeting"]) {
@@ -20759,7 +20765,8 @@ function thelegendmodproject() {
                         break;*/
                     case 'showStats':
                         this.displayStats();
-                        $('#stats-hud').show();
+                        /* displayStats() hides the HUD when the option is off; only show it when on. */
+                        if (defaultmapsettings.showStats) $('#stats-hud').show();
                         break;
                     case 'blockPopups':
                         this.setBlockPopups();
@@ -24761,7 +24768,12 @@ function thelegendmodproject() {
         SLGconnect2(srv) { },
         closeConnection() {
             if (this.socket) {
+                /* Detach every handler: closing a still-connecting socket fires
+                 * onerror, which used to set window.noOgarioSocket permanently. */
                 this.socket.onmessage = null;
+                this.socket.onerror = null;
+                this.socket.onclose = null;
+                this.socket.onopen = null;
                 try {
                     this.socket.close();
                 } catch (ogarcloseconlabel) { }
@@ -27346,8 +27358,9 @@ function thelegendmodproject() {
                 if (window.multiboxPlayerEnabled && typeof profiles !== 'undefined' && profiles) {
                     var mbSlot = window.multiboxPlayerEnabled;
                     var pIdx;
-                    if (application.selectedProfiles && application.selectedProfiles[mbSlot] != null) {
-                        pIdx = application.selectedProfiles[mbSlot];
+                    /* mbSlots[unit number] is the profile of that multibox unit (same as spect.js) */
+                    if (application.mbSlots && application.mbSlots[mbSlot] != null) {
+                        pIdx = application.mbSlots[mbSlot];
                     } else if (mbSlot === 1 && application.selectedOldProfile != null) {
                         pIdx = application.selectedOldProfile;
                     } else {
@@ -27447,8 +27460,8 @@ function thelegendmodproject() {
                 var User = this.chatMutedUserIDs.indexOf(id);
                 if (-1 != User) {
                     this.chatMutedUserIDs.splice(User, 1);
-                    toastr.info(textLanguage.userUnmuted.replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUser[id]) + "</strong>"));
-                    delete this.chatMutedUser[id];
+                    toastr.info(textLanguage.userUnmuted.replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUsers[id]) + "</strong>"));
+                    delete this.chatMutedUsers[id];
                 }
             }
         },
@@ -27540,7 +27553,10 @@ function thelegendmodproject() {
                                 //
                             }),
                             this.commandHistory.length > 15 && this.commandHistory.shift();
-                    } else $('#messages').append(msg);
+                    } else {
+                        /* Other message types: always treat the remote text as plain text. */
+                        $('#messages').append($('<li>').text(msg));
+                    }
                 }
             }
         },
@@ -71149,7 +71165,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 event.preventDefault();
             }
         }
-        if (('INPUT' !== event.target.tagName || event.target.className === hotkeysSetup.inputClassName || pressedKey === hotkeys['spec-messageKey']) && '' !== pressedKey && !keyBlind[pressedKey]) {
+        /* Typing in any text field (input, textarea such as #import-settings, select, contenteditable) must not trigger hotkeys. */
+        var _hkTarget = event.target || {};
+        var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.tagName === 'SELECT' || _hkTarget.isContentEditable === true;
+        if ((!_isTypingTarget || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
 
             if (keyBlind[pressedKey] = true, 'ESC' === pressedKey) {
                 return event.preventDefault(), void (application && application.showMenu());
@@ -71176,6 +71195,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
             keyBlind[pressedKey] = false;
         }
     }
+    /*
+     * A key held while the window loses focus never gets its keyup, so its
+     * keyUp action (e.g. stopping macro feed) never ran and keyBlind stayed set.
+     */
+    window.addEventListener('blur', function () {
+        for (var heldKey in keyBlind) {
+            if (!keyBlind[heldKey]) continue;
+            var heldCommand = hotkeys[heldKey];
+            if (heldCommand && hotkeysCommand[heldCommand] && hotkeysCommand[heldCommand].keyUp) {
+                try { hotkeysCommand[heldCommand].keyUp(); } catch (e) { }
+            }
+            keyBlind[heldKey] = false;
+        }
+    });
     window.onmousedown = function (event) {
         if (!$("#overlays").is(":visible")) {
             //console.log(event.which)
@@ -71241,7 +71274,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (defaultmapsettings.mouseCommand5 && (5 === event.which)) {
                     event.preventDefault();
                     if (application) {
-                        hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()
+                        hotkeysCommand[defaultmapsettings.mouse5Click].keyDown()
                     }
                 }
             }
@@ -71253,6 +71286,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
         //if (3 === event.which && !defaultmapsettings.mouseInvert || 1 === event.which && defaultmapsettings.mouseInvert) {
         //application && application.macroFeed(false);
         //}
+        /*
+         * Always release the reverse-trick / sticky-cell button flags. The
+         * else-branch below is skipped whenever a mouse command handles the
+         * button, which used to leave LMB/RMB stuck at true.
+         */
+        if (event.which === 1) {
+            drawRender.LMB = false;
+        } else if (event.which === 3) {
+            drawRender.RMB = false;
+        }
         if (defaultmapsettings.mouseSplit && (1 === event.which) && defaultmapsettings.leftClick) {
             if (hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
         }
@@ -71623,8 +71666,9 @@ function setGUIEvents() {
         storedbotsamount = 50;
 
     }
-    window.bots.amount = storedbotsamount;
-    $('#botsAmount').val(storedbotsamount)
+    /* localStorage returns a string; "50" + 20 would concatenate to "5020". */
+    window.bots.amount = Number(storedbotsamount) || 50;
+    $('#botsAmount').val(window.bots.amount)
     /*document.getElementById('captchaSpeed').addEventListener('change', function() {
         window.captchaOpenedWindow = $('#captchaSpeed').val()
         localStorage.setItem('captchaSpeed2', $('#captchaSpeed').val())
@@ -71640,8 +71684,9 @@ function setGUIEvents() {
         localStorage.setItem('localStoredBotsName', window.bots.nameLM)
     })
     document.getElementById('botsAmount').addEventListener('change', function () {
-        localStorage.setItem('localStoredBotsAmount', window.bots.amount)
+        /* Update first, then save the new value (it used to save the previous one). */
         window.bots.amount = Number(this.value)
+        localStorage.setItem('localStoredBotsAmount', window.bots.amount)
     })
     document.getElementById('connectBots').addEventListener('click', () => {
         if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) window.connectionBots.connect()
@@ -71713,8 +71758,16 @@ function minimapCell(envId, cb, i, s) {
     this._nickCacheKey = null;  /* cache invalidation key */
 
     this.setColor = function (i, inRevIdx) {
-        this.color = i;
-        if (7 === inRevIdx.length) {
+        /*
+         * Colors come from other players over the team relay and are later
+         * inserted into HTML style attributes (teamboard, colored chat nicks).
+         * Accept only #rgb / #rrggbb so a crafted value cannot break out.
+         */
+        var isHexColor = function (value) {
+            return typeof value === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value);
+        };
+        this.color = isHexColor(i) ? i : (this.color || '#ffffff');
+        if (isHexColor(inRevIdx) && 7 === inRevIdx.length) {
             this.customColor = inRevIdx;
         }
     };
