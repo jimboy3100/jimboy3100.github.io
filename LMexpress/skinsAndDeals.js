@@ -348,7 +348,7 @@ function SpecialDeals(defaultTab) {
             '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid ' + mc + '4d;">🧬 DNA: <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="coinsCountModal">0</span></div>' +
             '<div class="upload-drop-zone" id="uploadDropZone">' +
 
-            '<p style="color: ' + tc2 + '; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 PNG and submitted directly to Agar.io via Protobuf.</p>' +
+            '<p style="color: ' + tc2 + '; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 16-color PNG and submitted directly to Agar.io via Protobuf. Agar.io accepts about 31KB, so detailed images are simplified automatically.</p>' +
             '<div style="display: flex; gap: 8px; margin-bottom: 12px; max-width: 360px; margin-left: auto; margin-right: auto;">' +
             '<input id="legendSkinNameModal" class="form-control" placeholder="Skin Name (required)" style="width: 70%;" maxlength="15" required aria-required="true" autocomplete="off">' +
             '<div class="input-group legendSkinColor-picker" style="width: 30%;">' +
@@ -1340,7 +1340,7 @@ function SpecialDeals(defaultTab) {
                 '      );',
                 '    }',
                 '    var result = UPNG.encode(',
-                '      [e.data.buffer], 512, 512, 16',
+                '      [e.data.buffer], 512, 512, e.data.cnum || 16',
                 '    );',
                 '    var bytes = new Uint8Array(result);',
                 '    self.postMessage(',
@@ -1367,7 +1367,7 @@ function SpecialDeals(defaultTab) {
             return _lmPNG8Worker;
         }
 
-        function encodePNG8InWorker(rgbaBuffer) {
+        function encodePNG8InWorker(rgbaBuffer, cnum) {
             return new Promise(
                 function(resolve, reject) {
                     var worker;
@@ -1444,11 +1444,172 @@ function SpecialDeals(defaultTab) {
                      * (zero-copy to worker).
                      */
                     worker.postMessage(
-                        { buffer: rgbaBuffer },
+                        { buffer: rgbaBuffer, cnum: cnum || 16 },
                         [rgbaBuffer]
                     );
                 }
             );
+        }
+
+        /*
+         * ── Agar.io message-size limit ──
+         *
+         * The Agar.io game server drops the WebSocket (close 1006, no reason)
+         * when a single message is larger than about 32KB. Measured on
+         * 2026-11-18: 32,278 bytes accepted, 32,790 bytes cut.
+         *
+         * The upload message is the PNG + ~22 bytes of protobuf framing +
+         * the plist meta (up to ~550 bytes), so the PNG budget stays below
+         * 31,500 bytes. uploadCustomSkin() re-checks the exact packet size.
+         */
+        var LM_SKIN_MAX_PNG_BYTES = 31500;
+
+        /*
+         * Tried in order until the PNG fits: [palette colors, detail scale].
+         * Detail scale < 1 renders the image smaller first and scales it back
+         * up, which removes fine noise that PNG cannot compress well.
+         */
+        var LM_SKIN_ENCODE_STEPS = [
+            [16, 1], [12, 1], [16, 0.75], [8, 1], [12, 0.75],
+            [8, 0.75], [16, 0.5], [8, 0.5], [6, 0.5], [4, 0.5], [4, 0.375]
+        ];
+
+        var _lmPNG8WorkerBroken = false;
+
+        function renderSkinToCanvas(ctx, img, detailScale) {
+            ctx.clearRect(0, 0, 512, 512);
+
+            /*
+             * The official editor renders a final background before
+             * retrieving its 512x512 RGBA image data.
+             */
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, 512, 512);
+            ctx.imageSmoothingEnabled = true;
+            if ('imageSmoothingQuality' in ctx) {
+                ctx.imageSmoothingQuality = 'high';
+            }
+
+            if (detailScale >= 1) {
+                ctx.drawImage(img, 0, 0, 512, 512);
+                return;
+            }
+
+            var size = Math.max(16, Math.round(512 * detailScale));
+            var tmp = document.createElement('canvas');
+            tmp.width = size;
+            tmp.height = size;
+            var tctx = tmp.getContext('2d');
+            tctx.fillStyle = '#000000';
+            tctx.fillRect(0, 0, size, size);
+            tctx.imageSmoothingEnabled = true;
+            if ('imageSmoothingQuality' in tctx) {
+                tctx.imageSmoothingQuality = 'high';
+            }
+            tctx.drawImage(img, 0, 0, size, size);
+            ctx.drawImage(tmp, 0, 0, 512, 512);
+        }
+
+        /* Encode the current canvas content (Worker first, main thread fallback). */
+        function encodeCanvasPNG8(ctx, cnum) {
+            var workerPromise;
+
+            if (_lmPNG8WorkerBroken) {
+                workerPromise = Promise.reject(new Error('PNG8 worker unavailable'));
+            } else {
+                try {
+                    /* Transfers (detaches) this ImageData buffer to the worker. */
+                    workerPromise = encodePNG8InWorker(
+                        ctx.getImageData(0, 0, 512, 512).data.buffer,
+                        cnum
+                    );
+                } catch (workerInitErr) {
+                    workerPromise = Promise.reject(workerInitErr);
+                }
+            }
+
+            return workerPromise.catch(function(workerErr) {
+                if (!_lmPNG8WorkerBroken) {
+                    _lmPNG8WorkerBroken = true;
+                    console.warn(
+                        '[LM SKIN] Worker encode failed,' +
+                        ' falling back to main thread:',
+                        workerErr
+                    );
+                }
+
+                return ensureAgarUPNG().then(function(upng) {
+                    /* Re-read: the first buffer was transferred to the worker. */
+                    var rgba2 = ctx.getImageData(0, 0, 512, 512);
+                    return new Uint8Array(
+                        upng.encode([rgba2.data.buffer], 512, 512, cnum)
+                    );
+                });
+            });
+        }
+
+        /*
+         * Encode the image as Agar.io PNG8, stepping down colors and detail
+         * until it fits the server's message limit. Resolves null when a newer
+         * image replaced this job.
+         */
+        function encodeSkinWithinLimit(ctx, img, encodeJobId) {
+            var stepIndex = 0;
+
+            function attempt() {
+                if (encodeJobId !== window._lmSkinEncodeJobId) {
+                    return Promise.resolve(null);
+                }
+
+                var step = LM_SKIN_ENCODE_STEPS[stepIndex];
+                renderSkinToCanvas(ctx, img, step[1]);
+
+                return encodeCanvasPNG8(ctx, step[0]).then(function(png) {
+                    if (encodeJobId !== window._lmSkinEncodeJobId) {
+                        return null;
+                    }
+
+                    console.log(
+                        '[LM SKIN] PNG8 attempt ' + (stepIndex + 1) +
+                        ': colors=' + step[0] +
+                        ' detail=' + step[1] +
+                        ' size=' + (png.length / 1024).toFixed(1) + 'KB'
+                    );
+
+                    if (png.length <= LM_SKIN_MAX_PNG_BYTES) {
+                        return {
+                            png: png,
+                            colors: step[0],
+                            detail: step[1],
+                            reduced: stepIndex > 0
+                        };
+                    }
+
+                    stepIndex++;
+
+                    if (stepIndex >= LM_SKIN_ENCODE_STEPS.length) {
+                        throw new Error(
+                            'image is too detailed (smallest version is ' +
+                            (png.length / 1024).toFixed(1) +
+                            'KB, Agar.io accepts about 31KB). Try a simpler image.'
+                        );
+                    }
+
+                    $('#legendStatusModal')
+                        .text(
+                            'Image is too large for Agar.io (' +
+                            (png.length / 1024).toFixed(1) +
+                            'KB) — simplifying (step ' +
+                            (stepIndex + 1) + '/' +
+                            LM_SKIN_ENCODE_STEPS.length + ')...'
+                        )
+                        .css('color', getShopTheme().mc);
+
+                    return attempt();
+                });
+            }
+
+            return attempt();
         }
 
         /*
@@ -1458,7 +1619,8 @@ function SpecialDeals(defaultTab) {
          */
         function handleEncodedPNG8(
             pngBytes,
-            encodeJobId
+            encodeJobId,
+            encodeInfo
         ) {
             if (
                 encodeJobId !==
@@ -1480,11 +1642,11 @@ function SpecialDeals(defaultTab) {
                 pngBytes.length / 1024
             ).toFixed(1);
 
-            if (pngBytes.length > 102400) {
+            if (pngBytes.length > LM_SKIN_MAX_PNG_BYTES) {
                 throw new Error(
                     'Agar PNG8 is too large: ' +
                     kb +
-                    'KB; maximum is 100KB'
+                    'KB; Agar.io accepts about 31KB'
                 );
             }
 
@@ -1507,6 +1669,9 @@ function SpecialDeals(defaultTab) {
                     validation
                         .paletteEntries +
                     ' colors)' +
+                    (encodeInfo && encodeInfo.reduced
+                        ? ' — simplified to fit the Agar.io size limit'
+                        : '') +
                     (pngBytes[25] !== 3
                         ? ' ⚠ colorType=' +
                           pngBytes[25]
@@ -1757,55 +1922,6 @@ function SpecialDeals(defaultTab) {
                     return;
                 }
 
-                ctx.clearRect(
-                    0,
-                    0,
-                    512,
-                    512
-                );
-
-                /*
-                 * The official editor renders a final background before
-                 * retrieving its 512x512 RGBA image data.
-                 */
-                ctx.fillStyle =
-                    '#000000';
-
-                ctx.fillRect(
-                    0,
-                    0,
-                    512,
-                    512
-                );
-
-                ctx.imageSmoothingEnabled =
-                    true;
-
-                if (
-                    'imageSmoothingQuality' in
-                    ctx
-                ) {
-                    ctx.imageSmoothingQuality =
-                        'high';
-                }
-
-                ctx.drawImage(
-                    img,
-                    0,
-                    0,
-                    512,
-                    512
-                );
-
-                $('#legendStatusModal')
-                    .text(
-                        'Image loaded \u2014 preparing Agar.io PNG8...'
-                    )
-                    .css(
-                        'color',
-                        getShopTheme().mc
-                    );
-
                 /*
                  * Prevent an older asynchronous encode from replacing a
                  * newer selected image.
@@ -1820,124 +1936,35 @@ function SpecialDeals(defaultTab) {
                 window._lmSkinEncodeJobId =
                     encodeJobId;
 
-                /*
-                 * ── PNG8 encoding (Worker → fallback) ──
-                 *
-                 * Try the Web Worker path first (non-blocking).
-                 * If Workers are unavailable or CSP blocks
-                 * importScripts, fall back to main-thread
-                 * UPNG.encode (same as before, synchronous).
-                 */
-                var rgba =
-                    ctx.getImageData(
-                        0, 0, 512, 512
+                $('#legendStatusModal')
+                    .text(
+                        'Image loaded \u2014 preparing Agar.io PNG8...'
+                    )
+                    .css(
+                        'color',
+                        getShopTheme().mc
                     );
 
-                var workerSucceeded = false;
-
-                var encodePromise;
-
-                try {
-                    /*
-                     * Transfer the RGBA buffer to the
-                     * worker (zero-copy). After this call
-                     * rgba.data.buffer is detached and
-                     * cannot be re-read on the main thread.
-                     */
-                    encodePromise =
-                        encodePNG8InWorker(
-                            rgba.data.buffer
-                        )
-                        .then(function(pngBytes) {
-                            workerSucceeded = true;
-                            console.log(
-                                '[LM SKIN] PNG8 encoded via Worker'
-                            );
-                            handleEncodedPNG8(
-                                pngBytes,
-                                encodeJobId
-                            );
-                        });
-                } catch (workerInitErr) {
-                    /*
-                     * Worker creation itself threw
-                     * (e.g. no Worker support).
-                     */
-                    encodePromise =
-                        Promise.reject(
-                            workerInitErr
-                        );
-                }
-
-                encodePromise
-                    .catch(function(workerErr) {
-                        /*
-                         * Worker failed — fall back to
-                         * main-thread UPNG.encode.
-                         *
-                         * The original RGBA buffer was
-                         * transferred (detached), so we
-                         * must re-read from the canvas.
-                         */
-                        if (
-                            encodeJobId !==
-                            window
-                                ._lmSkinEncodeJobId
-                        ) {
+                /*
+                 * Encode to PNG8 and, when needed, step down colors and
+                 * detail until the upload fits the Agar.io message limit.
+                 * The preview canvas shows the version that will be sent.
+                 */
+                encodeSkinWithinLimit(
+                    ctx,
+                    img,
+                    encodeJobId
+                )
+                    .then(function(result) {
+                        if (!result) {
                             return;
                         }
 
-                        console.warn(
-                            '[LM SKIN] Worker encode failed,' +
-                            ' falling back to main thread:',
-                            workerErr
+                        handleEncodedPNG8(
+                            result.png,
+                            encodeJobId,
+                            result
                         );
-
-                        return ensureAgarUPNG()
-                            .then(
-                                function(upng) {
-                                    if (
-                                        encodeJobId !==
-                                        window
-                                            ._lmSkinEncodeJobId
-                                    ) {
-                                        return;
-                                    }
-
-                                    var rgba2 =
-                                        ctx.getImageData(
-                                            0, 0,
-                                            512, 512
-                                        );
-
-                                    var encodedPng =
-                                        upng.encode(
-                                            [
-                                                rgba2
-                                                    .data
-                                                    .buffer
-                                            ],
-                                            512,
-                                            512,
-                                            16
-                                        );
-
-                                    var pngBytes =
-                                        new Uint8Array(
-                                            encodedPng
-                                        );
-
-                                    console.log(
-                                        '[LM SKIN] PNG8 encoded' +
-                                        ' via main thread (fallback)'
-                                    );
-
-                                    handleEncodedPNG8(
-                                        pngBytes,
-                                        encodeJobId
-                                    );
-                                }
-                            );
                     })
                     .catch(function(error) {
                         if (
@@ -2071,6 +2098,8 @@ function SpecialDeals(defaultTab) {
 
         // --- Clear Image Button ---
         $('#legendClearBtn').off('click').on('click', function() {
+            /* Cancel any encode still running for the cleared image. */
+            window._lmSkinEncodeJobId = (window._lmSkinEncodeJobId || 0) + 1;
             processedBufferModal = null;
             var canvas = document.getElementById('legendCanvasModal');
             if (canvas) {

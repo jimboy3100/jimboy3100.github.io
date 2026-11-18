@@ -28355,11 +28355,19 @@ function thelegendmodproject() {
                 return false;
             }
 
-            if (imageUint8Array.length > 102400) {
+            /*
+             * The Agar.io game server drops the WebSocket (close 1006) when
+             * one message is larger than about 32KB. Measured 2026-11-18:
+             * 32,278 bytes accepted, 32,790 bytes cut. The exact packet size
+             * is checked again below, before any token is bought.
+             */
+            var LM_AGAR_MAX_MESSAGE_BYTES = 32256;
+
+            if (imageUint8Array.length > LM_AGAR_MAX_MESSAGE_BYTES) {
                 toastr.error(
-                    "<b>[STRICT]:</b> Image is over 100KB (" +
+                    "<b>[SKIN]:</b> Image is " +
                     (imageUint8Array.length / 1024).toFixed(1) +
-                    "KB)."
+                    "KB. Agar.io disconnects uploads over about 31KB."
                 );
                 return false;
             }
@@ -28800,6 +28808,53 @@ function thelegendmodproject() {
                 '</integer>\n' +
                 '  </dict>\n' +
                 '</plist>';
+
+            /*
+             * ── Exact message-size check (before any token purchase) ──
+             * The sent message is opcode 102 + this protobuf buffer.
+             */
+            try {
+                var uploadMessageBytes =
+                    window.mesega
+                        .encode({
+                            contentType: 1,
+                            uncompressedData: {
+                                type: 150,
+                                userSkinsCreateRequestField: {
+                                    content: imageUint8Array,
+                                    meta: xmlMeta
+                                }
+                            }
+                        })
+                        .finish().length + 1;
+            } catch (sizeCheckError) {
+                toastr.error(
+                    "<b>[ERROR]:</b> Failed to encode skin data: " +
+                    sizeCheckError.message
+                );
+                return false;
+            }
+
+            if (uploadMessageBytes > LM_AGAR_MAX_MESSAGE_BYTES) {
+                toastr.error(
+                    "<b>[SKIN]:</b> Upload would be " +
+                    (uploadMessageBytes / 1024).toFixed(1) +
+                    "KB. Agar.io disconnects messages over about 31.5KB. " +
+                    "Use a simpler image or a shorter name."
+                );
+
+                console.error(
+                    "[LM SKIN] Upload message too large:",
+                    {
+                        messageBytes: uploadMessageBytes,
+                        limit: LM_AGAR_MAX_MESSAGE_BYTES,
+                        pngBytes: imageUint8Array.length,
+                        metaLength: xmlMeta.length
+                    }
+                );
+
+                return false;
+            }
 
             /* ── Send opcode 150 through the active Agar.io protocol path ── */
             function sendSkinUpload() {
