@@ -1052,6 +1052,16 @@ function legendmaster(self) {
         },
         createParty() {
             this.setPartyState("3");
+            /*
+             * Already connected in party mode: setGameMode() returns early, so no
+             * new party was ever created. Force a fresh party connection.
+             */
+            if (this.gameMode === ":party" && this.connectionActive) {
+                this.partyToken = "";
+                this.applyGameMode(":party");
+                this.reconnect(false, "create-party");
+                return;
+            }
             this.setGameMode(":party");
         },
         joinParty(d) {
@@ -1229,6 +1239,13 @@ function legendmaster(self) {
 
             try {
                 self.core.connect(this.ws);
+                /*
+                 * LM.connect() already unbound and closed the previous socket, so
+                 * its onclose can no longer consume this flag. Clear it now, or a
+                 * new socket that fails before opening is treated as intentional
+                 * and never retried.
+                 */
+                this.intentionalDisconnect = false;
             } catch (connectError) {
                 this.connectionActive = false;
                 this.intentionalDisconnect = false;
@@ -1765,10 +1782,18 @@ window.LMGameConfigurationReady = new Promise(function(resolve) {
         resolve(window.LMGameConfiguration);
     }
 
-    $.ajax({ type: "GET", url: primaryUrl, dataType: "json" })
+    /*
+     * fallbackUrl used to be the same file as primaryUrl, and without timeouts
+     * a stalled CDN request left LMGameConfigurationReady pending forever.
+     * Fall back to the mirrored copy in this repository instead.
+     */
+    if (fallbackUrl === primaryUrl) {
+        fallbackUrl = "https://www.legendmod.ml/agario/live/GameConfiguration.json";
+    }
+    $.ajax({ type: "GET", url: primaryUrl, dataType: "json", timeout: 20000 })
         .done(finish)
         .fail(function() {
-            $.ajax({ type: "GET", url: fallbackUrl, dataType: "json" })
+            $.ajax({ type: "GET", url: fallbackUrl, dataType: "json", timeout: 20000 })
                 .done(finish)
                 .fail(function() { finish(null); });
         });

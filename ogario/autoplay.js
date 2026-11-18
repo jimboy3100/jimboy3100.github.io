@@ -143,7 +143,8 @@ function calcTarget() {
                     }
 
                     //define if top 5 who are not teammates and on tag are behind the virus, announce, act
-                    if ((window.DangerDistanceName.includes(legendmod.leaderboard[0].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[1].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[2].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[3].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[4].nick)) &&
+                    /* leaderboard can have fewer than 5 entries (party/private servers): [n].nick threw and stopped the AI */
+                    if (legendmod.leaderboard.slice(0, 5).some(function (entry) { return entry && window.DangerDistanceName.includes(entry.nick); }) &&
                         window.legendmod.playerSize > 140) {
                         for (var i = 0; i < 5; i++) {
                             //for (var j = 0; j < 5; j++) {

@@ -43070,6 +43070,13 @@ Most cells eaten   : ${mostCellsEaten}
             legendmod.drawCommander2 = true;
         },
         flushCellsData(preserveMapGeometry) {
+            /*
+             * Called without an argument only for connection changes (connect,
+             * socket error/close). Packet-driven flushes (ClearAll 18/20,
+             * Expanding Land respawn) pass a boolean and must keep the multibox
+             * and spectator sockets alive.
+             */
+            var _connectionLevelFlush = arguments.length === 0;
             preserveMapGeometry = preserveMapGeometry === true;
             this.time = Date.now(); // prevent stale timestamp on first frame after switch
             if (!LM.isLegendWorld) {
@@ -43077,7 +43084,9 @@ Most cells eaten   : ${mostCellsEaten}
                 LM.mapOffsetFixed = false;
                 if (typeof ogario !== 'undefined') ogario.mapOffsetFixed = false;
             }
-            window.multiboxPlayerEnabled = null;
+            if (_connectionLevelFlush) {
+                window.multiboxPlayerEnabled = null;
+            }
             /* Reset camera so the render view doesn't stay at the old server's position.
              * Without this, the camera drifts slowly (1/30 per frame) to the new view
              * which causes "ghost" old content when the tab is backgrounded. */
@@ -43148,7 +43157,9 @@ Most cells eaten   : ${mostCellsEaten}
 
             //for SPECT
             //this.ghostCellsStep = 0;
-            this.flushSpecsData();
+            if (_connectionLevelFlush) {
+                this.flushSpecsData();
+            }
         },
         flushSpecsData() {
             this.isSpectateEnabled = false;
@@ -43162,6 +43173,10 @@ Most cells eaten   : ${mostCellsEaten}
                 })
                 window.spects = [];
             }
+            /* No multibox player exists any more; a stale true made every later
+             * death silently spawn a new multibox unit instead of the death menu. */
+            this.multiBoxPlayerExists = false;
+            if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
         },
         setMapOffset(left, top, right, bottom) {
             var temp, temp2;
@@ -51687,11 +51702,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
              *
              * Reset before the authoritative renderer starts writing this frame.
              */
+            /*
+             * Texture-array exhaustion (>128 distinct skins). Rebuilding the
+             * 128 MB array is allowed at most every few seconds; otherwise this
+             * frame uses Canvas2D. Rebuilding every frame stalled rendering.
+             */
             if (
                 this.glSkinNextLayer >=
                     this.glSkinMaxLayers &&
-                !this
-                    ._resetWebGLSkinTextureArray()
+                (
+                    !this._skinArrayResetAllowed() ||
+                    !this._resetWebGLSkinTextureArray()
+                )
             ) {
                 return false;
             }
@@ -52048,6 +52070,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _self.glSkinMap = {};
                         _self.glSkinNextLayer = 0;
                         _self.glTextCache = new Map();
+                        if (_self.glCanvas) _self.glCanvas.style.display = '';
                         _self.initWebGL();
                         _self.resizeCanvas();
                     }, false);
@@ -54463,19 +54486,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
                 var self = this;
-                this.glCanvas.addEventListener('webglcontextlost', function (event) {
-                    event.preventDefault();
-                    self._webglDisabledUntil = Date.now() + 5000;
-                    self._gpuSceneActive = false;
-
-                    if (self.glCanvas) {
-                        self.glCanvas.style.display = 'none';
-                    }
-
-                    if (self.overlayCanvas) {
-                        self.overlayCanvas.style.display = 'none';
-                    }
-                }, false);
+                /*
+                 * Register once (initWebGL runs again on every context restore).
+                 * Do not hide glCanvas here: nothing ever showed it again, so after
+                 * a restore cells were drawn into a hidden canvas (empty world).
+                 * gl = null (other lost handler) already routes drawing to Canvas2D.
+                 */
+                if (!this._glCooldownListenerAdded) {
+                    this._glCooldownListenerAdded = true;
+                    this.glCanvas.addEventListener('webglcontextlost', function (event) {
+                        event.preventDefault();
+                        self._webglDisabledUntil = Date.now() + 5000;
+                        self._gpuSceneActive = false;
+                    }, false);
+                }
             } catch (e) {
                 console.warn('[WebGL2 Instanced Renderer] Initialization failed, falling back to 2D Canvas:', e);
                 this.gl = null;
@@ -54513,7 +54537,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
             if (this.glSkinNextLayer >= this.glSkinMaxLayers) {
-                if (!this._resetWebGLSkinTextureArray()) {
+                /* Never rebuild mid-frame more than every few seconds (see canUseWebGLScene). */
+                if (!this._skinArrayResetAllowed() || !this._resetWebGLSkinTextureArray()) {
                     return -1;
                 }
             }
@@ -54568,6 +54593,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
 
+        _skinArrayResetAllowed() {
+            return !this._lastSkinArrayReset || Date.now() - this._lastSkinArrayReset > 5000;
+        },
         _resetWebGLSkinTextureArray() {
             if (!this.gl) return false;
             var gl = this.gl;
@@ -54589,7 +54617,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 this.glSkinMap = {};
                 this.glSkinNodeMap = new WeakMap();
-                this.glSkinAlphaMode = new WeakMap();
+                /* glSkinAlphaMode describes the images, not the array: keep it. */
+                this._lastSkinArrayReset = Date.now();
                 this.glSkinNextLayer = 0;
                 return true;
             } catch (err) {

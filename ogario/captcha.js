@@ -13,18 +13,51 @@ function CaptchaRouter(arg) {
         return l.render()
     }
 
+    /*
+     * One v3 request at a time: the single shared widget was reset while an
+     * earlier execute() was still pending, so earlier callbacks never fired.
+     * Also handle a missing/failed reCAPTCHA instead of hanging silently.
+     */
+    var _captchaV3Busy = false;
+    var _captchaV3Queue = [];
+
     function requestCaptchaV3(t, e) {
-        null === window.recaptchaClientId && (window.recaptchaClientId = window.grecaptchaV3.render("captchaWindowV3", {
-            sitekey: RECAPTCHA_V3_KEY,
-            badge: "inline",
-            size: "invisible"
-        }))
-        grecaptcha.reset(window.recaptchaClientId)
-        window.grecaptchaV3.execute(window.recaptchaClientId, {
-            action: t
-        }).then(function(t) {
-            e(t)
-        })
+        if (!window.grecaptchaV3 || typeof window.grecaptchaV3.execute !== "function") {
+            console.warn("[Captcha] reCAPTCHA v3 is not loaded yet");
+            return;
+        }
+        if (_captchaV3Busy) {
+            _captchaV3Queue.push([t, e]);
+            return;
+        }
+        _captchaV3Busy = true;
+
+        function next() {
+            _captchaV3Busy = false;
+            var queued = _captchaV3Queue.shift();
+            if (queued) requestCaptchaV3(queued[0], queued[1]);
+        }
+
+        try {
+            null === window.recaptchaClientId && (window.recaptchaClientId = window.grecaptchaV3.render("captchaWindowV3", {
+                sitekey: RECAPTCHA_V3_KEY,
+                badge: "inline",
+                size: "invisible"
+            }))
+            window.grecaptchaV3.reset(window.recaptchaClientId)
+            window.grecaptchaV3.execute(window.recaptchaClientId, {
+                action: t
+            }).then(function(t) {
+                next();
+                e(t)
+            }, function(err) {
+                console.warn("[Captcha] reCAPTCHA v3 execute failed:", err);
+                next();
+            })
+        } catch (err) {
+            console.warn("[Captcha] reCAPTCHA v3 request failed:", err);
+            next();
+        }
     }
 
     function onloadCallback() {

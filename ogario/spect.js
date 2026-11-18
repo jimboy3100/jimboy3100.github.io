@@ -185,6 +185,7 @@ class Spect {
 
     onopen() {
         console.log('[SPECT] Game server socket ' + this.number + ' open')
+        this._reconnectAttempts = 0;
 
 
         this.clientVersion = window.master.clientVersion
@@ -244,15 +245,29 @@ class Spect {
         this.resetConnectionState()
         console.log('closed')
         if (shouldReconnect) {
+            /*
+             * Exponential backoff with a cap. Reconnecting every second forever
+             * resent a dead/expired token and, after "login elsewhere", kicked
+             * the other session every second.
+             */
+            this._reconnectAttempts = (this._reconnectAttempts || 0) + 1;
+            if (this._reconnectAttempts > 8) {
+                console.warn('[SPECT] Unit ' + this.number + ' gave up reconnecting after 8 attempts');
+                return;
+            }
+            var reconnectDelay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts - 1));
             this.reconnectTimer = setTimeout(() => {
                 this.reconnectTimer = null;
                 if (!this.closedByUser && this.connectionGeneration === generation) this.connect();
-            }, 1000);
+            }, reconnectDelay);
         }
     }
 
     closeConnection() {
         this.closedByUser = true
+        /* A closed unit must not keep the multibox login slot. */
+        if (window.MultiPending === this) window.MultiPending = null
+        if (this._multiPendingTimer) { clearTimeout(this._multiPendingTimer); this._multiPendingTimer = null }
         this.connectionGeneration++
         this.clearAsyncState()
         if (this.socket) {
@@ -333,6 +348,24 @@ class Spect {
 
     }
 
+    /*
+     * If the multibox login popup is cancelled or blocked, window.MultiPending
+     * stayed set and hijacked the next MAIN login. Release it after 60 s and let
+     * this unit play as guest.
+     */
+    _armMultiPendingTimeout() {
+        var spect = this;
+        if (this._multiPendingTimer) clearTimeout(this._multiPendingTimer);
+        this._multiPendingTimer = setTimeout(function () {
+            spect._multiPendingTimer = null;
+            if (window.MultiPending === spect) {
+                window.MultiPending = null;
+                console.warn('[SPECT] Multibox login not completed; continuing as guest');
+                if (!spect.closedByUser && typeof spect.handleSendNick === 'function') spect.handleSendNick();
+            }
+        }, 60000);
+    }
+
     //spects[0].sendGplusToken(master.accessToken)
     getTheOppositeSocialToken() {
         if (master.context === "facebook") {
@@ -340,6 +373,7 @@ class Spect {
                 MultiTokenReady(this)
             } else {
                 window.MultiPending = this
+                this._armMultiPendingTimeout()
                 document.getElementById("gplusLogin").click()
                 //this.handleSendNick()
                 console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
@@ -349,6 +383,7 @@ class Spect {
                 MultiTokenReady(this)
             } else {
                 window.MultiPending = this
+                this._armMultiPendingTimeout()
                 master.facebookLogin()
                 console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
             }
@@ -468,6 +503,47 @@ class Spect {
     sendSplit() {
         this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
         this.sendAction(17);
+    }
+
+    /*
+     * window.core routes double/triple/quad split and freeze to the active
+     * multibox unit; these were missing and threw a TypeError. Same opcodes as
+     * the main client (LM.sendDoubleSplit etc.).
+     */
+    _usesMultiSplitOpcodes() {
+        var type = window.legendmod && window.legendmod.serverType;
+        return type === 'imsolo' || type === 'agar2' || type === 'garix' || type === 'private';
+    }
+
+    sendDoubleSplit() {
+        if (this._usesMultiSplitOpcodes()) {
+            this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+            this.sendAction(28);
+        } else {
+            this.sendSplit(); this.sendSplit();
+        }
+    }
+
+    sendTripleSplit() {
+        if (this._usesMultiSplitOpcodes()) {
+            this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+            this.sendAction(26);
+        } else {
+            this.sendSplit(); this.sendSplit(); this.sendSplit();
+        }
+    }
+
+    sendQuadSplit() {
+        if (this._usesMultiSplitOpcodes()) {
+            this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+            this.sendAction(27);
+        } else {
+            this.sendSplit(); this.sendSplit(); this.sendSplit(); this.sendSplit();
+        }
+    }
+
+    sendPlayerFreeze() {
+        if (this._usesMultiSplitOpcodes()) this.sendAction(32);
     }
 
     sendNick(nick) {
