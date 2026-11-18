@@ -331,7 +331,8 @@ function startLM(modVersion) {
 
 function getEmbedUrl(url) {
     url = url.trim();
-    var musicParams = "showinfo=0&controls=0&rel=0&vq=tiny&enablejsapi=1";
+    /* origin= is required by YouTube when enablejsapi=1 is used */
+    var musicParams = "showinfo=0&controls=0&rel=0&vq=tiny&enablejsapi=1&origin=" + encodeURIComponent(location.origin);
     //var musicParams = "showinfo=0&controls=2&vq=tiny&enablejsapi=1&autoplay=1";
     var videoId = getParameterByName("v", url);
     var listId = getParameterByName("list", url);
@@ -6640,7 +6641,7 @@ function initializeLM(modVersion) {
     var initialMusicUrl = (localStorage.getItem("musicUrl") == null ? defaultMusicUrl : localStorage.getItem("musicUrl"));
     //	var savemusic=$(".agario-panel.sounds-panel").html();
     $('.agario-panel.radio-panel').after('<div id="youtubeplayer" style="margin-left: 0px;"><h5 class="main-color" style="margin-right: 15px;">Youtube player</h5>' +
-        '<iframe id="musicFrame" width="350" height="180" src="' + getEmbedUrl(initialMusicUrl) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
+        '<iframe id="musicFrame" width="350" height="180" src="' + (getEmbedUrl(initialMusicUrl) || getEmbedUrl(defaultMusicUrl)) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
         '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + initialMusicUrl + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">');
     //			'<button id="YoutubeBackgroundBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter61 + '</button></div>' +
 
@@ -7822,13 +7823,41 @@ function ytFrame() {
         }
         return false;
     }
-    if (!_initYT()) {
-        /* YT API not ready yet — hook into its callback */
-        var _origCb = window.onYouTubeIframeAPIReady;
-        window.onYouTubeIframeAPIReady = function() {
-            if (_origCb) _origCb();
-            _initYT();
-        };
+    function _attach() {
+        if (!_initYT()) {
+            /* YT API not ready yet — hook into its callback */
+            var _origCb = window.onYouTubeIframeAPIReady;
+            window.onYouTubeIframeAPIReady = function() {
+                if (_origCb) _origCb();
+                _initYT();
+            };
+        }
+    }
+
+    var frame = document.getElementById('musicFrame');
+    if (!frame) return;
+
+    /*
+     * Attach the YouTube API only after the iframe has navigated to
+     * youtube.com. While it is still about:blank it has this page's origin,
+     * and www-widgetapi.js then fails with "Failed to execute 'postMessage'
+     * ... target origin ('https://www.youtube.com') does not match".
+     */
+    var stillBlank = false;
+    try {
+        /* Readable only while same-origin, i.e. before YouTube has loaded. */
+        stillBlank = frame.contentWindow.location.href === 'about:blank';
+    } catch (crossOrigin) {
+        stillBlank = false; /* already showing youtube.com */
+    }
+
+    if (stillBlank) {
+        frame.addEventListener('load', function onMusicFrameLoad() {
+            frame.removeEventListener('load', onMusicFrameLoad);
+            _attach();
+        });
+    } else {
+        _attach();
     }
 }
 
