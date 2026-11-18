@@ -35423,11 +35423,19 @@ function thelegendmodproject() {
             var cursorX, cursorY;
             if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
                 if (window.multiboxPlayerEnabled && !window.multiboxFollowMouse && !window.autoPlay) {
-                    if (defaultmapsettings.multiKeepMoving) {
+                    /* Server-space view centre (viewXTrue is client space; mirrored maps differ). */
+                    var _viewServerX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue;
+                    var _viewServerY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue;
+                    if (defaultmapsettings.multiKeepMoving && Number.isFinite(this.distX) && Number.isFinite(this.distY)) {
                         //cursorX = this.playerX + this.distX;
                         //cursorY = this.playerY + this.distY;
-                        cursorX = this.viewXTrue + this.distX;
-                        cursorY = this.viewYTrue + this.distY;
+                        cursorX = _viewServerX + this.distX;
+                        cursorY = _viewServerY + this.distY;
+                    } else {
+                        /* Inactive main player holds position. cursorX/Y used to stay
+                         * undefined here and were sent as (0,0): cells ran to the corner. */
+                        cursorX = _viewServerX;
+                        cursorY = _viewServerY;
                     }
                 } else if (LM.dance || window.followStraight) {
                     let d = ~~((Date.now() / 40) % 8),
@@ -35522,8 +35530,9 @@ function thelegendmodproject() {
                     //for multi
                     //this.distX  = cursorX - this.playerX	
                     //this.distY  = cursorY - this.playerY
-                    this.distX = cursorX - this.viewXTrue
-                    this.distY = cursorY - this.viewYTrue
+                    /* Keep distX/distY in server space, matching cursorX/cursorY. */
+                    this.distX = cursorX - (window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue)
+                    this.distY = cursorY - (window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue)
                 }
                 // Sigmally: cursor position via qe[16] + Int32 x,y + UInt32 0
                 if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
@@ -35980,6 +35989,11 @@ function thelegendmodproject() {
                         litLen += addByte;
                     } while (addByte === 255);
                 }
+                if (sPos + litLen > sEnd || dPos + litLen > outputSize) {
+                    throw new RangeError(
+                        "LZ4: literal run out of bounds"
+                    );
+                }
                 if (litLen > 0) {
                     dst.set(
                         src.subarray(sPos, sPos + litLen),
@@ -35996,6 +36010,13 @@ function thelegendmodproject() {
                 if (offset === 0) {
                     throw new RangeError(
                         "LZ4: zero match offset"
+                    );
+                }
+                /* A corrupt packet must be rejected, not decoded into garbage
+                 * (a negative matchPos wraps around in subarray()). */
+                if (offset > dPos) {
+                    throw new RangeError(
+                        "LZ4: match offset beyond decoded data"
                     );
                 }
 
@@ -36446,12 +36467,15 @@ function thelegendmodproject() {
                          * feed back into the rotation matrix (fixes shaking). */
                         if (n === 0) { rawFirstX = d; rawFirstY = f; }
 
+                        var _ghostX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d; //Sonia3
+                        var _ghostY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f; //Sonia3
                         this.ghostCells.push({
-                            'x': window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d, //Sonia3
-                            'y': window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f, //Sonia3
+                            'x': _ghostX,
+                            'y': _ghostY,
                             'size': g,
                             'mass': m,
-                            'inView': this.isInView(d, f, g)
+                            /* isInView compares with the (translated) view, so use translated coords */
+                            'inView': this.isInView(_ghostX, _ghostY, g)
                         });
 
                         if (m > mmax) { //Sonia3
@@ -36951,7 +36975,26 @@ function thelegendmodproject() {
                         //window["logout"]();
                         //}
                     }
-                    if (data.buffer.byteLength > 1000) {
+                    /*
+                     * The raw-text UID/level/picture parse below is only valid for the
+                     * login response (protobuf type 11). Other large packets (leagues,
+                     * friends) contain other players' UIDs and overwrote agarioUID.
+                     * Layout: [102][8,1][18,len varint][8,type varint]...
+                     */
+                    var _lm102Type = -1;
+                    try {
+                        var _b = new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+                        var _p = 1;
+                        var _readVarint = function () {
+                            var v = 0, shift = 0, byte;
+                            do { byte = _b[_p++]; v += (byte & 127) * Math.pow(2, shift); shift += 7; } while (byte & 128 && shift < 35);
+                            return v;
+                        };
+                        if (_b[_p] === 8) { _p++; _readVarint(); }
+                        if (_b[_p] === 18) { _p++; _readVarint(); if (_b[_p] === 8) { _p++; _lm102Type = _readVarint(); } }
+                    } catch (e102) { _lm102Type = -1; }
+
+                    if (data.buffer.byteLength > 1000 && _lm102Type === 11) {
                         //
                         window.testobjects = data;
                         var sampleBytes = new Uint8Array(window.testobjects.buffer);
@@ -37021,7 +37064,9 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-                        window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
+                        if (window.testobjects2.indexOf('https') !== -1) {
+                            window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
+                        }
 
                         /*if (defaultmapsettings.massBooster && master.context) {				
                             massx31hour();
@@ -42815,7 +42860,8 @@ Most cells eaten   : ${mostCellsEaten}
             }
             var tempPositionText = null
             var tempPositionText2 = null
-            if (this.playerPositionMulti && this.playerPositionMulti > defaultmapsettings.leaderboardlimit) {
+            /* playerPositionMulti is 0-based (shown as +1): rank limit+1 must also be listed */
+            if (this.playerPositionMulti && this.playerPositionMulti >= defaultmapsettings.leaderboardlimit) {
                 tempPositionText = '<span class=\"me\">' + (this.playerPositionMulti + 1) + '. ' + application.escapeHTML(this.leaderboard[this.playerPositionMulti].nick) + '</span>';
             }
             //			
@@ -42827,13 +42873,13 @@ Most cells eaten   : ${mostCellsEaten}
                 if (tempPositionText2) teamText += tempPositionText2
             } else if (tempPositionText) {
                 if (this.playerPositionMulti && (this.playerPositionMulti + 1) > this.playerPosition) {
-                    teamText += tempPositionText2
-                    teamText += tempPositionText
+                    teamText += tempPositionText2 || ''
+                    teamText += tempPositionText || ''
                 } else if (this.playerPositionMulti && (this.playerPositionMulti + 1) < this.playerPosition) {
-                    teamText += tempPositionText
-                    teamText += tempPositionText2
+                    teamText += tempPositionText || ''
+                    teamText += tempPositionText2 || ''
                 } else if (this.playerPositionMulti && (this.playerPositionMulti + 1) === this.playerPosition) { //bug
-                    teamText += tempPositionText2
+                    teamText += tempPositionText2 || ''
                 }
             }
 
@@ -44095,6 +44141,20 @@ Most cells eaten   : ${mostCellsEaten}
 
                 victimID.updateTime =
                     this.time;
+
+                /*
+                 * moveCell() interpolates start -> target from updateTime, so the
+                 * start must be the current rendered state; otherwise the victim
+                 * snaps back to the previous packet's position first.
+                 */
+                victimID.startX =
+                    _victimStartX;
+
+                victimID.startY =
+                    _victimStartY;
+
+                victimID.startSize =
+                    _victimStartSize;
 
 
                 /*
@@ -70503,9 +70563,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
                 if (!ghostsCells.length) return;
-                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLFilledBatch(ghostsCells, defaultSettings.ghostCellsColor, defaultSettings.ghostCellsAlpha)) {
-                    return;
-                }
+                /*
+                 * Always Canvas2D. The WebGL layer sits ABOVE the 2D canvas, so GL
+                 * ghosts covered real cells whenever the frame rendered cells on
+                 * Canvas2D, vanished when a WebGL frame fell back, and skipped
+                 * showGhostCellsInfo. There are only a few ghosts, so this is cheap.
+                 */
                 var _showInfo = defaultmapsettings.showGhostCellsInfo;
                 var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
 
@@ -70722,9 +70785,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
-            drawRender.countFps();
-            drawRender.renderFrame();
-            window.requestAnimationFrame(drawRender.render);
+            /* Always schedule the next frame: one exception in renderFrame()
+             * used to stop rendering permanently (frozen game). */
+            try {
+                drawRender.countFps();
+                drawRender.renderFrame();
+            } catch (renderError) {
+                if (!drawRender._lastRenderErrorLog || Date.now() - drawRender._lastRenderErrorLog > 5000) {
+                    drawRender._lastRenderErrorLog = Date.now();
+                    console.error('[LM RENDER] Frame failed:', renderError);
+                }
+            } finally {
+                window.requestAnimationFrame(drawRender.render);
+            }
         },
         init() {
             this.setCanvas();
@@ -70747,13 +70820,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * processing a massive stale animation queue causes a frame spike.
                      * Delta does this exact cleanup in Stage.clearAnimations(). */
                     if (LM) {
-                        /* Release removed/fading cells back to the pool */
-                        for (var ri = LM.removedCells.length - 1; ri >= 0; ri--) {
-                            var rc = LM.removedCells[ri];
-                            if (rc && typeof ogarCellPool !== 'undefined') {
-                                ogarCellPool.push(rc);
-                            }
-                        }
+                        /* Drop removed/fading cells. They used to be pushed into
+                         * ogarCellPool, which is never read (getPooledCell is unused),
+                         * so every tab switch leaked them for the whole session. */
                         LM.removedCells.length = 0;
                         /* Clear wave animations */
                         if (LM.Waves) LM.Waves.length = 0;
