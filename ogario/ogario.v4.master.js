@@ -214,9 +214,13 @@ function legendmaster(self) {
             self.FB &&
             typeof self.FB.login === "function"
         ) {
-            options.loginIntent = "1";
-            options.context = "facebook";
-            self.updateStorage();
+            /* A multibox login (window.MultiPending) must not change the main
+             * account's saved provider. */
+            if (!window.MultiPending) {
+                options.loginIntent = "1";
+                options.context = "facebook";
+                self.updateStorage();
+            }
 
             self.FB.login(
                 function(requestTokenResult) {
@@ -342,6 +346,8 @@ function legendmaster(self) {
             contextMenu.addEventListener(
                 "click",
                 function() {
+                    /* A multibox login must not change the main account's saved provider. */
+                    if (window.MultiPending) return;
                     options.loginIntent = "1";
                     options.context = "google";
                     self.updateStorage();
@@ -375,7 +381,7 @@ function legendmaster(self) {
     }
 
     function transform(event) {
-        if (event && api && "1" === options.loginIntent && options.context === "google" && api.isSignedIn.get()) {
+        if (event && api && api.isSignedIn.get() && (window.MultiPending || ("1" === options.loginIntent && options.context === "google"))) {
 			if (window.MultiPending){				
 				master.accessTokenGPlus = event.getAuthResponse().id_token;
 				MultiTokenReady(window.MultiPending);
@@ -1495,6 +1501,7 @@ function legendmaster(self) {
 			this.context = "";
 			/* Allow the next login on this connection to send its token. */
 			if (window.legendmod) window.legendmod.accessTokenSent = false;
+			if (window.legendmod) window.legendmod.loginConfirmed = false;
 			if (this._tokenRefreshTimer) {
 				clearInterval(this._tokenRefreshTimer);
 				this._tokenRefreshTimer = null;

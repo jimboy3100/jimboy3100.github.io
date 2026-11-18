@@ -1792,77 +1792,84 @@ function LegendSettingsImport(switcheryLegendSwitch2) {
     }
 }
 
+/* Imported settings from older exports can lack keys: do not store the
+ * strings "undefined"/"null" for them, keep the current value instead. */
+function _lmImportSet(key, value) {
+    if (value === undefined || value === null) return;
+    localStorage.setItem(key, value);
+}
+
 function saveLegendJSONAPI() {
     if (LegendJSON.legendSettings != undefined) {
 
-        localStorage.setItem("gamemode", LegendJSON.legendSettings.previousMode);
-        localStorage.setItem("checkonlyonce", LegendJSON.legendSettings.checkonlyonce);
-        localStorage.setItem("previousnickname", LegendJSON.legendSettings.previousnickname);
-        localStorage.setItem("showTK", LegendJSON.legendSettings.showToken);
-        localStorage.setItem("showPlayer", LegendJSON.legendSettings.showPlayer);
-        localStorage.setItem("SHOSHOBtn", LegendJSON.legendSettings.SHOSHOBtn);
-        localStorage.setItem("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
+        _lmImportSet("gamemode", LegendJSON.legendSettings.previousMode);
+        _lmImportSet("checkonlyonce", LegendJSON.legendSettings.checkonlyonce);
+        _lmImportSet("previousnickname", LegendJSON.legendSettings.previousnickname);
+        _lmImportSet("showTK", LegendJSON.legendSettings.showToken);
+        _lmImportSet("showPlayer", LegendJSON.legendSettings.showPlayer);
+        _lmImportSet("SHOSHOBtn", LegendJSON.legendSettings.SHOSHOBtn);
+        _lmImportSet("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
 
-        localStorage.setItem("TIMEcalBtn", LegendJSON.legendSettings.TIMEcalBtn);
-        localStorage.setItem("timesopened", LegendJSON.legendSettings.timesopened);
+        _lmImportSet("TIMEcalBtn", LegendJSON.legendSettings.TIMEcalBtn);
+        _lmImportSet("timesopened", LegendJSON.legendSettings.timesopened);
 
-        localStorage.setItem("dyinglight1load", LegendJSON.legendSettings.dyinglight1load);
-        localStorage.setItem("languagemod", LegendJSON.legendSettings.languagemod);
+        _lmImportSet("dyinglight1load", LegendJSON.legendSettings.dyinglight1load);
+        _lmImportSet("languagemod", LegendJSON.legendSettings.languagemod);
 
-        localStorage.setItem("musicUrl", LegendJSON.legendSettings.initialMusicUrl);
-        localStorage.setItem("lastIP", LegendJSON.legendSettings.lastIP);
-        localStorage.setItem("note1", LegendJSON.legendSettings.note1);
-        localStorage.setItem("note2", LegendJSON.legendSettings.note2);
-        localStorage.setItem("note3", LegendJSON.legendSettings.note3);
-        localStorage.setItem("note4", LegendJSON.legendSettings.note4);
-        localStorage.setItem("note5", LegendJSON.legendSettings.note5);
-        localStorage.setItem("note6", LegendJSON.legendSettings.note6);
-        localStorage.setItem("note7", LegendJSON.legendSettings.note7);
-        localStorage.setItem("minimapbckimg", LegendJSON.legendSettings.minimapbckimg);
-        localStorage.setItem("teambimg", LegendJSON.legendSettings.teambimg);
-        localStorage.setItem("canvasbimg", LegendJSON.legendSettings.canvasbimg);
-        localStorage.setItem("leadbtext", LegendJSON.legendSettings.leadbtext);
-        localStorage.setItem("leadbimg", LegendJSON.legendSettings.leadbimg);
-        localStorage.setItem("teambtext", LegendJSON.legendSettings.teambtext);
-        localStorage.setItem("imgUrl", LegendJSON.legendSettings.imgUrl);
-        localStorage.setItem("imgHref", LegendJSON.legendSettings.imgHref);
-        localStorage.setItem("minbtext", LegendJSON.legendSettings.minbtext);
-        localStorage.setItem("pic1urlimg", LegendJSON.legendSettings.pic1urlimg);
-        localStorage.setItem("pic2urlimg", LegendJSON.legendSettings.pic2urlimg);
-        localStorage.setItem("pic3urlimg", LegendJSON.legendSettings.pic3urlimg);
-        localStorage.setItem("pic4urlimg", LegendJSON.legendSettings.pic4urlimg);
-        localStorage.setItem("pic5urlimg", LegendJSON.legendSettings.pic5urlimg);
-        localStorage.setItem("pic6urlimg", LegendJSON.legendSettings.pic6urlimg);
-        localStorage.setItem("yt1urlimg", LegendJSON.legendSettings.yt1urlimg);
-        localStorage.setItem("yt2urlimg", LegendJSON.legendSettings.yt2urlimg);
-        localStorage.setItem("yt3urlimg", LegendJSON.legendSettings.yt3urlimg);
-        localStorage.setItem("yt4urlimg", LegendJSON.legendSettings.yt4urlimg);
-        localStorage.setItem("yt5urlimg", LegendJSON.legendSettings.yt5urlimg);
-        localStorage.setItem("yt6urlimg", LegendJSON.legendSettings.yt6urlimg);
-        localStorage.setItem("pic1dataimg", LegendJSON.legendSettings.pic1dataimg);
-        localStorage.setItem("pic2dataimg", LegendJSON.legendSettings.pic2dataimg);
-        localStorage.setItem("pic3dataimg", LegendJSON.legendSettings.pic3dataimg);
-        localStorage.setItem("pic4dataimg", LegendJSON.legendSettings.pic4dataimg);
-        localStorage.setItem("pic5dataimg", LegendJSON.legendSettings.pic5dataimg);
-        localStorage.setItem("pic6dataimg", LegendJSON.legendSettings.pic6dataimg);
-        localStorage.setItem("yt1dataimg", LegendJSON.legendSettings.yt1dataimg);
-        localStorage.setItem("yt2dataimg", LegendJSON.legendSettings.yt2dataimg);
-        localStorage.setItem("yt3dataimg", LegendJSON.legendSettings.yt3dataimg);
-        localStorage.setItem("yt4dataimg", LegendJSON.legendSettings.yt4dataimg);
-        localStorage.setItem("yt5dataimg", LegendJSON.legendSettings.yt5dataimg);
-        localStorage.setItem("yt6dataimg", LegendJSON.legendSettings.yt6dataimg);
-        localStorage.setItem("discwebhook1", LegendJSON.legendSettings.discwebhook1);
-        localStorage.setItem("discwebhook2", LegendJSON.legendSettings.discwebhook2);
-        localStorage.setItem("Userscript1", LegendJSON.legendSettings.Userscript1);
-        localStorage.setItem("Userscript2", LegendJSON.legendSettings.Userscript2);
-        localStorage.setItem("Userscript3", LegendJSON.legendSettings.Userscript3);
-        localStorage.setItem("Userscript4", LegendJSON.legendSettings.Userscript4);
-        localStorage.setItem("Userscript5", LegendJSON.legendSettings.Userscript5);
-        localStorage.setItem("Userscripttexture1", LegendJSON.legendSettings.Userscripttexture1);
-        localStorage.setItem("Userscripttexture2", LegendJSON.legendSettings.Userscripttexture2);
-        localStorage.setItem("Userscripttexture3", LegendJSON.legendSettings.Userscripttexture3);
-        localStorage.setItem("Userscripttexture4", LegendJSON.legendSettings.Userscripttexture4);
-        localStorage.setItem("Userscripttexture5", LegendJSON.legendSettings.Userscripttexture5);
+        _lmImportSet("musicUrl", LegendJSON.legendSettings.initialMusicUrl);
+        _lmImportSet("lastIP", LegendJSON.legendSettings.lastIP);
+        _lmImportSet("note1", LegendJSON.legendSettings.note1);
+        _lmImportSet("note2", LegendJSON.legendSettings.note2);
+        _lmImportSet("note3", LegendJSON.legendSettings.note3);
+        _lmImportSet("note4", LegendJSON.legendSettings.note4);
+        _lmImportSet("note5", LegendJSON.legendSettings.note5);
+        _lmImportSet("note6", LegendJSON.legendSettings.note6);
+        _lmImportSet("note7", LegendJSON.legendSettings.note7);
+        _lmImportSet("minimapbckimg", LegendJSON.legendSettings.minimapbckimg);
+        _lmImportSet("teambimg", LegendJSON.legendSettings.teambimg);
+        _lmImportSet("canvasbimg", LegendJSON.legendSettings.canvasbimg);
+        _lmImportSet("leadbtext", LegendJSON.legendSettings.leadbtext);
+        _lmImportSet("leadbimg", LegendJSON.legendSettings.leadbimg);
+        _lmImportSet("teambtext", LegendJSON.legendSettings.teambtext);
+        _lmImportSet("imgUrl", LegendJSON.legendSettings.imgUrl);
+        _lmImportSet("imgHref", LegendJSON.legendSettings.imgHref);
+        _lmImportSet("minbtext", LegendJSON.legendSettings.minbtext);
+        _lmImportSet("pic1urlimg", LegendJSON.legendSettings.pic1urlimg);
+        _lmImportSet("pic2urlimg", LegendJSON.legendSettings.pic2urlimg);
+        _lmImportSet("pic3urlimg", LegendJSON.legendSettings.pic3urlimg);
+        _lmImportSet("pic4urlimg", LegendJSON.legendSettings.pic4urlimg);
+        _lmImportSet("pic5urlimg", LegendJSON.legendSettings.pic5urlimg);
+        _lmImportSet("pic6urlimg", LegendJSON.legendSettings.pic6urlimg);
+        _lmImportSet("yt1urlimg", LegendJSON.legendSettings.yt1urlimg);
+        _lmImportSet("yt2urlimg", LegendJSON.legendSettings.yt2urlimg);
+        _lmImportSet("yt3urlimg", LegendJSON.legendSettings.yt3urlimg);
+        _lmImportSet("yt4urlimg", LegendJSON.legendSettings.yt4urlimg);
+        _lmImportSet("yt5urlimg", LegendJSON.legendSettings.yt5urlimg);
+        _lmImportSet("yt6urlimg", LegendJSON.legendSettings.yt6urlimg);
+        _lmImportSet("pic1dataimg", LegendJSON.legendSettings.pic1dataimg);
+        _lmImportSet("pic2dataimg", LegendJSON.legendSettings.pic2dataimg);
+        _lmImportSet("pic3dataimg", LegendJSON.legendSettings.pic3dataimg);
+        _lmImportSet("pic4dataimg", LegendJSON.legendSettings.pic4dataimg);
+        _lmImportSet("pic5dataimg", LegendJSON.legendSettings.pic5dataimg);
+        _lmImportSet("pic6dataimg", LegendJSON.legendSettings.pic6dataimg);
+        _lmImportSet("yt1dataimg", LegendJSON.legendSettings.yt1dataimg);
+        _lmImportSet("yt2dataimg", LegendJSON.legendSettings.yt2dataimg);
+        _lmImportSet("yt3dataimg", LegendJSON.legendSettings.yt3dataimg);
+        _lmImportSet("yt4dataimg", LegendJSON.legendSettings.yt4dataimg);
+        _lmImportSet("yt5dataimg", LegendJSON.legendSettings.yt5dataimg);
+        _lmImportSet("yt6dataimg", LegendJSON.legendSettings.yt6dataimg);
+        _lmImportSet("discwebhook1", LegendJSON.legendSettings.discwebhook1);
+        _lmImportSet("discwebhook2", LegendJSON.legendSettings.discwebhook2);
+        _lmImportSet("Userscript1", LegendJSON.legendSettings.Userscript1);
+        _lmImportSet("Userscript2", LegendJSON.legendSettings.Userscript2);
+        _lmImportSet("Userscript3", LegendJSON.legendSettings.Userscript3);
+        _lmImportSet("Userscript4", LegendJSON.legendSettings.Userscript4);
+        _lmImportSet("Userscript5", LegendJSON.legendSettings.Userscript5);
+        _lmImportSet("Userscripttexture1", LegendJSON.legendSettings.Userscripttexture1);
+        _lmImportSet("Userscripttexture2", LegendJSON.legendSettings.Userscripttexture2);
+        _lmImportSet("Userscripttexture3", LegendJSON.legendSettings.Userscripttexture3);
+        _lmImportSet("Userscripttexture4", LegendJSON.legendSettings.Userscripttexture4);
+        _lmImportSet("Userscripttexture5", LegendJSON.legendSettings.Userscripttexture5);
     }
 }
 

@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.501;
+window.OgVer = 3.502;
 
 
 /*
@@ -1718,6 +1718,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 }
 
                 var reloginAttempted = false;
+                var retryStartedAt = Date.now();
 
                 var authProvider =
                     window._lwAuth &&
@@ -1745,6 +1746,27 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             '[LW AUTH] Discord relogin failed to start:',
                             e
                         );
+                    }
+                }
+
+                /* Google: resend the (refreshed) token on the current connection. */
+                if (
+                    !reloginAttempted &&
+                    authProvider === 'google' &&
+                    window.master &&
+                    window.master.accessToken &&
+                    typeof window.master.login === 'function'
+                ) {
+                    try {
+                        if (typeof window.master.refreshSocialToken === 'function') {
+                            window.master._tokenTime = 0;
+                            window.master.refreshSocialToken();
+                        }
+                        if (window.legendmod) window.legendmod.accessTokenSent = false;
+                        window.master.login();
+                        reloginAttempted = true;
+                    } catch (e) {
+                        console.warn('[LW AUTH] Google relogin failed to start:', e);
                     }
                 }
 
@@ -1777,7 +1799,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 ) {
                     try {
                         window.master.reconnect();
-                        reloginAttempted = true;
+                        /* master.reconnect() is a no-op on the website itself. */
+                        reloginAttempted = !window.legendModFromWebsite;
                     } catch (e) {
                         console.warn(
                             '[LW AUTH] Generic reconnect failed to start:',
@@ -1801,19 +1824,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         return;
                     }
 
-                    var isLoggedInNow = !!(
-                        (
-                            window._lwAuth &&
-                            window._lwAuth.state ===
-                                'logged_in'
-                        ) ||
-                        (
-                            window.loggedIn &&
-                            window.application &&
-                            window.application.user &&
-                            window.application.user.userId
-                        )
-                    );
+                    /*
+                     * Success means the server sent a NEW login response after this
+                     * retry started. loggedIn / user.userId / _lwAuth.state survive the
+                     * logout, so they reported success without any re-authentication.
+                     */
+                    var isLoggedInNow =
+                        (window._lmLoginResponseAt || 0) > retryStartedAt;
 
                     if (isLoggedInNow) {
                         console.log('[LW AUTH] Auto-login retry ' + window._loginRetryCount + ' succeeded!');
@@ -2769,7 +2786,7 @@ window.changeOnline = function (option) {
 
 
 function autocoins(slot) {
-    if (legendmod.integrity && window.loggedIn) {
+    if (legendmod.integrity && window.loggedIn && window.lmAccountReady()) {
         // Prefer sendProto-based method if available
         if (window.application && typeof window.application.activateTimedEvent === 'function') {
             window.application.activateTimedEvent("hourlyBonus");
@@ -2790,8 +2807,30 @@ function autocoins(slot) {
 
 window.autoRandomPotion = 0;
 
+/*
+ * Account requests are valid only after the server confirmed this connection's
+ * login (protobuf type 11). Applies to official agar.io servers only.
+ */
+window.lmAccountReady = function () {
+    var lm = window.legendmod;
+    if (!lm || lm.serverType !== 'agario') return true;
+    return lm.loginConfirmed === true && typeof lm.isSocketOpen === 'function' && lm.isSocketOpen();
+};
+
 function autoRandomPotionDigger() {
+    /* One run at a time; the counter used to be left at 7, so it only worked once per page. */
+    if (window._lmPotionDiggerRunning) return;
+    window._lmPotionDiggerRunning = true;
+    window.autoRandomPotion = 0;
+    _autoRandomPotionStep();
+}
+
+function _autoRandomPotionStep() {
     setTimeout(function () {
+        if (!window.lmAccountReady()) {
+            window._lmPotionDiggerRunning = false;
+            return;
+        }
         window.autoRandomPotion++;
         //if (window.autoRandomPotion==7) window.autoRandomPotion=1
         if (window.autoRandomPotion === 1) brewPotion(1)
@@ -2800,8 +2839,10 @@ function autoRandomPotionDigger() {
         if (window.autoRandomPotion === 4) openPotion(1, false)
         if (window.autoRandomPotion === 5) openPotion(2, false)
         if (window.autoRandomPotion === 6) openPotion(3, false)
-        if (window.autoRandomPotion <= 6) {
-            autoRandomPotionDigger()
+        if (window.autoRandomPotion < 6) {
+            _autoRandomPotionStep()
+        } else {
+            window._lmPotionDiggerRunning = false;
         }
     }, 5000);
 }
@@ -3095,6 +3136,15 @@ window.softPurchase =
         context
     ) {
         if (!purchaseId) {
+            return false;
+        }
+
+        /* Never send an account request before this connection's login is confirmed. */
+        if (typeof window.lmAccountReady === 'function' && !window.lmAccountReady()) {
+            console.warn('[LM] Soft purchase skipped: login not confirmed on this connection yet.', purchaseId);
+            if (context && typeof context.onFailure === 'function') {
+                try { context.onFailure('not_logged_in'); } catch (e) { }
+            }
             return false;
         }
 
@@ -28183,6 +28233,10 @@ function thelegendmodproject() {
         /* ─── §4.20b Soft Purchase (DNA buy) ─── */
         softPurchase(purchaseId) {
             console.log("[LM] Soft Purchase — id: " + purchaseId);
+            if (!window.lmAccountReady()) {
+                toastr.error("<b>[ERROR]:</b> Log in and wait until you are connected before buying.");
+                return false;
+            }
             if (!purchaseId) {
                 toastr.error("<b>[ERROR]:</b> No purchase ID specified.");
                 return false;
@@ -28347,6 +28401,12 @@ function thelegendmodproject() {
             }
         },
         sendProto(type, payload) {
+            /* Account request on an official connection before the login was
+             * confirmed: the server can drop the session (packet not authorized). */
+            if (!window.lmAccountReady()) {
+                console.warn("[LM] Account request " + type + " skipped: login not confirmed on this connection yet.");
+                return false;
+            }
             if (!window.mesega) {
                 toastr.error("<b>[ERROR]:</b> Protocol not ready.");
                 return false;
@@ -28583,6 +28643,12 @@ function thelegendmodproject() {
             );
 
             /* ── Protocol availability ── */
+            if (!window.lmAccountReady()) {
+                toastr.error(
+                    "<b>[SKIN]:</b> Log in and wait until you are connected before uploading."
+                );
+                return false;
+            }
             if (!window.mesega || !window.core || !window.core.proxyMobileData) {
                 toastr.error(
                     "<b>[ERROR]:</b> Skin upload protocol is unavailable. " +
@@ -33465,6 +33531,9 @@ function thelegendmodproject() {
             this.protocolKey = null;
             this.clientKey = null;
             this.accessTokenSent = false;
+            /* Account requests wait for this connection's login response (type 11). */
+            this.loginConfirmed = false;
+            this._questActivationSent = {};
             this.connectionOpened = false;
             this.mapOffsetFixed = false;
             this.isLegendWorld = false; // reset Expanding Land state on new connection
@@ -38108,6 +38177,9 @@ function thelegendmodproject() {
                     window.loggedIn = true;
                     /* The server accepted the login: never resend the token on this socket. */
                     LM.accessTokenSent = true;
+                    LM.loginConfirmed = true;
+                    /* Lets the auto-login retry tell a fresh login from stale flags. */
+                    window._lmLoginResponseAt = Date.now();
                     var u = r.uncompressedData.loginResponseField;
                     /* Preserve previous coins/dna/trophy across re-login to prevent
                      * the UI from flashing to 0 between reset and updateWalletInfo */
@@ -39922,7 +39994,19 @@ function thelegendmodproject() {
                         };
                         break;
                     case 4:
-                        if (items[i].amount > 0) window.activateQuest();
+                        /*
+                         * Activate each quest item once per connection. Every wallet
+                         * update used to re-send activateQuest, and its own reply
+                         * contains a wallet update (loop -> "too many operations").
+                         */
+                        if (items[i].amount > 0) {
+                            if (!this._questActivationSent) this._questActivationSent = {};
+                            var _questKey = items[i].productId || 'quest';
+                            if (!this._questActivationSent[_questKey]) {
+                                this._questActivationSent[_questKey] = true;
+                                window.activateQuest();
+                            }
+                        }
                         break;
                     case 5:
                         /*
@@ -71676,25 +71760,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
             LM.setClientVersion(version, strVersion);
         },
         proxyMobileData(arr = []) {
-            let data;
-            if (Array.isArray(arr)) {
-                if (arr[0] === 8) {
-                    arr.unshift(102);
-                }
-                data = new Uint8Array(arr);
-
-            }
-            else {
-                if (arr[0] === 8) {
-                    data = new Uint8Array(arr.length + 1);
-                    data.set([102]);
-                    data.set(arr, 1);
-
-                }
-                else {
-                    data = new Uint8Array(arr);
-                    console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData ERROR: Array data required.: ", arr);
-                }
+            /*
+             * Accepts a plain array or typed array holding either a protobuf
+             * Envelope (first byte 8 = field 1) or an already prefixed opcode
+             * 102 packet. The caller's array is never modified (it used to be
+             * unshift()ed), and anything else is refused instead of being sent
+             * without the 102 opcode.
+             */
+            var src = Array.isArray(arr) ? arr : (arr && typeof arr.length === 'number' ? Array.prototype.slice.call(arr) : []);
+            var data;
+            if (src[0] === 8) {
+                data = new Uint8Array(src.length + 1);
+                data[0] = 102;
+                data.set(src, 1);
+            } else if (src[0] === 102 && src[1] === 8) {
+                data = new Uint8Array(src);
+            } else {
+                console.warn("[32m%s[34m%s[0m", consoleMsgLM, " ProxyMobileData: not a protobuf envelope, not sent: ", arr);
+                return;
             }
             LM.sendMessage(new DataView(data.buffer));
         },
