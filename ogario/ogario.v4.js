@@ -18120,7 +18120,7 @@ var defaultmapsettings = {
      * Unsupported or visually ambiguous scenes fall back atomically to Canvas2D. */
     webgl2Acceleration: true,
     isAlphaChanged: false,
-    jellyPhisycs: true,
+    jellyPhisycs: false,
     virusSound: false,
     onlineStatus: true,
     potionsDrinker: true,
