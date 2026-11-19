@@ -25554,7 +25554,10 @@ function thelegendmodproject() {
                 if (pid === 0) break;
                 var idx = this.checkPlayerID(pid);
                 if (idx !== null) {
+                    var removedId = this.teamPlayers[idx] && this.teamPlayers[idx].id;
                     this.teamPlayers.splice(idx, 1);
+                    /* the stale check in updateTeamPlayers never sees a removed entry */
+                    if (this.targetID && removedId === this.targetID) this.setTargetStatus(0);
                 }
             }
         },
