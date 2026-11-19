@@ -680,19 +680,22 @@ message userLeaguesPassUpdateField {
 }
 
 message userPartyCreateResponseField {
-///
+  userParty userParty = 1;
 }
 
 message userPartyJoinRequestField {
-///
+  string code = 1;
 }
 
 message userPartyJoinResponseField {
-///
+  int32 result = 1; // 1 success, 2 expired, 3 invalid, 4 full, 5 incompatible
+  userParty userParty = 2;
 }
 
 message userPartyMembershipUpdateField {
-///
+  int32 updateType = 1; // 1 joined, 2 left, 3 invited_you
+  members member = 2;
+  string code = 3;
 }
 
 message userPartyFacebookInviteField {
