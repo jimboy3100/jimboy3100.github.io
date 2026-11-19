@@ -1701,8 +1701,20 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function () {
-        /* who keeps logging out: one stack per call (the 'Logged out!' toast comes from here) */
-        try { console.warn('[LM LOGOUT] logout() called', { manual: !!window._isUserManualLogout, privateSwitch: !!window._isChangingToPrivateServer, reconnecting: !!window._lwReconnecting, authRetrying: !!window._lwAuthRetrying, server: window.legendmod && window.legendmod.ws }, new Error('logout caller').stack); } catch (e) { }
+        /* who keeps logging out (the 'Logged out!' toast comes from here): the stack is
+         * printed on every call with localStorage.lmDebugLogout = '1', otherwise once
+         * when logout() runs more than 2 times within 10 s */
+        try {
+            var _lmLoNow = Date.now();
+            var _lmLoTimes = window._lmLogoutTimes = (window._lmLogoutTimes || []).filter(function (t) { return _lmLoNow - t < 10000; });
+            _lmLoTimes.push(_lmLoNow);
+            if (_lmLoTimes.length === 1) window._lmLogoutBurstLogged = false;
+            var _lmLoDebug = false;
+            try { _lmLoDebug = localStorage.lmDebugLogout === '1'; } catch (e) { }
+            var _lmLoBurst = _lmLoTimes.length > 2 && !window._lmLogoutBurstLogged;
+            if (_lmLoBurst) window._lmLogoutBurstLogged = true;
+            if (_lmLoDebug || _lmLoBurst) console.warn('[LM LOGOUT] logout() called' + (_lmLoBurst ? ' (' + _lmLoTimes.length + ' times in 10 s)' : ''), { manual: !!window._isUserManualLogout, privateSwitch: !!window._isChangingToPrivateServer, reconnecting: !!window._lwReconnecting, authRetrying: !!window._lwAuthRetrying, server: window.legendmod && window.legendmod.ws }, new Error('logout caller').stack);
+        } catch (e) { }
         var intendedLogout = !!(
             window._isUserManualLogout ||
             window._isChangingToPrivateServer
@@ -25016,7 +25028,7 @@ function thelegendmodproject() {
             idle.sort(function (a, b) { return a[0] - b[0]; });
             var cache = this.customSkinsCache;
             var excess = use.size - this._lmSkinCacheMax;
-            var suffixes = ['', '_cached', '_cached2', '_cached3', '_cached4', '_cached' + cache];
+            var suffixes = ['', '_cached', '_cached2', '_cached3', '_cached4'];
             for (var i = 0; i < idle.length && i < excess; i++) {
                 var u = idle[i][1];
                 use.delete(u);
@@ -31621,6 +31633,15 @@ function thelegendmodproject() {
         };
         this.removeCell = function () {
             this.removed = true;
+            /* Multibox: a unit's own copy is going away, so show the main socket's copy
+             * (hidden as its duplicate) right now instead of on the next per-frame check. */
+            if (this.isPlayerCellMulti && this.id >= 1000000000) {
+                var _mbMain = LM.indexedCells[this.id % 1000000000];
+                if (_mbMain && _mbMain._lmMbOwnDup) {
+                    _mbMain._lmMbOwnDup = false;
+                    _mbMain.invisible = false;
+                }
+            }
 
 
             /*
