@@ -21366,6 +21366,10 @@ function thelegendmodproject() {
             }
         },
         setSkinPreview(t, e) {
+            /* Loads finish asynchronously: only the latest request per container may append,
+             * or a slow earlier load showed the wrong (or a duplicate) skin. */
+            var previewReqs = this._lmSkinPreviewReq || (this._lmSkinPreviewReq = {});
+            var req = previewReqs[e] = (previewReqs[e] || 0) + 1;
             if (t.includes && (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg"))) {
                 //if (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg")) {
                 //console.log("stage 1 videos");
@@ -21373,7 +21377,7 @@ function thelegendmodproject() {
                 if ($('#' + e).empty().addClass('default'), t && 0 !== t.length) {
                     //console.log("stage 1 images/videos: " + t);
                     var app = this;
-                    o = new Video();
+                    var o = new Video();
                     o.crossOrigin = 'anonymous';
                     o.referrerPolicy = 'no-referrer';
                     o.referrer = 'no-referrer';
@@ -21385,6 +21389,7 @@ function thelegendmodproject() {
 
                     //o.style.borderRadius = "25px";
                     setTimeout(function () {
+                        if (previewReqs[e] !== req) return;
                         //newo.onload = function() {
                         app.changeSkinPreview(o, e);
                         checkVideos3(o);
@@ -21408,6 +21413,7 @@ function thelegendmodproject() {
                     // o = new Image();
 
                     o.onload = function () {
+                        if (previewReqs[e] !== req) return;
                         app.changeSkinPreview(o, e);
                     };
                 }
@@ -22195,11 +22201,8 @@ function thelegendmodproject() {
             $(document).on(`click`, `#close-stats`, () => {
                 $("#user-stats").hide();
             });
-            $(document).on("input", "#skin", function () {
-                var hexInputVal = this.value;
-                app.setSkinPreview(hexInputVal, "skin-preview");
-                app.setSkinPreview(hexInputVal, "profile-" + app.selectedProfile);
-            });
+            /* (a second "input" handler for #skin was removed: the "input click" one above
+             * already updates both previews, so each keystroke loaded every skin twice) */
             $(document).on("click", "#skins a", function (event) {
                 event.preventDefault();
                 app.selectProfile($(this).attr("data-profile"));
