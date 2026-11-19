@@ -994,26 +994,27 @@ function legendmaster(self) {
                 appendBytes(target, bytes);
             };
 
+            /* Bouncer_request_data: 1 regionInfo {1 region, 2 gamemode},
+             * 2 findServerWithFriends {2 friendFacebookId}, 3 getToken {1 token}.
+             * Friends and token are top-level fields, not part of regionInfo. */
             var payload = [];
             appendField(payload, 10, encodeText(args));
             appendField(payload, 18, encodeText(object));
 
+            var output = [];
+            appendField(output, 10, payload);
             if (Array.isArray(source2) && source2.length) {
                 var friendsPayload = [];
                 source2.forEach(function(element) {
                     appendField(friendsPayload, 18, encodeText(element));
                 });
-                appendField(payload, 18, friendsPayload);
+                appendField(output, 18, friendsPayload);
             }
             if (source != null) {
                 var sourcePayload = [];
                 appendField(sourcePayload, 10, encodeText(source));
-                appendField(payload, 26, sourcePayload);
+                appendField(output, 26, sourcePayload);
             }
-
-            var output = [10];
-            encodeVarint(output, payload.length);
-            appendBytes(output, payload);
             return new Uint8Array(output);
         },
         makeMasterRequest(_wid_attr, data, callback, timeout_callback, type) {
