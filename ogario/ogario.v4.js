@@ -39413,6 +39413,16 @@ function thelegendmodproject() {
                             } else {
                                 window.lastLeaguesResponse = lr;
                             }
+                            /* Field 8 is a realmInfo message; keep the flat avatarUrl/realm/realmId the UI reads. */
+                            ['league', 'country', 'world', 'friends'].forEach(function (listName) {
+                                (lr[listName] || []).forEach(function (entry) {
+                                    var ri = entry && entry.realmInfo;
+                                    if (!ri) return;
+                                    if (entry.avatarUrl == null) entry.avatarUrl = ri.avatarUrl;
+                                    if (entry.realm == null) entry.realm = ri.realm;
+                                    if (entry.realmId == null) entry.realmId = ri.realmId;
+                                });
+                            });
                             // Preserve the existing UI event contract without synthesizing leagueEntries.
                             lr.isLastWeek = isLastWeek;
                             try { document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', { detail: lr })); } catch (e) { }

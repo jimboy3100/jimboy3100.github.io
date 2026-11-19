@@ -655,9 +655,7 @@ message userLeaguesPlayerInfo {
   uint32 rank = 5;
   uint32 level = 6;
   uint32 trophies = 7;
-  string avatarUrl = 8;
-  int32 realm = 9;
-  optional string realmId = 10;
+  realmInfo realmInfo = 8;
 }
 
 message userLeaguesRewardUpdate {
@@ -671,7 +669,7 @@ message userLeaguesInfoResponseField {
   repeated userLeaguesPlayerInfo world = 4;
   repeated userLeaguesPlayerInfo friends = 5;
   userLeaguesInfo userLeaguesInfo = 6;
-  repeated userLeaguesRewardUpdate rewardsHandedOut = 7;
+  repeated productUpdates rewardsHandedOut = 7;
 }
 
 message userLeaguesPassUpdateField {
