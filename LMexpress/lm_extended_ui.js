@@ -3735,7 +3735,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         document.body.appendChild(modal);
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
-        // Listen for friend list update
+        // Listen for friend list update (one listener across reopens)
+        if (window._friendsModalListener) {
+            document.removeEventListener('friendListUpdate', window._friendsModalListener);
+        }
         window._friendsModalListener = function(e) {
             window._renderFriendsList(e.detail);
         };
@@ -3848,7 +3851,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     case 5: realmName = 'Battle Royale'; break;
                     default: realmName = 'Playing'; break;
                 }
-                if (realmId) realmName += ' (' + realmId.substring(0, 8) + ')';
+                if (realmId) realmName += ' (' + window._escapeLeagueHtmlText(String(realmId).substring(0, 8)) + ')';
                 realmText = '<div style="font-size: 10px; color: #2196f3; font-weight: 600; margin-top: 2px;">🎮 ' + realmName + '</div>';
             }
 
@@ -3859,7 +3862,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             // Avatar
             var avatarHtml = '';
             if (avatarUrl) {
-                avatarHtml = '<img src="' + avatarUrl + '" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; object-fit: cover;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">';
+                avatarHtml = '<img src="' + window._escapeLeagueHtmlText(avatarUrl) + '" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; object-fit: cover;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">';
                 avatarHtml += '<div style="display: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; background: rgba(255,255,255,0.08); align-items: center; justify-content: center; font-size: 18px;">👤</div>';
             } else {
                 avatarHtml = '<div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 18px;">👤</div>';
@@ -3870,7 +3873,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             if (isOnline && realm) {
                 var realmIdForJoin = realm.realmId || realm.realm_id || '';
                 if (realmIdForJoin) {
-                    actionHtml = '<button onclick="window._spectacteFriend(\'' + realmIdForJoin.replace(/'/g, "\\'") + '\');" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 4px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; white-space: nowrap;">👁 Spectate</button>';
+                    actionHtml = '<button onclick="window._spectacteFriend(\'' + window._escapeLeagueHtmlText(String(realmIdForJoin).replace(/\\/g, '\\\\').replace(/'/g, "\\'")) + '\');" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 4px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; white-space: nowrap;">👁 Spectate</button>';
                 }
             }
 
@@ -3879,7 +3882,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 '<div style="flex: 1; min-width: 0;">' +
                     '<div style="display: flex; align-items: center; gap: 6px;">' +
                         '<div style="width: 8px; height: 8px; border-radius: 50%; background: ' + statusColor + '; flex-shrink: 0;' + (isOnline ? ' box-shadow: 0 0 6px ' + statusColor + ';' : '') + '"></div>' +
-                        '<span style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + displayId + '</span>' +
+                        '<span style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + window._escapeLeagueHtmlText(displayId) + '</span>' +
                     '</div>' +
                     '<div style="font-size: 10px; color: ' + statusColor + '; font-weight: 600;">' + statusText + '</div>' +
                     realmText +
@@ -6259,6 +6262,12 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         return false;
     };
 
+    /*
+     * This definition replaces the official-field one above (userId, status,
+     * realmInfo from opcode 147). Keep its login checks, then delegate to it;
+     * the legacy renderer below read fields the friend proto never has.
+     */
+    var _lmOfficialFriendsModal = window.showFriendsModal;
     window.showFriendsModal = function() {
         // Authenticated & Facebook login check
         var isLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId));
@@ -6286,6 +6295,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         if (!hasServerConnection) {
             if (window.toastr) toastr.error('<b>[FRIENDS]:</b> No server connection. Join an Agar.io server first.');
             return;
+        }
+
+        if (typeof _lmOfficialFriendsModal === 'function') {
+            return _lmOfficialFriendsModal();
         }
 
         injectStyles();
