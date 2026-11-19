@@ -627,6 +627,33 @@ function SpecialDeals(defaultTab) {
             $('#dnaCountModal').text(dna.toLocaleString());
             $('#coinsCountModal').text(coins.toLocaleString());
 
+            /*
+             * The modal is kept in the DOM, so refresh the price label here
+             * (config index may have loaded later, or a token is owned and the
+             * upload costs nothing). Clearing originalButtonText makes the next
+             * upload capture and restore this fresh label instead of the first.
+             */
+            var labelUploadState = window._lmSkinUploadState;
+            if (
+                uploadBtn.length &&
+                !(labelUploadState && labelUploadState.busy) &&
+                !window._lmSkinCreatePending
+            ) {
+                var labelUser = (window.application && window.application.user) || {};
+                var labelVip = typeof window.getAgarVipStatus === 'function' ? window.getAgarVipStatus() : null;
+                var ownsUsableToken =
+                    (Number(labelUser.skinCreateTokens) || 0) > 0 ||
+                    ((Number(labelUser.skinCreateVIPTokens) || 0) > 0 && !!(labelVip && labelVip.active === true));
+                uploadBtn.text(
+                    ownsUsableToken
+                        ? 'Upload (uses token)'
+                        : (typeof window.getSkinUploadButtonLabel === 'function'
+                            ? window.getSkinUploadButtonLabel()
+                            : 'Upload & Buy')
+                );
+                if (labelUploadState) labelUploadState.originalButtonText = null;
+            }
+
             // Upload tab elements
             if (allReady) {
                 chooseLabel.css({ opacity: 1, pointerEvents: 'auto' });
