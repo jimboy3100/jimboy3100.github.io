@@ -34972,6 +34972,9 @@ function thelegendmodproject() {
                         if (!this.play) {
                             this.play = true;
                             this.isSpectateEnabled = false;
+                            /* Spawning ends free spectate: without this reset sendSpectate's
+                             * !isFreeSpectate guard blocks the next Spectate click after death. */
+                            this.isFreeSpectate = false;
                             this._isWorldSpectating = false;
                             this._worldSpecPanX = 0;
                             this._worldSpecPanY = 0;
