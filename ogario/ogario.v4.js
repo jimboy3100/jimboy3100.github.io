@@ -36938,6 +36938,37 @@ function thelegendmodproject() {
             if (!oW) {
                 oW = 102;
             }
+            /* Expanding Land keys the account on a "SID:" prefix and otherwise hashes the
+             * token itself. A Google id_token is reissued every session/hour, so Google
+             * progress was stored under a new account each time. Send the token's stable
+             * subject as SID, raw like the Discord login (_lw_sendLogin102):
+             * "SID:<sub>\n<token>". No NAME: line (it would be the user's real name). */
+            if (options === 4 && oW === 102 && (this.serverType === 'expandingland' || this.isLegendWorld)) {
+                var _lmGSub = '';
+                try {
+                    var _lmJwtPart = (String(shapes).split('.')[1] || '').replace(/-/g, '+').replace(/_/g, '/');
+                    while (_lmJwtPart.length % 4) _lmJwtPart += '=';
+                    var _lmJwtBin = atob(_lmJwtPart);
+                    var _lmJwtBytes = new Uint8Array(_lmJwtBin.length);
+                    for (var _lmJ = 0; _lmJ < _lmJwtBin.length; _lmJ++) _lmJwtBytes[_lmJ] = _lmJwtBin.charCodeAt(_lmJ);
+                    var _lmClaims = JSON.parse(new TextDecoder().decode(_lmJwtBytes));
+                    _lmGSub = _lmClaims && _lmClaims.sub != null ? String(_lmClaims.sub) : '';
+                } catch (e) {
+                    _lmGSub = '';
+                }
+                /* The server keeps at most 30 SID bytes; a Google subject is 21 digits. */
+                if (/^[0-9]{1,30}$/.test(_lmGSub)) {
+                    var _lmHead = 'SID:' + _lmGSub + '\n';
+                    var _lmView = this.createView(1 + _lmHead.length + shapes.length);
+                    _lmView.setUint8(0, 102);
+                    var _lmPos = 1;
+                    for (var _lmH = 0; _lmH < _lmHead.length; _lmH++) _lmView.setUint8(_lmPos++, _lmHead.charCodeAt(_lmH));
+                    for (var _lmT = 0; _lmT < shapes.length; _lmT++) _lmView.setUint8(_lmPos++, shapes.charCodeAt(_lmT) & 0xFF);
+                    this.sendMessage(_lmView);
+                    LM.accessTokenSent = true;
+                    return;
+                }
+            }
             var curr = shapes.length;
             var count = this.clientVersionString.length;
             var data = [oW, 8, 1, 18];
