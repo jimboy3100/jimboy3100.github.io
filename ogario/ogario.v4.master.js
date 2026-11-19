@@ -1818,9 +1818,9 @@ function continuelogout(){
 		$(".vanilla-skin-preview").attr('src', 'https://jimboy3100.github.io/banners/profilepic_guest.png');
 		$('.progress-bar-star').text("");
 		$(".agario-profile-name-container").html('<div class="agario-profile-name"></div>'+
-                                        '<div id="coins" style="display: inline-block;">??000</div>'+
-                                        '<div id="dna" style="display: inline-block;">??000</div>'+
-                                        '<div id="trophy" style="display: inline-block;">??000</div>')
+                                        '<div id="coins" style="display: inline-block;">💰000</div>'+
+                                        '<div id="dna" style="display: inline-block;">💊000</div>'+
+                                        '<div id="trophy" style="display: inline-block;">🏆000</div>')
 		$("#quest-active").html('')
 		$("#player-skins").html('');
 		
