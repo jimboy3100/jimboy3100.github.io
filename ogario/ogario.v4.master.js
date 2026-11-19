@@ -943,7 +943,19 @@ function legendmaster(self) {
                         response.endpoints &&
                         response.endpoints.https;
 
-                    if (endpoint && endpoint !== "0.0.0.0:0") {
+                    /* The bouncer rejects an outdated x-client-version with status
+                     * "invalid_client" (agario.js findServer stops there). Read the current
+                     * version from agario.js once; setClientVersion() reconnects. */
+                    var invalidClient = !!response && response.status === "invalid_client";
+                    if (invalidClient) {
+                        console.warn("[Master] Bouncer rejected client version " + options.clientVersion);
+                        if (!options._lmVersionRefetched && typeof ajaxrequestMaster === "function") {
+                            options._lmVersionRefetched = true;
+                            ajaxrequestMaster();
+                        }
+                    }
+
+                    if (!invalidClient && endpoint && endpoint !== "0.0.0.0:0") {
                         options.serverIP = endpoint;
 
                         if (response.token != null) {
