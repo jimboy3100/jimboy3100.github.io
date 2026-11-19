@@ -40134,8 +40134,16 @@ function thelegendmodproject() {
                     try {
                         var rlr = r.uncompressedData.activateRewardLinkResponseField;
                         if (rlr) {
-                            console.log("[LM] Reward Link Response received");
-                            if (rlr.productUpdates && rlr.productUpdates.length) {
+                            /* result: 1 = success, 2 = already claimed, 3 = expired. */
+                            var rlrResult = Number(rlr.result) || 0;
+                            console.log("[LM] Reward Link Response received, result: " + rlrResult);
+                            if (rlrResult === 2) {
+                                toastr.error('<b>[SERVER]:</b> This reward link was already claimed.');
+                            } else if (rlrResult === 3) {
+                                toastr.error('<b>[SERVER]:</b> This reward link has expired.');
+                            } else if (rlrResult !== 1) {
+                                toastr.warning('<b>[SERVER]:</b> Reward link not activated (code ' + rlrResult + ').');
+                            } else if (rlr.productUpdates && rlr.productUpdates.length) {
                                 this.updateProducts(rlr.productUpdates);
                                 toastr.success('<b>[SERVER]:</b> Reward link activated! &#x2714; ' + rlr.productUpdates.length + ' item(s) claimed');
                                 try { this.createSkinsHTML(); } catch (e) { }
