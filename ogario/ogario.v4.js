@@ -1702,8 +1702,9 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
 
         // Manual logout/private-server switch must always win over reconnect state.
         if (intendedLogout) {
-            /* Read before master.logout() clears loginConfirmed (see the reconnect below). */
-            var _lmReconnectAsGuest = !window._isChangingToPrivateServer &&
+            /* Both read before the flags below and master.logout() clear them. */
+            var _lmPlainLogout = !window._isChangingToPrivateServer;
+            var _lmReconnectAsGuest = _lmPlainLogout &&
                 typeof legendmod !== 'undefined' && legendmod &&
                 legendmod.serverType === 'agario' && !legendmod.isLegendWorld &&
                 legendmod.loginConfirmed === true;
@@ -1780,6 +1781,15 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             try { localStorage.removeItem('LMscore'); } catch (e) { }
             if (typeof window.updateLegendXpPanel === 'function') {
                 window.updateLegendXpPanel();
+            }
+
+            /* A manual logout kept legendmod.user (userId, coins, skins), so
+             * checkUserLoggedIn()/checkUserUID() still said logged in. The server switch
+             * path runs this reset itself when it crosses account domains. */
+            if (_lmPlainLogout && typeof window._clearAccountDomainRuntime === 'function') {
+                try { window._clearAccountDomainRuntime('logout'); } catch (e) {
+                    console.warn('[LW AUTH] Account reset on logout failed:', e);
+                }
             }
 
             /* Login-response data of the account that logged out. */
