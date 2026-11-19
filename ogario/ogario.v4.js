@@ -13056,6 +13056,8 @@ window.getAgarCustomSkinPurchaseId =
                  */
                 basePurchaseId =
                     String(
+                        /* the live descriptor names it 'default' */
+                        val.default ||
                         val.configDefault ||
                         val.Control ||
                         val.A ||
