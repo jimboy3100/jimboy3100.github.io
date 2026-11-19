@@ -31363,12 +31363,16 @@ function thelegendmodproject() {
 
 
             /*
-             * Food collection.
+             * Food collection. Every push into LM.food / LM.foodMulti marks the cell
+             * (_lmInFood / _lmInFoodMulti), so a cell that was never pushed skips the
+             * full scan of the (large) food arrays. isFood is checked too in case a
+             * food cell came in some other way; the flag is never cleared, a stale
+             * flag only costs the scan.
              */
             var foodIdx =
-                LM.food.indexOf(
+                (this._lmInFood || this.isFood) ? LM.food.indexOf(
                     this
-                );
+                ) : -1;
 
             if (foodIdx !== -1) {
                 quickSwapDelete(
@@ -31382,9 +31386,9 @@ function thelegendmodproject() {
              * Multibox food collection.
              */
             cells =
-                LM.foodMulti.indexOf(
+                (this._lmInFoodMulti || this.isFood) ? LM.foodMulti.indexOf(
                     this
-                );
+                ) : -1;
 
             if (cells !== -1) {
                 quickSwapDelete(
@@ -35610,7 +35614,7 @@ function thelegendmodproject() {
                                         self.playerCells.push(cell);
                                     }
                                 } else {
-                                    self.food.push(cell);
+                                    self.food.push(cell); cell._lmInFood = true;
                                 }
                                 self.indexedCells[cellID] = cell;
                             } else if (cellColor) {
@@ -45272,7 +45276,7 @@ Most cells eaten   : ${mostCellsEaten}
                             this.playerCells.push(cellObj);
                         }
                     } else {
-                        this.food.push(cellObj);
+                        this.food.push(cellObj); cellObj._lmInFood = true;
                     }
                     this.indexedCells[id] = cellObj;
                     cellObj.isFood = isFood ? 1 : 0;
@@ -45505,7 +45509,7 @@ Most cells eaten   : ${mostCellsEaten}
                             this.playerCells.push(cellObj);
                         }
                     } else {
-                        this.food.push(cellObj);
+                        this.food.push(cellObj); cellObj._lmInFood = true;
                     }
                     this.indexedCells[id] = cellObj;
                 }
@@ -46249,7 +46253,7 @@ Most cells eaten   : ${mostCellsEaten}
                             this.playerCells.push(cellUpdateCells);
                         }
                     } else if (isFood) {
-                        this.food.push(cellUpdateCells);
+                        this.food.push(cellUpdateCells); cellUpdateCells._lmInFood = true;
                     }
                     this.indexedCells[id] = cellUpdateCells;
                 }

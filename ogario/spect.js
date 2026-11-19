@@ -1844,7 +1844,7 @@ class Spect {
                         }
                     }
                 } else if (isFood) {
-                    legendmod.foodMulti.push(cell); //this causes problems					
+                    legendmod.foodMulti.push(cell); cell._lmInFoodMulti = true; //this causes problems					
                 }
                 if (defaultmapsettings.oneColoredSpectator && !this.player) {
                     if (!isFood && !remove) legendmod.cells.push(cell);
