@@ -40896,6 +40896,31 @@ function thelegendmodproject() {
                         console.warn("[LM] Error parsing leagues pass update:", lpuErr);
                     }
                     break;
+                case 145:
+                    /* Party membership update (official enum: 1 joined, 2 left, 3 invited_you).
+                     * The official web client registers no handler for it; an invite with a code
+                     * offers to join through the normal party-code path. */
+                    try {
+                        var pmu = r.uncompressedData.userPartyMembershipUpdateField;
+                        if (pmu) {
+                            console.log("[LM] Party membership update:", pmu);
+                            try { document.dispatchEvent(new CustomEvent('partyMembershipUpdate', { detail: pmu })); } catch (e) { }
+                            var pmuCode = pmu.code ? String(pmu.code).trim() : '';
+                            if (Number(pmu.updateType) === 3 && pmuCode && window.toastr &&
+                                typeof window.joinAgarPartyToken === 'function') {
+                                var pmuName = (pmu.member && pmu.member.displayName) ? String(pmu.member.displayName) : 'A friend';
+                                /* another player's name: escape before toastr HTML */
+                                toastr.info('<b>[PARTY]:</b> ' + application.escapeHTML(pmuName) + ' invited you to a party. Click to join.', '', {
+                                    timeOut: 15000,
+                                    extendedTimeOut: 5000,
+                                    onclick: function () { window.joinAgarPartyToken(pmuCode); }
+                                });
+                            }
+                        }
+                    } catch (pmuErr) {
+                        console.warn("[LM] Error parsing party membership update:", pmuErr);
+                    }
+                    break;
                 case 147:
                     // Friend list update response
                     try {
