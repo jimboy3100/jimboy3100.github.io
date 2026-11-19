@@ -28856,7 +28856,7 @@ function thelegendmodproject() {
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500),
-                            void (defaultmapsettings.chatSounds && this.playSound(this.messageSound));
+                            void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && this.playSound(this.messageSound)); /* hidden chat box: silent, like the popups */
                         defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
@@ -28876,7 +28876,7 @@ function thelegendmodproject() {
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500),
-                            void (defaultmapsettings.chatSounds && this.playSound(this.commandSound));
+                            void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && this.playSound(this.commandSound));
                         defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                     } else {
