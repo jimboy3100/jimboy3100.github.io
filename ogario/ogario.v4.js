@@ -71307,6 +71307,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     drawRender._lastRenderErrorLog = Date.now();
                     console.error('[LM RENDER] Frame failed:', renderError);
                 }
+                /* renderFrame's save()/scale()/translate() may not have been
+                 * restored: reset the 2D state so it does not compound into
+                 * the next frames. */
+                try {
+                    var _rc = drawRender.ctx;
+                    if (_rc) {
+                        if (typeof _rc.reset === 'function') _rc.reset();
+                        else _rc.setTransform(1, 0, 0, 1, 0, 0);
+                        _rc.globalAlpha = 1;
+                        _rc.globalCompositeOperation = 'source-over';
+                        _rc.filter = 'none';
+                    }
+                } catch (_resetError) { }
             } finally {
                 window.requestAnimationFrame(drawRender.render);
             }
