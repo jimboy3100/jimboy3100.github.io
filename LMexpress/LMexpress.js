@@ -7490,17 +7490,20 @@ function initializeLM(modVersion) {
             if (mutations[i].addedNodes.length > 0) { _processChatEmbeds(); return; }
         }
     });
-    var _toastEl = document.getElementById('toast-container');
-    if (_toastEl) {
-        _chatToastObs.observe(_toastEl, { childList: true, subtree: true });
-    } else {
-        /* toast-container may not exist yet — wait for it */
-        var _waitToast = new MutationObserver(function(muts) {
-            var el = document.getElementById('toast-container');
-            if (el) { _chatToastObs.observe(el, { childList: true, subtree: true }); _waitToast.disconnect(); }
-        });
-        _waitToast.observe(document.body, { childList: true, subtree: false });
-    }
+    /* toastr removes #toast-container when its last toast closes and creates a new
+     * one for the next toast: keep watching <body> and attach to every new container
+     * (the observer used to stay on the first, deleted one). */
+    var _observedToastEl = null;
+    var _attachToastObs = function () {
+        var el = document.getElementById('toast-container');
+        if (el && el !== _observedToastEl) {
+            _observedToastEl = el;
+            _chatToastObs.observe(el, { childList: true, subtree: true });
+            _processChatEmbeds();
+        }
+    };
+    _attachToastObs();
+    new MutationObserver(_attachToastObs).observe(document.body, { childList: true, subtree: false });
 
     /* Observe chat box content changes */
     var _chatBoxEl = document.getElementById('chat-box');
