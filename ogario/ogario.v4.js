@@ -36566,7 +36566,7 @@ function thelegendmodproject() {
                 return;
             }
 
-            // ===== Senpa join: opcode 10 (nick) + 11 (tag) + 12 (code) + 0 (spawn) =====
+            // ===== Senpa join: opcode 10 (nick) + 11 (tag) + 0 (spawn) =====
             if (this.serverType === 'senpa') {
                 /* WASM still loading or failed: closeConnection() left this.socket null. */
                 if (!this._senpaCanSend()) {
@@ -36589,8 +36589,7 @@ function thelegendmodproject() {
                 this.socket.send(nickBuf);
                 // Send tag (opcode 11) — empty
                 this.socket.send(new Uint8Array([11, 0]).buffer);
-                // Send code (opcode 12) — empty
-                this.socket.send(new Uint8Array([12, 0]).buffer);
+                /* No opcode 12: the current senpa.io client never sends it (skin is 21, hat 25). */
                 // Send spawn (opcode 0 + unitID 0)
                 var spawnBuf = new ArrayBuffer(2);
                 var spawnDV = new DataView(spawnBuf);
