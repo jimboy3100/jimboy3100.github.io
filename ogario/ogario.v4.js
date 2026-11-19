@@ -40290,7 +40290,31 @@ function thelegendmodproject() {
                              * there is no userPotions/newUserPotion here, so report by result. */
                             var opprResult = Number(oppr.result) || 0;
                             if (opprResult === 1) {
-                                toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                                /* Official getPotionRewards shows the rewards dialog with the
+                                 * response's product updates: reuse the slot-open reveal. */
+                                var opprRewards = [];
+                                for (var opri = 0; opri < (oppr.productUpdates || []).length; opri++) {
+                                    var opu = oppr.productUpdates[opri];
+                                    if (opu && opu.userWalletItem && Number(opu.deltaAmount) > 0) {
+                                        opprRewards.push({
+                                            productId: opu.userWalletItem.productId || '',
+                                            amount: Number(opu.deltaAmount) || 0,
+                                            type: Number(opu.userWalletItem.type) || 0,
+                                            origin: Number(opu.origin) || 0
+                                        });
+                                    }
+                                }
+                                if (opprRewards.length) {
+                                    try {
+                                        document.dispatchEvent(new CustomEvent('lm-potion-reward', {
+                                            detail: { rewards: opprRewards }
+                                        }));
+                                    } catch (opprEvtErr) {
+                                        toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                                    }
+                                } else {
+                                    toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                                }
                             } else if (opprResult === 2) {
                                 toastr.error('<b>[SERVER]:</b> Potion not opened — not enough currency.');
                             } else {
