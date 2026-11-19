@@ -1431,7 +1431,12 @@ function SpecialDeals(defaultTab) {
                 _lmPNG8WorkerIdleTimer = setTimeout(terminatePNG8Worker, 30000);
 
                 if (e.data.error) {
-                    job.reject(new Error(e.data.error));
+                    var jobErr = new Error(e.data.error);
+                    /* The worker cannot load its libraries (offline CDN, CSP): it will never work. */
+                    if (/importScripts|is not defined|NetworkError|SecurityError/i.test(String(e.data.error))) {
+                        jobErr._lmPNG8Fatal = true;
+                    }
+                    job.reject(jobErr);
                 } else {
                     job.resolve(e.data.png);
                 }
@@ -1439,7 +1444,9 @@ function SpecialDeals(defaultTab) {
 
             _lmPNG8Worker.onerror = function (err) {
                 terminatePNG8Worker();
-                rejectAllPNG8Pending(err || new Error('PNG8 worker error'));
+                var fatalErr = new Error((err && err.message) || 'PNG8 worker error');
+                fatalErr._lmPNG8Fatal = true;
+                rejectAllPNG8Pending(fatalErr);
             };
 
             return _lmPNG8Worker;
@@ -1454,7 +1461,9 @@ function SpecialDeals(defaultTab) {
                         worker =
                             getOrCreatePNG8Worker();
                     } catch (workerCreateErr) {
-                        reject(workerCreateErr);
+                        var createErr = new Error(String((workerCreateErr && workerCreateErr.message) || workerCreateErr));
+                        createErr._lmPNG8Fatal = true;
+                        reject(createErr);
                         return;
                     }
 
@@ -1584,13 +1593,20 @@ function SpecialDeals(defaultTab) {
             }
 
             return workerPromise.catch(function(workerErr) {
-                if (!_lmPNG8WorkerBroken) {
+                /*
+                 * Disable the worker only when it cannot run at all. A timeout
+                 * (busy device) or a one-off encode error falls back for this
+                 * image only; the next job starts a fresh worker.
+                 */
+                if (workerErr && workerErr._lmPNG8Fatal && !_lmPNG8WorkerBroken) {
                     _lmPNG8WorkerBroken = true;
                     console.warn(
                         '[LM SKIN] Worker encode failed,' +
                         ' falling back to main thread:',
                         workerErr
                     );
+                } else if (!_lmPNG8WorkerBroken) {
+                    console.warn('[LM SKIN] Worker encode failed once, main thread for this image:', workerErr);
                 }
 
                 return ensureAgarUPNG().then(function(upng) {
