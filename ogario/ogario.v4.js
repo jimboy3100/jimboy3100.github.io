@@ -8290,7 +8290,10 @@ window.getAgarConfigIndex =
         if (
             gc &&
             gc.gameConfig &&
-            window._lmGameConfigInitSource !== gc
+            window._lmGameConfigInitSource !== gc &&
+            /* An init that threw for this object would throw again on every
+             * lookup: only the ready hooks or a new config object retry it. */
+            window._lmGameConfigInitFailed !== gc
         ) {
             _initGameConfigSections(gc);
         }
@@ -15036,8 +15039,10 @@ function _initGameConfigSections(gc) {
     try {
         _initGameConfigSectionsBody(gc);
         _gameConfigInitDone = true;
+        window._lmGameConfigInitFailed = null;
     } catch (initErr) {
         window._lmGameConfigInitSource = null;
+        window._lmGameConfigInitFailed = gc;
         console.warn('[LM] GameConfiguration init failed:', initErr);
     }
 }
