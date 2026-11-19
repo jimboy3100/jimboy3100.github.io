@@ -4113,15 +4113,15 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         var key = (ph.potionId || '').toLowerCase();
                         if (tierMap[key]) {
                             var tObj = tierMap[key];
-                            var specText = (ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ` <span style="font-size: 10px; color: ${tObj.color}; font-weight: 800;">(At least x${ph.minSpecialPieces} Special)</span>` : '';
-                            var coinVal = (ph.coinText && ph.coinText !== 'na') ? ('💰 ' + ph.coinText) : tObj.coins;
+                            var specText = (ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ` <span style="font-size: 10px; color: ${tObj.color}; font-weight: 800;">(At least x${window._lmEconomyEscape(ph.minSpecialPieces)} Special)</span>` : '';
+                            var coinVal = (ph.coinText && ph.coinText !== 'na') ? ('💰 ' + window._lmEconomyEscape(ph.coinText)) : tObj.coins;
                             rowsHtml += `
                                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
                                     <div style="width: 120px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${tObj.color}; font-size: 13px;">
                                         🧪 ${tObj.name}
                                     </div>
                                     <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
-                                        ${ph.skinPieces || tObj.skin}${specText}
+                                        ${ph.skinPieces ? window._lmEconomyEscape(ph.skinPieces) : tObj.skin}${specText}
                                     </div>
                                     <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
                                         ${coinVal}
@@ -5276,7 +5276,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         var productId = String(info.productId || '');
         var baseName = productId.replace(/^potion_/i, '').replace(/_/g, ' ')
             .replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
-        var name = baseName + ' Potion';
+        var name = window._lmEconomyEscape(baseName + ' Potion');
 
         var tierColors = {
             potion_superior: '#4caf50', potion_epic: '#00bcd4',
@@ -5284,10 +5284,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         };
         var potionColor = tierColors[productId] || '#00bcd4';
 
-        var coinText = info.coinText || '\u2014';
-        var skinPiecesText = info.skinPieces > 0 ? ('x' + info.skinPieces) : '\u2014';
+        var coinText = info.coinText ? window._lmEconomyEscape(info.coinText) : '\u2014';
+        var skinPiecesText = info.skinPieces > 0 ? ('x' + window._lmEconomyEscape(info.skinPieces)) : '\u2014';
         var specialPiecesText = info.minSpecialPieces > 0
-            ? ('x' + info.minSpecialPieces + ' Special') : '';
+            ? ('x' + window._lmEconomyEscape(info.minSpecialPieces) + ' Special') : '';
 
         var priceText = (info.price !== null && info.price !== undefined)
             ? (typeof window.formatAgarCurrency === 'function'
@@ -5402,10 +5402,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
                 cardsHtml +=
                     '<div style="position:relative;flex:1;min-width:140px;max-width:180px;border-radius:14px;padding:16px 12px;border:2px solid ' + colors.border + ';background:' + colors.bg + ';display:flex;flex-direction:column;align-items:center;text-align:center;">' +
-                        '<button onclick="if(window.showPotionDetailModal) window.showPotionDetailModal(\'' + pid + '\');" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="Potion Info">?</button>' +
+                        '<button class="lm-premium-potion-info" data-product-id="' + window._lmEconomyEscape(pid) + '" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="Potion Info">?</button>' +
                         '<div style="width:80px;height:80px;border-radius:50%;margin:8px 0 10px;display:flex;align-items:center;justify-content:center;font-size:38px;background:radial-gradient(circle,' + colors.border + '22,' + colors.border + '44);border:3px solid ' + colors.border + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' +
-                        '<div style="font-size:15px;font-weight:900;color:#333;margin-bottom:4px;">' + baseName + '</div>' +
-                        '<button class="btn lm-buy-premium-potion" data-product-id="' + pid + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;cursor:pointer;width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
+                        '<div style="font-size:15px;font-weight:900;color:#333;margin-bottom:4px;">' + window._lmEconomyEscape(baseName) + '</div>' +
+                        '<button class="btn lm-buy-premium-potion" data-product-id="' + window._lmEconomyEscape(pid) + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;cursor:pointer;width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
                     '</div>';
             });
         }
@@ -5427,6 +5427,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
          * Pending registry is keyed by purchaseId, not productId.
          */
         modal.addEventListener('click', function (e) {
+            var infoBtn = e.target.closest('.lm-premium-potion-info');
+            if (infoBtn) {
+                if (window.showPotionDetailModal) {
+                    window.showPotionDetailModal(infoBtn.getAttribute('data-product-id') || '');
+                }
+                return;
+            }
             var btn = e.target.closest('.lm-buy-premium-potion');
             if (!btn || btn.disabled) return;
 
@@ -10060,8 +10067,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             var infoEl = document.createElement('div');
             infoEl.style.cssText = 'flex:1;text-align:left;';
             infoEl.innerHTML =
-                '<div style="font-weight:800;font-size:14px;color:' + pres.color + ';">' + pres.label + '</div>' +
-                (rw.amount > 1 ? '<div style="font-size:11px;color:' + t.tc2 + ';">x' + rw.amount + '</div>' : '');
+                '<div style="font-weight:800;font-size:14px;color:' + pres.color + ';">' + window._lmEconomyEscape(pres.label) + '</div>' +
+                (rw.amount > 1 ? '<div style="font-size:11px;color:' + t.tc2 + ';">x' + window._lmEconomyEscape(rw.amount) + '</div>' : '');
 
             card.appendChild(iconEl);
             card.appendChild(infoEl);
