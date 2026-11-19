@@ -44490,7 +44490,10 @@ Most cells eaten   : ${mostCellsEaten}
                      * over _DEATH_SLOWMO_ANIM (600 ms).
                      */
                     if (
-                        _victimWasPlayer
+                        _victimWasPlayer &&
+                        /* Death only when this was the last own cell and not one of our own cells eating it (merge). */
+                        this.playerCells.length <= 1 &&
+                        !(eaterID && eaterID.isPlayerCell)
                     ) {
                         /*
                          * ====================================================
