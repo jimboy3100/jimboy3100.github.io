@@ -8310,9 +8310,16 @@ function LegendModServerConnect() { };
 
 function UIDcontroller() {
     PremiumUsers();
-    AgarBannedUIDs();
+    /* the server list arrives later: check again once it has been merged */
+    AgarBannedUIDs(_lmCheckBannedUID);
+    _lmCheckBannedUID();
+}
+
+function _lmCheckBannedUID() {
+    if (window._lmBanApplied) return;
     var bannedUID = localStorage.getItem("bannedUID");
-    if (bannedUserUIDs.includes(window.agarioUID) || bannedUID == "true") {
+    if ((window.agarioUID && bannedUserUIDs.includes(window.agarioUID)) || bannedUID == "true") {
+        window._lmBanApplied = true;
         localStorage.setItem("bannedUID", true);
         document.documentElement.innerHTML = "";
         window.localStorage.setItem('HSLO[Saigo]:settings', defaultSettings.lbTeammateColor)
@@ -8321,7 +8328,7 @@ function UIDcontroller() {
     }
 }
 
-function AgarBannedUIDs() {
+function AgarBannedUIDs(onLoaded) {
     //postSNEZ('https://lmsettings.snez.org/', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
     try {
         getSNEZ("https://api.legendmod.ml/lm-settings", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass", function (xhttp) {
@@ -8344,6 +8351,7 @@ function AgarBannedUIDs() {
                     }
                 }
                 window.AgarBannedUIDsAdded = true;
+                if (typeof onLoaded === "function") onLoaded();
             } catch (error) { }
         });
     }
