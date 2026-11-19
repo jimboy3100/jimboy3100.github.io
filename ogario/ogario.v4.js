@@ -40558,6 +40558,7 @@ function thelegendmodproject() {
                                     console.log('[LM] Hourly bonus next in: ' + mins + 'm ' + secs + 's');
                                 }
                             }
+                        } else {
                             console.log("[LM] Timed Event Updates — no events in payload");
                         }
                     } catch (teuErr) {
