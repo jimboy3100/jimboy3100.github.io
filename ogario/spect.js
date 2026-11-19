@@ -32,6 +32,22 @@ function addSpectator() {
 }
 window.addSpectator = addSpectator;
 
+/* "View on middle of both (when close)": true when the main player and the multibox unit
+ * (client-space centre ux/uy) are both alive and the unit's centre lies inside the main
+ * player's visible area. The old test looked for a non-own cell with the main nick, but
+ * the unit's copies of the main cells are kept out of LM.cells, so it was almost never true. */
+function lmMultiUnitIsClose(ux, uy) {
+    if (!defaultmapsettings.middleMultiViewWhenClose || !legendmod.play) return false;
+    if (!legendmod.playerCells || !legendmod.playerCells.length) return false;
+    var mx = legendmod.viewXTrue, my = legendmod.viewYTrue;
+    if (!Number.isFinite(ux) || !Number.isFinite(uy) || !Number.isFinite(mx) || !Number.isFinite(my)) return false;
+    var sc = legendmod.viewScale > 0 ? legendmod.viewScale : 1;
+    var halfW = (legendmod.canvasWidth || window.innerWidth || 1920) / sc / 2;
+    var halfH = (legendmod.canvasHeight || window.innerHeight || 1080) / sc / 2;
+    return Math.abs(mx - ux) < halfW && Math.abs(my - uy) < halfH;
+}
+window.lmMultiUnitIsClose = lmMultiUnitIsClose;
+
 function addFullSpectator() {
     let mtp = 4.95,
         w = ~~(1024 * mtp),
@@ -612,43 +628,10 @@ class Spect {
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 self.sendMessage(view);
             };
-            if (self.integrity) {
-                /*
-                 * requestCaptchaV3 never calls back when reCAPTCHA is missing,
-                 * throttled or fails, and the unit then never spawned. Fall back
-                 * to "0" (what Delta sends for every unit) after 20 s or on an
-                 * empty token, once per request and only on the same connection.
-                 */
-                const generation = self.connectionGeneration;
-                let spawnDone = false;
-                const spawnOnce = function (token) {
-                    if (spawnDone) return;
-                    spawnDone = true;
-                    clearTimeout(fallbackTimer);
-                    if (self.connectionGeneration !== generation || self.active) return;
-                    sendSpawn(token);
-                };
-                const fallbackTimer = setTimeout(function () {
-                    console.warn("[SPECT] CAPTCHA did not answer; spawning with token 0");
-                    spawnOnce("0");
-                }, 20000);
-                agarCaptcha.requestCaptchaV3(
-                    "play",
-                    function (token) {
-                        if (typeof token !== "string" ||
-                            token.length === 0) {
-                            console.warn(
-                                "[SPECT] CAPTCHA returned no usable token"
-                            );
-                            token = "0";
-                        }
-
-                        spawnOnce(token);
-                    }
-                );
-            } else {
-                sendSpawn("0");
-            }
+            /* Like the main client (LM.sendNick) and Delta: spawn with token "0" on every
+             * server. agar.io asks for a v3 token with opcode 87 when it wants one (case 87
+             * answers it with 88), so the unit no longer waits up to 20 s for reCAPTCHA. */
+            sendSpawn("0");
         }
     }
 
@@ -945,10 +928,11 @@ class Spect {
             case 17:
 
                 this.viewX = view.getFloat32(offset, true);
-                window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
                 /* viewX is this connection's server space: convert before mixing it into the
                  * main camera; only the multibox player unit moves the camera. */
                 var _cvX = this.getX(this.viewX);
+                /* only a living player unit decides (spectator sockets used to overwrite the flag) */
+                if (this.player) window.middleMultiViewFlag = !!(this.active && this.playerCellIDs.length && lmMultiUnitIsClose(_cvX, this.getY(view.getFloat32(offset + 4, true))));
                 if (this.player && defaultmapsettings.middleMultiView && legendmod.play) {
                     legendmod.viewX = (legendmod.viewXTrue + _cvX) / 2;
                 } else if (this.player && window.middleMultiViewFlag) {
@@ -1121,6 +1105,7 @@ class Spect {
                 break;
             case 87:
                 window.agarCaptcha.requestCaptchaV3("play", (a) => {
+                    if (!a) return; /* as the main client */
                     const b = this.createView(2 + a.length);
                     b.setUint8(0, 88);
                     for (let c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
@@ -1859,7 +1844,7 @@ class Spect {
                         }
                     }
                 } else if (isFood) {
-                    legendmod.foodMulti.push(cell); //this causes problems					
+                    legendmod.foodMulti.push(cell); cell._lmInFoodMulti = true; //this causes problems					
                 }
                 if (defaultmapsettings.oneColoredSpectator && !this.player) {
                     if (!isFood && !remove) legendmod.cells.push(cell);
@@ -1976,7 +1961,7 @@ class Spect {
             x += n.x / playersLength;
             y += n.y / playersLength;
         }
-        window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
+        if (this.player) window.middleMultiViewFlag = lmMultiUnitIsClose(x, y);
         if (defaultmapsettings.middleMultiView && legendmod.play) {
             legendmod.viewX = (legendmod.viewXTrue + x) / 2;
             legendmod.viewY = (legendmod.viewYTrue + y) / 2;

@@ -20867,9 +20867,9 @@ function thelegendmodproject() {
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
                     if (currentPing) t += ' | PING: ' + currentPing;
                     if (window.multiboxPlayerEnabled) {
-                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + (defaultmapsettings.multiboxAmount || 2) + ']</span>';
+                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>';
                     } else if (legendmod.multiBoxPlayerExists) {
-                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB 1/' + (defaultmapsettings.multiboxAmount || 2) + ']</span>';
+                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB 1/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>'; /* real unit count (one unit is created) */
                     }
                 }
                 if (defaultmapsettings.showStatsPPS && LM.pps > 0) {
@@ -21819,7 +21819,9 @@ function thelegendmodproject() {
         },
         /* ─── mbSlots: multibox slot → profile index mapping ─── */
         ensureMbSlots() {
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+            /* Only one multibox unit is created (addBox runs only while spects is empty and the
+             * multiboxAmount slider is disabled), so a value 3-4 saved by an older version means 2. */
+            var maxMb = Math.min((defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2, 2);
             if (!this.mbSlots || !Array.isArray(this.mbSlots)) {
                 this.mbSlots = [];
             }
@@ -21900,7 +21902,9 @@ function thelegendmodproject() {
 
             // Check if idx is already in a slot
             var existingSlot = this.mbSlots.indexOf(idx);
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+            /* Only one multibox unit is created (addBox runs only while spects is empty and the
+             * multiboxAmount slider is disabled), so a value 3-4 saved by an older version means 2. */
+            var maxMb = Math.min((defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2, 2);
 
             if (existingSlot > 0) {
                 // Case 2: already in slot K (K > 0) → swap with slot 0
@@ -23779,6 +23783,7 @@ function thelegendmodproject() {
                 var memImg = window._skinMemoryCache.get(url);
                 if (memImg && img && !img[url]) {
                     img[url] = memImg;
+                    if (img === app.customSkinsCache) app._lmTouchSkin(url);
                     if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                     if (memImg.complete && memImg.width > 0 && memImg.height > 0) {
                         if (memImg.width >= memImg.height * 1.5) animated = true;
@@ -23899,6 +23904,10 @@ function thelegendmodproject() {
                  */
                 if (img) {
                     img[url] = imageObj;
+                    if (img === app.customSkinsCache) {
+                        app._lmTouchSkin(url);
+                        app._lmTrimSkinCache();
+                    }
                 }
 
                 if (window._skinMemoryCache.has(url)) {
@@ -24899,8 +24908,44 @@ function thelegendmodproject() {
                 }
             }
         },
+        /*
+         * customSkinsCache keeps the image plus up to four 512 px canvases per URL and
+         * nothing removed them, so long sessions grew without bound (_skinMemoryCache's
+         * 2000 cap freed nothing: the same objects stayed referenced here). Every use
+         * (getCachedSkin, the WebGL skin paths, a finished load) stamps the URL; past
+         * _lmSkinCacheMax URLs the least recently used ones idle for over a minute are
+         * dropped with their canvases and reload on their next use. WebGL layers are a
+         * fixed 128-layer array and are not affected.
+         */
+        _lmSkinCacheMax: 400,
+        _lmTouchSkin(url) {
+            if (!url) return;
+            if (!this._lmSkinUse) this._lmSkinUse = new Map();
+            this._lmSkinUse.set(url, Date.now());
+        },
+        _lmTrimSkinCache() {
+            var use = this._lmSkinUse;
+            if (!use || use.size <= this._lmSkinCacheMax) return;
+            var now = Date.now();
+            if (this._lmSkinTrimAt && now - this._lmSkinTrimAt < 5000) return;
+            this._lmSkinTrimAt = now;
+            var idle = [];
+            use.forEach(function (t, u) { if (now - t > 60000) idle.push([t, u]); });
+            if (!idle.length) return;
+            idle.sort(function (a, b) { return a[0] - b[0]; });
+            var cache = this.customSkinsCache;
+            var excess = use.size - this._lmSkinCacheMax;
+            var suffixes = ['', '_cached', '_cached2', '_cached3', '_cached4', '_cached' + cache];
+            for (var i = 0; i < idle.length && i < excess; i++) {
+                var u = idle[i][1];
+                use.delete(u);
+                if (cache) for (var s = 0; s < suffixes.length; s++) delete cache[u + suffixes[s]];
+                if (window._skinMemoryCache) window._skinMemoryCache.delete(u);
+            }
+        },
         getCachedSkin(skinCache, skinMap) {
             if (!skinMap) return null;
+            if (skinCache === this.customSkinsCache) this._lmTouchSkin(skinMap);
             if (skinCache[skinMap + '_cached3']) {
                 /* Use per-frame _skinHalf (set in renderFrame) instead of new Date() per cell */
                 if (drawRender._skinHalf) {
@@ -25279,7 +25324,18 @@ function thelegendmodproject() {
                          * which already adds ogario.mapOffsetX; adding it again drew them half a
                          * map to the bottom-right of where they are. */
                         for (; c < this.teamPlayers.length; c++) {
-                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.isLegendWorld ? 0 : LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                            /* Expanding Land: Legend Mod teammates send getPlayerX() (playerX + mapOffsetX),
+                             * which is already in the own dot's frame, so they need no margin (adding
+                             * mapOffsetX again put them a whole half-map down-right). A teammate that ever
+                             * reports a negative coordinate sends raw centred coordinates (another client):
+                             * keep adding mapOffsetX for that one. Other servers unchanged. */
+                            var _tmMargin = LM.mapOffset;
+                            if (LM.isLegendWorld) {
+                                var _tm = this.teamPlayers[c];
+                                if (_tm.x < 0 || _tm.y < 0) _tm._elRawCoords = true;
+                                _tmMargin = _tm._elRawCoords ? ogario.mapOffsetX : 0;
+                            }
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, _tmMargin, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                         }
                     }
                     if (this.deathLocations.length > 0) {
@@ -25434,6 +25490,16 @@ function thelegendmodproject() {
             this.cancelTargeting();
             ogario.play = false;
             ogario.playerColor = null;
+        },
+        /* Forget what was sent on the previous relay connection, so the next
+         * sendPartyData() sends nick, tag, skin, colour and tokens again. */
+        _lmResetSentPartyData() {
+            this.lastSentNick = '';
+            this.lastSentClanTag = null;
+            this.lastSentSkinURL = '';
+            this.lastSentCustomColor = '';
+            this.lastSentPartyToken = '';
+            this.lastSentServerToken = '';
         },
         flushPartyData() {
             this.teamPlayers = [];
@@ -25731,6 +25797,11 @@ function thelegendmodproject() {
                     buf.setUint16(1, 20, true);
                     app.sendBuffer(buf);
 
+                    /* The relay wrapper (standby-server) reopens its inner socket by itself and
+                     * replays only its cached opcodes; the lastSent* dedupe then kept 10-16 from
+                     * being sent after this handshake, and opcode 13 (custom colour) is never
+                     * cached, so it was lost after every inner reconnect. Resend all party data. */
+                    app._lmResetSentPartyData();
                     app.sendPartyData();
                     app._lmRelayRetries = 0;
                     /* after a reconnect the relay must learn we are alive again */
@@ -25742,7 +25813,7 @@ function thelegendmodproject() {
             } else {
                 /* Private server: legendmod owns the game socket.
                  * We wire handleMessage into ogarioWS relay instead. */
-                this.socket.onopen = () => { app.sendPartyData(); };
+                this.socket.onopen = () => { app._lmResetSentPartyData(); app.sendPartyData(); };
             }
             var _lmSock = this.socket;
             this.socket.onclose = function (buf) {
@@ -31519,12 +31590,16 @@ function thelegendmodproject() {
 
 
             /*
-             * Food collection.
+             * Food collection. Every push into LM.food / LM.foodMulti marks the cell
+             * (_lmInFood / _lmInFoodMulti), so a cell that was never pushed skips the
+             * full scan of the (large) food arrays. isFood is checked too in case a
+             * food cell came in some other way; the flag is never cleared, a stale
+             * flag only costs the scan.
              */
             var foodIdx =
-                LM.food.indexOf(
+                (this._lmInFood || this.isFood) ? LM.food.indexOf(
                     this
-                );
+                ) : -1;
 
             if (foodIdx !== -1) {
                 quickSwapDelete(
@@ -31538,9 +31613,9 @@ function thelegendmodproject() {
              * Multibox food collection.
              */
             cells =
-                LM.foodMulti.indexOf(
+                (this._lmInFoodMulti || this.isFood) ? LM.foodMulti.indexOf(
                     this
-                );
+                ) : -1;
 
             if (cells !== -1) {
                 quickSwapDelete(
@@ -35788,7 +35863,7 @@ function thelegendmodproject() {
                                         self.playerCells.push(cell);
                                     }
                                 } else {
-                                    self.food.push(cell);
+                                    self.food.push(cell); cell._lmInFood = true;
                                 }
                                 self.indexedCells[cellID] = cell;
                             } else if (cellColor) {
@@ -45635,7 +45710,7 @@ Most cells eaten   : ${mostCellsEaten}
                             this.playerCells.push(cellObj);
                         }
                     } else {
-                        this.food.push(cellObj);
+                        this.food.push(cellObj); cellObj._lmInFood = true;
                     }
                     this.indexedCells[id] = cellObj;
                     cellObj.isFood = isFood ? 1 : 0;
@@ -45868,7 +45943,7 @@ Most cells eaten   : ${mostCellsEaten}
                             this.playerCells.push(cellObj);
                         }
                     } else {
-                        this.food.push(cellObj);
+                        this.food.push(cellObj); cellObj._lmInFood = true;
                     }
                     this.indexedCells[id] = cellObj;
                 }
@@ -45913,7 +45988,8 @@ Most cells eaten   : ${mostCellsEaten}
             if (this.removePlayerCell && !this.playerCells.length) {
                 this.play = false;
                 application.onPlayerDeath();
-                if (!LM.multiBoxPlayerExists) {
+                /* same gate as updateCells: "Auto-switch focus after death" off keeps the menu */
+                if (!LM.multiBoxPlayerExists || (!defaultmapsettings.mbSwitchAfterDeath && !window.multiboxPlayerEnabled)) {
                     application.showMenu(300);
                 } else {
                     if (!window.multiboxPlayerEnabled) {
@@ -46611,7 +46687,7 @@ Most cells eaten   : ${mostCellsEaten}
                             this.playerCells.push(cellUpdateCells);
                         }
                     } else if (isFood) {
-                        this.food.push(cellUpdateCells);
+                        this.food.push(cellUpdateCells); cellUpdateCells._lmInFood = true;
                     }
                     this.indexedCells[id] = cellUpdateCells;
                 }
@@ -53452,14 +53528,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            if (
-                defaultmapsettings
-                    .showChat &&
-                this._chatLookup &&
-                this._chatLookup.size
-            ) {
-                return false;
-            }
+            /* Chat bubbles are drawn by cell.draw(): fall back only when a visible cell
+             * shows one (checked per cell below), not for 15 s after any chat line. */
+            var _glChatMap =
+                (defaultmapsettings.showChat && this._chatLookup && this._chatLookup.size)
+                    ? this._chatLookup : null;
 
 
             if (
@@ -53528,6 +53601,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         36
                 ) {
                     continue;
+                }
+                if (_glChatMap && cell.nick && !(cell.size <= 40)) {
+                    var _glChat = _glChatMap.get(cell.nick);
+                    if (_glChat && _glChat.message && LM.time - _glChat.time >= 0 && LM.time - _glChat.time < 15000) {
+                        return false;
+                    }
                 }
 
 
@@ -64964,6 +65043,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * the first frame, 'url_cached3' the second frame of an animated
              * skin, uploaded lazily if the key is not in glSkinMap yet.
              */
+            application._lmTouchSkin(skinUrl);
             var cache3 =
                 application
                     .customSkinsCache[
@@ -67354,6 +67434,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                          * first frame, "url_cached3" the second (animated skins),
                          * and the second-frame key is uploaded lazily after any
                          * skin-array reset or context restore. */
+                        application._lmTouchSkin(skinUrl);
                         var _skinCache3 = application.customSkinsCache[skinUrl + "_cached3"];
                         var activeKey = (this._skinHalf && _skinCache3) ? (skinUrl + "_cached3") : skinUrl;
                         var skinNode = activeKey !== skinUrl ? _skinCache3 : (application.customSkinsCache[skinUrl + "_cached"] || application.customSkinsCache[skinUrl]);
@@ -69012,6 +69093,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
                 var _cW = 0;
 
+                /* Own multibox cells are also seen by the main socket (raw id). The unit's
+                 * own copy (id + number * 1e9) is drawn with its profile, so the main copy is
+                 * hidden (not removed: it stays in LM.cells and keeps moving, the unit copy
+                 * snaps to it in moveCell) instead of being drawn a second time as an enemy. */
+                var _mbOwnOffsets = null;
+                if (LM.multiBoxPlayerExists && LM.playerCellsMulti && LM.playerCellsMulti.length && window.spects && window.spects.length) {
+                    _mbOwnOffsets = [];
+                    for (var _mbI = 0; _mbI < window.spects.length; _mbI++) {
+                        var _mbSp = window.spects[_mbI];
+                        if (_mbSp && _mbSp.player && _mbSp.number > 0) _mbOwnOffsets.push(_mbSp.number * 1000000000);
+                    }
+                }
+
                 for (
                     i = 0;
                     i < LM.cells.length;
@@ -69091,6 +69185,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     ) {
                         cell._renderSuppressed =
                             false;
+                    }
+
+                    if (cell._lmMbOwnDup) {
+                        cell._lmMbOwnDup = false;
+                        cell.invisible = false;
+                    }
+                    if (_mbOwnOffsets && !(cell.spectator > 0) && !cell.isPlayerCell && !cell.isFood) {
+                        for (var _mbK = 0; _mbK < _mbOwnOffsets.length; _mbK++) {
+                            var _mbOwn = LM.indexedCells[cell.id + _mbOwnOffsets[_mbK]];
+                            if (_mbOwn && _mbOwn !== cell && _mbOwn.isPlayerCellMulti && !_mbOwn.removed) {
+                                cell._lmMbOwnDup = true;
+                                cell.invisible = true;
+                                break;
+                            }
+                        }
                     }
 
 
@@ -72932,7 +73041,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawDashedCircle(ctx, targetX, targetY, radius, 60, width, color);
             }
         },
-        drawTextAlongArc(ctx, str, centerX, centerY, radius, angle) {
+        drawTextAlongArc(ctx, str, centerX, centerY, radius, angle, stroke) {
             var len = str.length;
             if (!len) return;
             this.ctx.save();
@@ -72942,6 +73051,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             for (var n = 0; n < len; n++) {
                 this.ctx.rotate(step);
                 this.ctx.translate(0, -radius);
+                if (stroke) this.ctx.strokeText(str[n], 0, 0);
                 this.ctx.fillText(str[n], 0, 0);
                 this.ctx.translate(0, radius);
             }
@@ -72970,12 +73080,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _vMinY = _cy - _halfH, _vMaxY = _cy + _halfH;
 
                 this.ctx.beginPath();
-                if (_showInfo) {
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillStyle = defaultSettings.namesColor;
-                    this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                    this.ctx.lineWidth = 4;
-                }
+                /* Info (skin, nick) is drawn after the ghost fill: drawn inside this loop it
+                 * sat under the translucent glow of the fill. */
+                var _ghostInfo = _showInfo ? [] : null;
                 for (var length = 0; length < ghostsCells.length; length++) {
                     var ghost = ghostsCells[length];
                     if (!ghost) continue;
@@ -73010,29 +73117,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                     this.ctx.moveTo(x, y);
                     this.ctx.arc(x, y, sz, 0, this.pi2, false);
-
-                    if (_showInfo) {
-                        this.nickScale = 1;
-                        this.fontSize = Math.max(sz * 0.3, 26) * this.scale;
-                        this.nickSize = ~~(this.fontSize * this.nickScale);
-                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                        var angle = Math.PI * 0.8;
-
-                        var ghostNick = ghost.nick || (LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : "Ghost cell");
-                        /* Cache cleaned text on ghost cell — only recompute when nick changes */
-                        if (!ghost._cleanedText || ghost._cleanedNick !== ghostNick) {
-                            ghost._cleanedNick = ghostNick;
-                            ghost._cleanedText = removeEmojis(ghostNick); // canvas text: no HTML escaping
-                        }
-                        this.ghostcellstext = ghost._cleanedText;
-                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
-                        if (_showSkins && ghostNick) {
-                            var node = application.getCustomSkin(ghostNick, "#000000");
-                            if (node) {
-                                this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
-                            }
-                        }
-                    }
+                    if (_ghostInfo) _ghostInfo.push(length, x, y, sz);
                 }
                 this.ctx.fillStyle = defaultSettings.ghostCellsColor;
                 this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
@@ -73043,6 +73128,42 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.ctx.fill();
                 this.ctx.globalAlpha = 1;
                 this.ctx.shadowBlur = 0;
+                if (_ghostInfo && _ghostInfo.length) {
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillStyle = defaultSettings.namesColor;
+                    this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                    this.ctx.lineWidth = 4;
+                    for (var _gi = 0; _gi < _ghostInfo.length; _gi += 4) {
+                        length = _ghostInfo[_gi];
+                        var ghost = ghostsCells[length];
+                        x = _ghostInfo[_gi + 1];
+                        y = _ghostInfo[_gi + 2];
+                        sz = _ghostInfo[_gi + 3];
+                        /* World-space size: the context is already scaled by this.scale, so the
+                         * old "* this.scale * 4" made the on-screen size grow with scale squared. */
+                        this.nickScale = 1;
+                        this.fontSize = Math.max(sz * 0.3, 26);
+                        this.nickSize = ~~(this.fontSize * this.nickScale);
+                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize + "px " + defaultSettings.namesFontFamily;
+                        var angle = Math.PI * 0.8;
+
+                        var ghostNick = ghost.nick || (LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : "Ghost cell");
+                        /* Cache cleaned text on ghost cell — only recompute when nick changes */
+                        if (!ghost._cleanedText || ghost._cleanedNick !== ghostNick) {
+                            ghost._cleanedNick = ghostNick;
+                            ghost._cleanedText = removeEmojis(ghostNick); // canvas text: no HTML escaping
+                        }
+                        this.ghostcellstext = ghost._cleanedText;
+                        /* skin first, nick on top of it */
+                        if (_showSkins && ghostNick) {
+                            var node = application.getCustomSkin(ghostNick, "#000000");
+                            if (node) {
+                                this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
+                            }
+                        }
+                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle, defaultmapsettings.namesStroke);
+                    }
+                }
             }
         },
         preDrawPellet() {
