@@ -1850,6 +1850,13 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                         } catch (gErr) { gUser = null; }
                         var doGoogleLogin = function () {
                             if (!window.master || typeof window.master.login !== 'function') return;
+                            /* This connection is still logged in: resending the token on an
+                               authenticated socket gets the session dropped. Keep the session. */
+                            if (window.legendmod && window.legendmod.loginConfirmed === true) {
+                                window._lwReconnecting = false;
+                                window._loginRetryCount = 0;
+                                return;
+                            }
                             if (window.legendmod) window.legendmod.accessTokenSent = false;
                             window.master.login();
                         };
