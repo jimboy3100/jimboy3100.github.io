@@ -20400,7 +20400,13 @@ function thelegendmodproject() {
             }
 
             var totalUnits = 1 + spects.length;
-            var currentIdx = (!window.multiboxPlayerEnabled) ? 0 : window.multiboxPlayerEnabled;
+            /* Same as multiboxchange: find the position of the current unit NUMBER. */
+            var currentIdx = 0;
+            if (window.multiboxPlayerEnabled) {
+                for (var _sj = 0; _sj < spects.length; _sj++) {
+                    if (spects[_sj] && spects[_sj].number === window.multiboxPlayerEnabled) { currentIdx = _sj + 1; break; }
+                }
+            }
             var prevIdx = (currentIdx - 1 + totalUnits) % totalUnits;
 
             if (prevIdx === 0) {
@@ -20409,8 +20415,8 @@ function thelegendmodproject() {
                     play();
                 }
             } else {
-                window.multiboxPlayerEnabled = prevIdx;
                 var spectIdx2 = prevIdx - 1;
+                window.multiboxPlayerEnabled = (spects[spectIdx2] && spects[spectIdx2].number) || prevIdx;
                 if (spects[spectIdx2]) {
                     if (!spects[spectIdx2].active) {
                         spects[spectIdx2].respawn();
@@ -23320,8 +23326,9 @@ function thelegendmodproject() {
             if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
                 for (var _i = 0; _i < spects.length; _i++) {
                     if (spects[_i] && spects[_i].active) {
-                        window.multiboxPlayerEnabled = _i + 1;
-                        console.log('[MB] Main player died, auto-switched to spect ' + (_i + 1));
+                        /* multiboxPlayerEnabled is the unit number, not index + 1 (units can be spliced) */
+                        window.multiboxPlayerEnabled = spects[_i].number || (_i + 1);
+                        console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
                         legendmod.playerCells = [];
