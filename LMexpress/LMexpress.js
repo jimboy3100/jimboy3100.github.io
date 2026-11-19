@@ -5515,18 +5515,26 @@ function SNEZServers() {
     }
 
     // ---------------
-    window.userfirstname = localStorage.getItem("userfirstname");
-    window.userlastname = localStorage.getItem("userlastname");
-    //window.agarioUID
+    /* The clan tag is the team password: the relay gets only a one-way hash
+     * of it ("h:" + FNV-1a 32 of the UTF-8 bytes), the same on every client,
+     * so equal tags still group together. No real name, UID or AID is sent. */
+    function _lmTagHash(tag) {
+        tag = String(tag || "");
+        if (!tag) return "";
+        var bytes;
+        try { bytes = unescape(encodeURIComponent(tag)); } catch (e) { bytes = tag; }
+        var h = 0x811c9dc5;
+        for (var i = 0; i < bytes.length; i++) {
+            h ^= bytes.charCodeAt(i);
+            h = Math.imul(h, 0x01000193) >>> 0;
+        }
+        return "h:" + ("0000000" + h.toString(16)).slice(-8);
+    }
     var state = {
         nickname: null,
         server: null,
         tag: null,
-        AID: null,
         hidecountry: false,
-        userfirstname: null,
-        userlastname: null,
-        agarioUID: null,
         isPlaying: false
     };
     var elements = {
@@ -5585,24 +5593,20 @@ function SNEZServers() {
             //state.nickname = nick.value;
             //state.server = server;
             //state.tag = tag.value;
+            var tagHash = _lmTagHash(tag.value);
             if (state.nickname != nick.value ||
                 state.server != servertemp ||
-                state.tag != tag.value ||
+                state.tag != tagHash ||
                 state.isPlaying != (window.ogario && window.ogario.play) ||
-                state.agarioLEVEL != window.agarioLEVEL ||
-                state.agarioUID != window.agarioUID)
+                state.agarioLEVEL != window.agarioLEVEL)
 
             /*if (state.nickname != nick.value ||
                 state.server != servertemp)			no1: I stoped this*/ {
                 //console.log('something changed')
                 state.nickname = nick.value;
                 state.server = servertemp;
-                state.tag = tag.value;
-                state.AID = window.agarioID;
+                state.tag = tagHash;
                 state.hidecountry = defaultmapsettings.hidecountry;
-                state.userfirstname = window.userfirstname;
-                state.userlastname = window.userlastname;
-                state.agarioUID = window.agarioUID;
                 state.agarioLEVEL = window.agarioLEVEL;
                 state.isPlaying = !!(window.ogario && window.ogario.play);
                 //state.tag="RespectPrivacy"; no2: I stoped this
@@ -7174,11 +7178,8 @@ function initializeLM(modVersion) {
             usercity = usercity.replace(" ", "_");
         }
         */
-        var Pwdtosend = "NONE";
         var servertosend = "NotFound";
         var nicknametosend = "NotFound";
-        var userfirstname = localStorage.getItem("userfirstname");
-        var userlastname = localStorage.getItem("userlastname");
         //			var userid=$('#user-id-tag').text();userid = userid.replace("User id: ", "");			
         //			var userid = localStorage.getItem("userid");
         var modetosend = "NotFound";
@@ -7202,10 +7203,6 @@ function initializeLM(modVersion) {
         if ($('#server').val() != "" && $('#server').val() != null && $('#server').val() != undefined) {
             servertosend = $('#server').val();
         }
-        if ($('#clantag').val() != "" && $('#clantag').val() != undefined) {
-            Pwdtosend = $('#clantag').val();
-        }
-        Pwdtosend = Pwdtosend.replace(/ /g, "_");
         if ($('#nick').val() != undefined) { nicknametosend = $('#nick').val(); }
         nicknametosend = removeEmojis(nicknametosend.replace(/ /g, "_"));
         if ($('#server').val() != undefined) {
@@ -7215,11 +7212,11 @@ function initializeLM(modVersion) {
         }
 
         if (searchSip == null) {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&mode=" + modetosend + "&region=" + regiontosend;
         } else if (searchSip != null) {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + searchSip + "&pwd=" + Pwdtosend + "&join=Url" + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + searchSip + "&join=Url" + "&mode=" + modetosend + "&region=" + regiontosend;
         } else {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&mode=" + modetosend + "&region=" + regiontosend;
         }
         $('#musicUrl').append($('<div id="loaderIframeInfo1"></div>').append($('<iframe id="loaderIframeInfo" name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe>').attr('src', detailed1)));
         $('#loaderIframeInfo1').hide();
