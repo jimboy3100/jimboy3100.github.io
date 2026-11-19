@@ -30752,8 +30752,10 @@ function thelegendmodproject() {
                         (this.targetSize - this.size) * delay;
                 }
             } else {
+                /* time is the total time since the last update, not a frame delta: clamp the
+                 * factor so it never exceeds 1 (it overshot and diverged after ~0.8-1.6 s). */
                 this.size +=
-                    (this.targetSize - this.size) * (time / 800);
+                    (this.targetSize - this.size) * Math.min(1, Math.max(0, time / 800));
 
                 if (this.size < 0) this.size = 0;
             }
