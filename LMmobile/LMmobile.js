@@ -510,6 +510,14 @@
         drawer.appendChild(bPaus);
         drawer.appendChild(bChat);
 
+        /* settings panel toggle (joystick, opacity, size, HUD fade, flick split) */
+        var bGear = mkd('⚙');
+        drawer.appendChild(bGear);
+        bGear.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            sp.classList.toggle('on');
+        }, { passive: false });
+
         var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
         bStop.style.display = 'none';
         drawer.appendChild(bStop);
@@ -625,12 +633,16 @@
             rootL.style.opacity = prefs.btnOpacity;
             var hc = document.getElementById('helloContainer');
             if (hc) {
-                if (hc.style.display === 'none' || hc.style.display === '') {
+                /* jQuery show() leaves display '' on a visible menu: judge by #overlays too */
+                if (hc.style.display === 'none' || !isMenuVisible()) {
                     hc.style.display = 'block';
                     if (window._lm_fitHC) window._lm_fitHC(); /* scale instantly */
                     if (typeof application !== 'undefined' && application.showMenu) {
                         application.showMenu();
                     }
+                } else if (typeof application !== 'undefined' && application.hideMenu) {
+                    /* hides #overlays too: left visible it covers the canvas and blocks the joystick */
+                    application.hideMenu();
                 } else {
                     hc.style.display = 'none';
                 }
@@ -967,7 +979,16 @@
         }, { passive: false });
 
         canvas.addEventListener('touchend', function (e) {
-            if (e.targetTouches.length < 2) { pOn = false; pDist = 0; }
+            if (e.targetTouches.length < 2) {
+                /* pinch over with one finger still down: that finger steers again */
+                if (pOn && e.targetTouches.length === 1 && jId === null && !chatOn) {
+                    var t = e.targetTouches[0];
+                    jId = t.identifier;
+                    org.x = t.clientX; org.y = t.clientY;
+                    jShow(org.x, org.y, org.x, org.y);
+                }
+                pOn = false; pDist = 0;
+            }
         }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
@@ -1276,6 +1297,8 @@
         setInterval(function () {
             var nowVisible = isMenuVisible();
             if (nowVisible !== _prevMenuVisible) {
+                /* show/hide the portrait overlay on play/death too, not only on rotation */
+                checkOrientation();
                 if (!nowVisible && !chatOn) {
                     // Menu just hidden (playing/spectating) → fullscreen + wake lock
                     goFullscreenLandscape();
@@ -1339,7 +1362,7 @@
          *  TAP CANVAS TO CLOSE DRAWER
          * ═══════════════════════════════════════════════════════ */
         document.addEventListener('touchstart', function (e) {
-            if (!drawer.classList.contains('on')) return;
+            if (!drawer.classList.contains('on') && !sp.classList.contains('on')) return;
             // If tap is outside the drawer, menu button, and settings panel — close
             if (rootL.contains(e.target)) return;
             drawer.classList.remove('on');
