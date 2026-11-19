@@ -31165,17 +31165,21 @@ function thelegendmodproject() {
                 var width = ~~(data.width / (this.scale * _dpr2));
                 var height = ~~(data.height / (this.scale * _dpr2));
                 var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
+                // Fade relative to the inherited alpha (textAlpha, removed-cell fade),
+                // so the bubble does not jump at 2 s and 13 s.
+                var chatBaseAlpha = context.globalAlpha;
                 if (temp < 2000) {
-                    context.globalAlpha = temp / 2000;
+                    context.globalAlpha = chatBaseAlpha * (temp / 2000);
                 } else if (temp > 13000) {
                     temp = 15000 - temp;
-                    context.globalAlpha = temp / 2000;
+                    context.globalAlpha = chatBaseAlpha * (temp / 2000);
                 }
                 if (width > 1 && height > 1) {
                     try {
                         context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
                     } catch (e) { }
                 }
+                context.globalAlpha = chatBaseAlpha;
             }
         };
         this.drawMerge = function (context) {
