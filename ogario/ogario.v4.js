@@ -35736,6 +35736,11 @@ function thelegendmodproject() {
             if (!this.isSocketOpen()) {
                 return;
             }
+            /* The agar.io login token is only for agar.io and Expanding Land; never send it
+             * (unencrypted) to Imsolo, Agar2, Garix, Sigmally, Senpa or private servers. */
+            if (!(this.serverType === 'agario' || this.serverType === 'expandingland' || this.isLegendWorld)) {
+                return;
+            }
             /* sendMessage() silently drops packets until the 241 key exists. */
             if (this.connectionIntegrity && !this.clientKey) {
                 return;
