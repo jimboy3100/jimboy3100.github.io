@@ -34735,6 +34735,28 @@ function thelegendmodproject() {
                 self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
                 if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
                 self.replayfunctions();
+                /* Sigmally can require a captcha before play (Delta ProtocolSigmally.captchaFlow2:
+                 * GET https://<host>/server/recaptcha/v3 -> {version: none|turnstile|v2|v3}).
+                 * Legend Mod has no widget for Sigmally's site keys, so it only tells the user
+                 * why a spawn may be ignored. Runs alongside the connection, never delays or
+                 * changes it; a failed or blocked request is ignored. */
+                try {
+                    var _lmSigSocket = self.socket;
+                    var _lmCaptchaUrl = new URL(t);
+                    _lmCaptchaUrl.protocol = 'https:';
+                    _lmCaptchaUrl.port = '';
+                    _lmCaptchaUrl.pathname = '/server/recaptcha/v3';
+                    _lmCaptchaUrl.search = '';
+                    _lmCaptchaUrl.hash = '';
+                    if (window.fetch) {
+                        fetch(_lmCaptchaUrl.toString(), { credentials: 'omit' }).then(function (r) { return r.json(); }).then(function (res) {
+                            var version = res && res.version ? String(res.version) : 'none';
+                            if (version === 'none' || self.socket !== _lmSigSocket) return;
+                            console.warn('%c[Sigmally]%c This server asks for a captcha (' + version + '); Legend Mod cannot solve it, so spawning may be ignored', 'color:#3af', 'color:inherit');
+                            if (window.toastr) toastr.warning('<b>[Sigmally]:</b> This server currently requires a captcha, which Legend Mod cannot show. Spawning may not work; play it on sigmally.com.');
+                        }).catch(function () { });
+                    }
+                } catch (eCaptcha) { }
                 return;
             }
 
