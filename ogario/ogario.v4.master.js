@@ -1431,9 +1431,21 @@ function legendmaster(self) {
                 this.accessToken = null;
                 window.loggedIn = false;
                 savedToken = null;
-                if (typeof toastr !== "undefined") {
-                    toastr.warning("<b>[SERVER]:</b> Your login expired. Please log in again.");
-                }
+                /*
+                 * Reason 14/15: the token expired, but the Google/FB session is
+                 * usually still valid (Delta requests a refresh here). Get a fresh
+                 * token silently and log in again; only ask the user if that fails.
+                 */
+                var refreshMaster = this;
+                this.refreshSocialToken(true, function (ok) {
+                    if (ok) {
+                        window.loggedIn = true;
+                        if (window.legendmod) window.legendmod.accessTokenSent = false;
+                        refreshMaster.login();
+                    } else if (typeof toastr !== "undefined") {
+                        toastr.warning("<b>[SERVER]:</b> Your login expired. Please log in again.");
+                    }
+                });
             }
 
             /*
@@ -1576,8 +1588,16 @@ function legendmaster(self) {
                 m.refreshSocialToken();
             }, 5 * 60 * 1000);
         },
-        refreshSocialToken() {
-            if (!this.accessToken || Date.now() - (this._tokenTime || 0) < 40 * 60 * 1000) return;
+        /* force: skip the token-age check (server said the token expired).
+         * onDone(ok), optional, is called once with the result. */
+        refreshSocialToken(force, onDone) {
+            var doneCalled = false;
+            var done = function (ok) {
+                if (doneCalled) return;
+                doneCalled = true;
+                if (typeof onDone === "function") onDone(ok);
+            };
+            if (!force && (!this.accessToken || Date.now() - (this._tokenTime || 0) < 40 * 60 * 1000)) return;
             var m = this;
             try {
                 if (this.context === "google" && self.gapi && self.gapi.auth2) {
@@ -1588,21 +1608,33 @@ function legendmaster(self) {
                             if (auth && auth.id_token && m.context === "google") {
                                 m.accessToken = auth.id_token;
                                 m._tokenTime = Date.now();
+                                done(true);
+                            } else {
+                                done(false);
                             }
                         }).catch(function (err) {
                             console.warn("[Master] Google token refresh failed:", err);
+                            done(false);
                         });
+                    } else {
+                        done(false);
                     }
                 } else if (this.context === "facebook" && self.FB && typeof self.FB.getLoginStatus === "function") {
                     self.FB.getLoginStatus(function (res) {
                         if (res && res.status === "connected" && res.authResponse && res.authResponse.accessToken && m.context === "facebook") {
                             m.accessToken = res.authResponse.accessToken;
                             m._tokenTime = Date.now();
+                            done(true);
+                        } else {
+                            done(false);
                         }
                     }, true);
+                } else {
+                    done(false);
                 }
             } catch (refreshErr) {
                 console.warn("[Master] Token refresh error:", refreshErr);
+                done(false);
             }
         },
         login() {
