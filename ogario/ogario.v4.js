@@ -29067,10 +29067,12 @@ function thelegendmodproject() {
             toastr.info('<b>[SERVER]:</b> Activating reward link...');
             return this.sendProto(183, { activateRewardLinkRequestField: { token: token } });
         },
-        activateUserRewards(rewardIds) {
-            if (!rewardIds || !rewardIds.length) return false;
-            console.log("[LM] Activate User Rewards (bulk):", rewardIds);
-            return this.sendProto(117, { activateUserRewardsRequestField: { rewardIds: rewardIds } });
+        activateUserRewards(rewardsFor) {
+            /* Official activate_user_rewards_request has one field, rewards_for
+             * (1 = progressive_video); there are no reward ids. */
+            var forValue = Number(rewardsFor) || 1;
+            console.log("[LM] Activate User Rewards for:", forValue);
+            return this.sendProto(117, { activateUserRewardsRequestField: { __for: forValue } });
         },
         requestLeaguesInfo(type) {
             var reqType = type || 1;
