@@ -43882,6 +43882,12 @@ Most cells eaten   : ${mostCellsEaten}
                     eaten.updateTime =
                         this.time;
 
+                    // moveCell() interpolates start -> target from updateTime:
+                    // start from the rendered state, not the previous packet.
+                    eaten.startX = eaten.x;
+                    eaten.startY = eaten.y;
+                    eaten.startSize = eaten.size;
+
                     eaten.removeCell();
                 }
             }
@@ -44086,7 +44092,12 @@ Most cells eaten   : ${mostCellsEaten}
                         victim.targetSize = victim.size;
 
                     }
-                    victim.time = this.time;
+                    // moveCell() interpolates start -> target from updateTime:
+                    // start from the rendered state, not the previous packet.
+                    victim.startX = victim.x;
+                    victim.startY = victim.y;
+                    victim.startSize = victim.size;
+                    victim.time = victim.updateTime = this.time;
                     victim.removeCell();
                 }
             }
