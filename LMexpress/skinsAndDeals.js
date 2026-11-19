@@ -4675,6 +4675,23 @@ function isSkinOwned(s, ownedSkinsObj) {
     return false;
 }
 
+/* Owned uploaded skins (skin_custom_*, amount above 0) as skin-list entries. */
+function getOwnedCustomSkinEntries(ownedSkinsObj) {
+    var entries = [];
+    var seen = Object.create(null);
+    if (!ownedSkinsObj) return entries;
+    for (var k in ownedSkinsObj) {
+        if (!ownedSkinsObj.hasOwnProperty(k)) continue;
+        var item = ownedSkinsObj[k];
+        if (!item || (typeof item.amount === 'number' && item.amount <= 0)) continue;
+        var id = String(item.productId || k);
+        if (id.indexOf('skin_custom_') !== 0 || seen[id]) continue;
+        seen[id] = true;
+        entries.push({ productId: id, image: id + '.png', skinType: 'custom' });
+    }
+    return entries;
+}
+
 var _populateSkinsRetries = 0;
 function populateSkins() {
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig || !window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"]) {
@@ -4720,8 +4737,15 @@ function populateSkins() {
 
         var ownedSkinsObj = getOwnedSkinsMap();
 
+        /*
+         * Uploaded custom skins are not in "Gameplay - Equippable Skins". The
+         * official client adds an owned skin_custom_* wallet item to the skin
+         * list (addCustomSkin), so it can be equipped and deleted here too.
+         */
+        var sourceSkins = skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj));
+
         skinShopFiltered =
-            skins.filter(
+            sourceSkins.filter(
                 function (
                     skin
                 ) {
@@ -4763,7 +4787,7 @@ function populateSkins() {
          * owned map) on every comparison, freezing the UI on each rebuild.
          */
         var configIndex = new Map();
-        for (var ci = 0; ci < skins.length; ci++) configIndex.set(skins[ci], ci);
+        for (var ci = 0; ci < sourceSkins.length; ci++) configIndex.set(sourceSkins[ci], ci);
         var keyedSkins = skinShopFiltered.map(function (skin) {
             var owned = isSkinOwned(skin, ownedSkinsObj);
             var info = getSkinPurchaseInfo(skin.productId, skin);
@@ -4897,7 +4921,7 @@ function populateSkins() {
     // Update owned skin count
     var ownedSkinsObj = getOwnedSkinsMap();
     var ownedCount = 0;
-    skins.forEach(function(s) {
+    skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj)).forEach(function(s) {
         if (s.productId !== 'skin_empty' && isSkinOwned(s, ownedSkinsObj)) ownedCount++;
     });
     if (ownedCount > 0) {
