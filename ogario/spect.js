@@ -1129,7 +1129,15 @@ class Spect {
                 //console.log("[SPECT] SendNick with")
                 /* Every 102 used to (re)spawn the unit: honour "Background auto-respawn" after
                  * the first life, and never start a new spawn within 2 s of the last one. */
-                if ((!this._lmHasSpawned || defaultmapsettings.mbAutoRespawn !== false) &&
+                /* Since these sockets ping every 3 s, the server's pong (type 31) is a 102 too:
+                 * it must not trigger a spawn (spectators spawned, dead units captcha'd every 3 s). */
+                var _lm102Type = -1;
+                try {
+                    var _lm102 = window.decodeMobileData(new Uint8Array(view.buffer, view.byteOffset + 1, view.byteLength - 1));
+                    if (_lm102 && _lm102.uncompressedData) _lm102Type = _lm102.uncompressedData.type;
+                } catch (e102) { }
+                if (_lm102Type !== 31 &&
+                    (!this._lmHasSpawned || defaultmapsettings.mbAutoRespawn !== false) &&
                     Date.now() - (this._lmLastSpawnReq || 0) > 2000) {
                     this._lmLastSpawnReq = Date.now();
                     this.handleSendNick()
