@@ -49,6 +49,9 @@ chrome.storage.local.get({ enabled: true }, (result) => {
         runMod();
     } else if (location.host === "agar.io" && location.pathname.startsWith("/legendmod")) {
         runMod();
+    } else if (location.host === "agar.io" && location.pathname === "/captcha") {
+        /* The bots open agar.io/captcha and expect the captcha helper page there. */
+        runMod();
     }
 });
 

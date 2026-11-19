@@ -35615,7 +35615,12 @@ function thelegendmodproject() {
             setTimeout(function() {*/
             for (var i = 0; i < window.captchaOpenedWindow; i++) {
                 if (legendmod.integrity && window.capthaWindow[i] && !window.capthaWindow[i].closed) {
-                    window.capthaWindow[i].ProcessParentMessage('doCaptcha');
+                    /* The helper may not be loaded (yet, or at all): do not throw. */
+                    try {
+                        if (typeof window.capthaWindow[i].ProcessParentMessage === 'function') {
+                            window.capthaWindow[i].ProcessParentMessage('doCaptcha');
+                        }
+                    } catch (e) { }
                 } else if (legendmod.integrity && window.capthaWindow[i] && window.capthaWindow[i].closed) {
                     createCaptchaWindow(i)
                 }
