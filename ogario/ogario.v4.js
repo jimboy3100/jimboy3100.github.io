@@ -34601,9 +34601,11 @@ function thelegendmodproject() {
                 _nextDomain &&
                 _previousDomain !== _nextDomain
             );
+            /* A replay (wss://imsolo.pro.replay) reaches no server: keep the account logged in. */
             var _joiningUnsupportedServer =
                 _earlyType !== 'agario' &&
-                _earlyType !== 'expandingland';
+                _earlyType !== 'expandingland' &&
+                t.indexOf('imsolo.pro.replay') === -1;
 
             if (_crossingAccountDomain || _joiningUnsupportedServer) {
                 var _isLoggedIn = Boolean(
@@ -36186,7 +36188,9 @@ function thelegendmodproject() {
                 lastWs.indexOf('sigmally.com') !== -1 ||
                 lastWs.indexOf('senpa.io') !== -1 ||
                 lastWs.indexOf('mi.com') !== -1 ||
-                lastWs.indexOf('delt.io') !== -1);
+                lastWs.indexOf('delt.io') !== -1) &&
+                /* the replay URL never connects: reconnecting to it only wiped the replayed cells */
+                lastWs.indexOf('imsolo.pro.replay') === -1;
 
             /* Master reconnect — only for official agar.io, NOT private servers */
             if (this.integrity && window.master && window.master.onDisconnect && !_isPrivateServer) {
