@@ -32464,6 +32464,7 @@ function thelegendmodproject() {
                                  * Skin alpha remains independent from the jelly
                                  * geometry decision.
                                  */
+                                var preSkinAlpha = style.globalAlpha;
                                 if (
                                     (
                                         defaultmapsettings
@@ -32789,6 +32790,8 @@ function thelegendmodproject() {
 
                                     //this.drawSpecialSkin(style, y)
                                 }
+                                // Undo the skin alpha so effects, nick and mass are not faded too.
+                                style.globalAlpha = preSkinAlpha;
                             }
                             else {
                                 if (defaultmapsettings.videoSkins) {
