@@ -3029,8 +3029,32 @@ function _showSkinPacksModal(skinName, productId) {
 }
 
 /* New Skins view: a skin with no coin/DNA price shows the packs that contain it,
- * or "Not for sale" (most new skins are sold only through agar.io's live offers). */
+ * "Promo Only", or a live offer button when a promotion is active. */
 function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
+    /* Check if this skin is in an active live promotion first. */
+    var _promo = window._lmOfficialPromotion;
+    var skinKey = productId.replace('skin_', '');
+    var _promoHasSkin = _promo && _promo.config &&
+        typeof JSON.stringify === 'function' &&
+        JSON.stringify(_promo.config).indexOf(skinKey) !== -1;
+    if (_promoHasSkin && _promo.callback) {
+        button.textContent = '\uD83C\uDF81 Active Offer!';
+        button.disabled = false;
+        button.style.opacity = '1';
+        button.style.cursor = 'pointer';
+        button.style.pointerEvents = 'auto';
+        button.style.background = '#ff9800';
+        button.title = 'This skin is in a live promotional offer right now! Click to open it.';
+        button.addEventListener('click', (function (cb) {
+            return function (evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                try { cb(); } catch (e) { console.warn('[SHOP] Promo callback error:', e); }
+            };
+        })(_promo.callback));
+        return;
+    }
+
     var packs = getSkinDealPacks(productId);
     if (!packs.length) {
         if (purchaseInfo.type !== 'REWARD') {
@@ -7563,8 +7587,33 @@ function renderSkinPage(
                     purchaseInfo.type ===
                     'INAPP'
                 ) {
-                    buyButton.textContent =
-                        'Offer Only';
+                    /* Check if this skin is in an active live promotion. */
+                    var _promo = window._lmOfficialPromotion;
+                    var _promoHasSkin = _promo && _promo.config &&
+                        typeof JSON.stringify === 'function' &&
+                        JSON.stringify(_promo.config).indexOf(productId.replace('skin_', '')) !== -1;
+                    if (_promoHasSkin && _promo.callback) {
+                        buyButton.textContent =
+                            '\uD83C\uDF81 Active Offer!';
+                        buyButton.disabled = false;
+                        buyButton.style.opacity = '1';
+                        buyButton.style.cursor = 'pointer';
+                        buyButton.style.pointerEvents = 'auto';
+                        buyButton.style.background = '#ff9800';
+                        buyButton.title = 'This skin is in a live promotional offer right now! Click to open it.';
+                        buyButton.addEventListener('click', (function (cb) {
+                            return function (evt) {
+                                evt.preventDefault();
+                                evt.stopPropagation();
+                                try { cb(); } catch (e) { console.warn('[SHOP] Promo callback error:', e); }
+                            };
+                        })(_promo.callback));
+                    } else {
+                        buyButton.textContent =
+                            'Promo Only';
+                        buyButton.title =
+                            'Available only through Agar.io\u2019s rotating promotional offers. Check in-game for active offers!';
+                    }
                 } else {
                     buyButton.textContent =
                         'Unavailable';
