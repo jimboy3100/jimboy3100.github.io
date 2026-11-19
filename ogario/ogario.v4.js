@@ -26145,6 +26145,17 @@ function thelegendmodproject() {
                         existingIdx
                     ].updateTime = Date.now();
 
+                    /* Same target tracking as opcode 30: without it a target that only
+                     * arrives through PPv7 kept its first position and status. */
+                    if (this.targeting && this.targetID && playerID === this.targetID) {
+                        var _lmTp = this.teamPlayers[existingIdx];
+                        if (isAlive === false) {
+                            if (this.targetStatus !== 2) this.setTargetStatus(2);
+                        } else if (posX !== undefined && _lmTp.alive) {
+                            this.updateTarget(_lmTp.nick, _lmTp.skinURL, _lmTp.x, _lmTp.y, _lmTp.mass, _lmTp.color, _lmTp.lbgpi);
+                        }
+                    }
+
                     /*
                      * PPv7 flag 8 carries the sender's map-orientation
                      * fingerprint (bgpi) for Legend Mod.
