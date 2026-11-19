@@ -44312,7 +44312,15 @@ Most cells eaten   : ${mostCellsEaten}
             var potions = Number(ac.potionsObtained) || 0;
             var quests = Number(ac.questsCompleted) || 0;
             var skins = Number(ac.skinsCreated) || 0;
-            var accountAge = ~~((Number(i.accountAge) || 0) / 3600 / 24);
+            /* uint32 accountAge: the official web client never shows it, so its unit is not
+             * documented. Expanding Land sends seconds (seconds/86400 = days). A value no larger
+             * than the days since agar.io launched (2015-04-28) cannot be an account older than
+             * ~75 minutes in seconds, so read it as days unless the account is new. */
+            var accountAgeRaw = Math.max(0, Number(i.accountAge) || 0);
+            var accountAgeMaxDays = Math.ceil((Date.now() - Date.UTC(2015, 3, 28)) / 86400000);
+            var accountAge = (accountAgeRaw > 0 && accountAgeRaw <= accountAgeMaxDays && !i.isNewUser)
+                ? Math.floor(accountAgeRaw)
+                : ~~(accountAgeRaw / 3600 / 24);
             /* server strings: escape before .html() */
             var country = application.escapeHTML(String(i.latestCountryCode || 'N/A'));
             var gameName = application.escapeHTML(String(i.displayName || 'Player'));
