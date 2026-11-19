@@ -2143,23 +2143,18 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         _lmRemoveCmdMsg();
         LegendClanSymbol = $("#nick").val();
         console.log("Step1");
-        /* everyone except nicks starting with the clan symbol gets the forced rejoin */
+        /* everyone except nicks starting with the clan symbol is asked to rejoin.
+         * Any chat sender can type this text, so it never reconnects by itself:
+         * the user has to press the button. */
         if (LegendClanSymbol.indexOf("℄") !== 0) {
             console.log("Step2");
-            if (commandMsg == "EU-London") {
-                setTimeout(function () {
-                    $("#server-join").click();
-                }, 60000);
-            } else if (commandMsg == "RU-Russia") {
-                //setTimeout(function() {
+            var _lmRejoinToast = toastr.warning("<b>" + MSGNICK + ":</b> asks you to reconnect to the server" + '<br><button class="btn btn-sm btn-primary btn-lm-rejoin" style="margin-top: 10px;border-color: darkblue;">Reconnect</button><br><button class="btn btn-sm btn-warning btn-lm-norejoin" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+                timeOut: 20000,
+                extendedTimeOut: 20000
+            }).css("width", "210px");
+            _lmRejoinToast.find(".btn-lm-rejoin").click(function () {
                 $("#server-join").click();
-                //}, 1000);
-            } else {
-                //bug fix
-                //setTimeout(function() {
-                $("#server-join").click();
-                //}, 1000);
-            }
+            });
         }
     } else if (MSGCOMMANDS.includes("[DosAttack]")) {
         if ($("#nick").val().includes("DosAttack") == false) _lmRemoveCmdMsg();
@@ -5271,7 +5266,7 @@ function YoutubebackgroundEnable() {
         //'@media (min-aspect-ratio: 16/9){.video-foreground{height: 300%;top: -100%}}@media (max-aspect-ratio: 16/9){.video-foreground{width: 300%;left: -100%}}'+
         //'@media all and (max-width: 5px){.vid-info{width: 50%;padding: .5rem}.vid-info h1{margin-bottom: .2rem}}@media all and (max-width: 500px){'+
         '.vid-info .acronym{display: none}}');
-    $("body").append('<div class="video-background"><div class="video-foreground"><iframe id="video-background" frameborder="0" height="100%" width="100%" src="https://www.youtube.com/embed/' + getParameterByName("v", $("#musicUrl").val()) + '?controls=0&showinfo=0&rel=0&autoplay=1&loop=1&start_radio=1&playlist=' + getParameterByName("list", $("#musicUrl").val()) + '"></iframe></div></div></div>');
+    $("body").append('<div class="video-background"><div class="video-foreground"><iframe id="video-background" frameborder="0" height="100%" width="100%" src="https://www.youtube.com/embed/' + encodeURIComponent(getParameterByName("v", $("#musicUrl").val())) + '?controls=0&showinfo=0&rel=0&autoplay=1&loop=1&start_radio=1&playlist=' + encodeURIComponent(getParameterByName("list", $("#musicUrl").val())) + '"></iframe></div></div></div>');
 }
 
 function YoutubebackgroundDisable() {
@@ -5478,6 +5473,32 @@ function SNEZOgarUpload() {
     }
 }
 
+/* Cloud settings are keyed only by the user id, so a download may hold values
+ * someone else uploaded. User scripts run on every start and webhooks get the
+ * game posts: import new ones only after the user confirms. */
+function _lmCloudSettingsFilter(text) {
+    var json;
+    try { json = JSON.parse(text); } catch (e) { return text; }
+    var ls = json && json.legendSettings;
+    if (!ls || typeof ls !== "object") return text;
+    var keys = ["Userscript1", "Userscript2", "Userscript3", "Userscript4", "Userscript5",
+        "Userscripttexture1", "Userscripttexture2", "Userscripttexture3", "Userscripttexture4", "Userscripttexture5",
+        "discwebhook1", "discwebhook2"];
+    var changed = [];
+    for (var i = 0; i < keys.length; i++) {
+        var v = ls[keys[i]];
+        if (v === undefined || v === null || v === "" || v === "null") continue;
+        if (String(v) === String(localStorage.getItem(keys[i]))) continue;
+        changed.push(keys[i]);
+    }
+    if (!changed.length) return text;
+    if (confirm("The downloaded settings contain user scripts or Discord webhooks (" + changed.join(", ") + ").\n\n" +
+        "User scripts will run on every start of Legend Mod. Import them only if you uploaded these settings yourself.\n\n" +
+        "OK = import them, Cancel = keep your current ones")) return text;
+    for (var j = 0; j < keys.length; j++) delete ls[keys[j]];
+    return JSON.stringify(json, null, 4);
+}
+
 function SNEZOgarDownload() {
     IdfromLegendmod()
     if (userid == "" || userid == null) {
@@ -5487,7 +5508,7 @@ function SNEZOgarDownload() {
         getSNEZ("https://api.legendmod.ml/lm-settings", userid, "LMSettings", function (xhttp) {
             if (!xhttp) return;
             var responseSNEZ = xhttp.response;
-            $('#import-settings').val(unescape(responseSNEZ));
+            $('#import-settings').val(_lmCloudSettingsFilter(unescape(responseSNEZ)));
             //$('#import-settings').val(responseSNEZ);
             $("#import-settings-btn2").click();
         });
@@ -5515,18 +5536,26 @@ function SNEZServers() {
     }
 
     // ---------------
-    window.userfirstname = localStorage.getItem("userfirstname");
-    window.userlastname = localStorage.getItem("userlastname");
-    //window.agarioUID
+    /* The clan tag is the team password: the relay gets only a one-way hash
+     * of it ("h:" + FNV-1a 32 of the UTF-8 bytes), the same on every client,
+     * so equal tags still group together. No real name, UID or AID is sent. */
+    function _lmTagHash(tag) {
+        tag = String(tag || "");
+        if (!tag) return "";
+        var bytes;
+        try { bytes = unescape(encodeURIComponent(tag)); } catch (e) { bytes = tag; }
+        var h = 0x811c9dc5;
+        for (var i = 0; i < bytes.length; i++) {
+            h ^= bytes.charCodeAt(i);
+            h = Math.imul(h, 0x01000193) >>> 0;
+        }
+        return "h:" + ("0000000" + h.toString(16)).slice(-8);
+    }
     var state = {
         nickname: null,
         server: null,
         tag: null,
-        AID: null,
         hidecountry: false,
-        userfirstname: null,
-        userlastname: null,
-        agarioUID: null,
         isPlaying: false
     };
     var elements = {
@@ -5585,24 +5614,20 @@ function SNEZServers() {
             //state.nickname = nick.value;
             //state.server = server;
             //state.tag = tag.value;
+            var tagHash = _lmTagHash(tag.value);
             if (state.nickname != nick.value ||
                 state.server != servertemp ||
-                state.tag != tag.value ||
+                state.tag != tagHash ||
                 state.isPlaying != (window.ogario && window.ogario.play) ||
-                state.agarioLEVEL != window.agarioLEVEL ||
-                state.agarioUID != window.agarioUID)
+                state.agarioLEVEL != window.agarioLEVEL)
 
             /*if (state.nickname != nick.value ||
                 state.server != servertemp)			no1: I stoped this*/ {
                 //console.log('something changed')
                 state.nickname = nick.value;
                 state.server = servertemp;
-                state.tag = tag.value;
-                state.AID = window.agarioID;
+                state.tag = tagHash;
                 state.hidecountry = defaultmapsettings.hidecountry;
-                state.userfirstname = window.userfirstname;
-                state.userlastname = window.userlastname;
-                state.agarioUID = window.agarioUID;
                 state.agarioLEVEL = window.agarioLEVEL;
                 state.isPlaying = !!(window.ogario && window.ogario.play);
                 //state.tag="RespectPrivacy"; no2: I stoped this
@@ -7174,11 +7199,8 @@ function initializeLM(modVersion) {
             usercity = usercity.replace(" ", "_");
         }
         */
-        var Pwdtosend = "NONE";
         var servertosend = "NotFound";
         var nicknametosend = "NotFound";
-        var userfirstname = localStorage.getItem("userfirstname");
-        var userlastname = localStorage.getItem("userlastname");
         //			var userid=$('#user-id-tag').text();userid = userid.replace("User id: ", "");			
         //			var userid = localStorage.getItem("userid");
         var modetosend = "NotFound";
@@ -7202,10 +7224,6 @@ function initializeLM(modVersion) {
         if ($('#server').val() != "" && $('#server').val() != null && $('#server').val() != undefined) {
             servertosend = $('#server').val();
         }
-        if ($('#clantag').val() != "" && $('#clantag').val() != undefined) {
-            Pwdtosend = $('#clantag').val();
-        }
-        Pwdtosend = Pwdtosend.replace(/ /g, "_");
         if ($('#nick').val() != undefined) { nicknametosend = $('#nick').val(); }
         nicknametosend = removeEmojis(nicknametosend.replace(/ /g, "_"));
         if ($('#server').val() != undefined) {
@@ -7215,11 +7233,11 @@ function initializeLM(modVersion) {
         }
 
         if (searchSip == null) {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&mode=" + modetosend + "&region=" + regiontosend;
         } else if (searchSip != null) {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + searchSip + "&pwd=" + Pwdtosend + "&join=Url" + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + searchSip + "&join=Url" + "&mode=" + modetosend + "&region=" + regiontosend;
         } else {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&mode=" + modetosend + "&region=" + regiontosend;
         }
         $('#musicUrl').append($('<div id="loaderIframeInfo1"></div>').append($('<iframe id="loaderIframeInfo" name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe>').attr('src', detailed1)));
         $('#loaderIframeInfo1').hide();
@@ -8802,7 +8820,7 @@ function disconnect2min() {
         commandMsg = "EU-London";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will disconnect in 120 seconds");
+        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will be asked to reconnect");
     }
 }
 
@@ -8811,7 +8829,7 @@ function disconnectnow() {
         commandMsg = "RU-Russia";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will disconnect now");
+        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will be asked to reconnect now");
     }
 }
 /*function showstatsphp(){
