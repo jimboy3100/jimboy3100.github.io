@@ -33547,8 +33547,13 @@ function thelegendmodproject() {
                     null;
             }
 
-            this._reconnAttempts =
-                0;
+            /* Keep the backoff state for our own auto-reconnects; reset it for user connects. */
+            if (this._lmAutoReconnect) {
+                this._lmAutoReconnect = false;
+            } else {
+                this._reconnAttempts = 0;
+                this._reconnStartTime = 0;
+            }
 
             /*
              * Capture the old socket BEFORE closeConnection() nulls it.
@@ -34752,7 +34757,9 @@ function thelegendmodproject() {
                     this._reconnTimer = setTimeout(function () {
                         console.log(consoleMsgLM + ' Reconnecting to ' + lastWs);
                         if (window.core && window.core.connect) {
+                            self._lmAutoReconnect = true;
                             window.core.connect(lastWs);
+                            self._lmAutoReconnect = false;
                         }
                     }, delay);
                 } else {
