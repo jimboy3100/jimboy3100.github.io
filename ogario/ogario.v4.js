@@ -21593,9 +21593,10 @@ function thelegendmodproject() {
                 return;
             }
             if (window.i18n_dict && window.i18n_dict.en) {
-                for (var lang in window.i18n_dict.en) {
-                    if (window.i18n_dict.en.hasOwnProperty(lang) && textLanguage.hasOwnProperty(lang)) {
-                        window.i18n_dict.en[lang] = textLanguage[lang];
+                /* loop variable renamed: 'var lang' was hoisted and shadowed the global, so the check above always returned */
+                for (var key in window.i18n_dict.en) {
+                    if (window.i18n_dict.en.hasOwnProperty(key) && textLanguage.hasOwnProperty(key)) {
+                        window.i18n_dict.en[key] = textLanguage[key];
                     }
                 }
             }
