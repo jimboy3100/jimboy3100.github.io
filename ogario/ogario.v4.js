@@ -1693,7 +1693,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             window._isChangingToPrivateServer
         );
 
-        if (!intendedLogout && window._lwReconnecting) {
+        if (!intendedLogout && (window._lwReconnecting || window._lwAuthRetrying)) {
             console.log(
                 '[LW AUTH] Duplicate unexpected logout ignored while reconnecting'
             );
@@ -1712,6 +1712,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 (window._lwLoginRetryGeneration || 0) + 1;
 
             window._lwReconnecting = false;
+            window._lwAuthRetrying = false;
 
             console.log('[LW AUTH] Intended logout (user manual or private server switch)');
             window._isUserManualLogout = false;
@@ -1824,7 +1825,9 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         // 2. Unexpected logout! Try auto-login retries up to MAX_LOGIN_RETRIES times
         if (window._loginRetryCount < MAX_LOGIN_RETRIES) {
             window._loginRetryCount++;
-            window._lwReconnecting = true;
+            /* Own flag: master.onDisconnect sets _lwReconnecting and clears it 3 s
+             * later, which used to stop this chain part-way. */
+            window._lwAuthRetrying = true;
             console.warn('[LW AUTH] Unexpected logout detected! Attempting auto-login retry ' + window._loginRetryCount + '/' + MAX_LOGIN_RETRIES + '...');
 
             if (window.toastr) {
@@ -1841,7 +1844,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 if (
                     retryGeneration !==
                         window._lwLoginRetryGeneration ||
-                    !window._lwReconnecting
+                    !window._lwAuthRetrying
                 ) {
                     return;
                 }
@@ -1855,7 +1858,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 if (window.legendmod && window.legendmod.loginConfirmed === true &&
                     window.legendmod.isSocketOpen && window.legendmod.isSocketOpen()) {
                     console.log('[LW AUTH] Connection still logged in, no relogin needed');
-                    window._lwReconnecting = false;
+                    window._lwAuthRetrying = false;
                     window._loginRetryCount = 0;
                     return;
                 }
@@ -1911,7 +1914,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                             /* This connection is still logged in: resending the token on an
                                authenticated socket gets the session dropped. Keep the session. */
                             if (window.legendmod && window.legendmod.loginConfirmed === true) {
-                                window._lwReconnecting = false;
+                                window._lwAuthRetrying = false;
                                 window._loginRetryCount = 0;
                                 return;
                             }
@@ -1992,7 +1995,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                     if (
                         retryGeneration !==
                             window._lwLoginRetryGeneration ||
-                        !window._lwReconnecting
+                        !window._lwAuthRetrying
                     ) {
                         return;
                     }
@@ -2014,7 +2017,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                             );
                         }
 
-                        window._lwReconnecting = false;
+                        window._lwAuthRetrying = false;
                         window._loginRetryCount = 0;
                     } else if (window._loginRetryCount < MAX_LOGIN_RETRIES) {
                         window._loginRetryCount++;
@@ -2022,7 +2025,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                         setTimeout(executeRetryStep, 2500);
                     } else {
                         console.error('[LW AUTH] All ' + MAX_LOGIN_RETRIES + ' auto-login retries failed. Proceeding with full logout.');
-                        window._lwReconnecting = false;
+                        window._lwAuthRetrying = false;
                         window._loginRetryCount = 0;
                         window._isUserManualLogout = true;
                         window.logout();
