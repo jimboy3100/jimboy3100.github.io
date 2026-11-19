@@ -34348,6 +34348,7 @@ function thelegendmodproject() {
 
                 // Subsequent messages: decode opcode byte 0 through inverse map
                 // Modify in-place before creating DataView
+                if (raw.length === 0) return; // empty frame: getUint8(0) would throw
                 raw[0] = this.sigOpcodeMapInverse[raw[0]];
                 var data = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
                 var opcode = data.getUint8(0);
@@ -35269,6 +35270,12 @@ function thelegendmodproject() {
             }
 
             // ===== Sigmally join: JSON spawn via opcode qe[0] =====
+            /* Before the opcode map arrives a raw frame would be decoded by the
+             * server's shuffle table as a random opcode: do not send it. */
+            if (this.serverType === 'sigmally' && (!this.sigOpcodeMap || !this.sigHandshakeDone)) {
+                console.warn('%c[Sigmally]%c Spawn ignored: handshake not complete yet', 'color:#3af', 'color:inherit');
+                return;
+            }
             if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
                 this.playerNick = nick;
                 var spawnJSON = JSON.stringify({
