@@ -2144,7 +2144,8 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         _lmRemoveCmdMsg();
         LegendClanSymbol = $("#nick").val();
         console.log("Step1");
-        if (LegendClanSymbol.indexOf("?") !== -1) {
+        /* everyone except nicks starting with the clan symbol gets the forced rejoin */
+        if (LegendClanSymbol.indexOf("℄") !== 0) {
             console.log("Step2");
             if (commandMsg == "EU-London") {
                 setTimeout(function () {
@@ -3907,7 +3908,7 @@ function setpic6data() {
 
 
 function sendyt1() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt1url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3915,7 +3916,7 @@ function sendyt1() {
 }
 
 function sendyt2() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt2url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3923,7 +3924,7 @@ function sendyt2() {
 }
 
 function sendyt3() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt3url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3931,7 +3932,7 @@ function sendyt3() {
 }
 
 function sendyt4() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt4url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3939,7 +3940,7 @@ function sendyt4() {
 }
 
 function sendyt5() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt5url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3947,7 +3948,7 @@ function sendyt5() {
 }
 
 function sendyt6() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt6url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -5000,7 +5001,7 @@ function triggerLMbtns() {
     }
 
     /*$("#agario-main-buttons").append('<div id="LEGENDAds5"></div>')
-    if (!window.proLicenceUID && !document.getElementById("nick").value.includes("?")){
+    if (!window.proLicenceUID && !document.getElementById("nick").value.includes("℄")){
         $("#LEGENDAds5").load("https://www.legendmod.ml/banners/agario2");
     }*/
     if (dyinglight1load == null || dyinglight1load == "null") {
@@ -8650,7 +8651,7 @@ function adminstuff() {
         '</div><p style="color:white; font-size:12px";" align="middle">IMPORTANT NOTICE: Admin Tools can only be used by the Admins of the Legend mod</u></p>' +
         '</div></div>');
     $("#administrationtoolshud").after('<button id="AdminBacktomenu" onclick="administrationtools(); return false" class="btn btn-danger"  style="margin-left: 10px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
-    $("#AdminClanSymbol").val("?");
+    $("#AdminClanSymbol").val("℄");
     if (localStorage.getItem("AdminClanSymbol") && localStorage.getItem("AdminClanSymbol") != "") {
         $('#AdminClanSymbol').val(localStorage.getItem("AdminClanSymbol"));
     }
@@ -8712,7 +8713,7 @@ function disconnect2min() {
         commandMsg = "EU-London";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ? symbol), same password will disconnect in 120 seconds");
+        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will disconnect in 120 seconds");
     }
 }
 
@@ -8721,7 +8722,7 @@ function disconnectnow() {
         commandMsg = "RU-Russia";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ? symbol), same password will disconnect now");
+        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will disconnect now");
     }
 }
 /*function showstatsphp(){
