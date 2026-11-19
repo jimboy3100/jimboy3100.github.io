@@ -890,6 +890,13 @@ function searchIPHandler(searchStr) { //VERY WEIRD FUNCTION, MOD DOESNT LOAD IF 
      * so searches keep the current region and mode instead of undefined. */
     region = $("#regioncheck").length ? $("#regioncheck").val() : $("#region").val(); //...
     realmode = $("#gamemodecheck").length ? $("#gamemodecheck").val() : $("#gamemode").val(); //...
+    /* a pasted ?r=..&m=..&search=.. link carries the server's region and mode */
+    try {
+        var _lmSearchR = getParameterByName("r", searchStr);
+        var _lmSearchM = getParameterByName("m", searchStr);
+        if (_lmSearchR) region = _lmSearchR;
+        if (_lmSearchM) realmode = _lmSearchM;
+    } catch (e) { }
     $("#Backtomenu").hide();
     hideMenu();
     showSearchHud();
