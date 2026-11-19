@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Express Agar.io Extension
 // @namespace    Legend Express Agario Mod
-// @version      1.8
+// @version      1.8.1
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     https://jimboy3100.github.io
 // @author       Jimboy3100
@@ -69,7 +69,8 @@ switch (mode) {
         Userscript(modwebsite);
         break;
     case 'vanilla':
-        modwebsite = 'http://imasters.org.ru/agar/js/vanilla.user.js';
+        /* https only: code fetched over plain http could be swapped by anyone on the network path and would run on agar.io */
+        modwebsite = 'https://imasters.org.ru/agar/js/vanilla.user.js';
         Userscript(modwebsite);
         break;		
     case 'ogario':
@@ -132,10 +133,20 @@ function Htmlscript(modwebsite) {
 }
 
 function Userscript(modwebsite) {
+    /* Never run remote code that did not come over https */
+    if (!/^https:\/\//i.test(modwebsite)) {
+        console.error("[LMexpress] Refusing to run a userscript that is not served over https: " + modwebsite);
+        return;
+    }
     LMdetails = GM_xmlhttpRequest({
         method: "GET",
         url: modwebsite,
         onload: function(e) {
+            /* An error page (404/5xx) or a redirect away from https is not the script */
+            if ((e.status && (e.status < 200 || e.status >= 300)) || (e.finalUrl && !/^https:\/\//i.test(e.finalUrl))) {
+                console.error("[LMexpress] Not running userscript from " + modwebsite + " (status " + e.status + ", final url " + e.finalUrl + ")");
+                return;
+            }
             try {
                 new Function(['GM_info', 'GM_xmlhttpRequest'], e.responseText)(GM_info, GM_xmlhttpRequest);
             } catch (evalErr) {
