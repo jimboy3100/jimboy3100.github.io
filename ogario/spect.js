@@ -508,7 +508,9 @@ class Spect {
 
     sendFreeSpectate() {
         this.isFreeSpectate = !this.isFreeSpectate
-        if (this.staticX === 0) {
+        /* In-game spectator (no static tile position): free spectate follows the
+         * cursor. staticX is null for it, never 0, so this branch was dead. */
+        if (this.staticX == null) {
             if (this.isFreeSpectate) {
                 this.sendCursor()
             } else {
