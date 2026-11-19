@@ -2388,6 +2388,56 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         `;
     };
 
+    /*
+     * The Expanding Land server answers at most one opcode-130 request per
+     * 5 s per connection (current and last week share that cooldown) and
+     * sends nothing when throttled. Send now when allowed, otherwise delay
+     * the send to the end of the cooldown. Returns the delay in ms (0 = sent
+     * now), or -1 when an immediate send failed.
+     */
+    window._lmLastLeaguesRequestAt = 0;
+    window._lmSendLeaguesRequest = function(requestType) {
+        var cooldownMs = 5100;
+        function send() {
+            var sent = false;
+            if (typeof window.requestLeaguesInfo === 'function') {
+                sent = window.requestLeaguesInfo(requestType) === true;
+            } else if (
+                window.application &&
+                typeof window.application.requestLeaguesInfo === 'function'
+            ) {
+                sent = window.application.requestLeaguesInfo(requestType) === true;
+            } else if (
+                requestType === 1 &&
+                typeof window.userLeaguesInfoRequest === 'function'
+            ) {
+                sent = window.userLeaguesInfoRequest() !== false;
+            }
+            if (sent) window._lmLastLeaguesRequestAt = Date.now();
+            return sent;
+        }
+        var now = Date.now();
+        var waitMs = window._lmLastLeaguesRequestAt + cooldownMs - now;
+        if (waitMs <= 0) {
+            return send() ? 0 : -1;
+        }
+        // A slot may already be reserved by a queued request; cap clock jumps.
+        if (waitMs > 3 * cooldownMs) waitMs = cooldownMs;
+        // Reserve the slot so a second queued request waits for this one.
+        window._lmLastLeaguesRequestAt = now + waitMs;
+        setTimeout(function() {
+            try {
+                send();
+            } catch (delayedLeaguesRequestError) {
+                console.warn(
+                    '[LM] Delayed leagues request failed:',
+                    delayedLeaguesRequestError
+                );
+            }
+        }, waitMs);
+        return waitMs;
+    };
+
     window._startCurrentLeaguesRequest = function() {
         if (
             !document.getElementById('lm-leagues-modal') ||
@@ -2400,22 +2450,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         window._leaguesRequestState = 'loading';
 
         var requestWasSent = false;
+        var requestDelayMs = 0;
         try {
-            if (typeof window.requestLeaguesInfo === 'function') {
-                requestWasSent =
-                    window.requestLeaguesInfo(1) === true;
-            } else if (
-                window.application &&
-                typeof window.application.requestLeaguesInfo === 'function'
-            ) {
-                requestWasSent =
-                    window.application.requestLeaguesInfo(1) === true;
-            } else if (
-                typeof window.userLeaguesInfoRequest === 'function'
-            ) {
-                requestWasSent =
-                    window.userLeaguesInfoRequest() !== false;
-            }
+            requestDelayMs = window._lmSendLeaguesRequest(1);
+            requestWasSent = requestDelayMs >= 0;
         } catch (currentLeaguesRequestError) {
             console.warn(
                 '[LM] Current-week leagues request failed:',
@@ -2458,7 +2496,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         'Leaderboard request timed out.'
                     );
                 }
-            }, 5000);
+            }, 5000 + requestDelayMs);
         }
     };
 
@@ -2588,6 +2626,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         // Load cached data and start exactly one background request.
         window.switchLeagueTab(window.currentLeagueTab || 1);
+
+        /*
+         * switchLeagueTab requests only when nothing is cached. Refresh the
+         * cached current week once per open as well, so trophies and rank
+         * earned since the first response are shown (the cache stays visible
+         * meanwhile; no-op when a request already started above).
+         */
+        window._startCurrentLeaguesRequest();
     };
 
     // Listen to leagues update event and render real player data matching Agar.io UI
@@ -3191,7 +3237,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         );
         window._lastWeekLeagueTab =
             requestedLastWeekTab === 2 ||
-            requestedLastWeekTab === 3
+            requestedLastWeekTab === 3 ||
+            requestedLastWeekTab === 4
                 ? requestedLastWeekTab
                 : 1;
         var t = getTheme();
@@ -3245,20 +3292,18 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         // Check if we already have cached last week data
         if (window.lastWeekLeaguesResponse) {
             window._renderLastWeekContent(window.lastWeekLeaguesResponse);
+            // Refresh in the background (e.g. after the weekly reset); the
+            // leaguesInfoUpdate listener re-renders this modal when it lands.
+            try {
+                window._lmSendLeaguesRequest(2);
+            } catch (lastWeekRefreshError) {}
         } else {
             // Request last week data from server (type=2).
             var lastWeekRequestWasSent = false;
+            var lastWeekRequestDelayMs = 0;
             try {
-                if (typeof window.requestLeaguesInfo === 'function') {
-                    lastWeekRequestWasSent =
-                        window.requestLeaguesInfo(2) === true;
-                } else if (
-                    window.application &&
-                    typeof window.application.requestLeaguesInfo === 'function'
-                ) {
-                    lastWeekRequestWasSent =
-                        window.application.requestLeaguesInfo(2) === true;
-                }
+                lastWeekRequestDelayMs = window._lmSendLeaguesRequest(2);
+                lastWeekRequestWasSent = lastWeekRequestDelayMs >= 0;
             } catch (lastWeekRequestError) {
                 console.warn(
                     '[LM] Last Week leagues request failed:',
@@ -3323,7 +3368,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         </div>
                     `;
                 }
-            }, 5000);
+            }, 5000 + lastWeekRequestDelayMs);
         }
     };
 
@@ -3402,7 +3447,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         if (
             selectedLastWeekTab !== 2 &&
-            selectedLastWeekTab !== 3
+            selectedLastWeekTab !== 3 &&
+            selectedLastWeekTab !== 4
         ) {
             selectedLastWeekTab = 1;
         }
@@ -3413,7 +3459,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 : (
                     selectedLastWeekTab === 3
                         ? worldEntries
-                        : leagueEntries
+                        : (
+                            selectedLastWeekTab === 4
+                                ? friendsEntries
+                                : leagueEntries
+                        )
                 );
 
         entries = selectedOfficialEntries.map(function(entry, index) {
@@ -3685,7 +3735,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         document.body.appendChild(modal);
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
-        // Listen for friend list update
+        // Listen for friend list update (one listener across reopens)
+        if (window._friendsModalListener) {
+            document.removeEventListener('friendListUpdate', window._friendsModalListener);
+        }
         window._friendsModalListener = function(e) {
             window._renderFriendsList(e.detail);
         };
@@ -3798,7 +3851,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     case 5: realmName = 'Battle Royale'; break;
                     default: realmName = 'Playing'; break;
                 }
-                if (realmId) realmName += ' (' + realmId.substring(0, 8) + ')';
+                if (realmId) realmName += ' (' + window._escapeLeagueHtmlText(String(realmId).substring(0, 8)) + ')';
                 realmText = '<div style="font-size: 10px; color: #2196f3; font-weight: 600; margin-top: 2px;">🎮 ' + realmName + '</div>';
             }
 
@@ -3809,7 +3862,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             // Avatar
             var avatarHtml = '';
             if (avatarUrl) {
-                avatarHtml = '<img src="' + avatarUrl + '" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; object-fit: cover;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">';
+                avatarHtml = '<img src="' + window._escapeLeagueHtmlText(avatarUrl) + '" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; object-fit: cover;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">';
                 avatarHtml += '<div style="display: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; background: rgba(255,255,255,0.08); align-items: center; justify-content: center; font-size: 18px;">👤</div>';
             } else {
                 avatarHtml = '<div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 18px;">👤</div>';
@@ -3820,7 +3873,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             if (isOnline && realm) {
                 var realmIdForJoin = realm.realmId || realm.realm_id || '';
                 if (realmIdForJoin) {
-                    actionHtml = '<button onclick="window._spectacteFriend(\'' + realmIdForJoin.replace(/'/g, "\\'") + '\');" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 4px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; white-space: nowrap;">👁 Spectate</button>';
+                    actionHtml = '<button onclick="window._spectacteFriend(\'' + window._escapeLeagueHtmlText(String(realmIdForJoin).replace(/\\/g, '\\\\').replace(/'/g, "\\'")) + '\');" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 4px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; white-space: nowrap;">👁 Spectate</button>';
                 }
             }
 
@@ -3829,7 +3882,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 '<div style="flex: 1; min-width: 0;">' +
                     '<div style="display: flex; align-items: center; gap: 6px;">' +
                         '<div style="width: 8px; height: 8px; border-radius: 50%; background: ' + statusColor + '; flex-shrink: 0;' + (isOnline ? ' box-shadow: 0 0 6px ' + statusColor + ';' : '') + '"></div>' +
-                        '<span style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + displayId + '</span>' +
+                        '<span style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + window._escapeLeagueHtmlText(displayId) + '</span>' +
                     '</div>' +
                     '<div style="font-size: 10px; color: ' + statusColor + '; font-weight: 600;">' + statusText + '</div>' +
                     realmText +
@@ -4060,15 +4113,15 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         var key = (ph.potionId || '').toLowerCase();
                         if (tierMap[key]) {
                             var tObj = tierMap[key];
-                            var specText = (ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ` <span style="font-size: 10px; color: ${tObj.color}; font-weight: 800;">(At least x${ph.minSpecialPieces} Special)</span>` : '';
-                            var coinVal = (ph.coinText && ph.coinText !== 'na') ? ('💰 ' + ph.coinText) : tObj.coins;
+                            var specText = (ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ` <span style="font-size: 10px; color: ${tObj.color}; font-weight: 800;">(At least x${window._lmEconomyEscape(ph.minSpecialPieces)} Special)</span>` : '';
+                            var coinVal = (ph.coinText && ph.coinText !== 'na') ? ('💰 ' + window._lmEconomyEscape(ph.coinText)) : tObj.coins;
                             rowsHtml += `
                                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
                                     <div style="width: 120px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${tObj.color}; font-size: 13px;">
                                         🧪 ${tObj.name}
                                     </div>
                                     <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
-                                        ${ph.skinPieces || tObj.skin}${specText}
+                                        ${ph.skinPieces ? window._lmEconomyEscape(ph.skinPieces) : tObj.skin}${specText}
                                     </div>
                                     <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
                                         ${coinVal}
@@ -5223,7 +5276,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         var productId = String(info.productId || '');
         var baseName = productId.replace(/^potion_/i, '').replace(/_/g, ' ')
             .replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
-        var name = baseName + ' Potion';
+        var name = window._lmEconomyEscape(baseName + ' Potion');
 
         var tierColors = {
             potion_superior: '#4caf50', potion_epic: '#00bcd4',
@@ -5231,10 +5284,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         };
         var potionColor = tierColors[productId] || '#00bcd4';
 
-        var coinText = info.coinText || '\u2014';
-        var skinPiecesText = info.skinPieces > 0 ? ('x' + info.skinPieces) : '\u2014';
+        var coinText = info.coinText ? window._lmEconomyEscape(info.coinText) : '\u2014';
+        var skinPiecesText = info.skinPieces > 0 ? ('x' + window._lmEconomyEscape(info.skinPieces)) : '\u2014';
         var specialPiecesText = info.minSpecialPieces > 0
-            ? ('x' + info.minSpecialPieces + ' Special') : '';
+            ? ('x' + window._lmEconomyEscape(info.minSpecialPieces) + ' Special') : '';
 
         var priceText = (info.price !== null && info.price !== undefined)
             ? (typeof window.formatAgarCurrency === 'function'
@@ -5349,10 +5402,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
                 cardsHtml +=
                     '<div style="position:relative;flex:1;min-width:140px;max-width:180px;border-radius:14px;padding:16px 12px;border:2px solid ' + colors.border + ';background:' + colors.bg + ';display:flex;flex-direction:column;align-items:center;text-align:center;">' +
-                        '<button onclick="if(window.showPotionDetailModal) window.showPotionDetailModal(\'' + pid + '\');" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="Potion Info">?</button>' +
+                        '<button class="lm-premium-potion-info" data-product-id="' + window._lmEconomyEscape(pid) + '" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="Potion Info">?</button>' +
                         '<div style="width:80px;height:80px;border-radius:50%;margin:8px 0 10px;display:flex;align-items:center;justify-content:center;font-size:38px;background:radial-gradient(circle,' + colors.border + '22,' + colors.border + '44);border:3px solid ' + colors.border + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' +
-                        '<div style="font-size:15px;font-weight:900;color:#333;margin-bottom:4px;">' + baseName + '</div>' +
-                        '<button class="btn lm-buy-premium-potion" data-product-id="' + pid + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;cursor:pointer;width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
+                        '<div style="font-size:15px;font-weight:900;color:#333;margin-bottom:4px;">' + window._lmEconomyEscape(baseName) + '</div>' +
+                        '<button class="btn lm-buy-premium-potion" data-product-id="' + window._lmEconomyEscape(pid) + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;cursor:pointer;width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
                     '</div>';
             });
         }
@@ -5374,6 +5427,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
          * Pending registry is keyed by purchaseId, not productId.
          */
         modal.addEventListener('click', function (e) {
+            var infoBtn = e.target.closest('.lm-premium-potion-info');
+            if (infoBtn) {
+                if (window.showPotionDetailModal) {
+                    window.showPotionDetailModal(infoBtn.getAttribute('data-product-id') || '');
+                }
+                return;
+            }
             var btn = e.target.closest('.lm-buy-premium-potion');
             if (!btn || btn.disabled) return;
 
@@ -6060,6 +6120,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
     document.addEventListener('lm-rush-boost-purchased', function () {
         window._lmRefreshOpenRushShop();
     });
+    // Header balances and BUY affordability are computed at render time.
+    document.addEventListener('lm-premium-potion-purchase-finished', function () {
+        if (document.getElementById('lm-premium-potions-modal') &&
+            typeof window.showPremiumPotionsModal === 'function') {
+            window.showPremiumPotionsModal();
+        }
+    });
 
 
     window.openShop = function (cat) {
@@ -6209,6 +6276,12 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         return false;
     };
 
+    /*
+     * This definition replaces the official-field one above (userId, status,
+     * realmInfo from opcode 147). Keep its login checks, then delegate to it;
+     * the legacy renderer below read fields the friend proto never has.
+     */
+    var _lmOfficialFriendsModal = window.showFriendsModal;
     window.showFriendsModal = function() {
         // Authenticated & Facebook login check
         var isLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId));
@@ -6236,6 +6309,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         if (!hasServerConnection) {
             if (window.toastr) toastr.error('<b>[FRIENDS]:</b> No server connection. Join an Agar.io server first.');
             return;
+        }
+
+        if (typeof _lmOfficialFriendsModal === 'function') {
+            return _lmOfficialFriendsModal();
         }
 
         injectStyles();
@@ -9376,7 +9453,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 );
 
 
-                window
+                var skipSent = window
                     .softPurchase(
                         purchaseId,
                         {
@@ -9428,6 +9505,25 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                 }
                         }
                     );
+
+
+                // Not sent (login not confirmed yet, or already pending):
+                // softPurchase calls no callback, so re-enable here.
+                if (skipSent !== true) {
+                    button.prop(
+                        'disabled',
+                        false
+                    );
+                    if (
+                        window.toastr &&
+                        typeof window.lmAccountReady === 'function' &&
+                        !window.lmAccountReady()
+                    ) {
+                        toastr.warning(
+                            '<b>[POTION]:</b> Log in and wait until you are connected.'
+                        );
+                    }
+                }
 
 
                 return false;
@@ -9997,8 +10093,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             var infoEl = document.createElement('div');
             infoEl.style.cssText = 'flex:1;text-align:left;';
             infoEl.innerHTML =
-                '<div style="font-weight:800;font-size:14px;color:' + pres.color + ';">' + pres.label + '</div>' +
-                (rw.amount > 1 ? '<div style="font-size:11px;color:' + t.tc2 + ';">x' + rw.amount + '</div>' : '');
+                '<div style="font-weight:800;font-size:14px;color:' + pres.color + ';">' + window._lmEconomyEscape(pres.label) + '</div>' +
+                (rw.amount > 1 ? '<div style="font-size:11px;color:' + t.tc2 + ';">x' + window._lmEconomyEscape(rw.amount) + '</div>' : '');
 
             card.appendChild(iconEl);
             card.appendChild(infoEl);
@@ -10032,10 +10128,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             document.head.appendChild(style);
         }
 
-        /* Auto-close after 8 seconds */
+        /* Auto-close after 8 seconds (only this modal, not a newer reward) */
         setTimeout(function () {
-            var m = document.getElementById('lm-potion-reward-modal');
-            if (m) m.remove();
+            if (modal.parentNode) modal.remove();
         }, 8000);
     });
 
@@ -11296,14 +11391,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         }
 
 
+        // Wallet type-2 items live on application.user.boosts.
         var inventory =
-            (
-                window.LM &&
-                window.LM.user &&
-                window.LM.user
-                    .boosts
-            ) ||
-            {};
+            typeof window._lmGetBoostInventory === 'function'
+                ? window._lmGetBoostInventory()
+                : {};
 
 
         var selectedBefore =

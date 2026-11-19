@@ -627,6 +627,33 @@ function SpecialDeals(defaultTab) {
             $('#dnaCountModal').text(dna.toLocaleString());
             $('#coinsCountModal').text(coins.toLocaleString());
 
+            /*
+             * The modal is kept in the DOM, so refresh the price label here
+             * (config index may have loaded later, or a token is owned and the
+             * upload costs nothing). Clearing originalButtonText makes the next
+             * upload capture and restore this fresh label instead of the first.
+             */
+            var labelUploadState = window._lmSkinUploadState;
+            if (
+                uploadBtn.length &&
+                !(labelUploadState && labelUploadState.busy) &&
+                !window._lmSkinCreatePending
+            ) {
+                var labelUser = (window.application && window.application.user) || {};
+                var labelVip = typeof window.getAgarVipStatus === 'function' ? window.getAgarVipStatus() : null;
+                var ownsUsableToken =
+                    (Number(labelUser.skinCreateTokens) || 0) > 0 ||
+                    ((Number(labelUser.skinCreateVIPTokens) || 0) > 0 && !!(labelVip && labelVip.active === true));
+                uploadBtn.text(
+                    ownsUsableToken
+                        ? 'Upload (uses token)'
+                        : (typeof window.getSkinUploadButtonLabel === 'function'
+                            ? window.getSkinUploadButtonLabel()
+                            : 'Upload & Buy')
+                );
+                if (labelUploadState) labelUploadState.originalButtonText = null;
+            }
+
             // Upload tab elements
             if (allReady) {
                 chooseLabel.css({ opacity: 1, pointerEvents: 'auto' });
@@ -1404,7 +1431,12 @@ function SpecialDeals(defaultTab) {
                 _lmPNG8WorkerIdleTimer = setTimeout(terminatePNG8Worker, 30000);
 
                 if (e.data.error) {
-                    job.reject(new Error(e.data.error));
+                    var jobErr = new Error(e.data.error);
+                    /* The worker cannot load its libraries (offline CDN, CSP): it will never work. */
+                    if (/importScripts|is not defined|NetworkError|SecurityError/i.test(String(e.data.error))) {
+                        jobErr._lmPNG8Fatal = true;
+                    }
+                    job.reject(jobErr);
                 } else {
                     job.resolve(e.data.png);
                 }
@@ -1412,7 +1444,9 @@ function SpecialDeals(defaultTab) {
 
             _lmPNG8Worker.onerror = function (err) {
                 terminatePNG8Worker();
-                rejectAllPNG8Pending(err || new Error('PNG8 worker error'));
+                var fatalErr = new Error((err && err.message) || 'PNG8 worker error');
+                fatalErr._lmPNG8Fatal = true;
+                rejectAllPNG8Pending(fatalErr);
             };
 
             return _lmPNG8Worker;
@@ -1427,7 +1461,9 @@ function SpecialDeals(defaultTab) {
                         worker =
                             getOrCreatePNG8Worker();
                     } catch (workerCreateErr) {
-                        reject(workerCreateErr);
+                        var createErr = new Error(String((workerCreateErr && workerCreateErr.message) || workerCreateErr));
+                        createErr._lmPNG8Fatal = true;
+                        reject(createErr);
                         return;
                     }
 
@@ -1557,13 +1593,20 @@ function SpecialDeals(defaultTab) {
             }
 
             return workerPromise.catch(function(workerErr) {
-                if (!_lmPNG8WorkerBroken) {
+                /*
+                 * Disable the worker only when it cannot run at all. A timeout
+                 * (busy device) or a one-off encode error falls back for this
+                 * image only; the next job starts a fresh worker.
+                 */
+                if (workerErr && workerErr._lmPNG8Fatal && !_lmPNG8WorkerBroken) {
                     _lmPNG8WorkerBroken = true;
                     console.warn(
                         '[LM SKIN] Worker encode failed,' +
                         ' falling back to main thread:',
                         workerErr
                     );
+                } else if (!_lmPNG8WorkerBroken) {
+                    console.warn('[LM SKIN] Worker encode failed once, main thread for this image:', workerErr);
                 }
 
                 return ensureAgarUPNG().then(function(upng) {
@@ -2346,7 +2389,7 @@ function SpecialDeals(defaultTab) {
             /* Clear current deals grid immediately so user sees loading indicator */
             var grid = document.getElementById('dealsGrid');
             if (grid) {
-                grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals for version ' + selectedVer + '...</div>';
+                grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals for version ' + _sdEscHtml(selectedVer) + '...</div>';
             }
 
             LoadGameConfiguration();
@@ -2761,12 +2804,34 @@ function showPotionProductSelector() {
 }
 window.showPotionProductSelector = showPotionProductSelector;
 
+/* Config / server strings go into HTML: escape them (SHOP-10). */
+function _sdEscHtml(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 /**
  * Populate the deals grid with cards from GameConfiguration
  */
 function populateDealsGrid() {
     var grid = document.getElementById('dealsGrid');
     if (!grid) return;
+
+    /* Deal ids and descriptions come from the config: read them from data
+     * attributes instead of building an inline JS string. */
+    if (!grid._lmDealBuyBound) {
+        grid._lmDealBuyBound = true;
+        grid.addEventListener('click', function (ev) {
+            var btn = ev.target && ev.target.closest ? ev.target.closest('.deal-buy-btn[data-deal-id]') : null;
+            if (!btn || !grid.contains(btn)) return;
+            ev.preventDefault();
+            buyDealIAP(btn.getAttribute('data-deal-id') || '', btn.getAttribute('data-deal-desc') || '');
+        });
+    }
 
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) {
         if (window.master && window.master.GameConfiguration && window.master.GameConfiguration.gameConfig) {
@@ -2852,7 +2917,7 @@ function populateDealsGrid() {
 
         // Show resolved skin names first (proper titles from config)
         for (var rs2 = 0; rs2 < resolvedSkins.length; rs2++) {
-            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">🎨 ' + resolvedSkins[rs2].name + '</span> ';
+            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">🎨 ' + _sdEscHtml(resolvedSkins[rs2].name) + '</span> ';
         }
 
         // Show non-skin products (coins, DNA, boosts, etc.)
@@ -2868,12 +2933,12 @@ function populateDealsGrid() {
             else if (pid.indexOf('skin') !== -1) label = '🎨 ' + cleanPid.replace(/_/g, ' ');
             else if (pid.indexOf('boost') !== -1) label = '🚀 ' + pid.replace(/_/g, ' ');
             else label = qty + 'x ' + label;
-            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + label + '</span> ';
+            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + _sdEscHtml(label) + '</span> ';
         }
         if (!contentText) contentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
 
         // Resolve all deal skin entries and render small skin icons
-        var skinImgs = getDealSkinImages(deal.bundleId);
+        var skinImgs = getDealSkinImages(deal.bundleId).map(_sdEscHtml);
         var skinMiniIconsHtml = renderDealSkinMiniIcons(deal.bundleId, 6);
 
         // Build the icon area — 0, 1, 2, or 3 skin previews
@@ -2904,12 +2969,12 @@ function populateDealsGrid() {
         html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: border-color 0.2s;">';
         html += iconHtml;
         html += '<div style="flex: 1; min-width: 0;">';
-        html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + desc + '</div>';
+        html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + _sdEscHtml(desc) + '</div>';
         html += '<div style="line-height: 1.4; margin-top: 2px;">' + contentText + skinMiniIconsHtml + '</div>';
         html += '</div>';
         html += '<div style="text-align: right; min-width: 70px;">';
         html += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + price + '</div>';
-        html += '<button class="btn btn-xs deal-buy-btn" onclick="buyDealIAP(\'' + deal.id + '\', \'' + desc.replace(/'/g, "\\'") + '\')" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '<button class="btn btn-xs deal-buy-btn" data-deal-id="' + _sdEscHtml(deal.id) + '" data-deal-desc="' + _sdEscHtml(desc) + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
         html += '</div>';
         html += '</div>';
     }
@@ -2922,7 +2987,7 @@ function populateDealsGrid() {
         if (!spId || !/^[\w.+\-]+$/.test(spId)) continue;
         sp = { purchaseId: spId, currencyType: sp.currencyType || sp.currencyProductId, currencyAmount: sp.currencyAmount };
         var spDesc = sp.purchaseId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
-        var currType = String(sp.currencyType || '').toLowerCase();
+        var currType = String(sp.currencyType || '').toLowerCase().replace(/[^\w ]/g, '');
         var currIcon = currType.indexOf('dna') !== -1 ? '🧬' : '💰';
         var currAmount = sp.currencyAmount || 0;
 
@@ -2948,8 +3013,8 @@ function populateDealsGrid() {
     var boostSrc = (window.application && window.application.user && window.application.user.boosts) || {};
     var boostHtml = '';
     for (var pid in boostSrc) {
-        if (pid.indexOf('boost') !== -1 && boostSrc[pid] > 0) {
-            var bQty = boostSrc[pid];
+        if (pid.indexOf('boost') !== -1 && boostSrc[pid] > 0 && /^[\w.+\-]+$/.test(pid)) {
+            var bQty = Number(boostSrc[pid]) || 0;
             var bName = pid.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
             boostHtml += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.mc + '44; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
             boostHtml += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.mc + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">🚀</div>';
@@ -3180,8 +3245,8 @@ function renderDealSkinMiniIcons(bundleId, maxIcons) {
 
         html +=
             '<img ' +
-                'src="' + e.imageUrl + '" ' +
-                'title="' + String(e.name || e.productId).replace(/"/g, '&quot;') + '" ' +
+                'src="' + _sdEscHtml(e.imageUrl) + '" ' +
+                'title="' + _sdEscHtml(e.name || e.productId) + '" ' +
                 'style="' +
                     'width:22px;' +
                     'height:22px;' +
@@ -3224,7 +3289,7 @@ function getDealSkinImage(bundleId) {
 /**
  * Buy a deal via IAP payment URL (real money)
  */
-function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
+function _showDealBuyConfirmationModal(title, priceLabel, onConfirm, headerText) {
     var old = document.getElementById('deal-buy-confirm-modal');
     if (old) old.remove();
 
@@ -3236,11 +3301,11 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
     modal.innerHTML = 
         '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
-                '🛒 Purchase Confirmation' +
+                _sdEscHtml(headerText || '🛒 Purchase Confirmation') +
             '</div>' +
             '<div style="padding: 20px 24px;">' +
-                '<div style="font-size: 15px; font-weight: 800; color: ' + t.tc + '; margin-bottom: 8px;">' + title + '</div>' +
-                (priceLabel ? ('<div style="font-size: 13px; font-weight: 700; color: ' + t.mc + '; margin-bottom: 14px;">Price: ' + priceLabel + '</div>') : '') +
+                '<div style="font-size: 15px; font-weight: 800; color: ' + t.tc + '; margin-bottom: 8px;">' + _sdEscHtml(title) + '</div>' +
+                (priceLabel ? ('<div style="font-size: 13px; font-weight: 700; color: ' + t.mc + '; margin-bottom: 14px;">Price: ' + _sdEscHtml(priceLabel) + '</div>') : '') +
                 '<div style="font-size: 11px; color: ' + t.tc2 + ';">Are you sure you want to proceed?</div>' +
             '</div>' +
             '<div style="display: flex; gap: 10px; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
@@ -4675,22 +4740,32 @@ function populateSkins() {
             return true;
         });
 
-        skinShopFiltered.sort(function(a, b) {
-            /* Unavailable skins go to the very end */
-            var aInfo = getSkinPurchaseInfo(a.productId, a);
-            var bInfo = getSkinPurchaseInfo(b.productId, b);
-            var aUnavail = (!aInfo.purchasable && !isSkinOwned(a, ownedSkinsObj)) ? 1 : 0;
-            var bUnavail = (!bInfo.purchasable && !isSkinOwned(b, ownedSkinsObj)) ? 1 : 0;
-            if (aUnavail !== bUnavail) return aUnavail - bUnavail;
-            /* Owned skins after unowned */
-            var aOwned = isSkinOwned(a, ownedSkinsObj) ? 1 : 0;
-            var bOwned = isSkinOwned(b, ownedSkinsObj) ? 1 : 0;
-            if (aOwned !== bOwned) return aOwned - bOwned;
-            /* Newest skins first: higher original index = added later to the config */
-            var aIdx = skins.indexOf(a);
-            var bIdx = skins.indexOf(b);
-            return bIdx - aIdx;
+        /*
+         * Compute the sort keys once per skin. The comparator used to call
+         * skins.indexOf, getSkinPurchaseInfo and isSkinOwned (a scan of the
+         * owned map) on every comparison, freezing the UI on each rebuild.
+         */
+        var configIndex = new Map();
+        for (var ci = 0; ci < skins.length; ci++) configIndex.set(skins[ci], ci);
+        var keyedSkins = skinShopFiltered.map(function (skin) {
+            var owned = isSkinOwned(skin, ownedSkinsObj);
+            var info = getSkinPurchaseInfo(skin.productId, skin);
+            return {
+                skin: skin,
+                unavail: (!info.purchasable && !owned) ? 1 : 0,
+                owned: owned ? 1 : 0,
+                idx: configIndex.get(skin)
+            };
         });
+        keyedSkins.sort(function(a, b) {
+            /* Unavailable skins go to the very end */
+            if (a.unavail !== b.unavail) return a.unavail - b.unavail;
+            /* Owned skins after unowned */
+            if (a.owned !== b.owned) return a.owned - b.owned;
+            /* Newest skins first: higher original index = added later to the config */
+            return b.idx - a.idx;
+        });
+        skinShopFiltered = keyedSkins.map(function (k) { return k.skin; });
 
         return skinShopFiltered;
     }
@@ -4852,6 +4927,19 @@ window.refreshSkinGrid = refreshSkinGrid;
  * Delete a custom skin from the server (opcode 152).
  * Custom skins have productId like "skin_custom_<uuid>_<uuid>".
  */
+/*
+ * Equip, unequip and delete go out through core.proxyMobileData, which drops
+ * account messages until this connection's login response arrived. Refuse
+ * instead of reporting a success that never reached the server.
+ */
+function _sdAccountReadyFor(label) {
+    if (typeof window.lmAccountReady === 'function' && !window.lmAccountReady()) {
+        if (window.toastr) toastr.warning('<b>[SHOP]:</b> Login not confirmed on this server yet. Wait a moment, then ' + label + ' again.');
+        return false;
+    }
+    return true;
+}
+
 function deleteCustomSkin(skinId) {
     if (!window.loggedIn) {
         toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to delete skins');
@@ -4865,6 +4953,7 @@ function deleteCustomSkin(skinId) {
         toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
         return;
     }
+    if (!_sdAccountReadyFor('delete the skin')) return;
 
     // Disable the delete button on this skin card to prevent double-clicks
     var cardBtn = $('.skin-card[data-product-id="' + skinId + '"] .skin-btn-delete, .skin-card[data-product-id="' + skinId + '"] .skin-btn-buy');
@@ -4910,6 +4999,7 @@ function equipSkin(productId, imageName) {
     if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('equip skins')) {
         return;
     }
+    if (!_sdAccountReadyFor('equip the skin')) return;
 
     var cdnBase = window.LM_CDN_BASE();
     localStorage.setItem('equippedSkinId', productId);
@@ -4945,6 +5035,7 @@ function unequipSkin() {
     if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('unequip skins')) {
         return;
     }
+    if (!_sdAccountReadyFor('unequip the skin')) return;
 
     localStorage.removeItem('equippedSkinId');
     localStorage.removeItem('equippedSkinImage');
@@ -6989,8 +7080,16 @@ function renderSkinPage(
                                 event
                                     .stopPropagation();
 
-                                deleteCustomSkin(
-                                    selectedProductId
+                                /* Deleting a paid custom skin cannot be undone: confirm first. */
+                                _showDealBuyConfirmationModal(
+                                    'Delete this custom skin permanently? This cannot be undone.',
+                                    null,
+                                    function () {
+                                        deleteCustomSkin(
+                                            selectedProductId
+                                        );
+                                    },
+                                    '🗑 Delete Custom Skin'
                                 );
                             };
                         }
@@ -8090,8 +8189,18 @@ function LoadGameConfiguration() {
         }
     }
 
+    /*
+     * MiniclipConfigDestination is set at load, so it is never empty. The
+     * already-loaded config is valid while it still points at the default
+     * URL (URL/version changes clear these caches before calling here).
+     */
+    var _lmConfigIsDefault =
+        !window.MiniclipConfigDestination ||
+        (typeof window.LM_CONFIG_URL === 'function' &&
+            window.MiniclipConfigDestination === window.LM_CONFIG_URL());
+
     if (
-        !window.MiniclipConfigDestination &&
+        _lmConfigIsDefault &&
         window.GameConfiguration &&
         window.GameConfiguration.gameConfig
     ) {
@@ -8100,7 +8209,7 @@ function LoadGameConfiguration() {
     }
 
     if (
-        !window.MiniclipConfigDestination &&
+        _lmConfigIsDefault &&
         window.master &&
         window.master.GameConfiguration &&
         window.master.GameConfiguration
@@ -8115,7 +8224,7 @@ function LoadGameConfiguration() {
     }
 
     if (
-        !window.MiniclipConfigDestination &&
+        _lmConfigIsDefault &&
         window.LMGameConfiguration &&
         window.LMGameConfiguration
             .gameConfig
@@ -8165,7 +8274,7 @@ function LoadGameConfiguration() {
     );
 
     if (
-        !window.MiniclipConfigDestination &&
+        _lmConfigIsDefault &&
         window.LMGameConfigurationReady &&
         typeof window
             .LMGameConfigurationReady

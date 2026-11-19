@@ -10,7 +10,7 @@ var proto = `syntax="proto3";
 message Data {
   int32 contentType = 1;
   uncompressedData uncompressedData = 2;
-  //read__TYPE_BYTES compressedData = 3;
+  bytes compressedData = 3; // zlib (RFC 1950) of an uncompressedData message when contentType != 1
   uint32 uncompressedSize = 4;
 }
 message uncompressedData {
@@ -637,7 +637,7 @@ message openPotionForSlotRequestField {
 }
 
 message openPotionForSlotResponseField {
-    int32 openPotionForSlotResponseField = 1;
+    int32 result = 1;
     repeated productUpdates productUpdates = 2;
     repeated userPotions userPotions = 3;
 }
