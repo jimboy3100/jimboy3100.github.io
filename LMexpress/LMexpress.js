@@ -1959,20 +1959,22 @@ function _lmSafeChatUrl(value) {
     return /^https?:\/\/[^\s"'<>`\\]+$/i.test(String(value || ''));
 }
 
-function MsgCommands1(MSGCOMMANDS, MSGNICK) {
+function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
     MSGNICK = _lmEscHtml(MSGNICK);
+    /* remove only the message that carried the command (not every chat line and toast),
+     * and only once the command was accepted */
+    function _lmRemoveCmdMsg() {
+        if (MSGEL && MSGEL.length) MSGEL.remove();
+    }
 
     if (MSGCOMMANDS.includes("[url]")) {
-        if ($("#nick").val().includes("url") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
         MSGCOMMANDS = MSGCOMMANDS.split("[url]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/url]')[0];
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
+        if ($("#nick").val().includes("url") == false) _lmRemoveCmdMsg();
         toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
@@ -1981,10 +1983,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             window.open(MSGCOMMANDS, '_blank');
         });
     } else if (MSGCOMMANDS.includes("[tag]")) {
-        if ($("#nick").val().includes("tag") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
+        if ($("#nick").val().includes("tag") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[tag]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/tag]')[0];
         if (MSGCOMMANDS != "") {
@@ -2009,10 +2008,6 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             });
         }
     } else if (MSGCOMMANDS.includes("[yut]")) {
-        if ($("#nick").val().includes("yut") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
         MSGCOMMANDS = MSGCOMMANDS.split("[yut]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/yut]')[0];
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
@@ -2021,6 +2016,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         var _lmYutId = _lmYoutubeId(MSGCOMMANDS);
         if (!_lmYutId) return;
+        if ($("#nick").val().includes("yut") == false) _lmRemoveCmdMsg();
         toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
@@ -2032,10 +2028,6 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             playYoutube(); //it's different on LME
         });
     } else if (MSGCOMMANDS.includes("[skype]")) {
-        if ($("#nick").val().includes("skype") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
         MSGCOMMANDS = MSGCOMMANDS.split("[skype]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/skype]')[0];
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
@@ -2043,6 +2035,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("join.skype.com/")) {
+            if ($("#nick").val().includes("skype") == false) _lmRemoveCmdMsg();
             toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 10000,
                 extendedTimeOut: 10000
@@ -2052,10 +2045,6 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             });
         }
     } else if (MSGCOMMANDS.includes("[discord]")) {
-        if ($("#nick").val().includes("discord") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
         MSGCOMMANDS = MSGCOMMANDS.split("[discord]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/discord]')[0];
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("http://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTP://") == false) {
@@ -2063,6 +2052,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg") || MSGCOMMANDS.includes("discord.com")) {
+            if ($("#nick").val().includes("discord") == false) _lmRemoveCmdMsg();
             toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
@@ -2078,8 +2068,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         otherMsg = getParameterByName("do", MSGCOMMANDS);
         //		$( ".toast.toast-success" ).text("");
         //		$(".message-text").text();.hide();
-        $(".message-text").remove();
-        $(".toast.toast-success").remove();
+        _lmRemoveCmdMsg();
         //without confirmation
         if (commandMsg == "Team5") {
             $("#top5-hud").css('background-image', 'url(" https://www.legendmod.ml/banners/icogeneral.gif ")').css({
@@ -2150,8 +2139,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
     } else if (MSGCOMMANDS.includes("https://agar.io/sip=151.80.91.73:1511")) {
         commandMsg = getParameterByName("com", MSGCOMMANDS);
         otherMsg = getParameterByName("do", MSGCOMMANDS);
-        $(".message-text").remove();
-        $(".toast.toast-success").remove();
+        _lmRemoveCmdMsg();
         LegendClanSymbol = $("#nick").val();
         console.log("Step1");
         if (LegendClanSymbol.indexOf("?") !== -1) {
@@ -2172,10 +2160,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             }
         }
     } else if (MSGCOMMANDS.includes("[DosAttack]")) {
-        if ($("#nick").val().includes("DosAttack") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
+        if ($("#nick").val().includes("DosAttack") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosAttack]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosAttack]')[0];
         var nameArr = MSGCOMMANDS.split(',');
@@ -2186,10 +2171,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         legendmod.drawCommander2 = true;
         toastr.warning("<b>" + MSGNICK + ":</b> Attack " + application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)).css("width", "210px");
     } else if (MSGCOMMANDS.includes("[DosFight]")) {
-        if ($("#nick").val().includes("DosFight") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
+        if ($("#nick").val().includes("DosFight") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosFight]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosFight]')[0];
         var nameArr = MSGCOMMANDS.split(',');
@@ -2200,10 +2182,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         legendmod.drawCommander2 = true;
         toastr.warning("<b>" + MSGNICK + ":</b> Fight " + application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)).css("width", "210px");
     } else if (MSGCOMMANDS.includes("[DosRun]")) {
-        if ($("#nick").val().includes("DosRun") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
+        if ($("#nick").val().includes("DosRun") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosRun]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosRun]')[0];
         var nameArr = MSGCOMMANDS.split(',');
@@ -7517,7 +7496,7 @@ function initializeLM(modVersion) {
              */
             if (MSGCOMMANDS && _msgEl.length && !_msgEl.attr('data-lm-done')) {
                 _msgEl.attr('data-lm-done', '1');
-                MsgCommands1(MSGCOMMANDS, MSGNICK);
+                MsgCommands1(MSGCOMMANDS, MSGNICK, _msgEl);
             }
             _chatObserverActive = false;
         }, 50);
