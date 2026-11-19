@@ -2473,6 +2473,33 @@ function deleteGamemode(temp) {
         }, {
             text: 'Senpa AS FFA',
             value: 10015
+        }, {
+            text: 'Delta EU Party 1',
+            value: 10020
+        }, {
+            text: 'Delta EU Party 2',
+            value: 10021
+        }, {
+            text: 'Delta EU FFA',
+            value: 10022
+        }, {
+            text: 'Delta EU FFA Arcade',
+            value: 10023
+        }, {
+            text: 'Delta US Party',
+            value: 10024
+        }, {
+            text: 'Delta Experimental',
+            value: 10025
+        }, {
+            text: 'Delta Dagestyle',
+            value: 10026
+        }, {
+            text: 'Delta Rookery',
+            value: 10027
+        }, {
+            text: 'Delta Arctida',
+            value: 10028
         }
         /* Other private servers (commented out)
         , {
@@ -2753,6 +2780,22 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 10015) {
             legendmod.gameMode = ':ffa';
             core.connect('wss://asia.senpa.io:2001');
+        }
+        // delt.io servers (10020-10028), list from Delta's client (servers/feeds.ts)
+        else if (parseInt($('#gamemode').val()) >= 10020 && parseInt($('#gamemode').val()) <= 10028) {
+            var deltioMap = {
+                10020: 'wss://party.delt.io',
+                10021: 'wss://party2.delt.io',
+                10022: 'wss://ffa.delt.io',
+                10023: 'wss://solo.delt.io',
+                10024: 'wss://party.na.delt.io',
+                10025: 'wss://exp.delt.io',
+                10026: 'wss://dag.delt.io',
+                10027: 'wss://rookery.delt.io',
+                10028: 'wss://arctida.delt.io'
+            };
+            legendmod.gameMode = (parseInt($('#gamemode').val()) === 10020 || parseInt($('#gamemode').val()) === 10021 || parseInt($('#gamemode').val()) === 10024) ? ':party' : ':ffa';
+            core.connect(deltioMap[parseInt($('#gamemode').val())]);
         } else {
             if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
             if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
