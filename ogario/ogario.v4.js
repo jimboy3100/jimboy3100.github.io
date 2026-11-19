@@ -43682,10 +43682,18 @@ Most cells eaten   : ${mostCellsEaten}
                 !this.connectionIntegrity &&
                 !temp2;
 
+            /*
+             * Official agar.io (as in Delta): only a border larger than
+             * 14000 x 14000 is the full map, and once it is fixed later opcode 64
+             * packets on this connection are ignored (agar.io also sends smaller
+             * ones during play, which shifted the offset).
+             */
             var isFullPacket =
-                isGenericPrivate ||
-                (pWidth > 6000 && pHeight > 6000) ||
-                (pWidth >= (this.mapSize - 500));
+                this.connectionIntegrity
+                    ? (!this.mapOffsetFixed && pWidth > 14000 && pHeight > 14000)
+                    : (isGenericPrivate ||
+                        (pWidth > 6000 && pHeight > 6000) ||
+                        (pWidth >= (this.mapSize - 500)));
 
             if (!this.mapOffsetFixed || isFullPacket) {
                 if (this.connectionIntegrity || temp2) {
