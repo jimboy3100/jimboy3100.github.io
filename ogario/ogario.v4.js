@@ -44490,10 +44490,12 @@ Most cells eaten   : ${mostCellsEaten}
                  * 7-branch resolution (regex, includes, toLowerCase per packet).
                  * Only while the packet's skin is the one resolved last time for this
                  * key: a respawn with another skin must re-resolve. Entries set by
-                 * other sources (no recorded skin) keep precedence as before. */
+                 * other sources (no recorded skin) keep precedence as before.
+                 * A name-only packet (no skin) keeps the cached entry: the nick
+                 * fallback must not replace a custom skin resolved earlier. */
                 var lastSkinByKey = window._lmVanillaSkinLastG || (window._lmVanillaSkinLastG = Object.create(null));
                 var lastSkin = lastSkinByKey[playerKey];
-                if (application.customSkinsMap[playerKey] && (lastSkin === undefined || lastSkin === (g || ''))) return;
+                if (application.customSkinsMap[playerKey] && (!g || lastSkin === undefined || lastSkin === g)) return;
                 lastSkinByKey[playerKey] = g || '';
 
                 var skinUrl = null;
