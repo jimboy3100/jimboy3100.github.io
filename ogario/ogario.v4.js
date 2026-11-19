@@ -24778,10 +24778,15 @@ function thelegendmodproject() {
                         LM.arrowFB[0].isIncluded = fbIncluded;
 
                         if (LM.arrowFB[0].visible && !fbIncluded) { //Yahnych
+                            /* opcode 160 stores raw server coordinates; the minimap is in the
+                             * local (possibly mirrored) frame like the other dots. */
+                            var fbVec = window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr];
+                            var fbX = fbVec && fbVec[0] ? legendmod.translateX(LM.arrowFB[0].x) : LM.arrowFB[0].x;
+                            var fbY = fbVec && fbVec[1] ? legendmod.translateY(LM.arrowFB[0].y) : LM.arrowFB[0].y;
                             this.miniMapCtx.save();
                             try {
                                 this.miniMapCtx.beginPath();
-                                this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
+                                this.miniMapCtx.arc((fbX + r) * n, (fbY + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
                                 this.miniMapCtx.closePath();
                                 this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
                                 this.miniMapCtx.strokeStyle = 'white';
@@ -24794,10 +24799,10 @@ function thelegendmodproject() {
                                 if (defaultSettings.miniMapNickStrokeSize > 0) {
                                     this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
                                     this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                                    this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                                    this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (fbX + r) * n, (fbY + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                                 }
                                 this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                                this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                                this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (fbX + r) * n, (fbY + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                             } catch (eArrowFB) { } finally {
                                 this.miniMapCtx.restore();
                             }
