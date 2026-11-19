@@ -61089,12 +61089,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var fontPx = fontSizeMatch ? parseInt(fontSizeMatch[1]) : 24;
             var h = Math.ceil(fontPx * 1.4);
             if (w < 1 || h < 1) return null;
-            /* Clamp to reasonable size to avoid huge textures */
-            if (w > 2048) w = 2048;
-            if (h > 512) h = 512;
+            /* Clamp to reasonable size to avoid huge textures. Scale the
+             * drawing down uniformly instead of cropping it, so the whole
+             * text fits and the w/h aspect used by the quad stays right. */
+            var fullW = w, fullH = h;
+            var texScale = Math.min(1, 2048 / w, 512 / h);
+            if (texScale < 1) {
+                w = Math.max(1, Math.ceil(w * texScale));
+                h = Math.max(1, Math.ceil(h * texScale));
+            }
             tc.width = w;
             tc.height = h;
+            tctx.setTransform(1, 0, 0, 1, 0, 0);
             tctx.clearRect(0, 0, w, h);
+            if (texScale < 1) tctx.scale(w / fullW, h / fullH);
             tctx.font = font;
             tctx.textAlign = 'center';
             tctx.textBaseline = 'middle';
@@ -61103,10 +61111,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 tctx.lineWidth = strokeWidth;
                 tctx.lineJoin = 'round';
                 tctx.miterLimit = 2;
-                tctx.strokeText(text, w / 2, h / 2);
+                tctx.strokeText(text, fullW / 2, fullH / 2);
             }
             tctx.fillStyle = fillStyle;
-            tctx.fillText(text, w / 2, h / 2);
+            tctx.fillText(text, fullW / 2, fullH / 2);
+            tctx.setTransform(1, 0, 0, 1, 0, 0);
 
             var gl = this.gl;
             var tex = gl.createTexture();
