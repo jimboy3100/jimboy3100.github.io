@@ -67183,8 +67183,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     for (var sI = 0; sI < neededSpects; sI++) {
                         var sp = spects[sI];
                         if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
-                            sumX += sp.playerX + (sp.fix3x || 0);
-                            sumY += sp.playerY + (sp.fix3y || 0);
+                            /* playerX/Y are already client space incl. fix3 (spect getX). */
+                            sumX += sp.playerX;
+                            sumY += sp.playerY;
                             count++;
                         }
                     }
@@ -67196,8 +67197,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && getActiveSpect(window.multiboxPlayerEnabled)) {
                 var spect = getActiveSpect(window.multiboxPlayerEnabled);
                 if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
-                    targetCamX = spect.playerX + (spect.fix3x || 0);
-                    targetCamY = spect.playerY + (spect.fix3y || 0);
+                    targetCamX = spect.playerX;
+                    targetCamY = spect.playerY;
                 }
             }
 
@@ -70332,8 +70333,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 for (var sI = 0; sI < neededSpects; sI++) {
                     var sp = spects[sI];
                     if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
-                        var spX = sp.playerX + (sp.fix3x || 0);
-                        var spY = sp.playerY + (sp.fix3y || 0);
+                        var spX = sp.playerX;
+                        var spY = sp.playerY;
                         var spMinX = spX - halfW;
                         var spMinY = spY - halfH;
                         var spMaxX = spX + halfW;
