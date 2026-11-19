@@ -51638,6 +51638,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
+             * drawRings() strokes the selected-cell and reverse-trick rings
+             * on the main Canvas2D, which sits BELOW the GL cell layer, and
+             * the ring lies inside the cell disc: with GPU cells it was
+             * fully hidden. Keep those frames on Canvas2D.
+             */
+            if (
+                (
+                    LM.selected != null &&
+                    LM.indexedCells &&
+                    LM.indexedCells[LM.selected]
+                ) ||
+                (
+                    defaultmapsettings.reverseTrick &&
+                    typeof reverseTrick !== 'undefined' &&
+                    LM.indexedCells &&
+                    (
+                        LM.indexedCells[reverseTrick.biggerEnemy] ||
+                        LM.indexedCells[reverseTrick.smallerEnemy]
+                    )
+                )
+            ) {
+                return false;
+            }
+
+
+            /*
              * Shared base resources.
              *
              * Do NOT require glCellProgram here unconditionally.
