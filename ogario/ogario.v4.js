@@ -73212,7 +73212,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     break;
                 case 61:
                 case 187:
-                    normalKey = '=';
+                    /* Shift+= types '+' (US layout): name it '+', the default quit game key,
+                     * which was reachable only with numpad + */
+                    normalKey = (key.shiftKey && key.key === '+') ? '+' : '=';
                     break;
                 /* '-' and ';' have different keyCodes in Firefox and Chrome */
                 case 173:
