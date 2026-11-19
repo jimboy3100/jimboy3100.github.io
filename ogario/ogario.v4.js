@@ -17226,53 +17226,6 @@ var SkinExplain = [{
     pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
 }
 ];
-/*
- * ═══════════════════════════════════════════════════════════════════════════
- * SCAN TRICK — LANGUAGE FALLBACKS
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Language packs can override these later. These fallback strings prevent
- * missing labels when an older language file does not know Scan Trick yet.
- */
-if (typeof textLanguage === 'undefined') {
-    window.textLanguage = window.textLanguage || {};
-}
-textLanguage.scanTrickGroup =
-    textLanguage.scanTrickGroup ||
-    'Scan Trick';
-
-textLanguage.scanTrick =
-    textLanguage.scanTrick ||
-    'Enable Scan Trick';
-
-textLanguage.scanTrickRounded =
-    textLanguage.scanTrickRounded ||
-    'Snap movement direction';
-
-textLanguage.scanTrickOnlyWhileLMB =
-    textLanguage.scanTrickOnlyWhileLMB ||
-    'Snap only while left mouse is held';
-
-textLanguage.scanTrickDirections =
-    textLanguage.scanTrickDirections ||
-    'Snapped directions';
-
-textLanguage.scanTrickDistance =
-    textLanguage.scanTrickDistance ||
-    'Normal projection distance';
-
-textLanguage.scanTrickRoundedDistance =
-    textLanguage.scanTrickRoundedDistance ||
-    'Snapped projection distance';
-
-textLanguage.scanTrickStatus =
-    textLanguage.scanTrickStatus ||
-    'Show Scan Trick status';
-
-textLanguage['hk-scanTrick'] =
-    textLanguage['hk-scanTrick'] ||
-    'Macro Scan trick';
-
 /* ═══════════════════════════════════════════════════════════════════════
  * §3.1a  Death Particle Burst System
  * ═══════════════════════════════════════════════════════════════════════
@@ -18621,6 +18574,52 @@ if (userLanguage && displayText.hasOwnProperty(userLanguage)) {
     lang = userLanguage;
 }
 var textLanguage = displayText[lang];
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SCAN TRICK — LANGUAGE FALLBACKS
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Language packs can override these later. These fallback strings prevent
+ * missing labels when an older language file does not know Scan Trick yet.
+ */
+/* Placed after textLanguage = displayText[lang]: written before it, they went to an
+ * object that this assignment replaced. */
+textLanguage.scanTrickGroup =
+    textLanguage.scanTrickGroup ||
+    'Scan Trick';
+
+textLanguage.scanTrick =
+    textLanguage.scanTrick ||
+    'Enable Scan Trick';
+
+textLanguage.scanTrickRounded =
+    textLanguage.scanTrickRounded ||
+    'Snap movement direction';
+
+textLanguage.scanTrickOnlyWhileLMB =
+    textLanguage.scanTrickOnlyWhileLMB ||
+    'Snap only while left mouse is held';
+
+textLanguage.scanTrickDirections =
+    textLanguage.scanTrickDirections ||
+    'Snapped directions';
+
+textLanguage.scanTrickDistance =
+    textLanguage.scanTrickDistance ||
+    'Normal projection distance';
+
+textLanguage.scanTrickRoundedDistance =
+    textLanguage.scanTrickRoundedDistance ||
+    'Snapped projection distance';
+
+textLanguage.scanTrickStatus =
+    textLanguage.scanTrickStatus ||
+    'Show Scan Trick status';
+
+textLanguage['hk-scanTrick'] =
+    textLanguage['hk-scanTrick'] ||
+    'Macro Scan trick';
+
 defineChatCommand();
 function defineChatCommand() {
     window.chatCommand = {
