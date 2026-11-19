@@ -20269,6 +20269,9 @@ function thelegendmodproject() {
             }
         },
         quitGame() {
+            /* opcode 57 is an Expanding Land command; elsewhere it only left
+             * _forceGameOverStats set for the next death */
+            if (!_isExpandingLandClient(LM)) return;
             window._forceGameOverStats = true;
             LM.sendQuitGame();
         },
