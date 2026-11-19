@@ -44048,10 +44048,10 @@ Most cells eaten   : ${mostCellsEaten}
                         window.expandingLandUID
                     );
                 }
-                /* realmInfo contains the social ID */
-                if (i.realmInfo && i.realmInfo.userId) {
-                    window.agarioID = i.realmInfo.userId;
-                    localStorage.setItem("agarioID", window.agarioID);
+                /* realmInfo.realmId (field 2) is the social ID; realmInfo has no userId field. */
+                if (i.realmInfo && i.realmInfo.realmId) {
+                    window.agarioID = i.realmInfo.realmId;
+                    try { localStorage.setItem("agarioID", window.agarioID); } catch (e) { }
                     console.log('[LW 102] Social ID from protobuf:', window.agarioID);
                 }
                 /* Profile picture from realmInfo.avatarUrl */
