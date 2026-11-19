@@ -673,6 +673,9 @@ message userLeaguesInfoResponseField {
 }
 
 message userLeaguesPassUpdateField {
+  int32 leagueType = 1;
+  userLeaguesPlayerInfo playerThatPassed = 2;
+  userLeaguesPlayerInfo playerThatWasPassed = 3;
 ///
 }
 

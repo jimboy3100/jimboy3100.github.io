@@ -40216,7 +40216,8 @@ function thelegendmodproject() {
                             window.lastLeaguesPassUpdate = lpu;
                             var passedBy = lpu.playerThatPassed;
                             if (passedBy && passedBy.displayName) {
-                                toastr.info('<b>[LEAGUE]:</b> ' + passedBy.displayName + ' passed you in the league!');
+                                /* another player's name: escape before toastr HTML */
+                                toastr.info('<b>[LEAGUE]:</b> ' + application.escapeHTML(String(passedBy.displayName)) + ' passed you in the league!');
                             }
                             // Refresh league data
                             if (lpu.newPosition !== undefined) {
