@@ -1057,13 +1057,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 /* Prepend social ID and display name as header lines before the token.
                  * Format: "SID:<socialId>\nNAME:<displayName>\n<token>"
                  * Server parses these prefixes before hashing the token. */
-                var prefix = '';
-                if (socialId) prefix += 'SID:' + socialId + '\n';
-                if (displayName) prefix += 'NAME:' + displayName + '\n';
-                var payload = prefix + token;
                 var tokenBytes = [];
-                for (var i = 0; i < payload.length; i++) {
-                    tokenBytes.push(payload.charCodeAt(i) & 0xFF);
+                var pushBytes = function (arr) { for (var k = 0; k < arr.length; k++) tokenBytes.push(arr[k]); };
+                if (socialId) { pushBytes(new TextEncoder().encode('SID:')); pushBytes(_lw_utf8Field(socialId, 30)); tokenBytes.push(10); }
+                if (displayName) { pushBytes(new TextEncoder().encode('NAME:')); pushBytes(_lw_utf8Field(displayName, 62)); tokenBytes.push(10); }
+                for (var i = 0; i < token.length; i++) {
+                    tokenBytes.push(token.charCodeAt(i) & 0xFF); /* tokens are ASCII */
                 }
                 var view = legendmod.createView(1 + tokenBytes.length);
                 view.setUint8(0, 102); // opcode
@@ -1076,6 +1075,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             }
             return false;
         });
+    }
+
+    /* UTF-8 bytes of a login/profile string (the server stores the bytes as UTF-8;
+     * `charCodeAt & 0xFF` corrupted every non-ASCII name). Newlines and NULs end the
+     * server's fields, so drop them; cut at maxBytes on a character boundary. */
+    function _lw_utf8Field(text, maxBytes) {
+        var bytes = new TextEncoder().encode(String(text || '').replace(/[\r\n\0]/g, ' '));
+        var len = Math.min(bytes.length, maxBytes);
+        while (len > 0 && len < bytes.length && (bytes[len] & 0xC0) === 0x80) len--;
+        return bytes.subarray(0, len);
     }
 
     /* LW: Send opcode 204 (Discord profile data) via legendmod's socket.
@@ -1091,18 +1100,20 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 var socialId = discordUser.id || '';
                 var displayName = discordUser.globalName || discordUser.username || '';
-                var totalLen = 2 + socialId.length + 1 + displayName.length + 1;
+                var idBytes = _lw_utf8Field(socialId, 30);
+                var nameBytes = _lw_utf8Field(displayName, 63);
+                var totalLen = 2 + idBytes.length + 1 + nameBytes.length + 1;
                 var view = legendmod.createView(totalLen);
                 var offset = 0;
                 view.setUint8(offset++, 204);
                 view.setUint8(offset++, 3); // auth_provider = discord
                 // Social ID
-                for (var ci = 0; ci < socialId.length; ci++)
-                    view.setUint8(offset++, socialId.charCodeAt(ci) & 0xFF);
+                for (var ci = 0; ci < idBytes.length; ci++)
+                    view.setUint8(offset++, idBytes[ci]);
                 view.setUint8(offset++, 0); // null terminator
-                // Display name
-                for (var ni = 0; ni < displayName.length; ni++)
-                    view.setUint8(offset++, displayName.charCodeAt(ni) & 0xFF);
+                // Display name (UTF-8)
+                for (var ni = 0; ni < nameBytes.length; ni++)
+                    view.setUint8(offset++, nameBytes[ni]);
                 view.setUint8(offset++, 0); // null terminator
                 legendmod.sendMessage(view);
                 console.log('[LW Discord] Sent opcode 204 (id=' + socialId + ' name=' + displayName + ')');
