@@ -2740,6 +2740,48 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         }
     });
 
+    /*
+     * Opcode-102 type 22 (no proper response) answering a leagues request:
+     * the official client resolves its pending 130 request with no data.
+     * Fail the pending request now instead of waiting for the timeout.
+     */
+    document.addEventListener('noProperResponse', function(e) {
+        var detail = e.detail || {};
+        if (detail.forType && detail.forType !== 130) return;
+
+        if (Number(detail.leagueRequestType) === 2) {
+            if (!window._lastWeekTimeoutTimer) return;
+            clearTimeout(window._lastWeekTimeoutTimer);
+            window._lastWeekTimeoutTimer = null;
+            var lastWeekArea = document.getElementById('lm-lastweek-content');
+            if (lastWeekArea && lastWeekArea.querySelector('[data-loading]')) {
+                var lt = getTheme();
+                lastWeekArea.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: ${lt.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
+                        <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
+                        Agar.io did not return weekly results.
+                        <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${lt.b1}; color: ${lt.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">Retry</button></div>
+                    </div>
+                `;
+            }
+            return;
+        }
+
+        if (window._leaguesRequestState !== 'loading') return;
+        if (window._leaguesTimeoutTimer) {
+            clearTimeout(window._leaguesTimeoutTimer);
+            window._leaguesTimeoutTimer = null;
+        }
+        window._leaguesRequestState = 'failure';
+        if (!window._hasUsableCurrentLeaguesCache()) {
+            window._renderCurrentLeaguesRequestState(
+                '⚠️',
+                'Agar.io did not return leaderboard data.',
+                true
+            );
+        }
+    });
+
     window.showMorePrizesModal = function(tabType) {
         injectStyles();
 
