@@ -1552,7 +1552,13 @@ class Spect {
 
     respawn() {
         if (!this.player) return;
+        /* The player switched to this dead unit: keep the focus on it until it
+         * spawns (beforecalculation used to hand it back on the next packet). */
+        this._lmWantFocusAt = Date.now();
         if (this.isSocketOpen()) {
+            /* Repeated Tab presses must not start a captcha + spawn each. */
+            if (Date.now() - (this._lmLastSpawnReq || 0) <= 2000) return;
+            this._lmLastSpawnReq = Date.now();
             this.handleSendNick();
         } else {
             this.connect();
@@ -1841,6 +1847,7 @@ class Spect {
                         if (!this.active) {
                             console.log('[SPECT] Player cell is active (unit ' + this.number + ')')
                             this.active = true
+                            this._lmWantFocusAt = 0
                             this.sendCursor()
                             loadMultiCellSkin(this)
 
@@ -1925,7 +1932,8 @@ class Spect {
                 window.multiboxPlayerEnabled = this.number
             }
             this.calculatePlayerMassAndPosition(ownCells);
-        } else if (window.multiboxPlayerEnabled === this.number) {
+        } else if (window.multiboxPlayerEnabled === this.number &&
+            !(this._lmWantFocusAt && Date.now() - this._lmWantFocusAt < 25000)) {
             window.multiboxPlayerEnabled = null;
             for (let i = 0; i < spects.length; i++) {
                 if (spects[i] && spects[i] !== this && spects[i].active) {
