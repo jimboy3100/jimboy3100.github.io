@@ -1078,8 +1078,10 @@ function legendmaster(self) {
              * Already connected in party mode: setGameMode() returns early, so no
              * new party was ever created. Force a fresh party connection.
              */
+            /* A code kept from an earlier party (left for FFA) would make
+             * reconnect() rejoin that party instead of creating a new one. */
+            this.partyToken = "";
             if (this.gameMode === ":party" && this.connectionActive) {
-                this.partyToken = "";
                 this.applyGameMode(":party");
                 this.reconnect(false, "create-party");
                 return;
