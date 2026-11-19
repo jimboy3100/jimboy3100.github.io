@@ -1553,8 +1553,12 @@ function LegendSettingsfirst() {
     try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); }
     LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
     $("#export-settings-btn").click(function () {
-        LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
-        copy($("#export-settings").val());
+        /* ogario's export handler is bound on document, so it runs after this one and
+         * rewrote the text without the API part (also what Upload sends): add it after that. */
+        setTimeout(function () {
+            LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
+            copy($("#export-settings").val());
+        }, 0);
     });
 
     $("#import-settings-btn").clone().insertAfter("#import-settings-btn").attr('id', 'import-settings-btn2');
