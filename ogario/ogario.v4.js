@@ -4614,13 +4614,25 @@ function createCaptchaWindow(i) {
 window.connectionBots = {
     ws: null,
     connect() {
+        /* A second click while the socket is still connecting opened a second socket,
+           so onopen/onclose ran twice (orphan captcha popups, false "Disconnected"). */
+        var old = this.ws
+        if (old && (old.readyState === WebSocket.CONNECTING || old.readyState === WebSocket.OPEN)) return
+        if (old) {
+            old.onopen = old.onmessage = old.onclose = null
+            try { old.close() } catch (e) { }
+        }
         //this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
-        this.ws = new WebSocket(`${window.SERVER_HOST}`)
+        var ws = this.ws = new WebSocket(`${window.SERVER_HOST}`)
         //this.ws = new WebSocket(`ws://agario-bots--jimboy3100.repl.co`)
-        this.ws.binaryType = 'arraybuffer'
-        this.ws.onopen = this.onopen.bind(this)
-        this.ws.onmessage = this.onmessage.bind(this)
-        this.ws.onclose = this.onclose.bind(this)
+        var self = this
+        var current = function (fn) {
+            return function (e) { if (self.ws === ws) return fn.call(self, e) }
+        }
+        ws.binaryType = 'arraybuffer'
+        ws.onopen = current(this.onopen)
+        ws.onmessage = current(this.onmessage)
+        ws.onclose = current(this.onclose)
     },
     send(buffer) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) this.ws.send(buffer)
