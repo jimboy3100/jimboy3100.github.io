@@ -1,3 +1,10 @@
+/* Nicks and colours come from other players: escape before .html(). */
+function _apEsc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"'`]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' }[c];
+    });
+}
+
 //v7.4
 window.autoteammatenicks = [];
 window.targetFood = null;
@@ -105,7 +112,7 @@ function calcTarget() {
 
                     if (performance.now() >= window._cooldownVirusUntil) {
                         window._cooldownVirusUntil = performance.now() + 1000;
-                        $('#pause-hud').html("<font color='" + PlayerCell.color + "'>Virus</font> is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                        $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>Virus</font> is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                     }
                     if (window.DistanceX[PlayerCell.id] > 0) {
                         target2.x = legendmod.mapMinX;
@@ -128,7 +135,7 @@ function calcTarget() {
                         doFeed = true;
                     }
                     //}
-                    $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                    $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>" + _apEsc(PlayerCell.nick) + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                 }
                 //window.legendmod.cells[0].isPlayerCell is our cell		
                 else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercell.mass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercell.mass * 1.25)) { //avoid danger cells
@@ -165,7 +172,7 @@ function calcTarget() {
 
                         if (performance.now() >= window._cooldownBiggerUntil) {
                             window._cooldownBiggerUntil = performance.now() + 1000;
-                            $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                            $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>" + _apEsc(PlayerCell.nick) + "</font> (mass: " + PlayerCell.mass + ") is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
 
                         if (window.SandwichCellCase != null) {
@@ -200,7 +207,7 @@ function calcTarget() {
 
                         if (performance.now() >= window._cooldownSmallerUntil) {
                             window._cooldownSmallerUntil = performance.now() + 1000;
-                            $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close and will be eaten by split. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                            $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>" + _apEsc(PlayerCell.nick) + "</font> (mass: " + PlayerCell.mass + ") is close and will be eaten by split. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
                         target2.x = PlayerCell.x;
                         target2.y = PlayerCell.y;
@@ -212,7 +219,7 @@ function calcTarget() {
 
                         if (performance.now() >= window._cooldownSmallerUntil) {
                             window._cooldownSmallerUntil = performance.now() + 1000;
-                            $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close, AI follows... X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                            $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>" + _apEsc(PlayerCell.nick) + "</font> (mass: " + PlayerCell.mass + ") is close, AI follows... X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
                         target2.x = PlayerCell.x;
                         target2.y = PlayerCell.y;
@@ -467,5 +474,5 @@ function AnnounceDangerCellOpposite(x, y) {
 }
 
 function AnnounceBadCellShooting(vx, vy, name, x, y) {
-    $('#pause-hud').html("<font color='yellow'>Shooting: <font> " + name + "(" + parseInt(x) + " , " + parseInt(y) + ")" + "from virus " + parseInt(vx) + "," + parseInt(vy));
+    $('#pause-hud').html("<font color='yellow'>Shooting: <font> " + _apEsc(name) + "(" + parseInt(x) + " , " + parseInt(y) + ")" + "from virus " + parseInt(vx) + "," + parseInt(vy));
 }
