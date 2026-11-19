@@ -15666,6 +15666,7 @@ var displayText = {
         extrasGroup: 'Dodatkowe',
         macroGroup: 'Macros',
         noSkins: 'Wylacz skiny',
+        highDPI: 'Wysoka rozdzielczosc (HiDPI)',
         cellContours: 'Only cells contours',
         noNames: 'Wylacz nazwy',
         noColors: 'Wylacz kolory',
@@ -16160,6 +16161,7 @@ var displayText = {
         extrasGroup: 'Extras',
         macroGroup: 'Macros',
         noSkins: 'No skins',
+        highDPI: 'High DPI rendering (sharper, slower)',
         cellContours: 'Only cells contours',
         noNames: 'No names',
         noColors: 'No colors',
@@ -18576,6 +18578,7 @@ var defaultmapsettings = {
     animatedRainbowColor: false,
     autoZoom: false,
     unlockedFPS: false,
+    highDPI: false,
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -18608,6 +18611,7 @@ var defaultmapsettings = {
     ownVanillaSkin: false,
     universalChat: true,
     customSkins: true,
+    noSkins: false,
     videoSkins: true,
     videoDestorted: false,
     videoSkinsMusic2: true,
@@ -20219,6 +20223,9 @@ function thelegendmodproject() {
                 window.core.setSkins(!this.noSkins)
             }
             LM.showCustomSkins = !this.noSkins;
+            /* keep the "No skins" setting and its checkbox in step with the hotkey */
+            defaultmapsettings.noSkins = !!this.noSkins;
+            this.syncHotkeyOption('noSkins');
             this.displayChatInfo(!this.noSkins, 'showSkinsMsg');
         },
         setTransparentSkins() {
@@ -21366,6 +21373,20 @@ function thelegendmodproject() {
                     case 'autoResp':
                         this.setAutoResp();
                         break;
+                    case 'noSkins':
+                        /* "No skins" was listed but had no setting, so the menu dropped it */
+                        this.noSkins = !!checked;
+                        LM.showCustomSkins = !checked;
+                        LM.showCustomSkin = !checked;
+                        if (window.core && window.core.setSkins) {
+                            window.core.setSkins(!checked);
+                        }
+                        break;
+                    case 'highDPI':
+                        if (typeof drawRender !== 'undefined' && drawRender && drawRender.resizeCanvas) {
+                            drawRender.resizeCanvas();
+                        }
+                        break;
                     case 'showMiniMap':
                         this.setMiniMap();
                         break;
@@ -22125,7 +22146,7 @@ function thelegendmodproject() {
             $("#noNames, #showMass").remove();
             $("#og-settings .submenu-panel").append('<div id="og-options"></div>');
             //this.addOptions(["unlockedFPS"], "animationGroup");
-            this.addOptions([], "animationGroup");
+            this.addOptions(["highDPI"], "animationGroup");
 
             this.addOptions(["autoZoom"], "zoomGroup");
             this.addOptions([], "boardGroup");
@@ -22756,6 +22777,7 @@ function thelegendmodproject() {
             //this.noColors = $("#noColors").prop("checked");
             this.skipStats = $("#skipStats").prop("checked");
             this.showQuest = $("#showQuest").prop("checked");
+            this.noSkins = !!defaultmapsettings.noSkins;
             LM.showCustomSkins = !defaultmapsettings.noSkins;
             LM.showCustomSkin = !defaultmapsettings.noSkins;
             if (null !== window.localStorage.getItem("scale_setting")) {
