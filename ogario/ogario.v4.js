@@ -1777,9 +1777,23 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 window.updateLegendXpPanel();
             }
 
+            /* Login-response data of the account that logged out. */
+            delete window._lmHasVIPSubscription;
+            window._lmLoginHasLeaguesInfo = undefined;
+            window._lmUserGifts = null;
+
             if (_origLogout) {
                 _origLogout.apply(this, arguments);
             }
+
+            /* The 'logout' listeners (identity, shop buttons, VIP cache) only ran when the
+             * official client logged out; Legend Mod's own logout never dispatched it. */
+            if (!window._lmDispatchingLogout) {
+                window._lmDispatchingLogout = true;
+                try { document.dispatchEvent(new CustomEvent('logout')); } catch (e) { }
+                window._lmDispatchingLogout = false;
+            }
+
             return;
         }
 
