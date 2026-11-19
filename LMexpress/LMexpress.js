@@ -1074,9 +1074,9 @@ function copyToClipboard(element) {
 function copyToClipboardAll() {
     $("#CopyTkPwLb").remove();
     if ($("#top5-pos").text() != "") {
-        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + CopyTkPwLb2 + '<br>Leaderboard: ' + $("#leaderboard-positions").text() + '<br>Teamboard:' + $("#top5-pos").text() + '<br>My Game Name: ' + $("#nick").val() + '</er>');
+        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmEscHtml($("#leaderboard-positions").text()) + '<br>Teamboard:' + _lmEscHtml($("#top5-pos").text()) + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>');
     } else {
-        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + CopyTkPwLb2 + '<br>Leaderboard: ' + $("#leaderboard-positions").text() + '<br>My Game Name: ' + $("#nick").val() + '</er>');
+        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmEscHtml($("#leaderboard-positions").text()) + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>');
     }
     copyToClipboard('er#CopyTkPwLb');
 }
@@ -3570,7 +3570,7 @@ function appendLog(message) {
     var region = $("#region").val();
     $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
         '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a href="javascript:void(0);" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
+        '<a href="javascript:void(0);" class="logEntry" data-token="' + _lmEscHtml(currentToken) + '" style="color: lightgrey; font-size: 14px;">' + _lmEscHtml(message) + '</a></p>');
 
     $("#log p").first().show(100);
     bumpLog();
