@@ -18785,7 +18785,9 @@ function thelegendmodproject() {
             );
         },
         addInputBox(id, name, holder, callback) {
-            $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" value=\"' + defaultSettings[name] + '\" /></div>');
+            $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" /></div>');
+            /* Set the value as a property: imported settings must not be parsed as HTML. */
+            $('#' + name).val(defaultSettings[name] == null ? '' : String(defaultSettings[name]));
             var app = this;
             $('#' + name).on('input', function () {
                 defaultSettings[name] = this.value;
@@ -20997,14 +20999,16 @@ function thelegendmodproject() {
 
                     $("#skin-preview").children().remove();
                     $("#skin-preview").removeClass("default");
-                    $("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + e.src + "' width='350'>\"></a>");
-                    $("#skin-popover").append('<video id="videoskinpreview" src=\'' + e.src + "' width='350' controls>\"></video>");
+                    /* Build with attributes, not string HTML: the skin URL may contain quotes. */
+                    var _lmVidSrc = String(e.src);
+                    $("#skin-preview").append($('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true"></a>').attr('data-content', $('<div>').append($('<video width="350"></video>').attr('src', _lmVidSrc)).html()));
+                    $("#skin-popover").append($('<video id="videoskinpreview" width="350" controls></video>').attr('src', _lmVidSrc));
                     //						$("#skin-popover").popover();
                     //$("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + t.src + "' width='500'>\"></a>");
                 } else {
                     //console.log("default settings for images on changeSkinPreview")
                     $("#skin-preview").removeClass("default");
-                    $("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<img src=\'' + e.src + "' width='500'>\"></a>");
+                    $("#skin-preview").append($('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true"></a>').attr('data-content', $('<div>').append($('<img width="500">').attr('src', String(e.src))).html()));
                 }
                 //e.style.width = $("#skin-popover").width();
                 //e.style.height = $("#skin-popover").height();
@@ -21227,7 +21231,9 @@ function thelegendmodproject() {
             }
         },
         addInputBox(id, name, holder, callback) {
-            $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" value=\"' + defaultmapsettings[name] + '\" /></div>');
+            $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" /></div>');
+            /* Set the value as a property: imported settings must not be parsed as HTML. */
+            $('#' + name).val(defaultmapsettings[name] == null ? '' : String(defaultmapsettings[name]));
             var app = this;
             $('#' + name).on('input', function () {
                 defaultmapsettings[name] = this.value, app[callback](),
