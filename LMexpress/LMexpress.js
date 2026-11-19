@@ -977,7 +977,7 @@ function findIP(searchIP) {
                             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
                             clearInterval(timerId);
                             searching = false;
-                            hideCancelSearch();
+                            //hideCancelSearch(); /* never defined: threw and broke the found/gave-up toast */
                             //hideSearchHud();							
                             toastr.info(Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
                                 timeOut: 20000,
@@ -987,7 +987,7 @@ function findIP(searchIP) {
                             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
                             clearInterval(timerId);
                             searching = false;
-                            hideCancelSearch();
+                            //hideCancelSearch(); /* never defined: threw and broke the found/gave-up toast */
                             toastr.error(Premadeletter31).css("width", "210px");
                             /* gave up: do not hop to another server */
                         } else {
