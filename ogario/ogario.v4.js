@@ -18849,9 +18849,17 @@ function thelegendmodproject() {
             ) {
                 storage = null;
             }
+            /* Colour settings end up in CSS and in inline style attributes of HTML strings
+             * (shop, chat, extended UI): a stored (e.g. imported) colour that is not a plain
+             * colour value keeps the default. lbTeammateColor is not rendered (LMexpress uses
+             * its stored value as a marker), so it is left as stored. */
+            var colorDefault = /^(#|rgba?\()/i;
+            var colorValue = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|[a-z]+)$/i;
             for (const setup in defaultSettings) {
                 if (defaultSettings.hasOwnProperty(setup)) {
-                    if (storage && storage.hasOwnProperty(setup)) {
+                    if (storage && storage.hasOwnProperty(setup) &&
+                        !(setup !== 'lbTeammateColor' && typeof defaultSettings[setup] === 'string' && colorDefault.test(defaultSettings[setup]) &&
+                            !(typeof storage[setup] === 'string' && colorValue.test(storage[setup])))) {
                         defaultSettings[setup] = storage[setup];
                     }
                     if (ogario.hasOwnProperty(setup)) {
