@@ -12134,10 +12134,13 @@ window.getAgarPartySettings =
  * GameConfiguration is authoritative for partyCodeLength,
  * partyLinkUrlPrefix, and partyLinkQuery.
  */
+/* Side-effect free: returns '' for invalid and for mobile ("M" + code) tokens and sets
+ * window._lmLastPartyTokenMobile; only joinAgarPartyToken opens the mobile dialog. */
 window.normalizeAgarPartyToken =
     function (
         partyToken
     ) {
+        window._lmLastPartyTokenMobile = false;
         var value =
             String(
                 partyToken || ''
@@ -12197,17 +12200,7 @@ window.normalizeAgarPartyToken =
             value.length === expectedLength + 1 &&
             value.charAt(0).toUpperCase() === 'M'
         ) {
-            try {
-                if (
-                    window.agarApp &&
-                    window.agarApp.API &&
-                    typeof window.agarApp.API.showMobilePartyCodeDialog === 'function'
-                ) {
-                    window.agarApp.API.showMobilePartyCodeDialog();
-                }
-            } catch (mobileDialogError) {
-                console.warn('[LM PARTY] Mobile dialog error:', mobileDialogError);
-            }
+            window._lmLastPartyTokenMobile = true;
             return '';
         }
 
@@ -12301,6 +12294,23 @@ window.joinAgarPartyToken =
     ) {
         var token =
             window.normalizeAgarPartyToken(partyToken);
+
+        if (!token && window._lmLastPartyTokenMobile) {
+            /* Mobile Party code: the official client shows its own dialog for it. */
+            try {
+                if (
+                    window.agarApp &&
+                    window.agarApp.API &&
+                    typeof window.agarApp.API.showMobilePartyCodeDialog === 'function'
+                ) {
+                    window.agarApp.API.showMobilePartyCodeDialog();
+                }
+            } catch (mobileDialogError) {
+                console.warn('[LM PARTY] Mobile dialog error:', mobileDialogError);
+            }
+            if (typeof onError === 'function') onError('mobile_code');
+            return false;
+        }
 
         if (!token) {
             if (window.toastr) {
