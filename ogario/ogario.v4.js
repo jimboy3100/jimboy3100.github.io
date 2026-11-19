@@ -33895,6 +33895,8 @@ function thelegendmodproject() {
                 var self = this;
                 (async function () {
                     await LM._generateGarixFingerprint();
+                    /* A newer connect() ran during the await: do not open a second socket. */
+                    if (self._connectSeq !== _connectSeq || self.serverType !== 'garix') return;
                     if (self.garixFingerprint) {
                         self.socket = new WebSocket(t, [self.garixFingerprint]);
                     } else {
