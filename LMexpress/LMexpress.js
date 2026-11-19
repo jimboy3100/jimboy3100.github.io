@@ -106,6 +106,11 @@ var TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
 
 var timesopened = localStorage.getItem("timesopened");
 var url = localStorage.getItem("url");
+/* The loaders store the launch link (with ?sip=/?pass=/?replay=...) for this page load.
+ * Consume it once: otherwise a later visit to agar.io/legendmod, where nothing is
+ * stored, re-applies the old link's actions. */
+try { localStorage.setItem("url", location.href); } catch (e) { }
+if (!url) url = location.href;
 
 var modVersion;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml')) {
