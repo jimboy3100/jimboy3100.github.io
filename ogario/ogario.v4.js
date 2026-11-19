@@ -43278,6 +43278,9 @@ Most cells eaten   : ${mostCellsEaten}
 
             switch (message.readUInt8(e++)) {
                 case 16:
+                    /* Same as uncompressed opcode 16: agar.io sends most cell updates
+                     * here, so the dead main client's viewport must be dropped too. */
+                    if (window.mainPlayerDeadMbActive) break;
                     var _tPkt = performance.now();
                     this.updateCells(message, e);
                     this.countPps();
