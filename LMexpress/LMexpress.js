@@ -7490,34 +7490,58 @@ function initializeLM(modVersion) {
     /* Chat embed shortcodes: [yut], [url], [tag], [skype], [discord], etc.
      * OLD: DOMNodeInserted / DOMSubtreeModified (deprecated, removed from modern browsers).
      * NEW: MutationObserver — standard API, works in all browsers. */
-    var _chatObserverActive = false;
-    function _processChatEmbeds() {
-        if (_chatObserverActive) return;
-        _chatObserverActive = true;
-        setTimeout(function() {
-            var _toastEl = $(".toast.toast-success").last();
-            var _msgEl = _toastEl.length ? _toastEl : $(".message-text").last();
+    /*
+     * Process each new chat message ELEMENT once (a teammate may send the same
+     * command twice in a row; MsgCommands1's own warning toasts also change the
+     * toast container). Elements come from the MutationRecords, so a chat-box
+     * message is not mistaken for a stale success toast and several messages
+     * arriving together are all handled.
+     */
+    var _chatPending = [];
+    var _chatFlushTimer = null;
+    function _queueChatEl(el) {
+        if (el && _chatPending.indexOf(el) === -1) _chatPending.push(el);
+    }
+    function _flushChatEmbeds() {
+        _chatFlushTimer = null;
+        var list = _chatPending;
+        _chatPending = [];
+        for (var i = 0; i < list.length; i++) {
+            var $el = $(list[i]);
+            if (!$el.closest(document.documentElement).length) continue; /* already removed */
+            var isToast = $el.is('.toast');
+            var _msgEl = isToast ? $el : $el.find('.message-text').first();
+            if (!_msgEl.length || _msgEl.attr('data-lm-done')) continue;
             MSGCOMMANDS = _msgEl.text();
-            MSGNICK = $(".message-nick").last().text().replace(": ", "");
-            /*
-             * The toast container also changes when MsgCommands1 shows its own
-             * warning toast; re-reading the same last message then looped
-             * forever. Process each message ELEMENT once (a teammate may send
-             * the same command twice in a row).
-             */
-            if (MSGCOMMANDS && _msgEl.length && !_msgEl.attr('data-lm-done')) {
-                _msgEl.attr('data-lm-done', '1');
-                MsgCommands1(MSGCOMMANDS, MSGNICK, _msgEl);
+            MSGNICK = $el.find('.message-nick').first().text().replace(": ", "");
+            if (!MSGCOMMANDS) continue;
+            _msgEl.attr('data-lm-done', '1');
+            MsgCommands1(MSGCOMMANDS, MSGNICK, _msgEl);
+        }
+    }
+    /* collect the .toast-success / .message elements touched by these mutations;
+     * the 50 ms delay lets toastr/ogario finish filling the element */
+    function _processChatEmbeds(mutations, selector) {
+        for (var i = 0; i < mutations.length; i++) {
+            var m = mutations[i];
+            /* the changed node's own message (text filled in later), not every message below it */
+            var t = m.target && m.target.nodeType === 3 ? m.target.parentNode : m.target;
+            if (t && t.nodeType === 1) _queueChatEl(t.closest(selector));
+            for (var j = 0; j < m.addedNodes.length; j++) {
+                var n = m.addedNodes[j];
+                if (n && n.nodeType === 3) n = n.parentNode;
+                if (!n || n.nodeType !== 1) continue;
+                _queueChatEl(n.closest(selector));
+                var inner = n.querySelectorAll(selector);
+                for (var q = 0; q < inner.length; q++) _queueChatEl(inner[q]);
             }
-            _chatObserverActive = false;
-        }, 50);
+        }
+        if (_chatPending.length && !_chatFlushTimer) _chatFlushTimer = setTimeout(_flushChatEmbeds, 50);
     }
 
     /* Observe toast notifications (toastr success messages) */
     var _chatToastObs = new MutationObserver(function(mutations) {
-        for (var i = 0; i < mutations.length; i++) {
-            if (mutations[i].addedNodes.length > 0) { _processChatEmbeds(); return; }
-        }
+        _processChatEmbeds(mutations, '.toast.toast-success');
     });
     /* toastr removes #toast-container when its last toast closes and creates a new
      * one for the next toast: keep watching <body> and attach to every new container
@@ -7528,7 +7552,8 @@ function initializeLM(modVersion) {
         if (el && el !== _observedToastEl) {
             _observedToastEl = el;
             _chatToastObs.observe(el, { childList: true, subtree: true });
-            _processChatEmbeds();
+            /* toasts already inside the new container */
+            _processChatEmbeds([{ target: el, addedNodes: el.children }], '.toast.toast-success');
         }
     };
     _attachToastObs();
@@ -7537,7 +7562,7 @@ function initializeLM(modVersion) {
     /* Observe chat box content changes */
     var _chatBoxEl = document.getElementById('chat-box');
     if (_chatBoxEl) {
-        new MutationObserver(function() { _processChatEmbeds(); }).observe(_chatBoxEl, { childList: true, subtree: true, characterData: true });
+        new MutationObserver(function(mutations) { _processChatEmbeds(mutations, '.message'); }).observe(_chatBoxEl, { childList: true, subtree: true, characterData: true });
     }
 }
 
