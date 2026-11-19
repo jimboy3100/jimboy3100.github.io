@@ -1910,6 +1910,9 @@ function _lmTagLabel(name, fallback) {
     return typeof window[name] === 'string' ? window[name] : fallback;
 }
 
+/* Several call sites outside the scope that defines escapeHtml use it as a global. */
+if (typeof window.escapeHtml !== "function") window.escapeHtml = _lmEscHtml;
+
 function _lmSafeChatUrl(value) {
     return /^https?:\/\/[^\s"'<>`\\]+$/i.test(String(value || ''));
 }
