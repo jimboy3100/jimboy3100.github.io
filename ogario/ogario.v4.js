@@ -37249,28 +37249,33 @@ function thelegendmodproject() {
                 case 49: //leaderboard for specific private servers
                     window.testobjectsOpcode49 = data;
                     this.leaderboard = [];
+                    /* Garix (Delta GarixProtocol case 49): {u16 pID until 0, name\0, color\0},
+                     * then u16 count ghost cells {u16 pID, i32 x, i32 y, u32 mass, u8}.
+                     * pID is the tab id for our own entry. */
+                    if (this.serverType === 'garix') {
+                        this.playerPosition = 0;
+                        for (i = 0; s + 2 <= data.byteLength; ++i) {
+                            var gPlayerID = data.getUint16(s, true); s += 2;
+                            if (gPlayerID === 0) break;
+                            var gNick = encode();
+                            try { gNick = window.decodeURIComponent(window.escape(gNick)); } catch (e) { }
+                            var gColor = encode();
+                            var gIsMe = !!gPlayerID && (gPlayerID === this.garixTabID1 || gPlayerID === this.garixTabID2);
+                            if (gIsMe) this.playerPosition = i + 1;
+                            this.leaderboard.push({
+                                id: gIsMe ? 'isPlayer' : gPlayerID,
+                                nick: gIsMe ? this.playerNick : (gNick || 'An unnamed cell'),
+                                color: gColor || null
+                            });
+                        }
+                        /* Ghost cells section (u16 count) is read past but not shown yet. */
+                        this.handleLeaderboard();
+                        break;
+                    }
                     var count = data.getUint32(s, true);
                     s += 4;
                     if (count > 200 || s > data.byteLength) { break; }
-                    // Garix protocol 6-10: [playerID UInt32][name UTF-8z][mass UInt32][sector UTF-8z][color UTF-8z]
-                    if (this.serverType === 'garix') {
-                        for (i = 0; i < count; ++i) {
-                            var gPlayerID = data.getUint32(s, true); s += 4;
-                            var gNick = encode();
-                            var gMass = data.getUint32(s, true); s += 4;
-                            var gSector = encode();
-                            var gColor = encode();
-                            var isMe = (this.playerCellIDs.length > 0) ? false : false;
-                            // Check if this is our player by matching tabID
-                            this.leaderboard.push({
-                                id: false,
-                                nick: gNick,
-                                mass: gMass,
-                                sector: gSector,
-                                color: gColor
-                            });
-                        }
-                    } else {
+                    {
                         for (i = 0; i < count && s + 4 <= data.byteLength; ++i) {
                             var isMe = !!data.getUint32(s, true);
                             s += 4;
@@ -37637,14 +37642,15 @@ function thelegendmodproject() {
                 // ===== Garix Protocol Opcodes (2026) =====
                 case 161: // 0xA1 — DualInfo (Garix)
                     if (this.serverType === 'garix') {
-                        if (data.byteLength < 6) {
+                        if (data.byteLength < 2) {
                             console.warn('[Protocol] Ignoring truncated Garix opcode 161 packet:', data.byteLength);
                             break;
                         }
 
+                        /* Delta GarixProtocol case 161: [count u8] then count x u32 tab id. */
                         var gTabCount = data.getUint8(s++);
-                        this.garixTabID1 = data.getUint16(s, true); s += 2;
-                        this.garixTabID2 = data.getUint16(s, true); s += 2;
+                        this.garixTabID1 = gTabCount >= 1 && s + 4 <= data.byteLength ? data.getUint32(s, true) : 0;
+                        this.garixTabID2 = gTabCount >= 2 && s + 8 <= data.byteLength ? data.getUint32(s + 4, true) : 0;
                         console.log('%c[Garix]%c DualInfo: tabs=' + gTabCount + ' tabID1=' + this.garixTabID1 + ' tabID2=' + this.garixTabID2, 'color:#f8a', 'color:inherit');
                         // Garix ping keepalive is started in onOpen (server disconnects after 8s without opcode 200)
                         if (!this.garixPingInterval) this._startGarixPing();
@@ -44597,109 +44603,105 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            // 2. Combined update + add nodes (single loop, ONE terminator)
-            // Flag 0x40 = added node (has tabID, possibly skin/name/nickColor)
-            while (offset + 3 < data.byteLength) {
+            // 2. Node records, Delta GarixProtocol case 16 layout: two sections
+            // (updated, then added), each ended by id 0. Per node:
+            //   [u32 id][i32 x][i32 y][u16 size][u8 flags]
+            //   [u8 ext_flags if flags & 0x80]
+            //   [u32 accountID if ext & 0x04][u24 nick colour if ext & 0x08]
+            //   [rgb if flags & 0x02][skin\0 if 0x04][name\0 if 0x08]
+            // flags: 0x01 virus, 0x10 agitated, 0x20 ejected, 0x40 other food.
+            // accountID is the owner's tab id from opcode 161 (own cells).
+            for (var sections = 2; sections && offset + 4 <= data.byteLength;) {
                 var id = data.getUint32(offset, true); offset += 4;
-                if (id === 0) break;
-                if (offset + 11 >= data.byteLength) break;
+                if (id === 0) { sections--; continue; }
                 var x = data.getInt32(offset, true); offset += 4;
                 var y = data.getInt32(offset, true); offset += 4;
                 var size = data.getUint16(offset, true); offset += 2;
-                var flags = data.getUint16(offset, true); offset += 2;
+                var flags = data.getUint8(offset++);
+                var extFlags = (flags & 0x80) ? data.getUint8(offset++) : 0;
+
+                var isVirus = !!(flags & 0x01);
+                var isEjected = !!(flags & 0x20);
+                var hasName = !!(flags & 0x08);
+                var hasAccountID = !!(extFlags & 0x04);
+                var hasNickColor = !!(extFlags & 0x08);
+                /* Delta: food = (0x20 | 0x40) without name/nick colour/account.
+                 * Ejected mass (0x20) stays a normal cell here, as LM draws it. */
+                var isFood = !isVirus && !isEjected && !!(flags & 0x40) && !hasName && !hasNickColor && !hasAccountID;
+
+                var accountID = null;
+                if (hasAccountID) { accountID = data.getUint32(offset, true); offset += 4; }
+                if (hasNickColor) offset += 3; // nick colour r,g,b (unused)
 
                 var color = null;
-                // flag 0x02 = has color
                 if (flags & 0x02) {
-                    if (offset + 2 >= data.byteLength) break;
                     var r = data.getUint8(offset++);
                     var g = data.getUint8(offset++);
                     var b = data.getUint8(offset++);
                     color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
                 }
+                var skin = (flags & 0x04) ? encode() : null;
+                var name = '', namePresent = false;
+                if (hasName) {
+                    name = encode(); namePresent = true;
+                    try { name = window.decodeURIComponent(escape(name)); } catch (e) { }
+                }
+                if (skin || namePresent) {
+                    this.vanillaskins(name, skin, color);
+                }
 
-                if (flags & 0x40) {
-                    // ── ADDED NODE ──
-                    var skin = null, name = '', namePresent = false;
-                    var isVirus = !!(flags & 0x0001);
-                    var isAgitated = !!(flags & 0x0010);
-                    var isEjected = !!(flags & 0x0020);
-                    var isFood = !!(flags & 0x0080);
-
-                    // flag 0x04 = has skin
-                    if (flags & 0x04) {
-                        skin = encode();
-                    }
-                    // flag 0x08 = has name
-                    if (flags & 0x08) {
-                        name = encode(); namePresent = true;
-                        try { name = window.decodeURIComponent(escape(name)); } catch (e) { }
-                    }
-                    if (skin || namePresent) {
-                        this.vanillaskins(name, skin, color);
-                    }
-                    // tabID (always present for added nodes, flag 0x40)
-                    if (offset + 2 <= data.byteLength) {
-                        var tabID = data.getUint16(offset, true); offset += 2;
-                    }
-                    // flag 0x100 = has nickColor
-                    if (flags & 0x100) {
-                        if (offset + 2 < data.byteLength) {
-                            offset += 3; // skip r,g,b
+                var cellObj = null;
+                if (this.indexedCells.hasOwnProperty(id)) {
+                    cellObj = this.indexedCells[id];
+                    if (color && !cellObj.isFood && !cellObj.isVirus) cellObj.color = color;
+                } else {
+                    /* Own cell: the owner accountID is one of our tab ids (Delta giveCellToUnit). */
+                    if (accountID && !isEjected && (accountID === this.garixTabID1 || accountID === this.garixTabID2) &&
+                        (this._playerCellIDSet ? !this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) === -1)) {
+                        this.playerCellIDs.push(id);
+                        if (this._playerCellIDSet) this._playerCellIDSet.add(id);
+                        if (!this.play) {
+                            this.play = true;
+                            this.isSpectateEnabled = false;
+                            application.hideMenu();
+                            this.playerColor = null;
+                            application.onPlayerSpawn();
+                            window.userBots.isAlive = true;
+                            if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
                         }
                     }
-
-                    var cellObj = null;
-                    if (this.indexedCells.hasOwnProperty(id)) {
-                        cellObj = this.indexedCells[id];
+                    cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    cellObj.time = this.time;
+                    cellObj.spectator = false;
+                    if (!isFood) {
+                        if (isVirus && defaultmapsettings.virusesRange) {
+                            this.viruses.push(cellObj);
+                        }
+                        this.cells.push(cellObj);
+                        this._cellsDirty = true;
+                        if (!isEjected && (this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
+                            cellObj.isPlayerCell = true;
+                            this.playerColor = color;
+                            cellObj.color = color;
+                            this.playerCells.push(cellObj);
+                        }
                     } else {
-                        cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-                        cellObj.time = this.time;
-                        cellObj.spectator = false;
-                        if (!isFood) {
-                            if (isVirus && defaultmapsettings.virusesRange) {
-                                this.viruses.push(cellObj);
-                            }
-                            this.cells.push(cellObj);
-                            this._cellsDirty = true;
-                            if (!isEjected && (this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
-                                cellObj.isPlayerCell = true;
-                                this.playerColor = color;
-                                cellObj.color = color;
-                                this.playerCells.push(cellObj);
-                            }
-                        } else {
-                            this.food.push(cellObj);
-                        }
-                        this.indexedCells[id] = cellObj;
+                        this.food.push(cellObj);
                     }
-                    if (cellObj.isPlayerCell) name = this.playerNick;
-                    if (name || namePresent) cellObj.targetNick = name;
-                    cellObj.startX = cellObj.x;
-                    cellObj.startY = cellObj.y;
-                    cellObj.startSize = cellObj.size;
-                    cellObj.targetX = x;
-                    cellObj.targetY = y;
-                    cellObj.targetSize = size;
-                    cellObj.updateTime = this.time || Date.now();
+                    this.indexedCells[id] = cellObj;
                     cellObj.isFood = isFood ? 1 : 0;
                     cellObj.isVirus = isVirus;
-                    if (color) cellObj.color = color;
-                    if (skin) cellObj.skin = skin;
-                } else {
-                    // ── UPDATED NODE ──
-                    var cell = this.indexedCells[id];
-                    if (cell) {
-                        cell.startX = cell.x;
-                        cell.startY = cell.y;
-                        cell.startSize = cell.size;
-                        cell.targetX = x;
-                        cell.targetY = y;
-                        cell.targetSize = size;
-                        cell.updateTime = this.time || Date.now();
-                        if (color) cell.color = color;
-                    }
                 }
+                if (cellObj.isPlayerCell) name = this.playerNick;
+                if (name || namePresent) cellObj.targetNick = name;
+                if (skin) cellObj.skin = skin;
+                cellObj.startX = cellObj.x;
+                cellObj.startY = cellObj.y;
+                cellObj.startSize = cellObj.size;
+                cellObj.targetX = x;
+                cellObj.targetY = y;
+                cellObj.targetSize = size;
+                cellObj.updateTime = this.time || Date.now();
             }
 
             // 3. Remove list (UInt16 count)
@@ -44707,6 +44709,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var removeCount = data.getUint16(offset, true); offset += 2;
                 for (var ri = 0; ri < removeCount && offset + 4 <= data.byteLength; ri++) {
                     var removeID = data.getUint32(offset, true); offset += 4;
+                    if (removeID === 0) break;
                     var rcell = this.indexedCells[removeID];
                     if (rcell) rcell.removeCell();
                 }
