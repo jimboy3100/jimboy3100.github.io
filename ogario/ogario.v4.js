@@ -61385,16 +61385,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 else {
                     /*
-                     * Ordinary cells keep their existing behavior unchanged.
+                     * Ordinary cells: from the current size. cell.mass is only refreshed by
+                     * setMass() in the Canvas text pass (skipped for WebGL cells unless chat on
+                     * cells is on), so it froze at the first value.
                      */
                     massVal =
-                        cell.mass > 0
-                            ? ~~cell.mass
-                            : ~~(
-                                cellSize *
-                                cellSize /
-                                100
-                            );
+                        ~~(
+                            cellSize *
+                            cellSize /
+                            100
+                        );
                 }
 
                 var massStr;
