@@ -1178,7 +1178,9 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         window._lw_protobuf102Received = false; /* debug marker */
         window.legendmod_discordUser = discordUser;
 
-        if (window.MC) {
+        /* The current official MiniclipAPI has no doLoginWithGPlus (only doLoginWithGoogle,
+         * which expects a Google id_token): without it, send opcode 102 directly. */
+        if (window.MC && typeof window.MC.doLoginWithGPlus === 'function') {
             /* agar.io path: use the engine's built-in login */
             if (discordUser.avatar) {
                 MC.setProfilePicture(discordUser.avatar);
@@ -1268,7 +1270,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             if (user && user.token && auth && (auth.provider === 'discord' || !auth.provider)) {
                 var newAttemptId = window._lwBeginLogin('discord');
                 window._lwAuth.discordAttemptId = newAttemptId;
-                if (window.MC) {
+                if (window.MC && typeof window.MC.doLoginWithGPlus === 'function') {
                     MC.doLoginWithGPlus({ access_token: user.token, expires_in: 604800 });
                 } else {
                     _lw_sendLogin102(user.token, user.id, user.globalName || user.username, newAttemptId, 'discord');
