@@ -19945,6 +19945,11 @@ function thelegendmodproject() {
                 this.macroFeedFrame =
                     window.requestAnimationFrame(loop);
             } else {
+                /* E and a mouse button bound to macro feed share this loop: releasing
+                 * one stopped the feed while the other was still held */
+                if (typeof window._lmMacroFeedHeld === 'function' && window._lmMacroFeedHeld()) {
+                    return;
+                }
                 this.macroFeedActive = false;
 
                 if (this.macroFeedFrame != null) {
@@ -73452,21 +73457,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
         delete _lmHeldByCode[event.keyCode];
         if (heldKey && heldKey !== pressedKey) {
             var heldCommand = hotkeys[heldKey];
+            /* released before keyUp runs: keyUp may check which keys are still held */
+            keyBlind[heldKey] = false;
             if (heldCommand && hotkeysCommand[heldCommand] && hotkeysCommand[heldCommand].keyUp) {
                 hotkeysCommand[heldCommand].keyUp();
             }
-            keyBlind[heldKey] = false;
         }
         if ('' !== pressedKey) {
             /* only keys whose keydown was taken (keyBlind set): typing in an input
              * must not run keyUp actions either */
-            if (keyBlind[pressedKey] && hotkeys[pressedKey]) {
+            var _lmKeyWasTaken = keyBlind[pressedKey];
+            keyBlind[pressedKey] = false;
+            if (_lmKeyWasTaken && hotkeys[pressedKey]) {
                 var key = hotkeys[pressedKey];
                 if ('' !== key && hotkeysCommand[key] && hotkeysCommand[key].keyUp) {
                     hotkeysCommand[key].keyUp();
                 }
             }
-            keyBlind[pressedKey] = false;
         }
     }
     /*
@@ -73477,10 +73484,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         for (var heldKey in keyBlind) {
             if (!keyBlind[heldKey]) continue;
             var heldCommand = hotkeys[heldKey];
+            keyBlind[heldKey] = false;
             if (heldCommand && hotkeysCommand[heldCommand] && hotkeysCommand[heldCommand].keyUp) {
                 try { hotkeysCommand[heldCommand].keyUp(); } catch (e) { }
             }
-            keyBlind[heldKey] = false;
         }
         /* Mouse buttons held while focus leaves never get mouseup either: replay it. */
         Object.keys(_lmMouseHeld).forEach(function (which) {
@@ -73489,6 +73496,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMouseHeld = {};
     });
     var _lmMouseHeld = {};
+    /* mouse button -> command whose keyDown it ran; cleared on mouseup */
+    var _lmMouseCmdHeld = {};
+    function _lmMouseCmdDown(which, command) {
+        if (!hotkeysCommand[command] || !hotkeysCommand[command].keyDown) return;
+        _lmMouseCmdHeld[which] = command;
+        hotkeysCommand[command].keyDown();
+    }
+    /* true while a key or mouse button bound to macro feed is still held */
+    window._lmMacroFeedHeld = function () {
+        for (var k in keyBlind) {
+            if (keyBlind[k] && hotkeys[k] === 'hk-macroFeed') return true;
+        }
+        for (var w in _lmMouseCmdHeld) {
+            if (_lmMouseCmdHeld[w] === 'hk-macroFeed') return true;
+        }
+        return false;
+    };
     window.addEventListener('auxclick', function (event) {
         if ((event.button === 3 && defaultmapsettings.mouseCommand4) || (event.button === 4 && defaultmapsettings.mouseCommand5)) {
             event.preventDefault();
@@ -73509,7 +73533,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         application.multiboxswap()
                     }
                     else {
-                        hotkeysCommand[defaultmapsettings.middleClick].keyDown()
+                        _lmMouseCmdDown(2, defaultmapsettings.middleClick)
                     }
                 }
                 else {
@@ -73540,7 +73564,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             application.split();
                         }
                         else {
-                            hotkeysCommand[defaultmapsettings.leftClick].keyDown()
+                            _lmMouseCmdDown(1, defaultmapsettings.leftClick)
                         }
                     }
                 }
@@ -73552,20 +73576,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             application.split();
                         }
                         else {
-                            hotkeysCommand[defaultmapsettings.rightClick].keyDown()
+                            _lmMouseCmdDown(3, defaultmapsettings.rightClick)
                         }
                     }
                 }
                 if (defaultmapsettings.mouseCommand4 && (4 === event.which)) {
                     event.preventDefault();
                     if (application && hotkeysCommand[defaultmapsettings.mouse4Click]) {
-                        hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()
+                        _lmMouseCmdDown(4, defaultmapsettings.mouse4Click)
                     }
                 }
                 if (defaultmapsettings.mouseCommand5 && (5 === event.which)) {
                     event.preventDefault();
                     if (application && hotkeysCommand[defaultmapsettings.mouse5Click]) {
-                        hotkeysCommand[defaultmapsettings.mouse5Click].keyDown()
+                        _lmMouseCmdDown(5, defaultmapsettings.mouse5Click)
                     }
                 }
             }
@@ -73573,6 +73597,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
     }
     window.onmouseup = function (event) {
         delete _lmMouseHeld[event.which];
+        var _lmMouseCmdWas = _lmMouseCmdHeld[event.which];
+        delete _lmMouseCmdHeld[event.which];
         /* Chromium navigates back/forward on the mouseup of buttons 4/5; cancel it
          * when those buttons are bound to commands. */
         if (event.preventDefault && ((event.which === 4 && defaultmapsettings.mouseCommand4) || (event.which === 5 && defaultmapsettings.mouseCommand5))) {
