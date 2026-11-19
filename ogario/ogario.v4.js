@@ -27301,6 +27301,16 @@ function thelegendmodproject() {
                                     cell.oldX
                                 );
                         }
+
+                        /* interpolation runs from startX/startY (cells have no oldX/oldY) */
+                        if (
+                            cell.startX != null
+                        ) {
+                            cell.startX =
+                                legendmod.translateX(
+                                    cell.startX
+                                );
+                        }
                     }
 
                     if (yFlipped) {
@@ -27330,6 +27340,38 @@ function thelegendmodproject() {
                                     cell.oldY
                                 );
                         }
+
+                        /* interpolation runs from startX/startY (cells have no oldX/oldY) */
+                        if (
+                            cell.startY != null
+                        ) {
+                            cell.startY =
+                                legendmod.translateY(
+                                    cell.startY
+                                );
+                        }
+                    }
+                }
+            }
+
+            /*
+             * 1b. Cells still animating their removal (not in indexedCells).
+             */
+            if (
+                legendmod.removedCells
+            ) {
+                for (var ri = 0; ri < legendmod.removedCells.length; ri++) {
+                    var rc = legendmod.removedCells[ri];
+                    if (!rc) continue;
+                    if (xFlipped) {
+                        if (rc.x != null) rc.x = legendmod.translateX(rc.x);
+                        if (rc.targetX != null) rc.targetX = legendmod.translateX(rc.targetX);
+                        if (rc.startX != null) rc.startX = legendmod.translateX(rc.startX);
+                    }
+                    if (yFlipped) {
+                        if (rc.y != null) rc.y = legendmod.translateY(rc.y);
+                        if (rc.targetY != null) rc.targetY = legendmod.translateY(rc.targetY);
+                        if (rc.startY != null) rc.startY = legendmod.translateY(rc.startY);
                     }
                 }
             }
