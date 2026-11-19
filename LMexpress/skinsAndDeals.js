@@ -2375,6 +2375,8 @@ function SpecialDeals(defaultTab) {
             var selectedVer = $("#ss-select-agarVersionDestinations").val();
             var newUrl = window.LM_CONFIG_CDN + "/" + selectedVer + "GameConfiguration.json";
             $("#GameConfigurationUrl").val(newUrl);
+            /* A chosen library version must not be replaced by agar.io's current one. */
+            window._lmShopConfigUrlChosen = true;
 
             /* Invalidate cached config so LoadGameConfiguration fetches fresh data
              * from the new library path instead of returning the stale cache. */
@@ -2399,6 +2401,7 @@ function SpecialDeals(defaultTab) {
             /* Blur without a change must not wipe the loaded config. */
             if (!newUrl || newUrl === window.MiniclipConfigDestination) return;
             window.MiniclipConfigDestination = newUrl;
+            window._lmShopConfigUrlChosen = true;
 
             /* Invalidate cached config so a fresh fetch is forced */
             window.GameConfiguration = null;
@@ -8254,10 +8257,31 @@ function LoadGameConfiguration() {
      * already-loaded config is valid while it still points at the default
      * URL (URL/version changes clear these caches before calling here).
      */
+    /*
+     * The login response can move window.agarversion to a newer config after
+     * this file (and master's config fetch) used the stored one. Unless the
+     * user picked a library version or URL, follow agar.io's current config
+     * and fetch it once: the cached config is the older version, and the
+     * stale load-time URL used to be refetched instead.
+     */
+    var _lmFollowLatestConfig = false;
+    if (
+        !window._lmShopConfigUrlChosen &&
+        !window._isLoadingGameConfig &&
+        typeof window.LM_CONFIG_URL === 'function' &&
+        window.MiniclipConfigDestination &&
+        window.MiniclipConfigDestination !== window.LM_CONFIG_URL()
+    ) {
+        window.MiniclipConfigDestination = window.LM_CONFIG_URL();
+        $('#GameConfigurationUrl').val(window.MiniclipConfigDestination);
+        _lmFollowLatestConfig = true;
+    }
+
     var _lmConfigIsDefault =
+        !_lmFollowLatestConfig && (
         !window.MiniclipConfigDestination ||
         (typeof window.LM_CONFIG_URL === 'function' &&
-            window.MiniclipConfigDestination === window.LM_CONFIG_URL());
+            window.MiniclipConfigDestination === window.LM_CONFIG_URL()));
 
     if (
         _lmConfigIsDefault &&
