@@ -2845,21 +2845,84 @@ function _sdDealPriceLabel(tier) {
     return 'Price at checkout';
 }
 
-/* Newest skins first: gameplayId grows with every skin agar.io adds. */
-var NEW_SKINS_LIMIT = 150;
+/*
+ * Truly new skins: only skins added since the user last viewed the shop.
+ *
+ * Tracks the highest gameplayId the user has seen in localStorage. Any skin
+ * with a gameplayId above that threshold is genuinely "new". When the user
+ * views "All Skins", the threshold updates to the current max, so the next
+ * config update's skins appear as new.
+ *
+ * NEW_SKINS_CAP is a safety cap, not the target count.
+ */
+var NEW_SKINS_CAP = 300;
+var _LM_SEEN_KEY = 'lm_lastSeenMaxGameplayId';
+
+function _getMaxGameplayId(skins) {
+    var maxId = 0;
+    for (var i = 0; i < (skins || []).length; i++) {
+        var id = Number((skins[i] || {}).gameplayId);
+        if (isFinite(id) && id > maxId) maxId = id;
+    }
+    return maxId;
+}
+
+/* Mark current skins as "seen" so they stop appearing as new. */
+function markSkinsAsSeen(skins) {
+    var maxId = _getMaxGameplayId(skins);
+    if (maxId > 0) {
+        try { localStorage.setItem(_LM_SEEN_KEY, String(maxId)); } catch (e) {}
+    }
+}
+
 function getNewestSkins(skins, limit) {
+    var threshold = 0;
+    try { threshold = Number(localStorage.getItem(_LM_SEEN_KEY)) || 0; } catch (e) {}
+
     var list = [];
     for (var i = 0; i < (skins || []).length; i++) {
         var skin = skins[i];
         if (!skin || !skin.productId || skin.productId === 'skin_empty') continue;
         var id = Number(skin.gameplayId);
-        list.push({ skin: skin, id: isFinite(id) ? id : -1, idx: i });
+        if (!isFinite(id)) id = -1;
+        list.push({ skin: skin, id: id, idx: i });
     }
+
+    /* Sort newest first by gameplayId. */
     list.sort(function (a, b) {
         if (a.id !== b.id) return b.id - a.id;
         return b.idx - a.idx;
     });
-    return list.slice(0, limit || NEW_SKINS_LIMIT).map(function (k) { return k.skin; });
+
+    /* Only return skins above the "last seen" threshold. */
+    if (threshold > 0) {
+        var newOnly = [];
+        for (var j = 0; j < list.length; j++) {
+            if (list[j].id > threshold) newOnly.push(list[j]);
+        }
+        if (newOnly.length > 0) {
+            return newOnly.slice(0, limit || NEW_SKINS_CAP).map(function (k) { return k.skin; });
+        }
+        /* All skins have been seen — return empty (no new skins right now). */
+        return [];
+    }
+
+    /* First visit ever: no stored threshold. The user has never seen any
+     * skins yet, so we cannot know which ones are "new" to them. Show the
+     * most recent batch (skins added in the last config update) by using
+     * a percentage-based heuristic: the top ~3% of gameplayIds are likely
+     * from the latest update cycle. Then store that cutoff as the "seen"
+     * threshold so these skins remain visible as "new" until the user
+     * views All Skins (which calls markSkinsAsSeen). */
+    var maxId = list.length > 0 ? list[0].id : 0;
+    if (maxId <= 0) return [];
+    var cutoff = Math.floor(maxId * 0.97);
+    var firstBatch = [];
+    for (var k = 0; k < list.length; k++) {
+        if (list[k].id > cutoff) firstBatch.push(list[k]);
+    }
+    try { localStorage.setItem(_LM_SEEN_KEY, String(cutoff)); } catch (e) {}
+    return firstBatch.slice(0, limit || NEW_SKINS_CAP).map(function (k) { return k.skin; });
 }
 
 /**
@@ -2971,8 +3034,8 @@ function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
     var packs = getSkinDealPacks(productId);
     if (!packs.length) {
         if (purchaseInfo.type !== 'REWARD') {
-            button.textContent = 'Not for sale';
-            button.title = 'Not sold in the shop right now (only through Agar.io promotional offers).';
+            button.textContent = 'Promo Only';
+            button.title = 'This skin is available only through Agar.io\u2019s rotating promotional offers (like The Doctor\u2019s Curiosities). Check in-game for active offers!';
         }
         return;
     }
@@ -4914,7 +4977,7 @@ function populateSkins() {
         var newMode = currentFilter === 'new';
         window._skinShopNewMode = newMode;
         var sourceSkins = newMode
-            ? getNewestSkins(skins, NEW_SKINS_LIMIT)
+            ? getNewestSkins(skins, NEW_SKINS_CAP)
             : skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj));
 
         skinShopFiltered =
@@ -5012,6 +5075,25 @@ function populateSkins() {
             return;
         }
 
+        if (currentFilter === 'new' && skinShopFiltered.length === 0) {
+            grid.innerHTML =
+                '<div style="grid-column:1/-1;text-align:center;padding:30px;color:' +
+                getShopTheme().tc2 + ';font-size:13px;">' +
+                '&#x2705; You\u2019re up to date!<br>' +
+                '<span style="font-size:11px;color:' + getShopTheme().tc2 +
+                ';">No new skins since your last visit. Check back after an Agar.io update!</span></div>';
+            $('#skinCount').text(0);
+            $('#skinTotal').text(0);
+            $('#skinLoadMore').hide();
+            return;
+        }
+
+        /* When viewing All Skins, record the current max gameplayId so the
+         * next config update's skins correctly appear as "new". */
+        if (currentFilter === 'all') {
+            markSkinsAsSeen(skins);
+        }
+
         renderSkinPage(false);
     }
 
@@ -5093,7 +5175,9 @@ function populateSkins() {
 
     // Update filter button with actual skin count
     $('.skin-filter-btn[data-filter="all"]').text('All Skins (' + skins.length + ')');
-    $('.skin-filter-btn[data-filter="new"]').html('&#x1F195; New Skins (' + getNewestSkins(skins, NEW_SKINS_LIMIT).length + ')');
+    var newSkinsList = getNewestSkins(skins, NEW_SKINS_CAP);
+    var newCount = newSkinsList.length;
+    $('.skin-filter-btn[data-filter="new"]').html('&#x1F195; New Skins' + (newCount > 0 ? ' (' + newCount + ')' : ''));
 
     /* Pack prices in the New Skins view follow the deal currency. */
     $('#BuyDealCurrency').off('change.newSkins').on('change.newSkins', function () {
