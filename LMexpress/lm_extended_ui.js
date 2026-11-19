@@ -9170,17 +9170,23 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 var potionKey = 'potion' + slot;
                 var pp = potionStates[potionKey] || null;
 
-                /* Default is 'brew' — empty slots are brewable, server validates */
-                var pState = 'brew';
+                /* A slot without a potion is empty: the server answers "not available"
+                 * (brew result 2) to a brew on it, so it must not be offered as BREW. */
+                var pState = 'empty';
                 var pRarity = '';
                 var pTimer = '';
                 var pSkipHtml = '';
-                var pSvg = _pvBrew;
-                var pGlow = '0 0 8px rgba(76,175,80,0.5)';
-                var pBorder = '#4caf50';
-                var pBg = 'rgba(76,175,80,0.08)';
-
+                var pSvg = _pvEmpty;
+                var pGlow = 'none';
+                var pBorder = 'rgba(255,255,255,0.15)';
+                var pBg = 'rgba(255,255,255,0.03)';
                 if (pp) {
+                    /* a potion is in the slot: brewable unless the status says otherwise */
+                    pState = 'brew';
+                    pSvg = _pvBrew;
+                    pGlow = '0 0 8px rgba(76,175,80,0.5)';
+                    pBorder = '#4caf50';
+                    pBg = 'rgba(76,175,80,0.08)';
                     /*
                      * Extract rarity from productId (e.g. "potion_exotic" → "exotic").
                      * Falls back to legacy DOM img src scraping only if productId missing.
@@ -9289,7 +9295,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
                 /* Status line */
                 var pStatus = '';
-                if (pState === 'brew') {
+                if (pState === 'empty') {
+                    pStatus = '<div style="font-size:8px;color:#888;font-weight:700;">EMPTY</div>';
+                } else if (pState === 'brew') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
                         '<div style="font-size:8px;color:#8bc34a;font-weight:700;">\u25B6 BREW</div>';
