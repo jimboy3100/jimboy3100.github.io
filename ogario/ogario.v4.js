@@ -30315,6 +30315,16 @@ function thelegendmodproject() {
             var self =
                 this;
 
+            var collisionProbe = { x: 0, y: 0, w: 10, h: 10 };
+            var collisionPoint = null;
+            var collisionTest = function (item) {
+                return (
+                    item &&
+                    item.parent !== self &&
+                    self.sqDist(item, collisionPoint) <= 25
+                );
+            };
+
             for (
                 var pointIndex = 0;
                 pointIndex < len;
@@ -30358,35 +30368,15 @@ function thelegendmodproject() {
                 if (
                     LM.quadtree
                 ) {
+                    // Reuse one probe rect and predicate (no per-point allocations).
+                    collisionProbe.x = curP.x - 5;
+                    collisionProbe.y = curP.y - 5;
+                    collisionPoint = curP;
+
                     affected =
                         LM.quadtree.some(
-                            {
-                                x:
-                                    curP.x -
-                                    5,
-
-                                y:
-                                    curP.y -
-                                    5,
-
-                                w: 10,
-                                h: 10
-                            },
-
-                            function (
-                                item
-                            ) {
-                                return (
-                                    item &&
-                                    item.parent !==
-                                        self &&
-                                    self.sqDist(
-                                        item,
-                                        curP
-                                    ) <=
-                                        25
-                                );
-                            }
+                            collisionProbe,
+                            collisionTest
                         );
                 }
 
