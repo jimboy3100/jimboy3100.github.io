@@ -736,6 +736,11 @@ function adres(info, thismode, thisregion) {
                     return realmode, region;
                 }
             } else if (realmode == ":party") {
+                /* the party redirect targets agar.io: on the website it would leave the site */
+                if (window.legendModFromWebsite) {
+                    realmode = thismode || $("#gamemode").val();
+                    return;
+                }
                 window.history.pushState(null, null, window.location.pathname);
                 window.location.href = "https://agar.io/#" + $('#party-token').val()
             }
@@ -744,7 +749,8 @@ function adres(info, thismode, thisregion) {
             allowCurrentToken: true
         });
     } else { //if party
-        /* Party mode: wait for token then redirect */
+        /* Party mode: wait for token then redirect (agar.io only, see above) */
+        if (window.legendModFromWebsite) return;
         _lmAdresCancelWait = whenServerTokenReady(function (readyToken) {
             window.history.pushState(null, null, window.location.pathname);
             window.location.href = "https://agar.io/#" + $('#party-token').val()
