@@ -71613,6 +71613,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !Array.isArray(storedHotkeys)
             ) {
                 hotkeys = storedHotkeys;
+                this.addMissingDefaultHotkeys();
             } else {
                 this.loadDefaultHotkeys();
             }
@@ -71631,8 +71632,34 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 chatCommand = storedCommands;
             }
         },
+        /*
+         * Stored hotkeys replace the defaults wholesale, so commands added
+         * after the user last saved had no key. Give such commands their
+         * default key when that key is still free. Commands that existed at
+         * the last save (ogarioHotkeysKnown) and have no key were unbound on
+         * purpose and stay unbound.
+         */
+        addMissingDefaultHotkeys() {
+            var known = readLocalStorageJSON('ogarioHotkeysKnown', null);
+            if (!Array.isArray(known)) known = null;
+            var bound = {};
+            for (var key in hotkeys) {
+                if (hotkeys.hasOwnProperty(key)) bound[hotkeys[key]] = true;
+            }
+            for (var command in hotkeysCommand) {
+                if (!hotkeysCommand.hasOwnProperty(command) || bound[command]) continue;
+                if (known && known.indexOf(command) !== -1) continue;
+                var defaultKey = hotkeysCommand[command] && hotkeysCommand[command].defaultKey;
+                if (defaultKey && !hotkeys.hasOwnProperty(defaultKey)) {
+                    hotkeys[defaultKey] = command;
+                }
+            }
+        },
         saveHotkeys() {
             window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
+            try {
+                window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(Object.keys(hotkeysCommand)));
+            } catch (eKnown) { }
             this.saveCommands();
         },
         saveCommands() {
