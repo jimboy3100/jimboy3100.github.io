@@ -68335,10 +68335,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             drawRender.renderTime += performance.now() - this.renderStarted
             drawRender.counterTime++
             if ((drawRender.fps > 0 && drawRender.counterTime >= drawRender.fps) || drawRender.counterTime >= 500) {
-                if (drawRender.counterTime < 500 && drawRender.counterTime > 8) {
+                if (drawRender.counterTime > 8) {
                     this.averageRenderTime = (drawRender.renderTime / drawRender.counterTime).toFixed(2)
 
                 }
+                /* Start a new window, otherwise the average froze after 500 frames. */
+                drawRender.renderTime = 0;
+                drawRender.counterTime = 0;
             }
 
             /*
