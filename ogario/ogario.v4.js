@@ -26950,6 +26950,9 @@ function thelegendmodproject() {
         },
         sendChatInvisibleData(dataObj) {
             if (!window.legendmod || typeof window.legendmod.sendMessage !== 'function') return;
+            /* Opcode 99 chat is not part of the agar.io protocol (chat 99 is already skipped
+             * there), and Sigmally/Senpa would read the raw byte as another opcode. */
+            if (window.legendmod.integrity || window.legendmod.serverType === 'sigmally' || window.legendmod.serverType === 'senpa') return;
             var encodedText = window.encodeLMInvisibleData(dataObj);
             if (!encodedText) return;
             try {
