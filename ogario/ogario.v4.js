@@ -1829,12 +1829,37 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                     typeof window.master.login === 'function'
                 ) {
                     try {
-                        if (typeof window.master.refreshSocialToken === 'function') {
-                            window.master._tokenTime = 0;
-                            window.master.refreshSocialToken();
+                        /* master.refreshSocialToken() is asynchronous and returns nothing, so
+                           calling login() right after it resent the old (maybe expired) token.
+                           Reload the Google token here and log in once it has settled. */
+                        var gUser = null;
+                        try {
+                            var gAuth = window.gapi && window.gapi.auth2 && window.gapi.auth2.getAuthInstance();
+                            gUser = gAuth && gAuth.isSignedIn.get() ? gAuth.currentUser.get() : null;
+                        } catch (gErr) { gUser = null; }
+                        var doGoogleLogin = function () {
+                            if (!window.master || typeof window.master.login !== 'function') return;
+                            if (window.legendmod) window.legendmod.accessTokenSent = false;
+                            window.master.login();
+                        };
+                        if (gUser && typeof gUser.reloadAuthResponse === 'function') {
+                            gUser.reloadAuthResponse().then(function (auth) {
+                                if (auth && auth.id_token && window.master && window.master.context === 'google') {
+                                    window.master.accessToken = auth.id_token;
+                                    window.master._tokenTime = Date.now();
+                                }
+                                doGoogleLogin();
+                            }, function (refreshErr) {
+                                console.warn('[LW AUTH] Google token reload failed, resending current token:', refreshErr);
+                                doGoogleLogin();
+                            });
+                        } else {
+                            if (typeof window.master.refreshSocialToken === 'function') {
+                                window.master._tokenTime = 0;
+                                window.master.refreshSocialToken();
+                            }
+                            doGoogleLogin();
                         }
-                        if (window.legendmod) window.legendmod.accessTokenSent = false;
-                        window.master.login();
                         reloginAttempted = true;
                     } catch (e) {
                         console.warn('[LW AUTH] Google relogin failed to start:', e);
