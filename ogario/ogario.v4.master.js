@@ -310,7 +310,7 @@ function legendmaster(self) {
 					window.loggedIn=true;
 				}
             } else {
-                if (f < 3 && !window.loggedIn && !window._lwReconnecting) {
+                if (f < 3 && !window.loggedIn && !window._lwReconnecting && !window._lwAuthRetrying) {
                     f++;
                     self.facebookRelogin();
                     self.logout();
@@ -1854,7 +1854,7 @@ function legendmaster(self) {
         /* Don't nuke login state during game server reconnect —
          * reconnect() can trigger FB.getLoginStatus which calls logout
          * when FB cookies expire, killing the Google session too. */
-        if (window._lwReconnecting) {
+        if (window._lwReconnecting || window._lwAuthRetrying) {
             console.log("[Master] logout() blocked — reconnecting");
             return;
         }

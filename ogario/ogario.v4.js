@@ -1693,7 +1693,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             window._isChangingToPrivateServer
         );
 
-        if (!intendedLogout && window._lwReconnecting) {
+        if (!intendedLogout && (window._lwReconnecting || window._lwAuthRetrying)) {
             console.log(
                 '[LW AUTH] Duplicate unexpected logout ignored while reconnecting'
             );
@@ -1712,6 +1712,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 (window._lwLoginRetryGeneration || 0) + 1;
 
             window._lwReconnecting = false;
+            window._lwAuthRetrying = false;
 
             console.log('[LW AUTH] Intended logout (user manual or private server switch)');
             window._isUserManualLogout = false;
@@ -1824,7 +1825,9 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         // 2. Unexpected logout! Try auto-login retries up to MAX_LOGIN_RETRIES times
         if (window._loginRetryCount < MAX_LOGIN_RETRIES) {
             window._loginRetryCount++;
-            window._lwReconnecting = true;
+            /* Own flag: master.onDisconnect sets _lwReconnecting and clears it 3 s
+             * later, which used to stop this chain part-way. */
+            window._lwAuthRetrying = true;
             console.warn('[LW AUTH] Unexpected logout detected! Attempting auto-login retry ' + window._loginRetryCount + '/' + MAX_LOGIN_RETRIES + '...');
 
             if (window.toastr) {
@@ -1841,7 +1844,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 if (
                     retryGeneration !==
                         window._lwLoginRetryGeneration ||
-                    !window._lwReconnecting
+                    !window._lwAuthRetrying
                 ) {
                     return;
                 }
@@ -1855,7 +1858,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 if (window.legendmod && window.legendmod.loginConfirmed === true &&
                     window.legendmod.isSocketOpen && window.legendmod.isSocketOpen()) {
                     console.log('[LW AUTH] Connection still logged in, no relogin needed');
-                    window._lwReconnecting = false;
+                    window._lwAuthRetrying = false;
                     window._loginRetryCount = 0;
                     return;
                 }
@@ -1911,7 +1914,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                             /* This connection is still logged in: resending the token on an
                                authenticated socket gets the session dropped. Keep the session. */
                             if (window.legendmod && window.legendmod.loginConfirmed === true) {
-                                window._lwReconnecting = false;
+                                window._lwAuthRetrying = false;
                                 window._loginRetryCount = 0;
                                 return;
                             }
@@ -1992,7 +1995,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                     if (
                         retryGeneration !==
                             window._lwLoginRetryGeneration ||
-                        !window._lwReconnecting
+                        !window._lwAuthRetrying
                     ) {
                         return;
                     }
@@ -2014,7 +2017,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                             );
                         }
 
-                        window._lwReconnecting = false;
+                        window._lwAuthRetrying = false;
                         window._loginRetryCount = 0;
                     } else if (window._loginRetryCount < MAX_LOGIN_RETRIES) {
                         window._loginRetryCount++;
@@ -2022,7 +2025,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                         setTimeout(executeRetryStep, 2500);
                     } else {
                         console.error('[LW AUTH] All ' + MAX_LOGIN_RETRIES + ' auto-login retries failed. Proceeding with full logout.');
-                        window._lwReconnecting = false;
+                        window._lwAuthRetrying = false;
                         window._loginRetryCount = 0;
                         window._isUserManualLogout = true;
                         window.logout();
@@ -2059,6 +2062,15 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         var _discordNonceLive = _discordOAuthNonce;
         try { sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce); } catch (e) { }
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(_discordOAuthState);
+        /* A fresh nonce/state for every login click: an accepted nonce is consumed, and
+         * reusing the page-load URL left every later login in this tab unchecked. */
+        function renewDiscordNonce() {
+            _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function (b) { return b.toString(16).padStart(2, '0') }).join('');
+            _discordOAuthState = window.location.origin + '|' + _discordOAuthNonce;
+            _discordNonceLive = _discordOAuthNonce;
+            try { sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce); } catch (e) { }
+            DISCORD_AUTH_URL = DISCORD_AUTH_URL.replace(/&state=[^&]*/, '&state=' + encodeURIComponent(_discordOAuthState));
+        }
         var discordPopupRef = null;
         var discordSetupAttempts = 0;
 
@@ -2090,8 +2102,11 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             /* CSRF nonce validation: reject if nonce is present but doesn't match */
             var expectedNonce = _discordNonceLive;
             try { expectedNonce = sessionStorage.getItem('discord_oauth_nonce') || _discordNonceLive; } catch (e) { }
-            if (expectedNonce && discordUser.nonce) {
-                if (discordUser.nonce !== expectedNonce) {
+            /* A relay that knows the state always sends a nonce field (possibly empty):
+             * then it must match. Only a relay without the field (current Expanding Land
+             * server) is accepted without the check. */
+            if (typeof discordUser.nonce === 'string') {
+                if (!expectedNonce || discordUser.nonce !== expectedNonce) {
                     console.warn('[LW Discord] CSRF nonce mismatch via ' + channel + ' — rejecting');
                     return false;
                 }
@@ -2201,6 +2216,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 var w = 500, h = 700;
                 var left = (screen.width - w) / 2;
                 var top = (screen.height - h) / 2;
+                renewDiscordNonce();
                 var popup = window.open(DISCORD_AUTH_URL, 'discordAuth',
                     'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',scrollbars=yes');
                 discordPopupRef = popup;
@@ -25145,14 +25161,20 @@ function thelegendmodproject() {
                         this.miniMapCtx.fill(),
                         this.teamPlayers.length) {
                         c = 0;
+                        /* Expanding Land: teammate positions (opcode 30 / PPv7) are getPlayerX(),
+                         * which already adds ogario.mapOffsetX; adding it again drew them half a
+                         * map to the bottom-right of where they are. */
                         for (; c < this.teamPlayers.length; c++) {
-                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.isLegendWorld ? ogario.mapOffsetX : LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.isLegendWorld ? 0 : LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                         }
                     }
                     if (this.deathLocations.length > 0) {
-                        var _effDeathOff = (LM.isLegendWorld ? 0 : LM.mapOffset);
-                        u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOff) * n);
-                        d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOff) * n);
+                        /* Expanding Land stores the raw position (updateDeathLocations): draw it
+                         * with the own dot's offsets r/l, or it landed toward the top-left. */
+                        var _effDeathOffX = (LM.isLegendWorld ? r : LM.mapOffset);
+                        var _effDeathOffY = (LM.isLegendWorld ? l : LM.mapOffset);
+                        u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOffX) * n);
+                        d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOffY) * n);
                         var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
                         this.miniMapCtx.lineWidth = 1;
                         this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
@@ -25443,8 +25465,16 @@ function thelegendmodproject() {
             }
             if (!text && serverFormat30072024) {
                 const [, region, ip] = serverFormat30072024;
-                const arr = [awsRegions.indexOf(region)].concat(ip.split('-').map((n) => parseInt(n)));
-                this.serverArena = toLong(arr).toString(36).padStart(7, '0');
+                const regionIndex = awsRegions.indexOf(region);
+                if (regionIndex >= 0 && regionIndex <= ranges[0]) {
+                    const arr = [regionIndex].concat(ip.split('-').map((n) => parseInt(n)));
+                    this.serverArena = toLong(arr).toString(36).padStart(7, '0');
+                } else {
+                    /* The packed token has room for region indices 0-10 only: a later or
+                     * unknown region decoded to another region/IP. Share the arena URL
+                     * itself, which recreateWS (also in older versions) opens as is. */
+                    this.serverArena = 'wss://web-arenas-live-v25-0.agario.miniclippt.com/' + region + '/' + ip;
+                }
                 //HERE I THINK
                 text = this.serverArena;
                 //console.log("createServerToken case 2:" + text);
@@ -26395,17 +26425,23 @@ function thelegendmodproject() {
                 var buffer = new ArrayBuffer(3);
                 var view = new DataView(buffer);
                 view.setUint8(0, 41);
-                view.setUint16(1, targetPlayerID & 0xFFFF, true);
+                /* Delta's request (deltaProtocol clientQuadrantRequest) carries the
+                 * requester's own ID; it is a broadcast, not addressed to one player. */
+                view.setUint16(1, this.playerID & 0xFFFF, true);
                 ws.send(buffer);
             }
         },
         readQuadrantRequest(view) {
             if (view.byteLength < 3) return;
             var requesterID = view.getUint16(1, true);
-            var myQuadrantStr = this.currentSector || '';
-            var quadChar = myQuadrantStr.charCodeAt(0) || 65;
-            var quadNum = parseInt(myQuadrantStr.slice(1)) || 1;
-            var quadrantCode = ((quadChar - 65) * 5 + (quadNum - 1)) & 0xFF;
+            if (requesterID === (this.playerID & 0xFFFF)) return;
+            /* Delta (RootSocket case 41) answers with its agar.io map orientation
+             * quadrant 0-3 and stays silent when it does not know it. The old reply
+             * sent the minimap sector (row*5+col), which Delta counted as an
+             * orientation vote (sectors A1-A4 = quadrants 0-3). */
+            var _lmQ = window.legendmod;
+            var quadrantCode = _lmQ && _lmQ.integrity ? _lmQ.bgpi : -1;
+            if (!(quadrantCode >= 0 && quadrantCode <= 3 && (quadrantCode | 0) === quadrantCode)) return;
 
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (ws && ws.readyState === 1 && this.playerID) {
@@ -26423,12 +26459,11 @@ function thelegendmodproject() {
             var senderID = view.getUint16(1, true);
             var receiverID = view.getUint16(3, true);
             var quadrantCode = view.getUint8(5);
-            var qRow = String.fromCharCode(65 + Math.floor(quadrantCode / 5));
-            var qCol = (quadrantCode % 5) + 1;
-            var sectorStr = qRow + qCol;
+            /* The sender's map orientation quadrant (0-3), stored like PPv7 flag 8.
+             * Not used as lbgpi: older Legend Mod versions answer with a sector code. */
             var idx = this.checkPlayerID(senderID);
-            if (idx !== null && this.teamPlayers[idx]) {
-                this.teamPlayers[idx].quadrant = sectorStr;
+            if (idx !== null && this.teamPlayers[idx] && quadrantCode <= 3) {
+                this.teamPlayers[idx].quadrant = quadrantCode;
             }
         },
         readWavePing(view) {
@@ -34744,6 +34779,28 @@ function thelegendmodproject() {
                 self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
                 if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
                 self.replayfunctions();
+                /* Sigmally can require a captcha before play (Delta ProtocolSigmally.captchaFlow2:
+                 * GET https://<host>/server/recaptcha/v3 -> {version: none|turnstile|v2|v3}).
+                 * Legend Mod has no widget for Sigmally's site keys, so it only tells the user
+                 * why a spawn may be ignored. Runs alongside the connection, never delays or
+                 * changes it; a failed or blocked request is ignored. */
+                try {
+                    var _lmSigSocket = self.socket;
+                    var _lmCaptchaUrl = new URL(t);
+                    _lmCaptchaUrl.protocol = 'https:';
+                    _lmCaptchaUrl.port = '';
+                    _lmCaptchaUrl.pathname = '/server/recaptcha/v3';
+                    _lmCaptchaUrl.search = '';
+                    _lmCaptchaUrl.hash = '';
+                    if (window.fetch) {
+                        fetch(_lmCaptchaUrl.toString(), { credentials: 'omit' }).then(function (r) { return r.json(); }).then(function (res) {
+                            var version = res && res.version ? String(res.version) : 'none';
+                            if (version === 'none' || self.socket !== _lmSigSocket) return;
+                            console.warn('%c[Sigmally]%c This server asks for a captcha (' + version + '); Legend Mod cannot solve it, so spawning may be ignored', 'color:#3af', 'color:inherit');
+                            if (window.toastr) toastr.warning('<b>[Sigmally]:</b> This server currently requires a captcha, which Legend Mod cannot show. Spawning may not work; play it on sigmally.com.');
+                        }).catch(function () { });
+                    }
+                } catch (eCaptcha) { }
                 return;
             }
 
@@ -36947,6 +37004,37 @@ function thelegendmodproject() {
             if (!oW) {
                 oW = 102;
             }
+            /* Expanding Land keys the account on a "SID:" prefix and otherwise hashes the
+             * token itself. A Google id_token is reissued every session/hour, so Google
+             * progress was stored under a new account each time. Send the token's stable
+             * subject as SID, raw like the Discord login (_lw_sendLogin102):
+             * "SID:<sub>\n<token>". No NAME: line (it would be the user's real name). */
+            if (options === 4 && oW === 102 && (this.serverType === 'expandingland' || this.isLegendWorld)) {
+                var _lmGSub = '';
+                try {
+                    var _lmJwtPart = (String(shapes).split('.')[1] || '').replace(/-/g, '+').replace(/_/g, '/');
+                    while (_lmJwtPart.length % 4) _lmJwtPart += '=';
+                    var _lmJwtBin = atob(_lmJwtPart);
+                    var _lmJwtBytes = new Uint8Array(_lmJwtBin.length);
+                    for (var _lmJ = 0; _lmJ < _lmJwtBin.length; _lmJ++) _lmJwtBytes[_lmJ] = _lmJwtBin.charCodeAt(_lmJ);
+                    var _lmClaims = JSON.parse(new TextDecoder().decode(_lmJwtBytes));
+                    _lmGSub = _lmClaims && _lmClaims.sub != null ? String(_lmClaims.sub) : '';
+                } catch (e) {
+                    _lmGSub = '';
+                }
+                /* The server keeps at most 30 SID bytes; a Google subject is 21 digits. */
+                if (/^[0-9]{1,30}$/.test(_lmGSub)) {
+                    var _lmHead = 'SID:' + _lmGSub + '\n';
+                    var _lmView = this.createView(1 + _lmHead.length + shapes.length);
+                    _lmView.setUint8(0, 102);
+                    var _lmPos = 1;
+                    for (var _lmH = 0; _lmH < _lmHead.length; _lmH++) _lmView.setUint8(_lmPos++, _lmHead.charCodeAt(_lmH));
+                    for (var _lmT = 0; _lmT < shapes.length; _lmT++) _lmView.setUint8(_lmPos++, shapes.charCodeAt(_lmT) & 0xFF);
+                    this.sendMessage(_lmView);
+                    LM.accessTokenSent = true;
+                    return;
+                }
+            }
             var curr = shapes.length;
             var count = this.clientVersionString.length;
             var data = [oW, 8, 1, 18];
@@ -37611,6 +37699,9 @@ function thelegendmodproject() {
                     this.playerCellIDs.push(data.getUint32(s, true));
                     if (this._playerCellIDSet) this._playerCellIDSet.add(this.playerCellIDs[this.playerCellIDs.length - 1]);
                     if (!this.play) {
+                        /* Spawned: cancel a pending 1.8 s spawn retry (sendNick), so dying
+                         * before it fires does not send an unrequested respawn. */
+                        this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1;
                         this.play = true;
                         this.isSpectateEnabled = false
                         application.hideMenu();
@@ -39155,10 +39246,29 @@ function thelegendmodproject() {
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
-                    this.clientKey = this.generateClientKey(this.ws, key);
+                    /* sendMessage drops every packet until the client key exists: if the key
+                     * cannot be made, the socket would sit silent until the server times it
+                     * out. Close it so the normal unexpected-disconnect reconnect runs. */
+                    var _lmKeyFailed = false;
+                    try {
+                        this.clientKey = this.generateClientKey(this.ws, key);
+                    } catch (eKey) {
+                        _lmKeyFailed = true;
+                        this.clientKey = null;
+                        console.error('[Protocol] Client key generation failed, closing the connection:', eKey);
+                    }
                     //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
-                    if (window.master && window.master.login) {
-                        window.master.login();
+                    if (_lmKeyFailed && this.connectionIntegrity && this.socket) {
+                        try { this.socket.close(); } catch (eClose) { }
+                        break;
+                    }
+                    /* A login exception must not escape into the socket handler. */
+                    try {
+                        if (window.master && window.master.login) {
+                            window.master.login();
+                        }
+                    } catch (eLogin) {
+                        console.error('[Protocol] master.login after opcode 241 failed:', eLogin);
                     }
                     break;
                 case 242:
