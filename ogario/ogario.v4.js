@@ -73568,14 +73568,23 @@ Array.prototype.stDev = function stDev() {
         { match: /jimboy3100\.github\.io/g, replace: 'www.legendmod.ml' },
         { match: /(?:www\.)?legendmod\.ml\/agario\/live\/flags/g, replace: 'www.legendmod.ml/agario/live/flags' }
     ];
+    var _elRewriteSelector = 'a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]';
+    function _rewriteValue(value) {
+        _elRewriteMap.forEach(function (r) { value = value.replace(r.match, r.replace); });
+        return value;
+    }
+    /* Assign only when the value really changes: setting iframe.src (even to the
+     * same URL) reloads the frame. */
+    function _rewriteElement(el) {
+        var v;
+        if (el.href && (v = _rewriteValue(el.href)) !== el.href) el.href = v;
+        if (el.src && (v = _rewriteValue(el.src)) !== el.src) el.src = v;
+        if (el.style && el.style.cssText && (v = _rewriteValue(el.style.cssText)) !== el.style.cssText) el.style.cssText = v;
+    }
     function _rewriteExpandingLinks(root) {
-        (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function (el) {
-            _elRewriteMap.forEach(function (r) {
-                if (el.href) el.href = el.href.replace(r.match, r.replace);
-                if (el.src) el.src = el.src.replace(r.match, r.replace);
-                if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(r.match, r.replace);
-            });
-        });
+        root = root || document;
+        if (root.nodeType === 1 && root.matches && root.matches(_elRewriteSelector)) _rewriteElement(root);
+        root.querySelectorAll(_elRewriteSelector).forEach(_rewriteElement);
     }
     /* Initial pass */
     _rewriteExpandingLinks();
@@ -73584,7 +73593,8 @@ Array.prototype.stDev = function stDev() {
         new MutationObserver(function (mutations) {
             mutations.forEach(function (m) {
                 m.addedNodes.forEach(function (n) {
-                    if (n.nodeType === 1) _rewriteExpandingLinks(n.parentElement || document);
+                    /* Scan only the added subtree, not its parent (often document.body). */
+                    if (n.nodeType === 1) _rewriteExpandingLinks(n);
                 });
             });
         }).observe(document.documentElement, { childList: true, subtree: true });
