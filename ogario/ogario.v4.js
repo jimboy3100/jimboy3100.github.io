@@ -40367,12 +40367,17 @@ function thelegendmodproject() {
                                 try {
                                     var rewardItems = [];
                                     if (u.productUpdates && u.productUpdates.length) {
+                                        /* Official getProductUpdatesForProductOrigin(updates, 14):
+                                         * the rewards are the potion_opened (origin 14) updates with
+                                         * a positive deltaAmount; userWalletItem.amount is the new
+                                         * wallet balance, not what the potion gave. */
                                         for (var ri = 0; ri < u.productUpdates.length; ri++) {
                                             var pu = u.productUpdates[ri];
-                                            if (pu && pu.userWalletItem) {
+                                            if (pu && pu.userWalletItem &&
+                                                Number(pu.origin) === 14 && Number(pu.deltaAmount) > 0) {
                                                 rewardItems.push({
                                                     productId: pu.userWalletItem.productId || '',
-                                                    amount: Number(pu.userWalletItem.amount) || 0,
+                                                    amount: Number(pu.deltaAmount) || 0,
                                                     type: Number(pu.userWalletItem.type) || 0,
                                                     origin: Number(pu.origin) || 0
                                                 });
