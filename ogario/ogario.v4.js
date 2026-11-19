@@ -18932,7 +18932,7 @@ function thelegendmodproject() {
                             .scanTrickDirections =
                             value;
 
-                        app.saveSettings(
+                        window.application.saveSettings(
                             defaultmapsettings,
                             'ogarioSettings'
                         );
@@ -18948,7 +18948,9 @@ function thelegendmodproject() {
             /*
              * Exact-angle projection distance.
              */
-            this.addSliderBox(
+            /* application's slider: these live in defaultmapsettings (Settings' own
+             * addSliderBox writes the theme object) and must be saved. */
+            window.application.addSliderBox(
                 '.scanTrickGroup',
                 'scanTrickDistance',
                 100000,
@@ -18960,7 +18962,9 @@ function thelegendmodproject() {
             /*
              * Snapped-angle projection distance.
              */
-            this.addSliderBox(
+            /* application's slider: these live in defaultmapsettings (Settings' own
+             * addSliderBox writes the theme object) and must be saved. */
+            window.application.addSliderBox(
                 '.scanTrickGroup',
                 'scanTrickRoundedDistance',
                 1000,
@@ -21811,6 +21815,9 @@ function thelegendmodproject() {
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
+            /* Scan Trick section: was never built, so its settings could not be changed. */
+            this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
+            Settings.addScanTrickControls();
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
             if (!this.protocolMode) {
