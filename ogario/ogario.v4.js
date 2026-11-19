@@ -1652,6 +1652,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             window._loginRetryCount = 0;
             window._lw_loginNotifShown = false;
             window.expandingLandUID = '';
+            /* The website does not load the official client, so its 'logout' event that
+             * clears these never fires there; clear the cached account identity here too. */
+            window.agarioUID = '';
+            window.agarioEncodedUID = '';
+            window.agarioProfileName = '';
+            window.loggedIn = false;
+            if (typeof removeIdentityValue === 'function') {
+                removeIdentityValue('agarioUID');
+                removeIdentityValue('agarioEncodedUID');
+            }
             window.lastLeaguesResponse =
                 null;
 
