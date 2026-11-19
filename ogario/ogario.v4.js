@@ -37052,6 +37052,11 @@ function thelegendmodproject() {
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
                         application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
+                    /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
+                     * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */
+                    else if (this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
+                        application.displayChatMessage(time, 101, 1000, message);
+                    }
                     /* ── Auto-reconnect on server restart chat ── */
                     if (server && message.toLowerCase().includes('restarting')) {
                         var reconnWs = this.ws;
