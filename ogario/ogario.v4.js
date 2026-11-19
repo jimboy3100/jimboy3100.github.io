@@ -3568,16 +3568,18 @@ function ReqPing() {
     var previousRoundtrip =
         1;
 
+    /* agario_proto_Ping: field 1 = pingId, field 2 = previousRoundtrip
+     * (agario/mc/agario.js writeTo); they were swapped. */
     var pingPayload = [8]
         .concat(
             encodeProtoVarint(
-                previousRoundtrip
+                pingId
             )
         )
         .concat([16])
         .concat(
             encodeProtoVarint(
-                pingId
+                previousRoundtrip
             )
         );
 
