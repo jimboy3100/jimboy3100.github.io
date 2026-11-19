@@ -1065,6 +1065,9 @@ function copyToClipboard(element) {
     $("body").append($temp);
     var html = $(element).html();
     html = html.replace(/<br>/g, "\n"); // or \r\n
+    var _lmDecode = document.createElement("textarea");
+    _lmDecode.innerHTML = html;
+    html = _lmDecode.value;
     console.log(html);
     $temp.val(html).select();
     document.execCommand("copy");
