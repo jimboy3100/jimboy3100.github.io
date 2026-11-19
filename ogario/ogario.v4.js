@@ -24340,8 +24340,15 @@ function thelegendmodproject() {
                     sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
                     sCtx.clip();
                     try {
-                        if (this.customSkinsCache[e]) {
-                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        var img2 = this.customSkinsCache[e];
+                        if (img2) {
+                            /* 2-frame sheets (width >= 1.5 x height, as in processOnLoad): first frame only */
+                            var w2 = img2.width || depth, h2 = img2.height || depth;
+                            if (w2 >= 1.5 * h2) {
+                                sCtx.drawImage(img2, 0, 0, w2 / 2, h2, 0, 0, depth, depth);
+                            } else {
+                                sCtx.drawImage(img2, 0, 0, depth, depth);
+                            }
                         }
                     } catch (error) { }
                     try {
