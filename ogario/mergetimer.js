@@ -1,10 +1,18 @@
-// Time Merger v3.1 — persistent edge-triggered deadline state machine
+// Time Merger v3.2 — split detection from player-cell ids, re-armed on every split
 window.ExternalScripts = true;
 
 (function () {
     "use strict";
 
     var intervalId = null;
+    /*
+     * Polled every 100 ms. Previously the split edge was looked for in a
+     * 10-frame historyMass window once per second, so most splits were missed,
+     * new pieces (fresh ids) never got a timer and a re-split was ignored.
+     */
+    var TICK_MS = 100;
+    var prevMass = {};   // id -> mass at the previous tick
+    var prevCount = 0;
 
     function clearCellMergeState(cellData) {
         if (!cellData) {
@@ -17,67 +25,20 @@ window.ExternalScripts = true;
         cellData._mergeTriggerActive = false;
     }
 
+    function armCellMergeTimer(cellData, mass, now) {
+        var mergeDurationSec =
+            29 + (8 / 300) * mass;
+
+        cellData._mergeDeadline =
+            now + mergeDurationSec * 1000;
+
+        cellData._mergeState = "counting";
+    }
+
     function updateCellMergeTimer(cellData, now) {
-        if (!cellData ||
-            !cellData.historyMass ||
-            !cellData.historyMass.length) {
+        if (!cellData) {
             return;
         }
-
-        var fpsIndex =
-            window.legendmod2 &&
-            Number.isFinite(window.legendmod2.fps)
-                ? window.legendmod2.fps
-                : 0;
-
-        if (fpsIndex < 0) {
-            fpsIndex = 0;
-        }
-
-        if (fpsIndex >= cellData.historyMass.length) {
-            fpsIndex = cellData.historyMass.length - 1;
-        }
-
-        var baseMass = Number(cellData.historyMass[0]);
-        var currentMass = Number(cellData.historyMass[fpsIndex]);
-
-        if (!Number.isFinite(baseMass) ||
-            baseMass <= 0 ||
-            !Number.isFinite(currentMass) ||
-            currentMass < 0) {
-            clearCellMergeState(cellData);
-            return;
-        }
-
-        if (!cellData._mergeState) {
-            cellData._mergeState = "idle";
-        }
-
-        var triggerActive =
-            currentMass > baseMass * 1.4;
-
-        /*
-         * Create a deadline only on a rising edge:
-         * false -> true.
-         *
-         * Once counting has started, temporary mass/history fluctuations must
-         * not erase the deadline.
-         */
-        if (triggerActive &&
-            !cellData._mergeTriggerActive &&
-            cellData._mergeState === "idle") {
-
-            var mergeDurationSec =
-                29 + (8 / 300) * baseMass;
-
-            cellData._mergeDeadline =
-                now + mergeDurationSec * 1000;
-
-            cellData._mergeState = "counting";
-        }
-
-        cellData._mergeTriggerActive =
-            triggerActive;
 
         if (cellData._mergeState === "counting" &&
             Number.isFinite(cellData._mergeDeadline)) {
@@ -85,36 +46,13 @@ window.ExternalScripts = true;
             var remainingMs =
                 cellData._mergeDeadline - now;
 
-            var remainingSec =
-                Math.max(
-                    0,
-                    Math.ceil(remainingMs / 1000)
-                );
+            if (remainingMs <= 0) {
+                clearCellMergeState(cellData);
+                return;
+            }
 
             cellData.mergeTime =
-                remainingSec;
-
-            if (remainingMs <= 0) {
-                cellData.mergeTime = null;
-                cellData._mergeState = "completed";
-            }
-
-            return;
-        }
-
-        if (cellData._mergeState === "completed") {
-            cellData.mergeTime = null;
-
-            /*
-             * Rearm only after the triggering condition returns to false.
-             * A future false -> true transition may then represent a new
-             * merge event.
-             */
-            if (!triggerActive) {
-                cellData._mergeState = "idle";
-                cellData._mergeDeadline = null;
-            }
-
+                Math.ceil(remainingMs / 1000);
             return;
         }
 
@@ -125,7 +63,8 @@ window.ExternalScripts = true;
         if (!window.ExternalScripts ||
             !window.legendmod ||
             !window.legendmod5 ||
-            window.legendmod5.optimizedMass) {
+            window.legendmod5.optimizedMass ||
+            !window.playerCellsId) {
             return;
         }
 
@@ -134,10 +73,14 @@ window.ExternalScripts = true;
             window.legendmod.playerCells || [];
 
         var playerCellsId =
-            window.playerCellsId || {};
+            window.playerCellsId;
+
+        var count = playerCells.length;
+        var grew = prevCount > 0 && count > prevCount;
+        var nextMass = {};
 
         for (var i = 0;
-            i < playerCells.length;
+            i < count;
             i++) {
 
             var cell = playerCells[i];
@@ -148,11 +91,33 @@ window.ExternalScripts = true;
                 continue;
             }
 
+            var mass = Number(cell.mass);
+            if (!Number.isFinite(mass) || mass <= 0) {
+                continue;
+            }
+            nextMass[cell.id] = mass;
+
             var cellData =
                 playerCellsId[cell.id];
 
             if (!cellData) {
+                cellData = playerCellsId[cell.id] = { historyMass: [mass] };
+            }
+
+            if (count <= 1) {
+                // back to one cell: nothing left to merge
+                clearCellMergeState(cellData);
                 continue;
+            }
+
+            var lastMass = prevMass[cell.id];
+            var isNewPiece = grew && lastMass === undefined;
+            var lostMass = lastMass !== undefined && lastMass > mass * 1.4;
+
+            // a split (or virus pop) arms both the new pieces and the piece
+            // that lost mass, also while it is already counting
+            if (isNewPiece || (grew && lostMass)) {
+                armCellMergeTimer(cellData, mass, now);
             }
 
             updateCellMergeTimer(
@@ -160,6 +125,9 @@ window.ExternalScripts = true;
                 now
             );
         }
+
+        prevMass = nextMass;
+        prevCount = count;
     }
 
     function start() {
@@ -168,7 +136,7 @@ window.ExternalScripts = true;
         }
 
         intervalId =
-            setInterval(CellTimer, 1000);
+            setInterval(CellTimer, TICK_MS);
     }
 
     function stop() {
