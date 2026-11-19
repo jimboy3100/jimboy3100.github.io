@@ -1271,7 +1271,7 @@ class Spect {
         if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][0]) {
             res = legendmod.mapMaxX - (res - legendmod.mapMinX);
         }
-        return ((res + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x);
+        return ((res + legendmod.mapOffsetX - this.fix3x) * this.fixX - this.mapOffsetX); /* exact inverse of getX */
     }
 
     convertY(y) {
@@ -1279,7 +1279,7 @@ class Spect {
         if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][1]) {
             res = legendmod.mapMaxY - (res - legendmod.mapMinY);
         }
-        return ((res + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y);
+        return ((res + legendmod.mapOffsetY - this.fix3y) * this.fixY - this.mapOffsetY); /* exact inverse of getY */
     }
 
     calibrateWithFood(spectCell, isFood) {
