@@ -489,14 +489,18 @@ class Spect {
 
             if (legendmod.pause) {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
-            } else if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
+            } else if (window.multiboxPlayerEnabled === this.number || this.isFreeSpectate || window.multiboxFollowMouse) {
+                /* Only the controlled unit follows the cursor (any truthy value moved every unit). */
                 this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
 
                 /* Keep-moving offset in server space (playerX/Y are client space). */
                 this.distX = this.convertX(legendmod.cursorX) - this.convertX(this.playerX)
                 this.distY = this.convertY(legendmod.cursorY) - this.convertY(this.playerY)
-            } else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
-                if (defaultmapsettings.multiKeepMoving) {
+            } else {
+                /* "Freeze inactive multibox unit": hold it at its own centre. */
+                if (defaultmapsettings.mbFreeze && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+                    this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
+                } else if (defaultmapsettings.multiKeepMoving) {
                     this.sendPosition(this.convertX(this.playerX) + this.distX, this.convertY(this.playerY) + this.distY);
                 }
             }
@@ -1136,7 +1140,8 @@ class Spect {
                     var _lm102 = window.decodeMobileData(new Uint8Array(view.buffer, view.byteOffset + 1, view.byteLength - 1));
                     if (_lm102 && _lm102.uncompressedData) _lm102Type = _lm102.uncompressedData.type;
                 } catch (e102) { }
-                if (_lm102Type !== 31 &&
+                /* Spectator sockets never spawn. */
+                if (this.player && _lm102Type !== 31 &&
                     (!this._lmHasSpawned || defaultmapsettings.mbAutoRespawn !== false) &&
                     Date.now() - (this._lmLastSpawnReq || 0) > 2000) {
                     this._lmLastSpawnReq = Date.now();
@@ -1552,7 +1557,13 @@ class Spect {
 
     respawn() {
         if (!this.player) return;
+        /* The player switched to this dead unit: keep the focus on it until it
+         * spawns (beforecalculation used to hand it back on the next packet). */
+        this._lmWantFocusAt = Date.now();
         if (this.isSocketOpen()) {
+            /* Repeated Tab presses must not start a captcha + spawn each. */
+            if (Date.now() - (this._lmLastSpawnReq || 0) <= 2000) return;
+            this._lmLastSpawnReq = Date.now();
             this.handleSendNick();
         } else {
             this.connect();
@@ -1841,6 +1852,7 @@ class Spect {
                         if (!this.active) {
                             console.log('[SPECT] Player cell is active (unit ' + this.number + ')')
                             this.active = true
+                            this._lmWantFocusAt = 0
                             this.sendCursor()
                             loadMultiCellSkin(this)
 
@@ -1925,7 +1937,8 @@ class Spect {
                 window.multiboxPlayerEnabled = this.number
             }
             this.calculatePlayerMassAndPosition(ownCells);
-        } else if (window.multiboxPlayerEnabled === this.number) {
+        } else if (window.multiboxPlayerEnabled === this.number &&
+            !(this._lmWantFocusAt && Date.now() - this._lmWantFocusAt < 25000)) {
             window.multiboxPlayerEnabled = null;
             for (let i = 0; i < spects.length; i++) {
                 if (spects[i] && spects[i] !== this && spects[i].active) {

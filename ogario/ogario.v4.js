@@ -20403,7 +20403,13 @@ function thelegendmodproject() {
             }
 
             var totalUnits = 1 + spects.length;
-            var currentIdx = (!window.multiboxPlayerEnabled) ? 0 : window.multiboxPlayerEnabled;
+            /* Same as multiboxchange: find the position of the current unit NUMBER. */
+            var currentIdx = 0;
+            if (window.multiboxPlayerEnabled) {
+                for (var _sj = 0; _sj < spects.length; _sj++) {
+                    if (spects[_sj] && spects[_sj].number === window.multiboxPlayerEnabled) { currentIdx = _sj + 1; break; }
+                }
+            }
             var prevIdx = (currentIdx - 1 + totalUnits) % totalUnits;
 
             if (prevIdx === 0) {
@@ -20412,8 +20418,8 @@ function thelegendmodproject() {
                     play();
                 }
             } else {
-                window.multiboxPlayerEnabled = prevIdx;
                 var spectIdx2 = prevIdx - 1;
+                window.multiboxPlayerEnabled = (spects[spectIdx2] && spects[spectIdx2].number) || prevIdx;
                 if (spects[spectIdx2]) {
                     if (!spects[spectIdx2].active) {
                         spects[spectIdx2].respawn();
@@ -23062,8 +23068,14 @@ function thelegendmodproject() {
             var _lmIsLegend = legendmod.serverType === "expandingland" || !!legendmod.isLegendWorld || (this.ws && (this.ws.includes("legendmod.ml") || this.ws.includes("expanding.land")));
             if (!legendmod.play && (_lmIsLegend || legendmod._isWorldSpectating)) {
                 legendmod._spawnTransitGate = true;
-                legendmod.cells = [];
-                legendmod.indexedCells = {};
+                /* Keep the multibox/spectator units' cells (spectator > 0): their sockets are not
+                 * respawning, and wiping them made a living unit look dead (playerCellsMulti stale). */
+                legendmod.cells = legendmod.cells.filter(function (c) { return c && c.spectator > 0; });
+                var _lmKeptCells = {};
+                for (var _lmK in legendmod.indexedCells) {
+                    if (legendmod.indexedCells[_lmK] && legendmod.indexedCells[_lmK].spectator > 0) _lmKeptCells[_lmK] = legendmod.indexedCells[_lmK];
+                }
+                legendmod.indexedCells = _lmKeptCells;
                 legendmod.removedCells = [];
                 legendmod.food = [];
                 legendmod.viruses = [];
@@ -23330,8 +23342,9 @@ function thelegendmodproject() {
             if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
                 for (var _i = 0; _i < spects.length; _i++) {
                     if (spects[_i] && spects[_i].active) {
-                        window.multiboxPlayerEnabled = _i + 1;
-                        console.log('[MB] Main player died, auto-switched to spect ' + (_i + 1));
+                        /* multiboxPlayerEnabled is the unit number, not index + 1 (units can be spliced) */
+                        window.multiboxPlayerEnabled = spects[_i].number || (_i + 1);
+                        console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
                         legendmod.playerCells = [];
@@ -36562,7 +36575,8 @@ function thelegendmodproject() {
                     /* Server-space view centre (viewXTrue is client space; mirrored maps differ). */
                     var _viewServerX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue;
                     var _viewServerY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue;
-                    if (defaultmapsettings.multiKeepMoving && Number.isFinite(this.distX) && Number.isFinite(this.distY)) {
+                    /* "Freeze inactive multibox unit" also holds the inactive main player. */
+                    if (defaultmapsettings.multiKeepMoving && !defaultmapsettings.mbFreeze && Number.isFinite(this.distX) && Number.isFinite(this.distY)) {
                         //cursorX = this.playerX + this.distX;
                         //cursorY = this.playerY + this.distY;
                         cursorX = _viewServerX + this.distX;
@@ -37402,13 +37416,17 @@ function thelegendmodproject() {
                      * next opcode-16 (force_full_diff from server) populates
                      * a clean world with proper color/skin/name ADDs. */
                     if (this._spawnTransitGate) {
-                        this.cells = [];
-                        this.indexedCells = {};
+                        /* Multibox/spectator unit cells (spectator > 0) belong to other sockets: keep them. */
+                        this.cells = this.cells.filter(function (c) { return c && c.spectator > 0; });
+                        var _lmKept32 = {};
+                        for (var _lmK32 in this.indexedCells) {
+                            if (this.indexedCells[_lmK32] && this.indexedCells[_lmK32].spectator > 0) _lmKept32[_lmK32] = this.indexedCells[_lmK32];
+                        }
+                        this.indexedCells = _lmKept32;
                         this.removedCells = [];
                         this.food = [];
                         this.viruses = [];
                         this.playerCells = [];
-                        this.playerCellsMulti = [];
                         if (this._cellsDirty !== undefined) this._cellsDirty = true;
                         this._spawnTransitGate = false;
                         if (this._spawnGateTimer) {
@@ -67216,8 +67234,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     for (var sI = 0; sI < neededSpects; sI++) {
                         var sp = spects[sI];
                         if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
-                            sumX += sp.playerX + (sp.fix3x || 0);
-                            sumY += sp.playerY + (sp.fix3y || 0);
+                            /* playerX/Y are already client space incl. fix3 (spect getX). */
+                            sumX += sp.playerX;
+                            sumY += sp.playerY;
                             count++;
                         }
                     }
@@ -67229,8 +67248,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && getActiveSpect(window.multiboxPlayerEnabled)) {
                 var spect = getActiveSpect(window.multiboxPlayerEnabled);
                 if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
-                    targetCamX = spect.playerX + (spect.fix3x || 0);
-                    targetCamY = spect.playerY + (spect.fix3y || 0);
+                    targetCamX = spect.playerX;
+                    targetCamY = spect.playerY;
                 }
             }
 
@@ -70365,8 +70384,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 for (var sI = 0; sI < neededSpects; sI++) {
                     var sp = spects[sI];
                     if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
-                        var spX = sp.playerX + (sp.fix3x || 0);
-                        var spY = sp.playerY + (sp.fix3y || 0);
+                        var spX = sp.playerX;
+                        var spY = sp.playerY;
                         var spMinX = spX - halfW;
                         var spMinY = spY - halfH;
                         var spMaxX = spX + halfW;
