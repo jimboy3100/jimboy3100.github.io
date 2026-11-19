@@ -406,6 +406,7 @@ function parseServer(raw) {
 
 // --- Auto-refresh via HTTP ---
 async function fetchStats() {
+    if (!monitorKey()) return;
     try {
         const resp = await apiFetch(API_URL);
         const data = await resp.json();
@@ -613,8 +614,12 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s; re
 function ccOf(v) { v = String(v || 'un').toLowerCase(); return /^[a-z]{2}$/.test(v) ? v : 'un'; }
 
 // --- Init ---
+/* Logging in again after a 401 must not start a second timer and WebSocket. */
+let appStarted = false;
 function startApp() {
     fetchStats();
+    if (appStarted) return;
+    appStarted = true;
     connectWS();
     setInterval(fetchStats, 5000);
 }
