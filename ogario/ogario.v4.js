@@ -22400,6 +22400,8 @@ function thelegendmodproject() {
         setMainButtons() {
             var app = this;
             $(document).on("click", ".btn-play", function () {
+                /* Toast buttons reuse these classes for styling; they are not the menu buttons. */
+                if ($(this).closest('#toast-container, .toast').length) return;
                 var _lmConn = window.legendmod || {}; var isLegend = _lmConn.serverType === "expandingland" || !!_lmConn.isLegendWorld || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
                 /* app.play is the play() method; the alive flag lives on legendmod.play */
                 if (isLegend && _lmConn.play === true) {
@@ -22409,6 +22411,8 @@ function thelegendmodproject() {
                 app.onPlay();
             });
             $(document).on("click", ".btn-play-guest", function () {
+                /* Toast buttons reuse these classes for styling; they are not the menu buttons. */
+                if ($(this).closest('#toast-container, .toast').length) return;
                 var _lmConn = window.legendmod || {}; var isLegend = _lmConn.serverType === "expandingland" || !!_lmConn.isLegendWorld || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
                 /* app.play is the play() method; the alive flag lives on legendmod.play */
                 if (isLegend && _lmConn.play === true) {
@@ -22544,6 +22548,8 @@ function thelegendmodproject() {
                 }
             });
             $(document).on("click", ".btn-spectate", function () {
+                /* Toast buttons reuse these classes for styling; they are not the menu buttons. */
+                if ($(this).closest('#toast-container, .toast').length) return;
                 app.onSpectate();
             });
             $(document).on("click", "#create-party-btn-2", function () {
