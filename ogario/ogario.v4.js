@@ -16350,6 +16350,7 @@ var displayText = {
         'hk-quickResp': 'Quick respawn',
         'hk-autoResp': 'Toggle auto respawn',
         'hk-quitGame': 'Quit game (Expanding Land)',
+        'hk-wave': 'Send wave to teammates (Delta compatible)',
         'hk-switchServerMode': 'Switch server [public/private]',
         'hk-showTargeting': 'Show/hide targeting panel',
         'hk-voiceChat': 'Voice to text',
@@ -26393,9 +26394,32 @@ function thelegendmodproject() {
             var type = view.getUint8(offset++);
             var wx = view.getInt32(offset, true); offset += 4;
             var wy = view.getInt32(offset, true); offset += 4;
-            if (window.LM && LM.addWave) {
-                LM.addWave(wx, wy, '#ffffff');
-            }
+            /* Delta's wave (opcode 45). The coordinates are team coordinates (world +
+             * map offset, like opcode 30). window.LM is only a UI stub and had no
+             * addWave, so received waves were never drawn. Our own echo is skipped:
+             * sendTeamWave already drew it. */
+            var lm = window.legendmod;
+            if (!lm || !lm.sendWaves || !Array.isArray(lm.Waves)) return;
+            if (this.playerID && playerID === (this.playerID & 0xFFFF)) return;
+            var color = '#00e6ff';
+            var idx = this.checkPlayerID(playerID);
+            if (idx !== null && this.teamPlayers[idx] && this.teamPlayers[idx].color) color = this.teamPlayers[idx].color;
+            if (lm.Waves.length > 30) lm.Waves.splice(0, lm.Waves.length - 30);
+            lm.sendWaves(wx - (ogario.mapOffsetX || 0), wy - (ogario.mapOffsetY || 0), color, 1000, 'wave:' + playerID, false);
+        },
+        /* hk-wave: show a wave at the cursor and send it to teammates (Legend Mod and Delta) */
+        sendTeamWave() {
+            var lm = window.legendmod;
+            if (!lm || !lm.sendWaves || !Array.isArray(lm.Waves)) return;
+            var now = Date.now();
+            if (this._lmLastWave && now - this._lmLastWave < 300) return;
+            this._lmLastWave = now;
+            var x = lm.cursorX, y = lm.cursorY;
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+            lm.sendWaves(x, y, defaultSettings.splitRangeColor || '#00e6ff', 1000, 'wave:self', false);
+            try {
+                this.sendWavePing(x + (ogario.mapOffsetX || 0), y + (ogario.mapOffsetY || 0), 4);
+            } catch (e) { }
         },
         sendWavePing(wx, wy, type) {
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
@@ -26408,7 +26432,7 @@ function thelegendmodproject() {
                 view.setUint8(5, type || 0);
                 view.setInt32(6, Math.round(wx), true);
                 view.setInt32(10, Math.round(wy), true);
-                ws.send(buffer);
+                try { ws.send(buffer); } catch (e) { }
             }
         },
         //Sonia4

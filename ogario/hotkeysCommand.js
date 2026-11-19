@@ -468,6 +468,15 @@
                 keyUp: null,
                 type: 'normal'
             },
+            'hk-wave': {
+                label: textLanguage['hk-wave'] || 'Send wave to teammates (Delta compatible)',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendTeamWave && application.sendTeamWave();
+                },
+                keyUp: null,
+                type: 'normal'
+            },
             'hk-zoom1': {
                 label: textLanguage['hk-zoomLevel'] + ' 1',
                 defaultKey: 'ALT+1',
