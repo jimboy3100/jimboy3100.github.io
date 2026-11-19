@@ -30360,6 +30360,114 @@ function thelegendmodproject() {
      *     (moveCell), removal (removeCell), rendering (draw), and jelly physics.
      * ═══════════════════════════════════════════════════════════════════════════ */
     function ogarbasicassembly(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
+        /*
+         * Jelly physics state.
+         *
+         * The point objects are kept directly on each cell, matching the
+         * Delta-style CPU perimeter simulation.
+         */
+        this.points = [];
+        this.pointsVel = [];
+        this.maxPointRad = 0;
+
+
+        this.oldAlpha = 0;
+        this.id = id;
+        this.x = e;
+        this.y = s;
+        this.targetX = e;
+        this.targetY = s;
+        this.color = color;
+        this.oppColor = null;
+        this.size = size;
+        this.targetSize = size;
+        this.alpha = 1;
+        this.nick = '';
+        this.targetNick = '';
+        this.nickCanvas = null;
+        this.mass = 0;
+        this.lastMass = 0;
+        //			this.historyMass = [];
+        //			this.historyX = [];
+        //			this.historyY = [];
+        this.kMass = 0;
+        this.massCanvas = null;
+        this.mergeCanvas = null;
+        this.chatCanvas = null;
+        this.massTxt = '';
+        this.margin = 0;
+        this.scale = 1;
+        this.nickScale = 1;
+        this.massScale = 1;
+        this.virMassScale = 3;
+        this.strokeScale = 1;
+        this.fontSize = 26;
+        this.nickSize = 26;
+        this.lastNickSize = 0;
+        this.massSize = 26;
+        this.virMassSize = 26;
+        this.nickStrokeSize = 3;
+        this.massStrokeSize = 3;
+        this.isFood = isFood;
+        this.isVirus = isVirus;
+        this.isPlayerCell = isPlayer;
+
+        this.shortMass = shortMass;
+        this.virMassShots = virusMassShots;
+
+        this.rescale = false;
+
+        this.redrawNick = true;
+        this.redrawMass = true;
+        this.redrawMerge = true;
+        this.redrawChat = true;
+
+        this.optimizedNames = false;
+        this.optimizedMass = false;
+
+        this.strokeNick = false;
+        this.strokeMass = false;
+
+        this.removed = false;
+        this.redrawed = 0;
+
+        this.time = 0;
+
+        this.skin = null;
+
+        this.pi2 = 2 * Math.PI;
+
+        this.virusColor = null;
+        this.virusStroke = null;
+
+        /*
+         * ============================================================
+         * CINEMATIC TRANSIENT STATE — INITIAL CELL INSTANCE
+         * ============================================================
+         */
+        this._deathSlowMo =
+            false;
+
+        this._eatPulseTime =
+            0;
+
+        this._webglRendered =
+            false;
+
+        this._pixiBodyRendered =
+            false;
+
+        this._skipCanvasSkin =
+            false;
+
+        this._pixiSkinId =
+            0;
+        //this.nHeight = 6;
+    }
+    /* Methods live on the prototype (they only use `this`), so creating a
+     * cell no longer allocates ~26 closures. Inside this block `this` is
+     * ogarbasicassembly.prototype. */
+    (function () {
         this.reset = function (id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
             this.id = id;
 
@@ -30471,109 +30579,6 @@ function thelegendmodproject() {
             return this;
         };
 
-        /*
-         * Jelly physics state.
-         *
-         * The point objects are kept directly on each cell, matching the
-         * Delta-style CPU perimeter simulation.
-         */
-        this.points = [];
-        this.pointsVel = [];
-        this.maxPointRad = 0;
-
-
-        this.oldAlpha = 0;
-        this.id = id;
-        this.x = e;
-        this.y = s;
-        this.targetX = e;
-        this.targetY = s;
-        this.color = color;
-        this.oppColor = null;
-        this.size = size;
-        this.targetSize = size;
-        this.alpha = 1;
-        this.nick = '';
-        this.targetNick = '';
-        this.nickCanvas = null;
-        this.mass = 0;
-        this.lastMass = 0;
-        //			this.historyMass = [];
-        //			this.historyX = [];
-        //			this.historyY = [];
-        this.kMass = 0;
-        this.massCanvas = null;
-        this.mergeCanvas = null;
-        this.chatCanvas = null;
-        this.massTxt = '';
-        this.margin = 0;
-        this.scale = 1;
-        this.nickScale = 1;
-        this.massScale = 1;
-        this.virMassScale = 3;
-        this.strokeScale = 1;
-        this.fontSize = 26;
-        this.nickSize = 26;
-        this.lastNickSize = 0;
-        this.massSize = 26;
-        this.virMassSize = 26;
-        this.nickStrokeSize = 3;
-        this.massStrokeSize = 3;
-        this.isFood = isFood;
-        this.isVirus = isVirus;
-        this.isPlayerCell = isPlayer;
-
-        this.shortMass = shortMass;
-        this.virMassShots = virusMassShots;
-
-        this.rescale = false;
-
-        this.redrawNick = true;
-        this.redrawMass = true;
-        this.redrawMerge = true;
-        this.redrawChat = true;
-
-        this.optimizedNames = false;
-        this.optimizedMass = false;
-
-        this.strokeNick = false;
-        this.strokeMass = false;
-
-        this.removed = false;
-        this.redrawed = 0;
-
-        this.time = 0;
-
-        this.skin = null;
-
-        this.pi2 = 2 * Math.PI;
-
-        this.virusColor = null;
-        this.virusStroke = null;
-
-        /*
-         * ============================================================
-         * CINEMATIC TRANSIENT STATE — INITIAL CELL INSTANCE
-         * ============================================================
-         */
-        this._deathSlowMo =
-            false;
-
-        this._eatPulseTime =
-            0;
-
-        this._webglRendered =
-            false;
-
-        this._pixiBodyRendered =
-            false;
-
-        this._skipCanvasSkin =
-            false;
-
-        this._pixiSkinId =
-            0;
-        //this.nHeight = 6;
 
 
         /*
@@ -33403,7 +33408,7 @@ function thelegendmodproject() {
                     style.restore();
                 }
             }
-    }
+    }).call(ogarbasicassembly.prototype);
     window.legendmod1 = ogarbasicassembly;
 
 
