@@ -307,7 +307,7 @@
             <h2 style="font-size:18px; margin-bottom:4px; color:#1a1a2e;">Legend <span style="color:#e94560">Mod</span> Monitor</h2>
             <p style="color:#999; font-size:12px; margin-bottom:20px;">Enter credentials to access</p>
             <input id="login-user" type="text" placeholder="Username" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:8px; font-family:inherit; outline:none;">
-            <input id="login-pass" type="password" placeholder="Password" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:16px; font-family:inherit; outline:none;">
+            <input id="login-pass" type="password" placeholder="Monitor key" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:16px; font-family:inherit; outline:none;">
             <button id="login-btn" style="width:100%; padding:10px; background:#e94560; color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">Sign In</button>
             <p id="login-error" style="color:#d63031; font-size:12px; margin-top:10px; display:none;">Invalid credentials</p>
         </div>
@@ -325,12 +325,28 @@ const PAGE_SIZE = 50;
 let currentPage = 0;
 
 // --- Login Gate ---
-const AUTH_KEY = 'lm_monitor_auth';
-const VALID_USER = 'Jan';
-const VALID_PASS = 'Jan';
+const AUTH_KEY = 'lm_monitor_key';
+/* The server checks this key on /stats and /history (they carry names, agar.io IDs
+ * and IP history). The old browser-only login let anyone read them. */
+function monitorKey() { try { return localStorage.getItem(AUTH_KEY) || ''; } catch (e) { return ''; } }
+function showLogin() {
+    document.getElementById('login-overlay').style.display = 'flex';
+    document.getElementById('main-content').style.display = 'none';
+}
+function apiFetch(url) {
+    return fetch(url, { headers: { 'x-monitor-key': monitorKey() } }).then(function (r) {
+        if (r.status === 401) {
+            try { localStorage.removeItem(AUTH_KEY); } catch (e) {}
+            showLogin();
+            throw new Error('unauthorized');
+        }
+        return r;
+    });
+}
+try { localStorage.removeItem('lm_monitor_auth'); } catch (e) {}
 
 function checkAuth() {
-    if (localStorage.getItem(AUTH_KEY) === '1') {
+    if (monitorKey()) {
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('main-content').style.display = '';
         return true;
@@ -345,17 +361,18 @@ document.getElementById('login-pass').addEventListener('keydown', function(e) { 
 document.getElementById('login-user').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('login-pass').focus(); });
 
 function doLogin() {
-    const u = document.getElementById('login-user').value;
-    const p = document.getElementById('login-pass').value;
-    if (u === VALID_USER && p === VALID_PASS) {
-        localStorage.setItem(AUTH_KEY, '1');
+    const p = document.getElementById('login-pass').value.trim();
+    fetch(API_URL, { headers: { 'x-monitor-key': p } }).then(function (r) {
+        if (!r.ok) throw new Error('bad key');
+        try { localStorage.setItem(AUTH_KEY, p); } catch (e) {}
+        document.getElementById('login-error').style.display = 'none';
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('main-content').style.display = '';
         startApp();
-    } else {
+    }).catch(function () {
         document.getElementById('login-error').style.display = 'block';
         document.getElementById('login-pass').value = '';
-    }
+    });
 }
 
 // --- Parse agar.io server string ---
@@ -390,7 +407,7 @@ function parseServer(raw) {
 // --- Auto-refresh via HTTP ---
 async function fetchStats() {
     try {
-        const resp = await fetch(API_URL);
+        const resp = await apiFetch(API_URL);
         const data = await resp.json();
         players = data.players || [];
         updateUI();
@@ -421,9 +438,7 @@ function connectWS() {
         try {
             const msg = JSON.parse(evt.data);
             if (msg.type === 'players_list') {
-                players = msg.data || [];
-                updateUI();
-                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                fetchStats();
             } else if (msg.type === 'ping') {
                 ws.send(JSON.stringify({ type: 'pong' }));
                 ws.send(JSON.stringify({ type: 'search', data: '' }));
