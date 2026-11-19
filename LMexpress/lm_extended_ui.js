@@ -10109,10 +10109,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             document.head.appendChild(style);
         }
 
-        /* Auto-close after 8 seconds */
+        /* Auto-close after 8 seconds (only this modal, not a newer reward) */
         setTimeout(function () {
-            var m = document.getElementById('lm-potion-reward-modal');
-            if (m) m.remove();
+            if (modal.parentNode) modal.remove();
         }, 8000);
     });
 
