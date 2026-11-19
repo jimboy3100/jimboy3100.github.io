@@ -38048,7 +38048,13 @@ function thelegendmodproject() {
                         /* [Expanding Land] Connected (silent) */
                         /* State-based login: trigger AFTER beacon confirms server is ready.
                          * This replaces the old 200ms blind timeout in onOpen(). */
-                        if (window.master && window.master.login) {
+                        /* Discord never sets master.context, so master.login() sends nothing for it;
+                         * the server keeps no login across sockets, so re-send it here. */
+                        if (window._lwAuth && window._lwAuth.provider === 'discord' &&
+                            (window._lwAuth.state === 'logged_in' || window._lwAuth.state === 'waiting_server') &&
+                            typeof window.gplusRelogin === 'function') {
+                            window.gplusRelogin();
+                        } else if (window.master && window.master.login) {
                             //console.log('[LW Auth] Triggering master.login() after LW beacon');
                             window.master.login();
                         }
