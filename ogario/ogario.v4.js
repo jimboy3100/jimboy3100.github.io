@@ -61126,7 +61126,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
             var cached = this.glTextCache.get(cacheKey);
             var now = Date.now();
-            if (cached) { cached.lastUsed = now; return cached; }
+            if (cached) {
+                cached.lastUsed = now;
+                /* Map keeps insertion order: re-insert on hit so the first
+                 * key is always the least recently used (O(1) eviction). */
+                this.glTextCache.delete(cacheKey);
+                this.glTextCache.set(cacheKey, cached);
+                return cached;
+            }
 
             var tc = this._textCanvas;
             var tctx = this._textCtx;
@@ -61185,11 +61192,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             /* Evict oldest entries until cache is back within limits */
             while (this.glTextCache.size > this.glTextCacheMaxSize) {
-                var oldest = null, oldestKey = null;
-                this.glTextCache.forEach(function (v, k) {
-                    if (!oldest || v.lastUsed < oldest.lastUsed) { oldest = v; oldestKey = k; }
-                });
-                if (oldestKey) {
+                var oldestKey = this.glTextCache.keys().next().value;
+                var oldest = oldestKey !== undefined ? this.glTextCache.get(oldestKey) : null;
+                if (oldest && oldestKey !== cacheKey) {
                     gl.deleteTexture(oldest.tex);
                     this.glTextCache.delete(oldestKey);
                 } else break;
