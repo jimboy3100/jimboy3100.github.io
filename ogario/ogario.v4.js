@@ -39110,7 +39110,10 @@ function thelegendmodproject() {
                          * Result zero may be a legitimate protocol value,
                          * but an absent result is not a successful purchase.
                          */
+                        /* protobufjs puts the proto3 default (0) on the prototype,
+                         * so only an own property is a real result. */
                         var hasSoftPurchaseResult =
+                            Object.prototype.hasOwnProperty.call(sp, 'result') &&
                             sp.result !==
                                 undefined &&
                             sp.result !==
@@ -39186,8 +39189,9 @@ function thelegendmodproject() {
                             );
                         }
 
+                        /* Official enum: success = 1, insufficient_funds = 2,
+                         * preconditions_failed = 3; 0 is not a valid value. */
                         var purchaseSucceeded =
-                            spResult === 0 ||
                             spResult === 1;
 
                         if (
@@ -39334,7 +39338,7 @@ function thelegendmodproject() {
                         var iap = r.uncompressedData.inappPurchaseResponseField;
                         if (iap) {
                             console.log("[LM] IAP Response — result: " + iap.result + ", txn: " + iap.transactionId);
-                            if (iap.result === 1 || iap.result === 0) {
+                            if (iap.result === 1) { // 0 = field absent, not success
                                 toastr.success('<b>[SERVER]:</b> In-app purchase confirmed! &#x2714;');
                                 if (iap.productUpdates && iap.productUpdates.length) {
                                     this.updateProducts(iap.productUpdates);
@@ -39386,7 +39390,7 @@ function thelegendmodproject() {
                         if (ob) {
                             var obResult = ob.result || 0;
                             console.log("[LM] Offer Bundle Response — result: " + obResult);
-                            if (obResult === 1 || obResult === 0) {
+                            if (obResult === 1) { // 0 = field absent, not success
                                 toastr.success('<b>[SERVER]:</b> Bundle purchased successfully! &#x2714;');
                                 if (ob.productUpdates && ob.productUpdates.length) {
                                     this.updateProducts(ob.productUpdates);
