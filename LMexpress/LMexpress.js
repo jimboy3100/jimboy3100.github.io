@@ -3549,7 +3549,8 @@ function universalchat() {
 
 
     $('#message').keydown(function (e) {
-        if (e.keyCode == 13) { // If Enter key pressed
+        /* Alt+Enter / Ctrl+Alt+Enter already went to Agar Tool through the hotkey handler above: do not send it twice */
+        if (e.keyCode == 13 && !e.altKey && !e.ctrlKey) { // If Enter key pressed
             $('#ao2t-message').click();
         }
     });

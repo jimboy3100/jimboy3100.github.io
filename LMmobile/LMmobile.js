@@ -474,7 +474,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false };
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
@@ -483,6 +483,7 @@
                 if (saved.btnScale !== undefined) prefs.btnScale = saved.btnScale;
                 if (saved.hudFade !== undefined) prefs.hudFade = saved.hudFade;
                 if (saved.targetMode !== undefined) prefs.targetMode = saved.targetMode;
+                if (saved.swipeSplit !== undefined) prefs.swipeSplit = !!saved.swipeSplit;
             }
         } catch (e) { }
         function savePrefs() {
@@ -535,7 +536,8 @@
             '<label>Btn Size <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
             '<label>HUD Fade <span id="lm-hf-v">' + Math.round(prefs.hudFade * 100) + '%</span></label>' +
-            '<input type="range" id="lm-hf" min="20" max="100" step="5" value="' + Math.round(prefs.hudFade * 100) + '">';
+            '<input type="range" id="lm-hf" min="20" max="100" step="5" value="' + Math.round(prefs.hudFade * 100) + '">' +
+            '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>';
         drawer.appendChild(sp);
 
         function applyPrefs() {
@@ -569,6 +571,10 @@
         sp.querySelector('#lm-hf').addEventListener('input', function () {
             prefs.hudFade = parseInt(this.value) / 100;
             sp.querySelector('#lm-hf-v').textContent = this.value + '%';
+            savePrefs();
+        });
+        sp.querySelector('#lm-sw').addEventListener('change', function () {
+            prefs.swipeSplit = this.checked;
             savePrefs();
         });
 
@@ -800,13 +806,17 @@
          *  SWIPE GESTURES (left half of canvas)
          *  swipe right → split | swipe up → double split
          * ═══════════════════════════════════════════════════════ */
+        /* Every single-finger canvas touch is also the joystick, so a swipe only counts when the
+         *  "Flick split" setting is on (off by default) and the finger is lifted quickly: a normal
+         *  steering drag is held longer than SW_MAX_MS and never splits. */
         var swStart = null;
         var SW_THRESH = 50; // min px to count as swipe
+        var SW_MAX_MS = 250; // a flick: lifted within this time
         canvas.addEventListener('touchstart', function (e) {
-            if (chatOn || e.targetTouches.length !== 1) return;
+            if (chatOn || e.targetTouches.length !== 1 || !prefs.swipeSplit) { swStart = null; return; }
             var t = e.changedTouches[0];
             if (t.clientX < window.innerWidth * 0.5) {
-                swStart = { x: t.clientX, y: t.clientY, id: t.identifier };
+                swStart = { x: t.clientX, y: t.clientY, id: t.identifier, t: Date.now() };
             } else {
                 swStart = null;
             }
@@ -819,6 +829,7 @@
                 if (t.identifier !== swStart.id) continue;
                 var dx = t.clientX - swStart.x;
                 var dy = t.clientY - swStart.y;
+                if (!prefs.swipeSplit || Date.now() - swStart.t > SW_MAX_MS) { swStart = null; break; }
                 // swipe right → split
                 if (dx > SW_THRESH && Math.abs(dy) < dx) {
                     emitKey(32);
@@ -856,7 +867,7 @@
             mouseAt(t.clientX, t.clientY);
             
             jShow(org.x, org.y, org.x, org.y);
-            swStart = null; // cancel any swipe tracking when joystick starts
+            /* swStart is kept: the swipe touchend decides by duration (this listener runs after the swipe one) */
         }, { passive: true });
 
         canvas.addEventListener('touchend', function (e) {

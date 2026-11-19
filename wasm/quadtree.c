@@ -20,6 +20,7 @@ typedef struct {
     float x;
     float y;
     int32_t id;      /* reference back to JS cell index */
+    int32_t next;    /* next point of the same leaf (-1 = end of list) */
 } Point;
 
 static Point points[MAX_POINTS];
@@ -28,7 +29,9 @@ static int32_t point_count = 0;
 /* ── Node storage (flat array, no malloc) ───────────────────────────── */
 typedef struct {
     float x, y, w, h;
-    int32_t point_start;  /* index into points[] */
+    int32_t point_start;  /* first point of this leaf's list in points[] (-1 = none).
+                             Points of different leaves interleave in points[], so a leaf
+                             keeps a linked list (Point.next), not a contiguous range. */
     int32_t point_count;  /* number of points in this leaf */
     int32_t child_idx;    /* index of first child in nodes[] (-1 if leaf) */
     int32_t max_points;   /* capacity before split (grows with depth) */
@@ -46,6 +49,12 @@ static int32_t result_count = 0;
 __attribute__((used))
 int32_t *get_result_buf(void) { return result_ids; }
 
+/* ── Layout version: 2 = per-leaf linked lists (version 1 assumed contiguous
+ *    leaf ranges and returned other leaves' points). The JS glue only uses a
+ *    module that reports 2 or more. */
+__attribute__((used))
+int32_t qt_version(void) { return 2; }
+
 /* ── Initialize root node ──────────────────────────────────────────── */
 __attribute__((used))
 void qt_init(float x, float y, float w, float h) {
@@ -57,7 +66,7 @@ void qt_init(float x, float y, float w, float h) {
     nodes[0].y = y;
     nodes[0].w = w;
     nodes[0].h = h;
-    nodes[0].point_start = 0;
+    nodes[0].point_start = -1;
     nodes[0].point_count = 0;
     nodes[0].child_idx = -1;
     nodes[0].max_points = NODE_CAP;
@@ -92,33 +101,30 @@ static void split_node(int32_t ni) {
             nodes[idx].y = n->y + r * hh;
             nodes[idx].w = hw;
             nodes[idx].h = hh;
-            nodes[idx].point_start = 0;
+            nodes[idx].point_start = -1;
             nodes[idx].point_count = 0;
             nodes[idx].child_idx = -1;
             nodes[idx].max_points = child_cap;
         }
     }
 
-    /* Re-insert points from parent into children */
+    /* Move the parent's points into the children: relink, no copies */
     float midx = n->x + hw;
     float midy = n->y + hh;
-    for (int i = 0; i < n->point_count; i++) {
-        Point *p = &points[n->point_start + i];
+    int32_t pi = n->point_start;
+    while (pi >= 0) {
+        Point *p = &points[pi];
+        int32_t next = p->next;
         int col = p->x > midx ? 1 : 0;
         int row = p->y > midy ? 1 : 0;
-        int child = ci + col + row * 2;
-        QTNode *cn = &nodes[child];
-
-        /* Add point to child — points are contiguous per-node */
-        if (cn->point_count == 0) {
-            cn->point_start = point_count;
-        }
-        if (point_count < MAX_POINTS) {
-            points[point_count++] = *p;
-            cn->point_count++;
-        }
+        QTNode *cn = &nodes[ci + col + row * 2];
+        p->next = cn->point_start;
+        cn->point_start = pi;
+        cn->point_count++;
+        pi = next;
     }
 
+    n->point_start = -1;
     n->point_count = 0; /* parent no longer holds points */
 }
 
@@ -138,14 +144,13 @@ static void insert_into(int32_t ni, float px, float py, int32_t pid) {
         int row = py > midy ? 1 : 0;
         insert_into(n->child_idx + col + row * 2, px, py, pid);
     } else {
-        /* Leaf node — add point */
-        if (n->point_count == 0) {
-            n->point_start = point_count;
-        }
+        /* Leaf node — add point to the head of its list */
         if (point_count < MAX_POINTS) {
             points[point_count].x = px;
             points[point_count].y = py;
             points[point_count].id = pid;
+            points[point_count].next = n->point_start;
+            n->point_start = point_count;
             point_count++;
             n->point_count++;
         }
@@ -178,8 +183,9 @@ static void query_node(int32_t ni, float ax, float ay, float aw, float ah) {
     QTNode *n = &nodes[ni];
 
     /* AABB overlap test */
-    if (ax >= n->x + n->w || ax + aw <= n->x ||
-        ay >= n->y + n->h || ay + ah <= n->y)
+    /* inclusive like the point test below: a point on a node edge (x == midx) must not be pruned */
+    if (ax > n->x + n->w || ax + aw < n->x ||
+        ay > n->y + n->h || ay + ah < n->y)
         return;
 
     if (n->child_idx >= 0) {
@@ -189,8 +195,8 @@ static void query_node(int32_t ni, float ax, float ay, float aw, float ah) {
         }
     } else {
         /* Leaf — check points */
-        for (int i = 0; i < n->point_count && result_count < MAX_RESULTS; i++) {
-            Point *p = &points[n->point_start + i];
+        for (int32_t pi = n->point_start; pi >= 0 && result_count < MAX_RESULTS; pi = points[pi].next) {
+            Point *p = &points[pi];
             if (p->x >= ax && p->x <= ax + aw &&
                 p->y >= ay && p->y <= ay + ah) {
                 result_ids[result_count++] = p->id;
@@ -210,8 +216,9 @@ int32_t qt_query(float ax, float ay, float aw, float ah) {
 static int some_node(int32_t ni, float ax, float ay, float aw, float ah) {
     QTNode *n = &nodes[ni];
 
-    if (ax >= n->x + n->w || ax + aw <= n->x ||
-        ay >= n->y + n->h || ay + ah <= n->y)
+    /* inclusive like the point test below: a point on a node edge (x == midx) must not be pruned */
+    if (ax > n->x + n->w || ax + aw < n->x ||
+        ay > n->y + n->h || ay + ah < n->y)
         return 0;
 
     if (n->child_idx >= 0) {
@@ -220,8 +227,8 @@ static int some_node(int32_t ni, float ax, float ay, float aw, float ah) {
                 return 1;
         }
     } else {
-        for (int i = 0; i < n->point_count; i++) {
-            Point *p = &points[n->point_start + i];
+        for (int32_t pi = n->point_start; pi >= 0; pi = points[pi].next) {
+            Point *p = &points[pi];
             if (p->x >= ax && p->x <= ax + aw &&
                 p->y >= ay && p->y <= ay + ah) {
                 /* Store the matching point ID for JS to inspect */

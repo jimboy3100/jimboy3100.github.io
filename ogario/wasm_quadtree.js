@@ -49,6 +49,16 @@ var WasmQuadTree = (function () {
             instance = result.instance;
             memory = instance.exports.memory || importObject.env.memory;
 
+            /* quadtree.wasm builds before layout version 2 assumed each leaf's points were
+             * contiguous and returned other leaves' points (jelly collisions were missed).
+             * Only use a module that reports the fixed layout; otherwise the JS quadtree runs. */
+            if (typeof instance.exports.qt_version !== 'function' || instance.exports.qt_version() < 2) {
+                instance = null;
+                ready = false;
+                console.warn('[WASM QuadTree] quadtree.wasm is an old build (contiguous leaf ranges), using the JS quadtree');
+                return;
+            }
+
             resultBufPtr = instance.exports.get_result_buf();
 
             /* Allocate bulk insert buffer at the end of WASM memory */
@@ -84,9 +94,14 @@ var WasmQuadTree = (function () {
 
         for (var i = 0; i < cells.length && count < BULK_BUF_MAX; i++) {
             var cell = cells[i];
+            /* Same filtering as the JS PointQuadTree path */
+            if (!cell || cell.removed || cell.isFood || !cell.points || cell.points.length < 3) continue;
             var pts = cell.points;
             for (var n = 0; n < pts.length && count < BULK_BUF_MAX; n++) {
                 var pt = pts[n];
+                if (!pt || !isFinite(pt.x) || !isFinite(pt.y)) continue;
+                /* movePoints() filters collisions with item.parent !== self */
+                pt.parent = cell;
                 var idx = count * 3;
                 floatView[idx] = pt.x;
                 floatView[idx + 1] = pt.y;
