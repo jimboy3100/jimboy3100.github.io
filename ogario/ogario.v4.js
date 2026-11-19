@@ -20325,6 +20325,12 @@ function thelegendmodproject() {
             }
         },
         setAnimatedRainbowColor() {
+            /* Called on every connect: act only when the setting changed, or restore()
+             * also removed fillText hooks installed later (Edit game names). */
+            var want = !!defaultmapsettings.animatedRainbowColor;
+            if (want === !!this._lmRainbowApplied) return;
+            if (typeof tcm2 === 'undefined' || !tcm2 || !tcm2.f) return; /* retry on the next call */
+            this._lmRainbowApplied = want;
             if (typeof tcm2 !== 'undefined' && defaultmapsettings.animatedRainbowColor && tcm2 && tcm2.f && typeof tcm2.f.override === 'function') {
                 tcm2.f.override();
             } else if (typeof tcm2 !== 'undefined' && tcm2 && tcm2.f && typeof tcm2.f.restore === 'function') {
