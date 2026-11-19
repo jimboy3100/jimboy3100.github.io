@@ -699,7 +699,15 @@ message userPartyFacebookInviteField {
 }
 
 message userFriendListUpdateField {
+  repeated userFriend userFriends = 1;
+  uint32 totalOnlineFriends = 2;
 ///
+}
+
+message userFriend {
+  uint32 status = 1;
+  string userId = 2;
+  realmInfo realmInfo = 3;
 }
 
 message userSkinsCreateRequestField {
