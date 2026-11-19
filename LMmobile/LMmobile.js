@@ -1364,10 +1364,8 @@
                 lowCss.textContent = '.lm-b,.lm-u,.lm-s,#lm-sp{backdrop-filter:none!important;' +
                     '-webkit-backdrop-filter:none!important}';
                 document.head.appendChild(lowCss);
-                // Reduce food rendering
-                if (typeof defaultSettings !== 'undefined') {
-                    defaultSettings.foodSize = 1;
-                }
+                // foodSize is not forced here: defaultSettings is the user's theme and gets
+                // saved, so a 4-core phone would permanently store foodSize 1.
                 console.log('[LM Mobile] Low-end mode: ' + cores + ' cores, blur disabled');
             }
         })();
