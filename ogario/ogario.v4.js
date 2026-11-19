@@ -27377,6 +27377,20 @@ function thelegendmodproject() {
             }
 
             /*
+             * 1c. Death markers: stored in the local frame plus the map offset.
+             */
+            if (this.deathLocations && this.deathLocations.length) {
+                var dOffX = LM.isLegendWorld ? 0 : (ogario.mapOffsetX || 0);
+                var dOffY = LM.isLegendWorld ? 0 : (ogario.mapOffsetY || 0);
+                for (var di = 0; di < this.deathLocations.length; di++) {
+                    var dl = this.deathLocations[di];
+                    if (!dl) continue;
+                    if (xFlipped && dl.x != null) dl.x = legendmod.translateX(dl.x - dOffX) + dOffX;
+                    if (yFlipped && dl.y != null) dl.y = legendmod.translateY(dl.y - dOffY) + dOffY;
+                }
+            }
+
+            /*
              * 2. Ghost cells.
              */
             if (
