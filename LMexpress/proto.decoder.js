@@ -265,7 +265,7 @@ message reconnectField {
 }
   
 message noProperResponseField {
-///
+  int32 __for = 1; // request type the server could not answer (official No_proper_response)
 }
 
 message pingField {

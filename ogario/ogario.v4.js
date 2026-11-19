@@ -39283,6 +39283,8 @@ function thelegendmodproject() {
                     window._lmLoginResponseAt = Date.now();
                     if (window.master) window.master._reason3Retried = false;
                     var u = r.uncompressedData.loginResponseField;
+                    /* Field 19: the official client enables Leagues only when the login carries it. */
+                    window._lmLoginHasLeaguesInfo = !!(u && u.userLeaguesInfo);
                     /* Preserve previous coins/dna/trophy across re-login to prevent
                      * the UI from flashing to 0 between reset and updateWalletInfo */
                     /* Only carry values over for the SAME account; after an account
@@ -39429,7 +39431,17 @@ function thelegendmodproject() {
                     //window.logout && window.logout();
                     break;
                 case 22:
-                    console.log("returnMessage = r.get_noProperResponseField();");
+                    /* No proper response: the server could not answer a request (__for
+                     * = its type). The official client fails a pending leagues request
+                     * (130) on it ("no_proper_leagues_response"). */
+                    try {
+                        var npr = r.uncompressedData.noProperResponseField;
+                        var nprFor = npr ? Number(npr.__for) || 0 : 0;
+                        console.log("[LM] No proper response" + (nprFor ? " for request type " + nprFor : ""));
+                        document.dispatchEvent(new CustomEvent('noProperResponse', {
+                            detail: { forType: nprFor, leagueRequestType: window._leaguesRequestType || 0 }
+                        }));
+                    } catch (nprErr) { }
                     break;
                 case 31:
                     if (window.agarpingstarted) drawRender.ping = Date.now() - window.agarpingstarted;

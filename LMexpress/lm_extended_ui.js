@@ -2374,18 +2374,50 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         );
     };
 
-    window._renderCurrentLeaguesRequestState = function(icon, message) {
+    window._renderCurrentLeaguesRequestState = function(icon, message, withRetry) {
         var listContainer = document.getElementById(
             'lm-leagues-list-container'
         );
         if (!listContainer) return;
         var t = getTheme();
+        var retryHtml = withRetry
+            ? `<div style="margin-top: 14px;"><button class="btn" onclick="window.retryCurrentLeaguesRequest();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">Retry</button></div>`
+            : '';
         listContainer.innerHTML = `
             <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 14px; font-weight: 600;">
                 <div style="font-size: 24px; margin-bottom: 10px;">${icon}</div>
                 ${message}
+                ${retryHtml}
             </div>
         `;
+    };
+
+    /*
+     * The official client opens Leagues only when the login response carried
+     * userLeaguesInfo (field 19); name that when a request gets no data.
+     */
+    window._leaguesNoDataMessage = function(message) {
+        if (window._lmLoginHasLeaguesInfo === false) {
+            return message + '<br><span style="font-size: 12px; font-weight: 500;">Agar.io did not enable Leagues for this account at login.</span>';
+        }
+        return message;
+    };
+
+    /*
+     * Retry button of the failure/timeout states: a failed or unanswered
+     * request is not retried by switching tabs (the state is no longer idle),
+     * so start a new request for the open modal here.
+     */
+    window.retryCurrentLeaguesRequest = function() {
+        if (!document.getElementById('lm-leagues-modal')) return;
+        if (window._leaguesRequestState === 'loading') return;
+        if (window._leaguesTimeoutTimer) {
+            clearTimeout(window._leaguesTimeoutTimer);
+            window._leaguesTimeoutTimer = null;
+        }
+        window._leaguesRequestState = 'idle';
+        window._renderCurrentLeaguesRequestState('⏳', 'Please wait...');
+        window._startCurrentLeaguesRequest();
     };
 
     /*
@@ -2474,7 +2506,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             if (!window._hasUsableCurrentLeaguesCache()) {
                 window._renderCurrentLeaguesRequestState(
                     '⚠️',
-                    'Unable to request leaderboard data.'
+                    'Unable to request leaderboard data.',
+                    true
                 );
             }
             return;
@@ -2493,7 +2526,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 if (!window._hasUsableCurrentLeaguesCache()) {
                     window._renderCurrentLeaguesRequestState(
                         '⏱️',
-                        'Leaderboard request timed out.'
+                        window._leaguesNoDataMessage('Leaderboard request timed out.'),
+                        true
                     );
                 }
             }, 5000 + requestDelayMs);
@@ -2552,7 +2586,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 window
                     ._renderCurrentLeaguesRequestState(
                         '⚠️',
-                        'Unable to request leaderboard data.'
+                        'Unable to request leaderboard data.',
+                        true
                     );
             } else if (
                 window._leaguesRequestState ===
@@ -2561,7 +2596,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 window
                     ._renderCurrentLeaguesRequestState(
                         '⏱️',
-                        'Leaderboard request timed out.'
+                        window._leaguesNoDataMessage('Leaderboard request timed out.'),
+                        true
                     );
             }
 
@@ -2690,15 +2726,69 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
              * Resolve and freeze the user from My League before rendering the
              * currently selected category.
              */
-            window
-                ._captureLeagueCurrentUserIdentity(
+            try {
+                window
+                    ._captureLeagueCurrentUserIdentity(
+                        detail
+                    );
+
+                window.renderLeaguesContent(
+                    window.currentLeagueTab ||
+                        1,
                     detail
                 );
+            } catch (leaguesRenderError) {
+                console.warn(
+                    '[LM LEAGUES] Could not render the leaderboard:',
+                    leaguesRenderError
+                );
+                window._renderCurrentLeaguesRequestState(
+                    '⚠️',
+                    'Unable to display leaderboard data.',
+                    true
+                );
+            }
+        }
+    });
 
-            window.renderLeaguesContent(
-                window.currentLeagueTab ||
-                    1,
-                detail
+    /*
+     * Opcode-102 type 22 (no proper response) answering a leagues request:
+     * the official client resolves its pending 130 request with no data.
+     * Fail the pending request now instead of waiting for the timeout.
+     */
+    document.addEventListener('noProperResponse', function(e) {
+        var detail = e.detail || {};
+        if (detail.forType && detail.forType !== 130) return;
+
+        if (Number(detail.leagueRequestType) === 2) {
+            if (!window._lastWeekTimeoutTimer) return;
+            clearTimeout(window._lastWeekTimeoutTimer);
+            window._lastWeekTimeoutTimer = null;
+            var lastWeekArea = document.getElementById('lm-lastweek-content');
+            if (lastWeekArea && lastWeekArea.querySelector('[data-loading]')) {
+                var lt = getTheme();
+                lastWeekArea.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: ${lt.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
+                        <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
+                        Agar.io did not return weekly results.
+                        <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${lt.b1}; color: ${lt.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">Retry</button></div>
+                    </div>
+                `;
+            }
+            return;
+        }
+
+        if (window._leaguesRequestState !== 'loading') return;
+        if (window._leaguesTimeoutTimer) {
+            clearTimeout(window._leaguesTimeoutTimer);
+            window._leaguesTimeoutTimer = null;
+        }
+        window._leaguesRequestState = 'failure';
+        if (!window._hasUsableCurrentLeaguesCache()) {
+            window._renderCurrentLeaguesRequestState(
+                '⚠️',
+                window._leaguesNoDataMessage('Agar.io did not return leaderboard data.'),
+                true
             );
         }
     });
@@ -3363,8 +3453,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     contentArea.innerHTML = `
                         <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
                             <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
-                            Weekly results could not be loaded.<br>
-                            Close this window and try again.
+                            Weekly results could not be loaded.
+                            <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">Retry</button></div>
                         </div>
                     `;
                 }
