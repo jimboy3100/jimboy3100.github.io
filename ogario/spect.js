@@ -32,6 +32,22 @@ function addSpectator() {
 }
 window.addSpectator = addSpectator;
 
+/* "View on middle of both (when close)": true when the main player and the multibox unit
+ * (client-space centre ux/uy) are both alive and the unit's centre lies inside the main
+ * player's visible area. The old test looked for a non-own cell with the main nick, but
+ * the unit's copies of the main cells are kept out of LM.cells, so it was almost never true. */
+function lmMultiUnitIsClose(ux, uy) {
+    if (!defaultmapsettings.middleMultiViewWhenClose || !legendmod.play) return false;
+    if (!legendmod.playerCells || !legendmod.playerCells.length) return false;
+    var mx = legendmod.viewXTrue, my = legendmod.viewYTrue;
+    if (!Number.isFinite(ux) || !Number.isFinite(uy) || !Number.isFinite(mx) || !Number.isFinite(my)) return false;
+    var sc = legendmod.viewScale > 0 ? legendmod.viewScale : 1;
+    var halfW = (legendmod.canvasWidth || window.innerWidth || 1920) / sc / 2;
+    var halfH = (legendmod.canvasHeight || window.innerHeight || 1080) / sc / 2;
+    return Math.abs(mx - ux) < halfW && Math.abs(my - uy) < halfH;
+}
+window.lmMultiUnitIsClose = lmMultiUnitIsClose;
+
 function addFullSpectator() {
     let mtp = 4.95,
         w = ~~(1024 * mtp),
@@ -912,10 +928,11 @@ class Spect {
             case 17:
 
                 this.viewX = view.getFloat32(offset, true);
-                window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
                 /* viewX is this connection's server space: convert before mixing it into the
                  * main camera; only the multibox player unit moves the camera. */
                 var _cvX = this.getX(this.viewX);
+                /* only a living player unit decides (spectator sockets used to overwrite the flag) */
+                if (this.player) window.middleMultiViewFlag = !!(this.active && this.playerCellIDs.length && lmMultiUnitIsClose(_cvX, this.getY(view.getFloat32(offset + 4, true))));
                 if (this.player && defaultmapsettings.middleMultiView && legendmod.play) {
                     legendmod.viewX = (legendmod.viewXTrue + _cvX) / 2;
                 } else if (this.player && window.middleMultiViewFlag) {
@@ -1944,7 +1961,7 @@ class Spect {
             x += n.x / playersLength;
             y += n.y / playersLength;
         }
-        window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
+        if (this.player) window.middleMultiViewFlag = lmMultiUnitIsClose(x, y);
         if (defaultmapsettings.middleMultiView && legendmod.play) {
             legendmod.viewX = (legendmod.viewXTrue + x) / 2;
             legendmod.viewY = (legendmod.viewYTrue + y) / 2;
