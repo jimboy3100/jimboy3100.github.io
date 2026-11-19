@@ -71646,6 +71646,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMouseHeld = {};
     });
     var _lmMouseHeld = {};
+    window.addEventListener('auxclick', function (event) {
+        if ((event.button === 3 && defaultmapsettings.mouseCommand4) || (event.button === 4 && defaultmapsettings.mouseCommand5)) {
+            event.preventDefault();
+        }
+    });
     window.onmousedown = function (event) {
         _lmMouseHeld[event.which] = true;
         if (!$("#overlays").is(":visible")) {
@@ -71671,7 +71676,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (1 === event.which) {
                     drawRender.LMB = true
                 }
-                else {
+                else if (3 === event.which) {
+                    /* only the real right button (4/5 never release RMB) */
                     drawRender.RMB = true
                 }
             }
@@ -71720,6 +71726,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
     }
     window.onmouseup = function (event) {
         delete _lmMouseHeld[event.which];
+        /* Chromium navigates back/forward on the mouseup of buttons 4/5; cancel it
+         * when those buttons are bound to commands. */
+        if (event.preventDefault && ((event.which === 4 && defaultmapsettings.mouseCommand4) || (event.which === 5 && defaultmapsettings.mouseCommand5))) {
+            event.preventDefault();
+        }
         //if (defaultmapsettings.mouseFeed) {
         //if (1 === event.which && hotkeysCommand[defaultmapsettings.leftClick]===textLanguage['hk-macroFeed'] || 2 === event.which && hotkeysCommand[defaultmapsettings.middleClick]===textLanguage['hk-macroFeed'] || 3 === event.which && hotkeysCommand[defaultmapsettings.rightClick]===textLanguage['hk-macroFeed'] || 4 === event.which && hotkeysCommand[defaultmapsettings.mouse4Click]===textLanguage['hk-macroFeed'] || 5 === event.which && hotkeysCommand[defaultmapsettings.mouse5Click]===textLanguage['hk-macroFeed']) {
         //if (3 === event.which && !defaultmapsettings.mouseInvert || 1 === event.which && defaultmapsettings.mouseInvert) {
