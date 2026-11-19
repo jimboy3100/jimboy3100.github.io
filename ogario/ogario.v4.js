@@ -36358,12 +36358,8 @@ function thelegendmodproject() {
         },
         handleMessage(data) {
             //this.pingTimer();		
-            if (window.legendClientWorker && data.buffer) {
-                // Offload raw binary WebSocket packet to Web Worker for parallel spatial analytics
-                try {
-                    window.legendClientWorker.postMessage({ type: 'NETWORK_PACKET', buffer: data.buffer.slice(0) });
-                } catch (e) { }
-            }
+            /* Removed: every packet was copied and posted to the worker, which only
+             * handles 'CULL' messages and ignored NETWORK_PACKET (1-3 MB/s of garbage). */
             /* Cap one recording at ~1 hour of packets so long sessions cannot exhaust memory. */
             if (window.catholicCalculator < 90000 && !$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data

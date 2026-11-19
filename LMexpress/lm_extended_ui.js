@@ -10546,7 +10546,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         // 1. Balances (Coins, DNA, Trophies)
         var coins = appUser.coins || 0;
         var dna = appUser.dna || 0;
-        var trophies = appUser.trophies || 0;
+        var trophies = appUser.trophy || appUser.trophies || 0; /* the user model stores 'trophy' */
 
         $('#coins').html('💰 ' + coins.toLocaleString());
         $('#dna').html('🧬 ' + dna.toLocaleString());
