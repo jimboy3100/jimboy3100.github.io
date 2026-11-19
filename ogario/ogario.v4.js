@@ -28935,13 +28935,23 @@ function thelegendmodproject() {
 
             if (window.LMSkinStorage) {
                 window.LMSkinStorage.getAudio(audioUrl, function (cachedData) {
-                    if (cachedData) {
+                    /* an error page cached by an earlier version (data:text/html) is not a sound */
+                    if (cachedData && !/^data:text\//i.test(String(cachedData))) {
                         audioObj.src = cachedData;
                     } else {
                         try {
                             fetch(audioUrl)
-                                .then(function (res) { return res.blob(); })
+                                .then(function (res) {
+                                    /* 404/5xx pages (and every half-typed URL in the settings box)
+                                     * must not be cached as the sound forever */
+                                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                                    return res.blob();
+                                })
                                 .then(function (blob) {
+                                    if (blob.type && /^text\//i.test(blob.type)) {
+                                        audioObj.src = audioUrl;
+                                        return;
+                                    }
                                     var reader = new FileReader();
                                     reader.onloadend = function () {
                                         if (reader.result) {
