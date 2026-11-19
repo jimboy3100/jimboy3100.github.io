@@ -40925,7 +40925,10 @@ function thelegendmodproject() {
                             }
                             /* The activation item is used up; allow the next one. */
                             this._questActivationSent = {};
-                            if (qa.userQuest) {
+                            if (qa.userQuest && !(Number(qa.userQuest.goal) > 0)) {
+                                /* Expanding Land answers a refused activation (no activation item) with goal 0. */
+                                toastr.error('<b>[SERVER]:</b> Quest could not be activated.');
+                            } else if (qa.userQuest) {
                                 this.displayActiveQuests([qa.userQuest]);
                                 toastr.success('<b>[SERVER]:</b> Quest activated! &#x1F3AF; Type: ' + (qa.userQuest.type || 'unknown'));
                             } else {
