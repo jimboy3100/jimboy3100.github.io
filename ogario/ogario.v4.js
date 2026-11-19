@@ -10618,7 +10618,11 @@ window.evaluateAgarBundleConditions =
                     )
                     : null;
 
+            /* Number(null) is 0: an unknown balance must not count as a known 0. */
             var known =
+                liveBalance !== null &&
+                liveBalance !== undefined &&
+                liveBalance !== '' &&
                 Number.isFinite(
                     Number(
                         liveBalance
@@ -10635,11 +10639,20 @@ window.evaluateAgarBundleConditions =
                     )
                     : null;
 
+            /* "=<" rows mean "must not own more than quantity" (e.g. not own the skin yet). */
+            var compareOp =
+                String(
+                    (row && row.compareOp) || '>='
+                ).trim();
+
             var met =
                 known
                     ? (
-                        numericBalance >=
-                        required
+                        compareOp === '=<' || compareOp === '<='
+                            ? numericBalance <= required
+                            : compareOp === '=' || compareOp === '=='
+                                ? numericBalance === required
+                                : numericBalance >= required
                     )
                     : null;
 
