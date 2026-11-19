@@ -25016,7 +25016,7 @@ function thelegendmodproject() {
             idle.sort(function (a, b) { return a[0] - b[0]; });
             var cache = this.customSkinsCache;
             var excess = use.size - this._lmSkinCacheMax;
-            var suffixes = ['', '_cached', '_cached2', '_cached3', '_cached4', '_cached' + cache];
+            var suffixes = ['', '_cached', '_cached2', '_cached3', '_cached4'];
             for (var i = 0; i < idle.length && i < excess; i++) {
                 var u = idle[i][1];
                 use.delete(u);
