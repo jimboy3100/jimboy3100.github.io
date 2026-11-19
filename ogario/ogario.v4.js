@@ -23588,6 +23588,7 @@ function thelegendmodproject() {
                         }
                         // Flag to suppress main client adding spectator cells
                         window.mainPlayerDeadMbActive = true;
+                        legendmod._lmMultiCellsSeenAt = Date.now();
 
                         return; // don't show menu or autoResp
                     }
@@ -39495,7 +39496,7 @@ function thelegendmodproject() {
 
                 case 16: //2020 jimboy3100 specific private servers
                     // Skip main client's cell updates when dead and multibox spect is active
-                    if (window.mainPlayerDeadMbActive) break;
+                    if (window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed()) break;
                     /* Grey-cell fix: while the spawn transit gate is active,
                      * drop ALL cell updates so stale spectate-viewport cells
                      * can't leak back in before the authoritative snapshot. */
@@ -44810,7 +44811,7 @@ Most cells eaten   : ${mostCellsEaten}
                 case 16:
                     /* Same as uncompressed opcode 16: agar.io sends most cell updates
                      * here, so the dead main client's viewport must be dropped too. */
-                    if (window.mainPlayerDeadMbActive) break;
+                    if (window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed()) break;
                     var _tPkt = performance.now();
                     this.updateCells(message, e);
                     this.countPps();
@@ -46047,6 +46048,22 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             this.handleLeaderboard();
+        },
+        /* mainPlayerDeadMbActive drops the dead main client's world updates while a multibox
+         * unit plays. It was only cleared on spawn/spectate/connect: when the unit then died or
+         * disconnected too, nothing updated the screen (frozen world) until Play. Release it once
+         * the unit has had no cells for 1.5 s. */
+        _lmKeepMainSuppressed() {
+            var now = Date.now();
+            if (this.playerCellsMulti && this.playerCellsMulti.length) {
+                this._lmMultiCellsSeenAt = now;
+                return true;
+            }
+            if (!this._lmMultiCellsSeenAt) this._lmMultiCellsSeenAt = now;
+            if (now - this._lmMultiCellsSeenAt < 1500) return true;
+            window.mainPlayerDeadMbActive = false;
+            console.log('[LM] Multibox unit has no cells: main client world updates resumed');
+            return false;
         },
         updateCells(view, offset) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
@@ -73343,6 +73360,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 readyState: _fl.socket && _fl.socket.readyState,
                                 bufferedAmount: _fl.socket && _fl.socket.bufferedAmount,
                                 pps: _fl.pps, playing: !!_fl.play,
+                                mainPlayerDeadMbActive: !!window.mainPlayerDeadMbActive,
+                                spawnTransitGate: !!_fl._spawnTransitGate,
                                 lastRenderError: drawRender._lastRenderErrorMsg || null
                             });
                         } else if (_gap < 1000 && drawRender._lmFreezeLogged) {
