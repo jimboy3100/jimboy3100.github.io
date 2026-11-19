@@ -22685,8 +22685,14 @@ function thelegendmodproject() {
                 LM.targetCanvasScale = e;
             }
 
-            if (typeof this.setCanvasSize === "function") {
-                this.setCanvasSize();
+            /* The renderer reads canvasScale in resizeCanvas (before it is
+             * initialised, its first resizeCanvas picks the value up). */
+            if (
+                window.drawRender &&
+                window.drawRender.canvas &&
+                typeof window.drawRender.resizeCanvas === "function"
+            ) {
+                window.drawRender.resizeCanvas();
             }
         },
         setStreamMode() {
@@ -52810,11 +52816,48 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     )
                     : 1;
 
+            /* Quality setting / scale_setting (application.setCanvasScale):
+             * a scale below 1 lowers the backing-store resolution. Larger
+             * values (Retina, a saved pixel ratio) stay governed by highDPI. */
+            var qualityScale =
+                window.application &&
+                window.application.canvasScale;
+
+            if (
+                typeof qualityScale === 'number' &&
+                isFinite(qualityScale) &&
+                qualityScale > 0 &&
+                qualityScale < 1
+            ) {
+                dpr *= qualityScale;
+            }
+
+            var prevDpr =
+                this.dpr;
+
             this.dpr =
                 dpr;
 
             window.LM_DPR =
                 dpr;
+
+            /* Text sprites are rasterized at LM_DPR and only redrawn on
+             * change: re-rasterize them so they keep their on-screen size. */
+            if (
+                prevDpr &&
+                prevDpr !== dpr &&
+                LM &&
+                LM.cells
+            ) {
+                for (var ci = 0; ci < LM.cells.length; ci++) {
+                    var rc = LM.cells[ci];
+                    if (!rc) continue;
+                    if (rc.nickCanvas) rc.nickCanvas.redraw = true;
+                    if (rc.massCanvas) rc.massCanvas.redraw = true;
+                    if (rc.mergeCanvas) rc.mergeCanvas.redraw = true;
+                    if (rc.chatCanvas) rc.chatCanvas.redraw = true;
+                }
+            }
 
             this.canvasWidth =
                 window.innerWidth;
