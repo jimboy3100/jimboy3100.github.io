@@ -6951,7 +6951,7 @@ function initializeLM(modVersion) {
             } else if (realmode != ":party") {
                 if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
-                copy(CopyTkPwLb2);
+                copyToClipboardAll(); /* TK&ALL: include leaderboard, teamboard and nick like the other branches */
             }
         } else {
             if (realmode == ":party") {
