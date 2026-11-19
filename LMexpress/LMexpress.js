@@ -6685,8 +6685,8 @@ function initializeLM(modVersion) {
     var initialMusicUrl = (localStorage.getItem("musicUrl") == null ? defaultMusicUrl : localStorage.getItem("musicUrl"));
     //	var savemusic=$(".agario-panel.sounds-panel").html();
     $('.agario-panel.radio-panel').after('<div id="youtubeplayer" style="margin-left: 0px;"><h5 class="main-color" style="margin-right: 15px;">Youtube player</h5>' +
-        '<iframe id="musicFrame" width="350" height="180" src="' + (getEmbedUrl(initialMusicUrl) || getEmbedUrl(defaultMusicUrl)) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
-        '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + initialMusicUrl + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">');
+        '<iframe id="musicFrame" width="350" height="180" src="' + _lmEscHtml(getEmbedUrl(initialMusicUrl) || getEmbedUrl(defaultMusicUrl)) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
+        '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + _lmEscHtml(initialMusicUrl) + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">');
     //			'<button id="YoutubeBackgroundBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter61 + '</button></div>' +
 
     $('.agario-panel.radio-panel').hide();
