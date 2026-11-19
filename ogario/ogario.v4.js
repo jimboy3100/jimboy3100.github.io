@@ -18916,7 +18916,9 @@ function thelegendmodproject() {
             });
         },
         addColorBox(id, name, callback) {
-            $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" value=\"' + defaultSettings[name] + '\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            /* Value set as a property before the colorpicker reads it: imported theme values must not be parsed as HTML. */
+            $(id + ' .' + name + '-picker input').val(defaultSettings[name] == null ? '' : String(defaultSettings[name]));
             if (callback) {
                 var app = this;
                 $(id + ' .' + name + '-picker').colorpicker({
@@ -18936,7 +18938,9 @@ function thelegendmodproject() {
             });
         },
         addRgbaColorBox(id, name, callback) {
-            $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" value=\"' + defaultSettings[name] + '\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            /* Value set as a property before the colorpicker reads it: imported theme values must not be parsed as HTML. */
+            $(id + ' .' + name + '-picker input').val(defaultSettings[name] == null ? '' : String(defaultSettings[name]));
             if (callback) {
                 var app = this;
                 $(id + ' .' + name + '-picker').colorpicker({
@@ -18950,7 +18954,7 @@ function thelegendmodproject() {
                     app[callback]();
                 });
             } else {
-                (id + ' .' + name + '-picker').colorpicker({
+                $(id + ' .' + name + '-picker').colorpicker({
                     'format': 'rgba'
                 }).on('changeColor.colorpicker', function (ids) {
                     var color = ids.color.toRGB();
@@ -18966,13 +18970,14 @@ function thelegendmodproject() {
                                   <span class="value-label">
                                       ${textLanguage[name]}
                                   </span>
-                                  <span id="${name}-value" class="value">
-                                      ${defaultSettings[name]}
-                                  </span>
+                                  <span id="${name}-value" class="value"></span>
                               </div>
-                              <input id="${name}-slider" type="range" min="${min}" max="${max}" step="${step}" value="${defaultSettings[name]}">
+                              <input id="${name}-slider" type="range" min="${min}" max="${max}" step="${step}">
                           </div>
                           `);
+            /* Values set as text/property: imported theme values must not be parsed as HTML. */
+            $('#' + name + '-value').text(defaultSettings[name]);
+            $('#' + name + '-slider').val(defaultSettings[name]);
             if (callback) {
                 var app = this;
                 $('#' + name + '-slider').on('input', function () {
@@ -21730,7 +21735,10 @@ function thelegendmodproject() {
             });
         },
         addSliderBox(id, name, min, max, step, callback) {
-            $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\">' + defaultmapsettings[name] + '</span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\" value=\"' + defaultmapsettings[name] + '\"></div>');
+            $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\"></span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\"></div>');
+            /* Values set as text/property: imported settings must not be parsed as HTML. */
+            $('#' + name + '-value').text(defaultmapsettings[name]);
+            $('#' + name + '-slider').val(defaultmapsettings[name]);
             var app = this;
             callback ? $('#' + name + '-slider').on('input', function () {
                 var t = parseFloat($(this).val());
