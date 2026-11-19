@@ -71067,7 +71067,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = color;
             ctx.fill();
+            /* Cap the cache (~256 KB per colour; random-colour servers have no limit). */
+            if (!this._cellsColoredKeys) this._cellsColoredKeys = [];
+            if (!this.cellsColored[color]) this._cellsColoredKeys.push(color);
             this.cellsColored[color] = canvas;
+            while (this._cellsColoredKeys.length > 256) {
+                delete this.cellsColored[this._cellsColoredKeys.shift()];
+            }
         },
         preDrawIndicator() {
             this.indicator = null;
