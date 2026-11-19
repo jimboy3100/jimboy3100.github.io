@@ -34012,10 +34012,16 @@ function thelegendmodproject() {
                             }
                         }, 100);
                         // Timeout after 10 seconds
-                        setTimeout(function() { clearInterval(_waitForInit); }, 10000);
+                        setTimeout(function() {
+                            clearInterval(_waitForInit);
+                            if (!(window._SenpaModule && window._SenpaModule.create) && window.toastr) {
+                                toastr.error('Senpa: WASM module did not initialise, cannot connect.');
+                            }
+                        }, 10000);
                     };
                     script.onerror = function() {
                         console.error('%c[Senpa]%c Failed to load WASM module script', 'color:#fa3', 'color:inherit');
+                        if (window.toastr) toastr.error('Senpa: failed to load the WASM module, cannot connect.');
                     };
                     document.head.appendChild(script);
                 }
@@ -35034,6 +35040,11 @@ function thelegendmodproject() {
         isSocketOpen() {
             return this.socket !== null && this.socket.readyState === this.socket.OPEN;
         },
+        _senpaCanSend() {
+            /* Senpa send paths call socket.send directly; the WASM socket may not expose readyState. */
+            var s = this.socket;
+            return !!(s && typeof s.send === 'function' && (s.readyState === undefined || s.readyState === 1));
+        },
         createView(t) {
             return new DataView(new ArrayBuffer(t));
         },
@@ -35138,7 +35149,7 @@ function thelegendmodproject() {
                 ejDV.setUint8(0, 23);
                 ejDV.setUint8(1, 0); // unitId
                 ejDV.setUint8(2, 0); // isMacro = false
-                this.socket.send(ejBuf);
+                if (this._senpaCanSend()) this.socket.send(ejBuf);
                 return;
             }
             this.sendAction(21);
@@ -35152,7 +35163,7 @@ function thelegendmodproject() {
                 spDV.setUint8(0, 22);
                 spDV.setUint8(1, 0); // unitId
                 spDV.setUint8(2, 1); // split count = 1
-                this.socket.send(spBuf);
+                if (this._senpaCanSend()) this.socket.send(spBuf);
                 return;
             }
             this.sendAction(17);
@@ -35164,7 +35175,7 @@ function thelegendmodproject() {
                 var spBuf = new ArrayBuffer(3);
                 var spDV = new DataView(spBuf);
                 spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 2);
-                this.socket.send(spBuf);
+                if (this._senpaCanSend()) this.socket.send(spBuf);
                 return;
             }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
@@ -35180,7 +35191,7 @@ function thelegendmodproject() {
                 var spBuf = new ArrayBuffer(3);
                 var spDV = new DataView(spBuf);
                 spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 3);
-                this.socket.send(spBuf);
+                if (this._senpaCanSend()) this.socket.send(spBuf);
                 return;
             }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
@@ -35196,7 +35207,7 @@ function thelegendmodproject() {
                 var spBuf = new ArrayBuffer(3);
                 var spDV = new DataView(spBuf);
                 spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 4);
-                this.socket.send(spBuf);
+                if (this._senpaCanSend()) this.socket.send(spBuf);
                 return;
             }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
@@ -35299,6 +35310,11 @@ function thelegendmodproject() {
 
             // ===== Senpa join: opcode 10 (nick) + 11 (tag) + 12 (code) + 0 (spawn) =====
             if (this.serverType === 'senpa') {
+                /* WASM still loading or failed: closeConnection() left this.socket null. */
+                if (!this._senpaCanSend()) {
+                    if (window.toastr) toastr.warning('Senpa is not connected yet, please wait or reconnect.');
+                    return;
+                }
                 /* Spawning leaves spectate mode: cursor packets must use the player format again. */
                 this._senpaSpectate = false;
                 this.playerNick = nick;
