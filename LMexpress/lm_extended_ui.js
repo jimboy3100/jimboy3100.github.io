@@ -2393,6 +2393,17 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
     };
 
     /*
+     * The official client opens Leagues only when the login response carried
+     * userLeaguesInfo (field 19); name that when a request gets no data.
+     */
+    window._leaguesNoDataMessage = function(message) {
+        if (window._lmLoginHasLeaguesInfo === false) {
+            return message + '<br><span style="font-size: 12px; font-weight: 500;">Agar.io did not enable Leagues for this account at login.</span>';
+        }
+        return message;
+    };
+
+    /*
      * Retry button of the failure/timeout states: a failed or unanswered
      * request is not retried by switching tabs (the state is no longer idle),
      * so start a new request for the open modal here.
@@ -2515,7 +2526,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 if (!window._hasUsableCurrentLeaguesCache()) {
                     window._renderCurrentLeaguesRequestState(
                         '⏱️',
-                        'Leaderboard request timed out.',
+                        window._leaguesNoDataMessage('Leaderboard request timed out.'),
                         true
                     );
                 }
@@ -2585,7 +2596,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 window
                     ._renderCurrentLeaguesRequestState(
                         '⏱️',
-                        'Leaderboard request timed out.',
+                        window._leaguesNoDataMessage('Leaderboard request timed out.'),
                         true
                     );
             }
@@ -2776,7 +2787,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         if (!window._hasUsableCurrentLeaguesCache()) {
             window._renderCurrentLeaguesRequestState(
                 '⚠️',
-                'Agar.io did not return leaderboard data.',
+                window._leaguesNoDataMessage('Agar.io did not return leaderboard data.'),
                 true
             );
         }

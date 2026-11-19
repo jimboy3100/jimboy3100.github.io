@@ -39257,6 +39257,8 @@ function thelegendmodproject() {
                     window._lmLoginResponseAt = Date.now();
                     if (window.master) window.master._reason3Retried = false;
                     var u = r.uncompressedData.loginResponseField;
+                    /* Field 19: the official client enables Leagues only when the login carries it. */
+                    window._lmLoginHasLeaguesInfo = !!(u && u.userLeaguesInfo);
                     /* Preserve previous coins/dna/trophy across re-login to prevent
                      * the UI from flashing to 0 between reset and updateWalletInfo */
                     /* Only carry values over for the SAME account; after an account
