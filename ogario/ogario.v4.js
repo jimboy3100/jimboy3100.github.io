@@ -39618,9 +39618,9 @@ function thelegendmodproject() {
                             if (u.productUpdates && u.productUpdates.length) {
                                 this.updateProducts(u.productUpdates);
                             }
-                            if (u.userPotions && u.userPotions.length) {
-                                this.updatePotions(u.userPotions);
-                            }
+                            /* The response carries the full slot list: an empty list means
+                             * every slot is now empty (opening the last potion). */
+                            this.updatePotions(Array.from(u.userPotions || []));
                             if (window._userInitiatedPotionOpen) {
                                 window._userInitiatedPotionOpen = false;
 
