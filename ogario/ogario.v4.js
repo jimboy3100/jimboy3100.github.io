@@ -30928,12 +30928,21 @@ function thelegendmodproject() {
                     this.virusColor = defaultSettings.mVirusColor;
                     this.virusStroke = defaultSettings.mVirusStrokeColor;
                 }
-                if (this.virMassShots) {
-                    this.mass = ~~((200 - this.mass) / 14);
+                var rawVirusMass = this.mass;
+                if (this.virMassShots && rawVirusMass < 200) {
+                    this.mass = ~~((200 - rawVirusMass) / 14);
                 }
-                if (defaultmapsettings.virusSound && this.lastMass && this.mass < this.lastMass) {
-                    void application.playSound(application.virusSoundurl);
+                // Compare raw masses tracked here (lastMass is only written by drawMass,
+                // and this.mass may be "shots left"). setMass runs every frame with the
+                // interpolated size, so play at most once per 300 ms per virus.
+                if (defaultmapsettings.virusSound && this._virusSoundMass && rawVirusMass < this._virusSoundMass) {
+                    var virusSoundNow = Date.now();
+                    if (!this._virusSoundAt || virusSoundNow - this._virusSoundAt > 300) {
+                        this._virusSoundAt = virusSoundNow;
+                        void application.playSound(application.virusSoundurl);
+                    }
                 }
+                this._virusSoundMass = rawVirusMass;
                 this.massTxt = this.mass.toString();
             }
             this.massTxt = this.mass.toString();
