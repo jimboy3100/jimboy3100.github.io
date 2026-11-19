@@ -72615,7 +72615,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawDashedCircle(ctx, targetX, targetY, radius, 60, width, color);
             }
         },
-        drawTextAlongArc(ctx, str, centerX, centerY, radius, angle) {
+        drawTextAlongArc(ctx, str, centerX, centerY, radius, angle, stroke) {
             var len = str.length;
             if (!len) return;
             this.ctx.save();
@@ -72625,6 +72625,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             for (var n = 0; n < len; n++) {
                 this.ctx.rotate(step);
                 this.ctx.translate(0, -radius);
+                if (stroke) this.ctx.strokeText(str[n], 0, 0);
                 this.ctx.fillText(str[n], 0, 0);
                 this.ctx.translate(0, radius);
             }
@@ -72653,12 +72654,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _vMinY = _cy - _halfH, _vMaxY = _cy + _halfH;
 
                 this.ctx.beginPath();
-                if (_showInfo) {
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillStyle = defaultSettings.namesColor;
-                    this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                    this.ctx.lineWidth = 4;
-                }
+                /* Info (skin, nick) is drawn after the ghost fill: drawn inside this loop it
+                 * sat under the translucent glow of the fill. */
+                var _ghostInfo = _showInfo ? [] : null;
                 for (var length = 0; length < ghostsCells.length; length++) {
                     var ghost = ghostsCells[length];
                     if (!ghost) continue;
@@ -72693,29 +72691,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                     this.ctx.moveTo(x, y);
                     this.ctx.arc(x, y, sz, 0, this.pi2, false);
-
-                    if (_showInfo) {
-                        this.nickScale = 1;
-                        this.fontSize = Math.max(sz * 0.3, 26) * this.scale;
-                        this.nickSize = ~~(this.fontSize * this.nickScale);
-                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                        var angle = Math.PI * 0.8;
-
-                        var ghostNick = ghost.nick || (LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : "Ghost cell");
-                        /* Cache cleaned text on ghost cell — only recompute when nick changes */
-                        if (!ghost._cleanedText || ghost._cleanedNick !== ghostNick) {
-                            ghost._cleanedNick = ghostNick;
-                            ghost._cleanedText = removeEmojis(ghostNick); // canvas text: no HTML escaping
-                        }
-                        this.ghostcellstext = ghost._cleanedText;
-                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
-                        if (_showSkins && ghostNick) {
-                            var node = application.getCustomSkin(ghostNick, "#000000");
-                            if (node) {
-                                this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
-                            }
-                        }
-                    }
+                    if (_ghostInfo) _ghostInfo.push(length, x, y, sz);
                 }
                 this.ctx.fillStyle = defaultSettings.ghostCellsColor;
                 this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
@@ -72726,6 +72702,42 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.ctx.fill();
                 this.ctx.globalAlpha = 1;
                 this.ctx.shadowBlur = 0;
+                if (_ghostInfo && _ghostInfo.length) {
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillStyle = defaultSettings.namesColor;
+                    this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                    this.ctx.lineWidth = 4;
+                    for (var _gi = 0; _gi < _ghostInfo.length; _gi += 4) {
+                        length = _ghostInfo[_gi];
+                        var ghost = ghostsCells[length];
+                        x = _ghostInfo[_gi + 1];
+                        y = _ghostInfo[_gi + 2];
+                        sz = _ghostInfo[_gi + 3];
+                        /* World-space size: the context is already scaled by this.scale, so the
+                         * old "* this.scale * 4" made the on-screen size grow with scale squared. */
+                        this.nickScale = 1;
+                        this.fontSize = Math.max(sz * 0.3, 26);
+                        this.nickSize = ~~(this.fontSize * this.nickScale);
+                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize + "px " + defaultSettings.namesFontFamily;
+                        var angle = Math.PI * 0.8;
+
+                        var ghostNick = ghost.nick || (LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : "Ghost cell");
+                        /* Cache cleaned text on ghost cell — only recompute when nick changes */
+                        if (!ghost._cleanedText || ghost._cleanedNick !== ghostNick) {
+                            ghost._cleanedNick = ghostNick;
+                            ghost._cleanedText = removeEmojis(ghostNick); // canvas text: no HTML escaping
+                        }
+                        this.ghostcellstext = ghost._cleanedText;
+                        /* skin first, nick on top of it */
+                        if (_showSkins && ghostNick) {
+                            var node = application.getCustomSkin(ghostNick, "#000000");
+                            if (node) {
+                                this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
+                            }
+                        }
+                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle, defaultmapsettings.namesStroke);
+                    }
+                }
             }
         },
         preDrawPellet() {
