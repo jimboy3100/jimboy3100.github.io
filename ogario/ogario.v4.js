@@ -2967,19 +2967,38 @@ function _autoRandomPotionStep() {
             return;
         }
         window.autoRandomPotion++;
-        //if (window.autoRandomPotion==7) window.autoRandomPotion=1
-        if (window.autoRandomPotion === 1) brewPotion(1)
-        if (window.autoRandomPotion === 2) brewPotion(2)
-        if (window.autoRandomPotion === 3) brewPotion(3)
-        if (window.autoRandomPotion === 4) openPotion(1, false)
-        if (window.autoRandomPotion === 5) openPotion(2, false)
-        if (window.autoRandomPotion === 6) openPotion(3, false)
-        if (window.autoRandomPotion < 6) {
+        /* Act on the real slot state (legendmod.user.potionsStatus, statuses
+         * 1 obtained / 2 brewing / 3 ready): blind brew/open requests on every
+         * slot were answered "not available" / "already brewing" / "not ready". */
+        var step = window.autoRandomPotion;
+        if (step <= 3) {
+            var ready = _lmPotionSlot(step);
+            if (ready && (ready.status === 3 ||
+                (ready.status === 2 && Number(ready.readyAt) > 0 && Number(ready.readyAt) <= Date.now()))) {
+                openPotion(step, false);
+            }
+        } else if (step === 4) {
+            var brewing = false, obtained = 0;
+            for (var n = 1; n <= 3; n++) {
+                var pot = _lmPotionSlot(n);
+                if (!pot) continue;
+                if (pot.status === 2 && Number(pot.readyAt) > Date.now()) brewing = true;
+                if (pot.status === 1 && !obtained) obtained = n;
+            }
+            if (!brewing && obtained) brewPotion(obtained);
+        }
+        if (window.autoRandomPotion < 4) {
             _autoRandomPotionStep()
         } else {
             window._lmPotionDiggerRunning = false;
         }
     }, 5000);
+}
+
+function _lmPotionSlot(slot) {
+    var u = window.legendmod && window.legendmod.user;
+    var p = u && u.potionsStatus && u.potionsStatus['potion' + slot];
+    return p ? { status: Number(p.status) || 0, readyAt: p.readyAt } : null;
 }
 
 // PotionDrinker: removed (duplicate of window.openPotion, never called)
@@ -13979,6 +13998,18 @@ window.getAgarPotionInfo =
                     null
                 )
                 : null;
+
+        /* Official getPriceForSkip uses the first time-variable row whose
+         * timedEventId is "potionSkipBrew" for every potion and slot. */
+        if (
+            !variable &&
+            index.timeVariablePriceByEventId &&
+            index.timeVariablePriceByEventId.potionSkipBrew &&
+            index.timeVariablePriceByEventId.potionSkipBrew.length
+        ) {
+            variable =
+                index.timeVariablePriceByEventId.potionSkipBrew[0];
+        }
 
 
         var totalSeconds =
@@ -38598,13 +38629,8 @@ function thelegendmodproject() {
                             case 121:
                                 window.testobjects102121 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Open Potion For Product Response", option, response);
-                                // Auto-confirm: skip potion brew timer
-                                if (window.application && typeof window.application.activateTimedEvent === 'function') {
-                                    window.application.activateTimedEvent("potionSkipBrew");
-                                } else {
-                                    var bytes = [8, 1, 18, 21, 8, 110, 242, 6, 16, 10, 14, 112, 111, 116, 105, 111, 110, 83, 107, 105, 112, 66, 114, 101, 119]
-                                    window.core.proxyMobileData(bytes);
-                                }
+                                /* potionSkipBrew is activated after a brew starts and before a
+                                 * skip purchase (official PotionsController), not on product opens. */
                                 break;
                             case 122:
                                 window.testobjects102122 = node;
@@ -40283,7 +40309,31 @@ function thelegendmodproject() {
                              * there is no userPotions/newUserPotion here, so report by result. */
                             var opprResult = Number(oppr.result) || 0;
                             if (opprResult === 1) {
-                                toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                                /* Official getPotionRewards shows the rewards dialog with the
+                                 * response's product updates: reuse the slot-open reveal. */
+                                var opprRewards = [];
+                                for (var opri = 0; opri < (oppr.productUpdates || []).length; opri++) {
+                                    var opu = oppr.productUpdates[opri];
+                                    if (opu && opu.userWalletItem && Number(opu.deltaAmount) > 0) {
+                                        opprRewards.push({
+                                            productId: opu.userWalletItem.productId || '',
+                                            amount: Number(opu.deltaAmount) || 0,
+                                            type: Number(opu.userWalletItem.type) || 0,
+                                            origin: Number(opu.origin) || 0
+                                        });
+                                    }
+                                }
+                                if (opprRewards.length) {
+                                    try {
+                                        document.dispatchEvent(new CustomEvent('lm-potion-reward', {
+                                            detail: { rewards: opprRewards }
+                                        }));
+                                    } catch (opprEvtErr) {
+                                        toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                                    }
+                                } else {
+                                    toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                                }
                             } else if (opprResult === 2) {
                                 toastr.error('<b>[SERVER]:</b> Potion not opened — not enough currency.');
                             } else {
@@ -40304,6 +40354,11 @@ function thelegendmodproject() {
                                 /* Success */
                                 this.updatePotions(u.userPotions);
                                 if (window.toastr) toastr.success('<b>[POTION]:</b> Brewing started! \u2615');
+                                /* Official onStartBrewing: activate the potionSkipBrew timed event
+                                 * once the brew is running (skip-brew price timer). */
+                                if (window.application && typeof window.application.activateTimedEvent === 'function') {
+                                    window.application.activateTimedEvent('potionSkipBrew');
+                                }
                             } else if (brewResult === 3) {
                                 /* Already brewing another slot */
                                 if (window.toastr) toastr.warning('<b>[POTION]:</b> Already brewing another potion. Wait for it to finish.');
@@ -40327,6 +40382,24 @@ function thelegendmodproject() {
                             if (u.productUpdates && u.productUpdates.length) {
                                 this.updateProducts(u.productUpdates);
                             }
+                            /* Official Result_enum: 1 success, 2 potion_not_ready. Only a
+                             * successful open carries the slot list; a failed one must not
+                             * be read as "every slot is empty". */
+                            var openResult = Number(u.result) || 0;
+                            if (openResult !== 1) {
+                                window._userInitiatedPotionOpen = false;
+                                if (window.toastr) {
+                                    toastr.warning(openResult === 2
+                                        ? '<b>[POTION]:</b> Potion is not ready yet.'
+                                        : '<b>[POTION]:</b> Potion not opened (code ' + openResult + ').');
+                                }
+                                try {
+                                    document.dispatchEvent(new CustomEvent('lm-potions-updated', {
+                                        detail: (this.user && this.user.potionsStatus) || {}
+                                    }));
+                                } catch (openFailEvtErr) { }
+                                break;
+                            }
                             /* The response carries the full slot list: an empty list means
                              * every slot is now empty (opening the last potion). */
                             this.updatePotions(Array.from(u.userPotions || []));
@@ -40337,12 +40410,17 @@ function thelegendmodproject() {
                                 try {
                                     var rewardItems = [];
                                     if (u.productUpdates && u.productUpdates.length) {
+                                        /* Official getProductUpdatesForProductOrigin(updates, 14):
+                                         * the rewards are the potion_opened (origin 14) updates with
+                                         * a positive deltaAmount; userWalletItem.amount is the new
+                                         * wallet balance, not what the potion gave. */
                                         for (var ri = 0; ri < u.productUpdates.length; ri++) {
                                             var pu = u.productUpdates[ri];
-                                            if (pu && pu.userWalletItem) {
+                                            if (pu && pu.userWalletItem &&
+                                                Number(pu.origin) === 14 && Number(pu.deltaAmount) > 0) {
                                                 rewardItems.push({
                                                     productId: pu.userWalletItem.productId || '',
-                                                    amount: Number(pu.userWalletItem.amount) || 0,
+                                                    amount: Number(pu.deltaAmount) || 0,
                                                     type: Number(pu.userWalletItem.type) || 0,
                                                     origin: Number(pu.origin) || 0
                                                 });
