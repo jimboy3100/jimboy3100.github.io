@@ -72149,7 +72149,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
     ogarhusettingsImportExportMobile();
     setGUIEvents();
 
-    window.canvasElem = document.querySelector("canvas");
+    /* #canvas, not the first <canvas>: the background layer (pointer-events:none) is inserted before it. */
+    window.canvasElem = document.getElementById("canvas") || document.querySelector("canvas");
     window.canvasElem.addEventListener('contextmenu', openContextMenu, false);
     document.getElementById("botsRemoteIP").addEventListener('contextmenu', openContextMenu2, false);
     document.getElementById("server-token").addEventListener('contextmenu', openContextMenu3, false);
@@ -72521,28 +72522,28 @@ function leftClickOpen3() {
 }
 
 function leftClickAttack() {
-    var temp = legendmod.cursorX + legendmod.mapOffsetX
-    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
+    /* the spot that was right-clicked, not where the menu item is */
+    var temp = window._lmContextMenuX + legendmod.mapOffsetX
+    var temp2 = window._lmContextMenuY + legendmod.mapOffsetY
     application.sendChatMessage(101, "[DosAttack]" + temp + "," + temp2 + "[/DosAttack]")
-    ogario.sendChatMessage(101, "[DosAttack]" + temp + "," + temp2 + "[/DosAttack]")
     //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
     hideContextMenu()
 }
 
 function leftClickFight() {
-    var temp = legendmod.cursorX + legendmod.mapOffsetX
-    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
+    /* the spot that was right-clicked, not where the menu item is */
+    var temp = window._lmContextMenuX + legendmod.mapOffsetX
+    var temp2 = window._lmContextMenuY + legendmod.mapOffsetY
     application.sendChatMessage(101, "[DosFight]" + temp + "," + temp2 + "[/DosFight]")
-    ogario.sendChatMessage(101, "[DosFight]" + temp + "," + temp2 + "[/DosFight]")
     //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
     hideContextMenu()
 }
 
 function leftClickRun() {
-    var temp = legendmod.cursorX + legendmod.mapOffsetX
-    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
+    /* the spot that was right-clicked, not where the menu item is */
+    var temp = window._lmContextMenuX + legendmod.mapOffsetX
+    var temp2 = window._lmContextMenuY + legendmod.mapOffsetY
     application.sendChatMessage(101, "[DosRun]" + temp + "," + temp2 + "[/DosRun]")
-    ogario.sendChatMessage(101, "[DosRun]" + temp + "," + temp2 + "[/DosRun]")
     //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
     hideContextMenu()
 }
@@ -72550,6 +72551,8 @@ function leftClickRun() {
 function openContextMenu(evt) {
     if (legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && (legendmod.gameMode === ":party" || !legendmod.integrity)) {
         evt.preventDefault();
+        window._lmContextMenuX = legendmod.cursorX;
+        window._lmContextMenuY = legendmod.cursorY;
         const time = menuLeft.isOpen() ? 100 : 0;
         menuLeft.hide();
         setTimeout(() => {
