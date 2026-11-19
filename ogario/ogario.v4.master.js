@@ -266,7 +266,8 @@ function legendmaster(self) {
                 response.authResponse.accessToken;
             if (accessToken) {
 				if (window.MultiPending){				
-					master.accessTokenFB = accessToken;				
+					master.accessTokenFB = accessToken;
+					master.accessTokenFBAt = Date.now();				
 					MultiTokenReady(window.MultiPending);
 					window.MultiPending = null;
 				}	
@@ -384,6 +385,7 @@ function legendmaster(self) {
         if (event && api && api.isSignedIn.get() && (window.MultiPending || ("1" === options.loginIntent && options.context === "google"))) {
 			if (window.MultiPending){				
 				master.accessTokenGPlus = event.getAuthResponse().id_token;
+				master.accessTokenGPlusAt = Date.now();
 				MultiTokenReady(window.MultiPending);
 				window.MultiPending = null;
 			}
@@ -1566,6 +1568,9 @@ function legendmaster(self) {
         },
         logout() {
             this.accessToken = null;
+            /* Multibox tokens belong to the session that is ending too. */
+            this.accessTokenGPlus = null;
+            this.accessTokenFB = null;
 			this.context = "";
 			/* Allow the next login on this connection to send its token. */
 			if (window.legendmod) window.legendmod.accessTokenSent = false;

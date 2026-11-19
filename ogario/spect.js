@@ -373,6 +373,11 @@ class Spect {
 
     //spects[0].sendGplusToken(master.accessToken)
     getTheOppositeSocialToken() {
+        /* Google id_tokens live 1 h and FB tokens 1-2 h: drop cached multibox tokens
+         * older than 45 min so the login flow runs again instead of resending a dead one. */
+        var maxTokenAge = 45 * 60 * 1000;
+        if (master.accessTokenGPlus && !(Date.now() - (master.accessTokenGPlusAt || 0) < maxTokenAge)) master.accessTokenGPlus = null;
+        if (master.accessTokenFB && !(Date.now() - (master.accessTokenFBAt || 0) < maxTokenAge)) master.accessTokenFB = null;
         if (master.context === "facebook") {
             if (master.accessTokenGPlus) {
                 MultiTokenReady(this)
@@ -1946,6 +1951,14 @@ function MultiTokenReady(spector) {
      * Sending the main account's token logs the main connection out
      * ("Login elsewhere"), so pick the token by the main login context.
      */
+    var maxTokenAge = 45 * 60 * 1000;
+    var neededAt = master.context === "facebook" ? master.accessTokenGPlusAt : master.accessTokenFBAt;
+    var needed = master.context === "facebook" ? master.accessTokenGPlus : master.accessTokenFB;
+    if (needed && !(Date.now() - (neededAt || 0) < maxTokenAge)) {
+        /* Expired cached token: getTheOppositeSocialToken drops it and logs in again. */
+        spector.getTheOppositeSocialToken();
+        return;
+    }
     if (master.context === "facebook" && master.accessTokenGPlus) {
         spector.sendGplusToken(master.accessTokenGPlus)
     } else if (master.context === "google" && master.accessTokenFB) {
