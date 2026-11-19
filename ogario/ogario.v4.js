@@ -2981,8 +2981,14 @@ window.changeOnline = function (option) {
 
 function autocoins(slot) {
     if (legendmod.integrity && window.loggedIn && window.lmAccountReady()) {
-        // Prefer sendProto-based method if available
-        if (window.application && typeof window.application.activateTimedEvent === 'function') {
+        /* Official FreeCoinsService claims only when the hourlyBonus timer is 0: the login
+         * timer and the hourly digger sent 110 during the cooldown (refused). Unknown timer
+         * (no list yet) still claims; 2 s of slack for a timer firing on the deadline. */
+        var _hbLeft = typeof window.getLiveTimedEventSecondsRemaining === 'function'
+            ? window.getLiveTimedEventSecondsRemaining('hourlyBonus') : null;
+        if (_hbLeft !== null && _hbLeft > 2) {
+            /* updateEvents already re-armed coinsTimer for the deadline. */
+        } else if (window.application && typeof window.application.activateTimedEvent === 'function') {
             window.application.activateTimedEvent("hourlyBonus");
         } else {
             // Fallback: raw bytes
