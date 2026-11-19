@@ -68632,7 +68632,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
         drawMergeProgressRings(ctx, playerCells) {
-            if (!playerCells || playerCells.length <= 1) return;
+            if (!playerCells) return;
+            if (playerCells.length <= 1) {
+                /* Merged back into one cell: clear its split time so the
+                 * next split re-arms the ring for both halves. */
+                if (playerCells[0]) playerCells[0].splitTime = 0;
+                return;
+            }
             var now = Date.now();
             ctx.save();
             try {
