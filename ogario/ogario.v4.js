@@ -1081,12 +1081,19 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         }
     }
 
+    /* Known servers that are not Expanding Land must never get the Discord token or
+     * profile. (window.LM is only a UI stub; the connection state is on legendmod.) */
+    function _lw_isNonLwServer() {
+        if (typeof legendmod === 'undefined' || !legendmod || legendmod.isLegendWorld) return false;
+        return ['agario', 'imsolo', 'agar2', 'garix', 'sigmally', 'senpa'].indexOf(legendmod.serverType) !== -1;
+    }
+
     function _lw_sendLogin102(token, socialId, displayName, attemptId, provider) {
         attemptId = attemptId || (window._lwAuth && window._lwAuth.attemptId);
         provider = provider || (window._lwAuth && window._lwAuth.provider);
         _lwScheduleAuthSocketSend(provider + ':102', attemptId, provider, 0, function () {
-            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
-                console.log('[LW Login] Skipping opcode 102 for legacy server: ' + window.LM.serverType);
+            if (_lw_isNonLwServer()) {
+                console.log('[LW Login] Skipping opcode 102 for non Expanding Land server: ' + legendmod.serverType);
                 return true;
             }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
@@ -1129,8 +1136,8 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
     function _lw_sendDiscordProfile(discordUser, attemptId) {
         attemptId = attemptId || (window._lwAuth && window._lwAuth.attemptId);
         _lwScheduleAuthSocketSend('discord:204', attemptId, 'discord', 500, function () {
-            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
-                console.log('[LW Discord] Skipping opcode 204 for legacy server: ' + window.LM.serverType);
+            if (_lw_isNonLwServer()) {
+                console.log('[LW Discord] Skipping opcode 204 for non Expanding Land server: ' + legendmod.serverType);
                 return true;
             }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
@@ -1171,7 +1178,9 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         window._lw_protobuf102Received = false; /* debug marker */
         window.legendmod_discordUser = discordUser;
 
-        if (window.MC) {
+        /* The current official MiniclipAPI has no doLoginWithGPlus (only doLoginWithGoogle,
+         * which expects a Google id_token): without it, send opcode 102 directly. */
+        if (window.MC && typeof window.MC.doLoginWithGPlus === 'function') {
             /* agar.io path: use the engine's built-in login */
             if (discordUser.avatar) {
                 MC.setProfilePicture(discordUser.avatar);
@@ -1261,7 +1270,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             if (user && user.token && auth && (auth.provider === 'discord' || !auth.provider)) {
                 var newAttemptId = window._lwBeginLogin('discord');
                 window._lwAuth.discordAttemptId = newAttemptId;
-                if (window.MC) {
+                if (window.MC && typeof window.MC.doLoginWithGPlus === 'function') {
                     MC.doLoginWithGPlus({ access_token: user.token, expires_in: 604800 });
                 } else {
                     _lw_sendLogin102(user.token, user.id, user.globalName || user.username, newAttemptId, 'discord');
@@ -1693,6 +1702,12 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
 
         // Manual logout/private-server switch must always win over reconnect state.
         if (intendedLogout) {
+            /* Both read before the flags below and master.logout() clear them. */
+            var _lmPlainLogout = !window._isChangingToPrivateServer;
+            var _lmReconnectAsGuest = _lmPlainLogout &&
+                typeof legendmod !== 'undefined' && legendmod &&
+                legendmod.serverType === 'agario' && !legendmod.isLegendWorld &&
+                legendmod.loginConfirmed === true;
             window._lwLoginRetryGeneration =
                 (window._lwLoginRetryGeneration || 0) + 1;
 
@@ -1768,8 +1783,40 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 window.updateLegendXpPanel();
             }
 
+            /* A manual logout kept legendmod.user (userId, coins, skins), so
+             * checkUserLoggedIn()/checkUserUID() still said logged in. The server switch
+             * path runs this reset itself when it crosses account domains. */
+            if (_lmPlainLogout && typeof window._clearAccountDomainRuntime === 'function') {
+                try { window._clearAccountDomainRuntime('logout'); } catch (e) {
+                    console.warn('[LW AUTH] Account reset on logout failed:', e);
+                }
+            }
+
+            /* Login-response data of the account that logged out. */
+            delete window._lmHasVIPSubscription;
+            window._lmLoginHasLeaguesInfo = undefined;
+            window._lmUserGifts = null;
+
             if (_origLogout) {
                 _origLogout.apply(this, arguments);
+            }
+
+            /* The 'logout' listeners (identity, shop buttons, VIP cache) only ran when the
+             * official client logged out; Legend Mod's own logout never dispatched it. */
+            if (!window._lmDispatchingLogout) {
+                window._lmDispatchingLogout = true;
+                try { document.dispatchEvent(new CustomEvent('logout')); } catch (e) { }
+                window._lmDispatchingLogout = false;
+            }
+
+            /* The agar.io socket stays logged in to the old account after a logout, so its
+             * games kept counting for it and a new login on it was a second login on one
+             * socket. The official client disconnects on logout; reconnect as guest here. */
+            if (_lmReconnectAsGuest && window.master && typeof window.master.reconnect === 'function' &&
+                legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                try { window.master.reconnect(true, 'logout'); } catch (e) {
+                    console.warn('[LW AUTH] Reconnect after logout failed:', e);
+                }
             }
             return;
         }
@@ -39413,10 +39460,10 @@ function thelegendmodproject() {
                         window.autocoins()
                     }, 3000);
 
-                    window.localStorage.setItem("getLatestID", u.latestConfiguration);
-
-                    /* Update agarversion with fresh configId from server and rebuild skin map */
-                    if (u.latestConfiguration) {
+                    /* Update agarversion with fresh configId from server and rebuild skin map.
+                     * Only an official agar.io login carries a real config id: Expanding Land
+                     * sends 1, which made agarversion "v15/1/" (saved for the next page load). */
+                    if (u.latestConfiguration && this.serverType === 'agario' && !LM.isLegendWorld) {
                         var freshVersion = "v" + (window.getLatestconfigVersion || "15") + "/" + u.latestConfiguration + "/";
                         window.agarversion = freshVersion;
                         window.localStorage.setItem("getLatestID", u.latestConfiguration);
@@ -44120,10 +44167,10 @@ Most cells eaten   : ${mostCellsEaten}
                         window.expandingLandUID
                     );
                 }
-                /* realmInfo contains the social ID */
-                if (i.realmInfo && i.realmInfo.userId) {
-                    window.agarioID = i.realmInfo.userId;
-                    localStorage.setItem("agarioID", window.agarioID);
+                /* realmInfo.realmId (field 2) is the social ID; realmInfo has no userId field. */
+                if (i.realmInfo && i.realmInfo.realmId) {
+                    window.agarioID = i.realmInfo.realmId;
+                    try { localStorage.setItem("agarioID", window.agarioID); } catch (e) { }
                     console.log('[LW 102] Social ID from protobuf:', window.agarioID);
                 }
                 /* Profile picture from realmInfo.avatarUrl */
