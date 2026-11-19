@@ -73287,6 +73287,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
     });
     window.onmousedown = function (event) {
         _lmMouseHeld[event.which] = true;
+        /* clicking into the chat input or a HUD button/select must not split or feed */
+        var _lmMT = event.target || {};
+        if (_lmMT.tagName === 'INPUT' || _lmMT.tagName === 'TEXTAREA' || _lmMT.tagName === 'SELECT' || _lmMT.tagName === 'BUTTON' || _lmMT.isContentEditable === true) return;
         if (!$("#overlays").is(":visible")) {
             //console.log(event.which)
             if (2 === event.which) {
