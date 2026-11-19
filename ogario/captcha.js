@@ -21,9 +21,15 @@ function CaptchaRouter(arg) {
     var _captchaV3Busy = false;
     var _captchaV3Queue = [];
 
-    function requestCaptchaV3(t, e) {
+    function requestCaptchaV3(t, e, _tries) {
         if (!window.grecaptchaV3 || typeof window.grecaptchaV3.execute !== "function") {
-            console.warn("[Captcha] reCAPTCHA v3 is not loaded yet");
+            /* Not loaded yet: retry for ~15 s instead of dropping the request. */
+            _tries = (_tries || 0) + 1;
+            if (_tries > 15) {
+                console.warn("[Captcha] reCAPTCHA v3 did not load; request dropped");
+                return;
+            }
+            setTimeout(function () { requestCaptchaV3(t, e, _tries); }, 1000);
             return;
         }
         if (_captchaV3Busy) {
@@ -32,11 +38,20 @@ function CaptchaRouter(arg) {
         }
         _captchaV3Busy = true;
 
+        var settled = false;
         function next() {
+            if (settled) return;
+            settled = true;
+            clearTimeout(hangTimer);
             _captchaV3Busy = false;
             var queued = _captchaV3Queue.shift();
             if (queued) requestCaptchaV3(queued[0], queued[1]);
         }
+        /* execute() can stay pending forever (blocked iframe): do not wedge the queue. */
+        var hangTimer = setTimeout(function () {
+            console.warn("[Captcha] reCAPTCHA v3 execute timed out");
+            next();
+        }, 15000);
 
         try {
             null === window.recaptchaClientId && (window.recaptchaClientId = window.grecaptchaV3.render("captchaWindowV3", {
@@ -48,6 +63,7 @@ function CaptchaRouter(arg) {
             window.grecaptchaV3.execute(window.recaptchaClientId, {
                 action: t
             }).then(function(t) {
+                if (settled) return; /* timed out; a newer request owns the widget */
                 next();
                 e(t)
             }, function(err) {
