@@ -20856,7 +20856,9 @@ function thelegendmodproject() {
                         e = e + this.top5[o].mass;
                         if (!(o >= defaultmapsettings.teamboardlimit && this.top5[o].mass > 1)) {
                             var p = this.top5[o];
-                            var skinUrl = p.skinURL || application.customSkinsMap[p.nick] || application.customSkinsMap[p.nick + "#000000"] || (p.color ? application.customSkinsMap[p.nick + p.color] : null);
+                            /* top5 entries carry the teammate's own skin as .skin (updateTeamPlayers);
+                             * the nick lookups picked another player's skin when nicks repeat. */
+                            var skinUrl = p.skinURL || p.skin || application.customSkinsMap[p.nick] || application.customSkinsMap[p.nick + "#000000"] || (p.color ? application.customSkinsMap[p.nick + p.color] : null);
                             var isValidSkinUrl = skinUrl && typeof skinUrl === 'string' && (/^(https?:\/\/|data:image\/)/i.test(skinUrl));
                             if (isValidSkinUrl) {
                                 if (!p.skinURL) p.skinURL = skinUrl;
