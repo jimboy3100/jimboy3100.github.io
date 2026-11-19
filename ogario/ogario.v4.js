@@ -2967,19 +2967,38 @@ function _autoRandomPotionStep() {
             return;
         }
         window.autoRandomPotion++;
-        //if (window.autoRandomPotion==7) window.autoRandomPotion=1
-        if (window.autoRandomPotion === 1) brewPotion(1)
-        if (window.autoRandomPotion === 2) brewPotion(2)
-        if (window.autoRandomPotion === 3) brewPotion(3)
-        if (window.autoRandomPotion === 4) openPotion(1, false)
-        if (window.autoRandomPotion === 5) openPotion(2, false)
-        if (window.autoRandomPotion === 6) openPotion(3, false)
-        if (window.autoRandomPotion < 6) {
+        /* Act on the real slot state (legendmod.user.potionsStatus, statuses
+         * 1 obtained / 2 brewing / 3 ready): blind brew/open requests on every
+         * slot were answered "not available" / "already brewing" / "not ready". */
+        var step = window.autoRandomPotion;
+        if (step <= 3) {
+            var ready = _lmPotionSlot(step);
+            if (ready && (ready.status === 3 ||
+                (ready.status === 2 && Number(ready.readyAt) > 0 && Number(ready.readyAt) <= Date.now()))) {
+                openPotion(step, false);
+            }
+        } else if (step === 4) {
+            var brewing = false, obtained = 0;
+            for (var n = 1; n <= 3; n++) {
+                var pot = _lmPotionSlot(n);
+                if (!pot) continue;
+                if (pot.status === 2 && Number(pot.readyAt) > Date.now()) brewing = true;
+                if (pot.status === 1 && !obtained) obtained = n;
+            }
+            if (!brewing && obtained) brewPotion(obtained);
+        }
+        if (window.autoRandomPotion < 4) {
             _autoRandomPotionStep()
         } else {
             window._lmPotionDiggerRunning = false;
         }
     }, 5000);
+}
+
+function _lmPotionSlot(slot) {
+    var u = window.legendmod && window.legendmod.user;
+    var p = u && u.potionsStatus && u.potionsStatus['potion' + slot];
+    return p ? { status: Number(p.status) || 0, readyAt: p.readyAt } : null;
 }
 
 // PotionDrinker: removed (duplicate of window.openPotion, never called)
