@@ -138,6 +138,20 @@ window.OgVer = 3.504;
             }
         }
 
+        /* The logout listener disables #adRewardBtn, but updateShopLoginState
+           does not manage it: re-enable it on login unless a request is pending. */
+        try {
+            var arBtn = document.getElementById('adRewardBtn');
+            if (arBtn && arBtn.disabled && !window._adRewardTimeout &&
+                typeof window.checkUserLoggedIn === 'function' && window.checkUserLoggedIn()) {
+                arBtn.disabled = false;
+                arBtn.style.opacity = '1';
+                arBtn.style.cursor = '';
+                arBtn.style.pointerEvents = 'auto';
+                arBtn.removeAttribute('title');
+            }
+        } catch (arErr) {}
+
         /*
          * VIP LIVE ACCOUNT STATE
          *
@@ -428,6 +442,9 @@ window.OgVer = 3.504;
     } catch (error) {
     }
 
+    /* Exposed so code outside this IIFE (_clearAccountDomainRuntime) can refresh the UI. */
+    window._lmRefreshIdentityUI = refreshIdentityUI;
+
     refreshIdentityUI();
 
     /*
@@ -440,6 +457,8 @@ window.OgVer = 3.504;
      * - agarApp.core.bind may appear later.
      */
     var officialIdentityPollTimer = null;
+    /* Bounded: on the website there is no agarApp, so the bind condition never becomes true. */
+    var officialIdentityPollAttempts = 0;
 
     function inspectExistingOfficialUser(source) {
         try {
@@ -602,6 +621,12 @@ window.OgVer = 3.504;
             return;
         }
 
+        /* Give up after about 2 minutes (480 x 250 ms). */
+        if (++officialIdentityPollAttempts >= 480) {
+            officialIdentityPollTimer = null;
+            return;
+        }
+
         officialIdentityPollTimer =
             window.setTimeout(
                 pollOfficialIdentitySources,
@@ -735,11 +760,20 @@ function readLocalStorageJSON(key, fallbackValue) {
                 var tx = this.db.transaction(storeName, "readonly");
                 var store = tx.objectStore(storeName);
                 var countReq = store.count();
+                /* Every exit path must clear the flag, or eviction never runs again. */
+                var clearFlag = function () { self[flagName] = false; };
+                tx.onabort = clearFlag;
                 countReq.onsuccess = function () {
                     var count = countReq.result;
                     if (count > limit) {
                         var toDelete = count - limit;
-                        var deleteTx = self.db.transaction(storeName, "readwrite");
+                        var deleteTx;
+                        try {
+                            deleteTx = self.db.transaction(storeName, "readwrite");
+                        } catch (txErr) {
+                            clearFlag();
+                            return;
+                        }
                         var deleteStore = deleteTx.objectStore(storeName);
                         var index = deleteStore.index("timestamp");
                         var cursorReq = index.openCursor();
@@ -757,6 +791,7 @@ function readLocalStorageJSON(key, fallbackValue) {
                         deleteTx.onerror = function () {
                             self[flagName] = false;
                         };
+                        deleteTx.onabort = clearFlag;
                     } else {
                         self[flagName] = false;
                     }
@@ -1181,7 +1216,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             /* Social ID = Discord user ID (temporary until server confirms) */
             if (discordUser.id) {
                 window.agarioID = discordUser.id;
-                localStorage.setItem("agarioID", discordUser.id);
+                try { localStorage.setItem("agarioID", discordUser.id); } catch (e) { }
             }
             /* Do NOT set window.agarioUID here — authoritative UID comes from server protobuf.
              * The old code hashed the token into 'discord-XXXXXXXX' which didn't match
@@ -1592,8 +1627,8 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             localStorage.removeItem("agarioEncodedUID");
         } catch (e) { }
 
-        if (typeof refreshIdentityUI === 'function') {
-            refreshIdentityUI();
+        if (typeof window._lmRefreshIdentityUI === 'function') {
+            window._lmRefreshIdentityUI();
         }
 
         /*
@@ -1805,12 +1840,37 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                     typeof window.master.login === 'function'
                 ) {
                     try {
-                        if (typeof window.master.refreshSocialToken === 'function') {
-                            window.master._tokenTime = 0;
-                            window.master.refreshSocialToken();
+                        /* master.refreshSocialToken() is asynchronous and returns nothing, so
+                           calling login() right after it resent the old (maybe expired) token.
+                           Reload the Google token here and log in once it has settled. */
+                        var gUser = null;
+                        try {
+                            var gAuth = window.gapi && window.gapi.auth2 && window.gapi.auth2.getAuthInstance();
+                            gUser = gAuth && gAuth.isSignedIn.get() ? gAuth.currentUser.get() : null;
+                        } catch (gErr) { gUser = null; }
+                        var doGoogleLogin = function () {
+                            if (!window.master || typeof window.master.login !== 'function') return;
+                            if (window.legendmod) window.legendmod.accessTokenSent = false;
+                            window.master.login();
+                        };
+                        if (gUser && typeof gUser.reloadAuthResponse === 'function') {
+                            gUser.reloadAuthResponse().then(function (auth) {
+                                if (auth && auth.id_token && window.master && window.master.context === 'google') {
+                                    window.master.accessToken = auth.id_token;
+                                    window.master._tokenTime = Date.now();
+                                }
+                                doGoogleLogin();
+                            }, function (refreshErr) {
+                                console.warn('[LW AUTH] Google token reload failed, resending current token:', refreshErr);
+                                doGoogleLogin();
+                            });
+                        } else {
+                            if (typeof window.master.refreshSocialToken === 'function') {
+                                window.master._tokenTime = 0;
+                                window.master.refreshSocialToken();
+                            }
+                            doGoogleLogin();
                         }
-                        if (window.legendmod) window.legendmod.accessTokenSent = false;
-                        window.master.login();
                         reloginAttempted = true;
                     } catch (e) {
                         console.warn('[LW AUTH] Google relogin failed to start:', e);
@@ -1929,7 +1989,9 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         /* Generate a one-time nonce for CSRF protection on OAuth state */
         var _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function (b) { return b.toString(16).padStart(2, '0') }).join('');
         var _discordOAuthState = window.location.origin + '|' + _discordOAuthNonce;
-        sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce);
+        /* Storage can be blocked (iframe) or full: keep the nonce in this closure too. */
+        var _discordNonceLive = _discordOAuthNonce;
+        try { sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce); } catch (e) { }
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(_discordOAuthState);
         var discordPopupRef = null;
         var discordSetupAttempts = 0;
@@ -1960,14 +2022,16 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         function acceptDiscordUser(discordUser, channel) {
             if (!discordUser || !discordUser.id || !discordUser.token) return false;
             /* CSRF nonce validation: reject if nonce is present but doesn't match */
-            var expectedNonce = sessionStorage.getItem('discord_oauth_nonce');
+            var expectedNonce = _discordNonceLive;
+            try { expectedNonce = sessionStorage.getItem('discord_oauth_nonce') || _discordNonceLive; } catch (e) { }
             if (expectedNonce && discordUser.nonce) {
                 if (discordUser.nonce !== expectedNonce) {
                     console.warn('[LW Discord] CSRF nonce mismatch via ' + channel + ' — rejecting');
                     return false;
                 }
                 /* Consume nonce to prevent replay */
-                sessionStorage.removeItem('discord_oauth_nonce');
+                _discordNonceLive = null;
+                try { sessionStorage.removeItem('discord_oauth_nonce'); } catch (e) { }
             } else if (expectedNonce && !discordUser.nonce) {
                 console.warn('[LW Discord] Relay did not include nonce — accepting (backwards-compat)');
             }
@@ -2424,7 +2488,9 @@ function deleteGamemode(temp) {
     });
     $('#gamemode').val('5001');
     $('#gamemode option[value="5001"]').prop('selected', true);
-    setTimeout(function () {
+    /* With temp === true the change is triggered right after the handler is bound
+       (end of this function); triggering it again here connected twice in 100 ms. */
+    if (temp !== true) setTimeout(function () {
         $('#gamemode').val('5001');
         $('#gamemode option[value="5001"]').prop('selected', true);
         $('#gamemode')[0].selectedIndex = 0;
@@ -3964,19 +4030,37 @@ function callEveryFullHourCoinDigger() {
     }, difference);
 }
 
+/* Bound once under a namespace (re-enabling used to stack handlers) and throttled to
+   one tween per animation frame; the canvas fills the window, so the window size is
+   used instead of reading the canvas size (a forced layout) on every mousemove. */
+var _lmTiltSel = '#leaderboard-hud, #top5-hud, #minimap-hud, #time-hud, #stats-hud';
+var _lmTiltRaf = 0, _lmTiltX = 0, _lmTiltY = 0, _lmTiltOn = false;
 function initTilt() {
     //TweenMax.set([$pContent], { transformStyle: "preserve-3d" });
-    $('body').mousemove(function (e) {
-        var sxPos = e.pageX / $(canvas).width() * 100 - 100;
-        var syPos = e.pageY / $(canvas).height() * 100 - 100;
-        TweenMaxLM($('#leaderboard-hud'), sxPos, syPos)
-        TweenMaxLM($('#top5-hud'), sxPos, syPos)
-        TweenMaxLM($('#minimap-hud'), sxPos, syPos)
-        TweenMaxLM($('#time-hud'), sxPos, syPos)
-        TweenMaxLM($('#stats-hud'), sxPos, syPos)
-        //TweenMaxLM($('#minimap-sectors'), sxPos, syPos)
+    _lmTiltOn = true;
+    $('body').off('mousemove.lmTilt').on('mousemove.lmTilt', function (e) {
+        _lmTiltX = e.pageX;
+        _lmTiltY = e.pageY;
+        if (_lmTiltRaf) return;
+        _lmTiltRaf = requestAnimationFrame(function () {
+            _lmTiltRaf = 0;
+            var w = window.innerWidth || 1, h = window.innerHeight || 1;
+            var sxPos = _lmTiltX / w * 100 - 100;
+            var syPos = _lmTiltY / h * 100 - 100;
+            TweenMaxLM($(_lmTiltSel), sxPos, syPos);
+        });
     });
 };
+
+function stopTilt() {
+    if (!_lmTiltOn) return; /* never touch the HUD transforms if tilt was not on */
+    _lmTiltOn = false;
+    $('body').off('mousemove.lmTilt');
+    if (_lmTiltRaf) { cancelAnimationFrame(_lmTiltRaf); _lmTiltRaf = 0; }
+    try {
+        if (typeof TweenMax !== 'undefined') TweenMax.to($(_lmTiltSel), 0.5, { rotationY: 0, rotationX: 0 });
+    } catch (e) { }
+}
 
 function TweenMaxLM(Variable, sxPos, syPos) {
     TweenMax.to(Variable, 2, {
@@ -4541,13 +4625,25 @@ function createCaptchaWindow(i) {
 window.connectionBots = {
     ws: null,
     connect() {
+        /* A second click while the socket is still connecting opened a second socket,
+           so onopen/onclose ran twice (orphan captcha popups, false "Disconnected"). */
+        var old = this.ws
+        if (old && (old.readyState === WebSocket.CONNECTING || old.readyState === WebSocket.OPEN)) return
+        if (old) {
+            old.onopen = old.onmessage = old.onclose = null
+            try { old.close() } catch (e) { }
+        }
         //this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
-        this.ws = new WebSocket(`${window.SERVER_HOST}`)
+        var ws = this.ws = new WebSocket(`${window.SERVER_HOST}`)
         //this.ws = new WebSocket(`ws://agario-bots--jimboy3100.repl.co`)
-        this.ws.binaryType = 'arraybuffer'
-        this.ws.onopen = this.onopen.bind(this)
-        this.ws.onmessage = this.onmessage.bind(this)
-        this.ws.onclose = this.onclose.bind(this)
+        var self = this
+        var current = function (fn) {
+            return function (e) { if (self.ws === ws) return fn.call(self, e) }
+        }
+        ws.binaryType = 'arraybuffer'
+        ws.onopen = current(this.onopen)
+        ws.onmessage = current(this.onmessage)
+        ws.onclose = current(this.onclose)
     },
     send(buffer) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) this.ws.send(buffer)
@@ -4701,7 +4797,23 @@ window.videoSkinPlayer = {};
 
 
 
+/* Videos loop and were never paused when their cell left view. Remember when each URL
+   was last drawn; one sweeper pauses those not drawn for 3 s (the next draw resumes it). */
+window.videoSkinLastDraw = {};
+window.videoSkinSweeper = null;
+function sweepVideoSkins() {
+    var now = Date.now();
+    for (var url in window.videoSkinPlayer) {
+        var v = window.videoSkinPlayer[url];
+        if (v && v.playing && now - (window.videoSkinLastDraw[url] || 0) > 3000) {
+            try { v.pause(); } catch (e) { }
+        }
+    }
+}
+
 function checkVideos(a, b) {
+    window.videoSkinLastDraw[a] = Date.now();
+    if (!window.videoSkinSweeper) window.videoSkinSweeper = setInterval(sweepVideoSkins, 2000);
     checkVideos1(a);
     //setTimeout(function() {
     if (window.videoSkinPlayer[a] && window.videoSkinPlayer[a].readyState == 4) {
@@ -8115,6 +8227,11 @@ window.rebuildAgarConfigIndex = function () {
 
     window._agarConfigIndex =
         index;
+    window._agarConfigIndexSource =
+        window.GameConfiguration ||
+        window.LMAgarGameConfiguration ||
+        window.LMGameConfiguration ||
+        null;
 
     return index;
 };
@@ -8125,12 +8242,45 @@ window.rebuildAgarConfigIndex = function () {
  */
 window.getAgarConfigIndex =
     function () {
-        return (
-            window
-                ._agarConfigIndex ||
-            window
-                .rebuildAgarConfigIndex()
-        );
+        /*
+         * The index belongs to one GameConfiguration object. The shop's version
+         * picker replaces window.GameConfiguration directly, and an index built
+         * before any config loaded is empty: rebuild (and re-derive the config
+         * globals) when the object changes, and never cache an empty index.
+         */
+        var gc =
+            window.GameConfiguration ||
+            window.LMAgarGameConfiguration ||
+            window.LMGameConfiguration ||
+            null;
+
+        if (
+            window._agarConfigIndex &&
+            gc &&
+            window._agarConfigIndexSource === gc
+        ) {
+            return window._agarConfigIndex;
+        }
+
+        if (
+            gc &&
+            gc.gameConfig &&
+            window._lmGameConfigInitSource !== gc
+        ) {
+            _initGameConfigSections(gc);
+        }
+
+        var index =
+            window._agarConfigIndexSource === gc &&
+            window._agarConfigIndex
+                ? window._agarConfigIndex
+                : window.rebuildAgarConfigIndex();
+
+        window._agarConfigIndexSource = gc;
+        if (!gc) {
+            window._agarConfigIndex = null;
+        }
+        return index;
     };
 
 
@@ -9256,7 +9406,9 @@ window.normalizeAgarGameplayConfigMode =
                 mode
             )
                 .trim()
-                .toLowerCase();
+                .toLowerCase()
+                /* LM stores modes as ':ffa', ':teams', ':battleroyale' ... */
+                .replace(/^:/, '');
 
 
         if (
@@ -9314,6 +9466,10 @@ window.getAgarGameplayCapabilities =
                     (
                         window.LM &&
                         window.LM.gameMode
+                    ) ||
+                    (
+                        window.legendmod &&
+                        window.legendmod.gameMode
                     ) ||
                     ''
                 );
@@ -11893,6 +12049,8 @@ if (!window._lmVipRuntimeListenersInstalled) {
     }, false);
 
     document.addEventListener('accountDomainRuntimeReset', function () {
+        /* Same as logout: getAgarVipStatus falls back to this flag. */
+        delete window._lmHasVIPSubscription;
         window._lmVipStatusCache = null;
         try { document.dispatchEvent(new CustomEvent('lm-vip-status-updated',
             { detail: { current: { known: false, active: false, source: 'runtime-reset',
@@ -12025,10 +12183,13 @@ window.getAgarPartySettings =
  * GameConfiguration is authoritative for partyCodeLength,
  * partyLinkUrlPrefix, and partyLinkQuery.
  */
+/* Side-effect free: returns '' for invalid and for mobile ("M" + code) tokens and sets
+ * window._lmLastPartyTokenMobile; only joinAgarPartyToken opens the mobile dialog. */
 window.normalizeAgarPartyToken =
     function (
         partyToken
     ) {
+        window._lmLastPartyTokenMobile = false;
         var value =
             String(
                 partyToken || ''
@@ -12088,17 +12249,7 @@ window.normalizeAgarPartyToken =
             value.length === expectedLength + 1 &&
             value.charAt(0).toUpperCase() === 'M'
         ) {
-            try {
-                if (
-                    window.agarApp &&
-                    window.agarApp.API &&
-                    typeof window.agarApp.API.showMobilePartyCodeDialog === 'function'
-                ) {
-                    window.agarApp.API.showMobilePartyCodeDialog();
-                }
-            } catch (mobileDialogError) {
-                console.warn('[LM PARTY] Mobile dialog error:', mobileDialogError);
-            }
+            window._lmLastPartyTokenMobile = true;
             return '';
         }
 
@@ -12193,6 +12344,23 @@ window.joinAgarPartyToken =
         var token =
             window.normalizeAgarPartyToken(partyToken);
 
+        if (!token && window._lmLastPartyTokenMobile) {
+            /* Mobile Party code: the official client shows its own dialog for it. */
+            try {
+                if (
+                    window.agarApp &&
+                    window.agarApp.API &&
+                    typeof window.agarApp.API.showMobilePartyCodeDialog === 'function'
+                ) {
+                    window.agarApp.API.showMobilePartyCodeDialog();
+                }
+            } catch (mobileDialogError) {
+                console.warn('[LM PARTY] Mobile dialog error:', mobileDialogError);
+            }
+            if (typeof onError === 'function') onError('mobile_code');
+            return false;
+        }
+
         if (!token) {
             if (window.toastr) {
                 toastr.warning('<b>[PARTY]:</b> Invalid Agar.io Party code.');
@@ -12240,7 +12408,7 @@ window.joinAgarPartyToken =
                         if (window.toastr) {
                             toastr.warning(
                                 '<b>[PARTY]:</b> Could not join Party' +
-                                (reason ? ': ' + String(reason) : '.')
+                                (reason ? ': ' + $('<div>').text(String(reason)).html() : '.')
                             );
                         }
                         if (typeof onError === 'function') onError(reason);
@@ -12937,6 +13105,8 @@ window.getAgarCustomSkinPurchaseId =
                  */
                 basePurchaseId =
                     String(
+                        /* the live descriptor names it 'default' */
+                        val.default ||
                         val.configDefault ||
                         val.Control ||
                         val.A ||
@@ -14829,12 +14999,25 @@ window.formatAgarReward =
  * of which signal fires first.
  */
 var _gameConfigInitDone = false;
+/* Config object the derived globals were last built from. Per object instead of a
+ * one-shot flag, so a config replaced later (shop version picker) is applied too,
+ * and a failed init (e.g. a missing section) can be retried. */
+window._lmGameConfigInitSource = window._lmGameConfigInitSource || null;
 
 function _initGameConfigSections(gc) {
-    if (_gameConfigInitDone) return;
     if (!gc || !gc.gameConfig) return;
+    if (window._lmGameConfigInitSource === gc) return;
+    window._lmGameConfigInitSource = gc;
+    try {
+        _initGameConfigSectionsBody(gc);
+        _gameConfigInitDone = true;
+    } catch (initErr) {
+        window._lmGameConfigInitSource = null;
+        console.warn('[LM] GameConfiguration init failed:', initErr);
+    }
+}
 
-    _gameConfigInitDone = true;
+function _initGameConfigSectionsBody(gc) {
 
     /* Set canonical references */
     window.LMAgarGameConfiguration = gc;
@@ -17105,53 +17288,6 @@ var SkinExplain = [{
     pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
 }
 ];
-/*
- * ═══════════════════════════════════════════════════════════════════════════
- * SCAN TRICK — LANGUAGE FALLBACKS
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Language packs can override these later. These fallback strings prevent
- * missing labels when an older language file does not know Scan Trick yet.
- */
-if (typeof textLanguage === 'undefined') {
-    window.textLanguage = window.textLanguage || {};
-}
-textLanguage.scanTrickGroup =
-    textLanguage.scanTrickGroup ||
-    'Scan Trick';
-
-textLanguage.scanTrick =
-    textLanguage.scanTrick ||
-    'Enable Scan Trick';
-
-textLanguage.scanTrickRounded =
-    textLanguage.scanTrickRounded ||
-    'Snap movement direction';
-
-textLanguage.scanTrickOnlyWhileLMB =
-    textLanguage.scanTrickOnlyWhileLMB ||
-    'Snap only while left mouse is held';
-
-textLanguage.scanTrickDirections =
-    textLanguage.scanTrickDirections ||
-    'Snapped directions';
-
-textLanguage.scanTrickDistance =
-    textLanguage.scanTrickDistance ||
-    'Normal projection distance';
-
-textLanguage.scanTrickRoundedDistance =
-    textLanguage.scanTrickRoundedDistance ||
-    'Snapped projection distance';
-
-textLanguage.scanTrickStatus =
-    textLanguage.scanTrickStatus ||
-    'Show Scan Trick status';
-
-textLanguage['hk-scanTrick'] =
-    textLanguage['hk-scanTrick'] ||
-    'Macro Scan trick';
-
 /* ═══════════════════════════════════════════════════════════════════════
  * §3.1a  Death Particle Burst System
  * ═══════════════════════════════════════════════════════════════════════
@@ -18500,6 +18636,52 @@ if (userLanguage && displayText.hasOwnProperty(userLanguage)) {
     lang = userLanguage;
 }
 var textLanguage = displayText[lang];
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SCAN TRICK — LANGUAGE FALLBACKS
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Language packs can override these later. These fallback strings prevent
+ * missing labels when an older language file does not know Scan Trick yet.
+ */
+/* Placed after textLanguage = displayText[lang]: written before it, they went to an
+ * object that this assignment replaced. */
+textLanguage.scanTrickGroup =
+    textLanguage.scanTrickGroup ||
+    'Scan Trick';
+
+textLanguage.scanTrick =
+    textLanguage.scanTrick ||
+    'Enable Scan Trick';
+
+textLanguage.scanTrickRounded =
+    textLanguage.scanTrickRounded ||
+    'Snap movement direction';
+
+textLanguage.scanTrickOnlyWhileLMB =
+    textLanguage.scanTrickOnlyWhileLMB ||
+    'Snap only while left mouse is held';
+
+textLanguage.scanTrickDirections =
+    textLanguage.scanTrickDirections ||
+    'Snapped directions';
+
+textLanguage.scanTrickDistance =
+    textLanguage.scanTrickDistance ||
+    'Normal projection distance';
+
+textLanguage.scanTrickRoundedDistance =
+    textLanguage.scanTrickRoundedDistance ||
+    'Snapped projection distance';
+
+textLanguage.scanTrickStatus =
+    textLanguage.scanTrickStatus ||
+    'Show Scan Trick status';
+
+textLanguage['hk-scanTrick'] =
+    textLanguage['hk-scanTrick'] ||
+    'Macro Scan trick';
+
 defineChatCommand();
 function defineChatCommand() {
     window.chatCommand = {
@@ -18812,7 +18994,7 @@ function thelegendmodproject() {
                             .scanTrickDirections =
                             value;
 
-                        app.saveSettings(
+                        window.application.saveSettings(
                             defaultmapsettings,
                             'ogarioSettings'
                         );
@@ -18828,7 +19010,9 @@ function thelegendmodproject() {
             /*
              * Exact-angle projection distance.
              */
-            this.addSliderBox(
+            /* application's slider: these live in defaultmapsettings (Settings' own
+             * addSliderBox writes the theme object) and must be saved. */
+            window.application.addSliderBox(
                 '.scanTrickGroup',
                 'scanTrickDistance',
                 100000,
@@ -18840,7 +19024,9 @@ function thelegendmodproject() {
             /*
              * Snapped-angle projection distance.
              */
-            this.addSliderBox(
+            /* application's slider: these live in defaultmapsettings (Settings' own
+             * addSliderBox writes the theme object) and must be saved. */
+            window.application.addSliderBox(
                 '.scanTrickGroup',
                 'scanTrickRoundedDistance',
                 1000,
@@ -19125,6 +19311,8 @@ function thelegendmodproject() {
                     }
                     if ($('#' + name + '-slider')) {
                         $('#' + name + '-slider').val(defaultSettings[name]).change();
+                        /* the label updater is bound to 'input' only */
+                        $('#' + name + '-value').text(defaultSettings[name]);
                     }
                     if ($('input[type=text]#' + name) || $('select#' + name)) {
                         $('#' + name).val(defaultSettings[name]);
@@ -19771,9 +19959,24 @@ function thelegendmodproject() {
             this.selectBiggestCell = !this.selectBiggestCell;
             ogario.selectBiggestCell = this.selectBiggestCell;
         },
+        /* Hotkey toggles flip defaultmapsettings directly: update the settings checkbox
+         * (and its Switchery) to match. The bubbling change also runs setSettings, which
+         * saves; without a checkbox, save here. */
+        syncHotkeyOption(key) {
+            var el = document.getElementById(key);
+            if (el && el.type === 'checkbox') {
+                el.checked = !!defaultmapsettings[key];
+                try {
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                    return;
+                } catch (e) { }
+            }
+            this.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },
         setShowTop5() {
             defaultmapsettings.showTop5 = !defaultmapsettings.showTop5;
             this.setTop5();
+            this.syncHotkeyOption('showTop5');
         },
         setTop5() {
             if (defaultmapsettings.showTop5) {
@@ -19785,6 +19988,7 @@ function thelegendmodproject() {
         setShowTargeting() {
             defaultmapsettings.showTargeting = !defaultmapsettings.showTargeting;
             this.setTargetingHUD();
+            this.syncHotkeyOption('showTargeting');
         },
         setTargetingHUD() {
             if (defaultmapsettings.showTargeting) {
@@ -19801,10 +20005,12 @@ function thelegendmodproject() {
             } else {
                 $('#time-hud').hide();
             }
+            this.syncHotkeyOption('showTime');
         },
         setShowSplitRange() {
             defaultmapsettings.splitRange = !defaultmapsettings.splitRange;
             ogario.splitRange = defaultmapsettings.splitRange;
+            this.syncHotkeyOption('splitRange');
         },
         setShowGhostCellsInfo() {
             if (defaultmapsettings.showGhostCells === false || defaultmapsettings.showGhostCellsInfo === false) {
@@ -19839,10 +20045,12 @@ function thelegendmodproject() {
         },
         setShowTeammatesInd() {
             defaultmapsettings.teammatesInd = !defaultmapsettings.teammatesInd;
+            this.syncHotkeyOption('teammatesInd');
         },
         setShowOppColors() {
             defaultmapsettings.oppColors = !defaultmapsettings.oppColors;
             ogario.oppColors = defaultmapsettings.oppColors;
+            this.syncHotkeyOption('oppColors');
         },
         setShowSkins() {
             this.noSkins = !this.noSkins;
@@ -19855,6 +20063,7 @@ function thelegendmodproject() {
         setTransparentSkins() {
             defaultmapsettings.transparentSkins = !defaultmapsettings.transparentSkins;
             ogario.transparentSkins = defaultmapsettings.transparentSkins;
+            this.syncHotkeyOption('transparentSkins');
         },
         setShowStats() {
             $('#stats-hud').toggle();
@@ -19867,9 +20076,11 @@ function thelegendmodproject() {
         },
         setShowGrid() {
             defaultmapsettings.showGrid = !defaultmapsettings.showGrid;
+            this.syncHotkeyOption('showGrid');
         },
         setShowMiniMapGuides() {
             defaultmapsettings.showMiniMapGuides = !defaultmapsettings.showMiniMapGuides;
+            this.syncHotkeyOption('showMiniMapGuides');
         },
         setShowLb() {
             if (this.gameMode === ':teams') {
@@ -19879,6 +20090,7 @@ function thelegendmodproject() {
         },
         setShowBgSectors() {
             defaultmapsettings.showBgSectors = !defaultmapsettings.showBgSectors;
+            this.syncHotkeyOption('showBgSectors');
         },
         setHideSmallBots() {
             ogario.hideSmallBots = !ogario.hideSmallBots;
@@ -19886,16 +20098,20 @@ function thelegendmodproject() {
         },
         setShowNames() {
             defaultmapsettings.noNames = !defaultmapsettings.noNames;
+            this.syncHotkeyOption('noNames');
         },
         setHideTeammatesNames() {
             defaultmapsettings.hideTeammatesNames = !defaultmapsettings.hideTeammatesNames;
+            this.syncHotkeyOption('hideTeammatesNames');
         },
         setShowMass() {
             defaultmapsettings.showMass = !defaultmapsettings.showMass;
+            this.syncHotkeyOption('showMass');
         },
         setShowMiniMap() {
             defaultmapsettings.showMiniMap = !defaultmapsettings.showMiniMap;
             this.setMiniMap();
+            this.syncHotkeyOption('showMiniMap');
         },
         setMiniMap() {
             if (defaultmapsettings.showMiniMap) {
@@ -20010,6 +20226,7 @@ function thelegendmodproject() {
             defaultmapsettings.autoResp = !defaultmapsettings.autoResp;
             this.setAutoResp();
             this.displayChatInfo(defaultmapsettings.autoResp, 'autoRespMsg');
+            this.syncHotkeyOption('autoResp');
         },
         copyLb() {
             var input = $('<input>');
@@ -20170,6 +20387,12 @@ function thelegendmodproject() {
             }
         },
         setAnimatedRainbowColor() {
+            /* Called on every connect: act only when the setting changed, or restore()
+             * also removed fillText hooks installed later (Edit game names). */
+            var want = !!defaultmapsettings.animatedRainbowColor;
+            if (want === !!this._lmRainbowApplied) return;
+            if (typeof tcm2 === 'undefined' || !tcm2 || !tcm2.f) return; /* retry on the next call */
+            this._lmRainbowApplied = want;
             if (typeof tcm2 !== 'undefined' && defaultmapsettings.animatedRainbowColor && tcm2 && tcm2.f && typeof tcm2.f.override === 'function') {
                 tcm2.f.override();
             } else if (typeof tcm2 !== 'undefined' && tcm2 && tcm2.f && typeof tcm2.f.restore === 'function') {
@@ -20189,6 +20412,7 @@ function thelegendmodproject() {
         },
         setTweenMaxEffect() {
             if (defaultmapsettings.tweenMaxEffect) initTilt()
+            else stopTilt();
             //defaultmapsettings.tweenMaxEffect ? initTilt() : console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Restart needed...');
         },
         /* ─── §4.4 Display Methods ─── */
@@ -20653,7 +20877,10 @@ function thelegendmodproject() {
             if (on) {
                 this.clearChatHistory(true);
                 for (let length = 0; length < this.chatHistory.length; length++) {
-                    $('#messages').append('<li><span class="message-nick">' + this.chatHistory[length].nick + ': </span><span class="message-text">' + this.chatHistory[length].message + '</span></li>');
+                    var he = this.chatHistory[length];
+                    var heNick = he.nickHtml != null ? he.nickHtml : this.escapeHTML(String(he.nick || ''));
+                    var heMsg = he.messageHtml != null ? he.messageHtml : this.escapeHTML(String(he.message || ''));
+                    $('#messages').append('<li><span class="message-nick">' + heNick + ': </span><span class="message-text">' + heMsg + '</span></li>');
                 }
                 return;
             }
@@ -20724,6 +20951,9 @@ function thelegendmodproject() {
             view.setUint16(2 + text.length * 2, 0, true);
             return view;
         },
+        lmLegendChatTooSoon() {
+            return !!(LM.isLegendWorld && this._lmLegendChatLast && Date.now() - this._lmLegendChatLast < 2100);
+        },
         enterChatMessage() {
             var messageBox = $('#message-box');
             var message = $('#message');
@@ -20731,15 +20961,35 @@ function thelegendmodproject() {
                 const value = message.val();
                 if (value.length) {
 
+                    /* Expanding Land drops chat (99/202) sent within 2 s of the previous
+                     * attempt and restarts its window even for dropped messages. Keep the
+                     * text and tell the user instead of sending a message that is lost. */
+                    if (this.lmLegendChatTooSoon()) {
+                        toastr.warning('<b>[CHAT]:</b> Slow down: one message every 2 seconds.');
+                        return;
+                    }
+                    /* sendChatMessage drops messages within 500 ms of the previous one: keep
+                     * the text instead of clearing it (and do not send the opcode 99 copy). */
+                    if (Date.now() - this.lastMessageSentTime < 500) {
+                        toastr.warning('<b>[CHAT]:</b> Slow down.');
+                        return;
+                    }
+
+                    var sent99 = false;
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
                     if (!LM.integrity && $("#clantag").val() === "") {
                         var view = application.buildChat99View(value);
                         legendmod.sendMessage(view);
+                        sent99 = true;
+                        if (LM.isLegendWorld) this._lmLegendChatLast = Date.now();
                     }
                     //
 
-                    this.sendChatMessage(101, value);
+                    if (!this.sendChatMessage(101, value) && !sent99) {
+                        toastr.warning('<b>[CHAT]:</b> Chat is not connected, message not sent.');
+                        return;
+                    }
                     message.blur();
                     messageBox.hide();
                 } else {
@@ -20890,7 +21140,16 @@ function thelegendmodproject() {
             $('#import-settings').blur();
             let importValue = $('#import-settings').val();
             if (importValue) {
-                importValue = JSON.parse(importValue);
+                try {
+                    importValue = JSON.parse(importValue);
+                } catch (parseErr) {
+                    toastr.error('<b>[SETTINGS]:</b> Import failed: the text is not valid JSON.');
+                    return;
+                }
+                if (!importValue || typeof importValue !== 'object' || Array.isArray(importValue)) {
+                    toastr.error('<b>[SETTINGS]:</b> Import failed: unexpected settings format.');
+                    return;
+                }
                 for (const value in importValue) {
                     if (importValue.hasOwnProperty(value)) {
                         const checked = $('#import-' + value).prop('checked');
@@ -21010,6 +21269,35 @@ function thelegendmodproject() {
                 if (!Array.isArray(profiles)) {
                     profiles = [];
                 }
+                /* An imported or corrupted entry that is not an object (null, "x") made
+                 * setMenu throw on every load: replace it with a default profile. */
+                for (var pi = 0; pi < profiles.length; pi++) {
+                    if (!profiles[pi] || typeof profiles[pi] !== 'object') {
+                        profiles[pi] = {
+                            'nick': 'Profile #' + (pi + 1),
+                            'clanTag': '',
+                            'skinURL': '',
+                            'color': defaultSettings.mainColor
+                        };
+                    }
+                }
+                /* Profiles cut off by a lower profile count are kept in
+                 * 'ogarioPlayerProfilesExtra' and restored when the count is raised again
+                 * (they used to be deleted on the next load). */
+                var extraProfiles = readLocalStorageJSON('ogarioPlayerProfilesExtra', []);
+                if (!Array.isArray(extraProfiles)) extraProfiles = [];
+                if (profiles.length < defaultmapsettings.profileNumber && extraProfiles.length) {
+                    while (profiles.length < defaultmapsettings.profileNumber && extraProfiles.length) {
+                        var restored = extraProfiles.shift();
+                        profiles.push(restored && typeof restored === 'object' ? restored : {
+                            'nick': 'Profile #' + (profiles.length + 1),
+                            'clanTag': '',
+                            'skinURL': '',
+                            'color': defaultSettings.mainColor
+                        });
+                    }
+                    application.saveSettings(extraProfiles, 'ogarioPlayerProfilesExtra');
+                }
                 if (profiles.length < defaultmapsettings.profileNumber) { //fix for old players
                     //for (var t = 10; t < 15; t++) profiles.push({
                     for (var t = profiles.length; t < defaultmapsettings.profileNumber; t++) {
@@ -21022,11 +21310,8 @@ function thelegendmodproject() {
                     }
                 } else if (profiles.length > defaultmapsettings.profileNumber) {
                     //for (var t = 10; t < 15; t++) profiles.push({
-                    var temp = profiles.length; //case profiles.length changes
-                    for (var t = 0; t < temp - defaultmapsettings.profileNumber; t++) {
-                        console.log(t);
-                        profiles.pop();
-                    }
+                    var removedProfiles = profiles.splice(defaultmapsettings.profileNumber);
+                    application.saveSettings(removedProfiles.concat(extraProfiles), 'ogarioPlayerProfilesExtra');
 
                 }
             } else {
@@ -21157,6 +21442,10 @@ function thelegendmodproject() {
             }
         },
         setSkinPreview(t, e) {
+            /* Loads finish asynchronously: only the latest request per container may append,
+             * or a slow earlier load showed the wrong (or a duplicate) skin. */
+            var previewReqs = this._lmSkinPreviewReq || (this._lmSkinPreviewReq = {});
+            var req = previewReqs[e] = (previewReqs[e] || 0) + 1;
             if (t.includes && (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg"))) {
                 //if (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg")) {
                 //console.log("stage 1 videos");
@@ -21164,7 +21453,7 @@ function thelegendmodproject() {
                 if ($('#' + e).empty().addClass('default'), t && 0 !== t.length) {
                     //console.log("stage 1 images/videos: " + t);
                     var app = this;
-                    o = new Video();
+                    var o = new Video();
                     o.crossOrigin = 'anonymous';
                     o.referrerPolicy = 'no-referrer';
                     o.referrer = 'no-referrer';
@@ -21176,6 +21465,7 @@ function thelegendmodproject() {
 
                     //o.style.borderRadius = "25px";
                     setTimeout(function () {
+                        if (previewReqs[e] !== req) return;
                         //newo.onload = function() {
                         app.changeSkinPreview(o, e);
                         checkVideos3(o);
@@ -21199,6 +21489,7 @@ function thelegendmodproject() {
                     // o = new Image();
 
                     o.onload = function () {
+                        if (previewReqs[e] !== req) return;
                         app.changeSkinPreview(o, e);
                     };
                 }
@@ -21384,9 +21675,10 @@ function thelegendmodproject() {
                 return;
             }
             if (window.i18n_dict && window.i18n_dict.en) {
-                for (var lang in window.i18n_dict.en) {
-                    if (window.i18n_dict.en.hasOwnProperty(lang) && textLanguage.hasOwnProperty(lang)) {
-                        window.i18n_dict.en[lang] = textLanguage[lang];
+                /* loop variable renamed: 'var lang' was hoisted and shadowed the global, so the check above always returned */
+                for (var key in window.i18n_dict.en) {
+                    if (window.i18n_dict.en.hasOwnProperty(key) && textLanguage.hasOwnProperty(key)) {
+                        window.i18n_dict.en[key] = textLanguage[key];
                     }
                 }
             }
@@ -21690,6 +21982,9 @@ function thelegendmodproject() {
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
+            /* Scan Trick section: was never built, so its settings could not be changed. */
+            this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
+            Settings.addScanTrickControls();
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
             if (!this.protocolMode) {
@@ -21982,11 +22277,8 @@ function thelegendmodproject() {
             $(document).on(`click`, `#close-stats`, () => {
                 $("#user-stats").hide();
             });
-            $(document).on("input", "#skin", function () {
-                var hexInputVal = this.value;
-                app.setSkinPreview(hexInputVal, "skin-preview");
-                app.setSkinPreview(hexInputVal, "profile-" + app.selectedProfile);
-            });
+            /* (a second "input" handler for #skin was removed: the "input click" one above
+             * already updates both previews, so each keystroke loaded every skin twice) */
             $(document).on("click", "#skins a", function (event) {
                 event.preventDefault();
                 app.selectProfile($(this).attr("data-profile"));
@@ -22315,7 +22607,8 @@ function thelegendmodproject() {
                 });
             });
             $("#nick").val(ogarcopythelb.nick).blur();
-            $("#noNames").prop("checked", !defaultmapsettings.noNames);
+            /* #noNames is now the LM "No names" switch (not the inverted vanilla "Show names") */
+            $("#noNames").prop("checked", !!defaultmapsettings.noNames);
             $("#showMass").prop("checked", defaultmapsettings.showMass);
             this.unlockButtons();
             this.setAutoResp();
@@ -22830,6 +23123,7 @@ function thelegendmodproject() {
             if (ogario.playerColor) {
                 this._lmSpawnTries = 0;
                 this.sendPlayerSpawn();
+                if (!ogarcopythelb.skinURL) this.clearOwnCustomSkin(ogarcopythelb.nick, ogario.playerColor);
                 if (!(defaultmapsettings.ownVanillaSkin && (!ogarcopythelb.skinURL || ogarcopythelb.skinURL === ''))) {
                     this.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
                 }
@@ -23009,6 +23303,7 @@ function thelegendmodproject() {
             ogarcopythelb.clanTag = tag.trim();
             //ogarcopythelb.clanTag = tag.trim() + "@";
             ogarcopythelb.skinURL = this.checkSkinURL(skin.trim());
+            if (!ogarcopythelb.skinURL) this.clearOwnCustomSkin(ogarcopythelb.nick, ogario.playerColor);
             if (7 === color.length) {
                 ogarcopythelb.color = color;
             }
@@ -23045,12 +23340,17 @@ function thelegendmodproject() {
         /* ─── §4.9 High-Performance Skin Loading ─── */
         loadSkin(img, url, animated, isPriority) {
             var app = this;
+            /* Set by the onerror mirror chain right before it calls loadSkin: the URL that
+             * failed, so the mirror's result can be found under the looked-up key. */
+            var aliasFrom = app._lmSkinMirrorFrom;
+            app._lmSkinMirrorFrom = null;
 
             if (!url || typeof url !== 'string') {
                 return;
             }
 
             url = url.trim();
+            var origUrl = url;
 
             if (!url) {
                 return;
@@ -23079,6 +23379,12 @@ function thelegendmodproject() {
             if (url.includes('skin custom')) {
                 url = url.replace(/skin custom/g, 'skin_custom');
             }
+
+            /* The image is published under the rewritten/mirror URL, but getCustomSkin
+             * looks up the original one: remember original -> loaded key. */
+            if (!app._skinUrlAlias) app._skinUrlAlias = {};
+            if (url !== origUrl) app._skinUrlAlias[origUrl] = url;
+            if (aliasFrom && aliasFrom !== url) app._skinUrlAlias[aliasFrom] = url;
 
             if (!app._failedSkinURLs) app._failedSkinURLs = {};
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
@@ -23815,6 +24121,7 @@ function thelegendmodproject() {
                         var isMirror = url.includes('legendmod.ml') ||
                             url.includes('jimboy3100.github.io') ||
                             url.includes('jimboy3000.github.io');
+                        app._lmSkinMirrorFrom = url; /* consumed by the loadSkin call below */
 
                         if (isCustomSkin) {
                             /*
@@ -23826,6 +24133,7 @@ function thelegendmodproject() {
                             ) {
                                 app.loadSkin(img, window.LM_CUSTOM_SKINS_CDN + '/' + filename, animated, isPriority);
                             }
+                            app._lmSkinMirrorFrom = null;
                             return;
                         }
 
@@ -23854,6 +24162,7 @@ function thelegendmodproject() {
                         else if (url.includes('configs.agario.miniclippt.com/live/')) {
                             app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
                         }
+                        app._lmSkinMirrorFrom = null;
                     };
                     directImage.src = url;
                 };
@@ -24123,8 +24432,15 @@ function thelegendmodproject() {
                     sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
                     sCtx.clip();
                     try {
-                        if (this.customSkinsCache[e]) {
-                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        var img2 = this.customSkinsCache[e];
+                        if (img2) {
+                            /* 2-frame sheets (width >= 1.5 x height, as in processOnLoad): first frame only */
+                            var w2 = img2.width || depth, h2 = img2.height || depth;
+                            if (w2 >= 1.5 * h2) {
+                                sCtx.drawImage(img2, 0, 0, w2 / 2, h2, 0, 0, depth, depth);
+                            } else {
+                                sCtx.drawImage(img2, 0, 0, depth, depth);
+                            }
                         }
                     } catch (error) { }
                     try {
@@ -24188,7 +24504,8 @@ function thelegendmodproject() {
                     sCtx.clip();
                     try {
                         if (this.customSkinsCache[e]) {
-                            sCtx.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                            /* fbSkin pictures are square (never 2-frame sheets): draw the whole image */
+                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                         }
                     } catch (error) { }
                     try {
@@ -24241,6 +24558,18 @@ function thelegendmodproject() {
             if (_isValidSkin(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
             if (_isValidSkin(skinCache[skinMap])) return skinCache[skinMap];
             return null;
+        },
+        /* cacheCustomSkin ignores an empty URL, so the own nick kept its previous custom
+         * skin (and blocked the owned vanilla skin) after the skin field was cleared. */
+        clearOwnCustomSkin(nick, color) {
+            if (!nick) return;
+            _RE_CLAN_TAG.lastIndex = 0;
+            var cleanNick = nick.replace(_RE_CLAN_TAG, '').trim();
+            var keys = [nick, nick + "#000000", cleanNick, cleanNick + "#000000"];
+            if (color) keys.push(nick + color);
+            for (var k = 0; k < keys.length; k++) {
+                if (keys[k]) delete this.customSkinsMap[keys[k]];
+            }
         },
         cacheCustomSkin(nick, color, skinUrl) {
             if (!skinUrl) return;
@@ -24317,10 +24646,18 @@ function thelegendmodproject() {
             }
 
             if (!skinUrl) return null;
-            if (!this.customSkinsCache.hasOwnProperty(skinUrl)) {
+            /* Follow original -> rewritten/mirror aliases recorded by loadSkin (bounded:
+             * the mirror chain can alias back and forth). */
+            var skinKeyUrl = skinUrl;
+            if (this._skinUrlAlias) {
+                for (var hop = 0; hop < 5 && !this.customSkinsCache.hasOwnProperty(skinKeyUrl) && this._skinUrlAlias[skinKeyUrl]; hop++) {
+                    skinKeyUrl = this._skinUrlAlias[skinKeyUrl];
+                }
+            }
+            if (!this.customSkinsCache.hasOwnProperty(skinKeyUrl)) {
                 this.loadSkin(this.customSkinsCache, skinUrl, undefined, true);
             }
-            return this.getCachedSkin(this.customSkinsCache, skinUrl);
+            return this.getCachedSkin(this.customSkinsCache, skinKeyUrl);
         },
         /* ─── §4.10 Minimap & HUD ─── */
         calculateMapSector(t, xgh2, closeExpr = false) {
@@ -24525,19 +24862,29 @@ function thelegendmodproject() {
                     }
                     //
                     if (LM.arrowFB && LM.arrowFB[0]) {
+                        /* Per frame: a sticky flag hid the friend for the rest of the session
+                         * once the nick had been in the teamboard. */
+                        var fbIncluded = false;
                         if (application.top5) {
                             for (var temp = 0; temp < application.top5.length; temp++) {
                                 if (application.top5[temp] && application.top5[temp].nick === LM.arrowFB[0].nick) {
-                                    LM.arrowFB[0].isIncluded = true;
+                                    fbIncluded = true;
+                                    break;
                                 }
                             }
                         }
+                        LM.arrowFB[0].isIncluded = fbIncluded;
 
-                        if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
+                        if (LM.arrowFB[0].visible && !fbIncluded) { //Yahnych
+                            /* opcode 160 stores raw server coordinates; the minimap is in the
+                             * local (possibly mirrored) frame like the other dots. */
+                            var fbVec = window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr];
+                            var fbX = fbVec && fbVec[0] ? legendmod.translateX(LM.arrowFB[0].x) : LM.arrowFB[0].x;
+                            var fbY = fbVec && fbVec[1] ? legendmod.translateY(LM.arrowFB[0].y) : LM.arrowFB[0].y;
                             this.miniMapCtx.save();
                             try {
                                 this.miniMapCtx.beginPath();
-                                this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
+                                this.miniMapCtx.arc((fbX + r) * n, (fbY + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
                                 this.miniMapCtx.closePath();
                                 this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
                                 this.miniMapCtx.strokeStyle = 'white';
@@ -24550,10 +24897,10 @@ function thelegendmodproject() {
                                 if (defaultSettings.miniMapNickStrokeSize > 0) {
                                     this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
                                     this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                                    this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                                    this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (fbX + r) * n, (fbY + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                                 }
                                 this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                                this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                                this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (fbX + r) * n, (fbY + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                             } catch (eArrowFB) { } finally {
                                 this.miniMapCtx.restore();
                             }
@@ -24953,8 +25300,27 @@ function thelegendmodproject() {
             }
         },
         connect() {
+            /* A socket to the same relay is still connecting: keep it (closing it lost the
+             * join state); its onopen sends the current party data. */
+            var _lmTarget = this.privateMode && this.privateIP ? this.privateIP : this.publicIP;
+            if (this.socket && this.socket.readyState === WebSocket.CONNECTING && this._lmRelayTarget === _lmTarget) {
+                this.flushData();
+                this.setParty();
+                return;
+            }
+            this._lmRelayTarget = _lmTarget;
+            if (this._lmRelayRetryTimer) {
+                clearTimeout(this._lmRelayRetryTimer);
+                this._lmRelayRetryTimer = null;
+            }
             this.closeConnection();
-            this.flushData();
+            if (this._lmRelayReconnecting) {
+                /* Reconnect after a drop: keep game/chat state, only force party data resend. */
+                this._lmRelayReconnecting = false;
+                this.flushPartyData();
+            } else {
+                this.flushData();
+            }
             this.setParty();
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to ogario socket'),
             if (this.privateMode && this.privateIP) {
@@ -24983,6 +25349,9 @@ function thelegendmodproject() {
                     app.sendBuffer(buf);
 
                     app.sendPartyData();
+                    app._lmRelayRetries = 0;
+                    /* after a reconnect the relay must learn we are alive again */
+                    if (ogario.play) app.sendPlayerSpawn();
                 }
                 this.socket.onmessage = function (buf) {
                     app.handleMessage(buf);
@@ -24992,8 +25361,22 @@ function thelegendmodproject() {
                  * We wire handleMessage into ogarioWS relay instead. */
                 this.socket.onopen = () => { app.sendPartyData(); };
             }
+            var _lmSock = this.socket;
             this.socket.onclose = function (buf) {
                 //app.flushData();
+                /* closeConnection() detaches this handler first, so this is an unexpected
+                 * drop: reconnect the public relay with backoff instead of staying dead. */
+                if (app.socket !== _lmSock || app.privateMode) return;
+                var tries = app._lmRelayRetries = (app._lmRelayRetries || 0) + 1;
+                if (tries > 20) return;
+                var delay = Math.min(30000, 2000 * Math.pow(2, tries - 1));
+                if (app._lmRelayRetryTimer) clearTimeout(app._lmRelayRetryTimer);
+                app._lmRelayRetryTimer = setTimeout(function () {
+                    app._lmRelayRetryTimer = null;
+                    if (app.socket !== _lmSock) return;
+                    app._lmRelayReconnecting = true;
+                    app.connect();
+                }, delay);
             }
             this.socket.onerror = function (buf) {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket error', buf);
@@ -25269,7 +25652,10 @@ function thelegendmodproject() {
                 if (pid === 0) break;
                 var idx = this.checkPlayerID(pid);
                 if (idx !== null) {
+                    var removedId = this.teamPlayers[idx] && this.teamPlayers[idx].id;
                     this.teamPlayers.splice(idx, 1);
+                    /* the stale check in updateTeamPlayers never sees a removed entry */
+                    if (this.targetID && removedId === this.targetID) this.setTargetStatus(0);
                 }
             }
         },
@@ -25548,6 +25934,12 @@ function thelegendmodproject() {
                         playerID
                     );
 
+                /* Cap teammates: a crafted relay stream with endless new IDs and skin
+                 * URLs grew teamPlayers (O(n^2) parsing) and the skin cache without limit. */
+                if (existingIdx === null && this.teamPlayers.length >= 250) {
+                    continue;
+                }
+
                 var activeNick =
                     nick ||
                     (
@@ -25641,6 +26033,13 @@ function thelegendmodproject() {
                         ].alive = isAlive;
                     }
 
+                    /* Colours were parsed but never stored, so minimap dots used a leftover fillStyle. */
+                    if (pColor || customColor) {
+                        this.teamPlayers[
+                            existingIdx
+                        ].setColor(pColor || customColor, customColor);
+                    }
+
                     /* updateTeamPlayers() kills entries older than 2 s; mark this one fresh. */
                     this.teamPlayers[
                         existingIdx
@@ -25700,6 +26099,8 @@ function thelegendmodproject() {
                     if (isAlive !== undefined) {
                         map.alive = isAlive;
                     }
+
+                    map.setColor(pColor || customColor, customColor);
 
                     map.updateTime = Date.now();
 
@@ -26141,7 +26542,8 @@ function thelegendmodproject() {
                 }
                 /* Route op30 to relay (not game server) when on private server */
                 if (this.privateMode && window.ogarioWS) {
-                    window.ogarioWS.send(view.buffer);
+                    /* send() throws while the relay is (re)connecting; that aborted the whole team tick */
+                    try { window.ogarioWS.send(view.buffer); } catch (e) { }
                 } else {
                     this.sendBuffer(view);
                 }
@@ -26496,6 +26898,11 @@ function thelegendmodproject() {
 
             var userId =
                 this.checkPlayerID(id);
+
+            /* same teammate cap as readPpv7 */
+            if (userId === null && this.teamPlayers.length >= 250) {
+                return;
+            }
 
             if (userId !== null) {
                 this.teamPlayers[
@@ -26992,6 +27399,16 @@ function thelegendmodproject() {
                                     cell.oldX
                                 );
                         }
+
+                        /* interpolation runs from startX/startY (cells have no oldX/oldY) */
+                        if (
+                            cell.startX != null
+                        ) {
+                            cell.startX =
+                                legendmod.translateX(
+                                    cell.startX
+                                );
+                        }
                     }
 
                     if (yFlipped) {
@@ -27021,7 +27438,53 @@ function thelegendmodproject() {
                                     cell.oldY
                                 );
                         }
+
+                        /* interpolation runs from startX/startY (cells have no oldX/oldY) */
+                        if (
+                            cell.startY != null
+                        ) {
+                            cell.startY =
+                                legendmod.translateY(
+                                    cell.startY
+                                );
+                        }
                     }
+                }
+            }
+
+            /*
+             * 1b. Cells still animating their removal (not in indexedCells).
+             */
+            if (
+                legendmod.removedCells
+            ) {
+                for (var ri = 0; ri < legendmod.removedCells.length; ri++) {
+                    var rc = legendmod.removedCells[ri];
+                    if (!rc) continue;
+                    if (xFlipped) {
+                        if (rc.x != null) rc.x = legendmod.translateX(rc.x);
+                        if (rc.targetX != null) rc.targetX = legendmod.translateX(rc.targetX);
+                        if (rc.startX != null) rc.startX = legendmod.translateX(rc.startX);
+                    }
+                    if (yFlipped) {
+                        if (rc.y != null) rc.y = legendmod.translateY(rc.y);
+                        if (rc.targetY != null) rc.targetY = legendmod.translateY(rc.targetY);
+                        if (rc.startY != null) rc.startY = legendmod.translateY(rc.startY);
+                    }
+                }
+            }
+
+            /*
+             * 1c. Death markers: stored in the local frame plus the map offset.
+             */
+            if (this.deathLocations && this.deathLocations.length) {
+                var dOffX = LM.isLegendWorld ? 0 : (ogario.mapOffsetX || 0);
+                var dOffY = LM.isLegendWorld ? 0 : (ogario.mapOffsetY || 0);
+                for (var di = 0; di < this.deathLocations.length; di++) {
+                    var dl = this.deathLocations[di];
+                    if (!dl) continue;
+                    if (xFlipped && dl.x != null) dl.x = legendmod.translateX(dl.x - dOffX) + dOffX;
+                    if (yFlipped && dl.y != null) dl.y = legendmod.translateY(dl.y - dOffY) + dOffY;
                 }
             }
 
@@ -27631,6 +28094,11 @@ function thelegendmodproject() {
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
                 if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
+                    if (this.lmLegendChatTooSoon()) {
+                        toastr.warning('<b>[CHAT]:</b> Slow down: one message every 2 seconds.');
+                        return;
+                    }
+                    this._lmLegendChatLast = Date.now();
                     var fullMsg = currentNick + ': ' + message;
                     var teamView = legendmod.createView(2 + 2 * fullMsg.length + 2);
                     teamView.setUint8(0, 202); // opcode 0xCA
@@ -27641,6 +28109,7 @@ function thelegendmodproject() {
                     teamView.setUint16(2 + 2 * fullMsg.length, 0, true); // null term
                     legendmod.sendMessage(teamView);
                     this.lastMessageSentTime = Date.now();
+                    return true;
                 }
                 /* All other servers: use chat relay websocket (shared with Delta) */
                 else if (this.isSocketOpen() || (this.privateMode && window.ogarioWS)) {
@@ -27657,14 +28126,16 @@ function thelegendmodproject() {
                          * ogarioWS.send() calls sendAll() which routes op100 to chat.delt.io/ws
                          * and stamps the correct relay playerID automatically. */
                         if (window.ogarioWS) {
-                            window.ogarioWS.send(view.buffer);
+                            try { window.ogarioWS.send(view.buffer); } catch (e) { } /* throws while connecting */
                         }
                     } else {
                         this.sendBuffer(view);
                     }
                     this.lastMessageSentTime = Date.now();
+                    return true;
                 }
             }
+            return false; /* not sent: rate limit, empty, or no chat socket */
         },
         prepareCommand(command) {
             return command.replace('%currentSector%', this.currentSector);
@@ -27684,10 +28155,19 @@ function thelegendmodproject() {
         },
         addChatUser(id, name) {
             this.chatUsers[id] = name;
+            /* chatUsers is rebuilt every second from alive teammates; keep a bounded
+             * persistent copy so muting someone later still knows their nick. */
+            var nicks = this._lmChatNicks || (this._lmChatNicks = new Map());
+            nicks.delete(id);
+            nicks.set(id, name);
+            if (nicks.size > 300) nicks.delete(nicks.keys().next().value);
         },
         getChatUserNick(id) {
             if (this.chatUsers.hasOwnProperty(id)) {
                 return this.chatUsers[id];
+            }
+            if (this._lmChatNicks && this._lmChatNicks.has(id)) {
+                return this._lmChatNicks.get(id);
             }
             return '';
         },
@@ -27760,9 +28240,24 @@ function thelegendmodproject() {
                 //
                 if (!(0 === a.length || fancyCount2(a) > 15 || 0 === n.length)) {
                     //if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
+                    /* History entries feed the canvas chat bubbles (plain text, matched to the
+                     * raw cell nick): store the raw nick, and the raw text unless the parsed
+                     * message is markup (image/video/emoticons, which the bubbles skip).
+                     * nickHtml/messageHtml are the escaped versions for HTML insertion. */
+                    var rawNick = a;
+                    var rawText = msg.replace(a + ': ', '');
                     var r = '';
                     if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 === caseof) {
 
+                        /* pushed first: the chat-box path returns early, so bubbles never appeared */
+                        this.chatHistory.push({
+                            'nick': rawNick,
+                            'message': n.indexOf('<') !== -1 ? n : rawText,
+                            'nickHtml': a,
+                            'messageHtml': n,
+                            'time': Date.now()
+                        });
+                        this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
@@ -27770,17 +28265,17 @@ function thelegendmodproject() {
                             }, 500),
                             void (defaultmapsettings.chatSounds && this.playSound(this.messageSound));
                         defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
-                            defaultmapsettings.chatSounds && this.playSound(this.messageSound)),
-                            this.chatHistory.push({
-                                'nick': a,
-                                'message': n,
-                                //
-                                'time': Date.now()
-                                //
-                            }),
-                            this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
+                            defaultmapsettings.chatSounds && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
                     } else if (102 === caseof) {
+                        this.commandHistory.push({
+                            'nick': rawNick,
+                            'message': n.indexOf('<') !== -1 ? n : rawText,
+                            'nickHtml': a,
+                            'messageHtml': n,
+                            'time': Date.now()
+                        });
+                        this.commandHistory.length > 15 && this.commandHistory.shift();
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
@@ -27788,15 +28283,7 @@ function thelegendmodproject() {
                             }, 500),
                             void (defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                         defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
-                            defaultmapsettings.chatSounds && this.playSound(this.commandSound)),
-                            this.commandHistory.push({
-                                'nick': a,
-                                'message': n,
-                                //
-                                'time': Date.now()
-                                //
-                            }),
-                            this.commandHistory.length > 15 && this.commandHistory.shift();
+                            defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                     } else {
                         /* Other message types: always treat the remote text as plain text. */
                         $('#messages').append($('<li>').text(msg));
