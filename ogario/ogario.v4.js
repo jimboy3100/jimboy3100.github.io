@@ -22618,24 +22618,25 @@ function thelegendmodproject() {
         },
         create() {
             this.setParty()
-            if (this.partyToken) this.onJoin();
-            else {
-                var app = this;
-                setTimeout(function () {
-                    app.create();
-                }, 100);
-            }
-        },
-        onCreate() {
-            this.setParty();
             if (this.partyToken) {
+                this._lmCreateTries = 0;
                 this.onJoin();
                 return;
             }
-            const app = this;
-            setTimeout(() => {
+            /* One pending poll at a time, and give up after ~10 s without a party token. */
+            if ((this._lmCreateTries = (this._lmCreateTries || 0) + 1) > 100) {
+                this._lmCreateTries = 0;
+                return;
+            }
+            var app = this;
+            clearTimeout(this._lmCreateTimer);
+            this._lmCreateTimer = setTimeout(function () {
                 app.create();
             }, 100);
+        },
+        onCreate() {
+            this._lmCreateTries = 0;
+            this.create();
         },
         onPlayerSpawn() {
             ogario.play =
