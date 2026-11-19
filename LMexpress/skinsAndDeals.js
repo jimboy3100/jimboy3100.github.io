@@ -7036,6 +7036,15 @@ function renderSkinPage(
 
                     buyButton.style.pointerEvents =
                         'none';
+                    /* Attach the handler now: the grid may be rebuilt while the purchase
+                     * is pending, and setSkinBuyButtonPending(false) only re-enables it. */
+                    buyButton.addEventListener('click', (function (selectedProductId) {
+                        return function (event) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            buySkin(selectedProductId);
+                        };
+                    })(productId));
                 } else {
                     if (
                         purchaseInfo
@@ -7188,8 +7197,7 @@ function renderSkinPage(
                 imageFile,
                 isOwned,
                 purchaseInfo
-                    .purchasable &&
-                !isPurchasePending
+                    .purchasable
             )
         );
 
