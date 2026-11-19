@@ -38521,6 +38521,12 @@ function thelegendmodproject() {
             if (defaultmapsettings.showDevConsole) console.log(r);
             switch (type) {
                 case 11:
+                    /* Without the sub-message nothing below can run: do not mark the
+                     * connection logged in (account requests would be ungated). */
+                    if (!r.uncompressedData.loginResponseField) {
+                        console.warn('[LM] Login response (type 11) without loginResponseField, ignored');
+                        break;
+                    }
                     if (LM.isLegendWorld) {
                         window._lw_protobuf102Received = true; /* debug marker */
                         /* Transition: login confirmed by server */
@@ -38675,9 +38681,14 @@ function thelegendmodproject() {
                     break;
                 case 20:
                     var u = r.uncompressedData.disconnectField;
-                    this.disconnectMessage(u.reason);
-                    /* Read by master.onDisconnect() to avoid reconnect loops on fatal reasons. */
+                    /* Read by master.onDisconnect() to avoid reconnect loops on fatal reasons.
+                     * Record it first: a missing sub-message must not throw before this. */
                     window._lmLastDisconnect = { reason: u && u.reason, time: Date.now() };
+                    if (!u) {
+                        console.warn('[LM] Disconnect (type 20) without disconnectField');
+                        break;
+                    }
+                    this.disconnectMessage(u.reason);
 
                     //window.loggedIn = false;
                     //window.logout && window.logout();
