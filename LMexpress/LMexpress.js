@@ -7128,7 +7128,7 @@ function initializeLM(modVersion) {
         } else if ($("#nick").val() == "EasterEgg3") {
             toastr.info(Premadeletter5 + ',<br>' + Premadeletter6 + '<a target="_blank" href="https://github.com/jimboy3100">https://github.com/jimboy3100</a>');
             $("#nick").val("Video");
-            openvidmod();
+            if (typeof openvidmod == "function") openvidmod();
         }
     });
     $("#nick").on("input", function () {
