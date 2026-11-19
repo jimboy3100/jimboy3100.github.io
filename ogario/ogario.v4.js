@@ -19249,6 +19249,8 @@ function thelegendmodproject() {
                     }
                     if ($('#' + name + '-slider')) {
                         $('#' + name + '-slider').val(defaultSettings[name]).change();
+                        /* the label updater is bound to 'input' only */
+                        $('#' + name + '-value').text(defaultSettings[name]);
                     }
                     if ($('input[type=text]#' + name) || $('select#' + name)) {
                         $('#' + name).val(defaultSettings[name]);
