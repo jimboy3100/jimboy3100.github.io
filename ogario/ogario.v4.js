@@ -71428,6 +71428,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
     function spectateBlind() {
         window.onkeydown = function (event) {
+            /* Q toggles free spectate only while spectating, never while typing (Q is also double split). */
+            var _lmT = event.target;
+            if (_lmT && (_lmT.tagName === 'INPUT' || _lmT.tagName === 'TEXTAREA' || _lmT.isContentEditable)) return;
+            if (window.legendmod && window.legendmod.play) return;
             if (81 === event.keyCode && window.core.specialOn) {
                 window.core.specialOn();
             }
