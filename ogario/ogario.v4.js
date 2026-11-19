@@ -21064,7 +21064,16 @@ function thelegendmodproject() {
             $('#import-settings').blur();
             let importValue = $('#import-settings').val();
             if (importValue) {
-                importValue = JSON.parse(importValue);
+                try {
+                    importValue = JSON.parse(importValue);
+                } catch (parseErr) {
+                    toastr.error('<b>[SETTINGS]:</b> Import failed: the text is not valid JSON.');
+                    return;
+                }
+                if (!importValue || typeof importValue !== 'object' || Array.isArray(importValue)) {
+                    toastr.error('<b>[SETTINGS]:</b> Import failed: unexpected settings format.');
+                    return;
+                }
                 for (const value in importValue) {
                     if (importValue.hasOwnProperty(value)) {
                         const checked = $('#import-' + value).prop('checked');
@@ -21183,6 +21192,18 @@ function thelegendmodproject() {
 
                 if (!Array.isArray(profiles)) {
                     profiles = [];
+                }
+                /* An imported or corrupted entry that is not an object (null, "x") made
+                 * setMenu throw on every load: replace it with a default profile. */
+                for (var pi = 0; pi < profiles.length; pi++) {
+                    if (!profiles[pi] || typeof profiles[pi] !== 'object') {
+                        profiles[pi] = {
+                            'nick': 'Profile #' + (pi + 1),
+                            'clanTag': '',
+                            'skinURL': '',
+                            'color': defaultSettings.mainColor
+                        };
+                    }
                 }
                 if (profiles.length < defaultmapsettings.profileNumber) { //fix for old players
                     //for (var t = 10; t < 15; t++) profiles.push({
