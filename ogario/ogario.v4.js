@@ -73594,7 +73594,11 @@ function rotateminimapsectors() {
 }
 
 function toggleFullScreen(fullornot) {
-    if (!window.fullornot) {
+    /* Use the real fullscreen state: a private flag went out of sync when
+     * the user left fullscreen with Esc/F11, so the next click did nothing. */
+    var isFull = !!(document.fullscreenElement || document.webkitFullscreenElement ||
+        document.mozFullScreenElement || document.msFullscreenElement);
+    if (!isFull) {
         launchIntoFullscreen(document.documentElement);
         window.fullornot = true
     } else {
@@ -73605,7 +73609,8 @@ function toggleFullScreen(fullornot) {
 
 function launchIntoFullscreen(element) {
     if (element.requestFullscreen) {
-        element.requestFullscreen();
+        var req = element.requestFullscreen();
+        if (req && typeof req.catch === 'function') req.catch(function () { });
     } else if (element.mozRequestFullScreen) {
         element.mozRequestFullScreen();
     } else if (element.webkitRequestFullscreen) {
@@ -73617,7 +73622,8 @@ function launchIntoFullscreen(element) {
 
 function exitFullscreen() {
     if (document.exitFullscreen) {
-        document.exitFullscreen();
+        var ex = document.exitFullscreen();
+        if (ex && typeof ex.catch === 'function') ex.catch(function () { });
     } else if (document.mozCancelFullScreen) {
         document.mozCancelFullScreen();
     } else if (document.webkitExitFullscreen) {
