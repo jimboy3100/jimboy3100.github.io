@@ -20819,11 +20819,16 @@ function thelegendmodproject() {
                             }
                             t += '<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[o].mass) + ']</span> ' + this.escapeHTML(this.top5[o].nick) + '</li>';
                         }
-                        this.top5pos.innerHTML = t,
-                            ogario.play && ogario.playerMass && (e += ogario.playerMass, s++),
-                            this.top5totalMass.textContent = this.shortMassFormat(e),
-                            this.top5totalPlayers.textContent = s;
                     }
+                    /* After the loop: inside it, s++ ran past the last entry (TypeError on
+                     * top5[s]) and an empty team never cleared the list. */
+                    this.top5pos.innerHTML = t;
+                    if (ogario.play && ogario.playerMass) {
+                        e += ogario.playerMass;
+                        s++;
+                    }
+                    this.top5totalMass.textContent = this.shortMassFormat(e);
+                    this.top5totalPlayers.textContent = s;
                 }
             }
             else {
