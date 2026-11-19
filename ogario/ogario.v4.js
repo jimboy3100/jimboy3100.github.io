@@ -24412,7 +24412,8 @@ function thelegendmodproject() {
                     sCtx.clip();
                     try {
                         if (this.customSkinsCache[e]) {
-                            sCtx.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                            /* fbSkin pictures are square (never 2-frame sheets): draw the whole image */
+                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                         }
                     } catch (error) { }
                     try {
