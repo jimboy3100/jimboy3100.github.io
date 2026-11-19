@@ -21234,8 +21234,11 @@ function thelegendmodproject() {
                     toastr.error('<b>[SETTINGS]:</b> Import failed: unexpected settings format.');
                     return;
                 }
+                /* Only the exported keys: other keys of the pasted JSON (e.g. legendSettings, or a
+                 * name that is not a valid selector, which threw) are not settings of this menu. */
+                var importKeys = ['ogarioCommands', 'ogarioHotkeys', 'ogarioPlayerProfiles', 'ogarioSettings', 'ogarioThemeSettings'];
                 for (const value in importValue) {
-                    if (importValue.hasOwnProperty(value)) {
+                    if (importValue.hasOwnProperty(value) && importKeys.indexOf(value) !== -1) {
                         const checked = $('#import-' + value).prop('checked');
                         if (!checked) {
                             continue;
