@@ -43347,6 +43347,29 @@ function thelegendmodproject() {
 
 
             /*
+             * The remaining time is written once per server message; repaint it
+             * from expiresAt every 30 s and drop boosts that have run out.
+             */
+            if (window._lmBoostTicker) {
+                clearInterval(window._lmBoostTicker);
+                window._lmBoostTicker = null;
+            }
+            if (Object.keys(window._lmActiveBoosts).length) {
+                var boostTickerApp = this;
+                window._lmBoostTicker = setInterval(function () {
+                    var tickList = [];
+                    var tickNow = Date.now();
+                    var tickActive = window._lmActiveBoosts || {};
+                    for (var tickId in tickActive) {
+                        var tickLeft = Math.ceil(((Number(tickActive[tickId] && tickActive[tickId].expiresAt) || 0) - tickNow) / 1000);
+                        if (tickLeft > 0) tickList.push({ productId: tickId, expiresInSeconds: tickLeft });
+                    }
+                    boostTickerApp.displayActiveBoosts(tickList);
+                }, 30000);
+            }
+
+
+            /*
              * Wallet/active state may have changed.
              *
              * initBoostDropdown() itself avoids unnecessary DOM rebuilding.
