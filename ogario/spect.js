@@ -477,6 +477,10 @@ class Spect {
         data = new Uint8Array(data);
         const raw_basefont = new DataView(data.buffer);
         this.sendMessage(raw_basefont);
+        /* Servers no longer send 103, so mark the token as sent here (as the main
+         * client does); re-sending it on an authenticated socket gets it kicked.
+         * resetConnectionState() clears it for the next connection. */
+        this.accessTokenSent = true;
     }
 
     sendCursor() {
@@ -605,6 +609,25 @@ class Spect {
                 self.sendMessage(view);
             };
             if (self.integrity) {
+                /*
+                 * requestCaptchaV3 never calls back when reCAPTCHA is missing,
+                 * throttled or fails, and the unit then never spawned. Fall back
+                 * to "0" (what Delta sends for every unit) after 20 s or on an
+                 * empty token, once per request and only on the same connection.
+                 */
+                const generation = self.connectionGeneration;
+                let spawnDone = false;
+                const spawnOnce = function (token) {
+                    if (spawnDone) return;
+                    spawnDone = true;
+                    clearTimeout(fallbackTimer);
+                    if (self.connectionGeneration !== generation || self.active) return;
+                    sendSpawn(token);
+                };
+                const fallbackTimer = setTimeout(function () {
+                    console.warn("[SPECT] CAPTCHA did not answer; spawning with token 0");
+                    spawnOnce("0");
+                }, 20000);
                 agarCaptcha.requestCaptchaV3(
                     "play",
                     function (token) {
@@ -613,10 +636,10 @@ class Spect {
                             console.warn(
                                 "[SPECT] CAPTCHA returned no usable token"
                             );
-                            return;
+                            token = "0";
                         }
 
-                        sendSpawn(token);
+                        spawnOnce(token);
                     }
                 );
             } else {
