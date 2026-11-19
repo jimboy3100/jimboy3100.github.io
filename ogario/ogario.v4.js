@@ -73019,6 +73019,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 hotkeys = storedHotkeys;
                 this.migrateBrowserSpecificHotkeys();
                 this.addMissingDefaultHotkeys();
+                this.syncMessageKey();
             } else {
                 this.loadDefaultHotkeys();
             }
@@ -73168,13 +73169,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     event.preventDefault();
                     //hotkeysSetup.saveHotkeys();
                     setup.saveHotkeys();
+                    setup.openSnapshot = null;
                     $('#hotkeys').fadeOut(500);
                 }),
                 $(document).on('click', '#close-hotkeys', function (event) {
                     event.preventDefault();
+                    setup.revertHotkeys();
                     $('#hotkeys').fadeOut(500);
                 }),
                 $(document).on('click', '.hotkeys-link', function (event) {
+                    if (!$('#hotkeys').is(':visible') || !setup.openSnapshot) {
+                        setup.openSnapshot = JSON.stringify(hotkeys);
+                    }
                     $('#hotkeys').fadeIn(500);
                     $('#hotkeys-cfg').perfectScrollbar('update');
                     resetonkeydown();
@@ -73333,13 +73339,62 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                     hotkeys[key] = id,
                         $('#' + id).val(key);
-                    if ('hk-chatMessage' === id) {
-                        hotkeys['spec-messageKey'] = key
-                    }
                     this.lastPressedKey = key;
                     this.lastKeyId = id;
                 }
+                /* also when the chat key was taken by another command or deleted */
+                this.syncMessageKey();
             }
+        },
+        /*
+         * spec-messageKey is the key that may run its command while typing in
+         * #message (send the message). It followed hk-chatMessage only when that
+         * field was set directly, so after the chat key went to another command
+         * that key in #message ran the other command. Keep it equal to the key
+         * of hk-chatMessage ('' when unbound).
+         */
+        syncMessageKey() {
+            var msgKey = '';
+            for (var key in hotkeys) {
+                if (hotkeys.hasOwnProperty(key) && key !== 'spec-messageKey' && hotkeys[key] === 'hk-chatMessage') {
+                    msgKey = key;
+                    break;
+                }
+            }
+            hotkeys['spec-messageKey'] = msgKey;
+        },
+        /* refill the dialog fields from hotkeys / chatCommand */
+        refreshHotkeysMenu() {
+            $('#hotkeys-cfg .custom-key-in').each(function () {
+                var id = this.id;
+                var text = '';
+                for (var key in hotkeys) {
+                    if (hotkeys.hasOwnProperty(key) && key !== 'spec-messageKey' && hotkeys[key] === id) {
+                        text = key;
+                        break;
+                    }
+                }
+                $(this).val(text);
+            });
+            $('#hotkeys-cfg .command-in').each(function () {
+                var id = this.id;
+                if (chatCommand.hasOwnProperty(id)) {
+                    $(this).val(chatCommand[id] == null ? '' : String(chatCommand[id]));
+                }
+            });
+        },
+        /* "Close" without "Save": undo the changes made since the dialog was opened
+         * (they stayed active until a reload, then were lost) */
+        revertHotkeys() {
+            if (this.openSnapshot) {
+                try {
+                    hotkeys = JSON.parse(this.openSnapshot);
+                } catch (eSnap) { }
+            }
+            this.openSnapshot = null;
+            this.lastPressedKey = '';
+            this.lastKeyId = '';
+            this.refreshHotkeysMenu();
         },
         init() {
             this.loadHotkeys();
