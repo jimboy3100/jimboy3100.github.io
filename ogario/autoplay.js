@@ -1,3 +1,4 @@
+//v7.4
 /* Nicks and colours come from other players: escape before .html(). */
 function _apEsc(value) {
     return String(value == null ? '' : value).replace(/[&<>"'`]/g, function (c) {
@@ -5,7 +6,6 @@ function _apEsc(value) {
     });
 }
 
-//v7.4
 window.autoteammatenicks = [];
 window.targetFood = null;
 window.autoPlay = false;
