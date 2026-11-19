@@ -8425,7 +8425,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
      */
     window._lmGetCurrencyBalance =
         function (currencyId) {
-            var u = (window.LM && window.LM.user) || null;
+            /* window.LM is only a local dummy; the real wallet lives on legendmod.user. */
+            var u = (window.application && window.application.user) || (window.legendmod && window.legendmod.user) || null;
             if (!u) return 0;
             var cid = String(currencyId || '').trim().toLowerCase();
             if (cid === 'coin') return Number(u.coins) || 0;
