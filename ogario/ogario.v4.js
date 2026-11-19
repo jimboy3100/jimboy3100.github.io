@@ -63073,13 +63073,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         : cell.targetNick;
 
 
-                var cleanNick =
+                /* Cached per targetNick: avoids a regex + 2 strings per frame. */
+                if (
+                    cell._skinCleanNickFrom !==
                     cell.targetNick
-                        .replace(
-                            /\[.*?\]/g,
-                            ''
-                        )
-                        .trim();
+                ) {
+                    cell._skinCleanNick =
+                        cell.targetNick
+                            .replace(
+                                /\[.*?\]/g,
+                                ''
+                            )
+                            .trim();
+                    cell._skinCleanNickFrom =
+                        cell.targetNick;
+                }
+
+                var cleanNick =
+                    cell._skinCleanNick;
 
 
                 skinUrl =
@@ -64042,23 +64053,52 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
 
+                    /*
+                     * Parsed colours are cached on the cell, keyed by their
+                     * inputs, so the jelly path does not allocate two arrays
+                     * per cell per frame. The arrays are only read below.
+                     */
+                    var bodyFallbackHex =
+                        cell.isVirus
+                            ? '#33ff33'
+                            : '#808080';
+
+                    if (
+                        !cell._jellyBodyRGB ||
+                        cell._jellyBodyHex !== bodyHex ||
+                        cell._jellyBodyFb !== bodyFallbackHex
+                    ) {
+                        cell._jellyBodyRGB =
+                            this
+                                .parseWebGLOverlayColor(
+                                    bodyHex,
+                                    bodyFallbackHex
+                                );
+                        cell._jellyBodyHex = bodyHex;
+                        cell._jellyBodyFb = bodyFallbackHex;
+                    }
+
                     var bodyRGB =
-                        this
-                            .parseWebGLOverlayColor(
-                                bodyHex,
+                        cell._jellyBodyRGB;
 
-                                cell.isVirus
-                                    ? '#33ff33'
-                                    : '#808080'
-                            );
 
+                    if (
+                        !cell._jellyStrokeRGB ||
+                        cell._jellyStrokeHex !== strokeHex ||
+                        cell._jellyStrokeFb !== bodyHex
+                    ) {
+                        cell._jellyStrokeRGB =
+                            this
+                                .parseWebGLOverlayColor(
+                                    strokeHex,
+                                    bodyHex
+                                );
+                        cell._jellyStrokeHex = strokeHex;
+                        cell._jellyStrokeFb = bodyHex;
+                    }
 
                     var strokeRGB =
-                        this
-                            .parseWebGLOverlayColor(
-                                strokeHex,
-                                bodyHex
-                            );
+                        cell._jellyStrokeRGB;
 
 
                     /*
@@ -65521,7 +65561,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var skinUrl = null;
                     if (cell.targetNick) {
                         var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
-                        var cleanNick = cell.targetNick.replace(/\[.*?\]/g, '').trim();
+                        /* Cached per targetNick: avoids a regex + 2 strings per frame. */
+                        if (cell._skinCleanNickFrom !== cell.targetNick) {
+                            cell._skinCleanNick = cell.targetNick.replace(/\[.*?\]/g, '').trim();
+                            cell._skinCleanNickFrom = cell.targetNick;
+                        }
+                        var cleanNick = cell._skinCleanNick;
                         skinUrl = application.customSkinsMap[mode] ||
                             application.customSkinsMap[cell.targetNick] ||
                             application.customSkinsMap[cell.targetNick + '#000000'] ||
