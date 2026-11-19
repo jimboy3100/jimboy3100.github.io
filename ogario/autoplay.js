@@ -181,7 +181,11 @@ function calcTarget() {
 
                             }
                         }
-                        DefineVirusshootCaseAndShoot(target2, doFeed);
+                        // the helper reports a shot; assigning its parameters only changed locals
+                        if (DefineVirusshootCaseAndShoot(target2)) {
+                            doFeed = true;
+                            VirusCellDontDoTheRest = true;
+                        }
 
                     }
                     if (distancePlayerCell - PlayerCell.size <= bestDist2 && !VirusCellDontDoTheRest) { //watch the closer cells
@@ -205,12 +209,12 @@ function calcTarget() {
                                 handleSandwichCellCase(target2);
                                 window.SandwichCellCase = null;
                             }
-                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner); //avoid being cornered on wall
+                            doSplittoAvoidCorner = avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner); //avoid being cornered on wall
                         }
                         //General acting
                         else {
                             GeneralAvoiding(target2, PlayerCell); //avoid dangerous cells by going back
-                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner); //avoid being cornered on wall
+                            doSplittoAvoidCorner = avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner); //avoid being cornered on wall
                         }
 
 
@@ -289,32 +293,24 @@ function DefineVirusshootCaseAndShoot(target2, doFeed, VirusCellDontDoTheRest) {
                         if (Math.abs(window.VirusDistanceX[window.FlagVirusCells[i]]) < Math.abs(window.BadCellsDistanceX[window.FlagDangerCells[j]]) && Math.abs(window.VirusDistanceY[window.FlagVirusCells[i]]) < Math.abs(window.BadCellsDistanceY[window.FlagDangerCells[j]])) {
                             if (window.VirusDistanceX[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] > 0 && window.VirusDistanceY[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] > 0) {
                                 AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);
-                                target2.x = window.VirusDistanceX[window.FlagVirusCells[i]];
-                                target2.y = window.VirusDistanceY[window.FlagVirusCells[i]];
-                                doFeed = true;
-                                VirusCellDontDoTheRest = true;
-                                return target2, doFeed, VirusCellDontDoTheRest;
+                                target2.x = window.legendmod.playerX + window.VirusDistanceX[window.FlagVirusCells[i]];
+                                target2.y = window.legendmod.playerY + window.VirusDistanceY[window.FlagVirusCells[i]];
+                                return true;
                             } else if (window.VirusDistanceX[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] < 0 && window.VirusDistanceY[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] < 0) {
                                 AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);
-                                target2.x = window.VirusDistanceX[window.FlagVirusCells[i]];
-                                target2.y = window.VirusDistanceY[window.FlagVirusCells[i]];
-                                doFeed = true;
-                                VirusCellDontDoTheRest = true;
-                                return target2, doFeed, VirusCellDontDoTheRest;
+                                target2.x = window.legendmod.playerX + window.VirusDistanceX[window.FlagVirusCells[i]];
+                                target2.y = window.legendmod.playerY + window.VirusDistanceY[window.FlagVirusCells[i]];
+                                return true;
                             } else if (window.VirusDistanceX[window.FlagVirusCells[i]] < 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] > 0 && window.VirusDistanceY[window.FlagVirusCells[i]] < 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] > 0) {
                                 AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);
-                                target2.x = window.VirusDistanceX[window.FlagVirusCells[i]];
-                                target2.y = window.VirusDistanceY[window.FlagVirusCells[i]];
-                                doFeed = true;
-                                VirusCellDontDoTheRest = true;
-                                return target2, doFeed, VirusCellDontDoTheRest;
+                                target2.x = window.legendmod.playerX + window.VirusDistanceX[window.FlagVirusCells[i]];
+                                target2.y = window.legendmod.playerY + window.VirusDistanceY[window.FlagVirusCells[i]];
+                                return true;
                             } else if (window.VirusDistanceX[window.FlagVirusCells[i]] < 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] < 0 && window.VirusDistanceY[window.FlagVirusCells[i]] < 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] < 0) {
                                 AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);
-                                target2.x = window.VirusDistanceX[window.FlagVirusCells[i]];
-                                target2.y = window.VirusDistanceY[window.FlagVirusCells[i]];
-                                doFeed = true;
-                                VirusCellDontDoTheRest = true;
-                                return target2, doFeed, VirusCellDontDoTheRest;
+                                target2.x = window.legendmod.playerX + window.VirusDistanceX[window.FlagVirusCells[i]];
+                                target2.y = window.legendmod.playerY + window.VirusDistanceY[window.FlagVirusCells[i]];
+                                return true;
                             }
                         }
                     }
@@ -391,11 +387,11 @@ function handleSandwichCellCase(target2) {
     //console.log(closestX, closestY);
     //here is the difference with the GeneralAvoiding
     if (Math.abs(-closestX) < Math.abs(-closestY)) {
-        target2.x = -closestX;
-        target2.y = closestY;
+        target2.x = window.legendmod.playerX - closestX;
+        target2.y = window.legendmod.playerY + closestY;
     } else {
-        target2.x = closestX;
-        target2.y = -closestY;
+        target2.x = window.legendmod.playerX + closestX;
+        target2.y = window.legendmod.playerY - closestY;
     }
     //target2.x = -closestX; normaly
     //target2.y = -closestY; normaly
@@ -474,7 +470,7 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
         }
         doSplittoAvoidCorner = true;
     }
-    return target2, doSplittoAvoidCorner;
+    return doSplittoAvoidCorner; // target2 is changed in place; the caller applies the split flag
 }
 
 function calcDist(x, y) {
