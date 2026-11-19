@@ -8181,17 +8181,29 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
          *   ("Gifting - Fake User": fictionalPlayerFbId / fictionalGiftRequestId).
          * Opcode 117 is not sent: it needs rewards_for=progressive_video (a watched ad).
          */
+        /* say what was claimed and why the rest was not: the button looked dead when nothing was ready */
+        var _claimed = [], _waiting = [];
+        var _fmtLeft = function (s) { s = Math.max(0, Math.round(s)); var h = Math.floor(s / 3600), m = Math.ceil((s % 3600) / 60); return h ? (h + 'h ' + m + 'm') : (m + 'm'); };
         if (window.application && typeof window.application.activateTimedEvent === 'function') {
             var _secs = typeof window.getLiveTimedEventSecondsRemaining === 'function'
                 ? window.getLiveTimedEventSecondsRemaining : function () { return null; };
-            if (_secs('hourlyBonus') === 0) {
+            var _hourlySecs = _secs('hourlyBonus');
+            if (_hourlySecs === 0) {
                 window.application.activateTimedEvent("hourlyBonus");
+                _claimed.push('hourly bonus');
+            } else if (_hourlySecs > 0) {
+                _waiting.push('hourly bonus in ' + _fmtLeft(_hourlySecs));
             }
             var _dailySecs = _secs('dailyQuest');
             /* The list is never pruned: an expired quest is not active. */
             var _noQuest = !(window._lmActiveQuests || []).some(function (q) { return q && q.expiresAt > Date.now(); });
             if (_noQuest && (_dailySecs === 0 || _dailySecs === null) && typeof window.questActivationReq === 'function') {
                 window.questActivationReq();
+                _claimed.push('daily quest');
+            } else if (!_noQuest) {
+                _waiting.push('daily quest still running');
+            } else if (_dailySecs > 0) {
+                _waiting.push('next daily quest in ' + _fmtLeft(_dailySecs));
             }
         }
         try {
@@ -8204,11 +8216,18 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 _claimable.some(function (g) { return g && g.facebookIdFrom === _fake.fictionalPlayerFbId; });
             if (_hasFakeGift && typeof window.claimGifts === 'function') {
                 if (window.claimGifts([String(_fake.fictionalGiftRequestId)]) !== false) {
+                    _claimed.push('gift');
                     /* Claimed once; the next login lists it again only if it is still claimable. */
                     window._lmUserGifts.claimable = _claimable.filter(function (g) { return !g || g.facebookIdFrom !== _fake.fictionalPlayerFbId; });
                 }
             }
         } catch (giftErr) { console.warn('[LM] Claim gift error:', giftErr); }
+        try {
+            if (window.toastr) {
+                if (_claimed.length) toastr.success('<b>[CLAIM]:</b> Claimed: ' + _claimed.join(', ') + (_waiting.length ? '. Waiting: ' + _waiting.join(', ') : '') + '.');
+                else toastr.info('<b>[CLAIM]:</b> Nothing to claim right now' + (_waiting.length ? ': ' + _waiting.join(', ') : '') + '. Level rewards are given by the server on level-up.');
+            }
+        } catch (toastErr) { }
 
         setTimeout(function() {
             if (btn) {
