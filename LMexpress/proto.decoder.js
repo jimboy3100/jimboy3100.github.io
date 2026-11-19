@@ -637,7 +637,7 @@ message openPotionForSlotRequestField {
 }
 
 message openPotionForSlotResponseField {
-    int32 openPotionForSlotResponseField = 1;
+    int32 result = 1;
     repeated productUpdates productUpdates = 2;
     repeated userPotions userPotions = 3;
 }
