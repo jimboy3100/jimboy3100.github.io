@@ -36700,7 +36700,7 @@ function thelegendmodproject() {
             for (var length = 0; length < joinStr.length; length++) view.setUint8(length + 1, joinStr.charCodeAt(length));
             this.sendMessage(view);
         },
-        sendPosition(cell, target2, specialcommand) {
+        sendPosition(cell, target2, specialcommand, periodic) {
             var cursorX, cursorY;
             if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
                 if (window.multiboxPlayerEnabled && !window.multiboxFollowMouse && !window.autoPlay) {
@@ -36817,6 +36817,17 @@ function thelegendmodproject() {
                     this.distX = cursorX - (window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue)
                     this.distY = cursorY - (window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue)
                 }
+                /* The 10 ms timer resends an unchanged cursor at most every 40 ms (the official
+                 * client's rate): ~100 identical packets/s while the mouse rests. A moving cursor,
+                 * splits, feeds and other direct calls still go out immediately. */
+                var _lmCursorNow = Date.now();
+                if (periodic && cursorX === this._lmLastCursorX && cursorY === this._lmLastCursorY &&
+                    _lmCursorNow - (this._lmLastCursorAt || 0) < 40) {
+                    return;
+                }
+                this._lmLastCursorX = cursorX;
+                this._lmLastCursorY = cursorY;
+                this._lmLastCursorAt = _lmCursorNow;
                 // Sigmally: cursor position via qe[16] + Int32 x,y + UInt32 0
                 if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
                     var sigBuf = new ArrayBuffer(13);
@@ -47815,7 +47826,7 @@ Most cells eaten   : ${mostCellsEaten}
             }, false) : document.body.onmousewheel = function (e) {
                 app.setZoom(e);
             }, setInterval(function () {
-                app.sendPosition();
+                app.sendPosition(undefined, undefined, undefined, true);
                 //}, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
             }, 10), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
         }
