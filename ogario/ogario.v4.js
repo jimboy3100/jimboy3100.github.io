@@ -73198,9 +73198,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 event.preventDefault();
             }
         }
-        /* Typing in any text field (input, textarea such as #import-settings, select, contenteditable) must not trigger hotkeys. */
+        /* Typing in any text field (input, textarea such as #import-settings, select, contenteditable) must not trigger hotkeys.
+         * A focused <select> uses letters and arrows to pick options (UP/DOWN are command keys). */
         var _hkTarget = event.target || {};
-        var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.isContentEditable === true;
+        var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.tagName === 'SELECT' || _hkTarget.isContentEditable === true;
         /* ESC always reaches the handler (opening the menu), as before. */
         var _isEscOutsideInput = pressedKey === 'ESC' && _hkTarget.tagName !== 'INPUT';
         if ((!_isTypingTarget || _isEscOutsideInput || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && _hkTarget.id === 'message' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
