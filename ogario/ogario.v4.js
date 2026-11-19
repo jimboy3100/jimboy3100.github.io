@@ -67102,7 +67102,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
                 if (defaultmapsettings.virusesRange) {
+                    /* LM.viruses is only filled when a virus is created while
+                     * the option is on: when it is switched on, add the
+                     * viruses already known so they get a range too. */
+                    if (!this._virusesRangeWasOn && LM.cells && LM.viruses) {
+                        for (var _vri = 0; _vri < LM.cells.length; _vri++) {
+                            var _vrc = LM.cells[_vri];
+                            if (_vrc && _vrc.isVirus && LM.viruses.indexOf(_vrc) === -1) {
+                                LM.viruses.push(_vrc);
+                            }
+                        }
+                    }
+                    this._virusesRangeWasOn = true;
                     this.drawVirusesRange(this.ctx, LM.viruses);
+                } else {
+                    this._virusesRangeWasOn = false;
                 }
                 if (LM.Waves && LM.Waves.length > 0) {
                     this.drawWaves();
