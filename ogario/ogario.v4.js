@@ -20269,6 +20269,9 @@ function thelegendmodproject() {
             }
         },
         quitGame() {
+            /* opcode 57 is an Expanding Land command; elsewhere it only left
+             * _forceGameOverStats set for the next death */
+            if (!_isExpandingLandClient(LM)) return;
             window._forceGameOverStats = true;
             LM.sendQuitGame();
         },
@@ -72829,7 +72832,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 typeof storedCommands === 'object' &&
                 !Array.isArray(storedCommands)
             ) {
-                chatCommand = storedCommands;
+                /* merge into the defaults: commands added after the last save
+                 * (comm31-comm50) were undefined, shown as "undefined" and
+                 * sendCommand threw on them */
+                for (var commId in storedCommands) {
+                    if (storedCommands.hasOwnProperty(commId) && chatCommand.hasOwnProperty(commId) && typeof storedCommands[commId] === 'string') {
+                        chatCommand[commId] = storedCommands[commId];
+                    }
+                }
             }
         },
         /*
@@ -72904,6 +72914,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         resetHotkeys() {
             this.loadDefaultHotkeys();
+            this.lastPressedKey = '';
+            this.lastKeyId = '';
             $('#hotkeys-cfg .custom-key-in').each(function () {
                 var t = $(this).attr('id');
                 hotkeysCommand[t] && $(this).val(hotkeysCommand[t].defaultKey);
@@ -72923,7 +72935,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         } if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
                     if ('command' === currentCommand.type) {
                         var replaceHk = command.replace('hk-', '');
-                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + chatCommand[replaceHk] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
+                        /* the command text is user/imported data: escape it for the value attribute */
+                        var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                     } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                 }
             $(document).on('click', '#reset-hotkeys', function (event) {
@@ -73031,6 +73045,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         deleteHotkey(name, id) {
             delete hotkeys[name];
             $('#' + id).val('');
+            /* the field changed: pressing the previous key again must assign it */
+            this.lastPressedKey = '';
+            this.lastKeyId = '';
         },
         setDefaultHotkey(id) {
             var key = false;
@@ -73208,9 +73225,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 event.preventDefault();
             }
         }
-        /* Typing in any text field (input, textarea such as #import-settings, select, contenteditable) must not trigger hotkeys. */
+        /* Typing in any text field (input, textarea such as #import-settings, select, contenteditable) must not trigger hotkeys.
+         * A focused <select> uses letters and arrows to pick options (UP/DOWN are command keys). */
         var _hkTarget = event.target || {};
-        var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.isContentEditable === true;
+        var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.tagName === 'SELECT' || _hkTarget.isContentEditable === true;
         /* ESC always reaches the handler (opening the menu), as before. */
         var _isEscOutsideInput = pressedKey === 'ESC' && _hkTarget.tagName !== 'INPUT';
         if ((!_isTypingTarget || _isEscOutsideInput || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && _hkTarget.id === 'message' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
@@ -73241,7 +73259,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             keyBlind[heldKey] = false;
         }
         if ('' !== pressedKey) {
-            if (hotkeys[pressedKey]) {
+            /* only keys whose keydown was taken (keyBlind set): typing in an input
+             * must not run keyUp actions either */
+            if (keyBlind[pressedKey] && hotkeys[pressedKey]) {
                 var key = hotkeys[pressedKey];
                 if ('' !== key && hotkeysCommand[key] && hotkeysCommand[key].keyUp) {
                     hotkeysCommand[key].keyUp();
@@ -73277,12 +73297,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
     });
     window.onmousedown = function (event) {
         _lmMouseHeld[event.which] = true;
+        /* clicking into the chat input or a HUD button/select must not split or feed */
+        var _lmMT = event.target || {};
+        if (_lmMT.tagName === 'INPUT' || _lmMT.tagName === 'TEXTAREA' || _lmMT.tagName === 'SELECT' || _lmMT.tagName === 'BUTTON' || _lmMT.isContentEditable === true) return;
         if (!$("#overlays").is(":visible")) {
             //console.log(event.which)
             if (2 === event.which) {
                 event.preventDefault();
                 if (application && defaultmapsettings.mouseWheelClick) {
-                    if (!defaultmapsettings.middleClick) {
+                    /* a stored command that no longer exists (e.g. hk-multiboxback) threw */
+                    if (!defaultmapsettings.middleClick || !hotkeysCommand[defaultmapsettings.middleClick]) {
                         application.multiboxswap()
                     }
                     else {
@@ -73313,7 +73337,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (defaultmapsettings.mouseSplit && (1 === event.which)) {
                     event.preventDefault();
                     if (application) {
-                        if (!defaultmapsettings.leftClick) {
+                        if (!defaultmapsettings.leftClick || !hotkeysCommand[defaultmapsettings.leftClick]) {
                             application.split();
                         }
                         else {
@@ -73325,7 +73349,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (defaultmapsettings.mouseFeed && (3 === event.which)) {
                     event.preventDefault();
                     if (application) {
-                        if (!defaultmapsettings.rightClick) {
+                        if (!defaultmapsettings.rightClick || !hotkeysCommand[defaultmapsettings.rightClick]) {
                             application.split();
                         }
                         else {
@@ -73335,13 +73359,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 if (defaultmapsettings.mouseCommand4 && (4 === event.which)) {
                     event.preventDefault();
-                    if (application) {
+                    if (application && hotkeysCommand[defaultmapsettings.mouse4Click]) {
                         hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()
                     }
                 }
                 if (defaultmapsettings.mouseCommand5 && (5 === event.which)) {
                     event.preventDefault();
-                    if (application) {
+                    if (application && hotkeysCommand[defaultmapsettings.mouse5Click]) {
                         hotkeysCommand[defaultmapsettings.mouse5Click].keyDown()
                     }
                 }
@@ -73371,19 +73395,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
             drawRender.RMB = false;
         }
         if (defaultmapsettings.mouseSplit && (1 === event.which) && defaultmapsettings.leftClick) {
-            if (hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
+            if (hotkeysCommand[defaultmapsettings.leftClick] && hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
         }
         else if (defaultmapsettings.mouseWheelClick && (2 === event.which) && defaultmapsettings.middleClick) {
-            if (hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
+            if (hotkeysCommand[defaultmapsettings.middleClick] && hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
         }
         else if (defaultmapsettings.mouseFeed && (3 === event.which) && defaultmapsettings.rightClick) {
-            if (hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
+            if (hotkeysCommand[defaultmapsettings.rightClick] && hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
         }
         else if (defaultmapsettings.mouseCommand4 && (4 === event.which) && defaultmapsettings.mouse4Click) {
-            if (hotkeysCommand[defaultmapsettings.mouse4Click].keyUp) hotkeysCommand[defaultmapsettings.mouse4Click].keyUp()
+            if (hotkeysCommand[defaultmapsettings.mouse4Click] && hotkeysCommand[defaultmapsettings.mouse4Click].keyUp) hotkeysCommand[defaultmapsettings.mouse4Click].keyUp()
         }
         else if (defaultmapsettings.mouseCommand5 && (5 === event.which) && defaultmapsettings.mouse5Click) {
-            if (hotkeysCommand[defaultmapsettings.mouse5Click].keyUp) hotkeysCommand[defaultmapsettings.mouse5Click].keyUp()
+            if (hotkeysCommand[defaultmapsettings.mouse5Click] && hotkeysCommand[defaultmapsettings.mouse5Click].keyUp) hotkeysCommand[defaultmapsettings.mouse5Click].keyUp()
         }
         else {
             //1=leftclick, 3=rightclick, 2=wheelclick
