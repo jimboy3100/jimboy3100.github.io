@@ -23241,8 +23241,8 @@ function thelegendmodproject() {
             if (typeof celltimerstop === 'function') celltimerstop();
             if (typeof stopMergeTimer === 'function') stopMergeTimer();
 
-            // Auto-switch to surviving multibox spect if any
-            if (typeof spects !== 'undefined' && spects && spects.length > 0) {
+            // Auto-switch to surviving multibox spect if any (only when "Auto-switch focus after death" is on)
+            if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
                 for (var _i = 0; _i < spects.length; _i++) {
                     if (spects[_i] && spects[_i].active) {
                         window.multiboxPlayerEnabled = _i + 1;
@@ -46398,9 +46398,15 @@ Most cells eaten   : ${mostCellsEaten}
                         .onPlayerDeath();
 
 
+                    /* "Auto-switch focus after death" off: keep the solo death
+                     * handling (menu) unless a unit already has focus. */
                     if (
                         !LM
-                            .multiBoxPlayerExists
+                            .multiBoxPlayerExists ||
+                        (
+                            !defaultmapsettings.mbSwitchAfterDeath &&
+                            !window.multiboxPlayerEnabled
+                        )
                     ) {
                         application.showMenu(
                             300
