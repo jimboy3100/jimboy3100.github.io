@@ -70913,8 +70913,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         continue;
                     }
 
-                    /* Skip ghost if real server cell for this ID is currently alive & visible in viewport */
-                    if (ghost.id && LM.cellsId && LM.cellsId[ghost.id]) {
+                    /* Skip the ghost when the real player is on screen: a visible non-food cell
+                     * lies inside the ghost's radius (LM.cellsId never existed, so this never ran). */
+                    var _ghostHasReal = false;
+                    for (var _gc = 0; _gc < LM.cells.length; _gc++) {
+                        var _rc = LM.cells[_gc];
+                        if (!_rc || _rc.isFood || _rc.isVirus || _rc.size < 40) continue;
+                        var _gdx = _rc.x - x, _gdy = _rc.y - y;
+                        if (_gdx * _gdx + _gdy * _gdy < sz * sz) { _ghostHasReal = true; break; }
+                    }
+                    if (_ghostHasReal) {
                         continue;
                     }
 
