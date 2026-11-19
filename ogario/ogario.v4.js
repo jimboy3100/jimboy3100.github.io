@@ -49156,7 +49156,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
          */
         drawLegendWorldDeformedCanvasCell(cell, ctx) {
             if (!cell || !ctx) return;
-            var self = this;
+            // Fast path: no deformation to apply, so skip the argument
+            // array, closure and apply() that the wrapper needs per cell.
+            if (
+                (typeof defaultmapsettings !== 'undefined' &&
+                    defaultmapsettings &&
+                    defaultmapsettings.jellyPhisycs) ||
+                !this.isLegendWorldMapDeformationVisible()
+            ) {
+                return cell.draw(ctx, arguments[2]);
+            }
             var extraArgs = Array.prototype.slice.call(arguments, 2);
             return this.withLegendWorldDeformedCellRenderState(
                 cell,
@@ -65287,7 +65296,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     colorHex =
                         "#808080";
                 }
+                // Same raw colour as last frame: reuse the validated value
+                // instead of re-running trim/lowercase/regex per frame.
+                else if (
+                    colorHex ===
+                    cell._gpuColorRaw
+                ) {
+                    colorHex =
+                        cell._gpuColorValid;
+                }
                 else {
+                    cell._gpuColorRaw =
+                        colorHex;
+
                     colorHex =
                         colorHex.trim();
 
@@ -65310,6 +65331,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         colorHex =
                             "#808080";
                     }
+
+                    cell._gpuColorValid =
+                        colorHex;
                 }
 
                 var cInt =
