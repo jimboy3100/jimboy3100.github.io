@@ -22307,16 +22307,18 @@ function thelegendmodproject() {
         setMainButtons() {
             var app = this;
             $(document).on("click", ".btn-play", function () {
-                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
-                if (isLegend && app.play) {
+                var _lmConn = window.legendmod || {}; var isLegend = _lmConn.serverType === "expandingland" || !!_lmConn.isLegendWorld || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                /* app.play is the play() method; the alive flag lives on legendmod.play */
+                if (isLegend && _lmConn.play === true) {
                     app.hideMenu();
                     return;
                 }
                 app.onPlay();
             });
             $(document).on("click", ".btn-play-guest", function () {
-                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
-                if (isLegend && app.play) {
+                var _lmConn = window.legendmod || {}; var isLegend = _lmConn.serverType === "expandingland" || !!_lmConn.isLegendWorld || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                /* app.play is the play() method; the alive flag lives on legendmod.play */
+                if (isLegend && _lmConn.play === true) {
                     app.hideMenu();
                     return;
                 }
@@ -22464,7 +22466,7 @@ function thelegendmodproject() {
                 //$("#helloContainer").attr("data-party-state", "6");
             })
             $(document).on("click", "#statsContinue2", function () {
-                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                var _lmConn = window.legendmod || {}; var isLegend = _lmConn.serverType === "expandingland" || !!_lmConn.isLegendWorld || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
                 if (isLegend) {
                     // On private LW server: spawn and hide menu, same as spectate hides it
                     app.onPlay();
