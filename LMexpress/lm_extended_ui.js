@@ -9453,7 +9453,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 );
 
 
-                window
+                var skipSent = window
                     .softPurchase(
                         purchaseId,
                         {
@@ -9505,6 +9505,25 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                 }
                         }
                     );
+
+
+                // Not sent (login not confirmed yet, or already pending):
+                // softPurchase calls no callback, so re-enable here.
+                if (skipSent !== true) {
+                    button.prop(
+                        'disabled',
+                        false
+                    );
+                    if (
+                        window.toastr &&
+                        typeof window.lmAccountReady === 'function' &&
+                        !window.lmAccountReady()
+                    ) {
+                        toastr.warning(
+                            '<b>[POTION]:</b> Log in and wait until you are connected.'
+                        );
+                    }
+                }
 
 
                 return false;
