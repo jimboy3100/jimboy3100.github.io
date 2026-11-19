@@ -5266,7 +5266,7 @@ function YoutubebackgroundEnable() {
         //'@media (min-aspect-ratio: 16/9){.video-foreground{height: 300%;top: -100%}}@media (max-aspect-ratio: 16/9){.video-foreground{width: 300%;left: -100%}}'+
         //'@media all and (max-width: 5px){.vid-info{width: 50%;padding: .5rem}.vid-info h1{margin-bottom: .2rem}}@media all and (max-width: 500px){'+
         '.vid-info .acronym{display: none}}');
-    $("body").append('<div class="video-background"><div class="video-foreground"><iframe id="video-background" frameborder="0" height="100%" width="100%" src="https://www.youtube.com/embed/' + getParameterByName("v", $("#musicUrl").val()) + '?controls=0&showinfo=0&rel=0&autoplay=1&loop=1&start_radio=1&playlist=' + getParameterByName("list", $("#musicUrl").val()) + '"></iframe></div></div></div>');
+    $("body").append('<div class="video-background"><div class="video-foreground"><iframe id="video-background" frameborder="0" height="100%" width="100%" src="https://www.youtube.com/embed/' + encodeURIComponent(getParameterByName("v", $("#musicUrl").val())) + '?controls=0&showinfo=0&rel=0&autoplay=1&loop=1&start_radio=1&playlist=' + encodeURIComponent(getParameterByName("list", $("#musicUrl").val())) + '"></iframe></div></div></div>');
 }
 
 function YoutubebackgroundDisable() {
@@ -5473,6 +5473,32 @@ function SNEZOgarUpload() {
     }
 }
 
+/* Cloud settings are keyed only by the user id, so a download may hold values
+ * someone else uploaded. User scripts run on every start and webhooks get the
+ * game posts: import new ones only after the user confirms. */
+function _lmCloudSettingsFilter(text) {
+    var json;
+    try { json = JSON.parse(text); } catch (e) { return text; }
+    var ls = json && json.legendSettings;
+    if (!ls || typeof ls !== "object") return text;
+    var keys = ["Userscript1", "Userscript2", "Userscript3", "Userscript4", "Userscript5",
+        "Userscripttexture1", "Userscripttexture2", "Userscripttexture3", "Userscripttexture4", "Userscripttexture5",
+        "discwebhook1", "discwebhook2"];
+    var changed = [];
+    for (var i = 0; i < keys.length; i++) {
+        var v = ls[keys[i]];
+        if (v === undefined || v === null || v === "" || v === "null") continue;
+        if (String(v) === String(localStorage.getItem(keys[i]))) continue;
+        changed.push(keys[i]);
+    }
+    if (!changed.length) return text;
+    if (confirm("The downloaded settings contain user scripts or Discord webhooks (" + changed.join(", ") + ").\n\n" +
+        "User scripts will run on every start of Legend Mod. Import them only if you uploaded these settings yourself.\n\n" +
+        "OK = import them, Cancel = keep your current ones")) return text;
+    for (var j = 0; j < keys.length; j++) delete ls[keys[j]];
+    return JSON.stringify(json, null, 4);
+}
+
 function SNEZOgarDownload() {
     IdfromLegendmod()
     if (userid == "" || userid == null) {
@@ -5482,7 +5508,7 @@ function SNEZOgarDownload() {
         getSNEZ("https://api.legendmod.ml/lm-settings", userid, "LMSettings", function (xhttp) {
             if (!xhttp) return;
             var responseSNEZ = xhttp.response;
-            $('#import-settings').val(unescape(responseSNEZ));
+            $('#import-settings').val(_lmCloudSettingsFilter(unescape(responseSNEZ)));
             //$('#import-settings').val(responseSNEZ);
             $("#import-settings-btn2").click();
         });
