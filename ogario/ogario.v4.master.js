@@ -1890,7 +1890,10 @@ function legendmaster(self) {
 		$(".progress-bar-striped2").width("0%");
         $("#login-facebook").attr("class", "menu-bar-button");
         $("#login-google").attr("class", "menu-bar-button");
-        toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");	
+        /* No toast when nothing was logged in (server switch cleanup). */
+        if (!window._lmQuietLogout) {
+            toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");
+        }
 		potionsLogout();
         master.logout();
 		continuelogout();
