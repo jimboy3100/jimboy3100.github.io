@@ -23058,8 +23058,14 @@ function thelegendmodproject() {
             var _lmIsLegend = legendmod.serverType === "expandingland" || !!legendmod.isLegendWorld || (this.ws && (this.ws.includes("legendmod.ml") || this.ws.includes("expanding.land")));
             if (!legendmod.play && (_lmIsLegend || legendmod._isWorldSpectating)) {
                 legendmod._spawnTransitGate = true;
-                legendmod.cells = [];
-                legendmod.indexedCells = {};
+                /* Keep the multibox/spectator units' cells (spectator > 0): their sockets are not
+                 * respawning, and wiping them made a living unit look dead (playerCellsMulti stale). */
+                legendmod.cells = legendmod.cells.filter(function (c) { return c && c.spectator > 0; });
+                var _lmKeptCells = {};
+                for (var _lmK in legendmod.indexedCells) {
+                    if (legendmod.indexedCells[_lmK] && legendmod.indexedCells[_lmK].spectator > 0) _lmKeptCells[_lmK] = legendmod.indexedCells[_lmK];
+                }
+                legendmod.indexedCells = _lmKeptCells;
                 legendmod.removedCells = [];
                 legendmod.food = [];
                 legendmod.viruses = [];
@@ -37377,13 +37383,17 @@ function thelegendmodproject() {
                      * next opcode-16 (force_full_diff from server) populates
                      * a clean world with proper color/skin/name ADDs. */
                     if (this._spawnTransitGate) {
-                        this.cells = [];
-                        this.indexedCells = {};
+                        /* Multibox/spectator unit cells (spectator > 0) belong to other sockets: keep them. */
+                        this.cells = this.cells.filter(function (c) { return c && c.spectator > 0; });
+                        var _lmKept32 = {};
+                        for (var _lmK32 in this.indexedCells) {
+                            if (this.indexedCells[_lmK32] && this.indexedCells[_lmK32].spectator > 0) _lmKept32[_lmK32] = this.indexedCells[_lmK32];
+                        }
+                        this.indexedCells = _lmKept32;
                         this.removedCells = [];
                         this.food = [];
                         this.viruses = [];
                         this.playerCells = [];
-                        this.playerCellsMulti = [];
                         if (this._cellsDirty !== undefined) this._cellsDirty = true;
                         this._spawnTransitGate = false;
                         if (this._spawnGateTimer) {
