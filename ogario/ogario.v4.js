@@ -71146,15 +71146,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         drawDangerArea(ctx, x, y, radius, minX, minY, maxX, maxY, color, aplha) {
             if (!(LM.battleRoyale.radius === LM.battleRoyale.maxRadius || radius <= 0)) {
+                /* Fill the map rect minus the safe circle as one even-odd
+                 * path (clipped to the rect). destination-out erased whatever
+                 * was already on the canvas inside the circle, e.g. the
+                 * sector grid on the world canvas. maxX/maxY are width/height. */
                 ctx.save();
                 ctx.globalAlpha = aplha;
                 ctx.fillStyle = color;
-                ctx.fillRect(minX, minY, maxX, maxY);
-                ctx.globalCompositeOperation = "destination-out";
-                ctx.globalAlpha = 1;
                 ctx.beginPath();
+                ctx.rect(minX, minY, maxX, maxY);
+                ctx.clip();
+                ctx.beginPath();
+                ctx.rect(minX, minY, maxX, maxY);
+                ctx.moveTo(x + radius, y);
                 ctx.arc(x, y, radius, 0, this.pi2, false);
-                ctx.fill();
+                ctx.fill('evenodd');
                 ctx.restore();
             }
         },
