@@ -7070,7 +7070,8 @@ function initializeLM(modVersion) {
     });
     $(document).keyup(function (event) {
         if (event.which == 8) { // search
-            if ($('input:focus').length == 0) {
+            /* not while editing any text field (textarea, select, contenteditable too) */
+            if (!$(document.activeElement).is('input, textarea, select, [contenteditable], [contenteditable] *')) {
                 $("#searchShortcut").click();
             }
 
