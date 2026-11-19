@@ -35083,14 +35083,14 @@ function thelegendmodproject() {
                     showClanmates: true,
                     password: ''
                 });
-                // Build: [qe[0]] + JSON string + null terminator
-                var sjBuf = new ArrayBuffer(1 + spawnJSON.length + 1);
+                // Build: [qe[0]] + UTF-8 JSON string + null terminator
+                // (charCodeAt truncated to a byte corrupted non-ASCII nicks)
+                var sjBytes = new TextEncoder().encode(spawnJSON);
+                var sjBuf = new ArrayBuffer(1 + sjBytes.length + 1);
                 var sjArr = new Uint8Array(sjBuf);
                 sjArr[0] = this.sigOpcodeMap[0]; // opcode 0 = spawn, encoded
-                for (var sji = 0; sji < spawnJSON.length; sji++) {
-                    sjArr[1 + sji] = spawnJSON.charCodeAt(sji);
-                }
-                sjArr[1 + spawnJSON.length] = 0; // null terminator
+                sjArr.set(sjBytes, 1);
+                sjArr[1 + sjBytes.length] = 0; // null terminator
                 this.socket.send(sjBuf);
                 console.log('%c[Sigmally]%c Spawn sent: ' + nick, 'color:#3af', 'color:inherit');
                 return;
