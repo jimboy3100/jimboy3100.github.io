@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.503;
+window.OgVer = 3.504;
 
 
 /*
