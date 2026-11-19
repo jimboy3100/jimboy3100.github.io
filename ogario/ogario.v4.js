@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.531;
+window.OgVer = 3.532;
 
 
 /*
@@ -2632,6 +2632,11 @@ function deleteGamemode(temp) {
     if (!window.gamemodeBackup) {
         window.gamemodeBackup = $("#gamemode").html();
     }
+    /* Agar2, Sigmally and Senpa servers do not work: hidden from the list (their code and
+     * ?sip= links stay, so they can be re-enabled by removing this filter). */
+    privateModOptions = privateModOptions.filter(function (el) {
+        return !/^(Agar2|Sigmally|Senpa)/i.test(String(el && el.text || ''));
+    });
     $('#gamemode').empty();
     $.each(privateModOptions, function (i, el) {
         var opt = new Option(el.text, el.value);
