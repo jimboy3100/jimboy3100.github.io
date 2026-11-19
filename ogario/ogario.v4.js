@@ -4017,19 +4017,37 @@ function callEveryFullHourCoinDigger() {
     }, difference);
 }
 
+/* Bound once under a namespace (re-enabling used to stack handlers) and throttled to
+   one tween per animation frame; the canvas fills the window, so the window size is
+   used instead of reading the canvas size (a forced layout) on every mousemove. */
+var _lmTiltSel = '#leaderboard-hud, #top5-hud, #minimap-hud, #time-hud, #stats-hud';
+var _lmTiltRaf = 0, _lmTiltX = 0, _lmTiltY = 0, _lmTiltOn = false;
 function initTilt() {
     //TweenMax.set([$pContent], { transformStyle: "preserve-3d" });
-    $('body').mousemove(function (e) {
-        var sxPos = e.pageX / $(canvas).width() * 100 - 100;
-        var syPos = e.pageY / $(canvas).height() * 100 - 100;
-        TweenMaxLM($('#leaderboard-hud'), sxPos, syPos)
-        TweenMaxLM($('#top5-hud'), sxPos, syPos)
-        TweenMaxLM($('#minimap-hud'), sxPos, syPos)
-        TweenMaxLM($('#time-hud'), sxPos, syPos)
-        TweenMaxLM($('#stats-hud'), sxPos, syPos)
-        //TweenMaxLM($('#minimap-sectors'), sxPos, syPos)
+    _lmTiltOn = true;
+    $('body').off('mousemove.lmTilt').on('mousemove.lmTilt', function (e) {
+        _lmTiltX = e.pageX;
+        _lmTiltY = e.pageY;
+        if (_lmTiltRaf) return;
+        _lmTiltRaf = requestAnimationFrame(function () {
+            _lmTiltRaf = 0;
+            var w = window.innerWidth || 1, h = window.innerHeight || 1;
+            var sxPos = _lmTiltX / w * 100 - 100;
+            var syPos = _lmTiltY / h * 100 - 100;
+            TweenMaxLM($(_lmTiltSel), sxPos, syPos);
+        });
     });
 };
+
+function stopTilt() {
+    if (!_lmTiltOn) return; /* never touch the HUD transforms if tilt was not on */
+    _lmTiltOn = false;
+    $('body').off('mousemove.lmTilt');
+    if (_lmTiltRaf) { cancelAnimationFrame(_lmTiltRaf); _lmTiltRaf = 0; }
+    try {
+        if (typeof TweenMax !== 'undefined') TweenMax.to($(_lmTiltSel), 0.5, { rotationY: 0, rotationX: 0 });
+    } catch (e) { }
+}
 
 function TweenMaxLM(Variable, sxPos, syPos) {
     TweenMax.to(Variable, 2, {
@@ -20242,6 +20260,7 @@ function thelegendmodproject() {
         },
         setTweenMaxEffect() {
             if (defaultmapsettings.tweenMaxEffect) initTilt()
+            else stopTilt();
             //defaultmapsettings.tweenMaxEffect ? initTilt() : console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Restart needed...');
         },
         /* ─── §4.4 Display Methods ─── */
