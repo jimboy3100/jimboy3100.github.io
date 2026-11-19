@@ -73254,11 +73254,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 console.log('Proxy ERROR: Array data required.');
                 return;
             }
-            if (data[0] === 8) {
-                data.unshift(102);
-            }
-            data = new Uint8Array(data);
-            LM.sendBuffer(new DataView(data.buffer));
+            /* Same path as proxyMobileData: encrypted with the rotating client key on
+             * official servers and gated on the login (sendBuffer skipped both and
+             * desynchronized the cipher stream). */
+            window.core.proxyMobileData(data);
         }
     };
     if (window.master && window.master.getClientVersion) window.master.getClientVersion();
