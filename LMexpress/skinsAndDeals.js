@@ -8090,8 +8090,18 @@ function LoadGameConfiguration() {
         }
     }
 
+    /*
+     * MiniclipConfigDestination is set at load, so it is never empty. The
+     * already-loaded config is valid while it still points at the default
+     * URL (URL/version changes clear these caches before calling here).
+     */
+    var _lmConfigIsDefault =
+        !window.MiniclipConfigDestination ||
+        (typeof window.LM_CONFIG_URL === 'function' &&
+            window.MiniclipConfigDestination === window.LM_CONFIG_URL());
+
     if (
-        !window.MiniclipConfigDestination &&
+        _lmConfigIsDefault &&
         window.GameConfiguration &&
         window.GameConfiguration.gameConfig
     ) {
@@ -8100,7 +8110,7 @@ function LoadGameConfiguration() {
     }
 
     if (
-        !window.MiniclipConfigDestination &&
+        _lmConfigIsDefault &&
         window.master &&
         window.master.GameConfiguration &&
         window.master.GameConfiguration
@@ -8115,7 +8125,7 @@ function LoadGameConfiguration() {
     }
 
     if (
-        !window.MiniclipConfigDestination &&
+        _lmConfigIsDefault &&
         window.LMGameConfiguration &&
         window.LMGameConfiguration
             .gameConfig
@@ -8165,7 +8175,7 @@ function LoadGameConfiguration() {
     );
 
     if (
-        !window.MiniclipConfigDestination &&
+        _lmConfigIsDefault &&
         window.LMGameConfigurationReady &&
         typeof window
             .LMGameConfigurationReady
