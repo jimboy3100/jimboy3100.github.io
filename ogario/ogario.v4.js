@@ -2477,7 +2477,9 @@ function deleteGamemode(temp) {
     });
     $('#gamemode').val('5001');
     $('#gamemode option[value="5001"]').prop('selected', true);
-    setTimeout(function () {
+    /* With temp === true the change is triggered right after the handler is bound
+       (end of this function); triggering it again here connected twice in 100 ms. */
+    if (temp !== true) setTimeout(function () {
         $('#gamemode').val('5001');
         $('#gamemode option[value="5001"]').prop('selected', true);
         $('#gamemode')[0].selectedIndex = 0;
