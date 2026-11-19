@@ -36509,7 +36509,10 @@ function thelegendmodproject() {
                     var a = data.getUint32(s, true);
                     s += 4; //5,12,19
                     //for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 4;
-                    for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 7;
+                    /* agar.io (protocol 21+) sends float32 + u24 colour per team (7 bytes); MultiOgar,
+                     * Imsolo/Agar2 and Expanding Land (protocol 6) send float32 only. */
+                    var _pieStride = a > 0 && (data.byteLength - s) >= a * 7 ? 7 : 4;
+                    for (var n = 0; n < a && s + 4 <= data.byteLength; n++) this.pieChart.push(data.getFloat32(s, true)), s += _pieStride;
                     drawRender.drawPieChart();
                     break;
                 case 53:
