@@ -22524,6 +22524,13 @@ function thelegendmodproject() {
             $(document).on("click", "#server-join", function () {
                 app.gameServerJoin($("#server-token").val());
             });
+            /* Profile edits were written to the profile only by setPlayerSettings (Play),
+             * which returns while alive: a reload or a profile switch lost them. Store
+             * the fields in the selected profile as they change, without the Play side
+             * effects (tag packet, live nick/skin). */
+            $(document).on("input change", "#nick, #clantag, #skin, #color", function () {
+                app.saveProfileFields();
+            });
             $(document).on("change", "#og-options input[type='checkbox']", function () {
                 var template = $(this);
                 app.setSettings(template.attr("id"), template.prop("checked"));
@@ -23527,6 +23534,19 @@ function thelegendmodproject() {
                     }, 4000);
                 }
             }
+        },
+        saveProfileFields() {
+            var profile = profiles[this.selectedProfile];
+            if (!profile) return;
+            var nick = $('#nick').val();
+            var tag = $('#clantag').val();
+            var skin = $('#skin').val();
+            var color = $('#color').val();
+            if (typeof nick === 'string') profile.nick = nick;
+            if (typeof tag === 'string') profile.clanTag = tag.trim();
+            if (typeof skin === 'string') profile.skinURL = this.checkSkinURL(skin.trim());
+            if (typeof color === 'string' && 7 === color.length) profile.color = color;
+            this.saveSettings(profiles, 'ogarioPlayerProfiles');
         },
         setPlayerSettings() {
             /* Prevent name/skin changes while alive — server ignores the join
