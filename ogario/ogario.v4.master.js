@@ -1110,6 +1110,7 @@ function legendmaster(self) {
             var scopeHeaderOverrides =
                 this;
 
+            var previousMode = this.gameMode;
             this.setGameMode(
                 ":party",
                 false
@@ -1150,6 +1151,7 @@ function legendmaster(self) {
 
                         scopeHeaderOverrides
                             .setPartyState("6");
+                        scopeHeaderOverrides._lmPartyJoinFailed(previousMode);
 
                         return;
                     }
@@ -1163,8 +1165,18 @@ function legendmaster(self) {
                 function() {
                     scopeHeaderOverrides
                         .setPartyState("6");
+                    scopeHeaderOverrides._lmPartyJoinFailed(previousMode);
                 }
             );
+        },
+        /* A party join that fails (expired code, network error) must not leave the
+         * client without a connection or stuck on :party (a later reconnect would
+         * create a new party). Go back to the previous mode and reconnect. */
+        _lmPartyJoinFailed(previousMode) {
+            this.partyToken = "";
+            this.setGameMode(previousMode && previousMode !== ":party" ? previousMode : ":ffa", false);
+            this.replaceHistoryState(self.location.pathname + self.location.search);
+            this.reconnect(false, "party-join-failed");
         },
         setPartyState(value) {
             if ("9" === value) {
