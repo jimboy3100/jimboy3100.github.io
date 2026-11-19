@@ -71345,6 +71345,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.indicator = new Image();
             this.indicator.src = canvas.toDataURL();
             canvas = null;
+            /* setIndicatorColor() only calls this function: redraw the heart
+             * and smile too so they follow the new colour. */
+            this.preDrawHeartIndicator();
+            this.preDrawSmileIndicator();
         },
         preDrawSmileIndicator() {
             var canvas = document.createElement('canvas');
@@ -71449,9 +71453,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.setCanvas();
             this.resizeCanvas();
             this.preDrawPellet();
-            this.preDrawIndicator();
-            this.preDrawHeartIndicator();
-            this.preDrawSmileIndicator();
+            this.preDrawIndicator(); // also draws the heart and smile
             window.requestAnimationFrame(drawRender.render);
             /* Background-tab recovery: when user returns to tab, snap state immediately.
              * requestAnimationFrame stops in hidden tabs, so cells/camera go stale.
