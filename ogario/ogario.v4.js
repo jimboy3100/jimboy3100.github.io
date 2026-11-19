@@ -63415,8 +63415,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                     ._webglCellIdx !==
                                 undefined
                             ) {
-                                delete abortCell
-                                    ._webglCellIdx;
+                                abortCell
+                                    ._webglCellIdx = undefined;
                             }
 
 
@@ -63425,8 +63425,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                     ._webglZ !==
                                 undefined
                             ) {
-                                delete abortCell
-                                    ._webglZ;
+                                abortCell
+                                    ._webglZ = undefined;
                             }
                         }
 
@@ -64781,8 +64781,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var abortCell = cellsArray[ai];
                     if (!abortCell) continue;
                     abortCell._webglRendered = false;
-                    if (abortCell._webglCellIdx !== undefined) delete abortCell._webglCellIdx;
-                    if (abortCell._webglZ !== undefined) delete abortCell._webglZ;
+                    if (abortCell._webglCellIdx !== undefined) abortCell._webglCellIdx = undefined;
+                    if (abortCell._webglZ !== undefined) abortCell._webglZ = undefined;
                 }
                 return false;
             };
@@ -65688,8 +65688,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             9
                         ];
 
-                    delete cell
-                        ._webglCellIdx;
+                    cell
+                        ._webglCellIdx = undefined;
                 }
             }
 
@@ -67600,8 +67600,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             ._webglCellIdx !==
                         undefined
                     ) {
-                        delete unifiedWebGLClearCell
-                            ._webglCellIdx;
+                        unifiedWebGLClearCell
+                            ._webglCellIdx = undefined;
                     }
 
 
@@ -67610,8 +67610,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             ._webglZ !==
                         undefined
                     ) {
-                        delete unifiedWebGLClearCell
-                            ._webglZ;
+                        unifiedWebGLClearCell
+                            ._webglZ = undefined;
                     }
                 }
 
@@ -67753,8 +67753,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                     ._webglCellIdx !==
                                 undefined
                             ) {
-                                delete unifiedWebGLResetCell
-                                    ._webglCellIdx;
+                                unifiedWebGLResetCell
+                                    ._webglCellIdx = undefined;
                             }
 
 
@@ -67763,8 +67763,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                     ._webglZ !==
                                 undefined
                             ) {
-                                delete unifiedWebGLResetCell
-                                    ._webglZ;
+                                unifiedWebGLResetCell
+                                    ._webglZ = undefined;
                             }
                         }
 
