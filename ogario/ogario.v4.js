@@ -63273,14 +63273,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
+            /*
+             * Pick the node from the key (see the instanced path): 'url' is
+             * the first frame, 'url_cached3' the second frame of an animated
+             * skin, uploaded lazily if the key is not in glSkinMap yet.
+             */
+            var cache3 =
+                application
+                    .customSkinsCache[
+                        skinUrl +
+                        '_cached3'
+                    ];
+
             var activeKey =
                 (
                     this._skinHalf &&
-                    this.glSkinMap[
-                        skinUrl +
-                        '_cached3'
-                    ] !==
-                        undefined
+                    cache3
                 )
                     ? (
                         skinUrl +
@@ -63290,22 +63298,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             var node =
-                application
-                    .customSkinsCache[
-                        skinUrl +
-                        '_cached3'
-                    ] ||
+                activeKey !== skinUrl
+                    ? cache3
+                    : (
+                        application
+                            .customSkinsCache[
+                                skinUrl +
+                                '_cached'
+                            ] ||
 
-                application
-                    .customSkinsCache[
-                        skinUrl +
-                        '_cached'
-                    ] ||
-
-                application
-                    .customSkinsCache[
-                        skinUrl
-                    ];
+                        application
+                            .customSkinsCache[
+                                skinUrl
+                            ]
+                    );
 
 
             var layer =
@@ -65654,8 +65660,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (!application.customSkinsCache.hasOwnProperty(skinUrl)) {
                             application.loadSkin(application.customSkinsCache, skinUrl, undefined, true);
                         }
-                        var activeKey = (this._skinHalf && this.glSkinMap[skinUrl + "_cached3"] !== undefined) ? (skinUrl + "_cached3") : skinUrl;
-                        var skinNode = application.customSkinsCache[skinUrl + "_cached3"] || application.customSkinsCache[skinUrl + "_cached"] || application.customSkinsCache[skinUrl];
+                        /* Pick the node from the key: the "url" key must get the
+                         * first frame, "url_cached3" the second (animated skins),
+                         * and the second-frame key is uploaded lazily after any
+                         * skin-array reset or context restore. */
+                        var _skinCache3 = application.customSkinsCache[skinUrl + "_cached3"];
+                        var activeKey = (this._skinHalf && _skinCache3) ? (skinUrl + "_cached3") : skinUrl;
+                        var skinNode = activeKey !== skinUrl ? _skinCache3 : (application.customSkinsCache[skinUrl + "_cached"] || application.customSkinsCache[skinUrl]);
 
                         var mappedLayer = this.glSkinMap[activeKey];
                         if (mappedLayer === undefined && skinNode && !skinNode._failed && (skinNode.naturalWidth > 0 || skinNode.width > 0)) {
