@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.521;
+window.OgVer = 3.522;
 
 
 /*
@@ -20615,7 +20615,7 @@ function thelegendmodproject() {
             window.multiboxPlayerEnabledSaved = null;
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
-                if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
+                if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
         },
         multiboxback() {
@@ -20666,7 +20666,7 @@ function thelegendmodproject() {
             window.multiboxPlayerEnabledSaved = null;
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
-                if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
+                if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
         },
         multiboxFollowMouse() {
@@ -32440,7 +32440,7 @@ function thelegendmodproject() {
         this.drawSpecialSkinDancer = function (style, y) {
             let tempcolor;
             if (LM.gameMode !== ":party") {
-                if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
+                if (defaultmapsettings.videoSkins && this.targetNick && application.customSkinsMap[this.targetNick] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
                     application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
                     node2 = application.customSkinsMap[this.targetNick]
                     if (ogarcopythelb.nick === this.targetNick) {
@@ -32451,7 +32451,7 @@ function thelegendmodproject() {
                 }
             }
             else {
-                if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick + this.color] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
+                if (defaultmapsettings.videoSkins && this.targetNick && application.customSkinsMap[this.targetNick + this.color] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
                     application.customSkinsMap[this.targetNick + this.color] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
                     node2 = application.customSkinsMap[this.targetNick + this.color]
                     if (ogarcopythelb.nick === this.targetNick) {
