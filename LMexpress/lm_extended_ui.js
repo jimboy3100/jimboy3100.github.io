@@ -10658,9 +10658,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
 
     /* Listen for challenge evaluation and optionally auto-show toast */
+    /* Challenges were removed (owner decision): agar.io web has no achievements; the window
+     * only compared the last game with the config's Play Games thresholds. No toast either. */
     document.addEventListener('lm-challenges-evaluated', function (e) {
         var ev = e && e.detail;
-        if (!ev || ev.metThresholdCount <= 0) return;
+        if (!ev || ev.metThresholdCount <= 0 || !window._lmShowChallenges) return;
 
         if (window.toastr) {
             var msg = '<b>\uD83C\uDFC5 Challenges:</b> ' + ev.metThresholdCount + ' threshold' + (ev.metThresholdCount > 1 ? 's' : '') + ' met!';
@@ -10701,9 +10703,6 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
                 <i class="fa fa-users"></i> Friends
                 <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY NEEDED</div>
-            </button>
-            <button id="lm-challenges-btn" class="btn btn-success btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="View Challenges / Achievements">
-                \uD83C\uDFC5 Challenges
             </button>
             <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="Claim the hourly bonus, the daily quest and gifts that are ready">
                 \uD83C\uDF81 Claim All
