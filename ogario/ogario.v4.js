@@ -4786,7 +4786,23 @@ window.videoSkinPlayer = {};
 
 
 
+/* Videos loop and were never paused when their cell left view. Remember when each URL
+   was last drawn; one sweeper pauses those not drawn for 3 s (the next draw resumes it). */
+window.videoSkinLastDraw = {};
+window.videoSkinSweeper = null;
+function sweepVideoSkins() {
+    var now = Date.now();
+    for (var url in window.videoSkinPlayer) {
+        var v = window.videoSkinPlayer[url];
+        if (v && v.playing && now - (window.videoSkinLastDraw[url] || 0) > 3000) {
+            try { v.pause(); } catch (e) { }
+        }
+    }
+}
+
 function checkVideos(a, b) {
+    window.videoSkinLastDraw[a] = Date.now();
+    if (!window.videoSkinSweeper) window.videoSkinSweeper = setInterval(sweepVideoSkins, 2000);
     checkVideos1(a);
     //setTimeout(function() {
     if (window.videoSkinPlayer[a] && window.videoSkinPlayer[a].readyState == 4) {
