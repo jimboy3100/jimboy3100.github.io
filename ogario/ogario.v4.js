@@ -21441,6 +21441,9 @@ function thelegendmodproject() {
             if (!url || typeof url !== 'string') return '';
             url = url.trim();
             if (!url) return '';
+            /* imgur page link (imgur.com/<id>) is an HTML page, not the image */
+            var imgurPage = /^(?:https?:\/\/)?(?:www\.|m\.)?imgur\.com\/([a-zA-Z0-9]{5,8})\/?(?:[?#].*)?$/i.exec(url);
+            if (imgurPage) return 'https://i.imgur.com/' + imgurPage[1] + '.png';
             if (url.startsWith('http://')) return url.replace('http://', 'https://');
             if (url.startsWith('https://') || url.startsWith('data:')) return url;
             if (url.startsWith('//')) return 'https:' + url;
@@ -23845,16 +23848,21 @@ function thelegendmodproject() {
             }
 
             var failTime = app._failedSkinURLs[url];
+            /* A 403/404 does not heal in 30 s: double the cooldown on every
+             * retry that fails again (30 s, 60 s, ... up to 10 min). */
+            if (!app._failedSkinRetries) app._failedSkinRetries = {};
+            var failRetries = app._failedSkinRetries[url] || 0;
 
             if (
                 failTime &&
-                (Date.now() - failTime) < 30000
+                (Date.now() - failTime) < Math.min(30000 * Math.pow(2, failRetries), 600000)
             ) {
                 return;
             }
 
             if (failTime) {
                 delete app._failedSkinURLs[url];
+                app._failedSkinRetries[url] = failRetries + 1;
             }
 
             /*
@@ -23988,6 +23996,9 @@ function thelegendmodproject() {
                     delete app._failedSkinURLs[
                         url
                     ];
+                }
+                if (app._failedSkinRetries) {
+                    delete app._failedSkinRetries[url];
                 }
 
                 /*
@@ -24570,7 +24581,7 @@ function thelegendmodproject() {
                                 Date.now();
                         }
                         if (!url || typeof url !== 'string' || url.length < 10 || !url.includes('.')) return;
-                        console.warn("[LM] Skin URL failed to load: " + url);
+                        if (!(app._failedSkinRetries && app._failedSkinRetries[url])) console.warn("[LM] Skin URL failed to load: " + url);
                         var filename = url.split('/').pop().replace('?', '');
                         if (!filename) return;
                         var isCustomSkin = filename.startsWith('skin_custom_');
@@ -45552,16 +45563,19 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
-                    var digits = g.replace(/[^0-9]/g, '');
-                    if (digits) {
-                        skinUrl = window.LM_CUSTOM_SKINS_CDN + "/skin_custom_" + digits + ".png?";
+                    /* Uploaded skin ids are skin_custom_<uuid>_<uuid> (hex letters and
+                     * dashes). Keep the id as is, like the official addCustomSkin
+                     * ('%x' -> 'skin_x', url = custom_skins_url + id + '.png'). */
+                    var g1 = g.replace(/\.png(?:\?.*)?$/i, '');
+                    if (/^\d+$/.test(g1)) {
+                        g1 = 'skin_custom_' + g1;
                     } else {
-                        var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
+                        if (g1.charAt(0) === '%') g1 = 'skin_' + g1.substring(1);
                         if (!g1.startsWith('skin_custom')) {
-                            g1 = 'skin_custom_' + g1.replace(/^_+/, '');
+                            g1 = 'skin_custom_' + g1.replace(/^skin_/, '').replace(/^custom/, '').replace(/^_+/, '');
                         }
-                        skinUrl = window.LM_CUSTOM_SKINS_CDN + "/" + g1 + ".png?";
                     }
+                    skinUrl = window.LM_CUSTOM_SKINS_CDN + "/" + g1 + ".png?";
                 }
                 /* 5. Level skins (_level_1, _level_2, etc.) */
                 else if (g && typeof g === 'string' && g.includes("_level_")) {
