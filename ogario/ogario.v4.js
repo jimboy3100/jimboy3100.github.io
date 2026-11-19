@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.540;
+window.OgVer = 3.541;
 
 
 /*
@@ -2442,30 +2442,14 @@ function deleteGamemode(temp) {
         }, {
             text: 'Exp Rookery',
             value: 10
-        }, {
-            text: 'Agar2 EU FFA',
-            value: 8001
-        }, {
-            text: 'Agar2 EU Experimental',
-            value: 8002
-        }, {
-            text: 'Agar2 EU Teams',
-            value: 8003
-        }, {
-            text: 'Agar2 EU Party',
-            value: 8004
-        }, {
-            text: 'Agar2 NA FFA',
-            value: 8005
-        }, {
-            text: 'Agar2 NA Experimental',
-            value: 8006
-        }, {
-            text: 'Agar2 NA Teams',
-            value: 8007
-        }, {
-            text: 'Agar2 NA Party',
-            value: 8008
+        /* not working: { text: 'Agar2 EU FFA', value: 8001 } */
+        /* not working: { text: 'Agar2 EU Experimental', value: 8002 } */
+        /* not working: { text: 'Agar2 EU Teams', value: 8003 } */
+        /* not working: { text: 'Agar2 EU Party', value: 8004 } */
+        /* not working: { text: 'Agar2 NA FFA', value: 8005 } */
+        /* not working: { text: 'Agar2 NA Experimental', value: 8006 } */
+        /* not working: { text: 'Agar2 NA Teams', value: 8007 } */
+        /* not working: { text: 'Agar2 NA Party', value: 8008 } */
         /* Garix servers (commented out)
         }, {
             text: 'Garix Teams',
@@ -2483,39 +2467,17 @@ function deleteGamemode(temp) {
             text: 'Garix Selffeed',
             value: 9005
         */
-        }, {
-            text: 'Sigmally US-1',
-            value: 10001
-        }, {
-            text: 'Sigmally US-2',
-            value: 10002
-        }, {
-            text: 'Sigmally US-3',
-            value: 10003
-        }, {
-            text: 'Sigmally Europe-1',
-            value: 10004
-        }, {
-            text: 'Sigmally Tournaments',
-            value: 10005
-        }, {
-            text: 'Senpa EU FFA',
-            value: 10010
-        }, {
-            text: 'Senpa EU Macro',
-            value: 10011
-        }, {
-            text: 'Senpa EU Multibox',
-            value: 10012
-        }, {
-            text: 'Senpa NA FFA',
-            value: 10013
-        }, {
-            text: 'Senpa NA Instant',
-            value: 10014
-        }, {
-            text: 'Senpa AS FFA',
-            value: 10015
+        /* not working: { text: 'Sigmally US-1', value: 10001 } */
+        /* not working: { text: 'Sigmally US-2', value: 10002 } */
+        /* not working: { text: 'Sigmally US-3', value: 10003 } */
+        /* not working: { text: 'Sigmally Europe-1', value: 10004 } */
+        /* not working: { text: 'Sigmally Tournaments', value: 10005 } */
+        /* not working: { text: 'Senpa EU FFA', value: 10010 } */
+        /* not working: { text: 'Senpa EU Macro', value: 10011 } */
+        /* not working: { text: 'Senpa EU Multibox', value: 10012 } */
+        /* not working: { text: 'Senpa NA FFA', value: 10013 } */
+        /* not working: { text: 'Senpa NA Instant', value: 10014 } */
+        /* not working: { text: 'Senpa AS FFA', value: 10015 } */
         }, {
             text: 'Delta EU Party 1',
             value: 10020
