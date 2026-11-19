@@ -1322,6 +1322,18 @@ function SpecialDeals(defaultTab) {
          */
         var _lmPNG8Worker = null;
         var _lmPNG8WorkerIdleTimer = null;
+        /* One worker serves every encode; replies are matched to requests by id. */
+        var _lmPNG8Seq = 0;
+        var _lmPNG8Pending = {};
+
+        function rejectAllPNG8Pending(error) {
+            Object.keys(_lmPNG8Pending).forEach(function (id) {
+                var job = _lmPNG8Pending[id];
+                delete _lmPNG8Pending[id];
+                clearTimeout(job.timeout);
+                job.reject(error);
+            });
+        }
 
         function terminatePNG8Worker() {
             if (_lmPNG8Worker) {
@@ -1358,11 +1370,12 @@ function SpecialDeals(defaultTab) {
                 '    );',
                 '    var bytes = new Uint8Array(result);',
                 '    self.postMessage(',
-                '      { png: bytes },',
+                '      { id: e.data.id, png: bytes },',
                 '      [bytes.buffer]',
                 '    );',
                 '  } catch (err) {',
                 '    self.postMessage({',
+                '      id: e.data.id,',
                 '      error: err.message || String(err)',
                 '    });',
                 '  }',
@@ -1377,6 +1390,30 @@ function SpecialDeals(defaultTab) {
             _lmPNG8Worker = new Worker(
                 URL.createObjectURL(blob)
             );
+
+            _lmPNG8Worker.onmessage = function (e) {
+                var job = _lmPNG8Pending[e.data && e.data.id];
+                if (!job) return; /* reply to a request that already timed out */
+                delete _lmPNG8Pending[e.data.id];
+                clearTimeout(job.timeout);
+
+                /* Reset idle auto-terminate */
+                if (_lmPNG8WorkerIdleTimer) {
+                    clearTimeout(_lmPNG8WorkerIdleTimer);
+                }
+                _lmPNG8WorkerIdleTimer = setTimeout(terminatePNG8Worker, 30000);
+
+                if (e.data.error) {
+                    job.reject(new Error(e.data.error));
+                } else {
+                    job.resolve(e.data.png);
+                }
+            };
+
+            _lmPNG8Worker.onerror = function (err) {
+                terminatePNG8Worker();
+                rejectAllPNG8Pending(err || new Error('PNG8 worker error'));
+            };
 
             return _lmPNG8Worker;
         }
@@ -1394,13 +1431,16 @@ function SpecialDeals(defaultTab) {
                         return;
                     }
 
-                    var timedOut = false;
+                    var id = ++_lmPNG8Seq;
 
-                    /* 15s timeout for very slow devices */
+                    /* 15s timeout for very slow devices: the worker is stuck, so
+                     * restart it and fail every job that was waiting on it. */
                     var timeout = setTimeout(
                         function() {
-                            timedOut = true;
+                            if (!_lmPNG8Pending[id]) return;
+                            delete _lmPNG8Pending[id];
                             terminatePNG8Worker();
+                            rejectAllPNG8Pending(new Error('PNG8 worker restarted'));
                             reject(
                                 new Error(
                                     'PNG8 worker timed out'
@@ -1410,55 +1450,18 @@ function SpecialDeals(defaultTab) {
                         15000
                     );
 
-                    worker.onmessage =
-                        function(e) {
-                            clearTimeout(timeout);
-
-                            if (timedOut) return;
-
-                            /* Reset idle auto-terminate */
-                            if (_lmPNG8WorkerIdleTimer) {
-                                clearTimeout(
-                                    _lmPNG8WorkerIdleTimer
-                                );
-                            }
-                            _lmPNG8WorkerIdleTimer =
-                                setTimeout(
-                                    terminatePNG8Worker,
-                                    30000
-                                );
-
-                            if (e.data.error) {
-                                reject(
-                                    new Error(
-                                        e.data.error
-                                    )
-                                );
-                            } else {
-                                resolve(
-                                    e.data.png
-                                );
-                            }
-                        };
-
-                    worker.onerror =
-                        function(err) {
-                            clearTimeout(timeout);
-                            if (timedOut) return;
-                            terminatePNG8Worker();
-                            reject(
-                                err || new Error(
-                                    'PNG8 worker error'
-                                )
-                            );
-                        };
+                    _lmPNG8Pending[id] = {
+                        resolve: resolve,
+                        reject: reject,
+                        timeout: timeout
+                    };
 
                     /*
                      * Transfer the RGBA buffer
                      * (zero-copy to worker).
                      */
                     worker.postMessage(
-                        { buffer: rgbaBuffer, cnum: cnum || 16 },
+                        { id: id, buffer: rgbaBuffer, cnum: cnum || 16 },
                         [rgbaBuffer]
                     );
                 }
