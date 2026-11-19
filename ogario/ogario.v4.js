@@ -40943,7 +40943,7 @@ function thelegendmodproject() {
                     setTimeout(
                         function () {
                             if (
-                                window.LM &&
+                                LM && /* local LM; window.LM is only a UI stub */
                                 typeof LM
                                     .autobrew ===
                                     'function'
@@ -41031,7 +41031,7 @@ function thelegendmodproject() {
                     setTimeout(
                         function () {
                             if (
-                                window.LM &&
+                                LM && /* local LM; window.LM is only a UI stub */
                                 typeof LM
                                     .autobrew ===
                                     'function'
@@ -41469,7 +41469,7 @@ function thelegendmodproject() {
 
                             var statuses =
                                 (
-                                    window.LM &&
+                                    LM && /* local LM; window.LM is only a UI stub */
                                     LM.user &&
                                     LM.user
                                         .potionsStatus
@@ -41575,7 +41575,7 @@ function thelegendmodproject() {
 
 
                             if (
-                                window.LM &&
+                                LM && /* local LM; window.LM is only a UI stub */
                                 typeof LM
                                     .autobrew ===
                                     'function'
@@ -41600,7 +41600,7 @@ function thelegendmodproject() {
                     setTimeout(
                         function () {
                             if (
-                                window.LM &&
+                                LM && /* local LM; window.LM is only a UI stub */
                                 typeof LM
                                     .autobrew ===
                                     'function'
@@ -46462,13 +46462,14 @@ Most cells eaten   : ${mostCellsEaten}
     window.sendAction = function (
         action
     ) {
+        /* window.LM is only a UI stub; the real protocol object is LM / window.legendmod. */
         if (
-            window.LM &&
-            typeof window.LM
+            LM &&
+            typeof LM
                 .sendAction ===
                 'function'
         ) {
-            window.LM.sendAction(
+            LM.sendAction(
                 action
             );
         }
