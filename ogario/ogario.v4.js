@@ -19655,6 +19655,7 @@ function thelegendmodproject() {
         },
         doubleSplit() {
             var app = this;
+            var _lmSplitUnit = window.multiboxPlayerEnabled;
             // Imsolo/Agar2: use dedicated server-side atomic double split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 if (window.core && window.core.doubleSplit) window.core.doubleSplit();
@@ -19662,11 +19663,14 @@ function thelegendmodproject() {
             }
             app.split();
             setTimeout(function () {
+                /* the unit switched since the macro started: do not split the other one */
+                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
             }, 40);
         },
         crazyDoubleSplit() {
             var app = this;
+            var _lmSplitUnit = window.multiboxPlayerEnabled;
             // Imsolo/Agar2: use dedicated server-side atomic double split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 window.lockPosition = true;
@@ -19677,19 +19681,25 @@ function thelegendmodproject() {
             window.lockPosition = true
             app.split();
             setTimeout(function () {
+                /* the unit switched since the macro started: do not split the other one */
+                if (window.multiboxPlayerEnabled !== _lmSplitUnit) { window.lockPosition = false; return; }
                 app.split();
                 window.lockPosition = false
             }, 40);
         },
         popSplit() {
             var app = this;
+            var _lmSplitUnit = window.multiboxPlayerEnabled;
             app.split();
             setTimeout(function () {
+                /* the unit switched since the macro started: do not split the other one */
+                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
             }, 200);
         },
         tripleSplit() {
             var app = this;
+            var _lmSplitUnit = window.multiboxPlayerEnabled;
             // Imsolo/Agar2: use dedicated server-side atomic triple split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 if (window.core && window.core.tripleSplit) window.core.tripleSplit();
@@ -19698,15 +19708,20 @@ function thelegendmodproject() {
             //window.lockPosition = true
             app.split();
             setTimeout(function () {
+                /* the unit switched since the macro started: do not split the other one */
+                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
             }, 40);
             setTimeout(function () {
+                /* the unit switched since the macro started: do not split the other one */
+                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
                 //window.lockPosition = false
             }, 80);
         },
         split16() {
             var app = this;
+            var _lmSplitUnit = window.multiboxPlayerEnabled;
             // Imsolo/Agar2: use dedicated server-side atomic quad split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 if (window.core && window.core.quadSplit) window.core.quadSplit();
@@ -19714,12 +19729,18 @@ function thelegendmodproject() {
             }
             app.split();
             setTimeout(function () {
+                /* the unit switched since the macro started: do not split the other one */
+                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
             }, 40);
             setTimeout(function () {
+                /* the unit switched since the macro started: do not split the other one */
+                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
             }, 80);
             setTimeout(function () {
+                /* the unit switched since the macro started: do not split the other one */
+                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
             }, 120);
         },
