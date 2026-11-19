@@ -22659,6 +22659,8 @@ function thelegendmodproject() {
 
         },
         onSpectate() {
+            /* Spectating needs the main socket's cell updates (see onPlayerDeath). */
+            window.mainPlayerDeadMbActive = false;
             this.onJoin();
             this.sendPlayerJoin();
             this.hideMenu();
@@ -33692,6 +33694,9 @@ function thelegendmodproject() {
             this.clientKey = null;
             /* Recomputed in _finishConnect; Garix/Sigmally/Senpa return before it. */
             this.connectionIntegrity = false;
+            /* Set by a main death while a multibox unit lives; it drops every opcode 16
+             * of the main socket, so it must not survive into a new connection. */
+            window.mainPlayerDeadMbActive = false;
             this.accessTokenSent = false;
             /* Account requests wait for this connection's login response (type 11). */
             this.loginConfirmed = false;
