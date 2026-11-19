@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.513;
+window.OgVer = 3.514;
 
 
 /*
@@ -36032,7 +36032,11 @@ function thelegendmodproject() {
             this.flushCellsData();
         },
         onClose(t) {
-            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close');
+            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close',
+                /* why: close code/reason, how long it was open, handshake/login state */
+                t ? ('code ' + t.code + (t.reason ? ' reason "' + t.reason + '"' : '') + (t.wasClean === false ? ' (not clean)' : '')) : '',
+                this._connOpenTime ? ('after ' + (Date.now() - this._connOpenTime) + ' ms open') : 'before open',
+                this.clientKey ? '(241 key ok)' : '(no 241 key)', LM.loginConfirmed ? '(logged in)' : '(not logged in)');
             this.flushCellsData();
             if (typeof celltimerstop === 'function') celltimerstop();
             if (typeof stopMergeTimer === 'function') stopMergeTimer();
@@ -40016,6 +40020,7 @@ function thelegendmodproject() {
                         console.warn('[LM] Disconnect (type 20) without disconnectField');
                         break;
                     }
+                    console.warn('[LM] Server sent disconnect (type 20), reason:', u.reason);
                     this.disconnectMessage(u.reason);
 
                     //window.loggedIn = false;
