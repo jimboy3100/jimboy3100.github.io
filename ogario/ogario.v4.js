@@ -67196,8 +67196,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var rCell = LM.removedCells[i];
                     if (rCell) {
                         try {
+                            /* Move before the deform wrapper (as live cells do):
+                             * moving inside it mixed the raw start with the
+                             * deformed target and the result was then discarded.
+                             * Same skip condition as cell.draw(). */
+                            if (!((LM.hideSmallBots && rCell.size <= 36) || rCell.invisible === true)) {
+                                rCell.moveCell();
+                            }
                             /* EXPANDING LAND — deform removed-cell render (jelly ON = no-op) */
-                            this.drawLegendWorldDeformedCanvasCell(rCell, this.ctx, true);
+                            this.drawLegendWorldDeformedCanvasCell(rCell, this.ctx, false);
                         } catch (eRCell) { }
                     }
                 }
