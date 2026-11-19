@@ -31659,7 +31659,7 @@ function thelegendmodproject() {
                         e = n / 30
                     }
                     style.save();
-                    style.globalAlpha = e
+                    style.globalAlpha *= e; // keep the removed-cell fade / transparency
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHero1", this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsHero1, this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1);
                     style.restore();
@@ -31844,7 +31844,7 @@ function thelegendmodproject() {
                                     style.beginPath();
                                     style.arc(this.x, this.y, y + 10, 0, this.pi2, false);
                                     style.fillStyle = this.oppColor;
-                                    style.globalAlpha = 0.45;
+                                    style.globalAlpha *= 0.45; // keep the removed-cell fade / transparency
                                     style.fill();
                                     style.restore();
                                 }
