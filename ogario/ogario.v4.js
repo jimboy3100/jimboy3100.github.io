@@ -1850,6 +1850,13 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                         } catch (gErr) { gUser = null; }
                         var doGoogleLogin = function () {
                             if (!window.master || typeof window.master.login !== 'function') return;
+                            /* This connection is still logged in: resending the token on an
+                               authenticated socket gets the session dropped. Keep the session. */
+                            if (window.legendmod && window.legendmod.loginConfirmed === true) {
+                                window._lwReconnecting = false;
+                                window._loginRetryCount = 0;
+                                return;
+                            }
                             if (window.legendmod) window.legendmod.accessTokenSent = false;
                             window.master.login();
                         };
@@ -23241,8 +23248,8 @@ function thelegendmodproject() {
             if (typeof celltimerstop === 'function') celltimerstop();
             if (typeof stopMergeTimer === 'function') stopMergeTimer();
 
-            // Auto-switch to surviving multibox spect if any
-            if (typeof spects !== 'undefined' && spects && spects.length > 0) {
+            // Auto-switch to surviving multibox spect if any (only when "Auto-switch focus after death" is on)
+            if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
                 for (var _i = 0; _i < spects.length; _i++) {
                     if (spects[_i] && spects[_i].active) {
                         window.multiboxPlayerEnabled = _i + 1;
@@ -35892,6 +35899,13 @@ function thelegendmodproject() {
             var self = this
             this.playerNick = nick;
 
+            /* Imsolo/Agar2 need the extended spawn [0][nick\0][skin\0][uuid\0][partyCode\0]
+             * built in sendNick2; the 1.8 s fallback below never runs there (no LM.integrity). */
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                this.sendNick2(nick);
+                return;
+            }
+
             /* ── Build <skin>nick prefix for ExpandingLand servers ──
              * The server's ProtocolLegacy parses <skin>nick format on spawn.
              * Only applied to ExpandingLand — other servers are unaffected. */
@@ -37011,8 +37025,10 @@ function thelegendmodproject() {
                     : 0;
 
             me.startTime = Date.now();
-            me.transitionDuration = transitionDur;
-            me.warningDuration = warningDur;
+            /* The server sends both durations in 25 Hz ticks (40 ms each); store ms,
+             * because the zone overlay divides Date.now() elapsed time by them. */
+            me.transitionDuration = transitionDur * 40;
+            me.warningDuration = warningDur * 40;
             me.prevMinX = this.mapMinX;
             me.prevMinY = this.mapMinY;
             me.prevMaxX = this.mapMaxX;
@@ -37138,9 +37154,10 @@ function thelegendmodproject() {
                     break;
                 case 18:
                     window.testobjectsOpcode18 = data;
-                    if (this.protocolKey) {
-                        this.protocolKey = this.shiftKey(this.protocolKey);
-                    }
+                    // No protocol-key rotation here: current agar.io keeps decrypting with
+                    // protocolKey ^ clientVersion for the whole connection (Delta's legacy
+                    // protocol has the rotation on 18 disabled too). Rotating made every later
+                    // packet garbage until reconnect.
                     /*
                      * ClearAll clears ENTITY state, not Expanding Land's authoritative
                      * dynamic map geometry.  During tab-resync we remain on the same
@@ -46388,9 +46405,15 @@ Most cells eaten   : ${mostCellsEaten}
                         .onPlayerDeath();
 
 
+                    /* "Auto-switch focus after death" off: keep the solo death
+                     * handling (menu) unless a unit already has focus. */
                     if (
                         !LM
-                            .multiBoxPlayerExists
+                            .multiBoxPlayerExists ||
+                        (
+                            !defaultmapsettings.mbSwitchAfterDeath &&
+                            !window.multiboxPlayerEnabled
+                        )
                     ) {
                         application.showMenu(
                             300
