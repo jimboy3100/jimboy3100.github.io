@@ -71567,7 +71567,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.isContentEditable === true;
         /* ESC always reaches the handler (opening the menu), as before. */
         var _isEscOutsideInput = pressedKey === 'ESC' && _hkTarget.tagName !== 'INPUT';
-        if ((!_isTypingTarget || _isEscOutsideInput || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
+        if ((!_isTypingTarget || _isEscOutsideInput || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && _hkTarget.id === 'message' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
 
             _lmHeldByCode[event.keyCode] = pressedKey;
             if (keyBlind[pressedKey] = true, 'ESC' === pressedKey) {
