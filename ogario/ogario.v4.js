@@ -36374,7 +36374,15 @@ function thelegendmodproject() {
                     this.flushCellsData(LM.isLegendWorld === true);
                     break;
                 case 20:
-                    this.flushCellsData(LM.isLegendWorld === true);
+                    /* ClearOwned: forget which cells are ours; the world itself stays (ClearAll is 18). */
+                    if (this.playerCells) {
+                        for (var _lmCo = 0; _lmCo < this.playerCells.length; _lmCo++) {
+                            if (this.playerCells[_lmCo]) this.playerCells[_lmCo].isPlayerCell = false;
+                        }
+                    }
+                    this.playerCells = [];
+                    this.playerCellIDs = [];
+                    if (this._playerCellIDSet) this._playerCellIDSet.clear();
                     break;
                 case 32:
                     if (data.byteLength < 5) {
