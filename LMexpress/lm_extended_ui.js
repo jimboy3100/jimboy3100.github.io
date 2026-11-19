@@ -2588,6 +2588,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         // Load cached data and start exactly one background request.
         window.switchLeagueTab(window.currentLeagueTab || 1);
+
+        /*
+         * switchLeagueTab requests only when nothing is cached. Refresh the
+         * cached current week once per open as well, so trophies and rank
+         * earned since the first response are shown (the cache stays visible
+         * meanwhile; no-op when a request already started above).
+         */
+        window._startCurrentLeaguesRequest();
     };
 
     // Listen to leagues update event and render real player data matching Agar.io UI
@@ -3245,6 +3253,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         // Check if we already have cached last week data
         if (window.lastWeekLeaguesResponse) {
             window._renderLastWeekContent(window.lastWeekLeaguesResponse);
+            // Refresh in the background (e.g. after the weekly reset); the
+            // leaguesInfoUpdate listener re-renders this modal when it lands.
+            try {
+                if (typeof window.requestLeaguesInfo === 'function') {
+                    window.requestLeaguesInfo(2);
+                }
+            } catch (lastWeekRefreshError) {}
         } else {
             // Request last week data from server (type=2).
             var lastWeekRequestWasSent = false;
