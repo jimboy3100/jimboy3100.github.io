@@ -73654,6 +73654,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
     window.core = {
         //'connect': function(url) {
         connect(url) {
+            /* A connect master did not start (private server list, World Spectate,
+             * captcha reconnect...) supersedes a findServer reply or backoff and a
+             * delayed master auto-reconnect still pending; those moved the player
+             * back to an agar.io arena. Master's own connects pass master.ws, and
+             * LM's private-server auto-reconnect leaves master's pending work alone. */
+            var _lmMaster = window.master;
+            if (_lmMaster && typeof _lmMaster.connectionGeneration === 'number' &&
+                url !== _lmMaster.ws && !LM._lmAutoReconnect) {
+                _lmMaster.connectionGeneration++;
+                _lmMaster.curValidFindServer++;
+                clearTimeout(_lmMaster.findServerTimer);
+                _lmMaster.findServerTimer = null;
+                _lmMaster._lmFindGaveUp = false;
+            }
             LM.connect(url);
             //LM.connect(url); //for multibox with new Protocol and Client
         },
