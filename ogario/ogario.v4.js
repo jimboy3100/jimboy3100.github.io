@@ -20302,8 +20302,15 @@ function thelegendmodproject() {
                 return;
             }
 
+            /* multiboxPlayerEnabled is the unit NUMBER (spect.js, getActiveSpect); a unit can be
+             * removed from the middle of spects, so walk by position but store the number. */
             var totalUnits = 1 + spects.length;
-            var currentIdx = (!window.multiboxPlayerEnabled) ? 0 : window.multiboxPlayerEnabled;
+            var currentIdx = 0;
+            if (window.multiboxPlayerEnabled) {
+                for (var _si = 0; _si < spects.length; _si++) {
+                    if (spects[_si] && spects[_si].number === window.multiboxPlayerEnabled) { currentIdx = _si + 1; break; }
+                }
+            }
             var nextIdx = (currentIdx + 1) % totalUnits;
 
             if (nextIdx === 0) {
@@ -20312,8 +20319,8 @@ function thelegendmodproject() {
                     play();
                 }
             } else {
-                window.multiboxPlayerEnabled = nextIdx;
                 var spectIdx = nextIdx - 1;
+                window.multiboxPlayerEnabled = (spects[spectIdx] && spects[spectIdx].number) || nextIdx;
                 if (spects[spectIdx]) {
                     if (!spects[spectIdx].active) {
                         spects[spectIdx].respawn();
