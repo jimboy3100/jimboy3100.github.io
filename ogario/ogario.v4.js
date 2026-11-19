@@ -37580,6 +37580,9 @@ function thelegendmodproject() {
                     this.playerCellIDs.push(data.getUint32(s, true));
                     if (this._playerCellIDSet) this._playerCellIDSet.add(this.playerCellIDs[this.playerCellIDs.length - 1]);
                     if (!this.play) {
+                        /* Spawned: cancel a pending 1.8 s spawn retry (sendNick), so dying
+                         * before it fires does not send an unrequested respawn. */
+                        this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1;
                         this.play = true;
                         this.isSpectateEnabled = false
                         application.hideMenu();
