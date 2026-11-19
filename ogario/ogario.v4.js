@@ -40787,15 +40787,25 @@ function thelegendmodproject() {
                         if (lpu) {
                             console.log("[LM] Leagues Pass Update received");
                             window.lastLeaguesPassUpdate = lpu;
+                            /* Official User_leagues_pass_update: leagueType, playerThatPassed,
+                             * playerThatWasPassed (no position field). Either one can be this
+                             * account: word the toast from our side. Names are escaped for toastr. */
                             var passedBy = lpu.playerThatPassed;
-                            if (passedBy && passedBy.displayName) {
-                                /* another player's name: escape before toastr HTML */
+                            var passedWho = lpu.playerThatWasPassed;
+                            /* Compare ids without a "provider$" prefix (login userId is "google$<id>"). */
+                            var lpuId = function (id) { id = String(id || '').trim(); var k = id.lastIndexOf('$'); return k >= 0 ? id.slice(k + 1) : id; };
+                            var myUserId = lpuId(this.user && this.user.userId);
+                            var isMe = function (p) { return !!(p && myUserId && p.userId && lpuId(p.userId) === myUserId); };
+                            if (isMe(passedBy) && passedWho && passedWho.displayName) {
+                                toastr.info('<b>[LEAGUE]:</b> You passed ' + application.escapeHTML(String(passedWho.displayName)) + ' in the league!');
+                            } else if (passedBy && passedBy.displayName && !isMe(passedBy)) {
                                 toastr.info('<b>[LEAGUE]:</b> ' + application.escapeHTML(String(passedBy.displayName)) + ' passed you in the league!');
                             }
-                            // Refresh league data
-                            if (lpu.newPosition !== undefined) {
-                                this.user.leaguePosition = lpu.newPosition;
-                                console.log("[LM] New league position: " + lpu.newPosition);
+                            /* Our rank, when the server filled it in on our entry. */
+                            var myEntry = isMe(passedBy) ? passedBy : (isMe(passedWho) ? passedWho : null);
+                            if (myEntry && Number(myEntry.rank) > 0 && this.user) {
+                                this.user.leaguePosition = Number(myEntry.rank);
+                                console.log("[LM] New league position: " + this.user.leaguePosition);
                             }
                             try { document.dispatchEvent(new CustomEvent('leaguesPassUpdate', { detail: lpu })); } catch (e) { }
                         }
