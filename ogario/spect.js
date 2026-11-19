@@ -936,6 +936,7 @@ class Spect {
             case 32:
                 temp = view.getUint32(offset, true);
                 this.playerCellIDs.push(this.newID(temp));
+                this._lmHasSpawned = true;
 
                 this.isSpectateEnabled = false
 
@@ -1074,7 +1075,13 @@ class Spect {
             case 102:
                 //this.sendCursor()
                 //console.log("[SPECT] SendNick with")
-                this.handleSendNick()
+                /* Every 102 used to (re)spawn the unit: honour "Background auto-respawn" after
+                 * the first life, and never start a new spawn within 2 s of the last one. */
+                if ((!this._lmHasSpawned || defaultmapsettings.mbAutoRespawn !== false) &&
+                    Date.now() - (this._lmLastSpawnReq || 0) > 2000) {
+                    this._lmLastSpawnReq = Date.now();
+                    this.handleSendNick()
+                }
                 console.log('[SPECT] case 102');
                 //console.log(Date.now() - this.timeStarted, this.player, this.active, this.annoucementTold)
                 if (Date.now() - this.timeStarted > 4000 && this.player && !this.active && !this.annoucementTold) {
