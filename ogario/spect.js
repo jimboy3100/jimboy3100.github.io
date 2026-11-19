@@ -972,9 +972,7 @@ class Spect {
                 this.scale = view.getFloat32(offset, true);
                 break;
             case 18:
-                if (this.protocolKey) {
-                    this.protocolKey = this.shiftKey(this.protocolKey);
-                }
+                /* No key rotation on 18 (same as the main client since PROTO-3 and Delta). */
                 this.flushCellsData();
                 console.log('[SPECT] case 18');
 
