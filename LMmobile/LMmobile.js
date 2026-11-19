@@ -971,7 +971,16 @@
         }, { passive: false });
 
         canvas.addEventListener('touchend', function (e) {
-            if (e.targetTouches.length < 2) { pOn = false; pDist = 0; }
+            if (e.targetTouches.length < 2) {
+                /* pinch over with one finger still down: that finger steers again */
+                if (pOn && e.targetTouches.length === 1 && jId === null && !chatOn) {
+                    var t = e.targetTouches[0];
+                    jId = t.identifier;
+                    org.x = t.clientX; org.y = t.clientY;
+                    jShow(org.x, org.y, org.x, org.y);
+                }
+                pOn = false; pDist = 0;
+            }
         }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
