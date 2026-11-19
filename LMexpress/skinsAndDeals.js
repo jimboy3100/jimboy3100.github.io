@@ -8209,10 +8209,17 @@ function _fetchConfigFallback(callback) {
         timeout: 8000,
         success: function(info) {
             if (typeof info === 'string') {
-                try { window.GameConfiguration = JSON.parse(info); } catch(e) { window.GameConfiguration = info; }
-            } else {
-                window.GameConfiguration = info;
+                try { info = JSON.parse(info); } catch(e) { info = null; }
             }
+            /* Accept only a real GameConfiguration: anything else (an HTML page, another
+             * JSON shape) used to be stored and re-requested in an endless loop. */
+            if (!info || typeof info !== 'object' || !info.gameConfig) {
+                window._isLoadingGameConfig = false;
+                console.warn('[Shop] Config URL did not return a GameConfiguration:', targetUrl);
+                if (typeof toastr !== 'undefined') toastr.error('<b>[SHOP]:</b> The config URL did not return a valid GameConfiguration.');
+                return;
+            }
+            window.GameConfiguration = info;
             callback();
         },
         error: function(err) {
