@@ -2206,6 +2206,10 @@ function changeregion() {
         deleteGamemode(true);
     } else {
         if (window.gamemodeBackup) {
+            /* Leaving Private: the private socket replaced agar.io without an onDisconnect,
+             * so master still thinks it is connected and setRegion/setGameMode with the
+             * same values would not reconnect. */
+            if (window.master) window.master.connectionActive = false;
             $('#gamemode').empty();
             $("#gamemode").append(window.gamemodeBackup);
             window.gamemodeBackup = null;
