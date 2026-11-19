@@ -1571,7 +1571,14 @@ function legendmaster(self) {
             var doReconnect = function () {
                 /* The user changed region/server meanwhile: their connect wins. */
                 if (master.connectionGeneration !== reconnectGeneration) return;
-                master.reconnect(false, "unexpected-disconnect");
+                /* The first two retries reopen the same arena (or the arena joined by token/link),
+                 * so a network blip does not drop the player into a random arena of the region;
+                 * if that arena is gone, later retries search for a new one. */
+                var lmNow = self.legendmod;
+                var onAgario = !lmNow || !lmNow.serverType || lmNow.serverType === "agario";
+                var sameServer = onAgario && master._unexpectedFails <= 2 &&
+                    (!!master.serverIP || master._lmDirectGen === master.connectionGeneration);
+                master.reconnect(sameServer, sameServer ? "unexpected-disconnect-same-server" : "unexpected-disconnect");
 
                 if (savedToken && savedContext) {
                     master.accessToken = savedToken;
