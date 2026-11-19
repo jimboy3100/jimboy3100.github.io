@@ -39034,6 +39034,17 @@ function thelegendmodproject() {
                     let friendX = 0,
                         friendY = 0,
                         friendNick = null;
+                    /* Layout (Delta's notes, no live capture yet): repeated int16 x, int16 y,
+                     * optional UTF-8 nick. Log the first packet's bytes once for a capture. */
+                    if (!window._lmFriendPosLogged) {
+                        window._lmFriendPosLogged = true;
+                        try {
+                            console.log('[LM] opcode 160 (friend position) bytes:',
+                                Array.from(new Uint8Array(data.buffer, data.byteOffset, data.byteLength)).join(','));
+                        } catch (e160) { }
+                    }
+                    if (!this.arrowFB || !this.arrowFB[0]) this.arrowFB = [{}];
+                    var fbVec = window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr];
                     for (; s < data.byteLength;) {
                         num++
                         if (s + 4 > data.byteLength) break;
@@ -39043,13 +39054,14 @@ function thelegendmodproject() {
                         s += 2;
                         friendY = data.getInt16(s, true);
                         s += 2;
-                        if (window.legendmod.vector[window.legendmod.vnr][0]) friendX = this.translateX(friendX);
-                        if (window.legendmod.vector[window.legendmod.vnr][1]) friendY = this.translateY(friendY);
+                        if (fbVec && fbVec[0]) friendX = this.translateX(friendX);
+                        if (fbVec && fbVec[1]) friendY = this.translateY(friendY);
                         if (s < data.byteLength) {
                             friendNick = encode();
                         } else {
                             friendNick = "";
                         }
+                        if (!isFinite(friendX) || !isFinite(friendY)) continue;
                         //this.arrowFB.push({
                         //    nick: friendNick,
                         //    x: friendX,
@@ -39059,7 +39071,8 @@ function thelegendmodproject() {
                         this.arrowFB[0].visible = true;
                         this.arrowFB[0].x = friendX;
                         this.arrowFB[0].y = friendY;
-                        this.arrowFB[0].nick = friendNick != "" ? friendNick : this.arrowFB[0].nick;
+                        /* the minimap draws '🔹' + nick + '🔹': never undefined */
+                        this.arrowFB[0].nick = friendNick ? String(friendNick) : (this.arrowFB[0].nick || '');
                     }
                     break;
                 /* case 161 (friend arrow hide) is merged into the Garix DualInfo case above. */
