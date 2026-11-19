@@ -1970,7 +1970,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
     if (MSGCOMMANDS.includes("[url]")) {
         MSGCOMMANDS = MSGCOMMANDS.split("[url]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/url]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
+        if (!/^https?:\/\//i.test(MSGCOMMANDS)) { /* http:// or https:// in any case */
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
@@ -2010,7 +2010,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
     } else if (MSGCOMMANDS.includes("[yut]")) {
         MSGCOMMANDS = MSGCOMMANDS.split("[yut]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/yut]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
+        if (!/^https?:\/\//i.test(MSGCOMMANDS)) { /* http:// or https:// in any case */
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
@@ -2030,7 +2030,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
     } else if (MSGCOMMANDS.includes("[skype]")) {
         MSGCOMMANDS = MSGCOMMANDS.split("[skype]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/skype]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
+        if (!/^https?:\/\//i.test(MSGCOMMANDS)) { /* http:// or https:// in any case */
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
