@@ -18849,9 +18849,17 @@ function thelegendmodproject() {
             ) {
                 storage = null;
             }
+            /* Colour settings end up in CSS and in inline style attributes of HTML strings
+             * (shop, chat, extended UI): a stored (e.g. imported) colour that is not a plain
+             * colour value keeps the default. lbTeammateColor is not rendered (LMexpress uses
+             * its stored value as a marker), so it is left as stored. */
+            var colorDefault = /^(#|rgba?\()/i;
+            var colorValue = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|[a-z]+)$/i;
             for (const setup in defaultSettings) {
                 if (defaultSettings.hasOwnProperty(setup)) {
-                    if (storage && storage.hasOwnProperty(setup)) {
+                    if (storage && storage.hasOwnProperty(setup) &&
+                        !(setup !== 'lbTeammateColor' && typeof defaultSettings[setup] === 'string' && colorDefault.test(defaultSettings[setup]) &&
+                            !(typeof storage[setup] === 'string' && colorValue.test(storage[setup])))) {
                         defaultSettings[setup] = storage[setup];
                     }
                     if (ogario.hasOwnProperty(setup)) {
@@ -18873,7 +18881,9 @@ function thelegendmodproject() {
             if (!this[name]) {
                 this[name] = $("<style type='text/css'>").appendTo('head');
             }
-            this[name].html(css);
+            /* text, not html: the CSS is built from (importable) theme values, and jQuery's html()
+             * falls back to append() for strings containing <script/<style, which runs the scripts. */
+            this[name].text(css);
         },
         addPresetBox(id, name, options, value, callback) {
             for (var option in $(id).append('<div class=\"preset-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"select-wrapper\"><select id=\"' + name + '\" class=\"form-control\"></select></div></div>'), options) {
@@ -18916,7 +18926,9 @@ function thelegendmodproject() {
             });
         },
         addColorBox(id, name, callback) {
-            $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" value=\"' + defaultSettings[name] + '\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            /* Value set as a property before the colorpicker reads it: imported theme values must not be parsed as HTML. */
+            $(id + ' .' + name + '-picker input').val(defaultSettings[name] == null ? '' : String(defaultSettings[name]));
             if (callback) {
                 var app = this;
                 $(id + ' .' + name + '-picker').colorpicker({
@@ -18936,7 +18948,9 @@ function thelegendmodproject() {
             });
         },
         addRgbaColorBox(id, name, callback) {
-            $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" value=\"' + defaultSettings[name] + '\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            /* Value set as a property before the colorpicker reads it: imported theme values must not be parsed as HTML. */
+            $(id + ' .' + name + '-picker input').val(defaultSettings[name] == null ? '' : String(defaultSettings[name]));
             if (callback) {
                 var app = this;
                 $(id + ' .' + name + '-picker').colorpicker({
@@ -18950,7 +18964,7 @@ function thelegendmodproject() {
                     app[callback]();
                 });
             } else {
-                (id + ' .' + name + '-picker').colorpicker({
+                $(id + ' .' + name + '-picker').colorpicker({
                     'format': 'rgba'
                 }).on('changeColor.colorpicker', function (ids) {
                     var color = ids.color.toRGB();
@@ -18966,13 +18980,14 @@ function thelegendmodproject() {
                                   <span class="value-label">
                                       ${textLanguage[name]}
                                   </span>
-                                  <span id="${name}-value" class="value">
-                                      ${defaultSettings[name]}
-                                  </span>
+                                  <span id="${name}-value" class="value"></span>
                               </div>
-                              <input id="${name}-slider" type="range" min="${min}" max="${max}" step="${step}" value="${defaultSettings[name]}">
+                              <input id="${name}-slider" type="range" min="${min}" max="${max}" step="${step}">
                           </div>
                           `);
+            /* Values set as text/property: imported theme values must not be parsed as HTML. */
+            $('#' + name + '-value').text(defaultSettings[name]);
+            $('#' + name + '-slider').val(defaultSettings[name]);
             if (callback) {
                 var app = this;
                 $('#' + name + '-slider').on('input', function () {
@@ -21243,8 +21258,11 @@ function thelegendmodproject() {
                     toastr.error('<b>[SETTINGS]:</b> Import failed: unexpected settings format.');
                     return;
                 }
+                /* Only the exported keys: other keys of the pasted JSON (e.g. legendSettings, or a
+                 * name that is not a valid selector, which threw) are not settings of this menu. */
+                var importKeys = ['ogarioCommands', 'ogarioHotkeys', 'ogarioPlayerProfiles', 'ogarioSettings', 'ogarioThemeSettings'];
                 for (const value in importValue) {
-                    if (importValue.hasOwnProperty(value)) {
+                    if (importValue.hasOwnProperty(value) && importKeys.indexOf(value) !== -1) {
                         const checked = $('#import-' + value).prop('checked');
                         if (!checked) {
                             continue;
@@ -21746,7 +21764,10 @@ function thelegendmodproject() {
             });
         },
         addSliderBox(id, name, min, max, step, callback) {
-            $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\">' + defaultmapsettings[name] + '</span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\" value=\"' + defaultmapsettings[name] + '\"></div>');
+            $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\"></span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\"></div>');
+            /* Values set as text/property: imported settings must not be parsed as HTML. */
+            $('#' + name + '-value').text(defaultmapsettings[name]);
+            $('#' + name + '-slider').val(defaultmapsettings[name]);
             var app = this;
             callback ? $('#' + name + '-slider').on('input', function () {
                 var t = parseFloat($(this).val());
@@ -22061,15 +22082,15 @@ function thelegendmodproject() {
 
             //	
             Settings.addPresetBox3('#mouseSplit', 'mouseSplit2', hotkeysCommand, 'preset', 'changeleftCmd');
-            $("#mouseSplit2 option[value=" + defaultmapsettings.leftClick + "]").prop('selected', 'selected').change();
+            $("#mouseSplit2 option").filter(function () { return this.value === String(defaultmapsettings.leftClick); }).prop('selected', 'selected').change();
             Settings.addPresetBox3('#mouseFeed', 'mouseFeed2', hotkeysCommand, 'preset', 'changerightCmd');
-            $("#mouseFeed2 option[value=" + defaultmapsettings.rightClick + "]").prop('selected', 'selected').change();
+            $("#mouseFeed2 option").filter(function () { return this.value === String(defaultmapsettings.rightClick); }).prop('selected', 'selected').change();
             Settings.addPresetBox3('#mouseWheelClick', 'mouseWheelClick2', hotkeysCommand, 'preset', 'changemiddleCmd');
-            $("#mouseWheelClick2 option[value=" + defaultmapsettings.middleClick + "]").prop('selected', 'selected').change();
+            $("#mouseWheelClick2 option").filter(function () { return this.value === String(defaultmapsettings.middleClick); }).prop('selected', 'selected').change();
             Settings.addPresetBox3('#mouseCommand4', 'mouseCommand42', hotkeysCommand, 'preset', 'change4Cmd');
-            $("#mouseCommand42 option[value=" + defaultmapsettings.mouse4Click + "]").prop('selected', 'selected').change();
+            $("#mouseCommand42 option").filter(function () { return this.value === String(defaultmapsettings.mouse4Click); }).prop('selected', 'selected').change();
             Settings.addPresetBox3('#mouseCommand5', 'mouseCommand52', hotkeysCommand, 'preset', 'change5Cmd');
-            $("#mouseCommand52 option[value=" + defaultmapsettings.mouse5Click + "]").prop('selected', 'selected').change();
+            $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
@@ -72972,10 +72993,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             text = key;
                             break;
                         } if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
+                    /* stored/imported key names go into a value attribute too */
+                    text = String(text).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
                     if ('command' === currentCommand.type) {
                         var replaceHk = command.replace('hk-', '');
-                        /* the command text is user/imported data: escape it for the value attribute */
-                        var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        /* chat command texts are user/imported text: escape them for the value attribute (a quote cut the text off) */
+                        var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
                         $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                     } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                 }
