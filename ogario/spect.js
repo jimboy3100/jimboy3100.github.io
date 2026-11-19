@@ -467,11 +467,12 @@ class Spect {
             } else if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
                 this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
 
-                this.distX = this.convertX(legendmod.cursorX) - this.playerX
-                this.distY = this.convertY(legendmod.cursorY) - this.playerY
+                /* Keep-moving offset in server space (playerX/Y are client space). */
+                this.distX = this.convertX(legendmod.cursorX) - this.convertX(this.playerX)
+                this.distY = this.convertY(legendmod.cursorY) - this.convertY(this.playerY)
             } else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
                 if (defaultmapsettings.multiKeepMoving) {
-                    this.sendPosition(this.playerX + this.distX, this.playerY + this.distY);
+                    this.sendPosition(this.convertX(this.playerX) + this.distX, this.convertY(this.playerY) + this.distY);
                 }
             }
         }, 50);
