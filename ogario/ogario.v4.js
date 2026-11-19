@@ -26444,7 +26444,8 @@ function thelegendmodproject() {
                 }
                 /* Route op30 to relay (not game server) when on private server */
                 if (this.privateMode && window.ogarioWS) {
-                    window.ogarioWS.send(view.buffer);
+                    /* send() throws while the relay is (re)connecting; that aborted the whole team tick */
+                    try { window.ogarioWS.send(view.buffer); } catch (e) { }
                 } else {
                     this.sendBuffer(view);
                 }
@@ -27970,7 +27971,7 @@ function thelegendmodproject() {
                          * ogarioWS.send() calls sendAll() which routes op100 to chat.delt.io/ws
                          * and stamps the correct relay playerID automatically. */
                         if (window.ogarioWS) {
-                            window.ogarioWS.send(view.buffer);
+                            try { window.ogarioWS.send(view.buffer); } catch (e) { } /* throws while connecting */
                         }
                     } else {
                         this.sendBuffer(view);
