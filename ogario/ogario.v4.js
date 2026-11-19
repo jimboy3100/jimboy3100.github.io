@@ -8290,7 +8290,10 @@ window.getAgarConfigIndex =
         if (
             gc &&
             gc.gameConfig &&
-            window._lmGameConfigInitSource !== gc
+            window._lmGameConfigInitSource !== gc &&
+            /* An init that threw for this object would throw again on every
+             * lookup: only the ready hooks or a new config object retry it. */
+            window._lmGameConfigInitFailed !== gc
         ) {
             _initGameConfigSections(gc);
         }
@@ -15036,8 +15039,10 @@ function _initGameConfigSections(gc) {
     try {
         _initGameConfigSectionsBody(gc);
         _gameConfigInitDone = true;
+        window._lmGameConfigInitFailed = null;
     } catch (initErr) {
         window._lmGameConfigInitSource = null;
+        window._lmGameConfigInitFailed = gc;
         console.warn('[LM] GameConfiguration init failed:', initErr);
     }
 }
@@ -72596,13 +72601,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
         /*
-         * Stored hotkeys replace the defaults wholesale, so commands added
-         * after the user last saved had no key. Give such commands their
-         * default key when that key is still free. Commands that existed at
-         * the last save (ogarioHotkeysKnown) and have no key were unbound on
-         * purpose and stay unbound.
-         */
-        /*
          * getPressedKey() used to store '-' and ';' as the raw
          * String.fromCharCode(keyCode), which differs per browser
          * ('\u00BD' / '\u00AD' for '-', '\u00BA' for ';'). Rename those keys.
@@ -72624,16 +72622,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 hotkeys['spec-messageKey'] = msgKey.slice(0, -1) + map[msgKey.charAt(msgKey.length - 1)];
             }
         },
+        /*
+         * Stored hotkeys replace the defaults wholesale, so commands added
+         * after the user last saved had no key. Give such commands their
+         * default key when that key is still free. Commands that existed at
+         * the last save (ogarioHotkeysKnown) and have no key were unbound on
+         * purpose and stay unbound. Without a known list (saved before it
+         * existed) an unbound command cannot be told from a new one, so
+         * record the current commands and bind nothing this time.
+         */
         addMissingDefaultHotkeys() {
             var known = readLocalStorageJSON('ogarioHotkeysKnown', null);
-            if (!Array.isArray(known)) known = null;
+            if (!Array.isArray(known)) {
+                try {
+                    window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(Object.keys(hotkeysCommand)));
+                } catch (eKnown) { }
+                return;
+            }
             var bound = {};
             for (var key in hotkeys) {
                 if (hotkeys.hasOwnProperty(key)) bound[hotkeys[key]] = true;
             }
             for (var command in hotkeysCommand) {
                 if (!hotkeysCommand.hasOwnProperty(command) || bound[command]) continue;
-                if (known && known.indexOf(command) !== -1) continue;
+                if (known.indexOf(command) !== -1) continue;
                 var defaultKey = hotkeysCommand[command] && hotkeysCommand[command].defaultKey;
                 if (defaultKey && !hotkeys.hasOwnProperty(defaultKey)) {
                     hotkeys[defaultKey] = command;
@@ -73455,8 +73467,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             /* Same path as proxyMobileData: encrypted with the rotating client key on
              * official servers and gated on the login (sendBuffer skipped both and
-             * desynchronized the cipher stream). */
-            window.core.proxyMobileData(data);
+             * desynchronized the cipher stream). Other opcodes still go out, through
+             * sendMessage so they are encrypted too. */
+            if (data[0] === 8 || (data[0] === 102 && data[1] === 8)) {
+                window.core.proxyMobileData(data);
+                return;
+            }
+            LM.sendMessage(new DataView(new Uint8Array(data).buffer));
         }
     };
     if (window.master && window.master.getClientVersion) window.master.getClientVersion();
