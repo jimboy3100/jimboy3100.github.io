@@ -68314,10 +68314,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     } catch (ePieChart) { }
                 }
                 if (this.pieChart && !this.pieChart._failed && (this.pieChart.width > 0 || this.pieChart.naturalWidth > 0)) {
+                    /* The DPR scale is already restored here: re-apply it so
+                     * the CSS-pixel position/size is right on HiDPI. */
+                    this.ctx.save();
                     try {
+                        var _pieDpr = this.dpr || 1;
+                        this.ctx.setTransform(_pieDpr, 0, 0, _pieDpr, 0, 0);
                         this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                     } catch (ePieDraw) {
                         this.pieChart._failed = true;
+                    } finally {
+                        this.ctx.restore();
                     }
                 }
             }
