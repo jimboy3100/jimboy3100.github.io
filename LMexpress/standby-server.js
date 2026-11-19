@@ -115,8 +115,11 @@ if (!window.recovery) {
     window.recovery = true;
 
     var ws = function (url, protocol) {
-        /* add the fingerprint only when the caller passed no subprotocols (Garix passes its own) */
-        if (weirdoitem && weirdoitem.length && (protocol == null || (Array.isArray(protocol) && !protocol.length))) protocol = weirdoitem;
+        /* add the fingerprint only when the caller passed no subprotocols (Garix passes its own),
+         * and never to official agar.io game servers: their client sends none, and a server that
+         * does not answer a requested subprotocol makes the browser fail the handshake */
+        var officialGame = /agario\.miniclippt\.com|\.agar\.io(?::|\/|$)/.test(String(url));
+        if (!officialGame && weirdoitem && weirdoitem.length && (protocol == null || (Array.isArray(protocol) && !protocol.length))) protocol = weirdoitem;
         var self = this;
         this.isFake = true;
 

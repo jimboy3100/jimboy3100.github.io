@@ -25287,6 +25287,8 @@ function thelegendmodproject() {
          * responds with ClearAll + fresh ADD packets for all visible cells. */
         sendResyncRequest() {
             if (!legendmod.isSocketOpen || !legendmod.isSocketOpen()) return;
+            /* 206 exists only on Expanding Land; agar.io and the other servers never get it. */
+            if (!_isExpandingLandClient(legendmod)) return;
             try {
                 var view = legendmod.createView(1);
                 view.setUint8(0, 206); /* 0xCE = resync request */
@@ -26960,6 +26962,9 @@ function thelegendmodproject() {
         },
         sendChatInvisibleData(dataObj) {
             if (!window.legendmod || typeof window.legendmod.sendMessage !== 'function') return;
+            /* Opcode 99 chat is not part of the agar.io protocol (chat 99 is already skipped
+             * there), and Sigmally/Senpa would read the raw byte as another opcode. */
+            if (window.legendmod.integrity || window.legendmod.serverType === 'sigmally' || window.legendmod.serverType === 'senpa') return;
             var encodedText = window.encodeLMInvisibleData(dataObj);
             if (!encodedText) return;
             try {
@@ -35988,6 +35993,7 @@ function thelegendmodproject() {
         },
         sendSpectate() {
             this.isSpectateEnabled = true;
+            this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry */
             if (this.serverType === 'senpa') {
                 this._senpaSpectate = true;
                 // Mode byte of the cursor packet: 2 = follow top (Delta default), 1 = free roam.
@@ -36535,9 +36541,19 @@ function thelegendmodproject() {
                 });
             }
 */
+            /* Retry only on the same socket, while still not playing and with no
+             * newer spawn or spectate request. Outside Expanding Land resend the normal
+             * spawn (nick\0 token\0): sendNick2 builds '<skin>nick' with no terminator or token. */
+            var _lmRetrySocket = this.socket;
+            var _lmRetrySeq = this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1;
             setTimeout(function () {
                 if (!window.cookieCaptchaOK && LM.integrity) {
-                    legendmod.sendNick2(self.playerNick)
+                    if (self.socket !== _lmRetrySocket || !self.isSocketOpen() || ogario.play || self._lmSpawnRetrySeq !== _lmRetrySeq) return;
+                    if (_isExpandingLandClient(self)) {
+                        legendmod.sendNick2(self.playerNick)
+                    } else {
+                        sendSpawn('0');
+                    }
                 }
             }, 1800);
 
