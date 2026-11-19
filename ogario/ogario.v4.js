@@ -71617,8 +71617,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             keyBlind[heldKey] = false;
         }
+        /* Mouse buttons held while focus leaves never get mouseup either: replay it. */
+        Object.keys(_lmMouseHeld).forEach(function (which) {
+            try { window.onmouseup({ which: Number(which) }); } catch (e) { }
+        });
+        _lmMouseHeld = {};
     });
+    var _lmMouseHeld = {};
     window.onmousedown = function (event) {
+        _lmMouseHeld[event.which] = true;
         if (!$("#overlays").is(":visible")) {
             //console.log(event.which)
             if (2 === event.which) {
@@ -71690,6 +71697,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
     }
     window.onmouseup = function (event) {
+        delete _lmMouseHeld[event.which];
         //if (defaultmapsettings.mouseFeed) {
         //if (1 === event.which && hotkeysCommand[defaultmapsettings.leftClick]===textLanguage['hk-macroFeed'] || 2 === event.which && hotkeysCommand[defaultmapsettings.middleClick]===textLanguage['hk-macroFeed'] || 3 === event.which && hotkeysCommand[defaultmapsettings.rightClick]===textLanguage['hk-macroFeed'] || 4 === event.which && hotkeysCommand[defaultmapsettings.mouse4Click]===textLanguage['hk-macroFeed'] || 5 === event.which && hotkeysCommand[defaultmapsettings.mouse5Click]===textLanguage['hk-macroFeed']) {
         //if (3 === event.which && !defaultmapsettings.mouseInvert || 1 === event.which && defaultmapsettings.mouseInvert) {
