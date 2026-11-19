@@ -76200,6 +76200,22 @@ function playReplayLM(temp) {
         legendmod.playingReplayRecord = 0
 
         legendmod.playingReplayServer = temp
+        /* Parse the packets as the server they were recorded on (the key is that server's
+         * token or file name). The replay URL imsolo.pro.replay made every replay Imsolo, so
+         * agar.io cell updates were read with the MultiOgar layout (flag 0x80 = cell type +
+         * party code instead of the extended flags byte) and food/ejected cells broke them. */
+        var _lmRk = String(temp).replace(/\.lm$/i, '').toLowerCase();
+        var _lmRt = (_lmRk.indexOf('agario') !== -1 || _lmRk.indexOf('agar.io') !== -1) ? 'agario'
+            : _lmRk.indexOf('imsolo.pro') !== -1 ? 'imsolo'
+                : _lmRk.indexOf('agar2.com') !== -1 ? 'agar2'
+                    : _lmRk.indexOf('garix.io') !== -1 ? 'garix'
+                        : _lmRk.indexOf('sigmally.com') !== -1 ? 'sigmally'
+                            : (_lmRk.indexOf('senpa.io') !== -1 || _lmRk.indexOf('mi.com') !== -1) ? 'senpa'
+                                : _lmRk.indexOf('delt.io') !== -1 ? 'deltio'
+                                    : (_lmRk.indexOf('legendmod.ml') !== -1 || _lmRk.indexOf('expanding.land') !== -1) ? 'expandingland'
+                                        : /[.:\/]/.test(_lmRk) ? 'private' : 'agario';
+        legendmod.serverType = _lmRt
+        legendmod.connectionIntegrity = _lmRt === 'agario' || _lmRt === 'deltio'
         legendmod.playingReplayRewind = false
         legendmod.playingReplayRewindNow = false
         //if (parseInt(window.replayTiming) < 0) {
