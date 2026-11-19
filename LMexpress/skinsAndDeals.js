@@ -2917,9 +2917,12 @@ function populateDealsGrid() {
     // --- Soft Purchases (DNA/Coins) ---
     for (var s = 0; s < softPurchases.length; s++) {
         var sp = softPurchases[s];
-        if (!sp.purchaseId) continue;
+        /* Live config rows use id / currencyProductId (older ones purchaseId / currencyType). */
+        var spId = sp.purchaseId || sp.id;
+        if (!spId || !/^[\w.+\-]+$/.test(spId)) continue;
+        sp = { purchaseId: spId, currencyType: sp.currencyType || sp.currencyProductId, currencyAmount: sp.currencyAmount };
         var spDesc = sp.purchaseId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
-        var currType = (sp.currencyType || '').toLowerCase();
+        var currType = String(sp.currencyType || '').toLowerCase();
         var currIcon = currType.indexOf('dna') !== -1 ? '🧬' : '💰';
         var currAmount = sp.currencyAmount || 0;
 
