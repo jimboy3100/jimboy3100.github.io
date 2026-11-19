@@ -26024,7 +26024,6 @@ function thelegendmodproject() {
                             1,
                             true
                         );
-                    try { this.sendDeltaRoom(); } catch (e) { }
                     break;
 
                 case 1:
@@ -26866,38 +26865,34 @@ function thelegendmodproject() {
             this.sendServerGameMode();
         },
         sendDeltaRoom() {
-            /* Delta's room registration (deltav4 deltaProtocol.ts clientTokenTag):
-             * [9][flags u8][UTF-16LE zero-terminated: serverToken, clanTag, region, gameMode, partyToken].
-             * The old packet used length-prefixed strings without the flags byte, the full
-             * region ("EU-London") and the raw mode (":ffa"), so Legend Mod never joined
-             * Delta's room and room messages such as waves (opcode 45) never arrived. */
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (!ws || ws.readyState !== 1) return;
-            var serverToken = String(this.serverToken || $("#server-token").val() || '');
-            if (this.tokenNeedToBtoa && serverToken) {
-                try { serverToken = btoa(serverToken); } catch (e) { }
+            var serverToken = (this.serverToken || $("#server-token").val() || '').substring(0, 255);
+            var clanTag = (ogarcopythelb.clanTag || '').substring(0, 255);
+            var region = (this.region || $('#region').val() || '').substring(0, 255);
+            var gamemode = (this.gameMode || $('#gamemode').val() || '').substring(0, 255);
+            var partyToken = (this.partyToken || '').substring(0, 255);
+
+            function writeUTF16Len(str, view, offset) {
+                view.setUint8(offset++, str.length & 0xFF);
+                for (var i = 0; i < str.length; i++) {
+                    view.setUint16(offset, str.charCodeAt(i), true);
+                    offset += 2;
+                }
+                return offset;
             }
-            var clanTag = String(ogarcopythelb.clanTag || '');
-            var region = String(this.region || $('#region').val() || '');
-            region = region.indexOf('s://') === -1 ? region.split('-')[0] : 'Private';
-            if (this.privateMode) region = 'Private';
-            var modeLabels = { ':ffa': 'FFA', ':party': 'PTY', ':experimental': 'EXP', ':teams': 'TMS', ':battleroyale': 'BTR' };
-            var gameMode = String(this.gameMode || $('#gamemode').val() || '');
-            gameMode = modeLabels[gameMode] || gameMode.replace(/^:/, '').toUpperCase();
-            var partyToken = String(this.partyToken || '');
-            var fields = [serverToken, clanTag, region, gameMode, partyToken].map(function (s) { return s.substring(0, 255); });
-            var size = 2;
-            fields.forEach(function (s) { size += 2 * s.length + 2; });
+
+            var size = 1 + (1 + serverToken.length * 2) + (1 + clanTag.length * 2) + (1 + region.length * 2) + (1 + gamemode.length * 2) + (1 + partyToken.length * 2);
             var buffer = new ArrayBuffer(size);
             var view = new DataView(buffer);
-            view.setUint8(0, 9);
-            view.setUint8(1, 31); /* all five fields present */
-            var off = 2;
-            fields.forEach(function (s) {
-                for (var i = 0; i < s.length; i++) { view.setUint16(off, s.charCodeAt(i), true); off += 2; }
-                view.setUint16(off, 0, true); off += 2;
-            });
-            try { ws.send(buffer); } catch (e) { }
+            view.setUint8(0, 9); // Opcode 9: Delta room registration
+            var off = 1;
+            off = writeUTF16Len(serverToken, view, off);
+            off = writeUTF16Len(clanTag, view, off);
+            off = writeUTF16Len(region, view, off);
+            off = writeUTF16Len(gamemode, view, off);
+            off = writeUTF16Len(partyToken, view, off);
+            ws.send(buffer);
         },
         sendPartyData() {
             this.sendPlayerClanTag();
