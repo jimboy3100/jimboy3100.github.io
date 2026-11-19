@@ -31860,7 +31860,12 @@ function thelegendmodproject() {
                         var color2 = this.color;
                         var _useFallbackGradient = false;
 
-                        if (typeof color2 !== "string") {
+                        /* Cache the resolved colour per cell; it only changes on a server update. */
+                        if (this._colorSrc === color2 && this._colorSrcSet) {
+                            color2 = this._colorResolved;
+                            _useFallbackGradient = this._colorFallback;
+                        }
+                        else if (typeof color2 !== "string") {
                             color2 = "#808080";
                             _useFallbackGradient = true;
                         }
@@ -31882,6 +31887,12 @@ function thelegendmodproject() {
                                 color2 = "#808080";
                                 _useFallbackGradient = true;
                             }
+                        }
+                        if (this._colorSrc !== this.color || !this._colorSrcSet) {
+                            this._colorSrc = this.color;
+                            this._colorSrcSet = true;
+                            this._colorResolved = color2;
+                            this._colorFallback = _useFallbackGradient;
                         }
 
                         /*
