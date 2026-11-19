@@ -38854,12 +38854,17 @@ function thelegendmodproject() {
 
                     if (data.buffer.byteLength > 1000 && _lm102Type === 11) {
                         //
+                        /* Expanding Land: the decoded login (unpackageMessage case 11) already set level,
+                         * UID, social ID and skin. This agar.io byte-pattern parse read them from the
+                         * wrong fields there (level 48-57 = a digit's char code, UID/ID with control
+                         * bytes, skin name glued to the next strings) and ran after the decoded path. */
+                        var _lmRawAgario = !(LM.isLegendWorld || this.serverType === 'expandingland');
                         window.testobjects = data;
                         var sampleBytes = new Uint8Array(window.testobjects.buffer);
                         var enc = new TextDecoder();
                         window.testobjects2 = enc.decode(sampleBytes);
                         try {
-                            var temp = window.testobjects2.split('').pop().split('R')[0].replace('', "");
+                            var temp = !_lmRawAgario ? '' : window.testobjects2.split('').pop().split('R')[0].replace('', "");
                             if (temp && temp.includes("Uskin_custom")) {
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png'; // OLD — may point to wrong domain
@@ -38869,16 +38874,16 @@ function thelegendmodproject() {
                                 window.UserVanillaSkin = temp;
                                 //window.UserVanillaSkin = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + temp.charAt(0).toUpperCase() + temp.slice(1) + '.png'
                             }
-                            window.agarioUID = window.testobjects2.split('$')[1].substr(0, 36);
+                            if (_lmRawAgario) window.agarioUID = window.testobjects2.split('$')[1].substr(0, 36);
                             if (
                                 typeof window.syncProfileTabUI ===
                                 'function'
                             ) {
                                 window.syncProfileTabUI();
                             }
-                            window.agarioID = window.testobjects2.split('$')[1].split('')[1].split('')[0].replace(/\s/g, "");
-                            window.agarioLEVEL = window.testobjects2.split('$')[1].split("(")[0].slice(-1).charCodeAt();
-                            setLevelProgressBar();
+                            if (_lmRawAgario) window.agarioID = window.testobjects2.split('$')[1].split('')[1].split('')[0].replace(/\s/g, "");
+                            if (_lmRawAgario) window.agarioLEVEL = window.testobjects2.split('$')[1].split("(")[0].slice(-1).charCodeAt();
+                            if (_lmRawAgario) setLevelProgressBar();
                             application.findOwnedVanillaSkin();
                             if (!window.callEveryFullHourCoinDig) {
                                 window.callEveryFullHourCoinDig = true;
@@ -38922,7 +38927,7 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-                        if (window.testobjects2.indexOf('https') !== -1) {
+                        if (_lmRawAgario && window.testobjects2.indexOf('https') !== -1) {
                             window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
                         }
 
@@ -38939,17 +38944,17 @@ function thelegendmodproject() {
                             localStorage.removeItem("agarioEncodedUID");
                         } catch (e) { }
 
-                        if (window.agarioUID && window.agarioUID !== "0" && window.agarioUID.length >= 8) {
+                        if (_lmRawAgario && window.agarioUID && window.agarioUID !== "0" && window.agarioUID.length >= 8) {
                             $("#UserProfileUUID1").val(window.agarioUID);
                         }
                         if (window.agarioUID && UIDcontroller && !window.checkOneTheUID) {
                             window.checkOneTheUID = true;
                             UIDfunction();
                         }
-                        if (window.testobjects2.split('" ')[1]) {
+                        if (_lmRawAgario && window.testobjects2.split('" ')[1]) {
                             window.agarioEncodedUID = window.testobjects2.split('" ')[1].split('=')[0] + "%3D";
                         }
-                        else if (window.testobjects2.split('"�\x01')[1]) { //6/8/2024 fix
+                        else if (_lmRawAgario && window.testobjects2.split('"�\x01')[1]) { //6/8/2024 fix
                             //window.agarioEncodedUID = window.testobjects2.split('"?\x01')[1].split('=')[0] + "%3D"; 
                             window.agarioEncodedUID = window.testobjects2.split('"�\x01')[1].split('=')[0] + "%3D"; //3/11/2024 TEST
                         }
@@ -40188,6 +40193,14 @@ function thelegendmodproject() {
                             }
                         }
                     } catch (e) { console.error('[LM 102] agar.io UID from login error:', e); }
+                    /* Expanding Land: tokens.auth is "el$<numeric uid>" (LegendWorld proto102.c); the
+                     * raw-text parse that used to read it is skipped there. */
+                    try {
+                        if ((LM.isLegendWorld || this.serverType === 'expandingland') && u && u.tokens && u.tokens.auth) {
+                            var _elAuth = String(u.tokens.auth).split('$');
+                            if (_elAuth.length >= 2 && /^\d+$/.test(_elAuth[1])) window.agarioUID = _elAuth[1].substr(0, 36);
+                        }
+                    } catch (e) { console.error('[LW 102] UID from login error:', e); }
 
                     try { this.updatePotions(u.userPotions); } catch (e) { console.error('[LW 102] updatePotions error:', e); }
 
@@ -43878,6 +43891,13 @@ function thelegendmodproject() {
                         }
 
                         window.serverEquippedSkinId = skinVal;
+                        /* Expanding Land: the join packet (<%skin>nick) and the own-skin lookup read
+                         * UserVanillaSkin, which only the agar.io raw login parse set. Custom skins: none,
+                         * the server applies the equipped one when the join carries no skin. */
+                        if (LM.isLegendWorld || this.serverType === 'expandingland') {
+                            var _elVs = String(skinVal).replace(/^skin_/, '').replace(/\W+/g, '');
+                            window.UserVanillaSkin = (_elVs && _elVs !== 'empty' && _elVs.indexOf('custom') === -1) ? _elVs : null;
+                        }
                         if (!skinVal || skinVal === 'skin_empty') {
                             localStorage.removeItem('equippedSkinId');
                             localStorage.removeItem('equippedSkinImage');
