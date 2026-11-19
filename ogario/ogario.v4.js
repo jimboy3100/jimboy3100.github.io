@@ -12359,7 +12359,7 @@ window.joinAgarPartyToken =
                         if (window.toastr) {
                             toastr.warning(
                                 '<b>[PARTY]:</b> Could not join Party' +
-                                (reason ? ': ' + String(reason) : '.')
+                                (reason ? ': ' + $('<div>').text(String(reason)).html() : '.')
                             );
                         }
                         if (typeof onError === 'function') onError(reason);
