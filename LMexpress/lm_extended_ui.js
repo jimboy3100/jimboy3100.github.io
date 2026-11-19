@@ -8108,7 +8108,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 window.application.activateTimedEvent("hourlyBonus");
             }
             var _dailySecs = _secs('dailyQuest');
-            var _noQuest = !(window._lmActiveQuests && window._lmActiveQuests.length);
+            /* The list is never pruned: an expired quest is not active. */
+            var _noQuest = !(window._lmActiveQuests || []).some(function (q) { return q && q.expiresAt > Date.now(); });
             if (_noQuest && (_dailySecs === 0 || _dailySecs === null) && typeof window.questActivationReq === 'function') {
                 window.questActivationReq();
             }
