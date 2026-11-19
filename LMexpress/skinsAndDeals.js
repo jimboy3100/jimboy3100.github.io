@@ -5943,9 +5943,28 @@ function getSkinPurchaseInfo(
             continue;
         }
 
+        /*
+         * "Shop - Skins" rows carry skinType, not type. The official
+         * ShopSkinItemVO maps VETERAN to REWARD and INAPP to INAPP; the
+         * config spells the latter "IN-APP".
+         */
+        var candidateSkinType =
+            String(
+                typeCandidate.skinType ||
+                ''
+            )
+                .trim()
+                .toUpperCase();
+
         var configuredType =
             String(
                 typeCandidate.type ||
+                (candidateSkinType === 'VETERAN'
+                    ? 'REWARD'
+                    : candidateSkinType === 'INAPP' ||
+                        candidateSkinType === 'IN-APP'
+                        ? 'INAPP'
+                        : '') ||
                 fallbackType ||
                 ''
             )
