@@ -461,7 +461,8 @@ function isDataURI(filename) {
 function isFileURI(filename) {
     return filename.startsWith('file://');
 }
-const wasmBinaryFile = 'https://senpa.io/web/static/js/bundle.wasm';
+/* senpa.io moved its module from /web/static/js/ to /web/ (the old path now returns the HTML page) */
+const wasmBinaryFile = 'https://senpa.io/web/bundle.wasm';
 if (!isDataURI(wasmBinaryFile)) {
     // wasmBinaryFile = locateFile(wasmBinaryFile)
 }
@@ -557,7 +558,7 @@ function createWasm() {
             !isFileURI(wasmBinaryFile) &&
             typeof fetch === 'function'
         ) {
-            return fetch(new URL('./bundle.wasm', 'https://senpa.io/web/static/js/').toString(), {
+            return fetch(wasmBinaryFile, {
                 // return fetch(wasmBinaryFile, {
                 credentials: 'same-origin'
             }).then(function (response) {
