@@ -23329,12 +23329,17 @@ function thelegendmodproject() {
         /* ─── §4.9 High-Performance Skin Loading ─── */
         loadSkin(img, url, animated, isPriority) {
             var app = this;
+            /* Set by the onerror mirror chain right before it calls loadSkin: the URL that
+             * failed, so the mirror's result can be found under the looked-up key. */
+            var aliasFrom = app._lmSkinMirrorFrom;
+            app._lmSkinMirrorFrom = null;
 
             if (!url || typeof url !== 'string') {
                 return;
             }
 
             url = url.trim();
+            var origUrl = url;
 
             if (!url) {
                 return;
@@ -23363,6 +23368,12 @@ function thelegendmodproject() {
             if (url.includes('skin custom')) {
                 url = url.replace(/skin custom/g, 'skin_custom');
             }
+
+            /* The image is published under the rewritten/mirror URL, but getCustomSkin
+             * looks up the original one: remember original -> loaded key. */
+            if (!app._skinUrlAlias) app._skinUrlAlias = {};
+            if (url !== origUrl) app._skinUrlAlias[origUrl] = url;
+            if (aliasFrom && aliasFrom !== url) app._skinUrlAlias[aliasFrom] = url;
 
             if (!app._failedSkinURLs) app._failedSkinURLs = {};
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
@@ -24099,6 +24110,7 @@ function thelegendmodproject() {
                         var isMirror = url.includes('legendmod.ml') ||
                             url.includes('jimboy3100.github.io') ||
                             url.includes('jimboy3000.github.io');
+                        app._lmSkinMirrorFrom = url; /* consumed by the loadSkin call below */
 
                         if (isCustomSkin) {
                             /*
@@ -24110,6 +24122,7 @@ function thelegendmodproject() {
                             ) {
                                 app.loadSkin(img, window.LM_CUSTOM_SKINS_CDN + '/' + filename, animated, isPriority);
                             }
+                            app._lmSkinMirrorFrom = null;
                             return;
                         }
 
@@ -24138,6 +24151,7 @@ function thelegendmodproject() {
                         else if (url.includes('configs.agario.miniclippt.com/live/')) {
                             app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
                         }
+                        app._lmSkinMirrorFrom = null;
                     };
                     directImage.src = url;
                 };
@@ -24621,10 +24635,18 @@ function thelegendmodproject() {
             }
 
             if (!skinUrl) return null;
-            if (!this.customSkinsCache.hasOwnProperty(skinUrl)) {
+            /* Follow original -> rewritten/mirror aliases recorded by loadSkin (bounded:
+             * the mirror chain can alias back and forth). */
+            var skinKeyUrl = skinUrl;
+            if (this._skinUrlAlias) {
+                for (var hop = 0; hop < 5 && !this.customSkinsCache.hasOwnProperty(skinKeyUrl) && this._skinUrlAlias[skinKeyUrl]; hop++) {
+                    skinKeyUrl = this._skinUrlAlias[skinKeyUrl];
+                }
+            }
+            if (!this.customSkinsCache.hasOwnProperty(skinKeyUrl)) {
                 this.loadSkin(this.customSkinsCache, skinUrl, undefined, true);
             }
-            return this.getCachedSkin(this.customSkinsCache, skinUrl);
+            return this.getCachedSkin(this.customSkinsCache, skinKeyUrl);
         },
         /* ─── §4.10 Minimap & HUD ─── */
         calculateMapSector(t, xgh2, closeExpr = false) {
