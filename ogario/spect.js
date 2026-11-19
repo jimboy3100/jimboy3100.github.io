@@ -95,6 +95,7 @@ class Spect {
         this.socketErrorTimer = null;
         this.reconnectTimer = null;
         this.massPositionTimer = null;
+        this.pingInterval = null;
         this.mapOffset = 7071 //7071.067811865476
         this.fixX = 1
         this.fixY = 1
@@ -111,11 +112,31 @@ class Spect {
         if (this.socketErrorTimer) clearTimeout(this.socketErrorTimer);
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         if (this.massPositionTimer) clearTimeout(this.massPositionTimer);
+        if (this.pingInterval) clearInterval(this.pingInterval);
         this.positionController = null;
         this.staticPositionController = null;
         this.socketErrorTimer = null;
         this.reconnectTimer = null;
         this.massPositionTimer = null;
+        this.pingInterval = null;
+    }
+
+    /*
+     * Type-30 ping keepalive every 3 s, like the main socket (ReqPing) and Delta
+     * (one ping loop per unit). Sent as opcode 102 through this unit's own cipher.
+     */
+    sendPing() {
+        if (!this.integrity || !this.clientKey || !this.isSocketOpen()) return;
+        const pingPayload = [8];
+        application.writeUint32(pingPayload, Math.floor(Math.random() * 1000)); // pingId
+        pingPayload.push(16, 1); // previousRoundtrip = 1
+        let uncompressed = [8, 30, 242, 1];
+        application.writeUint32(uncompressed, pingPayload.length);
+        uncompressed = uncompressed.concat(pingPayload);
+        let packet = [102, 8, 1, 18];
+        application.writeUint32(packet, uncompressed.length);
+        packet = packet.concat(uncompressed);
+        this.sendMessage(new DataView(new Uint8Array(packet).buffer));
     }
 
     resetConnectionState() {
@@ -1150,6 +1171,7 @@ class Spect {
                 //console.log('[SPECT] Received protocol key:', this.protocolKey);
                 const agarioReader = new Uint8Array(view.buffer, offset += 4);
                 this.clientKey = this.generateClientKey(this.ws, agarioReader);
+                if (this.integrity && !this.pingInterval) this.pingInterval = setInterval(() => this.sendPing(), 3000);
                 break;
             case 242:
                 console.log('[SPECT] case 242')
