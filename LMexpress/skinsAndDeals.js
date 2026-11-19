@@ -4927,6 +4927,19 @@ window.refreshSkinGrid = refreshSkinGrid;
  * Delete a custom skin from the server (opcode 152).
  * Custom skins have productId like "skin_custom_<uuid>_<uuid>".
  */
+/*
+ * Equip, unequip and delete go out through core.proxyMobileData, which drops
+ * account messages until this connection's login response arrived. Refuse
+ * instead of reporting a success that never reached the server.
+ */
+function _sdAccountReadyFor(label) {
+    if (typeof window.lmAccountReady === 'function' && !window.lmAccountReady()) {
+        if (window.toastr) toastr.warning('<b>[SHOP]:</b> Login not confirmed on this server yet. Wait a moment, then ' + label + ' again.');
+        return false;
+    }
+    return true;
+}
+
 function deleteCustomSkin(skinId) {
     if (!window.loggedIn) {
         toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to delete skins');
@@ -4940,6 +4953,7 @@ function deleteCustomSkin(skinId) {
         toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
         return;
     }
+    if (!_sdAccountReadyFor('delete the skin')) return;
 
     // Disable the delete button on this skin card to prevent double-clicks
     var cardBtn = $('.skin-card[data-product-id="' + skinId + '"] .skin-btn-delete, .skin-card[data-product-id="' + skinId + '"] .skin-btn-buy');
@@ -4985,6 +4999,7 @@ function equipSkin(productId, imageName) {
     if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('equip skins')) {
         return;
     }
+    if (!_sdAccountReadyFor('equip the skin')) return;
 
     var cdnBase = window.LM_CDN_BASE();
     localStorage.setItem('equippedSkinId', productId);
@@ -5020,6 +5035,7 @@ function unequipSkin() {
     if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('unequip skins')) {
         return;
     }
+    if (!_sdAccountReadyFor('unequip the skin')) return;
 
     localStorage.removeItem('equippedSkinId');
     localStorage.removeItem('equippedSkinImage');
