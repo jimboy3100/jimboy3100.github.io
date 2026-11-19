@@ -29038,7 +29038,8 @@ function thelegendmodproject() {
         sendFacebookInvite(friendIds) {
             if (!friendIds || !friendIds.length) return false;
             console.log("[LM] Send Facebook Invite to:", friendIds);
-            return this.sendProto(146, { userPartyFacebookInviteField: { friendIds: friendIds } });
+            /* official field: repeated string facebookIds = 1 (undeclared fields were dropped by encode) */
+            return this.sendProto(146, { userPartyFacebookInviteField: { facebookIds: friendIds } });
         },
         requestFriendListUpdate() {
             console.log("[LM] Request Friend List Update");

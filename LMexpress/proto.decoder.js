@@ -696,6 +696,7 @@ message userPartyMembershipUpdateField {
 }
 
 message userPartyFacebookInviteField {
+  repeated string facebookIds = 1;
 ///
 }
 
@@ -729,6 +730,7 @@ message userSkinsDeleteField {
 }
 
 message automationRequestUpdateField {
+  string eventFinished = 1;
 ///
 }
 
