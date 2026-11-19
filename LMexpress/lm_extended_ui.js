@@ -10679,6 +10679,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             <button id="lm-challenges-btn" class="btn btn-success btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="View Challenges / Achievements">
                 \uD83C\uDFC5 Challenges
             </button>
+            <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="Claim the hourly bonus, the daily quest and gifts that are ready">
+                \uD83C\uDF81 Claim All
+            </button>
 
         `;
 
@@ -12013,6 +12016,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         $(document).off('click', '#lm-claim-all-btn').on('click', '#lm-claim-all-btn', function(e) {
             e.preventDefault();
+            /* same login guard as the other account buttons */
+            if (typeof window._lmExtendedMenuEnabled === 'function' && !window._lmExtendedMenuEnabled()) {
+                return false;
+            }
             if (typeof window.claimAllRewardsAndGifts === 'function') window.claimAllRewardsAndGifts();
         });
 
