@@ -73462,8 +73462,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             /* Same path as proxyMobileData: encrypted with the rotating client key on
              * official servers and gated on the login (sendBuffer skipped both and
-             * desynchronized the cipher stream). */
-            window.core.proxyMobileData(data);
+             * desynchronized the cipher stream). Other opcodes still go out, through
+             * sendMessage so they are encrypted too. */
+            if (data[0] === 8 || (data[0] === 102 && data[1] === 8)) {
+                window.core.proxyMobileData(data);
+                return;
+            }
+            LM.sendMessage(new DataView(new Uint8Array(data).buffer));
         }
     };
     if (window.master && window.master.getClientVersion) window.master.getClientVersion();
