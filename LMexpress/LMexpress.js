@@ -538,6 +538,13 @@ function PremiumUsers() {
                 toastr.warning("<b>[SERVER]:</b> Your licence is stored as Premium. Thank you for using our mod!").css("width", "350px");
             }
         }
+        /* stored giveaway licence whose entry was removed from the loaded table: it has ended */
+        else if (window.agarioUID && window.proLicenceUID && window.proLicenceUID.includes("Give") &&
+            ProLicenceUsersTable && ProLicenceUsersTable.ProLicenceUsers) {
+            window.proLicenceUID = null;
+            localStorage.removeItem("proLicenceUID");
+            toastr.warning("<b>[SERVER]:</b> Your Giveaway licence has ended. Thank you for using our mod!").css("width", "350px");
+        }
         localStorage.setItem("proLicenceUID", window.proLicenceUID);
     }
 }
@@ -677,15 +684,22 @@ function whenServerTokenReady(callback, options) {
     };
 }
 
+/* Only one pending adres wait at a time: older waits would fire later with stale mode/region. */
+var _lmAdresCancelWait = null;
+
 function adres(info, thismode, thisregion) {
     if (thismode == null || thisregion == null) {
         joinSERVERfindinfo();
+    }
+    if (_lmAdresCancelWait) {
+        _lmAdresCancelWait();
+        _lmAdresCancelWait = null;
     }
     if ($("#gamemode").val() != ":party") {
         var previousServerToken =
             String($("#server-token").val() || "").trim();
 
-        whenServerTokenReady(function (readyToken) {
+        _lmAdresCancelWait = whenServerTokenReady(function (readyToken) {
             currentIP =
                 "live-arena-" +
                 readyToken +
@@ -705,22 +719,28 @@ function adres(info, thismode, thisregion) {
                 } else {
                     region = thisregion;
                 }
+                /* replaceState: every join/reconnect would otherwise add another history entry */
                 if (currentIPopened == true) {
-                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
-                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    if (_lmOnLegendWebsite()) history.replaceState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    else history.replaceState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
                     return currentIPopened = false;
                 } else if (thismode != null && thisregion != null) {
-                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
-                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    if (_lmOnLegendWebsite()) history.replaceState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    else history.replaceState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
 
                 } else {
-                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
-                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP);
+                    if (_lmOnLegendWebsite()) history.replaceState(stateObj, "page 2", "/play?sip=" + currentIP);
+                    else history.replaceState(stateObj, "page 2", "?sip=" + currentIP);
                     realmode = null;
                     region = null;
                     return realmode, region;
                 }
             } else if (realmode == ":party") {
+                /* the party redirect targets agar.io: on the website it would leave the site */
+                if (window.legendModFromWebsite) {
+                    realmode = thismode || $("#gamemode").val();
+                    return;
+                }
                 window.history.pushState(null, null, window.location.pathname);
                 window.location.href = "https://agar.io/#" + $('#party-token').val()
             }
@@ -729,8 +749,9 @@ function adres(info, thismode, thisregion) {
             allowCurrentToken: true
         });
     } else { //if party
-        /* Party mode: wait for token then redirect */
-        whenServerTokenReady(function (readyToken) {
+        /* Party mode: wait for token then redirect (agar.io only, see above) */
+        if (window.legendModFromWebsite) return;
+        _lmAdresCancelWait = whenServerTokenReady(function (readyToken) {
             window.history.pushState(null, null, window.location.pathname);
             window.location.href = "https://agar.io/#" + $('#party-token').val()
         });
@@ -869,6 +890,13 @@ function searchIPHandler(searchStr) { //VERY WEIRD FUNCTION, MOD DOESNT LOAD IF 
      * so searches keep the current region and mode instead of undefined. */
     region = $("#regioncheck").length ? $("#regioncheck").val() : $("#region").val(); //...
     realmode = $("#gamemodecheck").length ? $("#gamemodecheck").val() : $("#gamemode").val(); //...
+    /* a pasted ?r=..&m=..&search=.. link carries the server's region and mode */
+    try {
+        var _lmSearchR = getParameterByName("r", searchStr);
+        var _lmSearchM = getParameterByName("m", searchStr);
+        if (_lmSearchR) region = _lmSearchR;
+        if (_lmSearchM) realmode = _lmSearchM;
+    } catch (e) { }
     $("#Backtomenu").hide();
     hideMenu();
     showSearchHud();
@@ -940,14 +968,7 @@ function findIP(searchIP) {
                         numAttempts = 0;
                         numTries++;
                         toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-                        if (numTries >= maxTries) {
-                            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                            clearInterval(timerId);
-                            searching = false;
-                            hideCancelSearch();
-                            toastr.error(Premadeletter31).css("width", "210px");
-                            return; /* gave up: do not hop to another server */
-                        }
+                        /* test the current server before giving up, so a hit on the last try counts */
                         if (currentIP == searchIP) {
                             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
                             clearInterval(timerId);
@@ -958,6 +979,13 @@ function findIP(searchIP) {
                                 timeOut: 20000,
                                 extendedTimeOut: 20000
                             }).css("width", "210px");
+                        } else if (numTries >= maxTries) {
+                            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
+                            clearInterval(timerId);
+                            searching = false;
+                            hideCancelSearch();
+                            toastr.error(Premadeletter31).css("width", "210px");
+                            /* gave up: do not hop to another server */
                         } else {
                             changeServer();
                         }
@@ -1039,13 +1067,7 @@ function searchPlayer(searchString) {
                         }
                         numTries++;
                         toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-                        if (numTries >= maxTries) {
-                            clearInterval(timerId);
-                            searching = false;
-                            //                            hideCancelSearch();
-                            toastr.error(Premadeletter31).css("width", "210px");
-                            return; /* gave up: do not hop to another server */
-                        }
+                        /* test the current leaderboard before giving up, so a hit on the last try counts */
                         if (found) {
                             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
                             clearInterval(timerId);
@@ -1056,6 +1078,12 @@ function searchPlayer(searchString) {
                                 timeOut: 20000,
                                 extendedTimeOut: 20000
                             }).css("width", "210px");
+                        } else if (numTries >= maxTries) {
+                            clearInterval(timerId);
+                            searching = false;
+                            //                            hideCancelSearch();
+                            toastr.error(Premadeletter31).css("width", "210px");
+                            /* gave up: do not hop to another server */
                         } else {
                             changeServer();
                         }
@@ -1931,103 +1959,94 @@ function _lmSafeChatUrl(value) {
     return /^https?:\/\/[^\s"'<>`\\]+$/i.test(String(value || ''));
 }
 
-function MsgCommands1(MSGCOMMANDS, MSGNICK) {
+function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
     MSGNICK = _lmEscHtml(MSGNICK);
+    /* remove only the message that carried the command (not every chat line and toast),
+     * and only once the command was accepted */
+    function _lmRemoveCmdMsg() {
+        if (MSGEL && MSGEL.length) MSGEL.remove();
+    }
+    /* Accept buttons are bound inside the toast toastr returns (_lmToast): visible toasts
+     * share the same ids/classes, so a document-wide selector hit the wrong or every toast. */
 
     if (MSGCOMMANDS.includes("[url]")) {
-        if ($("#nick").val().includes("url") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
         MSGCOMMANDS = MSGCOMMANDS.split("[url]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/url]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
+        if (!/^https?:\/\//i.test(MSGCOMMANDS)) { /* http:// or https:// in any case */
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
-        toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+        if ($("#nick").val().includes("url") == false) _lmRemoveCmdMsg();
+        var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
         }).css("width", "250px");
-        $("#acceptURL").click(function () {
+        _lmToast.find("#acceptURL").click(function () {
             window.open(MSGCOMMANDS, '_blank');
         });
     } else if (MSGCOMMANDS.includes("[tag]")) {
-        if ($("#nick").val().includes("tag") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
+        if ($("#nick").val().includes("tag") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[tag]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/tag]')[0];
         if (MSGCOMMANDS != "") {
-            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63a', 'wants you to use the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63a', 'wants you to use the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
-            $("#acceptURL").click(function () {
+            _lmToast.find("#acceptURL").click(function () {
                 $("#clantag").val(MSGCOMMANDS);
                 $('#clantag').css('background-color', '#ff6347');
                 newsubmit();
             });
         } else {
-            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63b', 'wants you to remove the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63b', 'wants you to remove the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
-            $("#acceptURL").click(function () {
+            _lmToast.find("#acceptURL").click(function () {
                 $("#clantag").val(MSGCOMMANDS);
                 $('#clantag').css('background-color', '#ff6347');
                 newsubmit();
             });
         }
     } else if (MSGCOMMANDS.includes("[yut]")) {
-        if ($("#nick").val().includes("yut") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
         MSGCOMMANDS = MSGCOMMANDS.split("[yut]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/yut]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
+        if (!/^https?:\/\//i.test(MSGCOMMANDS)) { /* http:// or https:// in any case */
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         var _lmYutId = _lmYoutubeId(MSGCOMMANDS);
         if (!_lmYutId) return;
-        toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
+        if ($("#nick").val().includes("yut") == false) _lmRemoveCmdMsg();
+        var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
         }).css("width", "300px");
-        $("#acceptYoutubeEmb").click(function () {
+        _lmToast.find("#acceptYoutubeEmb").click(function () {
             YoutubeEmbPlayer(MSGCOMMANDS);
             $("#musicUrl").val(MSGCOMMANDS);
             //$("#playerI").click();
             playYoutube(); //it's different on LME
         });
     } else if (MSGCOMMANDS.includes("[skype]")) {
-        if ($("#nick").val().includes("skype") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
         MSGCOMMANDS = MSGCOMMANDS.split("[skype]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/skype]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
+        if (!/^https?:\/\//i.test(MSGCOMMANDS)) { /* http:// or https:// in any case */
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("join.skype.com/")) {
-            toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            if ($("#nick").val().includes("skype") == false) _lmRemoveCmdMsg();
+            var _lmToast = toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 10000,
                 extendedTimeOut: 10000
             }).css("width", "300px");
-            $("#acceptURL").click(function () {
+            _lmToast.find("#acceptURL").click(function () {
                 window.open(MSGCOMMANDS, '_blank');
             });
         }
     } else if (MSGCOMMANDS.includes("[discord]")) {
-        if ($("#nick").val().includes("discord") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
         MSGCOMMANDS = MSGCOMMANDS.split("[discord]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/discord]')[0];
         if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("http://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTP://") == false) {
@@ -2035,11 +2054,12 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg") || MSGCOMMANDS.includes("discord.com")) {
-            toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            if ($("#nick").val().includes("discord") == false) _lmRemoveCmdMsg();
+            var _lmToast = toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "300px");
-            $("#acceptURL").click(function () {
+            _lmToast.find("#acceptURL").click(function () {
                 window.open(MSGCOMMANDS, '_blank');
             });
         }
@@ -2050,8 +2070,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         otherMsg = getParameterByName("do", MSGCOMMANDS);
         //		$( ".toast.toast-success" ).text("");
         //		$(".message-text").text();.hide();
-        $(".message-text").remove();
-        $(".toast.toast-success").remove();
+        _lmRemoveCmdMsg();
         //without confirmation
         if (commandMsg == "Team5") {
             $("#top5-hud").css('background-image', 'url(" https://www.legendmod.ml/banners/icogeneral.gif ")').css({
@@ -2080,37 +2099,37 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
 
         //with confirmation
         else if (commandMsg == "HideAll") {
-            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-hideall").click(function () {
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-hideall").click(function () {
                 $("#HideAllBthn").click();
             });
         } else if (commandMsg == "NamePerm") {
-            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter26 + ': ' + _lmEscHtml(playerMsg) + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter26 + ': ' + _lmEscHtml(playerMsg) + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-NamePerm").click(function () {
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-NamePerm").click(function () {
                 $("#nick").val(playerMsg);
                 $("#helloContainer").show();
                 newsubmit();
             });
         } else if (commandMsg == "dTroll2") {
-            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-troll").click(function () {
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-troll").click(function () {
                 settrolling();
             });
         } else if (commandMsg == "Youtube") {
-            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-play-youtube").click(function () {
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-play-youtube").click(function () {
                 $("#playerBtn").click();
                 setTimeout(function () {
                     $("#playerBtn").focusout();
@@ -2122,11 +2141,11 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
     } else if (MSGCOMMANDS.includes("https://agar.io/sip=151.80.91.73:1511")) {
         commandMsg = getParameterByName("com", MSGCOMMANDS);
         otherMsg = getParameterByName("do", MSGCOMMANDS);
-        $(".message-text").remove();
-        $(".toast.toast-success").remove();
+        _lmRemoveCmdMsg();
         LegendClanSymbol = $("#nick").val();
         console.log("Step1");
-        if (LegendClanSymbol.indexOf("?") !== -1) {
+        /* everyone except nicks starting with the clan symbol gets the forced rejoin */
+        if (LegendClanSymbol.indexOf("℄") !== 0) {
             console.log("Step2");
             if (commandMsg == "EU-London") {
                 setTimeout(function () {
@@ -2144,10 +2163,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             }
         }
     } else if (MSGCOMMANDS.includes("[DosAttack]")) {
-        if ($("#nick").val().includes("DosAttack") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
+        if ($("#nick").val().includes("DosAttack") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosAttack]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosAttack]')[0];
         var nameArr = MSGCOMMANDS.split(',');
@@ -2158,10 +2174,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         legendmod.drawCommander2 = true;
         toastr.warning("<b>" + MSGNICK + ":</b> Attack " + application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)).css("width", "210px");
     } else if (MSGCOMMANDS.includes("[DosFight]")) {
-        if ($("#nick").val().includes("DosFight") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
+        if ($("#nick").val().includes("DosFight") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosFight]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosFight]')[0];
         var nameArr = MSGCOMMANDS.split(',');
@@ -2172,10 +2185,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         legendmod.drawCommander2 = true;
         toastr.warning("<b>" + MSGNICK + ":</b> Fight " + application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)).css("width", "210px");
     } else if (MSGCOMMANDS.includes("[DosRun]")) {
-        if ($("#nick").val().includes("DosRun") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
+        if ($("#nick").val().includes("DosRun") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosRun]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosRun]')[0];
         var nameArr = MSGCOMMANDS.split(',');
@@ -3898,7 +3908,7 @@ function setpic6data() {
 
 
 function sendyt1() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt1url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3906,7 +3916,7 @@ function sendyt1() {
 }
 
 function sendyt2() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt2url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3914,7 +3924,7 @@ function sendyt2() {
 }
 
 function sendyt3() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt3url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3922,7 +3932,7 @@ function sendyt3() {
 }
 
 function sendyt4() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt4url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3930,7 +3940,7 @@ function sendyt4() {
 }
 
 function sendyt5() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt5url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -3938,7 +3948,7 @@ function sendyt5() {
 }
 
 function sendyt6() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
         application.sendChatMessage(101, "[yt]" + yt6url + "[/yt]")
     } else {
         toastr.info(Premadeletter39);
@@ -4360,14 +4370,26 @@ function StartEditGameNames() {
                     filltext_override: function () {
                         t.f.prototype_override("canvas", "fillText", "before", function (e, o) {
                             var s = o[0];
+                            /* panel hidden (x / StopEditGameNames): skip the per-fillText work */
+                            var tcmPanel = document.getElementById("tcm");
+                            if (!tcmPanel || tcmPanel.style.display == "none") return;
                             if (o, s.match(/^(1|2|3|4|5|6|7|8|9|10)\.(.+?)$/)) {
                                 var a = "",
                                     n = s.split(/\.(.+)?/);
                                 t.l.leaderboard[n[0]] = n[1];
                                 for (k in t.l.leaderboard) a += t.u.span("leaderboard name #" + k, t.l.leaderboard[k]);
                                 document.getElementById("tcm-leaderboard").innerHTML = a
-                            } else s.match(/^score\:\s([0-9]+)$/i) ? (t.l.score = parseInt(s.split(/score:\s([0-9]+)?/i)[1]), document.getElementById("tcm-score").innerHTML = t.u.span("score", t.l.score)) : !("" !== s && s.length <= 15) || t.l.names.indexOf(s) > -1 || s.match(/(leaderboard|connect|loading|starting\smass|xp\sboost|open\sshop|([0-9]{2})m\s(([0-9]{2})h\s)?([0-9]{2})s)/i) || s.match(/^(free\scoins|\s?([0-9]+)\scoins|\s?with\soffers|collect\sin\:|hourly\scoins|come\sback\sin|to\searn\:|starter\spack|hourly\sbonus|level\s([0-9]+)|([0-9\.]+)|.([0-9\.]+)|([0-9\.]+)\%|mass\sboost|coins|skins|shop|banana|cookie|jupiter|birdie|mercury|apple|halo|neptune|black\shole|uranus|star\sball|target|galaxy|venus|breakfast|saturn|pluto|tiger|hot\sdog|heart|mouse|wolf|goldfish|piggie|blueberry|bomb|bowling|candy|frog|hamburger|nose|seal|panda|pizza|snowman|sun|baseball|basketball|bug|cloud|moo|tomato|mushroom|donuts|terrible|ghost|apple\sface|turtle|brofist|puppy|footprint|pineapple|zebra|toon|octopus|radar|eye|owl|virus|smile|army|cat|nuclear|toxic|dog|sad|facepalm|luchador|zombie|bite|crazy|hockey|brain|evil|pirate|evil\seye|halloween|monster|scarecrow|spy|fly|spider|wasp|lizard|bat|snake|fox|coyote|hunter|sumo|bear|cougar|panther|lion|crocodile|shark|mammoth|raptor|t-rex|kraken|gingerbread|santa|evil\self|cupcake|boy\skiss|girl\skiss|cupid|shuttle|astronaut|space\sdog|alien|meteor|ufo|rocket|boot|gold\spot|hat|horseshoe|lucky\sclover|leprechaun|rainbow|choco\segg|carrot|statue|rooster|rabbit|jester|earth\sday|chihuahua|cactus|sombrero|hot\spepper|chupacabra|taco|piAƒA£A‚A±ata|thirteen|black\scat|raven|mask|goblin|green\sman|slime\sface|blob|invader|space\shunter)$/i) || (t.l.names.push(s), document.getElementById("tcm-names").innerHTML = document.getElementById("tcm-names").innerHTML.concat(t.u.span("cell name", s)))
+                            } else s.match(/^score\:\s([0-9]+)$/i) ? (t.l.score = parseInt(s.split(/score:\s([0-9]+)?/i)[1]), document.getElementById("tcm-score").innerHTML = t.u.span("score", t.l.score)) : !("" !== s && s.length <= 15) || t.l.names.indexOf(s) > -1 || s.match(/(leaderboard|connect|loading|starting\smass|xp\sboost|open\sshop|([0-9]{2})m\s(([0-9]{2})h\s)?([0-9]{2})s)/i) || s.match(/^(free\scoins|\s?([0-9]+)\scoins|\s?with\soffers|collect\sin\:|hourly\scoins|come\sback\sin|to\searn\:|starter\spack|hourly\sbonus|level\s([0-9]+)|([0-9\.]+)|.([0-9\.]+)|([0-9\.]+)\%|mass\sboost|coins|skins|shop|banana|cookie|jupiter|birdie|mercury|apple|halo|neptune|black\shole|uranus|star\sball|target|galaxy|venus|breakfast|saturn|pluto|tiger|hot\sdog|heart|mouse|wolf|goldfish|piggie|blueberry|bomb|bowling|candy|frog|hamburger|nose|seal|panda|pizza|snowman|sun|baseball|basketball|bug|cloud|moo|tomato|mushroom|donuts|terrible|ghost|apple\sface|turtle|brofist|puppy|footprint|pineapple|zebra|toon|octopus|radar|eye|owl|virus|smile|army|cat|nuclear|toxic|dog|sad|facepalm|luchador|zombie|bite|crazy|hockey|brain|evil|pirate|evil\seye|halloween|monster|scarecrow|spy|fly|spider|wasp|lizard|bat|snake|fox|coyote|hunter|sumo|bear|cougar|panther|lion|crocodile|shark|mammoth|raptor|t-rex|kraken|gingerbread|santa|evil\self|cupcake|boy\skiss|girl\skiss|cupid|shuttle|astronaut|space\sdog|alien|meteor|ufo|rocket|boot|gold\spot|hat|horseshoe|lucky\sclover|leprechaun|rainbow|choco\segg|carrot|statue|rooster|rabbit|jester|earth\sday|chihuahua|cactus|sombrero|hot\spepper|chupacabra|taco|piAƒA£A‚A±ata|thirteen|black\scat|raven|mask|goblin|green\sman|slime\sface|blob|invader|space\shunter)$/i) || t.f.add_name(s)
                         })
+                    },
+                    add_name: function (s) {
+                        /* append instead of re-parsing the whole list, and keep only the last 200 names */
+                        t.l.names.push(s);
+                        if (t.l.names.length > 200) t.l.names.shift();
+                        var list = document.getElementById("tcm-names");
+                        if (!list) return;
+                        list.insertAdjacentHTML("beforeend", t.u.span("cell name", s));
+                        while (list.children.length > 200) list.removeChild(list.firstElementChild);
                     },
                     hotkeys: function (e) {
                         88 == e.keyCode && (document.getElementById("tcm").style.display = t.l.toggled ? "none" : "block", t.l.toggled = t.l.toggled ? !1 : !0)
@@ -4480,33 +4502,27 @@ function displayTimer() {
     TimerLM.difference = timeNow - TimerLM.timerStarted;
 
 
-    // seconds
-    if (TimerLM.difference > 1000) {
-        seconds = Math.floor(TimerLM.difference / 1000);
-        if (seconds > 60) {
-            seconds = seconds % 60;
-        }
-        if (seconds < 10) {
-            seconds = '0' + String(seconds);
-        }
+    // wrap at 60 (not > 60, which showed "01:60") and keep the hours
+    var total = Math.max(0, Math.floor(TimerLM.difference / 1000));
+    var hours = Math.floor(total / 3600);
+    seconds = total % 60;
+    minutes = Math.floor(total / 60) % 60;
+    if (seconds < 10) {
+        seconds = '0' + String(seconds);
+    }
+    if (minutes < 10) {
+        minutes = '0' + String(minutes);
     }
 
-    // minutes
-    if (TimerLM.difference > 60000) {
-        minutes = Math.floor(TimerLM.difference / 60000);
-        if (minutes > 60) {
-            minutes = minutes % 60;
-        }
-        if (minutes < 10) {
-            minutes = '0' + String(minutes);
-        }
-    }
-
-
+    if (hours > 0) time += hours + ':'
     time += minutes + ':'
     time += seconds
 
-    TimerLM.timerDiv.innerHTML = time;
+    /* only touch the DOM when the shown text changes */
+    if (TimerLM.lastShown !== time) {
+        TimerLM.lastShown = time;
+        TimerLM.timerDiv.innerHTML = time;
+    }
 }
 
 function startTimer() {
@@ -4524,7 +4540,7 @@ function startTimer() {
     if (TimerLM.timerInterval) clearInterval(TimerLM.timerInterval);
     TimerLM.timerInterval = setInterval(function () {
         displayTimer()
-    }, 10);
+    }, 250); /* the display has 1 s resolution: 100 Hz was wasted work */
 
 }
 
@@ -4542,6 +4558,7 @@ function clearTimer() {
     $("#cleartimer").hide();
     clearInterval(TimerLM.timerInterval);
     TimerLM.timerDiv.innerHTML = "00:00";
+    TimerLM.lastShown = "00:00";
     TimerLM.difference = 0;
 }
 
@@ -4696,6 +4713,8 @@ function openrotatingmod() {
 }
 
 function languagemodfun() {
+    /* nothing stored yet (null, or the string "null" saved by older versions): keep English selected */
+    if (!languagemod || languagemod == "null") languagemod = "1";
     if (languagemod != 1) {
         $('#legendlanguages').val(languagemod);
         changeModLanguage();
@@ -4703,7 +4722,9 @@ function languagemodfun() {
 }
 
 function changeModLanguage() {
-    localStorage.setItem("languagemod", $("#legendlanguages").val());
+    /* keep the global in sync: the language pack handler reads it (Arabic check) */
+    languagemod = $("#legendlanguages").val();
+    localStorage.setItem("languagemod", languagemod);
     if ($("#legendlanguages").val() == 1) {
         languageinjector("https://www.legendmod.ml/languages/LanguagePackEnglish.js");
     }
@@ -4987,7 +5008,7 @@ function triggerLMbtns() {
     }
 
     /*$("#agario-main-buttons").append('<div id="LEGENDAds5"></div>')
-    if (!window.proLicenceUID && !document.getElementById("nick").value.includes("?")){
+    if (!window.proLicenceUID && !document.getElementById("nick").value.includes("℄")){
         $("#LEGENDAds5").load("https://www.legendmod.ml/banners/agario2");
     }*/
     if (dyinglight1load == null || dyinglight1load == "null") {
@@ -6930,7 +6951,7 @@ function initializeLM(modVersion) {
             } else if (realmode != ":party") {
                 if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
-                copy(CopyTkPwLb2);
+                copyToClipboardAll(); /* TK&ALL: include leaderboard, teamboard and nick like the other branches */
             }
         } else {
             if (realmode == ":party") {
@@ -7049,7 +7070,8 @@ function initializeLM(modVersion) {
     });
     $(document).keyup(function (event) {
         if (event.which == 8) { // search
-            if ($('input:focus').length == 0) {
+            /* not while editing any text field (textarea, select, contenteditable too) */
+            if (!$(document.activeElement).is('input, textarea, select, [contenteditable], [contenteditable] *')) {
                 $("#searchShortcut").click();
             }
 
@@ -7468,34 +7490,58 @@ function initializeLM(modVersion) {
     /* Chat embed shortcodes: [yut], [url], [tag], [skype], [discord], etc.
      * OLD: DOMNodeInserted / DOMSubtreeModified (deprecated, removed from modern browsers).
      * NEW: MutationObserver — standard API, works in all browsers. */
-    var _chatObserverActive = false;
-    function _processChatEmbeds() {
-        if (_chatObserverActive) return;
-        _chatObserverActive = true;
-        setTimeout(function() {
-            var _toastEl = $(".toast.toast-success").last();
-            var _msgEl = _toastEl.length ? _toastEl : $(".message-text").last();
+    /*
+     * Process each new chat message ELEMENT once (a teammate may send the same
+     * command twice in a row; MsgCommands1's own warning toasts also change the
+     * toast container). Elements come from the MutationRecords, so a chat-box
+     * message is not mistaken for a stale success toast and several messages
+     * arriving together are all handled.
+     */
+    var _chatPending = [];
+    var _chatFlushTimer = null;
+    function _queueChatEl(el) {
+        if (el && _chatPending.indexOf(el) === -1) _chatPending.push(el);
+    }
+    function _flushChatEmbeds() {
+        _chatFlushTimer = null;
+        var list = _chatPending;
+        _chatPending = [];
+        for (var i = 0; i < list.length; i++) {
+            var $el = $(list[i]);
+            if (!$el.closest(document.documentElement).length) continue; /* already removed */
+            var isToast = $el.is('.toast');
+            var _msgEl = isToast ? $el : $el.find('.message-text').first();
+            if (!_msgEl.length || _msgEl.attr('data-lm-done')) continue;
             MSGCOMMANDS = _msgEl.text();
-            MSGNICK = $(".message-nick").last().text().replace(": ", "");
-            /*
-             * The toast container also changes when MsgCommands1 shows its own
-             * warning toast; re-reading the same last message then looped
-             * forever. Process each message ELEMENT once (a teammate may send
-             * the same command twice in a row).
-             */
-            if (MSGCOMMANDS && _msgEl.length && !_msgEl.attr('data-lm-done')) {
-                _msgEl.attr('data-lm-done', '1');
-                MsgCommands1(MSGCOMMANDS, MSGNICK);
+            MSGNICK = $el.find('.message-nick').first().text().replace(": ", "");
+            if (!MSGCOMMANDS) continue;
+            _msgEl.attr('data-lm-done', '1');
+            MsgCommands1(MSGCOMMANDS, MSGNICK, _msgEl);
+        }
+    }
+    /* collect the .toast-success / .message elements touched by these mutations;
+     * the 50 ms delay lets toastr/ogario finish filling the element */
+    function _processChatEmbeds(mutations, selector) {
+        for (var i = 0; i < mutations.length; i++) {
+            var m = mutations[i];
+            /* the changed node's own message (text filled in later), not every message below it */
+            var t = m.target && m.target.nodeType === 3 ? m.target.parentNode : m.target;
+            if (t && t.nodeType === 1) _queueChatEl(t.closest(selector));
+            for (var j = 0; j < m.addedNodes.length; j++) {
+                var n = m.addedNodes[j];
+                if (n && n.nodeType === 3) n = n.parentNode;
+                if (!n || n.nodeType !== 1) continue;
+                _queueChatEl(n.closest(selector));
+                var inner = n.querySelectorAll(selector);
+                for (var q = 0; q < inner.length; q++) _queueChatEl(inner[q]);
             }
-            _chatObserverActive = false;
-        }, 50);
+        }
+        if (_chatPending.length && !_chatFlushTimer) _chatFlushTimer = setTimeout(_flushChatEmbeds, 50);
     }
 
     /* Observe toast notifications (toastr success messages) */
     var _chatToastObs = new MutationObserver(function(mutations) {
-        for (var i = 0; i < mutations.length; i++) {
-            if (mutations[i].addedNodes.length > 0) { _processChatEmbeds(); return; }
-        }
+        _processChatEmbeds(mutations, '.toast.toast-success');
     });
     /* toastr removes #toast-container when its last toast closes and creates a new
      * one for the next toast: keep watching <body> and attach to every new container
@@ -7506,7 +7552,8 @@ function initializeLM(modVersion) {
         if (el && el !== _observedToastEl) {
             _observedToastEl = el;
             _chatToastObs.observe(el, { childList: true, subtree: true });
-            _processChatEmbeds();
+            /* toasts already inside the new container */
+            _processChatEmbeds([{ target: el, addedNodes: el.children }], '.toast.toast-success');
         }
     };
     _attachToastObs();
@@ -7515,7 +7562,7 @@ function initializeLM(modVersion) {
     /* Observe chat box content changes */
     var _chatBoxEl = document.getElementById('chat-box');
     if (_chatBoxEl) {
-        new MutationObserver(function() { _processChatEmbeds(); }).observe(_chatBoxEl, { childList: true, subtree: true, characterData: true });
+        new MutationObserver(function(mutations) { _processChatEmbeds(mutations, '.message'); }).observe(_chatBoxEl, { childList: true, subtree: true, characterData: true });
     }
 }
 
@@ -7684,6 +7731,13 @@ function autoplayplaying() {
     $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
 }
 
+function _lmSelectHasValue(sel, value) {
+    value = String(value);
+    return $(sel + " option").filter(function () {
+        return this.value === value;
+    }).length > 0;
+}
+
 function joinSERVERfindinfo() {
     $("#log").html("");
     var searchedtoken =
@@ -7728,9 +7782,11 @@ function joinSERVERfindinfo() {
                     continue;
                 }
 
+                /* relay records are crowd-sourced: count only values that exist in the selects */
                 if (
                     record.region &&
-                    record.region !== "null"
+                    record.region !== "null" &&
+                    _lmSelectHasValue("#region", record.region)
                 ) {
                     regionCounts[
                         record.region
@@ -7742,7 +7798,8 @@ function joinSERVERfindinfo() {
 
                 if (
                     record.mode &&
-                    record.mode !== "null"
+                    record.mode !== "null" &&
+                    _lmSelectHasValue("#gamemode", record.mode)
                 ) {
                     modeCounts[
                         record.mode
@@ -8253,9 +8310,16 @@ function LegendModServerConnect() { };
 
 function UIDcontroller() {
     PremiumUsers();
-    AgarBannedUIDs();
+    /* the server list arrives later: check again once it has been merged */
+    AgarBannedUIDs(_lmCheckBannedUID);
+    _lmCheckBannedUID();
+}
+
+function _lmCheckBannedUID() {
+    if (window._lmBanApplied) return;
     var bannedUID = localStorage.getItem("bannedUID");
-    if (bannedUserUIDs.includes(window.agarioUID) || bannedUID == "true") {
+    if ((window.agarioUID && bannedUserUIDs.includes(window.agarioUID)) || bannedUID == "true") {
+        window._lmBanApplied = true;
         localStorage.setItem("bannedUID", true);
         document.documentElement.innerHTML = "";
         window.localStorage.setItem('HSLO[Saigo]:settings', defaultSettings.lbTeammateColor)
@@ -8264,7 +8328,7 @@ function UIDcontroller() {
     }
 }
 
-function AgarBannedUIDs() {
+function AgarBannedUIDs(onLoaded) {
     //postSNEZ('https://lmsettings.snez.org/', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
     try {
         getSNEZ("https://api.legendmod.ml/lm-settings", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass", function (xhttp) {
@@ -8287,6 +8351,7 @@ function AgarBannedUIDs() {
                     }
                 }
                 window.AgarBannedUIDsAdded = true;
+                if (typeof onLoaded === "function") onLoaded();
             } catch (error) { }
         });
     }
@@ -8637,7 +8702,7 @@ function adminstuff() {
         '</div><p style="color:white; font-size:12px";" align="middle">IMPORTANT NOTICE: Admin Tools can only be used by the Admins of the Legend mod</u></p>' +
         '</div></div>');
     $("#administrationtoolshud").after('<button id="AdminBacktomenu" onclick="administrationtools(); return false" class="btn btn-danger"  style="margin-left: 10px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
-    $("#AdminClanSymbol").val("?");
+    $("#AdminClanSymbol").val("℄");
     if (localStorage.getItem("AdminClanSymbol") && localStorage.getItem("AdminClanSymbol") != "") {
         $('#AdminClanSymbol').val(localStorage.getItem("AdminClanSymbol"));
     }
@@ -8699,7 +8764,7 @@ function disconnect2min() {
         commandMsg = "EU-London";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ? symbol), same password will disconnect in 120 seconds");
+        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will disconnect in 120 seconds");
     }
 }
 
@@ -8708,7 +8773,7 @@ function disconnectnow() {
         commandMsg = "RU-Russia";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ? symbol), same password will disconnect now");
+        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will disconnect now");
     }
 }
 /*function showstatsphp(){

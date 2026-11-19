@@ -115,7 +115,8 @@ if (!window.recovery) {
     window.recovery = true;
 
     var ws = function (url, protocol) {
-        if (weirdoitem && weirdoitem.length) protocol = weirdoitem;
+        /* add the fingerprint only when the caller passed no subprotocols (Garix passes its own) */
+        if (weirdoitem && weirdoitem.length && (protocol == null || (Array.isArray(protocol) && !protocol.length))) protocol = weirdoitem;
         var self = this;
         this.isFake = true;
 
@@ -313,6 +314,11 @@ if (!window.recovery) {
     if (!window.WebSocket.prototype.WebSocket || !window.wsinjected) {
         window.wsinjected = true;
         ws.prototype.WebSocket = WebSocket;
+        /* keep WebSocket.OPEN etc. working while the wrapper is installed */
+        ws.CONNECTING = 0;
+        ws.OPEN = 1;
+        ws.CLOSING = 2;
+        ws.CLOSED = 3;
         window.WebSocket = ws;
 
         document.head.appendChild(document.createElement('script')).src =
