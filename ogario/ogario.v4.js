@@ -34477,7 +34477,13 @@ function thelegendmodproject() {
                 self._senpaSpectate = false;
                 self._senpaAuthSent = false;
 
+                /* The WASM load is async: a later connect() (another server, or another
+                 * Senpa room) must win, and an old socket's callbacks must not reach app. */
+                function _senpaLive() {
+                    return self._connectSeq === _connectSeq && self.serverType === 'senpa';
+                }
                 function _senpaDoConnect() {
+                    if (!_senpaLive()) return;
                     var SenpaModule = window._SenpaModule;
                     if (!SenpaModule || !SenpaModule.create) {
                         console.error('%c[Senpa]%c WASM module not loaded or missing create()', 'color:#fa3', 'color:inherit');
@@ -34492,24 +34498,30 @@ function thelegendmodproject() {
                     if (location.pathname.startsWith('/web/mobile') && !senpaPo.startsWith('mobile.')) senpaPo += '/mobile';
                     var senpaUrl = t + '?' + new URLSearchParams({ po: senpaPo, tid: window._senpaTid }).toString();
                     // Module.create() wraps WebSocket with anti-cheat WASM layer
-                    self.socket = SenpaModule.create(
+                    var senpaSock = null;
+                    var _senpaOurs = function () {
+                        return _senpaLive() && (senpaSock === null || self.socket === senpaSock);
+                    };
+                    senpaSock = SenpaModule.create(
                         senpaUrl,
                         function onOpen(a) {
                             // Defer to microtask so socket is fully initialized
-                            queueMicrotask(function() { app.onOpen(); });
+                            queueMicrotask(function() { if (_senpaOurs()) app.onOpen(); });
                         },
                         function onClose(a) {
-                            app.onClose(a);
+                            if (_senpaOurs()) app.onClose(a);
                         },
                         function onMessage(a) {
+                            if (!_senpaOurs()) return;
                             // WASM passes raw data, wrap in MessageEvent
                             var msg = { data: a };
                             app.onMessage(msg);
                         },
                         function onError(a) {
-                            app.onError(a);
+                            if (_senpaOurs()) app.onError(a);
                         }
                     );
+                    self.socket = senpaSock;
                     // Wrap send to go through WASM socket
                     var _origSenpaSend = self.socket && self.socket.send ? self.socket.send.bind(self.socket) : null;
                     if (_origSenpaSend) {
@@ -34521,31 +34533,40 @@ function thelegendmodproject() {
                 if (window._SenpaModule && window._SenpaModule.create) {
                     _senpaDoConnect();
                 } else {
-                    console.log('%c[Senpa]%c Loading WASM module...', 'color:#fa3', 'color:inherit');
-                    var script = document.createElement('script');
-                    script.src = 'https://jimboy3100.github.io/ogario/senpa_module.js';
-                    script.onload = function() {
-                        // WASM module needs time to initialize (onRuntimeInitialized)
-                        var _waitForInit = setInterval(function() {
-                            if (window._SenpaModule && window._SenpaModule.create) {
-                                clearInterval(_waitForInit);
-                                console.log('%c[Senpa]%c WASM module ready', 'color:#fa3', 'color:inherit');
-                                _senpaDoConnect();
-                            }
-                        }, 100);
-                        // Timeout after 10 seconds
-                        setTimeout(function() {
-                            clearInterval(_waitForInit);
-                            if (!(window._SenpaModule && window._SenpaModule.create) && window.toastr) {
-                                toastr.error('Senpa: WASM module did not initialise, cannot connect.');
-                            }
-                        }, 10000);
-                    };
-                    script.onerror = function() {
-                        console.error('%c[Senpa]%c Failed to load WASM module script', 'color:#fa3', 'color:inherit');
-                        if (window.toastr) toastr.error('Senpa: failed to load the WASM module, cannot connect.');
-                    };
-                    document.head.appendChild(script);
+                    /* Load the script once (shared promise); every connect() waits on it. */
+                    if (!window._senpaModuleLoad) {
+                        console.log('%c[Senpa]%c Loading WASM module...', 'color:#fa3', 'color:inherit');
+                        window._senpaModuleLoad = new Promise(function (resolve, reject) {
+                            var script = document.createElement('script');
+                            script.src = 'https://jimboy3100.github.io/ogario/senpa_module.js';
+                            script.onload = function() {
+                                // WASM module needs time to initialize (onRuntimeInitialized)
+                                var _waitStart = Date.now();
+                                var _waitForInit = setInterval(function() {
+                                    if (window._SenpaModule && window._SenpaModule.create) {
+                                        clearInterval(_waitForInit);
+                                        console.log('%c[Senpa]%c WASM module ready', 'color:#fa3', 'color:inherit');
+                                        resolve();
+                                    } else if (Date.now() - _waitStart > 10000) {
+                                        clearInterval(_waitForInit);
+                                        reject(new Error('Senpa: WASM module did not initialise, cannot connect.'));
+                                    }
+                                }, 100);
+                            };
+                            script.onerror = function() {
+                                reject(new Error('Senpa: failed to load the WASM module, cannot connect.'));
+                            };
+                            document.head.appendChild(script);
+                        });
+                        /* A failed load may be retried by the next connect(). */
+                        window._senpaModuleLoad.catch(function () {
+                            window._senpaModuleLoad = null;
+                        });
+                    }
+                    window._senpaModuleLoad.then(_senpaDoConnect, function (err) {
+                        console.error('%c[Senpa]%c ' + err.message, 'color:#fa3', 'color:inherit');
+                        if (_senpaLive() && window.toastr) toastr.error(err.message);
+                    });
                 }
 
                 application.getWS(self.ws);
