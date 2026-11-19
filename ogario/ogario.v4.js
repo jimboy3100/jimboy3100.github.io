@@ -24914,11 +24914,10 @@ function thelegendmodproject() {
                         LM.arrowFB[0].isIncluded = fbIncluded;
 
                         if (LM.arrowFB[0].visible && !fbIncluded) { //Yahnych
-                            /* opcode 160 stores raw server coordinates; the minimap is in the
-                             * local (possibly mirrored) frame like the other dots. */
-                            var fbVec = window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr];
-                            var fbX = fbVec && fbVec[0] ? legendmod.translateX(LM.arrowFB[0].x) : LM.arrowFB[0].x;
-                            var fbY = fbVec && fbVec[1] ? legendmod.translateY(LM.arrowFB[0].y) : LM.arrowFB[0].y;
+                            /* opcode 160 already stores the position in the local (mirrored) frame,
+                             * so draw it as is (translating again mirrored it back). */
+                            var fbX = LM.arrowFB[0].x;
+                            var fbY = LM.arrowFB[0].y;
                             this.miniMapCtx.save();
                             try {
                                 this.miniMapCtx.beginPath();
