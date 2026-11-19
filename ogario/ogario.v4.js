@@ -35080,8 +35080,12 @@ function thelegendmodproject() {
                         self.mapMinY = 0;
                         self.mapMaxX = worldSize;
                         self.mapMaxY = worldSize;
-                        self.mapOffsetX = worldSize / 2;
-                        self.mapOffsetY = worldSize / 2;
+                        /* Private-server convention (setMapOffset): mapOffsetX = -(left + right) / 2,
+                         * mapOffset = mapSize / 2, so the minimap and sectors map 0..worldSize onto the map. */
+                        self.mapOffsetX = -worldSize / 2;
+                        self.mapOffsetY = -worldSize / 2;
+                        self.mapSize = worldSize;
+                        self.mapOffset = worldSize / 2;
                         self.mapOffsetFixed = true;
                         self.mapSizeW = worldSize;
                         self.mapSizeH = worldSize;
@@ -35125,8 +35129,12 @@ function thelegendmodproject() {
                         self.mapMinY = 0;
                         self.mapMaxX = worldSize;
                         self.mapMaxY = worldSize;
-                        self.mapOffsetX = worldSize / 2;
-                        self.mapOffsetY = worldSize / 2;
+                        /* Private-server convention (setMapOffset): mapOffsetX = -(left + right) / 2,
+                         * mapOffset = mapSize / 2, so the minimap and sectors map 0..worldSize onto the map. */
+                        self.mapOffsetX = -worldSize / 2;
+                        self.mapOffsetY = -worldSize / 2;
+                        self.mapSize = worldSize;
+                        self.mapOffset = worldSize / 2;
                         self.mapSizeW = worldSize;
                         self.mapSizeH = worldSize;
                         ogario.mapOffsetX = self.mapOffsetX;
@@ -35452,10 +35460,15 @@ function thelegendmodproject() {
                     case 22: { // Minimap
                         var mapCount = rU8();
                         var ghostCells = [];
+                        /* Same space as the case 20 cells: raw server coords, mirrored with the map rotation. */
+                        var ghostFlipX = !!window.legendmod.vector[window.legendmod.vnr][0];
+                        var ghostFlipY = !!window.legendmod.vector[window.legendmod.vnr][1];
                         for (var mi = 0; mi < mapCount; mi++) {
                             var playerID = rU16();
                             var mx = rI32();
                             var my = rI32();
+                            if (ghostFlipX) mx = self.translateX(mx);
+                            if (ghostFlipY) my = self.translateY(my);
                             var mSize = rU16();
                             var pInfo = self._senpaPlayers[playerID];
                             var pName = '';
@@ -35479,8 +35492,12 @@ function thelegendmodproject() {
                     }
                     case 23: { // Spectate point
                         if (!self.play) {
-                            var sx = rI32() - self.mapMaxX / 2;
-                            var sy = rI32() - self.mapMaxY / 2;
+                            /* Delta subtracts maxX/2 because it shifts its cells into centred
+                             * space; LM keeps Senpa cells at raw coords (+ rotation mirror). */
+                            var sx = rI32();
+                            var sy = rI32();
+                            if (window.legendmod.vector[window.legendmod.vnr][0]) sx = self.translateX(sx);
+                            if (window.legendmod.vector[window.legendmod.vnr][1]) sy = self.translateY(sy);
                             self.viewX = sx;
                             self.viewY = sy;
                             self.viewXTrue = sx;
