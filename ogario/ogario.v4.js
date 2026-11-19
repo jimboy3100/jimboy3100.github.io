@@ -20822,11 +20822,16 @@ function thelegendmodproject() {
                             }
                             t += '<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[o].mass) + ']</span> ' + this.escapeHTML(this.top5[o].nick) + '</li>';
                         }
-                        this.top5pos.innerHTML = t,
-                            ogario.play && ogario.playerMass && (e += ogario.playerMass, s++),
-                            this.top5totalMass.textContent = this.shortMassFormat(e),
-                            this.top5totalPlayers.textContent = s;
                     }
+                    /* After the loop: inside it, s++ ran past the last entry (TypeError on
+                     * top5[s]) and an empty team never cleared the list. */
+                    this.top5pos.innerHTML = t;
+                    if (ogario.play && ogario.playerMass) {
+                        e += ogario.playerMass;
+                        s++;
+                    }
+                    this.top5totalMass.textContent = this.shortMassFormat(e);
+                    this.top5totalPlayers.textContent = s;
                 }
             }
             else {
@@ -20854,7 +20859,9 @@ function thelegendmodproject() {
                         e = e + this.top5[o].mass;
                         if (!(o >= defaultmapsettings.teamboardlimit && this.top5[o].mass > 1)) {
                             var p = this.top5[o];
-                            var skinUrl = p.skinURL || application.customSkinsMap[p.nick] || application.customSkinsMap[p.nick + "#000000"] || (p.color ? application.customSkinsMap[p.nick + p.color] : null);
+                            /* top5 entries carry the teammate's own skin as .skin (updateTeamPlayers);
+                             * the nick lookups picked another player's skin when nicks repeat. */
+                            var skinUrl = p.skinURL || p.skin || application.customSkinsMap[p.nick] || application.customSkinsMap[p.nick + "#000000"] || (p.color ? application.customSkinsMap[p.nick + p.color] : null);
                             var isValidSkinUrl = skinUrl && typeof skinUrl === 'string' && (/^(https?:\/\/|data:image\/)/i.test(skinUrl));
                             if (isValidSkinUrl) {
                                 if (!p.skinURL) p.skinURL = skinUrl;
@@ -26151,6 +26158,17 @@ function thelegendmodproject() {
                         existingIdx
                     ].updateTime = Date.now();
 
+                    /* Same target tracking as opcode 30: without it a target that only
+                     * arrives through PPv7 kept its first position and status. */
+                    if (this.targeting && this.targetID && playerID === this.targetID) {
+                        var _lmTp = this.teamPlayers[existingIdx];
+                        if (isAlive === false) {
+                            if (this.targetStatus !== 2) this.setTargetStatus(2);
+                        } else if (posX !== undefined && _lmTp.alive) {
+                            this.updateTarget(_lmTp.nick, _lmTp.skinURL, _lmTp.x, _lmTp.y, _lmTp.mass, _lmTp.color, _lmTp.lbgpi);
+                        }
+                    }
+
                     /*
                      * PPv7 flag 8 carries the sender's map-orientation
                      * fingerprint (bgpi) for Legend Mod.
@@ -28247,7 +28265,9 @@ function thelegendmodproject() {
             return command.replace('%currentSector%', this.currentSector);
         },
         sendCommand(command) {
-            var prepareCommand = this.prepareCommand(chatCommand['comm' + command]);
+            var _lmCommandText = chatCommand['comm' + command];
+            if (typeof _lmCommandText !== 'string' || !_lmCommandText.length) return;
+            var prepareCommand = this.prepareCommand(_lmCommandText);
             this.sendChatMessage(102, prepareCommand);
 
             //		
