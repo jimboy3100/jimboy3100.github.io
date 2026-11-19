@@ -32333,6 +32333,8 @@ function thelegendmodproject() {
                          */
                         if (
                             this.size <= 38 &&
+                            /* targetNick is what packets set; nick is only filled by setNick in the text pass below */
+                            !this.targetNick &&
                             this.nick === "" &&
                             !this.isPlayerCell
                         ) {
