@@ -40450,7 +40450,8 @@ function thelegendmodproject() {
                             var friendArr = flu.userFriends || flu.friends || [];
                             var totalOnline = flu.totalOnlineFriends || 0;
                             window._friendListData = { friends: friendArr, totalOnline: totalOnline };
-                            this.user.friendList = friendArr;
+                            /* this.user is created by the login response; do not let an early push skip the event */
+                            if (this.user) this.user.friendList = friendArr;
                             try { document.dispatchEvent(new CustomEvent('friendListUpdate', { detail: { friends: friendArr, totalOnline: totalOnline } })); } catch (e) { }
                         }
                     } catch (fluErr) {
