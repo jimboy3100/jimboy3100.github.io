@@ -1685,6 +1685,19 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         }
     };
 
+    /* A real login session: a social token/provider. window.loggedIn, loginConfirmed and
+     * the UIDs do not count, a server-sent profile sets them on a guest connection too
+     * (Expanding Land re-sends it, e.g. after opcode 204 or a potion open). */
+    window._lmHasLoginSession = function () {
+        var m = window.master;
+        if (m && (m.accessToken || m.context === 'facebook' || m.context === 'google')) return true;
+        var a = window._lwAuth;
+        if (a && a.provider && a.state && a.state !== 'idle') return true;
+        if (window._discordLoginDone || window.legendmod_discordUser) return true;
+        var lm = window.legendmod;
+        return !!(lm && lm.serverType === 'agario' && !lm.isLegendWorld && lm.loginConfirmed === true);
+    };
+
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function () {
@@ -1694,6 +1707,17 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             window._isUserManualLogout ||
             window._isChangingToPrivateServer
         );
+
+        var _lmHadSession = window._lmHasLoginSession();
+        /* Nothing logged in: an unexpected logout() (official client, SDK callback, a
+         * repeating disconnect) started an auto-login retry chain that ended in a
+         * 'Logged out!' toast, once per call, for guests. */
+        if (!intendedLogout && !_lmHadSession) {
+            console.log('[LW AUTH] logout() ignored, nothing is logged in');
+            return;
+        }
+        /* A server switch still clears the cached account data, without a toast. */
+        var _lmQuietLogout = intendedLogout && !_lmHadSession && !window._isUserManualLogout;
 
         if (!intendedLogout && (window._lwReconnecting || window._lwAuthRetrying)) {
             console.log(
@@ -1801,7 +1825,12 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             window._lmUserGifts = null;
 
             if (_origLogout) {
-                _origLogout.apply(this, arguments);
+                window._lmQuietLogout = _lmQuietLogout;
+                try {
+                    _origLogout.apply(this, arguments);
+                } finally {
+                    window._lmQuietLogout = false;
+                }
             }
 
             /* The 'logout' listeners (identity, shop buttons, VIP cache) only ran when the
