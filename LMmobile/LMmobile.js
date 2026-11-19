@@ -684,9 +684,17 @@
             e.preventDefault(); e.stopPropagation();
             if (typeof application !== 'undefined' && application.setAutoPlay) {
                 application.setAutoPlay();
-                bAI.classList.toggle('lm-active');
+                syncAiPause();
             }
         }, { passive: false });
+
+        // setAutoPlay/setPause change each other's state and the J/R hotkeys change
+        // them too, so highlight both buttons from the real state, not by toggling.
+        function syncAiPause() {
+            bAI.classList.toggle('lm-active', !!window.autoPlay);
+            bPaus.classList.toggle('lm-active', typeof application !== 'undefined' && !!application.pause);
+        }
+        setInterval(syncAiPause, 500);
 
         /* ═══════════════════════════════════════════════════════
          *  PAUSE — calls application.setPause()
@@ -695,7 +703,7 @@
             e.preventDefault(); e.stopPropagation();
             if (typeof application !== 'undefined' && application.setPause) {
                 application.setPause();
-                bPaus.classList.toggle('lm-active');
+                syncAiPause();
             }
         }, { passive: false });
 
@@ -993,11 +1001,13 @@
             var mm = document.getElementById('minimap-hud');
             if (!mm) return;
             var expanded = false;
-            mm.style.pointerEvents = 'auto';
+            // The mobile stylesheet uses !important, so inline writes must be !important too
+            mm.style.setProperty('pointer-events', 'auto', 'important');
             mm.addEventListener('touchstart', function (e) {
                 e.stopPropagation();
                 expanded = !expanded;
-                mm.style.transform = expanded ? 'scale(1)' : 'scale(0.7)';
+                // collapse back to the base scale (0.5, or the tablet value set by tabletAware)
+                mm.style.setProperty('transform', expanded ? 'scale(1)' : 'scale(' + (mm.dataset.lmBaseScale || '0.5') + ')', 'important');
             }, { passive: true });
         })();
 
@@ -1157,7 +1167,7 @@
                 var orig = document.getElementById('stats-hud');
                 if (orig) {
                     expanded = !expanded;
-                    orig.style.display = expanded ? 'block' : 'none';
+                    orig.style.setProperty('display', expanded ? 'block' : 'none', 'important');
                 }
             }, { passive: false });
 
@@ -1303,10 +1313,14 @@
                 var huds = ['#leaderboard-hud', '#top5-hud', '#stats-hud', '#time-hud'];
                 huds.forEach(function (sel) {
                     var el = document.querySelector(sel);
-                    if (el) el.style.transform = el.style.transform.replace('scale(0.75)', 'scale(0.9)');
+                    // the base scale comes from an !important stylesheet rule, not the inline style
+                    if (el) el.style.setProperty('transform', 'scale(0.9)', 'important');
                 });
                 var mm = document.querySelector('#minimap-hud');
-                if (mm) mm.style.transform = mm.style.transform.replace('scale(0.5)', 'scale(0.65)');
+                if (mm) {
+                    mm.dataset.lmBaseScale = '0.65';
+                    mm.style.setProperty('transform', 'scale(0.65)', 'important');
+                }
             }
         })();
 
@@ -1350,10 +1364,8 @@
                 lowCss.textContent = '.lm-b,.lm-u,.lm-s,#lm-sp{backdrop-filter:none!important;' +
                     '-webkit-backdrop-filter:none!important}';
                 document.head.appendChild(lowCss);
-                // Reduce food rendering
-                if (typeof defaultSettings !== 'undefined') {
-                    defaultSettings.foodSize = 1;
-                }
+                // foodSize is not forced here: defaultSettings is the user's theme and gets
+                // saved, so a 4-core phone would permanently store foodSize 1.
                 console.log('[LM Mobile] Low-end mode: ' + cores + ' cores, blur disabled');
             }
         })();

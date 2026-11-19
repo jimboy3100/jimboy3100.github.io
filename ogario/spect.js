@@ -95,6 +95,7 @@ class Spect {
         this.socketErrorTimer = null;
         this.reconnectTimer = null;
         this.massPositionTimer = null;
+        this.pingInterval = null;
         this.mapOffset = 7071 //7071.067811865476
         this.fixX = 1
         this.fixY = 1
@@ -111,11 +112,31 @@ class Spect {
         if (this.socketErrorTimer) clearTimeout(this.socketErrorTimer);
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         if (this.massPositionTimer) clearTimeout(this.massPositionTimer);
+        if (this.pingInterval) clearInterval(this.pingInterval);
         this.positionController = null;
         this.staticPositionController = null;
         this.socketErrorTimer = null;
         this.reconnectTimer = null;
         this.massPositionTimer = null;
+        this.pingInterval = null;
+    }
+
+    /*
+     * Type-30 ping keepalive every 3 s, like the main socket (ReqPing) and Delta
+     * (one ping loop per unit). Sent as opcode 102 through this unit's own cipher.
+     */
+    sendPing() {
+        if (!this.integrity || !this.clientKey || !this.isSocketOpen()) return;
+        const pingPayload = [8];
+        application.writeUint32(pingPayload, Math.floor(Math.random() * 1000)); // pingId
+        pingPayload.push(16, 1); // previousRoundtrip = 1
+        let uncompressed = [8, 30, 242, 1];
+        application.writeUint32(uncompressed, pingPayload.length);
+        uncompressed = uncompressed.concat(pingPayload);
+        let packet = [102, 8, 1, 18];
+        application.writeUint32(packet, uncompressed.length);
+        packet = packet.concat(uncompressed);
+        this.sendMessage(new DataView(new Uint8Array(packet).buffer));
     }
 
     resetConnectionState() {
@@ -456,6 +477,10 @@ class Spect {
         data = new Uint8Array(data);
         const raw_basefont = new DataView(data.buffer);
         this.sendMessage(raw_basefont);
+        /* Servers no longer send 103, so mark the token as sent here (as the main
+         * client does); re-sending it on an authenticated socket gets it kicked.
+         * resetConnectionState() clears it for the next connection. */
+        this.accessTokenSent = true;
     }
 
     sendCursor() {
@@ -487,7 +512,9 @@ class Spect {
 
     sendFreeSpectate() {
         this.isFreeSpectate = !this.isFreeSpectate
-        if (this.staticX === 0) {
+        /* In-game spectator (no static tile position): free spectate follows the
+         * cursor. staticX is null for it, never 0, so this branch was dead. */
+        if (this.staticX == null) {
             if (this.isFreeSpectate) {
                 this.sendCursor()
             } else {
@@ -582,6 +609,25 @@ class Spect {
                 self.sendMessage(view);
             };
             if (self.integrity) {
+                /*
+                 * requestCaptchaV3 never calls back when reCAPTCHA is missing,
+                 * throttled or fails, and the unit then never spawned. Fall back
+                 * to "0" (what Delta sends for every unit) after 20 s or on an
+                 * empty token, once per request and only on the same connection.
+                 */
+                const generation = self.connectionGeneration;
+                let spawnDone = false;
+                const spawnOnce = function (token) {
+                    if (spawnDone) return;
+                    spawnDone = true;
+                    clearTimeout(fallbackTimer);
+                    if (self.connectionGeneration !== generation || self.active) return;
+                    sendSpawn(token);
+                };
+                const fallbackTimer = setTimeout(function () {
+                    console.warn("[SPECT] CAPTCHA did not answer; spawning with token 0");
+                    spawnOnce("0");
+                }, 20000);
                 agarCaptcha.requestCaptchaV3(
                     "play",
                     function (token) {
@@ -590,10 +636,10 @@ class Spect {
                             console.warn(
                                 "[SPECT] CAPTCHA returned no usable token"
                             );
-                            return;
+                            token = "0";
                         }
 
-                        sendSpawn(token);
+                        spawnOnce(token);
                     }
                 );
             } else {
@@ -1061,6 +1107,14 @@ class Spect {
                 toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Captcha requested from Multibox client. Multibox closed");
                 console.log('[SPECT] case 85');
                 this.terminate()
+                /* The v2 captcha is not answered on this socket, so really close the
+                 * unit: left connected it stayed in multibox switching and every
+                 * respawn() on it got another 85. */
+                this.closeConnection()
+                var closedIndex = spects.indexOf(this)
+                if (closedIndex !== -1) spects.splice(closedIndex, 1)
+                if (window.multiboxPlayerEnabled === this.number) window.multiboxPlayerEnabled = null
+                if (this.player && !spects.some(function (s) { return s && s.player; })) legendmod.multiBoxPlayerExists = false
 
                 break;
             case 87:
@@ -1150,6 +1204,7 @@ class Spect {
                 //console.log('[SPECT] Received protocol key:', this.protocolKey);
                 const agarioReader = new Uint8Array(view.buffer, offset += 4);
                 this.clientKey = this.generateClientKey(this.ws, agarioReader);
+                if (this.integrity && !this.pingInterval) this.pingInterval = setInterval(() => this.sendPing(), 3000);
                 break;
             case 242:
                 console.log('[SPECT] case 242')

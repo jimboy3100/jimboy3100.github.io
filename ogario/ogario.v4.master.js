@@ -226,7 +226,8 @@ function legendmaster(self) {
         ) {
             /* A multibox login (window.MultiPending) must not change the main
              * account's saved provider. */
-            if (!window.MultiPending) {
+            var forMulti = !!window.MultiPending;
+            if (!forMulti) {
                 options.loginIntent = "1";
                 options.context = "facebook";
                 self.updateStorage();
@@ -241,7 +242,7 @@ function legendmaster(self) {
                         return;
                     }
 
-                    init(requestTokenResult);
+                    init(requestTokenResult, forMulti);
                 },
                 {
                     scope: "public_profile, email"
@@ -258,7 +259,7 @@ function legendmaster(self) {
         return false;
     }
 
-    function init(response) {
+    function init(response, forMulti) {
         if (
             !response ||
             response.status !== "connected" ||
@@ -280,7 +281,15 @@ function legendmaster(self) {
 					master.accessTokenFBAt = Date.now();				
 					MultiTokenReady(window.MultiPending);
 					window.MultiPending = null;
-				}	
+				}
+				else if (forMulti) {
+					/* This popup was opened for a multibox unit whose 60 s wait expired
+					 * (MultiPending was released). Keep the token for the next multibox
+					 * login; never log the MAIN player into that account. */
+					master.accessTokenFB = accessToken;
+					master.accessTokenFBAt = Date.now();
+					console.warn("[Master] Late multibox Facebook login kept for multibox only");
+				}
 				else{
 					master.doLoginWithFB(accessToken);
 					self.FB.api("/me/picture?width=180&height=180", function(images) {
@@ -1422,9 +1431,21 @@ function legendmaster(self) {
                 this.accessToken = null;
                 window.loggedIn = false;
                 savedToken = null;
-                if (typeof toastr !== "undefined") {
-                    toastr.warning("<b>[SERVER]:</b> Your login expired. Please log in again.");
-                }
+                /*
+                 * Reason 14/15: the token expired, but the Google/FB session is
+                 * usually still valid (Delta requests a refresh here). Get a fresh
+                 * token silently and log in again; only ask the user if that fails.
+                 */
+                var refreshMaster = this;
+                this.refreshSocialToken(true, function (ok) {
+                    if (ok) {
+                        window.loggedIn = true;
+                        if (window.legendmod) window.legendmod.accessTokenSent = false;
+                        refreshMaster.login();
+                    } else if (typeof toastr !== "undefined") {
+                        toastr.warning("<b>[SERVER]:</b> Your login expired. Please log in again.");
+                    }
+                });
             }
 
             /*
@@ -1567,8 +1588,16 @@ function legendmaster(self) {
                 m.refreshSocialToken();
             }, 5 * 60 * 1000);
         },
-        refreshSocialToken() {
-            if (!this.accessToken || Date.now() - (this._tokenTime || 0) < 40 * 60 * 1000) return;
+        /* force: skip the token-age check (server said the token expired).
+         * onDone(ok), optional, is called once with the result. */
+        refreshSocialToken(force, onDone) {
+            var doneCalled = false;
+            var done = function (ok) {
+                if (doneCalled) return;
+                doneCalled = true;
+                if (typeof onDone === "function") onDone(ok);
+            };
+            if (!force && (!this.accessToken || Date.now() - (this._tokenTime || 0) < 40 * 60 * 1000)) return;
             var m = this;
             try {
                 if (this.context === "google" && self.gapi && self.gapi.auth2) {
@@ -1579,21 +1608,33 @@ function legendmaster(self) {
                             if (auth && auth.id_token && m.context === "google") {
                                 m.accessToken = auth.id_token;
                                 m._tokenTime = Date.now();
+                                done(true);
+                            } else {
+                                done(false);
                             }
                         }).catch(function (err) {
                             console.warn("[Master] Google token refresh failed:", err);
+                            done(false);
                         });
+                    } else {
+                        done(false);
                     }
                 } else if (this.context === "facebook" && self.FB && typeof self.FB.getLoginStatus === "function") {
                     self.FB.getLoginStatus(function (res) {
                         if (res && res.status === "connected" && res.authResponse && res.authResponse.accessToken && m.context === "facebook") {
                             m.accessToken = res.authResponse.accessToken;
                             m._tokenTime = Date.now();
+                            done(true);
+                        } else {
+                            done(false);
                         }
                     }, true);
+                } else {
+                    done(false);
                 }
             } catch (refreshErr) {
                 console.warn("[Master] Token refresh error:", refreshErr);
+                done(false);
             }
         },
         login() {
@@ -1777,9 +1818,9 @@ function continuelogout(){
 		$(".vanilla-skin-preview").attr('src', 'https://jimboy3100.github.io/banners/profilepic_guest.png');
 		$('.progress-bar-star').text("");
 		$(".agario-profile-name-container").html('<div class="agario-profile-name"></div>'+
-                                        '<div id="coins" style="display: inline-block;">??000</div>'+
-                                        '<div id="dna" style="display: inline-block;">??000</div>'+
-                                        '<div id="trophy" style="display: inline-block;">??000</div>')
+                                        '<div id="coins" style="display: inline-block;">💰000</div>'+
+                                        '<div id="dna" style="display: inline-block;">💊000</div>'+
+                                        '<div id="trophy" style="display: inline-block;">🏆000</div>')
 		$("#quest-active").html('')
 		$("#player-skins").html('');
 		

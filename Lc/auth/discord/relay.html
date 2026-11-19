@@ -112,18 +112,25 @@
       /* Method 3: postMessage to opener — the popup was opened from play.html.
        * If the opener reference survived the cross-origin redirect chain
        * (discord.com → expanding.land → jimboy3100.github.io), this works.
-       * Use '*' target since we don't know if opener is expanding.land or jimboy3100.github.io. */
+       * The message carries the one-time OAuth code, so it is posted only to our
+       * own origins (never '*'): a window or iframe of any other origin gets nothing. */
+      var trustedOrigins = ['https://expanding.land', 'https://jimboy3100.github.io', 'https://legendmod.ml'];
+      function postToTrusted(target) {
+        for (var t = 0; t < trustedOrigins.length; t++) {
+          try { target.postMessage(msg, trustedOrigins[t]); } catch (e3) { }
+        }
+      }
       if (window.opener) {
         try {
-          window.opener.postMessage(msg, '*');
+          postToTrusted(window.opener);
           dbg('postMessage sent to opener!');
 
           /* Method 4: The opener might be expanding.land which embeds play.html in an iframe.
-           * Try to postMessage into each iframe inside the opener. */
+           * Try to postMessage into each iframe inside the opener (trusted origins only). */
           try {
             var frames = window.opener.frames;
             for (var i = 0; i < frames.length; i++) {
-              frames[i].postMessage(msg, '*');
+              postToTrusted(frames[i]);
             }
             dbg('postMessage sent to ' + frames.length + ' iframe(s) in opener');
           } catch(e2) {
