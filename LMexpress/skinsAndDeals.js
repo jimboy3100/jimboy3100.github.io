@@ -4548,7 +4548,10 @@ function buyDealBundle(bundleId, dealDesc) {
              * The official dispatcher resolves this as type OFFER and sends
              * Offer_bundle_request, opcode 77. No purchase URL is involved.
              */
-            window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } });
+            /* sendProto returns false when nothing went out (login not confirmed). */
+            if (window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } }) !== true) {
+                throw new Error('Offer bundle request was not sent');
+            }
             toastr.info('<b>[SHOP]:</b> Bundle purchase request sent...');
             console.log('[SHOP] Sent offer bundle request for ' + bundleId);
         } catch (error) {
