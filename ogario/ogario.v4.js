@@ -39501,6 +39501,9 @@ function thelegendmodproject() {
                             this.user.nextLevelXp = gNextXp;
                         }
                         window.agarioLEVEL = gLevel;
+                        /* updateOfficialXpPanel reads these; without them the XP text kept the pre-game values. */
+                        window.agarioXP = gXp;
+                        window.agarioNextXP = gNextXp;
                         window.updateOfficialXpPanel(gLevel, exp);
                     }
 
