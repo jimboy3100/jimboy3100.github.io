@@ -1280,6 +1280,8 @@
         setInterval(function () {
             var nowVisible = isMenuVisible();
             if (nowVisible !== _prevMenuVisible) {
+                /* show/hide the portrait overlay on play/death too, not only on rotation */
+                checkOrientation();
                 if (!nowVisible && !chatOn) {
                     // Menu just hidden (playing/spectating) → fullscreen + wake lock
                     goFullscreenLandscape();
