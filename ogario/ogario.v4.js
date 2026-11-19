@@ -37895,7 +37895,7 @@ function thelegendmodproject() {
                     }
                     var temp = '<b>[' + Premadeletter123 + ']:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';
                     for (var i = 0; i < legendmod.battleRoyale.rank.length; i++) {
-                        temp += '<br>' + legendmod.battleRoyale.rank[i].place + ". " + legendmod.battleRoyale.rank[i].name;
+                        temp += '<br>' + legendmod.battleRoyale.rank[i].place + ". " + application.escapeHTML(String(legendmod.battleRoyale.rank[i].name || ''));
                     }
                     temp += '<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
                     toastr.info(temp);
