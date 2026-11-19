@@ -12000,6 +12000,8 @@ if (!window._lmVipRuntimeListenersInstalled) {
     }, false);
 
     document.addEventListener('accountDomainRuntimeReset', function () {
+        /* Same as logout: getAgarVipStatus falls back to this flag. */
+        delete window._lmHasVIPSubscription;
         window._lmVipStatusCache = null;
         try { document.dispatchEvent(new CustomEvent('lm-vip-status-updated',
             { detail: { current: { known: false, active: false, source: 'runtime-reset',
