@@ -20,7 +20,13 @@ if ( typeof core != 'undefined'){
 if (isMobile){
 	/* play.html also loads LMmobile.js (newer touch controls) on these devices; it is in the page by the load event
 	   and sets LM_IS_MOBILE, so only fall back to the old gamepad when LMmobile is not there. */
-	var _lmGamepadCheck = function () { if (!window.LM_IS_MOBILE) opengamepad(); };
+	/* The old gamepad's init() rewrites HUD scale/minimap and clicks Save on every start, and
+	   before isMobile worked it never loaded: keep it opt-in (localStorage LMgamepad = "1"). */
+	var _lmGamepadCheck = function () {
+		var _optIn = false;
+		try { _optIn = localStorage.getItem('LMgamepad') === '1'; } catch (e) { }
+		if (!window.LM_IS_MOBILE && _optIn) opengamepad();
+	};
 	if (document.readyState === 'complete') _lmGamepadCheck();
 	else window.addEventListener('load', _lmGamepadCheck);
 }
