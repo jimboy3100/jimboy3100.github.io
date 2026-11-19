@@ -29212,6 +29212,8 @@ function thelegendmodproject() {
             return this.sendProto(122, { brewPotionForSlotRequestField: { slot: parseInt(slot) } });
         },
         openPotion(slot, isUserAction) {
+            /* Read by the 125 not_ready handler. */
+            window._lmLastPotionOpen = { slot: parseInt(slot, 10), at: Date.now() };
             if (isUserAction === false) {
                 window._userInitiatedPotionOpen = false;
             } else {
@@ -40677,6 +40679,36 @@ function thelegendmodproject() {
                                         ? '<b>[POTION]:</b> Potion is not ready yet.'
                                         : '<b>[POTION]:</b> Potion not opened (code ' + openResult + ').');
                                 }
+                                /* An expired brew is promoted to 3 locally (the server sends no
+                                 * status change); receive delay or rounding can leave it brewing on
+                                 * the server. Put that slot back to brewing for a short, growing
+                                 * delay so the brew timer offers/opens it again instead of keeping
+                                 * a dead OPEN. */
+                                try {
+                                    var lastOpen = window._lmLastPotionOpen;
+                                    var potStates = this.user && this.user.potionsStatus;
+                                    var failedPot = lastOpen && potStates && potStates['potion' + lastOpen.slot];
+                                    if (openResult === 2 && failedPot && Number(failedPot.status) === 3 &&
+                                        Date.now() - lastOpen.at < 15000) {
+                                        window._lmPotionNotReady = window._lmPotionNotReady || {};
+                                        var notReadyCount = (window._lmPotionNotReady[lastOpen.slot] || 0) + 1;
+                                        window._lmPotionNotReady[lastOpen.slot] = notReadyCount;
+                                        var retrySecs = Math.min(60, 5 * Math.pow(2, notReadyCount - 1));
+                                        var revertList = [];
+                                        for (var rpn = 1; rpn <= 3; rpn++) {
+                                            var rpv = potStates['potion' + rpn];
+                                            if (!rpv) continue;
+                                            var rpStatus = Number(rpv.status) || 0;
+                                            var rpSecs = rpStatus === 2
+                                                ? Math.max(0, Math.ceil((Number(rpv.readyAt) - Date.now()) / 1000)) : 0;
+                                            if (rpn === lastOpen.slot) { rpStatus = 2; rpSecs = retrySecs; }
+                                            revertList.push({ slot: rpn, status: rpStatus, secondsRemaining: rpSecs, productId: rpv.productId || rpv.type || '' });
+                                        }
+                                        this.updatePotions(revertList);
+                                    }
+                                } catch (notReadyErr) {
+                                    console.warn('[LM] Potion not-ready revert failed:', notReadyErr);
+                                }
                                 try {
                                     document.dispatchEvent(new CustomEvent('lm-potions-updated', {
                                         detail: (this.user && this.user.potionsStatus) || {}
@@ -40686,6 +40718,7 @@ function thelegendmodproject() {
                             }
                             /* The response carries the full slot list: an empty list means
                              * every slot is now empty (opening the last potion). */
+                            window._lmPotionNotReady = {};
                             this.updatePotions(Array.from(u.userPotions || []));
                             if (window._userInitiatedPotionOpen) {
                                 window._userInitiatedPotionOpen = false;
