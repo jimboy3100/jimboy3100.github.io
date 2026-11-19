@@ -25472,6 +25472,11 @@ function thelegendmodproject() {
                         ].alive = isAlive;
                     }
 
+                    /* updateTeamPlayers() kills entries older than 2 s; mark this one fresh. */
+                    this.teamPlayers[
+                        existingIdx
+                    ].updateTime = Date.now();
+
                     /*
                      * PPv7 flag 8 carries the sender's map-orientation
                      * fingerprint (bgpi) for Legend Mod.
@@ -25526,6 +25531,8 @@ function thelegendmodproject() {
                     if (isAlive !== undefined) {
                         map.alive = isAlive;
                     }
+
+                    map.updateTime = Date.now();
 
                     /*
                      * New teammate: initialise orientation immediately.
