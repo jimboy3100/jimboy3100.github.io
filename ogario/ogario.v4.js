@@ -20886,6 +20886,9 @@ function thelegendmodproject() {
             view.setUint16(2 + text.length * 2, 0, true);
             return view;
         },
+        lmLegendChatTooSoon() {
+            return !!(LM.isLegendWorld && this._lmLegendChatLast && Date.now() - this._lmLegendChatLast < 2100);
+        },
         enterChatMessage() {
             var messageBox = $('#message-box');
             var message = $('#message');
@@ -20893,11 +20896,20 @@ function thelegendmodproject() {
                 const value = message.val();
                 if (value.length) {
 
+                    /* Expanding Land drops chat (99/202) sent within 2 s of the previous
+                     * attempt and restarts its window even for dropped messages. Keep the
+                     * text and tell the user instead of sending a message that is lost. */
+                    if (this.lmLegendChatTooSoon()) {
+                        toastr.warning('<b>[CHAT]:</b> Slow down: one message every 2 seconds.');
+                        return;
+                    }
+
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
                     if (!LM.integrity && $("#clantag").val() === "") {
                         var view = application.buildChat99View(value);
                         legendmod.sendMessage(view);
+                        if (LM.isLegendWorld) this._lmLegendChatLast = Date.now();
                     }
                     //
 
@@ -27796,6 +27808,11 @@ function thelegendmodproject() {
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
                 if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
+                    if (this.lmLegendChatTooSoon()) {
+                        toastr.warning('<b>[CHAT]:</b> Slow down: one message every 2 seconds.');
+                        return;
+                    }
+                    this._lmLegendChatLast = Date.now();
                     var fullMsg = currentNick + ': ' + message;
                     var teamView = legendmod.createView(2 + 2 * fullMsg.length + 2);
                     teamView.setUint8(0, 202); // opcode 0xCA
