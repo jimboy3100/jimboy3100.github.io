@@ -20903,17 +20903,28 @@ function thelegendmodproject() {
                         toastr.warning('<b>[CHAT]:</b> Slow down: one message every 2 seconds.');
                         return;
                     }
+                    /* sendChatMessage drops messages within 500 ms of the previous one: keep
+                     * the text instead of clearing it (and do not send the opcode 99 copy). */
+                    if (Date.now() - this.lastMessageSentTime < 500) {
+                        toastr.warning('<b>[CHAT]:</b> Slow down.');
+                        return;
+                    }
 
+                    var sent99 = false;
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
                     if (!LM.integrity && $("#clantag").val() === "") {
                         var view = application.buildChat99View(value);
                         legendmod.sendMessage(view);
+                        sent99 = true;
                         if (LM.isLegendWorld) this._lmLegendChatLast = Date.now();
                     }
                     //
 
-                    this.sendChatMessage(101, value);
+                    if (!this.sendChatMessage(101, value) && !sent99) {
+                        toastr.warning('<b>[CHAT]:</b> Chat is not connected, message not sent.');
+                        return;
+                    }
                     message.blur();
                     messageBox.hide();
                 } else {
@@ -28011,6 +28022,7 @@ function thelegendmodproject() {
                     teamView.setUint16(2 + 2 * fullMsg.length, 0, true); // null term
                     legendmod.sendMessage(teamView);
                     this.lastMessageSentTime = Date.now();
+                    return true;
                 }
                 /* All other servers: use chat relay websocket (shared with Delta) */
                 else if (this.isSocketOpen() || (this.privateMode && window.ogarioWS)) {
@@ -28033,8 +28045,10 @@ function thelegendmodproject() {
                         this.sendBuffer(view);
                     }
                     this.lastMessageSentTime = Date.now();
+                    return true;
                 }
             }
+            return false; /* not sent: rate limit, empty, or no chat socket */
         },
         prepareCommand(command) {
             return command.replace('%currentSector%', this.currentSector);
