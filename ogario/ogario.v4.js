@@ -34741,6 +34741,8 @@ function thelegendmodproject() {
             //window.temporaryRecordedProtocol2 = window.temporaryRecordedProtocol
             if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
                 if (window.RecordedArenasSpecifications[$("#server-token").val()]) {
+                    /* Fallback when all 9 numbered slots are taken, so an older recording is never overwritten. */
+                    window.temporaryRecordedProtocol = $("#server-token").val() + '(' + Date.now() + ')'
                     for (var i = 1; i < 10; i++) {
                         if (!window.RecordedArenasSpecifications[$("#server-token").val() + '(' + i + ')']) {
                             window.temporaryRecordedProtocol = $("#server-token").val() + '(' + i + ')'
@@ -34756,6 +34758,17 @@ function thelegendmodproject() {
                 window.RecordedProtocol[window.temporaryRecordedProtocol] = []
                 window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
                 window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
+                /* Keep only the newest recordings in memory (each holds every packet of a session). */
+                while (window.RecordedProtocolArenas.length > 5) {
+                    var _lmOldIdx = -1;
+                    for (var _lmJ = 0; _lmJ < window.RecordedProtocolArenas.length - 1; _lmJ++) {
+                        if (window.RecordedProtocolArenas[_lmJ] !== legendmod.playingReplayServer) { _lmOldIdx = _lmJ; break; }
+                    }
+                    if (_lmOldIdx < 0) break;
+                    var _lmOldArena = window.RecordedProtocolArenas.splice(_lmOldIdx, 1)[0];
+                    delete window.RecordedProtocol[_lmOldArena];
+                    delete window.RecordedArenasSpecifications[_lmOldArena];
+                }
             }
 
 
@@ -36210,7 +36223,8 @@ function thelegendmodproject() {
                     window.legendClientWorker.postMessage({ type: 'NETWORK_PACKET', buffer: data.buffer.slice(0) });
                 } catch (e) { }
             }
-            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+            /* Cap one recording at ~1 hour of packets so long sessions cannot exhaust memory. */
+            if (window.catholicCalculator < 90000 && !$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
 
                 //window.RecordedProtocolArenas[legendmod.ws][]
