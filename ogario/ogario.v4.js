@@ -39686,6 +39686,24 @@ function thelegendmodproject() {
                         this.updateUserInfo(u.userInfo);
                     } catch (e) { console.error('[LW 102] updateUserInfo error:', e); }
 
+                    /* agar.io UID and xsolla token from the decoded login. The raw-text parse in
+                     * case 102 only reads an uncompressed reply (> 1000 bytes), so a compressed
+                     * login left them empty; for an uncompressed one it still runs after this.
+                     * Official: id after "provider$", xsollaToken = urlEncode(tokens.xsolla). */
+                    try {
+                        if (this.serverType === 'agario' && !LM.isLegendWorld && u) {
+                            var _uidParts = (u.userInfo && u.userInfo.userId) ? String(u.userInfo.userId).split('$') : [];
+                            if (_uidParts.length >= 2 && _uidParts[1]) {
+                                window.agarioUID = _uidParts[1].substr(0, 36);
+                                $("#UserProfileUUID1").val(window.agarioUID);
+                                if (typeof window.syncProfileTabUI === 'function') window.syncProfileTabUI();
+                            }
+                            if (u.tokens && u.tokens.xsolla) {
+                                window.agarioEncodedUID = encodeURIComponent(String(u.tokens.xsolla));
+                            }
+                        }
+                    } catch (e) { console.error('[LM 102] agar.io UID from login error:', e); }
+
                     try { this.updatePotions(u.userPotions); } catch (e) { console.error('[LW 102] updatePotions error:', e); }
 
                     if (u.userUnapprovedSkinsIds && u.userUnapprovedSkinsIds.length) {
