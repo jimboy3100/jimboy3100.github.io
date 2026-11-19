@@ -191,35 +191,37 @@ $('#UserscriptA').blur(function(){
 if ($("#UserscriptA").val()=="" && Userscript1){Userscript1="";localStorage.setItem("Userscript1", "");}
 else if ($("#UserscriptA").val()!="" && $("#UserscriptA").val()!==Userscript1){
 Userscript1=$("#UserscriptA").val();localStorage.setItem("Userscript1", Userscript1);
-$("#Userscripttexture1").load(Userscript1, function() { $("#userscriptBtn1").click(); }); }return false;});
+/* fetch as plain text and set .val(): .load() HTML-parsed the JS (decoded entities, ran <script> parts)
+ * and did not change the value of a textarea the user had already edited */
+$.get(Userscript1, null, function(code) { $("#Userscripttexture1").val(code); $("#userscriptBtn1").click(); }, "text"); }return false;});
 $('#UserscriptB').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptB").val()=="" && Userscript2){Userscript2="";localStorage.setItem("Userscript2", "");}
 else if ($("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){
 Userscript2=$("#UserscriptB").val();localStorage.setItem("Userscript2", Userscript2);
-$("#Userscripttexture2").load(Userscript2, function() { $("#userscriptBtn2").click(); }); }return false;});
+$.get(Userscript2, null, function(code) { $("#Userscripttexture2").val(code); $("#userscriptBtn2").click(); }, "text"); }return false;});
 $('#UserscriptC').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptC").val()=="" && Userscript3){Userscript3="";localStorage.setItem("Userscript3", "");}
 else if ($("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){
 Userscript3=$("#UserscriptC").val();localStorage.setItem("Userscript3", Userscript3);
-$("#Userscripttexture3").load(Userscript3, function() { $("#userscriptBtn3").click(); }); }return false;});
+$.get(Userscript3, null, function(code) { $("#Userscripttexture3").val(code); $("#userscriptBtn3").click(); }, "text"); }return false;});
 $('#UserscriptD').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptD").val()=="" && Userscript4){Userscript4="";localStorage.setItem("Userscript4", "");}
 else if ($("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){
 Userscript4=$("#UserscriptD").val();localStorage.setItem("Userscript4", Userscript4);
-$("#Userscripttexture4").load(Userscript4, function() { $("#userscriptBtn4").click(); }); }return false;});
+$.get(Userscript4, null, function(code) { $("#Userscripttexture4").val(code); $("#userscriptBtn4").click(); }, "text"); }return false;});
 $('#UserscriptE').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptE").val()=="" && Userscript5){Userscript5="";localStorage.setItem("Userscript5", "");}
 else if ($("#UserscriptE").val()!="" && $("#UserscriptE").val()!==Userscript5){
 Userscript5=$("#UserscriptE").val();localStorage.setItem("Userscript5", Userscript5);
-$("#Userscripttexture5").load(Userscript5, function() { $("#userscriptBtn5").click(); }); }return false;});
+$.get(Userscript5, null, function(code) { $("#Userscripttexture5").val(code); $("#userscriptBtn5").click(); }, "text"); }return false;});
 
 $("#Userscripttexture1").blur(function(){
 if ($("#Userscripttexture1").val()!=""){Userscripttexture1=$("#Userscripttexture1").val();localStorage.setItem("Userscripttexture1", Userscripttexture1);}});	
