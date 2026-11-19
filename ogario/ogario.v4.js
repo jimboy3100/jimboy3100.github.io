@@ -442,6 +442,9 @@ window.OgVer = 3.504;
     } catch (error) {
     }
 
+    /* Exposed so code outside this IIFE (_clearAccountDomainRuntime) can refresh the UI. */
+    window._lmRefreshIdentityUI = refreshIdentityUI;
+
     refreshIdentityUI();
 
     /*
@@ -1624,8 +1627,8 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             localStorage.removeItem("agarioEncodedUID");
         } catch (e) { }
 
-        if (typeof refreshIdentityUI === 'function') {
-            refreshIdentityUI();
+        if (typeof window._lmRefreshIdentityUI === 'function') {
+            window._lmRefreshIdentityUI();
         }
 
         /*
