@@ -661,32 +661,32 @@
                 defaultKey: '',
                 keyDown() {
                     //if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
-					if (legendmod.ws.includes("imsolo.pro") && application) {
+					if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) {
 						application.macrobotFeed(!0);	
 						//application.Botseject();
 					}																
                 },
                 keyUp(){
-					if (legendmod.ws.includes("imsolo.pro") && application) application.macrobotFeed(!1); 
+					if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.macrobotFeed(!1); 
 				},
                 type: 'normal'
             },				
             'hk-bots-feed': {
                 label: textLanguage['hk-bots-feed'],
-                defaultKey: 'L',
+                defaultKey: '', // 'L' is already the Copy LB default; a later duplicate overwrote it
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
-					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
+					else if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
                 },
                 keyUp: null,
                 type: 'normal'
             },			
             'hk-bots-split': {
                 label: textLanguage['hk-bots-split'],
-                defaultKey: 'M',
+                defaultKey: '', // 'M' is already the Show mass default
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
-					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botsplit();
+					else if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.Botsplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -695,7 +695,7 @@
                 label: textLanguage['hk-doubleBotSplit'],
                 defaultKey: '',
                 keyDown() {
-                    if (legendmod.ws.includes("imsolo.pro") && application) application.doubleBotSplit();
+                    if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.doubleBotSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -704,7 +704,7 @@
                 label: 'Bots Popsplit (Private servers)',
                 defaultKey: '',
                 keyDown() {
-                    if (legendmod.ws.includes("imsolo.pro") && application) application.popBotSplit();
+                    if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.popBotSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -713,7 +713,7 @@
                 label: textLanguage['hk-splitBot16'],
                 defaultKey: '',
                 keyDown() {
-                    if (legendmod.ws.includes("imsolo.pro") && application) application.splitBot16();
+                    if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.splitBot16();
                 },
                 keyUp: null,
                 type: 'normal'
