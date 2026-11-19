@@ -40926,7 +40926,8 @@ function thelegendmodproject() {
                                 toastr.info('<b>[PARTY]:</b> ' + application.escapeHTML(pmuName) + ' invited you to a party. Click to join.', '', {
                                     timeOut: 15000,
                                     extendedTimeOut: 5000,
-                                    onclick: function () { window.joinAgarPartyToken(pmuCode); }
+                                    /* bind this invite's code: pmuCode is reused by the next 145 */
+                                    onclick: (function (code) { return function () { window.joinAgarPartyToken(code); }; })(pmuCode)
                                 });
                             }
                         }
