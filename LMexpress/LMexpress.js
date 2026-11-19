@@ -4502,29 +4502,19 @@ function displayTimer() {
     TimerLM.difference = timeNow - TimerLM.timerStarted;
 
 
-    // seconds
-    if (TimerLM.difference > 1000) {
-        seconds = Math.floor(TimerLM.difference / 1000);
-        if (seconds > 60) {
-            seconds = seconds % 60;
-        }
-        if (seconds < 10) {
-            seconds = '0' + String(seconds);
-        }
+    // wrap at 60 (not > 60, which showed "01:60") and keep the hours
+    var total = Math.max(0, Math.floor(TimerLM.difference / 1000));
+    var hours = Math.floor(total / 3600);
+    seconds = total % 60;
+    minutes = Math.floor(total / 60) % 60;
+    if (seconds < 10) {
+        seconds = '0' + String(seconds);
+    }
+    if (minutes < 10) {
+        minutes = '0' + String(minutes);
     }
 
-    // minutes
-    if (TimerLM.difference > 60000) {
-        minutes = Math.floor(TimerLM.difference / 60000);
-        if (minutes > 60) {
-            minutes = minutes % 60;
-        }
-        if (minutes < 10) {
-            minutes = '0' + String(minutes);
-        }
-    }
-
-
+    if (hours > 0) time += hours + ':'
     time += minutes + ':'
     time += seconds
 
