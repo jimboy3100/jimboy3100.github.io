@@ -2473,6 +2473,33 @@ function deleteGamemode(temp) {
         }, {
             text: 'Senpa AS FFA',
             value: 10015
+        }, {
+            text: 'Delta EU Party 1',
+            value: 10020
+        }, {
+            text: 'Delta EU Party 2',
+            value: 10021
+        }, {
+            text: 'Delta EU FFA',
+            value: 10022
+        }, {
+            text: 'Delta EU FFA Arcade',
+            value: 10023
+        }, {
+            text: 'Delta US Party',
+            value: 10024
+        }, {
+            text: 'Delta Experimental',
+            value: 10025
+        }, {
+            text: 'Delta Dagestyle',
+            value: 10026
+        }, {
+            text: 'Delta Rookery',
+            value: 10027
+        }, {
+            text: 'Delta Arctida',
+            value: 10028
         }
         /* Other private servers (commented out)
         , {
@@ -2753,6 +2780,22 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 10015) {
             legendmod.gameMode = ':ffa';
             core.connect('wss://asia.senpa.io:2001');
+        }
+        // delt.io servers (10020-10028), list from Delta's client (servers/feeds.ts)
+        else if (parseInt($('#gamemode').val()) >= 10020 && parseInt($('#gamemode').val()) <= 10028) {
+            var deltioMap = {
+                10020: 'wss://party.delt.io',
+                10021: 'wss://party2.delt.io',
+                10022: 'wss://ffa.delt.io',
+                10023: 'wss://solo.delt.io',
+                10024: 'wss://party.na.delt.io',
+                10025: 'wss://exp.delt.io',
+                10026: 'wss://dag.delt.io',
+                10027: 'wss://rookery.delt.io',
+                10028: 'wss://arctida.delt.io'
+            };
+            legendmod.gameMode = (parseInt($('#gamemode').val()) === 10020 || parseInt($('#gamemode').val()) === 10021 || parseInt($('#gamemode').val()) === 10024) ? ':party' : ':ffa';
+            core.connect(deltioMap[parseInt($('#gamemode').val())]);
         } else {
             if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
             if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
@@ -34428,6 +34471,8 @@ function thelegendmodproject() {
                         : t.includes('garix.io') ? 'garix'
                             : t.includes('sigmally.com') ? 'sigmally'
                                 : (t.includes('senpa.io') || t.includes('mi.com')) ? 'senpa'
+                                /* delt.io game servers (Delta's server, its agar.io-compatible legacy protocol) */
+                                : t.includes('delt.io') ? 'deltio'
                                     : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                                         /* older/proxied official URLs: integrity is already true for these,
                                          * and as 'private' the split hotkeys sent Imsolo opcodes 26-28/32 to agar.io */
@@ -35171,7 +35216,7 @@ function thelegendmodproject() {
                 } catch (e) { }
             }
             this.socket = new WebSocket(url);
-            this.connectionIntegrity = typeof this.socket._lwIntegrity === "boolean" ? this.socket._lwIntegrity : Boolean(this.integrity);
+            this.connectionIntegrity = typeof this.socket._lwIntegrity === "boolean" ? this.socket._lwIntegrity : (Boolean(this.integrity) || this.serverType === 'deltio');
             this.socket.binaryType = 'arraybuffer';
             this.socket.onopen = function () {
                 app.onOpen();
@@ -35327,7 +35372,10 @@ function thelegendmodproject() {
                     }
                 } //protocol 6 and 5
                 else {
-                    view.setUint32(1, this.clientVersion, true);
+                    /* delt.io: version 0 disables Delta's cipher (no 241 key), and
+                     * sendMessage waits for that key, so always send a real version. */
+                    this._deltioClientVersion = this.clientVersion || 31200;
+                    view.setUint32(1, this.serverType === 'deltio' ? this._deltioClientVersion : this.clientVersion, true);
                     window.gameBots.clientVersion = this.clientVersion;
                     //new
                     /* 3s, the same cadence Delta uses on official servers */
@@ -36027,7 +36075,7 @@ function thelegendmodproject() {
 
             message = new DataView(message.data);
             if (this.protocolKey) {
-                message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
+                message = this.shiftMessage(message, this.protocolKey ^ (this.serverType === 'deltio' ? this._deltioClientVersion : this.clientVersion));
             }
             this.handleMessage(message);
 
@@ -36075,7 +36123,8 @@ function thelegendmodproject() {
                 lastWs.indexOf('imsolo.pro') !== -1 ||
                 lastWs.indexOf('sigmally.com') !== -1 ||
                 lastWs.indexOf('senpa.io') !== -1 ||
-                lastWs.indexOf('mi.com') !== -1);
+                lastWs.indexOf('mi.com') !== -1 ||
+                lastWs.indexOf('delt.io') !== -1);
 
             /* Master reconnect — only for official agar.io, NOT private servers */
             if (this.integrity && window.master && window.master.onDisconnect && !_isPrivateServer) {
@@ -36243,6 +36292,13 @@ function thelegendmodproject() {
             }
         },
         sendMessage(message) {
+            /* delt.io (Delta's legacy protocol): send only the opcodes it reads
+             * (spawn, spectate, mouse, split, Q, eject, ping/pong, handshake);
+             * never chat 99, agar.io 102 tokens or LM/Expanding Land opcodes. */
+            if (this.serverType === 'deltio' && message && message.buffer) {
+                var _dlOp = new Uint8Array(message.buffer, message.byteOffset || 0, 1)[0];
+                if ([0, 1, 16, 17, 18, 19, 21, 22, 226, 227, 254, 255].indexOf(_dlOp) === -1) return;
+            }
             if (this.connectionOpened && this.connectionIntegrity) {
                 if (!this.clientKey) {
                     return;
@@ -45196,7 +45252,7 @@ Most cells eaten   : ${mostCellsEaten}
                     if (internalSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
                 }
                 LM.mapTier = derivedTier;
-            } else if (this.connectionIntegrity || temp2) {
+            } else if ((this.connectionIntegrity && this.serverType !== 'deltio') || temp2) {
                 /* agar.io standard server: hardcoded 14142 */
                 this.mapSize = 14142;
                 this.mapOffset = this.mapSize / 2;
@@ -45231,7 +45287,7 @@ Most cells eaten   : ${mostCellsEaten}
              */
             var isGenericPrivate =
                 !LM.isLegendWorld &&
-                !this.connectionIntegrity &&
+                (!this.connectionIntegrity || this.serverType === 'deltio') &&
                 !temp2;
 
             /*
@@ -45241,14 +45297,14 @@ Most cells eaten   : ${mostCellsEaten}
              * ones during play, which shifted the offset).
              */
             var isFullPacket =
-                (this.connectionIntegrity && !LM.isLegendWorld)
+                (this.connectionIntegrity && !LM.isLegendWorld && this.serverType !== 'deltio')
                     ? (!this.mapOffsetFixed && pWidth > 14000 && pHeight > 14000)
                     : (isGenericPrivate ||
                         (pWidth > 6000 && pHeight > 6000) ||
                         (pWidth >= (this.mapSize - 500)));
 
             if (!this.mapOffsetFixed || isFullPacket) {
-                if (this.connectionIntegrity || temp2) {
+                if ((this.connectionIntegrity && this.serverType !== 'deltio') || temp2) {
                     this.mapOffsetX = this.mapOffset - right;
                     this.mapOffsetY = this.mapOffset - bottom;
 
@@ -46574,6 +46630,11 @@ Most cells eaten   : ${mostCellsEaten}
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         this.vanillaskins(name, skin, color);
                     }
+                }
+                /* delt.io: ext flag 4 = u32 account id after the name (Delta ProtocolLegacy.write_body) */
+                if (!isLegacyMultiOgar && this.serverType === 'deltio' && (extendedFlags & 4)) {
+                    accountID = view.readUInt32LE(offset);
+                    offset += 4;
                 }
                 // MultiOgar / LegacyProtocol (protocols 6-10): flag 0x40 and 0x80 come AFTER color/skin/name in byte stream
                 if (isLegacyMultiOgar && (flags & 0x40)) {
