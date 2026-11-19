@@ -510,6 +510,14 @@
         drawer.appendChild(bPaus);
         drawer.appendChild(bChat);
 
+        /* settings panel toggle (joystick, opacity, size, HUD fade, flick split) */
+        var bGear = mkd('⚙');
+        drawer.appendChild(bGear);
+        bGear.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            sp.classList.toggle('on');
+        }, { passive: false });
+
         var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
         bStop.style.display = 'none';
         drawer.appendChild(bStop);
@@ -1354,7 +1362,7 @@
          *  TAP CANVAS TO CLOSE DRAWER
          * ═══════════════════════════════════════════════════════ */
         document.addEventListener('touchstart', function (e) {
-            if (!drawer.classList.contains('on')) return;
+            if (!drawer.classList.contains('on') && !sp.classList.contains('on')) return;
             // If tap is outside the drawer, menu button, and settings panel — close
             if (rootL.contains(e.target)) return;
             drawer.classList.remove('on');
