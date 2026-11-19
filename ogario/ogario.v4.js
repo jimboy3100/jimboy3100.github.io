@@ -28850,6 +28850,8 @@ function thelegendmodproject() {
                         });
                         this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                            /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
+                            $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
@@ -28868,6 +28870,8 @@ function thelegendmodproject() {
                         });
                         this.commandHistory.length > 15 && this.commandHistory.shift();
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                            /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
+                            $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
