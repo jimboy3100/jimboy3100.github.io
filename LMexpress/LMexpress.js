@@ -4696,6 +4696,8 @@ function openrotatingmod() {
 }
 
 function languagemodfun() {
+    /* nothing stored yet (null, or the string "null" saved by older versions): keep English selected */
+    if (!languagemod || languagemod == "null") languagemod = "1";
     if (languagemod != 1) {
         $('#legendlanguages').val(languagemod);
         changeModLanguage();
@@ -4703,7 +4705,9 @@ function languagemodfun() {
 }
 
 function changeModLanguage() {
-    localStorage.setItem("languagemod", $("#legendlanguages").val());
+    /* keep the global in sync: the language pack handler reads it (Arabic check) */
+    languagemod = $("#legendlanguages").val();
+    localStorage.setItem("languagemod", languagemod);
     if ($("#legendlanguages").val() == 1) {
         languageinjector("https://www.legendmod.ml/languages/LanguagePackEnglish.js");
     }
