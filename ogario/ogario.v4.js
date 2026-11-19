@@ -31390,8 +31390,10 @@ function thelegendmodproject() {
         this.drawSpecialSkin = function (style, y) {
             if (SpecialEffectPlayers[this.targetNick]) {
                 /* Cache split result on cell — only recompute when nick changes */
-                if (!this.SpecialEffect || this._specialEffectNick !== this.targetNick) {
+                /* Re-split when the effect string itself changes, not only the nick. */
+                if (!this.SpecialEffect || this._specialEffectNick !== this.targetNick || this._specialEffectRaw !== SpecialEffectPlayers[this.targetNick]) {
                     this._specialEffectNick = this.targetNick;
+                    this._specialEffectRaw = SpecialEffectPlayers[this.targetNick];
                     this.SpecialEffect = null;
                     this.SpecialEffect2 = null;
                     var temp = SpecialEffectPlayers[this.targetNick].split(';');
