@@ -4642,16 +4642,30 @@ function isSkinOwned(s, ownedSkinsObj) {
     var modId = s.productId ? s.productId.replace('skin_', '%') : '';
     var cleanId = s.productId ? s.productId.replace('skin_', '') : '';
 
-    if (ownedSkinsObj.hasOwnProperty(rawId) || ownedSkinsObj.hasOwnProperty(modId) || ownedSkinsObj.hasOwnProperty(cleanId)) {
+    /* Like the official client (checkUserSkin / isSkinOwned): a wallet entry
+     * counts only while its amount is above 0 (expired or removed skins stay
+     * in the map with amount 0). */
+    function active(item) {
+        return !!item && !(typeof item.amount === 'number' && item.amount <= 0);
+    }
+
+    if ((ownedSkinsObj.hasOwnProperty(rawId) && active(ownedSkinsObj[rawId])) ||
+        (ownedSkinsObj.hasOwnProperty(modId) && active(ownedSkinsObj[modId])) ||
+        (ownedSkinsObj.hasOwnProperty(cleanId) && active(ownedSkinsObj[cleanId]))) {
         return true;
     }
+
+    /* Keys can also be skin image URLs: match the file name exactly, a substring
+     * test made "rat.png" match ".../golden_rat.png" (67 such pairs in the config). */
+    var imageSuffix = s.image && s.image !== 'uses_spine' ? '/' + s.image : '';
 
     for (var k in ownedSkinsObj) {
         if (ownedSkinsObj.hasOwnProperty(k)) {
             var item = ownedSkinsObj[k];
-            if (item) {
+            if (active(item)) {
                 if (item.productId === rawId || item.productId === modId || item.productId === cleanId) return true;
-                if (typeof k === 'string' && s.image && k.indexOf(s.image) !== -1) return true;
+                if (imageSuffix && typeof k === 'string' && k.length > imageSuffix.length &&
+                    k.slice(-imageSuffix.length) === imageSuffix) return true;
             }
         }
     }
