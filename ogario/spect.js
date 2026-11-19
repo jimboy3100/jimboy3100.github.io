@@ -489,14 +489,18 @@ class Spect {
 
             if (legendmod.pause) {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
-            } else if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
+            } else if (window.multiboxPlayerEnabled === this.number || this.isFreeSpectate || window.multiboxFollowMouse) {
+                /* Only the controlled unit follows the cursor (any truthy value moved every unit). */
                 this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
 
                 /* Keep-moving offset in server space (playerX/Y are client space). */
                 this.distX = this.convertX(legendmod.cursorX) - this.convertX(this.playerX)
                 this.distY = this.convertY(legendmod.cursorY) - this.convertY(this.playerY)
-            } else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
-                if (defaultmapsettings.multiKeepMoving) {
+            } else {
+                /* "Freeze inactive multibox unit": hold it at its own centre. */
+                if (defaultmapsettings.mbFreeze && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+                    this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
+                } else if (defaultmapsettings.multiKeepMoving) {
                     this.sendPosition(this.convertX(this.playerX) + this.distX, this.convertY(this.playerY) + this.distY);
                 }
             }
