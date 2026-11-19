@@ -73500,9 +73500,10 @@ function playReplayLM(temp) {
         //if (parseInt(window.replayTiming)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
         //start
         //window.playrecord = 0
-        intervalPlayingRecord()
+        /* Read the range first: the first tick used the previous run's values. */
         window.startReplayTime = $("#startReplayTime").val()
         window.endReplayTime = $("#endReplayTime").val()
+        intervalPlayingRecord()
 
         $("#stopReplaybtn").prop('disabled', false);
         if ($("#savedArenas").val() && window.RecordedArenasSpecifications[$("#savedArenas").val()] && window.RecordedArenasSpecifications[$("#savedArenas").val()][4]) {
@@ -73587,19 +73588,21 @@ function intervalPlayingRecord() {
             $("#totalReplayPackets").val(legendmod.playingReplayRecord + "/" + window.RecordedProtocolPackets)
 
             if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 1 && legendmod.playingReplayRecord >= 0) {
-                if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 2) intervalPlayingRecord();
+                intervalPlayingRecord();
                 if (parseFloat(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
                     //if (parseInt(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
                     legendmod.playingReplayRecord++
                 } else {
                     legendmod.playingReplayRecord--
                 }
-            } else if (legendmod.playingReplayRewindNow) {
-                if (legendmod.playingReplayRecord >= 0) {
-                    legendmod.playingReplayRewindNow = true
-                    legendmod.playingReplayRecord--
-                    intervalPlayingRecord();
-                }
+            } else if (legendmod.playingReplayRewind && !legendmod.playingReplayRewindNow && legendmod.playingReplayRecord >= 0) {
+                /* Fast-forwarded to the end: now play backwards. (The flag was only set
+                 * inside a branch that required it already, so rewind never started.) */
+                legendmod.playingReplayRewindNow = true
+                legendmod.playingReplayRecord--
+                intervalPlayingRecord();
+            } else {
+                /* Finished (end reached, or rewound to the start). */
                 $("#stopReplaybtn").prop('disabled', true);
                 $('#pause-hud').text(textLanguage.pause);
                 $('#pause-hud').hide()
