@@ -20648,6 +20648,32 @@ function thelegendmodproject() {
                 $('#chat-box').hide();
             }
         },
+        /*
+         * Opcode 99 chat packet. Expanding Land guesses the encoding from the first
+         * code unit (UTF-16 only if its high byte is 0), so non-Latin-1 text sent as
+         * UTF-16 was decoded as garbage there: send UTF-8 to Expanding Land. Other
+         * private servers keep UTF-16LE.
+         */
+        buildChat99View(text) {
+            var view;
+            if (LM.isLegendWorld) {
+                var bytes = new TextEncoder().encode(text);
+                view = application.createView(3 + bytes.length);
+                view.setUint8(0, 99);
+                view.setUint8(1, 0);
+                for (var i = 0; i < bytes.length; i++) view.setUint8(2 + i, bytes[i]);
+                view.setUint8(2 + bytes.length, 0);
+                return view;
+            }
+            view = application.createView(4 + 2 * text.length);
+            view.setUint8(0, 99);
+            view.setUint8(1, 0);
+            for (var length = 0; length < text.length; length++) {
+                view.setUint16(2 + length * 2, text.charCodeAt(length), true);
+            }
+            view.setUint16(2 + text.length * 2, 0, true);
+            return view;
+        },
         enterChatMessage() {
             var messageBox = $('#message-box');
             var message = $('#message');
@@ -20658,19 +20684,7 @@ function thelegendmodproject() {
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
                     if (!LM.integrity && $("#clantag").val() === "") {
-                        var view = application.createView(4 + 2 * value.length);
-                        view.setUint8(0, 99);
-                        view.setUint8(1, 0);
-
-                        for (var length = 0; length < value.length; length++) {
-                            view.setUint16(
-                                2 + length * 2,
-                                value.charCodeAt(length),
-                                true
-                            );
-                        }
-
-                        view.setUint16(2 + value.length * 2, 0, true);
+                        var view = application.buildChat99View(value);
                         legendmod.sendMessage(view);
                     }
                     //
@@ -27605,19 +27619,7 @@ function thelegendmodproject() {
             //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
             if (!LM.integrity && $("#clantag").val() === "") {
 
-                var view = application.createView(4 + 2 * prepareCommand.length);
-                view.setUint8(0, 99);
-                view.setUint8(1, 0);
-
-                for (var length = 0; length < prepareCommand.length; length++) {
-                    view.setUint16(
-                        2 + length * 2,
-                        prepareCommand.charCodeAt(length),
-                        true
-                    );
-                }
-
-                view.setUint16(2 + prepareCommand.length * 2, 0, true);
+                var view = application.buildChat99View(prepareCommand);
                 legendmod.sendMessage(view);
             }
             //
