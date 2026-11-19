@@ -72940,7 +72940,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         } if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
                     if ('command' === currentCommand.type) {
                         var replaceHk = command.replace('hk-', '');
-                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + chatCommand[replaceHk] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + application.escapeHTML(chatCommand[replaceHk] == null ? '' : String(chatCommand[replaceHk])) + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                     } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                 }
             $(document).on('click', '#reset-hotkeys', function (event) {
