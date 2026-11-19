@@ -9357,7 +9357,9 @@ window.normalizeAgarGameplayConfigMode =
                 mode
             )
                 .trim()
-                .toLowerCase();
+                .toLowerCase()
+                /* LM stores modes as ':ffa', ':teams', ':battleroyale' ... */
+                .replace(/^:/, '');
 
 
         if (
@@ -9415,6 +9417,10 @@ window.getAgarGameplayCapabilities =
                     (
                         window.LM &&
                         window.LM.gameMode
+                    ) ||
+                    (
+                        window.legendmod &&
+                        window.legendmod.gameMode
                     ) ||
                     ''
                 );
