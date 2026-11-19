@@ -25202,8 +25202,27 @@ function thelegendmodproject() {
             }
         },
         connect() {
+            /* A socket to the same relay is still connecting: keep it (closing it lost the
+             * join state); its onopen sends the current party data. */
+            var _lmTarget = this.privateMode && this.privateIP ? this.privateIP : this.publicIP;
+            if (this.socket && this.socket.readyState === WebSocket.CONNECTING && this._lmRelayTarget === _lmTarget) {
+                this.flushData();
+                this.setParty();
+                return;
+            }
+            this._lmRelayTarget = _lmTarget;
+            if (this._lmRelayRetryTimer) {
+                clearTimeout(this._lmRelayRetryTimer);
+                this._lmRelayRetryTimer = null;
+            }
             this.closeConnection();
-            this.flushData();
+            if (this._lmRelayReconnecting) {
+                /* Reconnect after a drop: keep game/chat state, only force party data resend. */
+                this._lmRelayReconnecting = false;
+                this.flushPartyData();
+            } else {
+                this.flushData();
+            }
             this.setParty();
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to ogario socket'),
             if (this.privateMode && this.privateIP) {
@@ -25232,6 +25251,9 @@ function thelegendmodproject() {
                     app.sendBuffer(buf);
 
                     app.sendPartyData();
+                    app._lmRelayRetries = 0;
+                    /* after a reconnect the relay must learn we are alive again */
+                    if (ogario.play) app.sendPlayerSpawn();
                 }
                 this.socket.onmessage = function (buf) {
                     app.handleMessage(buf);
@@ -25241,8 +25263,22 @@ function thelegendmodproject() {
                  * We wire handleMessage into ogarioWS relay instead. */
                 this.socket.onopen = () => { app.sendPartyData(); };
             }
+            var _lmSock = this.socket;
             this.socket.onclose = function (buf) {
                 //app.flushData();
+                /* closeConnection() detaches this handler first, so this is an unexpected
+                 * drop: reconnect the public relay with backoff instead of staying dead. */
+                if (app.socket !== _lmSock || app.privateMode) return;
+                var tries = app._lmRelayRetries = (app._lmRelayRetries || 0) + 1;
+                if (tries > 20) return;
+                var delay = Math.min(30000, 2000 * Math.pow(2, tries - 1));
+                if (app._lmRelayRetryTimer) clearTimeout(app._lmRelayRetryTimer);
+                app._lmRelayRetryTimer = setTimeout(function () {
+                    app._lmRelayRetryTimer = null;
+                    if (app.socket !== _lmSock) return;
+                    app._lmRelayReconnecting = true;
+                    app.connect();
+                }, delay);
             }
             this.socket.onerror = function (buf) {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket error', buf);
