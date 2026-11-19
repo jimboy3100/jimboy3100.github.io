@@ -2388,6 +2388,56 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         `;
     };
 
+    /*
+     * The Expanding Land server answers at most one opcode-130 request per
+     * 5 s per connection (current and last week share that cooldown) and
+     * sends nothing when throttled. Send now when allowed, otherwise delay
+     * the send to the end of the cooldown. Returns the delay in ms (0 = sent
+     * now), or -1 when an immediate send failed.
+     */
+    window._lmLastLeaguesRequestAt = 0;
+    window._lmSendLeaguesRequest = function(requestType) {
+        var cooldownMs = 5100;
+        function send() {
+            var sent = false;
+            if (typeof window.requestLeaguesInfo === 'function') {
+                sent = window.requestLeaguesInfo(requestType) === true;
+            } else if (
+                window.application &&
+                typeof window.application.requestLeaguesInfo === 'function'
+            ) {
+                sent = window.application.requestLeaguesInfo(requestType) === true;
+            } else if (
+                requestType === 1 &&
+                typeof window.userLeaguesInfoRequest === 'function'
+            ) {
+                sent = window.userLeaguesInfoRequest() !== false;
+            }
+            if (sent) window._lmLastLeaguesRequestAt = Date.now();
+            return sent;
+        }
+        var now = Date.now();
+        var waitMs = window._lmLastLeaguesRequestAt + cooldownMs - now;
+        if (waitMs <= 0) {
+            return send() ? 0 : -1;
+        }
+        // A slot may already be reserved by a queued request; cap clock jumps.
+        if (waitMs > 3 * cooldownMs) waitMs = cooldownMs;
+        // Reserve the slot so a second queued request waits for this one.
+        window._lmLastLeaguesRequestAt = now + waitMs;
+        setTimeout(function() {
+            try {
+                send();
+            } catch (delayedLeaguesRequestError) {
+                console.warn(
+                    '[LM] Delayed leagues request failed:',
+                    delayedLeaguesRequestError
+                );
+            }
+        }, waitMs);
+        return waitMs;
+    };
+
     window._startCurrentLeaguesRequest = function() {
         if (
             !document.getElementById('lm-leagues-modal') ||
@@ -2400,22 +2450,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         window._leaguesRequestState = 'loading';
 
         var requestWasSent = false;
+        var requestDelayMs = 0;
         try {
-            if (typeof window.requestLeaguesInfo === 'function') {
-                requestWasSent =
-                    window.requestLeaguesInfo(1) === true;
-            } else if (
-                window.application &&
-                typeof window.application.requestLeaguesInfo === 'function'
-            ) {
-                requestWasSent =
-                    window.application.requestLeaguesInfo(1) === true;
-            } else if (
-                typeof window.userLeaguesInfoRequest === 'function'
-            ) {
-                requestWasSent =
-                    window.userLeaguesInfoRequest() !== false;
-            }
+            requestDelayMs = window._lmSendLeaguesRequest(1);
+            requestWasSent = requestDelayMs >= 0;
         } catch (currentLeaguesRequestError) {
             console.warn(
                 '[LM] Current-week leagues request failed:',
@@ -2458,7 +2496,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         'Leaderboard request timed out.'
                     );
                 }
-            }, 5000);
+            }, 5000 + requestDelayMs);
         }
     };
 
@@ -3256,24 +3294,15 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             // Refresh in the background (e.g. after the weekly reset); the
             // leaguesInfoUpdate listener re-renders this modal when it lands.
             try {
-                if (typeof window.requestLeaguesInfo === 'function') {
-                    window.requestLeaguesInfo(2);
-                }
+                window._lmSendLeaguesRequest(2);
             } catch (lastWeekRefreshError) {}
         } else {
             // Request last week data from server (type=2).
             var lastWeekRequestWasSent = false;
+            var lastWeekRequestDelayMs = 0;
             try {
-                if (typeof window.requestLeaguesInfo === 'function') {
-                    lastWeekRequestWasSent =
-                        window.requestLeaguesInfo(2) === true;
-                } else if (
-                    window.application &&
-                    typeof window.application.requestLeaguesInfo === 'function'
-                ) {
-                    lastWeekRequestWasSent =
-                        window.application.requestLeaguesInfo(2) === true;
-                }
+                lastWeekRequestDelayMs = window._lmSendLeaguesRequest(2);
+                lastWeekRequestWasSent = lastWeekRequestDelayMs >= 0;
             } catch (lastWeekRequestError) {
                 console.warn(
                     '[LM] Last Week leagues request failed:',
@@ -3338,7 +3367,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         </div>
                     `;
                 }
-            }, 5000);
+            }, 5000 + lastWeekRequestDelayMs);
         }
     };
 
