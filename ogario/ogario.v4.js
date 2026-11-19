@@ -2062,6 +2062,15 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         var _discordNonceLive = _discordOAuthNonce;
         try { sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce); } catch (e) { }
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(_discordOAuthState);
+        /* A fresh nonce/state for every login click: an accepted nonce is consumed, and
+         * reusing the page-load URL left every later login in this tab unchecked. */
+        function renewDiscordNonce() {
+            _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function (b) { return b.toString(16).padStart(2, '0') }).join('');
+            _discordOAuthState = window.location.origin + '|' + _discordOAuthNonce;
+            _discordNonceLive = _discordOAuthNonce;
+            try { sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce); } catch (e) { }
+            DISCORD_AUTH_URL = DISCORD_AUTH_URL.replace(/&state=[^&]*/, '&state=' + encodeURIComponent(_discordOAuthState));
+        }
         var discordPopupRef = null;
         var discordSetupAttempts = 0;
 
@@ -2093,8 +2102,11 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             /* CSRF nonce validation: reject if nonce is present but doesn't match */
             var expectedNonce = _discordNonceLive;
             try { expectedNonce = sessionStorage.getItem('discord_oauth_nonce') || _discordNonceLive; } catch (e) { }
-            if (expectedNonce && discordUser.nonce) {
-                if (discordUser.nonce !== expectedNonce) {
+            /* A relay that knows the state always sends a nonce field (possibly empty):
+             * then it must match. Only a relay without the field (current Expanding Land
+             * server) is accepted without the check. */
+            if (typeof discordUser.nonce === 'string') {
+                if (!expectedNonce || discordUser.nonce !== expectedNonce) {
                     console.warn('[LW Discord] CSRF nonce mismatch via ' + channel + ' — rejecting');
                     return false;
                 }
@@ -2204,6 +2216,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 var w = 500, h = 700;
                 var left = (screen.width - w) / 2;
                 var top = (screen.height - h) / 2;
+                renewDiscordNonce();
                 var popup = window.open(DISCORD_AUTH_URL, 'discordAuth',
                     'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',scrollbars=yes');
                 discordPopupRef = popup;
