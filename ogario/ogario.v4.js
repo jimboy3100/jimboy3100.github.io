@@ -39509,9 +39509,14 @@ function thelegendmodproject() {
                     }
 
 
-                    this.displayStats(
-                        u.userStats
-                    );
+                    /* Only a game over that carries userStats replaces them (official setUserStats);
+                     * an empty one used to reset the stats panel to zeros. */
+                    if (u.userStats) {
+                        if (this.user) this.user.stats = u.userStats;
+                        this.displayStats(
+                            u.userStats
+                        );
+                    }
 
                     var challengeFinalLevel = null;
 
@@ -39539,6 +39544,9 @@ function thelegendmodproject() {
                             this.user.nextLevelXp = gNextXp;
                         }
                         window.agarioLEVEL = gLevel;
+                        /* updateOfficialXpPanel reads these; without them the XP text kept the pre-game values. */
+                        window.agarioXP = gXp;
+                        window.agarioNextXP = gNextXp;
                         window.updateOfficialXpPanel(gLevel, exp);
                     }
 
@@ -40174,7 +40182,19 @@ function thelegendmodproject() {
                         var st = r.uncompressedData.userStatsResponseField;
                         if (st && st.userStats) {
                             console.log("[LM] Inspected User Stats for " + st.userId + ":", st.userStats);
-                            toastr.info('<b>[STATS]:</b> Level ' + (st.level || 1) + ' | Mass Consumed: ' + (st.userStats.massConsumed || 0).toLocaleString() + ' | Highest Mass: ' + (st.userStats.highestMass || 0));
+                            /* uint64 may decode as a Long object */
+                            var stMass = st.userStats.massConsumed;
+                            stMass = (stMass && typeof stMass === 'object' && stMass.toNumber) ? stMass.toNumber() : (Number(stMass) || 0);
+                            if (typeof window.showUserStatsModal === 'function') {
+                                window.showUserStatsModal({
+                                    level: Number(st.level) || 1,
+                                    highestMass: Number(st.userStats.highestMass) || 0,
+                                    mostCellsEaten: Number(st.userStats.mostCellsEaten) || 0,
+                                    gamesPlayed: Number(st.userStats.gamesPlayed) || 0
+                                });
+                            } else {
+                                toastr.info('<b>[STATS]:</b> Level ' + (st.level || 1) + ' | Mass Consumed: ' + stMass.toLocaleString() + ' | Highest Mass: ' + (st.userStats.highestMass || 0));
+                            }
                         }
                     } catch (stErr) { console.warn("[LM] Error parsing user stats response:", stErr); }
                     break;
@@ -40253,12 +40273,31 @@ function thelegendmodproject() {
                             if (ba.productUpdates && ba.productUpdates.length) {
                                 this.updateProducts(ba.productUpdates);
                             }
-                            if (ba.userBoostItem) {
-                                this.displayActiveBoosts([ba.userBoostItem]);
-                                var expMins = Math.floor((ba.userBoostItem.expiresInSeconds || 0) / 60);
-                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680; Expires in ' + expMins + ' min');
+                            var newBoost = ba.userBoostItem;
+                            var newBoostSecs = newBoost ? (Number(newBoost.expiresInSeconds) || 0) : 0;
+                            if (!newBoost || !newBoost.productId || newBoostSecs <= 0) {
+                                /* Official handleUserBoostUpdate: no product or no time left = useProductFailed. */
+                                toastr.error('<b>[SERVER]:</b> Boost could not be activated.');
                             } else {
-                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680;');
+                                /* Official client keeps the other active boosts and only replaces the one
+                                 * of the same category; this used to clear every other active boost. */
+                                var newBoostId = String(newBoost.productId);
+                                var newBoostInfo = typeof window.getAgarBoostInfo === 'function' ? window.getAgarBoostInfo(newBoostId) : null;
+                                var newBoostType = newBoostInfo && newBoostInfo.type ? String(newBoostInfo.type).toLowerCase() : '';
+                                var prevBoosts = window._lmActiveBoosts || {};
+                                var mergedBoosts = [];
+                                var boostNow = Date.now();
+                                for (var prevBoostId in prevBoosts) {
+                                    var prevBoost = prevBoosts[prevBoostId];
+                                    if (!prevBoost || prevBoostId === newBoostId) continue;
+                                    if (newBoostType && prevBoost.type === newBoostType) continue;
+                                    var prevBoostLeft = Math.ceil(((Number(prevBoost.expiresAt) || 0) - boostNow) / 1000);
+                                    if (prevBoostLeft > 0) mergedBoosts.push({ productId: prevBoostId, expiresInSeconds: prevBoostLeft });
+                                }
+                                mergedBoosts.push(newBoost);
+                                this.displayActiveBoosts(mergedBoosts);
+                                var expMins = Math.floor(newBoostSecs / 60);
+                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680; Expires in ' + expMins + ' min');
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
@@ -40927,6 +40966,8 @@ function thelegendmodproject() {
                             if (u.questsCompleted > (prev.questsCompleted || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Quest completed');
                             if (u.skinsCreated > (prev.skinsCreated || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
                             this.user.actionCounters = u;
+                            if (this.user.info) this.user.info.actionCounters = u;
+                            this.renderUserInfoPanel(this.user.info || { actionCounters: u });
                         }
                     } catch (acErr) { console.warn("[LM] Error parsing action counters:", acErr); }
                     break;
@@ -43411,6 +43452,29 @@ function thelegendmodproject() {
 
 
             /*
+             * The remaining time is written once per server message; repaint it
+             * from expiresAt every 30 s and drop boosts that have run out.
+             */
+            if (window._lmBoostTicker) {
+                clearInterval(window._lmBoostTicker);
+                window._lmBoostTicker = null;
+            }
+            if (Object.keys(window._lmActiveBoosts).length) {
+                var boostTickerApp = this;
+                window._lmBoostTicker = setInterval(function () {
+                    var tickList = [];
+                    var tickNow = Date.now();
+                    var tickActive = window._lmActiveBoosts || {};
+                    for (var tickId in tickActive) {
+                        var tickLeft = Math.ceil(((Number(tickActive[tickId] && tickActive[tickId].expiresAt) || 0) - tickNow) / 1000);
+                        if (tickLeft > 0) tickList.push({ productId: tickId, expiresInSeconds: tickLeft });
+                    }
+                    boostTickerApp.displayActiveBoosts(tickList);
+                }, 30000);
+            }
+
+
+            /*
              * Wallet/active state may have changed.
              *
              * initBoostDropdown() itself avoids unnecessary DOM rebuilding.
@@ -44013,6 +44077,11 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
+            this.renderUserInfoPanel(i);
+        },
+        /* #user-info text; also repainted when opcode 170 pushes new action counters. */
+        renderUserInfoPanel(i) {
+            if (!i) i = {};
             /* Null-safe access to actionCounters (protobuf may not decode nested submessage) */
             var ac = i.actionCounters || {};
             var potions = Number(ac.potionsObtained) || 0;

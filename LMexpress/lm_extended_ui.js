@@ -10704,7 +10704,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         </div>
                         <div class="lm-stat-card">
                             <span style="font-size: 24px;">⚔️</span>
-                            <div class="lm-stat-value" style="color: ${t.b3};">${(stats.cellsEaten || 0).toLocaleString()}</div>
+                            <div class="lm-stat-value" style="color: ${t.b3};">${(stats.mostCellsEaten || stats.cellsEaten || 0).toLocaleString()}</div>
                             <div class="lm-stat-label">Cells Eaten</div>
                         </div>
                         <div class="lm-stat-card">
