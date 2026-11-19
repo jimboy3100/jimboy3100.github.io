@@ -1167,6 +1167,23 @@ function legendmaster(self) {
                 label,
                 function(moduleParams) {
                     if (joinGeneration !== scopeHeaderOverrides.connectionGeneration) return;
+                    /* The official client joins only on status "ok" (agario.js joinParty);
+                     * e.g. "party_full" must not connect to the endpoint. */
+                    var joinStatus = moduleParams && moduleParams.status;
+                    if (joinStatus != null && joinStatus !== "ok") {
+                        console.warn("[Master] Party join refused:", joinStatus);
+                        if (window.toastr) {
+                            toastr.warning(
+                                "<b>[Master]:</b> " +
+                                (joinStatus === "party_full"
+                                    ? "This party is full."
+                                    : "Could not join the party (" + String(joinStatus).replace(/[^\w-]/g, "") + ").")
+                            );
+                        }
+                        scopeHeaderOverrides.setPartyState("6");
+                        scopeHeaderOverrides._lmPartyJoinFailed(previousMode);
+                        return;
+                    }
                     var endpoint =
                         moduleParams &&
                         moduleParams.endpoints &&
