@@ -34321,6 +34321,7 @@ function thelegendmodproject() {
             this.garixProtocol = 6;
             this.garixHandshakeDone = false;
             this.garixPingCounter = 0;
+            this._garixCaptchaWarned = false;
             // Clear any existing ping interval on reconnect
             if (this.pingInterval) {
                 clearInterval(this.pingInterval);
@@ -38800,7 +38801,20 @@ function thelegendmodproject() {
 
                 default:
                     // Garix: unknown opcodes silently ignored
-                    if (this.serverType === 'garix') break;
+                    if (this.serverType === 'garix') {
+                        /* 230 = captcha request [providerLen u8][provider][siteKey]. Delta
+                         * answers it with opcode 232; LM has no captcha widget for
+                         * third-party site keys, so at least tell the user why spawns fail. */
+                        if (data.getUint8(0) === 230 && !this._garixCaptchaWarned) {
+                            this._garixCaptchaWarned = true;
+                            var gcLen = data.byteLength > 1 ? data.getUint8(1) : 0;
+                            var gcProvider = '';
+                            for (var gci = 0; gci < gcLen && 2 + gci < data.byteLength; gci++) gcProvider += String.fromCharCode(data.getUint8(2 + gci));
+                            console.warn('%c[Garix]%c Captcha requested (provider=' + gcProvider + '), not supported', 'color:#f8a', 'color:inherit');
+                            if (window.toastr) toastr.warning('Garix requires a captcha (' + gcProvider + ') that Legend Mod cannot solve. Spawning may be refused; use the official Garix client.');
+                        }
+                        break;
+                    }
                     /* ── Expanding Land opcodes handled in default: so they never
                      * interfere with the switch on non-LW servers ── */
                     var _lwOp = data.getUint8(0);
