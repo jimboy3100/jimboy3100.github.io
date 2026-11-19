@@ -69951,16 +69951,27 @@ function pickPlayerCellBySize(players, selectBiggest) {
             } else {
                 /* Reuse persistent batch object — arrays are cleared with .length=0 after each draw */
                 var batches = this._rainbowBatches || (this._rainbowBatches = {});
+                /* Iterate only the colours used this frame (the map keeps every colour ever
+                 * seen), and drop the map when it grows large. */
+                var batchKeys = this._rainbowUsed || (this._rainbowUsed = []);
+                batchKeys.length = 0;
+                if (this._rainbowBatchCount > 512) {
+                    batches = this._rainbowBatches = {};
+                    this._rainbowBatchCount = 0;
+                }
                 for (var length = 0; length < food.length; length++) {
                     var f = food[length];
                     if (!f || f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;
 
                     var color = f.color || defaultFoodColor;
-                    if (!batches[color]) batches[color] = [];
+                    if (!batches[color]) {
+                        batches[color] = [];
+                        this._rainbowBatchCount = (this._rainbowBatchCount || 0) + 1;
+                    }
+                    if (batches[color].length === 0) batchKeys.push(color);
                     batches[color].push(f);
                 }
-                var batchKeys = Object.keys(batches);
                 for (var ki = 0; ki < batchKeys.length; ki++) {
                     var col = batchKeys[ki];
                     var batch = batches[col];
