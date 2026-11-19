@@ -51,6 +51,26 @@ var Userscripttexture2;
 var Userscripttexture3;
 var Userscripttexture4;
 var Userscripttexture5;
+/* code each slot last ran (Load or URL), so an unchanged textarea is not taken as an edit */
+var _lmUsRan = {};
+/* A slot runs at start only after the user ran it (Load button, or a URL entered
+ * in the field): code pasted just to read it, or written by a settings import,
+ * ran on every later start. Installs from before this flag keep running. */
+function _lmUserscriptEnabled(n){
+	try {
+		if (localStorage.getItem("UserscriptEnabledInit")!=="1"){
+			for (var i=1;i<=5;i++){
+				var u=localStorage.getItem("Userscript"+i), c=localStorage.getItem("Userscripttexture"+i);
+				if (localStorage.getItem("UserscriptEnabled"+i)===null && ((u && u!=="null") || (c && c!=="null"))) localStorage.setItem("UserscriptEnabled"+i, "1");
+			}
+			localStorage.setItem("UserscriptEnabledInit", "1");
+		}
+		return localStorage.getItem("UserscriptEnabled"+n)==="1";
+	} catch (e) { return false; }
+}
+function _lmUserscriptSetEnabled(n, on){
+	try { localStorage.setItem("UserscriptEnabled"+n, on ? "1" : "0"); } catch (e) { }
+}
 /* Initialize User Scripts UI after its actual parent exists.
  * #Userscripttexture1 is created by _setupUserscripts(), so waiting for it
  * creates a circular dependency and prevents initialization forever. */
@@ -185,7 +205,8 @@ $("#userscripts").hide();
 
 
 
-$('#UserscriptA').blur(function(){
+$('#UserscriptA').blur(function(e){
+if (!e.isTrigger && $("#UserscriptA").val()!="" && $("#UserscriptA").val()!==Userscript1){_lmUserscriptSetEnabled(1, true);}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptA").val()=="" && Userscript1){Userscript1="";localStorage.setItem("Userscript1", "");}
@@ -194,28 +215,32 @@ Userscript1=$("#UserscriptA").val();localStorage.setItem("Userscript1", Userscri
 /* fetch as plain text and set .val(): .load() HTML-parsed the JS (decoded entities, ran <script> parts)
  * and did not change the value of a textarea the user had already edited */
 $.get(Userscript1, null, function(code) { $("#Userscripttexture1").val(code); $("#userscriptBtn1").click(); }, "text"); }return false;});
-$('#UserscriptB').blur(function(){
+$('#UserscriptB').blur(function(e){
+if (!e.isTrigger && $("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){_lmUserscriptSetEnabled(2, true);}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptB").val()=="" && Userscript2){Userscript2="";localStorage.setItem("Userscript2", "");}
 else if ($("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){
 Userscript2=$("#UserscriptB").val();localStorage.setItem("Userscript2", Userscript2);
 $.get(Userscript2, null, function(code) { $("#Userscripttexture2").val(code); $("#userscriptBtn2").click(); }, "text"); }return false;});
-$('#UserscriptC').blur(function(){
+$('#UserscriptC').blur(function(e){
+if (!e.isTrigger && $("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){_lmUserscriptSetEnabled(3, true);}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptC").val()=="" && Userscript3){Userscript3="";localStorage.setItem("Userscript3", "");}
 else if ($("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){
 Userscript3=$("#UserscriptC").val();localStorage.setItem("Userscript3", Userscript3);
 $.get(Userscript3, null, function(code) { $("#Userscripttexture3").val(code); $("#userscriptBtn3").click(); }, "text"); }return false;});
-$('#UserscriptD').blur(function(){
+$('#UserscriptD').blur(function(e){
+if (!e.isTrigger && $("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){_lmUserscriptSetEnabled(4, true);}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptD").val()=="" && Userscript4){Userscript4="";localStorage.setItem("Userscript4", "");}
 else if ($("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){
 Userscript4=$("#UserscriptD").val();localStorage.setItem("Userscript4", Userscript4);
 $.get(Userscript4, null, function(code) { $("#Userscripttexture4").val(code); $("#userscriptBtn4").click(); }, "text"); }return false;});
-$('#UserscriptE').blur(function(){
+$('#UserscriptE').blur(function(e){
+if (!e.isTrigger && $("#UserscriptE").val()!="" && $("#UserscriptE").val()!==Userscript5){_lmUserscriptSetEnabled(5, true);}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptE").val()=="" && Userscript5){Userscript5="";localStorage.setItem("Userscript5", "");}
@@ -224,29 +249,39 @@ Userscript5=$("#UserscriptE").val();localStorage.setItem("Userscript5", Userscri
 $.get(Userscript5, null, function(code) { $("#Userscripttexture5").val(code); $("#userscriptBtn5").click(); }, "text"); }return false;});
 
 $("#Userscripttexture1").blur(function(){
-if ($("#Userscripttexture1").val()!=""){Userscripttexture1=$("#Userscripttexture1").val();localStorage.setItem("Userscripttexture1", Userscripttexture1);}});	
+if ($("#Userscripttexture1").val()!=""){if ($("#Userscripttexture1").val()!==localStorage.getItem("Userscripttexture1") && $("#Userscripttexture1").val()!==_lmUsRan[1]){_lmUserscriptSetEnabled(1, false);} Userscripttexture1=$("#Userscripttexture1").val();localStorage.setItem("Userscripttexture1", Userscripttexture1);}});	
 $("#Userscripttexture2").blur(function(){
-if ($("#Userscripttexture2").val()!=""){Userscripttexture2=$("#Userscripttexture2").val();localStorage.setItem("Userscripttexture2", Userscripttexture2);}});	
+if ($("#Userscripttexture2").val()!=""){if ($("#Userscripttexture2").val()!==localStorage.getItem("Userscripttexture2") && $("#Userscripttexture2").val()!==_lmUsRan[2]){_lmUserscriptSetEnabled(2, false);} Userscripttexture2=$("#Userscripttexture2").val();localStorage.setItem("Userscripttexture2", Userscripttexture2);}});	
 $("#Userscripttexture3").blur(function(){
-if ($("#Userscripttexture3").val()!=""){Userscripttexture3=$("#Userscripttexture3").val();localStorage.setItem("Userscripttexture3", Userscripttexture3);}});	
+if ($("#Userscripttexture3").val()!=""){if ($("#Userscripttexture3").val()!==localStorage.getItem("Userscripttexture3") && $("#Userscripttexture3").val()!==_lmUsRan[3]){_lmUserscriptSetEnabled(3, false);} Userscripttexture3=$("#Userscripttexture3").val();localStorage.setItem("Userscripttexture3", Userscripttexture3);}});	
 $("#Userscripttexture4").blur(function(){
-if ($("#Userscripttexture4").val()!=""){Userscripttexture4=$("#Userscripttexture4").val();localStorage.setItem("Userscripttexture4", Userscripttexture4);}});	
+if ($("#Userscripttexture4").val()!=""){if ($("#Userscripttexture4").val()!==localStorage.getItem("Userscripttexture4") && $("#Userscripttexture4").val()!==_lmUsRan[4]){_lmUserscriptSetEnabled(4, false);} Userscripttexture4=$("#Userscripttexture4").val();localStorage.setItem("Userscripttexture4", Userscripttexture4);}});	
 $("#Userscripttexture5").blur(function(){
-if ($("#Userscripttexture5").val()!=""){Userscripttexture5=$("#Userscripttexture5").val();localStorage.setItem("Userscripttexture5", Userscripttexture5);}});	
+if ($("#Userscripttexture5").val()!=""){if ($("#Userscripttexture5").val()!==localStorage.getItem("Userscripttexture5") && $("#Userscripttexture5").val()!==_lmUsRan[5]){_lmUserscriptSetEnabled(5, false);} Userscripttexture5=$("#Userscripttexture5").val();localStorage.setItem("Userscripttexture5", Userscripttexture5);}});	
 	
 
 
 
 
-$("#userscriptBtn1").click(function() {
+$("#userscriptBtn1").click(function(e) {
+	_lmUsRan[1] = $("#Userscripttexture1").val();
+	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture1", $("#Userscripttexture1").val()); _lmUserscriptSetEnabled(1, true); }
 	var sUser1 = document.createElement("script");sUser1.type = "text/javascript"; sUser1.text=$("#Userscripttexture1").val(); $("head").append(sUser1);});
-$("#userscriptBtn2").click(function() {
+$("#userscriptBtn2").click(function(e) {
+	_lmUsRan[2] = $("#Userscripttexture2").val();
+	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture2", $("#Userscripttexture2").val()); _lmUserscriptSetEnabled(2, true); }
 	var sUser2 = document.createElement("script");sUser2.type = "text/javascript"; sUser2.text=$("#Userscripttexture2").val(); $("head").append(sUser2);});
-$("#userscriptBtn3").click(function() {
+$("#userscriptBtn3").click(function(e) {
+	_lmUsRan[3] = $("#Userscripttexture3").val();
+	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture3", $("#Userscripttexture3").val()); _lmUserscriptSetEnabled(3, true); }
 	var sUser3 = document.createElement("script");sUser3.type = "text/javascript"; sUser3.text=$("#Userscripttexture3").val(); $("head").append(sUser3);});
-$("#userscriptBtn4").click(function() {
+$("#userscriptBtn4").click(function(e) {
+	_lmUsRan[4] = $("#Userscripttexture4").val();
+	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture4", $("#Userscripttexture4").val()); _lmUserscriptSetEnabled(4, true); }
 	var sUser4 = document.createElement("script");sUser4.type = "text/javascript"; sUser4.text=$("#Userscripttexture4").val(); $("head").append(sUser4);});
-$("#userscriptBtn5").click(function() {
+$("#userscriptBtn5").click(function(e) {
+	_lmUsRan[5] = $("#Userscripttexture5").val();
+	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture5", $("#Userscripttexture5").val()); _lmUserscriptSetEnabled(5, true); }
 	var sUser5 = document.createElement("script");sUser5.type = "text/javascript"; sUser5.text=$("#Userscripttexture5").val(); $("head").append(sUser5);});
 
 
@@ -257,19 +292,24 @@ $("#userscriptBtn5").click(function() {
 	document.getElementById("UserscripttextE").value =localStorage.getItem("Userscripttext15");
 
 	$('#UserscriptA').val(localStorage.getItem("Userscript1"));
-	if($('#UserscriptA').val()!=""){$('#UserscriptA').blur();}
+	if (!_lmUserscriptEnabled(1)) {Userscript1=$('#UserscriptA').val();document.getElementById("Userscripttexture1").value =localStorage.getItem("Userscripttexture1");}
+	else if($('#UserscriptA').val()!=""){$('#UserscriptA').blur();}
 	else if($('#UserscriptA').val()==""){document.getElementById("Userscripttexture1").value =localStorage.getItem("Userscripttexture1");$("#userscriptBtn1").click();}
 	$('#UserscriptB').val(localStorage.getItem("Userscript2"));
-	if($('#UserscriptB').val()!=""){$('#UserscriptB').blur();}
+	if (!_lmUserscriptEnabled(2)) {Userscript2=$('#UserscriptB').val();document.getElementById("Userscripttexture2").value =localStorage.getItem("Userscripttexture2");}
+	else if($('#UserscriptB').val()!=""){$('#UserscriptB').blur();}
 	else if($('#UserscriptB').val()==""){document.getElementById("Userscripttexture2").value =localStorage.getItem("Userscripttexture2");$("#userscriptBtn2").click();}
 	$('#UserscriptC').val(localStorage.getItem("Userscript3"));
-	if($('#UserscriptC').val()!=""){$('#UserscriptC').blur();}
+	if (!_lmUserscriptEnabled(3)) {Userscript3=$('#UserscriptC').val();document.getElementById("Userscripttexture3").value =localStorage.getItem("Userscripttexture3");}
+	else if($('#UserscriptC').val()!=""){$('#UserscriptC').blur();}
 	else if($('#UserscriptC').val()==""){document.getElementById("Userscripttexture3").value =localStorage.getItem("Userscripttexture3");$("#userscriptBtn3").click();}
 	$('#UserscriptD').val(localStorage.getItem("Userscript4"));
-	if($('#UserscriptD').val()!=""){$('#UserscriptD').blur();}
+	if (!_lmUserscriptEnabled(4)) {Userscript4=$('#UserscriptD').val();document.getElementById("Userscripttexture4").value =localStorage.getItem("Userscripttexture4");}
+	else if($('#UserscriptD').val()!=""){$('#UserscriptD').blur();}
 	else if($('#UserscriptD').val()==""){document.getElementById("Userscripttexture4").value =localStorage.getItem("Userscripttexture4");$("#userscriptBtn4").click();}
 	$('#UserscriptE').val(localStorage.getItem("Userscript5"));
-	if($('#UserscriptE').val()!=""){$('#UserscriptE').blur();}
+	if (!_lmUserscriptEnabled(5)) {Userscript5=$('#UserscriptE').val();document.getElementById("Userscripttexture5").value =localStorage.getItem("Userscripttexture5");}
+	else if($('#UserscriptE').val()!=""){$('#UserscriptE').blur();}
 	else if($('#UserscriptE').val()==""){document.getElementById("Userscripttexture5").value =localStorage.getItem("Userscripttexture5");$("#userscriptBtn5").click();}
 
 	datatooltipfix();
@@ -350,15 +390,15 @@ function userscriptpages(){
 function erasescripter(){
 	/* also reset UserscriptN, so the same URL can be added again without a reload */
 	if ($("#Userscriptpages3").val()==1){
-		$("#Userscripttexture1").val(""); localStorage.setItem("Userscripttexture1", ""); $('#Userscriptpages3>option:nth-child(1)').text("User Script 1"); $("#UserscripttextA").val(""); localStorage.setItem("Userscripttext11", ""); $("#UserscriptA").val(""); localStorage.setItem("Userscript1", ""); Userscript1 = "";}
+		$("#Userscripttexture1").val(""); localStorage.setItem("Userscripttexture1", ""); $('#Userscriptpages3>option:nth-child(1)').text("User Script 1"); $("#UserscripttextA").val(""); localStorage.setItem("Userscripttext11", ""); $("#UserscriptA").val(""); localStorage.setItem("Userscript1", ""); Userscript1 = ""; _lmUserscriptSetEnabled(1, false);}
 	if ($("#Userscriptpages3").val()==2){
-		$("#Userscripttexture2").val(""); localStorage.setItem("Userscripttexture2", ""); $('#Userscriptpages3>option:nth-child(2)').text("User Script 2"); $("#UserscripttextB").val(""); localStorage.setItem("Userscripttext12", ""); $("#UserscriptB").val(""); localStorage.setItem("Userscript2", ""); Userscript2 = "";}
+		$("#Userscripttexture2").val(""); localStorage.setItem("Userscripttexture2", ""); $('#Userscriptpages3>option:nth-child(2)').text("User Script 2"); $("#UserscripttextB").val(""); localStorage.setItem("Userscripttext12", ""); $("#UserscriptB").val(""); localStorage.setItem("Userscript2", ""); Userscript2 = ""; _lmUserscriptSetEnabled(2, false);}
 	if ($("#Userscriptpages3").val()==3){
-		$("#Userscripttexture3").val(""); localStorage.setItem("Userscripttexture3", ""); $('#Userscriptpages3>option:nth-child(3)').text("User Script 3"); $("#UserscripttextC").val(""); localStorage.setItem("Userscripttext13", ""); $("#UserscriptC").val(""); localStorage.setItem("Userscript3", ""); Userscript3 = "";}
+		$("#Userscripttexture3").val(""); localStorage.setItem("Userscripttexture3", ""); $('#Userscriptpages3>option:nth-child(3)').text("User Script 3"); $("#UserscripttextC").val(""); localStorage.setItem("Userscripttext13", ""); $("#UserscriptC").val(""); localStorage.setItem("Userscript3", ""); Userscript3 = ""; _lmUserscriptSetEnabled(3, false);}
 	if ($("#Userscriptpages3").val()==4){
-		$("#Userscripttexture4").val(""); localStorage.setItem("Userscripttexture4", ""); $('#Userscriptpages3>option:nth-child(4)').text("User Script 4"); $("#UserscripttextD").val(""); localStorage.setItem("Userscripttext14", ""); $("#UserscriptD").val(""); localStorage.setItem("Userscript4", ""); Userscript4 = "";}
+		$("#Userscripttexture4").val(""); localStorage.setItem("Userscripttexture4", ""); $('#Userscriptpages3>option:nth-child(4)').text("User Script 4"); $("#UserscripttextD").val(""); localStorage.setItem("Userscripttext14", ""); $("#UserscriptD").val(""); localStorage.setItem("Userscript4", ""); Userscript4 = ""; _lmUserscriptSetEnabled(4, false);}
 	if ($("#Userscriptpages3").val()==5){
-		$("#Userscripttexture5").val(""); localStorage.setItem("Userscripttexture5", ""); $('#Userscriptpages3>option:nth-child(5)').text("User Script 5"); $("#UserscripttextE").val(""); localStorage.setItem("Userscripttext15", ""); $("#UserscriptE").val(""); localStorage.setItem("Userscript5", ""); Userscript5 = "";}
+		$("#Userscripttexture5").val(""); localStorage.setItem("Userscripttexture5", ""); $('#Userscriptpages3>option:nth-child(5)').text("User Script 5"); $("#UserscripttextE").val(""); localStorage.setItem("Userscripttext15", ""); $("#UserscriptE").val(""); localStorage.setItem("Userscript5", ""); Userscript5 = ""; _lmUserscriptSetEnabled(5, false);}
 }
 
 

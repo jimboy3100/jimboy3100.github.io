@@ -15709,6 +15709,7 @@ var displayText = {
         extrasGroup: 'Dodatkowe',
         macroGroup: 'Macros',
         noSkins: 'Wylacz skiny',
+        highDPI: 'Wysoka rozdzielczosc (HiDPI)',
         cellContours: 'Only cells contours',
         noNames: 'Wylacz nazwy',
         noColors: 'Wylacz kolory',
@@ -16203,6 +16204,7 @@ var displayText = {
         extrasGroup: 'Extras',
         macroGroup: 'Macros',
         noSkins: 'No skins',
+        highDPI: 'High DPI rendering (sharper, slower)',
         cellContours: 'Only cells contours',
         noNames: 'No names',
         noColors: 'No colors',
@@ -18619,6 +18621,7 @@ var defaultmapsettings = {
     animatedRainbowColor: false,
     autoZoom: false,
     unlockedFPS: false,
+    highDPI: false,
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -18651,6 +18654,7 @@ var defaultmapsettings = {
     ownVanillaSkin: false,
     universalChat: true,
     customSkins: true,
+    noSkins: false,
     videoSkins: true,
     videoDestorted: false,
     videoSkinsMusic2: true,
@@ -19875,18 +19879,26 @@ function thelegendmodproject() {
         macroFeedPerm(on) {
             if (on) {
                 if (this.feedIntervalPerm) {
-                    clearInterval(this.feedIntervalPerm);
+                    clearTimeout(this.feedIntervalPerm);
                     this.feedIntervalPerm = null
                     return;
                 }
                 var app = this;
                 this.feed();
                 /* at most one feed per 10 ms: the 1 ms setting reached ~250 feeds/s,
-                 * about 500 packets/s with the cursor packet each feed sends */
-                var permDelay = Math.max(10, Number(defaultmapsettings.macroFeeding) || 10);
-                this.feedIntervalPerm = setInterval(function () {
+                 * about 500 packets/s with the cursor packet each feed sends.
+                 * The delay is read again for every feed, so a change of the
+                 * "Macro feed" slider applies while permanent feed runs (the
+                 * interval kept the delay it was started with). */
+                var permDelay = function () {
+                    return Math.max(10, Number(defaultmapsettings.macroFeeding) || 10);
+                };
+                var permTick = function () {
+                    if (!app.feedIntervalPerm) return;
                     app.feed();
-                }, permDelay);
+                    app.feedIntervalPerm = setTimeout(permTick, permDelay());
+                };
+                this.feedIntervalPerm = setTimeout(permTick, permDelay());
             }
         },
         macrobotFeed(on) {
@@ -19980,6 +19992,11 @@ function thelegendmodproject() {
                 this.macroFeedFrame =
                     window.requestAnimationFrame(loop);
             } else {
+                /* E and a mouse button bound to macro feed share this loop: releasing
+                 * one stopped the feed while the other was still held */
+                if (typeof window._lmMacroFeedHeld === 'function' && window._lmMacroFeedHeld()) {
+                    return;
+                }
                 this.macroFeedActive = false;
 
                 if (this.macroFeedFrame != null) {
@@ -20249,6 +20266,9 @@ function thelegendmodproject() {
                 window.core.setSkins(!this.noSkins)
             }
             LM.showCustomSkins = !this.noSkins;
+            /* keep the "No skins" setting and its checkbox in step with the hotkey */
+            defaultmapsettings.noSkins = !!this.noSkins;
+            this.syncHotkeyOption('noSkins');
             this.displayChatInfo(!this.noSkins, 'showSkinsMsg');
         },
         setTransparentSkins() {
@@ -21396,6 +21416,20 @@ function thelegendmodproject() {
                     case 'autoResp':
                         this.setAutoResp();
                         break;
+                    case 'noSkins':
+                        /* "No skins" was listed but had no setting, so the menu dropped it */
+                        this.noSkins = !!checked;
+                        LM.showCustomSkins = !checked;
+                        LM.showCustomSkin = !checked;
+                        if (window.core && window.core.setSkins) {
+                            window.core.setSkins(!checked);
+                        }
+                        break;
+                    case 'highDPI':
+                        if (typeof drawRender !== 'undefined' && drawRender && drawRender.resizeCanvas) {
+                            drawRender.resizeCanvas();
+                        }
+                        break;
                     case 'showMiniMap':
                         this.setMiniMap();
                         break;
@@ -22155,7 +22189,7 @@ function thelegendmodproject() {
             $("#noNames, #showMass").remove();
             $("#og-settings .submenu-panel").append('<div id="og-options"></div>');
             //this.addOptions(["unlockedFPS"], "animationGroup");
-            this.addOptions([], "animationGroup");
+            this.addOptions(["highDPI"], "animationGroup");
 
             this.addOptions(["autoZoom"], "zoomGroup");
             this.addOptions([], "boardGroup");
@@ -22533,6 +22567,13 @@ function thelegendmodproject() {
             $(document).on("click", "#server-join", function () {
                 app.gameServerJoin($("#server-token").val());
             });
+            /* Profile edits were written to the profile only by setPlayerSettings (Play),
+             * which returns while alive: a reload or a profile switch lost them. Store
+             * the fields in the selected profile as they change, without the Play side
+             * effects (tag packet, live nick/skin). */
+            $(document).on("input change", "#nick, #clantag, #skin, #color", function () {
+                app.saveProfileFields();
+            });
             $(document).on("change", "#og-options input[type='checkbox']", function () {
                 var template = $(this);
                 app.setSettings(template.attr("id"), template.prop("checked"));
@@ -22786,6 +22827,7 @@ function thelegendmodproject() {
             //this.noColors = $("#noColors").prop("checked");
             this.skipStats = $("#skipStats").prop("checked");
             this.showQuest = $("#showQuest").prop("checked");
+            this.noSkins = !!defaultmapsettings.noSkins;
             LM.showCustomSkins = !defaultmapsettings.noSkins;
             LM.showCustomSkin = !defaultmapsettings.noSkins;
             if (null !== window.localStorage.getItem("scale_setting")) {
@@ -23457,6 +23499,13 @@ function thelegendmodproject() {
             ogario.playerMass = 0;
             ogario.playerScore = 0;
             ogario.playerSplitCells = 0;
+            /* Pause (R) ends with the life: after a respawn the new cell was still
+             * held at the old target, with the pause HUD shown. */
+            if (this.pause) {
+                this.pause = false;
+                ogario.pause = false;
+                $('#pause-hud').hide();
+            }
             //this.showMenu(300);
             this.sendPlayerDeath();
             this.updateDeathLocations(ogario.playerX, ogario.playerY);
@@ -23528,6 +23577,19 @@ function thelegendmodproject() {
                     }, 4000);
                 }
             }
+        },
+        saveProfileFields() {
+            var profile = profiles[this.selectedProfile];
+            if (!profile) return;
+            var nick = $('#nick').val();
+            var tag = $('#clantag').val();
+            var skin = $('#skin').val();
+            var color = $('#color').val();
+            if (typeof nick === 'string') profile.nick = nick;
+            if (typeof tag === 'string') profile.clanTag = tag.trim();
+            if (typeof skin === 'string') profile.skinURL = this.checkSkinURL(skin.trim());
+            if (typeof color === 'string' && 7 === color.length) profile.color = color;
+            this.saveSettings(profiles, 'ogarioPlayerProfiles');
         },
         setPlayerSettings() {
             /* Prevent name/skin changes while alive — server ignores the join
@@ -36868,7 +36930,7 @@ function thelegendmodproject() {
                     //} 
                     if (!window.autoPlay) {
                         if (window.lockPosition) {
-                            console.log('LockPosition enabled')
+                            /* no log here: it ran every frame for 40 ms per crazy double split */
                             return false;
                         }
                         cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
@@ -36883,9 +36945,15 @@ function thelegendmodproject() {
                     else if (!specialcommand) {
                         //if (typeof cell != "undefined") { //when used, autoplay not working as expected
                         //if (target2 && Object.keys(target2).length == 0) {
-                        if (cell) {
-                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
-                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
+                        /* calcTarget's escape / chase / feed point (target2, world coords) wins
+                         * per axis over the nearest food: split and eject went toward the food */
+                        var _apT2X = target2 && Number.isFinite(target2.x);
+                        var _apT2Y = target2 && Number.isFinite(target2.y);
+                        if (cell || _apT2X || _apT2Y) {
+                            var _apX = _apT2X ? target2.x : (cell ? cell.x : this.playerX);
+                            var _apY = _apT2Y ? target2.y : (cell ? cell.y : this.playerY);
+                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(_apX) : _apX; //Sonia3
+                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(_apY) : _apY; //Sonia3
                             // var cursorX = cell.x;
                             //var cursorY = cell.y;
                             //} else if (target2){
@@ -47737,6 +47805,7 @@ Most cells eaten   : ${mostCellsEaten}
                 this.cursorY =
                     normalCursorY;
 
+                this.updateScanTrickStatus();
                 return;
             }
 
@@ -47859,6 +47928,30 @@ Most cells eaten   : ${mostCellsEaten}
 
             this.cursorY =
                 cursorY;
+            this.updateScanTrickStatus();
+        },
+        /*
+         * "Show Scan Trick status": a small HUD line while the Scan Trick key
+         * is held (the setting had no display). Updated only on change.
+         */
+        updateScanTrickStatus() {
+            var text = '';
+            if (defaultmapsettings.scanTrickStatus && defaultmapsettings.scanTrick && this.scanTrickActive) {
+                text = 'Scan Trick' + (this.scanTrickSnapped ? ' (' + this.getScanTrickDirectionCount() + ' directions)' : '');
+            }
+            if (text === this._scanTrickStatusText) return;
+            this._scanTrickStatusText = text;
+            var el = document.getElementById('scan-trick-status');
+            if (!el) {
+                if (!text) return;
+                el = document.createElement('div');
+                el.id = 'scan-trick-status';
+                el.className = 'hud';
+                el.style.cssText = 'position:fixed;left:50%;top:120px;transform:translateX(-50%);padding:2px 10px;font-size:13px;pointer-events:none;z-index:100;';
+                document.body.appendChild(el);
+            }
+            el.textContent = text;
+            el.style.display = text ? 'block' : 'none';
         },
 
         setZoom(t) {
@@ -67544,8 +67637,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             var _activeSpect = window.multiboxPlayerEnabled && spects ? getActiveSpect(window.multiboxPlayerEnabled) : null;
             var activeHasCells = LM.playerCells.length || (_activeSpect && _activeSpect.playerCellIDs && _activeSpect.playerCellIDs.length);
+            /* "Smooth multibox camera lerp" off: the camera jumps to the newly focused
+             * multibox unit instead of gliding there (the setting had no reader) */
+            var _lmCamUnit = window.multiboxPlayerEnabled || 0;
+            var _lmCamSwitched = this._lmCamUnit !== undefined && this._lmCamUnit !== _lmCamUnit;
+            this._lmCamUnit = _lmCamUnit;
             if (activeHasCells) {
-                if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
+                if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500 || (_lmCamSwitched && !defaultmapsettings.cameraSmoothLerp)) {
                     this.camX = targetCamX;
                     this.camY = targetCamY;
                 } else {
@@ -73145,6 +73243,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 hotkeys = storedHotkeys;
                 this.migrateBrowserSpecificHotkeys();
                 this.addMissingDefaultHotkeys();
+                this.syncMessageKey();
             } else {
                 this.loadDefaultHotkeys();
             }
@@ -73177,19 +73276,34 @@ function pickPlayerCellBySize(players, selectBiggest) {
          */
         migrateBrowserSpecificHotkeys() {
             var map = { '\u00BD': '-', '\u00AD': '-', '\u00BA': ';' };
+            /* raw String.fromCharCode names of numpad, F keys and punctuation; renamed
+             * only as a whole key name (optionally CTRL+/ALT+), letters are upper case */
+            var named = {
+                '`': 'NUM0', 'a': 'NUM1', 'b': 'NUM2', 'c': 'NUM3', 'd': 'NUM4', 'e': 'NUM5',
+                'f': 'NUM6', 'g': 'NUM7', 'h': 'NUM8', 'i': 'NUM9', 'j': 'NUM*', 'n': 'NUM.', 'o': 'NUM/',
+                'p': 'F1', 'q': 'F2', 'r': 'F3', 's': 'F4', 't': 'F5', 'u': 'F6', 'v': 'F7', 'w': 'F8',
+                'x': 'F9', 'y': 'F10', 'z': 'F11', '{': 'F12',
+                '\u00BC': ',', '\u00BE': '.', '\u00BF': '/', '\u00DB': '[', '\u00DC': '\\', '\u00DD': ']', '\u00DE': "'"
+            };
+            var rename = function (name) {
+                var last = name.charAt(name.length - 1);
+                var prefix = name.slice(0, -1);
+                if (map.hasOwnProperty(last)) return prefix + map[last];
+                if (named.hasOwnProperty(last) && (prefix === '' || prefix === 'CTRL+' || prefix === 'ALT+')) return prefix + named[last];
+                return null;
+            };
             var keys = Object.keys(hotkeys);
             for (var i = 0; i < keys.length; i++) {
                 var oldKey = keys[i];
                 if (oldKey === 'spec-messageKey') continue;
-                var last = oldKey.charAt(oldKey.length - 1);
-                if (!map.hasOwnProperty(last)) continue;
-                var newKey = oldKey.slice(0, -1) + map[last];
+                var newKey = rename(oldKey);
+                if (newKey === null) continue;
                 if (!hotkeys.hasOwnProperty(newKey)) hotkeys[newKey] = hotkeys[oldKey];
                 delete hotkeys[oldKey];
             }
             var msgKey = hotkeys['spec-messageKey'];
-            if (typeof msgKey === 'string' && msgKey && map.hasOwnProperty(msgKey.charAt(msgKey.length - 1))) {
-                hotkeys['spec-messageKey'] = msgKey.slice(0, -1) + map[msgKey.charAt(msgKey.length - 1)];
+            if (typeof msgKey === 'string' && msgKey && rename(msgKey) !== null) {
+                hotkeys['spec-messageKey'] = rename(msgKey);
             }
         },
         /*
@@ -73279,13 +73393,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     event.preventDefault();
                     //hotkeysSetup.saveHotkeys();
                     setup.saveHotkeys();
+                    setup.openSnapshot = null;
                     $('#hotkeys').fadeOut(500);
                 }),
                 $(document).on('click', '#close-hotkeys', function (event) {
                     event.preventDefault();
+                    setup.revertHotkeys();
                     $('#hotkeys').fadeOut(500);
                 }),
                 $(document).on('click', '.hotkeys-link', function (event) {
+                    if (!$('#hotkeys').is(':visible') || !setup.openSnapshot) {
+                        setup.openSnapshot = JSON.stringify(hotkeys);
+                    }
                     $('#hotkeys').fadeIn(500);
                     $('#hotkeys-cfg').perfectScrollbar('update');
                     resetonkeydown();
@@ -73338,7 +73457,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     break;
                 case 61:
                 case 187:
-                    normalKey = '=';
+                    /* Shift+= types '+' (US layout): name it '+', the default quit game key,
+                     * which was reachable only with numpad + */
+                    normalKey = (key.shiftKey && key.key === '+') ? '+' : '=';
                     break;
                 /* '-' and ';' have different keyCodes in Firefox and Chrome */
                 case 173:
@@ -73360,8 +73481,47 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 case 109:
                     normalKey = '-';
                     break;
+                /* Keys below came through String.fromCharCode(keyCode) with odd names
+                 * (numpad 1 -> 'a', F1 -> 'p', ',' -> U+00BC); old names are renamed
+                 * by migrateBrowserSpecificHotkeys. */
+                case 106:
+                    normalKey = 'NUM*';
+                    break;
+                case 110:
+                    normalKey = 'NUM.';
+                    break;
+                case 111:
+                    normalKey = 'NUM/';
+                    break;
+                case 188:
+                    normalKey = ',';
+                    break;
+                case 190:
+                    normalKey = '.';
+                    break;
+                case 191:
+                    normalKey = '/';
+                    break;
+                case 219:
+                    normalKey = '[';
+                    break;
+                case 220:
+                    normalKey = '\\';
+                    break;
+                case 221:
+                    normalKey = ']';
+                    break;
+                case 222:
+                    normalKey = "'";
+                    break;
                 default:
-                    normalKey = String.fromCharCode(key.keyCode);
+                    if (key.keyCode >= 96 && key.keyCode <= 105) {
+                        normalKey = 'NUM' + (key.keyCode - 96);
+                    } else if (key.keyCode >= 112 && key.keyCode <= 123) {
+                        normalKey = 'F' + (key.keyCode - 111);
+                    } else {
+                        normalKey = String.fromCharCode(key.keyCode);
+                    }
             }
             if (specialKey !== '') {
                 if (normalKey !== '') {
@@ -73403,13 +73563,62 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                     hotkeys[key] = id,
                         $('#' + id).val(key);
-                    if ('hk-chatMessage' === id) {
-                        hotkeys['spec-messageKey'] = key
-                    }
                     this.lastPressedKey = key;
                     this.lastKeyId = id;
                 }
+                /* also when the chat key was taken by another command or deleted */
+                this.syncMessageKey();
             }
+        },
+        /*
+         * spec-messageKey is the key that may run its command while typing in
+         * #message (send the message). It followed hk-chatMessage only when that
+         * field was set directly, so after the chat key went to another command
+         * that key in #message ran the other command. Keep it equal to the key
+         * of hk-chatMessage ('' when unbound).
+         */
+        syncMessageKey() {
+            var msgKey = '';
+            for (var key in hotkeys) {
+                if (hotkeys.hasOwnProperty(key) && key !== 'spec-messageKey' && hotkeys[key] === 'hk-chatMessage') {
+                    msgKey = key;
+                    break;
+                }
+            }
+            hotkeys['spec-messageKey'] = msgKey;
+        },
+        /* refill the dialog fields from hotkeys / chatCommand */
+        refreshHotkeysMenu() {
+            $('#hotkeys-cfg .custom-key-in').each(function () {
+                var id = this.id;
+                var text = '';
+                for (var key in hotkeys) {
+                    if (hotkeys.hasOwnProperty(key) && key !== 'spec-messageKey' && hotkeys[key] === id) {
+                        text = key;
+                        break;
+                    }
+                }
+                $(this).val(text);
+            });
+            $('#hotkeys-cfg .command-in').each(function () {
+                var id = this.id;
+                if (chatCommand.hasOwnProperty(id)) {
+                    $(this).val(chatCommand[id] == null ? '' : String(chatCommand[id]));
+                }
+            });
+        },
+        /* "Close" without "Save": undo the changes made since the dialog was opened
+         * (they stayed active until a reload, then were lost) */
+        revertHotkeys() {
+            if (this.openSnapshot) {
+                try {
+                    hotkeys = JSON.parse(this.openSnapshot);
+                } catch (eSnap) { }
+            }
+            this.openSnapshot = null;
+            this.lastPressedKey = '';
+            this.lastKeyId = '';
+            this.refreshHotkeysMenu();
         },
         init() {
             this.loadHotkeys();
@@ -73575,6 +73784,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var i = hotkeys[pressedKey];
                 '' !== i && hotkeysCommand[i] && hotkeysCommand[i].keyDown && hotkeysCommand[i].keyDown();
             }
+        } else if (!_isTypingTarget && '' !== pressedKey && keyBlind[pressedKey] && hotkeys[pressedKey]) {
+            /* auto-repeat of a held hotkey: the first keydown cancelled the browser
+             * shortcut (CTRL+D bookmark, CTRL+L address bar, ...), the repeats did not */
+            event.preventDefault();
         }
     }
     document.onkeyup = function (event) {
@@ -73583,21 +73796,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
         delete _lmHeldByCode[event.keyCode];
         if (heldKey && heldKey !== pressedKey) {
             var heldCommand = hotkeys[heldKey];
+            /* released before keyUp runs: keyUp may check which keys are still held */
+            keyBlind[heldKey] = false;
             if (heldCommand && hotkeysCommand[heldCommand] && hotkeysCommand[heldCommand].keyUp) {
                 hotkeysCommand[heldCommand].keyUp();
             }
-            keyBlind[heldKey] = false;
         }
         if ('' !== pressedKey) {
             /* only keys whose keydown was taken (keyBlind set): typing in an input
              * must not run keyUp actions either */
-            if (keyBlind[pressedKey] && hotkeys[pressedKey]) {
+            var _lmKeyWasTaken = keyBlind[pressedKey];
+            keyBlind[pressedKey] = false;
+            if (_lmKeyWasTaken && hotkeys[pressedKey]) {
                 var key = hotkeys[pressedKey];
                 if ('' !== key && hotkeysCommand[key] && hotkeysCommand[key].keyUp) {
                     hotkeysCommand[key].keyUp();
                 }
             }
-            keyBlind[pressedKey] = false;
         }
     }
     /*
@@ -73608,10 +73823,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         for (var heldKey in keyBlind) {
             if (!keyBlind[heldKey]) continue;
             var heldCommand = hotkeys[heldKey];
+            keyBlind[heldKey] = false;
             if (heldCommand && hotkeysCommand[heldCommand] && hotkeysCommand[heldCommand].keyUp) {
                 try { hotkeysCommand[heldCommand].keyUp(); } catch (e) { }
             }
-            keyBlind[heldKey] = false;
         }
         /* Mouse buttons held while focus leaves never get mouseup either: replay it. */
         Object.keys(_lmMouseHeld).forEach(function (which) {
@@ -73620,6 +73835,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMouseHeld = {};
     });
     var _lmMouseHeld = {};
+    /* mouse button -> command whose keyDown it ran; cleared on mouseup */
+    var _lmMouseCmdHeld = {};
+    function _lmMouseCmdDown(which, command) {
+        if (!hotkeysCommand[command] || !hotkeysCommand[command].keyDown) return;
+        _lmMouseCmdHeld[which] = command;
+        hotkeysCommand[command].keyDown();
+    }
+    /* true while a key or mouse button bound to macro feed is still held */
+    window._lmMacroFeedHeld = function () {
+        for (var k in keyBlind) {
+            if (keyBlind[k] && hotkeys[k] === 'hk-macroFeed') return true;
+        }
+        for (var w in _lmMouseCmdHeld) {
+            if (_lmMouseCmdHeld[w] === 'hk-macroFeed') return true;
+        }
+        return false;
+    };
     window.addEventListener('auxclick', function (event) {
         if ((event.button === 3 && defaultmapsettings.mouseCommand4) || (event.button === 4 && defaultmapsettings.mouseCommand5)) {
             event.preventDefault();
@@ -73629,6 +73861,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMouseHeld[event.which] = true;
         /* clicking into the chat input or a HUD button/select must not split or feed */
         var _lmMT = event.target || {};
+        /* middle click in a hotkey field assigns MOUSE WHEEL (no key event produces it) */
+        if (event.which === 2 && _lmMT.className === hotkeysSetup.inputClassName && _lmMT.id) {
+            event.preventDefault && event.preventDefault();
+            hotkeysSetup.setHotkey('MOUSE WHEEL', _lmMT.id);
+            return;
+        }
         if (_lmMT.tagName === 'INPUT' || _lmMT.tagName === 'TEXTAREA' || _lmMT.tagName === 'SELECT' || _lmMT.tagName === 'BUTTON' || _lmMT.isContentEditable === true) return;
         if (!$("#overlays").is(":visible")) {
             //console.log(event.which)
@@ -73640,11 +73878,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         application.multiboxswap()
                     }
                     else {
-                        hotkeysCommand[defaultmapsettings.middleClick].keyDown()
+                        _lmMouseCmdDown(2, defaultmapsettings.middleClick)
                     }
                 }
-                else {
-                    //application.sendCommand(10);
+                else if (application && hotkeys['MOUSE WHEEL']) {
+                    /* "Mouse wheel click" off: a hotkey bound to MOUSE WHEEL runs (the
+                     * default of chat command 10, which getPressedKey can never produce) */
+                    _lmMouseCmdDown(2, hotkeys['MOUSE WHEEL']);
                 }
                 if (defaultmapsettings.stickyCell) {
                     LM.selected = null
@@ -73671,7 +73911,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             application.split();
                         }
                         else {
-                            hotkeysCommand[defaultmapsettings.leftClick].keyDown()
+                            _lmMouseCmdDown(1, defaultmapsettings.leftClick)
                         }
                     }
                 }
@@ -73683,20 +73923,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             application.split();
                         }
                         else {
-                            hotkeysCommand[defaultmapsettings.rightClick].keyDown()
+                            _lmMouseCmdDown(3, defaultmapsettings.rightClick)
                         }
                     }
                 }
                 if (defaultmapsettings.mouseCommand4 && (4 === event.which)) {
                     event.preventDefault();
                     if (application && hotkeysCommand[defaultmapsettings.mouse4Click]) {
-                        hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()
+                        _lmMouseCmdDown(4, defaultmapsettings.mouse4Click)
                     }
                 }
                 if (defaultmapsettings.mouseCommand5 && (5 === event.which)) {
                     event.preventDefault();
                     if (application && hotkeysCommand[defaultmapsettings.mouse5Click]) {
-                        hotkeysCommand[defaultmapsettings.mouse5Click].keyDown()
+                        _lmMouseCmdDown(5, defaultmapsettings.mouse5Click)
                     }
                 }
             }
@@ -73704,6 +73944,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
     }
     window.onmouseup = function (event) {
         delete _lmMouseHeld[event.which];
+        var _lmMouseCmdWas = _lmMouseCmdHeld[event.which];
+        delete _lmMouseCmdHeld[event.which];
         /* Chromium navigates back/forward on the mouseup of buttons 4/5; cancel it
          * when those buttons are bound to commands. */
         if (event.preventDefault && ((event.which === 4 && defaultmapsettings.mouseCommand4) || (event.which === 5 && defaultmapsettings.mouseCommand5))) {
@@ -73729,6 +73971,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
         else if (defaultmapsettings.mouseWheelClick && (2 === event.which) && defaultmapsettings.middleClick) {
             if (hotkeysCommand[defaultmapsettings.middleClick] && hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
+        }
+        else if (!defaultmapsettings.mouseWheelClick && (2 === event.which) && _lmMouseCmdWas) {
+            /* the MOUSE WHEEL hotkey started on mousedown */
+            if (hotkeysCommand[_lmMouseCmdWas] && hotkeysCommand[_lmMouseCmdWas].keyUp) hotkeysCommand[_lmMouseCmdWas].keyUp()
         }
         else if (defaultmapsettings.mouseFeed && (3 === event.which) && defaultmapsettings.rightClick) {
             if (hotkeysCommand[defaultmapsettings.rightClick] && hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()

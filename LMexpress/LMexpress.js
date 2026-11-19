@@ -1854,6 +1854,37 @@ function _lmImportSet(key, value) {
     localStorage.setItem(key, value);
 }
 
+/* Imported user scripts (Userscript1-5 URLs, Userscripttexture1-5 code) ran on
+ * every later start without being shown. Ask before importing new ones, unless
+ * the cloud download asked for the same values already; a confirmed slot runs
+ * at start like one the user loaded. */
+function _lmImportUserscripts(ls) {
+    var changed = [];
+    for (var n = 1; n <= 5; n++) {
+        ["Userscript" + n, "Userscripttexture" + n].forEach(function (k) {
+            var v = ls[k];
+            if (v === undefined || v === null) return;
+            if (String(v) === String(localStorage.getItem(k))) return;
+            changed.push(k);
+        });
+    }
+    if (!changed.length) return;
+    var confirmed = window._lmCloudConfirmedScripts || {};
+    var ask = changed.some(function (k) {
+        var v = String(ls[k]);
+        return v !== "" && v !== "null" && confirmed[k] !== v;
+    });
+    if (ask && !confirm("The imported settings contain user scripts (" + changed.join(", ") + ").\n\n" +
+        "User scripts run inside Legend Mod on every start and can read your login. Import them only if you trust where these settings came from.\n\n" +
+        "OK = import them, Cancel = keep your current ones")) return;
+    changed.forEach(function (k) {
+        localStorage.setItem(k, ls[k]);
+        var slot = k.charAt(k.length - 1);
+        var v = String(ls[k]);
+        if (v !== "" && v !== "null") localStorage.setItem("UserscriptEnabled" + slot, "1");
+    });
+}
+
 function saveLegendJSONAPI() {
     if (LegendJSON.legendSettings != undefined) {
 
@@ -1915,16 +1946,8 @@ function saveLegendJSONAPI() {
         _lmImportSet("yt6dataimg", LegendJSON.legendSettings.yt6dataimg);
         _lmImportSet("discwebhook1", LegendJSON.legendSettings.discwebhook1);
         _lmImportSet("discwebhook2", LegendJSON.legendSettings.discwebhook2);
-        _lmImportSet("Userscript1", LegendJSON.legendSettings.Userscript1);
-        _lmImportSet("Userscript2", LegendJSON.legendSettings.Userscript2);
-        _lmImportSet("Userscript3", LegendJSON.legendSettings.Userscript3);
-        _lmImportSet("Userscript4", LegendJSON.legendSettings.Userscript4);
-        _lmImportSet("Userscript5", LegendJSON.legendSettings.Userscript5);
-        _lmImportSet("Userscripttexture1", LegendJSON.legendSettings.Userscripttexture1);
-        _lmImportSet("Userscripttexture2", LegendJSON.legendSettings.Userscripttexture2);
-        _lmImportSet("Userscripttexture3", LegendJSON.legendSettings.Userscripttexture3);
-        _lmImportSet("Userscripttexture4", LegendJSON.legendSettings.Userscripttexture4);
-        _lmImportSet("Userscripttexture5", LegendJSON.legendSettings.Userscripttexture5);
+        /* user scripts are code that runs in this page: ask first */
+        _lmImportUserscripts(LegendJSON.legendSettings);
     }
 }
 
@@ -5503,7 +5526,12 @@ function _lmCloudSettingsFilter(text) {
     if (!changed.length) return text;
     if (confirm("The downloaded settings contain user scripts or Discord webhooks (" + changed.join(", ") + ").\n\n" +
         "User scripts will run on every start of Legend Mod. Import them only if you uploaded these settings yourself.\n\n" +
-        "OK = import them, Cancel = keep your current ones")) return text;
+        "OK = import them, Cancel = keep your current ones")) {
+        /* the import itself does not ask again for these values */
+        window._lmCloudConfirmedScripts = {};
+        changed.forEach(function (k) { window._lmCloudConfirmedScripts[k] = String(ls[k]); });
+        return text;
+    }
     for (var j = 0; j < keys.length; j++) delete ls[keys[j]];
     return JSON.stringify(json, null, 4);
 }
