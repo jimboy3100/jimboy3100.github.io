@@ -12,6 +12,8 @@
 // © 2019 neosoft
 
 
+/* Wrapped so it defines no globals: a global init() here replaced LMexpress's init(modVersion) when sniff3 loaded this file. */
+(function () {
 setTimeout(function() {
 legendmod.autoZoom=true;	
 if ($("#legendhelper")){
@@ -19,9 +21,9 @@ if ($("#legendhelper")){
 }
 }, 5000);
 
-var isMobile;
+/* isMobile is the page global from ogario.v4.js (a local "var isMobile" would shadow it as undefined). */
 function init() {
-if (isMobile){
+if (window.isMobile){
 	defaultSettings.hudScale=0.70
 	$(".ogicon-home").click()
 	defaultSettings.miniMapWidth=90
@@ -371,3 +373,4 @@ var t123 = setInterval(function() {
         }
     }
 }, 50)
+})();
