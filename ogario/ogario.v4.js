@@ -72822,7 +72822,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 typeof storedCommands === 'object' &&
                 !Array.isArray(storedCommands)
             ) {
-                chatCommand = storedCommands;
+                /* merge into the defaults: commands added after the last save
+                 * (comm31-comm50) were undefined, shown as "undefined" and
+                 * sendCommand threw on them */
+                for (var commId in storedCommands) {
+                    if (storedCommands.hasOwnProperty(commId) && chatCommand.hasOwnProperty(commId) && typeof storedCommands[commId] === 'string') {
+                        chatCommand[commId] = storedCommands[commId];
+                    }
+                }
             }
         },
         /*
@@ -72918,7 +72925,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         } if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
                     if ('command' === currentCommand.type) {
                         var replaceHk = command.replace('hk-', '');
-                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + chatCommand[replaceHk] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
+                        /* the command text is user/imported data: escape it for the value attribute */
+                        var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                     } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                 }
             $(document).on('click', '#reset-hotkeys', function (event) {
