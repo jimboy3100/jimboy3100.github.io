@@ -10,7 +10,7 @@ var proto = `syntax="proto3";
 message Data {
   int32 contentType = 1;
   uncompressedData uncompressedData = 2;
-  //read__TYPE_BYTES compressedData = 3;
+  bytes compressedData = 3; // zlib (RFC 1950) of an uncompressedData message when contentType != 1
   uint32 uncompressedSize = 4;
 }
 message uncompressedData {
