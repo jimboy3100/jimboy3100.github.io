@@ -40223,12 +40223,31 @@ function thelegendmodproject() {
                             if (ba.productUpdates && ba.productUpdates.length) {
                                 this.updateProducts(ba.productUpdates);
                             }
-                            if (ba.userBoostItem) {
-                                this.displayActiveBoosts([ba.userBoostItem]);
-                                var expMins = Math.floor((ba.userBoostItem.expiresInSeconds || 0) / 60);
-                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680; Expires in ' + expMins + ' min');
+                            var newBoost = ba.userBoostItem;
+                            var newBoostSecs = newBoost ? (Number(newBoost.expiresInSeconds) || 0) : 0;
+                            if (!newBoost || !newBoost.productId || newBoostSecs <= 0) {
+                                /* Official handleUserBoostUpdate: no product or no time left = useProductFailed. */
+                                toastr.error('<b>[SERVER]:</b> Boost could not be activated.');
                             } else {
-                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680;');
+                                /* Official client keeps the other active boosts and only replaces the one
+                                 * of the same category; this used to clear every other active boost. */
+                                var newBoostId = String(newBoost.productId);
+                                var newBoostInfo = typeof window.getAgarBoostInfo === 'function' ? window.getAgarBoostInfo(newBoostId) : null;
+                                var newBoostType = newBoostInfo && newBoostInfo.type ? String(newBoostInfo.type).toLowerCase() : '';
+                                var prevBoosts = window._lmActiveBoosts || {};
+                                var mergedBoosts = [];
+                                var boostNow = Date.now();
+                                for (var prevBoostId in prevBoosts) {
+                                    var prevBoost = prevBoosts[prevBoostId];
+                                    if (!prevBoost || prevBoostId === newBoostId) continue;
+                                    if (newBoostType && prevBoost.type === newBoostType) continue;
+                                    var prevBoostLeft = Math.ceil(((Number(prevBoost.expiresAt) || 0) - boostNow) / 1000);
+                                    if (prevBoostLeft > 0) mergedBoosts.push({ productId: prevBoostId, expiresInSeconds: prevBoostLeft });
+                                }
+                                mergedBoosts.push(newBoost);
+                                this.displayActiveBoosts(mergedBoosts);
+                                var expMins = Math.floor(newBoostSecs / 60);
+                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680; Expires in ' + expMins + ' min');
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
