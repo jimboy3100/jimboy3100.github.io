@@ -45061,14 +45061,15 @@ Most cells eaten   : ${mostCellsEaten}
                 var rawServerColor = color;
                 if (!isVirus && !isFood) {
                     if (name != "" && this.gameMode != ":teams" && this.gameMode != ":party") {
-                        if (LM.cellcolors[name]) {
+                        /* Team colour first: a nick cached before the team relay gave its
+                         * colour must not keep the raw server colour for the session. */
+                        var _tmColor = this._teamColorMap ? this._teamColorMap.get(name) : undefined;
+                        if (_tmColor) {
+                            color = _tmColor;
+                        } else if (LM.cellcolors[name]) {
                             color = LM.cellcolors[name];
-                        } else {
-                            /* O(1) Map lookup instead of O(N) forEach */
-                            var _tmColor = this._teamColorMap ? this._teamColorMap.get(name) : undefined;
-                            if (_tmColor) color = _tmColor;
                         }
-                        if (!LM.cellcolors[name] && color) LM.cellcolors[name] = color;
+                        if (!_tmColor && !LM.cellcolors[name] && color) LM.cellcolors[name] = color;
                         if (rawServerColor && color) {
                             if (!this._colorByRawMap) this._colorByRawMap = new Map();
                             this._colorByRawMap.set(rawServerColor, color);
