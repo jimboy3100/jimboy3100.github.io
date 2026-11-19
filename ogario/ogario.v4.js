@@ -33881,6 +33881,12 @@ function thelegendmodproject() {
             this.imsoloGhostCells = [];
             this.imsoloPlayersByID = new Map();
             this.protocolFamily = null;
+            /* Per-server chat/friend state: only some servers set these, so a
+             * value from the previous server must not survive a switch. */
+            this.chatableServer = false;
+            this.fbOnline = [];
+            this.imsoloPartyFriend = null;
+            if (this.arrowFB && this.arrowFB[0]) this.arrowFB[0].visible = false;
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
