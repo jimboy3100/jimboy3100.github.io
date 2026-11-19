@@ -31640,8 +31640,11 @@ function thelegendmodproject() {
                     else { e = (n /30) - 1}						
                     style.filter = 'contrast(1.4) sepia(' + e + ')';
                     */
+                    // save/restore so the filter does not tint the nick, mass and indicators drawn later.
+                    style.save();
                     style.filter = 'hue-rotate(-' + n / 60 + 'turn)';
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsGladiator", this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
+                    style.restore();
                     //style.drawImage(iconSpecialSkinEffectsGladiator, this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
                 } else if (this.SpecialEffect === "Hero" || this.SpecialEffect2 === "Hero") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHero", this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5, style);
