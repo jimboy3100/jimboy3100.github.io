@@ -23414,6 +23414,13 @@ function thelegendmodproject() {
             ogario.playerMass = 0;
             ogario.playerScore = 0;
             ogario.playerSplitCells = 0;
+            /* Pause (R) ends with the life: after a respawn the new cell was still
+             * held at the old target, with the pause HUD shown. */
+            if (this.pause) {
+                this.pause = false;
+                ogario.pause = false;
+                $('#pause-hud').hide();
+            }
             //this.showMenu(300);
             this.sendPlayerDeath();
             this.updateDeathLocations(ogario.playerX, ogario.playerY);
