@@ -20971,7 +20971,12 @@ function thelegendmodproject() {
                     if (LM.pps < 20 || LM.pps > 32) color = 'color:red';
                     t += 'PPS: <span style="' + color + '">' + LM.pps + '</span>';
                 }
-                this.statsHUD.innerHTML = t;
+                /* Runs every 250 ms: skip the HTML re-parse when the text has not changed. */
+                if (this._statsHUDLastHTML !== t || this._statsHUDLastEl !== this.statsHUD) {
+                    this.statsHUD.innerHTML = t;
+                    this._statsHUDLastHTML = t;
+                    this._statsHUDLastEl = this.statsHUD;
+                }
                 //this.statsHUD.textContent = t;
                 if (!this._displayStatsInterval) {
                     var app = this;
@@ -34227,18 +34232,21 @@ function thelegendmodproject() {
                          *
                          *      LM.quadtree.some(aabb, callback)
                          */
-                        this.quadtree = {
-                            some: function (
-                                aabb,
-                                test
-                            ) {
-                                return WasmQuadTree
-                                    .some(
-                                        aabb,
-                                        test
-                                    );
-                            }
-                        };
+                        /* One wrapper for the session, not a new object and closure every frame. */
+                        this.quadtree =
+                            this._wasmQuadtreeWrapper ||
+                            (this._wasmQuadtreeWrapper = {
+                                some: function (
+                                    aabb,
+                                    test
+                                ) {
+                                    return WasmQuadTree
+                                        .some(
+                                            aabb,
+                                            test
+                                        );
+                                }
+                            });
 
                         return;
                     }
@@ -37945,7 +37953,9 @@ function thelegendmodproject() {
             /* Removed: every packet was copied and posted to the worker, which only
              * handles 'CULL' messages and ignored NETWORK_PACKET (1-3 MB/s of garbage). */
             /* Cap one recording at ~1 hour of packets so long sessions cannot exhaust memory. */
-            if (window.catholicCalculator < 90000 && !$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+            /* One #server-token lookup per packet instead of two. */
+            var _recServerToken;
+            if (window.catholicCalculator < 90000 && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
 
                 //window.RecordedProtocolArenas[legendmod.ws][]

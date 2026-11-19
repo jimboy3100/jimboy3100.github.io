@@ -25,6 +25,24 @@ var WasmQuadTree = (function () {
     var bulkBuf = null;
     var bulkBufPtr = 0;
     var BULK_BUF_MAX = 32768; /* max points per frame */
+    var MAX_RESULTS = 4096; /* quadtree.c MAX_RESULTS: qt_query never returns more */
+
+    /* Typed-array views are reused (made again only if the WASM memory grows and
+     * detaches the old buffer); some() runs once per jelly point per frame. */
+    var floatViewCache = null;
+    var resultViewCache = null;
+    function getFloatView() {
+        if (!floatViewCache || floatViewCache.buffer !== memory.buffer) {
+            floatViewCache = new Float32Array(memory.buffer, bulkBufPtr, BULK_BUF_MAX * 3);
+        }
+        return floatViewCache;
+    }
+    function getResultView() {
+        if (!resultViewCache || resultViewCache.buffer !== memory.buffer) {
+            resultViewCache = new Int32Array(memory.buffer, resultBufPtr, MAX_RESULTS);
+        }
+        return resultViewCache;
+    }
 
     async function init() {
         if (ready) return;
@@ -89,7 +107,7 @@ var WasmQuadTree = (function () {
         pointRefs.length = 0;
 
         /* Collect all points into bulk insert buffer */
-        var floatView = new Float32Array(memory.buffer, bulkBufPtr, BULK_BUF_MAX * 3);
+        var floatView = getFloatView();
         var count = 0;
 
         for (var i = 0; i < cells.length && count < BULK_BUF_MAX; i++) {
@@ -135,7 +153,8 @@ var WasmQuadTree = (function () {
         if (count === 0) return false;
 
         /* Read result IDs */
-        var resultView = new Int32Array(memory.buffer, resultBufPtr, count);
+        var resultView = getResultView();
+        if (count > MAX_RESULTS) count = MAX_RESULTS;
 
         for (var i = 0; i < count; i++) {
             var pointId = resultView[i];
@@ -160,7 +179,8 @@ var WasmQuadTree = (function () {
         var count = instance.exports.qt_query(aabb.x, aabb.y, aabb.w, aabb.h);
         if (count === 0) return [];
 
-        var resultView = new Int32Array(memory.buffer, resultBufPtr, count);
+        var resultView = getResultView();
+        if (count > MAX_RESULTS) count = MAX_RESULTS;
         var results = [];
         for (var i = 0; i < count; i++) {
             var pid = resultView[i];
