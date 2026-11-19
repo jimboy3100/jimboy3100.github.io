@@ -39180,10 +39180,29 @@ function thelegendmodproject() {
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
-                    this.clientKey = this.generateClientKey(this.ws, key);
+                    /* sendMessage drops every packet until the client key exists: if the key
+                     * cannot be made, the socket would sit silent until the server times it
+                     * out. Close it so the normal unexpected-disconnect reconnect runs. */
+                    var _lmKeyFailed = false;
+                    try {
+                        this.clientKey = this.generateClientKey(this.ws, key);
+                    } catch (eKey) {
+                        _lmKeyFailed = true;
+                        this.clientKey = null;
+                        console.error('[Protocol] Client key generation failed, closing the connection:', eKey);
+                    }
                     //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
-                    if (window.master && window.master.login) {
-                        window.master.login();
+                    if (_lmKeyFailed && this.connectionIntegrity && this.socket) {
+                        try { this.socket.close(); } catch (eClose) { }
+                        break;
+                    }
+                    /* A login exception must not escape into the socket handler. */
+                    try {
+                        if (window.master && window.master.login) {
+                            window.master.login();
+                        }
+                    } catch (eLogin) {
+                        console.error('[Protocol] master.login after opcode 241 failed:', eLogin);
                     }
                     break;
                 case 242:
