@@ -37018,8 +37018,10 @@ function thelegendmodproject() {
                     : 0;
 
             me.startTime = Date.now();
-            me.transitionDuration = transitionDur;
-            me.warningDuration = warningDur;
+            /* The server sends both durations in 25 Hz ticks (40 ms each); store ms,
+             * because the zone overlay divides Date.now() elapsed time by them. */
+            me.transitionDuration = transitionDur * 40;
+            me.warningDuration = warningDur * 40;
             me.prevMinX = this.mapMinX;
             me.prevMinY = this.mapMinY;
             me.prevMaxX = this.mapMaxX;
