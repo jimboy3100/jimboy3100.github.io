@@ -72921,9 +72921,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             text = key;
                             break;
                         } if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
+                    /* stored/imported key names go into a value attribute too */
+                    text = String(text).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
                     if ('command' === currentCommand.type) {
                         var replaceHk = command.replace('hk-', '');
-                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + chatCommand[replaceHk] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
+                        /* chat command texts are user/imported text: escape them for the value attribute (a quote cut the text off) */
+                        var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                     } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                 }
             $(document).on('click', '#reset-hotkeys', function (event) {
