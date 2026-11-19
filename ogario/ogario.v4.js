@@ -23845,16 +23845,21 @@ function thelegendmodproject() {
             }
 
             var failTime = app._failedSkinURLs[url];
+            /* A 403/404 does not heal in 30 s: double the cooldown on every
+             * retry that fails again (30 s, 60 s, ... up to 10 min). */
+            if (!app._failedSkinRetries) app._failedSkinRetries = {};
+            var failRetries = app._failedSkinRetries[url] || 0;
 
             if (
                 failTime &&
-                (Date.now() - failTime) < 30000
+                (Date.now() - failTime) < Math.min(30000 * Math.pow(2, failRetries), 600000)
             ) {
                 return;
             }
 
             if (failTime) {
                 delete app._failedSkinURLs[url];
+                app._failedSkinRetries[url] = failRetries + 1;
             }
 
             /*
@@ -23988,6 +23993,9 @@ function thelegendmodproject() {
                     delete app._failedSkinURLs[
                         url
                     ];
+                }
+                if (app._failedSkinRetries) {
+                    delete app._failedSkinRetries[url];
                 }
 
                 /*
@@ -24570,7 +24578,7 @@ function thelegendmodproject() {
                                 Date.now();
                         }
                         if (!url || typeof url !== 'string' || url.length < 10 || !url.includes('.')) return;
-                        console.warn("[LM] Skin URL failed to load: " + url);
+                        if (!(app._failedSkinRetries && app._failedSkinRetries[url])) console.warn("[LM] Skin URL failed to load: " + url);
                         var filename = url.split('/').pop().replace('?', '');
                         if (!filename) return;
                         var isCustomSkin = filename.startsWith('skin_custom_');
