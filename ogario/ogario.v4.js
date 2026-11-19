@@ -25118,14 +25118,20 @@ function thelegendmodproject() {
                         this.miniMapCtx.fill(),
                         this.teamPlayers.length) {
                         c = 0;
+                        /* Expanding Land: teammate positions (opcode 30 / PPv7) are getPlayerX(),
+                         * which already adds ogario.mapOffsetX; adding it again drew them half a
+                         * map to the bottom-right of where they are. */
                         for (; c < this.teamPlayers.length; c++) {
-                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.isLegendWorld ? ogario.mapOffsetX : LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.isLegendWorld ? 0 : LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                         }
                     }
                     if (this.deathLocations.length > 0) {
-                        var _effDeathOff = (LM.isLegendWorld ? 0 : LM.mapOffset);
-                        u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOff) * n);
-                        d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOff) * n);
+                        /* Expanding Land stores the raw position (updateDeathLocations): draw it
+                         * with the own dot's offsets r/l, or it landed toward the top-left. */
+                        var _effDeathOffX = (LM.isLegendWorld ? r : LM.mapOffset);
+                        var _effDeathOffY = (LM.isLegendWorld ? l : LM.mapOffset);
+                        u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOffX) * n);
+                        d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOffY) * n);
                         var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
                         this.miniMapCtx.lineWidth = 1;
                         this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
