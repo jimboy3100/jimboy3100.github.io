@@ -3237,7 +3237,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         );
         window._lastWeekLeagueTab =
             requestedLastWeekTab === 2 ||
-            requestedLastWeekTab === 3
+            requestedLastWeekTab === 3 ||
+            requestedLastWeekTab === 4
                 ? requestedLastWeekTab
                 : 1;
         var t = getTheme();
@@ -3446,7 +3447,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         if (
             selectedLastWeekTab !== 2 &&
-            selectedLastWeekTab !== 3
+            selectedLastWeekTab !== 3 &&
+            selectedLastWeekTab !== 4
         ) {
             selectedLastWeekTab = 1;
         }
@@ -3457,7 +3459,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 : (
                     selectedLastWeekTab === 3
                         ? worldEntries
-                        : leagueEntries
+                        : (
+                            selectedLastWeekTab === 4
+                                ? friendsEntries
+                                : leagueEntries
+                        )
                 );
 
         entries = selectedOfficialEntries.map(function(entry, index) {
