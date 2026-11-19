@@ -42326,16 +42326,24 @@ function thelegendmodproject() {
         createSkinsHTML() {
             const s = this.user.skins;
             $("#player-skins").html(``);
+            /* Image callbacks of an earlier call must not append after this clear. */
+            var app = this;
+            var gen = this._skinsHtmlGen = (this._skinsHtmlGen || 0) + 1;
             var callback = function (img) {
+                if (gen !== app._skinsHtmlGen) return;
                 img.style = "display:inline-block;width:100px;height:100px;border-radius: 50px;";
                 $("#player-skins").append(img);
             };
             var seen = {};
+            var seenUrl = {};
             for (var [key, value] of Object.entries(s)) {
                 if (!value || !value.productId) continue;
-                /* Skip duplicates (skins are dual-keyed by URL and productId) */
+                /* Skip duplicates (skins are dual-keyed by URL and productId; a replaced
+                 * lower level keeps its old productId key but has the same url) */
                 if (seen[value.productId]) continue;
                 seen[value.productId] = true;
+                if (value.url && seenUrl[value.url]) continue;
+                if (value.url) seenUrl[value.url] = true;
                 if (value.url) {
                     this.getImg(value.url, value.productId, callback);
                 }
