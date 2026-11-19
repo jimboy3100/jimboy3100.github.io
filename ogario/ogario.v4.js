@@ -18873,7 +18873,9 @@ function thelegendmodproject() {
             if (!this[name]) {
                 this[name] = $("<style type='text/css'>").appendTo('head');
             }
-            this[name].html(css);
+            /* text, not html: the CSS is built from (importable) theme values, and jQuery's html()
+             * falls back to append() for strings containing <script/<style, which runs the scripts. */
+            this[name].text(css);
         },
         addPresetBox(id, name, options, value, callback) {
             for (var option in $(id).append('<div class=\"preset-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"select-wrapper\"><select id=\"' + name + '\" class=\"form-control\"></select></div></div>'), options) {
