@@ -22976,24 +22976,31 @@ function thelegendmodproject() {
              * Fix: gate all opcode-16 processing until opcode 32 arrives.
              * At opcode-32 time we flush everything, so the very next
              * cell update (the server's force_full_diff) starts from a
-             * clean slate with full ADD records including color/skin/name. */
-            legendmod._spawnTransitGate = true;
-            legendmod.cells = [];
-            legendmod.indexedCells = {};
-            legendmod.removedCells = [];
-            legendmod.food = [];
-            legendmod.viruses = [];
-            legendmod.playerCells = [];
-            if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
+             * clean slate with full ADD records including color/skin/name.
+             *
+             * Only for a dead player on Expanding Land (or in World Spectate):
+             * on other servers, or when Play is pressed while alive, no
+             * opcode 32 may follow, and the gate would blank the world for 3s. */
+            var _lmIsLegend = legendmod.serverType === "expandingland" || !!legendmod.isLegendWorld || (this.ws && (this.ws.includes("legendmod.ml") || this.ws.includes("expanding.land")));
+            if (!legendmod.play && (_lmIsLegend || legendmod._isWorldSpectating)) {
+                legendmod._spawnTransitGate = true;
+                legendmod.cells = [];
+                legendmod.indexedCells = {};
+                legendmod.removedCells = [];
+                legendmod.food = [];
+                legendmod.viruses = [];
+                legendmod.playerCells = [];
+                if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
 
-            /* Safety timeout: auto-clear the gate after 3s in case the server
-             * never responds with opcode 32 (e.g. spawn failure, packet loss).
-             * Without this, a failed spawn would permanently block cell updates. */
-            if (legendmod._spawnGateTimer) clearTimeout(legendmod._spawnGateTimer);
-            legendmod._spawnGateTimer = setTimeout(function () {
-                legendmod._spawnTransitGate = false;
-                legendmod._spawnGateTimer = null;
-            }, 3000);
+                /* Safety timeout: auto-clear the gate after 3s in case the server
+                 * never responds with opcode 32 (e.g. spawn failure, packet loss).
+                 * Without this, a failed spawn would permanently block cell updates. */
+                if (legendmod._spawnGateTimer) clearTimeout(legendmod._spawnGateTimer);
+                legendmod._spawnGateTimer = setTimeout(function () {
+                    legendmod._spawnTransitGate = false;
+                    legendmod._spawnGateTimer = null;
+                }, 3000);
+            }
 
             this.play();
             this.hideMenu();
