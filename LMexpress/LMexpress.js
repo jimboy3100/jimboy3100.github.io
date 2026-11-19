@@ -816,6 +816,15 @@ function play() {
 }
 
 function changeServer() {
+    /* The server/player search hops servers every few seconds: stop it once the
+     * player is in a game there, or the next hop ends that game. */
+    if (typeof legendmod !== "undefined" && legendmod && legendmod.play) {
+        if (timerId) clearInterval(timerId);
+        searching = false;
+        $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
+        toastr.info("Search stopped: you are playing.").css("width", "210px");
+        return;
+    }
     $("#server-reconnect").click();
     appendLog($("#leaderboard-positions").text());
 }
