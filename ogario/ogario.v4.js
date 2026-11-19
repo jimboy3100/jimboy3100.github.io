@@ -1849,6 +1849,17 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 var reloginAttempted = false;
                 var retryStartedAt = Date.now();
 
+                /* The game connection is still open and logged in: a relogin or reconnect
+                   would only end the player's game (the generic fallback below even moved
+                   them to another arena). Keep the session, as the Google path does. */
+                if (window.legendmod && window.legendmod.loginConfirmed === true &&
+                    window.legendmod.isSocketOpen && window.legendmod.isSocketOpen()) {
+                    console.log('[LW AUTH] Connection still logged in, no relogin needed');
+                    window._lwReconnecting = false;
+                    window._loginRetryCount = 0;
+                    return;
+                }
+
                 var authProvider =
                     window._lwAuth &&
                     window._lwAuth.provider
@@ -1959,7 +1970,8 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                         'function'
                 ) {
                     try {
-                        window.master.reconnect();
+                        /* Same server (findServer picked another arena); nothing on private servers. */
+                        window.master.reconnect(true, 'relogin');
                         /* master.reconnect() is a no-op on the website itself. */
                         reloginAttempted = !window.legendModFromWebsite;
                     } catch (e) {
