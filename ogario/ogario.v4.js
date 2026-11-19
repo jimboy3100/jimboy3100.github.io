@@ -35087,6 +35087,9 @@ function thelegendmodproject() {
             this.isSpectateEnabled = true;
             if (this.serverType === 'senpa') {
                 this._senpaSpectate = true;
+                // Mode byte of the cursor packet: 2 = follow top (Delta default), 1 = free roam.
+                this._senpaSpecMode = 2;
+                this.isFreeSpectate = false;
                 return; // Senpa spectate is toggled by mouse position opcode
             }
             // Sigmally has no plain spectate opcode: use free spectate (qe[18] + qe[19]), as Delta does.
@@ -35098,6 +35101,13 @@ function thelegendmodproject() {
         },
         sendFreeSpectate() {
             this.isFreeSpectate = !this.isFreeSpectate;
+            // Senpa has no free-spectate opcode: switch the cursor packet's mode byte instead.
+            if (this.serverType === 'senpa') {
+                this._senpaSpectate = true;
+                this.isSpectateEnabled = true;
+                this._senpaSpecMode = this.isFreeSpectate ? 1 : 2;
+                return;
+            }
             // Sigmally: free spectate requires two opcodes: qe[18] + qe[19] with delay
             if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
                 this.sendAction(18);
@@ -35881,7 +35891,7 @@ function thelegendmodproject() {
                     this.socket.send(sigBuf);
                 } else if (this.serverType === 'senpa') {
                     // Senpa: opcode 20 + spectate(u8) + [unitId(u8) if !spectate] + x(i32) + y(i32)
-                    var isSpec = this._senpaSpectate ? 1 : 0;
+                    var isSpec = this._senpaSpectate ? (this._senpaSpecMode || 1) : 0;
                     var senpaBufLen = isSpec ? 10 : 11; // 1+1+4+4 or 1+1+1+4+4
                     var senpaBuf = new ArrayBuffer(senpaBufLen);
                     var senpaDv = new DataView(senpaBuf);
