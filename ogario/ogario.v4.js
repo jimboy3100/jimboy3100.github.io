@@ -49167,7 +49167,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
          */
         drawLegendWorldDeformedCanvasCell(cell, ctx) {
             if (!cell || !ctx) return;
-            var self = this;
+            // Fast path: no deformation to apply, so skip the argument
+            // array, closure and apply() that the wrapper needs per cell.
+            if (
+                (typeof defaultmapsettings !== 'undefined' &&
+                    defaultmapsettings &&
+                    defaultmapsettings.jellyPhisycs) ||
+                !this.isLegendWorldMapDeformationVisible()
+            ) {
+                return cell.draw(ctx, arguments[2]);
+            }
             var extraArgs = Array.prototype.slice.call(arguments, 2);
             return this.withLegendWorldDeformedCellRenderState(
                 cell,
@@ -51634,6 +51643,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this._webglDisabledUntil &&
                 Date.now() <
                     this._webglDisabledUntil
+            ) {
+                return false;
+            }
+
+
+            /*
+             * drawRings() strokes the selected-cell and reverse-trick rings
+             * on the main Canvas2D, which sits BELOW the GL cell layer, and
+             * the ring lies inside the cell disc: with GPU cells it was
+             * fully hidden. Keep those frames on Canvas2D.
+             */
+            if (
+                (
+                    LM.selected != null &&
+                    LM.indexedCells &&
+                    LM.indexedCells[LM.selected]
+                ) ||
+                (
+                    defaultmapsettings.reverseTrick &&
+                    typeof reverseTrick !== 'undefined' &&
+                    LM.indexedCells &&
+                    (
+                        LM.indexedCells[reverseTrick.biggerEnemy] ||
+                        LM.indexedCells[reverseTrick.smallerEnemy]
+                    )
+                )
             ) {
                 return false;
             }
@@ -59906,6 +59941,53 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return true;
         },
 
+        /*
+         * Canvas2D fallback for the ring batches when gridGl (WebGL2) is not
+         * available, so opponent rings and split ranges are not silently lost.
+         * Same geometry: stroke centred on size * mult + offset.
+         */
+        _drawCanvasRingsFallback(
+            players,
+            scaleOffset,
+            colorHex,
+            alphaVal,
+            sizeMultiplier,
+            canvasLineWidth,
+            dashed
+        ) {
+            var ctx = this.ctx;
+            if (!ctx || !players || !players.length) return false;
+            var mult = Number(sizeMultiplier);
+            if (!Number.isFinite(mult) || mult <= 0) mult = 1.0;
+            var lw = Number(canvasLineWidth);
+            if (!Number.isFinite(lw) || lw <= 0) lw = 4.0;
+            var alpha = alphaVal == null ? 0.75 : Number(alphaVal);
+            if (!Number.isFinite(alpha)) alpha = 0.75;
+            var offset = Number(scaleOffset) || 0;
+            ctx.save();
+            try {
+                ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+                ctx.strokeStyle = colorHex || '#ffffff';
+                ctx.lineWidth = lw;
+                if (dashed) ctx.setLineDash([15, 15]);
+                ctx.beginPath();
+                for (var i = 0; i < players.length; i++) {
+                    var pl = players[i];
+                    if (!pl) continue;
+                    var px = Number(pl.x), py = Number(pl.y), ps = Number(pl.size);
+                    if (!Number.isFinite(px) || !Number.isFinite(py) || !Number.isFinite(ps) || ps <= 0) continue;
+                    var r = ps * mult + offset;
+                    if (!Number.isFinite(r) || r <= 0) continue;
+                    var rp = this.getLegendWorldAttachedRenderPoint(px, py, this._elMapPointA);
+                    ctx.moveTo(rp.x + r, rp.y);
+                    ctx.arc(rp.x, rp.y, r, 0, Math.PI * 2, false);
+                }
+                ctx.stroke();
+            } finally {
+                ctx.restore();
+            }
+            return true;
+        },
         drawWebGLRingsBatch(
             players,
             scaleOffset,
@@ -59922,7 +60004,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (
                 !this.ensureGridHelperRings()
             ) {
-                return false;
+                return this._drawCanvasRingsFallback(
+                    players, scaleOffset, colorHex, alphaVal,
+                    sizeMultiplier, canvasLineWidth, false
+                );
             }
 
             if (
@@ -60287,7 +60372,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (
                 !this.ensureGridHelperRings()
             ) {
-                return false;
+                return this._drawCanvasRingsFallback(
+                    players, scaleOffset, colorHex, alphaVal,
+                    sizeMultiplier, canvasLineWidth, true
+                );
             }
 
             if (
@@ -61075,7 +61163,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
             var cached = this.glTextCache.get(cacheKey);
             var now = Date.now();
-            if (cached) { cached.lastUsed = now; return cached; }
+            if (cached) {
+                cached.lastUsed = now;
+                /* Map keeps insertion order: re-insert on hit so the first
+                 * key is always the least recently used (O(1) eviction). */
+                this.glTextCache.delete(cacheKey);
+                this.glTextCache.set(cacheKey, cached);
+                return cached;
+            }
 
             var tc = this._textCanvas;
             var tctx = this._textCtx;
@@ -61091,12 +61186,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var fontPx = fontSizeMatch ? parseInt(fontSizeMatch[1]) : 24;
             var h = Math.ceil(fontPx * 1.4);
             if (w < 1 || h < 1) return null;
-            /* Clamp to reasonable size to avoid huge textures */
-            if (w > 2048) w = 2048;
-            if (h > 512) h = 512;
+            /* Clamp to reasonable size to avoid huge textures. Scale the
+             * drawing down uniformly instead of cropping it, so the whole
+             * text fits and the w/h aspect used by the quad stays right. */
+            var fullW = w, fullH = h;
+            var texScale = Math.min(1, 2048 / w, 512 / h);
+            if (texScale < 1) {
+                w = Math.max(1, Math.ceil(w * texScale));
+                h = Math.max(1, Math.ceil(h * texScale));
+            }
             tc.width = w;
             tc.height = h;
+            tctx.setTransform(1, 0, 0, 1, 0, 0);
             tctx.clearRect(0, 0, w, h);
+            if (texScale < 1) tctx.scale(w / fullW, h / fullH);
             tctx.font = font;
             tctx.textAlign = 'center';
             tctx.textBaseline = 'middle';
@@ -61105,10 +61208,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 tctx.lineWidth = strokeWidth;
                 tctx.lineJoin = 'round';
                 tctx.miterLimit = 2;
-                tctx.strokeText(text, w / 2, h / 2);
+                tctx.strokeText(text, fullW / 2, fullH / 2);
             }
             tctx.fillStyle = fillStyle;
-            tctx.fillText(text, w / 2, h / 2);
+            tctx.fillText(text, fullW / 2, fullH / 2);
+            tctx.setTransform(1, 0, 0, 1, 0, 0);
 
             var gl = this.gl;
             var tex = gl.createTexture();
@@ -61125,11 +61229,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             /* Evict oldest entries until cache is back within limits */
             while (this.glTextCache.size > this.glTextCacheMaxSize) {
-                var oldest = null, oldestKey = null;
-                this.glTextCache.forEach(function (v, k) {
-                    if (!oldest || v.lastUsed < oldest.lastUsed) { oldest = v; oldestKey = k; }
-                });
-                if (oldestKey) {
+                var oldestKey = this.glTextCache.keys().next().value;
+                var oldest = oldestKey !== undefined ? this.glTextCache.get(oldestKey) : null;
+                if (oldest && oldestKey !== cacheKey) {
                     gl.deleteTexture(oldest.tex);
                     this.glTextCache.delete(oldestKey);
                 } else break;
@@ -63066,13 +63168,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         : cell.targetNick;
 
 
-                var cleanNick =
+                /* Cached per targetNick: avoids a regex + 2 strings per frame. */
+                if (
+                    cell._skinCleanNickFrom !==
                     cell.targetNick
-                        .replace(
-                            /\[.*?\]/g,
-                            ''
-                        )
-                        .trim();
+                ) {
+                    cell._skinCleanNick =
+                        cell.targetNick
+                            .replace(
+                                /\[.*?\]/g,
+                                ''
+                            )
+                            .trim();
+                    cell._skinCleanNickFrom =
+                        cell.targetNick;
+                }
+
+                var cleanNick =
+                    cell._skinCleanNick;
 
 
                 skinUrl =
@@ -63197,14 +63310,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
+            /*
+             * Pick the node from the key (see the instanced path): 'url' is
+             * the first frame, 'url_cached3' the second frame of an animated
+             * skin, uploaded lazily if the key is not in glSkinMap yet.
+             */
+            var cache3 =
+                application
+                    .customSkinsCache[
+                        skinUrl +
+                        '_cached3'
+                    ];
+
             var activeKey =
                 (
                     this._skinHalf &&
-                    this.glSkinMap[
-                        skinUrl +
-                        '_cached3'
-                    ] !==
-                        undefined
+                    cache3
                 )
                     ? (
                         skinUrl +
@@ -63214,22 +63335,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             var node =
-                application
-                    .customSkinsCache[
-                        skinUrl +
-                        '_cached3'
-                    ] ||
+                activeKey !== skinUrl
+                    ? cache3
+                    : (
+                        application
+                            .customSkinsCache[
+                                skinUrl +
+                                '_cached'
+                            ] ||
 
-                application
-                    .customSkinsCache[
-                        skinUrl +
-                        '_cached'
-                    ] ||
-
-                application
-                    .customSkinsCache[
-                        skinUrl
-                    ];
+                        application
+                            .customSkinsCache[
+                                skinUrl
+                            ]
+                    );
 
 
             var layer =
@@ -64035,23 +64154,52 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
 
+                    /*
+                     * Parsed colours are cached on the cell, keyed by their
+                     * inputs, so the jelly path does not allocate two arrays
+                     * per cell per frame. The arrays are only read below.
+                     */
+                    var bodyFallbackHex =
+                        cell.isVirus
+                            ? '#33ff33'
+                            : '#808080';
+
+                    if (
+                        !cell._jellyBodyRGB ||
+                        cell._jellyBodyHex !== bodyHex ||
+                        cell._jellyBodyFb !== bodyFallbackHex
+                    ) {
+                        cell._jellyBodyRGB =
+                            this
+                                .parseWebGLOverlayColor(
+                                    bodyHex,
+                                    bodyFallbackHex
+                                );
+                        cell._jellyBodyHex = bodyHex;
+                        cell._jellyBodyFb = bodyFallbackHex;
+                    }
+
                     var bodyRGB =
-                        this
-                            .parseWebGLOverlayColor(
-                                bodyHex,
+                        cell._jellyBodyRGB;
 
-                                cell.isVirus
-                                    ? '#33ff33'
-                                    : '#808080'
-                            );
 
+                    if (
+                        !cell._jellyStrokeRGB ||
+                        cell._jellyStrokeHex !== strokeHex ||
+                        cell._jellyStrokeFb !== bodyHex
+                    ) {
+                        cell._jellyStrokeRGB =
+                            this
+                                .parseWebGLOverlayColor(
+                                    strokeHex,
+                                    bodyHex
+                                );
+                        cell._jellyStrokeHex = strokeHex;
+                        cell._jellyStrokeFb = bodyHex;
+                    }
 
                     var strokeRGB =
-                        this
-                            .parseWebGLOverlayColor(
-                                strokeHex,
-                                bodyHex
-                            );
+                        cell._jellyStrokeRGB;
 
 
                     /*
@@ -64826,6 +64974,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return false;
             };
 
+            /* uploadSkinTexture() may rebuild the whole skin array mid-frame;
+             * layers already written for earlier cells would then be stale. */
+            var skinArrayAtStart = this.glSkinArray;
+
             // Viewport culling bounds
             var minX, maxX, minY, maxY;
             if (window.fullSpectator) {
@@ -65298,7 +65450,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     colorHex =
                         "#808080";
                 }
+                // Same raw colour as last frame: reuse the validated value
+                // instead of re-running trim/lowercase/regex per frame.
+                else if (
+                    colorHex ===
+                    cell._gpuColorRaw
+                ) {
+                    colorHex =
+                        cell._gpuColorValid;
+                }
                 else {
+                    cell._gpuColorRaw =
+                        colorHex;
+
                     colorHex =
                         colorHex.trim();
 
@@ -65321,6 +65485,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         colorHex =
                             "#808080";
                     }
+
+                    cell._gpuColorValid =
+                        colorHex;
                 }
 
                 var cInt =
@@ -65499,7 +65666,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var skinUrl = null;
                     if (cell.targetNick) {
                         var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
-                        var cleanNick = cell.targetNick.replace(/\[.*?\]/g, '').trim();
+                        /* Cached per targetNick: avoids a regex + 2 strings per frame. */
+                        if (cell._skinCleanNickFrom !== cell.targetNick) {
+                            cell._skinCleanNick = cell.targetNick.replace(/\[.*?\]/g, '').trim();
+                            cell._skinCleanNickFrom = cell.targetNick;
+                        }
+                        var cleanNick = cell._skinCleanNick;
                         skinUrl = application.customSkinsMap[mode] ||
                             application.customSkinsMap[cell.targetNick] ||
                             application.customSkinsMap[cell.targetNick + '#000000'] ||
@@ -65529,12 +65701,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (!application.customSkinsCache.hasOwnProperty(skinUrl)) {
                             application.loadSkin(application.customSkinsCache, skinUrl, undefined, true);
                         }
-                        var activeKey = (this._skinHalf && this.glSkinMap[skinUrl + "_cached3"] !== undefined) ? (skinUrl + "_cached3") : skinUrl;
-                        var skinNode = application.customSkinsCache[skinUrl + "_cached3"] || application.customSkinsCache[skinUrl + "_cached"] || application.customSkinsCache[skinUrl];
+                        /* Pick the node from the key: the "url" key must get the
+                         * first frame, "url_cached3" the second (animated skins),
+                         * and the second-frame key is uploaded lazily after any
+                         * skin-array reset or context restore. */
+                        var _skinCache3 = application.customSkinsCache[skinUrl + "_cached3"];
+                        var activeKey = (this._skinHalf && _skinCache3) ? (skinUrl + "_cached3") : skinUrl;
+                        var skinNode = activeKey !== skinUrl ? _skinCache3 : (application.customSkinsCache[skinUrl + "_cached"] || application.customSkinsCache[skinUrl]);
 
                         var mappedLayer = this.glSkinMap[activeKey];
                         if (mappedLayer === undefined && skinNode && !skinNode._failed && (skinNode.naturalWidth > 0 || skinNode.width > 0)) {
                             mappedLayer = this.uploadSkinTexture(activeKey, skinNode);
+                            if (this.glSkinArray !== skinArrayAtStart) {
+                                return abortCellBatch();
+                            }
                         }
 
                         if (
@@ -66636,7 +66816,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
 
+                    /*
+                     * The origin only matters while a transform is set; it
+                     * follows the camera, so writing it with no transform
+                     * restyled four full-screen layers every frame for nothing.
+                     */
                     if (
+                        _worldCssTransform &&
                         layer
                             .style
                             .transformOrigin !==
@@ -67029,7 +67215,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
                 if (defaultmapsettings.virusesRange) {
+                    /* LM.viruses is only filled when a virus is created while
+                     * the option is on: when it is switched on, add the
+                     * viruses already known so they get a range too. */
+                    if (!this._virusesRangeWasOn && LM.cells && LM.viruses) {
+                        for (var _vri = 0; _vri < LM.cells.length; _vri++) {
+                            var _vrc = LM.cells[_vri];
+                            if (_vrc && _vrc.isVirus && LM.viruses.indexOf(_vrc) === -1) {
+                                LM.viruses.push(_vrc);
+                            }
+                        }
+                    }
+                    this._virusesRangeWasOn = true;
                     this.drawVirusesRange(this.ctx, LM.viruses);
+                } else {
+                    this._virusesRangeWasOn = false;
                 }
                 if (LM.Waves && LM.Waves.length > 0) {
                     this.drawWaves();
@@ -67109,8 +67309,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var rCell = LM.removedCells[i];
                     if (rCell) {
                         try {
+                            /* Move before the deform wrapper (as live cells do):
+                             * moving inside it mixed the raw start with the
+                             * deformed target and the result was then discarded.
+                             * Same skip condition as cell.draw(). */
+                            if (!((LM.hideSmallBots && rCell.size <= 36) || rCell.invisible === true)) {
+                                rCell.moveCell();
+                            }
                             /* EXPANDING LAND — deform removed-cell render (jelly ON = no-op) */
-                            this.drawLegendWorldDeformedCanvasCell(rCell, this.ctx, true);
+                            this.drawLegendWorldDeformedCanvasCell(rCell, this.ctx, false);
                         } catch (eRCell) { }
                     }
                 }
@@ -68220,10 +68427,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     } catch (ePieChart) { }
                 }
                 if (this.pieChart && !this.pieChart._failed && (this.pieChart.width > 0 || this.pieChart.naturalWidth > 0)) {
+                    /* The DPR scale is already restored here: re-apply it so
+                     * the CSS-pixel position/size is right on HiDPI. */
+                    this.ctx.save();
                     try {
+                        var _pieDpr = this.dpr || 1;
+                        this.ctx.setTransform(_pieDpr, 0, 0, _pieDpr, 0, 0);
                         this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                     } catch (ePieDraw) {
                         this.pieChart._failed = true;
+                    } finally {
+                        this.ctx.restore();
                     }
                 }
             }
@@ -68234,10 +68448,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             drawRender.renderTime += performance.now() - this.renderStarted
             drawRender.counterTime++
             if ((drawRender.fps > 0 && drawRender.counterTime >= drawRender.fps) || drawRender.counterTime >= 500) {
-                if (drawRender.counterTime < 500 && drawRender.counterTime > 8) {
+                if (drawRender.counterTime > 8) {
                     this.averageRenderTime = (drawRender.renderTime / drawRender.counterTime).toFixed(2)
 
                 }
+                /* Start a new window, otherwise the average froze after 500 frames. */
+                drawRender.renderTime = 0;
+                drawRender.counterTime = 0;
             }
 
             /*
@@ -68259,11 +68476,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (oCtx) {
                     var oW = this.canvasWidth || window.innerWidth;
                     var oH = this.canvasHeight || window.innerHeight;
-                    if (this.overlayCanvas.width !== oW || this.overlayCanvas.height !== oH) {
-                        this.overlayCanvas.width = oW;
-                        this.overlayCanvas.height = oH;
+                    /* resizeCanvas sizes the backing store in physical pixels
+                     * (CSS size * dpr): keep that size and draw in CSS pixels
+                     * through a DPR transform, instead of shrinking it to 1x. */
+                    var oDpr = this.dpr || 1;
+                    var oPW = Math.round(oW * oDpr);
+                    var oPH = Math.round(oH * oDpr);
+                    if (Math.abs(this.overlayCanvas.width - oPW) > 1 || Math.abs(this.overlayCanvas.height - oPH) > 1) {
+                        this.overlayCanvas.width = oPW;
+                        this.overlayCanvas.height = oPH;
                     }
-                    oCtx.clearRect(0, 0, oW, oH);
+                    oCtx.setTransform(1, 0, 0, 1, 0, 0);
+                    oCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+                    oCtx.setTransform(this.overlayCanvas.width / oW, 0, 0, this.overlayCanvas.height / oH, 0, 0);
 
                     if (_elDeathVisual && _elDeathVisual.active) {
                         var dNow = Date.now();
@@ -68375,10 +68600,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             LM.selectBiggestCell
                         );
 
+                        /* Own ring is already drawn by the call above: pass
+                         * no players so it is not stroked twice. */
                         this.drawSplitRange(
                             this.ctx,
                             LM.biggerSTEDCellsCache,
-                            LM.playerCells,
+                            null,
                             LM.selectBiggestCell
                         );
 
@@ -68433,23 +68660,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 continue;
                             }
 
+                            /* Enemy rings were drawn once above (the caches
+                             * are computed against the main player): draw
+                             * only this unit's own rings here. */
                             this.drawSplitRange(
                                 this.ctx,
-                                LM.biggerSTECellsCache,
-                                unitCells,
-                                LM.selectBiggestCell
-                            );
-
-                            this.drawSplitRange(
-                                this.ctx,
-                                LM.biggerSTEDCellsCache,
+                                null,
                                 unitCells,
                                 LM.selectBiggestCell
                             );
 
                             this.drawDoubleSplitRange(
                                 this.ctx,
-                                LM.biggerSTEDCellsCache,
+                                null,
                                 unitCells,
                                 LM.selectBiggestCell
                             );
@@ -68522,7 +68745,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
         drawMergeProgressRings(ctx, playerCells) {
-            if (!playerCells || playerCells.length <= 1) return;
+            if (!playerCells) return;
+            if (playerCells.length <= 1) {
+                /* Merged back into one cell: clear its split time so the
+                 * next split re-arms the ring for both halves. */
+                if (playerCells[0]) playerCells[0].splitTime = 0;
+                return;
+            }
             var now = Date.now();
             ctx.save();
             try {
@@ -69740,8 +69969,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var food = LM.foodMulti;
                 var len = food.length;
                 var foodOffset = 10 + defaultSettings.foodSize;
-                var minX = LM.playerXMulti, maxX = LM.playerXMulti;
-                var minY = LM.playerYMulti, maxY = LM.playerYMulti;
+                /* Like calMinMax: start from the multi camera rectangle and
+                 * only grow it with the food box. The old seed (playerXMulti/
+                 * playerYMulti) is never assigned, so it was always (0,0).
+                 * The camera rectangle is only fresh this frame while
+                 * multiboxPlayerEnabled (renderFrame); otherwise use the food
+                 * box alone so a stale rectangle does not keep growing. */
+                var _camMultiFresh = !!window.multiboxPlayerEnabled;
+                var minX = _camMultiFresh && Number.isFinite(LM.camMinMultiX) ? LM.camMinMultiX : Infinity;
+                var maxX = _camMultiFresh && Number.isFinite(LM.camMaxMultiX) ? LM.camMaxMultiX : -Infinity;
+                var minY = _camMultiFresh && Number.isFinite(LM.camMinMultiY) ? LM.camMinMultiY : Infinity;
+                var maxY = _camMultiFresh && Number.isFinite(LM.camMaxMultiY) ? LM.camMaxMultiY : -Infinity;
 
                 var i = 0, len4 = len & ~3;
                 for (; i < len4; i += 4) {
@@ -69770,8 +70008,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (x < minX) minX = x; if (x > maxX) maxX = x;
                     if (y < minY) minY = y; if (y > maxY) maxY = y;
                 }
-                LM.camMinMultiX = minX; LM.camMaxMultiX = maxX;
-                LM.camMinMultiY = minY; LM.camMaxMultiY = maxY;
+                if (Number.isFinite(minX) && Number.isFinite(maxX) &&
+                    Number.isFinite(minY) && Number.isFinite(maxY)) {
+                    LM.camMinMultiX = minX; LM.camMaxMultiX = maxX;
+                    LM.camMinMultiY = minY; LM.camMaxMultiY = maxY;
+                }
             }
         },
         calMinMax() {
@@ -69952,10 +70193,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
             } else {
                 var viewScale = scale || this.scale || 1;
-                var halfW = (this.canvasWidth / viewScale / 2) + 200;
-                var halfH = (this.canvasHeight / viewScale / 2) + 200;
-                minX = this.viewX - halfW; maxX = this.viewX + halfW;
-                minY = this.viewY - halfH; maxY = this.viewY + halfH;
+                /* drawRender has no viewX/viewY (NaN bounds culled nothing):
+                 * use the camera, as drawVirusesRange does. Extra margin while
+                 * the EL deformation can shift food (up to ~700 units). */
+                var cullPad = 200 + ((this.isLegendWorldMapDeformationVisible &&
+                    this.isLegendWorldMapDeformationVisible()) ? 1000 : 0);
+                var halfW = (this.canvasWidth / viewScale / 2) + cullPad;
+                var halfH = (this.canvasHeight / viewScale / 2) + cullPad;
+                var cullX = (this.camX != null) ? this.camX : (LM.viewX || 0);
+                var cullY = (this.camY != null) ? this.camY : (LM.viewY || 0);
+                minX = cullX - halfW; maxX = cullX + halfW;
+                minY = cullY - halfH; maxY = cullY + halfH;
             }
             var twoPi = Math.PI * 2;
             var defaultFoodColor = defaultSettings.foodColor || "#FF0000";
@@ -70256,9 +70504,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 1 / scale;
 
             /*
-             * WebGL path: opponent bubbles are drawn before the cell
-             * batch (drawHelpers → drawWebGLCellBatch). The GPU depth
-             * buffer ensures cells always cover the bubble indicators.
+             * Canvas2D (forceCanvas2D = true), as drawHelpers and
+             * drawBubbleCircles describe: on the GL cell layer the bubbles
+             * were wiped whenever the cell batch aborted (gl.clear) and were
+             * drawn above the cells whenever Canvas2D owned the cells.
              */
             this.drawBubbleCircles(
                 ctx,
@@ -70267,7 +70516,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBSTEDColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70277,7 +70526,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBSTEColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70287,7 +70536,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70297,7 +70546,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.splitRangeColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70307,7 +70556,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70317,7 +70566,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySSTEColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70327,7 +70576,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySSTEDColor,
-                false
+                true
             );
 
             if (reset) {
@@ -70958,15 +71207,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         drawDangerArea(ctx, x, y, radius, minX, minY, maxX, maxY, color, aplha) {
             if (!(LM.battleRoyale.radius === LM.battleRoyale.maxRadius || radius <= 0)) {
+                /* Fill the map rect minus the safe circle as one even-odd
+                 * path (clipped to the rect). destination-out erased whatever
+                 * was already on the canvas inside the circle, e.g. the
+                 * sector grid on the world canvas. maxX/maxY are width/height. */
                 ctx.save();
                 ctx.globalAlpha = aplha;
                 ctx.fillStyle = color;
-                ctx.fillRect(minX, minY, maxX, maxY);
-                ctx.globalCompositeOperation = "destination-out";
-                ctx.globalAlpha = 1;
                 ctx.beginPath();
+                ctx.rect(minX, minY, maxX, maxY);
+                ctx.clip();
+                ctx.beginPath();
+                ctx.rect(minX, minY, maxX, maxY);
+                ctx.moveTo(x + radius, y);
                 ctx.arc(x, y, radius, 0, this.pi2, false);
-                ctx.fill();
+                ctx.fill('evenodd');
                 ctx.restore();
             }
         },
@@ -71065,7 +71320,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         /* Cache cleaned text on ghost cell — only recompute when nick changes */
                         if (!ghost._cleanedText || ghost._cleanedNick !== ghostNick) {
                             ghost._cleanedNick = ghostNick;
-                            ghost._cleanedText = removeEmojis(application.escapeHTML(ghostNick));
+                            ghost._cleanedText = removeEmojis(ghostNick); // canvas text: no HTML escaping
                         }
                         this.ghostcellstext = ghost._cleanedText;
                         this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
@@ -71157,6 +71412,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.indicator = new Image();
             this.indicator.src = canvas.toDataURL();
             canvas = null;
+            /* setIndicatorColor() only calls this function: redraw the heart
+             * and smile too so they follow the new colour. */
+            this.preDrawHeartIndicator();
+            this.preDrawSmileIndicator();
         },
         preDrawSmileIndicator() {
             var canvas = document.createElement('canvas');
@@ -71240,6 +71499,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     drawRender._lastRenderErrorLog = Date.now();
                     console.error('[LM RENDER] Frame failed:', renderError);
                 }
+                /* renderFrame's save()/scale()/translate() may not have been
+                 * restored: reset the 2D state so it does not compound into
+                 * the next frames. */
+                try {
+                    var _rc = drawRender.ctx;
+                    if (_rc) {
+                        if (typeof _rc.reset === 'function') _rc.reset();
+                        else _rc.setTransform(1, 0, 0, 1, 0, 0);
+                        _rc.globalAlpha = 1;
+                        _rc.globalCompositeOperation = 'source-over';
+                        _rc.filter = 'none';
+                    }
+                } catch (_resetError) { }
             } finally {
                 window.requestAnimationFrame(drawRender.render);
             }
@@ -71248,9 +71520,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.setCanvas();
             this.resizeCanvas();
             this.preDrawPellet();
-            this.preDrawIndicator();
-            this.preDrawHeartIndicator();
-            this.preDrawSmileIndicator();
+            this.preDrawIndicator(); // also draws the heart and smile
             window.requestAnimationFrame(drawRender.render);
             /* Background-tab recovery: when user returns to tab, snap state immediately.
              * requestAnimationFrame stops in hidden tabs, so cells/camera go stale.
@@ -71404,6 +71674,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !Array.isArray(storedHotkeys)
             ) {
                 hotkeys = storedHotkeys;
+                this.migrateBrowserSpecificHotkeys();
+                this.addMissingDefaultHotkeys();
             } else {
                 this.loadDefaultHotkeys();
             }
@@ -71422,8 +71694,56 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 chatCommand = storedCommands;
             }
         },
+        /*
+         * Stored hotkeys replace the defaults wholesale, so commands added
+         * after the user last saved had no key. Give such commands their
+         * default key when that key is still free. Commands that existed at
+         * the last save (ogarioHotkeysKnown) and have no key were unbound on
+         * purpose and stay unbound.
+         */
+        /*
+         * getPressedKey() used to store '-' and ';' as the raw
+         * String.fromCharCode(keyCode), which differs per browser
+         * ('\u00BD' / '\u00AD' for '-', '\u00BA' for ';'). Rename those keys.
+         */
+        migrateBrowserSpecificHotkeys() {
+            var map = { '\u00BD': '-', '\u00AD': '-', '\u00BA': ';' };
+            var keys = Object.keys(hotkeys);
+            for (var i = 0; i < keys.length; i++) {
+                var oldKey = keys[i];
+                if (oldKey === 'spec-messageKey') continue;
+                var last = oldKey.charAt(oldKey.length - 1);
+                if (!map.hasOwnProperty(last)) continue;
+                var newKey = oldKey.slice(0, -1) + map[last];
+                if (!hotkeys.hasOwnProperty(newKey)) hotkeys[newKey] = hotkeys[oldKey];
+                delete hotkeys[oldKey];
+            }
+            var msgKey = hotkeys['spec-messageKey'];
+            if (typeof msgKey === 'string' && msgKey && map.hasOwnProperty(msgKey.charAt(msgKey.length - 1))) {
+                hotkeys['spec-messageKey'] = msgKey.slice(0, -1) + map[msgKey.charAt(msgKey.length - 1)];
+            }
+        },
+        addMissingDefaultHotkeys() {
+            var known = readLocalStorageJSON('ogarioHotkeysKnown', null);
+            if (!Array.isArray(known)) known = null;
+            var bound = {};
+            for (var key in hotkeys) {
+                if (hotkeys.hasOwnProperty(key)) bound[hotkeys[key]] = true;
+            }
+            for (var command in hotkeysCommand) {
+                if (!hotkeysCommand.hasOwnProperty(command) || bound[command]) continue;
+                if (known && known.indexOf(command) !== -1) continue;
+                var defaultKey = hotkeysCommand[command] && hotkeysCommand[command].defaultKey;
+                if (defaultKey && !hotkeys.hasOwnProperty(defaultKey)) {
+                    hotkeys[defaultKey] = command;
+                }
+            }
+        },
         saveHotkeys() {
             window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
+            try {
+                window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(Object.keys(hotkeysCommand)));
+            } catch (eKnown) { }
             this.saveCommands();
         },
         saveCommands() {
@@ -71530,6 +71850,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 case 61:
                 case 187:
                     normalKey = '=';
+                    break;
+                /* '-' and ';' have different keyCodes in Firefox and Chrome */
+                case 173:
+                case 189:
+                    normalKey = '-';
+                    break;
+                case 59:
+                case 186:
+                    normalKey = ';';
                     break;
                 case 192:
                     normalKey = 'TILDE';
@@ -72791,7 +73120,7 @@ function PreLcCelebration() {
             LcCelebration();
             window.celebrationDay = "LcDay"
         }
-        else if (checkdate === "12/31" || checkdate === "1/1") {
+        else if (checkdate === "12/31" || checkdate === "01/01") { // yyyymmdd() zero-pads
             window.celebrationDay = "NewYear"
         }
         else if (checkdate === "11/26") {
@@ -72800,7 +73129,7 @@ function PreLcCelebration() {
         else if (checkdate === "12/25" || checkdate === "12/24") {
             window.celebrationDay = "Christmas"
         }
-        else if (checkdate === "7/4") {
+        else if (checkdate === "07/04") {
             window.celebrationDay = "4July"
         }
     }
@@ -73326,7 +73655,11 @@ function rotateminimapsectors() {
 }
 
 function toggleFullScreen(fullornot) {
-    if (!window.fullornot) {
+    /* Use the real fullscreen state: a private flag went out of sync when
+     * the user left fullscreen with Esc/F11, so the next click did nothing. */
+    var isFull = !!(document.fullscreenElement || document.webkitFullscreenElement ||
+        document.mozFullScreenElement || document.msFullscreenElement);
+    if (!isFull) {
         launchIntoFullscreen(document.documentElement);
         window.fullornot = true
     } else {
@@ -73337,7 +73670,8 @@ function toggleFullScreen(fullornot) {
 
 function launchIntoFullscreen(element) {
     if (element.requestFullscreen) {
-        element.requestFullscreen();
+        var req = element.requestFullscreen();
+        if (req && typeof req.catch === 'function') req.catch(function () { });
     } else if (element.mozRequestFullScreen) {
         element.mozRequestFullScreen();
     } else if (element.webkitRequestFullscreen) {
@@ -73349,7 +73683,8 @@ function launchIntoFullscreen(element) {
 
 function exitFullscreen() {
     if (document.exitFullscreen) {
-        document.exitFullscreen();
+        var ex = document.exitFullscreen();
+        if (ex && typeof ex.catch === 'function') ex.catch(function () { });
     } else if (document.mozCancelFullScreen) {
         document.mozCancelFullScreen();
     } else if (document.webkitExitFullscreen) {
@@ -73524,12 +73859,14 @@ var reverseTrick = {
 
             $('#pause-hud').text("Avoiding reverse split...");
             $('#pause-hud').show()
-            setTimeout(function () {
+            /* Called per update packet: keep a single pending hide timer
+             * instead of one per packet (and no per-packet console dump). */
+            if (reverseTrick._hudTimer) clearTimeout(reverseTrick._hudTimer);
+            reverseTrick._hudTimer = setTimeout(function () {
+                reverseTrick._hudTimer = null;
                 $('#pause-hud').text(textLanguage.pause);
                 $('#pause-hud').hide()
             }, 500)
-
-            console.log(reverseTrick)
         }
     }
 }
