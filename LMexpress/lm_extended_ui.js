@@ -3854,7 +3854,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 '</div>';
         }
 
-        // Send opcode 147 request
+        // Replays the last server-pushed 147 list (the client never requests it)
         if (window.application && typeof window.application.requestFriendListUpdate === 'function') {
             window.application.requestFriendListUpdate();
         } else if (window.core && window.core.proxyMobileData) {

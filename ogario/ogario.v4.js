@@ -29335,8 +29335,15 @@ function thelegendmodproject() {
             return this.sendProto(146, { userPartyFacebookInviteField: { facebookIds: friendIds } });
         },
         requestFriendListUpdate() {
-            console.log("[LM] Request Friend List Update");
-            return this.sendProto(147, { userFriendListUpdateField: {} });
+            /* 147 is server push only: the official client never sends it (it registers no
+             * friend or party handler at all). Replay the last pushed list instead. */
+            var cached = window._friendListData;
+            if (cached) {
+                try { document.dispatchEvent(new CustomEvent('friendListUpdate', { detail: cached })); } catch (e) { }
+                return true;
+            }
+            console.log("[LM] No friend list pushed by the server yet (147)");
+            return false;
         },
         sendAutomationUpdate(eventFinished) {
             console.log("[LM] Send Automation Update — eventFinished: " + eventFinished);
