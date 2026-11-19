@@ -4514,6 +4514,8 @@ window.connectionBots = {
         if (!window.capthaWindowOpened) {
             window.capthaWindowOpened = true;
             window.addEventListener("message", function (event) {
+                /* Only reCAPTCHA tokens from the captcha popups: ignore YouTube, ads, extensions, OAuth relays. */
+                if (typeof event.data !== 'string' || !/^[A-Za-z0-9_\-]{20,}$/.test(event.data)) return;
                 //if (event.data.includes('captcha-')){
                 //event.data.replace('captcha-','');	
                 if (legendmod.integrity) {
