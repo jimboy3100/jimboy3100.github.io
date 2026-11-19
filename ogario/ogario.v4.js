@@ -43481,15 +43481,18 @@ Most cells eaten   : ${mostCellsEaten}
                 window.customskinsname = null;
             }
             //if ($("#ao2t-capture").length && $("#ao2t-capture").hasClass("connected")) { //if existed and connected and visible
+            /* Copy instead of aliasing: the map-rotation handler flips ghostCells and
+             * predictedGhostCells separately, so shared objects were flipped twice. */
             for (var e = 0; e < legendmod.ghostCells.length; e++) {
-                window.predictedGhostCells[e] = {};
-                window.predictedGhostCells[e] = legendmod.ghostCells[e];
+                window.predictedGhostCells[e] = Object.assign({}, legendmod.ghostCells[e]);
                 if (legendmod.leaderboard[e]) {
                     window.predictedGhostCells[e].id = legendmod.leaderboard[e].id;
                     window.predictedGhostCells[e].nick = legendmod.leaderboard[e].nick;
                     window.predictedGhostCells[e].isFriend = legendmod.leaderboard[e].isFriend;
                 }
             }
+            /* Drop entries beyond the current ghost count (or from the previous server). */
+            window.predictedGhostCells.length = legendmod.ghostCells.length;
             if (window.clientProfiler) window.clientProfiler.recordLeaderboard(performance.now() - _tLb);
         },
         targetingLead(o) {
