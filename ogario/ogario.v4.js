@@ -35738,8 +35738,9 @@ function thelegendmodproject() {
                         cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
                         cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                         if (!this.play && this.targeting || this.pause) {
-                            cursorX = this.targetX;
-                            cursorY = this.targetY;
+                            /* targetX/Y are local (rotated) coordinates: translate like the cursor. */
+                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.targetX) : this.targetX;
+                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.targetY) : this.targetY;
                         }
                     }
                     //autoplay handling
@@ -46397,8 +46398,9 @@ Most cells eaten   : ${mostCellsEaten}
             window.targetDistance = this.targetDistance;
         },
         resetTargetPosition() {
-            this.targetX = this.vector[this.vnr][0] ? this.translateX(this.playerX) : this.playerX;
-            this.targetY = this.vector[this.vnr][1] ? this.translateY(this.playerY) : this.playerY;
+            /* Keep targetX/Y in local space like setTargetPosition; sendPosition translates. */
+            this.targetX = this.playerX;
+            this.targetY = this.playerY;
         },
         setKeys() {
             var app = this;
