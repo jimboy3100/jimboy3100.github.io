@@ -72163,7 +72163,10 @@ function minimapCell(envId, cb, i, s) {
 
             var w = (this.lastX + margin) * mult;
             var h = (this.lastY + margin) * mult;
-            if (w < -10 || w > 170 || h < -10 || h > 170) return;
+            /* Cull against the real minimap size (the slider allows 120-400 px). */
+            var _lmMapSize = window.legendmod && window.legendmod.mapSize;
+            var _lmLimit = _lmMapSize > 0 ? mult * _lmMapSize + 10 : 170;
+            if (w < -10 || w > _lmLimit || h < -10 || h > _lmLimit) return;
 
             /*
              * Draw nick from cached offscreen canvas.
