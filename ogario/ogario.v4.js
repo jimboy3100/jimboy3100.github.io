@@ -73051,19 +73051,34 @@ function pickPlayerCellBySize(players, selectBiggest) {
          */
         migrateBrowserSpecificHotkeys() {
             var map = { '\u00BD': '-', '\u00AD': '-', '\u00BA': ';' };
+            /* raw String.fromCharCode names of numpad, F keys and punctuation; renamed
+             * only as a whole key name (optionally CTRL+/ALT+), letters are upper case */
+            var named = {
+                '`': 'NUM0', 'a': 'NUM1', 'b': 'NUM2', 'c': 'NUM3', 'd': 'NUM4', 'e': 'NUM5',
+                'f': 'NUM6', 'g': 'NUM7', 'h': 'NUM8', 'i': 'NUM9', 'j': 'NUM*', 'n': 'NUM.', 'o': 'NUM/',
+                'p': 'F1', 'q': 'F2', 'r': 'F3', 's': 'F4', 't': 'F5', 'u': 'F6', 'v': 'F7', 'w': 'F8',
+                'x': 'F9', 'y': 'F10', 'z': 'F11', '{': 'F12',
+                '\u00BC': ',', '\u00BE': '.', '\u00BF': '/', '\u00DB': '[', '\u00DC': '\\', '\u00DD': ']', '\u00DE': "'"
+            };
+            var rename = function (name) {
+                var last = name.charAt(name.length - 1);
+                var prefix = name.slice(0, -1);
+                if (map.hasOwnProperty(last)) return prefix + map[last];
+                if (named.hasOwnProperty(last) && (prefix === '' || prefix === 'CTRL+' || prefix === 'ALT+')) return prefix + named[last];
+                return null;
+            };
             var keys = Object.keys(hotkeys);
             for (var i = 0; i < keys.length; i++) {
                 var oldKey = keys[i];
                 if (oldKey === 'spec-messageKey') continue;
-                var last = oldKey.charAt(oldKey.length - 1);
-                if (!map.hasOwnProperty(last)) continue;
-                var newKey = oldKey.slice(0, -1) + map[last];
+                var newKey = rename(oldKey);
+                if (newKey === null) continue;
                 if (!hotkeys.hasOwnProperty(newKey)) hotkeys[newKey] = hotkeys[oldKey];
                 delete hotkeys[oldKey];
             }
             var msgKey = hotkeys['spec-messageKey'];
-            if (typeof msgKey === 'string' && msgKey && map.hasOwnProperty(msgKey.charAt(msgKey.length - 1))) {
-                hotkeys['spec-messageKey'] = msgKey.slice(0, -1) + map[msgKey.charAt(msgKey.length - 1)];
+            if (typeof msgKey === 'string' && msgKey && rename(msgKey) !== null) {
+                hotkeys['spec-messageKey'] = rename(msgKey);
             }
         },
         /*
@@ -73236,8 +73251,47 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 case 109:
                     normalKey = '-';
                     break;
+                /* Keys below came through String.fromCharCode(keyCode) with odd names
+                 * (numpad 1 -> 'a', F1 -> 'p', ',' -> U+00BC); old names are renamed
+                 * by migrateBrowserSpecificHotkeys. */
+                case 106:
+                    normalKey = 'NUM*';
+                    break;
+                case 110:
+                    normalKey = 'NUM.';
+                    break;
+                case 111:
+                    normalKey = 'NUM/';
+                    break;
+                case 188:
+                    normalKey = ',';
+                    break;
+                case 190:
+                    normalKey = '.';
+                    break;
+                case 191:
+                    normalKey = '/';
+                    break;
+                case 219:
+                    normalKey = '[';
+                    break;
+                case 220:
+                    normalKey = '\\';
+                    break;
+                case 221:
+                    normalKey = ']';
+                    break;
+                case 222:
+                    normalKey = "'";
+                    break;
                 default:
-                    normalKey = String.fromCharCode(key.keyCode);
+                    if (key.keyCode >= 96 && key.keyCode <= 105) {
+                        normalKey = 'NUM' + (key.keyCode - 96);
+                    } else if (key.keyCode >= 112 && key.keyCode <= 123) {
+                        normalKey = 'F' + (key.keyCode - 111);
+                    } else {
+                        normalKey = String.fromCharCode(key.keyCode);
+                    }
             }
             if (specialKey !== '') {
                 if (normalKey !== '') {
