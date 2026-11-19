@@ -13980,6 +13980,18 @@ window.getAgarPotionInfo =
                 )
                 : null;
 
+        /* Official getPriceForSkip uses the first time-variable row whose
+         * timedEventId is "potionSkipBrew" for every potion and slot. */
+        if (
+            !variable &&
+            index.timeVariablePriceByEventId &&
+            index.timeVariablePriceByEventId.potionSkipBrew &&
+            index.timeVariablePriceByEventId.potionSkipBrew.length
+        ) {
+            variable =
+                index.timeVariablePriceByEventId.potionSkipBrew[0];
+        }
+
 
         var totalSeconds =
             timer
