@@ -20966,7 +20966,12 @@ function thelegendmodproject() {
                     if (LM.pps < 20 || LM.pps > 32) color = 'color:red';
                     t += 'PPS: <span style="' + color + '">' + LM.pps + '</span>';
                 }
-                this.statsHUD.innerHTML = t;
+                /* Runs every 250 ms: skip the HTML re-parse when the text has not changed. */
+                if (this._statsHUDLastHTML !== t || this._statsHUDLastEl !== this.statsHUD) {
+                    this.statsHUD.innerHTML = t;
+                    this._statsHUDLastHTML = t;
+                    this._statsHUDLastEl = this.statsHUD;
+                }
                 //this.statsHUD.textContent = t;
                 if (!this._displayStatsInterval) {
                     var app = this;
