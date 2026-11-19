@@ -68487,10 +68487,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             LM.selectBiggestCell
                         );
 
+                        /* Own ring is already drawn by the call above: pass
+                         * no players so it is not stroked twice. */
                         this.drawSplitRange(
                             this.ctx,
                             LM.biggerSTEDCellsCache,
-                            LM.playerCells,
+                            null,
                             LM.selectBiggestCell
                         );
 
@@ -68545,23 +68547,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 continue;
                             }
 
+                            /* Enemy rings were drawn once above (the caches
+                             * are computed against the main player): draw
+                             * only this unit's own rings here. */
                             this.drawSplitRange(
                                 this.ctx,
-                                LM.biggerSTECellsCache,
-                                unitCells,
-                                LM.selectBiggestCell
-                            );
-
-                            this.drawSplitRange(
-                                this.ctx,
-                                LM.biggerSTEDCellsCache,
+                                null,
                                 unitCells,
                                 LM.selectBiggestCell
                             );
 
                             this.drawDoubleSplitRange(
                                 this.ctx,
-                                LM.biggerSTEDCellsCache,
+                                null,
                                 unitCells,
                                 LM.selectBiggestCell
                             );
