@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.537;
+window.OgVer = 3.538;
 
 
 /*
@@ -36495,6 +36495,7 @@ function thelegendmodproject() {
             this.sendAction(1);
         },
         sendFreeSpectate() {
+            this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry, like sendSpectate */
             this.isFreeSpectate = !this.isFreeSpectate;
             this._isWorldSpectating = false;
             this._worldSpecPanX = 0;
