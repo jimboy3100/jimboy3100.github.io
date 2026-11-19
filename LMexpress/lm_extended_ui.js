@@ -11372,14 +11372,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         }
 
 
+        // Wallet type-2 items live on application.user.boosts.
         var inventory =
-            (
-                window.LM &&
-                window.LM.user &&
-                window.LM.user
-                    .boosts
-            ) ||
-            {};
+            typeof window._lmGetBoostInventory === 'function'
+                ? window._lmGetBoostInventory()
+                : {};
 
 
         var selectedBefore =
