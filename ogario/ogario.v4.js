@@ -68363,11 +68363,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (oCtx) {
                     var oW = this.canvasWidth || window.innerWidth;
                     var oH = this.canvasHeight || window.innerHeight;
-                    if (this.overlayCanvas.width !== oW || this.overlayCanvas.height !== oH) {
-                        this.overlayCanvas.width = oW;
-                        this.overlayCanvas.height = oH;
+                    /* resizeCanvas sizes the backing store in physical pixels
+                     * (CSS size * dpr): keep that size and draw in CSS pixels
+                     * through a DPR transform, instead of shrinking it to 1x. */
+                    var oDpr = this.dpr || 1;
+                    var oPW = Math.round(oW * oDpr);
+                    var oPH = Math.round(oH * oDpr);
+                    if (Math.abs(this.overlayCanvas.width - oPW) > 1 || Math.abs(this.overlayCanvas.height - oPH) > 1) {
+                        this.overlayCanvas.width = oPW;
+                        this.overlayCanvas.height = oPH;
                     }
-                    oCtx.clearRect(0, 0, oW, oH);
+                    oCtx.setTransform(1, 0, 0, 1, 0, 0);
+                    oCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+                    oCtx.setTransform(this.overlayCanvas.width / oW, 0, 0, this.overlayCanvas.height / oH, 0, 0);
 
                     if (_elDeathVisual && _elDeathVisual.active) {
                         var dNow = Date.now();
