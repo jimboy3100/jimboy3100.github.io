@@ -35736,6 +35736,7 @@ function thelegendmodproject() {
                             var team = rUTF16Len();
                             var color = rU24();
                             var hasReserved = rU8();
+                            var clanTag = rUTF16Len(); /* senpa.io client 2026: clan tag after the reserved-name byte */
                             self._senpaClients[cid] = { name: nick, color: color, team: team, isBot: !!isBot };
                         }
                         var updated = rU8();
@@ -35749,6 +35750,7 @@ function thelegendmodproject() {
                             var team = hasTeam ? rUTF16Len() : null;
                             var color = hasColor ? rU24() : 0;
                             var hasReserved = hasColor ? rU8() : 0;
+                            if (flags & 8) rUTF16Len(); /* clan tag */
                             var c = self._senpaClients[cid];
                             if (c) {
                                 if (hasNick) c.name = nick;
@@ -35770,6 +35772,7 @@ function thelegendmodproject() {
                             var cid = rU16();
                             var color = rU24();
                             var skin = rZTStringLen();
+                            rU32(); /* senpa.io client 2026: hat id after the skin */
                             self._senpaPlayers[pid] = { clientID: cid, color: color, skin: skin };
                         }
                         var updated = rU8();
@@ -35780,6 +35783,7 @@ function thelegendmodproject() {
                             var hasSkin = !!(flags & 2);
                             var color = hasColor ? rU24() : 0;
                             var skin = hasSkin ? rZTStringLen() : null;
+                            if (flags & 4) rU32(); /* hat id */
                             var p = self._senpaPlayers[pid];
                             if (p) {
                                 if (hasColor) p.color = color;
