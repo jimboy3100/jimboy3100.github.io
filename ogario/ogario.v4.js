@@ -37386,7 +37386,7 @@ function thelegendmodproject() {
                         var restartSelf = this;
                         this._restartReconnTimer = setTimeout(function () {
                             restartSelf._restartReconnTimer = null;
-                            if (restartSelf.ws && restartSelf.ws !== reconnWs) return;
+                            if (restartSelf.ws !== reconnWs) return;
                             if (restartSelf._reconnTimer) return;
                             if (restartSelf.socket && restartSelf.socket.readyState <= 1) return;
                             if (window.core && window.core.connect) {
