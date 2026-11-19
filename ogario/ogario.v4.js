@@ -3068,6 +3068,47 @@ function _lmPotionSlot(slot) {
 
 // PotionDrinker: removed (duplicate of window.openPotion, never called)
 
+/*
+ * The official Vue potion slots (store user/potions) are filled only by the official
+ * PotionsController's "refresh_slots" / "update_potion" document events, which it sends
+ * for its own 122/124 requests (addOnce listeners). After LM's own brew/open (strip,
+ * potion drinker) those slots stayed stale until a re-login. Replay the same events from
+ * LM's 123/125 reply, reusing the official detail (localized name, spine asset) last seen
+ * for that productId. Without a known detail for every potion the slots are not cleared,
+ * only the known ones are updated. Core.user.userPotions (not exported) is not touched.
+ */
+window._lmVuePotionDetail = {};
+document.addEventListener('update_potion', function (e) {
+    var d = e && e.detail;
+    if (d && d.id && d.name && d.asset) window._lmVuePotionDetail[d.id] = d;
+}, true);
+window._lmSyncOfficialPotionSlots = function (userPotions) {
+    try {
+        var list = Array.from(userPotions || []).filter(Boolean);
+        /* official getPotionState: an obtained potion is UNAVAILABLE while another brews */
+        var brewing = list.some(function (p) { return Number(p.status) === 2; });
+        var details = [], complete = true;
+        list.forEach(function (p) {
+            var base = window._lmVuePotionDetail[p.productId];
+            if (!base) { complete = false; return; }
+            var st = Number(p.status), secs = Math.max(0, Number(p.secondsRemaining) || 0);
+            var state = st === 2 ? ['BREWING', 1] : st === 3 ? ['READY', 2]
+                : st === 1 ? (brewing ? ['UNAVAILABLE', 3] : ['AVAILABLE', 0]) : null;
+            var price = base.skipPrice;
+            try {
+                if (window.agarApp && window.agarApp.API && typeof window.agarApp.API.getPriceForPotionSkip === 'function') {
+                    price = window.agarApp.API.getPriceForPotionSkip(secs, p.productId, Number(p.slot));
+                }
+            } catch (priceErr) { }
+            details.push(Object.assign({}, base, { totalTime: secs, state: state, skipPrice: price, slot: Number(p.slot), id: p.productId }));
+        });
+        if (complete) document.dispatchEvent(new CustomEvent('refresh_slots'));
+        details.forEach(function (d) { document.dispatchEvent(new CustomEvent('update_potion', { detail: d })); });
+    } catch (err) {
+        console.warn('[LM] Official potion slot sync failed:', err);
+    }
+};
+
 function userLeaguesInfoRequest(slot) {
     // Prefer sendProto-based method
     if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
@@ -40639,6 +40680,7 @@ function thelegendmodproject() {
                             if (brewResult === 1 && u.userPotions && u.userPotions.length) {
                                 /* Success */
                                 this.updatePotions(u.userPotions);
+                                if (typeof window._lmSyncOfficialPotionSlots === 'function') window._lmSyncOfficialPotionSlots(u.userPotions);
                                 if (window.toastr) toastr.success('<b>[POTION]:</b> Brewing started! \u2615');
                                 /* Official onStartBrewing: activate the potionSkipBrew timed event
                                  * once the brew is running (skip-brew price timer). */
@@ -40720,6 +40762,7 @@ function thelegendmodproject() {
                              * every slot is now empty (opening the last potion). */
                             window._lmPotionNotReady = {};
                             this.updatePotions(Array.from(u.userPotions || []));
+                            if (typeof window._lmSyncOfficialPotionSlots === 'function') window._lmSyncOfficialPotionSlots(u.userPotions);
                             if (window._userInitiatedPotionOpen) {
                                 window._userInitiatedPotionOpen = false;
 
