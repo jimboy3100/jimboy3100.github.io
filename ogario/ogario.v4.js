@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.533;
+window.OgVer = 3.534;
 
 
 /*
@@ -68177,7 +68177,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 LM.viewScale = this.scale;
                 return;
             }
-            if (LM.play) {
+            /* delt.io sends the camera and zoom in every opcode 17 (Delta's setViewport uses it
+             * while playing too); the own-size formula zoomed far in there (huge cells). */
+            if (LM.play && LM.serverType !== 'deltio') {
                 this.scale = (9 * this.scale + Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom()) / 10;
             } else {
                 this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10;
