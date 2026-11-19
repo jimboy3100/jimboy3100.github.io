@@ -19897,9 +19897,24 @@ function thelegendmodproject() {
             this.selectBiggestCell = !this.selectBiggestCell;
             ogario.selectBiggestCell = this.selectBiggestCell;
         },
+        /* Hotkey toggles flip defaultmapsettings directly: update the settings checkbox
+         * (and its Switchery) to match. The bubbling change also runs setSettings, which
+         * saves; without a checkbox, save here. */
+        syncHotkeyOption(key) {
+            var el = document.getElementById(key);
+            if (el && el.type === 'checkbox') {
+                el.checked = !!defaultmapsettings[key];
+                try {
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                    return;
+                } catch (e) { }
+            }
+            this.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },
         setShowTop5() {
             defaultmapsettings.showTop5 = !defaultmapsettings.showTop5;
             this.setTop5();
+            this.syncHotkeyOption('showTop5');
         },
         setTop5() {
             if (defaultmapsettings.showTop5) {
@@ -19911,6 +19926,7 @@ function thelegendmodproject() {
         setShowTargeting() {
             defaultmapsettings.showTargeting = !defaultmapsettings.showTargeting;
             this.setTargetingHUD();
+            this.syncHotkeyOption('showTargeting');
         },
         setTargetingHUD() {
             if (defaultmapsettings.showTargeting) {
@@ -19927,10 +19943,12 @@ function thelegendmodproject() {
             } else {
                 $('#time-hud').hide();
             }
+            this.syncHotkeyOption('showTime');
         },
         setShowSplitRange() {
             defaultmapsettings.splitRange = !defaultmapsettings.splitRange;
             ogario.splitRange = defaultmapsettings.splitRange;
+            this.syncHotkeyOption('splitRange');
         },
         setShowGhostCellsInfo() {
             if (defaultmapsettings.showGhostCells === false || defaultmapsettings.showGhostCellsInfo === false) {
@@ -19965,10 +19983,12 @@ function thelegendmodproject() {
         },
         setShowTeammatesInd() {
             defaultmapsettings.teammatesInd = !defaultmapsettings.teammatesInd;
+            this.syncHotkeyOption('teammatesInd');
         },
         setShowOppColors() {
             defaultmapsettings.oppColors = !defaultmapsettings.oppColors;
             ogario.oppColors = defaultmapsettings.oppColors;
+            this.syncHotkeyOption('oppColors');
         },
         setShowSkins() {
             this.noSkins = !this.noSkins;
@@ -19981,6 +20001,7 @@ function thelegendmodproject() {
         setTransparentSkins() {
             defaultmapsettings.transparentSkins = !defaultmapsettings.transparentSkins;
             ogario.transparentSkins = defaultmapsettings.transparentSkins;
+            this.syncHotkeyOption('transparentSkins');
         },
         setShowStats() {
             $('#stats-hud').toggle();
@@ -19993,9 +20014,11 @@ function thelegendmodproject() {
         },
         setShowGrid() {
             defaultmapsettings.showGrid = !defaultmapsettings.showGrid;
+            this.syncHotkeyOption('showGrid');
         },
         setShowMiniMapGuides() {
             defaultmapsettings.showMiniMapGuides = !defaultmapsettings.showMiniMapGuides;
+            this.syncHotkeyOption('showMiniMapGuides');
         },
         setShowLb() {
             if (this.gameMode === ':teams') {
@@ -20005,6 +20028,7 @@ function thelegendmodproject() {
         },
         setShowBgSectors() {
             defaultmapsettings.showBgSectors = !defaultmapsettings.showBgSectors;
+            this.syncHotkeyOption('showBgSectors');
         },
         setHideSmallBots() {
             ogario.hideSmallBots = !ogario.hideSmallBots;
@@ -20012,16 +20036,20 @@ function thelegendmodproject() {
         },
         setShowNames() {
             defaultmapsettings.noNames = !defaultmapsettings.noNames;
+            this.syncHotkeyOption('noNames');
         },
         setHideTeammatesNames() {
             defaultmapsettings.hideTeammatesNames = !defaultmapsettings.hideTeammatesNames;
+            this.syncHotkeyOption('hideTeammatesNames');
         },
         setShowMass() {
             defaultmapsettings.showMass = !defaultmapsettings.showMass;
+            this.syncHotkeyOption('showMass');
         },
         setShowMiniMap() {
             defaultmapsettings.showMiniMap = !defaultmapsettings.showMiniMap;
             this.setMiniMap();
+            this.syncHotkeyOption('showMiniMap');
         },
         setMiniMap() {
             if (defaultmapsettings.showMiniMap) {
@@ -20136,6 +20164,7 @@ function thelegendmodproject() {
             defaultmapsettings.autoResp = !defaultmapsettings.autoResp;
             this.setAutoResp();
             this.displayChatInfo(defaultmapsettings.autoResp, 'autoRespMsg');
+            this.syncHotkeyOption('autoResp');
         },
         copyLb() {
             var input = $('<input>');
