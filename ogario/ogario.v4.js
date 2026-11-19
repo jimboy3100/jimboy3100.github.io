@@ -59904,6 +59904,53 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return true;
         },
 
+        /*
+         * Canvas2D fallback for the ring batches when gridGl (WebGL2) is not
+         * available, so opponent rings and split ranges are not silently lost.
+         * Same geometry: stroke centred on size * mult + offset.
+         */
+        _drawCanvasRingsFallback(
+            players,
+            scaleOffset,
+            colorHex,
+            alphaVal,
+            sizeMultiplier,
+            canvasLineWidth,
+            dashed
+        ) {
+            var ctx = this.ctx;
+            if (!ctx || !players || !players.length) return false;
+            var mult = Number(sizeMultiplier);
+            if (!Number.isFinite(mult) || mult <= 0) mult = 1.0;
+            var lw = Number(canvasLineWidth);
+            if (!Number.isFinite(lw) || lw <= 0) lw = 4.0;
+            var alpha = alphaVal == null ? 0.75 : Number(alphaVal);
+            if (!Number.isFinite(alpha)) alpha = 0.75;
+            var offset = Number(scaleOffset) || 0;
+            ctx.save();
+            try {
+                ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+                ctx.strokeStyle = colorHex || '#ffffff';
+                ctx.lineWidth = lw;
+                if (dashed) ctx.setLineDash([15, 15]);
+                ctx.beginPath();
+                for (var i = 0; i < players.length; i++) {
+                    var pl = players[i];
+                    if (!pl) continue;
+                    var px = Number(pl.x), py = Number(pl.y), ps = Number(pl.size);
+                    if (!Number.isFinite(px) || !Number.isFinite(py) || !Number.isFinite(ps) || ps <= 0) continue;
+                    var r = ps * mult + offset;
+                    if (!Number.isFinite(r) || r <= 0) continue;
+                    var rp = this.getLegendWorldAttachedRenderPoint(px, py, this._elMapPointA);
+                    ctx.moveTo(rp.x + r, rp.y);
+                    ctx.arc(rp.x, rp.y, r, 0, Math.PI * 2, false);
+                }
+                ctx.stroke();
+            } finally {
+                ctx.restore();
+            }
+            return true;
+        },
         drawWebGLRingsBatch(
             players,
             scaleOffset,
@@ -59920,7 +59967,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (
                 !this.ensureGridHelperRings()
             ) {
-                return false;
+                return this._drawCanvasRingsFallback(
+                    players, scaleOffset, colorHex, alphaVal,
+                    sizeMultiplier, canvasLineWidth, false
+                );
             }
 
             if (
@@ -60285,7 +60335,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (
                 !this.ensureGridHelperRings()
             ) {
-                return false;
+                return this._drawCanvasRingsFallback(
+                    players, scaleOffset, colorHex, alphaVal,
+                    sizeMultiplier, canvasLineWidth, true
+                );
             }
 
             if (
