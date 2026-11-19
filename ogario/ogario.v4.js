@@ -40253,6 +40253,8 @@ function thelegendmodproject() {
                             if (qa.productUpdates && qa.productUpdates.length) {
                                 this.updateProducts(qa.productUpdates);
                             }
+                            /* The activation item is used up; allow the next one. */
+                            this._questActivationSent = {};
                             if (qa.userQuest) {
                                 this.displayActiveQuests([qa.userQuest]);
                                 toastr.success('<b>[SERVER]:</b> Quest activated! &#x1F3AF; Type: ' + (qa.userQuest.type || 'unknown'));
@@ -41129,15 +41131,18 @@ function thelegendmodproject() {
                          * update used to re-send activateQuest, and its own reply
                          * contains a wallet update (loop -> "too many operations").
                          */
+                        if (!this._questActivationSent) this._questActivationSent = {};
+                        var _questKey = items[i].productId || 'quest';
                         if (items[i].amount > 0) {
-                            if (!this._questActivationSent) this._questActivationSent = {};
-                            var _questKey = items[i].productId || 'quest';
                             if (!this._questActivationSent[_questKey]) {
                                 /* Only remember it if the request was actually sent. */
                                 if (window.activateQuest() !== false) {
                                     this._questActivationSent[_questKey] = true;
                                 }
                             }
+                        } else {
+                            /* Consumed: a later item (next day, New Quest purchase) activates again. */
+                            delete this._questActivationSent[_questKey];
                         }
                         break;
                     case 5:
