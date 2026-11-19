@@ -35192,23 +35192,34 @@ function thelegendmodproject() {
                         break;
                     }
                     case 20: { // World updates (cells)
+                        /* Cells are built like garixUpdateCells/updateCells: indexedCells +
+                         * ogarbasicassembly, removed through removeCell(). Positions get the
+                         * map rotation (Delta receiveX/receiveY). */
+                        self.megaFFAscore();
+                        self.time = Date.now();
+                        self.removePlayerCell = false;
+                        var senpaFlipX = !!window.legendmod.vector[window.legendmod.vnr][0];
+                        var senpaFlipY = !!window.legendmod.vector[window.legendmod.vnr][1];
+                        var senpaHex = function (c) { return '#' + ('00000' + (c >>> 0).toString(16)).slice(-6); };
                         // Eat events
                         var eatenCount = rU16();
                         while (eatenCount-- > 0) {
                             var eaterID = rU32();
                             var victimID = rU32();
-                            // Remove victim cell, merge into eater
-                            var eater = self.cells[eaterID];
-                            var victim = self.cells[victimID];
+                            var eater = self.indexedCells[eaterID];
+                            var victim = self.indexedCells[victimID];
                             if (victim) {
                                 if (eater) {
-                                    eater.ox = eater.x;
-                                    eater.oy = eater.y;
-                                    eater.oSize = eater.size;
-
+                                    victim.targetX = eater.x;
+                                    victim.targetY = eater.y;
+                                    victim.targetSize = victim.size;
                                 }
-                                victim.destroy();
-                                delete self.cells[victimID];
+                                // moveCell() interpolates start -> target from updateTime.
+                                victim.startX = victim.x;
+                                victim.startY = victim.y;
+                                victim.startSize = victim.size;
+                                victim.time = victim.updateTime = self.time;
+                                victim.removeCell();
                             }
                         }
                         // Added cells
@@ -35217,25 +35228,31 @@ function thelegendmodproject() {
                             var cellID = rU32();
                             var cx = rI32();
                             var cy = rI32();
+                            if (senpaFlipX) cx = self.translateX(cx);
+                            if (senpaFlipY) cy = self.translateY(cy);
                             var cSize = rU16();
                             var cellType = rU8();
                             var isFood = (cellType === 3);
                             var isVirus = (cellType === 1);
-                            var cellColor = 0xFF00FF;
+                            var isEjected = (cellType === 2);
+                            var cellColor = null;
                             var cellName = '';
-                            var cellSkin = '';
+                            var playerID = -1;
 
                             if (isFood) {
-                                // Food color from hash
-                                cellColor = Math.abs(((cellID % 360) * 314159) % 360);
-                                // HSL to approximate color
-                                cellColor = 0x00FF00; // green placeholder for food
+                                // Delta: HSL(|((id % 360) << 314159) % 360|, 100%, 51%)
+                                var fh = Math.abs(((cellID % 360) << 314159) % 360) / 60;
+                                var fc = (1 - Math.abs(2 * 0.51 - 1));
+                                var fx = fc * (1 - Math.abs(fh % 2 - 1));
+                                var fm = 0.51 - fc / 2;
+                                var frgb = fh < 1 ? [fc, fx, 0] : fh < 2 ? [fx, fc, 0] : fh < 3 ? [0, fc, fx] : fh < 4 ? [0, fx, fc] : fh < 5 ? [fx, 0, fc] : [fc, 0, fx];
+                                cellColor = self.rgb2Hex(Math.round((frgb[0] + fm) * 255), Math.round((frgb[1] + fm) * 255), Math.round((frgb[2] + fm) * 255));
                             } else if (isVirus) {
-                                cellColor = 0x33FF33; // virus green
+                                cellColor = '#33ff33'; // virus green
                             } else if (cellType === 0) {
                                 // Player cell — read extra data
-                                var playerID = rU16();
-                                cellColor = rU24();
+                                playerID = rU16();
+                                cellColor = senpaHex(rU24());
                                 // Resolve name from player → client
                                 var pInfo = self._senpaPlayers[playerID];
                                 if (pInfo) {
@@ -35244,7 +35261,7 @@ function thelegendmodproject() {
                                 }
                             } else if (cellType === 2) {
                                 // Ejected mass
-                                cellColor = rU24();
+                                cellColor = senpaHex(rU24());
                             } else if (cellType === 5) {
                                 // Anti-cheat challenge array: hand it to the WASM module (Delta senpaModuleAllocArray)
                                 var acLen = rU16();
@@ -35259,25 +35276,10 @@ function thelegendmodproject() {
 
                             if (cellID === 5024) continue; // Senpa sentinel skip
 
-                            // Create/update cell
-                            var cell = self.cells[cellID];
-                            if (!cell) {
-                                cell = new Cell(cellID, cx, cy, cSize, cellColor, isFood, isVirus, cellName, cellSkin);
-                                self.cells[cellID] = cell;
-                            } else {
-                                cell.nx = cx;
-                                cell.ny = cy;
-                                cell.nSize = cSize;
-                            }
-                            cell.isFood = isFood;
-                            cell.isVirus = isVirus;
-                            if (cellColor !== 0xFF00FF) cell.color = cellColor;
-                            if (cellName) cell.name = cellName;
-
-                            // Track own cells
+                            // Track own cells (before the cell is built, as opcode 32 does)
                             if (cellType === 0) {
-                                var pInfo = self._senpaPlayers[playerID];
-                                if (pInfo && pInfo.clientID === self._senpaMyClientID) {
+                                var ownInfo = self._senpaPlayers[playerID];
+                                if (ownInfo && ownInfo.clientID === self._senpaMyClientID) {
                                     if (self.playerCellIDs.indexOf(cellID) === -1) {
                                         self.playerCellIDs.push(cellID);
                                         if (self._playerCellIDSet) self._playerCellIDSet.add(cellID);
@@ -35293,6 +35295,40 @@ function thelegendmodproject() {
                                     }
                                 }
                             }
+
+                            // Create/update cell
+                            var cell = self.indexedCells[cellID];
+                            if (!cell) {
+                                cell = new ogarbasicassembly(cellID, cx, cy, cSize, cellColor, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                                cell.time = self.time;
+                                cell.spectator = false;
+                                if (!isFood) {
+                                    if (isVirus && defaultmapsettings.virusesRange) {
+                                        self.viruses.push(cell);
+                                    }
+                                    self.cells.push(cell);
+                                    self._cellsDirty = true;
+                                    if (!isEjected && self.playerCellIDs.indexOf(cellID) !== -1 && self.playerCells.indexOf(cell) === -1) {
+                                        cell.isPlayerCell = true;
+                                        self.playerColor = cellColor;
+                                        self.playerCells.push(cell);
+                                    }
+                                } else {
+                                    self.food.push(cell);
+                                }
+                                self.indexedCells[cellID] = cell;
+                            } else if (cellColor) {
+                                cell.color = cellColor;
+                            }
+                            if (cell.isPlayerCell) cellName = self.playerNick;
+                            if (cellName) cell.targetNick = cellName;
+                            cell.startX = cell.x;
+                            cell.startY = cell.y;
+                            cell.startSize = cell.size;
+                            cell.targetX = cx;
+                            cell.targetY = cy;
+                            cell.targetSize = cSize;
+                            cell.updateTime = self.time;
                         }
                         // Updated cells
                         var updatedCount = rU16();
@@ -35300,16 +35336,18 @@ function thelegendmodproject() {
                             var cellID = rU32();
                             var cx = rI32();
                             var cy = rI32();
+                            if (senpaFlipX) cx = self.translateX(cx);
+                            if (senpaFlipY) cy = self.translateY(cy);
                             var cSize = rU16();
-                            var cell = self.cells[cellID];
+                            var cell = self.indexedCells[cellID];
                             if (cell) {
-                                cell.ox = cell.x;
-                                cell.oy = cell.y;
-                                cell.oSize = cell.size;
-                                cell.nx = cx;
-                                cell.ny = cy;
-                                cell.nSize = cSize;
-                                cell.updateTime = Date.now();
+                                cell.startX = cell.x;
+                                cell.startY = cell.y;
+                                cell.startSize = cell.size;
+                                cell.targetX = cx;
+                                cell.targetY = cy;
+                                cell.targetSize = cSize;
+                                cell.updateTime = self.time;
                             }
                         }
                         // Removed cells
@@ -35317,11 +35355,8 @@ function thelegendmodproject() {
                         while (removedCount-- > 0) {
                             var cellID = rU32();
                             if (cellID === 0) break;
-                            var cell = self.cells[cellID];
-                            if (cell) {
-                                cell.destroy();
-                                delete self.cells[cellID];
-                            }
+                            var cell = self.indexedCells[cellID];
+                            if (cell) cell.removeCell();
                             // Remove from own cells
                             var idx = self.playerCellIDs.indexOf(cellID);
                             if (idx !== -1) {
@@ -35339,6 +35374,15 @@ function thelegendmodproject() {
                         } catch (eAc9) {
                             console.warn('%c[Senpa]%c Anti-cheat answer failed:', 'color:#fa3', 'color:inherit', eAc9);
                         }
+                        // Death check (as the Sigmally parser)
+                        if (self.removePlayerCell && !self.playerCells.length) {
+                            self.play = false;
+                            application.onPlayerDeath();
+                            application.showMenu(300);
+                            window.userBots.isAlive = false;
+                            if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+                        }
+                        self.countPps();
                         break;
                     }
                     case 21: { // Leaderboard
