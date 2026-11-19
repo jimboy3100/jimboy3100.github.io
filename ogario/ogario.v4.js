@@ -5258,8 +5258,8 @@ function checkVideos3(o) {
     }
 }
 
-window.agarversion = "v15/10913/";
-window.getLatestID = "10913";
+window.agarversion = "v15/10935/";
+window.getLatestID = "10935";
 
 window.getLatestconfigVersion = window.localStorage.getItem('EnvConfig.configVersion');
 window.getLatestID = window.localStorage.getItem("getLatestID");
