@@ -4690,6 +4690,9 @@ function checkVideos(a, b) {
 
 function checkVideos2(a, b) {
     //console.log(b)
+    /* Reset before the loop: a player who left the top 5 must fade out too
+     * (the flag was only reset when the nick was still found). */
+    window.videoSkinPlayerflag2[b] = false;
     for (var i = 0; i < application.top5.length; i++) {
         //if (i.nick == b) {
         //application.setTarget(i.id);
@@ -4750,6 +4753,7 @@ function checkVideos2(a, b) {
                     return p && p.nick && p.nick.replace(/\s{2,}/g, ' ') == nickKey;
                 });
                 if (!stillHere) {
+                    if (window.videoSkinPlayer[a]) window.videoSkinPlayer[a].volume = 0;
                     clearInterval(window.timerVideoSkinsInterval[videoKey]);
                     window.timerVideoSkinsInterval[videoKey] = null;
                     window.videoSkinPlayerflag3[videoKey] = null;
