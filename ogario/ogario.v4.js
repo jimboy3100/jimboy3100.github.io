@@ -53226,14 +53226,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            if (
-                defaultmapsettings
-                    .showChat &&
-                this._chatLookup &&
-                this._chatLookup.size
-            ) {
-                return false;
-            }
+            /* Chat bubbles are drawn by cell.draw(): fall back only when a visible cell
+             * shows one (checked per cell below), not for 15 s after any chat line. */
+            var _glChatMap =
+                (defaultmapsettings.showChat && this._chatLookup && this._chatLookup.size)
+                    ? this._chatLookup : null;
 
 
             if (
@@ -53302,6 +53299,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         36
                 ) {
                     continue;
+                }
+                if (_glChatMap && cell.nick && !(cell.size <= 40)) {
+                    var _glChat = _glChatMap.get(cell.nick);
+                    if (_glChat && _glChat.message && LM.time - _glChat.time >= 0 && LM.time - _glChat.time < 15000) {
+                        return false;
+                    }
                 }
 
 
