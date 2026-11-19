@@ -34349,6 +34349,7 @@ function thelegendmodproject() {
             this.garixProtocol = 6;
             this.garixHandshakeDone = false;
             this.garixPingCounter = 0;
+            this._garixCaptchaWarned = false;
             // Clear any existing ping interval on reconnect
             if (this.pingInterval) {
                 clearInterval(this.pingInterval);
@@ -34504,32 +34505,51 @@ function thelegendmodproject() {
                 self._senpaSpectate = false;
                 self._senpaAuthSent = false;
 
+                /* The WASM load is async: a later connect() (another server, or another
+                 * Senpa room) must win, and an old socket's callbacks must not reach app. */
+                function _senpaLive() {
+                    return self._connectSeq === _connectSeq && self.serverType === 'senpa';
+                }
                 function _senpaDoConnect() {
+                    if (!_senpaLive()) return;
                     var SenpaModule = window._SenpaModule;
                     if (!SenpaModule || !SenpaModule.create) {
                         console.error('%c[Senpa]%c WASM module not loaded or missing create()', 'color:#fa3', 'color:inherit');
                         return;
                     }
-                    var senpaUrl = t + '?';
+                    /* Query as Delta / the official client: po = page host, tid = 32-hex id made once per session. */
+                    if (!window._senpaTid) {
+                        var tidBytes = crypto.getRandomValues(new Uint8Array(16));
+                        window._senpaTid = Array.prototype.map.call(tidBytes, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+                    }
+                    var senpaPo = location.host || 'unknown';
+                    if (location.pathname.startsWith('/web/mobile') && !senpaPo.startsWith('mobile.')) senpaPo += '/mobile';
+                    var senpaUrl = t + '?' + new URLSearchParams({ po: senpaPo, tid: window._senpaTid }).toString();
                     // Module.create() wraps WebSocket with anti-cheat WASM layer
-                    self.socket = SenpaModule.create(
+                    var senpaSock = null;
+                    var _senpaOurs = function () {
+                        return _senpaLive() && (senpaSock === null || self.socket === senpaSock);
+                    };
+                    senpaSock = SenpaModule.create(
                         senpaUrl,
                         function onOpen(a) {
                             // Defer to microtask so socket is fully initialized
-                            queueMicrotask(function() { app.onOpen(); });
+                            queueMicrotask(function() { if (_senpaOurs()) app.onOpen(); });
                         },
                         function onClose(a) {
-                            app.onClose(a);
+                            if (_senpaOurs()) app.onClose(a);
                         },
                         function onMessage(a) {
+                            if (!_senpaOurs()) return;
                             // WASM passes raw data, wrap in MessageEvent
                             var msg = { data: a };
                             app.onMessage(msg);
                         },
                         function onError(a) {
-                            app.onError(a);
+                            if (_senpaOurs()) app.onError(a);
                         }
                     );
+                    self.socket = senpaSock;
                     // Wrap send to go through WASM socket
                     var _origSenpaSend = self.socket && self.socket.send ? self.socket.send.bind(self.socket) : null;
                     if (_origSenpaSend) {
@@ -34541,31 +34561,40 @@ function thelegendmodproject() {
                 if (window._SenpaModule && window._SenpaModule.create) {
                     _senpaDoConnect();
                 } else {
-                    console.log('%c[Senpa]%c Loading WASM module...', 'color:#fa3', 'color:inherit');
-                    var script = document.createElement('script');
-                    script.src = 'https://jimboy3100.github.io/ogario/senpa_module.js';
-                    script.onload = function() {
-                        // WASM module needs time to initialize (onRuntimeInitialized)
-                        var _waitForInit = setInterval(function() {
-                            if (window._SenpaModule && window._SenpaModule.create) {
-                                clearInterval(_waitForInit);
-                                console.log('%c[Senpa]%c WASM module ready', 'color:#fa3', 'color:inherit');
-                                _senpaDoConnect();
-                            }
-                        }, 100);
-                        // Timeout after 10 seconds
-                        setTimeout(function() {
-                            clearInterval(_waitForInit);
-                            if (!(window._SenpaModule && window._SenpaModule.create) && window.toastr) {
-                                toastr.error('Senpa: WASM module did not initialise, cannot connect.');
-                            }
-                        }, 10000);
-                    };
-                    script.onerror = function() {
-                        console.error('%c[Senpa]%c Failed to load WASM module script', 'color:#fa3', 'color:inherit');
-                        if (window.toastr) toastr.error('Senpa: failed to load the WASM module, cannot connect.');
-                    };
-                    document.head.appendChild(script);
+                    /* Load the script once (shared promise); every connect() waits on it. */
+                    if (!window._senpaModuleLoad) {
+                        console.log('%c[Senpa]%c Loading WASM module...', 'color:#fa3', 'color:inherit');
+                        window._senpaModuleLoad = new Promise(function (resolve, reject) {
+                            var script = document.createElement('script');
+                            script.src = 'https://jimboy3100.github.io/ogario/senpa_module.js';
+                            script.onload = function() {
+                                // WASM module needs time to initialize (onRuntimeInitialized)
+                                var _waitStart = Date.now();
+                                var _waitForInit = setInterval(function() {
+                                    if (window._SenpaModule && window._SenpaModule.create) {
+                                        clearInterval(_waitForInit);
+                                        console.log('%c[Senpa]%c WASM module ready', 'color:#fa3', 'color:inherit');
+                                        resolve();
+                                    } else if (Date.now() - _waitStart > 10000) {
+                                        clearInterval(_waitForInit);
+                                        reject(new Error('Senpa: WASM module did not initialise, cannot connect.'));
+                                    }
+                                }, 100);
+                            };
+                            script.onerror = function() {
+                                reject(new Error('Senpa: failed to load the WASM module, cannot connect.'));
+                            };
+                            document.head.appendChild(script);
+                        });
+                        /* A failed load may be retried by the next connect(). */
+                        window._senpaModuleLoad.catch(function () {
+                            window._senpaModuleLoad = null;
+                        });
+                    }
+                    window._senpaModuleLoad.then(_senpaDoConnect, function (err) {
+                        console.error('%c[Senpa]%c ' + err.message, 'color:#fa3', 'color:inherit');
+                        if (_senpaLive() && window.toastr) toastr.error(err.message);
+                    });
                 }
 
                 application.getWS(self.ws);
@@ -35008,20 +35037,18 @@ function thelegendmodproject() {
                 function rI32() { var v = dv.getInt32(_off.v, true); _off.v += 4; return v; }
                 function rU32() { var v = dv.getUint32(_off.v, true); _off.v += 4; return v; }
                 function rU24() { var b0 = dv.getUint8(_off.v); var b1 = dv.getUint8(_off.v+1); var b2 = dv.getUint8(_off.v+2); _off.v += 3; return (b0 << 16) | (b1 << 8) | b2; }
+                /* Senpa string lengths are u8 (Delta readUTF16StringLength /
+                 * readUTF8StringLength); all len units are always consumed. */
                 function rUTF16Len() {
-                    var len = rU16();
+                    var len = rU8();
                     var s = '';
                     for (var i = 0; i < len; i++) s += String.fromCharCode(rU16());
                     return s;
                 }
                 function rZTStringLen() {
-                    var len = rU16();
+                    var len = rU8();
                     var s = '';
-                    for (var i = 0; i < len; i++) {
-                        var ch = rU8();
-                        if (ch === 0) break;
-                        s += String.fromCharCode(ch);
-                    }
+                    for (var i = 0; i < len; i++) s += String.fromCharCode(rU8());
                     return s;
                 }
 
@@ -35101,6 +35128,11 @@ function thelegendmodproject() {
                         var loggedUsersOnly = rU8();
                         var captchaVersion = rU8();
                         console.warn('%c[Senpa]%c Captcha requested (version=' + captchaVersion + ', loggedOnly=' + loggedUsersOnly + ') — not implemented', 'color:#fa3', 'color:inherit');
+                        /* Delta solves it (Turnstile / reCAPTCHA v2 / v3) and answers opcode 14
+                         * before spawning; LM cannot, so say why spawns may be refused. */
+                        if (captchaVersion >= 1 && captchaVersion <= 3 && window.toastr) {
+                            toastr.warning('Senpa requires a captcha that Legend Mod cannot solve. Spawning may be refused; use the official Senpa client.');
+                        }
                         break;
                     }
                     case 8: { // Handshake done → send auth
@@ -35188,23 +35220,34 @@ function thelegendmodproject() {
                         break;
                     }
                     case 20: { // World updates (cells)
+                        /* Cells are built like garixUpdateCells/updateCells: indexedCells +
+                         * ogarbasicassembly, removed through removeCell(). Positions get the
+                         * map rotation (Delta receiveX/receiveY). */
+                        self.megaFFAscore();
+                        self.time = Date.now();
+                        self.removePlayerCell = false;
+                        var senpaFlipX = !!window.legendmod.vector[window.legendmod.vnr][0];
+                        var senpaFlipY = !!window.legendmod.vector[window.legendmod.vnr][1];
+                        var senpaHex = function (c) { return '#' + ('00000' + (c >>> 0).toString(16)).slice(-6); };
                         // Eat events
                         var eatenCount = rU16();
                         while (eatenCount-- > 0) {
                             var eaterID = rU32();
                             var victimID = rU32();
-                            // Remove victim cell, merge into eater
-                            var eater = self.cells[eaterID];
-                            var victim = self.cells[victimID];
+                            var eater = self.indexedCells[eaterID];
+                            var victim = self.indexedCells[victimID];
                             if (victim) {
                                 if (eater) {
-                                    eater.ox = eater.x;
-                                    eater.oy = eater.y;
-                                    eater.oSize = eater.size;
-
+                                    victim.targetX = eater.x;
+                                    victim.targetY = eater.y;
+                                    victim.targetSize = victim.size;
                                 }
-                                victim.destroy();
-                                delete self.cells[victimID];
+                                // moveCell() interpolates start -> target from updateTime.
+                                victim.startX = victim.x;
+                                victim.startY = victim.y;
+                                victim.startSize = victim.size;
+                                victim.time = victim.updateTime = self.time;
+                                victim.removeCell();
                             }
                         }
                         // Added cells
@@ -35213,25 +35256,31 @@ function thelegendmodproject() {
                             var cellID = rU32();
                             var cx = rI32();
                             var cy = rI32();
+                            if (senpaFlipX) cx = self.translateX(cx);
+                            if (senpaFlipY) cy = self.translateY(cy);
                             var cSize = rU16();
                             var cellType = rU8();
                             var isFood = (cellType === 3);
                             var isVirus = (cellType === 1);
-                            var cellColor = 0xFF00FF;
+                            var isEjected = (cellType === 2);
+                            var cellColor = null;
                             var cellName = '';
-                            var cellSkin = '';
+                            var playerID = -1;
 
                             if (isFood) {
-                                // Food color from hash
-                                cellColor = Math.abs(((cellID % 360) * 314159) % 360);
-                                // HSL to approximate color
-                                cellColor = 0x00FF00; // green placeholder for food
+                                // Delta: HSL(|((id % 360) << 314159) % 360|, 100%, 51%)
+                                var fh = Math.abs(((cellID % 360) << 314159) % 360) / 60;
+                                var fc = (1 - Math.abs(2 * 0.51 - 1));
+                                var fx = fc * (1 - Math.abs(fh % 2 - 1));
+                                var fm = 0.51 - fc / 2;
+                                var frgb = fh < 1 ? [fc, fx, 0] : fh < 2 ? [fx, fc, 0] : fh < 3 ? [0, fc, fx] : fh < 4 ? [0, fx, fc] : fh < 5 ? [fx, 0, fc] : [fc, 0, fx];
+                                cellColor = self.rgb2Hex(Math.round((frgb[0] + fm) * 255), Math.round((frgb[1] + fm) * 255), Math.round((frgb[2] + fm) * 255));
                             } else if (isVirus) {
-                                cellColor = 0x33FF33; // virus green
+                                cellColor = '#33ff33'; // virus green
                             } else if (cellType === 0) {
                                 // Player cell — read extra data
-                                var playerID = rU16();
-                                cellColor = rU24();
+                                playerID = rU16();
+                                cellColor = senpaHex(rU24());
                                 // Resolve name from player → client
                                 var pInfo = self._senpaPlayers[playerID];
                                 if (pInfo) {
@@ -35240,35 +35289,25 @@ function thelegendmodproject() {
                                 }
                             } else if (cellType === 2) {
                                 // Ejected mass
-                                cellColor = rU24();
+                                cellColor = senpaHex(rU24());
                             } else if (cellType === 5) {
-                                // Anti-cheat challenge array (WASM needed)
+                                // Anti-cheat challenge array: hand it to the WASM module (Delta senpaModuleAllocArray)
                                 var acLen = rU16();
-                                _off.v += acLen; // skip the array
-                                console.warn('%c[Senpa]%c Anti-cheat challenge (type 5) skipped — WASM not available', 'color:#fa3', 'color:inherit');
+                                var acArr = raw.slice(_off.v, _off.v + acLen);
+                                _off.v += acLen;
+                                try {
+                                    if (window._SenpaModule && window._SenpaModule._alloc) window._SenpaModule._alloc(8, acArr);
+                                } catch (eAc) {
+                                    console.warn('%c[Senpa]%c Anti-cheat challenge failed:', 'color:#fa3', 'color:inherit', eAc);
+                                }
                             }
 
                             if (cellID === 5024) continue; // Senpa sentinel skip
 
-                            // Create/update cell
-                            var cell = self.cells[cellID];
-                            if (!cell) {
-                                cell = new Cell(cellID, cx, cy, cSize, cellColor, isFood, isVirus, cellName, cellSkin);
-                                self.cells[cellID] = cell;
-                            } else {
-                                cell.nx = cx;
-                                cell.ny = cy;
-                                cell.nSize = cSize;
-                            }
-                            cell.isFood = isFood;
-                            cell.isVirus = isVirus;
-                            if (cellColor !== 0xFF00FF) cell.color = cellColor;
-                            if (cellName) cell.name = cellName;
-
-                            // Track own cells
+                            // Track own cells (before the cell is built, as opcode 32 does)
                             if (cellType === 0) {
-                                var pInfo = self._senpaPlayers[playerID];
-                                if (pInfo && pInfo.clientID === self._senpaMyClientID) {
+                                var ownInfo = self._senpaPlayers[playerID];
+                                if (ownInfo && ownInfo.clientID === self._senpaMyClientID) {
                                     if (self.playerCellIDs.indexOf(cellID) === -1) {
                                         self.playerCellIDs.push(cellID);
                                         if (self._playerCellIDSet) self._playerCellIDSet.add(cellID);
@@ -35284,6 +35323,40 @@ function thelegendmodproject() {
                                     }
                                 }
                             }
+
+                            // Create/update cell
+                            var cell = self.indexedCells[cellID];
+                            if (!cell) {
+                                cell = new ogarbasicassembly(cellID, cx, cy, cSize, cellColor, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                                cell.time = self.time;
+                                cell.spectator = false;
+                                if (!isFood) {
+                                    if (isVirus && defaultmapsettings.virusesRange) {
+                                        self.viruses.push(cell);
+                                    }
+                                    self.cells.push(cell);
+                                    self._cellsDirty = true;
+                                    if (!isEjected && self.playerCellIDs.indexOf(cellID) !== -1 && self.playerCells.indexOf(cell) === -1) {
+                                        cell.isPlayerCell = true;
+                                        self.playerColor = cellColor;
+                                        self.playerCells.push(cell);
+                                    }
+                                } else {
+                                    self.food.push(cell);
+                                }
+                                self.indexedCells[cellID] = cell;
+                            } else if (cellColor) {
+                                cell.color = cellColor;
+                            }
+                            if (cell.isPlayerCell) cellName = self.playerNick;
+                            if (cellName) cell.targetNick = cellName;
+                            cell.startX = cell.x;
+                            cell.startY = cell.y;
+                            cell.startSize = cell.size;
+                            cell.targetX = cx;
+                            cell.targetY = cy;
+                            cell.targetSize = cSize;
+                            cell.updateTime = self.time;
                         }
                         // Updated cells
                         var updatedCount = rU16();
@@ -35291,16 +35364,18 @@ function thelegendmodproject() {
                             var cellID = rU32();
                             var cx = rI32();
                             var cy = rI32();
+                            if (senpaFlipX) cx = self.translateX(cx);
+                            if (senpaFlipY) cy = self.translateY(cy);
                             var cSize = rU16();
-                            var cell = self.cells[cellID];
+                            var cell = self.indexedCells[cellID];
                             if (cell) {
-                                cell.ox = cell.x;
-                                cell.oy = cell.y;
-                                cell.oSize = cell.size;
-                                cell.nx = cx;
-                                cell.ny = cy;
-                                cell.nSize = cSize;
-                                cell.updateTime = Date.now();
+                                cell.startX = cell.x;
+                                cell.startY = cell.y;
+                                cell.startSize = cell.size;
+                                cell.targetX = cx;
+                                cell.targetY = cy;
+                                cell.targetSize = cSize;
+                                cell.updateTime = self.time;
                             }
                         }
                         // Removed cells
@@ -35308,11 +35383,8 @@ function thelegendmodproject() {
                         while (removedCount-- > 0) {
                             var cellID = rU32();
                             if (cellID === 0) break;
-                            var cell = self.cells[cellID];
-                            if (cell) {
-                                cell.destroy();
-                                delete self.cells[cellID];
-                            }
+                            var cell = self.indexedCells[cellID];
+                            if (cell) cell.removeCell();
                             // Remove from own cells
                             var idx = self.playerCellIDs.indexOf(cellID);
                             if (idx !== -1) {
@@ -35320,6 +35392,25 @@ function thelegendmodproject() {
                                 if (self._playerCellIDSet) self._playerCellIDSet.delete(cellID);
                             }
                         }
+                        // Anti-cheat answer the module stashes on CanvasCaptureMediaStreamTrack (Delta senpaModuleAlloc)
+                        try {
+                            var ccmst = window.CanvasCaptureMediaStreamTrack;
+                            if (ccmst && ccmst.contextBufferFactory && window._SenpaModule && window._SenpaModule._alloc) {
+                                window._SenpaModule._alloc(9, ccmst.contextBufferFactory);
+                                ccmst.contextBufferFactory = null;
+                            }
+                        } catch (eAc9) {
+                            console.warn('%c[Senpa]%c Anti-cheat answer failed:', 'color:#fa3', 'color:inherit', eAc9);
+                        }
+                        // Death check (as the Sigmally parser)
+                        if (self.removePlayerCell && !self.playerCells.length) {
+                            self.play = false;
+                            application.onPlayerDeath();
+                            application.showMenu(300);
+                            window.userBots.isAlive = false;
+                            if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+                        }
+                        self.countPps();
                         break;
                     }
                     case 21: { // Leaderboard
@@ -35885,28 +35976,21 @@ function thelegendmodproject() {
                 /* Spawning leaves spectate mode: cursor packets must use the player format again. */
                 this._senpaSpectate = false;
                 this.playerNick = nick;
-                // Send nick (opcode 10)
-                var nickBuf = new ArrayBuffer(1 + 2 + nick.length * 2);
+                // Send nick (opcode 10): u8 length + UTF-16 (Delta writeUTF16StringLength)
+                var senpaNick = nick.length > 255 ? nick.substring(0, 255) : nick;
+                var nickBuf = new ArrayBuffer(1 + 1 + senpaNick.length * 2);
                 var nickDV = new DataView(nickBuf);
                 var nOff = 0;
                 nickDV.setUint8(nOff, 10); nOff += 1;
-                nickDV.setUint16(nOff, nick.length, true); nOff += 2;
-                for (var ni = 0; ni < nick.length; ni++) {
-                    nickDV.setUint16(nOff, nick.charCodeAt(ni), true); nOff += 2;
+                nickDV.setUint8(nOff, senpaNick.length); nOff += 1;
+                for (var ni = 0; ni < senpaNick.length; ni++) {
+                    nickDV.setUint16(nOff, senpaNick.charCodeAt(ni), true); nOff += 2;
                 }
                 this.socket.send(nickBuf);
                 // Send tag (opcode 11) — empty
-                var tagBuf = new ArrayBuffer(1 + 2);
-                var tagDV = new DataView(tagBuf);
-                tagDV.setUint8(0, 11);
-                tagDV.setUint16(1, 0, true);
-                this.socket.send(tagBuf);
+                this.socket.send(new Uint8Array([11, 0]).buffer);
                 // Send code (opcode 12) — empty
-                var codeBuf = new ArrayBuffer(1 + 2);
-                var codeDV = new DataView(codeBuf);
-                codeDV.setUint8(0, 12);
-                codeDV.setUint16(1, 0, true);
-                this.socket.send(codeBuf);
+                this.socket.send(new Uint8Array([12, 0]).buffer);
                 // Send spawn (opcode 0 + unitID 0)
                 var spawnBuf = new ArrayBuffer(2);
                 var spawnDV = new DataView(spawnBuf);
@@ -37296,28 +37380,33 @@ function thelegendmodproject() {
                 case 49: //leaderboard for specific private servers
                     window.testobjectsOpcode49 = data;
                     this.leaderboard = [];
+                    /* Garix (Delta GarixProtocol case 49): {u16 pID until 0, name\0, color\0},
+                     * then u16 count ghost cells {u16 pID, i32 x, i32 y, u32 mass, u8}.
+                     * pID is the tab id for our own entry. */
+                    if (this.serverType === 'garix') {
+                        this.playerPosition = 0;
+                        for (i = 0; s + 2 <= data.byteLength; ++i) {
+                            var gPlayerID = data.getUint16(s, true); s += 2;
+                            if (gPlayerID === 0) break;
+                            var gNick = encode();
+                            try { gNick = window.decodeURIComponent(window.escape(gNick)); } catch (e) { }
+                            var gColor = encode();
+                            var gIsMe = !!gPlayerID && (gPlayerID === this.garixTabID1 || gPlayerID === this.garixTabID2);
+                            if (gIsMe) this.playerPosition = i + 1;
+                            this.leaderboard.push({
+                                id: gIsMe ? 'isPlayer' : gPlayerID,
+                                nick: gIsMe ? this.playerNick : (gNick || 'An unnamed cell'),
+                                color: gColor || null
+                            });
+                        }
+                        /* Ghost cells section (u16 count) is read past but not shown yet. */
+                        this.handleLeaderboard();
+                        break;
+                    }
                     var count = data.getUint32(s, true);
                     s += 4;
                     if (count > 200 || s > data.byteLength) { break; }
-                    // Garix protocol 6-10: [playerID UInt32][name UTF-8z][mass UInt32][sector UTF-8z][color UTF-8z]
-                    if (this.serverType === 'garix') {
-                        for (i = 0; i < count; ++i) {
-                            var gPlayerID = data.getUint32(s, true); s += 4;
-                            var gNick = encode();
-                            var gMass = data.getUint32(s, true); s += 4;
-                            var gSector = encode();
-                            var gColor = encode();
-                            var isMe = (this.playerCellIDs.length > 0) ? false : false;
-                            // Check if this is our player by matching tabID
-                            this.leaderboard.push({
-                                id: false,
-                                nick: gNick,
-                                mass: gMass,
-                                sector: gSector,
-                                color: gColor
-                            });
-                        }
-                    } else {
+                    {
                         for (i = 0; i < count && s + 4 <= data.byteLength; ++i) {
                             var isMe = !!data.getUint32(s, true);
                             s += 4;
@@ -37684,14 +37773,15 @@ function thelegendmodproject() {
                 // ===== Garix Protocol Opcodes (2026) =====
                 case 161: // 0xA1 — DualInfo (Garix)
                     if (this.serverType === 'garix') {
-                        if (data.byteLength < 6) {
+                        if (data.byteLength < 2) {
                             console.warn('[Protocol] Ignoring truncated Garix opcode 161 packet:', data.byteLength);
                             break;
                         }
 
+                        /* Delta GarixProtocol case 161: [count u8] then count x u32 tab id. */
                         var gTabCount = data.getUint8(s++);
-                        this.garixTabID1 = data.getUint16(s, true); s += 2;
-                        this.garixTabID2 = data.getUint16(s, true); s += 2;
+                        this.garixTabID1 = gTabCount >= 1 && s + 4 <= data.byteLength ? data.getUint32(s, true) : 0;
+                        this.garixTabID2 = gTabCount >= 2 && s + 8 <= data.byteLength ? data.getUint32(s + 4, true) : 0;
                         console.log('%c[Garix]%c DualInfo: tabs=' + gTabCount + ' tabID1=' + this.garixTabID1 + ' tabID2=' + this.garixTabID2, 'color:#f8a', 'color:inherit');
                         // Garix ping keepalive is started in onOpen (server disconnects after 8s without opcode 200)
                         if (!this.garixPingInterval) this._startGarixPing();
@@ -38841,7 +38931,20 @@ function thelegendmodproject() {
 
                 default:
                     // Garix: unknown opcodes silently ignored
-                    if (this.serverType === 'garix') break;
+                    if (this.serverType === 'garix') {
+                        /* 230 = captcha request [providerLen u8][provider][siteKey]. Delta
+                         * answers it with opcode 232; LM has no captcha widget for
+                         * third-party site keys, so at least tell the user why spawns fail. */
+                        if (data.getUint8(0) === 230 && !this._garixCaptchaWarned) {
+                            this._garixCaptchaWarned = true;
+                            var gcLen = data.byteLength > 1 ? data.getUint8(1) : 0;
+                            var gcProvider = '';
+                            for (var gci = 0; gci < gcLen && 2 + gci < data.byteLength; gci++) gcProvider += String.fromCharCode(data.getUint8(2 + gci));
+                            console.warn('%c[Garix]%c Captcha requested (provider=' + gcProvider + '), not supported', 'color:#f8a', 'color:inherit');
+                            if (window.toastr) toastr.warning('Garix requires a captcha (' + gcProvider + ') that Legend Mod cannot solve. Spawning may be refused; use the official Garix client.');
+                        }
+                        break;
+                    }
                     /* ── Expanding Land opcodes handled in default: so they never
                      * interfere with the switch on non-LW servers ── */
                     var _lwOp = data.getUint8(0);
@@ -44644,109 +44747,109 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            // 2. Combined update + add nodes (single loop, ONE terminator)
-            // Flag 0x40 = added node (has tabID, possibly skin/name/nickColor)
-            while (offset + 3 < data.byteLength) {
+            // 2. Node records, Delta GarixProtocol case 16 layout: two sections
+            // (updated, then added), each ended by id 0. Per node:
+            //   [u32 id][i32 x][i32 y][u16 size][u8 flags]
+            //   [u8 ext_flags if flags & 0x80]
+            //   [u32 accountID if ext & 0x04][u24 nick colour if ext & 0x08]
+            //   [rgb if flags & 0x02][skin\0 if 0x04][name\0 if 0x08]
+            // flags: 0x01 virus, 0x10 agitated, 0x20 ejected, 0x40 other food.
+            // accountID is the owner's tab id from opcode 161 (own cells).
+            for (var sections = 2; sections && offset + 4 <= data.byteLength;) {
                 var id = data.getUint32(offset, true); offset += 4;
-                if (id === 0) break;
-                if (offset + 11 >= data.byteLength) break;
+                if (id === 0) { sections--; continue; }
                 var x = data.getInt32(offset, true); offset += 4;
                 var y = data.getInt32(offset, true); offset += 4;
+                /* Map rotation, as updateCells (Delta receiveX/receiveY): sendPosition
+                 * mirrors the cursor back, so raw x/y would invert steering. */
+                if (window.legendmod.vector[window.legendmod.vnr][0]) x = this.translateX(x);
+                if (window.legendmod.vector[window.legendmod.vnr][1]) y = this.translateY(y);
                 var size = data.getUint16(offset, true); offset += 2;
-                var flags = data.getUint16(offset, true); offset += 2;
+                var flags = data.getUint8(offset++);
+                var extFlags = (flags & 0x80) ? data.getUint8(offset++) : 0;
+
+                var isVirus = !!(flags & 0x01);
+                var isEjected = !!(flags & 0x20);
+                var hasName = !!(flags & 0x08);
+                var hasAccountID = !!(extFlags & 0x04);
+                var hasNickColor = !!(extFlags & 0x08);
+                /* Delta: food = (0x20 | 0x40) without name/nick colour/account.
+                 * Ejected mass (0x20) stays a normal cell here, as LM draws it. */
+                var isFood = !isVirus && !isEjected && !!(flags & 0x40) && !hasName && !hasNickColor && !hasAccountID;
+
+                var accountID = null;
+                if (hasAccountID) { accountID = data.getUint32(offset, true); offset += 4; }
+                if (hasNickColor) offset += 3; // nick colour r,g,b (unused)
 
                 var color = null;
-                // flag 0x02 = has color
                 if (flags & 0x02) {
-                    if (offset + 2 >= data.byteLength) break;
                     var r = data.getUint8(offset++);
                     var g = data.getUint8(offset++);
                     var b = data.getUint8(offset++);
                     color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
                 }
+                var skin = (flags & 0x04) ? encode() : null;
+                var name = '', namePresent = false;
+                if (hasName) {
+                    name = encode(); namePresent = true;
+                    try { name = window.decodeURIComponent(escape(name)); } catch (e) { }
+                }
+                if (skin || namePresent) {
+                    this.vanillaskins(name, skin, color);
+                }
 
-                if (flags & 0x40) {
-                    // ── ADDED NODE ──
-                    var skin = null, name = '', namePresent = false;
-                    var isVirus = !!(flags & 0x0001);
-                    var isAgitated = !!(flags & 0x0010);
-                    var isEjected = !!(flags & 0x0020);
-                    var isFood = !!(flags & 0x0080);
-
-                    // flag 0x04 = has skin
-                    if (flags & 0x04) {
-                        skin = encode();
-                    }
-                    // flag 0x08 = has name
-                    if (flags & 0x08) {
-                        name = encode(); namePresent = true;
-                        try { name = window.decodeURIComponent(escape(name)); } catch (e) { }
-                    }
-                    if (skin || namePresent) {
-                        this.vanillaskins(name, skin, color);
-                    }
-                    // tabID (always present for added nodes, flag 0x40)
-                    if (offset + 2 <= data.byteLength) {
-                        var tabID = data.getUint16(offset, true); offset += 2;
-                    }
-                    // flag 0x100 = has nickColor
-                    if (flags & 0x100) {
-                        if (offset + 2 < data.byteLength) {
-                            offset += 3; // skip r,g,b
+                var cellObj = null;
+                if (this.indexedCells.hasOwnProperty(id)) {
+                    cellObj = this.indexedCells[id];
+                    if (color && !cellObj.isFood && !cellObj.isVirus) cellObj.color = color;
+                } else {
+                    /* Own cell: the owner accountID is one of our tab ids (Delta giveCellToUnit). */
+                    if (accountID && !isEjected && (accountID === this.garixTabID1 || accountID === this.garixTabID2) &&
+                        (this._playerCellIDSet ? !this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) === -1)) {
+                        this.playerCellIDs.push(id);
+                        if (this._playerCellIDSet) this._playerCellIDSet.add(id);
+                        if (!this.play) {
+                            this.play = true;
+                            this.isSpectateEnabled = false;
+                            application.hideMenu();
+                            this.playerColor = null;
+                            application.onPlayerSpawn();
+                            window.userBots.isAlive = true;
+                            if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
                         }
                     }
-
-                    var cellObj = null;
-                    if (this.indexedCells.hasOwnProperty(id)) {
-                        cellObj = this.indexedCells[id];
+                    cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    cellObj.time = this.time;
+                    cellObj.spectator = false;
+                    if (!isFood) {
+                        if (isVirus && defaultmapsettings.virusesRange) {
+                            this.viruses.push(cellObj);
+                        }
+                        this.cells.push(cellObj);
+                        this._cellsDirty = true;
+                        if (!isEjected && (this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
+                            cellObj.isPlayerCell = true;
+                            this.playerColor = color;
+                            cellObj.color = color;
+                            this.playerCells.push(cellObj);
+                        }
                     } else {
-                        cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-                        cellObj.time = this.time;
-                        cellObj.spectator = false;
-                        if (!isFood) {
-                            if (isVirus && defaultmapsettings.virusesRange) {
-                                this.viruses.push(cellObj);
-                            }
-                            this.cells.push(cellObj);
-                            this._cellsDirty = true;
-                            if (!isEjected && (this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
-                                cellObj.isPlayerCell = true;
-                                this.playerColor = color;
-                                cellObj.color = color;
-                                this.playerCells.push(cellObj);
-                            }
-                        } else {
-                            this.food.push(cellObj);
-                        }
-                        this.indexedCells[id] = cellObj;
+                        this.food.push(cellObj);
                     }
-                    if (cellObj.isPlayerCell) name = this.playerNick;
-                    if (name || namePresent) cellObj.targetNick = name;
-                    cellObj.startX = cellObj.x;
-                    cellObj.startY = cellObj.y;
-                    cellObj.startSize = cellObj.size;
-                    cellObj.targetX = x;
-                    cellObj.targetY = y;
-                    cellObj.targetSize = size;
-                    cellObj.updateTime = this.time || Date.now();
+                    this.indexedCells[id] = cellObj;
                     cellObj.isFood = isFood ? 1 : 0;
                     cellObj.isVirus = isVirus;
-                    if (color) cellObj.color = color;
-                    if (skin) cellObj.skin = skin;
-                } else {
-                    // ── UPDATED NODE ──
-                    var cell = this.indexedCells[id];
-                    if (cell) {
-                        cell.startX = cell.x;
-                        cell.startY = cell.y;
-                        cell.startSize = cell.size;
-                        cell.targetX = x;
-                        cell.targetY = y;
-                        cell.targetSize = size;
-                        cell.updateTime = this.time || Date.now();
-                        if (color) cell.color = color;
-                    }
                 }
+                if (cellObj.isPlayerCell) name = this.playerNick;
+                if (name || namePresent) cellObj.targetNick = name;
+                if (skin) cellObj.skin = skin;
+                cellObj.startX = cellObj.x;
+                cellObj.startY = cellObj.y;
+                cellObj.startSize = cellObj.size;
+                cellObj.targetX = x;
+                cellObj.targetY = y;
+                cellObj.targetSize = size;
+                cellObj.updateTime = this.time || Date.now();
             }
 
             // 3. Remove list (UInt16 count)
@@ -44754,6 +44857,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var removeCount = data.getUint16(offset, true); offset += 2;
                 for (var ri = 0; ri < removeCount && offset + 4 <= data.byteLength; ri++) {
                     var removeID = data.getUint32(offset, true); offset += 4;
+                    if (removeID === 0) break;
                     var rcell = this.indexedCells[removeID];
                     if (rcell) rcell.removeCell();
                 }
@@ -44861,6 +44965,9 @@ Most cells eaten   : ${mostCellsEaten}
                 // Sigmally uses Int16 for x,y (not Int32 like agar.io)
                 var x = data.getInt16(offset, true); offset += 2;
                 var y = data.getInt16(offset, true); offset += 2;
+                /* Map rotation, as updateCells and opcode 17 (Delta receiveX/receiveY). */
+                if (window.legendmod.vector[window.legendmod.vnr][0]) x = this.translateX(x);
+                if (window.legendmod.vector[window.legendmod.vnr][1]) y = this.translateY(y);
                 var size = data.getUint16(offset, true); offset += 2;
 
                 var flags = data.getUint8(offset++);
