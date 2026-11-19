@@ -34980,20 +34980,18 @@ function thelegendmodproject() {
                 function rI32() { var v = dv.getInt32(_off.v, true); _off.v += 4; return v; }
                 function rU32() { var v = dv.getUint32(_off.v, true); _off.v += 4; return v; }
                 function rU24() { var b0 = dv.getUint8(_off.v); var b1 = dv.getUint8(_off.v+1); var b2 = dv.getUint8(_off.v+2); _off.v += 3; return (b0 << 16) | (b1 << 8) | b2; }
+                /* Senpa string lengths are u8 (Delta readUTF16StringLength /
+                 * readUTF8StringLength); all len units are always consumed. */
                 function rUTF16Len() {
-                    var len = rU16();
+                    var len = rU8();
                     var s = '';
                     for (var i = 0; i < len; i++) s += String.fromCharCode(rU16());
                     return s;
                 }
                 function rZTStringLen() {
-                    var len = rU16();
+                    var len = rU8();
                     var s = '';
-                    for (var i = 0; i < len; i++) {
-                        var ch = rU8();
-                        if (ch === 0) break;
-                        s += String.fromCharCode(ch);
-                    }
+                    for (var i = 0; i < len; i++) s += String.fromCharCode(rU8());
                     return s;
                 }
 
@@ -35857,28 +35855,21 @@ function thelegendmodproject() {
                 /* Spawning leaves spectate mode: cursor packets must use the player format again. */
                 this._senpaSpectate = false;
                 this.playerNick = nick;
-                // Send nick (opcode 10)
-                var nickBuf = new ArrayBuffer(1 + 2 + nick.length * 2);
+                // Send nick (opcode 10): u8 length + UTF-16 (Delta writeUTF16StringLength)
+                var senpaNick = nick.length > 255 ? nick.substring(0, 255) : nick;
+                var nickBuf = new ArrayBuffer(1 + 1 + senpaNick.length * 2);
                 var nickDV = new DataView(nickBuf);
                 var nOff = 0;
                 nickDV.setUint8(nOff, 10); nOff += 1;
-                nickDV.setUint16(nOff, nick.length, true); nOff += 2;
-                for (var ni = 0; ni < nick.length; ni++) {
-                    nickDV.setUint16(nOff, nick.charCodeAt(ni), true); nOff += 2;
+                nickDV.setUint8(nOff, senpaNick.length); nOff += 1;
+                for (var ni = 0; ni < senpaNick.length; ni++) {
+                    nickDV.setUint16(nOff, senpaNick.charCodeAt(ni), true); nOff += 2;
                 }
                 this.socket.send(nickBuf);
                 // Send tag (opcode 11) — empty
-                var tagBuf = new ArrayBuffer(1 + 2);
-                var tagDV = new DataView(tagBuf);
-                tagDV.setUint8(0, 11);
-                tagDV.setUint16(1, 0, true);
-                this.socket.send(tagBuf);
+                this.socket.send(new Uint8Array([11, 0]).buffer);
                 // Send code (opcode 12) — empty
-                var codeBuf = new ArrayBuffer(1 + 2);
-                var codeDV = new DataView(codeBuf);
-                codeDV.setUint8(0, 12);
-                codeDV.setUint16(1, 0, true);
-                this.socket.send(codeBuf);
+                this.socket.send(new Uint8Array([12, 0]).buffer);
                 // Send spawn (opcode 0 + unitID 0)
                 var spawnBuf = new ArrayBuffer(2);
                 var spawnDV = new DataView(spawnBuf);
