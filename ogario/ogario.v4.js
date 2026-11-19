@@ -30326,6 +30326,16 @@ function thelegendmodproject() {
             var self =
                 this;
 
+            var collisionProbe = { x: 0, y: 0, w: 10, h: 10 };
+            var collisionPoint = null;
+            var collisionTest = function (item) {
+                return (
+                    item &&
+                    item.parent !== self &&
+                    self.sqDist(item, collisionPoint) <= 25
+                );
+            };
+
             for (
                 var pointIndex = 0;
                 pointIndex < len;
@@ -30369,35 +30379,15 @@ function thelegendmodproject() {
                 if (
                     LM.quadtree
                 ) {
+                    // Reuse one probe rect and predicate (no per-point allocations).
+                    collisionProbe.x = curP.x - 5;
+                    collisionProbe.y = curP.y - 5;
+                    collisionPoint = curP;
+
                     affected =
                         LM.quadtree.some(
-                            {
-                                x:
-                                    curP.x -
-                                    5,
-
-                                y:
-                                    curP.y -
-                                    5,
-
-                                w: 10,
-                                h: 10
-                            },
-
-                            function (
-                                item
-                            ) {
-                                return (
-                                    item &&
-                                    item.parent !==
-                                        self &&
-                                    self.sqDist(
-                                        item,
-                                        curP
-                                    ) <=
-                                        25
-                                );
-                            }
+                            collisionProbe,
+                            collisionTest
                         );
                 }
 
@@ -30949,12 +30939,21 @@ function thelegendmodproject() {
                     this.virusColor = defaultSettings.mVirusColor;
                     this.virusStroke = defaultSettings.mVirusStrokeColor;
                 }
-                if (this.virMassShots) {
-                    this.mass = ~~((200 - this.mass) / 14);
+                var rawVirusMass = this.mass;
+                if (this.virMassShots && rawVirusMass < 200) {
+                    this.mass = ~~((200 - rawVirusMass) / 14);
                 }
-                if (defaultmapsettings.virusSound && this.lastMass && this.mass < this.lastMass) {
-                    void application.playSound(application.virusSoundurl);
+                // Compare raw masses tracked here (lastMass is only written by drawMass,
+                // and this.mass may be "shots left"). setMass runs every frame with the
+                // interpolated size, so play at most once per 300 ms per virus.
+                if (defaultmapsettings.virusSound && this._virusSoundMass && rawVirusMass < this._virusSoundMass) {
+                    var virusSoundNow = Date.now();
+                    if (!this._virusSoundAt || virusSoundNow - this._virusSoundAt > 300) {
+                        this._virusSoundAt = virusSoundNow;
+                        void application.playSound(application.virusSoundurl);
+                    }
                 }
+                this._virusSoundMass = rawVirusMass;
                 this.massTxt = this.mass.toString();
             }
             this.massTxt = this.mass.toString();
@@ -31177,17 +31176,21 @@ function thelegendmodproject() {
                 var width = ~~(data.width / (this.scale * _dpr2));
                 var height = ~~(data.height / (this.scale * _dpr2));
                 var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
+                // Fade relative to the inherited alpha (textAlpha, removed-cell fade),
+                // so the bubble does not jump at 2 s and 13 s.
+                var chatBaseAlpha = context.globalAlpha;
                 if (temp < 2000) {
-                    context.globalAlpha = temp / 2000;
+                    context.globalAlpha = chatBaseAlpha * (temp / 2000);
                 } else if (temp > 13000) {
                     temp = 15000 - temp;
-                    context.globalAlpha = temp / 2000;
+                    context.globalAlpha = chatBaseAlpha * (temp / 2000);
                 }
                 if (width > 1 && height > 1) {
                     try {
                         context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
                     } catch (e) { }
                 }
+                context.globalAlpha = chatBaseAlpha;
             }
         };
         this.drawMerge = function (context) {
@@ -31349,12 +31352,16 @@ function thelegendmodproject() {
         this.createStrokeVirusPath = function (shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax) {
             /* Cache Path2D on the cell — only rebuild when size changes */
             var cacheKey = zeroSizeMax * 10000 + pixelSizeTargetMax;
+            /* The spike count depends on virusSpikesRatio too, so it is part of the key. */
+            var spikesRatio = defaultSettings.virusSpikesRatio;
             if (this._virusCachedPath && this._virusCachedPathKey === cacheKey &&
+                this._virusCachedPathRatio === spikesRatio &&
                 this._virusCachedPathX === shadowXpos && this._virusCachedPathY === shadowYpos) {
                 return this._virusCachedPath;
             }
             //const nAngelsOfVirus = ~~(zeroSizeMax * 45 / 98);
-            const nAngelsOfVirus = ~~(zeroSizeMax * defaultSettings.virusSpikesRatio);
+            /* At least 3 spikes: a ratio of 0 would give GROUPSIZE = Infinity and NaN points. */
+            const nAngelsOfVirus = Math.max(3, ~~(zeroSizeMax * spikesRatio) || 0);
             const GROUPSIZE = this.pi2 / nAngelsOfVirus;
             const degreeStep = GROUPSIZE / 2;
             const ctxfx = new Path2D;
@@ -31368,6 +31375,7 @@ function thelegendmodproject() {
             }
             this._virusCachedPath = ctxfx;
             this._virusCachedPathKey = cacheKey;
+            this._virusCachedPathRatio = spikesRatio;
             this._virusCachedPathX = shadowXpos;
             this._virusCachedPathY = shadowYpos;
             return ctxfx;
@@ -31643,8 +31651,11 @@ function thelegendmodproject() {
                     else { e = (n /30) - 1}						
                     style.filter = 'contrast(1.4) sepia(' + e + ')';
                     */
+                    // save/restore so the filter does not tint the nick, mass and indicators drawn later.
+                    style.save();
                     style.filter = 'hue-rotate(-' + n / 60 + 'turn)';
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsGladiator", this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
+                    style.restore();
                     //style.drawImage(iconSpecialSkinEffectsGladiator, this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
                 } else if (this.SpecialEffect === "Hero" || this.SpecialEffect2 === "Hero") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHero", this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5, style);
@@ -31659,7 +31670,7 @@ function thelegendmodproject() {
                         e = n / 30
                     }
                     style.save();
-                    style.globalAlpha = e
+                    style.globalAlpha *= e; // keep the removed-cell fade / transparency
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHero1", this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsHero1, this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1);
                     style.restore();
@@ -31844,7 +31855,7 @@ function thelegendmodproject() {
                                     style.beginPath();
                                     style.arc(this.x, this.y, y + 10, 0, this.pi2, false);
                                     style.fillStyle = this.oppColor;
-                                    style.globalAlpha = 0.45;
+                                    style.globalAlpha *= 0.45; // keep the removed-cell fade / transparency
                                     style.fill();
                                     style.restore();
                                 }
@@ -31860,7 +31871,12 @@ function thelegendmodproject() {
                         var color2 = this.color;
                         var _useFallbackGradient = false;
 
-                        if (typeof color2 !== "string") {
+                        /* Cache the resolved colour per cell; it only changes on a server update. */
+                        if (this._colorSrc === color2 && this._colorSrcSet) {
+                            color2 = this._colorResolved;
+                            _useFallbackGradient = this._colorFallback;
+                        }
+                        else if (typeof color2 !== "string") {
                             color2 = "#808080";
                             _useFallbackGradient = true;
                         }
@@ -31882,6 +31898,12 @@ function thelegendmodproject() {
                                 color2 = "#808080";
                                 _useFallbackGradient = true;
                             }
+                        }
+                        if (this._colorSrc !== this.color || !this._colorSrcSet) {
+                            this._colorSrc = this.color;
+                            this._colorSrcSet = true;
+                            this._colorResolved = color2;
+                            this._colorFallback = _useFallbackGradient;
                         }
 
                         /*
@@ -32453,6 +32475,7 @@ function thelegendmodproject() {
                                  * Skin alpha remains independent from the jelly
                                  * geometry decision.
                                  */
+                                var preSkinAlpha = style.globalAlpha;
                                 if (
                                     (
                                         defaultmapsettings
@@ -32778,6 +32801,8 @@ function thelegendmodproject() {
 
                                     //this.drawSpecialSkin(style, y)
                                 }
+                                // Undo the skin alpha so effects, nick and mass are not faded too.
+                                style.globalAlpha = preSkinAlpha;
                             }
                             else {
                                 if (defaultmapsettings.videoSkins) {
@@ -33867,6 +33892,12 @@ function thelegendmodproject() {
             this.imsoloGhostCells = [];
             this.imsoloPlayersByID = new Map();
             this.protocolFamily = null;
+            /* Per-server chat/friend state: only some servers set these, so a
+             * value from the previous server must not survive a switch. */
+            this.chatableServer = false;
+            this.fbOnline = [];
+            this.imsoloPartyFriend = null;
+            if (this.arrowFB && this.arrowFB[0]) this.arrowFB[0].visible = false;
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
@@ -33875,6 +33906,8 @@ function thelegendmodproject() {
                 var self = this;
                 (async function () {
                     await LM._generateGarixFingerprint();
+                    /* A newer connect() ran during the await: do not open a second socket. */
+                    if (self._connectSeq !== _connectSeq || self.serverType !== 'garix') return;
                     if (self.garixFingerprint) {
                         self.socket = new WebSocket(t, [self.garixFingerprint]);
                     } else {
@@ -33990,10 +34023,16 @@ function thelegendmodproject() {
                             }
                         }, 100);
                         // Timeout after 10 seconds
-                        setTimeout(function() { clearInterval(_waitForInit); }, 10000);
+                        setTimeout(function() {
+                            clearInterval(_waitForInit);
+                            if (!(window._SenpaModule && window._SenpaModule.create) && window.toastr) {
+                                toastr.error('Senpa: WASM module did not initialise, cannot connect.');
+                            }
+                        }, 10000);
                     };
                     script.onerror = function() {
                         console.error('%c[Senpa]%c Failed to load WASM module script', 'color:#fa3', 'color:inherit');
+                        if (window.toastr) toastr.error('Senpa: failed to load the WASM module, cannot connect.');
                     };
                     document.head.appendChild(script);
                 }
@@ -34086,8 +34125,12 @@ function thelegendmodproject() {
             if (this.imsoloHeartbeatInterval) clearInterval(this.imsoloHeartbeatInterval);
             if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                 var self = this;
+                var hbSocket = this.socket;
                 this.imsoloHeartbeatInterval = setInterval(function () {
-                    if (self.socket && self.socket.readyState === WebSocket.OPEN) {
+                    if (self.socket === hbSocket && hbSocket.readyState === WebSocket.CONNECTING) {
+                        return; // slow handshake: wait instead of stopping the heartbeat for good
+                    }
+                    if (self.socket === hbSocket && hbSocket.readyState === WebSocket.OPEN) {
                         var hb = self.createView(1);
                         hb.setUint8(0, 254); // 0xFE
                         self.sendMessage(hb);
@@ -34184,6 +34227,9 @@ function thelegendmodproject() {
                 gView.setUint32(5, this.garixClientTime, true);
                 this.sendBuffer(gView);
                 this.connectionOpened = true;
+                /* Keepalive from onOpen, as Delta does: waiting for DualInfo (161)
+                 * let the server drop the client after 8 s when 161 was late. */
+                this._startGarixPing();
                 console.log('%c[Garix]%c Handshake step 1: sent opcode 171 (proto=' + this.garixProtocol + ' time=' + this.garixClientTime + ')', 'color:#f8a', 'color:inherit');
             } else {
                 // ===== Standard Handshake: 0xFE + 0xFF =====
@@ -34322,6 +34368,7 @@ function thelegendmodproject() {
 
                 // Subsequent messages: decode opcode byte 0 through inverse map
                 // Modify in-place before creating DataView
+                if (raw.length === 0) return; // empty frame: getUint8(0) would throw
                 raw[0] = this.sigOpcodeMapInverse[raw[0]];
                 var data = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
                 var opcode = data.getUint8(0);
@@ -34855,6 +34902,7 @@ function thelegendmodproject() {
             ogario.serverHz = 0;
             if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
             if (this._senpaPingInterval) { clearInterval(this._senpaPingInterval); this._senpaPingInterval = null; }
+            if (this.garixPingInterval) { clearInterval(this.garixPingInterval); this.garixPingInterval = null; }
             /* Cancel the stability timer — connection wasn't stable */
             if (this._reconnStabilityTimer) { clearTimeout(this._reconnStabilityTimer); this._reconnStabilityTimer = null; }
             /* ── Reconnect with mutual exclusion ──
@@ -35007,6 +35055,32 @@ function thelegendmodproject() {
         isSocketOpen() {
             return this.socket !== null && this.socket.readyState === this.socket.OPEN;
         },
+        _startGarixPing() {
+            /* Garix keepalive (Delta GarixProtocol.sendPing): [254] stats request
+             * plus [200][time u32] every 2 s. */
+            var self = this;
+            if (this.garixPingInterval) clearInterval(this.garixPingInterval);
+            this.garixPingInterval = setInterval(function () {
+                if (self.isSocketOpen() && self.serverType === 'garix') {
+                    self.garixPingCounter++;
+                    var sv = self.createView(1);
+                    sv.setUint8(0, 254); // 0xFE stats request
+                    self.sendBuffer(sv);
+                    var pv = self.createView(5);
+                    pv.setUint8(0, 200); // 0xC8
+                    pv.setUint32(1, Date.now() >>> 0, true);
+                    self.sendBuffer(pv);
+                } else {
+                    clearInterval(self.garixPingInterval);
+                    self.garixPingInterval = null;
+                }
+            }, 2000);
+        },
+        _senpaCanSend() {
+            /* Senpa send paths call socket.send directly; the WASM socket may not expose readyState. */
+            var s = this.socket;
+            return !!(s && typeof s.send === 'function' && (s.readyState === undefined || s.readyState === 1));
+        },
         createView(t) {
             return new DataView(new ArrayBuffer(t));
         },
@@ -35061,12 +35135,27 @@ function thelegendmodproject() {
             this.isSpectateEnabled = true;
             if (this.serverType === 'senpa') {
                 this._senpaSpectate = true;
+                // Mode byte of the cursor packet: 2 = follow top (Delta default), 1 = free roam.
+                this._senpaSpecMode = 2;
+                this.isFreeSpectate = false;
                 return; // Senpa spectate is toggled by mouse position opcode
+            }
+            // Sigmally has no plain spectate opcode: use free spectate (qe[18] + qe[19]), as Delta does.
+            if (this.serverType === 'sigmally') {
+                if (this.sigOpcodeMap && !this.isFreeSpectate) this.sendFreeSpectate();
+                return;
             }
             this.sendAction(1);
         },
         sendFreeSpectate() {
             this.isFreeSpectate = !this.isFreeSpectate;
+            // Senpa has no free-spectate opcode: switch the cursor packet's mode byte instead.
+            if (this.serverType === 'senpa') {
+                this._senpaSpectate = true;
+                this.isSpectateEnabled = true;
+                this._senpaSpecMode = this.isFreeSpectate ? 1 : 2;
+                return;
+            }
             // Sigmally: free spectate requires two opcodes: qe[18] + qe[19] with delay
             if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
                 this.sendAction(18);
@@ -35096,7 +35185,7 @@ function thelegendmodproject() {
                 ejDV.setUint8(0, 23);
                 ejDV.setUint8(1, 0); // unitId
                 ejDV.setUint8(2, 0); // isMacro = false
-                this.socket.send(ejBuf);
+                if (this._senpaCanSend()) this.socket.send(ejBuf);
                 return;
             }
             this.sendAction(21);
@@ -35110,7 +35199,7 @@ function thelegendmodproject() {
                 spDV.setUint8(0, 22);
                 spDV.setUint8(1, 0); // unitId
                 spDV.setUint8(2, 1); // split count = 1
-                this.socket.send(spBuf);
+                if (this._senpaCanSend()) this.socket.send(spBuf);
                 return;
             }
             this.sendAction(17);
@@ -35122,7 +35211,7 @@ function thelegendmodproject() {
                 var spBuf = new ArrayBuffer(3);
                 var spDV = new DataView(spBuf);
                 spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 2);
-                this.socket.send(spBuf);
+                if (this._senpaCanSend()) this.socket.send(spBuf);
                 return;
             }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
@@ -35138,7 +35227,7 @@ function thelegendmodproject() {
                 var spBuf = new ArrayBuffer(3);
                 var spDV = new DataView(spBuf);
                 spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 3);
-                this.socket.send(spBuf);
+                if (this._senpaCanSend()) this.socket.send(spBuf);
                 return;
             }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
@@ -35154,7 +35243,7 @@ function thelegendmodproject() {
                 var spBuf = new ArrayBuffer(3);
                 var spDV = new DataView(spBuf);
                 spDV.setUint8(0, 22); spDV.setUint8(1, 0); spDV.setUint8(2, 4);
-                this.socket.send(spBuf);
+                if (this._senpaCanSend()) this.socket.send(spBuf);
                 return;
             }
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
@@ -35228,6 +35317,12 @@ function thelegendmodproject() {
             }
 
             // ===== Sigmally join: JSON spawn via opcode qe[0] =====
+            /* Before the opcode map arrives a raw frame would be decoded by the
+             * server's shuffle table as a random opcode: do not send it. */
+            if (this.serverType === 'sigmally' && (!this.sigOpcodeMap || !this.sigHandshakeDone)) {
+                console.warn('%c[Sigmally]%c Spawn ignored: handshake not complete yet', 'color:#3af', 'color:inherit');
+                return;
+            }
             if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
                 this.playerNick = nick;
                 var spawnJSON = JSON.stringify({
@@ -35251,6 +35346,11 @@ function thelegendmodproject() {
 
             // ===== Senpa join: opcode 10 (nick) + 11 (tag) + 12 (code) + 0 (spawn) =====
             if (this.serverType === 'senpa') {
+                /* WASM still loading or failed: closeConnection() left this.socket null. */
+                if (!this._senpaCanSend()) {
+                    if (window.toastr) toastr.warning('Senpa is not connected yet, please wait or reconnect.');
+                    return;
+                }
                 /* Spawning leaves spectate mode: cursor packets must use the player format again. */
                 this._senpaSpectate = false;
                 this.playerNick = nick;
@@ -35850,7 +35950,7 @@ function thelegendmodproject() {
                     this.socket.send(sigBuf);
                 } else if (this.serverType === 'senpa') {
                     // Senpa: opcode 20 + spectate(u8) + [unitId(u8) if !spectate] + x(i32) + y(i32)
-                    var isSpec = this._senpaSpectate ? 1 : 0;
+                    var isSpec = this._senpaSpectate ? (this._senpaSpecMode || 1) : 0;
                     var senpaBufLen = isSpec ? 10 : 11; // 1+1+4+4 or 1+1+1+4+4
                     var senpaBuf = new ArrayBuffer(senpaBufLen);
                     var senpaDv = new DataView(senpaBuf);
@@ -36268,7 +36368,9 @@ function thelegendmodproject() {
                 var decoded = wasm.decode(
                     compressedSize, outputSize
                 );
-                if (decoded >= 0) {
+                /* A short decode means truncated/corrupt input: the zero tail
+                 * would be parsed as phantom cell records. */
+                if (decoded === outputSize) {
                     var out = new Uint8Array(outputSize);
                     out.set(
                         wasm.mem.subarray(
@@ -36295,6 +36397,11 @@ function thelegendmodproject() {
                 if (litLen === 15) {
                     var addByte;
                     do {
+                        if (sPos >= sEnd) {
+                            throw new RangeError(
+                                "LZ4: truncated literal length"
+                            );
+                        }
                         addByte = src[sPos++];
                         litLen += addByte;
                     } while (addByte === 255);
@@ -36313,6 +36420,11 @@ function thelegendmodproject() {
                     dPos += litLen;
                 }
                 if (sPos >= sEnd) break;
+                if (sPos + 2 > sEnd) {
+                    throw new RangeError(
+                        "LZ4: truncated match offset"
+                    );
+                }
 
                 var offset =
                     src[sPos] | (src[sPos + 1] << 8);
@@ -36334,9 +36446,19 @@ function thelegendmodproject() {
                 if ((token & 0xF) === 15) {
                     var addByte2;
                     do {
+                        if (sPos >= sEnd) {
+                            throw new RangeError(
+                                "LZ4: truncated match length"
+                            );
+                        }
                         addByte2 = src[sPos++];
                         matchLen += addByte2;
                     } while (addByte2 === 255);
+                }
+                if (dPos + matchLen > outputSize) {
+                    throw new RangeError(
+                        "LZ4: match run out of bounds"
+                    );
                 }
 
                 var matchPos = dPos - offset;
@@ -36357,7 +36479,7 @@ function thelegendmodproject() {
                 }
             }
 
-            if (dPos < 0 || dPos > outputSize) {
+            if (dPos !== outputSize) {
                 throw new RangeError(
                     "LZ4 decompression failed"
                 );
@@ -36862,8 +36984,14 @@ function thelegendmodproject() {
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
-                case 200: // 0xC8 — MapEvent (Expanding Land) or ShopResponse (Agar2)
-                    if (this.serverType === 'agar2') {
+                case 200: // 0xC8 — MapEvent (Expanding Land) or ShopResponse (Agar2/Imsolo)
+                    /* Only Expanding Land sends MapEvent; Imsolo uses 0xC8 for ShopResponse
+                     * like Agar2, and other private servers must not deform the map. */
+                    if (!(this.serverType === 'agar2' || this.serverType === 'imsolo') &&
+                        !(LM.isLegendWorld || this.isLegendWorld || this.serverType === 'expandingland')) {
+                        break;
+                    }
+                    if (this.serverType === 'agar2' || this.serverType === 'imsolo') {
                         /*
                          * Agar2 ShopResponse fixed prefix:
                          * action(1) + success(1) + coins(4) + remaining(4)
@@ -36962,6 +37090,9 @@ function thelegendmodproject() {
                     break;
 
                 case 203: // 0xCB — Expanding Land Unified Stats (shared + per-player decay)
+                    if (!(LM.isLegendWorld || this.isLegendWorld || this.serverType === 'expandingland')) {
+                        break;
+                    }
                     try {
                         if (data.byteLength < 5) {
                             console.warn('[Protocol] Ignoring truncated opcode 203 packet:', data.byteLength);
@@ -37021,21 +37152,13 @@ function thelegendmodproject() {
                         this.garixTabID1 = data.getUint16(s, true); s += 2;
                         this.garixTabID2 = data.getUint16(s, true); s += 2;
                         console.log('%c[Garix]%c DualInfo: tabs=' + gTabCount + ' tabID1=' + this.garixTabID1 + ' tabID2=' + this.garixTabID2, 'color:#f8a', 'color:inherit');
-                        // Start Garix ping keepalive (server disconnects after 8s without opcode 200)
-                        var self = this;
-                        if (this.garixPingInterval) clearInterval(this.garixPingInterval);
-                        this.garixPingInterval = setInterval(function () {
-                            if (self.isSocketOpen() && self.serverType === 'garix') {
-                                self.garixPingCounter++;
-                                var pv = self.createView(5);
-                                pv.setUint8(0, 200); // 0xC8
-                                pv.setUint32(1, self.garixPingCounter, true);
-                                self.sendBuffer(pv);
-                            } else {
-                                clearInterval(self.garixPingInterval);
-                                self.garixPingInterval = null;
-                            }
-                        }, 3000);
+                        // Garix ping keepalive is started in onOpen (server disconnects after 8s without opcode 200)
+                        if (!this.garixPingInterval) this._startGarixPing();
+                    } else {
+                        /* agar.io: friend gone, hide the Facebook friend arrow (was a
+                         * second, unreachable case 161 label). */
+                        window.testobjectsOpcode161 = data;
+                        if (this.arrowFB && this.arrowFB[0]) this.arrowFB[0].visible = false;
                     }
                     break;
                 case 172: // 0xAC — Handshake Seed (Garix)
@@ -37083,12 +37206,7 @@ function thelegendmodproject() {
                         }
 
                         var authSuccess = data.getUint8(s++);
-                        var authReason = '';
-                        while (s < data.byteLength) {
-                            var ch = data.getUint8(s++);
-                            if (ch === 0) break;
-                            authReason += String.fromCharCode(ch);
-                        }
+                        var authReason = encode(); // UTF-8, zero-terminated
                         console.log('%c[Garix]%c Auth result: ' + (authSuccess ? 'SUCCESS' : 'FAIL') + (authReason ? ' reason=' + authReason : ''), authSuccess ? 'color:#3f3' : 'color:#f33', 'color:inherit');
                     }
                     break;
@@ -37118,18 +37236,15 @@ function thelegendmodproject() {
                     } else if (this.serverType === 'expandingland') {
                         if (s < data.byteLength) {
                             var toastType = data.getUint8(s++);
-                            var toastMsg = "";
-                            while (s < data.byteLength) {
-                                var ch = data.getUint8(s++);
-                                if (ch === 0) break;
-                                toastMsg += String.fromCharCode(ch);
-                            }
+                            /* The server writes UTF-8; toastr renders HTML, so escape it. */
+                            var toastMsg = encode();
                             if (toastMsg) {
                                 console.log('%c[ADMIN NOTICE]%c ' + toastMsg, 'color:#fa0;font-weight:bold;', 'color:inherit;');
                                 if (window.toastr) {
-                                    if (toastType === 1) toastr.warning(toastMsg, "Admin Notice");
-                                    else if (toastType === 2) toastr.error(toastMsg, "Admin Notice");
-                                    else toastr.info(toastMsg, "Admin Notice");
+                                    var toastMsgSafe = application.escapeHTML(toastMsg);
+                                    if (toastType === 1) toastr.warning(toastMsgSafe, "Admin Notice");
+                                    else if (toastType === 2) toastr.error(toastMsgSafe, "Admin Notice");
+                                    else toastr.info(toastMsgSafe, "Admin Notice");
                                 }
                             }
                         }
@@ -37156,17 +37271,14 @@ function thelegendmodproject() {
                     } else {
                         if (s < data.byteLength) {
                             var adminStatus = data.getUint8(s++);
-                            var adminMsg = "";
-                            while (s < data.byteLength) {
-                                var ch = data.getUint8(s++);
-                                if (ch === 0) break;
-                                adminMsg += String.fromCharCode(ch);
-                            }
+                            /* The server writes UTF-8; toastr renders HTML, so escape it. */
+                            var adminMsg = encode();
                             if (adminMsg) {
                                 console.log('%c[ADMIN RESPONSE]%c ' + adminMsg, 'color:#0f0;font-weight:bold;', 'color:inherit;');
                                 if (window.toastr) {
-                                    if (adminStatus === 0) toastr.success(adminMsg, "Admin Command");
-                                    else toastr.error(adminMsg, "Admin Command");
+                                    var adminMsgSafe = application.escapeHTML(adminMsg);
+                                    if (adminStatus === 0) toastr.success(adminMsgSafe, "Admin Command");
+                                    else toastr.error(adminMsgSafe, "Admin Command");
                                 }
                             }
                         }
@@ -37248,19 +37360,19 @@ function thelegendmodproject() {
                         // Imsolo/Agar2 uses bit 2 (0x04) for moderator, Garix uses its own flags
                         mod = (this.serverType === 'imsolo' || this.serverType === 'agar2') ? !!(flag & 4) : !!(flag & 32);
 
+                    /* Decide the style before renaming (the old name === "SERVER" check ran
+                     * after the rename and never matched), and strip the {skin} tag before
+                     * adding prefixes so they are not cut off. */
+                    var caseof = server ? 102 : 101;
+                    if (name.charAt(0) === '{' && name.includes('}')) {
+                        name = name.slice(name.indexOf('}') + 1);
+                    }
                     if (server && name !== "SERVER") name = "[SERVER] " + name;
                     if (name === "SERVER") name = "[SERVER]"
                     if (admin) name = "[ADMIN] " + name;
                     if (mod) name = "[MOD] " + name;
                     //var wait = Math.max(3000, 1000 + message.length * 150);
                     var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-                    var caseof = 101
-                    if (name === "SERVER") {
-                        caseof = 102
-                    }
-                    if (name.includes('}')) {
-                        name = name.split('}')[1]
-                    }
                     if (message.includes("E = split bots")) {
                         message = "For bot commands look at Hotkeys"
                     }
@@ -37278,7 +37390,16 @@ function thelegendmodproject() {
                         var reconnWs = this.ws;
                         console.log(consoleMsgLM + ' Server restart detected, reconnecting in 5s to ' + reconnWs);
                         this._reconnAttempts = 0;
-                        setTimeout(function () {
+                        /* One pending timer only (countdown messages repeat "restarting"),
+                         * and reconnect only if still on that server and the socket really
+                         * went down without onClose's own auto-reconnect pending. */
+                        if (this._restartReconnTimer) clearTimeout(this._restartReconnTimer);
+                        var restartSelf = this;
+                        this._restartReconnTimer = setTimeout(function () {
+                            restartSelf._restartReconnTimer = null;
+                            if (restartSelf.ws !== reconnWs) return;
+                            if (restartSelf._reconnTimer) return;
+                            if (restartSelf.socket && restartSelf.socket.readyState <= 1) return;
                             if (window.core && window.core.connect) {
                                 window.core.connect(reconnWs);
                             }
@@ -37372,7 +37493,7 @@ function thelegendmodproject() {
                                 rawText.includes('$')
                             ) {
                                 try {
-                                    var uidMatch = rawText.match(/(?:google|discord|facebook)$([0-9a-f-]{8,})/i);
+                                    var uidMatch = rawText.match(/(?:google|discord|facebook)\$([0-9a-f-]{8,})/i); // literal "$" separator
                                     if (uidMatch) {
                                         window.expandingLandUID =
                                             uidMatch[1].substr(0, 36);
@@ -37963,16 +38084,15 @@ function thelegendmodproject() {
                         friendNick = null;
                     for (; s < data.byteLength;) {
                         num++
-                        friendX = data.getUint16(s, true);
-                        if (friendX > 32250) {
-                            friendX -= 65500;
-                        }
+                        if (s + 4 > data.byteLength) break;
+                        /* Signed 16-bit server coordinates (Delta: readInt16); the old
+                         * "-65500" shifted negative values by 36. Mirror like other cells. */
+                        friendX = data.getInt16(s, true);
                         s += 2;
-                        friendY = data.getUint16(s, true);
-                        if (friendY > 32250) {
-                            friendY -= 65500;
-                        }
+                        friendY = data.getInt16(s, true);
                         s += 2;
+                        if (window.legendmod.vector[window.legendmod.vnr][0]) friendX = this.translateX(friendX);
+                        if (window.legendmod.vector[window.legendmod.vnr][1]) friendY = this.translateY(friendY);
                         if (s < data.byteLength) {
                             friendNick = encode();
                         } else {
@@ -37990,11 +38110,7 @@ function thelegendmodproject() {
                         this.arrowFB[0].nick = friendNick != "" ? friendNick : this.arrowFB[0].nick;
                     }
                     break;
-                case 161:
-                    //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                    window.testobjectsOpcode161 = data;
-                    this.arrowFB[0].visible = false;
-                    break;
+                /* case 161 (friend arrow hide) is merged into the Garix DualInfo case above. */
                 case 101:
                     window.testobjectsOpcode101 = data;
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Opcode 101 (Claim Gifts Response)');
@@ -38416,6 +38532,12 @@ function thelegendmodproject() {
             if (defaultmapsettings.showDevConsole) console.log(r);
             switch (type) {
                 case 11:
+                    /* Without the sub-message nothing below can run: do not mark the
+                     * connection logged in (account requests would be ungated). */
+                    if (!r.uncompressedData.loginResponseField) {
+                        console.warn('[LM] Login response (type 11) without loginResponseField, ignored');
+                        break;
+                    }
                     if (LM.isLegendWorld) {
                         window._lw_protobuf102Received = true; /* debug marker */
                         /* Transition: login confirmed by server */
@@ -38570,9 +38692,14 @@ function thelegendmodproject() {
                     break;
                 case 20:
                     var u = r.uncompressedData.disconnectField;
-                    this.disconnectMessage(u.reason);
-                    /* Read by master.onDisconnect() to avoid reconnect loops on fatal reasons. */
+                    /* Read by master.onDisconnect() to avoid reconnect loops on fatal reasons.
+                     * Record it first: a missing sub-message must not throw before this. */
                     window._lmLastDisconnect = { reason: u && u.reason, time: Date.now() };
+                    if (!u) {
+                        console.warn('[LM] Disconnect (type 20) without disconnectField');
+                        break;
+                    }
+                    this.disconnectMessage(u.reason);
 
                     //window.loggedIn = false;
                     //window.logout && window.logout();
@@ -38659,7 +38786,8 @@ function thelegendmodproject() {
                     }
 
                     if (u.xpLevelUpdates && u.xpLevelUpdates.length) {
-                        var iXp = u.xpLevelUpdates[0];
+                        /* The official client applies every update and keeps the last one. */
+                        var iXp = u.xpLevelUpdates[u.xpLevelUpdates.length - 1];
                         var gLevel = Number(iXp.finalLevel) || 1;
                         var gXp = Number(iXp.finalXpForLevel) || 0;
                         challengeFinalLevel = gLevel;
@@ -38993,7 +39121,10 @@ function thelegendmodproject() {
                          * Result zero may be a legitimate protocol value,
                          * but an absent result is not a successful purchase.
                          */
+                        /* protobufjs puts the proto3 default (0) on the prototype,
+                         * so only an own property is a real result. */
                         var hasSoftPurchaseResult =
+                            Object.prototype.hasOwnProperty.call(sp, 'result') &&
                             sp.result !==
                                 undefined &&
                             sp.result !==
@@ -39069,8 +39200,9 @@ function thelegendmodproject() {
                             );
                         }
 
+                        /* Official enum: success = 1, insufficient_funds = 2,
+                         * preconditions_failed = 3; 0 is not a valid value. */
                         var purchaseSucceeded =
-                            spResult === 0 ||
                             spResult === 1;
 
                         if (
@@ -39217,7 +39349,7 @@ function thelegendmodproject() {
                         var iap = r.uncompressedData.inappPurchaseResponseField;
                         if (iap) {
                             console.log("[LM] IAP Response — result: " + iap.result + ", txn: " + iap.transactionId);
-                            if (iap.result === 1 || iap.result === 0) {
+                            if (iap.result === 1) { // 0 = field absent, not success
                                 toastr.success('<b>[SERVER]:</b> In-app purchase confirmed! &#x2714;');
                                 if (iap.productUpdates && iap.productUpdates.length) {
                                     this.updateProducts(iap.productUpdates);
@@ -39269,7 +39401,7 @@ function thelegendmodproject() {
                         if (ob) {
                             var obResult = ob.result || 0;
                             console.log("[LM] Offer Bundle Response — result: " + obResult);
-                            if (obResult === 1 || obResult === 0) {
+                            if (obResult === 1) { // 0 = field absent, not success
                                 toastr.success('<b>[SERVER]:</b> Bundle purchased successfully! &#x2714;');
                                 if (ob.productUpdates && ob.productUpdates.length) {
                                     this.updateProducts(ob.productUpdates);
@@ -39449,12 +39581,15 @@ function thelegendmodproject() {
                             if (oppr.productUpdates && oppr.productUpdates.length) {
                                 this.updateProducts(oppr.productUpdates);
                             }
-                            if (oppr.userPotions && oppr.userPotions.length) {
-                                this.updatePotions(oppr.userPotions);
-                            }
-                            if (oppr.newUserPotion) {
-                                this.newPotion(oppr.newUserPotion);
+                            /* The schema (and the official proto) is result/productId/productUpdates:
+                             * there is no userPotions/newUserPotion here, so report by result. */
+                            var opprResult = Number(oppr.result) || 0;
+                            if (opprResult === 1) {
                                 toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                            } else if (opprResult === 2) {
+                                toastr.error('<b>[SERVER]:</b> Potion not opened — not enough currency.');
+                            } else {
+                                toastr.warning('<b>[SERVER]:</b> Potion not opened (code ' + opprResult + ').');
                             }
                         }
                     } catch (opprErr) {
@@ -39494,9 +39629,9 @@ function thelegendmodproject() {
                             if (u.productUpdates && u.productUpdates.length) {
                                 this.updateProducts(u.productUpdates);
                             }
-                            if (u.userPotions && u.userPotions.length) {
-                                this.updatePotions(u.userPotions);
-                            }
+                            /* The response carries the full slot list: an empty list means
+                             * every slot is now empty (opening the last potion). */
+                            this.updatePotions(Array.from(u.userPotions || []));
                             if (window._userInitiatedPotionOpen) {
                                 window._userInitiatedPotionOpen = false;
 
@@ -40010,8 +40145,16 @@ function thelegendmodproject() {
                     try {
                         var rlr = r.uncompressedData.activateRewardLinkResponseField;
                         if (rlr) {
-                            console.log("[LM] Reward Link Response received");
-                            if (rlr.productUpdates && rlr.productUpdates.length) {
+                            /* result: 1 = success, 2 = already claimed, 3 = expired. */
+                            var rlrResult = Number(rlr.result) || 0;
+                            console.log("[LM] Reward Link Response received, result: " + rlrResult);
+                            if (rlrResult === 2) {
+                                toastr.error('<b>[SERVER]:</b> This reward link was already claimed.');
+                            } else if (rlrResult === 3) {
+                                toastr.error('<b>[SERVER]:</b> This reward link has expired.');
+                            } else if (rlrResult !== 1) {
+                                toastr.warning('<b>[SERVER]:</b> Reward link not activated (code ' + rlrResult + ').');
+                            } else if (rlr.productUpdates && rlr.productUpdates.length) {
                                 this.updateProducts(rlr.productUpdates);
                                 toastr.success('<b>[SERVER]:</b> Reward link activated! &#x2714; ' + rlr.productUpdates.length + ' item(s) claimed');
                                 try { this.createSkinsHTML(); } catch (e) { }
@@ -40540,8 +40683,14 @@ function thelegendmodproject() {
             var closeBtn = document.getElementById('lm-go-close');
             if (closeBtn) closeBtn.addEventListener('click', function(e) { e.stopPropagation(); dismissGameOver(); });
 
-            /* Auto-dismiss after 12 seconds */
-            setTimeout(dismissGameOver, 12000);
+            /* Auto-dismiss after 12 seconds. Cancel the previous modal's timer so it
+             * does not close this one early (dismissGameOver looks the modal up by id). */
+            if (this._gameOverDismissTimer) clearTimeout(this._gameOverDismissTimer);
+            var goSelf = this;
+            this._gameOverDismissTimer = setTimeout(function () {
+                goSelf._gameOverDismissTimer = null;
+                dismissGameOver();
+            }, 12000);
         },
         updateEvents(event) {
             /*
@@ -42188,16 +42337,24 @@ function thelegendmodproject() {
         createSkinsHTML() {
             const s = this.user.skins;
             $("#player-skins").html(``);
+            /* Image callbacks of an earlier call must not append after this clear. */
+            var app = this;
+            var gen = this._skinsHtmlGen = (this._skinsHtmlGen || 0) + 1;
             var callback = function (img) {
+                if (gen !== app._skinsHtmlGen) return;
                 img.style = "display:inline-block;width:100px;height:100px;border-radius: 50px;";
                 $("#player-skins").append(img);
             };
             var seen = {};
+            var seenUrl = {};
             for (var [key, value] of Object.entries(s)) {
                 if (!value || !value.productId) continue;
-                /* Skip duplicates (skins are dual-keyed by URL and productId) */
+                /* Skip duplicates (skins are dual-keyed by URL and productId; a replaced
+                 * lower level keeps its old productId key but has the same url) */
                 if (seen[value.productId]) continue;
                 seen[value.productId] = true;
+                if (value.url && seenUrl[value.url]) continue;
+                if (value.url) seenUrl[value.url] = true;
                 if (value.url) {
                     this.getImg(value.url, value.productId, callback);
                 }
@@ -43132,6 +43289,9 @@ Most cells eaten   : ${mostCellsEaten}
 
             switch (message.readUInt8(e++)) {
                 case 16:
+                    /* Same as uncompressed opcode 16: agar.io sends most cell updates
+                     * here, so the dead main client's viewport must be dropped too. */
+                    if (window.mainPlayerDeadMbActive) break;
                     var _tPkt = performance.now();
                     this.updateCells(message, e);
                     this.countPps();
@@ -43335,15 +43495,18 @@ Most cells eaten   : ${mostCellsEaten}
                 window.customskinsname = null;
             }
             //if ($("#ao2t-capture").length && $("#ao2t-capture").hasClass("connected")) { //if existed and connected and visible
+            /* Copy instead of aliasing: the map-rotation handler flips ghostCells and
+             * predictedGhostCells separately, so shared objects were flipped twice. */
             for (var e = 0; e < legendmod.ghostCells.length; e++) {
-                window.predictedGhostCells[e] = {};
-                window.predictedGhostCells[e] = legendmod.ghostCells[e];
+                window.predictedGhostCells[e] = Object.assign({}, legendmod.ghostCells[e]);
                 if (legendmod.leaderboard[e]) {
                     window.predictedGhostCells[e].id = legendmod.leaderboard[e].id;
                     window.predictedGhostCells[e].nick = legendmod.leaderboard[e].nick;
                     window.predictedGhostCells[e].isFriend = legendmod.leaderboard[e].isFriend;
                 }
             }
+            /* Drop entries beyond the current ghost count (or from the previous server). */
+            window.predictedGhostCells.length = legendmod.ghostCells.length;
             if (window.clientProfiler) window.clientProfiler.recordLeaderboard(performance.now() - _tLb);
         },
         targetingLead(o) {
@@ -43533,10 +43696,18 @@ Most cells eaten   : ${mostCellsEaten}
                 !this.connectionIntegrity &&
                 !temp2;
 
+            /*
+             * Official agar.io (as in Delta): only a border larger than
+             * 14000 x 14000 is the full map, and once it is fixed later opcode 64
+             * packets on this connection are ignored (agar.io also sends smaller
+             * ones during play, which shifted the offset).
+             */
             var isFullPacket =
-                isGenericPrivate ||
-                (pWidth > 6000 && pHeight > 6000) ||
-                (pWidth >= (this.mapSize - 500));
+                (this.connectionIntegrity && !LM.isLegendWorld)
+                    ? (!this.mapOffsetFixed && pWidth > 14000 && pHeight > 14000)
+                    : (isGenericPrivate ||
+                        (pWidth > 6000 && pHeight > 6000) ||
+                        (pWidth >= (this.mapSize - 500)));
 
             if (!this.mapOffsetFixed || isFullPacket) {
                 if (this.connectionIntegrity || temp2) {
@@ -43573,12 +43744,14 @@ Most cells eaten   : ${mostCellsEaten}
                             this.mapOffsetY =
                                 this.mapSize / 2;
                         } else {
+                            /* Centre each axis on its own midpoint. Same value as
+                             * mapOffset - right/bottom for the axis equal to mapSize,
+                             * but a shorter axis of a non-square border was
+                             * bottom-aligned before. */
                             this.mapOffsetX =
-                                this.mapOffset -
-                                right;
+                                -(left + right) / 2;
                             this.mapOffsetY =
-                                this.mapOffset -
-                                bottom;
+                                -(top + bottom) / 2;
                         }
 
                         this.mapMinX = left;
@@ -43649,8 +43822,14 @@ Most cells eaten   : ${mostCellsEaten}
                 }
 
                 /* Fast-path: if skin already cached for this key, skip the expensive
-                 * 7-branch resolution (regex, includes, toLowerCase per packet). */
-                if (application.customSkinsMap[playerKey]) return;
+                 * 7-branch resolution (regex, includes, toLowerCase per packet).
+                 * Only while the packet's skin is the one resolved last time for this
+                 * key: a respawn with another skin must re-resolve. Entries set by
+                 * other sources (no recorded skin) keep precedence as before. */
+                var lastSkinByKey = window._lmVanillaSkinLastG || (window._lmVanillaSkinLastG = Object.create(null));
+                var lastSkin = lastSkinByKey[playerKey];
+                if (application.customSkinsMap[playerKey] && (lastSkin === undefined || lastSkin === (g || ''))) return;
+                lastSkinByKey[playerKey] = g || '';
 
                 var skinUrl = null;
                 var isAnimated = false;
@@ -43903,6 +44082,12 @@ Most cells eaten   : ${mostCellsEaten}
                     eaten.updateTime =
                         this.time;
 
+                    // moveCell() interpolates start -> target from updateTime:
+                    // start from the rendered state, not the previous packet.
+                    eaten.startX = eaten.x;
+                    eaten.startY = eaten.y;
+                    eaten.startSize = eaten.size;
+
                     eaten.removeCell();
                 }
             }
@@ -44025,13 +44210,11 @@ Most cells eaten   : ${mostCellsEaten}
             // Death check
             if (this.removePlayerCell && !this.playerCells.length) {
                 if (defaultmapsettings.mbSwitchAfterDeath && LM.playerCellsMulti && LM.playerCellsMulti.length) {
-                    // Bug 8 fix: find first living multibox unit instead of hardcoding 1
-                    if (application && typeof application.switchToNextLivingUnit === 'function') {
-                        window.multiboxPlayerEnabled = null; // start from main slot
-                        application.switchToNextLivingUnit(true);
-                    } else {
-                        window.multiboxPlayerEnabled = 1;
-                    }
+                    /* application.switchToNextLivingUnit never existed, so this always
+                     * forced unit 1 and skipped the death handling. Like updateCells: end
+                     * the game and let onPlayerDeath() switch to the first living unit. */
+                    this.play = false;
+                    application.onPlayerDeath();
                     this.removePlayerCell = false;
                 } else {
                     this.play = false;
@@ -44107,7 +44290,12 @@ Most cells eaten   : ${mostCellsEaten}
                         victim.targetSize = victim.size;
 
                     }
-                    victim.time = this.time;
+                    // moveCell() interpolates start -> target from updateTime:
+                    // start from the rendered state, not the previous packet.
+                    victim.startX = victim.x;
+                    victim.startY = victim.y;
+                    victim.startSize = victim.size;
+                    victim.time = victim.updateTime = this.time;
                     victim.removeCell();
                 }
             }
@@ -44887,14 +45075,15 @@ Most cells eaten   : ${mostCellsEaten}
                 var rawServerColor = color;
                 if (!isVirus && !isFood) {
                     if (name != "" && this.gameMode != ":teams" && this.gameMode != ":party") {
-                        if (LM.cellcolors[name]) {
+                        /* Team colour first: a nick cached before the team relay gave its
+                         * colour must not keep the raw server colour for the session. */
+                        var _tmColor = this._teamColorMap ? this._teamColorMap.get(name) : undefined;
+                        if (_tmColor) {
+                            color = _tmColor;
+                        } else if (LM.cellcolors[name]) {
                             color = LM.cellcolors[name];
-                        } else {
-                            /* O(1) Map lookup instead of O(N) forEach */
-                            var _tmColor = this._teamColorMap ? this._teamColorMap.get(name) : undefined;
-                            if (_tmColor) color = _tmColor;
                         }
-                        if (!LM.cellcolors[name] && color) LM.cellcolors[name] = color;
+                        if (!_tmColor && !LM.cellcolors[name] && color) LM.cellcolors[name] = color;
                         if (rawServerColor && color) {
                             if (!this._colorByRawMap) this._colorByRawMap = new Map();
                             this._colorByRawMap.set(rawServerColor, color);
