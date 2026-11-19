@@ -655,9 +655,8 @@ ec="`; elem.appendChild(script); } }, 100)";showCode();
     document.getElementById(id).select();
   }
   function c(id) {
-    var copyElement = document.createElement('input');
-    copyElement.setAttribute('type', 'text');
-    copyElement.setAttribute('value', document.getElementById(id).value);
+    var copyElement = document.createElement('textarea');
+    copyElement.value = document.getElementById(id).value;
     copyElement = document.body.appendChild(copyElement);
     copyElement.select();
     document.execCommand('copy');
