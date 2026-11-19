@@ -1084,6 +1084,14 @@ class Spect {
                 toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Captcha requested from Multibox client. Multibox closed");
                 console.log('[SPECT] case 85');
                 this.terminate()
+                /* The v2 captcha is not answered on this socket, so really close the
+                 * unit: left connected it stayed in multibox switching and every
+                 * respawn() on it got another 85. */
+                this.closeConnection()
+                var closedIndex = spects.indexOf(this)
+                if (closedIndex !== -1) spects.splice(closedIndex, 1)
+                if (window.multiboxPlayerEnabled === this.number) window.multiboxPlayerEnabled = null
+                if (this.player && !spects.some(function (s) { return s && s.player; })) legendmod.multiBoxPlayerExists = false
 
                 break;
             case 87:
