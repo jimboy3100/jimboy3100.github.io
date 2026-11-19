@@ -185,7 +185,10 @@ class Spect {
 
     onopen() {
         console.log('[SPECT] Game server socket ' + this.number + ' open')
-        this._reconnectAttempts = 0;
+        /* Do not reset the backoff here: a server that accepts and then kicks (login
+         * elsewhere, expired token) would loop every second. onclose resets it only
+         * after the socket stayed open for a while. */
+        this._openedAt = Date.now();
 
 
         this.clientVersion = window.master.clientVersion
@@ -250,6 +253,8 @@ class Spect {
              * resent a dead/expired token and, after "login elsewhere", kicked
              * the other session every second.
              */
+            if (this._openedAt && Date.now() - this._openedAt > 60000) this._reconnectAttempts = 0;
+            this._openedAt = 0;
             this._reconnectAttempts = (this._reconnectAttempts || 0) + 1;
             if (this._reconnectAttempts > 8) {
                 console.warn('[SPECT] Unit ' + this.number + ' gave up reconnecting after 8 attempts');
