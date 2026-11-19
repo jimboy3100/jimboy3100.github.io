@@ -1130,11 +1130,19 @@ function legendmaster(self) {
                     d
                 );
 
+            /* This join supersedes any pending findServer reply or backoff, and a newer
+             * region/mode choice must win over a late getToken reply. */
+            var joinGeneration = ++this.connectionGeneration;
+            clearTimeout(this.findServerTimer);
+            this.findServerTimer = null;
+            ++this.curValidFindServer;
+
             this.makeMasterRequest(
                 headers.endpoint_version +
                     "/getToken",
                 label,
                 function(moduleParams) {
+                    if (joinGeneration !== scopeHeaderOverrides.connectionGeneration) return;
                     var endpoint =
                         moduleParams &&
                         moduleParams.endpoints &&
@@ -1163,6 +1171,7 @@ function legendmaster(self) {
                         .setPartyState("9");
                 },
                 function() {
+                    if (joinGeneration !== scopeHeaderOverrides.connectionGeneration) return;
                     scopeHeaderOverrides
                         .setPartyState("6");
                     scopeHeaderOverrides._lmPartyJoinFailed(previousMode);
