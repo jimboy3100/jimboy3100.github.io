@@ -24926,8 +24926,12 @@ function thelegendmodproject() {
                     $("#active-parties").empty();
                     $(".party-panel").hide();
                 }
+                /* onJoin -> connect -> flushData resets the game's alive state; keep it. */
+                var _lmWasPlaying = ogario.play, _lmColor = ogario.playerColor;
                 this.onJoin();
-                if (ogario.play) {
+                if (_lmWasPlaying) {
+                    ogario.play = true;
+                    ogario.playerColor = _lmColor;
                     this.onPlayerSpawn();
                 }
             }
