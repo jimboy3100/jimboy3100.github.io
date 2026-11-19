@@ -43345,7 +43345,10 @@ Most cells eaten   : ${mostCellsEaten}
             this.foodMulti = []; //for multi fix
             this.viruses = [];
             this.removedCells = [];
-            if (typeof spects !== "undefined" && spects) {
+            /* Only a connection-level flush resets the multibox units. A ClearAll packet or
+             * the Expanding Land respawn flush keeps their sockets, so their own-cell IDs
+             * and spectate state must survive (they come back only with opcode 32). */
+            if (_connectionLevelFlush && typeof spects !== "undefined" && spects) {
                 for (var s = 0; s < spects.length; s++) {
                     if (spects[s] && typeof spects[s].flushCellsData === "function") {
                         spects[s].flushCellsData();
