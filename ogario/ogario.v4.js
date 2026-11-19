@@ -3584,6 +3584,21 @@ function decodeMobileData(data) {
     return window.mesega.decode(data);
 }
 
+/*
+ * Envelopes with contentType != 1 carry the Req zlib-compressed in compressedData
+ * (official client: haxe_zip_Uncompress.run, i.e. RFC 1950). Inflate with the
+ * browser's DecompressionStream and decode the inner message. Returns a Promise.
+ */
+window.decodeCompressedMobileData = function (bytes) {
+    if (typeof DecompressionStream !== 'function') {
+        return Promise.reject(new Error('DecompressionStream not supported'));
+    }
+    var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'));
+    return new Response(stream).arrayBuffer().then(function (buf) {
+        return compressed.decode(new Uint8Array(buf));
+    });
+};
+
 function encodeProtoVarint(value) {
     var number = Number(value);
 
@@ -39007,6 +39022,16 @@ function thelegendmodproject() {
                     var hex = Array.from(new Uint8Array(msg)).map(function (b) { return b.toString(16).padStart(2, '0') }).join(' ');
                     console.error('[LW 102 DECODE FAIL] len=' + msg.byteLength + ' hex=' + hex, decodeErr);
                 }
+                return;
+            }
+            /* Compressed envelope: inflate first, then handle it like an uncompressed one. */
+            if (response && !response.uncompressedData && response.compressedData && response.compressedData.length) {
+                var selfLM = this;
+                window.decodeCompressedMobileData(response.compressedData).then(function (req) {
+                    selfLM.unpackageMessage({ contentType: 1, uncompressedData: req });
+                }).catch(function (inflateErr) {
+                    console.warn('[LM] Could not inflate compressed 102 message:', inflateErr);
+                });
                 return;
             }
             if (LM.isLegendWorld) console.log('[LW 102 TRACE] onMobileData decoded, type=' + (response && response.uncompressedData ? response.uncompressedData.type : 'null'));
