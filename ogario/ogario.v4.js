@@ -73451,6 +73451,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var i = hotkeys[pressedKey];
                 '' !== i && hotkeysCommand[i] && hotkeysCommand[i].keyDown && hotkeysCommand[i].keyDown();
             }
+        } else if (!_isTypingTarget && '' !== pressedKey && keyBlind[pressedKey] && hotkeys[pressedKey]) {
+            /* auto-repeat of a held hotkey: the first keydown cancelled the browser
+             * shortcut (CTRL+D bookmark, CTRL+L address bar, ...), the repeats did not */
+            event.preventDefault();
         }
     }
     document.onkeyup = function (event) {
