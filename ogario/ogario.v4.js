@@ -23047,6 +23047,7 @@ function thelegendmodproject() {
             if (ogario.playerColor) {
                 this._lmSpawnTries = 0;
                 this.sendPlayerSpawn();
+                if (!ogarcopythelb.skinURL) this.clearOwnCustomSkin(ogarcopythelb.nick, ogario.playerColor);
                 if (!(defaultmapsettings.ownVanillaSkin && (!ogarcopythelb.skinURL || ogarcopythelb.skinURL === ''))) {
                     this.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
                 }
@@ -23226,6 +23227,7 @@ function thelegendmodproject() {
             ogarcopythelb.clanTag = tag.trim();
             //ogarcopythelb.clanTag = tag.trim() + "@";
             ogarcopythelb.skinURL = this.checkSkinURL(skin.trim());
+            if (!ogarcopythelb.skinURL) this.clearOwnCustomSkin(ogarcopythelb.nick, ogario.playerColor);
             if (7 === color.length) {
                 ogarcopythelb.color = color;
             }
@@ -24466,6 +24468,18 @@ function thelegendmodproject() {
             if (_isValidSkin(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
             if (_isValidSkin(skinCache[skinMap])) return skinCache[skinMap];
             return null;
+        },
+        /* cacheCustomSkin ignores an empty URL, so the own nick kept its previous custom
+         * skin (and blocked the owned vanilla skin) after the skin field was cleared. */
+        clearOwnCustomSkin(nick, color) {
+            if (!nick) return;
+            _RE_CLAN_TAG.lastIndex = 0;
+            var cleanNick = nick.replace(_RE_CLAN_TAG, '').trim();
+            var keys = [nick, nick + "#000000", cleanNick, cleanNick + "#000000"];
+            if (color) keys.push(nick + color);
+            for (var k = 0; k < keys.length; k++) {
+                if (keys[k]) delete this.customSkinsMap[keys[k]];
+            }
         },
         cacheCustomSkin(nick, color, skinUrl) {
             if (!skinUrl) return;
