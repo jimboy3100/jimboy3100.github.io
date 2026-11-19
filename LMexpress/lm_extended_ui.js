@@ -11745,6 +11745,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             if (typeof window.showLeaguesModal === 'function') window.showLeaguesModal();
         });
 
+        /* The Friends button stays hidden until the server pushes a non-empty friend
+         * list (147); it then opens that list (showFriendsModal had no entry point). */
+        if (!window._lmFriendsBtnRevealBound) {
+            window._lmFriendsBtnRevealBound = true;
+            document.addEventListener('friendListUpdate', function (e) {
+                var d = e && e.detail;
+                if (d && d.friends && d.friends.length) $('#lm-friends-btn').css('display', '');
+            });
+        }
+
         $(document)
             .off('click.lmFriendsLeague', '#lm-friends-btn')
             .on('click.lmFriendsLeague', '#lm-friends-btn', function(event) {
@@ -11770,6 +11780,18 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         );
                     }
 
+                    return false;
+                }
+
+                /* The server pushed a friend list (147): show it. Otherwise the
+                 * Leagues friends tab, below. */
+                if (
+                    window._friendListData &&
+                    window._friendListData.friends &&
+                    window._friendListData.friends.length &&
+                    typeof window.showFriendsModal === 'function'
+                ) {
+                    window.showFriendsModal();
                     return false;
                 }
 
