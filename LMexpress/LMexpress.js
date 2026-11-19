@@ -684,15 +684,22 @@ function whenServerTokenReady(callback, options) {
     };
 }
 
+/* Only one pending adres wait at a time: older waits would fire later with stale mode/region. */
+var _lmAdresCancelWait = null;
+
 function adres(info, thismode, thisregion) {
     if (thismode == null || thisregion == null) {
         joinSERVERfindinfo();
+    }
+    if (_lmAdresCancelWait) {
+        _lmAdresCancelWait();
+        _lmAdresCancelWait = null;
     }
     if ($("#gamemode").val() != ":party") {
         var previousServerToken =
             String($("#server-token").val() || "").trim();
 
-        whenServerTokenReady(function (readyToken) {
+        _lmAdresCancelWait = whenServerTokenReady(function (readyToken) {
             currentIP =
                 "live-arena-" +
                 readyToken +
@@ -712,17 +719,18 @@ function adres(info, thismode, thisregion) {
                 } else {
                     region = thisregion;
                 }
+                /* replaceState: every join/reconnect would otherwise add another history entry */
                 if (currentIPopened == true) {
-                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
-                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    if (_lmOnLegendWebsite()) history.replaceState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    else history.replaceState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
                     return currentIPopened = false;
                 } else if (thismode != null && thisregion != null) {
-                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
-                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    if (_lmOnLegendWebsite()) history.replaceState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    else history.replaceState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
 
                 } else {
-                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
-                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP);
+                    if (_lmOnLegendWebsite()) history.replaceState(stateObj, "page 2", "/play?sip=" + currentIP);
+                    else history.replaceState(stateObj, "page 2", "?sip=" + currentIP);
                     realmode = null;
                     region = null;
                     return realmode, region;
@@ -737,7 +745,7 @@ function adres(info, thismode, thisregion) {
         });
     } else { //if party
         /* Party mode: wait for token then redirect */
-        whenServerTokenReady(function (readyToken) {
+        _lmAdresCancelWait = whenServerTokenReady(function (readyToken) {
             window.history.pushState(null, null, window.location.pathname);
             window.location.href = "https://agar.io/#" + $('#party-token').val()
         });
