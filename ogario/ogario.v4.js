@@ -70467,9 +70467,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 1 / scale;
 
             /*
-             * WebGL path: opponent bubbles are drawn before the cell
-             * batch (drawHelpers → drawWebGLCellBatch). The GPU depth
-             * buffer ensures cells always cover the bubble indicators.
+             * Canvas2D (forceCanvas2D = true), as drawHelpers and
+             * drawBubbleCircles describe: on the GL cell layer the bubbles
+             * were wiped whenever the cell batch aborted (gl.clear) and were
+             * drawn above the cells whenever Canvas2D owned the cells.
              */
             this.drawBubbleCircles(
                 ctx,
@@ -70478,7 +70479,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBSTEDColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70488,7 +70489,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBSTEColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70498,7 +70499,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70508,7 +70509,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.splitRangeColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70518,7 +70519,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70528,7 +70529,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySSTEColor,
-                false
+                true
             );
 
             this.drawBubbleCircles(
@@ -70538,7 +70539,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySSTEDColor,
-                false
+                true
             );
 
             if (reset) {
