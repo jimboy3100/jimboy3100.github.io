@@ -545,7 +545,9 @@ function doLogin() {
 }
 
 // --- Helpers ---
-function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+/* country code goes into a class name and the page: only two letters */
+function ccOf(v) { v = String(v || 'un').toLowerCase(); return /^[a-z]{2}$/.test(v) ? v : 'un'; }
 
 function formatTime(unix) {
     if (!unix) return '—';
@@ -744,7 +746,7 @@ function renderResultsPage() {
 
         tbody.innerHTML = pageItems.map((p, idx) => {
             const globalIdx = start + idx + 1;
-            const cc = (p.country || 'un').toLowerCase();
+            const cc = ccOf(p.country);
             const name = p.first_name ? [p.first_name, p.last_name].filter(Boolean).join(' ') : '';
             const uid = p.aid || p.agario_uid || '';
             const playTimeSecs = p.total_play_secs || 0;
@@ -775,7 +777,7 @@ function renderResultsPage() {
 
         tbody.innerHTML = pageItems.map((s, idx) => {
             const globalIdx = start + idx + 1;
-            const cc = (s.country || 'un').toLowerCase();
+            const cc = ccOf(s.country);
             const srv = parseServer(s.server);
             const mc = modeColors[s.mode] || '#636e72';
             const durText = s.ongoing
@@ -877,7 +879,7 @@ function renderDetailPage() {
 
     eventsBody.innerHTML = pageItems.map((s, idx) => {
         const globalIdx = start + idx + 1;
-        const cc = (s.country || 'un').toLowerCase();
+        const cc = ccOf(s.country);
         const srv = parseServer(s.server);
         const mc = modeColors[s.mode] || '#636e72';
         const durText = s.ongoing

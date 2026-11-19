@@ -499,7 +499,7 @@ function updateUI() {
     // Count stats from ALL players
     sorted.forEach(p => {
         if (p.server && p.server.length > 5) servers.add(p.server);
-        const cc = (p.country || p.extra?.ip_info?.country || 'un').toLowerCase();
+        const cc = ccOf(p.country || p.extra?.ip_info?.country);
         if (cc !== 'un') countries.add(cc);
     });
 
@@ -517,7 +517,7 @@ function updateUI() {
             const isPlaying = !!p.isPlaying;
             const hasServer = p.server && p.server.length > 5;
 
-            const cc = (p.country || p.extra?.ip_info?.country || 'un').toLowerCase();
+            const cc = ccOf(p.country || p.extra?.ip_info?.country);
 
             const srv = p._srv;
             const level = parseInt(p.agario_level) || 0;
@@ -608,7 +608,9 @@ function timeAgo(unixTs) {
     return Math.floor(diff / 3600) + 'h ago';
 }
 
-function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+/* country code goes into a class name and the page: only two letters */
+function ccOf(v) { v = String(v || 'un').toLowerCase(); return /^[a-z]{2}$/.test(v) ? v : 'un'; }
 
 // --- Init ---
 function startApp() {
