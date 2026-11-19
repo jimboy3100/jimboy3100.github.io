@@ -31619,7 +31619,7 @@ function thelegendmodproject() {
                     //style.drawImage(iconSpecialSkinEffectsPanicAtDisco, this.x - 1 * y, this.y - 1 * y, y/1, y/4);	
                     this.drawSpecialSkinDancer(style, y);
                 } else if (this.targetNick.includes("The Dying Light") || this.SpecialEffect === "RedArrow" || this.SpecialEffect2 === "RedArrow") {
-                    style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+                    if (cimg5 && cimg5.complete && cimg5.naturalWidth > 0) { try { style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y); } catch (e) { } }
                 } else if (this.SpecialEffect === "HappyNewYear" || this.SpecialEffect2 === "HappyNewYear") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHappyNewYear", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsHappyNewYear, this.x + 0.1 * y, this.y + 0.15 * y, y / 1.5, y / 1);
@@ -31653,7 +31653,7 @@ function thelegendmodproject() {
                                 }
                                 ab = ab - window.abam;
                                 if (drawRender._frameHours === window.abah && ab < 5) {
-                                    style.drawImage(cimg5, this.x - (1.5 + 2 * ab) * y, this.y - (1.5 + 2 * ab) * y, (1.5 + 2 * ab) * 2 * y, (1.5 + 2 * ab) * 2 * y);
+                                    if (cimg5 && cimg5.complete && cimg5.naturalWidth > 0) { try { style.drawImage(cimg5, this.x - (1.5 + 2 * ab) * y, this.y - (1.5 + 2 * ab) * y, (1.5 + 2 * ab) * 2 * y, (1.5 + 2 * ab) * 2 * y); } catch (e) { } }
                                 } else {
                                     window.testAnimatCells = true;
                                 }
