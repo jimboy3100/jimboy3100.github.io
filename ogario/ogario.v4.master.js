@@ -695,12 +695,16 @@ function legendmaster(self) {
                 return;
             }
             var canvasLayersManager = this;
+            /* The reply can come seconds later: if the player joined a server or picked a
+             * region meanwhile (?sip= link, private server, region list), do not move them. */
+            var regionGeneration = this.connectionGeneration;
             window.userData = $.ajax(master.master_url_http + "/getCountry", {
                 beforeSend(xhr) {
                     return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", "application/octet-stream"), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
                 },
                 error() {
                     canvasLayersManager.checkRegion();
+                    if (canvasLayersManager.connectionGeneration !== regionGeneration) return;
 
                     var selectedRegion = $("#region").val();
                     if (selectedRegion) {
@@ -717,6 +721,13 @@ function legendmaster(self) {
                 $("#response").html(JSON.stringify(playlistCopy, null, 4));
                 if (playlistCopy != null) {
                     localStorage.setItem("userData", JSON.stringify(playlistCopy));
+                }
+                if (canvasLayersManager.connectionGeneration !== regionGeneration) {
+                    /* Still record the region (party join needs one), without reconnecting. */
+                    if (!canvasLayersManager.region && playlistCopy && regionobj.hasOwnProperty(playlistCopy.country)) {
+                        canvasLayersManager.setRegion(regionobj[playlistCopy.country], false);
+                    }
+                    return;
                 }
 				//if (userData && userData.responseJSON){		
 				if (playlistCopy){			
@@ -1381,6 +1392,23 @@ function legendmaster(self) {
 
             if (!this.region || this.region === "Private") {
                 return;
+            }
+
+            /* reconnect(true) means "same server" (client/protocol version change, logout).
+             * On a private server that is not master's to do (it connected to the last
+             * agar.io arena); after a direct join (token, ?sip= link) with nothing started
+             * by master since, serverIP is still the last bouncer arena: reopen the joined one. */
+            var currentLm = self.legendmod;
+            if (table && currentLm && currentLm.ws && currentLm.serverType) {
+                if (currentLm.serverType !== "agario") {
+                    console.log("[Master] reconnect(true) skipped on a " + currentLm.serverType + " server:", reason || "unspecified");
+                    return;
+                }
+                if (this._lmDirectGen === this.connectionGeneration && currentLm.ws !== this.ws && self.core) {
+                    this.reconnectReason = reason || "unspecified";
+                    self.core.connect(currentLm.ws);
+                    return;
+                }
             }
 
             var generation =

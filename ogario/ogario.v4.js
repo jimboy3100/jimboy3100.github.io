@@ -1849,6 +1849,17 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 var reloginAttempted = false;
                 var retryStartedAt = Date.now();
 
+                /* The game connection is still open and logged in: a relogin or reconnect
+                   would only end the player's game (the generic fallback below even moved
+                   them to another arena). Keep the session, as the Google path does. */
+                if (window.legendmod && window.legendmod.loginConfirmed === true &&
+                    window.legendmod.isSocketOpen && window.legendmod.isSocketOpen()) {
+                    console.log('[LW AUTH] Connection still logged in, no relogin needed');
+                    window._lwReconnecting = false;
+                    window._loginRetryCount = 0;
+                    return;
+                }
+
                 var authProvider =
                     window._lwAuth &&
                     window._lwAuth.provider
@@ -1959,7 +1970,8 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                         'function'
                 ) {
                     try {
-                        window.master.reconnect();
+                        /* Same server (findServer picked another arena); nothing on private servers. */
+                        window.master.reconnect(true, 'relogin');
                         /* master.reconnect() is a no-op on the website itself. */
                         reloginAttempted = !window.legendModFromWebsite;
                     } catch (e) {
@@ -73654,6 +73666,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
     window.core = {
         //'connect': function(url) {
         connect(url) {
+            /* A connect master did not start (private server list, World Spectate,
+             * captcha reconnect...) supersedes a findServer reply or backoff and a
+             * delayed master auto-reconnect still pending; those moved the player
+             * back to an agar.io arena. Master's own connects pass master.ws, and
+             * LM's private-server auto-reconnect leaves master's pending work alone. */
+            var _lmMaster = window.master;
+            if (_lmMaster && typeof _lmMaster.connectionGeneration === 'number' &&
+                url !== _lmMaster.ws && !LM._lmAutoReconnect) {
+                _lmMaster.connectionGeneration++;
+                _lmMaster.curValidFindServer++;
+                clearTimeout(_lmMaster.findServerTimer);
+                _lmMaster.findServerTimer = null;
+                _lmMaster._lmFindGaveUp = false;
+                /* master.reconnect(true) reopens this server instead of master.serverIP */
+                _lmMaster._lmDirectGen = _lmMaster.connectionGeneration;
+            }
             LM.connect(url);
             //LM.connect(url); //for multibox with new Protocol and Client
         },
