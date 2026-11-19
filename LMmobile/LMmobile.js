@@ -684,9 +684,17 @@
             e.preventDefault(); e.stopPropagation();
             if (typeof application !== 'undefined' && application.setAutoPlay) {
                 application.setAutoPlay();
-                bAI.classList.toggle('lm-active');
+                syncAiPause();
             }
         }, { passive: false });
+
+        // setAutoPlay/setPause change each other's state and the J/R hotkeys change
+        // them too, so highlight both buttons from the real state, not by toggling.
+        function syncAiPause() {
+            bAI.classList.toggle('lm-active', !!window.autoPlay);
+            bPaus.classList.toggle('lm-active', typeof application !== 'undefined' && !!application.pause);
+        }
+        setInterval(syncAiPause, 500);
 
         /* ═══════════════════════════════════════════════════════
          *  PAUSE — calls application.setPause()
@@ -695,7 +703,7 @@
             e.preventDefault(); e.stopPropagation();
             if (typeof application !== 'undefined' && application.setPause) {
                 application.setPause();
-                bPaus.classList.toggle('lm-active');
+                syncAiPause();
             }
         }, { passive: false });
 
