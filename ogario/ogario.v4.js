@@ -71613,6 +71613,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !Array.isArray(storedHotkeys)
             ) {
                 hotkeys = storedHotkeys;
+                this.migrateBrowserSpecificHotkeys();
                 this.addMissingDefaultHotkeys();
             } else {
                 this.loadDefaultHotkeys();
@@ -71639,6 +71640,28 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * the last save (ogarioHotkeysKnown) and have no key were unbound on
          * purpose and stay unbound.
          */
+        /*
+         * getPressedKey() used to store '-' and ';' as the raw
+         * String.fromCharCode(keyCode), which differs per browser
+         * ('\u00BD' / '\u00AD' for '-', '\u00BA' for ';'). Rename those keys.
+         */
+        migrateBrowserSpecificHotkeys() {
+            var map = { '\u00BD': '-', '\u00AD': '-', '\u00BA': ';' };
+            var keys = Object.keys(hotkeys);
+            for (var i = 0; i < keys.length; i++) {
+                var oldKey = keys[i];
+                if (oldKey === 'spec-messageKey') continue;
+                var last = oldKey.charAt(oldKey.length - 1);
+                if (!map.hasOwnProperty(last)) continue;
+                var newKey = oldKey.slice(0, -1) + map[last];
+                if (!hotkeys.hasOwnProperty(newKey)) hotkeys[newKey] = hotkeys[oldKey];
+                delete hotkeys[oldKey];
+            }
+            var msgKey = hotkeys['spec-messageKey'];
+            if (typeof msgKey === 'string' && msgKey && map.hasOwnProperty(msgKey.charAt(msgKey.length - 1))) {
+                hotkeys['spec-messageKey'] = msgKey.slice(0, -1) + map[msgKey.charAt(msgKey.length - 1)];
+            }
+        },
         addMissingDefaultHotkeys() {
             var known = readLocalStorageJSON('ogarioHotkeysKnown', null);
             if (!Array.isArray(known)) known = null;
@@ -71766,6 +71789,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 case 61:
                 case 187:
                     normalKey = '=';
+                    break;
+                /* '-' and ';' have different keyCodes in Firefox and Chrome */
+                case 173:
+                case 189:
+                    normalKey = '-';
+                    break;
+                case 59:
+                case 186:
+                    normalKey = ';';
                     break;
                 case 192:
                     normalKey = 'TILDE';
