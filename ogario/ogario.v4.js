@@ -909,17 +909,22 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         retryTimers: {}
     };
 
-    window._lwCancelAuthAsync = function () {
+    window._lwCancelAuthAsync = function (keepRetryKeys) {
         if (_lwAuthAsync.loginTimeout) clearTimeout(_lwAuthAsync.loginTimeout);
         if (_lwAuthAsync.discordPoll) clearInterval(_lwAuthAsync.discordPoll);
         if (_lwAuthAsync.discordFinalCheck) clearTimeout(_lwAuthAsync.discordFinalCheck);
         _lwAuthAsync.loginTimeout = null;
         _lwAuthAsync.discordPoll = null;
         _lwAuthAsync.discordFinalCheck = null;
+        var kept = {};
         Object.keys(_lwAuthAsync.retryTimers).forEach(function (key) {
+            if (keepRetryKeys && keepRetryKeys.indexOf(key) !== -1) {
+                kept[key] = _lwAuthAsync.retryTimers[key];
+                return;
+            }
             clearTimeout(_lwAuthAsync.retryTimers[key]);
         });
-        _lwAuthAsync.retryTimers = {};
+        _lwAuthAsync.retryTimers = kept;
     };
 
     window._lwResetAuthState = function () {
@@ -38281,7 +38286,8 @@ function thelegendmodproject() {
                         if (window._lwAuth && (window._lwAuth.state === 'waiting_server' || window._lwAuth.state === 'processing_oauth')) {
                             window._lwAuth.state = 'logged_in';
                             window._lwAuth.done = true;
-                            window._lwCancelAuthAsync();
+                            /* Keep the pending Discord profile (opcode 204): it is meant to follow the login. */
+                            window._lwCancelAuthAsync(['discord:204']);
                             console.log('[LW AUTH] Login confirmed by server, provider=' + window._lwAuth.provider);
                         }
                         console.log('[LW 102] Protobuf type-11 login response received — fallback disabled');
