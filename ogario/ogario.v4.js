@@ -25119,13 +25119,27 @@ function thelegendmodproject() {
                         this.teamPlayers.length) {
                         c = 0;
                         for (; c < this.teamPlayers.length; c++) {
-                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.isLegendWorld ? ogario.mapOffsetX : LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                            /* Expanding Land: Legend Mod teammates send getPlayerX() (playerX + mapOffsetX),
+                             * which is already in the own dot's frame, so they need no margin (adding
+                             * mapOffsetX again put them a whole half-map down-right). A teammate that ever
+                             * reports a negative coordinate sends raw centred coordinates (another client):
+                             * keep adding mapOffsetX for that one. Other servers unchanged. */
+                            var _tmMargin = LM.mapOffset;
+                            if (LM.isLegendWorld) {
+                                var _tm = this.teamPlayers[c];
+                                if (_tm.x < 0 || _tm.y < 0) _tm._elRawCoords = true;
+                                _tmMargin = _tm._elRawCoords ? ogario.mapOffsetX : 0;
+                            }
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, _tmMargin, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                         }
                     }
                     if (this.deathLocations.length > 0) {
-                        var _effDeathOff = (LM.isLegendWorld ? 0 : LM.mapOffset);
+                        /* Expanding Land stores the raw centred position (updateDeathLocations),
+                         * so add mapOffsetX/Y like the own dot (r/l); it was drawn at playerX * n. */
+                        var _effDeathOff = (LM.isLegendWorld ? ogario.mapOffsetX : LM.mapOffset);
+                        var _effDeathOffY = (LM.isLegendWorld ? ogario.mapOffsetY : LM.mapOffset);
                         u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOff) * n);
-                        d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOff) * n);
+                        d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOffY) * n);
                         var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
                         this.miniMapCtx.lineWidth = 1;
                         this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
