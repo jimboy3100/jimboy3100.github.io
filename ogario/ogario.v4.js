@@ -40144,7 +40144,19 @@ function thelegendmodproject() {
                         var st = r.uncompressedData.userStatsResponseField;
                         if (st && st.userStats) {
                             console.log("[LM] Inspected User Stats for " + st.userId + ":", st.userStats);
-                            toastr.info('<b>[STATS]:</b> Level ' + (st.level || 1) + ' | Mass Consumed: ' + (st.userStats.massConsumed || 0).toLocaleString() + ' | Highest Mass: ' + (st.userStats.highestMass || 0));
+                            /* uint64 may decode as a Long object */
+                            var stMass = st.userStats.massConsumed;
+                            stMass = (stMass && typeof stMass === 'object' && stMass.toNumber) ? stMass.toNumber() : (Number(stMass) || 0);
+                            if (typeof window.showUserStatsModal === 'function') {
+                                window.showUserStatsModal({
+                                    level: Number(st.level) || 1,
+                                    highestMass: Number(st.userStats.highestMass) || 0,
+                                    mostCellsEaten: Number(st.userStats.mostCellsEaten) || 0,
+                                    gamesPlayed: Number(st.userStats.gamesPlayed) || 0
+                                });
+                            } else {
+                                toastr.info('<b>[STATS]:</b> Level ' + (st.level || 1) + ' | Mass Consumed: ' + stMass.toLocaleString() + ' | Highest Mass: ' + (st.userStats.highestMass || 0));
+                            }
                         }
                     } catch (stErr) { console.warn("[LM] Error parsing user stats response:", stErr); }
                     break;
