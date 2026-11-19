@@ -72894,6 +72894,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         resetHotkeys() {
             this.loadDefaultHotkeys();
+            this.lastPressedKey = '';
+            this.lastKeyId = '';
             $('#hotkeys-cfg .custom-key-in').each(function () {
                 var t = $(this).attr('id');
                 hotkeysCommand[t] && $(this).val(hotkeysCommand[t].defaultKey);
@@ -73021,6 +73023,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         deleteHotkey(name, id) {
             delete hotkeys[name];
             $('#' + id).val('');
+            /* the field changed: pressing the previous key again must assign it */
+            this.lastPressedKey = '';
+            this.lastKeyId = '';
         },
         setDefaultHotkey(id) {
             var key = false;
