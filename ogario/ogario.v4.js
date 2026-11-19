@@ -20589,8 +20589,9 @@ function thelegendmodproject() {
             ogario.spectatorFollow = this.spectatorFollow;
             if (this.spectatorFollow && spects.length > 0 && spects[0].staticX == null && spects[0].isSpectateEnabled === true /*&& spects[0].isFreeSpectateEnabled===false*/) {
                 spects[0].sendFreeSpectate();
-            } else {
-                void (0);
+            } else if (!this.spectatorFollow && spects.length > 0 && spects[0].staticX == null && spects[0].isFreeSpectate === true) {
+                /* Turning it off must leave free spectate too (the unit kept following the cursor). */
+                spects[0].sendFreeSpectate();
             }
         },
         setPause() {
@@ -34612,9 +34613,11 @@ function thelegendmodproject() {
                 _nextDomain &&
                 _previousDomain !== _nextDomain
             );
+            /* A replay (wss://imsolo.pro.replay) reaches no server: keep the account logged in. */
             var _joiningUnsupportedServer =
                 _earlyType !== 'agario' &&
-                _earlyType !== 'expandingland';
+                _earlyType !== 'expandingland' &&
+                t.indexOf('imsolo.pro.replay') === -1;
 
             if (_crossingAccountDomain || _joiningUnsupportedServer) {
                 var _isLoggedIn = Boolean(
@@ -36197,7 +36200,9 @@ function thelegendmodproject() {
                 lastWs.indexOf('sigmally.com') !== -1 ||
                 lastWs.indexOf('senpa.io') !== -1 ||
                 lastWs.indexOf('mi.com') !== -1 ||
-                lastWs.indexOf('delt.io') !== -1);
+                lastWs.indexOf('delt.io') !== -1) &&
+                /* the replay URL never connects: reconnecting to it only wiped the replayed cells */
+                lastWs.indexOf('imsolo.pro.replay') === -1;
 
             /* Master reconnect — only for official agar.io, NOT private servers */
             if (this.integrity && window.master && window.master.onDisconnect && !_isPrivateServer) {
@@ -36416,6 +36421,12 @@ function thelegendmodproject() {
         sendSpectate() {
             this.isSpectateEnabled = true;
             this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry */
+            /* Expanding Land leaves World Spectate on opcode 1 and 18 (client.c on_spectate /
+             * on_spectate_toggle): stop the World Spectate mouse pan here too, or the camera
+             * kept panning away from the followed player. */
+            this._isWorldSpectating = false;
+            this._worldSpecPanX = 0;
+            this._worldSpecPanY = 0;
             if (this.serverType === 'senpa') {
                 this._senpaSpectate = true;
                 // Mode byte of the cursor packet: 2 = follow top (Delta default), 1 = free roam.
@@ -36432,6 +36443,9 @@ function thelegendmodproject() {
         },
         sendFreeSpectate() {
             this.isFreeSpectate = !this.isFreeSpectate;
+            this._isWorldSpectating = false;
+            this._worldSpecPanX = 0;
+            this._worldSpecPanY = 0;
             // Senpa has no free-spectate opcode: switch the cursor packet's mode byte instead.
             if (this.serverType === 'senpa') {
                 this._senpaSpectate = true;
@@ -76210,6 +76224,22 @@ function playReplayLM(temp) {
         legendmod.playingReplayRecord = 0
 
         legendmod.playingReplayServer = temp
+        /* Parse the packets as the server they were recorded on (the key is that server's
+         * token or file name). The replay URL imsolo.pro.replay made every replay Imsolo, so
+         * agar.io cell updates were read with the MultiOgar layout (flag 0x80 = cell type +
+         * party code instead of the extended flags byte) and food/ejected cells broke them. */
+        var _lmRk = String(temp).replace(/\.lm$/i, '').toLowerCase();
+        var _lmRt = (_lmRk.indexOf('agario') !== -1 || _lmRk.indexOf('agar.io') !== -1) ? 'agario'
+            : _lmRk.indexOf('imsolo.pro') !== -1 ? 'imsolo'
+                : _lmRk.indexOf('agar2.com') !== -1 ? 'agar2'
+                    : _lmRk.indexOf('garix.io') !== -1 ? 'garix'
+                        : _lmRk.indexOf('sigmally.com') !== -1 ? 'sigmally'
+                            : (_lmRk.indexOf('senpa.io') !== -1 || _lmRk.indexOf('mi.com') !== -1) ? 'senpa'
+                                : _lmRk.indexOf('delt.io') !== -1 ? 'deltio'
+                                    : (_lmRk.indexOf('legendmod.ml') !== -1 || _lmRk.indexOf('expanding.land') !== -1) ? 'expandingland'
+                                        : /[.:\/]/.test(_lmRk) ? 'private' : 'agario';
+        legendmod.serverType = _lmRt
+        legendmod.connectionIntegrity = _lmRt === 'agario' || _lmRt === 'deltio'
         legendmod.playingReplayRewind = false
         legendmod.playingReplayRewindNow = false
         //if (parseInt(window.replayTiming) < 0) {
