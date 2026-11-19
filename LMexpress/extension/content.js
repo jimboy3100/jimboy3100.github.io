@@ -75,7 +75,8 @@ function runMod() {
             Userscript(modwebsite);
             break;
         case 'vanilla':
-            modwebsite = 'http://imasters.org.ru/agar/js/vanilla.user.js';
+            /* https only: code fetched over plain http could be swapped on the network path and would run on agar.io */
+            modwebsite = 'https://imasters.org.ru/agar/js/vanilla.user.js';
             Userscript(modwebsite);
             break;
         case 'ogario':
@@ -136,6 +137,11 @@ function Htmlscript(modwebsite) {
 }
 
 function Userscript(modwebsite) {
+    /* Never run remote code that did not come over https */
+    if (!/^https:\/\//i.test(modwebsite)) {
+        console.error('[LMexpress] Refusing to run a userscript that is not served over https: ' + modwebsite);
+        return;
+    }
     GM_xmlhttpRequest({
         method: "GET",
         url: modwebsite,
