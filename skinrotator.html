@@ -440,6 +440,7 @@ var xhttp = new XMLHttpRequest();
 //window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
 var myArr=[];
 var nc=6;
+var _verServer = null, _verRepo = [], _verPending = 2, _verMerged = false;
 
 //
 
@@ -455,35 +456,63 @@ function getSNEZ(server, username, password) {
     xhttp.setRequestHeader("password", password);
     xhttp.send();
 xhttp.onreadystatechange = function () {
-  // In local files, status is 0 upon success in Mozilla Firefox
   if(xhttp.readyState === XMLHttpRequest.DONE) {
-    var status = xhttp.status;
-    if (status === 0 || (status >= 200 && status < 400)) {
-      AgarVersionDestinations2()
-    } else {
-      // Oh no! There has been an error with the request!
-    }
+    try {
+      if (xhttp.status === 200 && xhttp.response) {
+        var parsed = JSON.parse(xhttp.response);
+        if (isObject(parsed)) _verServer = parsed;
+      }
+    } catch (e) { }
+    _verMerge();
   }
 };	
 	
 }
+/*
+ * Version list = shared LMConfigVersion record on api.legendmod.ml
+ * + agario/live/versions.json in this repo, sorted, newest last.
+ */
+function _verId(v) {
+    var m = /^v(\d+)\/(\d+)\/$/.exec(String(v || ''));
+    return m ? Number(m[1]) * 1e7 + Number(m[2]) : -1;
+}
+function _verMerge(force) {
+    if (!force && --_verPending > 0) return;
+    if (_verMerged) return;
+    _verMerged = true;
+    var seen = {}, versions = [];
+    var add = function (v) {
+        if (typeof v === 'string' && _verId(v) >= 0 && !seen[v]) { seen[v] = true; versions.push(v); }
+    };
+    if (_verServer) Object.keys(_verServer).forEach(function (k) { add(_verServer[k]); });
+    _verRepo.forEach(add);
+    versions.sort(function (a, c) { return _verId(a) - _verId(c); });
+    window.agarversionDestinations = {};
+    versions.forEach(function (v, i) { window.agarversionDestinations[i] = v; });
+    AgarVersionDestinations2();
+}
 function AgarVersionDestinations() {
 
     window.agarversionDestinations = {};
-    window.agarversionDestinations[Object.keys(agarversionDestinations).length - 1] = version;
     getSNEZ("https://api.legendmod.ml/lm-settings", "LMConfigVersion", "LMConfigVersionPass");
+    try {
+        var vx = new XMLHttpRequest();
+        vx.open("GET", "agario/live/versions.json", true);
+        vx.onload = function () {
+            try {
+                var list = JSON.parse(vx.responseText);
+                if (Array.isArray(list)) _verRepo = list;
+            } catch (e) { }
+            _verMerge();
+        };
+        vx.onerror = function () { _verMerge(); };
+        vx.send();
+    } catch (e) { _verMerge(); }
 }
 
 function AgarVersionDestinations2(custom) {
-    if (!xhttp.response || xhttp.response.length === 0) return;
+    if (!window.agarversionDestinations || Object.keys(window.agarversionDestinations).length === 0) return;
     try {
-    var responseagarversionDestinations = JSON.parse(xhttp.response);
-    for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
-        if (responseagarversionDestinations[i] == version) {
-            window.agarversionDestinationFound = true;
-        }
-    }
-        window.agarversionDestinations = responseagarversionDestinations;
 		if (!window.populated){
 			populateLibConfig()
 			window.populated=true
@@ -493,8 +522,8 @@ function AgarVersionDestinations2(custom) {
 		localStorage.setItem('sa',null);
 		localStorage.setItem('ss',null);
 		localStorage.setItem('speed',null);
-		console.log(custom)
-		console.log(window.agarversionDestinations[custom])
+		skin_arr=[];
+		clearInterval(sanim);
 		version=window.agarversionDestinations[custom];
 		
 		}
@@ -521,6 +550,7 @@ function isObject(val) {
 //
 
 setTimeout(function() {
+   if (!window.started) _verMerge(true);
    if (!window.started){
 		version='v15/3032';
 		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
@@ -586,6 +616,8 @@ setTimeout(function() {
 xmlhttp.open("GET", window.urlVersion, true);
 xmlhttp.send();
 
+if (window.srListeners) return;
+window.srListeners = true;
   document.getElementById("speed").addEventListener("input", function() {
     clearInterval(sanim);
     s = 0;
@@ -623,9 +655,8 @@ ec="`; elem.appendChild(script); } }, 100)";showCode();
     document.getElementById(id).select();
   }
   function c(id) {
-    var copyElement = document.createElement('input');
-    copyElement.setAttribute('type', 'text');
-    copyElement.setAttribute('value', document.getElementById(id).value);
+    var copyElement = document.createElement('textarea');
+    copyElement.value = document.getElementById(id).value;
     copyElement = document.body.appendChild(copyElement);
     copyElement.select();
     document.execCommand('copy');
