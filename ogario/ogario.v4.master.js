@@ -1160,6 +1160,8 @@ function legendmaster(self) {
             if ("9" === value) {
                 this.updatePartyToken();
                 this.setGameMode(":party", false);
+                /* reconnect(true) uses serverIP: point it at the party server. */
+                if (this.endpoint) this.serverIP = this.endpoint;
                 this.connect(this.endpoint);
                 value = "5";
             }
@@ -1277,6 +1279,13 @@ function legendmaster(self) {
              */
             this.reconnectReason =
                 reason || "unspecified";
+
+            /* In a party, findServer(":party") would create a NEW party and overwrite the
+             * code; rejoin the current one instead. */
+            if (!table && this.gameMode === ":party" && this.partyToken) {
+                this.joinParty(this.partyToken);
+                return;
+            }
 
             if (table && this.serverIP) {
                 this.connect(
