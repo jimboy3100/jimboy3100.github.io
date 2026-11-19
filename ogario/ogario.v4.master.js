@@ -679,6 +679,11 @@ function legendmaster(self) {
         },
         getRegionCode() {
             var nextNodeLoc = window.localStorage.getItem('location');
+            /* "Private" (saved by older versions) is not a bouncer region. */
+            if (nextNodeLoc === "Private") {
+                window.localStorage.removeItem('location');
+                nextNodeLoc = null;
+            }
             if (nextNodeLoc) {
                 this.setRegion(nextNodeLoc, false);
                 if (!this.checkPartyHash()) {
@@ -755,6 +760,13 @@ function legendmaster(self) {
 
             this.region = items;
 
+            /* "Private" is LM's own server list (Expanding Land, Agar2, Senpa...), not an
+             * agar.io region: the bouncer has no arena for it (findServer retried forever)
+             * and a saved "Private" made the next page load do the same. */
+            if (items === "Private") {
+                return;
+            }
+
             self.localStorage.setItem(
                 "location",
                 items
@@ -772,7 +784,7 @@ function legendmaster(self) {
             var x = $("#region");
             var options = x.val();
             if (options) {
-                self.localStorage.setItem("location", options);
+                if (options !== "Private") self.localStorage.setItem("location", options);
             } else {
                 if (options = self.localStorage.getItem("location")) {
                     $("#region").val(options);
@@ -1309,7 +1321,7 @@ function legendmaster(self) {
                 return;
             }
 
-            if (!this.region) {
+            if (!this.region || this.region === "Private") {
                 return;
             }
 
