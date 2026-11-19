@@ -2143,23 +2143,18 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         _lmRemoveCmdMsg();
         LegendClanSymbol = $("#nick").val();
         console.log("Step1");
-        /* everyone except nicks starting with the clan symbol gets the forced rejoin */
+        /* everyone except nicks starting with the clan symbol is asked to rejoin.
+         * Any chat sender can type this text, so it never reconnects by itself:
+         * the user has to press the button. */
         if (LegendClanSymbol.indexOf("℄") !== 0) {
             console.log("Step2");
-            if (commandMsg == "EU-London") {
-                setTimeout(function () {
-                    $("#server-join").click();
-                }, 60000);
-            } else if (commandMsg == "RU-Russia") {
-                //setTimeout(function() {
+            var _lmRejoinToast = toastr.warning("<b>" + MSGNICK + ":</b> asks you to reconnect to the server" + '<br><button class="btn btn-sm btn-primary btn-lm-rejoin" style="margin-top: 10px;border-color: darkblue;">Reconnect</button><br><button class="btn btn-sm btn-warning btn-lm-norejoin" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+                timeOut: 20000,
+                extendedTimeOut: 20000
+            }).css("width", "210px");
+            _lmRejoinToast.find(".btn-lm-rejoin").click(function () {
                 $("#server-join").click();
-                //}, 1000);
-            } else {
-                //bug fix
-                //setTimeout(function() {
-                $("#server-join").click();
-                //}, 1000);
-            }
+            });
         }
     } else if (MSGCOMMANDS.includes("[DosAttack]")) {
         if ($("#nick").val().includes("DosAttack") == false) _lmRemoveCmdMsg();
@@ -8799,7 +8794,7 @@ function disconnect2min() {
         commandMsg = "EU-London";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will disconnect in 120 seconds");
+        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will be asked to reconnect");
     }
 }
 
@@ -8808,7 +8803,7 @@ function disconnectnow() {
         commandMsg = "RU-Russia";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will disconnect now");
+        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will be asked to reconnect now");
     }
 }
 /*function showstatsphp(){
