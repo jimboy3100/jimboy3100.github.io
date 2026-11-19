@@ -699,9 +699,15 @@
         bFeed.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             emitKey(87);
+            /* A second finger on the button must not orphan the running interval. */
+            clearInterval(feedIv);
             feedIv = setInterval(function () { emitKey(87); }, 50);
         }, { passive: false });
-        bFeed.addEventListener('touchend', function () { clearInterval(feedIv); feedIv = null; }, { passive: true });
+        bFeed.addEventListener('touchend', function (e) {
+            /* Keep feeding while another finger still rests on the button. */
+            if (e && e.targetTouches && e.targetTouches.length > 0) return;
+            clearInterval(feedIv); feedIv = null;
+        }, { passive: true });
         bFeed.addEventListener('touchcancel', function () { clearInterval(feedIv); feedIv = null; }, { passive: true });
 
         /* (game menu is accessed via the drawer — ☰ now only toggles the drawer) */
