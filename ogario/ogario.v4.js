@@ -36410,6 +36410,12 @@ function thelegendmodproject() {
         sendSpectate() {
             this.isSpectateEnabled = true;
             this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry */
+            /* Expanding Land leaves World Spectate on opcode 1 and 18 (client.c on_spectate /
+             * on_spectate_toggle): stop the World Spectate mouse pan here too, or the camera
+             * kept panning away from the followed player. */
+            this._isWorldSpectating = false;
+            this._worldSpecPanX = 0;
+            this._worldSpecPanY = 0;
             if (this.serverType === 'senpa') {
                 this._senpaSpectate = true;
                 // Mode byte of the cursor packet: 2 = follow top (Delta default), 1 = free roam.
@@ -36426,6 +36432,9 @@ function thelegendmodproject() {
         },
         sendFreeSpectate() {
             this.isFreeSpectate = !this.isFreeSpectate;
+            this._isWorldSpectating = false;
+            this._worldSpecPanX = 0;
+            this._worldSpecPanY = 0;
             // Senpa has no free-spectate opcode: switch the cursor packet's mode byte instead.
             if (this.serverType === 'senpa') {
                 this._senpaSpectate = true;
