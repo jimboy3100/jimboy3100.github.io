@@ -31621,6 +31621,15 @@ function thelegendmodproject() {
         };
         this.removeCell = function () {
             this.removed = true;
+            /* Multibox: a unit's own copy is going away, so show the main socket's copy
+             * (hidden as its duplicate) right now instead of on the next per-frame check. */
+            if (this.isPlayerCellMulti && this.id >= 1000000000) {
+                var _mbMain = LM.indexedCells[this.id % 1000000000];
+                if (_mbMain && _mbMain._lmMbOwnDup) {
+                    _mbMain._lmMbOwnDup = false;
+                    _mbMain.invisible = false;
+                }
+            }
 
 
             /*
