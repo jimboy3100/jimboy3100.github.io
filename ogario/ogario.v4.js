@@ -38073,16 +38073,15 @@ function thelegendmodproject() {
                         friendNick = null;
                     for (; s < data.byteLength;) {
                         num++
-                        friendX = data.getUint16(s, true);
-                        if (friendX > 32250) {
-                            friendX -= 65500;
-                        }
+                        if (s + 4 > data.byteLength) break;
+                        /* Signed 16-bit server coordinates (Delta: readInt16); the old
+                         * "-65500" shifted negative values by 36. Mirror like other cells. */
+                        friendX = data.getInt16(s, true);
                         s += 2;
-                        friendY = data.getUint16(s, true);
-                        if (friendY > 32250) {
-                            friendY -= 65500;
-                        }
+                        friendY = data.getInt16(s, true);
                         s += 2;
+                        if (window.legendmod.vector[window.legendmod.vnr][0]) friendX = this.translateX(friendX);
+                        if (window.legendmod.vector[window.legendmod.vnr][1]) friendY = this.translateY(friendY);
                         if (s < data.byteLength) {
                             friendNick = encode();
                         } else {
