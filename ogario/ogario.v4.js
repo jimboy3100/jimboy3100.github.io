@@ -21010,7 +21010,7 @@ function thelegendmodproject() {
                     var sent99 = false;
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
-                    if (!LM.integrity && $("#clantag").val() === "") {
+                    if (!LM.integrity && $("#clantag").val() === "" && !(LM.isLegendWorld && ogarcopythelb.clanTag)) { /* EL with a stored tag goes through team chat 202 (sendChatMessage) */
                         var view = application.buildChat99View(value);
                         legendmod.sendMessage(view);
                         sent99 = true;
@@ -28194,7 +28194,7 @@ function thelegendmodproject() {
 
             //		
             //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
-            if (!LM.integrity && $("#clantag").val() === "") {
+            if (!LM.integrity && $("#clantag").val() === "" && !(LM.isLegendWorld && ogarcopythelb.clanTag)) { /* EL with a stored tag goes through team chat 202 (sendChatMessage) */
 
                 var view = application.buildChat99View(prepareCommand);
                 legendmod.sendMessage(view);
