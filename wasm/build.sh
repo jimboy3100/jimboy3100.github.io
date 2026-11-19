@@ -19,7 +19,7 @@ emcc cell_parser.c -O3 \
 echo "=== Building quadtree.wasm ==="
 emcc quadtree.c -O3 \
     -s STANDALONE_WASM=1 \
-    -s EXPORTED_FUNCTIONS="['_qt_init','_qt_clear','_qt_insert','_qt_bulk_insert','_qt_query','_qt_some','_qt_node_count','_qt_point_count','_get_result_buf']" \
+    -s EXPORTED_FUNCTIONS="['_qt_init','_qt_clear','_qt_insert','_qt_bulk_insert','_qt_query','_qt_some','_qt_node_count','_qt_point_count','_get_result_buf','_qt_version']" \
     -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
     --no-entry \
     -o quadtree.wasm
