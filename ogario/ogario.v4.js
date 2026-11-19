@@ -28054,10 +28054,19 @@ function thelegendmodproject() {
         },
         addChatUser(id, name) {
             this.chatUsers[id] = name;
+            /* chatUsers is rebuilt every second from alive teammates; keep a bounded
+             * persistent copy so muting someone later still knows their nick. */
+            var nicks = this._lmChatNicks || (this._lmChatNicks = new Map());
+            nicks.delete(id);
+            nicks.set(id, name);
+            if (nicks.size > 300) nicks.delete(nicks.keys().next().value);
         },
         getChatUserNick(id) {
             if (this.chatUsers.hasOwnProperty(id)) {
                 return this.chatUsers[id];
+            }
+            if (this._lmChatNicks && this._lmChatNicks.has(id)) {
+                return this._lmChatNicks.get(id);
             }
             return '';
         },
