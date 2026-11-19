@@ -38017,6 +38017,12 @@ function thelegendmodproject() {
                             id = data.getUint32(s, true);
                             s += 4;
                         }
+                        /* delt.io (Delta ProtocolLegacy.writeLeaderboard) never sets flag 8:
+                         * its id is the player id our own cells carry as account id. */
+                        if (this.serverType === 'deltio' && (flags & 4) && !(flags & 8) && this.playerCellIDs && this.playerCellIDs.length) {
+                            var _dlOwn = this.indexedCells[this.playerCellIDs[0]];
+                            if (_dlOwn && _dlOwn.accID === id) flags |= 8;
+                        }
                         if (flags & 8) {
                             nick = this.playerNick;
                             id = 'isPlayer';
