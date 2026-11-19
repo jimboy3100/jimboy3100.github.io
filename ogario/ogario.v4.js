@@ -19838,9 +19838,12 @@ function thelegendmodproject() {
                 }
                 var app = this;
                 this.feed();
+                /* at most one feed per 10 ms: the 1 ms setting reached ~250 feeds/s,
+                 * about 500 packets/s with the cursor packet each feed sends */
+                var permDelay = Math.max(10, Number(defaultmapsettings.macroFeeding) || 10);
                 this.feedIntervalPerm = setInterval(function () {
                     app.feed();
-                }, defaultmapsettings.macroFeeding);
+                }, permDelay);
             }
         },
         macrobotFeed(on) {
