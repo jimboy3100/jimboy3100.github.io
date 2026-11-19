@@ -9044,7 +9044,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
              * Renders 3 visual potion bottles side by side.
              */
 
+            /* The real slot state is written by updatePotions()/newPotion() into
+             * legendmod.user.potionsStatus ('potion1'..'potion3'); window.LM is only a stub. */
+            var _realUser = (window.application && window.application.user) || (window.legendmod && window.legendmod.user) || null;
             var potionStates =
+                (_realUser && _realUser.potionsStatus) ||
                 (window.LM && window.LM.user && window.LM.user.potionsStatus) || {};
 
             var _pvEmpty = '<svg viewBox="0 0 40 56" width="28" height="38">' +
