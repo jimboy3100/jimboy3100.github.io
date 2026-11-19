@@ -1966,6 +1966,8 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
     function _lmRemoveCmdMsg() {
         if (MSGEL && MSGEL.length) MSGEL.remove();
     }
+    /* Accept buttons are bound inside the toast toastr returns (_lmToast): visible toasts
+     * share the same ids/classes, so a document-wide selector hit the wrong or every toast. */
 
     if (MSGCOMMANDS.includes("[url]")) {
         MSGCOMMANDS = MSGCOMMANDS.split("[url]").pop();
@@ -1975,11 +1977,11 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if ($("#nick").val().includes("url") == false) _lmRemoveCmdMsg();
-        toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+        var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
         }).css("width", "250px");
-        $("#acceptURL").click(function () {
+        _lmToast.find("#acceptURL").click(function () {
             window.open(MSGCOMMANDS, '_blank');
         });
     } else if (MSGCOMMANDS.includes("[tag]")) {
@@ -1987,21 +1989,21 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         MSGCOMMANDS = MSGCOMMANDS.split("[tag]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/tag]')[0];
         if (MSGCOMMANDS != "") {
-            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63a', 'wants you to use the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63a', 'wants you to use the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
-            $("#acceptURL").click(function () {
+            _lmToast.find("#acceptURL").click(function () {
                 $("#clantag").val(MSGCOMMANDS);
                 $('#clantag').css('background-color', '#ff6347');
                 newsubmit();
             });
         } else {
-            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63b', 'wants you to remove the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63b', 'wants you to remove the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
-            $("#acceptURL").click(function () {
+            _lmToast.find("#acceptURL").click(function () {
                 $("#clantag").val(MSGCOMMANDS);
                 $('#clantag').css('background-color', '#ff6347');
                 newsubmit();
@@ -2017,11 +2019,11 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         var _lmYutId = _lmYoutubeId(MSGCOMMANDS);
         if (!_lmYutId) return;
         if ($("#nick").val().includes("yut") == false) _lmRemoveCmdMsg();
-        toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
+        var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
         }).css("width", "300px");
-        $("#acceptYoutubeEmb").click(function () {
+        _lmToast.find("#acceptYoutubeEmb").click(function () {
             YoutubeEmbPlayer(MSGCOMMANDS);
             $("#musicUrl").val(MSGCOMMANDS);
             //$("#playerI").click();
@@ -2036,11 +2038,11 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("join.skype.com/")) {
             if ($("#nick").val().includes("skype") == false) _lmRemoveCmdMsg();
-            toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 10000,
                 extendedTimeOut: 10000
             }).css("width", "300px");
-            $("#acceptURL").click(function () {
+            _lmToast.find("#acceptURL").click(function () {
                 window.open(MSGCOMMANDS, '_blank');
             });
         }
@@ -2053,11 +2055,11 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg") || MSGCOMMANDS.includes("discord.com")) {
             if ($("#nick").val().includes("discord") == false) _lmRemoveCmdMsg();
-            toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "300px");
-            $("#acceptURL").click(function () {
+            _lmToast.find("#acceptURL").click(function () {
                 window.open(MSGCOMMANDS, '_blank');
             });
         }
@@ -2097,37 +2099,37 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
 
         //with confirmation
         else if (commandMsg == "HideAll") {
-            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-hideall").click(function () {
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-hideall").click(function () {
                 $("#HideAllBthn").click();
             });
         } else if (commandMsg == "NamePerm") {
-            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter26 + ': ' + _lmEscHtml(playerMsg) + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter26 + ': ' + _lmEscHtml(playerMsg) + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-NamePerm").click(function () {
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-NamePerm").click(function () {
                 $("#nick").val(playerMsg);
                 $("#helloContainer").show();
                 newsubmit();
             });
         } else if (commandMsg == "dTroll2") {
-            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-troll").click(function () {
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-troll").click(function () {
                 settrolling();
             });
         } else if (commandMsg == "Youtube") {
-            toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-play-youtube").click(function () {
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-play-youtube").click(function () {
                 $("#playerBtn").click();
                 setTimeout(function () {
                     $("#playerBtn").focusout();
