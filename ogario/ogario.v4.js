@@ -757,11 +757,20 @@ function readLocalStorageJSON(key, fallbackValue) {
                 var tx = this.db.transaction(storeName, "readonly");
                 var store = tx.objectStore(storeName);
                 var countReq = store.count();
+                /* Every exit path must clear the flag, or eviction never runs again. */
+                var clearFlag = function () { self[flagName] = false; };
+                tx.onabort = clearFlag;
                 countReq.onsuccess = function () {
                     var count = countReq.result;
                     if (count > limit) {
                         var toDelete = count - limit;
-                        var deleteTx = self.db.transaction(storeName, "readwrite");
+                        var deleteTx;
+                        try {
+                            deleteTx = self.db.transaction(storeName, "readwrite");
+                        } catch (txErr) {
+                            clearFlag();
+                            return;
+                        }
                         var deleteStore = deleteTx.objectStore(storeName);
                         var index = deleteStore.index("timestamp");
                         var cursorReq = index.openCursor();
@@ -779,6 +788,7 @@ function readLocalStorageJSON(key, fallbackValue) {
                         deleteTx.onerror = function () {
                             self[flagName] = false;
                         };
+                        deleteTx.onabort = clearFlag;
                     } else {
                         self[flagName] = false;
                     }
