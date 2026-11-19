@@ -34483,7 +34483,14 @@ function thelegendmodproject() {
                         console.error('%c[Senpa]%c WASM module not loaded or missing create()', 'color:#fa3', 'color:inherit');
                         return;
                     }
-                    var senpaUrl = t + '?';
+                    /* Query as Delta / the official client: po = page host, tid = 32-hex id made once per session. */
+                    if (!window._senpaTid) {
+                        var tidBytes = crypto.getRandomValues(new Uint8Array(16));
+                        window._senpaTid = Array.prototype.map.call(tidBytes, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+                    }
+                    var senpaPo = location.host || 'unknown';
+                    if (location.pathname.startsWith('/web/mobile') && !senpaPo.startsWith('mobile.')) senpaPo += '/mobile';
+                    var senpaUrl = t + '?' + new URLSearchParams({ po: senpaPo, tid: window._senpaTid }).toString();
                     // Module.create() wraps WebSocket with anti-cheat WASM layer
                     self.socket = SenpaModule.create(
                         senpaUrl,
@@ -35072,6 +35079,11 @@ function thelegendmodproject() {
                         var loggedUsersOnly = rU8();
                         var captchaVersion = rU8();
                         console.warn('%c[Senpa]%c Captcha requested (version=' + captchaVersion + ', loggedOnly=' + loggedUsersOnly + ') — not implemented', 'color:#fa3', 'color:inherit');
+                        /* Delta solves it (Turnstile / reCAPTCHA v2 / v3) and answers opcode 14
+                         * before spawning; LM cannot, so say why spawns may be refused. */
+                        if (captchaVersion >= 1 && captchaVersion <= 3 && window.toastr) {
+                            toastr.warning('Senpa requires a captcha that Legend Mod cannot solve. Spawning may be refused; use the official Senpa client.');
+                        }
                         break;
                     }
                     case 8: { // Handshake done → send auth
@@ -35213,10 +35225,15 @@ function thelegendmodproject() {
                                 // Ejected mass
                                 cellColor = rU24();
                             } else if (cellType === 5) {
-                                // Anti-cheat challenge array (WASM needed)
+                                // Anti-cheat challenge array: hand it to the WASM module (Delta senpaModuleAllocArray)
                                 var acLen = rU16();
-                                _off.v += acLen; // skip the array
-                                console.warn('%c[Senpa]%c Anti-cheat challenge (type 5) skipped — WASM not available', 'color:#fa3', 'color:inherit');
+                                var acArr = raw.slice(_off.v, _off.v + acLen);
+                                _off.v += acLen;
+                                try {
+                                    if (window._SenpaModule && window._SenpaModule._alloc) window._SenpaModule._alloc(8, acArr);
+                                } catch (eAc) {
+                                    console.warn('%c[Senpa]%c Anti-cheat challenge failed:', 'color:#fa3', 'color:inherit', eAc);
+                                }
                             }
 
                             if (cellID === 5024) continue; // Senpa sentinel skip
@@ -35290,6 +35307,16 @@ function thelegendmodproject() {
                                 self.playerCellIDs.splice(idx, 1);
                                 if (self._playerCellIDSet) self._playerCellIDSet.delete(cellID);
                             }
+                        }
+                        // Anti-cheat answer the module stashes on CanvasCaptureMediaStreamTrack (Delta senpaModuleAlloc)
+                        try {
+                            var ccmst = window.CanvasCaptureMediaStreamTrack;
+                            if (ccmst && ccmst.contextBufferFactory && window._SenpaModule && window._SenpaModule._alloc) {
+                                window._SenpaModule._alloc(9, ccmst.contextBufferFactory);
+                                ccmst.contextBufferFactory = null;
+                            }
+                        } catch (eAc9) {
+                            console.warn('%c[Senpa]%c Anti-cheat answer failed:', 'color:#fa3', 'color:inherit', eAc9);
                         }
                         break;
                     }
