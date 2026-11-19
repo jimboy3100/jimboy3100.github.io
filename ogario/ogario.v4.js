@@ -2997,8 +2997,14 @@ window.changeOnline = function (option) {
 
 function autocoins(slot) {
     if (legendmod.integrity && window.loggedIn && window.lmAccountReady()) {
-        // Prefer sendProto-based method if available
-        if (window.application && typeof window.application.activateTimedEvent === 'function') {
+        /* Official FreeCoinsService claims only when the hourlyBonus timer is 0: the login
+         * timer and the hourly digger sent 110 during the cooldown (refused). Unknown timer
+         * (no list yet) still claims; 2 s of slack for a timer firing on the deadline. */
+        var _hbLeft = typeof window.getLiveTimedEventSecondsRemaining === 'function'
+            ? window.getLiveTimedEventSecondsRemaining('hourlyBonus') : null;
+        if (_hbLeft !== null && _hbLeft > 2) {
+            /* updateEvents already re-armed coinsTimer for the deadline. */
+        } else if (window.application && typeof window.application.activateTimedEvent === 'function') {
             window.application.activateTimedEvent("hourlyBonus");
         } else {
             // Fallback: raw bytes
@@ -3077,6 +3083,47 @@ function _lmPotionSlot(slot) {
 }
 
 // PotionDrinker: removed (duplicate of window.openPotion, never called)
+
+/*
+ * The official Vue potion slots (store user/potions) are filled only by the official
+ * PotionsController's "refresh_slots" / "update_potion" document events, which it sends
+ * for its own 122/124 requests (addOnce listeners). After LM's own brew/open (strip,
+ * potion drinker) those slots stayed stale until a re-login. Replay the same events from
+ * LM's 123/125 reply, reusing the official detail (localized name, spine asset) last seen
+ * for that productId. Without a known detail for every potion the slots are not cleared,
+ * only the known ones are updated. Core.user.userPotions (not exported) is not touched.
+ */
+window._lmVuePotionDetail = {};
+document.addEventListener('update_potion', function (e) {
+    var d = e && e.detail;
+    if (d && d.id && d.name && d.asset) window._lmVuePotionDetail[d.id] = d;
+}, true);
+window._lmSyncOfficialPotionSlots = function (userPotions) {
+    try {
+        var list = Array.from(userPotions || []).filter(Boolean);
+        /* official getPotionState: an obtained potion is UNAVAILABLE while another brews */
+        var brewing = list.some(function (p) { return Number(p.status) === 2; });
+        var details = [], complete = true;
+        list.forEach(function (p) {
+            var base = window._lmVuePotionDetail[p.productId];
+            if (!base) { complete = false; return; }
+            var st = Number(p.status), secs = Math.max(0, Number(p.secondsRemaining) || 0);
+            var state = st === 2 ? ['BREWING', 1] : st === 3 ? ['READY', 2]
+                : st === 1 ? (brewing ? ['UNAVAILABLE', 3] : ['AVAILABLE', 0]) : null;
+            var price = base.skipPrice;
+            try {
+                if (window.agarApp && window.agarApp.API && typeof window.agarApp.API.getPriceForPotionSkip === 'function') {
+                    price = window.agarApp.API.getPriceForPotionSkip(secs, p.productId, Number(p.slot));
+                }
+            } catch (priceErr) { }
+            details.push(Object.assign({}, base, { totalTime: secs, state: state, skipPrice: price, slot: Number(p.slot), id: p.productId }));
+        });
+        if (complete) document.dispatchEvent(new CustomEvent('refresh_slots'));
+        details.forEach(function (d) { document.dispatchEvent(new CustomEvent('update_potion', { detail: d })); });
+    } catch (err) {
+        console.warn('[LM] Official potion slot sync failed:', err);
+    }
+};
 
 function userLeaguesInfoRequest(slot) {
     // Prefer sendProto-based method
@@ -29335,6 +29382,8 @@ function thelegendmodproject() {
             return this.sendProto(122, { brewPotionForSlotRequestField: { slot: parseInt(slot) } });
         },
         openPotion(slot, isUserAction) {
+            /* Read by the 125 not_ready handler. */
+            window._lmLastPotionOpen = { slot: parseInt(slot, 10), at: Date.now() };
             if (isUserAction === false) {
                 window._userInitiatedPotionOpen = false;
             } else {
@@ -29419,8 +29468,15 @@ function thelegendmodproject() {
             return this.sendProto(146, { userPartyFacebookInviteField: { facebookIds: friendIds } });
         },
         requestFriendListUpdate() {
-            console.log("[LM] Request Friend List Update");
-            return this.sendProto(147, { userFriendListUpdateField: {} });
+            /* 147 is server push only: the official client never sends it (it registers no
+             * friend or party handler at all). Replay the last pushed list instead. */
+            var cached = window._friendListData;
+            if (cached) {
+                try { document.dispatchEvent(new CustomEvent('friendListUpdate', { detail: cached })); } catch (e) { }
+                return true;
+            }
+            console.log("[LM] No friend list pushed by the server yet (147)");
+            return false;
         },
         sendAutomationUpdate(eventFinished) {
             console.log("[LM] Send Automation Update — eventFinished: " + eventFinished);
@@ -39173,6 +39229,17 @@ function thelegendmodproject() {
                     let friendX = 0,
                         friendY = 0,
                         friendNick = null;
+                    /* Layout (Delta's notes, no live capture yet): repeated int16 x, int16 y,
+                     * optional UTF-8 nick. Log the first packet's bytes once for a capture. */
+                    if (!window._lmFriendPosLogged) {
+                        window._lmFriendPosLogged = true;
+                        try {
+                            console.log('[LM] opcode 160 (friend position) bytes:',
+                                Array.from(new Uint8Array(data.buffer, data.byteOffset, data.byteLength)).join(','));
+                        } catch (e160) { }
+                    }
+                    if (!this.arrowFB || !this.arrowFB[0]) this.arrowFB = [{}];
+                    var fbVec = window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr];
                     for (; s < data.byteLength;) {
                         num++
                         if (s + 4 > data.byteLength) break;
@@ -39182,13 +39249,14 @@ function thelegendmodproject() {
                         s += 2;
                         friendY = data.getInt16(s, true);
                         s += 2;
-                        if (window.legendmod.vector[window.legendmod.vnr][0]) friendX = this.translateX(friendX);
-                        if (window.legendmod.vector[window.legendmod.vnr][1]) friendY = this.translateY(friendY);
+                        if (fbVec && fbVec[0]) friendX = this.translateX(friendX);
+                        if (fbVec && fbVec[1]) friendY = this.translateY(friendY);
                         if (s < data.byteLength) {
                             friendNick = encode();
                         } else {
                             friendNick = "";
                         }
+                        if (!isFinite(friendX) || !isFinite(friendY)) continue;
                         //this.arrowFB.push({
                         //    nick: friendNick,
                         //    x: friendX,
@@ -39198,7 +39266,8 @@ function thelegendmodproject() {
                         this.arrowFB[0].visible = true;
                         this.arrowFB[0].x = friendX;
                         this.arrowFB[0].y = friendY;
-                        this.arrowFB[0].nick = friendNick != "" ? friendNick : this.arrowFB[0].nick;
+                        /* the minimap draws '🔹' + nick + '🔹': never undefined */
+                        this.arrowFB[0].nick = friendNick ? String(friendNick) : (this.arrowFB[0].nick || '');
                     }
                     break;
                 /* case 161 (friend arrow hide) is merged into the Garix DualInfo case above. */
@@ -39790,7 +39859,16 @@ function thelegendmodproject() {
                     this.user.stats = u.userStats;
                     try { this.displayStats(u.userStats); } catch (e) { console.error('[LW 102] displayStats error:', e); }
 
+                    /* The login list is the whole timed-event state (the official client replaces
+                     * it): drop the previous session's entries. Official createFirstTimeEvent: a
+                     * hourlyBonus missing from the list is available now. */
+                    window._lmTimedEventState = Object.create(null);
                     try { this.updateEvents(u.userTimedEvents); } catch (e) { console.error('[LW 102] updateEvents error:', e); }
+                    if (!window._lmTimedEventState.hourlyBonus) {
+                        var _hbNow = Date.now();
+                        window._lmTimedEventState.hourlyBonus = { eventId: 'hourlyBonus', nextAvailableInSeconds: 0, receivedAt: _hbNow, readyAt: _hbNow, raw: null };
+                        window.hourlyBonusFinalTimer = _hbNow;
+                    }
 
                     try { this.displayActiveQuests(u.userActiveQuests); } catch (e) { console.error('[LW 102] displayActiveQuests error:', e); }
 
@@ -39821,6 +39899,24 @@ function thelegendmodproject() {
                         if (LM.isLegendWorld && u.userInfo) console.log('[LW 102 TRACE] userInfo.userId=' + (u.userInfo.userId || 'EMPTY') + ' realmInfo=' + JSON.stringify(u.userInfo.realmInfo || {}));
                         this.updateUserInfo(u.userInfo);
                     } catch (e) { console.error('[LW 102] updateUserInfo error:', e); }
+
+                    /* agar.io UID and xsolla token from the decoded login. The raw-text parse in
+                     * case 102 only reads an uncompressed reply (> 1000 bytes), so a compressed
+                     * login left them empty; for an uncompressed one it still runs after this.
+                     * Official: id after "provider$", xsollaToken = urlEncode(tokens.xsolla). */
+                    try {
+                        if (this.serverType === 'agario' && !LM.isLegendWorld && u) {
+                            var _uidParts = (u.userInfo && u.userInfo.userId) ? String(u.userInfo.userId).split('$') : [];
+                            if (_uidParts.length >= 2 && _uidParts[1]) {
+                                window.agarioUID = _uidParts[1].substr(0, 36);
+                                $("#UserProfileUUID1").val(window.agarioUID);
+                                if (typeof window.syncProfileTabUI === 'function') window.syncProfileTabUI();
+                            }
+                            if (u.tokens && u.tokens.xsolla) {
+                                window.agarioEncodedUID = encodeURIComponent(String(u.tokens.xsolla));
+                            }
+                        }
+                    } catch (e) { console.error('[LM 102] agar.io UID from login error:', e); }
 
                     try { this.updatePotions(u.userPotions); } catch (e) { console.error('[LW 102] updatePotions error:', e); }
 
@@ -40773,6 +40869,7 @@ function thelegendmodproject() {
                                     console.log('[LM] Hourly bonus next in: ' + mins + 'm ' + secs + 's');
                                 }
                             }
+                        } else {
                             console.log("[LM] Timed Event Updates — no events in payload");
                         }
                     } catch (teuErr) {
@@ -40836,6 +40933,7 @@ function thelegendmodproject() {
                             if (brewResult === 1 && u.userPotions && u.userPotions.length) {
                                 /* Success */
                                 this.updatePotions(u.userPotions);
+                                if (typeof window._lmSyncOfficialPotionSlots === 'function') window._lmSyncOfficialPotionSlots(u.userPotions);
                                 if (window.toastr) toastr.success('<b>[POTION]:</b> Brewing started! \u2615');
                                 /* Official onStartBrewing: activate the potionSkipBrew timed event
                                  * once the brew is running (skip-brew price timer). */
@@ -40876,6 +40974,36 @@ function thelegendmodproject() {
                                         ? '<b>[POTION]:</b> Potion is not ready yet.'
                                         : '<b>[POTION]:</b> Potion not opened (code ' + openResult + ').');
                                 }
+                                /* An expired brew is promoted to 3 locally (the server sends no
+                                 * status change); receive delay or rounding can leave it brewing on
+                                 * the server. Put that slot back to brewing for a short, growing
+                                 * delay so the brew timer offers/opens it again instead of keeping
+                                 * a dead OPEN. */
+                                try {
+                                    var lastOpen = window._lmLastPotionOpen;
+                                    var potStates = this.user && this.user.potionsStatus;
+                                    var failedPot = lastOpen && potStates && potStates['potion' + lastOpen.slot];
+                                    if (openResult === 2 && failedPot && Number(failedPot.status) === 3 &&
+                                        Date.now() - lastOpen.at < 15000) {
+                                        window._lmPotionNotReady = window._lmPotionNotReady || {};
+                                        var notReadyCount = (window._lmPotionNotReady[lastOpen.slot] || 0) + 1;
+                                        window._lmPotionNotReady[lastOpen.slot] = notReadyCount;
+                                        var retrySecs = Math.min(60, 5 * Math.pow(2, notReadyCount - 1));
+                                        var revertList = [];
+                                        for (var rpn = 1; rpn <= 3; rpn++) {
+                                            var rpv = potStates['potion' + rpn];
+                                            if (!rpv) continue;
+                                            var rpStatus = Number(rpv.status) || 0;
+                                            var rpSecs = rpStatus === 2
+                                                ? Math.max(0, Math.ceil((Number(rpv.readyAt) - Date.now()) / 1000)) : 0;
+                                            if (rpn === lastOpen.slot) { rpStatus = 2; rpSecs = retrySecs; }
+                                            revertList.push({ slot: rpn, status: rpStatus, secondsRemaining: rpSecs, productId: rpv.productId || rpv.type || '' });
+                                        }
+                                        this.updatePotions(revertList);
+                                    }
+                                } catch (notReadyErr) {
+                                    console.warn('[LM] Potion not-ready revert failed:', notReadyErr);
+                                }
                                 try {
                                     document.dispatchEvent(new CustomEvent('lm-potions-updated', {
                                         detail: (this.user && this.user.potionsStatus) || {}
@@ -40885,7 +41013,9 @@ function thelegendmodproject() {
                             }
                             /* The response carries the full slot list: an empty list means
                              * every slot is now empty (opening the last potion). */
+                            window._lmPotionNotReady = {};
                             this.updatePotions(Array.from(u.userPotions || []));
+                            if (typeof window._lmSyncOfficialPotionSlots === 'function') window._lmSyncOfficialPotionSlots(u.userPotions);
                             if (window._userInitiatedPotionOpen) {
                                 window._userInitiatedPotionOpen = false;
 
@@ -40990,20 +41120,56 @@ function thelegendmodproject() {
                         if (lpu) {
                             console.log("[LM] Leagues Pass Update received");
                             window.lastLeaguesPassUpdate = lpu;
+                            /* Official User_leagues_pass_update: leagueType, playerThatPassed,
+                             * playerThatWasPassed (no position field). Either one can be this
+                             * account: word the toast from our side. Names are escaped for toastr. */
                             var passedBy = lpu.playerThatPassed;
-                            if (passedBy && passedBy.displayName) {
-                                /* another player's name: escape before toastr HTML */
+                            var passedWho = lpu.playerThatWasPassed;
+                            /* Compare ids without a "provider$" prefix (login userId is "google$<id>"). */
+                            var lpuId = function (id) { id = String(id || '').trim(); var k = id.lastIndexOf('$'); return k >= 0 ? id.slice(k + 1) : id; };
+                            var myUserId = lpuId(this.user && this.user.userId);
+                            var isMe = function (p) { return !!(p && myUserId && p.userId && lpuId(p.userId) === myUserId); };
+                            if (isMe(passedBy) && passedWho && passedWho.displayName) {
+                                toastr.info('<b>[LEAGUE]:</b> You passed ' + application.escapeHTML(String(passedWho.displayName)) + ' in the league!');
+                            } else if (passedBy && passedBy.displayName && !isMe(passedBy)) {
                                 toastr.info('<b>[LEAGUE]:</b> ' + application.escapeHTML(String(passedBy.displayName)) + ' passed you in the league!');
                             }
-                            // Refresh league data
-                            if (lpu.newPosition !== undefined) {
-                                this.user.leaguePosition = lpu.newPosition;
-                                console.log("[LM] New league position: " + lpu.newPosition);
+                            /* Our rank, when the server filled it in on our entry. */
+                            var myEntry = isMe(passedBy) ? passedBy : (isMe(passedWho) ? passedWho : null);
+                            if (myEntry && Number(myEntry.rank) > 0 && this.user) {
+                                this.user.leaguePosition = Number(myEntry.rank);
+                                console.log("[LM] New league position: " + this.user.leaguePosition);
                             }
                             try { document.dispatchEvent(new CustomEvent('leaguesPassUpdate', { detail: lpu })); } catch (e) { }
                         }
                     } catch (lpuErr) {
                         console.warn("[LM] Error parsing leagues pass update:", lpuErr);
+                    }
+                    break;
+                case 145:
+                    /* Party membership update (official enum: 1 joined, 2 left, 3 invited_you).
+                     * The official web client registers no handler for it; an invite with a code
+                     * offers to join through the normal party-code path. */
+                    try {
+                        var pmu = r.uncompressedData.userPartyMembershipUpdateField;
+                        if (pmu) {
+                            console.log("[LM] Party membership update:", pmu);
+                            try { document.dispatchEvent(new CustomEvent('partyMembershipUpdate', { detail: pmu })); } catch (e) { }
+                            var pmuCode = pmu.code ? String(pmu.code).trim() : '';
+                            if (Number(pmu.updateType) === 3 && pmuCode && window.toastr &&
+                                typeof window.joinAgarPartyToken === 'function') {
+                                var pmuName = (pmu.member && pmu.member.displayName) ? String(pmu.member.displayName) : 'A friend';
+                                /* another player's name: escape before toastr HTML */
+                                toastr.info('<b>[PARTY]:</b> ' + application.escapeHTML(pmuName) + ' invited you to a party. Click to join.', '', {
+                                    timeOut: 15000,
+                                    extendedTimeOut: 5000,
+                                    /* bind this invite's code: pmuCode is reused by the next 145 */
+                                    onclick: (function (code) { return function () { window.joinAgarPartyToken(code); }; })(pmuCode)
+                                });
+                            }
+                        }
+                    } catch (pmuErr) {
+                        console.warn("[LM] Error parsing party membership update:", pmuErr);
                     }
                     break;
                 case 147:
@@ -44505,7 +44671,15 @@ Most cells eaten   : ${mostCellsEaten}
             var potions = Number(ac.potionsObtained) || 0;
             var quests = Number(ac.questsCompleted) || 0;
             var skins = Number(ac.skinsCreated) || 0;
-            var accountAge = ~~((Number(i.accountAge) || 0) / 3600 / 24);
+            /* uint32 accountAge: the official web client never shows it, so its unit is not
+             * documented. Expanding Land sends seconds (seconds/86400 = days). A value no larger
+             * than the days since agar.io launched (2015-04-28) cannot be an account older than
+             * ~75 minutes in seconds, so read it as days unless the account is new. */
+            var accountAgeRaw = Math.max(0, Number(i.accountAge) || 0);
+            var accountAgeMaxDays = Math.ceil((Date.now() - Date.UTC(2015, 3, 28)) / 86400000);
+            var accountAge = (accountAgeRaw > 0 && accountAgeRaw <= accountAgeMaxDays && !i.isNewUser)
+                ? Math.floor(accountAgeRaw)
+                : ~~(accountAgeRaw / 3600 / 24);
             /* server strings: escape before .html() */
             var country = application.escapeHTML(String(i.latestCountryCode || 'N/A'));
             var gameName = application.escapeHTML(String(i.displayName || 'Player'));

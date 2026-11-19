@@ -3854,7 +3854,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 '</div>';
         }
 
-        // Send opcode 147 request
+        // Replays the last server-pushed 147 list (the client never requests it)
         if (window.application && typeof window.application.requestFriendListUpdate === 'function') {
             window.application.requestFriendListUpdate();
         } else if (window.core && window.core.proxyMobileData) {
@@ -8897,13 +8897,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             var hourlyTimerText;
 
 
+            /* Official: an event missing from the received list is available. */
             if (
                 hourlySeconds ===
-                null
+                null &&
+                !window._lmTimedEventState
             ) {
                 hourlyTimerText =
                     'Waiting for server';
             } else if (
+                hourlySeconds === null ||
                 hourlySeconds <=
                 0
             ) {
@@ -8948,13 +8951,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             var dailyTimerText;
 
 
+            /* Official QuestsController: no dailyQuest event means a quest can start now. */
             if (
                 dailySeconds ===
-                null
+                null &&
+                !window._lmTimedEventState
             ) {
                 dailyTimerText =
                     'Waiting for server';
             } else if (
+                dailySeconds === null ||
                 dailySeconds <=
                 0
             ) {
@@ -11106,7 +11112,6 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         // click events via agarApp.API.openPotion/startPotion/skipPotion.
         // LM only tracks status in window.LM.user.potionsStatus for
         // autobrewing and the potions help button — never overwrite Vue DOM.
-        var potions = appUser.potions || window.lastPotionsData || [];
         if (!window.LM) window.LM = {};
         if (!window.LM.user) window.LM.user = {};
         if (!window.LM.user.potionsStatus) window.LM.user.potionsStatus = {};
@@ -11127,303 +11132,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             return false;
         });
 
-        /*
-         * ═══════════════════════════════════════════════════════════════
-         * POTION STATE MERGE
-         * ═══════════════════════════════════════════════════════════════
-         *
-         * application.updatePotions()/newPotion() own the authoritative
-         * rich potion state.
-         *
-         * syncProfileTabUI() is allowed to MERGE newer information from
-         * the Vue/application user model, but must never collapse:
-         *
-         *     readyAt
-         *     secondsRemaining
-         *     receivedAt
-         *     productId
-         *     raw
-         *
-         * back into the old minimal object.
-         *
-         * IMPORTANT:
-         *
-         * If pData carries a fresh secondsRemaining/expiresInSeconds,
-         * that snapshot wins over an older readyAt.
-         */
-
-        for (
-            var s = 1;
-            s <= 3;
-            s++
-        ) {
-            var pData =
-                potions[
-                    s - 1
-                ] ||
-                null;
-
-
-            if (!pData) {
-                /*
-                 * Do not delete here.
-                 *
-                 * updatePotions() owns deletion because it receives the
-                 * authoritative server slot list.
-                 */
-                continue;
-            }
-
-
-            var potionKey =
-                'potion' +
-                s;
-
-
-            var previous =
-                window.LM
-                    .user
-                    .potionsStatus[
-                        potionKey
-                    ] ||
-                {};
-
-
-            var now =
-                Date.now();
-
-
-            /*
-             * STATUS
-             */
-            var status =
-                Number(
-                    pData.status
-                );
-
-
-            if (
-                !Number.isFinite(
-                    status
-                ) ||
-                status <= 0
-            ) {
-                status =
-                    Number(
-                        previous.status
-                    ) ||
-                    1;
-            }
-
-
-            /*
-             * PRODUCT
-             */
-            var productId =
-                pData.productId ||
-                pData.type ||
-                previous.productId ||
-                previous.type ||
-                '';
-
-
-            /*
-             * Detect a fresh timer snapshot.
-             */
-            var freshSeconds =
-                null;
-
-
-            if (
-                pData.secondsRemaining !==
-                    undefined &&
-                pData.secondsRemaining !==
-                    null
-            ) {
-                freshSeconds =
-                    Math.max(
-                        0,
-                        Number(
-                            pData
-                                .secondsRemaining
-                        ) ||
-                        0
-                    );
-
-            } else if (
-                pData.expiresInSeconds !==
-                    undefined &&
-                pData.expiresInSeconds !==
-                    null
-            ) {
-                freshSeconds =
-                    Math.max(
-                        0,
-                        Number(
-                            pData
-                                .expiresInSeconds
-                        ) ||
-                        0
-                    );
-            }
-
-
-            var readyAt =
-                Number(
-                    previous.readyAt
-                ) ||
-                0;
-
-
-            var secondsRemaining =
-                0;
-
-
-            var receivedAt =
-                Number(
-                    previous.receivedAt
-                ) ||
-                now;
-
-
-            /*
-             * Only BREWING potions should carry a running deadline.
-             */
-            if (
-                status === 2
-            ) {
-                if (
-                    freshSeconds !==
-                    null
-                ) {
-                    /*
-                     * Fresh server/application snapshot wins.
-                     */
-                    secondsRemaining =
-                        freshSeconds;
-
-
-                    receivedAt =
-                        now;
-
-
-                    readyAt =
-                        now +
-                        secondsRemaining *
-                        1000;
-
-                } else if (
-                    readyAt > 0
-                ) {
-                    /*
-                     * No new snapshot.
-                     *
-                     * Preserve the existing absolute deadline and derive
-                     * the current remaining time.
-                     */
-                    secondsRemaining =
-                        Math.max(
-                            0,
-                            Math.ceil(
-                                (
-                                    readyAt -
-                                    now
-                                ) /
-                                1000
-                            )
-                        );
-
-                } else {
-                    /*
-                     * Last compatibility fallback.
-                     */
-                    secondsRemaining =
-                        Math.max(
-                            0,
-                            Number(
-                                previous
-                                    .secondsRemaining
-                            ) ||
-                            0
-                        );
-
-
-                    if (
-                        secondsRemaining >
-                        0
-                    ) {
-                        readyAt =
-                            now +
-                            secondsRemaining *
-                            1000;
-
-
-                        receivedAt =
-                            now;
-                    }
-                }
-
-            } else {
-                /*
-                 * Obtained / ready-to-brew / ready-to-open potions do not
-                 * have an active brew countdown.
-                 */
-                secondsRemaining =
-                    0;
-
-
-                readyAt =
-                    0;
-            }
-
-
-            var expires =
-                readyAt > 0
-                    ? new Date(
-                        readyAt
-                    )
-                    : new Date(
-                        0
-                    );
-
-
-            window.LM
-                .user
-                .potionsStatus[
-                    potionKey
-                ] = {
-                    type:
-                        productId,
-
-                    productId:
-                        productId,
-
-                    slot:
-                        s,
-
-                    status:
-                        status,
-
-                    secondsRemaining:
-                        secondsRemaining,
-
-                    receivedAt:
-                        receivedAt,
-
-                    readyAt:
-                        readyAt,
-
-                    expires:
-                        expires,
-
-                    /*
-                     * Keep current source object available for diagnostics
-                     * and future fields.
-                     */
-                    raw:
-                        pData
-                };
-        }
+        /* The slot state lives in legendmod.user.potionsStatus (application.updatePotions /
+         * newPotion). The old merge here read appUser.potions (the wallet map, not a
+         * slot list) by index and only wrote the window.LM stub: it never ran. */
 
         // 5. Friends Button Disabled state when unauthenticated, missing UID, not logged in with Facebook, or disconnected
         var isUserLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId));
@@ -12041,6 +11752,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             if (typeof window.showLeaguesModal === 'function') window.showLeaguesModal();
         });
 
+        /* The Friends button stays hidden until the server pushes a non-empty friend
+         * list (147); it then opens that list (showFriendsModal had no entry point). */
+        if (!window._lmFriendsBtnRevealBound) {
+            window._lmFriendsBtnRevealBound = true;
+            document.addEventListener('friendListUpdate', function (e) {
+                var d = e && e.detail;
+                if (d && d.friends && d.friends.length) $('#lm-friends-btn').css('display', '');
+            });
+        }
+
         $(document)
             .off('click.lmFriendsLeague', '#lm-friends-btn')
             .on('click.lmFriendsLeague', '#lm-friends-btn', function(event) {
@@ -12066,6 +11787,18 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         );
                     }
 
+                    return false;
+                }
+
+                /* The server pushed a friend list (147): show it. Otherwise the
+                 * Leagues friends tab, below. */
+                if (
+                    window._friendListData &&
+                    window._friendListData.friends &&
+                    window._friendListData.friends.length &&
+                    typeof window.showFriendsModal === 'function'
+                ) {
+                    window.showFriendsModal();
                     return false;
                 }
 
