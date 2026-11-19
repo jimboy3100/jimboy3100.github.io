@@ -45546,7 +45546,8 @@ Most cells eaten   : ${mostCellsEaten}
             if (this.removePlayerCell && !this.playerCells.length) {
                 this.play = false;
                 application.onPlayerDeath();
-                if (!LM.multiBoxPlayerExists) {
+                /* same gate as updateCells: "Auto-switch focus after death" off keeps the menu */
+                if (!LM.multiBoxPlayerExists || (!defaultmapsettings.mbSwitchAfterDeath && !window.multiboxPlayerEnabled)) {
                     application.showMenu(300);
                 } else {
                     if (!window.multiboxPlayerEnabled) {
