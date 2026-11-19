@@ -896,23 +896,29 @@ class Spect {
 
                 this.viewX = view.getFloat32(offset, true);
                 window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
-                if (defaultmapsettings.middleMultiView && legendmod.play) {
-                    legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;
-                } else if (window.middleMultiViewFlag) {
-                    legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;
+                /* viewX is this connection's server space: convert before mixing it into the
+                 * main camera; only the multibox player unit moves the camera. */
+                var _cvX = this.getX(this.viewX);
+                if (this.player && defaultmapsettings.middleMultiView && legendmod.play) {
+                    legendmod.viewX = (legendmod.viewXTrue + _cvX) / 2;
+                } else if (this.player && window.middleMultiViewFlag) {
+                    legendmod.viewX = (legendmod.viewXTrue + _cvX) / 2;
                 } else if (this.player && window.multiboxPlayerEnabled === this.number && getActiveSpect(window.multiboxPlayerEnabled)) {
-                    legendmod.viewX = this.viewX
+                    legendmod.viewX = _cvX
                 }
                 //var x=this.viewX = view.getFloat32(offset, true);
                 //this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
                 this.viewY = view.getFloat32(offset, true);
-                if (defaultmapsettings.middleMultiView && legendmod.play) {
-                    legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
-                } else if (window.middleMultiViewFlag) {
-                    legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
+                /* viewY is this connection's server space: convert before mixing it into the
+                 * main camera; only the multibox player unit moves the camera. */
+                var _cvY = this.getY(this.viewY);
+                if (this.player && defaultmapsettings.middleMultiView && legendmod.play) {
+                    legendmod.viewY = (legendmod.viewYTrue + _cvY) / 2;
+                } else if (this.player && window.middleMultiViewFlag) {
+                    legendmod.viewY = (legendmod.viewYTrue + _cvY) / 2;
                 } else if (this.player && window.multiboxPlayerEnabled === this.number && getActiveSpect(window.multiboxPlayerEnabled)) {
-                    legendmod.viewY = this.viewY
+                    legendmod.viewY = _cvY
                 }
                 //var y=this.viewX = view.getFloat32(offset, true);
                 //this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
