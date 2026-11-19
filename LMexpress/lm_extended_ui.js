@@ -6120,6 +6120,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
     document.addEventListener('lm-rush-boost-purchased', function () {
         window._lmRefreshOpenRushShop();
     });
+    // Header balances and BUY affordability are computed at render time.
+    document.addEventListener('lm-premium-potion-purchase-finished', function () {
+        if (document.getElementById('lm-premium-potions-modal') &&
+            typeof window.showPremiumPotionsModal === 'function') {
+            window.showPremiumPotionsModal();
+        }
+    });
 
 
     window.openShop = function (cat) {
