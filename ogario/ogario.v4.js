@@ -34108,8 +34108,12 @@ function thelegendmodproject() {
             if (this.imsoloHeartbeatInterval) clearInterval(this.imsoloHeartbeatInterval);
             if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                 var self = this;
+                var hbSocket = this.socket;
                 this.imsoloHeartbeatInterval = setInterval(function () {
-                    if (self.socket && self.socket.readyState === WebSocket.OPEN) {
+                    if (self.socket === hbSocket && hbSocket.readyState === WebSocket.CONNECTING) {
+                        return; // slow handshake: wait instead of stopping the heartbeat for good
+                    }
+                    if (self.socket === hbSocket && hbSocket.readyState === WebSocket.OPEN) {
                         var hb = self.createView(1);
                         hb.setUint8(0, 254); // 0xFE
                         self.sendMessage(hb);
