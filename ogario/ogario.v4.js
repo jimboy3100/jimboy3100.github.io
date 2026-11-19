@@ -43722,12 +43722,14 @@ Most cells eaten   : ${mostCellsEaten}
                             this.mapOffsetY =
                                 this.mapSize / 2;
                         } else {
+                            /* Centre each axis on its own midpoint. Same value as
+                             * mapOffset - right/bottom for the axis equal to mapSize,
+                             * but a shorter axis of a non-square border was
+                             * bottom-aligned before. */
                             this.mapOffsetX =
-                                this.mapOffset -
-                                right;
+                                -(left + right) / 2;
                             this.mapOffsetY =
-                                this.mapOffset -
-                                bottom;
+                                -(top + bottom) / 2;
                         }
 
                         this.mapMinX = left;
