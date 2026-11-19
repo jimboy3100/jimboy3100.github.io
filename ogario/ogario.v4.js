@@ -4452,7 +4452,10 @@ window.getOfficialAgarXpState = function (
      * This is the same source used by the official client.
      */
     try {
+        /* Expanding Land: Core.user is the official agar.io account (logged in on its
+         * own), so its level/XP replaced the Expanding Land values passed in. */
         if (
+            !_isExpandingLandClient(window.legendmod) &&
             window.Core &&
             Core.user &&
             Core.user.userInfo
