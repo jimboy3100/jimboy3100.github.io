@@ -36780,7 +36780,7 @@ function thelegendmodproject() {
                     //} 
                     if (!window.autoPlay) {
                         if (window.lockPosition) {
-                            console.log('LockPosition enabled')
+                            /* no log here: it ran every frame for 40 ms per crazy double split */
                             return false;
                         }
                         cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
