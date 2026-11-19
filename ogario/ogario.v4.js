@@ -1702,6 +1702,11 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
 
         // Manual logout/private-server switch must always win over reconnect state.
         if (intendedLogout) {
+            /* Read before master.logout() clears loginConfirmed (see the reconnect below). */
+            var _lmReconnectAsGuest = !window._isChangingToPrivateServer &&
+                typeof legendmod !== 'undefined' && legendmod &&
+                legendmod.serverType === 'agario' && !legendmod.isLegendWorld &&
+                legendmod.loginConfirmed === true;
             window._lwLoginRetryGeneration =
                 (window._lwLoginRetryGeneration || 0) + 1;
 
@@ -1794,6 +1799,15 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 window._lmDispatchingLogout = false;
             }
 
+            /* The agar.io socket stays logged in to the old account after a logout, so its
+             * games kept counting for it and a new login on it was a second login on one
+             * socket. The official client disconnects on logout; reconnect as guest here. */
+            if (_lmReconnectAsGuest && window.master && typeof window.master.reconnect === 'function' &&
+                legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                try { window.master.reconnect(true, 'logout'); } catch (e) {
+                    console.warn('[LW AUTH] Reconnect after logout failed:', e);
+                }
+            }
             return;
         }
 
