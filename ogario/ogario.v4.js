@@ -38775,7 +38775,8 @@ function thelegendmodproject() {
                     }
 
                     if (u.xpLevelUpdates && u.xpLevelUpdates.length) {
-                        var iXp = u.xpLevelUpdates[0];
+                        /* The official client applies every update and keeps the last one. */
+                        var iXp = u.xpLevelUpdates[u.xpLevelUpdates.length - 1];
                         var gLevel = Number(iXp.finalLevel) || 1;
                         var gXp = Number(iXp.finalXpForLevel) || 0;
                         challengeFinalLevel = gLevel;
