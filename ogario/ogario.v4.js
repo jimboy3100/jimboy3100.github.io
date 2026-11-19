@@ -33565,6 +33565,8 @@ function thelegendmodproject() {
             this.flushCellsData();
             this.protocolKey = null;
             this.clientKey = null;
+            /* Recomputed in _finishConnect; Garix/Sigmally/Senpa return before it. */
+            this.connectionIntegrity = false;
             this.accessTokenSent = false;
             /* Account requests wait for this connection's login response (type 11). */
             this.loginConfirmed = false;
