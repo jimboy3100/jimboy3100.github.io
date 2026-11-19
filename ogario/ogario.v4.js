@@ -72617,6 +72617,7 @@ function animateSkincheck() {
     //for (i = 0; i < 10; i++) {
     //SpecialEffectPlayers[	
     let verifiednames;
+    let e, b, d; /* were implicit globals window.e / window.b / window.d */
     for (let i = 0; i < 1; i++) {
         for (let animatedi = 0; animatedi < legendmod.leaderboard.length; animatedi++) {
             for (let animatedkey in animatedskins) {
@@ -72641,9 +72642,12 @@ function animateSkincheck() {
     //if (window.preSetanimateSkincheck > window.anualTop + 1000 ) window.preSetanimateSkincheck = window.anualTop + 1000
     window.preSetanimateSkincheck = window.anualTop
     if (defaultmapsettings.vanillaSkins) {
-        setTimeout(function () {
+        /* anualTop is 0 until an animated skin is seen: that was a ~4 ms loop all
+         * session. Keep one timer (setVanillaSkins clears animateSkinsTimer). */
+        clearTimeout(window.animateSkinsTimer);
+        window.animateSkinsTimer = setTimeout(function () {
             animateSkincheck()
-        }, window.preSetanimateSkincheck);
+        }, Math.max(window.preSetanimateSkincheck || 0, 1000));
     }
 }
 
