@@ -71551,6 +71551,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
         window.onkeydown = event => { };
     }
+    /* keyCode -> hotkey name resolved at keydown. The name is rebuilt from the
+     * modifier state at each event, so keyup may produce a different name
+     * (modifier released first); release what was really pressed. */
+    var _lmHeldByCode = {};
     document.onkeydown = function (event) {
         var pressedKey = hotkeysSetup.getPressedKey(event);
         if (pressedKey === 'TAB' || event.keyCode === 9) {
@@ -71565,6 +71569,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         var _isEscOutsideInput = pressedKey === 'ESC' && _hkTarget.tagName !== 'INPUT';
         if ((!_isTypingTarget || _isEscOutsideInput || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
 
+            _lmHeldByCode[event.keyCode] = pressedKey;
             if (keyBlind[pressedKey] = true, 'ESC' === pressedKey) {
                 return event.preventDefault(), void (application && application.showMenu());
             }
@@ -71580,6 +71585,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
     }
     document.onkeyup = function (event) {
         var pressedKey = hotkeysSetup.getPressedKey(event);
+        var heldKey = _lmHeldByCode[event.keyCode];
+        delete _lmHeldByCode[event.keyCode];
+        if (heldKey && heldKey !== pressedKey) {
+            var heldCommand = hotkeys[heldKey];
+            if (heldCommand && hotkeysCommand[heldCommand] && hotkeysCommand[heldCommand].keyUp) {
+                hotkeysCommand[heldCommand].keyUp();
+            }
+            keyBlind[heldKey] = false;
+        }
         if ('' !== pressedKey) {
             if (hotkeys[pressedKey]) {
                 var key = hotkeys[pressedKey];
