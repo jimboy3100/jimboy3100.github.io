@@ -69518,6 +69518,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         );
                     }
 
+                    /* The enemy caches are also filled while only a
+                     * multibox unit plays: when the main is dead, the
+                     * first unit with cells draws them (once). */
+                    var enemySplitDrawn =
+                        !!(LM.playerCells && LM.playerCells.length);
+
                     if (
                         typeof spects !== "undefined" &&
                         spects
@@ -69561,19 +69567,31 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 continue;
                             }
 
-                            /* Enemy rings were drawn once above (the caches
-                             * are computed against the main player): draw
-                             * only this unit's own rings here. */
+                            /* Enemy rings are drawn once (above, or by the
+                             * first unit when the main is dead): otherwise
+                             * draw only this unit's own rings here. */
+                            var drawEnemy = !enemySplitDrawn;
+                            enemySplitDrawn = true;
+
                             this.drawSplitRange(
                                 this.ctx,
-                                null,
+                                drawEnemy ? LM.biggerSTECellsCache : null,
                                 unitCells,
                                 LM.selectBiggestCell
                             );
 
+                            if (drawEnemy) {
+                                this.drawSplitRange(
+                                    this.ctx,
+                                    LM.biggerSTEDCellsCache,
+                                    null,
+                                    LM.selectBiggestCell
+                                );
+                            }
+
                             this.drawDoubleSplitRange(
                                 this.ctx,
-                                null,
+                                drawEnemy ? LM.biggerSTEDCellsCache : null,
                                 unitCells,
                                 LM.selectBiggestCell
                             );
