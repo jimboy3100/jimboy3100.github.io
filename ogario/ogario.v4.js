@@ -47611,6 +47611,7 @@ Most cells eaten   : ${mostCellsEaten}
                 this.cursorY =
                     normalCursorY;
 
+                this.updateScanTrickStatus();
                 return;
             }
 
@@ -47733,6 +47734,30 @@ Most cells eaten   : ${mostCellsEaten}
 
             this.cursorY =
                 cursorY;
+            this.updateScanTrickStatus();
+        },
+        /*
+         * "Show Scan Trick status": a small HUD line while the Scan Trick key
+         * is held (the setting had no display). Updated only on change.
+         */
+        updateScanTrickStatus() {
+            var text = '';
+            if (defaultmapsettings.scanTrickStatus && defaultmapsettings.scanTrick && this.scanTrickActive) {
+                text = 'Scan Trick' + (this.scanTrickSnapped ? ' (' + this.getScanTrickDirectionCount() + ' directions)' : '');
+            }
+            if (text === this._scanTrickStatusText) return;
+            this._scanTrickStatusText = text;
+            var el = document.getElementById('scan-trick-status');
+            if (!el) {
+                if (!text) return;
+                el = document.createElement('div');
+                el.id = 'scan-trick-status';
+                el.className = 'hud';
+                el.style.cssText = 'position:fixed;left:50%;top:120px;transform:translateX(-50%);padding:2px 10px;font-size:13px;pointer-events:none;z-index:100;';
+                document.body.appendChild(el);
+            }
+            el.textContent = text;
+            el.style.display = text ? 'block' : 'none';
         },
 
         setZoom(t) {
@@ -67418,8 +67443,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             var _activeSpect = window.multiboxPlayerEnabled && spects ? getActiveSpect(window.multiboxPlayerEnabled) : null;
             var activeHasCells = LM.playerCells.length || (_activeSpect && _activeSpect.playerCellIDs && _activeSpect.playerCellIDs.length);
+            /* "Smooth multibox camera lerp" off: the camera jumps to the newly focused
+             * multibox unit instead of gliding there (the setting had no reader) */
+            var _lmCamUnit = window.multiboxPlayerEnabled || 0;
+            var _lmCamSwitched = this._lmCamUnit !== undefined && this._lmCamUnit !== _lmCamUnit;
+            this._lmCamUnit = _lmCamUnit;
             if (activeHasCells) {
-                if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
+                if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500 || (_lmCamSwitched && !defaultmapsettings.cameraSmoothLerp)) {
                     this.camX = targetCamX;
                     this.camY = targetCamY;
                 } else {
