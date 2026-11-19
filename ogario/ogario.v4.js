@@ -43077,6 +43077,8 @@ Most cells eaten   : ${mostCellsEaten}
                     var botcounter = 0;
                     var howmanytypesofbots = 0;
                     var ArrayLeaderboardCount = findOcc(legendmod.leaderboard, key);
+                    /* Rebuild every update so bot groups that left do not linger. */
+                    legendmod.botNicks = [];
                     ArrayLeaderboardCount.forEach((element) => {
 
                         botcounter = element.occurrence;

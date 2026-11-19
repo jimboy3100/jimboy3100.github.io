@@ -3552,11 +3552,11 @@ function hideSearchHud() {
 function showBotNameHud() {
     $("#searchHud").fadeOut();
     if (legendmod.botNicks.length == 0) {
-        appendLog2("<span class='main-color'><span id='playerBots'>No bots found</span></span> (" + legendmod.ws + "</span>)");
+        appendLog2("<span class='main-color'><span id='playerBots'>No bots found</span></span> (" + _lmEscHtml(legendmod.ws) + "</span>)");
     }
     else {
         for (var i = 0; i < legendmod.botNicks.length; i++) {
-            appendLog2("<span class='main-color'><span id='playerBots'>" + legendmod.botNicks[i].nick + "</span></span>" + " <span id='botNamesCount'>" + legendmod.botNicks[i].occurrence + "</span><span> (" + legendmod.ws + "</span>)");
+            appendLog2("<span class='main-color'><span id='playerBots'>" + _lmEscHtml(legendmod.botNicks[i].nick) + "</span></span>" + " <span id='botNamesCount'>" + _lmEscHtml(legendmod.botNicks[i].occurrence) + "</span><span> (" + _lmEscHtml(legendmod.ws) + "</span>)");
         }
     }
     $("#backgroundFade").fadeIn();
