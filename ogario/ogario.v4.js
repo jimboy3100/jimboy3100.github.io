@@ -22531,7 +22531,8 @@ function thelegendmodproject() {
                 });
             });
             $("#nick").val(ogarcopythelb.nick).blur();
-            $("#noNames").prop("checked", !defaultmapsettings.noNames);
+            /* #noNames is now the LM "No names" switch (not the inverted vanilla "Show names") */
+            $("#noNames").prop("checked", !!defaultmapsettings.noNames);
             $("#showMass").prop("checked", defaultmapsettings.showMass);
             this.unlockButtons();
             this.setAutoResp();
