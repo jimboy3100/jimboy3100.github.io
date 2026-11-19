@@ -35098,6 +35098,8 @@ function thelegendmodproject() {
 
             // ===== Senpa join: opcode 10 (nick) + 11 (tag) + 12 (code) + 0 (spawn) =====
             if (this.serverType === 'senpa') {
+                /* Spawning leaves spectate mode: cursor packets must use the player format again. */
+                this._senpaSpectate = false;
                 this.playerNick = nick;
                 // Send nick (opcode 10)
                 var nickBuf = new ArrayBuffer(1 + 2 + nick.length * 2);
