@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.535;
+window.OgVer = 3.536;
 
 
 /*
@@ -41145,9 +41145,12 @@ function thelegendmodproject() {
                             if (qa.productUpdates && qa.productUpdates.length) {
                                 this.updateProducts(qa.productUpdates);
                             }
-                            /* The activation item is used up; allow the next one. */
-                            this._questActivationSent = {};
-                            if (qa.userQuest && !(Number(qa.userQuest.goal) > 0)) {
+                            /* The activation item is used up; allow the next one. A refused activation
+                             * (Expanding Land: goal 0) keeps the guard, or every re-sent login profile
+                             * (after 204 / a potion) triggered the same refused request again. */
+                            var _qaRefused = qa.userQuest && !(Number(qa.userQuest.goal) > 0);
+                            if (!_qaRefused) this._questActivationSent = {};
+                            if (_qaRefused) {
                                 /* Expanding Land answers a refused activation (no activation item) with goal 0. */
                                 toastr.error('<b>[SERVER]:</b> Quest could not be activated.');
                             } else if (qa.userQuest) {
