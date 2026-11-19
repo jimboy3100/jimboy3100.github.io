@@ -39527,6 +39527,13 @@ function thelegendmodproject() {
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
+                    /* delt.io (Delta ProtocolLegacy.writeCipherKey): the server version is
+                     * zero-terminated and the server hashes host + version without the 0. */
+                    if (this.serverType === 'deltio') {
+                        var _dlKeyEnd = key.length;
+                        while (_dlKeyEnd > 0 && key[_dlKeyEnd - 1] === 0) _dlKeyEnd--;
+                        key = key.subarray(0, _dlKeyEnd);
+                    }
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
                     /* sendMessage drops every packet until the client key exists: if the key
                      * cannot be made, the socket would sit silent until the server times it
