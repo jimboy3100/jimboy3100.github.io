@@ -69856,8 +69856,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var food = LM.foodMulti;
                 var len = food.length;
                 var foodOffset = 10 + defaultSettings.foodSize;
-                var minX = LM.playerXMulti, maxX = LM.playerXMulti;
-                var minY = LM.playerYMulti, maxY = LM.playerYMulti;
+                /* Like calMinMax: start from the multi camera rectangle and
+                 * only grow it with the food box. The old seed (playerXMulti/
+                 * playerYMulti) is never assigned, so it was always (0,0).
+                 * The camera rectangle is only fresh this frame while
+                 * multiboxPlayerEnabled (renderFrame); otherwise use the food
+                 * box alone so a stale rectangle does not keep growing. */
+                var _camMultiFresh = !!window.multiboxPlayerEnabled;
+                var minX = _camMultiFresh && Number.isFinite(LM.camMinMultiX) ? LM.camMinMultiX : Infinity;
+                var maxX = _camMultiFresh && Number.isFinite(LM.camMaxMultiX) ? LM.camMaxMultiX : -Infinity;
+                var minY = _camMultiFresh && Number.isFinite(LM.camMinMultiY) ? LM.camMinMultiY : Infinity;
+                var maxY = _camMultiFresh && Number.isFinite(LM.camMaxMultiY) ? LM.camMaxMultiY : -Infinity;
 
                 var i = 0, len4 = len & ~3;
                 for (; i < len4; i += 4) {
@@ -69886,8 +69895,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (x < minX) minX = x; if (x > maxX) maxX = x;
                     if (y < minY) minY = y; if (y > maxY) maxY = y;
                 }
-                LM.camMinMultiX = minX; LM.camMaxMultiX = maxX;
-                LM.camMinMultiY = minY; LM.camMaxMultiY = maxY;
+                if (Number.isFinite(minX) && Number.isFinite(maxX) &&
+                    Number.isFinite(minY) && Number.isFinite(maxY)) {
+                    LM.camMinMultiX = minX; LM.camMaxMultiX = maxX;
+                    LM.camMinMultiY = minY; LM.camMaxMultiY = maxY;
+                }
             }
         },
         calMinMax() {
