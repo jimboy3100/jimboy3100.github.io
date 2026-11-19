@@ -12,9 +12,19 @@ window.LM_CONFIG_CDN = "https://configs-web.agario.miniclippt.com/live";
  */
 window.LM_CUSTOM_SKINS_CDN =
     "https://configs.agario.miniclippt.com/live/custom_skins";
+/* This file loads before ogario.v4.js sets window.agarversion: build the same
+ * value from the stored config version/id (as ogario.v4.js does) before the literal. */
+window.LM_STORED_AGARVERSION = function() {
+    try {
+        var cv = localStorage.getItem("EnvConfig.configVersion");
+        var id = localStorage.getItem("getLatestID");
+        if (cv && id && cv !== "null" && id !== "null") return "v" + cv + "/" + id + "/";
+    } catch (e) { }
+    return "";
+};
 // Computed after agarversion is known:
 window.LM_CDN_BASE = function() {
-    var v = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || "v15/10913/";
+    var v = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || window.LM_STORED_AGARVERSION() || "v15/10913/";
     if (!v.endsWith('/')) v += '/';
     return window.LM_CONFIG_CDN + "/" + v;
 };
@@ -1831,7 +1841,7 @@ var Lmagarversion = "";
 
 window.LMGameConfiguration = null;
 window.LMGameConfigurationReady = new Promise(function(resolve) {
-    var version = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || "v15/10913/";
+    var version = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || window.LM_STORED_AGARVERSION() || "v15/10913/";
     if (!version.endsWith('/')) version += '/';
     var primaryUrl = window.LM_CONFIG_CDN + "/" + version + "GameConfiguration.json";
     var fallbackUrl = window.LM_CONFIG_URL();
