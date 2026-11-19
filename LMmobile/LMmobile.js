@@ -625,12 +625,16 @@
             rootL.style.opacity = prefs.btnOpacity;
             var hc = document.getElementById('helloContainer');
             if (hc) {
-                if (hc.style.display === 'none' || hc.style.display === '') {
+                /* jQuery show() leaves display '' on a visible menu: judge by #overlays too */
+                if (hc.style.display === 'none' || !isMenuVisible()) {
                     hc.style.display = 'block';
                     if (window._lm_fitHC) window._lm_fitHC(); /* scale instantly */
                     if (typeof application !== 'undefined' && application.showMenu) {
                         application.showMenu();
                     }
+                } else if (typeof application !== 'undefined' && application.hideMenu) {
+                    /* hides #overlays too: left visible it covers the canvas and blocks the joystick */
+                    application.hideMenu();
                 } else {
                     hc.style.display = 'none';
                 }
