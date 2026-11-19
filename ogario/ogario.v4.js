@@ -49691,11 +49691,26 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /*
              * Outside current authoritative map = void.
              */
+            /*
+             * Circular map: the Expanding Land map is the circle inscribed in mapMin/Max (server mapscaler.c, Canvas and WebGL border renderers), not the bounding square.
+             */
+            var mapCX =
+                (mapMinX + mapMaxX) * 0.5;
+            var mapCY =
+                (mapMinY + mapMaxY) * 0.5;
+            var mapR =
+                Math.max(
+                    mapMaxX - mapMinX,
+                    mapMaxY - mapMinY
+                ) * 0.5;
+            var distFromMapCenter =
+                Math.sqrt(
+                    (x - mapCX) * (x - mapCX) +
+                    (y - mapCY) * (y - mapCY)
+                );
             if (
-                x < mapMinX ||
-                x > mapMaxX ||
-                y < mapMinY ||
-                y > mapMaxY
+                distFromMapCenter >
+                    mapR
             ) {
                 return 0;
             }
@@ -49708,7 +49723,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * Distance from point to the CURRENT authoritative rectangular
+             * Distance from point to the CURRENT authoritative circular
              * border.
              *
              *      0 = directly at border
@@ -49717,19 +49732,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var depthToCurrentBorder =
                 Math.max(
                     0,
-                    Math.min(
-                        x -
-                            mapMinX,
-
-                        mapMaxX -
-                            x,
-
-                        y -
-                            mapMinY,
-
-                        mapMaxY -
-                            y
-                    )
+                    mapR -
+                        distFromMapCenter
                 );
 
 
@@ -49797,15 +49801,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (
                     hasPreviousBorder
                 ) {
+                    /* inside the previous (circular) border */
+                    var prevCX =
+                        (prevMinX + prevMaxX) * 0.5;
+                    var prevCY =
+                        (prevMinY + prevMaxY) * 0.5;
+                    var prevR =
+                        Math.max(
+                            prevMaxX - prevMinX,
+                            prevMaxY - prevMinY
+                        ) * 0.5;
                     var wasOldLand =
-                        x >=
-                            prevMinX &&
-                        x <=
-                            prevMaxX &&
-                        y >=
-                            prevMinY &&
-                        y <=
-                            prevMaxY;
+                        (x - prevCX) * (x - prevCX) +
+                        (y - prevCY) * (y - prevCY) <=
+                        prevR * prevR;
 
 
                     /*
@@ -49944,7 +49953,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
              *
              * Determine which area survives using opcode-200 targetSize.
              *
-             * Do not assume a circular map.
+             * The map is circular (see above); the target radius scales
+             * with targetSize.
              *
              * Preserve the previous rectangle's aspect ratio.
              */
@@ -50106,17 +50116,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     targetRatio;
 
 
+                /* inside the target circle */
+                var targetR =
+                    Math.max(
+                        targetHalfW,
+                        targetHalfH
+                    );
                 var insideSafeTarget =
-                    Math.abs(
-                        x -
-                        eventCenterX
-                    ) <=
-                        targetHalfW &&
-                    Math.abs(
-                        y -
-                        eventCenterY
-                    ) <=
-                        targetHalfH;
+                    (x - eventCenterX) * (x - eventCenterX) +
+                    (y - eventCenterY) * (y - eventCenterY) <=
+                    targetR * targetR;
 
 
                 /*
@@ -50684,205 +50693,37 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * SELECT A REAL BORDER POINT
                  * ========================================================
                  */
-                var perimeterPosition =
-                    Math.random() *
-                    perimeter;
-
-
-                var bx;
-                var by;
-
-
                 /*
-                 * Outward unit normal of the selected border.
+                 * The border is a circle: the Expanding Land map is the circle inscribed in mapMin/Max (server mapscaler.c, Canvas and WebGL border renderers), not the bounding square.
+                 * Pick a point on it with a radial outward normal.
                  */
+                var borderAngle =
+                    Math.random() *
+                    Math.PI *
+                    2;
                 var normalX =
-                    0;
-
-
+                    Math.cos(
+                        borderAngle
+                    );
                 var normalY =
-                    0;
-
-
+                    Math.sin(
+                        borderAngle
+                    );
                 /*
                  * Unit tangent running along that border.
                  */
                 var tangentX =
-                    0;
-
-
+                    -normalY;
                 var tangentY =
-                    0;
-
-
-                /*
-                 * TOP:
-                 *
-                 *      minX → maxX
-                 */
-                if (
-                    perimeterPosition <
-                    mapWidth
-                ) {
-                    var topT =
-                        perimeterPosition /
-                        mapWidth;
-
-
-                    bx =
-                        minX +
-                        mapWidth *
-                            topT;
-
-
-                    by =
-                        minY;
-
-
-                    normalX =
-                        0;
-
-                    normalY =
-                        -1;
-
-
-                    tangentX =
-                        1;
-
-                    tangentY =
-                        0;
-                }
-
-
-                /*
-                 * RIGHT:
-                 *
-                 *      minY → maxY
-                 */
-                else if (
-                    perimeterPosition <
-                    mapWidth +
-                        mapHeight
-                ) {
-                    var rightT =
-                        (
-                            perimeterPosition -
-                            mapWidth
-                        ) /
-                        mapHeight;
-
-
-                    bx =
-                        maxX;
-
-
-                    by =
-                        minY +
-                        mapHeight *
-                            rightT;
-
-
-                    normalX =
-                        1;
-
-                    normalY =
-                        0;
-
-
-                    tangentX =
-                        0;
-
-                    tangentY =
-                        1;
-                }
-
-
-                /*
-                 * BOTTOM:
-                 *
-                 *      maxX → minX
-                 */
-                else if (
-                    perimeterPosition <
-                    mapWidth *
-                        2 +
-                        mapHeight
-                ) {
-                    var bottomT =
-                        (
-                            perimeterPosition -
-                            mapWidth -
-                            mapHeight
-                        ) /
-                        mapWidth;
-
-
-                    bx =
-                        maxX -
-                        mapWidth *
-                            bottomT;
-
-
-                    by =
-                        maxY;
-
-
-                    normalX =
-                        0;
-
-                    normalY =
-                        1;
-
-
-                    tangentX =
-                        -1;
-
-                    tangentY =
-                        0;
-                }
-
-
-                /*
-                 * LEFT:
-                 *
-                 *      maxY → minY
-                 */
-                else {
-                    var leftT =
-                        (
-                            perimeterPosition -
-                            mapWidth *
-                                2 -
-                            mapHeight
-                        ) /
-                        mapHeight;
-
-
-                    bx =
-                        minX;
-
-
-                    by =
-                        maxY -
-                        mapHeight *
-                            leftT;
-
-
-                    normalX =
-                        -1;
-
-                    normalY =
-                        0;
-
-
-                    tangentX =
-                        0;
-
-                    tangentY =
-                        -1;
-                }
-
-
+                    normalX;
+                var bx =
+                    (minX + maxX) * 0.5 +
+                    normalX *
+                        Math.max(mapWidth, mapHeight) * 0.5;
+                var by =
+                    (minY + maxY) * 0.5 +
+                    normalY *
+                        Math.max(mapWidth, mapHeight) * 0.5;
                 /*
                  * ========================================================
                  * MATERIAL VELOCITY
@@ -51718,6 +51559,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      */
                     uniform vec4 u_mapBoundsRelative;
 
+                    /* 1.0 on Expanding Land: clip to the circle inscribed in the bounds */
+                    uniform float u_mapCircle;
+
                     out vec4 fragColor;
 
                     void main() {
@@ -51744,6 +51588,37 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 u_mapBoundsRelative.w
                         ) {
                             discard;
+                        }
+
+                        if (
+                            u_mapCircle >
+                            0.5
+                        ) {
+                            vec2 mapCenterRel =
+                                (
+                                    u_mapBoundsRelative.xy +
+                                    u_mapBoundsRelative.zw
+                                ) *
+                                0.5;
+
+                            float mapRadius =
+                                max(
+                                    u_mapBoundsRelative.z -
+                                        u_mapBoundsRelative.x,
+                                    u_mapBoundsRelative.w -
+                                        u_mapBoundsRelative.y
+                                ) *
+                                0.5;
+
+                            if (
+                                length(
+                                    v_viewOffset -
+                                    mapCenterRel
+                                ) >
+                                mapRadius
+                            ) {
+                                discard;
+                            }
                         }
 
                         /*
@@ -51933,6 +51808,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         'u_mapBoundsRelative'
                     );
 
+                this.grid_u_mapCircle =
+                    gl.getUniformLocation(
+                        program,
+                        'u_mapCircle'
+                    );
+
                 /*
                  * Fullscreen quad.
                  */
@@ -52089,13 +51970,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         u_zoneCenter.y;
 
                     /*
-                     * Chebyshev distance gives axis-aligned square zones
-                     * which matches the rectangular border.
+                     * Radial distance: the Expanding Land map and its
+                     * border are circular.
                      */
                     float distFromCenter =
-                        max(
-                            abs(dx),
-                            abs(dy)
+                        length(
+                            vec2(
+                                dx,
+                                dy
+                            )
                         );
 
                     /*
@@ -56497,19 +56380,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             gl.uniform4f(
                 this.grid_u_mapBoundsRelative,
-
                 mapMinX -
                     this.camX,
-
                 mapMinY -
                     this.camY,
-
                 mapMaxX -
                     this.camX,
-
                 mapMaxY -
                     this.camY
             );
+
+            /* Expanding Land: the map is a circle, do not draw grid in the corners */
+            if (this.grid_u_mapCircle) {
+                gl.uniform1f(
+                    this.grid_u_mapCircle,
+                    LM && LM.isLegendWorld ? 1.0 : 0.0
+                );
+            }
 
             /*
              * Theme color.
