@@ -40863,6 +40863,8 @@ function thelegendmodproject() {
                             if (u.questsCompleted > (prev.questsCompleted || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Quest completed');
                             if (u.skinsCreated > (prev.skinsCreated || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
                             this.user.actionCounters = u;
+                            if (this.user.info) this.user.info.actionCounters = u;
+                            this.renderUserInfoPanel(this.user.info || { actionCounters: u });
                         }
                     } catch (acErr) { console.warn("[LM] Error parsing action counters:", acErr); }
                     break;
@@ -43972,6 +43974,11 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
+            this.renderUserInfoPanel(i);
+        },
+        /* #user-info text; also repainted when opcode 170 pushes new action counters. */
+        renderUserInfoPanel(i) {
+            if (!i) i = {};
             /* Null-safe access to actionCounters (protobuf may not decode nested submessage) */
             var ac = i.actionCounters || {};
             var potions = Number(ac.potionsObtained) || 0;
