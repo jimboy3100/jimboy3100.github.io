@@ -34222,18 +34222,21 @@ function thelegendmodproject() {
                          *
                          *      LM.quadtree.some(aabb, callback)
                          */
-                        this.quadtree = {
-                            some: function (
-                                aabb,
-                                test
-                            ) {
-                                return WasmQuadTree
-                                    .some(
-                                        aabb,
-                                        test
-                                    );
-                            }
-                        };
+                        /* One wrapper for the session, not a new object and closure every frame. */
+                        this.quadtree =
+                            this._wasmQuadtreeWrapper ||
+                            (this._wasmQuadtreeWrapper = {
+                                some: function (
+                                    aabb,
+                                    test
+                                ) {
+                                    return WasmQuadTree
+                                        .some(
+                                            aabb,
+                                            test
+                                        );
+                                }
+                            });
 
                         return;
                     }
