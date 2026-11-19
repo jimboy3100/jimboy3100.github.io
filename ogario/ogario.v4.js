@@ -52049,9 +52049,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 out vec2 v_worldPos;
 
                 void main() {
+                    /* clip Y is up, world Y is down: flip like every other gridGl/gl pass */
                     v_worldPos =
                         u_viewCenter +
-                        a_unitPos *
+                        vec2(a_unitPos.x, -a_unitPos.y) *
                         u_invViewScale;
 
                     gl_Position =
@@ -71121,9 +71122,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var cameraY =
                 this.camY || 0;
 
+            /*
+             * CSS pixels, like drawWebGLGridShader(): this.scale is world -> CSS px,
+             * gridCanvas.width is the backing size (CSS px x devicePixelRatio).
+             */
             var canvasW =
-                this.gridCanvas
-                    ? this.gridCanvas.width
+                Number(this.canvasWidth) > 0
+                    ? Number(this.canvasWidth)
                     : (
                           this.canvas
                               ? this.canvas.width
@@ -71131,8 +71136,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                       );
 
             var canvasH =
-                this.gridCanvas
-                    ? this.gridCanvas.height
+                Number(this.canvasHeight) > 0
+                    ? Number(this.canvasHeight)
                     : (
                           this.canvas
                               ? this.canvas.height
