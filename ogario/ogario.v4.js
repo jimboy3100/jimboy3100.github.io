@@ -8216,6 +8216,11 @@ window.rebuildAgarConfigIndex = function () {
 
     window._agarConfigIndex =
         index;
+    window._agarConfigIndexSource =
+        window.GameConfiguration ||
+        window.LMAgarGameConfiguration ||
+        window.LMGameConfiguration ||
+        null;
 
     return index;
 };
@@ -8226,12 +8231,45 @@ window.rebuildAgarConfigIndex = function () {
  */
 window.getAgarConfigIndex =
     function () {
-        return (
-            window
-                ._agarConfigIndex ||
-            window
-                .rebuildAgarConfigIndex()
-        );
+        /*
+         * The index belongs to one GameConfiguration object. The shop's version
+         * picker replaces window.GameConfiguration directly, and an index built
+         * before any config loaded is empty: rebuild (and re-derive the config
+         * globals) when the object changes, and never cache an empty index.
+         */
+        var gc =
+            window.GameConfiguration ||
+            window.LMAgarGameConfiguration ||
+            window.LMGameConfiguration ||
+            null;
+
+        if (
+            window._agarConfigIndex &&
+            gc &&
+            window._agarConfigIndexSource === gc
+        ) {
+            return window._agarConfigIndex;
+        }
+
+        if (
+            gc &&
+            gc.gameConfig &&
+            window._lmGameConfigInitSource !== gc
+        ) {
+            _initGameConfigSections(gc);
+        }
+
+        var index =
+            window._agarConfigIndexSource === gc &&
+            window._agarConfigIndex
+                ? window._agarConfigIndex
+                : window.rebuildAgarConfigIndex();
+
+        window._agarConfigIndexSource = gc;
+        if (!gc) {
+            window._agarConfigIndex = null;
+        }
+        return index;
     };
 
 
@@ -14950,12 +14988,25 @@ window.formatAgarReward =
  * of which signal fires first.
  */
 var _gameConfigInitDone = false;
+/* Config object the derived globals were last built from. Per object instead of a
+ * one-shot flag, so a config replaced later (shop version picker) is applied too,
+ * and a failed init (e.g. a missing section) can be retried. */
+window._lmGameConfigInitSource = window._lmGameConfigInitSource || null;
 
 function _initGameConfigSections(gc) {
-    if (_gameConfigInitDone) return;
     if (!gc || !gc.gameConfig) return;
+    if (window._lmGameConfigInitSource === gc) return;
+    window._lmGameConfigInitSource = gc;
+    try {
+        _initGameConfigSectionsBody(gc);
+        _gameConfigInitDone = true;
+    } catch (initErr) {
+        window._lmGameConfigInitSource = null;
+        console.warn('[LM] GameConfiguration init failed:', initErr);
+    }
+}
 
-    _gameConfigInitDone = true;
+function _initGameConfigSectionsBody(gc) {
 
     /* Set canonical references */
     window.LMAgarGameConfiguration = gc;
