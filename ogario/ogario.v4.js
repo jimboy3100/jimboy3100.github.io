@@ -39356,6 +39356,8 @@ function thelegendmodproject() {
 
                     try { this.displayActiveQuests(u.userActiveQuests); } catch (e) { console.error('[LW 102] displayActiveQuests error:', e); }
 
+                    window._lmUserGifts = u.userGifts || null;
+
                     /*
                      * Daily quest start, as the official QuestsController INIT state:
                      * no active quest and no "dailyQuest" timed event -> activate the

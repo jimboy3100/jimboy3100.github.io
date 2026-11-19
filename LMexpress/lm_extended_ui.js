@@ -8090,21 +8090,44 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             btn.innerHTML = '⏳ Claiming...';
         }
 
-        if (window.application) {
-            if (typeof window.application.activateTimedEvent === 'function') {
+        /*
+         * Send only what the server can grant now (official client rules):
+         * - hourlyBonus: only when its timed event is listed and its timer is 0
+         *   (FreeCoinsService.triggerFreeCoins).
+         * - dailyQuest: activate the timed event (110) only with no active quest
+         *   and the timer at 0; the reply's wallet update sends 114.
+         * - gifts: claim ids are Facebook request ids; without Facebook the only
+         *   claimable one is the configured fake user's gift
+         *   ("Gifting - Fake User": fictionalPlayerFbId / fictionalGiftRequestId).
+         * Opcode 117 is not sent: it needs rewards_for=progressive_video (a watched ad).
+         */
+        if (window.application && typeof window.application.activateTimedEvent === 'function') {
+            var _secs = typeof window.getLiveTimedEventSecondsRemaining === 'function'
+                ? window.getLiveTimedEventSecondsRemaining : function () { return null; };
+            if (_secs('hourlyBonus') === 0) {
                 window.application.activateTimedEvent("hourlyBonus");
-                window.application.activateTimedEvent("dailyQuest");
             }
-            if (typeof window.application.claimGifts === 'function') {
-                window.application.claimGifts(["all"]);
+            var _dailySecs = _secs('dailyQuest');
+            var _noQuest = !(window._lmActiveQuests && window._lmActiveQuests.length);
+            if (_noQuest && (_dailySecs === 0 || _dailySecs === null) && typeof window.questActivationReq === 'function') {
+                window.questActivationReq();
             }
         }
-        if (typeof window.activateUserRewards === 'function') {
-            window.activateUserRewards(['hourlyBonus', 'dailyQuest', 'freeCoins']);
-        }
-        if (typeof window.claimGifts === 'function' && (!window.application || !window.application.claimGifts)) {
-            window.claimGifts(['all']);
-        }
+        try {
+            var _fake = {};
+            var _fakeCfg = typeof window.getAgarConfigSection === 'function'
+                ? window.getAgarConfigSection('Gifting - Fake User') : null;
+            (Array.isArray(_fakeCfg) ? _fakeCfg : []).forEach(function (s) { if (s && s.key) _fake[s.key] = s.value; });
+            var _claimable = (window._lmUserGifts && window._lmUserGifts.claimable) || [];
+            var _hasFakeGift = _fake.fictionalPlayerFbId && _fake.fictionalGiftRequestId &&
+                _claimable.some(function (g) { return g && g.facebookIdFrom === _fake.fictionalPlayerFbId; });
+            if (_hasFakeGift && typeof window.claimGifts === 'function') {
+                if (window.claimGifts([String(_fake.fictionalGiftRequestId)]) !== false) {
+                    /* Claimed once; the next login lists it again only if it is still claimable. */
+                    window._lmUserGifts.claimable = _claimable.filter(function (g) { return !g || g.facebookIdFrom !== _fake.fictionalPlayerFbId; });
+                }
+            }
+        } catch (giftErr) { console.warn('[LM] Claim gift error:', giftErr); }
 
         setTimeout(function() {
             if (btn) {
