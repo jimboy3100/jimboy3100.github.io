@@ -22907,12 +22907,17 @@ function thelegendmodproject() {
              * [203][UTF-8 tag bytes][0x00] — server stores in player->clan_tag */
             if (LM.isLegendWorld && legendmod.isSocketOpen()) {
                 var tagStr = ogarcopythelb.clanTag || '';
-                var tagView = legendmod.createView(2 + tagStr.length);
+                /* Real UTF-8 (was masked to 7 bits, so "Ⓜ" became "B"). The server keeps
+                 * 15 bytes; cut on a character boundary so no partial character is sent. */
+                var tagBytes = new TextEncoder().encode(tagStr);
+                var tagLen = Math.min(tagBytes.length, 15);
+                while (tagLen > 0 && tagLen < tagBytes.length && (tagBytes[tagLen] & 0xC0) === 0x80) tagLen--;
+                var tagView = legendmod.createView(2 + tagLen);
                 tagView.setUint8(0, 203); // opcode 0xCB
-                for (var ci = 0; ci < tagStr.length; ci++) {
-                    tagView.setUint8(1 + ci, tagStr.charCodeAt(ci) & 0x7F);
+                for (var ci = 0; ci < tagLen; ci++) {
+                    tagView.setUint8(1 + ci, tagBytes[ci]);
                 }
-                tagView.setUint8(1 + tagStr.length, 0); // null terminator
+                tagView.setUint8(1 + tagLen, 0); // null terminator
                 legendmod.sendMessage(tagView);
             }
             if (profiles[this.selectedProfile]) {
