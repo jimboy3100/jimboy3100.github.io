@@ -43808,8 +43808,14 @@ Most cells eaten   : ${mostCellsEaten}
                 }
 
                 /* Fast-path: if skin already cached for this key, skip the expensive
-                 * 7-branch resolution (regex, includes, toLowerCase per packet). */
-                if (application.customSkinsMap[playerKey]) return;
+                 * 7-branch resolution (regex, includes, toLowerCase per packet).
+                 * Only while the packet's skin is the one resolved last time for this
+                 * key: a respawn with another skin must re-resolve. Entries set by
+                 * other sources (no recorded skin) keep precedence as before. */
+                var lastSkinByKey = window._lmVanillaSkinLastG || (window._lmVanillaSkinLastG = Object.create(null));
+                var lastSkin = lastSkinByKey[playerKey];
+                if (application.customSkinsMap[playerKey] && (lastSkin === undefined || lastSkin === (g || ''))) return;
+                lastSkinByKey[playerKey] = g || '';
 
                 var skinUrl = null;
                 var isAnimated = false;
