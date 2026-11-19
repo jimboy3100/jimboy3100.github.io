@@ -45555,6 +45555,7 @@ Most cells eaten   : ${mostCellsEaten}
          * Server writes updNodes then addNodes then ONE writeUInt32(0) terminator.
          * Flag 0x40 distinguishes added nodes (has tabID/skin/name) from updates. */
         garixUpdateCells(data, offset) {
+            this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
             this.megaFFAscore();
             var self = this;
             // UTF-8z string reader (null-terminated)
@@ -45765,6 +45766,7 @@ Most cells eaten   : ${mostCellsEaten}
          *   Remove list: u16 count → u32 id
          * ═══════════════════════════════════════════════════════════════ */
         _handleSigmallyCellUpdate(data) {
+            this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
             this.megaFFAscore();
             var offset = 1; // skip opcode byte
 
@@ -46047,6 +46049,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.handleLeaderboard();
         },
         updateCells(view, offset) {
+            this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
 
             //window.updateCellsClock=true;
             this.megaFFAscore();
@@ -73312,6 +73315,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     drawRender._lastRenderErrorLog = Date.now();
                     console.error('[LM RENDER] Frame failed:', renderError);
                 }
+                drawRender._lastRenderErrorMsg = String((renderError && renderError.stack) || renderError).slice(0, 300);
                 /* renderFrame's save()/scale()/translate() may not have been
                  * restored: reset the 2D state so it does not compound into
                  * the next frames. */
@@ -73326,6 +73330,27 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                 } catch (_resetError) { }
             } finally {
+                /* Freeze detector: connected and visible, but no world update for >3 s.
+                 * Logs once per freeze with what is needed to find the cause. */
+                try {
+                    var _fl = window.legendmod;
+                    if (_fl && _fl._lmLastWorldUpdate && !document.hidden && _fl.isSocketOpen && _fl.isSocketOpen()) {
+                        var _gap = Date.now() - _fl._lmLastWorldUpdate;
+                        if (_gap > 3000 && !drawRender._lmFreezeLogged) {
+                            drawRender._lmFreezeLogged = Date.now();
+                            console.warn('[LM FREEZE] No world update for ' + _gap + ' ms while connected', {
+                                server: _fl.ws, serverType: _fl.serverType,
+                                readyState: _fl.socket && _fl.socket.readyState,
+                                bufferedAmount: _fl.socket && _fl.socket.bufferedAmount,
+                                pps: _fl.pps, playing: !!_fl.play,
+                                lastRenderError: drawRender._lastRenderErrorMsg || null
+                            });
+                        } else if (_gap < 1000 && drawRender._lmFreezeLogged) {
+                            console.warn('[LM FREEZE] World updates resumed after ' + (Date.now() - drawRender._lmFreezeLogged + 3000) + ' ms');
+                            drawRender._lmFreezeLogged = 0;
+                        }
+                    }
+                } catch (_freezeCheckError) { }
                 window.requestAnimationFrame(drawRender.render);
             }
         },
