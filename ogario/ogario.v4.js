@@ -2212,8 +2212,8 @@ window.chatLimit = 15;
 window.LMscore = 0;
 //inject gamepad libraries if Mobile
 //var isMobile = window.orientation > -1; //false for PC, true for mobile 
-var isMobile = false;
-if (jQuery && jQuery.browser && jQuery.browser.mobile) isMobile = true;
+/* jQuery.browser no longer exists (jQuery 3), so detect a touch-only device the same way play.html does (touch laptops have a mouse). */
+var isMobile = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches);
 
 // make sure the page doesn't send referrer information to imgur for image message to work
 $(function () {

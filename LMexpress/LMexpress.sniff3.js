@@ -18,8 +18,11 @@ if ( typeof core != 'undefined'){
 
 
 if (isMobile){
-	opengamepad()	
-	
+	/* play.html also loads LMmobile.js (newer touch controls) on these devices; it is in the page by the load event
+	   and sets LM_IS_MOBILE, so only fall back to the old gamepad when LMmobile is not there. */
+	var _lmGamepadCheck = function () { if (!window.LM_IS_MOBILE) opengamepad(); };
+	if (document.readyState === 'complete') _lmGamepadCheck();
+	else window.addEventListener('load', _lmGamepadCheck);
 }
 
 function opengamepad() {
