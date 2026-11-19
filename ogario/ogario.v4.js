@@ -4739,9 +4739,22 @@ function checkVideos2(a, b) {
     }
     //
     if (window.videoSkinPlayer[a]) {
-        if (!window.videoSkinPlayerflag3[a]) {
-            window.videoSkinPlayerflag3[a] = true;
-            window.timerVideoSkinsInterval[a] = setInterval(function () {
+        /* One interval per URL + nick (two players may share a video URL), and stop it
+         * once that player is gone; it used to run for the rest of the session. */
+        var videoKey = a + '|' + b;
+        if (!window.videoSkinPlayerflag3[videoKey]) {
+            window.videoSkinPlayerflag3[videoKey] = true;
+            window.timerVideoSkinsInterval[videoKey] = setInterval(function () {
+                var nickKey = String(b).replace(/\s{2,}/g, ' ');
+                var stillHere = ogarcopythelb.nick == b || application.top5.some(function (p) {
+                    return p && p.nick && p.nick.replace(/\s{2,}/g, ' ') == nickKey;
+                });
+                if (!stillHere) {
+                    clearInterval(window.timerVideoSkinsInterval[videoKey]);
+                    window.timerVideoSkinsInterval[videoKey] = null;
+                    window.videoSkinPlayerflag3[videoKey] = null;
+                    return;
+                }
                 checkVideos2(a, b);
             }, 500);
         }
