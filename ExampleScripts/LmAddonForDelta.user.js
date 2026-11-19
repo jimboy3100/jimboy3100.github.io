@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Delta agar.io
 // @namespace    Legend addon for Delta mod agar.io
-// @version      1.2
+// @version      1.3
 // @description  Agar.io PC addon for Delta (deltio / delt.io) and LegendMod. Discord webhook invites, Play auto-post, rich embeds, server join URLs, SNEZ broadcaster, server history & instant rejoin, cloud save/load, themes, skins, custom skin URLs, clan tags, macro & feed coordination, party play, bot reduction helpers, UI enhancements. Works with Legend, Ogario style play, Agar.io desktop, Discord, YouTube.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
@@ -940,15 +940,32 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
         setupDragging(document.getElementById('lm-main-win'), document.getElementById('lm-drag'));
     }
 
+    /* Same as Legend Mod (LMexpress _lmTagHash): the relay only gets "h:" + FNV-1a 32
+     * of the clan tag (the team password), never the tag itself. */
+    function lmTagHash(tag) {
+        tag = String(tag || "");
+        if (!tag) return "";
+        let bytes;
+        try { bytes = unescape(encodeURIComponent(tag)); } catch (e) { bytes = tag; }
+        let h = 0x811c9dc5;
+        for (let i = 0; i < bytes.length; i++) {
+            h ^= bytes.charCodeAt(i);
+            h = Math.imul(h, 0x01000193) >>> 0;
+        }
+        return "h:" + ("0000000" + h.toString(16)).slice(-8);
+    }
+
     function refreshHUD() {
-        const query = document.getElementById('lm-search-in').value.toLowerCase();
+        const rawQuery = document.getElementById('lm-search-in').value;
+        const query = rawQuery.toLowerCase();
+        const queryTag = lmTagHash(rawQuery);
         const log = document.getElementById('lm-log');
         if (!query) { log.innerHTML = '<div style="text-align:center; color:#333; padding-top:140px;">Network active. Start typing.</div>'; return; }
         log.innerHTML = "";
         let found = 0;
 
         LM_MASTER.playerCache.forEach(p => {
-            if ((p.nickname || "").toLowerCase().includes(query) || (p.tag || "").toLowerCase().includes(query) || (p.server || "").includes(query)) {
+            if ((p.nickname || "").toLowerCase().includes(query) || (p.tag && p.tag === queryTag) || (p.server || "").includes(query)) {
                 found++;
                 const srv = p.server || "";
                 const token = srv.split('live-arena-').pop().split('.agar.io')[0];
@@ -995,7 +1012,7 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
                     type: "update_details", data: {
                         nickname: (document.querySelector('input[name="nickA"]')?.value || "Unnamed") + " (DM)",
                         server: `live-arena-${sip}.agar.io&?r=${document.querySelector('select[name="region"]')?.value}&?m=${document.querySelector('select[name="gamemode"]')?.value}`,
-                        tag: document.querySelector('input[name="clantag"]')?.value || "",
+                        tag: lmTagHash(document.querySelector('input[name="clantag"]')?.value || ""),
                         agarioLEVEL: win
                             .agarioLEVEL || 0, country: LM_MASTER.myCountryCode.toUpperCase()
                     }
