@@ -37379,7 +37379,16 @@ function thelegendmodproject() {
                         var reconnWs = this.ws;
                         console.log(consoleMsgLM + ' Server restart detected, reconnecting in 5s to ' + reconnWs);
                         this._reconnAttempts = 0;
-                        setTimeout(function () {
+                        /* One pending timer only (countdown messages repeat "restarting"),
+                         * and reconnect only if still on that server and the socket really
+                         * went down without onClose's own auto-reconnect pending. */
+                        if (this._restartReconnTimer) clearTimeout(this._restartReconnTimer);
+                        var restartSelf = this;
+                        this._restartReconnTimer = setTimeout(function () {
+                            restartSelf._restartReconnTimer = null;
+                            if (restartSelf.ws && restartSelf.ws !== reconnWs) return;
+                            if (restartSelf._reconnTimer) return;
+                            if (restartSelf.socket && restartSelf.socket.readyState <= 1) return;
                             if (window.core && window.core.connect) {
                                 window.core.connect(reconnWs);
                             }
