@@ -35089,6 +35089,11 @@ function thelegendmodproject() {
                 this._senpaSpectate = true;
                 return; // Senpa spectate is toggled by mouse position opcode
             }
+            // Sigmally has no plain spectate opcode: use free spectate (qe[18] + qe[19]), as Delta does.
+            if (this.serverType === 'sigmally') {
+                if (this.sigOpcodeMap && !this.isFreeSpectate) this.sendFreeSpectate();
+                return;
+            }
             this.sendAction(1);
         },
         sendFreeSpectate() {
