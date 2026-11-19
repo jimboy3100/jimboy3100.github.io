@@ -73667,6 +73667,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 clearTimeout(_lmMaster.findServerTimer);
                 _lmMaster.findServerTimer = null;
                 _lmMaster._lmFindGaveUp = false;
+                /* master.reconnect(true) reopens this server instead of master.serverIP */
+                _lmMaster._lmDirectGen = _lmMaster.connectionGeneration;
             }
             LM.connect(url);
             //LM.connect(url); //for multibox with new Protocol and Client

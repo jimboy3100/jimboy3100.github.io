@@ -1394,6 +1394,23 @@ function legendmaster(self) {
                 return;
             }
 
+            /* reconnect(true) means "same server" (client/protocol version change, logout).
+             * On a private server that is not master's to do (it connected to the last
+             * agar.io arena); after a direct join (token, ?sip= link) with nothing started
+             * by master since, serverIP is still the last bouncer arena: reopen the joined one. */
+            var currentLm = self.legendmod;
+            if (table && currentLm && currentLm.ws && currentLm.serverType) {
+                if (currentLm.serverType !== "agario") {
+                    console.log("[Master] reconnect(true) skipped on a " + currentLm.serverType + " server:", reason || "unspecified");
+                    return;
+                }
+                if (this._lmDirectGen === this.connectionGeneration && currentLm.ws !== this.ws && self.core) {
+                    this.reconnectReason = reason || "unspecified";
+                    self.core.connect(currentLm.ws);
+                    return;
+                }
+            }
+
             var generation =
                 ++this.connectionGeneration;
 
