@@ -20589,8 +20589,9 @@ function thelegendmodproject() {
             ogario.spectatorFollow = this.spectatorFollow;
             if (this.spectatorFollow && spects.length > 0 && spects[0].staticX == null && spects[0].isSpectateEnabled === true /*&& spects[0].isFreeSpectateEnabled===false*/) {
                 spects[0].sendFreeSpectate();
-            } else {
-                void (0);
+            } else if (!this.spectatorFollow && spects.length > 0 && spects[0].staticX == null && spects[0].isFreeSpectate === true) {
+                /* Turning it off must leave free spectate too (the unit kept following the cursor). */
+                spects[0].sendFreeSpectate();
             }
         },
         setPause() {
