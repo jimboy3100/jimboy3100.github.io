@@ -37418,8 +37418,7 @@ function thelegendmodproject() {
                         for (i = 0; s + 2 <= data.byteLength; ++i) {
                             var gPlayerID = data.getUint16(s, true); s += 2;
                             if (gPlayerID === 0) break;
-                            var gNick = encode();
-                            try { gNick = window.decodeURIComponent(window.escape(gNick)); } catch (e) { }
+                            var gNick = encode(); // already UTF-8 decoded (TextDecoder): no second decode
                             var gColor = encode();
                             var gIsMe = !!gPlayerID && (gPlayerID === this.garixTabID1 || gPlayerID === this.garixTabID2);
                             if (gIsMe) this.playerPosition = i + 1;
