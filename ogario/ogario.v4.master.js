@@ -455,9 +455,9 @@ function legendmaster(self) {
             endpoint_version: "v4",
             proto_version: "15.0.3",
             //client_version: 30706,
-			client_version: 31100,
+			client_version: 31129,
 			//3.4.6
-            client_version_string: "3.11.0",
+            client_version_string: "3.11.29",
 			protocolVersion: 23
         };
     } else if (window.EnvConfig.master_url){
@@ -467,8 +467,8 @@ function legendmaster(self) {
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
             proto_version: "15.0.3",
-            client_version: 31100,
-            client_version_string: "3.11.0",
+            client_version: 31129,
+            client_version_string: "3.11.29",
 			protocolVersion: 23
         };
 		} else {
@@ -478,8 +478,8 @@ function legendmaster(self) {
             master_url: "webbouncer-live-v8-0.agario.miniclippt.com",
             endpoint_version: "v4",
             proto_version: "15.0.3",
-            client_version: 31100,
-            client_version_string: "3.11.0",
+            client_version: 31129,
+            client_version_string: "3.11.29",
 			protocolVersion: 23
         };		
     }
@@ -533,7 +533,10 @@ function legendmaster(self) {
                         storedVersionString
                     );
 
-                if (parsedStoredVersion != null) {
+                /* a version saved by an older build must not override a newer default */
+                if (parsedStoredVersion != null && parsedStoredVersion < this.clientVersion) {
+                    console.log("[Master] Saved client version " + storedVersionString + " is older than " + this.clientVersionString + ", using the newer one");
+                } else if (parsedStoredVersion != null) {
                     this.clientVersionString =
                         storedVersionString;
 
@@ -920,6 +923,15 @@ function legendmaster(self) {
             this.findServerTimer = null;
             this.findingServer = now;
 
+            /* Like the official client: at most 3 findServer attempts per connection
+             * attempt (region/mode change, reconnect). It used to retry forever. */
+            if (this._lmFindGen !== generation) {
+                this._lmFindGen = generation;
+                this._lmFindAttempts = 0;
+            }
+            this._lmFindAttempts++;
+            this._lmFindGaveUp = false;
+
             var picKey = "findServer";
             var source2;
             var container = this.setRequestMsg(id, params, null, source2);
@@ -967,6 +979,8 @@ function legendmaster(self) {
                         return;
                     }
 
+                    if (options._lmFindGiveUp(requestGeneration)) return;
+
                     options.backoffPeriod = Math.min(
                         Math.max(options.backoffPeriod, 500) * 2,
                         30000
@@ -982,6 +996,8 @@ function legendmaster(self) {
                         return;
                     }
 
+                    if (options._lmFindGiveUp(requestGeneration)) return;
+
                     options.backoffPeriod = Math.min(
                         Math.max(options.backoffPeriod, 500) * 2,
                         30000
@@ -993,6 +1009,19 @@ function legendmaster(self) {
                     }, options.backoffPeriod);
                 }
             );
+        },
+        /* true (and stops) after the 3rd failed findServer of this connection attempt */
+        _lmFindGiveUp(generation) {
+            if (this._lmFindGen !== generation || this._lmFindAttempts < 3) return false;
+            clearTimeout(this.findServerTimer);
+            this.findServerTimer = null;
+            this.backoffPeriod = 500;
+            this._lmFindGaveUp = true;
+            console.warn("[Master] No server found after 3 attempts");
+            if (window.toastr) {
+                toastr.error("<b>[Master]:</b> Could not find a server. Press Play, or change the region or mode, to try again.");
+            }
+            return true;
         },
         setRequestMsg(args, object, source, source2) {
             var encodeVarint = function(target, value) {
@@ -1546,6 +1575,10 @@ function legendmaster(self) {
             this.sendRecaptchaResponse(n);
         },
         setNick() {
+            if (this._lmFindGaveUp) {
+                this._lmFindGaveUp = false;
+                this.reconnect(false, "play-after-no-server");
+            }
             this.login();
             var result = $("#nick").val();
             //if (result && result.length > 15) {
