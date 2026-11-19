@@ -1679,6 +1679,9 @@
                 $(this).html('<span class="step-badge">' + m[1] + '</span>' + rest);
             }
         });
+        // Open the tab named in the URL hash (/#Changelog, /#Features from the FAQ/Features pages)
+        var lmTab = /^#(\w+)$/.exec(location.hash);
+        if (lmTab) $('#nav a[name="' + lmTab[1] + '"]').trigger('click');
         // Inject footer
         $('body').append('<div class="lm-footer">© 2026 Legend Mod Project · <a href="https://github.com/jimboy3100" target="_blank">GitHub</a></div>');
     </script>
