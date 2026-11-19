@@ -26376,17 +26376,23 @@ function thelegendmodproject() {
                 var buffer = new ArrayBuffer(3);
                 var view = new DataView(buffer);
                 view.setUint8(0, 41);
-                view.setUint16(1, targetPlayerID & 0xFFFF, true);
+                /* Delta's request (deltaProtocol clientQuadrantRequest) carries the
+                 * requester's own ID; it is a broadcast, not addressed to one player. */
+                view.setUint16(1, this.playerID & 0xFFFF, true);
                 ws.send(buffer);
             }
         },
         readQuadrantRequest(view) {
             if (view.byteLength < 3) return;
             var requesterID = view.getUint16(1, true);
-            var myQuadrantStr = this.currentSector || '';
-            var quadChar = myQuadrantStr.charCodeAt(0) || 65;
-            var quadNum = parseInt(myQuadrantStr.slice(1)) || 1;
-            var quadrantCode = ((quadChar - 65) * 5 + (quadNum - 1)) & 0xFF;
+            if (requesterID === (this.playerID & 0xFFFF)) return;
+            /* Delta (RootSocket case 41) answers with its agar.io map orientation
+             * quadrant 0-3 and stays silent when it does not know it. The old reply
+             * sent the minimap sector (row*5+col), which Delta counted as an
+             * orientation vote (sectors A1-A4 = quadrants 0-3). */
+            var _lmQ = window.legendmod;
+            var quadrantCode = _lmQ && _lmQ.integrity ? _lmQ.bgpi : -1;
+            if (!(quadrantCode >= 0 && quadrantCode <= 3 && (quadrantCode | 0) === quadrantCode)) return;
 
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (ws && ws.readyState === 1 && this.playerID) {
@@ -26404,12 +26410,11 @@ function thelegendmodproject() {
             var senderID = view.getUint16(1, true);
             var receiverID = view.getUint16(3, true);
             var quadrantCode = view.getUint8(5);
-            var qRow = String.fromCharCode(65 + Math.floor(quadrantCode / 5));
-            var qCol = (quadrantCode % 5) + 1;
-            var sectorStr = qRow + qCol;
+            /* The sender's map orientation quadrant (0-3), stored like PPv7 flag 8.
+             * Not used as lbgpi: older Legend Mod versions answer with a sector code. */
             var idx = this.checkPlayerID(senderID);
-            if (idx !== null && this.teamPlayers[idx]) {
-                this.teamPlayers[idx].quadrant = sectorStr;
+            if (idx !== null && this.teamPlayers[idx] && quadrantCode <= 3) {
+                this.teamPlayers[idx].quadrant = quadrantCode;
             }
         },
         readWavePing(view) {
