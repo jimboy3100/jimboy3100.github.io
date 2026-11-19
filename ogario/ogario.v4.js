@@ -71259,7 +71259,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         /* Cache cleaned text on ghost cell — only recompute when nick changes */
                         if (!ghost._cleanedText || ghost._cleanedNick !== ghostNick) {
                             ghost._cleanedNick = ghostNick;
-                            ghost._cleanedText = removeEmojis(application.escapeHTML(ghostNick));
+                            ghost._cleanedText = removeEmojis(ghostNick); // canvas text: no HTML escaping
                         }
                         this.ghostcellstext = ghost._cleanedText;
                         this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
