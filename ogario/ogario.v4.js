@@ -25365,6 +25365,16 @@ function thelegendmodproject() {
                 }
             }
             this.skipServerData = true
+            /* A server the user picked (token, ?sip= link, IP, quick respawn) wins over a
+             * findServer / party getToken reply or delayed auto-reconnect still pending in
+             * master: those would otherwise move the player to another arena. */
+            var _lmMaster = window.master;
+            if (_lmMaster && typeof _lmMaster.connectionGeneration === 'number') {
+                _lmMaster.connectionGeneration++;
+                _lmMaster.curValidFindServer++;
+                clearTimeout(_lmMaster.findServerTimer);
+                _lmMaster.findServerTimer = null;
+            }
             window.core && window.core.connect && window.core.connect(ws);
         },
         gameServerReconnect() {

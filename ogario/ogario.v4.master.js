@@ -679,6 +679,11 @@ function legendmaster(self) {
         },
         getRegionCode() {
             var nextNodeLoc = window.localStorage.getItem('location');
+            /* "Private" (saved by older versions) is not a bouncer region. */
+            if (nextNodeLoc === "Private") {
+                window.localStorage.removeItem('location');
+                nextNodeLoc = null;
+            }
             if (nextNodeLoc) {
                 this.setRegion(nextNodeLoc, false);
                 if (!this.checkPartyHash()) {
@@ -755,6 +760,13 @@ function legendmaster(self) {
 
             this.region = items;
 
+            /* "Private" is LM's own server list (Expanding Land, Agar2, Senpa...), not an
+             * agar.io region: the bouncer has no arena for it (findServer retried forever)
+             * and a saved "Private" made the next page load do the same. */
+            if (items === "Private") {
+                return;
+            }
+
             self.localStorage.setItem(
                 "location",
                 items
@@ -772,7 +784,7 @@ function legendmaster(self) {
             var x = $("#region");
             var options = x.val();
             if (options) {
-                self.localStorage.setItem("location", options);
+                if (options !== "Private") self.localStorage.setItem("location", options);
             } else {
                 if (options = self.localStorage.getItem("location")) {
                     $("#region").val(options);
@@ -931,7 +943,19 @@ function legendmaster(self) {
                         response.endpoints &&
                         response.endpoints.https;
 
-                    if (endpoint && endpoint !== "0.0.0.0:0") {
+                    /* The bouncer rejects an outdated x-client-version with status
+                     * "invalid_client" (agario.js findServer stops there). Read the current
+                     * version from agario.js once; setClientVersion() reconnects. */
+                    var invalidClient = !!response && response.status === "invalid_client";
+                    if (invalidClient) {
+                        console.warn("[Master] Bouncer rejected client version " + options.clientVersion);
+                        if (!options._lmVersionRefetched && typeof ajaxrequestMaster === "function") {
+                            options._lmVersionRefetched = true;
+                            ajaxrequestMaster();
+                        }
+                    }
+
+                    if (!invalidClient && endpoint && endpoint !== "0.0.0.0:0") {
                         options.serverIP = endpoint;
 
                         if (response.token != null) {
@@ -1155,6 +1179,23 @@ function legendmaster(self) {
                 label,
                 function(moduleParams) {
                     if (joinGeneration !== scopeHeaderOverrides.connectionGeneration) return;
+                    /* The official client joins only on status "ok" (agario.js joinParty);
+                     * e.g. "party_full" must not connect to the endpoint. */
+                    var joinStatus = moduleParams && moduleParams.status;
+                    if (joinStatus != null && joinStatus !== "ok") {
+                        console.warn("[Master] Party join refused:", joinStatus);
+                        if (window.toastr) {
+                            toastr.warning(
+                                "<b>[Master]:</b> " +
+                                (joinStatus === "party_full"
+                                    ? "This party is full."
+                                    : "Could not join the party (" + String(joinStatus).replace(/[^\w-]/g, "") + ").")
+                            );
+                        }
+                        scopeHeaderOverrides.setPartyState("6");
+                        scopeHeaderOverrides._lmPartyJoinFailed(previousMode);
+                        return;
+                    }
                     var endpoint =
                         moduleParams &&
                         moduleParams.endpoints &&
@@ -1309,7 +1350,7 @@ function legendmaster(self) {
                 return;
             }
 
-            if (!this.region) {
+            if (!this.region || this.region === "Private") {
                 return;
             }
 
