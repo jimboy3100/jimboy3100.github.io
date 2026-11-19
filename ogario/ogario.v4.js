@@ -70080,10 +70080,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
             } else {
                 var viewScale = scale || this.scale || 1;
-                var halfW = (this.canvasWidth / viewScale / 2) + 200;
-                var halfH = (this.canvasHeight / viewScale / 2) + 200;
-                minX = this.viewX - halfW; maxX = this.viewX + halfW;
-                minY = this.viewY - halfH; maxY = this.viewY + halfH;
+                /* drawRender has no viewX/viewY (NaN bounds culled nothing):
+                 * use the camera, as drawVirusesRange does. Extra margin while
+                 * the EL deformation can shift food (up to ~700 units). */
+                var cullPad = 200 + ((this.isLegendWorldMapDeformationVisible &&
+                    this.isLegendWorldMapDeformationVisible()) ? 1000 : 0);
+                var halfW = (this.canvasWidth / viewScale / 2) + cullPad;
+                var halfH = (this.canvasHeight / viewScale / 2) + cullPad;
+                var cullX = (this.camX != null) ? this.camX : (LM.viewX || 0);
+                var cullY = (this.camY != null) ? this.camY : (LM.viewY || 0);
+                minX = cullX - halfW; maxX = cullX + halfW;
+                minY = cullY - halfH; maxY = cullY + halfH;
             }
             var twoPi = Math.PI * 2;
             var defaultFoodColor = defaultSettings.foodColor || "#FF0000";
