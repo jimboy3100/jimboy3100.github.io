@@ -3836,23 +3836,17 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             var statusColor = isOnline ? '#4caf50' : '#666';
             var statusText = isOnline ? 'Online' : 'Offline';
 
-            // Realm/server info
+            // realmInfo is the friend's login account (official login_realm enum:
+            // 1 guest, 2 facebook, 3 googleplus, 4 googleplay), not a game server.
             var realmText = '';
-            if (isOnline && realm) {
-                var realmId = realm.realmId || realm.realm_id || '';
-                var realmType = realm.realm || 0;
+            if (realm) {
                 var realmName = '';
-                // Map realm types
-                switch (realmType) {
-                    case 1: realmName = 'FFA'; break;
-                    case 2: realmName = 'Teams'; break;
-                    case 3: realmName = 'Experimental'; break;
-                    case 4: realmName = 'Party'; break;
-                    case 5: realmName = 'Battle Royale'; break;
-                    default: realmName = 'Playing'; break;
+                switch (realm.realm || 0) {
+                    case 2: realmName = 'Facebook'; break;
+                    case 3: case 4: realmName = 'Google'; break;
+                    case 1: realmName = 'Guest'; break;
                 }
-                if (realmId) realmName += ' (' + window._escapeLeagueHtmlText(String(realmId).substring(0, 8)) + ')';
-                realmText = '<div style="font-size: 10px; color: #2196f3; font-weight: 600; margin-top: 2px;">🎮 ' + realmName + '</div>';
+                if (realmName) realmText = '<div style="font-size: 10px; color: #2196f3; font-weight: 600; margin-top: 2px;">' + realmName + '</div>';
             }
 
             // Display name: extract from userId or show truncated ID
@@ -3868,14 +3862,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 avatarHtml = '<div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 18px;">👤</div>';
             }
 
-            // Spectate button (only for online friends with realm info)
+            // No join/spectate action: the friend message carries no server or
+            // party code (realmId is a Facebook/Google account id).
             var actionHtml = '';
-            if (isOnline && realm) {
-                var realmIdForJoin = realm.realmId || realm.realm_id || '';
-                if (realmIdForJoin) {
-                    actionHtml = '<button onclick="window._spectacteFriend(\'' + window._escapeLeagueHtmlText(String(realmIdForJoin).replace(/\\/g, '\\\\').replace(/'/g, "\\'")) + '\');" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 4px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; white-space: nowrap;">👁 Spectate</button>';
-                }
-            }
 
             html += '<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,' + (isOnline ? '0.06' : '0.02') + '); border: 1px solid rgba(255,255,255,' + (isOnline ? '0.1' : '0.04') + '); margin-bottom: 6px;' + (isOnline ? '' : ' opacity: 0.7;') + '">' +
                 avatarHtml +
