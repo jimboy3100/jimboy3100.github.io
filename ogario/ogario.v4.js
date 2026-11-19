@@ -31341,12 +31341,16 @@ function thelegendmodproject() {
         this.createStrokeVirusPath = function (shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax) {
             /* Cache Path2D on the cell — only rebuild when size changes */
             var cacheKey = zeroSizeMax * 10000 + pixelSizeTargetMax;
+            /* The spike count depends on virusSpikesRatio too, so it is part of the key. */
+            var spikesRatio = defaultSettings.virusSpikesRatio;
             if (this._virusCachedPath && this._virusCachedPathKey === cacheKey &&
+                this._virusCachedPathRatio === spikesRatio &&
                 this._virusCachedPathX === shadowXpos && this._virusCachedPathY === shadowYpos) {
                 return this._virusCachedPath;
             }
             //const nAngelsOfVirus = ~~(zeroSizeMax * 45 / 98);
-            const nAngelsOfVirus = ~~(zeroSizeMax * defaultSettings.virusSpikesRatio);
+            /* At least 3 spikes: a ratio of 0 would give GROUPSIZE = Infinity and NaN points. */
+            const nAngelsOfVirus = Math.max(3, ~~(zeroSizeMax * spikesRatio) || 0);
             const GROUPSIZE = this.pi2 / nAngelsOfVirus;
             const degreeStep = GROUPSIZE / 2;
             const ctxfx = new Path2D;
@@ -31360,6 +31364,7 @@ function thelegendmodproject() {
             }
             this._virusCachedPath = ctxfx;
             this._virusCachedPathKey = cacheKey;
+            this._virusCachedPathRatio = spikesRatio;
             this._virusCachedPathX = shadowXpos;
             this._virusCachedPathY = shadowYpos;
             return ctxfx;
