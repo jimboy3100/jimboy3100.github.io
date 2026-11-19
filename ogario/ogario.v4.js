@@ -454,6 +454,8 @@ window.OgVer = 3.504;
      * - agarApp.core.bind may appear later.
      */
     var officialIdentityPollTimer = null;
+    /* Bounded: on the website there is no agarApp, so the bind condition never becomes true. */
+    var officialIdentityPollAttempts = 0;
 
     function inspectExistingOfficialUser(source) {
         try {
@@ -612,6 +614,12 @@ window.OgVer = 3.504;
                 )
             )
         ) {
+            officialIdentityPollTimer = null;
+            return;
+        }
+
+        /* Give up after about 2 minutes (480 x 250 ms). */
+        if (++officialIdentityPollAttempts >= 480) {
             officialIdentityPollTimer = null;
             return;
         }
