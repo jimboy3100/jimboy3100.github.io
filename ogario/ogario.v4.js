@@ -19832,18 +19832,26 @@ function thelegendmodproject() {
         macroFeedPerm(on) {
             if (on) {
                 if (this.feedIntervalPerm) {
-                    clearInterval(this.feedIntervalPerm);
+                    clearTimeout(this.feedIntervalPerm);
                     this.feedIntervalPerm = null
                     return;
                 }
                 var app = this;
                 this.feed();
                 /* at most one feed per 10 ms: the 1 ms setting reached ~250 feeds/s,
-                 * about 500 packets/s with the cursor packet each feed sends */
-                var permDelay = Math.max(10, Number(defaultmapsettings.macroFeeding) || 10);
-                this.feedIntervalPerm = setInterval(function () {
+                 * about 500 packets/s with the cursor packet each feed sends.
+                 * The delay is read again for every feed, so a change of the
+                 * "Macro feed" slider applies while permanent feed runs (the
+                 * interval kept the delay it was started with). */
+                var permDelay = function () {
+                    return Math.max(10, Number(defaultmapsettings.macroFeeding) || 10);
+                };
+                var permTick = function () {
+                    if (!app.feedIntervalPerm) return;
                     app.feed();
-                }, permDelay);
+                    app.feedIntervalPerm = setTimeout(permTick, permDelay());
+                };
+                this.feedIntervalPerm = setTimeout(permTick, permDelay());
             }
         },
         macrobotFeed(on) {
