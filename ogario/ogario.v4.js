@@ -37482,7 +37482,7 @@ function thelegendmodproject() {
                                 rawText.includes('$')
                             ) {
                                 try {
-                                    var uidMatch = rawText.match(/(?:google|discord|facebook)$([0-9a-f-]{8,})/i);
+                                    var uidMatch = rawText.match(/(?:google|discord|facebook)\$([0-9a-f-]{8,})/i); // literal "$" separator
                                     if (uidMatch) {
                                         window.expandingLandUID =
                                             uidMatch[1].substr(0, 36);
