@@ -29098,10 +29098,12 @@ function thelegendmodproject() {
             toastr.info('<b>[SERVER]:</b> Activating reward link...');
             return this.sendProto(183, { activateRewardLinkRequestField: { token: token } });
         },
-        activateUserRewards(rewardIds) {
-            if (!rewardIds || !rewardIds.length) return false;
-            console.log("[LM] Activate User Rewards (bulk):", rewardIds);
-            return this.sendProto(117, { activateUserRewardsRequestField: { rewardIds: rewardIds } });
+        activateUserRewards(rewardsFor) {
+            /* Official activate_user_rewards_request has one field, rewards_for
+             * (1 = progressive_video); there are no reward ids. */
+            var forValue = Number(rewardsFor) || 1;
+            console.log("[LM] Activate User Rewards for:", forValue);
+            return this.sendProto(117, { activateUserRewardsRequestField: { __for: forValue } });
         },
         requestLeaguesInfo(type) {
             var reqType = type || 1;
@@ -39384,6 +39386,25 @@ function thelegendmodproject() {
 
                     try { this.displayActiveQuests(u.userActiveQuests); } catch (e) { console.error('[LW 102] displayActiveQuests error:', e); }
 
+                    window._lmUserGifts = u.userGifts || null;
+
+                    /*
+                     * Daily quest start, as the official QuestsController INIT state:
+                     * no active quest and no "dailyQuest" timed event -> activate the
+                     * timed event (110); its reply credits quest_activation_24h and the
+                     * wallet update sends the quest activation (114). A listed event is
+                     * handled by the timer in updateEvents, a held activation item by
+                     * updateWalletInfo. New users get no quests.
+                     */
+                    try {
+                        var _hasActiveQuest = Array.isArray(u.userActiveQuests) && u.userActiveQuests.length > 0;
+                        var _hasDailyEvent = Array.isArray(u.userTimedEvents) && u.userTimedEvents.some(function (te) { return te && te.eventId === 'dailyQuest'; });
+                        var _isNewUser = !!(u.userInfo && u.userInfo.isNewUser);
+                        if (!_hasActiveQuest && !_hasDailyEvent && !_isNewUser && typeof window.questActivationReq === 'function') {
+                            window.questActivationReq();
+                        }
+                    } catch (e) { console.error('[LW 102] daily quest start error:', e); }
+
                     try { this.createSkinsHTML(); } catch (e) { console.error('[LW 102] createSkinsHTML error:', e); }
 
                     try { this.updateUserSettings(u.userSettings); } catch (e) { console.error('[LW 102] updateUserSettings error:', e); }
@@ -40313,6 +40334,8 @@ function thelegendmodproject() {
                             if (qa.productUpdates && qa.productUpdates.length) {
                                 this.updateProducts(qa.productUpdates);
                             }
+                            /* The activation item is used up; allow the next one. */
+                            this._questActivationSent = {};
                             if (qa.userQuest) {
                                 this.displayActiveQuests([qa.userQuest]);
                                 toastr.success('<b>[SERVER]:</b> Quest activated! &#x1F3AF; Type: ' + (qa.userQuest.type || 'unknown'));
@@ -41244,15 +41267,18 @@ function thelegendmodproject() {
                          * update used to re-send activateQuest, and its own reply
                          * contains a wallet update (loop -> "too many operations").
                          */
+                        if (!this._questActivationSent) this._questActivationSent = {};
+                        var _questKey = items[i].productId || 'quest';
                         if (items[i].amount > 0) {
-                            if (!this._questActivationSent) this._questActivationSent = {};
-                            var _questKey = items[i].productId || 'quest';
                             if (!this._questActivationSent[_questKey]) {
                                 /* Only remember it if the request was actually sent. */
                                 if (window.activateQuest() !== false) {
                                     this._questActivationSent[_questKey] = true;
                                 }
                             }
+                        } else {
+                            /* Consumed: a later item (next day, New Quest purchase) activates again. */
+                            delete this._questActivationSent[_questKey];
                         }
                         break;
                     case 5:
@@ -41552,17 +41578,6 @@ function thelegendmodproject() {
                     Object.create(
                         null
                     );
-            }
-
-
-            if (
-                event.length === 0 &&
-                typeof window
-                    .questActivationReq ===
-                    'function'
-            ) {
-                window
-                    .questActivationReq();
             }
 
 
@@ -43564,16 +43579,6 @@ function thelegendmodproject() {
                 items.length ===
                 0
             ) {
-                if (
-                    typeof window
-                        .questActivationReq ===
-                        'function'
-                ) {
-                    window
-                        .questActivationReq();
-                }
-
-
                 try {
                     document.dispatchEvent(
                         new CustomEvent(

@@ -603,6 +603,7 @@ message userTimedEventUpdatesField {
 }
 
 message activateUserRewardsRequestField {
+    int32 __for = 1; // rewards_for: 1 = progressive_video
 ///
 }
 
@@ -749,14 +750,20 @@ message userAbTestGroupsUpdateField {
 }
 
 message userRewardsTokenRequestField {
+    int32 __for = 1;
 ///
 }
 
 message userRewardsTokenResponseField {
+    int32 __for = 1;
+    string token = 2;
 ///
 }
 
 message userRewardsUpdatesField {
+    int32 __for = 1;
+    uint32 activeSlot = 2;
+    repeated productUpdates productUpdates = 3;
 ///
 }
 
