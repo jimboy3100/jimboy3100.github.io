@@ -8240,6 +8240,23 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         };
 
 
+    /*
+     * Owned potion skip-brew token for a slot (wallet type 9, productId with
+     * "skip_brew_slot_<n>"), as matched by the official handlePendingRewards.
+     */
+    window._lmSkipBrewTokenForSlot = function (slot) {
+        var u = (window.application && window.application.user) ||
+            (window.legendmod && window.legendmod.user) || null;
+        var tokens = (u && u.skipBrew) || {};
+        for (var key in tokens) {
+            if (!Object.prototype.hasOwnProperty.call(tokens, key)) continue;
+            if (!(Number(tokens[key]) > 0) || key.indexOf('skip_brew_slot') === -1) continue;
+            if (parseInt(key.split('_slot_')[1], 10) === Number(slot)) return key;
+        }
+        return '';
+    };
+
+
     window.getLivePotionSecondsRemaining =
         function (
             potion
@@ -9271,7 +9288,20 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                             ? window.getAgarPotionInfo(ppId, slot, ppSec === null ? undefined : ppSec)
                             : null;
 
-                        if (ppInfo && ppInfo.purchaseId &&
+                        if (typeof window._lmSkipBrewTokenForSlot === 'function' &&
+                            window._lmSkipBrewTokenForSlot(slot)) {
+                            /* skip token already owned: opening the slot uses it */
+                            pSkipHtml =
+                                '<button type="button" class="btn btn-xs lm-potion-skip-buy" ' +
+                                    'data-potion-id="' + window._lmEconomyEscape(ppId) + '" ' +
+                                    'data-slot="' + slot + '" ' +
+                                    'data-purchase-id="" ' +
+                                    'style="font-size:8px;padding:2px 5px;background:' +
+                                        window._lmEconomyEscape(theme.b3) + ';color:' +
+                                        window._lmEconomyEscape(theme.btc) +
+                                        ';border:0;border-radius:4px;white-space:nowrap;margin-top:2px;cursor:pointer;"' +
+                                '>Skip (owned)</button>';
+                        } else if (ppInfo && ppInfo.purchaseId &&
                             ppInfo.currentPrice !== null && ppInfo.currentPrice !== undefined) {
                             var ppPrice = Math.max(0, Number(ppInfo.currentPrice) || 0);
                             var ppPriceText = typeof window.formatAgarCurrency === 'function'
@@ -9417,6 +9447,20 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     0;
 
 
+                /* An already owned skip token for this slot is used by opening the
+                 * slot (official handlePendingRewards/getSkipProduct): no purchase. */
+                if (
+                    slot &&
+                    typeof window._lmSkipBrewTokenForSlot === 'function' &&
+                    window._lmSkipBrewTokenForSlot(slot) &&
+                    typeof window.openPotion === 'function'
+                ) {
+                    button.prop('disabled', true);
+                    window.openPotion(slot, true);
+                    return false;
+                }
+
+
                 if (
                     !purchaseId
                 ) {
@@ -9461,6 +9505,21 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 );
 
 
+                /* Official skipPotionBrew: activate potionSkipBrew, buy the skip
+                 * product, then open the slot (opcode 124) which uses it. */
+                if (
+                    typeof window.lmAccountReady !== 'function' ||
+                    window.lmAccountReady()
+                ) {
+                    if (
+                        window.application &&
+                        typeof window.application.activateTimedEvent === 'function'
+                    ) {
+                        window.application.activateTimedEvent('potionSkipBrew');
+                    }
+                }
+
+
                 var skipSent = window
                     .softPurchase(
                         purchaseId,
@@ -9483,6 +9542,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                         'disabled',
                                         false
                                     );
+
+
+                                    /* The purchase only grants the skip token; opening
+                                     * the slot is what skips the brew. */
+                                    if (
+                                        slot &&
+                                        typeof window.openPotion === 'function'
+                                    ) {
+                                        window.openPotion(slot, true);
+                                    }
 
 
                                     if (

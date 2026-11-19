@@ -38598,13 +38598,8 @@ function thelegendmodproject() {
                             case 121:
                                 window.testobjects102121 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Open Potion For Product Response", option, response);
-                                // Auto-confirm: skip potion brew timer
-                                if (window.application && typeof window.application.activateTimedEvent === 'function') {
-                                    window.application.activateTimedEvent("potionSkipBrew");
-                                } else {
-                                    var bytes = [8, 1, 18, 21, 8, 110, 242, 6, 16, 10, 14, 112, 111, 116, 105, 111, 110, 83, 107, 105, 112, 66, 114, 101, 119]
-                                    window.core.proxyMobileData(bytes);
-                                }
+                                /* potionSkipBrew is activated after a brew starts and before a
+                                 * skip purchase (official PotionsController), not on product opens. */
                                 break;
                             case 122:
                                 window.testobjects102122 = node;
@@ -40304,6 +40299,11 @@ function thelegendmodproject() {
                                 /* Success */
                                 this.updatePotions(u.userPotions);
                                 if (window.toastr) toastr.success('<b>[POTION]:</b> Brewing started! \u2615');
+                                /* Official onStartBrewing: activate the potionSkipBrew timed event
+                                 * once the brew is running (skip-brew price timer). */
+                                if (window.application && typeof window.application.activateTimedEvent === 'function') {
+                                    window.application.activateTimedEvent('potionSkipBrew');
+                                }
                             } else if (brewResult === 3) {
                                 /* Already brewing another slot */
                                 if (window.toastr) toastr.warning('<b>[POTION]:</b> Already brewing another potion. Wait for it to finish.');
