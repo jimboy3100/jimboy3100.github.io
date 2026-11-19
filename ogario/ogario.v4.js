@@ -45552,16 +45552,19 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
-                    var digits = g.replace(/[^0-9]/g, '');
-                    if (digits) {
-                        skinUrl = window.LM_CUSTOM_SKINS_CDN + "/skin_custom_" + digits + ".png?";
+                    /* Uploaded skin ids are skin_custom_<uuid>_<uuid> (hex letters and
+                     * dashes). Keep the id as is, like the official addCustomSkin
+                     * ('%x' -> 'skin_x', url = custom_skins_url + id + '.png'). */
+                    var g1 = g.replace(/\.png(?:\?.*)?$/i, '');
+                    if (/^\d+$/.test(g1)) {
+                        g1 = 'skin_custom_' + g1;
                     } else {
-                        var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
+                        if (g1.charAt(0) === '%') g1 = 'skin_' + g1.substring(1);
                         if (!g1.startsWith('skin_custom')) {
-                            g1 = 'skin_custom_' + g1.replace(/^_+/, '');
+                            g1 = 'skin_custom_' + g1.replace(/^skin_/, '').replace(/^custom/, '').replace(/^_+/, '');
                         }
-                        skinUrl = window.LM_CUSTOM_SKINS_CDN + "/" + g1 + ".png?";
                     }
+                    skinUrl = window.LM_CUSTOM_SKINS_CDN + "/" + g1 + ".png?";
                 }
                 /* 5. Level skins (_level_1, _level_2, etc.) */
                 else if (g && typeof g === 'string' && g.includes("_level_")) {
