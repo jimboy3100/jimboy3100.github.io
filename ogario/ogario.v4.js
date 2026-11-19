@@ -1081,12 +1081,19 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         }
     }
 
+    /* Known servers that are not Expanding Land must never get the Discord token or
+     * profile. (window.LM is only a UI stub; the connection state is on legendmod.) */
+    function _lw_isNonLwServer() {
+        if (typeof legendmod === 'undefined' || !legendmod || legendmod.isLegendWorld) return false;
+        return ['agario', 'imsolo', 'agar2', 'garix', 'sigmally', 'senpa'].indexOf(legendmod.serverType) !== -1;
+    }
+
     function _lw_sendLogin102(token, socialId, displayName, attemptId, provider) {
         attemptId = attemptId || (window._lwAuth && window._lwAuth.attemptId);
         provider = provider || (window._lwAuth && window._lwAuth.provider);
         _lwScheduleAuthSocketSend(provider + ':102', attemptId, provider, 0, function () {
-            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
-                console.log('[LW Login] Skipping opcode 102 for legacy server: ' + window.LM.serverType);
+            if (_lw_isNonLwServer()) {
+                console.log('[LW Login] Skipping opcode 102 for non Expanding Land server: ' + legendmod.serverType);
                 return true;
             }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
@@ -1129,8 +1136,8 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
     function _lw_sendDiscordProfile(discordUser, attemptId) {
         attemptId = attemptId || (window._lwAuth && window._lwAuth.attemptId);
         _lwScheduleAuthSocketSend('discord:204', attemptId, 'discord', 500, function () {
-            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
-                console.log('[LW Discord] Skipping opcode 204 for legacy server: ' + window.LM.serverType);
+            if (_lw_isNonLwServer()) {
+                console.log('[LW Discord] Skipping opcode 204 for non Expanding Land server: ' + legendmod.serverType);
                 return true;
             }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
