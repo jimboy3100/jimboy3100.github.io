@@ -22769,6 +22769,11 @@ function thelegendmodproject() {
             }, 200);
         },
         onPlayerDeath() {
+            /* updateCells (last own cell removed) and the official game-over packet
+             * (protobuf 62) both report the same death; handle it once. */
+            var _lmNow = Date.now();
+            if (this._lmLastDeathAt && _lmNow - this._lmLastDeathAt < 3000 && !ogario.play) return;
+            this._lmLastDeathAt = _lmNow;
             //
             pauseVideos();
             ogario.play = false;
