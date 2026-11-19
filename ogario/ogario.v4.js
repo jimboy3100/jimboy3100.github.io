@@ -69703,7 +69703,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         ctx.strokeStyle = remaining < 5 ? '#00ff66' : (remaining < 15 ? '#ffcc00' : '#ff3333');
                         ctx.stroke();
 
-                        if (window.playerCellsId && window.playerCellsId[cell.id]) {
+                        /* mergetimer.js owns mergeTime while it runs (it
+                         * re-arms on a re-split; this splitTime does not):
+                         * write it here only as the fallback. It tracks
+                         * the main player's cells only, not multibox. */
+                        var mergeTimerOwns = playerCells === LM.playerCells &&
+                            window.MergeTimerController &&
+                            typeof window.MergeTimerController.isActive === 'function' &&
+                            window.MergeTimerController.isActive();
+                        if (!mergeTimerOwns && window.playerCellsId && window.playerCellsId[cell.id]) {
                             window.playerCellsId[cell.id].mergeTime = remaining;
                         }
                     }

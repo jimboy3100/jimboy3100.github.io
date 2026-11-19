@@ -148,9 +148,21 @@ window.ExternalScripts = true;
         intervalId = null;
     }
 
+    // true while CellTimer owns playerCellsId[id].mergeTime (same gate as
+    // CellTimer); other writers must not overwrite it then
+    function isActive() {
+        return intervalId !== null &&
+            !!window.ExternalScripts &&
+            !!window.legendmod &&
+            !!window.legendmod5 &&
+            !window.legendmod5.optimizedMass &&
+            !!window.playerCellsId;
+    }
+
     window.MergeTimerController = {
         start: start,
         stop: stop,
+        isActive: isActive,
         clearCellState: clearCellMergeState,
         updateCell: updateCellMergeTimer
     };
