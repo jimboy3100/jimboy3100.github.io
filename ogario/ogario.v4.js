@@ -25286,6 +25286,16 @@ function thelegendmodproject() {
             ogario.play = false;
             ogario.playerColor = null;
         },
+        /* Forget what was sent on the previous relay connection, so the next
+         * sendPartyData() sends nick, tag, skin, colour and tokens again. */
+        _lmResetSentPartyData() {
+            this.lastSentNick = '';
+            this.lastSentClanTag = null;
+            this.lastSentSkinURL = '';
+            this.lastSentCustomColor = '';
+            this.lastSentPartyToken = '';
+            this.lastSentServerToken = '';
+        },
         flushPartyData() {
             this.teamPlayers = [];
             this.parties = [];
@@ -25574,6 +25584,11 @@ function thelegendmodproject() {
                     buf.setUint16(1, 20, true);
                     app.sendBuffer(buf);
 
+                    /* The relay wrapper (standby-server) reopens its inner socket by itself and
+                     * replays only its cached opcodes; the lastSent* dedupe then kept 10-16 from
+                     * being sent after this handshake, and opcode 13 (custom colour) is never
+                     * cached, so it was lost after every inner reconnect. Resend all party data. */
+                    app._lmResetSentPartyData();
                     app.sendPartyData();
                     app._lmRelayRetries = 0;
                     /* after a reconnect the relay must learn we are alive again */
@@ -25585,7 +25600,7 @@ function thelegendmodproject() {
             } else {
                 /* Private server: legendmod owns the game socket.
                  * We wire handleMessage into ogarioWS relay instead. */
-                this.socket.onopen = () => { app.sendPartyData(); };
+                this.socket.onopen = () => { app._lmResetSentPartyData(); app.sendPartyData(); };
             }
             var _lmSock = this.socket;
             this.socket.onclose = function (buf) {
