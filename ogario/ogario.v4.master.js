@@ -1385,17 +1385,47 @@ function legendmaster(self) {
                 }
             }
 
-            this.reconnect(false, "unexpected-disconnect");
+            /*
+             * Back off on repeated failures: a server that accepts and then closes
+             * (rejected version, kick) used to be retried every ~0.5 s forever.
+             * The counter resets once a connection lasted more than a minute.
+             */
+            if (Date.now() - (this._lastConnectAt || 0) > 60000) this._unexpectedFails = 0;
+            this._unexpectedFails = (this._unexpectedFails || 0) + 1;
+            if (this._unexpectedFails > 8) {
+                this._unexpectedFails = 0;
+                window._lwReconnecting = false;
+                console.warn("[Master] Giving up after 8 failed reconnects");
+                if (typeof toastr !== "undefined") {
+                    toastr.error("<b>[SERVER]:</b> The connection keeps dropping. Press Play or change the server to try again.");
+                }
+                return;
+            }
 
-            if (savedToken && savedContext) {
-                this.accessToken = savedToken;
-                this.context = savedContext;
-                window.loggedIn = savedLoggedIn;
+            var master = this;
+            var reconnectGeneration = this.connectionGeneration;
+            var doReconnect = function () {
+                /* The user changed region/server meanwhile: their connect wins. */
+                if (master.connectionGeneration !== reconnectGeneration) return;
+                master.reconnect(false, "unexpected-disconnect");
+
+                if (savedToken && savedContext) {
+                    master.accessToken = savedToken;
+                    master.context = savedContext;
+                    window.loggedIn = savedLoggedIn;
+                }
+            };
+            var reconnectDelay = this._unexpectedFails <= 1 ? 0 : Math.min(30000, 1000 * Math.pow(2, this._unexpectedFails - 2));
+            if (reconnectDelay > 0) {
+                console.log("[Master] Reconnect attempt " + this._unexpectedFails + " in " + reconnectDelay + " ms");
+                setTimeout(doReconnect, reconnectDelay);
+            } else {
+                doReconnect();
             }
 
             setTimeout(function() {
                 window._lwReconnecting = false;
-            }, 3000);
+            }, 3000 + reconnectDelay);
         },
         recaptchaRequested() {
             window.agarCaptcha.requestCaptcha(true);
