@@ -226,7 +226,8 @@ function legendmaster(self) {
         ) {
             /* A multibox login (window.MultiPending) must not change the main
              * account's saved provider. */
-            if (!window.MultiPending) {
+            var forMulti = !!window.MultiPending;
+            if (!forMulti) {
                 options.loginIntent = "1";
                 options.context = "facebook";
                 self.updateStorage();
@@ -241,7 +242,7 @@ function legendmaster(self) {
                         return;
                     }
 
-                    init(requestTokenResult);
+                    init(requestTokenResult, forMulti);
                 },
                 {
                     scope: "public_profile, email"
@@ -258,7 +259,7 @@ function legendmaster(self) {
         return false;
     }
 
-    function init(response) {
+    function init(response, forMulti) {
         if (
             !response ||
             response.status !== "connected" ||
@@ -280,7 +281,15 @@ function legendmaster(self) {
 					master.accessTokenFBAt = Date.now();				
 					MultiTokenReady(window.MultiPending);
 					window.MultiPending = null;
-				}	
+				}
+				else if (forMulti) {
+					/* This popup was opened for a multibox unit whose 60 s wait expired
+					 * (MultiPending was released). Keep the token for the next multibox
+					 * login; never log the MAIN player into that account. */
+					master.accessTokenFB = accessToken;
+					master.accessTokenFBAt = Date.now();
+					console.warn("[Master] Late multibox Facebook login kept for multibox only");
+				}
 				else{
 					master.doLoginWithFB(accessToken);
 					self.FB.api("/me/picture?width=180&height=180", function(images) {
