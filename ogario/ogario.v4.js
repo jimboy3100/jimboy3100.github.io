@@ -68671,6 +68671,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
                 var _cW = 0;
 
+                /* Own multibox cells are also seen by the main socket (raw id). The unit's
+                 * own copy (id + number * 1e9) is drawn with its profile, so the main copy is
+                 * hidden (not removed: it stays in LM.cells and keeps moving, the unit copy
+                 * snaps to it in moveCell) instead of being drawn a second time as an enemy. */
+                var _mbOwnOffsets = null;
+                if (LM.multiBoxPlayerExists && LM.playerCellsMulti && LM.playerCellsMulti.length && window.spects && window.spects.length) {
+                    _mbOwnOffsets = [];
+                    for (var _mbI = 0; _mbI < window.spects.length; _mbI++) {
+                        var _mbSp = window.spects[_mbI];
+                        if (_mbSp && _mbSp.player && _mbSp.number > 0) _mbOwnOffsets.push(_mbSp.number * 1000000000);
+                    }
+                }
+
                 for (
                     i = 0;
                     i < LM.cells.length;
@@ -68750,6 +68763,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     ) {
                         cell._renderSuppressed =
                             false;
+                    }
+
+                    if (cell._lmMbOwnDup) {
+                        cell._lmMbOwnDup = false;
+                        cell.invisible = false;
+                    }
+                    if (_mbOwnOffsets && !(cell.spectator > 0) && !cell.isPlayerCell && !cell.isFood) {
+                        for (var _mbK = 0; _mbK < _mbOwnOffsets.length; _mbK++) {
+                            var _mbOwn = LM.indexedCells[cell.id + _mbOwnOffsets[_mbK]];
+                            if (_mbOwn && _mbOwn !== cell && _mbOwn.isPlayerCellMulti && !_mbOwn.removed) {
+                                cell._lmMbOwnDup = true;
+                                cell.invisible = true;
+                                break;
+                            }
+                        }
                     }
 
 
