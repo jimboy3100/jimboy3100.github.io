@@ -24463,7 +24463,7 @@ function thelegendmodproject() {
                                 if (
                                     img &&
                                     img[url] ===
-                                    timedOutImage
+                                    directImage
                                 ) {
                                     delete img[url];
                                 }
