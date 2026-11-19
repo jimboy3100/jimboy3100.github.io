@@ -67880,6 +67880,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 LM._worldSpecPanX += _wsPanDX * _wsPanSpeed;
                 LM._worldSpecPanY += _wsPanDY * _wsPanSpeed;
 
+                /* Keep the camera on the (circular) map: the pan grew without
+                 * limit, so holding the mouse at an edge drifted into the void
+                 * and took as long to come back. */
+                var _wsMinX = Number(LM.mapMinX), _wsMaxX = Number(LM.mapMaxX);
+                var _wsMinY = Number(LM.mapMinY), _wsMaxY = Number(LM.mapMaxY);
+                if (Number.isFinite(_wsMinX) && Number.isFinite(_wsMaxX) && _wsMaxX > _wsMinX &&
+                    Number.isFinite(_wsMinY) && Number.isFinite(_wsMaxY) && _wsMaxY > _wsMinY) {
+                    var _wsCX = (_wsMinX + _wsMaxX) / 2, _wsCY = (_wsMinY + _wsMaxY) / 2;
+                    var _wsRad = Math.min(_wsMaxX - _wsMinX, _wsMaxY - _wsMinY) / 2;
+                    var _wsDX = targetCamX + LM._worldSpecPanX - _wsCX;
+                    var _wsDY = targetCamY + LM._worldSpecPanY - _wsCY;
+                    var _wsDist = Math.sqrt(_wsDX * _wsDX + _wsDY * _wsDY);
+                    if (_wsDist > _wsRad && _wsDist > 0) {
+                        LM._worldSpecPanX = _wsCX + _wsDX * _wsRad / _wsDist - targetCamX;
+                        LM._worldSpecPanY = _wsCY + _wsDY * _wsRad / _wsDist - targetCamY;
+                    }
+                }
                 targetCamX += LM._worldSpecPanX;
                 targetCamY += LM._worldSpecPanY;
             }
