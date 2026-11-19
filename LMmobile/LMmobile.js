@@ -794,7 +794,7 @@
         var swStart = null;
         var SW_THRESH = 50; // min px to count as swipe
         canvas.addEventListener('touchstart', function (e) {
-            if (chatOn || e.touches.length !== 1) return;
+            if (chatOn || e.targetTouches.length !== 1) return;
             var t = e.changedTouches[0];
             if (t.clientX < window.innerWidth * 0.5) {
                 swStart = { x: t.clientX, y: t.clientY, id: t.identifier };
@@ -826,6 +826,8 @@
 
         /* ═══════════════════════════════════════════════════════
          *  JOYSTICK — direction persists after finger lift
+         *  (targetTouches: only fingers on the canvas; a thumb on FEED/SPLIT must not
+         *   freeze steering or start a pinch-zoom)
          * ═══════════════════════════════════════════════════════ */
         var org = { x: 0, y: 0 }; // joystick origin
         var jId = null;
@@ -838,7 +840,7 @@
         });
 
         canvas.addEventListener('touchstart', function (e) {
-            if (chatOn || e.touches.length !== 1) return;
+            if (chatOn || e.targetTouches.length !== 1) return;
             var t = e.changedTouches[0];
             jId = t.identifier;
             org.x = t.clientX; org.y = t.clientY;
@@ -864,7 +866,7 @@
         }, { passive: true });
 
         canvas.addEventListener('touchmove', function (e) {
-            if (e.touches.length >= 2) return;
+            if (e.targetTouches.length >= 2) return;
             var t = tById(e.changedTouches, jId);
             if (!t) return;
 
@@ -906,17 +908,17 @@
         }
 
         canvas.addEventListener('touchstart', function (e) {
-            if (e.touches.length === 2) {
+            if (e.targetTouches.length === 2) {
                 pOn = true;
-                pDist = dist(e.touches[0], e.touches[1]);
+                pDist = dist(e.targetTouches[0], e.targetTouches[1]);
                 jHide(); jId = null;
             }
         }, { passive: true });
 
         canvas.addEventListener('touchmove', function (e) {
-            if (!(e.touches.length === 2 && pOn)) return;
+            if (!(e.targetTouches.length === 2 && pOn)) return;
             e.preventDefault();
-            var nd = dist(e.touches[0], e.touches[1]);
+            var nd = dist(e.targetTouches[0], e.targetTouches[1]);
             var delta = nd - pDist;   // >0 = spread, <0 = pinch
             if (Math.abs(delta) > 4) {
                 if (isMenuVisible()) {
@@ -931,8 +933,8 @@
                     }
                 } else {
                     /* ── Map zoom mode ── */
-                    var cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                    var cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                    var cx = (e.targetTouches[0].clientX + e.targetTouches[1].clientX) / 2;
+                    var cy = (e.targetTouches[0].clientY + e.targetTouches[1].clientY) / 2;
                     // spread (delta>0) → positive deltaY → zoom in (ogario convention)
                     wheel(canvas, delta * 2, cx, cy);
                     zP.textContent = delta > 0 ? '🔍 +' : '🔍 −';
@@ -945,7 +947,7 @@
         }, { passive: false });
 
         canvas.addEventListener('touchend', function (e) {
-            if (e.touches.length < 2) { pOn = false; pDist = 0; }
+            if (e.targetTouches.length < 2) { pOn = false; pDist = 0; }
         }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
