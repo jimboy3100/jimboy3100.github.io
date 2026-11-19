@@ -39341,10 +39341,10 @@ function thelegendmodproject() {
                         window.autocoins()
                     }, 3000);
 
-                    window.localStorage.setItem("getLatestID", u.latestConfiguration);
-
-                    /* Update agarversion with fresh configId from server and rebuild skin map */
-                    if (u.latestConfiguration) {
+                    /* Update agarversion with fresh configId from server and rebuild skin map.
+                     * Only an official agar.io login carries a real config id: Expanding Land
+                     * sends 1, which made agarversion "v15/1/" (saved for the next page load). */
+                    if (u.latestConfiguration && this.serverType === 'agario' && !LM.isLegendWorld) {
                         var freshVersion = "v" + (window.getLatestconfigVersion || "15") + "/" + u.latestConfiguration + "/";
                         window.agarversion = freshVersion;
                         window.localStorage.setItem("getLatestID", u.latestConfiguration);
