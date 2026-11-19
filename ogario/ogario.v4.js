@@ -21441,6 +21441,9 @@ function thelegendmodproject() {
             if (!url || typeof url !== 'string') return '';
             url = url.trim();
             if (!url) return '';
+            /* imgur page link (imgur.com/<id>) is an HTML page, not the image */
+            var imgurPage = /^(?:https?:\/\/)?(?:www\.|m\.)?imgur\.com\/([a-zA-Z0-9]{5,8})\/?(?:[?#].*)?$/i.exec(url);
+            if (imgurPage) return 'https://i.imgur.com/' + imgurPage[1] + '.png';
             if (url.startsWith('http://')) return url.replace('http://', 'https://');
             if (url.startsWith('https://') || url.startsWith('data:')) return url;
             if (url.startsWith('//')) return 'https:' + url;
