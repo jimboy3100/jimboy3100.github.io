@@ -187,27 +187,37 @@ $("#userscripts").hide();
 
 $('#UserscriptA').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
-if ($("#UserscriptA").val()!="" && $("#UserscriptA").val()!==Userscript1){
+/* emptied field: forget the URL so it is not loaded again on the next start */
+if ($("#UserscriptA").val()=="" && Userscript1){Userscript1="";localStorage.setItem("Userscript1", "");}
+else if ($("#UserscriptA").val()!="" && $("#UserscriptA").val()!==Userscript1){
 Userscript1=$("#UserscriptA").val();localStorage.setItem("Userscript1", Userscript1);
 $("#Userscripttexture1").load(Userscript1, function() { $("#userscriptBtn1").click(); }); }return false;});
 $('#UserscriptB').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
-if ($("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){
+/* emptied field: forget the URL so it is not loaded again on the next start */
+if ($("#UserscriptB").val()=="" && Userscript2){Userscript2="";localStorage.setItem("Userscript2", "");}
+else if ($("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){
 Userscript2=$("#UserscriptB").val();localStorage.setItem("Userscript2", Userscript2);
 $("#Userscripttexture2").load(Userscript2, function() { $("#userscriptBtn2").click(); }); }return false;});
 $('#UserscriptC').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
-if ($("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){
+/* emptied field: forget the URL so it is not loaded again on the next start */
+if ($("#UserscriptC").val()=="" && Userscript3){Userscript3="";localStorage.setItem("Userscript3", "");}
+else if ($("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){
 Userscript3=$("#UserscriptC").val();localStorage.setItem("Userscript3", Userscript3);
 $("#Userscripttexture3").load(Userscript3, function() { $("#userscriptBtn3").click(); }); }return false;});
 $('#UserscriptD').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
-if ($("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){
+/* emptied field: forget the URL so it is not loaded again on the next start */
+if ($("#UserscriptD").val()=="" && Userscript4){Userscript4="";localStorage.setItem("Userscript4", "");}
+else if ($("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){
 Userscript4=$("#UserscriptD").val();localStorage.setItem("Userscript4", Userscript4);
 $("#Userscripttexture4").load(Userscript4, function() { $("#userscriptBtn4").click(); }); }return false;});
 $('#UserscriptE').blur(function(){
 /* reload only when the URL changed (re-injected the script on every blur) */
-if ($("#UserscriptE").val()!="" && $("#UserscriptE").val()!==Userscript5){
+/* emptied field: forget the URL so it is not loaded again on the next start */
+if ($("#UserscriptE").val()=="" && Userscript5){Userscript5="";localStorage.setItem("Userscript5", "");}
+else if ($("#UserscriptE").val()!="" && $("#UserscriptE").val()!==Userscript5){
 Userscript5=$("#UserscriptE").val();localStorage.setItem("Userscript5", Userscript5);
 $("#Userscripttexture5").load(Userscript5, function() { $("#userscriptBtn5").click(); }); }return false;});
 
@@ -336,16 +346,17 @@ function userscriptpages(){
 }
 
 function erasescripter(){
+	/* also reset UserscriptN, so the same URL can be added again without a reload */
 	if ($("#Userscriptpages3").val()==1){
-		$("#Userscripttexture1").val(""); localStorage.setItem("Userscripttexture1", ""); $('#Userscriptpages3>option:nth-child(1)').text("User Script 1"); $("#UserscripttextA").val(""); localStorage.setItem("Userscripttext11", ""); $("#UserscriptA").val(""); localStorage.setItem("Userscript1", "");}
+		$("#Userscripttexture1").val(""); localStorage.setItem("Userscripttexture1", ""); $('#Userscriptpages3>option:nth-child(1)').text("User Script 1"); $("#UserscripttextA").val(""); localStorage.setItem("Userscripttext11", ""); $("#UserscriptA").val(""); localStorage.setItem("Userscript1", ""); Userscript1 = "";}
 	if ($("#Userscriptpages3").val()==2){
-		$("#Userscripttexture2").val(""); localStorage.setItem("Userscripttexture2", ""); $('#Userscriptpages3>option:nth-child(2)').text("User Script 2"); $("#UserscripttextB").val(""); localStorage.setItem("Userscripttext12", ""); $("#UserscriptB").val(""); localStorage.setItem("Userscript2", "");}
+		$("#Userscripttexture2").val(""); localStorage.setItem("Userscripttexture2", ""); $('#Userscriptpages3>option:nth-child(2)').text("User Script 2"); $("#UserscripttextB").val(""); localStorage.setItem("Userscripttext12", ""); $("#UserscriptB").val(""); localStorage.setItem("Userscript2", ""); Userscript2 = "";}
 	if ($("#Userscriptpages3").val()==3){
-		$("#Userscripttexture3").val(""); localStorage.setItem("Userscripttexture3", ""); $('#Userscriptpages3>option:nth-child(3)').text("User Script 3"); $("#UserscripttextC").val(""); localStorage.setItem("Userscripttext13", ""); $("#UserscriptC").val(""); localStorage.setItem("Userscript3", "");}
+		$("#Userscripttexture3").val(""); localStorage.setItem("Userscripttexture3", ""); $('#Userscriptpages3>option:nth-child(3)').text("User Script 3"); $("#UserscripttextC").val(""); localStorage.setItem("Userscripttext13", ""); $("#UserscriptC").val(""); localStorage.setItem("Userscript3", ""); Userscript3 = "";}
 	if ($("#Userscriptpages3").val()==4){
-		$("#Userscripttexture4").val(""); localStorage.setItem("Userscripttexture4", ""); $('#Userscriptpages3>option:nth-child(4)').text("User Script 4"); $("#UserscripttextD").val(""); localStorage.setItem("Userscripttext14", ""); $("#UserscriptD").val(""); localStorage.setItem("Userscript4", "");}
+		$("#Userscripttexture4").val(""); localStorage.setItem("Userscripttexture4", ""); $('#Userscriptpages3>option:nth-child(4)').text("User Script 4"); $("#UserscripttextD").val(""); localStorage.setItem("Userscripttext14", ""); $("#UserscriptD").val(""); localStorage.setItem("Userscript4", ""); Userscript4 = "";}
 	if ($("#Userscriptpages3").val()==5){
-		$("#Userscripttexture5").val(""); localStorage.setItem("Userscripttexture5", ""); $('#Userscriptpages3>option:nth-child(5)').text("User Script 5"); $("#UserscripttextE").val(""); localStorage.setItem("Userscripttext15", ""); $("#UserscriptE").val(""); localStorage.setItem("Userscript5", "");}
+		$("#Userscripttexture5").val(""); localStorage.setItem("Userscripttexture5", ""); $('#Userscriptpages3>option:nth-child(5)').text("User Script 5"); $("#UserscripttextE").val(""); localStorage.setItem("Userscripttext15", ""); $("#UserscriptE").val(""); localStorage.setItem("Userscript5", ""); Userscript5 = "";}
 }
 
 
