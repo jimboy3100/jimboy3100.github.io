@@ -68756,19 +68756,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return;
             }
 
-            if (!legendmod.customMidPic) {
-                legendmod.customMidPic =
-                    new Image();
-
-                legendmod.customMidPic.src =
-                    defaultSettings.customBackground;
-            }
-            else if (
-                legendmod.customMidPic.src !==
+            /* Compare the configured string (_src), not img.src: the browser normalizes
+             * src (encoding, case, trailing slash), which created a new Image every frame. */
+            if (
+                !legendmod.customMidPic ||
+                legendmod.customMidPic._src !==
                 defaultSettings.customBackground
             ) {
                 legendmod.customMidPic =
                     new Image();
+
+                legendmod.customMidPic._src =
+                    defaultSettings.customBackground;
 
                 legendmod.customMidPic.src =
                     defaultSettings.customBackground;
