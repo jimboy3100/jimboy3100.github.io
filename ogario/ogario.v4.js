@@ -73059,7 +73059,7 @@ function PreLcCelebration() {
             LcCelebration();
             window.celebrationDay = "LcDay"
         }
-        else if (checkdate === "12/31" || checkdate === "1/1") {
+        else if (checkdate === "12/31" || checkdate === "01/01") { // yyyymmdd() zero-pads
             window.celebrationDay = "NewYear"
         }
         else if (checkdate === "11/26") {
@@ -73068,7 +73068,7 @@ function PreLcCelebration() {
         else if (checkdate === "12/25" || checkdate === "12/24") {
             window.celebrationDay = "Christmas"
         }
-        else if (checkdate === "7/4") {
+        else if (checkdate === "07/04") {
             window.celebrationDay = "4July"
         }
     }
