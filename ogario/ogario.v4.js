@@ -1216,7 +1216,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             /* Social ID = Discord user ID (temporary until server confirms) */
             if (discordUser.id) {
                 window.agarioID = discordUser.id;
-                localStorage.setItem("agarioID", discordUser.id);
+                try { localStorage.setItem("agarioID", discordUser.id); } catch (e) { }
             }
             /* Do NOT set window.agarioUID here — authoritative UID comes from server protobuf.
              * The old code hashed the token into 'discord-XXXXXXXX' which didn't match
@@ -1978,7 +1978,9 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         /* Generate a one-time nonce for CSRF protection on OAuth state */
         var _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function (b) { return b.toString(16).padStart(2, '0') }).join('');
         var _discordOAuthState = window.location.origin + '|' + _discordOAuthNonce;
-        sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce);
+        /* Storage can be blocked (iframe) or full: keep the nonce in this closure too. */
+        var _discordNonceLive = _discordOAuthNonce;
+        try { sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce); } catch (e) { }
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(_discordOAuthState);
         var discordPopupRef = null;
         var discordSetupAttempts = 0;
@@ -2009,14 +2011,16 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         function acceptDiscordUser(discordUser, channel) {
             if (!discordUser || !discordUser.id || !discordUser.token) return false;
             /* CSRF nonce validation: reject if nonce is present but doesn't match */
-            var expectedNonce = sessionStorage.getItem('discord_oauth_nonce');
+            var expectedNonce = _discordNonceLive;
+            try { expectedNonce = sessionStorage.getItem('discord_oauth_nonce') || _discordNonceLive; } catch (e) { }
             if (expectedNonce && discordUser.nonce) {
                 if (discordUser.nonce !== expectedNonce) {
                     console.warn('[LW Discord] CSRF nonce mismatch via ' + channel + ' — rejecting');
                     return false;
                 }
                 /* Consume nonce to prevent replay */
-                sessionStorage.removeItem('discord_oauth_nonce');
+                _discordNonceLive = null;
+                try { sessionStorage.removeItem('discord_oauth_nonce'); } catch (e) { }
             } else if (expectedNonce && !discordUser.nonce) {
                 console.warn('[LW Discord] Relay did not include nonce — accepting (backwards-compat)');
             }
