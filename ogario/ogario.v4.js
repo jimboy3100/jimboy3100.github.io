@@ -73522,6 +73522,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMouseHeld[event.which] = true;
         /* clicking into the chat input or a HUD button/select must not split or feed */
         var _lmMT = event.target || {};
+        /* middle click in a hotkey field assigns MOUSE WHEEL (no key event produces it) */
+        if (event.which === 2 && _lmMT.className === hotkeysSetup.inputClassName && _lmMT.id) {
+            event.preventDefault && event.preventDefault();
+            hotkeysSetup.setHotkey('MOUSE WHEEL', _lmMT.id);
+            return;
+        }
         if (_lmMT.tagName === 'INPUT' || _lmMT.tagName === 'TEXTAREA' || _lmMT.tagName === 'SELECT' || _lmMT.tagName === 'BUTTON' || _lmMT.isContentEditable === true) return;
         if (!$("#overlays").is(":visible")) {
             //console.log(event.which)
@@ -73536,8 +73542,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _lmMouseCmdDown(2, defaultmapsettings.middleClick)
                     }
                 }
-                else {
-                    //application.sendCommand(10);
+                else if (application && hotkeys['MOUSE WHEEL']) {
+                    /* "Mouse wheel click" off: a hotkey bound to MOUSE WHEEL runs (the
+                     * default of chat command 10, which getPressedKey can never produce) */
+                    _lmMouseCmdDown(2, hotkeys['MOUSE WHEEL']);
                 }
                 if (defaultmapsettings.stickyCell) {
                     LM.selected = null
@@ -73624,6 +73632,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
         else if (defaultmapsettings.mouseWheelClick && (2 === event.which) && defaultmapsettings.middleClick) {
             if (hotkeysCommand[defaultmapsettings.middleClick] && hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
+        }
+        else if (!defaultmapsettings.mouseWheelClick && (2 === event.which) && _lmMouseCmdWas) {
+            /* the MOUSE WHEEL hotkey started on mousedown */
+            if (hotkeysCommand[_lmMouseCmdWas] && hotkeysCommand[_lmMouseCmdWas].keyUp) hotkeysCommand[_lmMouseCmdWas].keyUp()
         }
         else if (defaultmapsettings.mouseFeed && (3 === event.which) && defaultmapsettings.rightClick) {
             if (hotkeysCommand[defaultmapsettings.rightClick] && hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
