@@ -3289,7 +3289,7 @@ function getDealSkinImage(bundleId) {
 /**
  * Buy a deal via IAP payment URL (real money)
  */
-function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
+function _showDealBuyConfirmationModal(title, priceLabel, onConfirm, headerText) {
     var old = document.getElementById('deal-buy-confirm-modal');
     if (old) old.remove();
 
@@ -3301,7 +3301,7 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
     modal.innerHTML = 
         '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
-                '🛒 Purchase Confirmation' +
+                _sdEscHtml(headerText || '🛒 Purchase Confirmation') +
             '</div>' +
             '<div style="padding: 20px 24px;">' +
                 '<div style="font-size: 15px; font-weight: 800; color: ' + t.tc + '; margin-bottom: 8px;">' + _sdEscHtml(title) + '</div>' +
@@ -7080,8 +7080,16 @@ function renderSkinPage(
                                 event
                                     .stopPropagation();
 
-                                deleteCustomSkin(
-                                    selectedProductId
+                                /* Deleting a paid custom skin cannot be undone: confirm first. */
+                                _showDealBuyConfirmationModal(
+                                    'Delete this custom skin permanently? This cannot be undone.',
+                                    null,
+                                    function () {
+                                        deleteCustomSkin(
+                                            selectedProductId
+                                        );
+                                    },
+                                    '🗑 Delete Custom Skin'
                                 );
                             };
                         }
