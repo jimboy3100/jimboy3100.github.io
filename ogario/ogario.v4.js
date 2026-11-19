@@ -3342,15 +3342,18 @@ window.softPurchase =
                 return true;
             } catch (encErr) {
                 console.error('[LM] Failed to encode softPurchase opcode 70:', encErr);
-                if (window._lmCancelSoftPurchase) {
-                    window._lmCancelSoftPurchase(purchaseId, 'encode_error');
+                /* Not sent: drop the pending entry without onFailure. Callers
+                 * handle the false return; both ran their failure path twice. */
+                if (window._lmTakeSoftPurchase) {
+                    window._lmTakeSoftPurchase(purchaseId);
                 }
                 return false;
             }
         }
 
-        if (window._lmCancelSoftPurchase) {
-            window._lmCancelSoftPurchase(purchaseId, 'network_not_ready');
+        /* Not sent: same as above, the false return is the only signal. */
+        if (window._lmTakeSoftPurchase) {
+            window._lmTakeSoftPurchase(purchaseId);
         }
         return false;
     };
@@ -22692,8 +22695,14 @@ function thelegendmodproject() {
                 LM.targetCanvasScale = e;
             }
 
-            if (typeof this.setCanvasSize === "function") {
-                this.setCanvasSize();
+            /* The renderer reads canvasScale in resizeCanvas (before it is
+             * initialised, its first resizeCanvas picks the value up). */
+            if (
+                window.drawRender &&
+                window.drawRender.canvas &&
+                typeof window.drawRender.resizeCanvas === "function"
+            ) {
+                window.drawRender.resizeCanvas();
             }
         },
         setStreamMode() {
@@ -22983,24 +22992,31 @@ function thelegendmodproject() {
              * Fix: gate all opcode-16 processing until opcode 32 arrives.
              * At opcode-32 time we flush everything, so the very next
              * cell update (the server's force_full_diff) starts from a
-             * clean slate with full ADD records including color/skin/name. */
-            legendmod._spawnTransitGate = true;
-            legendmod.cells = [];
-            legendmod.indexedCells = {};
-            legendmod.removedCells = [];
-            legendmod.food = [];
-            legendmod.viruses = [];
-            legendmod.playerCells = [];
-            if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
+             * clean slate with full ADD records including color/skin/name.
+             *
+             * Only for a dead player on Expanding Land (or in World Spectate):
+             * on other servers, or when Play is pressed while alive, no
+             * opcode 32 may follow, and the gate would blank the world for 3s. */
+            var _lmIsLegend = legendmod.serverType === "expandingland" || !!legendmod.isLegendWorld || (this.ws && (this.ws.includes("legendmod.ml") || this.ws.includes("expanding.land")));
+            if (!legendmod.play && (_lmIsLegend || legendmod._isWorldSpectating)) {
+                legendmod._spawnTransitGate = true;
+                legendmod.cells = [];
+                legendmod.indexedCells = {};
+                legendmod.removedCells = [];
+                legendmod.food = [];
+                legendmod.viruses = [];
+                legendmod.playerCells = [];
+                if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
 
-            /* Safety timeout: auto-clear the gate after 3s in case the server
-             * never responds with opcode 32 (e.g. spawn failure, packet loss).
-             * Without this, a failed spawn would permanently block cell updates. */
-            if (legendmod._spawnGateTimer) clearTimeout(legendmod._spawnGateTimer);
-            legendmod._spawnGateTimer = setTimeout(function () {
-                legendmod._spawnTransitGate = false;
-                legendmod._spawnGateTimer = null;
-            }, 3000);
+                /* Safety timeout: auto-clear the gate after 3s in case the server
+                 * never responds with opcode 32 (e.g. spawn failure, packet loss).
+                 * Without this, a failed spawn would permanently block cell updates. */
+                if (legendmod._spawnGateTimer) clearTimeout(legendmod._spawnGateTimer);
+                legendmod._spawnGateTimer = setTimeout(function () {
+                    legendmod._spawnTransitGate = false;
+                    legendmod._spawnGateTimer = null;
+                }, 3000);
+            }
 
             this.play();
             this.hideMenu();
@@ -52831,11 +52847,48 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     )
                     : 1;
 
+            /* Quality setting / scale_setting (application.setCanvasScale):
+             * a scale below 1 lowers the backing-store resolution. Larger
+             * values (Retina, a saved pixel ratio) stay governed by highDPI. */
+            var qualityScale =
+                window.application &&
+                window.application.canvasScale;
+
+            if (
+                typeof qualityScale === 'number' &&
+                isFinite(qualityScale) &&
+                qualityScale > 0 &&
+                qualityScale < 1
+            ) {
+                dpr *= qualityScale;
+            }
+
+            var prevDpr =
+                this.dpr;
+
             this.dpr =
                 dpr;
 
             window.LM_DPR =
                 dpr;
+
+            /* Text sprites are rasterized at LM_DPR and only redrawn on
+             * change: re-rasterize them so they keep their on-screen size. */
+            if (
+                prevDpr &&
+                prevDpr !== dpr &&
+                LM &&
+                LM.cells
+            ) {
+                for (var ci = 0; ci < LM.cells.length; ci++) {
+                    var rc = LM.cells[ci];
+                    if (!rc) continue;
+                    if (rc.nickCanvas) rc.nickCanvas.redraw = true;
+                    if (rc.massCanvas) rc.massCanvas.redraw = true;
+                    if (rc.mergeCanvas) rc.mergeCanvas.redraw = true;
+                    if (rc.chatCanvas) rc.chatCanvas.redraw = true;
+                }
+            }
 
             this.canvasWidth =
                 window.innerWidth;

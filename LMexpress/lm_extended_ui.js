@@ -9502,12 +9502,23 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                         purchaseId,
                                         reason
                                     );
+                                },
+
+                            // No opcode 71 within the timeout: onFailure
+                            // never runs, so re-enable here too.
+                            onTimeout:
+                                function () {
+                                    button.prop(
+                                        'disabled',
+                                        false
+                                    );
                                 }
                         }
                     );
 
 
-                // Not sent (login not confirmed yet, or already pending):
+                // Not sent (login not confirmed, already pending, not
+                // connected or encode error):
                 // softPurchase calls no callback, so re-enable here.
                 if (skipSent !== true) {
                     button.prop(
