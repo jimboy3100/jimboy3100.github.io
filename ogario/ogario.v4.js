@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.520;
+window.OgVer = 3.521;
 
 
 /*
@@ -25067,7 +25067,8 @@ function thelegendmodproject() {
             );
         },
         getCustomSkin(nick, color, skinKey) {
-            if (!nick && !skinKey) return null;
+            /* A player without a name shows no skin at all (custom, vanilla or server skin). */
+            if (!nick || !String(nick).trim()) return null;
             _RE_CLAN_TAG.lastIndex = 0;
             var cleanNick = nick ? nick.replace(_RE_CLAN_TAG, '').trim() : '';
             /* Cache lowered color to avoid per-call string allocation */
