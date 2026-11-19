@@ -24764,15 +24764,20 @@ function thelegendmodproject() {
                     }
                     //
                     if (LM.arrowFB && LM.arrowFB[0]) {
+                        /* Per frame: a sticky flag hid the friend for the rest of the session
+                         * once the nick had been in the teamboard. */
+                        var fbIncluded = false;
                         if (application.top5) {
                             for (var temp = 0; temp < application.top5.length; temp++) {
                                 if (application.top5[temp] && application.top5[temp].nick === LM.arrowFB[0].nick) {
-                                    LM.arrowFB[0].isIncluded = true;
+                                    fbIncluded = true;
+                                    break;
                                 }
                             }
                         }
+                        LM.arrowFB[0].isIncluded = fbIncluded;
 
-                        if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
+                        if (LM.arrowFB[0].visible && !fbIncluded) { //Yahnych
                             this.miniMapCtx.save();
                             try {
                                 this.miniMapCtx.beginPath();
