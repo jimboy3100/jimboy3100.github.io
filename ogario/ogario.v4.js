@@ -73798,12 +73798,14 @@ var reverseTrick = {
 
             $('#pause-hud').text("Avoiding reverse split...");
             $('#pause-hud').show()
-            setTimeout(function () {
+            /* Called per update packet: keep a single pending hide timer
+             * instead of one per packet (and no per-packet console dump). */
+            if (reverseTrick._hudTimer) clearTimeout(reverseTrick._hudTimer);
+            reverseTrick._hudTimer = setTimeout(function () {
+                reverseTrick._hudTimer = null;
                 $('#pause-hud').text(textLanguage.pause);
                 $('#pause-hud').hide()
             }, 500)
-
-            console.log(reverseTrick)
         }
     }
 }
