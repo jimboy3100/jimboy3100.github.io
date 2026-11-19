@@ -30277,10 +30277,10 @@ function thelegendmodproject() {
                 }
             },
             this.setScale = function (ogarioscalesetter) {
-                if (this.scale !== ogarioscalesetter) {
-                    this.scale = ogarioscalesetter;
-                    this.redraw = true;
-                }
+                // drawTxt() never reads this.scale (raster size depends only on
+                // fontSize/margin/DPR), so a scale change must not force a
+                // re-rasterization; the eased zoom changes it every frame.
+                this.scale = ogarioscalesetter;
             },
             this.createCanvas = function () {
                 this.txtCanvas || (this.txtCanvas = document.createElement('canvas'),
