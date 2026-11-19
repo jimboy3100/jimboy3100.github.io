@@ -39570,12 +39570,15 @@ function thelegendmodproject() {
                             if (oppr.productUpdates && oppr.productUpdates.length) {
                                 this.updateProducts(oppr.productUpdates);
                             }
-                            if (oppr.userPotions && oppr.userPotions.length) {
-                                this.updatePotions(oppr.userPotions);
-                            }
-                            if (oppr.newUserPotion) {
-                                this.newPotion(oppr.newUserPotion);
+                            /* The schema (and the official proto) is result/productId/productUpdates:
+                             * there is no userPotions/newUserPotion here, so report by result. */
+                            var opprResult = Number(oppr.result) || 0;
+                            if (opprResult === 1) {
                                 toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                            } else if (opprResult === 2) {
+                                toastr.error('<b>[SERVER]:</b> Potion not opened — not enough currency.');
+                            } else {
+                                toastr.warning('<b>[SERVER]:</b> Potion not opened (code ' + opprResult + ').');
                             }
                         }
                     } catch (opprErr) {
