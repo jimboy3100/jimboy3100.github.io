@@ -695,12 +695,16 @@ function legendmaster(self) {
                 return;
             }
             var canvasLayersManager = this;
+            /* The reply can come seconds later: if the player joined a server or picked a
+             * region meanwhile (?sip= link, private server, region list), do not move them. */
+            var regionGeneration = this.connectionGeneration;
             window.userData = $.ajax(master.master_url_http + "/getCountry", {
                 beforeSend(xhr) {
                     return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", "application/octet-stream"), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
                 },
                 error() {
                     canvasLayersManager.checkRegion();
+                    if (canvasLayersManager.connectionGeneration !== regionGeneration) return;
 
                     var selectedRegion = $("#region").val();
                     if (selectedRegion) {
@@ -717,6 +721,13 @@ function legendmaster(self) {
                 $("#response").html(JSON.stringify(playlistCopy, null, 4));
                 if (playlistCopy != null) {
                     localStorage.setItem("userData", JSON.stringify(playlistCopy));
+                }
+                if (canvasLayersManager.connectionGeneration !== regionGeneration) {
+                    /* Still record the region (party join needs one), without reconnecting. */
+                    if (!canvasLayersManager.region && playlistCopy && regionobj.hasOwnProperty(playlistCopy.country)) {
+                        canvasLayersManager.setRegion(regionobj[playlistCopy.country], false);
+                    }
+                    return;
                 }
 				//if (userData && userData.responseJSON){		
 				if (playlistCopy){			
