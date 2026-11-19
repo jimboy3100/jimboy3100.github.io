@@ -39576,7 +39576,16 @@ function thelegendmodproject() {
                     this.user.stats = u.userStats;
                     try { this.displayStats(u.userStats); } catch (e) { console.error('[LW 102] displayStats error:', e); }
 
+                    /* The login list is the whole timed-event state (the official client replaces
+                     * it): drop the previous session's entries. Official createFirstTimeEvent: a
+                     * hourlyBonus missing from the list is available now. */
+                    window._lmTimedEventState = Object.create(null);
                     try { this.updateEvents(u.userTimedEvents); } catch (e) { console.error('[LW 102] updateEvents error:', e); }
+                    if (!window._lmTimedEventState.hourlyBonus) {
+                        var _hbNow = Date.now();
+                        window._lmTimedEventState.hourlyBonus = { eventId: 'hourlyBonus', nextAvailableInSeconds: 0, receivedAt: _hbNow, readyAt: _hbNow, raw: null };
+                        window.hourlyBonusFinalTimer = _hbNow;
+                    }
 
                     try { this.displayActiveQuests(u.userActiveQuests); } catch (e) { console.error('[LW 102] displayActiveQuests error:', e); }
 

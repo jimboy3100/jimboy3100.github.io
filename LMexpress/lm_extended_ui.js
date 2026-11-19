@@ -8897,13 +8897,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             var hourlyTimerText;
 
 
+            /* Official: an event missing from the received list is available. */
             if (
                 hourlySeconds ===
-                null
+                null &&
+                !window._lmTimedEventState
             ) {
                 hourlyTimerText =
                     'Waiting for server';
             } else if (
+                hourlySeconds === null ||
                 hourlySeconds <=
                 0
             ) {
@@ -8948,13 +8951,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             var dailyTimerText;
 
 
+            /* Official QuestsController: no dailyQuest event means a quest can start now. */
             if (
                 dailySeconds ===
-                null
+                null &&
+                !window._lmTimedEventState
             ) {
                 dailyTimerText =
                     'Waiting for server';
             } else if (
+                dailySeconds === null ||
                 dailySeconds <=
                 0
             ) {
