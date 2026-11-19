@@ -39471,9 +39471,14 @@ function thelegendmodproject() {
                     }
 
 
-                    this.displayStats(
-                        u.userStats
-                    );
+                    /* Only a game over that carries userStats replaces them (official setUserStats);
+                     * an empty one used to reset the stats panel to zeros. */
+                    if (u.userStats) {
+                        if (this.user) this.user.stats = u.userStats;
+                        this.displayStats(
+                            u.userStats
+                        );
+                    }
 
                     var challengeFinalLevel = null;
 
