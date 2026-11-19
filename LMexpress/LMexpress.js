@@ -4518,7 +4518,11 @@ function displayTimer() {
     time += minutes + ':'
     time += seconds
 
-    TimerLM.timerDiv.innerHTML = time;
+    /* only touch the DOM when the shown text changes */
+    if (TimerLM.lastShown !== time) {
+        TimerLM.lastShown = time;
+        TimerLM.timerDiv.innerHTML = time;
+    }
 }
 
 function startTimer() {
@@ -4536,7 +4540,7 @@ function startTimer() {
     if (TimerLM.timerInterval) clearInterval(TimerLM.timerInterval);
     TimerLM.timerInterval = setInterval(function () {
         displayTimer()
-    }, 10);
+    }, 250); /* the display has 1 s resolution: 100 Hz was wasted work */
 
 }
 
@@ -4554,6 +4558,7 @@ function clearTimer() {
     $("#cleartimer").hide();
     clearInterval(TimerLM.timerInterval);
     TimerLM.timerDiv.innerHTML = "00:00";
+    TimerLM.lastShown = "00:00";
     TimerLM.difference = 0;
 }
 
