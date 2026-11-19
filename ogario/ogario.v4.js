@@ -64937,6 +64937,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return false;
             };
 
+            /* uploadSkinTexture() may rebuild the whole skin array mid-frame;
+             * layers already written for earlier cells would then be stale. */
+            var skinArrayAtStart = this.glSkinArray;
+
             // Viewport culling bounds
             var minX, maxX, minY, maxY;
             if (window.fullSpectator) {
@@ -65671,6 +65675,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         var mappedLayer = this.glSkinMap[activeKey];
                         if (mappedLayer === undefined && skinNode && !skinNode._failed && (skinNode.naturalWidth > 0 || skinNode.width > 0)) {
                             mappedLayer = this.uploadSkinTexture(activeKey, skinNode);
+                            if (this.glSkinArray !== skinArrayAtStart) {
+                                return abortCellBatch();
+                            }
                         }
 
                         if (
