@@ -2880,6 +2880,13 @@ function populateDealsGrid() {
     }
 
     // --- IAP Deals (real money) ---
+    var dealCurrency = String($('#BuyDealCurrency').val() || 'USD').trim().toUpperCase();
+    if (!/^[A-Z]{3}$/.test(dealCurrency)) dealCurrency = 'USD';
+    var currencySelect = document.getElementById('BuyDealCurrency');
+    if (currencySelect && !currencySelect._lmDealPriceBound) {
+        currencySelect._lmDealPriceBound = true;
+        currencySelect.addEventListener('change', function () { populateDealsGrid(); });
+    }
     for (var i = 0; i < iaps.length; i++) {
         var deal = iaps[i];
         var bundleInfo = bundleLookup[deal.bundleId] || {};
@@ -2890,11 +2897,14 @@ function populateDealsGrid() {
                 for (var m = 0; m < matrix.length; m++) {
                     var row = matrix[m];
                     if (String(row.tier) !== String(tier)) continue;
-                    /* The web payment service requests USD.
-                     * The price-matrix row stores currencies as direct properties. */
-                    var amount = row.USD;
+                    /* Show the currency the checkout will request (#BuyDealCurrency,
+                     * see getOfficialAgarPaymentService). The price-matrix row
+                     * stores currencies as direct properties. */
+                    var amount = row[dealCurrency];
                     if (amount !== undefined && amount !== null && isFinite(Number(amount))) {
-                        return '$' + Number(amount).toFixed(2);
+                        return dealCurrency === 'USD'
+                            ? '$' + Number(amount).toFixed(2)
+                            : Number(amount).toFixed(2) + ' ' + dealCurrency;
                     }
                 }
             }
