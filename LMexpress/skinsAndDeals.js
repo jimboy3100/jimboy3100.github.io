@@ -1477,6 +1477,10 @@ function SpecialDeals(defaultTab) {
          * 31,500 bytes. uploadCustomSkin() re-checks the exact packet size.
          */
         var LM_SKIN_MAX_PNG_BYTES = 31500;
+        /* Expanding Land closes the socket for frames over ~8KB (8192-byte receive buffer). */
+        function lmSkinMaxPngBytes() {
+            return (window.legendmod && window.legendmod.isLegendWorld) ? 7500 : LM_SKIN_MAX_PNG_BYTES;
+        }
 
         /*
          * Tried in order until the PNG fits: [palette colors, detail scale].
@@ -1597,7 +1601,7 @@ function SpecialDeals(defaultTab) {
                         ' size=' + (png.length / 1024).toFixed(1) + 'KB'
                     );
 
-                    if (png.length <= LM_SKIN_MAX_PNG_BYTES) {
+                    if (png.length <= lmSkinMaxPngBytes()) {
                         return {
                             png: png,
                             colors: step[0],
@@ -1663,7 +1667,7 @@ function SpecialDeals(defaultTab) {
                 pngBytes.length / 1024
             ).toFixed(1);
 
-            if (pngBytes.length > LM_SKIN_MAX_PNG_BYTES) {
+            if (pngBytes.length > lmSkinMaxPngBytes()) {
                 throw new Error(
                     'Agar PNG8 is too large: ' +
                     kb +

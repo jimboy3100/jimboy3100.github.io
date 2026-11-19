@@ -28470,12 +28470,20 @@ function thelegendmodproject() {
              * is checked again below, before any token is bought.
              */
             var LM_AGAR_MAX_MESSAGE_BYTES = 32256;
+            /* Expanding Land (LegendWorld) reads each frame into an 8192-byte buffer
+             * and closes the socket for anything larger (net.c RECV_BUF_SIZE). */
+            var _lmSkinServerName = "Agar.io";
+            if (window.legendmod && window.legendmod.isLegendWorld) {
+                LM_AGAR_MAX_MESSAGE_BYTES = 8100;
+                _lmSkinServerName = "Expanding Land";
+            }
 
             if (imageUint8Array.length > LM_AGAR_MAX_MESSAGE_BYTES) {
                 toastr.error(
                     "<b>[SKIN]:</b> Image is " +
                     (imageUint8Array.length / 1024).toFixed(1) +
-                    "KB. Agar.io disconnects uploads over about 31KB."
+                    "KB. " + _lmSkinServerName + " disconnects uploads over about " +
+                    Math.floor(LM_AGAR_MAX_MESSAGE_BYTES / 1024) + "KB."
                 );
                 return false;
             }
@@ -28980,7 +28988,8 @@ function thelegendmodproject() {
                 toastr.error(
                     "<b>[SKIN]:</b> Upload would be " +
                     (uploadMessageBytes / 1024).toFixed(1) +
-                    "KB. Agar.io disconnects messages over about 31.5KB. " +
+                    "KB. " + _lmSkinServerName + " disconnects messages over about " +
+                    (LM_AGAR_MAX_MESSAGE_BYTES / 1024).toFixed(1) + "KB. " +
                     "Use a simpler image or a shorter name."
                 );
 
