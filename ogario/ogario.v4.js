@@ -25416,8 +25416,16 @@ function thelegendmodproject() {
             }
             if (!text && serverFormat30072024) {
                 const [, region, ip] = serverFormat30072024;
-                const arr = [awsRegions.indexOf(region)].concat(ip.split('-').map((n) => parseInt(n)));
-                this.serverArena = toLong(arr).toString(36).padStart(7, '0');
+                const regionIndex = awsRegions.indexOf(region);
+                if (regionIndex >= 0 && regionIndex <= ranges[0]) {
+                    const arr = [regionIndex].concat(ip.split('-').map((n) => parseInt(n)));
+                    this.serverArena = toLong(arr).toString(36).padStart(7, '0');
+                } else {
+                    /* The packed token has room for region indices 0-10 only: a later or
+                     * unknown region decoded to another region/IP. Share the arena URL
+                     * itself, which recreateWS (also in older versions) opens as is. */
+                    this.serverArena = 'wss://web-arenas-live-v25-0.agario.miniclippt.com/' + region + '/' + ip;
+                }
                 //HERE I THINK
                 text = this.serverArena;
                 //console.log("createServerToken case 2:" + text);
