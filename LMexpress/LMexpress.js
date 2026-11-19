@@ -940,14 +940,7 @@ function findIP(searchIP) {
                         numAttempts = 0;
                         numTries++;
                         toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-                        if (numTries >= maxTries) {
-                            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                            clearInterval(timerId);
-                            searching = false;
-                            hideCancelSearch();
-                            toastr.error(Premadeletter31).css("width", "210px");
-                            return; /* gave up: do not hop to another server */
-                        }
+                        /* test the current server before giving up, so a hit on the last try counts */
                         if (currentIP == searchIP) {
                             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
                             clearInterval(timerId);
@@ -958,6 +951,13 @@ function findIP(searchIP) {
                                 timeOut: 20000,
                                 extendedTimeOut: 20000
                             }).css("width", "210px");
+                        } else if (numTries >= maxTries) {
+                            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
+                            clearInterval(timerId);
+                            searching = false;
+                            hideCancelSearch();
+                            toastr.error(Premadeletter31).css("width", "210px");
+                            /* gave up: do not hop to another server */
                         } else {
                             changeServer();
                         }
@@ -1039,13 +1039,7 @@ function searchPlayer(searchString) {
                         }
                         numTries++;
                         toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-                        if (numTries >= maxTries) {
-                            clearInterval(timerId);
-                            searching = false;
-                            //                            hideCancelSearch();
-                            toastr.error(Premadeletter31).css("width", "210px");
-                            return; /* gave up: do not hop to another server */
-                        }
+                        /* test the current leaderboard before giving up, so a hit on the last try counts */
                         if (found) {
                             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
                             clearInterval(timerId);
@@ -1056,6 +1050,12 @@ function searchPlayer(searchString) {
                                 timeOut: 20000,
                                 extendedTimeOut: 20000
                             }).css("width", "210px");
+                        } else if (numTries >= maxTries) {
+                            clearInterval(timerId);
+                            searching = false;
+                            //                            hideCancelSearch();
+                            toastr.error(Premadeletter31).css("width", "210px");
+                            /* gave up: do not hop to another server */
                         } else {
                             changeServer();
                         }
