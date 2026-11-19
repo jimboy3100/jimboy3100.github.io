@@ -37131,6 +37131,11 @@ function thelegendmodproject() {
                                 self.garixPingInterval = null;
                             }
                         }, 3000);
+                    } else {
+                        /* agar.io: friend gone, hide the Facebook friend arrow (was a
+                         * second, unreachable case 161 label). */
+                        window.testobjectsOpcode161 = data;
+                        if (this.arrowFB && this.arrowFB[0]) this.arrowFB[0].visible = false;
                     }
                     break;
                 case 172: // 0xAC — Handshake Seed (Garix)
@@ -38085,11 +38090,7 @@ function thelegendmodproject() {
                         this.arrowFB[0].nick = friendNick != "" ? friendNick : this.arrowFB[0].nick;
                     }
                     break;
-                case 161:
-                    //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                    window.testobjectsOpcode161 = data;
-                    this.arrowFB[0].visible = false;
-                    break;
+                /* case 161 (friend arrow hide) is merged into the Garix DualInfo case above. */
                 case 101:
                     window.testobjectsOpcode101 = data;
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Opcode 101 (Claim Gifts Response)');
