@@ -23626,6 +23626,7 @@ function thelegendmodproject() {
                 var memImg = window._skinMemoryCache.get(url);
                 if (memImg && img && !img[url]) {
                     img[url] = memImg;
+                    if (img === app.customSkinsCache) app._lmTouchSkin(url);
                     if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                     if (memImg.complete && memImg.width > 0 && memImg.height > 0) {
                         if (memImg.width >= memImg.height * 1.5) animated = true;
@@ -23746,6 +23747,10 @@ function thelegendmodproject() {
                  */
                 if (img) {
                     img[url] = imageObj;
+                    if (img === app.customSkinsCache) {
+                        app._lmTouchSkin(url);
+                        app._lmTrimSkinCache();
+                    }
                 }
 
                 if (window._skinMemoryCache.has(url)) {
@@ -24746,8 +24751,44 @@ function thelegendmodproject() {
                 }
             }
         },
+        /*
+         * customSkinsCache keeps the image plus up to four 512 px canvases per URL and
+         * nothing removed them, so long sessions grew without bound (_skinMemoryCache's
+         * 2000 cap freed nothing: the same objects stayed referenced here). Every use
+         * (getCachedSkin, the WebGL skin paths, a finished load) stamps the URL; past
+         * _lmSkinCacheMax URLs the least recently used ones idle for over a minute are
+         * dropped with their canvases and reload on their next use. WebGL layers are a
+         * fixed 128-layer array and are not affected.
+         */
+        _lmSkinCacheMax: 400,
+        _lmTouchSkin(url) {
+            if (!url) return;
+            if (!this._lmSkinUse) this._lmSkinUse = new Map();
+            this._lmSkinUse.set(url, Date.now());
+        },
+        _lmTrimSkinCache() {
+            var use = this._lmSkinUse;
+            if (!use || use.size <= this._lmSkinCacheMax) return;
+            var now = Date.now();
+            if (this._lmSkinTrimAt && now - this._lmSkinTrimAt < 5000) return;
+            this._lmSkinTrimAt = now;
+            var idle = [];
+            use.forEach(function (t, u) { if (now - t > 60000) idle.push([t, u]); });
+            if (!idle.length) return;
+            idle.sort(function (a, b) { return a[0] - b[0]; });
+            var cache = this.customSkinsCache;
+            var excess = use.size - this._lmSkinCacheMax;
+            var suffixes = ['', '_cached', '_cached2', '_cached3', '_cached4', '_cached' + cache];
+            for (var i = 0; i < idle.length && i < excess; i++) {
+                var u = idle[i][1];
+                use.delete(u);
+                if (cache) for (var s = 0; s < suffixes.length; s++) delete cache[u + suffixes[s]];
+                if (window._skinMemoryCache) window._skinMemoryCache.delete(u);
+            }
+        },
         getCachedSkin(skinCache, skinMap) {
             if (!skinMap) return null;
+            if (skinCache === this.customSkinsCache) this._lmTouchSkin(skinMap);
             if (skinCache[skinMap + '_cached3']) {
                 /* Use per-frame _skinHalf (set in renderFrame) instead of new Date() per cell */
                 if (drawRender._skinHalf) {
@@ -64649,6 +64690,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * the first frame, 'url_cached3' the second frame of an animated
              * skin, uploaded lazily if the key is not in glSkinMap yet.
              */
+            application._lmTouchSkin(skinUrl);
             var cache3 =
                 application
                     .customSkinsCache[
@@ -67039,6 +67081,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                          * first frame, "url_cached3" the second (animated skins),
                          * and the second-frame key is uploaded lazily after any
                          * skin-array reset or context restore. */
+                        application._lmTouchSkin(skinUrl);
                         var _skinCache3 = application.customSkinsCache[skinUrl + "_cached3"];
                         var activeKey = (this._skinHalf && _skinCache3) ? (skinUrl + "_cached3") : skinUrl;
                         var skinNode = activeKey !== skinUrl ? _skinCache3 : (application.customSkinsCache[skinUrl + "_cached"] || application.customSkinsCache[skinUrl]);
