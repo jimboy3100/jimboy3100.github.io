@@ -1702,6 +1702,17 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 uuidField.value = '';
             }
 
+            /* Expanding Land ignores a login (opcode 102) while the socket is still linked
+             * to an account, so tell it about the logout: opcode 207 unlinks the player and
+             * the next login on this socket is accepted. Other servers never get it.
+             * (legendmod, not window.LM: window.LM is only a UI stub.) */
+            if (typeof legendmod !== 'undefined' && legendmod && legendmod.isLegendWorld &&
+                legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                var logoutView = legendmod.createView(1);
+                logoutView.setUint8(0, 207); // 0xCF account logout
+                legendmod.sendMessage(logoutView);
+            }
+
             window._lwResetAuthState();
 
             /* Reset UI */
