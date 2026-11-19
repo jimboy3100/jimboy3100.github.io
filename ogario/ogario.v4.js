@@ -40327,6 +40327,24 @@ function thelegendmodproject() {
                             if (u.productUpdates && u.productUpdates.length) {
                                 this.updateProducts(u.productUpdates);
                             }
+                            /* Official Result_enum: 1 success, 2 potion_not_ready. Only a
+                             * successful open carries the slot list; a failed one must not
+                             * be read as "every slot is empty". */
+                            var openResult = Number(u.result) || 0;
+                            if (openResult !== 1) {
+                                window._userInitiatedPotionOpen = false;
+                                if (window.toastr) {
+                                    toastr.warning(openResult === 2
+                                        ? '<b>[POTION]:</b> Potion is not ready yet.'
+                                        : '<b>[POTION]:</b> Potion not opened (code ' + openResult + ').');
+                                }
+                                try {
+                                    document.dispatchEvent(new CustomEvent('lm-potions-updated', {
+                                        detail: (this.user && this.user.potionsStatus) || {}
+                                    }));
+                                } catch (openFailEvtErr) { }
+                                break;
+                            }
                             /* The response carries the full slot list: an empty list means
                              * every slot is now empty (opening the last potion). */
                             this.updatePotions(Array.from(u.userPotions || []));
