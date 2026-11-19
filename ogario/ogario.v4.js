@@ -34216,6 +34216,9 @@ function thelegendmodproject() {
                 gView.setUint32(5, this.garixClientTime, true);
                 this.sendBuffer(gView);
                 this.connectionOpened = true;
+                /* Keepalive from onOpen, as Delta does: waiting for DualInfo (161)
+                 * let the server drop the client after 8 s when 161 was late. */
+                this._startGarixPing();
                 console.log('%c[Garix]%c Handshake step 1: sent opcode 171 (proto=' + this.garixProtocol + ' time=' + this.garixClientTime + ')', 'color:#f8a', 'color:inherit');
             } else {
                 // ===== Standard Handshake: 0xFE + 0xFF =====
@@ -34888,6 +34891,7 @@ function thelegendmodproject() {
             ogario.serverHz = 0;
             if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
             if (this._senpaPingInterval) { clearInterval(this._senpaPingInterval); this._senpaPingInterval = null; }
+            if (this.garixPingInterval) { clearInterval(this.garixPingInterval); this.garixPingInterval = null; }
             /* Cancel the stability timer — connection wasn't stable */
             if (this._reconnStabilityTimer) { clearTimeout(this._reconnStabilityTimer); this._reconnStabilityTimer = null; }
             /* ── Reconnect with mutual exclusion ──
@@ -35039,6 +35043,27 @@ function thelegendmodproject() {
         },
         isSocketOpen() {
             return this.socket !== null && this.socket.readyState === this.socket.OPEN;
+        },
+        _startGarixPing() {
+            /* Garix keepalive (Delta GarixProtocol.sendPing): [254] stats request
+             * plus [200][time u32] every 2 s. */
+            var self = this;
+            if (this.garixPingInterval) clearInterval(this.garixPingInterval);
+            this.garixPingInterval = setInterval(function () {
+                if (self.isSocketOpen() && self.serverType === 'garix') {
+                    self.garixPingCounter++;
+                    var sv = self.createView(1);
+                    sv.setUint8(0, 254); // 0xFE stats request
+                    self.sendBuffer(sv);
+                    var pv = self.createView(5);
+                    pv.setUint8(0, 200); // 0xC8
+                    pv.setUint32(1, Date.now() >>> 0, true);
+                    self.sendBuffer(pv);
+                } else {
+                    clearInterval(self.garixPingInterval);
+                    self.garixPingInterval = null;
+                }
+            }, 2000);
         },
         _senpaCanSend() {
             /* Senpa send paths call socket.send directly; the WASM socket may not expose readyState. */
@@ -37116,21 +37141,8 @@ function thelegendmodproject() {
                         this.garixTabID1 = data.getUint16(s, true); s += 2;
                         this.garixTabID2 = data.getUint16(s, true); s += 2;
                         console.log('%c[Garix]%c DualInfo: tabs=' + gTabCount + ' tabID1=' + this.garixTabID1 + ' tabID2=' + this.garixTabID2, 'color:#f8a', 'color:inherit');
-                        // Start Garix ping keepalive (server disconnects after 8s without opcode 200)
-                        var self = this;
-                        if (this.garixPingInterval) clearInterval(this.garixPingInterval);
-                        this.garixPingInterval = setInterval(function () {
-                            if (self.isSocketOpen() && self.serverType === 'garix') {
-                                self.garixPingCounter++;
-                                var pv = self.createView(5);
-                                pv.setUint8(0, 200); // 0xC8
-                                pv.setUint32(1, self.garixPingCounter, true);
-                                self.sendBuffer(pv);
-                            } else {
-                                clearInterval(self.garixPingInterval);
-                                self.garixPingInterval = null;
-                            }
-                        }, 3000);
+                        // Garix ping keepalive is started in onOpen (server disconnects after 8s without opcode 200)
+                        if (!this.garixPingInterval) this._startGarixPing();
                     } else {
                         /* agar.io: friend gone, hide the Facebook friend arrow (was a
                          * second, unreachable case 161 label). */
