@@ -4740,22 +4740,32 @@ function populateSkins() {
             return true;
         });
 
-        skinShopFiltered.sort(function(a, b) {
-            /* Unavailable skins go to the very end */
-            var aInfo = getSkinPurchaseInfo(a.productId, a);
-            var bInfo = getSkinPurchaseInfo(b.productId, b);
-            var aUnavail = (!aInfo.purchasable && !isSkinOwned(a, ownedSkinsObj)) ? 1 : 0;
-            var bUnavail = (!bInfo.purchasable && !isSkinOwned(b, ownedSkinsObj)) ? 1 : 0;
-            if (aUnavail !== bUnavail) return aUnavail - bUnavail;
-            /* Owned skins after unowned */
-            var aOwned = isSkinOwned(a, ownedSkinsObj) ? 1 : 0;
-            var bOwned = isSkinOwned(b, ownedSkinsObj) ? 1 : 0;
-            if (aOwned !== bOwned) return aOwned - bOwned;
-            /* Newest skins first: higher original index = added later to the config */
-            var aIdx = skins.indexOf(a);
-            var bIdx = skins.indexOf(b);
-            return bIdx - aIdx;
+        /*
+         * Compute the sort keys once per skin. The comparator used to call
+         * skins.indexOf, getSkinPurchaseInfo and isSkinOwned (a scan of the
+         * owned map) on every comparison, freezing the UI on each rebuild.
+         */
+        var configIndex = new Map();
+        for (var ci = 0; ci < skins.length; ci++) configIndex.set(skins[ci], ci);
+        var keyedSkins = skinShopFiltered.map(function (skin) {
+            var owned = isSkinOwned(skin, ownedSkinsObj);
+            var info = getSkinPurchaseInfo(skin.productId, skin);
+            return {
+                skin: skin,
+                unavail: (!info.purchasable && !owned) ? 1 : 0,
+                owned: owned ? 1 : 0,
+                idx: configIndex.get(skin)
+            };
         });
+        keyedSkins.sort(function(a, b) {
+            /* Unavailable skins go to the very end */
+            if (a.unavail !== b.unavail) return a.unavail - b.unavail;
+            /* Owned skins after unowned */
+            if (a.owned !== b.owned) return a.owned - b.owned;
+            /* Newest skins first: higher original index = added later to the config */
+            return b.idx - a.idx;
+        });
+        skinShopFiltered = keyedSkins.map(function (k) { return k.skin; });
 
         return skinShopFiltered;
     }
