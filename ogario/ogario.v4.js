@@ -12986,9 +12986,9 @@ window.resolveAmountVariablePrice =
          */
         var counters =
             (
-                window.LM &&
-                LM.user &&
-                LM.user
+                window.legendmod &&
+                window.legendmod.user &&
+                window.legendmod.user
                     .actionCounters
             ) ||
             {};
