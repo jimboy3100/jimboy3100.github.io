@@ -1297,10 +1297,15 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     window._loginRetryCount = 0;
     var MAX_LOGIN_RETRIES = 3;
 
-    $(document).on('click', '#logoutbtn, .btn-logout, [data-itr="page_logout"]', function () {
+    /* Capture phase: the button's inline onclick="logout()" runs at the target,
+     * before a handler delegated to document would see the click. */
+    document.addEventListener('click', function (event) {
+        var target = event.target && event.target.closest ?
+            event.target.closest('#logoutbtn, .btn-logout, [data-itr="page_logout"]') : null;
+        if (!target) return;
         console.log('[LW AUTH] User manually clicked Logout button');
         window._isUserManualLogout = true;
-    });
+    }, true);
 
     /*
      * Clear account-domain runtime data without replacing the shared user
