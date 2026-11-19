@@ -37349,19 +37349,19 @@ function thelegendmodproject() {
                         // Imsolo/Agar2 uses bit 2 (0x04) for moderator, Garix uses its own flags
                         mod = (this.serverType === 'imsolo' || this.serverType === 'agar2') ? !!(flag & 4) : !!(flag & 32);
 
+                    /* Decide the style before renaming (the old name === "SERVER" check ran
+                     * after the rename and never matched), and strip the {skin} tag before
+                     * adding prefixes so they are not cut off. */
+                    var caseof = server ? 102 : 101;
+                    if (name.charAt(0) === '{' && name.includes('}')) {
+                        name = name.slice(name.indexOf('}') + 1);
+                    }
                     if (server && name !== "SERVER") name = "[SERVER] " + name;
                     if (name === "SERVER") name = "[SERVER]"
                     if (admin) name = "[ADMIN] " + name;
                     if (mod) name = "[MOD] " + name;
                     //var wait = Math.max(3000, 1000 + message.length * 150);
                     var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-                    var caseof = 101
-                    if (name === "SERVER") {
-                        caseof = 102
-                    }
-                    if (name.includes('}')) {
-                        name = name.split('}')[1]
-                    }
                     if (message.includes("E = split bots")) {
                         message = "For bot commands look at Hotkeys"
                     }
