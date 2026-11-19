@@ -21391,18 +21391,6 @@ function thelegendmodproject() {
                     }
                 }
             }
-            /* Jelly physics became the default: switch it on once for players whose saved
-             * settings still have the old default (off); later choices are kept. */
-            try {
-                if (!localStorage.getItem('lmJellyDefaultOn')) {
-                    localStorage.setItem('lmJellyDefaultOn', '1');
-                    if (!defaultmapsettings.jellyPhisycs) {
-                        defaultmapsettings.jellyPhisycs = true;
-                        if (ogario.hasOwnProperty('jellyPhisycs')) ogario.jellyPhisycs = true;
-                        this.saveSettings(defaultmapsettings, 'ogarioSettings');
-                    }
-                }
-            } catch (e) { }
         },
         saveSettings(option, name) {
             window.localStorage.setItem(name, JSON.stringify(option));
