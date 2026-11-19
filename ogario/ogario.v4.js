@@ -73462,7 +73462,21 @@ function playReplayLM(temp) {
         $("#stopReplaybtn").prop('disabled', false);
         if ($("#savedArenas").val() && window.RecordedArenasSpecifications[$("#savedArenas").val()] && window.RecordedArenasSpecifications[$("#savedArenas").val()][4]) {
 
-            $.extend(true, application.customSkinsMap, JSON.parse(window.RecordedArenasSpecifications[$("#savedArenas").val()][4]));
+            /* Replay files can come from a ?replay= link: copy only plain nick -> http(s) URL
+             * pairs (jQuery 3.2.1 deep extend does not filter __proto__). */
+            try {
+                var _lmReplaySkins = JSON.parse(window.RecordedArenasSpecifications[$("#savedArenas").val()][4]);
+                if (_lmReplaySkins && typeof _lmReplaySkins === 'object') {
+                    Object.keys(_lmReplaySkins).forEach(function (skinKey) {
+                        var skinUrl = _lmReplaySkins[skinKey];
+                        if (skinKey === '__proto__' || skinKey === 'constructor' || skinKey === 'prototype') return;
+                        if (typeof skinUrl !== 'string' || !/^https?:\/\/[^\s"'<>`]+$/i.test(skinUrl)) return;
+                        application.customSkinsMap[skinKey] = skinUrl;
+                    });
+                }
+            } catch (e) {
+                console.warn('[Replay] Ignoring invalid skins data:', e);
+            }
         }
     }
 }
