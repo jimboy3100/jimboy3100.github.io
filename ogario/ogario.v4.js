@@ -73232,7 +73232,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             keyBlind[heldKey] = false;
         }
         if ('' !== pressedKey) {
-            if (hotkeys[pressedKey]) {
+            /* only keys whose keydown was taken (keyBlind set): typing in an input
+             * must not run keyUp actions either */
+            if (keyBlind[pressedKey] && hotkeys[pressedKey]) {
                 var key = hotkeys[pressedKey];
                 if ('' !== key && hotkeysCommand[key] && hotkeysCommand[key].keyUp) {
                     hotkeysCommand[key].keyUp();
