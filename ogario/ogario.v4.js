@@ -35892,6 +35892,13 @@ function thelegendmodproject() {
             var self = this
             this.playerNick = nick;
 
+            /* Imsolo/Agar2 need the extended spawn [0][nick\0][skin\0][uuid\0][partyCode\0]
+             * built in sendNick2; the 1.8 s fallback below never runs there (no LM.integrity). */
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                this.sendNick2(nick);
+                return;
+            }
+
             /* ── Build <skin>nick prefix for ExpandingLand servers ──
              * The server's ProtocolLegacy parses <skin>nick format on spawn.
              * Only applied to ExpandingLand — other servers are unaffected. */
