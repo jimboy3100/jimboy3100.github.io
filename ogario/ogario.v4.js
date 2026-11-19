@@ -31768,7 +31768,7 @@ function thelegendmodproject() {
                         }
 
                         if (LM.play || LM.playerCellsMulti.length) {
-                            if (this.isPlayerCell || this.playerCellsMulti) {
+                            if (this.isPlayerCell || this.isPlayerCellMulti) {
                                 if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
                                     this.color = ogarcopythelb.color;
                                 }
@@ -32369,7 +32369,7 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-                        if (defaultmapsettings.mbRings && this.playerCellsMulti) {
+                        if (defaultmapsettings.mbRings && this.isPlayerCellMulti) {
                             style.strokeStyle = defaultSettings.mbRingColor || '#00E5FF';
                             style.lineWidth = Math.max(~~(y / 40), 8);
                             style.stroke();
