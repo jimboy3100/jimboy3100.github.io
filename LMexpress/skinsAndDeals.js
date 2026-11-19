@@ -333,6 +333,7 @@ function SpecialDeals(defaultTab) {
             '<div class="skin-filter-bar" style="display: flex; gap: 6px; margin-bottom: 10px;">' +
             '<button class="btn btn-xs skin-filter-btn active" data-filter="all" style="flex: 1; background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; padding: 6px 0; border-radius: 4px;">All Skins (955+)</button>' +
             '<button class="btn btn-xs skin-filter-btn" data-filter="owned" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x2B50; My Owned Skins</button>' +
+            '<button class="btn btn-xs skin-filter-btn" data-filter="new" title="The newest Agar.io skins, newest first" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x1F195; New Skins</button>' +
             '</div>' +
             '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
             '<div class="skin-grid" id="skinGrid"></div>' +
@@ -2818,6 +2819,181 @@ function _sdEscHtml(value) {
 }
 
 /**
+ * Price label for an In-App Purchase price tier, in the currency the checkout
+ * will request (#BuyDealCurrency, see getOfficialAgarPaymentService).
+ */
+function _sdDealPriceLabel(tier) {
+    var dealCurrency = String($('#BuyDealCurrency').val() || 'USD').trim().toUpperCase();
+    if (!/^[A-Z]{3}$/.test(dealCurrency)) dealCurrency = 'USD';
+    var config = window.GameConfiguration && window.GameConfiguration.gameConfig;
+    var matrix = config && config['Prices - Matrix'];
+    if (Array.isArray(matrix)) {
+        for (var m = 0; m < matrix.length; m++) {
+            var row = matrix[m];
+            if (!row || String(row.tier) !== String(tier)) continue;
+            /* The price-matrix row stores currencies as direct properties. */
+            var amount = row[dealCurrency];
+            if (amount !== undefined && amount !== null && isFinite(Number(amount))) {
+                return dealCurrency === 'USD'
+                    ? '$' + Number(amount).toFixed(2)
+                    : Number(amount).toFixed(2) + ' ' + dealCurrency;
+            }
+        }
+    }
+    /* Never expose the internal tier identifier as a price.
+     * Xsolla will still provide the authoritative checkout amount. */
+    return 'Price at checkout';
+}
+
+/* Newest skins first: gameplayId grows with every skin agar.io adds. */
+var NEW_SKINS_LIMIT = 150;
+function getNewestSkins(skins, limit) {
+    var list = [];
+    for (var i = 0; i < (skins || []).length; i++) {
+        var skin = skins[i];
+        if (!skin || !skin.productId || skin.productId === 'skin_empty') continue;
+        var id = Number(skin.gameplayId);
+        list.push({ skin: skin, id: isFinite(id) ? id : -1, idx: i });
+    }
+    list.sort(function (a, b) {
+        if (a.id !== b.id) return b.id - a.id;
+        return b.idx - a.idx;
+    });
+    return list.slice(0, limit || NEW_SKINS_LIMIT).map(function (k) { return k.skin; });
+}
+
+/**
+ * Real-money packs (Wallet - In-App Purchases) whose bundle (Wallet - Product
+ * Bundles) contains this skin, cheapest first, with prices in the selected currency.
+ */
+function getSkinDealPacks(productId) {
+    var gc = window.GameConfiguration && window.GameConfiguration.gameConfig;
+    if (!gc || !productId) return [];
+    if (!window._skinDealPacksCache || window._skinDealPacksCacheConfig !== gc) {
+        var cache = Object.create(null);
+        var visual = Object.create(null);
+        var bundles = gc['Visual - Bundles'] || [];
+        for (var v = 0; v < bundles.length; v++) {
+            if (bundles[v] && bundles[v].bundleId) visual[bundles[v].bundleId] = bundles[v];
+        }
+        var iaps = gc['Wallet - In-App Purchases'] || [];
+        for (var i = 0; i < iaps.length; i++) {
+            var deal = iaps[i];
+            if (!deal || !deal.id || !deal.bundleId) continue;
+            var entries = getDealSkinEntries(deal.bundleId);
+            for (var e = 0; e < entries.length; e++) {
+                var key = entries[e] && entries[e].productId;
+                if (!key) continue;
+                if (!cache[key]) cache[key] = [];
+                if (cache[key].indexOf(deal) === -1) cache[key].push(deal);
+            }
+        }
+        window._skinDealPacksCache = cache;
+        window._skinDealPacksVisual = visual;
+        window._skinDealPacksCacheConfig = gc;
+    }
+    var deals = window._skinDealPacksCache[productId] || [];
+    return deals.map(function (deal) {
+        var bundleInfo = window._skinDealPacksVisual[deal.bundleId] || {};
+        var desc = (bundleInfo.description && bundleInfo.description !== 'na')
+            ? bundleInfo.description.replace(/_/g, ' ').replace(' name', '')
+            : String(deal.bundleId || deal.id || '').replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
+        return {
+            id: deal.id,
+            bundleId: deal.bundleId,
+            desc: desc,
+            tier: Number(deal.priceTier) || 0,
+            price: _sdDealPriceLabel(deal.priceTier)
+        };
+    }).sort(function (a, b) { return a.tier - b.tier; });
+}
+
+/* Lists the packs that contain a skin; Buy goes through the deal checkout (buyDealIAP). */
+function _showSkinPacksModal(skinName, productId) {
+    var packs = getSkinDealPacks(productId);
+    if (!packs.length) return;
+    var old = document.getElementById('skin-packs-modal');
+    if (old) old.remove();
+
+    var t = getShopTheme();
+    var rows = '';
+    for (var i = 0; i < packs.length; i++) {
+        var p = packs[i];
+        rows += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; text-align: left;">';
+        rows += '<div style="flex: 1; min-width: 0;">';
+        rows += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + _sdEscHtml(p.desc) + '</div>';
+        rows += renderDealSkinMiniIcons(p.bundleId, 8);
+        rows += '</div>';
+        rows += '<div style="text-align: right; min-width: 70px;">';
+        rows += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + _sdEscHtml(p.price) + '</div>';
+        rows += '<button type="button" class="btn btn-xs deal-buy-btn" data-pack-index="' + i + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
+        rows += '</div>';
+        rows += '</div>';
+    }
+
+    var modal = document.createElement('div');
+    modal.id = 'skin-packs-modal';
+    modal.className = 'lm-modal-overlay';
+    modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
+    modal.innerHTML =
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 420px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
+            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
+                '&#x1F381; Packs with ' + _sdEscHtml(skinName) +
+            '</div>' +
+            '<div style="padding: 14px 16px; max-height: 60vh; overflow-y: auto;">' + rows + '</div>' +
+            '<div style="display: flex; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
+                '<button id="skin-packs-close" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">Close</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function (e) {
+        var target = e.target;
+        if (target === modal || (target && target.id === 'skin-packs-close')) {
+            e.preventDefault();
+            e.stopPropagation();
+            modal.remove();
+            return;
+        }
+        var btn = target && target.closest ? target.closest('[data-pack-index]') : null;
+        if (!btn || !modal.contains(btn)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var pack = packs[Number(btn.getAttribute('data-pack-index'))];
+        modal.remove();
+        if (pack) buyDealIAP(pack.id, pack.desc);
+    });
+}
+
+/* New Skins view: a skin with no coin/DNA price shows the packs that contain it,
+ * or "Not for sale" (most new skins are sold only through agar.io's live offers). */
+function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
+    var packs = getSkinDealPacks(productId);
+    if (!packs.length) {
+        if (purchaseInfo.type !== 'REWARD') {
+            button.textContent = 'Not for sale';
+            button.title = 'Not sold in the shop right now (only through Agar.io promotional offers).';
+        }
+        return;
+    }
+    button.setAttribute('data-skin-action', 'pack');
+    button.setAttribute('data-purchase-state', 'pack');
+    button.disabled = false;
+    button.style.opacity = '1';
+    button.style.cursor = 'pointer';
+    button.style.pointerEvents = 'auto';
+    button.textContent = packs.length > 1
+        ? packs.length + ' Packs'
+        : (packs[0].price === 'Price at checkout' ? 'Pack' : 'Pack ' + packs[0].price);
+    button.title = packs.map(function (p) { return p.desc + ' - ' + p.price; }).join('\n');
+    button.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        _showSkinPacksModal(displayName, productId);
+    });
+}
+
+/**
  * Populate the deals grid with cards from GameConfiguration
  */
 function populateDealsGrid() {
@@ -2890,28 +3066,7 @@ function populateDealsGrid() {
     for (var i = 0; i < iaps.length; i++) {
         var deal = iaps[i];
         var bundleInfo = bundleLookup[deal.bundleId] || {};
-        var price = (function(tier) {
-            var config = window.GameConfiguration && window.GameConfiguration.gameConfig;
-            var matrix = config && config['Prices - Matrix'];
-            if (Array.isArray(matrix)) {
-                for (var m = 0; m < matrix.length; m++) {
-                    var row = matrix[m];
-                    if (String(row.tier) !== String(tier)) continue;
-                    /* Show the currency the checkout will request (#BuyDealCurrency,
-                     * see getOfficialAgarPaymentService). The price-matrix row
-                     * stores currencies as direct properties. */
-                    var amount = row[dealCurrency];
-                    if (amount !== undefined && amount !== null && isFinite(Number(amount))) {
-                        return dealCurrency === 'USD'
-                            ? '$' + Number(amount).toFixed(2)
-                            : Number(amount).toFixed(2) + ' ' + dealCurrency;
-                    }
-                }
-            }
-            /* Never expose the internal tier identifier as a price.
-             * Xsolla will still provide the authoritative checkout amount. */
-            return 'Price at checkout';
-        })(deal.priceTier);
+        var price = _sdDealPriceLabel(deal.priceTier);
         var desc = (bundleInfo.description && bundleInfo.description !== 'na')
             ? bundleInfo.description.replace(/_/g, ' ').replace(' name', '')
             : String(deal.bundleId || deal.id || '').replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
@@ -4737,7 +4892,8 @@ function populateSkins() {
 
         if (
             activeFilter === 'all' ||
-            activeFilter === 'owned'
+            activeFilter === 'owned' ||
+            activeFilter === 'new'
         ) {
             currentFilter = activeFilter;
         }
@@ -4755,7 +4911,11 @@ function populateSkins() {
          * official client adds an owned skin_custom_* wallet item to the skin
          * list (addCustomSkin), so it can be equipped and deleted here too.
          */
-        var sourceSkins = skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj));
+        var newMode = currentFilter === 'new';
+        window._skinShopNewMode = newMode;
+        var sourceSkins = newMode
+            ? getNewestSkins(skins, NEW_SKINS_LIMIT)
+            : skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj));
 
         skinShopFiltered =
             sourceSkins.filter(
@@ -4793,6 +4953,9 @@ function populateSkins() {
             }
             return true;
         });
+
+        /* New Skins keeps the newest-first order. */
+        if (newMode) return skinShopFiltered;
 
         /*
          * Compute the sort keys once per skin. The comparator used to call
@@ -4930,6 +5093,12 @@ function populateSkins() {
 
     // Update filter button with actual skin count
     $('.skin-filter-btn[data-filter="all"]').text('All Skins (' + skins.length + ')');
+    $('.skin-filter-btn[data-filter="new"]').html('&#x1F195; New Skins (' + getNewestSkins(skins, NEW_SKINS_LIMIT).length + ')');
+
+    /* Pack prices in the New Skins view follow the deal currency. */
+    $('#BuyDealCurrency').off('change.newSkins').on('change.newSkins', function () {
+        if (window._skinShopNewMode) applySkinFilters(false);
+    });
 
     // Update owned skin count
     var ownedSkinsObj = getOwnedSkinsMap();
@@ -7315,6 +7484,14 @@ function renderSkinPage(
                 } else {
                     buyButton.textContent =
                         'Unavailable';
+                }
+                if (window._skinShopNewMode) {
+                    setNewSkinPackButton(
+                        buyButton,
+                        productId,
+                        displayName,
+                        purchaseInfo
+                    );
                 }
             }
 
