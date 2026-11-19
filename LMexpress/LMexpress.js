@@ -1898,6 +1898,15 @@ function _lmEscHtml(value) {
     });
 }
 
+function _lmYoutubeId(url) {
+    var id = getParameterByName("v", url);
+    return /^[A-Za-z0-9_-]{6,20}$/.test(String(id || '')) ? id : null;
+}
+
+function _lmTagLabel(name, fallback) {
+    return typeof window[name] === 'string' ? window[name] : fallback;
+}
+
 function _lmSafeChatUrl(value) {
     return /^https?:\/\/[^\s"'<>`\\]+$/i.test(String(value || ''));
 }
@@ -1916,7 +1925,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
-        toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+        toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
         }).css("width", "250px");
@@ -1931,7 +1940,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         MSGCOMMANDS = MSGCOMMANDS.split("[tag]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/tag]')[0];
         if (MSGCOMMANDS != "") {
-            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63a + ': <i id="visiturl" href=' + _lmEscHtml(MSGCOMMANDS) + ' target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63a', 'wants you to use the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
@@ -1941,7 +1950,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
                 newsubmit();
             });
         } else {
-            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63b + ': <i id="visiturl" href=' + _lmEscHtml(MSGCOMMANDS) + ' target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63b', 'wants you to remove the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
@@ -1962,7 +1971,9 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
-        toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + getParameterByName("v", MSGCOMMANDS) + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
+        var _lmYutId = _lmYoutubeId(MSGCOMMANDS);
+        if (!_lmYutId) return;
+        toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
         }).css("width", "300px");
@@ -1984,7 +1995,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("join.skype.com/")) {
-            toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 10000,
                 extendedTimeOut: 10000
             }).css("width", "300px");
@@ -2004,7 +2015,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg") || MSGCOMMANDS.includes("discord.com")) {
-            toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "300px");
