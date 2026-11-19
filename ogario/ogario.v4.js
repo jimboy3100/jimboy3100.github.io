@@ -21205,6 +21205,23 @@ function thelegendmodproject() {
                         };
                     }
                 }
+                /* Profiles cut off by a lower profile count are kept in
+                 * 'ogarioPlayerProfilesExtra' and restored when the count is raised again
+                 * (they used to be deleted on the next load). */
+                var extraProfiles = readLocalStorageJSON('ogarioPlayerProfilesExtra', []);
+                if (!Array.isArray(extraProfiles)) extraProfiles = [];
+                if (profiles.length < defaultmapsettings.profileNumber && extraProfiles.length) {
+                    while (profiles.length < defaultmapsettings.profileNumber && extraProfiles.length) {
+                        var restored = extraProfiles.shift();
+                        profiles.push(restored && typeof restored === 'object' ? restored : {
+                            'nick': 'Profile #' + (profiles.length + 1),
+                            'clanTag': '',
+                            'skinURL': '',
+                            'color': defaultSettings.mainColor
+                        });
+                    }
+                    application.saveSettings(extraProfiles, 'ogarioPlayerProfilesExtra');
+                }
                 if (profiles.length < defaultmapsettings.profileNumber) { //fix for old players
                     //for (var t = 10; t < 15; t++) profiles.push({
                     for (var t = profiles.length; t < defaultmapsettings.profileNumber; t++) {
@@ -21217,11 +21234,8 @@ function thelegendmodproject() {
                     }
                 } else if (profiles.length > defaultmapsettings.profileNumber) {
                     //for (var t = 10; t < 15; t++) profiles.push({
-                    var temp = profiles.length; //case profiles.length changes
-                    for (var t = 0; t < temp - defaultmapsettings.profileNumber; t++) {
-                        console.log(t);
-                        profiles.pop();
-                    }
+                    var removedProfiles = profiles.splice(defaultmapsettings.profileNumber);
+                    application.saveSettings(removedProfiles.concat(extraProfiles), 'ogarioPlayerProfilesExtra');
 
                 }
             } else {
