@@ -104,6 +104,13 @@ var MAINBTBtn = localStorage.getItem("MAINBTBtn");
 var TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
 
 
+/* The website is served on www.legendmod.ml (jimboy3100.github.io redirects there).
+ * Test the hostname: a URL check also matched agar.io links whose ?sip= names a
+ * legendmod.ml server, and missed the live site when it looked for github.io only. */
+function _lmOnLegendWebsite() {
+    return /(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i.test(location.hostname);
+}
+
 var timesopened = localStorage.getItem("timesopened");
 var url = localStorage.getItem("url");
 /* The loaders store the launch link (with ?sip=/?pass=/?replay=...) for this page load.
@@ -113,7 +120,7 @@ try { localStorage.setItem("url", location.href); } catch (e) { }
 if (!url) url = location.href;
 
 var modVersion;
-if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml')) {
+if (_lmOnLegendWebsite()) {
     window.legendModFromWebsite = true; // Flag: loaded from website, not Agar.io userscript (private servers only)
     if (location.protocol !== 'https:') {
         toastr.warning("Legend mod over http. Many functions cannot work properly. To join Non SSL servers use <font color='blue'>ws://</font> in front of websocket.<br>e.g <font color='blue'>ws://34.89.203.157:3000/</font>").css("width", "350px");
@@ -699,15 +706,15 @@ function adres(info, thismode, thisregion) {
                     region = thisregion;
                 }
                 if (currentIPopened == true) {
-                    if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
                     else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
                     return currentIPopened = false;
                 } else if (thismode != null && thisregion != null) {
-                    if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
                     else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
 
                 } else {
-                    if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
+                    if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
                     else history.pushState(stateObj, "page 2", "?sip=" + currentIP);
                     realmode = null;
                     region = null;
@@ -762,21 +769,21 @@ function urlIpWhenOpened() {
         }
         if (searchSip != null) {
             if (region == null) {
-                if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + searchSip);
+                if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + searchSip);
                 else history.pushState(stateObj, "page 2", "?sip=" + searchSip);
             } else {
-                if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + searchSip + "&r=" + region + "&m=" + realmode);
+                if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + searchSip + "&r=" + region + "&m=" + realmode);
                 else history.pushState(stateObj, "page 2", "?sip=" + searchSip + "&r=" + region + "&m=" + realmode);
             }
         } else if (searchSip == null) {
-            if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + $('#gamemode').val());
+            if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + $('#gamemode').val());
             else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + $('#gamemode').val());
             region = $('#region').val();
             realmode = $('#gamemode').val();
             return region, realmode;
         } else {
             if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                if (_lmOnLegendWebsite()) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
                 else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
             }
         }
@@ -877,7 +884,7 @@ function searchIPHandler(searchStr) { //VERY WEIRD FUNCTION, MOD DOESNT LOAD IF 
     } else if (getParameterByName("search", searchStr)) {
         if (region) {
             $('#region option[value="' + region + '"]').prop('selected', 'selected').change();
-            if (!document.URL.includes('jimboy3100.github.io')) {
+            if (!_lmOnLegendWebsite()) {
                 getInfo();
             }
 
@@ -3538,7 +3545,7 @@ function hideMenu() {
 
 function showSearchHud() {
     //hideBotNameHud();
-    if (!document.URL.includes('jimboy3100.github.io')) {
+    if (!_lmOnLegendWebsite()) {
         getInfo();
     }
     $("#backgroundFade").fadeIn();
@@ -5432,7 +5439,7 @@ function emphasischat() {
 }
 
 function IdfromLegendmod() {
-    if (document.URL.includes("jimboy3100.github.io") && $("#UserProfileID2a").val() != "") {
+    if (_lmOnLegendWebsite() && $("#UserProfileID2a").val() != "") {
         window.userid = $("#UserProfileID2a").val()
         localStorage.setItem("userid", window.userid);
     }
@@ -6873,7 +6880,7 @@ function initializeLM(modVersion) {
             copy(CopyTkPwLb2);
         } else if (realmode != ":party") {
             if (region != null && realmode != null) {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             } else {
@@ -6885,7 +6892,7 @@ function initializeLM(modVersion) {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val();
                 copy(CopyTkPwLb2);
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             }
@@ -6898,7 +6905,7 @@ function initializeLM(modVersion) {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
                 copy(CopyTkPwLb2);
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
 
@@ -6908,7 +6915,7 @@ function initializeLM(modVersion) {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
                 copy(CopyTkPwLb2);
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             }
@@ -6921,7 +6928,7 @@ function initializeLM(modVersion) {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
                 copyToClipboardAll();
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             }
@@ -6930,7 +6937,7 @@ function initializeLM(modVersion) {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
                 copyToClipboardAll();
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copyToClipboardAll();
             }
@@ -7354,7 +7361,7 @@ function initializeLM(modVersion) {
     $("#import-settings-btn").attr('class', 'btn btn-success');
     $("#close-exp-imp").before('<button id="SNEZOgarUploadBtn" onclick="SNEZOgarUpload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109 + '</button>');
     $("#close-exp-imp").before('<button id="SNEZOgarDownloadBtn" onclick="SNEZOgarDownload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109a + '</button>');
-    if (document.URL.includes("jimboy3100.github.io")) {
+    if (_lmOnLegendWebsite()) {
         $("#close-exp-imp").after('<br><div id="UserProfileUID2">Social ID: <input id="UserProfileID2a" class="user-name" style="display:inline-block"></div>');
         if (localStorage.getItem("userid") != "" && localStorage.getItem("userid") != null && localStorage.getItem("userid") != "null") {
             userid = localStorage.getItem("userid");
