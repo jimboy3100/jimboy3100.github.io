@@ -35981,6 +35981,7 @@ function thelegendmodproject() {
         },
         sendSpectate() {
             this.isSpectateEnabled = true;
+            this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry */
             if (this.serverType === 'senpa') {
                 this._senpaSpectate = true;
                 // Mode byte of the cursor packet: 2 = follow top (Delta default), 1 = free roam.
@@ -36528,9 +36529,19 @@ function thelegendmodproject() {
                 });
             }
 */
+            /* Retry only on the same socket, while still not playing and with no
+             * newer spawn or spectate request. Outside Expanding Land resend the normal
+             * spawn (nick\0 token\0): sendNick2 builds '<skin>nick' with no terminator or token. */
+            var _lmRetrySocket = this.socket;
+            var _lmRetrySeq = this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1;
             setTimeout(function () {
                 if (!window.cookieCaptchaOK && LM.integrity) {
-                    legendmod.sendNick2(self.playerNick)
+                    if (self.socket !== _lmRetrySocket || !self.isSocketOpen() || ogario.play || self._lmSpawnRetrySeq !== _lmRetrySeq) return;
+                    if (_isExpandingLandClient(self)) {
+                        legendmod.sendNick2(self.playerNick)
+                    } else {
+                        sendSpawn('0');
+                    }
                 }
             }, 1800);
 
