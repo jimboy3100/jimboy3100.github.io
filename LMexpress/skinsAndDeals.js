@@ -2881,20 +2881,20 @@ function populateDealsGrid() {
         if (skinImgs.length >= 3) {
             // Three skins — triangle arrangement: two on top, one centered below
             iconHtml += '<div style="position: relative; min-width: 60px; width: 60px; height: 56px;">';
-            iconHtml += '<img src="' + skinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.mc + '; z-index: 3;" onerror="this.style.display=\'none\'">';
-            iconHtml += '<img src="' + skinImgs[1] + '" style="position: absolute; top: 0; right: 0; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b3 + '; z-index: 2;" onerror="this.style.display=\'none\'">';
-            iconHtml += '<img src="' + skinImgs[2] + '" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b1 + '; z-index: 1;" onerror="this.style.display=\'none\'">';
+            iconHtml += '<img loading="lazy" decoding="async" src="' + skinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.mc + '; z-index: 3;" onerror="this.style.display=\'none\'">';
+            iconHtml += '<img loading="lazy" decoding="async" src="' + skinImgs[1] + '" style="position: absolute; top: 0; right: 0; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b3 + '; z-index: 2;" onerror="this.style.display=\'none\'">';
+            iconHtml += '<img loading="lazy" decoding="async" src="' + skinImgs[2] + '" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b1 + '; z-index: 1;" onerror="this.style.display=\'none\'">';
             iconHtml += '</div>';
         } else if (skinImgs.length === 2) {
             // Two skins stacked/overlapping
             iconHtml += '<div style="position: relative; min-width: 56px; width: 56px; height: 56px;">';
-            iconHtml += '<img src="' + skinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.mc + '; z-index: 2;" onerror="this.style.display=\'none\'">';
-            iconHtml += '<img src="' + skinImgs[1] + '" style="position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b3 + '; z-index: 1;" onerror="this.style.display=\'none\'">';
+            iconHtml += '<img loading="lazy" decoding="async" src="' + skinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.mc + '; z-index: 2;" onerror="this.style.display=\'none\'">';
+            iconHtml += '<img loading="lazy" decoding="async" src="' + skinImgs[1] + '" style="position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b3 + '; z-index: 1;" onerror="this.style.display=\'none\'">';
             iconHtml += '</div>';
         } else if (skinImgs.length === 1) {
             // One skin centered
             iconHtml += '<div style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid ' + t.mc + ';">';
-            iconHtml += '<img src="' + skinImgs[0] + '" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'💎\'">';
+            iconHtml += '<img loading="lazy" decoding="async" src="' + skinImgs[0] + '" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'💎\'">';
             iconHtml += '</div>';
         } else {
             // No skin — show default gem icon
@@ -2982,6 +2982,8 @@ function populateDealsGrid() {
         html = '<div style="text-align: center; color: ' + t.tc2 + '; padding: 20px;">No deals found in configuration.</div>';
     }
 
+    /* loading="lazy" is in the markup itself, so hidden-tab images are not fetched
+     * on insert (setting it after innerHTML was too late). */
     grid.innerHTML = html;
 
     var dealImages =
