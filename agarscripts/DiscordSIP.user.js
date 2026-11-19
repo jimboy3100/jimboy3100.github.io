@@ -89,6 +89,12 @@ function popAgarURL(fun) {
 }
 
 function postToDiscord(discordUrl, isGeneralChannel) {
+	/* An empty optional webhook (null) made xhr.open POST the team password and
+	 * profile to <origin>/null; only post to real Discord webhook URLs. */
+	if (!/^https:\/\/(discord|discordapp|ptb\.discord|canary\.discord)\.com\/api\/webhooks\//i.test(String(discordUrl || ''))) {
+		console.log('discord url skipped (not a webhook): ' + discordUrl);
+		return;
+	}
 	popAgarURL(function(serverlinks) {
 		//hack to prevent strange post duplication bug
 		//if (previousUrl!=discordUrl) {
