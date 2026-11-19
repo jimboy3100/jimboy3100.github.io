@@ -37195,12 +37195,7 @@ function thelegendmodproject() {
                         }
 
                         var authSuccess = data.getUint8(s++);
-                        var authReason = '';
-                        while (s < data.byteLength) {
-                            var ch = data.getUint8(s++);
-                            if (ch === 0) break;
-                            authReason += String.fromCharCode(ch);
-                        }
+                        var authReason = encode(); // UTF-8, zero-terminated
                         console.log('%c[Garix]%c Auth result: ' + (authSuccess ? 'SUCCESS' : 'FAIL') + (authReason ? ' reason=' + authReason : ''), authSuccess ? 'color:#3f3' : 'color:#f33', 'color:inherit');
                     }
                     break;
@@ -37230,18 +37225,15 @@ function thelegendmodproject() {
                     } else if (this.serverType === 'expandingland') {
                         if (s < data.byteLength) {
                             var toastType = data.getUint8(s++);
-                            var toastMsg = "";
-                            while (s < data.byteLength) {
-                                var ch = data.getUint8(s++);
-                                if (ch === 0) break;
-                                toastMsg += String.fromCharCode(ch);
-                            }
+                            /* The server writes UTF-8; toastr renders HTML, so escape it. */
+                            var toastMsg = encode();
                             if (toastMsg) {
                                 console.log('%c[ADMIN NOTICE]%c ' + toastMsg, 'color:#fa0;font-weight:bold;', 'color:inherit;');
                                 if (window.toastr) {
-                                    if (toastType === 1) toastr.warning(toastMsg, "Admin Notice");
-                                    else if (toastType === 2) toastr.error(toastMsg, "Admin Notice");
-                                    else toastr.info(toastMsg, "Admin Notice");
+                                    var toastMsgSafe = application.escapeHTML(toastMsg);
+                                    if (toastType === 1) toastr.warning(toastMsgSafe, "Admin Notice");
+                                    else if (toastType === 2) toastr.error(toastMsgSafe, "Admin Notice");
+                                    else toastr.info(toastMsgSafe, "Admin Notice");
                                 }
                             }
                         }
@@ -37268,17 +37260,14 @@ function thelegendmodproject() {
                     } else {
                         if (s < data.byteLength) {
                             var adminStatus = data.getUint8(s++);
-                            var adminMsg = "";
-                            while (s < data.byteLength) {
-                                var ch = data.getUint8(s++);
-                                if (ch === 0) break;
-                                adminMsg += String.fromCharCode(ch);
-                            }
+                            /* The server writes UTF-8; toastr renders HTML, so escape it. */
+                            var adminMsg = encode();
                             if (adminMsg) {
                                 console.log('%c[ADMIN RESPONSE]%c ' + adminMsg, 'color:#0f0;font-weight:bold;', 'color:inherit;');
                                 if (window.toastr) {
-                                    if (adminStatus === 0) toastr.success(adminMsg, "Admin Command");
-                                    else toastr.error(adminMsg, "Admin Command");
+                                    var adminMsgSafe = application.escapeHTML(adminMsg);
+                                    if (adminStatus === 0) toastr.success(adminMsgSafe, "Admin Command");
+                                    else toastr.error(adminMsgSafe, "Admin Command");
                                 }
                             }
                         }
