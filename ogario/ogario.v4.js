@@ -66703,7 +66703,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
 
+                    /*
+                     * The origin only matters while a transform is set; it
+                     * follows the camera, so writing it with no transform
+                     * restyled four full-screen layers every frame for nothing.
+                     */
                     if (
+                        _worldCssTransform &&
                         layer
                             .style
                             .transformOrigin !==
