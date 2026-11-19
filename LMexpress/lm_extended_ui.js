@@ -9183,6 +9183,18 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 '<div style="display:flex;gap:6px;padding:6px 4px;border-top:1px solid rgba(255,255,255,0.07);">';
 
 
+            /* Official getPotionState: an obtained potion cannot be brewed while
+             * another slot is brewing (UNAVAILABLE; the server answers 3). */
+            var pAnyBrewing = false;
+            for (var bSlot = 1; bSlot <= 3; bSlot++) {
+                var bp = potionStates['potion' + bSlot];
+                if (bp && Number(bp.status) === 2) {
+                    var bSecs = typeof window.getLivePotionSecondsRemaining === 'function'
+                        ? window.getLivePotionSecondsRemaining(bp) : null;
+                    if (bSecs === null || bSecs > 0) pAnyBrewing = true;
+                }
+            }
+
             for (var slot = 1; slot <= 3; slot++) {
                 var potionKey = 'potion' + slot;
                 var pp = potionStates[potionKey] || null;
@@ -9237,7 +9249,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     }
 
 
-                    if (ppStatus === 1) {
+                    if (ppStatus === 1 && pAnyBrewing) {
+                        /* Obtained, waits until the running brew finishes */
+                        pState = 'wait';
+                        pSvg = _pvBrew;
+                        pGlow = 'none';
+                        pBorder = 'rgba(255,255,255,0.25)';
+                        pBg = 'rgba(255,255,255,0.03)';
+                    } else if (ppStatus === 1) {
                         /* Obtained, ready to brew */
                         pState = 'brew';
                         pSvg = _pvBrew;
@@ -9331,6 +9350,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
                         '<div style="font-size:8px;color:#8bc34a;font-weight:700;">\u25B6 BREW</div>';
+                } else if (pState === 'wait') {
+                    pStatus =
+                        (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
+                        '<div style="font-size:8px;color:#888;font-weight:700;" title="Another potion is brewing">WAITING</div>';
                 } else if (pState === 'brewing') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
