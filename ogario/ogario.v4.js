@@ -20757,9 +20757,9 @@ function thelegendmodproject() {
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
                     if (currentPing) t += ' | PING: ' + currentPing;
                     if (window.multiboxPlayerEnabled) {
-                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + (defaultmapsettings.multiboxAmount || 2) + ']</span>';
+                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>';
                     } else if (legendmod.multiBoxPlayerExists) {
-                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB 1/' + (defaultmapsettings.multiboxAmount || 2) + ']</span>';
+                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB 1/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>'; /* real unit count (one unit is created) */
                     }
                 }
                 if (defaultmapsettings.showStatsPPS && LM.pps > 0) {
@@ -21695,7 +21695,9 @@ function thelegendmodproject() {
         },
         /* ─── mbSlots: multibox slot → profile index mapping ─── */
         ensureMbSlots() {
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+            /* Only one multibox unit is created (addBox runs only while spects is empty and the
+             * multiboxAmount slider is disabled), so a value 3-4 saved by an older version means 2. */
+            var maxMb = Math.min((defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2, 2);
             if (!this.mbSlots || !Array.isArray(this.mbSlots)) {
                 this.mbSlots = [];
             }
@@ -21776,7 +21778,9 @@ function thelegendmodproject() {
 
             // Check if idx is already in a slot
             var existingSlot = this.mbSlots.indexOf(idx);
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+            /* Only one multibox unit is created (addBox runs only while spects is empty and the
+             * multiboxAmount slider is disabled), so a value 3-4 saved by an older version means 2. */
+            var maxMb = Math.min((defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2, 2);
 
             if (existingSlot > 0) {
                 // Case 2: already in slot K (K > 0) → swap with slot 0
