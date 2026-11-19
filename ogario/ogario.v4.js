@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.517;
+window.OgVer = 3.518;
 
 
 /*
@@ -34522,7 +34522,11 @@ function thelegendmodproject() {
             }
 
             var _previousType = this.serverType || '';
-            var _previousDomain =
+            /* The account domain of the last real connection. Guessing it from leftover
+             * UIDs (window.agarioUID stays set) made every Expanding Land reconnect look like
+             * an agar.io -> EL switch: logout, reconnect, login, logout... ("Logged out!" spam).
+             * The UID guess is only used before the first connection of the page. */
+            var _previousDomain = this._lmLastAccountDomain ? this._lmLastAccountDomain :
                 _previousType === 'agario'
                     ? 'official'
                     : _previousType === 'expandingland'
@@ -34629,6 +34633,7 @@ function thelegendmodproject() {
                     return;
                 }
             }
+            if (_nextDomain) this._lmLastAccountDomain = _nextDomain;
             if (_earlyType !== 'agario') {
                 if ($('#region').length && $('#region option[value="Private"]').length === 0) {
                     $('#region').append('<option value="Private">Private</option>');
