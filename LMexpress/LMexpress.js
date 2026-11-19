@@ -7731,6 +7731,13 @@ function autoplayplaying() {
     $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
 }
 
+function _lmSelectHasValue(sel, value) {
+    value = String(value);
+    return $(sel + " option").filter(function () {
+        return this.value === value;
+    }).length > 0;
+}
+
 function joinSERVERfindinfo() {
     $("#log").html("");
     var searchedtoken =
@@ -7775,9 +7782,11 @@ function joinSERVERfindinfo() {
                     continue;
                 }
 
+                /* relay records are crowd-sourced: count only values that exist in the selects */
                 if (
                     record.region &&
-                    record.region !== "null"
+                    record.region !== "null" &&
+                    _lmSelectHasValue("#region", record.region)
                 ) {
                     regionCounts[
                         record.region
@@ -7789,7 +7798,8 @@ function joinSERVERfindinfo() {
 
                 if (
                     record.mode &&
-                    record.mode !== "null"
+                    record.mode !== "null" &&
+                    _lmSelectHasValue("#gamemode", record.mode)
                 ) {
                     modeCounts[
                         record.mode
