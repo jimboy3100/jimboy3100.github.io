@@ -8242,51 +8242,90 @@ function AgarVersionDestinations() {
 
     refreshDropdown();
 
+    /*
+     * Version history = union of:
+     *  - the shared LMConfigVersion record on api.legendmod.ml (grows as players see new versions),
+     *  - agario/live/versions.json in this repo (every v15 config agar.io still serves,
+     *    rebuilt after the SNEZ -> api.legendmod.ml move lost the old record),
+     *  - agar.io's current version (window.agarversion).
+     * Whenever the merged list has a version the server record lacks, it is written back,
+     * so the server record fills itself and stays complete.
+     */
+    var _lmVerServer = null, _lmVerServerStatus = 0, _lmVerRepo = [], _lmVerPending = 2;
+    function _lmVerId(v) {
+        var m = /^v(\d+)\/(\d+)\/$/.exec(String(v || ''));
+        return m ? Number(m[1]) * 1e7 + Number(m[2]) : -1;
+    }
+    function _lmVerMerge() {
+        if (--_lmVerPending > 0) return;
+        try {
+            var seen = {}, versions = [];
+            var add = function (v) {
+                if (typeof v === 'string' && _lmVerId(v) >= 0 && !seen[v]) { seen[v] = true; versions.push(v); }
+            };
+            var serverList = [];
+            if (_lmVerServer) Object.keys(_lmVerServer).forEach(function (k) { serverList.push(_lmVerServer[k]); });
+            serverList.forEach(add);
+            _lmVerRepo.forEach(add);
+            add(window.agarversion);
+            versions.sort(function (a, c) { return _lmVerId(a) - _lmVerId(c); });
+
+            window.agarversionDestinations = {};
+            versions.forEach(function (value, index) {
+                window.agarversionDestinations[index] = value;
+            });
+
+            /* Auto-populate the server: write back when it lacks any known version.
+             * Never overwrite a record we could not read (only 200 with a parsed body, or 404). */
+            var missing = versions.some(function (v) { return serverList.indexOf(v) === -1; });
+            if (missing && ((_lmVerServerStatus === 200 && _lmVerServer) || _lmVerServerStatus === 404)) {
+                postSNEZ('https://api.legendmod.ml/lm-settings', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
+            }
+            refreshDropdown();
+        } catch (e) { }
+    }
+
     try {
         getSNEZ("https://api.legendmod.ml/lm-settings", "LMConfigVersion", "LMConfigVersionPass", function (xhttp) {
             try {
-                var history = null;
-
+                _lmVerServerStatus = xhttp ? xhttp.status : 0;
                 if (xhttp && xhttp.status === 200 && xhttp.response) {
                     var parsed = JSON.parse(xhttp.response);
-                    if (isObject(parsed)) history = parsed;
+                    if (isObject(parsed)) _lmVerServer = parsed;
                 }
-
-                /* Rebuild as an ordered list: stored versions + agar.io's current one. */
-                var versions = [];
-                if (history) {
-                    Object.keys(history).forEach(function (key) {
-                        var value = history[key];
-                        if (typeof value === 'string' && value && versions.indexOf(value) === -1) {
-                            versions.push(value);
-                        }
-                    });
-                }
-
-                var currentAdded = false;
-                if (window.agarversion && versions.indexOf(window.agarversion) === -1) {
-                    versions.push(window.agarversion);
-                    currentAdded = true;
-                }
-
-                window.agarversionDestinations = {};
-                versions.forEach(function (value, index) {
-                    window.agarversionDestinations[index] = value;
-                });
-
-                /*
-                 * Record a newly seen version. This also creates the record
-                 * when the server has none yet (404).
-                 */
-                /* Never overwrite the shared history with an unparsable 200 reply. */
-                if (currentAdded && xhttp && ((xhttp.status === 200 && history) || xhttp.status === 404)) {
-                    postSNEZ('https://api.legendmod.ml/lm-settings', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
-                }
-
-                refreshDropdown();
             } catch (e) { }
+            _lmVerMerge();
         });
-    } catch (e) { }
+    } catch (e) { _lmVerMerge(); }
+
+    try {
+        var _lmVerXhr = new XMLHttpRequest();
+        _lmVerXhr.open("GET", "https://www.legendmod.ml/agario/live/versions.json", true);
+        _lmVerXhr.onload = function () {
+            try {
+                var list = JSON.parse(_lmVerXhr.responseText);
+                if (Array.isArray(list)) _lmVerRepo = list;
+            } catch (e) { }
+            _lmVerMerge();
+        };
+        _lmVerXhr.onerror = function () { _lmVerMerge(); };
+        _lmVerXhr.send();
+    } catch (e) { _lmVerMerge(); }
+
+    /* agar.io's version can arrive later (login response): add it and write it back. */
+    window._lmAddAgarVersion = function (version) {
+        if (_lmVerPending > 0 || _lmVerId(version) < 0) return;
+        var known = Object.keys(window.agarversionDestinations || {}).map(function (k) { return window.agarversionDestinations[k]; });
+        if (known.indexOf(version) !== -1) return;
+        known.push(version);
+        known.sort(function (a, c) { return _lmVerId(a) - _lmVerId(c); });
+        window.agarversionDestinations = {};
+        known.forEach(function (v, i) { window.agarversionDestinations[i] = v; });
+        if ((_lmVerServerStatus === 200 && _lmVerServer) || _lmVerServerStatus === 404) {
+            postSNEZ('https://api.legendmod.ml/lm-settings', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
+        }
+        refreshDropdown();
+    };
 }
 
 

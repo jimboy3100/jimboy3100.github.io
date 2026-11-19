@@ -39309,6 +39309,7 @@ function thelegendmodproject() {
                         var freshVersion = "v" + (window.getLatestconfigVersion || "15") + "/" + u.latestConfiguration + "/";
                         window.agarversion = freshVersion;
                         window.localStorage.setItem("getLatestID", u.latestConfiguration);
+                        if (typeof window._lmAddAgarVersion === 'function') window._lmAddAgarVersion(freshVersion);
                         /* Rebuild VanillaSkinUrlMap with correct CDN version */
                         if (window.EquippableSkins) {
                             window.VanillaSkinUrlMap = {};
