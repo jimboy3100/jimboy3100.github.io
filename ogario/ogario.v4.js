@@ -25275,6 +25275,8 @@ function thelegendmodproject() {
          * responds with ClearAll + fresh ADD packets for all visible cells. */
         sendResyncRequest() {
             if (!legendmod.isSocketOpen || !legendmod.isSocketOpen()) return;
+            /* 206 exists only on Expanding Land; agar.io and the other servers never get it. */
+            if (!_isExpandingLandClient(legendmod)) return;
             try {
                 var view = legendmod.createView(1);
                 view.setUint8(0, 206); /* 0xCE = resync request */
