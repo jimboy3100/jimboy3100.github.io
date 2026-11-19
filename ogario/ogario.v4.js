@@ -36948,8 +36948,14 @@ function thelegendmodproject() {
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
-                case 200: // 0xC8 — MapEvent (Expanding Land) or ShopResponse (Agar2)
-                    if (this.serverType === 'agar2') {
+                case 200: // 0xC8 — MapEvent (Expanding Land) or ShopResponse (Agar2/Imsolo)
+                    /* Only Expanding Land sends MapEvent; Imsolo uses 0xC8 for ShopResponse
+                     * like Agar2, and other private servers must not deform the map. */
+                    if (!(this.serverType === 'agar2' || this.serverType === 'imsolo') &&
+                        !(LM.isLegendWorld || this.isLegendWorld || this.serverType === 'expandingland')) {
+                        break;
+                    }
+                    if (this.serverType === 'agar2' || this.serverType === 'imsolo') {
                         /*
                          * Agar2 ShopResponse fixed prefix:
                          * action(1) + success(1) + coins(4) + remaining(4)
@@ -37048,6 +37054,9 @@ function thelegendmodproject() {
                     break;
 
                 case 203: // 0xCB — Expanding Land Unified Stats (shared + per-player decay)
+                    if (!(LM.isLegendWorld || this.isLegendWorld || this.serverType === 'expandingland')) {
+                        break;
+                    }
                     try {
                         if (data.byteLength < 5) {
                             console.warn('[Protocol] Ignoring truncated opcode 203 packet:', data.byteLength);
