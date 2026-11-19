@@ -250,7 +250,8 @@ function calcTarget() {
             }
         }
     });
-    if (target != undefined) { //not needed
+    /* also with no food in view when an escape / chase / feed point is set */
+    if (target != undefined || Number.isFinite(target2.x) || Number.isFinite(target2.y)) {
         window.legendmod.sendPosition(target, target2);
     }
     var _now = performance.now();

@@ -36857,9 +36857,15 @@ function thelegendmodproject() {
                     else if (!specialcommand) {
                         //if (typeof cell != "undefined") { //when used, autoplay not working as expected
                         //if (target2 && Object.keys(target2).length == 0) {
-                        if (cell) {
-                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
-                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
+                        /* calcTarget's escape / chase / feed point (target2, world coords) wins
+                         * per axis over the nearest food: split and eject went toward the food */
+                        var _apT2X = target2 && Number.isFinite(target2.x);
+                        var _apT2Y = target2 && Number.isFinite(target2.y);
+                        if (cell || _apT2X || _apT2Y) {
+                            var _apX = _apT2X ? target2.x : (cell ? cell.x : this.playerX);
+                            var _apY = _apT2Y ? target2.y : (cell ? cell.y : this.playerY);
+                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(_apX) : _apX; //Sonia3
+                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(_apY) : _apY; //Sonia3
                             // var cursorX = cell.x;
                             //var cursorY = cell.y;
                             //} else if (target2){
