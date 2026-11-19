@@ -249,6 +249,7 @@ if (!window.recovery) {
             return text;
         };
         var socketInit = function (s, i) {
+            var _lmRetryDelay = 0; /* per relay socket, survives reconnects */
             var socketCloseListener = function () {
                 var so = (self.sockets[i] = new self.WebSocket(s, weirdoitem ? weirdoitem : undefined));
                 so.master = (self.sockets.length === 1) || (masterid == i); //(s.indexOf('ogario.eu') > -1)
@@ -268,6 +269,7 @@ if (!window.recovery) {
                 };
 
                 so.onopen = function () {
+                    _lmRetryDelay = 0;
                     for (var opcode in self.cached) {
                         so.send(self.cached[opcode].buffer);
                     }
@@ -278,7 +280,11 @@ if (!window.recovery) {
                     //console.log('[Router]: disconnected', s);
                     so.playerID = 0;
                     clearTimeout(so.imAliveTimer);
-                    setTimeout(socketCloseListener, 5000);
+                    /* back off while the relay is down (5 s, 10 s, 20 s ... 60 s) instead of
+                     * a failed connection every 5 s forever; reset after a successful open */
+                    var _lmDelay = Math.min(60000, (_lmRetryDelay || 2500) * 2);
+                    _lmRetryDelay = _lmDelay;
+                    setTimeout(socketCloseListener, _lmDelay);
                 };
             };
             socketCloseListener();
