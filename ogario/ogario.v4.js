@@ -3603,10 +3603,19 @@ window.decodeCompressedMobileData = function (bytes) {
     if (typeof DecompressionStream !== 'function') {
         return Promise.reject(new Error('DecompressionStream not supported'));
     }
-    var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'));
-    return new Response(stream).arrayBuffer().then(function (buf) {
-        return compressed.decode(new Uint8Array(buf));
-    });
+    /* zlib (RFC 1950) per the official client; fall back to raw deflate and gzip
+     * so an unexpected format is not silently dropped. */
+    var formats = ['deflate', 'deflate-raw', 'gzip'];
+    var attempt = function (i) {
+        var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream(formats[i]));
+        return new Response(stream).arrayBuffer().then(function (buf) {
+            return compressed.decode(new Uint8Array(buf));
+        }).catch(function (err) {
+            if (i + 1 < formats.length) return attempt(i + 1);
+            throw err;
+        });
+    };
+    return attempt(0);
 };
 
 function encodeProtoVarint(value) {
