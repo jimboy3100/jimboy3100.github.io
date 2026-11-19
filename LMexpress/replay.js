@@ -244,7 +244,13 @@ var temp4=tempo2[tempo2.length-1][3]
     fileReader.readAsText(fileToLoad, "UTF-8");
 }
 function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint8Array(buf));
+  /* In chunks: apply() with a whole large packet (World Spectate, full diffs) threw
+   * "Maximum call stack size exceeded" and the replay could not be saved. */
+  var bytes = new Uint8Array(buf), out = '';
+  for (var i = 0; i < bytes.length; i += 32768) {
+    out += String.fromCharCode.apply(null, bytes.subarray(i, i + 32768));
+  }
+  return out;
 }
 //ab2str(window.RecordedProtocol['1llnrvk'][0].buffer)
 
