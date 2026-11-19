@@ -966,7 +966,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         if (a.provider !== provider) return false;
         if (a.done || a.oauthHandled) return false;
         if (a.tabId !== _lwTabId) return false;
-        if (Date.now() - a.startedAt > 30000) return false;
+        /* The OAuth popup (sign-in, 2FA) can take minutes; the server phase has its own 20 s timeout. */
+        if (Date.now() - a.startedAt > 300000) return false;
         if (a.state !== 'waiting_oauth') return false;
         a.oauthHandled = true;
         a.state = 'processing_oauth';
@@ -982,9 +983,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     window._lwIsCurrentAuthAttempt = function (attemptId, provider) {
         var a = window._lwAuth;
         return !!(a && a.attemptId === attemptId && a.provider === provider &&
-            a.tabId === _lwTabId && !a.done && Date.now() - a.startedAt <= 30000);
+            a.tabId === _lwTabId && !a.done && Date.now() - a.startedAt <= 300000);
     };
-    window._lwArmLoginTimeout = function (attemptId) {
+    window._lwArmLoginTimeout = function (attemptId, ms) {
         if (_lwAuthAsync.loginTimeout) clearTimeout(_lwAuthAsync.loginTimeout);
         _lwAuthAsync.loginTimeout = setTimeout(function () {
             _lwAuthAsync.loginTimeout = null;
@@ -994,7 +995,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.warn('[LW AUTH] Login attempt #' + attemptId + ' timed out');
                 window._lwResetAuthState();
             }
-        }, 20000);
+        }, ms || 20000);
     };
     /* Initialize on page load */
     window._lwResetAuthState();
@@ -1133,7 +1134,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             /* expanding.land path: MC unavailable, send opcode 102 directly */
             _lw_sendLogin102(discordUser.token, discordUser.id, discordUser.globalName || discordUser.username, attemptId, 'discord');
         }
-        if (window._lwIsCurrentAuthAttempt(attemptId, 'discord')) window._lwAuth.state = 'waiting_server';
+        if (window._lwIsCurrentAuthAttempt(attemptId, 'discord')) {
+            window._lwAuth.state = 'waiting_server';
+            window._lwArmLoginTimeout(attemptId);
+        }
 
         /* UI updates — work on both domains */
         if (discordUser.avatar) {
@@ -2021,7 +2025,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
                 /* Start fresh login attempt */
                 var attemptId = window._lwBeginLogin('discord');
-                window._lwArmLoginTimeout(attemptId);
+                /* Give the user time in the Discord popup; re-armed to 20 s once we wait for the server. */
+                window._lwArmLoginTimeout(attemptId, 300000);
                 window._lwAuth.discordAttemptId = attemptId;
 
                 /* Open Discord auth in a popup */
@@ -2052,7 +2057,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         return;
                     }
 
-                    if (popup.closed || pollCount >= 30) {
+                    if (popup.closed || pollCount >= 300) {
                         stopDiscordPolling();
                         _lwAuthAsync.discordFinalCheck = setTimeout(function () {
                             _lwAuthAsync.discordFinalCheck = null;
