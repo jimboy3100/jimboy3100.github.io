@@ -24606,7 +24606,11 @@ function thelegendmodproject() {
             var keys = [nick, nick + "#000000", cleanNick, cleanNick + "#000000"];
             if (color) keys.push(nick + color);
             for (var k = 0; k < keys.length; k++) {
-                if (keys[k]) delete this.customSkinsMap[keys[k]];
+                if (!keys[k]) continue;
+                /* keep the owned vanilla/flag skin that setPlayerSettings mapped for the own nick */
+                var mapped = String(this.customSkinsMap[keys[k]] || '');
+                if (window.UserVanillaSkin && mapped && mapped.indexOf(window.UserVanillaSkin) === 0) continue;
+                delete this.customSkinsMap[keys[k]];
             }
         },
         cacheCustomSkin(nick, color, skinUrl) {
