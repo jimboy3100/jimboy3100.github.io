@@ -538,6 +538,13 @@ function PremiumUsers() {
                 toastr.warning("<b>[SERVER]:</b> Your licence is stored as Premium. Thank you for using our mod!").css("width", "350px");
             }
         }
+        /* stored giveaway licence whose entry was removed from the loaded table: it has ended */
+        else if (window.agarioUID && window.proLicenceUID && window.proLicenceUID.includes("Give") &&
+            ProLicenceUsersTable && ProLicenceUsersTable.ProLicenceUsers) {
+            window.proLicenceUID = null;
+            localStorage.removeItem("proLicenceUID");
+            toastr.warning("<b>[SERVER]:</b> Your Giveaway licence has ended. Thank you for using our mod!").css("width", "350px");
+        }
         localStorage.setItem("proLicenceUID", window.proLicenceUID);
     }
 }
