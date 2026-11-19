@@ -53924,6 +53924,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
                 uniform float u_virusExtraRadius;
 
+                /*
+                 * 1.0 = second, glow-only pass for viruses (no depth write).
+                 */
+                uniform float u_glowPass;
+
                 out vec4 v_color;
                 out vec2 v_localWorld;
 
@@ -53980,6 +53985,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             a_z,
                             1.0
                         );
+
+                    /* glow pass: only viruses, everything else is culled */
+                    if (
+                        u_glowPass > 0.5 &&
+                        isVirus < 0.5
+                    ) {
+                        gl_Position =
+                            vec4(
+                                2.0,
+                                2.0,
+                                2.0,
+                                1.0
+                            );
+                    }
                 }`;
 
                 var cellFsSource = `#version 300 es
@@ -54005,6 +54024,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 uniform float u_virusGlowEnabled;
                 uniform float u_virusGlowSize;
                 uniform vec3 u_virusGlowColor;
+
+                uniform float u_glowPass;
 
                 out vec4 fragColor;
 
@@ -54320,6 +54341,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             glowCoverage *
                             0.45;
 
+                        /*
+                         * Glow-only fragments (outside the body and stroke) are drawn in
+                         * a second pass without depth writes, so the nearly transparent
+                         * halo does not hide the nick/mass of smaller cells behind it.
+                         */
+                        bool glowOnly =
+                            bodyCoverage +
+                            strokeCoverage <=
+                            0.001;
+
+                        if (
+                            glowOnly !=
+                            (u_glowPass > 0.5)
+                        ) {
+                            discard;
+                        }
+
                         float strokeAlpha =
                             strokeCoverage;
 
@@ -54589,6 +54627,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     gl.getUniformLocation(
                         cellProgram,
                         'u_virusGlowColor'
+                    );
+
+                this.u_cell_glowPass =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_glowPass'
                     );
 
                 // Cell VAO:
@@ -67205,7 +67249,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
             );
 
             gl.bindVertexArray(this.glCellVAO);
+            if (this.u_cell_glowPass) gl.uniform1f(this.u_cell_glowPass, 0.0);
             gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            /*
+             * Virus glow halo: second pass without depth writes (like the jelly
+             * path), so the halo does not hide smaller cells' nick/mass in the
+             * text pass. Pass 1 above discarded the glow-only fragments.
+             */
+            if (
+                this.u_cell_glowPass &&
+                defaultmapsettings.virusGlow &&
+                _virusGlowSize > 0
+            ) {
+                gl.uniform1f(this.u_cell_glowPass, 1.0);
+                gl.depthMask(false);
+                gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+                gl.depthMask(true);
+                gl.uniform1f(this.u_cell_glowPass, 0.0);
+            }
             gl.bindVertexArray(null);
 
             if (window.clientProfiler) window.clientProfiler.recordWebGL(performance.now() - _tGL);
