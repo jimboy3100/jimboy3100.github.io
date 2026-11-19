@@ -73292,7 +73292,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (2 === event.which) {
                 event.preventDefault();
                 if (application && defaultmapsettings.mouseWheelClick) {
-                    if (!defaultmapsettings.middleClick) {
+                    /* a stored command that no longer exists (e.g. hk-multiboxback) threw */
+                    if (!defaultmapsettings.middleClick || !hotkeysCommand[defaultmapsettings.middleClick]) {
                         application.multiboxswap()
                     }
                     else {
@@ -73323,7 +73324,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (defaultmapsettings.mouseSplit && (1 === event.which)) {
                     event.preventDefault();
                     if (application) {
-                        if (!defaultmapsettings.leftClick) {
+                        if (!defaultmapsettings.leftClick || !hotkeysCommand[defaultmapsettings.leftClick]) {
                             application.split();
                         }
                         else {
@@ -73335,7 +73336,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (defaultmapsettings.mouseFeed && (3 === event.which)) {
                     event.preventDefault();
                     if (application) {
-                        if (!defaultmapsettings.rightClick) {
+                        if (!defaultmapsettings.rightClick || !hotkeysCommand[defaultmapsettings.rightClick]) {
                             application.split();
                         }
                         else {
@@ -73345,13 +73346,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 if (defaultmapsettings.mouseCommand4 && (4 === event.which)) {
                     event.preventDefault();
-                    if (application) {
+                    if (application && hotkeysCommand[defaultmapsettings.mouse4Click]) {
                         hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()
                     }
                 }
                 if (defaultmapsettings.mouseCommand5 && (5 === event.which)) {
                     event.preventDefault();
-                    if (application) {
+                    if (application && hotkeysCommand[defaultmapsettings.mouse5Click]) {
                         hotkeysCommand[defaultmapsettings.mouse5Click].keyDown()
                     }
                 }
@@ -73381,19 +73382,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
             drawRender.RMB = false;
         }
         if (defaultmapsettings.mouseSplit && (1 === event.which) && defaultmapsettings.leftClick) {
-            if (hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
+            if (hotkeysCommand[defaultmapsettings.leftClick] && hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
         }
         else if (defaultmapsettings.mouseWheelClick && (2 === event.which) && defaultmapsettings.middleClick) {
-            if (hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
+            if (hotkeysCommand[defaultmapsettings.middleClick] && hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
         }
         else if (defaultmapsettings.mouseFeed && (3 === event.which) && defaultmapsettings.rightClick) {
-            if (hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
+            if (hotkeysCommand[defaultmapsettings.rightClick] && hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
         }
         else if (defaultmapsettings.mouseCommand4 && (4 === event.which) && defaultmapsettings.mouse4Click) {
-            if (hotkeysCommand[defaultmapsettings.mouse4Click].keyUp) hotkeysCommand[defaultmapsettings.mouse4Click].keyUp()
+            if (hotkeysCommand[defaultmapsettings.mouse4Click] && hotkeysCommand[defaultmapsettings.mouse4Click].keyUp) hotkeysCommand[defaultmapsettings.mouse4Click].keyUp()
         }
         else if (defaultmapsettings.mouseCommand5 && (5 === event.which) && defaultmapsettings.mouse5Click) {
-            if (hotkeysCommand[defaultmapsettings.mouse5Click].keyUp) hotkeysCommand[defaultmapsettings.mouse5Click].keyUp()
+            if (hotkeysCommand[defaultmapsettings.mouse5Click] && hotkeysCommand[defaultmapsettings.mouse5Click].keyUp) hotkeysCommand[defaultmapsettings.mouse5Click].keyUp()
         }
         else {
             //1=leftclick, 3=rightclick, 2=wheelclick
