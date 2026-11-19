@@ -17,13 +17,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/lib/sw.js').catch(function () {});
-        });
-    }
-    </script>
+    <!-- No service worker: /lib/sw.js could only control /lib/ (GitHub Pages cannot widen its scope),
+         so it never cached play.html's requests and only pre-fetched assets on every version. -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
     <link rel="stylesheet" href="https://jimboy3100.github.io/LMexpress/master.css">
     <link rel="stylesheet" href="https://jimboy3100.github.io/lib/bootstrap-colorpicker.min.css">
