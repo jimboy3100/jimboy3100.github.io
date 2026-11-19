@@ -3677,6 +3677,33 @@ function decodeMobileData(data) {
  * (official client: haxe_zip_Uncompress.run, i.e. RFC 1950). Inflate with the
  * browser's DecompressionStream and decode the inner message. Returns a Promise.
  */
+/*
+ * Pending opcode-130 league requests, oldest first. The official client does not
+ * read leagueRequestType in the 131 reply (the server can leave it out, which
+ * decodes as 0): the reply answers the request it registered for.
+ *   _lmTakePendingLeagueRequest(0, type)  -> queue a sent request
+ *   _lmTakePendingLeagueRequest(type)     -> remove that type, return it
+ *   _lmTakePendingLeagueRequest()         -> remove and return the oldest (0 if none)
+ * Entries older than 30 s were never answered and are dropped.
+ */
+window._lmPendingLeagueRequests = [];
+window._lmTakePendingLeagueRequest = function (type, queueType) {
+    var list = window._lmPendingLeagueRequests;
+    var now = Date.now();
+    while (list.length && now - list[0].at > 30000) list.shift();
+    if (queueType) {
+        list.push({ type: queueType, at: now });
+        return queueType;
+    }
+    if (type === 1 || type === 2) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].type === type) { list.splice(i, 1); break; }
+        }
+        return type;
+    }
+    return list.length ? list.shift().type : 0;
+};
+
 window.decodeCompressedMobileData = function (bytes) {
     if (typeof DecompressionStream !== 'function') {
         return Promise.reject(new Error('DecompressionStream not supported'));
@@ -29273,7 +29300,11 @@ function thelegendmodproject() {
             var reqType = type || 1;
             window._leaguesRequestType = reqType; // Track: 1=current, 2=last week
             console.log("[LM] Request Leagues Info — type: " + reqType);
-            return this.sendProto(130, { userLeaguesInfoRequestField: { leagueRequestType: reqType } });
+            var leaguesSent = this.sendProto(130, { userLeaguesInfoRequestField: { leagueRequestType: reqType } });
+            /* Like the official LeaguesModel, the next 131 (or 22) answers the oldest
+             * pending request; remember which week each one asked for. */
+            if (leaguesSent) window._lmTakePendingLeagueRequest(0, reqType);
+            return leaguesSent;
         },
         updateLeaguesPass(data) {
             console.log("[LM] Update Leagues Pass:", data);
@@ -39653,8 +39684,9 @@ function thelegendmodproject() {
                         var npr = r.uncompressedData.noProperResponseField;
                         var nprFor = npr ? Number(npr.__for) || 0 : 0;
                         console.log("[LM] No proper response" + (nprFor ? " for request type " + nprFor : ""));
+                        var nprLeagueType = (nprFor === 130 || nprFor === 0) ? window._lmTakePendingLeagueRequest() : 0;
                         document.dispatchEvent(new CustomEvent('noProperResponse', {
-                            detail: { forType: nprFor, leagueRequestType: window._leaguesRequestType || 0 }
+                            detail: { forType: nprFor, leagueRequestType: nprLeagueType || window._leaguesRequestType || 0 }
                         }));
                     } catch (nprErr) { }
                     break;
@@ -40733,13 +40765,17 @@ function thelegendmodproject() {
                         var lr = r.uncompressedData.userLeaguesInfoResponseField;
                         if (lr) {
                             var responseRequestType = Number(lr.leagueRequestType);
-                            if (responseRequestType !== 1 && responseRequestType !== 2) {
-                                console.warn(
-                                    "[LM] Ignoring leagues response with invalid leagueRequestType:",
-                                    lr.leagueRequestType
-                                );
-                                break;
+                            if (responseRequestType === 1 || responseRequestType === 2) {
+                                window._lmTakePendingLeagueRequest(responseRequestType);
+                            } else {
+                                /* Missing in the reply (decodes as 0): this is the answer to the
+                                 * oldest pending request. Dropping it left "Please wait..." forever. */
+                                responseRequestType = window._lmTakePendingLeagueRequest() || Number(window._leaguesRequestType) || 1;
+                                lr.leagueRequestType = responseRequestType;
                             }
+                            console.log("[LM] Leagues response for " + (responseRequestType === 2 ? "last week" : "this week") +
+                                ": league " + ((lr.league || []).length) + ", country " + ((lr.country || []).length) +
+                                ", world " + ((lr.world || []).length) + ", friends " + ((lr.friends || []).length) + " rows");
                             var isLastWeek = (responseRequestType === 2);
                             if (isLastWeek) {
                                 window.lastWeekLeaguesResponse = lr;
