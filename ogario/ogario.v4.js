@@ -44495,10 +44495,12 @@ Most cells eaten   : ${mostCellsEaten}
                  * 7-branch resolution (regex, includes, toLowerCase per packet).
                  * Only while the packet's skin is the one resolved last time for this
                  * key: a respawn with another skin must re-resolve. Entries set by
-                 * other sources (no recorded skin) keep precedence as before. */
+                 * other sources (no recorded skin) keep precedence as before.
+                 * A name-only packet (no skin) keeps the cached entry: the nick
+                 * fallback must not replace a custom skin resolved earlier. */
                 var lastSkinByKey = window._lmVanillaSkinLastG || (window._lmVanillaSkinLastG = Object.create(null));
                 var lastSkin = lastSkinByKey[playerKey];
-                if (application.customSkinsMap[playerKey] && (lastSkin === undefined || lastSkin === (g || ''))) return;
+                if (application.customSkinsMap[playerKey] && (!g || lastSkin === undefined || lastSkin === g)) return;
                 lastSkinByKey[playerKey] = g || '';
 
                 var skinUrl = null;
@@ -69523,6 +69525,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         );
                     }
 
+                    /* The enemy caches are also filled while only a
+                     * multibox unit plays: when the main is dead, the
+                     * first unit with cells draws them (once). */
+                    var enemySplitDrawn =
+                        !!(LM.playerCells && LM.playerCells.length);
+
                     if (
                         typeof spects !== "undefined" &&
                         spects
@@ -69566,19 +69574,31 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 continue;
                             }
 
-                            /* Enemy rings were drawn once above (the caches
-                             * are computed against the main player): draw
-                             * only this unit's own rings here. */
+                            /* Enemy rings are drawn once (above, or by the
+                             * first unit when the main is dead): otherwise
+                             * draw only this unit's own rings here. */
+                            var drawEnemy = !enemySplitDrawn;
+                            enemySplitDrawn = true;
+
                             this.drawSplitRange(
                                 this.ctx,
-                                null,
+                                drawEnemy ? LM.biggerSTECellsCache : null,
                                 unitCells,
                                 LM.selectBiggestCell
                             );
 
+                            if (drawEnemy) {
+                                this.drawSplitRange(
+                                    this.ctx,
+                                    LM.biggerSTEDCellsCache,
+                                    null,
+                                    LM.selectBiggestCell
+                                );
+                            }
+
                             this.drawDoubleSplitRange(
                                 this.ctx,
-                                null,
+                                drawEnemy ? LM.biggerSTEDCellsCache : null,
                                 unitCells,
                                 LM.selectBiggestCell
                             );
@@ -69688,7 +69708,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         ctx.strokeStyle = remaining < 5 ? '#00ff66' : (remaining < 15 ? '#ffcc00' : '#ff3333');
                         ctx.stroke();
 
-                        if (window.playerCellsId && window.playerCellsId[cell.id]) {
+                        /* mergetimer.js owns mergeTime while it runs (it
+                         * re-arms on a re-split; this splitTime does not):
+                         * write it here only as the fallback. It tracks
+                         * the main player's cells only, not multibox. */
+                        var mergeTimerOwns = playerCells === LM.playerCells &&
+                            window.MergeTimerController &&
+                            typeof window.MergeTimerController.isActive === 'function' &&
+                            window.MergeTimerController.isActive();
+                        if (!mergeTimerOwns && window.playerCellsId && window.playerCellsId[cell.id]) {
                             window.playerCellsId[cell.id].mergeTime = remaining;
                         }
                     }
