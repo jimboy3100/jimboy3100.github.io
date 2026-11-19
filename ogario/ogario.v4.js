@@ -2190,6 +2190,7 @@ const awsRegions = [
 ];
 
 function changeregion() {
+    window._lmGamemodeSeq = (window._lmGamemodeSeq || 0) + 1;
     if ($('#region').val() === "Private") {
         deleteGamemode(true);
     } else {
@@ -2403,6 +2404,11 @@ function deleteGamemode(temp) {
         $('#gamemode').trigger('change');
     }, 100);
     $('#gamemode').off('change').on('change', function () {
+        /* Load-balancer replies arrive later; drop them if the user picked something else. */
+        var _lmGmSeq = window._lmGamemodeSeq = (window._lmGamemodeSeq || 0) + 1;
+        var _lmGmStale = function (val) {
+            return _lmGmSeq !== window._lmGamemodeSeq || parseInt($('#gamemode').val()) !== val || $('#region').val() !== "Private";
+        };
         if ($('#region').val() == "Private") {
             /*
             var now = new Date();
@@ -2440,6 +2446,7 @@ function deleteGamemode(temp) {
                 var cfg = imsoloLbMap[val];
                 if (!cfg) return;
                 fetch(cfg.url).then(function (r) { return r.json(); }).then(function (data) {
+                    if (_lmGmStale(val)) return;
                     if (data && data.gameurl) {
                         console.log('%c[ImSolo]%c Load balancer: ' + data.gameurl, 'color:#f3a', 'color:inherit');
                         core.connect(data.gameurl);
@@ -2448,6 +2455,7 @@ function deleteGamemode(temp) {
                         core.connect(cfg.fallback);
                     }
                 }).catch(function (err) {
+                    if (_lmGmStale(val)) return;
                     console.log('%c[ImSolo]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
                     core.connect(cfg.fallback);
                 });
@@ -2494,6 +2502,7 @@ function deleteGamemode(temp) {
                 var cfg = agar2ApiMap[val];
                 if (!cfg) return;
                 fetch(cfg.url).then(function (r) { return r.json(); }).then(function (data) {
+                    if (_lmGmStale(val)) return;
                     if (data && data.gameurl) {
                         // Extract token from URL: wss://live-arena-{token}-{region}.agar2.com
                         var tokenMatch = data.gameurl.match(/live-arena-([a-z0-9]+)-/i);
@@ -2509,6 +2518,7 @@ function deleteGamemode(temp) {
                         core.connect(cfg.fallback);
                     }
                 }).catch(function (err) {
+                    if (_lmGmStale(val)) return;
                     console.log('%c[Agar2]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
                     legendmod.gameMode = cfg.gm;
                     core.connect(cfg.fallback);
