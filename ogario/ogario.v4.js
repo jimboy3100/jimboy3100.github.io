@@ -20815,7 +20815,10 @@ function thelegendmodproject() {
             if (on) {
                 this.clearChatHistory(true);
                 for (let length = 0; length < this.chatHistory.length; length++) {
-                    $('#messages').append('<li><span class="message-nick">' + this.chatHistory[length].nick + ': </span><span class="message-text">' + this.chatHistory[length].message + '</span></li>');
+                    var he = this.chatHistory[length];
+                    var heNick = he.nickHtml != null ? he.nickHtml : this.escapeHTML(String(he.nick || ''));
+                    var heMsg = he.messageHtml != null ? he.messageHtml : this.escapeHTML(String(he.message || ''));
+                    $('#messages').append('<li><span class="message-nick">' + heNick + ': </span><span class="message-text">' + heMsg + '</span></li>');
                 }
                 return;
             }
@@ -28153,9 +28156,24 @@ function thelegendmodproject() {
                 //
                 if (!(0 === a.length || fancyCount2(a) > 15 || 0 === n.length)) {
                     //if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
+                    /* History entries feed the canvas chat bubbles (plain text, matched to the
+                     * raw cell nick): store the raw nick, and the raw text unless the parsed
+                     * message is markup (image/video/emoticons, which the bubbles skip).
+                     * nickHtml/messageHtml are the escaped versions for HTML insertion. */
+                    var rawNick = a;
+                    var rawText = msg.replace(a + ': ', '');
                     var r = '';
                     if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 === caseof) {
 
+                        /* pushed first: the chat-box path returns early, so bubbles never appeared */
+                        this.chatHistory.push({
+                            'nick': rawNick,
+                            'message': n.indexOf('<') !== -1 ? n : rawText,
+                            'nickHtml': a,
+                            'messageHtml': n,
+                            'time': Date.now()
+                        });
+                        this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
@@ -28163,17 +28181,17 @@ function thelegendmodproject() {
                             }, 500),
                             void (defaultmapsettings.chatSounds && this.playSound(this.messageSound));
                         defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
-                            defaultmapsettings.chatSounds && this.playSound(this.messageSound)),
-                            this.chatHistory.push({
-                                'nick': a,
-                                'message': n,
-                                //
-                                'time': Date.now()
-                                //
-                            }),
-                            this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
+                            defaultmapsettings.chatSounds && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
                     } else if (102 === caseof) {
+                        this.commandHistory.push({
+                            'nick': rawNick,
+                            'message': n.indexOf('<') !== -1 ? n : rawText,
+                            'nickHtml': a,
+                            'messageHtml': n,
+                            'time': Date.now()
+                        });
+                        this.commandHistory.length > 15 && this.commandHistory.shift();
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
@@ -28181,15 +28199,7 @@ function thelegendmodproject() {
                             }, 500),
                             void (defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                         defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
-                            defaultmapsettings.chatSounds && this.playSound(this.commandSound)),
-                            this.commandHistory.push({
-                                'nick': a,
-                                'message': n,
-                                //
-                                'time': Date.now()
-                                //
-                            }),
-                            this.commandHistory.length > 15 && this.commandHistory.shift();
+                            defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                     } else {
                         /* Other message types: always treat the remote text as plain text. */
                         $('#messages').append($('<li>').text(msg));
