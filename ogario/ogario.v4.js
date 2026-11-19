@@ -44616,6 +44616,10 @@ Most cells eaten   : ${mostCellsEaten}
                 if (id === 0) { sections--; continue; }
                 var x = data.getInt32(offset, true); offset += 4;
                 var y = data.getInt32(offset, true); offset += 4;
+                /* Map rotation, as updateCells (Delta receiveX/receiveY): sendPosition
+                 * mirrors the cursor back, so raw x/y would invert steering. */
+                if (window.legendmod.vector[window.legendmod.vnr][0]) x = this.translateX(x);
+                if (window.legendmod.vector[window.legendmod.vnr][1]) y = this.translateY(y);
                 var size = data.getUint16(offset, true); offset += 2;
                 var flags = data.getUint8(offset++);
                 var extFlags = (flags & 0x80) ? data.getUint8(offset++) : 0;
@@ -44817,6 +44821,9 @@ Most cells eaten   : ${mostCellsEaten}
                 // Sigmally uses Int16 for x,y (not Int32 like agar.io)
                 var x = data.getInt16(offset, true); offset += 2;
                 var y = data.getInt16(offset, true); offset += 2;
+                /* Map rotation, as updateCells and opcode 17 (Delta receiveX/receiveY). */
+                if (window.legendmod.vector[window.legendmod.vnr][0]) x = this.translateX(x);
+                if (window.legendmod.vector[window.legendmod.vnr][1]) y = this.translateY(y);
                 var size = data.getUint16(offset, true); offset += 2;
 
                 var flags = data.getUint8(offset++);
