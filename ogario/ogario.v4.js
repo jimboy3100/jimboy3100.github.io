@@ -43689,7 +43689,7 @@ Most cells eaten   : ${mostCellsEaten}
              * ones during play, which shifted the offset).
              */
             var isFullPacket =
-                this.connectionIntegrity
+                (this.connectionIntegrity && !LM.isLegendWorld)
                     ? (!this.mapOffsetFixed && pWidth > 14000 && pHeight > 14000)
                     : (isGenericPrivate ||
                         (pWidth > 6000 && pHeight > 6000) ||
