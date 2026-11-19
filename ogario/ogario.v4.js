@@ -28750,6 +28750,21 @@ function thelegendmodproject() {
             nicks.set(id, name);
             if (nicks.size > 300) nicks.delete(nicks.keys().next().value);
         },
+        /* stable chat id per nick for game-server chat (opcode 99 carries no player id) */
+        serverChatUserId(nick) {
+            var ids = this._lmSrvChatIds || (this._lmSrvChatIds = new Map());
+            nick = String(nick || '');
+            if (!ids.has(nick)) {
+                if (ids.size >= 1000) {
+                    for (var [k, v] of ids) {
+                        if (!this.isChatUserMuted(v)) { ids.delete(k); break; }
+                    }
+                }
+                this._lmSrvChatNext = (this._lmSrvChatNext || 0x40000000) + 1;
+                ids.set(nick, this._lmSrvChatNext);
+            }
+            return ids.get(nick);
+        },
         getChatUserNick(id) {
             if (this.chatUsers.hasOwnProperty(id)) {
                 return this.chatUsers[id];
@@ -38745,13 +38760,17 @@ function thelegendmodproject() {
                         message = "For bot commands look at Hotkeys"
                     }
                     this.chatableServer = true;
+                    /* Opcode 99 has no sender id (all of it used id 1000, so the mute button did nothing):
+                     * each nick gets its own id, which the mute list checks. */
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
-                        application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
+                        var _lmSrvChatId = application.serverChatUserId(name);
+                        if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
                     /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
                      * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */
                     else if (this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
-                        application.displayChatMessage(time, 101, 1000, message);
+                        var _lmTeamChatId = application.serverChatUserId(message.split(': ', 1)[0]);
+                        if (!application.isChatUserMuted(_lmTeamChatId)) application.displayChatMessage(time, 101, _lmTeamChatId, message);
                     }
                     /* ── Auto-reconnect on server restart chat ── */
                     if (server && message.toLowerCase().includes('restarting')) {
