@@ -40672,8 +40672,14 @@ function thelegendmodproject() {
             var closeBtn = document.getElementById('lm-go-close');
             if (closeBtn) closeBtn.addEventListener('click', function(e) { e.stopPropagation(); dismissGameOver(); });
 
-            /* Auto-dismiss after 12 seconds */
-            setTimeout(dismissGameOver, 12000);
+            /* Auto-dismiss after 12 seconds. Cancel the previous modal's timer so it
+             * does not close this one early (dismissGameOver looks the modal up by id). */
+            if (this._gameOverDismissTimer) clearTimeout(this._gameOverDismissTimer);
+            var goSelf = this;
+            this._gameOverDismissTimer = setTimeout(function () {
+                goSelf._gameOverDismissTimer = null;
+                dismissGameOver();
+            }, 12000);
         },
         updateEvents(event) {
             /*
