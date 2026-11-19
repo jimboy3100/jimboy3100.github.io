@@ -20296,7 +20296,7 @@ function thelegendmodproject() {
         toggleSkins() {
             if (ogario.vanillaSkins && ogario.customSkins) {
                 ogario.vanillaSkins = false;
-            } else if (!ogario.vannillaSkins && ogario.customSkins) {
+            } else if (!ogario.vanillaSkins && ogario.customSkins) {
                 ogario.vanillaSkins = true;
                 ogario.customSkins = false;
             } else {
