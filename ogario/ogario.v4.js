@@ -36606,12 +36606,14 @@ function thelegendmodproject() {
                     //(function anonymous(t) {
                     console.log('case 87');
                     window.testobjectsOpcode87 = data;
+                    var _lmCaptchaSelf = this;
                     window.agarCaptcha.requestCaptchaV3("play", function (a) {
-                        var b = this.createView(2 + a.length);
+                        if (!a) return;
+                        var b = _lmCaptchaSelf.createView(2 + a.length);
                         b.setUint8(0, 88);
                         for (var c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
                         b.setUint8(a.length + 1, 0);
-                        this.sendMessage(b)
+                        _lmCaptchaSelf.sendMessage(b)
                     });
                     //})(window,this)		
 
