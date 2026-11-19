@@ -37138,9 +37138,10 @@ function thelegendmodproject() {
                     break;
                 case 18:
                     window.testobjectsOpcode18 = data;
-                    if (this.protocolKey) {
-                        this.protocolKey = this.shiftKey(this.protocolKey);
-                    }
+                    // No protocol-key rotation here: current agar.io keeps decrypting with
+                    // protocolKey ^ clientVersion for the whole connection (Delta's legacy
+                    // protocol has the rotation on 18 disabled too). Rotating made every later
+                    // packet garbage until reconnect.
                     /*
                      * ClearAll clears ENTITY state, not Expanding Land's authoritative
                      * dynamic map geometry.  During tab-resync we remain on the same
