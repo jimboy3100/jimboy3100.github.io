@@ -138,6 +138,20 @@ window.OgVer = 3.504;
             }
         }
 
+        /* The logout listener disables #adRewardBtn, but updateShopLoginState
+           does not manage it: re-enable it on login unless a request is pending. */
+        try {
+            var arBtn = document.getElementById('adRewardBtn');
+            if (arBtn && arBtn.disabled && !window._adRewardTimeout &&
+                typeof window.checkUserLoggedIn === 'function' && window.checkUserLoggedIn()) {
+                arBtn.disabled = false;
+                arBtn.style.opacity = '1';
+                arBtn.style.cursor = '';
+                arBtn.style.pointerEvents = 'auto';
+                arBtn.removeAttribute('title');
+            }
+        } catch (arErr) {}
+
         /*
          * VIP LIVE ACCOUNT STATE
          *
