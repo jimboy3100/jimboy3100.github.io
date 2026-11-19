@@ -1135,7 +1135,8 @@ function foundName(leaderboard, name) {
 }
 
 function playYoutube() {
-    if (musicPlayer != undefined) {
+    /* the YT.Player methods only exist after the iframe API is ready */
+    if (musicPlayer != undefined && typeof musicPlayer.getPlayerState === "function") {
         var playerState = musicPlayer.getPlayerState();
         if (playerState != 1) {
             musicPlayer.playVideo();
@@ -8001,6 +8002,9 @@ function ytFrame() {
             musicPlayer = new YT.Player('musicFrame', {
                 events: {
                     'onStateChange': function (state) {
+                        /* keep the #playerBtn toggle in step with the real state (video ended,
+                         * paused in the frame, started from a chat [yut] invite) */
+                        playerState = state.data == 1 ? 1 : 0;
                         if (state.data == 1) {
                             $("#playerI").removeClass("fa-play-circle").addClass("fa-pause-circle");
                             $("#playerBtn").attr('data-original-title', Premadeletter60).tooltip('fixTitle');

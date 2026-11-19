@@ -28762,6 +28762,21 @@ function thelegendmodproject() {
             nicks.set(id, name);
             if (nicks.size > 300) nicks.delete(nicks.keys().next().value);
         },
+        /* stable chat id per nick for game-server chat (opcode 99 carries no player id) */
+        serverChatUserId(nick) {
+            var ids = this._lmSrvChatIds || (this._lmSrvChatIds = new Map());
+            nick = String(nick || '');
+            if (!ids.has(nick)) {
+                if (ids.size >= 1000) {
+                    for (var [k, v] of ids) {
+                        if (!this.isChatUserMuted(v)) { ids.delete(k); break; }
+                    }
+                }
+                this._lmSrvChatNext = (this._lmSrvChatNext || 0x40000000) + 1;
+                ids.set(nick, this._lmSrvChatNext);
+            }
+            return ids.get(nick);
+        },
         getChatUserNick(id) {
             if (this.chatUsers.hasOwnProperty(id)) {
                 return this.chatUsers[id];
@@ -28811,8 +28826,11 @@ function thelegendmodproject() {
                 return '<img src=\"https://www.legendmod.ml/banners/emoticons/' + d[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });*/
             //return String(string).replace(/\&lt\;3/g, '<3').replace(/?/g, '? Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(string) {
-            return String(string).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function (string) {
+            /* entities from escapeHTML (&quot; &#39; &#x2F; ...) are matched first and kept, so a typed ") is not
+             * cut into '&quot' + ;) ; patterns without a picture ((rage), (evil)) stay text instead of a broken img */
+            return String(string).replace(/\&lt\;3/g, '<3').replace(/(&(?:#x?[0-9a-fA-F]+|[a-zA-Z]+);|O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function (string) {
                 //console.log(d[string]);
+                if (string.charAt(0) === '&' || !emoticonicons.hasOwnProperty(string)) return string;
                 return '<img src=\"https://www.legendmod.ml/banners/emoticons/' + emoticonicons[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });
 
@@ -28859,11 +28877,13 @@ function thelegendmodproject() {
                         });
                         this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                            /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
+                            $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500),
-                            void (defaultmapsettings.chatSounds && this.playSound(this.messageSound));
+                            void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && this.playSound(this.messageSound)); /* hidden chat box: silent, like the popups */
                         defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
@@ -28877,11 +28897,13 @@ function thelegendmodproject() {
                         });
                         this.commandHistory.length > 15 && this.commandHistory.shift();
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                            /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
+                            $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500),
-                            void (defaultmapsettings.chatSounds && this.playSound(this.commandSound));
+                            void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && this.playSound(this.commandSound));
                         defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                     } else {
@@ -28944,13 +28966,23 @@ function thelegendmodproject() {
 
             if (window.LMSkinStorage) {
                 window.LMSkinStorage.getAudio(audioUrl, function (cachedData) {
-                    if (cachedData) {
+                    /* an error page cached by an earlier version (data:text/html) is not a sound */
+                    if (cachedData && !/^data:text\//i.test(String(cachedData))) {
                         audioObj.src = cachedData;
                     } else {
                         try {
                             fetch(audioUrl)
-                                .then(function (res) { return res.blob(); })
+                                .then(function (res) {
+                                    /* 404/5xx pages (and every half-typed URL in the settings box)
+                                     * must not be cached as the sound forever */
+                                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                                    return res.blob();
+                                })
                                 .then(function (blob) {
+                                    if (blob.type && /^text\//i.test(blob.type)) {
+                                        audioObj.src = audioUrl;
+                                        return;
+                                    }
                                     var reader = new FileReader();
                                     reader.onloadend = function () {
                                         if (reader.result) {
@@ -38753,13 +38785,17 @@ function thelegendmodproject() {
                         message = "For bot commands look at Hotkeys"
                     }
                     this.chatableServer = true;
+                    /* Opcode 99 has no sender id (all of it used id 1000, so the mute button did nothing):
+                     * each nick gets its own id, which the mute list checks. */
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
-                        application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
+                        var _lmSrvChatId = application.serverChatUserId(name);
+                        if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
                     /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
                      * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */
                     else if (this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
-                        application.displayChatMessage(time, 101, 1000, message);
+                        var _lmTeamChatId = application.serverChatUserId(message.split(': ', 1)[0]);
+                        if (!application.isChatUserMuted(_lmTeamChatId)) application.displayChatMessage(time, 101, _lmTeamChatId, message);
                     }
                     /* ── Auto-reconnect on server restart chat ── */
                     if (server && message.toLowerCase().includes('restarting')) {
