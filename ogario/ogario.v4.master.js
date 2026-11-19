@@ -1669,6 +1669,7 @@ function legendmaster(self) {
             self.facebookLogin();
         },
         doLoginWithFB(session) {
+            var prevContext = this.context;
             this.context = "facebook";
             /* A new token may be sent while this connection is not logged in yet
              * (an earlier attempt got no login response). */
@@ -1676,8 +1677,10 @@ function legendmaster(self) {
             this.accessToken = session;
             this._tokenTime = Date.now();
             this._startTokenRefresh();
+            this._reloginOnProviderSwitch(prevContext);
         },
         doLoginWithGPlus(value) {
+            var prevContext = this.context;
             this.context = "google";
             /* A new token may be sent while this connection is not logged in yet
              * (an earlier attempt got no login response). */
@@ -1685,6 +1688,24 @@ function legendmaster(self) {
             this.accessToken = value;
             this._tokenTime = Date.now();
             this._startTokenRefresh();
+            this._reloginOnProviderSwitch(prevContext);
+        },
+        /*
+         * Provider switch (Facebook <-> Google) on a connection that is already logged in:
+         * the token goes out once per connection, so the server kept the old account while
+         * the UI showed the new profile until some later reconnect. Open a fresh connection
+         * to the same server; its login sends the new token. Token refreshes keep the same
+         * provider and do not reconnect.
+         */
+        _reloginOnProviderSwitch(prevContext) {
+            var lm = window.legendmod;
+            if (!prevContext || prevContext === this.context || !lm || lm.loginConfirmed !== true) return;
+            console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Login provider changed (" + prevContext + " -> " + this.context + "), reconnecting for the new account");
+            if (lm.serverType === "agario") {
+                this.reconnect(true, "login provider change");
+            } else if ((lm.serverType === "expandingland" || lm.isLegendWorld) && lm.ws && self.core) {
+                self.core.connect(lm.ws);
+            }
         },
         /*
          * Like Delta's AccountManager: refresh the provider token before it
