@@ -391,6 +391,14 @@ class Spect {
         } else if (master.context === "google") {
             if (master.accessTokenFB) {
                 MultiTokenReady(this)
+            } else if (!(window.FB && typeof window.FB.login === "function")) {
+                /* Facebook SDK not available (blocked): master.facebookLogin() would show a
+                 * blocking alert inside the socket handler. Play this unit as guest. */
+                if (!this._fbUnavailableToastShown && typeof toastr !== "undefined") {
+                    this._fbUnavailableToastShown = true;
+                    toastr.warning("<b>[MULTIBOX]:</b> Facebook login is unavailable, the multibox unit plays as guest.");
+                }
+                this.handleSendNick()
             } else {
                 window.MultiPending = this
                 this._armMultiPendingTimeout()
