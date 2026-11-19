@@ -2375,6 +2375,8 @@ function SpecialDeals(defaultTab) {
             var selectedVer = $("#ss-select-agarVersionDestinations").val();
             var newUrl = window.LM_CONFIG_CDN + "/" + selectedVer + "GameConfiguration.json";
             $("#GameConfigurationUrl").val(newUrl);
+            /* A chosen library version must not be replaced by agar.io's current one. */
+            window._lmShopConfigUrlChosen = true;
 
             /* Invalidate cached config so LoadGameConfiguration fetches fresh data
              * from the new library path instead of returning the stale cache. */
@@ -2399,6 +2401,7 @@ function SpecialDeals(defaultTab) {
             /* Blur without a change must not wipe the loaded config. */
             if (!newUrl || newUrl === window.MiniclipConfigDestination) return;
             window.MiniclipConfigDestination = newUrl;
+            window._lmShopConfigUrlChosen = true;
 
             /* Invalidate cached config so a fresh fetch is forced */
             window.GameConfiguration = null;
@@ -2877,6 +2880,13 @@ function populateDealsGrid() {
     }
 
     // --- IAP Deals (real money) ---
+    var dealCurrency = String($('#BuyDealCurrency').val() || 'USD').trim().toUpperCase();
+    if (!/^[A-Z]{3}$/.test(dealCurrency)) dealCurrency = 'USD';
+    var currencySelect = document.getElementById('BuyDealCurrency');
+    if (currencySelect && !currencySelect._lmDealPriceBound) {
+        currencySelect._lmDealPriceBound = true;
+        currencySelect.addEventListener('change', function () { populateDealsGrid(); });
+    }
     for (var i = 0; i < iaps.length; i++) {
         var deal = iaps[i];
         var bundleInfo = bundleLookup[deal.bundleId] || {};
@@ -2887,11 +2897,14 @@ function populateDealsGrid() {
                 for (var m = 0; m < matrix.length; m++) {
                     var row = matrix[m];
                     if (String(row.tier) !== String(tier)) continue;
-                    /* The web payment service requests USD.
-                     * The price-matrix row stores currencies as direct properties. */
-                    var amount = row.USD;
+                    /* Show the currency the checkout will request (#BuyDealCurrency,
+                     * see getOfficialAgarPaymentService). The price-matrix row
+                     * stores currencies as direct properties. */
+                    var amount = row[dealCurrency];
                     if (amount !== undefined && amount !== null && isFinite(Number(amount))) {
-                        return '$' + Number(amount).toFixed(2);
+                        return dealCurrency === 'USD'
+                            ? '$' + Number(amount).toFixed(2)
+                            : Number(amount).toFixed(2) + ' ' + dealCurrency;
                     }
                 }
             }
@@ -4548,7 +4561,10 @@ function buyDealBundle(bundleId, dealDesc) {
              * The official dispatcher resolves this as type OFFER and sends
              * Offer_bundle_request, opcode 77. No purchase URL is involved.
              */
-            window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } });
+            /* sendProto returns false when nothing went out (login not confirmed). */
+            if (window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } }) !== true) {
+                throw new Error('Offer bundle request was not sent');
+            }
             toastr.info('<b>[SHOP]:</b> Bundle purchase request sent...');
             console.log('[SHOP] Sent offer bundle request for ' + bundleId);
         } catch (error) {
@@ -4642,20 +4658,51 @@ function isSkinOwned(s, ownedSkinsObj) {
     var modId = s.productId ? s.productId.replace('skin_', '%') : '';
     var cleanId = s.productId ? s.productId.replace('skin_', '') : '';
 
-    if (ownedSkinsObj.hasOwnProperty(rawId) || ownedSkinsObj.hasOwnProperty(modId) || ownedSkinsObj.hasOwnProperty(cleanId)) {
+    /* Like the official client (checkUserSkin / isSkinOwned): a wallet entry
+     * counts only while its amount is above 0 (expired or removed skins stay
+     * in the map with amount 0). */
+    function active(item) {
+        return !!item && !(typeof item.amount === 'number' && item.amount <= 0);
+    }
+
+    if ((ownedSkinsObj.hasOwnProperty(rawId) && active(ownedSkinsObj[rawId])) ||
+        (ownedSkinsObj.hasOwnProperty(modId) && active(ownedSkinsObj[modId])) ||
+        (ownedSkinsObj.hasOwnProperty(cleanId) && active(ownedSkinsObj[cleanId]))) {
         return true;
     }
+
+    /* Keys can also be skin image URLs: match the file name exactly, a substring
+     * test made "rat.png" match ".../golden_rat.png" (67 such pairs in the config). */
+    var imageSuffix = s.image && s.image !== 'uses_spine' ? '/' + s.image : '';
 
     for (var k in ownedSkinsObj) {
         if (ownedSkinsObj.hasOwnProperty(k)) {
             var item = ownedSkinsObj[k];
-            if (item) {
+            if (active(item)) {
                 if (item.productId === rawId || item.productId === modId || item.productId === cleanId) return true;
-                if (typeof k === 'string' && s.image && k.indexOf(s.image) !== -1) return true;
+                if (imageSuffix && typeof k === 'string' && k.length > imageSuffix.length &&
+                    k.slice(-imageSuffix.length) === imageSuffix) return true;
             }
         }
     }
     return false;
+}
+
+/* Owned uploaded skins (skin_custom_*, amount above 0) as skin-list entries. */
+function getOwnedCustomSkinEntries(ownedSkinsObj) {
+    var entries = [];
+    var seen = Object.create(null);
+    if (!ownedSkinsObj) return entries;
+    for (var k in ownedSkinsObj) {
+        if (!ownedSkinsObj.hasOwnProperty(k)) continue;
+        var item = ownedSkinsObj[k];
+        if (!item || (typeof item.amount === 'number' && item.amount <= 0)) continue;
+        var id = String(item.productId || k);
+        if (id.indexOf('skin_custom_') !== 0 || seen[id]) continue;
+        seen[id] = true;
+        entries.push({ productId: id, image: id + '.png', skinType: 'custom' });
+    }
+    return entries;
 }
 
 var _populateSkinsRetries = 0;
@@ -4703,8 +4750,15 @@ function populateSkins() {
 
         var ownedSkinsObj = getOwnedSkinsMap();
 
+        /*
+         * Uploaded custom skins are not in "Gameplay - Equippable Skins". The
+         * official client adds an owned skin_custom_* wallet item to the skin
+         * list (addCustomSkin), so it can be equipped and deleted here too.
+         */
+        var sourceSkins = skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj));
+
         skinShopFiltered =
-            skins.filter(
+            sourceSkins.filter(
                 function (
                     skin
                 ) {
@@ -4746,7 +4800,7 @@ function populateSkins() {
          * owned map) on every comparison, freezing the UI on each rebuild.
          */
         var configIndex = new Map();
-        for (var ci = 0; ci < skins.length; ci++) configIndex.set(skins[ci], ci);
+        for (var ci = 0; ci < sourceSkins.length; ci++) configIndex.set(sourceSkins[ci], ci);
         var keyedSkins = skinShopFiltered.map(function (skin) {
             var owned = isSkinOwned(skin, ownedSkinsObj);
             var info = getSkinPurchaseInfo(skin.productId, skin);
@@ -4880,7 +4934,7 @@ function populateSkins() {
     // Update owned skin count
     var ownedSkinsObj = getOwnedSkinsMap();
     var ownedCount = 0;
-    skins.forEach(function(s) {
+    skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj)).forEach(function(s) {
         if (s.productId !== 'skin_empty' && isSkinOwned(s, ownedSkinsObj)) ownedCount++;
     });
     if (ownedCount > 0) {
@@ -5926,9 +5980,28 @@ function getSkinPurchaseInfo(
             continue;
         }
 
+        /*
+         * "Shop - Skins" rows carry skinType, not type. The official
+         * ShopSkinItemVO maps VETERAN to REWARD and INAPP to INAPP; the
+         * config spells the latter "IN-APP".
+         */
+        var candidateSkinType =
+            String(
+                typeCandidate.skinType ||
+                ''
+            )
+                .trim()
+                .toUpperCase();
+
         var configuredType =
             String(
                 typeCandidate.type ||
+                (candidateSkinType === 'VETERAN'
+                    ? 'REWARD'
+                    : candidateSkinType === 'INAPP' ||
+                        candidateSkinType === 'IN-APP'
+                        ? 'INAPP'
+                        : '') ||
                 fallbackType ||
                 ''
             )
@@ -8194,10 +8267,31 @@ function LoadGameConfiguration() {
      * already-loaded config is valid while it still points at the default
      * URL (URL/version changes clear these caches before calling here).
      */
+    /*
+     * The login response can move window.agarversion to a newer config after
+     * this file (and master's config fetch) used the stored one. Unless the
+     * user picked a library version or URL, follow agar.io's current config
+     * and fetch it once: the cached config is the older version, and the
+     * stale load-time URL used to be refetched instead.
+     */
+    var _lmFollowLatestConfig = false;
+    if (
+        !window._lmShopConfigUrlChosen &&
+        !window._isLoadingGameConfig &&
+        typeof window.LM_CONFIG_URL === 'function' &&
+        window.MiniclipConfigDestination &&
+        window.MiniclipConfigDestination !== window.LM_CONFIG_URL()
+    ) {
+        window.MiniclipConfigDestination = window.LM_CONFIG_URL();
+        $('#GameConfigurationUrl').val(window.MiniclipConfigDestination);
+        _lmFollowLatestConfig = true;
+    }
+
     var _lmConfigIsDefault =
+        !_lmFollowLatestConfig && (
         !window.MiniclipConfigDestination ||
         (typeof window.LM_CONFIG_URL === 'function' &&
-            window.MiniclipConfigDestination === window.LM_CONFIG_URL());
+            window.MiniclipConfigDestination === window.LM_CONFIG_URL()));
 
     if (
         _lmConfigIsDefault &&
