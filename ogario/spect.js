@@ -1140,7 +1140,8 @@ class Spect {
                     var _lm102 = window.decodeMobileData(new Uint8Array(view.buffer, view.byteOffset + 1, view.byteLength - 1));
                     if (_lm102 && _lm102.uncompressedData) _lm102Type = _lm102.uncompressedData.type;
                 } catch (e102) { }
-                if (_lm102Type !== 31 &&
+                /* Spectator sockets never spawn. */
+                if (this.player && _lm102Type !== 31 &&
                     (!this._lmHasSpawned || defaultmapsettings.mbAutoRespawn !== false) &&
                     Date.now() - (this._lmLastSpawnReq || 0) > 2000) {
                     this._lmLastSpawnReq = Date.now();
