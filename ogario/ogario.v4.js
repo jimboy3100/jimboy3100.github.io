@@ -72565,6 +72565,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 case 192:
                     normalKey = 'TILDE';
                     break;
+                /* Numpad + and - came through String.fromCharCode as 'k' and 'm' (firing the
+                 * K / M hotkeys), so the default '+' (quit game) could never be pressed. */
+                case 107:
+                    normalKey = '+';
+                    break;
+                case 109:
+                    normalKey = '-';
+                    break;
                 default:
                     normalKey = String.fromCharCode(key.keyCode);
             }
