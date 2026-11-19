@@ -42,8 +42,9 @@
     <!--div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/loader/LoaderNew.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div-->
     <link rel="stylesheet" href="https://jimboy3100.github.io/lib/context-menu.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css">
-    <script src="https://delt.io/v7/js/runtimechunk~P2PWebSocket.js"></script>
-    <script src="https://delt.io/v7/js/P2PWebSocket.js"></script>
+    <!-- defer: optional P2P helper; a slow delt.io must not block the page (the proxy checks P2PWebSocket at connect time) -->
+    <script defer src="https://delt.io/v7/js/runtimechunk~P2PWebSocket.js"></script>
+    <script defer src="https://delt.io/v7/js/P2PWebSocket.js"></script>
     <script>
     /* P2P WebSocket proxy — intercepts hash:// server connections */
     (function() {
@@ -359,7 +360,8 @@
     <a href="https://expanding.land/privacy.html"
         style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;">Privacy Policy</a>
     <script>
-        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        /* A touch-only device, not any device with a touchscreen (touch laptops have a mouse). */
+        if (window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) {
             var _lmm = document.createElement('script');
             _lmm.src = 'https://jimboy3100.github.io/LMmobile/LMmobile.js';
             document.body.appendChild(_lmm);

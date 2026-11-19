@@ -17,7 +17,8 @@
 (function () {
     'use strict';
 
-    if (!('ontouchstart' in window) && navigator.maxTouchPoints <= 0) return;
+    /* Touch-only devices: Windows touch laptops (mouse + touchscreen) keep the desktop UI. */
+    if (!(window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches)) return;
 
     /* ── Global flag for other scripts to detect mobile mode ── */
     window.LM_IS_MOBILE = true;
