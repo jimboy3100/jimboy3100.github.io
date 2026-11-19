@@ -3335,15 +3335,18 @@ window.softPurchase =
                 return true;
             } catch (encErr) {
                 console.error('[LM] Failed to encode softPurchase opcode 70:', encErr);
-                if (window._lmCancelSoftPurchase) {
-                    window._lmCancelSoftPurchase(purchaseId, 'encode_error');
+                /* Not sent: drop the pending entry without onFailure. Callers
+                 * handle the false return; both ran their failure path twice. */
+                if (window._lmTakeSoftPurchase) {
+                    window._lmTakeSoftPurchase(purchaseId);
                 }
                 return false;
             }
         }
 
-        if (window._lmCancelSoftPurchase) {
-            window._lmCancelSoftPurchase(purchaseId, 'network_not_ready');
+        /* Not sent: same as above, the false return is the only signal. */
+        if (window._lmTakeSoftPurchase) {
+            window._lmTakeSoftPurchase(purchaseId);
         }
         return false;
     };
