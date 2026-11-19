@@ -34168,6 +34168,9 @@ function thelegendmodproject() {
                             : t.includes('sigmally.com') ? 'sigmally'
                                 : (t.includes('senpa.io') || t.includes('mi.com')) ? 'senpa'
                                     : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                                        /* older/proxied official URLs: integrity is already true for these,
+                                         * and as 'private' the split hotkeys sent Imsolo opcodes 26-28/32 to agar.io */
+                                        : (t.includes('agar.io') || t.includes('live-arena')) ? 'agario'
                                         : 'private';
 
             /*
