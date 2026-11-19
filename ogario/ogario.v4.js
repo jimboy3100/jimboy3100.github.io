@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.522;
+window.OgVer = 3.523;
 
 
 /*
@@ -1688,6 +1688,8 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function () {
+        /* who keeps logging out: one stack per call (the 'Logged out!' toast comes from here) */
+        try { console.warn('[LM LOGOUT] logout() called', { manual: !!window._isUserManualLogout, privateSwitch: !!window._isChangingToPrivateServer, reconnecting: !!window._lwReconnecting, authRetrying: !!window._lwAuthRetrying, server: window.legendmod && window.legendmod.ws }, new Error('logout caller').stack); } catch (e) { }
         var intendedLogout = !!(
             window._isUserManualLogout ||
             window._isChangingToPrivateServer
