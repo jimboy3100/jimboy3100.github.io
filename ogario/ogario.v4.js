@@ -28252,7 +28252,9 @@ function thelegendmodproject() {
             return command.replace('%currentSector%', this.currentSector);
         },
         sendCommand(command) {
-            var prepareCommand = this.prepareCommand(chatCommand['comm' + command]);
+            var _lmCommandText = chatCommand['comm' + command];
+            if (typeof _lmCommandText !== 'string' || !_lmCommandText.length) return;
+            var prepareCommand = this.prepareCommand(_lmCommandText);
             this.sendChatMessage(102, prepareCommand);
 
             //		
@@ -72837,7 +72839,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 typeof storedCommands === 'object' &&
                 !Array.isArray(storedCommands)
             ) {
-                chatCommand = storedCommands;
+                /* Merge over the defaults: a list saved before newer commands were added
+                 * left those undefined, so the hotkeys menu showed "undefined" (and saved it)
+                 * and sendCommand threw on prepareCommand(undefined). */
+                for (var _lmCmd in storedCommands) {
+                    if (storedCommands.hasOwnProperty(_lmCmd) && typeof storedCommands[_lmCmd] === 'string') {
+                        chatCommand[_lmCmd] = storedCommands[_lmCmd];
+                    }
+                }
             }
         },
         /*
