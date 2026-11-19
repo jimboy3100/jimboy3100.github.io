@@ -44196,13 +44196,11 @@ Most cells eaten   : ${mostCellsEaten}
             // Death check
             if (this.removePlayerCell && !this.playerCells.length) {
                 if (defaultmapsettings.mbSwitchAfterDeath && LM.playerCellsMulti && LM.playerCellsMulti.length) {
-                    // Bug 8 fix: find first living multibox unit instead of hardcoding 1
-                    if (application && typeof application.switchToNextLivingUnit === 'function') {
-                        window.multiboxPlayerEnabled = null; // start from main slot
-                        application.switchToNextLivingUnit(true);
-                    } else {
-                        window.multiboxPlayerEnabled = 1;
-                    }
+                    /* application.switchToNextLivingUnit never existed, so this always
+                     * forced unit 1 and skipped the death handling. Like updateCells: end
+                     * the game and let onPlayerDeath() switch to the first living unit. */
+                    this.play = false;
+                    application.onPlayerDeath();
                     this.removePlayerCell = false;
                 } else {
                     this.play = false;
