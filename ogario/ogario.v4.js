@@ -36332,7 +36332,9 @@ function thelegendmodproject() {
                 var decoded = wasm.decode(
                     compressedSize, outputSize
                 );
-                if (decoded >= 0) {
+                /* A short decode means truncated/corrupt input: the zero tail
+                 * would be parsed as phantom cell records. */
+                if (decoded === outputSize) {
                     var out = new Uint8Array(outputSize);
                     out.set(
                         wasm.mem.subarray(
@@ -36359,6 +36361,11 @@ function thelegendmodproject() {
                 if (litLen === 15) {
                     var addByte;
                     do {
+                        if (sPos >= sEnd) {
+                            throw new RangeError(
+                                "LZ4: truncated literal length"
+                            );
+                        }
                         addByte = src[sPos++];
                         litLen += addByte;
                     } while (addByte === 255);
@@ -36377,6 +36384,11 @@ function thelegendmodproject() {
                     dPos += litLen;
                 }
                 if (sPos >= sEnd) break;
+                if (sPos + 2 > sEnd) {
+                    throw new RangeError(
+                        "LZ4: truncated match offset"
+                    );
+                }
 
                 var offset =
                     src[sPos] | (src[sPos + 1] << 8);
@@ -36398,9 +36410,19 @@ function thelegendmodproject() {
                 if ((token & 0xF) === 15) {
                     var addByte2;
                     do {
+                        if (sPos >= sEnd) {
+                            throw new RangeError(
+                                "LZ4: truncated match length"
+                            );
+                        }
                         addByte2 = src[sPos++];
                         matchLen += addByte2;
                     } while (addByte2 === 255);
+                }
+                if (dPos + matchLen > outputSize) {
+                    throw new RangeError(
+                        "LZ4: match run out of bounds"
+                    );
                 }
 
                 var matchPos = dPos - offset;
@@ -36421,7 +36443,7 @@ function thelegendmodproject() {
                 }
             }
 
-            if (dPos < 0 || dPos > outputSize) {
+            if (dPos !== outputSize) {
                 throw new RangeError(
                     "LZ4 decompression failed"
                 );
