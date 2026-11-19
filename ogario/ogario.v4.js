@@ -22716,13 +22716,22 @@ function thelegendmodproject() {
             window.mainPlayerDeadMbActive =
                 false; // Re-enable main client cell updates
             if (ogario.playerColor) {
+                this._lmSpawnTries = 0;
                 this.sendPlayerSpawn();
                 if (!(defaultmapsettings.ownVanillaSkin && (!ogarcopythelb.skinURL || ogarcopythelb.skinURL === ''))) {
                     this.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
                 }
             } else {
+                /* Wait for the first own cell (playerColor), but stop after a death or ~5 s. */
                 const app = this;
+                const spawnGen = app._lmSpawnGen || 0;
+                app._lmSpawnTries = (app._lmSpawnTries || 0) + 1;
+                if (app._lmSpawnTries > 50) {
+                    app._lmSpawnTries = 0;
+                    return;
+                }
                 setTimeout(() => {
+                    if ((app._lmSpawnGen || 0) !== spawnGen) return;
                     app.onPlayerSpawn();
                 }, 100);
                 return;
@@ -22787,6 +22796,9 @@ function thelegendmodproject() {
             }, 200);
         },
         onPlayerDeath() {
+            /* Cancels a pending onPlayerSpawn() retry from this life. */
+            this._lmSpawnGen = (this._lmSpawnGen || 0) + 1;
+            this._lmSpawnTries = 0;
             /* updateCells (last own cell removed) and the official game-over packet
              * (protobuf 62) both report the same death; handle it once. */
             var _lmNow = Date.now();
