@@ -50873,7 +50873,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             );
 
             if (
-                jellyActive ||
                 !this.isLegendWorldMapDeformationVisible()
             ) {
                 out.x = Number.isFinite(x) ? x : 0;
@@ -50882,8 +50881,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 out.weight = 0;
                 return out;
             }
-
-            return this.getLegendWorldMapRenderPoint(x, y, out);
+            /* Jelly (the default) used to stay undeformed while food, grid and
+             * border were deformed, so cells drifted off their food and out of
+             * the drawn border during map events. Jelly cells now move with the
+             * field as a rigid body (no scale, the jelly shape is kept). */
+            this.getLegendWorldMapRenderPoint(x, y, out);
+            if (jellyActive) out.localScale = 1;
+            return out;
         },
 
 
@@ -50960,12 +50964,33 @@ function pickPlayerCellBySize(players, selectBiggest) {
             // Fast path: no deformation to apply, so skip the argument
             // array, closure and apply() that the wrapper needs per cell.
             if (
-                (typeof defaultmapsettings !== 'undefined' &&
-                    defaultmapsettings &&
-                    defaultmapsettings.jellyPhisycs) ||
                 !this.isLegendWorldMapDeformationVisible()
             ) {
                 return cell.draw(ctx, arguments[2]);
+            }
+            if (
+                typeof defaultmapsettings !== 'undefined' &&
+                defaultmapsettings &&
+                defaultmapsettings.jellyPhisycs
+            ) {
+                /* Jelly points are absolute world coordinates: move the cell
+                 * as a rigid body instead of rewriting cell.x/y. */
+                var _jPt = this.getLegendWorldMapRenderPoint(
+                    cell.x, cell.y, this._elMapPointA
+                );
+                var _jDx = _jPt.x - cell.x;
+                var _jDy = _jPt.y - cell.y;
+                if (!Number.isFinite(_jDx) || !Number.isFinite(_jDy) ||
+                    (_jDx === 0 && _jDy === 0)) {
+                    return cell.draw(ctx, arguments[2]);
+                }
+                ctx.save();
+                try {
+                    ctx.translate(_jDx, _jDy);
+                    return cell.draw(ctx, arguments[2]);
+                } finally {
+                    ctx.restore();
+                }
             }
             var extraArgs = Array.prototype.slice.call(arguments, 2);
             return this.withLegendWorldDeformedCellRenderState(
@@ -64327,12 +64352,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var d =
                 this.glJellyVertexData;
 
-
             d[i] =
-                x;
+                x + (this._glJellyOffX || 0);
 
             d[i + 1] =
-                y;
+                y + (this._glJellyOffY || 0);
 
             d[i + 2] =
                 u;
@@ -64380,12 +64404,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var d =
                 this.glJellyStrokeVertexData;
 
-
             d[i] =
-                x;
+                x + (this._glJellyOffX || 0);
 
             d[i + 1] =
-                y;
+                y + (this._glJellyOffY || 0);
 
             d[i + 2] =
                 r;
@@ -65591,6 +65614,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var jellyDrawCount =
                     0;
 
+                /* Expanding Land: per-cell map deformation offset (rigid) */
+                this._glJellyOffX = 0;
+                this._glJellyOffY = 0;
+                var _jellyDeform =
+                    !!(
+                        this.isLegendWorldMapDeformationVisible &&
+                        this.isLegendWorldMapDeformationVisible()
+                    );
+
 
                 /*
                  * Keep the identity of the texture array for this WHOLE frame.
@@ -65642,6 +65674,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cellsArray[
                             jellyIndex
                         ];
+
+                    this._glJellyOffX = 0;
+                    this._glJellyOffY = 0;
+                    if (_jellyDeform && cell) {
+                        var _jDefPt =
+                            this.getLegendWorldMapRenderPoint(
+                                cell.x, cell.y, this._elMapPointA
+                            );
+                        var _jOx = _jDefPt.x - cell.x;
+                        var _jOy = _jDefPt.y - cell.y;
+                        if (Number.isFinite(_jOx) && Number.isFinite(_jOy)) {
+                            this._glJellyOffX = _jOx;
+                            this._glJellyOffY = _jOy;
+                        }
+                    }
 
 
                     if (
@@ -67836,6 +67883,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 LM._worldSpecPanX += _wsPanDX * _wsPanSpeed;
                 LM._worldSpecPanY += _wsPanDY * _wsPanSpeed;
 
+                /* Keep the camera on the (circular) map: the pan grew without
+                 * limit, so holding the mouse at an edge drifted into the void
+                 * and took as long to come back. */
+                var _wsMinX = Number(LM.mapMinX), _wsMaxX = Number(LM.mapMaxX);
+                var _wsMinY = Number(LM.mapMinY), _wsMaxY = Number(LM.mapMaxY);
+                if (Number.isFinite(_wsMinX) && Number.isFinite(_wsMaxX) && _wsMaxX > _wsMinX &&
+                    Number.isFinite(_wsMinY) && Number.isFinite(_wsMaxY) && _wsMaxY > _wsMinY) {
+                    var _wsCX = (_wsMinX + _wsMaxX) / 2, _wsCY = (_wsMinY + _wsMaxY) / 2;
+                    var _wsRad = Math.min(_wsMaxX - _wsMinX, _wsMaxY - _wsMinY) / 2;
+                    var _wsDX = targetCamX + LM._worldSpecPanX - _wsCX;
+                    var _wsDY = targetCamY + LM._worldSpecPanY - _wsCY;
+                    var _wsDist = Math.sqrt(_wsDX * _wsDX + _wsDY * _wsDY);
+                    if (_wsDist > _wsRad && _wsDist > 0) {
+                        LM._worldSpecPanX = _wsCX + _wsDX * _wsRad / _wsDist - targetCamX;
+                        LM._worldSpecPanY = _wsCY + _wsDY * _wsRad / _wsDist - targetCamY;
+                    }
+                }
                 targetCamX += LM._worldSpecPanX;
                 targetCamY += LM._worldSpecPanY;
             }
