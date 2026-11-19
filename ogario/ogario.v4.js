@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.536;
+window.OgVer = 3.537;
 
 
 /*
@@ -25690,6 +25690,11 @@ function thelegendmodproject() {
                 }
 
                 setTimeout(function () {
+                    /* the player joined a real server within these 500 ms: keep its token, no playback */
+                    if (!(window.legendmod && String(window.legendmod.ws || '').indexOf('replay') !== -1)) {
+                        window.replayToken = null;
+                        return;
+                    }
                     $('#server-token').val(window.replayToken)
                     window.replayToken = null
                     //console.log("replay")
