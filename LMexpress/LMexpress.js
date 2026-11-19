@@ -911,7 +911,8 @@ function searchIPHandler(searchStr) { //VERY WEIRD FUNCTION, MOD DOESNT LOAD IF 
         findIP(searchStr.replace("https://agar.io/?search=wss://", ""));
     } else if (getParameterByName("search", searchStr)) {
         if (region) {
-            $('#region option[value="' + region + '"]').prop('selected', 'selected').change();
+            /* match by value, not a selector string: a quote in r= threw a jQuery error */
+            $('#region option').filter(function () { return this.value === region; }).prop('selected', 'selected').change();
             if (!_lmOnLegendWebsite()) {
                 getInfo();
             }
@@ -928,17 +929,11 @@ function searchIPHandler(searchStr) { //VERY WEIRD FUNCTION, MOD DOESNT LOAD IF 
 
 function findIP(searchIP) {
 
-    if (realmode == ":party") {
-        $('#gamemode option[value=":party"]').prop('selected', 'selected').change();
-    }
-    if (realmode == ":ffa") {
-        $('#gamemode option[value=""]').prop('selected', 'selected').change();
-    }
-    if (realmode == ":teams") {
-        $('#gamemode option[value=":teams"]').prop('selected', 'selected').change();
-    }
-    if (realmode == ":experimental") {
-        $('#gamemode option[value=":experimental"]').prop('selected', 'selected').change();
+    /* Select the option whose value is the mode (":ffa", ":teams", ":battleroyale"...).
+     * FFA used to look for value="" which no select has, and battle royale was missing. */
+    var _lmModeOpt = realmode ? $('#gamemode option').filter(function () { return this.value === realmode; }) : $();
+    if (_lmModeOpt.length && $('#gamemode').val() !== realmode) {
+        _lmModeOpt.prop('selected', 'selected').change();
     }
     if (!searching) {
         if ($.trim(searchIP) == '') { } else {
