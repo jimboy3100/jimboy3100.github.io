@@ -25926,6 +25926,13 @@ function thelegendmodproject() {
                         ].alive = isAlive;
                     }
 
+                    /* Colours were parsed but never stored, so minimap dots used a leftover fillStyle. */
+                    if (pColor || customColor) {
+                        this.teamPlayers[
+                            existingIdx
+                        ].setColor(pColor || customColor, customColor);
+                    }
+
                     /* updateTeamPlayers() kills entries older than 2 s; mark this one fresh. */
                     this.teamPlayers[
                         existingIdx
@@ -25985,6 +25992,8 @@ function thelegendmodproject() {
                     if (isAlive !== undefined) {
                         map.alive = isAlive;
                     }
+
+                    map.setColor(pColor || customColor, customColor);
 
                     map.updateTime = Date.now();
 
