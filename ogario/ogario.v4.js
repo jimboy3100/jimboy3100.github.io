@@ -865,9 +865,10 @@ function readLocalStorageJSON(key, fallbackValue) {
     };
     window.LMSkinStorage.init();
 })();
-if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
+/* Hostname, not URL text: agar.io/?sip=wss://ffa.legendmod.ml must not enable website mode. */
+if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i.test(location.hostname)) {
     window.legendModFromWebsite = true;
-    if (document.URL.includes('expanding.land')) {
+    if (/(^|\.)expanding\.land$/i.test(location.hostname)) {
         window.expandingLand = true;
     }
     /* LW: Swap Google OAuth client ID for our domains only.
