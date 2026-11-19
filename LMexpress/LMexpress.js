@@ -815,10 +815,10 @@ function play() {
     $('*[data-itr="page_play"]').click();
 }
 
-function changeServer() {
-    /* The server/player search hops servers every few seconds: stop it once the
+function changeServer(fromSearchTimer) {
+    /* The search hops servers every few seconds: stop its timer hops once the
      * player is in a game there, or the next hop ends that game. */
-    if (typeof legendmod !== "undefined" && legendmod && legendmod.play) {
+    if (fromSearchTimer && typeof legendmod !== "undefined" && legendmod && legendmod.play) {
         if (timerId) clearInterval(timerId);
         searching = false;
         $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
@@ -991,7 +991,7 @@ function findIP(searchIP) {
                             toastr.error(Premadeletter31).css("width", "210px");
                             /* gave up: do not hop to another server */
                         } else {
-                            changeServer();
+                            changeServer(true);
                         }
                     } else {
                         numAttempts++;
@@ -1089,7 +1089,7 @@ function searchPlayer(searchString) {
                             toastr.error(Premadeletter31).css("width", "210px");
                             /* gave up: do not hop to another server */
                         } else {
-                            changeServer();
+                            changeServer(true);
                         }
                     } else {
                         numAttempts++;
