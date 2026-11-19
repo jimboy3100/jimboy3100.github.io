@@ -35765,6 +35765,7 @@ function thelegendmodproject() {
                             var team = rUTF16Len();
                             var color = rU24();
                             var hasReserved = rU8();
+                            var clanTag = rUTF16Len(); /* senpa.io client 2026: clan tag after the reserved-name byte */
                             self._senpaClients[cid] = { name: nick, color: color, team: team, isBot: !!isBot };
                         }
                         var updated = rU8();
@@ -35778,6 +35779,7 @@ function thelegendmodproject() {
                             var team = hasTeam ? rUTF16Len() : null;
                             var color = hasColor ? rU24() : 0;
                             var hasReserved = hasColor ? rU8() : 0;
+                            if (flags & 8) rUTF16Len(); /* clan tag */
                             var c = self._senpaClients[cid];
                             if (c) {
                                 if (hasNick) c.name = nick;
@@ -35799,6 +35801,7 @@ function thelegendmodproject() {
                             var cid = rU16();
                             var color = rU24();
                             var skin = rZTStringLen();
+                            rU32(); /* senpa.io client 2026: hat id after the skin */
                             self._senpaPlayers[pid] = { clientID: cid, color: color, skin: skin };
                         }
                         var updated = rU8();
@@ -35809,6 +35812,7 @@ function thelegendmodproject() {
                             var hasSkin = !!(flags & 2);
                             var color = hasColor ? rU24() : 0;
                             var skin = hasSkin ? rZTStringLen() : null;
+                            if (flags & 4) rU32(); /* hat id */
                             var p = self._senpaPlayers[pid];
                             if (p) {
                                 if (hasColor) p.color = color;
@@ -36591,7 +36595,7 @@ function thelegendmodproject() {
                 return;
             }
 
-            // ===== Senpa join: opcode 10 (nick) + 11 (tag) + 12 (code) + 0 (spawn) =====
+            // ===== Senpa join: opcode 10 (nick) + 11 (tag) + 0 (spawn) =====
             if (this.serverType === 'senpa') {
                 /* WASM still loading or failed: closeConnection() left this.socket null. */
                 if (!this._senpaCanSend()) {
@@ -36614,8 +36618,7 @@ function thelegendmodproject() {
                 this.socket.send(nickBuf);
                 // Send tag (opcode 11) — empty
                 this.socket.send(new Uint8Array([11, 0]).buffer);
-                // Send code (opcode 12) — empty
-                this.socket.send(new Uint8Array([12, 0]).buffer);
+                /* No opcode 12: the current senpa.io client never sends it (skin is 21, hat 25). */
                 // Send spawn (opcode 0 + unitID 0)
                 var spawnBuf = new ArrayBuffer(2);
                 var spawnDV = new DataView(spawnBuf);
@@ -38045,6 +38048,12 @@ function thelegendmodproject() {
                         if (flags & 4) {
                             id = data.getUint32(s, true);
                             s += 4;
+                        }
+                        /* delt.io (Delta ProtocolLegacy.writeLeaderboard) never sets flag 8:
+                         * its id is the player id our own cells carry as account id. */
+                        if (this.serverType === 'deltio' && (flags & 4) && !(flags & 8) && this.playerCellIDs && this.playerCellIDs.length) {
+                            var _dlOwn = this.indexedCells[this.playerCellIDs[0]];
+                            if (_dlOwn && _dlOwn.accID === id) flags |= 8;
                         }
                         if (flags & 8) {
                             nick = this.playerNick;
@@ -39556,6 +39565,13 @@ function thelegendmodproject() {
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
+                    /* delt.io (Delta ProtocolLegacy.writeCipherKey): the server version is
+                     * zero-terminated and the server hashes host + version without the 0. */
+                    if (this.serverType === 'deltio') {
+                        var _dlKeyEnd = key.length;
+                        while (_dlKeyEnd > 0 && key[_dlKeyEnd - 1] === 0) _dlKeyEnd--;
+                        key = key.subarray(0, _dlKeyEnd);
+                    }
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
                     /* sendMessage drops every packet until the client key exists: if the key
                      * cannot be made, the socket would sit silent until the server times it
@@ -46667,11 +46683,6 @@ Most cells eaten   : ${mostCellsEaten}
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         this.vanillaskins(name, skin, color);
                     }
-                }
-                /* delt.io: ext flag 4 = u32 account id after the name (Delta ProtocolLegacy.write_body) */
-                if (!isLegacyMultiOgar && this.serverType === 'deltio' && (extendedFlags & 4)) {
-                    accountID = view.readUInt32LE(offset);
-                    offset += 4;
                 }
                 // MultiOgar / LegacyProtocol (protocols 6-10): flag 0x40 and 0x80 come AFTER color/skin/name in byte stream
                 if (isLegacyMultiOgar && (flags & 0x40)) {
