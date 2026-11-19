@@ -39356,6 +39356,23 @@ function thelegendmodproject() {
 
                     try { this.displayActiveQuests(u.userActiveQuests); } catch (e) { console.error('[LW 102] displayActiveQuests error:', e); }
 
+                    /*
+                     * Daily quest start, as the official QuestsController INIT state:
+                     * no active quest and no "dailyQuest" timed event -> activate the
+                     * timed event (110); its reply credits quest_activation_24h and the
+                     * wallet update sends the quest activation (114). A listed event is
+                     * handled by the timer in updateEvents, a held activation item by
+                     * updateWalletInfo. New users get no quests.
+                     */
+                    try {
+                        var _hasActiveQuest = Array.isArray(u.userActiveQuests) && u.userActiveQuests.length > 0;
+                        var _hasDailyEvent = Array.isArray(u.userTimedEvents) && u.userTimedEvents.some(function (te) { return te && te.eventId === 'dailyQuest'; });
+                        var _isNewUser = !!(u.userInfo && u.userInfo.isNewUser);
+                        if (!_hasActiveQuest && !_hasDailyEvent && !_isNewUser && typeof window.questActivationReq === 'function') {
+                            window.questActivationReq();
+                        }
+                    } catch (e) { console.error('[LW 102] daily quest start error:', e); }
+
                     try { this.createSkinsHTML(); } catch (e) { console.error('[LW 102] createSkinsHTML error:', e); }
 
                     try { this.updateUserSettings(u.userSettings); } catch (e) { console.error('[LW 102] updateUserSettings error:', e); }
@@ -41423,17 +41440,6 @@ function thelegendmodproject() {
             }
 
 
-            if (
-                event.length === 0 &&
-                typeof window
-                    .questActivationReq ===
-                    'function'
-            ) {
-                window
-                    .questActivationReq();
-            }
-
-
             var receivedAt =
                 Date.now();
 
@@ -43409,16 +43415,6 @@ function thelegendmodproject() {
                 items.length ===
                 0
             ) {
-                if (
-                    typeof window
-                        .questActivationReq ===
-                        'function'
-                ) {
-                    window
-                        .questActivationReq();
-                }
-
-
                 try {
                     document.dispatchEvent(
                         new CustomEvent(
