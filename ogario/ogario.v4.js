@@ -39963,9 +39963,12 @@ function thelegendmodproject() {
                         var npr = r.uncompressedData.noProperResponseField;
                         var nprFor = npr ? Number(npr.__for) || 0 : 0;
                         console.log("[LM] No proper response" + (nprFor ? " for request type " + nprFor : ""));
-                        var nprLeagueType = (nprFor === 130 || nprFor === 0) ? window._lmTakePendingLeagueRequest() : 0;
+                        /* __for is a reason code, not the request type (it arrives as 1 for a
+                         * leagues request). Like the official LeaguesModel, any 22 while a
+                         * leagues request is pending answers that request with "no data". */
+                        var nprLeagueType = window._lmTakePendingLeagueRequest();
                         document.dispatchEvent(new CustomEvent('noProperResponse', {
-                            detail: { forType: nprFor, leagueRequestType: nprLeagueType || window._leaguesRequestType || 0 }
+                            detail: { forType: nprFor, leagueRequestType: nprLeagueType }
                         }));
                     } catch (nprErr) { }
                     break;

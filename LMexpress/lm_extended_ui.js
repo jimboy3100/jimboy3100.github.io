@@ -2398,7 +2398,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
      */
     window._leaguesNoDataMessage = function(message) {
         if (window._lmLoginHasLeaguesInfo === false) {
-            return message + '<br><span style="font-size: 12px; font-weight: 500;">Agar.io did not enable Leagues for this account at login.</span>';
+            return message + '<br><span style="font-size: 12px; font-weight: 500;">Agar.io did not enable Leagues for this account at login (the official client hides Leagues in this case too).</span>';
         }
         return message;
     };
@@ -2758,7 +2758,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
      */
     document.addEventListener('noProperResponse', function(e) {
         var detail = e.detail || {};
-        if (detail.forType && detail.forType !== 130) return;
+        /* only a 22 that answered a pending leagues request (ogario fills leagueRequestType) */
+        if (!detail.leagueRequestType) return;
 
         if (Number(detail.leagueRequestType) === 2) {
             if (!window._lastWeekTimeoutTimer) return;
@@ -2787,7 +2788,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         if (!window._hasUsableCurrentLeaguesCache()) {
             window._renderCurrentLeaguesRequestState(
                 '⚠️',
-                window._leaguesNoDataMessage('Agar.io did not return leaderboard data.'),
+                window._leaguesNoDataMessage('Agar.io answered that it has no leaderboard data for this account.'),
                 true
             );
         }
