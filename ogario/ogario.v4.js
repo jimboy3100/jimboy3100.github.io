@@ -46639,11 +46639,6 @@ Most cells eaten   : ${mostCellsEaten}
                         this.vanillaskins(name, skin, color);
                     }
                 }
-                /* delt.io: ext flag 4 = u32 account id after the name (Delta ProtocolLegacy.write_body) */
-                if (!isLegacyMultiOgar && this.serverType === 'deltio' && (extendedFlags & 4)) {
-                    accountID = view.readUInt32LE(offset);
-                    offset += 4;
-                }
                 // MultiOgar / LegacyProtocol (protocols 6-10): flag 0x40 and 0x80 come AFTER color/skin/name in byte stream
                 if (isLegacyMultiOgar && (flags & 0x40)) {
                     imsoloOwnerID = view.readUInt16LE(offset);
