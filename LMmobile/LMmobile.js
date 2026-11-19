@@ -280,8 +280,11 @@
         })();
         /* ── Mobile visual overrides: proportional to user settings ── */
         (function mobileVisuals() {
+            /* Values this function wrote last time: reduce only values that changed since
+             * (a theme load), never our own output again (the observer re-runs apply). */
+            var lastGrid = null, lastFood = null;
             function apply() {
-                if (typeof defaultSettings !== 'undefined') {
+                if (typeof defaultSettings !== 'undefined' && defaultSettings.gridColor !== lastGrid) {
                     // Grid: keep user's color, reduce opacity proportionally (×0.3)
                     var gc = defaultSettings.gridColor || '#00243e';
                     if (gc.indexOf('rgba') === 0) {
@@ -294,10 +297,13 @@
                         // Hex or named color — wrap in rgba with low alpha
                         defaultSettings.gridColor = 'rgba(0,36,62,.15)';
                     }
-
+                    lastGrid = defaultSettings.gridColor;
+                }
+                if (typeof defaultSettings !== 'undefined' && defaultSettings.foodSize !== lastFood) {
                     // FoodSize: proportional (60% of user's setting, min 1)
                     var userFood = defaultSettings.foodSize || 5;
                     defaultSettings.foodSize = Math.max(1, Math.round(userFood * 0.6));
+                    lastFood = defaultSettings.foodSize;
                 }
                 if (typeof defaultmapsettings !== 'undefined') {
                     defaultmapsettings.showBgSectors = false; // no sector background
