@@ -25833,6 +25833,12 @@ function thelegendmodproject() {
                         playerID
                     );
 
+                /* Cap teammates: a crafted relay stream with endless new IDs and skin
+                 * URLs grew teamPlayers (O(n^2) parsing) and the skin cache without limit. */
+                if (existingIdx === null && this.teamPlayers.length >= 250) {
+                    continue;
+                }
+
                 var activeNick =
                     nick ||
                     (
@@ -26790,6 +26796,11 @@ function thelegendmodproject() {
 
             var userId =
                 this.checkPlayerID(id);
+
+            /* same teammate cap as readPpv7 */
+            if (userId === null && this.teamPlayers.length >= 250) {
+                return;
+            }
 
             if (userId !== null) {
                 this.teamPlayers[
