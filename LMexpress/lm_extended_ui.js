@@ -11739,9 +11739,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             initBoostDropdown();
             syncProfileTabUI();
             setInterval(function() {
+                /* Skip when tab is hidden or menu is not visible — no DOM work needed */
+                if (document.hidden) return;
+                var menu = document.getElementById('mainPanel');
+                if (menu && menu.style.display === 'none') return;
                 initMenuButtons();
                 syncProfileTabUI();
-            }, 2500);
+            }, 5000);
         }, 1000);
 
         $(document).off('click', '#lm-claim-all-btn').on('click', '#lm-claim-all-btn', function(e) {
