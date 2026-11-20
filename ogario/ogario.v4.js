@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.541;
+window.OgVer = 3.542;
 
 
 /*
@@ -75554,12 +75554,12 @@ var stylesLegendModConsole2 = [
 ].join(';');
 
 function consoleNotice() {
-    console.groupCollapsed('%cLegend express%c  %chttp://jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://www.legendmod.ml/banners/icon48.png) no-repeat', stylesLegendModConsole1);
+    console.groupCollapsed('%cLegend express%c  %chttps://jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat', stylesLegendModConsole1);
     console.groupCollapsed("Part of");
     console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
     console.groupCollapsed("Mod developed by");
-    console.log('%cwww.legendclan.ml', stylesLegendModConsole2);
+    console.log('%cjimboy3100.github.io', stylesLegendModConsole2);
     console.groupEnd();
     console.groupEnd();
 }
