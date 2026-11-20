@@ -334,6 +334,7 @@ function SpecialDeals(defaultTab) {
             '<button class="btn btn-xs skin-filter-btn active" data-filter="all" style="flex: 1; background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; padding: 6px 0; border-radius: 4px;">All Skins (955+)</button>' +
             '<button class="btn btn-xs skin-filter-btn" data-filter="owned" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x2B50; My Owned Skins</button>' +
             '<button class="btn btn-xs skin-filter-btn" data-filter="new" title="The newest Agar.io skins, newest first" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x1F195; New Skins</button>' +
+            '<button class="btn btn-xs" id="checkForOffersBtn" onclick="window._lmCheckForOffersManual()" title="Scan for active Agar.io promotional offers" style="flex: 0 0 auto; background: #ff9800; color: #fff; font-weight: 700; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">&#x1F514; Offers</button>' +
             '</div>' +
             '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
             '<div class="skin-grid" id="skinGrid"></div>' +
@@ -3028,16 +3029,189 @@ function _showSkinPacksModal(skinName, productId) {
     });
 }
 
+/**
+ * Check whether a promo config object references a given skin productId.
+ * Walks the config deeply instead of JSON.stringify+indexOf so partial
+ * key collisions (e.g. "cat" matching "scatter") cannot happen.
+ */
+function _promoConfigHasSkin(config, productId) {
+    if (!config || typeof config !== 'object') return false;
+    var skinKey = String(productId || '').replace('skin_', '');
+    if (!skinKey) return false;
+
+    function walk(obj) {
+        if (obj == null) return false;
+        if (typeof obj === 'string') {
+            /* Exact match against the productId or its stripped key */
+            return obj === productId || obj === skinKey || obj === 'skin_' + skinKey;
+        }
+        if (Array.isArray(obj)) {
+            for (var i = 0; i < obj.length; i++) { if (walk(obj[i])) return true; }
+            return false;
+        }
+        if (typeof obj === 'object') {
+            for (var k in obj) {
+                if (!obj.hasOwnProperty(k)) continue;
+                if (walk(obj[k])) return true;
+            }
+        }
+        return false;
+    }
+    return walk(config);
+}
+
+/**
+ * Scan the DOM for agar.io offer/promo elements that may have appeared
+ * outside the promo_badge_create event (e.g. Vue-rendered popups).
+ * Updates window._lmOfficialPromotion when a new promo element is found.
+ */
+function _lmScanDomForPromos() {
+    /* Selectors that agar.io's official client uses for offer popups */
+    var selectors = [
+        '.offer-popup', '.promo-badge', '.offer-banner',
+        '.promo-badge-container', '#mainui-offers',
+        '[class*="offer"]', '[class*="promo"]'
+    ];
+    var el = null;
+    for (var i = 0; i < selectors.length; i++) {
+        try { el = document.querySelector(selectors[i]); } catch (e) { continue; }
+        if (el && el.offsetParent !== null) break; /* visible element found */
+        el = null;
+    }
+    if (!el) return false;
+
+    /* Already captured this element */
+    if (window._lmOfficialPromotion && window._lmOfficialPromotion._domEl === el) return false;
+
+    /* Try to extract a callback from the element */
+    var callback = null;
+    var btn = el.querySelector('button') || el.querySelector('[role="button"]') || el;
+    if (btn) {
+        callback = function () {
+            try { btn.click(); } catch (e) { console.warn('[PROMO] DOM click failed:', e); }
+        };
+    }
+
+    /* Try Vue extraction */
+    if (!callback) {
+        try {
+            var vue = el.__vue__ || (el.querySelector && el.querySelector('[class*="offer"]') || {}).__vue__;
+            if (vue && typeof vue.promoCallback === 'function') {
+                callback = function () { vue.promoCallback(); };
+            } else if (vue && typeof vue.onPromoClick === 'function') {
+                callback = function () { vue.onPromoClick(); };
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    /* Try Core.services.promo */
+    if (!callback) {
+        try {
+            var core = window.Core || window.core;
+            if (core && core.services && core.services.promo && typeof core.services.promo.openOffer === 'function') {
+                callback = function () { core.services.promo.openOffer(); };
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    if (callback) {
+        window._lmOfficialPromotion = {
+            offerId: el.getAttribute('data-offer-id') || 'dom-detected',
+            config: null,
+            delegate: null,
+            system: 'dom-scan',
+            callback: callback,
+            receivedAt: Date.now(),
+            _domEl: el
+        };
+        console.log('[PROMO] Detected offer via DOM scan:', window._lmOfficialPromotion);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Periodic promo refresh: re-scans DOM for promo elements, and updates any
+ * visible "Promo Only" buttons to "Active Offer!" when a promotion is detected.
+ */
+var _lmPromoRefreshTimer = null;
+function _lmStartPromoRefresh() {
+    if (_lmPromoRefreshTimer) return; /* already running */
+    _lmPromoRefreshTimer = setInterval(function () {
+        /* 1. Try DOM scan for new promos */
+        var found = _lmScanDomForPromos();
+
+        /* 2. If a promo is now active, update all visible "Promo Only" buttons */
+        var promo = window._lmOfficialPromotion;
+        if (!promo || !promo.callback) return;
+
+        var promoButtons = document.querySelectorAll(
+            '[data-purchase-state="unavailable"], [data-purchase-state="pack"]'
+        );
+        for (var i = 0; i < promoButtons.length; i++) {
+            var btn = promoButtons[i];
+            if (!btn || btn.textContent.indexOf('Promo Only') === -1) continue;
+            var pid = btn.getAttribute('data-product-id');
+            if (!pid) continue;
+            /* Check if this skin is in the promo */
+            if (promo.config && !_promoConfigHasSkin(promo.config, pid)) continue;
+            /* Update to Active Offer */
+            btn.textContent = '\uD83C\uDF81 Active Offer!';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.style.pointerEvents = 'auto';
+            btn.style.background = '#ff9800';
+            btn.title = 'This skin is in a live promotional offer right now! Click to open it.';
+            btn.setAttribute('data-purchase-state', 'promo-active');
+            (function (cb, button) {
+                button.addEventListener('click', function (evt) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    try { cb(); } catch (e) { console.warn('[SHOP] Promo callback error:', e); }
+                });
+            })(promo.callback, btn);
+        }
+        if (found) {
+            console.log('[PROMO] Refresh cycle detected new promotion — updated buttons');
+        }
+    }, 60000); /* every 60 seconds */
+}
+
+/**
+ * Manual "Check for Offers" trigger.
+ * Runs the DOM scan immediately, refreshes the skin grid if something changed.
+ */
+function _lmCheckForOffersManual() {
+    var hadPromo = !!window._lmOfficialPromotion;
+    _lmScanDomForPromos();
+    var hasPromo = !!window._lmOfficialPromotion;
+
+    if (hasPromo && !hadPromo) {
+        if (typeof toastr !== 'undefined') toastr.success('<b>[SHOP]:</b> Promotional offer detected! Updating skin cards...');
+        if (typeof window._skinShopRefresh === 'function') window._skinShopRefresh();
+    } else if (hasPromo) {
+        if (typeof toastr !== 'undefined') toastr.info('<b>[SHOP]:</b> Active promotion still available.');
+    } else {
+        if (typeof toastr !== 'undefined') toastr.info('<b>[SHOP]:</b> No promotional offers detected right now. They rotate — check back later!');
+    }
+}
+window._lmCheckForOffersManual = _lmCheckForOffersManual;
+
+/* Start the periodic promo refresh as soon as this file loads */
+_lmStartPromoRefresh();
+
 /* New Skins view: a skin with no coin/DNA price shows the packs that contain it,
  * "Promo Only", or a live offer button when a promotion is active. */
 function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
+    /* Tag button with its productId for the periodic promo refresh to find it */
+    button.setAttribute('data-product-id', productId);
+
     /* Check if this skin is in an active live promotion first. */
     var _promo = window._lmOfficialPromotion;
-    var skinKey = productId.replace('skin_', '');
-    var _promoHasSkin = _promo && _promo.config &&
-        typeof JSON.stringify === 'function' &&
-        JSON.stringify(_promo.config).indexOf(skinKey) !== -1;
-    if (_promoHasSkin && _promo.callback) {
+    var _promoHasSkin = _promo && _promo.callback &&
+        (!_promo.config || _promoConfigHasSkin(_promo.config, productId));
+    if (_promoHasSkin) {
         button.textContent = '\uD83C\uDF81 Active Offer!';
         button.disabled = false;
         button.style.opacity = '1';
@@ -3286,17 +3460,64 @@ function populateDealsGrid() {
         html += boostHtml;
     }
 
-    // --- Offer Bundles (from Wallet - Offerable Bundles, not Visual - Bundles) ---
-    //
-    // HIDDEN: These are unfiltered catalog definitions, NOT confirmed active offers.
-    // The server rejects them with opcode 78 result 2 ("offer not active").
-    // LM currently has no way to determine which bundles are genuinely active
-    // for the current account/session. Showing Buy buttons is misleading.
-    //
-    // To re-enable: implement active-offer tracking via server responses and
-    // filter offerableBundles against confirmed active IDs before rendering.
-    //
-    // The data is still loaded above (line ~2385) for future use.
+    // --- Offer Bundles (date-filtered from Wallet - Offerable Bundles) ---
+    // Show only bundles where availableFrom ≤ now ≤ availableTo.
+    // The server may still reject with opcode 78 result 2 for session-specific
+    // reasons, so each card carries a warning and uses "Try Purchase".
+    var nowMs = Date.now();
+    var activeOfferBundles = offerableBundles.filter(function (ob) {
+        if (!ob || !ob.availableFrom || !ob.availableTo) return false;
+        var from = new Date(ob.availableFrom).getTime();
+        var to   = new Date(ob.availableTo).getTime();
+        return !isNaN(from) && !isNaN(to) && from <= nowMs && nowMs <= to;
+    });
+
+    /* Cross-reference with _lmOfficialPromotion to mark confirmed active ones */
+    var promoActive = window._lmOfficialPromotion;
+    for (var obi = 0; obi < activeOfferBundles.length; obi++) {
+        var ob = activeOfferBundles[obi];
+        var obBundle = bundleLookup[ob.bundleId] || {};
+        var obDesc = (obBundle.description && obBundle.description !== 'na')
+            ? obBundle.description.replace(/_/g, ' ').replace(' name', '')
+            : String(ob.bundleId || '').replace(/_/g, ' ');
+
+        /* Check if this exact bundle is confirmed via live promo */
+        var isConfirmed = promoActive && promoActive.config &&
+            _promoConfigHasSkin(promoActive.config, ob.bundleId);
+
+        var obBorder = isConfirmed ? '#ff9800' : t.b3;
+        var obIcon = isConfirmed ? '🎁' : '🎲';
+        var obLabel = isConfirmed ? 'Active Offer' : 'Try Purchase';
+        var obWarning = isConfirmed
+            ? ''
+            : '<div style="font-size:9px;color:#ff9800;margin-top:2px;">⚠ Server may reject if not active for your session</div>';
+
+        var obFromDate = new Date(ob.availableFrom).toLocaleDateString();
+        var obToDate = new Date(ob.availableTo).toLocaleDateString();
+
+        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + obBorder + '44; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + obBorder + ';">' + obIcon + '</div>';
+        html += '<div style="flex: 1; min-width: 0;">';
+        html += '<div style="font-weight: 700; font-size: 13px; color: ' + obBorder + ';">' + _sdEscHtml(obDesc) + '</div>';
+        html += '<div style="font-size: 10px; color: ' + t.tc2 + ';">' + obFromDate + ' — ' + obToDate + '</div>';
+        html += obWarning;
+        html += '</div>';
+        html += '<button class="btn btn-xs deal-offer-btn" data-offer-bundle-id="' + _sdEscHtml(ob.bundleId) + '" data-offer-desc="' + _sdEscHtml(obDesc) + '" style="background: ' + obBorder + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">' + obLabel + '</button>';
+        html += '</div>';
+    }
+
+    if (activeOfferBundles.length > 0) {
+        /* Bind the offer bundle buy buttons (delegated) */
+        if (!grid._lmOfferBundleBound) {
+            grid._lmOfferBundleBound = true;
+            grid.addEventListener('click', function (ev) {
+                var btn = ev.target && ev.target.closest ? ev.target.closest('.deal-offer-btn[data-offer-bundle-id]') : null;
+                if (!btn || !grid.contains(btn)) return;
+                ev.preventDefault();
+                buyDealBundle(btn.getAttribute('data-offer-bundle-id') || '', btn.getAttribute('data-offer-desc') || '');
+            });
+        }
+    }
 
     if (!html) {
         html = '<div style="text-align: center; color: ' + t.tc2 + '; padding: 20px;">No deals found in configuration.</div>';
@@ -7589,10 +7810,10 @@ function renderSkinPage(
                 ) {
                     /* Check if this skin is in an active live promotion. */
                     var _promo = window._lmOfficialPromotion;
-                    var _promoHasSkin = _promo && _promo.config &&
-                        typeof JSON.stringify === 'function' &&
-                        JSON.stringify(_promo.config).indexOf(productId.replace('skin_', '')) !== -1;
-                    if (_promoHasSkin && _promo.callback) {
+                    var _promoHasSkin = _promo && _promo.callback &&
+                        (!_promo.config || _promoConfigHasSkin(_promo.config, productId));
+                    buyButton.setAttribute('data-product-id', productId);
+                    if (_promoHasSkin) {
                         buyButton.textContent =
                             '\uD83C\uDF81 Active Offer!';
                         buyButton.disabled = false;

@@ -35305,7 +35305,24 @@ function thelegendmodproject() {
             this.socket = new WebSocket(url);
             this.connectionIntegrity = typeof this.socket._lwIntegrity === "boolean" ? this.socket._lwIntegrity : (Boolean(this.integrity) || this.serverType === 'deltio');
             this.socket.binaryType = 'arraybuffer';
+            /* ── delt.io connection timeout: if still CONNECTING after 8s, close and retry ── */
+            if (this._deltioConnTimeout) { clearTimeout(this._deltioConnTimeout); this._deltioConnTimeout = null; }
+            if (this.serverType === 'deltio') {
+                var _dtSock = this.socket;
+                var _dtSelf = this;
+                this._deltioConnTimeout = setTimeout(function () {
+                    if (_dtSelf.socket === _dtSock && _dtSock.readyState === WebSocket.CONNECTING) {
+                        console.warn('%c[delt.io]%c Connection timeout: WebSocket stuck in CONNECTING state for >8s, closing and retrying', 'color:#e44', 'color:inherit');
+                        try { _dtSock.onopen = null; _dtSock.onmessage = null; _dtSock.onerror = null; _dtSock.onclose = null; _dtSock.close(); } catch (e) { }
+                        /* Trigger reconnect via onClose path */
+                        app.onClose({ code: 4408, reason: 'delt.io connection timeout (8s)' });
+                    }
+                    _dtSelf._deltioConnTimeout = null;
+                }, 8000);
+            }
             this.socket.onopen = function () {
+                /* Clear delt.io connection timeout on successful open */
+                if (app._deltioConnTimeout) { clearTimeout(app._deltioConnTimeout); app._deltioConnTimeout = null; }
                 app.onOpen();
                 if (window.master && window.master.onConnect) {
                     window.master.onConnect();
@@ -35315,9 +35332,20 @@ function thelegendmodproject() {
                 app.onMessage(t);
             };
             this.socket.onerror = function (t) {
+                /* Enhanced delt.io error logging */
+                if (app.serverType === 'deltio') {
+                    console.error('%c[delt.io]%c WebSocket error on ' + (app.ws || url), 'color:#e44', 'color:inherit', t);
+                }
                 app.onError(t);
             };
             this.socket.onclose = function (t) {
+                /* Enhanced delt.io close logging */
+                if (app.serverType === 'deltio') {
+                    var _dtCode = t ? t.code : '?';
+                    var _dtReason = t && t.reason ? t.reason : 'no reason';
+                    var _dtClean = t ? t.wasClean : false;
+                    console.warn('%c[delt.io]%c Connection closed: code=' + _dtCode + ' reason="' + _dtReason + '" clean=' + _dtClean + ' url=' + (app.ws || url), 'color:#e44', 'color:inherit');
+                }
                 app.onClose(t);
             };
             // Imsolo/Agar2 heartbeat: send 0xFE every 2 seconds to keep connection alive
@@ -35337,6 +35365,25 @@ function thelegendmodproject() {
                         clearInterval(self.imsoloHeartbeatInterval);
                     }
                 }, 2000);
+            }
+            // delt.io heartbeat: send 0xFE every 3 seconds to keep connection alive
+            if (this._deltioHeartbeatInterval) clearInterval(this._deltioHeartbeatInterval);
+            if (this.serverType === 'deltio') {
+                var self = this;
+                var hbSocket = this.socket;
+                this._deltioHeartbeatInterval = setInterval(function () {
+                    if (self.socket === hbSocket && hbSocket.readyState === WebSocket.CONNECTING) {
+                        return; // still connecting, wait
+                    }
+                    if (self.socket === hbSocket && hbSocket.readyState === WebSocket.OPEN) {
+                        var hb = self.createView(1);
+                        hb.setUint8(0, 254); // 0xFE keepalive
+                        self.sendMessage(hb);
+                    } else {
+                        clearInterval(self._deltioHeartbeatInterval);
+                        self._deltioHeartbeatInterval = null;
+                    }
+                }, 3000);
             }
             application.getWS(this.ws);
             application.sendServerJoin();
@@ -35366,11 +35413,17 @@ function thelegendmodproject() {
             this._connOpenTime = Date.now();
             var self = this;
             if (this._reconnStabilityTimer) clearTimeout(this._reconnStabilityTimer);
+            /* delt.io needs 30s stability before resetting reconnect counter;
+             * other servers use 5s (they tend to be more stable). */
+            var _stabilityDelay = this.serverType === 'deltio' ? 30000 : 5000;
             this._reconnStabilityTimer = setTimeout(function () {
                 self._reconnAttempts = 0;
                 self._reconnStartTime = 0;
                 self._reconnStabilityTimer = null;
-            }, 5000);
+                if (self.serverType === 'deltio') {
+                    console.log('%c[delt.io]%c Connection stable for 30s — reconnect counter reset', 'color:#0a0', 'color:inherit');
+                }
+            }, _stabilityDelay);
             this.time = Date.now();
             if (!window.customProtol) window.customProtol = 6
             if (!window.customClient) window.customClient = 1
@@ -36232,10 +36285,11 @@ function thelegendmodproject() {
                 if (!this._reconnAttempts) this._reconnAttempts = 0;
                 if (!this._reconnStartTime) this._reconnStartTime = Date.now();
 
-                /* Total duration cap: give up after 2 minutes of continuous reconnecting */
+                /* Total duration cap: give up after N minutes of continuous reconnecting */
                 var _reconnElapsed = Date.now() - this._reconnStartTime;
-                var _RECONN_MAX_DURATION = 120000; /* 2 minutes */
-                var maxAttempts = 5;
+                var _isDeltioReconn = this.serverType === 'deltio';
+                var _RECONN_MAX_DURATION = _isDeltioReconn ? 300000 : 120000; /* delt.io: 5 min, others: 2 min */
+                var maxAttempts = _isDeltioReconn ? 10 : 5;
 
                 if (_reconnElapsed > _RECONN_MAX_DURATION) {
                     console.log(consoleMsgLM + ' Auto-reconnect timed out after ' + Math.round(_reconnElapsed / 1000) + 's — server appears offline');
