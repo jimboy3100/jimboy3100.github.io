@@ -24,7 +24,7 @@ window.LM_STORED_AGARVERSION = function() {
 };
 // Computed after agarversion is known:
 window.LM_CDN_BASE = function() {
-    var v = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || window.LM_STORED_AGARVERSION() || "v15/10913/";
+    var v = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || window.LM_STORED_AGARVERSION() || "v15/10935/";
     if (!v.endsWith('/')) v += '/';
     return window.LM_CONFIG_CDN + "/" + v;
 };
@@ -2041,7 +2041,7 @@ var Lmagarversion = "";
 
 window.LMGameConfiguration = null;
 window.LMGameConfigurationReady = new Promise(function(resolve) {
-    var version = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || window.LM_STORED_AGARVERSION() || "v15/10913/";
+    var version = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || window.LM_STORED_AGARVERSION() || "v15/10935/";
     if (!version.endsWith('/')) version += '/';
     var primaryUrl = window.LM_CONFIG_CDN + "/" + version + "GameConfiguration.json";
     var fallbackUrl = window.LM_CONFIG_URL();
