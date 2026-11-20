@@ -25938,7 +25938,22 @@ function thelegendmodproject() {
                  * drop: reconnect the public relay with backoff instead of staying dead. */
                 if (app.socket !== _lmSock || app.privateMode) return;
                 var tries = app._lmRelayRetries = (app._lmRelayRetries || 0) + 1;
-                if (tries > 20) return;
+                if (tries > 20) {
+                    /* After 20 failed reconnects, switch to slow polling (every 60s) */
+                    if (!app._lmRelaySlowPoll) {
+                        app._lmRelaySlowPoll = setInterval(function () {
+                            if (app._lmRelayRetries <= 20) {
+                                clearInterval(app._lmRelaySlowPoll);
+                                app._lmRelaySlowPoll = null;
+                                return;
+                            }
+                            app._lmRelayReconnecting = true;
+                            app.connect();
+                        }, 60000);
+                        console.log(consoleMsgLM + ' Relay reconnect exhausted (20 tries), switching to 60s slow polling');
+                    }
+                    return;
+                }
                 var delay = Math.min(30000, 2000 * Math.pow(2, tries - 1));
                 if (app._lmRelayRetryTimer) clearTimeout(app._lmRelayRetryTimer);
                 app._lmRelayRetryTimer = setTimeout(function () {
