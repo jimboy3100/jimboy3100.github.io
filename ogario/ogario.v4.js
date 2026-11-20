@@ -30760,18 +30760,22 @@ function thelegendmodproject() {
                 this.setProfileboxShadow()
             }
             var app = this;
-            setInterval(function () {
-                app.drawMiniMap();
-            }, 33);
-            setInterval(function () {
-                if (typeof repeatSendingSpecialSkins === "function") {
-                    repeatSendingSpecialSkins();
-                }
-            }, 10000);
-            setInterval(function () {
-                app.updateTeamPlayers();
-                //application.sendSocket3Position(); // DO NOT SEND SECONDARY SOCKET POSITION
-            }, this.updateInterval);
+            /* Guard against interval stacking if init() is called multiple times */
+            if (!app._lmIntervalsSet) {
+                app._lmIntervalsSet = true;
+                setInterval(function () {
+                    app.drawMiniMap();
+                }, 33);
+                setInterval(function () {
+                    if (typeof repeatSendingSpecialSkins === "function") {
+                        repeatSendingSpecialSkins();
+                    }
+                }, 10000);
+                setInterval(function () {
+                    app.updateTeamPlayers();
+                    //application.sendSocket3Position(); // DO NOT SEND SECONDARY SOCKET POSITION
+                }, this.updateInterval);
+            }
         }
     };
 
