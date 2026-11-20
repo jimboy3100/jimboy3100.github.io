@@ -76583,12 +76583,16 @@ function findOcc(arr, key) {
 
 
 
-Array.prototype.stDev = function stDev() {
-    const average = data => data.reduce((sum, value) => sum + value) / data.length
-    return Math.sqrt(average(this.map(value => Math.pow(value - average(this), 2))))
-    //return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
-};
-
+/* Make stDev non-enumerable so for-in loops over arrays are not affected */
+Object.defineProperty(Array.prototype, 'stDev', {
+    value: function stDev() {
+        const average = data => data.reduce((sum, value) => sum + value) / data.length
+        return Math.sqrt(average(this.map(value => Math.pow(value - average(this), 2))))
+    },
+    writable: true,
+    configurable: true,
+    enumerable: false
+});
 // Replace legendmod.ml URLs with jimboy3100.github.io / expanding.land equivalents.
 // Uses MutationObserver so it catches dynamically created elements too.
 (function () {

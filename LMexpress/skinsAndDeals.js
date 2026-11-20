@@ -2443,6 +2443,12 @@ function SpecialDeals(defaultTab) {
                         null;
                 }
 
+                /* Stop the 60s promo refresh timer when the shop closes */
+                if (_lmPromoRefreshTimer) {
+                    clearInterval(_lmPromoRefreshTimer);
+                    _lmPromoRefreshTimer = null;
+                }
+
                 /*
                  * A focused descendant must not remain inside an element
                  * that is about to become aria-hidden. Chrome blocks
