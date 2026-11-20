@@ -5238,6 +5238,36 @@ if (window.getLatestID != null && window.getLatestconfigVersion != null && windo
     window.agarversion = "v" + window.getLatestconfigVersion + "/" + window.getLatestID + "/";
 }
 
+/* Auto-detect latest config version from agar.io bouncer on startup.
+ * This replicates the official client's getLatestConfigurationId() so the mod
+ * always uses the newest config even before login. */
+(function _lmFetchLatestConfigId() {
+    try {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://webbouncer-live-v8-0.agario.miniclippt.com/getLatestID');
+        xhr.setRequestHeader('x-config-group', '15');
+        xhr.setRequestHeader('x-support-proto-version', '15.0.3');
+        xhr.timeout = 5000;
+        xhr.addEventListener('load', function () {
+            var configId = (xhr.responseText || '').split('\n')[0].trim();
+            if (configId && /^\d+$/.test(configId) && configId !== window.getLatestID) {
+                console.log('%c[CONFIG]%c Updated config: ' + window.getLatestID + ' -> ' + configId,
+                    'color:#4CAF50;font-weight:bold', 'color:inherit');
+                window.getLatestID = configId;
+                window.agarversion = 'v15/' + configId + '/';
+                window.localStorage.setItem('getLatestID', configId);
+                window.localStorage.setItem('EnvConfig.configVersion', '15');
+            }
+        });
+        xhr.addEventListener('error', function () {
+            console.log('[CONFIG] Bouncer unreachable, using cached/default config: ' + window.getLatestID);
+        });
+        xhr.send();
+    } catch (e) {
+        console.log('[CONFIG] Auto-detect failed:', e.message);
+    }
+})();
+
 function pauseVideos() {
     setTimeout(function () {
         Object.getOwnPropertyNames(window.videoSkinPlayer).forEach(function (element) {
