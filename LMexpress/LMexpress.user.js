@@ -1,174 +1,215 @@
 // ==UserScript==
 // @name         Legend Express Agar.io Extension
 // @namespace    Legend Express Agario Mod
-// @version      1.8.1
+// @version      1.8.2
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     https://jimboy3100.github.io
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
 // @match        https://agar.io/*
-// @match        https://agar.io/
 // @downloadURL  https://jimboy3100.github.io/LMexpress/LMexpress.user.js
 // @updateURL    https://jimboy3100.github.io/LMexpress/LMexpress.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
+// @grant        GM_registerMenuCommand
 // @connect      hslo.io
-// @connect	 agartool.io
-// @connect	 imasters.org.ru
-// @connect	 cdn.ogario.ovh
+// @connect      agartool.io
+// @connect      imasters.org.ru
+// @connect      cdn.ogario.ovh
 // @connect      deltav4.glitch.me
 // @connect      jimboy3100.github.io
 // @connect      legendmod.ml
-// @grant        GM_registerMenuCommand
-
 // ==/UserScript==
 
 // Legend Mod by Jimboy3100
 /*MIT License*/
 
-GM_registerMenuCommand('Legend Mod Website', function() {
-    window.open("http://jimboy3100.github.io");
-}, 'r');
-GM_registerMenuCommand('LM Library', function() {
-    window.open("https://github.com/jimboy3100/jimboy3100.github.io/");
-}, 'r');
-GM_registerMenuCommand('Donate for Legend Mod', function() {
-    window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6");
-}, 'r');
+/*
+ * Legend Express loader.
+ *
+ * agar.io/<mode> picks what runs in place of agar.io's own page: an HTML page
+ * written over it (loadPage) or a userscript fetched and run (runUserscript).
+ * Unknown paths, agar.io/ and agar.io/legendmod load Legend Mod's play.html.
+ */
 
-var version = 2;
+GM_registerMenuCommand('Legend Mod Website', function () {
+    window.open('https://jimboy3100.github.io');
+}, 'w');
+GM_registerMenuCommand('LM Library', function () {
+    window.open('https://github.com/jimboy3100/jimboy3100.github.io/');
+}, 'l');
+GM_registerMenuCommand('Donate for Legend Mod', function () {
+    window.open('https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6');
+}, 'd');
 
-// Check location
-if (location.host === "agar.io" && location.pathname === "/") {
-    var url = window.location.href;
-    localStorage.setItem("url", url);
-    history.replaceState({}, '', location.pathname + location.search + location.hash);
-}
+/* Change to make browsers fetch a fresh play.html instead of a cached copy */
+var pageVersion = 2;
+var legendPage = 'https://www.legendmod.ml/play.html?' + pageVersion;
+var requestTimeoutMs = 30000;
+/* The /neo and /mobile add-on scripts run this long after the Legend page is written */
+var extraScriptDelayMs = 5000;
+
+/*
+ * page:   HTML page written over agar.io
+ * script: userscript fetched and run
+ * legend: the page is Legend Mod's play.html, so it gets the init(<version>) call
+ * extra:  userscript run on top of the Legend page
+ */
+var modes = {
+    legendmod: { page: legendPage, legend: true },
+    normal:    { page: 'https://agar.io' },
+    hslo:      { script: 'https://hslo.io/install.user.js' },
+    agartool:  { script: 'https://www.agartool.io/agartool.user.js' },
+    /* https only: code fetched over plain http could be swapped by anyone on the network path and would run on agar.io */
+    vanilla:   { script: 'https://imasters.org.ru/agar/js/vanilla.user.js' },
+    ogario:    { script: 'https://cdn.ogario.ovh/v4/beta/ogario.v4.user.js' },
+    delta:     { page: 'https://deltav4.glitch.me/v4/index.html' },
+    neo:       { page: legendPage, legend: true, extra: 'https://jimboy3100.github.io/ExampleScripts/Neoprivate.js' },
+    mobile:    { page: legendPage, legend: true, extra: 'https://www.legendmod.ml/ExampleScripts/gamepad.user.js' },
+    captcha:   { page: 'https://www.legendmod.ml/ogario/captcha.html' }
+};
+
 var modVersion = GM_info.script.version;
-// Inject Legend
-function inject(page) {
-    var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
-    return page;
-}
-document.documentElement.innerHTML = "";
-var LMdetails;
-var mode = location.pathname.slice(1);
-var modwebsite;
-switch (mode) {
-    case 'normal':
-        modwebsite = 'https://agar.io';
-        Htmlscript(modwebsite);
-        break;
-    case 'hslo':
-        modwebsite = 'https://hslo.io/install.user.js';
-        Userscript(modwebsite);
-        break;
-    case 'agartool':
-        modwebsite = 'https://www.agartool.io/agartool.user.js';
-        Userscript(modwebsite);
-        break;
-    case 'vanilla':
-        /* https only: code fetched over plain http could be swapped by anyone on the network path and would run on agar.io */
-        modwebsite = 'https://imasters.org.ru/agar/js/vanilla.user.js';
-        Userscript(modwebsite);
-        break;		
-    case 'ogario':
-        modwebsite = 'https://cdn.ogario.ovh/v4/beta/ogario.v4.user.js';
-        Userscript(modwebsite);
-        break;		
-    case 'delta':
-        modwebsite = 'https://deltav4.glitch.me/v4/index.html';
-        Htmlscript(modwebsite);
-        break;
-    case 'neo': 
-        modwebsite = 'https://www.legendmod.ml/play.html?' + version;
-        Htmlscript(modwebsite);
-		setTimeout(function() {		
-			modwebsite = 'https://jimboy3100.github.io/ExampleScripts/Neoprivate.js';
-			Userscript(modwebsite);
-		}, 5000);
-	break;	
-    case 'mobile': 
-        modwebsite = 'https://www.legendmod.ml/play.html';
-        Htmlscript(modwebsite);
-		setTimeout(function() {		
-			modwebsite = 'https://www.legendmod.ml/ExampleScripts/gamepad.user.js';
-			Userscript(modwebsite);
-		}, 5000);
-	break;		
-    case 'captcha':
-        modwebsite = 'https://www.legendmod.ml/ogario/captcha.html'
-        Htmlscript(modwebsite);
-        break;	
-    case 'legendmod': default:
-        modwebsite = 'https://www.legendmod.ml/play.html?' + version;
-        Htmlscript(modwebsite);
-        break;
+/* "/Normal/" and "/normal" are the same mode */
+var modeName = location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+var mode = Object.prototype.hasOwnProperty.call(modes, modeName) ? modes[modeName] : modes.legendmod;
+
+/*
+ * LMexpress.js reads the launch link (?sip=, ?pass=, ?replay=...) from localStorage "url".
+ * Save it on every visit that loads the Legend page. It used to be saved on agar.io/ only,
+ * so a later visit to agar.io/legendmod re-applied the previous link's server or replay.
+ */
+if (mode.legend) {
+    try {
+        localStorage.setItem('url', location.href);
+    } catch (e) {
+        console.error('[LMexpress] Could not save the launch link', e);
+    }
 }
 
-function Htmlscript(modwebsite) {
-    LMdetails = GM_xmlhttpRequest({
-        method: "GET",
-        url: modwebsite,
-        synchronous: false,
-        onload: function(legend) {
-            var doc = inject(legend.responseText);
-            document.open();
-            document.write(doc);
-            setTimeout(function() {
-                if (window.history && window.history.pushState) {
-                    window.history.pushState(null, null, window.location.pathname + window.location.search + window.location.hash);
-                }
-            }, 2000);
-            document.close();
-        },
-        onerror: function(err) {
-            console.error("[LMexpress] Failed to fetch target HTML script from " + modwebsite, err);
-        },
-        ontimeout: function() {
-            console.error("[LMexpress] Request timed out while fetching target HTML script from " + modwebsite);
-        }
-    });
+/* Stop agar.io's own page; the mode's page or userscript replaces it */
+document.documentElement.innerHTML = '';
+
+if (mode.page) {
+    loadPage(mode.page, mode.legend, mode.extra);
+} else {
+    runUserscript(mode.script, true);
 }
 
-function Userscript(modwebsite) {
-    /* Never run remote code that did not come over https */
-    if (!/^https:\/\//i.test(modwebsite)) {
-        console.error("[LMexpress] Refusing to run a userscript that is not served over https: " + modwebsite);
+function isHttps(url) {
+    return /^https:\/\//i.test(String(url || ''));
+}
+
+/* Returns why a response is not usable, or '' if it is. An error page (404/5xx) or a redirect away from https is not the code we asked for. */
+function responseProblem(res) {
+    if (!res || !(res.status >= 200 && res.status < 300)) {
+        return 'status ' + (res ? res.status : 'none');
+    }
+    if (res.finalUrl && !isHttps(res.finalUrl)) {
+        return 'redirected off https to ' + res.finalUrl;
+    }
+    return '';
+}
+
+/* GET a URL over https and hand its text to onText, or a reason to onFail */
+function fetchText(url, onText, onFail) {
+    /* Never fetch code that is not served over https */
+    if (!isHttps(url)) {
+        onFail('not https');
         return;
     }
-    LMdetails = GM_xmlhttpRequest({
-        method: "GET",
-        url: modwebsite,
-        onload: function(e) {
-            /* An error page (404/5xx) or a redirect away from https is not the script */
-            if ((e.status && (e.status < 200 || e.status >= 300)) || (e.finalUrl && !/^https:\/\//i.test(e.finalUrl))) {
-                console.error("[LMexpress] Not running userscript from " + modwebsite + " (status " + e.status + ", final url " + e.finalUrl + ")");
+    GM_xmlhttpRequest({
+        method: 'GET',
+        url: url,
+        timeout: requestTimeoutMs,
+        onload: function (res) {
+            var problem = responseProblem(res);
+            if (problem) {
+                onFail(problem);
                 return;
             }
-            try {
-                new Function(['GM_info', 'GM_xmlhttpRequest'], e.responseText)(GM_info, GM_xmlhttpRequest);
-            } catch (evalErr) {
-                console.error("[LMexpress] Error executing loaded userscript from " + modwebsite, evalErr);
-            }
+            onText(res.responseText);
         },
-        onerror: function(err) {
-            console.error("[LMexpress] Failed to fetch userscript from " + modwebsite, err);
+        onerror: function (err) {
+            onFail('network error', err);
         },
-        ontimeout: function() {
-            console.error("[LMexpress] Request timed out while fetching userscript from " + modwebsite);
+        ontimeout: function () {
+            onFail('timed out after ' + (requestTimeoutMs / 1000) + ' s');
         }
     });
 }
 
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+/* Htmlscript: fetch an HTML page and write it over agar.io */
+function loadPage(pageUrl, isLegendPage, extraScriptUrl) {
+    fetchText(pageUrl, function (html) {
+        if (isLegendPage) {
+            html = addInitCall(html);
+        }
+        document.open();
+        document.write(html);
+        document.close();
+        if (extraScriptUrl) {
+            setTimeout(function () {
+                runUserscript(extraScriptUrl, false);
+            }, extraScriptDelayMs);
+        }
+    }, function (problem, err) {
+        console.error('[LMexpress] Could not load page ' + pageUrl + ' (' + problem + ')', err || '');
+        showLoadError(pageUrl, problem);
+    });
 }
 
+/*
+ * Userscript: fetch a userscript and run it with this loader's GM_info and GM_xmlhttpRequest.
+ * replacesPage: the script is the whole mode, so a failed download gets the error page.
+ */
+function runUserscript(scriptUrl, replacesPage) {
+    fetchText(scriptUrl, function (code) {
+        try {
+            new Function('GM_info', 'GM_xmlhttpRequest', code)(GM_info, GM_xmlhttpRequest);
+        } catch (err) {
+            console.error('[LMexpress] Error running userscript from ' + scriptUrl, err);
+        }
+    }, function (problem, err) {
+        console.error('[LMexpress] Not running userscript from ' + scriptUrl + ' (' + problem + ')', err || '');
+        if (replacesPage) {
+            showLoadError(scriptUrl, problem);
+        }
+    });
+}
+
+/* Add the mod's init(<version>) call at the end of the Legend page's body, after its own scripts */
+function addInitCall(html) {
+    /* JSON quoting, with "<" escaped so the version text can never close the script tag */
+    var version = JSON.stringify(modVersion).replace(/</g, '\\u003c');
+    var call = '<script>' +
+        'if (typeof init === "function") { init(' + version + '); }' +
+        ' else { console.error("[LMexpress] init() is missing: LMexpress.js did not load"); }' +
+        '</script>';
+    var bodyEnd = html.toLowerCase().lastIndexOf('</body>');
+    if (bodyEnd === -1) {
+        return html + call;
+    }
+    return html.slice(0, bodyEnd) + call + html.slice(bodyEnd);
+}
+
+/* agar.io's page is already gone, so say what failed instead of leaving a blank tab */
+function showLoadError(url, problem) {
+    var page = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Legend Express</title></head>' +
+        '<body style="background:#111;color:#eee;font:16px sans-serif;padding:40px;">' +
+        '<h2>Legend Express could not load this mode</h2>' +
+        '<p>' + escapeHtml(url) + ' (' + escapeHtml(problem) + ')</p>' +
+        '<p><a style="color:#6cf;" href="' + escapeHtml(location.href) + '">Try again</a>' +
+        ' &middot; <a style="color:#6cf;" href="https://agar.io/normal">Play agar.io without the mod</a></p>' +
+        '</body></html>';
+    document.open();
+    document.write(page);
+    document.close();
+}
+
+function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function (ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+}
