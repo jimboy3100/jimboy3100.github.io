@@ -2597,7 +2597,7 @@ function deleteGamemode(temp) {
     /* Agar2, Sigmally and Senpa servers do not work: hidden from the list (their code and
      * ?sip= links stay, so they can be re-enabled by removing this filter). */
     privateModOptions = privateModOptions.filter(function (el) {
-        return !/^(Agar2|Sigmally|Senpa)/i.test(String(el && el.text || ''));
+        return !/^(Agar2|Sigmally|Senpa|Garix)\b/i.test(String(el && el.text || ''));
     });
     $('#gamemode').empty();
     $.each(privateModOptions, function (i, el) {
@@ -4795,7 +4795,7 @@ const standardDeviation = (arr, usePopulation = false) => {
 window.botsSpawncode = [];
 window.botsSpawncodeNum = 0;
 
-window.SERVER_HOST = 'ws://localhost:1337' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
+window.SERVER_HOST = 'wss://localhost:1337' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
 //window.SERVER_PORT = 1337 // Port number used on the server where the bots are running [Default = 1337]
 class Writer {
     constructor(size) {
@@ -17410,8 +17410,8 @@ cimg6.src = defaultSettings.commanderImage6;
 //cimg7 = new Image;
 //cimg7.src = 'https://www.legendmod.ml/banners/iconLcForCanvas.png';
 function loadIconSpecialSkins(val) {
-    eval('window.' + val + ' = new Image');
-    eval('window.' + val + '.src = "https://www.legendmod.ml/banners/' + val + '.png"')
+    window[val] = new Image();
+    window[val].src = 'https://www.legendmod.ml/banners/' + val + '.png';
 }
 /*
 iconSpecialSkinEffectsCrown = new Image;
@@ -40141,6 +40141,7 @@ function thelegendmodproject() {
                         var freshVersion = "v" + (window.getLatestconfigVersion || "15") + "/" + u.latestConfiguration + "/";
                         window.agarversion = freshVersion;
                         window.localStorage.setItem("getLatestID", u.latestConfiguration);
+                    window.localStorage.setItem("EnvConfig.configVersion", window.getLatestconfigVersion || "15");
                         if (typeof window._lmAddAgarVersion === 'function') window._lmAddAgarVersion(freshVersion);
                         /* Rebuild VanillaSkinUrlMap with correct CDN version */
                         if (window.EquippableSkins) {
@@ -48609,8 +48610,7 @@ Most cells eaten   : ${mostCellsEaten}
                 app.setZoom(e);
             }, setInterval(function () {
                 app.sendPosition(undefined, undefined, undefined, true);
-                //}, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
-            }, 10), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
+            }, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
         }
     };
     window.legendmod = LM; // look at this
