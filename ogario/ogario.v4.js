@@ -25126,9 +25126,19 @@ function thelegendmodproject() {
                 ))
             );
         },
-        getCustomSkin(nick, color, skinKey) {
+        /*
+         * Skin for a cell: its own skin URL (a multibox unit's profile skin, a private
+         * server's URL), else a skin set for its name (Legend Mod players' custom
+         * skins, flag/name skins), else its own agar.io skin id (vanillaskins caches
+         * those by id). nameOnly: for places with only a name (ghost cells), also use
+         * the last skin seen with that name.
+         */
+        getCustomSkin(nick, color, skinKey, nameOnly) {
             /* A player without a name shows no skin at all (custom, vanilla or server skin). */
             if (!nick || !String(nick).trim()) return null;
+            /* the cell's own URL wins, even while it loads (no flash of another skin) */
+            var ownUrl = (skinKey && typeof skinKey === 'string' && (skinKey.startsWith('http://') || skinKey.startsWith('https://')))
+                ? this.checkSkinURL(skinKey) : '';
             _RE_CLAN_TAG.lastIndex = 0;
             var cleanNick = nick ? nick.replace(_RE_CLAN_TAG, '').trim() : '';
             /* Cache lowered color to avoid per-call string allocation */
@@ -25142,7 +25152,7 @@ function thelegendmodproject() {
 
             /* Chat socket skins (nick-based) take priority over vanilla skins.
              * This lets legendmod skins override agar.io server skins. */
-            var skinUrl =
+            var skinUrl = ownUrl ||
                 (nick ? (
                     this.customSkinsMap[nick] ||
                     this.customSkinsMap[nick + hexColor] ||
@@ -25153,7 +25163,8 @@ function thelegendmodproject() {
                         this.customSkinsMap[cleanNick + hexColor]
                     ) : null)
                 ) : null) ||
-                (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null);
+                (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null) ||
+                (nameOnly && this.nickSkinSeen ? (this.nickSkinSeen[nick] || this.nickSkinSeen[nick + hexColor]) : null);
 
             if (!skinUrl && skinKey && (skinKey.startsWith('http://') || skinKey.startsWith('https://'))) {
                 skinUrl = skinKey;
@@ -45663,20 +45674,30 @@ Most cells eaten   : ${mostCellsEaten}
                     playerKey = playerKey + cellColor;
                 }
 
-                /* Fast-path: if skin already cached for this key, skip the expensive
-                 * 7-branch resolution (regex, includes, toLowerCase per packet).
-                 * Only while the packet's skin is the one resolved last time for this
-                 * key: a respawn with another skin must re-resolve. Entries set by
-                 * other sources (no recorded skin) keep precedence as before.
-                 * A name-only packet (no skin) keeps the cached entry: the nick
-                 * fallback must not replace a custom skin resolved earlier. */
-                var lastSkinByKey = window._lmVanillaSkinLastG || (window._lmVanillaSkinLastG = Object.create(null));
-                var lastSkin = lastSkinByKey[playerKey];
-                if (application.customSkinsMap[playerKey] && (!g || lastSkin === undefined || lastSkin === g)) return;
-                lastSkinByKey[playerKey] = g || '';
+                /*
+                 * A skin sent with a cell (g) belongs to that cell, not to its name:
+                 * it is cached under the skin id and drawn from cell.skin
+                 * (getCustomSkin). It used to be written under the player's name, so
+                 * players sharing a name (common on agar.io, and both units of a
+                 * multibox) overwrote each other on every packet and their skins kept
+                 * switching. Only skins that come from the name itself (flag names,
+                 * name skins) are stored under the name.
+                 *
+                 * nickSkinSeen keeps the last skin seen per name for places that only
+                 * have a name (ghost cells / top players); it is never used for a cell.
+                 *
+                 * Fast path: skin id (or, without one, the name) already resolved.
+                 */
+                var seen = application.nickSkinSeen || (application.nickSkinSeen = Object.create(null));
+                var known = g ? application.customSkinsMap[g] : application.customSkinsMap[playerKey];
+                if (known) {
+                    if (y) seen[playerKey] = known;
+                    return;
+                }
 
                 var skinUrl = null;
                 var isAnimated = false;
+                var fromName = false;
                 var lowerName = y && typeof y === 'string' ? LowerCase(y) : '';
 
                 /* Build O(1) flag/free-skin indexes only when their source arrays change. */
@@ -45719,10 +45740,12 @@ Most cells eaten   : ${mostCellsEaten}
                 /* 2. Flag skins */
                 else if (lowerName && resolverCache.flags[lowerName]) {
                     skinUrl = "https://www.legendmod.ml/agario/live/flags/" + lowerName + ".png";
+                    fromName = true;
                 }
                 /* 3. Free skins map */
                 else if (lowerName && resolverCache.free[lowerName]) {
                     skinUrl = "https://jimboy3000.github.io/vanillaskins/" + resolverCache.free[lowerName];
+                    fromName = true;
                 }
                 /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
@@ -45763,24 +45786,29 @@ Most cells eaten   : ${mostCellsEaten}
                 if (!skinUrl && y && typeof y === 'string' && window.VanillaSkinUrlMap) {
                     var cleanY = lowerName || y.toLowerCase().trim();
                     skinUrl = window.VanillaSkinUrlMap[cleanY] || window.VanillaSkinUrlMap['%' + cleanY];
+                    fromName = !!skinUrl;
                 }
 
                 if (skinUrl) {
-
-                    if (y) {
-                        window.lastusednameforskin = y;
-                        core.registerSkin(y, null, skinUrl, isAnimated);
-                        application.cacheCustomSkin(y, cellColor || '#000000', skinUrl);
+                    if (fromName) {
+                        /* the name decides this skin: same for everyone with that name */
+                        if (y) {
+                            window.lastusednameforskin = y;
+                            core.registerSkin(y, null, skinUrl, isAnimated);
+                            application.cacheCustomSkin(y, cellColor || '#000000', skinUrl);
+                        }
+                        if (playerKey && playerKey !== y) {
+                            core.registerSkin(playerKey, null, skinUrl, isAnimated);
+                            application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl);
+                        }
+                    } else if (g) {
+                        /* this cell's own skin: keyed by the skin id only */
+                        if (isAnimated && !application.customSkinsCache.hasOwnProperty(skinUrl)) {
+                            application.loadSkin(application.customSkinsCache, skinUrl, true);
+                        }
+                        application.cacheCustomSkin(g, '#000000', skinUrl); /* loads it if not yet */
                     }
-                    if (playerKey && playerKey !== y) {
-                        core.registerSkin(playerKey, null, skinUrl, isAnimated);
-                        application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl);
-                    }
-                    if (g) {
-                        application.cacheCustomSkin(g, cellColor || '#000000', skinUrl);
-                    }
-                } else if (g) {
-
+                    if (y) seen[playerKey] = skinUrl;
                 }
             } catch (eVanilla) {
                 console.error('[OGARIO SKIN ERROR] Failed resolving skin for name/skin:', y, g, eVanilla);
@@ -73556,7 +73584,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         this.ghostcellstext = ghost._cleanedText;
                         /* skin first, nick on top of it */
                         if (_showSkins && ghostNick) {
-                            var node = application.getCustomSkin(ghostNick, "#000000");
+                            var node = application.getCustomSkin(ghostNick, "#000000", undefined, true);
                             if (node) {
                                 this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
                             }
