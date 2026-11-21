@@ -18817,6 +18817,13 @@ var defaultmapsettings = {
     scanTrickDistance: 10000000,
     scanTrickRoundedDistance: 20000,
     scanTrickStatus: true,
+    /* Line split (hk-lineSplit): splits per press (3 = x8, 4 = x16), ms
+     * between splits, ms the aim stays locked after the last split. */
+    lineSplitCount: 3,
+    lineSplitDelay: 50,
+    lineSplitHold: 1000,
+    lineSplitStatus: true,
+    lineSplitGuide: true,
 
     stickyCell: false,
     //showPartyBots: false,
@@ -18991,6 +18998,15 @@ textLanguage.scanTrickStatus =
 textLanguage['hk-scanTrick'] =
     textLanguage['hk-scanTrick'] ||
     'Macro Scan trick';
+
+/* Line split: same fallback pattern as Scan Trick. */
+textLanguage.lineSplitGroup = textLanguage.lineSplitGroup || 'Line Split';
+textLanguage.lineSplitCount = textLanguage.lineSplitCount || 'Splits per press (3 = x8, 4 = x16)';
+textLanguage.lineSplitDelay = textLanguage.lineSplitDelay || 'Delay between splits (ms)';
+textLanguage.lineSplitHold = textLanguage.lineSplitHold || 'Aim lock after last split (ms)';
+textLanguage.lineSplitStatus = textLanguage.lineSplitStatus || 'Show line split status';
+textLanguage.lineSplitGuide = textLanguage.lineSplitGuide || 'Draw line split aim line';
+textLanguage['hk-lineSplit'] = textLanguage['hk-lineSplit'] || 'Line split';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -22390,6 +22406,18 @@ function thelegendmodproject() {
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
             Settings.addScanTrickControls();
+            /* Line split section; its key is set in Hotkeys ("Line split"). */
+            this.addOptions(["lineSplitStatus", "lineSplitGuide"], "lineSplitGroup");
+            this.addSliderBox(".lineSplitGroup", "lineSplitCount", 1, 4, 1);
+            this.addSliderBox(".lineSplitGroup", "lineSplitDelay", 0, 200, 5);
+            this.addSliderBox(".lineSplitGroup", "lineSplitHold", 0, 3000, 100);
+            $(".lineSplitGroup").append(
+                '<div class="line-split-help" style="margin-top:8px;padding:8px 10px;font-size:11px;line-height:1.45;opacity:.82;border-left:3px solid #ff2fd6;background:rgba(0,0,0,.18);">' +
+                '<strong>Usage:</strong> assign "Line split" in Hotkeys, or to a mouse button under Mouse control. ' +
+                'Point the cursor where the line should go and press it once: the aim locks on that line, ' +
+                'the splits fire, and the aim stays locked for the time above. Press it again to cancel.' +
+                '</div>'
+            );
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
             if (!this.protocolMode) {
@@ -34549,6 +34577,15 @@ function thelegendmodproject() {
         scanTrickDirectionY: 0,
         scanTrickRevision: 0,
 
+        /* Line split runtime state (see lineSplit()). lineSplitTarget is in
+         * client space, like cursorX/cursorY. */
+        lineSplitActive: false,
+        lineSplitTarget: null,
+        lineSplitUnit: 0,
+        lineSplitSplits: 0,
+        lineSplitSeq: 0,
+        _lineSplitStatusText: '',
+
         targetX: 0,
         targetY: 0,
         targetDistance: 0,
@@ -37267,7 +37304,8 @@ function thelegendmodproject() {
                         cursorX = _viewServerX;
                         cursorY = _viewServerY;
                     }
-                } else if (LM.dance || window.followStraight) {
+                } else if ((LM.dance || window.followStraight) && !this.lineSplitActive) {
+                    /* (a running line split keeps its locked cursor over these) */
                     let d = ~~((Date.now() / 40) % 8),
                         distance = 50000;
                     if (window.followStraight) {
@@ -48299,8 +48337,23 @@ Most cells eaten   : ${mostCellsEaten}
          *     optional angular quantization
          *              ↓
          *     far target from player/view origin
+         *
+         * Line split (wins over both while it runs):
+         *
+         *     fixed spot on the map, chosen when the key was pressed
          */
         getCursorPosition() {
+            if (this.lineSplitActive) {
+                /* The unit died or the multibox unit was switched: release the
+                 * lock (stopLineSplit runs this function again, unlocked). */
+                if (!this.lineSplitStillValid()) {
+                    this.stopLineSplit();
+                    return;
+                }
+                this.cursorX = this.lineSplitTarget.x;
+                this.cursorY = this.lineSplitTarget.y;
+                return;
+            }
             var canvasWidth =
                 Number.isFinite(
                     this.canvasWidth
@@ -48547,6 +48600,217 @@ Most cells eaten   : ${mostCellsEaten}
             el.style.display = text ? 'block' : 'none';
         },
 
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * LINE SPLIT
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * One key press locks the aim on one fixed spot on the map, on the
+         * line from the unit's biggest cell through the cursor, splits
+         * lineSplitCount times lineSplitDelay ms apart, and keeps the aim
+         * locked for lineSplitHold ms after the last split, so the pieces
+         * fly out in one straight line. The same key again cancels.
+         *
+         * The lock is applied in getCursorPosition(), so everything that
+         * sends or draws the cursor uses the locked spot: sendPosition() of
+         * the main client, the active multibox unit (it sends
+         * legendmod.cursorX/Y) and the cursor helpers. Mouse moves still
+         * update clientX/clientY, so the real cursor is back on release.
+         * Nothing here depends on the renderer.
+         */
+        getLineSplitSettings() {
+            function num(value, min, max, fallback) {
+                value = Number(value);
+                if (!Number.isFinite(value)) return fallback;
+                return Math.min(max, Math.max(min, value));
+            }
+            /* Settings can be imported: clamp them here. */
+            return {
+                splits: Math.round(num(defaultmapsettings.lineSplitCount, 1, 4, 3)),
+                delay: num(defaultmapsettings.lineSplitDelay, 0, 500, 50),
+                hold: num(defaultmapsettings.lineSplitHold, 0, 5000, 1000)
+            };
+        },
+        /* The unit a split goes to, as window.core routes it: the active
+         * multibox unit, or 0 for the main player. */
+        getLineSplitUnitNumber() {
+            var unitNumber = window.multiboxPlayerEnabled;
+            return unitNumber && getActiveSpect(unitNumber) ? unitNumber : 0;
+        },
+        /* Biggest cell of that unit, or null when it has none. */
+        getLineSplitCell(unitNumber) {
+            var cells = this.playerCells;
+            if (unitNumber) {
+                var unit = getActiveSpect(unitNumber);
+                if (!unit || typeof unit.getOwnPlayerCells !== 'function') return null;
+                cells = unit.getOwnPlayerCells();
+            }
+            var best = null;
+            var bestSize = 0;
+            for (var i = 0; cells && i < cells.length; i++) {
+                var cell = cells[i];
+                if (!cell || cell.removed || !Number.isFinite(cell.x) || !Number.isFinite(cell.y)) continue;
+                /* targetSize is the server's latest radius; size is interpolated. */
+                var size = Number(cell.targetSize);
+                if (!Number.isFinite(size) || size <= 0) size = Number(cell.size);
+                if (!Number.isFinite(size) || size <= 0) continue;
+                if (!best || size > bestSize) {
+                    best = cell;
+                    bestSize = size;
+                }
+            }
+            return best;
+        },
+        /*
+         * Where to lock the aim: on the ray from the cell through the cursor,
+         * just inside the map border, so the direction stays the same while
+         * the cell moves. The server clamps the cursor to the map one axis at
+         * a time, which would bend a target past the border. When the cell
+         * hugs a wall or aims almost along one, the target slides along the
+         * wall instead, as the game moves the cell there. Border unknown: a
+         * point 3000 units out. null when there is no usable direction.
+         * Client space in and out (the map box is the same box mirrored).
+         */
+        getLineSplitAimPoint(cell, cursorX, cursorY) {
+            var dx = cursorX - cell.x;
+            var dy = cursorY - cell.y;
+            var d = Math.hypot(dx, dy);
+            if (!(d > 2)) return null;
+            var ux = dx / d;
+            var uy = dy / d;
+            var reach = 1500;
+            var minX = this.mapMinX;
+            var minY = this.mapMinY;
+            var maxX = this.mapMaxX;
+            var maxY = this.mapMaxY;
+            var known = Number.isFinite(minX) && Number.isFinite(minY) &&
+                Number.isFinite(maxX) && Number.isFinite(maxY) &&
+                maxX - minX > 200 && maxY - minY > 200 &&
+                cell.x >= minX - 1 && cell.x <= maxX + 1 &&
+                cell.y >= minY - 1 && cell.y <= maxY + 1;
+            if (!known) {
+                return { x: cell.x + ux * reach * 2, y: cell.y + uy * reach * 2 };
+            }
+            /* Distance along the ray to the first wall. */
+            var hit = Infinity;
+            if (ux > 1e-9) hit = Math.min(hit, (maxX - cell.x) / ux);
+            else if (ux < -1e-9) hit = Math.min(hit, (minX - cell.x) / ux);
+            if (uy > 1e-9) hit = Math.min(hit, (maxY - cell.y) / uy);
+            else if (uy < -1e-9) hit = Math.min(hit, (minY - cell.y) / uy);
+            hit = Math.max(0, hit);
+            if (hit < reach) {
+                var ex = Math.max(minX, Math.min(maxX, cell.x + ux * reach)) - cell.x;
+                var ey = Math.max(minY, Math.min(maxY, cell.y + uy * reach)) - cell.y;
+                var el = Math.hypot(ex, ey);
+                var radius = Number(cell.size) || 0;
+                if (el > 1 && (hit < radius || (ex * ux + ey * uy) / el > 0.9986)) {
+                    return { x: cell.x + ex, y: cell.y + ey };
+                }
+            }
+            var len = hit - Math.min(hit * 0.5, 2);
+            /* Pressed against the wall it aims into: no point to lock on. */
+            if (!(len >= 1)) return null;
+            return { x: cell.x + ux * len, y: cell.y + uy * len };
+        },
+        lineSplitStillValid() {
+            return !!this.lineSplitTarget &&
+                this.getLineSplitUnitNumber() === this.lineSplitUnit &&
+                !!this.getLineSplitCell(this.lineSplitUnit);
+        },
+        /* Hotkey action (hk-lineSplit). */
+        lineSplit() {
+            if (this.lineSplitActive) {
+                this.stopLineSplit();
+                return;
+            }
+            /* Pause and Auto Play steer without the cursor: a lock would do nothing. */
+            if (this.pause || window.autoPlay) return;
+            var unitNumber = this.getLineSplitUnitNumber();
+            var cell = this.getLineSplitCell(unitNumber);
+            if (!cell) return;
+            /* Still the real cursor here (or Scan Trick's far point: same direction). */
+            var cursorX = this.cursorX;
+            var cursorY = this.cursorY;
+            if (!Number.isFinite(cursorX) || !Number.isFinite(cursorY)) return;
+            /* No direction (cursor on the cell): hold the cursor where it is. */
+            var target = this.getLineSplitAimPoint(cell, cursorX, cursorY) || { x: cursorX, y: cursorY };
+            var settings = this.getLineSplitSettings();
+            var app = this;
+            var seq = this.lineSplitSeq = (this.lineSplitSeq + 1) >>> 0;
+            this.lineSplitActive = true;
+            this.lineSplitTarget = { x: Math.round(target.x), y: Math.round(target.y) };
+            this.lineSplitUnit = unitNumber;
+            this.lineSplitSplits = settings.splits;
+            this.getCursorPosition();
+            this.updateLineSplitStatus();
+
+            /* Imsolo and Agar2 have one opcode for a 2-, 3- and 4-split, which
+             * the double, triple and 16 split hotkeys use there too. */
+            var core = window.core;
+            var atomic = null;
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                atomic = { 2: 'doubleSplit', 3: 'tripleSplit', 4: 'quadSplit' }[settings.splits] || null;
+            }
+            var fired = 0;
+            var release = function () {
+                if (app.lineSplitSeq === seq) app.stopLineSplit();
+            };
+            var step = function () {
+                if (app.lineSplitSeq !== seq || !app.lineSplitActive) return;
+                if (!app.lineSplitStillValid()) {
+                    app.stopLineSplit();
+                    return;
+                }
+                /* window.core sends the split to the unit chosen above; its
+                 * sendSplit() sends the (locked) cursor first. */
+                if (core && atomic && typeof core[atomic] === 'function') {
+                    core[atomic]();
+                    fired = settings.splits;
+                } else {
+                    if (core && typeof core.split === 'function') core.split();
+                    fired++;
+                }
+                if (fired < settings.splits) {
+                    setTimeout(step, settings.delay);
+                } else {
+                    setTimeout(release, settings.hold);
+                }
+            };
+            step();
+        },
+        stopLineSplit() {
+            if (!this.lineSplitActive) return;
+            this.lineSplitActive = false;
+            this.lineSplitTarget = null;
+            /* Pending split and release timers see a new number and stop. */
+            this.lineSplitSeq = (this.lineSplitSeq + 1) >>> 0;
+            this.getCursorPosition();
+            this.updateLineSplitStatus();
+            /* Hand the aim back to the real cursor now, not at the next 40 ms tick. */
+            this.sendPosition();
+        },
+        /* "Show line split status": a HUD line while the aim is locked. */
+        updateLineSplitStatus() {
+            var text = '';
+            if (this.lineSplitActive && defaultmapsettings.lineSplitStatus) {
+                text = (textLanguage.lineSplitGroup || 'Line Split') + ' x' + Math.pow(2, this.lineSplitSplits);
+            }
+            if (text === this._lineSplitStatusText) return;
+            this._lineSplitStatusText = text;
+            var el = document.getElementById('line-split-status');
+            if (!el) {
+                if (!text) return;
+                el = document.createElement('div');
+                el.id = 'line-split-status';
+                el.className = 'hud';
+                /* Below the Scan Trick status line (top: 120px). */
+                el.style.cssText = 'position:fixed;left:50%;top:146px;transform:translateX(-50%);padding:2px 10px;font-size:13px;pointer-events:none;z-index:100;';
+                document.body.appendChild(el);
+            }
+            el.textContent = text;
+            el.style.display = text ? 'block' : 'none';
+        },
+
         setZoom(t) {
             //t.preventDefault(), this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2, t.wheelDelta / -120 || t.detail || 0), this.zoomValue > 4 / this.viewScale && (this.zoomValue = 4 / this.viewScale);
             this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2 + 1, t.wheelDelta / -120 || t.detail || 0);
@@ -48649,6 +48913,7 @@ Most cells eaten   : ${mostCellsEaten}
                 'blur',
                 function () {
                     app.releaseScanTrickInput();
+                    app.stopLineSplit();
                 },
                 true
             );
@@ -71011,6 +71276,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
                 }
             }
+            if (LM.lineSplitActive && defaultmapsettings.lineSplitGuide) {
+                this.drawLineSplitGuide(this.ctx);
+            }
+        },
+        /* Line split aim guide: from the unit's biggest cell to the locked spot. */
+        drawLineSplitGuide(ctx) {
+            var target = LM.lineSplitTarget;
+            var cell = target && LM.getLineSplitCell(LM.lineSplitUnit);
+            if (!cell) return;
+            var color = '#ff2fd6';
+            var alpha = 0.6;
+            var width = 6;
+            /* Same WebGL2 fast path and 2D fallback as the cursor tracking line. */
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                && this.drawWebGLLineBatch([cell], target.x, target.y, color, alpha, width)) {
+                return;
+            }
+            ctx.save();
+            ctx.lineWidth = width;
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(cell.x, cell.y);
+            ctx.lineTo(target.x, target.y);
+            ctx.stroke();
+            ctx.restore();
         },
         drawRMB() {
             if (
