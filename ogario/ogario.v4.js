@@ -28,6 +28,121 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * MULTIBOX: ONE CELL, SEEN BY SEVERAL CONNECTIONS
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * A multibox unit's cells are stored as server id + unit number * LM_UNIT_ID_STEP.
+ * agar.io ids are uint32 (up to ~4.29e9). The step used to be 1e9: an id above
+ * 1e9 did not come back with % 1e9 (its copies were never matched, so the cell
+ * was drawn twice) and could collide with another cell's id.
+ */
+var LM_UNIT_ID_STEP = 4294967296;
+function lmUnitCellId(id, unitNumber) {
+    return id + unitNumber * LM_UNIT_ID_STEP;
+}
+function lmRawCellId(id) {
+    return id % LM_UNIT_ID_STEP;
+}
+/* Copy of a unit's (not own) cell held by the main connection or a lower unit,
+ * matched by id. Only works where the connections share ids. includeOwn: also
+ * for the unit's own cells (moveCell snaps those to the main copy, as before). */
+function lmMultiboxIdMaster(cell, includeOwn) {
+    if (!cell || !(cell.spectator > 0)) return null;
+    if (!includeOwn && (cell.isPlayerCell || cell.isPlayerCellMulti)) return null;
+    var cells = window.legendmod && window.legendmod.indexedCells;
+    if (!cells) return null;
+    var rawID = lmRawCellId(cell.id);
+    var master = cells[rawID];
+    if (!master || master.removed) {
+        master = null;
+        for (var n = 1; n < cell.spectator; n++) {
+            var candidate = cells[lmUnitCellId(rawID, n)];
+            if (candidate && !candidate.removed) {
+                master = candidate;
+                break;
+            }
+        }
+    }
+    return master && master !== cell ? master : null;
+}
+/*
+ * The same cell drawn from another connection, found by position and size:
+ * agar.io numbers cells per connection, so ids don't match there. Which copy
+ * is drawn: the main player's and a unit's own cells always; otherwise the
+ * main connection's, then the lowest unit number's. Returns the copy that is
+ * drawn instead of this one, or null if this one is drawn.
+ *
+ * Two copies of one cell differ only by the connections' timing (a few
+ * dozen units for a moving cell). Two different cells of the same size that
+ * close overlap almost completely, which only a player's own pieces do while
+ * merging; both are in view of both connections then, so hiding one
+ * connection's copy still leaves each piece drawn once.
+ */
+var _lmMbGrid = null;
+var _lmMbGridTime = -1;
+function _lmMbCellRadius(cell) {
+    var r = Number(cell.targetSize);
+    if (!Number.isFinite(r) || r <= 0) r = Number(cell.size);
+    return Number.isFinite(r) && r > 0 ? r : 0;
+}
+function _lmMbBuildGrid() {
+    var LM = window.legendmod;
+    var grid = new Map();
+    var cells = LM && LM.cells;
+    for (var i = 0; cells && i < cells.length; i++) {
+        var c = cells[i];
+        if (!c || c.removed || c.isFood || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
+        var key = Math.floor(c.x / 256) * 65536 + Math.floor(c.y / 256);
+        var bucket = grid.get(key);
+        if (bucket) bucket.push(c);
+        else grid.set(key, [c]);
+    }
+    return grid;
+}
+function _lmMbIsPreferredTwin(cell, other, radius) {
+    if (!other || other === cell || other.removed || other.isFood) return false;
+    var mine = cell.spectator > 0 ? cell.spectator : 0;
+    var theirs = other.spectator > 0 ? other.spectator : 0;
+    if (theirs === mine) return false; /* same connection: a different cell */
+    var otherOwn = theirs ? !!other.isPlayerCellMulti : !!other.isPlayerCell;
+    if (!otherOwn && !(theirs < mine)) return false; /* this copy is the one drawn */
+    var r2 = _lmMbCellRadius(other);
+    if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) return false;
+    var tol = Math.max(1.2 * radius, 60);
+    var dx = cell.x - other.x, dy = cell.y - other.y;
+    return dx * dx + dy * dy <= tol * tol;
+}
+function lmMultiboxPositionTwin(cell) {
+    var LM = window.legendmod;
+    if (!cell || cell.removed || cell.isFood || !LM || !window.spects || !window.spects.length) return null;
+    /* own cells of the main player or a unit are always drawn */
+    if (cell.spectator > 0 ? cell.isPlayerCellMulti : cell.isPlayerCell) return null;
+    if (!Number.isFinite(cell.x) || !Number.isFinite(cell.y)) return null;
+    var radius = _lmMbCellRadius(cell);
+    if (!radius) return null;
+    if (cell._lmMbTwin && _lmMbIsPreferredTwin(cell, cell._lmMbTwin, radius)) return cell._lmMbTwin;
+    cell._lmMbTwin = null;
+    if (_lmMbGridTime !== LM.time || !_lmMbGrid) {
+        _lmMbGrid = _lmMbBuildGrid();
+        _lmMbGridTime = LM.time;
+    }
+    var gx = Math.floor(cell.x / 256), gy = Math.floor(cell.y / 256);
+    for (var ox = -1; ox <= 1; ox++) {
+        for (var oy = -1; oy <= 1; oy++) {
+            var bucket = _lmMbGrid.get((gx + ox) * 65536 + gy + oy);
+            for (var i = 0; bucket && i < bucket.length; i++) {
+                if (_lmMbIsPreferredTwin(cell, bucket[i], radius)) {
+                    cell._lmMbTwin = bucket[i];
+                    return bucket[i];
+                }
+            }
+        }
+    }
+    return null;
+}
 window.OgVer = 3.543;
 
 
@@ -18817,6 +18932,13 @@ var defaultmapsettings = {
     scanTrickDistance: 10000000,
     scanTrickRoundedDistance: 20000,
     scanTrickStatus: true,
+    /* Line split (hk-lineSplit): splits per press (3 = x8, 4 = x16), ms
+     * between splits, ms the aim stays locked after the last split. */
+    lineSplitCount: 3,
+    lineSplitDelay: 50,
+    lineSplitHold: 1000,
+    lineSplitStatus: true,
+    lineSplitGuide: true,
 
     stickyCell: false,
     //showPartyBots: false,
@@ -18991,6 +19113,15 @@ textLanguage.scanTrickStatus =
 textLanguage['hk-scanTrick'] =
     textLanguage['hk-scanTrick'] ||
     'Macro Scan trick';
+
+/* Line split: same fallback pattern as Scan Trick. */
+textLanguage.lineSplitGroup = textLanguage.lineSplitGroup || 'Line Split';
+textLanguage.lineSplitCount = textLanguage.lineSplitCount || 'Splits per press (3 = x8, 4 = x16)';
+textLanguage.lineSplitDelay = textLanguage.lineSplitDelay || 'Delay between splits (ms)';
+textLanguage.lineSplitHold = textLanguage.lineSplitHold || 'Aim lock after last split (ms)';
+textLanguage.lineSplitStatus = textLanguage.lineSplitStatus || 'Show line split status';
+textLanguage.lineSplitGuide = textLanguage.lineSplitGuide || 'Draw line split aim line';
+textLanguage['hk-lineSplit'] = textLanguage['hk-lineSplit'] || 'Line split';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -22390,6 +22521,18 @@ function thelegendmodproject() {
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
             Settings.addScanTrickControls();
+            /* Line split section; its key is set in Hotkeys ("Line split"). */
+            this.addOptions(["lineSplitStatus", "lineSplitGuide"], "lineSplitGroup");
+            this.addSliderBox(".lineSplitGroup", "lineSplitCount", 1, 4, 1);
+            this.addSliderBox(".lineSplitGroup", "lineSplitDelay", 0, 200, 5);
+            this.addSliderBox(".lineSplitGroup", "lineSplitHold", 0, 3000, 100);
+            $(".lineSplitGroup").append(
+                '<div class="line-split-help" style="margin-top:8px;padding:8px 10px;font-size:11px;line-height:1.45;opacity:.82;border-left:3px solid #ff2fd6;background:rgba(0,0,0,.18);">' +
+                '<strong>Usage:</strong> assign "Line split" in Hotkeys, or to a mouse button under Mouse control. ' +
+                'Point the cursor where the line should go and press it once: the aim locks on that line, ' +
+                'the splits fire, and the aim stays locked for the time above. Press it again to cancel.' +
+                '</div>'
+            );
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
             if (!this.protocolMode) {
@@ -25126,9 +25269,19 @@ function thelegendmodproject() {
                 ))
             );
         },
-        getCustomSkin(nick, color, skinKey) {
+        /*
+         * Skin for a cell: its own skin URL (a multibox unit's profile skin, a private
+         * server's URL), else a skin set for its name (Legend Mod players' custom
+         * skins, flag/name skins), else its own agar.io skin id (vanillaskins caches
+         * those by id). nameOnly: for places with only a name (ghost cells), also use
+         * the last skin seen with that name.
+         */
+        getCustomSkin(nick, color, skinKey, nameOnly) {
             /* A player without a name shows no skin at all (custom, vanilla or server skin). */
             if (!nick || !String(nick).trim()) return null;
+            /* the cell's own URL wins, even while it loads (no flash of another skin) */
+            var ownUrl = (skinKey && typeof skinKey === 'string' && (skinKey.startsWith('http://') || skinKey.startsWith('https://')))
+                ? this.checkSkinURL(skinKey) : '';
             _RE_CLAN_TAG.lastIndex = 0;
             var cleanNick = nick ? nick.replace(_RE_CLAN_TAG, '').trim() : '';
             /* Cache lowered color to avoid per-call string allocation */
@@ -25142,7 +25295,7 @@ function thelegendmodproject() {
 
             /* Chat socket skins (nick-based) take priority over vanilla skins.
              * This lets legendmod skins override agar.io server skins. */
-            var skinUrl =
+            var skinUrl = ownUrl ||
                 (nick ? (
                     this.customSkinsMap[nick] ||
                     this.customSkinsMap[nick + hexColor] ||
@@ -25153,7 +25306,8 @@ function thelegendmodproject() {
                         this.customSkinsMap[cleanNick + hexColor]
                     ) : null)
                 ) : null) ||
-                (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null);
+                (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null) ||
+                (nameOnly && this.nickSkinSeen ? (this.nickSkinSeen[nick] || this.nickSkinSeen[nick + hexColor]) : null);
 
             if (!skinUrl && skinKey && (skinKey.startsWith('http://') || skinKey.startsWith('https://'))) {
                 skinUrl = skinKey;
@@ -31708,13 +31862,21 @@ function thelegendmodproject() {
             this.removed = true;
             /* Multibox: a unit's own copy is going away, so show the main socket's copy
              * (hidden as its duplicate) right now instead of on the next per-frame check. */
-            if (this.isPlayerCellMulti && this.id >= 1000000000) {
-                var _mbMain = LM.indexedCells[this.id % 1000000000];
+            if (this.isPlayerCellMulti && this.id >= LM_UNIT_ID_STEP) {
+                var _mbMain = LM.indexedCells[lmRawCellId(this.id)];
                 if (_mbMain && _mbMain._lmMbOwnDup) {
                     _mbMain._lmMbOwnDup = false;
                     _mbMain.invisible = false;
                 }
             }
+            /* same for a copy hidden because it sat on this cell (lmMultiboxPositionTwin) */
+            var _mbPosHidden = this._lmMbHides;
+            if (_mbPosHidden && _mbPosHidden._lmMbPosDup && _mbPosHidden._lmMbTwin === this) {
+                _mbPosHidden._lmMbPosDup = false;
+                _mbPosHidden._lmMbTwin = null;
+                _mbPosHidden.invisible = false;
+            }
+            this._lmMbHides = null;
 
 
             /*
@@ -31890,15 +32052,10 @@ function thelegendmodproject() {
         this.moveCell = function () {
             // Snap duplicate spectator cells to the primary socket's cell position for 100% pixel-perfect overlap
             if (this.spectator && this.spectator > 0) {
-                var rawID = this.id % 1000000000;
-                var master = LM.indexedCells[rawID];
-                if (!master) {
-                    for (var sNum = 1; sNum < this.spectator; sNum++) {
-                        var candidate = LM.indexedCells[rawID + sNum * 1000000000];
-                        if (candidate) { master = candidate; break; }
-                    }
-                }
-                if (master && master !== this) {
+                /* by id only (as before): a copy matched by position keeps its own
+                 * movement, so a wrong match can't hold it in place */
+                var master = lmMultiboxIdMaster(this, true);
+                if (master) {
                     this.x = master.x;
                     this.y = master.y;
                     this.size = master.size;
@@ -34548,6 +34705,15 @@ function thelegendmodproject() {
         scanTrickDirectionX: 1,
         scanTrickDirectionY: 0,
         scanTrickRevision: 0,
+
+        /* Line split runtime state (see lineSplit()). lineSplitTarget is in
+         * client space, like cursorX/cursorY. */
+        lineSplitActive: false,
+        lineSplitTarget: null,
+        lineSplitUnit: 0,
+        lineSplitSplits: 0,
+        lineSplitSeq: 0,
+        _lineSplitStatusText: '',
 
         targetX: 0,
         targetY: 0,
@@ -37267,7 +37433,8 @@ function thelegendmodproject() {
                         cursorX = _viewServerX;
                         cursorY = _viewServerY;
                     }
-                } else if (LM.dance || window.followStraight) {
+                } else if ((LM.dance || window.followStraight) && !this.lineSplitActive) {
+                    /* (a running line split keeps its locked cursor over these) */
                     let d = ~~((Date.now() / 40) % 8),
                         distance = 50000;
                     if (window.followStraight) {
@@ -38408,6 +38575,10 @@ function thelegendmodproject() {
                         this.ghostCells.push({
                             'x': _ghostX,
                             'y': _ghostY,
+                            /* raw server coordinates: multibox units (spect.js) compare
+                             * their own ghost list with these to find their orientation */
+                            'rawX': d,
+                            'rawY': f,
                             'size': g,
                             'mass': m,
                             /* isInView compares with the (translated) view, so use translated coords */
@@ -38429,6 +38600,7 @@ function thelegendmodproject() {
                     } else {
                         window.legendmod.bgpi = 4;
                     }
+                    this.ghostCellsTime = Date.now();
                     break;
 
                 case 85:
@@ -45663,20 +45835,30 @@ Most cells eaten   : ${mostCellsEaten}
                     playerKey = playerKey + cellColor;
                 }
 
-                /* Fast-path: if skin already cached for this key, skip the expensive
-                 * 7-branch resolution (regex, includes, toLowerCase per packet).
-                 * Only while the packet's skin is the one resolved last time for this
-                 * key: a respawn with another skin must re-resolve. Entries set by
-                 * other sources (no recorded skin) keep precedence as before.
-                 * A name-only packet (no skin) keeps the cached entry: the nick
-                 * fallback must not replace a custom skin resolved earlier. */
-                var lastSkinByKey = window._lmVanillaSkinLastG || (window._lmVanillaSkinLastG = Object.create(null));
-                var lastSkin = lastSkinByKey[playerKey];
-                if (application.customSkinsMap[playerKey] && (!g || lastSkin === undefined || lastSkin === g)) return;
-                lastSkinByKey[playerKey] = g || '';
+                /*
+                 * A skin sent with a cell (g) belongs to that cell, not to its name:
+                 * it is cached under the skin id and drawn from cell.skin
+                 * (getCustomSkin). It used to be written under the player's name, so
+                 * players sharing a name (common on agar.io, and both units of a
+                 * multibox) overwrote each other on every packet and their skins kept
+                 * switching. Only skins that come from the name itself (flag names,
+                 * name skins) are stored under the name.
+                 *
+                 * nickSkinSeen keeps the last skin seen per name for places that only
+                 * have a name (ghost cells / top players); it is never used for a cell.
+                 *
+                 * Fast path: skin id (or, without one, the name) already resolved.
+                 */
+                var seen = application.nickSkinSeen || (application.nickSkinSeen = Object.create(null));
+                var known = g ? application.customSkinsMap[g] : application.customSkinsMap[playerKey];
+                if (known) {
+                    if (y) seen[playerKey] = known;
+                    return;
+                }
 
                 var skinUrl = null;
                 var isAnimated = false;
+                var fromName = false;
                 var lowerName = y && typeof y === 'string' ? LowerCase(y) : '';
 
                 /* Build O(1) flag/free-skin indexes only when their source arrays change. */
@@ -45719,10 +45901,12 @@ Most cells eaten   : ${mostCellsEaten}
                 /* 2. Flag skins */
                 else if (lowerName && resolverCache.flags[lowerName]) {
                     skinUrl = "https://www.legendmod.ml/agario/live/flags/" + lowerName + ".png";
+                    fromName = true;
                 }
                 /* 3. Free skins map */
                 else if (lowerName && resolverCache.free[lowerName]) {
                     skinUrl = "https://jimboy3000.github.io/vanillaskins/" + resolverCache.free[lowerName];
+                    fromName = true;
                 }
                 /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
@@ -45763,24 +45947,29 @@ Most cells eaten   : ${mostCellsEaten}
                 if (!skinUrl && y && typeof y === 'string' && window.VanillaSkinUrlMap) {
                     var cleanY = lowerName || y.toLowerCase().trim();
                     skinUrl = window.VanillaSkinUrlMap[cleanY] || window.VanillaSkinUrlMap['%' + cleanY];
+                    fromName = !!skinUrl;
                 }
 
                 if (skinUrl) {
-
-                    if (y) {
-                        window.lastusednameforskin = y;
-                        core.registerSkin(y, null, skinUrl, isAnimated);
-                        application.cacheCustomSkin(y, cellColor || '#000000', skinUrl);
+                    if (fromName) {
+                        /* the name decides this skin: same for everyone with that name */
+                        if (y) {
+                            window.lastusednameforskin = y;
+                            core.registerSkin(y, null, skinUrl, isAnimated);
+                            application.cacheCustomSkin(y, cellColor || '#000000', skinUrl);
+                        }
+                        if (playerKey && playerKey !== y) {
+                            core.registerSkin(playerKey, null, skinUrl, isAnimated);
+                            application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl);
+                        }
+                    } else if (g) {
+                        /* this cell's own skin: keyed by the skin id only */
+                        if (isAnimated && !application.customSkinsCache.hasOwnProperty(skinUrl)) {
+                            application.loadSkin(application.customSkinsCache, skinUrl, true);
+                        }
+                        application.cacheCustomSkin(g, '#000000', skinUrl); /* loads it if not yet */
                     }
-                    if (playerKey && playerKey !== y) {
-                        core.registerSkin(playerKey, null, skinUrl, isAnimated);
-                        application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl);
-                    }
-                    if (g) {
-                        application.cacheCustomSkin(g, cellColor || '#000000', skinUrl);
-                    }
-                } else if (g) {
-
+                    if (y) seen[playerKey] = skinUrl;
                 }
             } catch (eVanilla) {
                 console.error('[OGARIO SKIN ERROR] Failed resolving skin for name/skin:', y, g, eVanilla);
@@ -48299,8 +48488,23 @@ Most cells eaten   : ${mostCellsEaten}
          *     optional angular quantization
          *              ↓
          *     far target from player/view origin
+         *
+         * Line split (wins over both while it runs):
+         *
+         *     fixed spot on the map, chosen when the key was pressed
          */
         getCursorPosition() {
+            if (this.lineSplitActive) {
+                /* The unit died or the multibox unit was switched: release the
+                 * lock (stopLineSplit runs this function again, unlocked). */
+                if (!this.lineSplitStillValid()) {
+                    this.stopLineSplit();
+                    return;
+                }
+                this.cursorX = this.lineSplitTarget.x;
+                this.cursorY = this.lineSplitTarget.y;
+                return;
+            }
             var canvasWidth =
                 Number.isFinite(
                     this.canvasWidth
@@ -48547,6 +48751,217 @@ Most cells eaten   : ${mostCellsEaten}
             el.style.display = text ? 'block' : 'none';
         },
 
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * LINE SPLIT
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * One key press locks the aim on one fixed spot on the map, on the
+         * line from the unit's biggest cell through the cursor, splits
+         * lineSplitCount times lineSplitDelay ms apart, and keeps the aim
+         * locked for lineSplitHold ms after the last split, so the pieces
+         * fly out in one straight line. The same key again cancels.
+         *
+         * The lock is applied in getCursorPosition(), so everything that
+         * sends or draws the cursor uses the locked spot: sendPosition() of
+         * the main client, the active multibox unit (it sends
+         * legendmod.cursorX/Y) and the cursor helpers. Mouse moves still
+         * update clientX/clientY, so the real cursor is back on release.
+         * Nothing here depends on the renderer.
+         */
+        getLineSplitSettings() {
+            function num(value, min, max, fallback) {
+                value = Number(value);
+                if (!Number.isFinite(value)) return fallback;
+                return Math.min(max, Math.max(min, value));
+            }
+            /* Settings can be imported: clamp them here. */
+            return {
+                splits: Math.round(num(defaultmapsettings.lineSplitCount, 1, 4, 3)),
+                delay: num(defaultmapsettings.lineSplitDelay, 0, 500, 50),
+                hold: num(defaultmapsettings.lineSplitHold, 0, 5000, 1000)
+            };
+        },
+        /* The unit a split goes to, as window.core routes it: the active
+         * multibox unit, or 0 for the main player. */
+        getLineSplitUnitNumber() {
+            var unitNumber = window.multiboxPlayerEnabled;
+            return unitNumber && getActiveSpect(unitNumber) ? unitNumber : 0;
+        },
+        /* Biggest cell of that unit, or null when it has none. */
+        getLineSplitCell(unitNumber) {
+            var cells = this.playerCells;
+            if (unitNumber) {
+                var unit = getActiveSpect(unitNumber);
+                if (!unit || typeof unit.getOwnPlayerCells !== 'function') return null;
+                cells = unit.getOwnPlayerCells();
+            }
+            var best = null;
+            var bestSize = 0;
+            for (var i = 0; cells && i < cells.length; i++) {
+                var cell = cells[i];
+                if (!cell || cell.removed || !Number.isFinite(cell.x) || !Number.isFinite(cell.y)) continue;
+                /* targetSize is the server's latest radius; size is interpolated. */
+                var size = Number(cell.targetSize);
+                if (!Number.isFinite(size) || size <= 0) size = Number(cell.size);
+                if (!Number.isFinite(size) || size <= 0) continue;
+                if (!best || size > bestSize) {
+                    best = cell;
+                    bestSize = size;
+                }
+            }
+            return best;
+        },
+        /*
+         * Where to lock the aim: on the ray from the cell through the cursor,
+         * just inside the map border, so the direction stays the same while
+         * the cell moves. The server clamps the cursor to the map one axis at
+         * a time, which would bend a target past the border. When the cell
+         * hugs a wall or aims almost along one, the target slides along the
+         * wall instead, as the game moves the cell there. Border unknown: a
+         * point 3000 units out. null when there is no usable direction.
+         * Client space in and out (the map box is the same box mirrored).
+         */
+        getLineSplitAimPoint(cell, cursorX, cursorY) {
+            var dx = cursorX - cell.x;
+            var dy = cursorY - cell.y;
+            var d = Math.hypot(dx, dy);
+            if (!(d > 2)) return null;
+            var ux = dx / d;
+            var uy = dy / d;
+            var reach = 1500;
+            var minX = this.mapMinX;
+            var minY = this.mapMinY;
+            var maxX = this.mapMaxX;
+            var maxY = this.mapMaxY;
+            var known = Number.isFinite(minX) && Number.isFinite(minY) &&
+                Number.isFinite(maxX) && Number.isFinite(maxY) &&
+                maxX - minX > 200 && maxY - minY > 200 &&
+                cell.x >= minX - 1 && cell.x <= maxX + 1 &&
+                cell.y >= minY - 1 && cell.y <= maxY + 1;
+            if (!known) {
+                return { x: cell.x + ux * reach * 2, y: cell.y + uy * reach * 2 };
+            }
+            /* Distance along the ray to the first wall. */
+            var hit = Infinity;
+            if (ux > 1e-9) hit = Math.min(hit, (maxX - cell.x) / ux);
+            else if (ux < -1e-9) hit = Math.min(hit, (minX - cell.x) / ux);
+            if (uy > 1e-9) hit = Math.min(hit, (maxY - cell.y) / uy);
+            else if (uy < -1e-9) hit = Math.min(hit, (minY - cell.y) / uy);
+            hit = Math.max(0, hit);
+            if (hit < reach) {
+                var ex = Math.max(minX, Math.min(maxX, cell.x + ux * reach)) - cell.x;
+                var ey = Math.max(minY, Math.min(maxY, cell.y + uy * reach)) - cell.y;
+                var el = Math.hypot(ex, ey);
+                var radius = Number(cell.size) || 0;
+                if (el > 1 && (hit < radius || (ex * ux + ey * uy) / el > 0.9986)) {
+                    return { x: cell.x + ex, y: cell.y + ey };
+                }
+            }
+            var len = hit - Math.min(hit * 0.5, 2);
+            /* Pressed against the wall it aims into: no point to lock on. */
+            if (!(len >= 1)) return null;
+            return { x: cell.x + ux * len, y: cell.y + uy * len };
+        },
+        lineSplitStillValid() {
+            return !!this.lineSplitTarget &&
+                this.getLineSplitUnitNumber() === this.lineSplitUnit &&
+                !!this.getLineSplitCell(this.lineSplitUnit);
+        },
+        /* Hotkey action (hk-lineSplit). */
+        lineSplit() {
+            if (this.lineSplitActive) {
+                this.stopLineSplit();
+                return;
+            }
+            /* Pause and Auto Play steer without the cursor: a lock would do nothing. */
+            if (this.pause || window.autoPlay) return;
+            var unitNumber = this.getLineSplitUnitNumber();
+            var cell = this.getLineSplitCell(unitNumber);
+            if (!cell) return;
+            /* Still the real cursor here (or Scan Trick's far point: same direction). */
+            var cursorX = this.cursorX;
+            var cursorY = this.cursorY;
+            if (!Number.isFinite(cursorX) || !Number.isFinite(cursorY)) return;
+            /* No direction (cursor on the cell): hold the cursor where it is. */
+            var target = this.getLineSplitAimPoint(cell, cursorX, cursorY) || { x: cursorX, y: cursorY };
+            var settings = this.getLineSplitSettings();
+            var app = this;
+            var seq = this.lineSplitSeq = (this.lineSplitSeq + 1) >>> 0;
+            this.lineSplitActive = true;
+            this.lineSplitTarget = { x: Math.round(target.x), y: Math.round(target.y) };
+            this.lineSplitUnit = unitNumber;
+            this.lineSplitSplits = settings.splits;
+            this.getCursorPosition();
+            this.updateLineSplitStatus();
+
+            /* Imsolo and Agar2 have one opcode for a 2-, 3- and 4-split, which
+             * the double, triple and 16 split hotkeys use there too. */
+            var core = window.core;
+            var atomic = null;
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                atomic = { 2: 'doubleSplit', 3: 'tripleSplit', 4: 'quadSplit' }[settings.splits] || null;
+            }
+            var fired = 0;
+            var release = function () {
+                if (app.lineSplitSeq === seq) app.stopLineSplit();
+            };
+            var step = function () {
+                if (app.lineSplitSeq !== seq || !app.lineSplitActive) return;
+                if (!app.lineSplitStillValid()) {
+                    app.stopLineSplit();
+                    return;
+                }
+                /* window.core sends the split to the unit chosen above; its
+                 * sendSplit() sends the (locked) cursor first. */
+                if (core && atomic && typeof core[atomic] === 'function') {
+                    core[atomic]();
+                    fired = settings.splits;
+                } else {
+                    if (core && typeof core.split === 'function') core.split();
+                    fired++;
+                }
+                if (fired < settings.splits) {
+                    setTimeout(step, settings.delay);
+                } else {
+                    setTimeout(release, settings.hold);
+                }
+            };
+            step();
+        },
+        stopLineSplit() {
+            if (!this.lineSplitActive) return;
+            this.lineSplitActive = false;
+            this.lineSplitTarget = null;
+            /* Pending split and release timers see a new number and stop. */
+            this.lineSplitSeq = (this.lineSplitSeq + 1) >>> 0;
+            this.getCursorPosition();
+            this.updateLineSplitStatus();
+            /* Hand the aim back to the real cursor now, not at the next 40 ms tick. */
+            this.sendPosition();
+        },
+        /* "Show line split status": a HUD line while the aim is locked. */
+        updateLineSplitStatus() {
+            var text = '';
+            if (this.lineSplitActive && defaultmapsettings.lineSplitStatus) {
+                text = (textLanguage.lineSplitGroup || 'Line Split') + ' x' + Math.pow(2, this.lineSplitSplits);
+            }
+            if (text === this._lineSplitStatusText) return;
+            this._lineSplitStatusText = text;
+            var el = document.getElementById('line-split-status');
+            if (!el) {
+                if (!text) return;
+                el = document.createElement('div');
+                el.id = 'line-split-status';
+                el.className = 'hud';
+                /* Below the Scan Trick status line (top: 120px). */
+                el.style.cssText = 'position:fixed;left:50%;top:146px;transform:translateX(-50%);padding:2px 10px;font-size:13px;pointer-events:none;z-index:100;';
+                document.body.appendChild(el);
+            }
+            el.textContent = text;
+            el.style.display = text ? 'block' : 'none';
+        },
+
         setZoom(t) {
             //t.preventDefault(), this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2, t.wheelDelta / -120 || t.detail || 0), this.zoomValue > 4 / this.viewScale && (this.zoomValue = 4 / this.viewScale);
             this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2 + 1, t.wheelDelta / -120 || t.detail || 0);
@@ -48649,6 +49064,7 @@ Most cells eaten   : ${mostCellsEaten}
                 'blur',
                 function () {
                     app.releaseScanTrickInput();
+                    app.stopLineSplit();
                 },
                 true
             );
@@ -65132,65 +65548,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _isDuplicateWebGLSpectatorCell(
             cell
         ) {
-            if (
-                !cell ||
-                !cell.spectator ||
-                cell.spectator <=
-                    0 ||
-                cell.isPlayerCell ||
-                cell.isPlayerCellMulti
-            ) {
-                return false;
-            }
-
-
-            var rawID =
-                cell.id %
-                1000000000;
-
-
-            var master =
-                LM.indexedCells[
-                    rawID
-                ];
-
-
-            if (
-                !master
-            ) {
-                for (
-                    var n = 1;
-                    n <
-                        cell.spectator;
-                    n++
-                ) {
-                    var candidate =
-                        LM.indexedCells[
-                            rawID +
-                            n *
-                            1000000000
-                        ];
-
-
-                    if (
-                        candidate &&
-                        !candidate.removed
-                    ) {
-                        master =
-                            candidate;
-
-                        break;
-                    }
-                }
-            }
-
-
-            return !!(
-                master &&
-                master !==
-                    cell &&
-                !master.removed
-            );
+            /* same rules as the 2D path: id match, or (ids differ per connection)
+             * the copy hidden by the per-frame position check */
+            return !!(lmMultiboxIdMaster(cell) || (cell && cell._lmMbPosDup));
         },
 
 
@@ -67201,53 +67561,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * Skip rendering duplicate spectator cell if the primary
                  * socket is already drawing the same server cell.
                  */
-                if (
-                    cell.spectator &&
-                    cell.spectator > 0 &&
-                    !cell.isPlayerCell &&
-                    !cell.isPlayerCellMulti
-                ) {
-                    var rawID =
-                        cell.id %
-                        1000000000;
-
-                    var master =
-                        LM.indexedCells[
-                            rawID
-                        ];
-
-                    if (!master) {
-                        for (
-                            var sNum = 1;
-                            sNum < cell.spectator;
-                            sNum++
-                        ) {
-                            var candidate =
-                                LM.indexedCells[
-                                    rawID +
-                                    sNum *
-                                    1000000000
-                                ];
-
-                            if (
-                                candidate &&
-                                !candidate.removed
-                            ) {
-                                master =
-                                    candidate;
-
-                                break;
-                            }
-                        }
-                    }
-
-                    if (
-                        master &&
-                        master !== cell &&
-                        !master.removed
-                    ) {
-                        continue;
-                    }
+                if (lmMultiboxIdMaster(cell)) {
+                    continue;
                 }
 
 
@@ -68225,7 +68540,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var neededSpects = (defaultmapsettings.multiboxAmount || 2) - 1;
                     for (var sI = 0; sI < neededSpects; sI++) {
                         var sp = spects[sI];
-                        if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
+                        /* a unit whose offset/orientation isn't known yet has no place on this map */
+                        if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0 &&
+                            !(typeof sp.transformReady === 'function' && !sp.transformReady())) {
                             /* playerX/Y are already client space incl. fix3 (spect getX). */
                             sumX += sp.playerX;
                             sumY += sp.playerY;
@@ -68239,7 +68556,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && getActiveSpect(window.multiboxPlayerEnabled)) {
                 var spect = getActiveSpect(window.multiboxPlayerEnabled);
-                if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
+                if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length &&
+                    !(typeof spect.transformReady === 'function' && !spect.transformReady())) {
                     targetCamX = spect.playerX;
                     targetCamY = spect.playerY;
                 }
@@ -69494,17 +69812,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _cW = 0;
 
                 /* Own multibox cells are also seen by the main socket (raw id). The unit's
-                 * own copy (id + number * 1e9) is drawn with its profile, so the main copy is
-                 * hidden (not removed: it stays in LM.cells and keeps moving, the unit copy
-                 * snaps to it in moveCell) instead of being drawn a second time as an enemy. */
+                 * own copy (id + number * LM_UNIT_ID_STEP) is drawn with its profile, so the
+                 * main copy is hidden (not removed: it stays in LM.cells and keeps moving, the
+                 * unit copy snaps to it in moveCell) instead of being drawn a second time as
+                 * an enemy. */
                 var _mbOwnOffsets = null;
                 if (LM.multiBoxPlayerExists && LM.playerCellsMulti && LM.playerCellsMulti.length && window.spects && window.spects.length) {
                     _mbOwnOffsets = [];
                     for (var _mbI = 0; _mbI < window.spects.length; _mbI++) {
                         var _mbSp = window.spects[_mbI];
-                        if (_mbSp && _mbSp.player && _mbSp.number > 0) _mbOwnOffsets.push(_mbSp.number * 1000000000);
+                        if (_mbSp && _mbSp.player && _mbSp.number > 0) _mbOwnOffsets.push(_mbSp.number * LM_UNIT_ID_STEP);
                     }
                 }
+                /* Any multibox connection open: also match copies by position (ids differ
+                 * per connection on agar.io, see lmMultiboxPositionTwin). */
+                var _mbAny = !!(window.spects && window.spects.length);
 
                 for (
                     i = 0;
@@ -69526,57 +69848,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * Suppressed spectator copies remain in indexedCells and
                      * will be restored by their next authoritative packet.
                      */
-                    if (
-                        cell.spectator &&
-                        cell.spectator > 0 &&
-                        !cell.isPlayerCell &&
-                        !cell.isPlayerCellMulti
-                    ) {
-                        var rawID =
-                            cell.id %
-                            1000000000;
+                    if (lmMultiboxIdMaster(cell)) {
+                        cell._renderSuppressed =
+                            true;
 
-                        var master =
-                            LM.indexedCells[
-                                rawID
-                            ];
-
-                        if (!master) {
-                            for (
-                                var sNum = 1;
-                                sNum < cell.spectator;
-                                sNum++
-                            ) {
-                                var candidate =
-                                    LM.indexedCells[
-                                        rawID +
-                                        sNum *
-                                        1000000000
-                                    ];
-
-                                if (
-                                    candidate &&
-                                    !candidate.removed
-                                ) {
-                                    master =
-                                        candidate;
-
-                                    break;
-                                }
-                            }
-                        }
-
-
-                        if (
-                            master &&
-                            master !== cell &&
-                            !master.removed
-                        ) {
-                            cell._renderSuppressed =
-                                true;
-
-                            continue;
-                        }
+                        continue;
                     }
 
 
@@ -69591,6 +69867,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cell._lmMbOwnDup = false;
                         cell.invisible = false;
                     }
+                    if (cell._lmMbPosDup) {
+                        cell._lmMbPosDup = false;
+                        cell.invisible = false;
+                    }
                     if (_mbOwnOffsets && !(cell.spectator > 0) && !cell.isPlayerCell && !cell.isFood) {
                         for (var _mbK = 0; _mbK < _mbOwnOffsets.length; _mbK++) {
                             var _mbOwn = LM.indexedCells[cell.id + _mbOwnOffsets[_mbK]];
@@ -69599,6 +69879,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 cell.invisible = true;
                                 break;
                             }
+                        }
+                    }
+                    /* Not matched by id: the same cell from another connection at the
+                     * same place. Hidden, not dropped, so it keeps moving and is shown
+                     * again as soon as the other copy goes. */
+                    if (_mbAny && !cell.invisible && !cell.isFood) {
+                        var _mbTwin = lmMultiboxPositionTwin(cell);
+                        if (_mbTwin) {
+                            cell._lmMbPosDup = true;
+                            cell.invisible = true;
+                            _mbTwin._lmMbHides = cell;
                         }
                     }
 
@@ -71011,6 +71302,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
                 }
             }
+            if (LM.lineSplitActive && defaultmapsettings.lineSplitGuide) {
+                this.drawLineSplitGuide(this.ctx);
+            }
+        },
+        /* Line split aim guide: from the unit's biggest cell to the locked spot. */
+        drawLineSplitGuide(ctx) {
+            var target = LM.lineSplitTarget;
+            var cell = target && LM.getLineSplitCell(LM.lineSplitUnit);
+            if (!cell) return;
+            var color = '#ff2fd6';
+            var alpha = 0.6;
+            var width = 6;
+            /* Same WebGL2 fast path and 2D fallback as the cursor tracking line. */
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                && this.drawWebGLLineBatch([cell], target.x, target.y, color, alpha, width)) {
+                return;
+            }
+            ctx.save();
+            ctx.lineWidth = width;
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(cell.x, cell.y);
+            ctx.lineTo(target.x, target.y);
+            ctx.stroke();
+            ctx.restore();
         },
         drawRMB() {
             if (
@@ -73556,7 +73873,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         this.ghostcellstext = ghost._cleanedText;
                         /* skin first, nick on top of it */
                         if (_showSkins && ghostNick) {
-                            var node = application.getCustomSkin(ghostNick, "#000000");
+                            var node = application.getCustomSkin(ghostNick, "#000000", undefined, true);
                             if (node) {
                                 this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
                             }
