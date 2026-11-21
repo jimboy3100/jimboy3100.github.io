@@ -83,7 +83,23 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },			
+            },
+            /* Locks the aim on one line and splits (settings: Line Split section).
+             * No default key: E, the old standalone script's key, is macro feed here. */
+            'hk-lineSplit': {
+                get label() {
+                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-lineSplit']) || 'Line split';
+                },
+                defaultKey: '',
+                keyDown() {
+                    var game = window.legendmod;
+                    if (game && typeof game.lineSplit === 'function') {
+                        game.lineSplit();
+                    }
+                },
+                keyUp: null,
+                type: 'normal'
+            },		
             'hk-pause': {
                 label: textLanguage['hk-pause'],
                 defaultKey: 'R',
