@@ -28,6 +28,121 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * MULTIBOX: ONE CELL, SEEN BY SEVERAL CONNECTIONS
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * A multibox unit's cells are stored as server id + unit number * LM_UNIT_ID_STEP.
+ * agar.io ids are uint32 (up to ~4.29e9). The step used to be 1e9: an id above
+ * 1e9 did not come back with % 1e9 (its copies were never matched, so the cell
+ * was drawn twice) and could collide with another cell's id.
+ */
+var LM_UNIT_ID_STEP = 4294967296;
+function lmUnitCellId(id, unitNumber) {
+    return id + unitNumber * LM_UNIT_ID_STEP;
+}
+function lmRawCellId(id) {
+    return id % LM_UNIT_ID_STEP;
+}
+/* Copy of a unit's (not own) cell held by the main connection or a lower unit,
+ * matched by id. Only works where the connections share ids. includeOwn: also
+ * for the unit's own cells (moveCell snaps those to the main copy, as before). */
+function lmMultiboxIdMaster(cell, includeOwn) {
+    if (!cell || !(cell.spectator > 0)) return null;
+    if (!includeOwn && (cell.isPlayerCell || cell.isPlayerCellMulti)) return null;
+    var cells = window.legendmod && window.legendmod.indexedCells;
+    if (!cells) return null;
+    var rawID = lmRawCellId(cell.id);
+    var master = cells[rawID];
+    if (!master || master.removed) {
+        master = null;
+        for (var n = 1; n < cell.spectator; n++) {
+            var candidate = cells[lmUnitCellId(rawID, n)];
+            if (candidate && !candidate.removed) {
+                master = candidate;
+                break;
+            }
+        }
+    }
+    return master && master !== cell ? master : null;
+}
+/*
+ * The same cell drawn from another connection, found by position and size:
+ * agar.io numbers cells per connection, so ids don't match there. Which copy
+ * is drawn: the main player's and a unit's own cells always; otherwise the
+ * main connection's, then the lowest unit number's. Returns the copy that is
+ * drawn instead of this one, or null if this one is drawn.
+ *
+ * Two copies of one cell differ only by the connections' timing (a few
+ * dozen units for a moving cell). Two different cells of the same size that
+ * close overlap almost completely, which only a player's own pieces do while
+ * merging; both are in view of both connections then, so hiding one
+ * connection's copy still leaves each piece drawn once.
+ */
+var _lmMbGrid = null;
+var _lmMbGridTime = -1;
+function _lmMbCellRadius(cell) {
+    var r = Number(cell.targetSize);
+    if (!Number.isFinite(r) || r <= 0) r = Number(cell.size);
+    return Number.isFinite(r) && r > 0 ? r : 0;
+}
+function _lmMbBuildGrid() {
+    var LM = window.legendmod;
+    var grid = new Map();
+    var cells = LM && LM.cells;
+    for (var i = 0; cells && i < cells.length; i++) {
+        var c = cells[i];
+        if (!c || c.removed || c.isFood || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
+        var key = Math.floor(c.x / 256) * 65536 + Math.floor(c.y / 256);
+        var bucket = grid.get(key);
+        if (bucket) bucket.push(c);
+        else grid.set(key, [c]);
+    }
+    return grid;
+}
+function _lmMbIsPreferredTwin(cell, other, radius) {
+    if (!other || other === cell || other.removed || other.isFood) return false;
+    var mine = cell.spectator > 0 ? cell.spectator : 0;
+    var theirs = other.spectator > 0 ? other.spectator : 0;
+    if (theirs === mine) return false; /* same connection: a different cell */
+    var otherOwn = theirs ? !!other.isPlayerCellMulti : !!other.isPlayerCell;
+    if (!otherOwn && !(theirs < mine)) return false; /* this copy is the one drawn */
+    var r2 = _lmMbCellRadius(other);
+    if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) return false;
+    var tol = Math.max(1.2 * radius, 60);
+    var dx = cell.x - other.x, dy = cell.y - other.y;
+    return dx * dx + dy * dy <= tol * tol;
+}
+function lmMultiboxPositionTwin(cell) {
+    var LM = window.legendmod;
+    if (!cell || cell.removed || cell.isFood || !LM || !window.spects || !window.spects.length) return null;
+    /* own cells of the main player or a unit are always drawn */
+    if (cell.spectator > 0 ? cell.isPlayerCellMulti : cell.isPlayerCell) return null;
+    if (!Number.isFinite(cell.x) || !Number.isFinite(cell.y)) return null;
+    var radius = _lmMbCellRadius(cell);
+    if (!radius) return null;
+    if (cell._lmMbTwin && _lmMbIsPreferredTwin(cell, cell._lmMbTwin, radius)) return cell._lmMbTwin;
+    cell._lmMbTwin = null;
+    if (_lmMbGridTime !== LM.time || !_lmMbGrid) {
+        _lmMbGrid = _lmMbBuildGrid();
+        _lmMbGridTime = LM.time;
+    }
+    var gx = Math.floor(cell.x / 256), gy = Math.floor(cell.y / 256);
+    for (var ox = -1; ox <= 1; ox++) {
+        for (var oy = -1; oy <= 1; oy++) {
+            var bucket = _lmMbGrid.get((gx + ox) * 65536 + gy + oy);
+            for (var i = 0; bucket && i < bucket.length; i++) {
+                if (_lmMbIsPreferredTwin(cell, bucket[i], radius)) {
+                    cell._lmMbTwin = bucket[i];
+                    return bucket[i];
+                }
+            }
+        }
+    }
+    return null;
+}
 window.OgVer = 3.542;
 
 
@@ -31708,13 +31823,21 @@ function thelegendmodproject() {
             this.removed = true;
             /* Multibox: a unit's own copy is going away, so show the main socket's copy
              * (hidden as its duplicate) right now instead of on the next per-frame check. */
-            if (this.isPlayerCellMulti && this.id >= 1000000000) {
-                var _mbMain = LM.indexedCells[this.id % 1000000000];
+            if (this.isPlayerCellMulti && this.id >= LM_UNIT_ID_STEP) {
+                var _mbMain = LM.indexedCells[lmRawCellId(this.id)];
                 if (_mbMain && _mbMain._lmMbOwnDup) {
                     _mbMain._lmMbOwnDup = false;
                     _mbMain.invisible = false;
                 }
             }
+            /* same for a copy hidden because it sat on this cell (lmMultiboxPositionTwin) */
+            var _mbPosHidden = this._lmMbHides;
+            if (_mbPosHidden && _mbPosHidden._lmMbPosDup && _mbPosHidden._lmMbTwin === this) {
+                _mbPosHidden._lmMbPosDup = false;
+                _mbPosHidden._lmMbTwin = null;
+                _mbPosHidden.invisible = false;
+            }
+            this._lmMbHides = null;
 
 
             /*
@@ -31890,15 +32013,10 @@ function thelegendmodproject() {
         this.moveCell = function () {
             // Snap duplicate spectator cells to the primary socket's cell position for 100% pixel-perfect overlap
             if (this.spectator && this.spectator > 0) {
-                var rawID = this.id % 1000000000;
-                var master = LM.indexedCells[rawID];
-                if (!master) {
-                    for (var sNum = 1; sNum < this.spectator; sNum++) {
-                        var candidate = LM.indexedCells[rawID + sNum * 1000000000];
-                        if (candidate) { master = candidate; break; }
-                    }
-                }
-                if (master && master !== this) {
+                /* by id only (as before): a copy matched by position keeps its own
+                 * movement, so a wrong match can't hold it in place */
+                var master = lmMultiboxIdMaster(this, true);
+                if (master) {
                     this.x = master.x;
                     this.y = master.y;
                     this.size = master.size;
@@ -65137,65 +65255,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _isDuplicateWebGLSpectatorCell(
             cell
         ) {
-            if (
-                !cell ||
-                !cell.spectator ||
-                cell.spectator <=
-                    0 ||
-                cell.isPlayerCell ||
-                cell.isPlayerCellMulti
-            ) {
-                return false;
-            }
-
-
-            var rawID =
-                cell.id %
-                1000000000;
-
-
-            var master =
-                LM.indexedCells[
-                    rawID
-                ];
-
-
-            if (
-                !master
-            ) {
-                for (
-                    var n = 1;
-                    n <
-                        cell.spectator;
-                    n++
-                ) {
-                    var candidate =
-                        LM.indexedCells[
-                            rawID +
-                            n *
-                            1000000000
-                        ];
-
-
-                    if (
-                        candidate &&
-                        !candidate.removed
-                    ) {
-                        master =
-                            candidate;
-
-                        break;
-                    }
-                }
-            }
-
-
-            return !!(
-                master &&
-                master !==
-                    cell &&
-                !master.removed
-            );
+            /* same rules as the 2D path: id match, or (ids differ per connection)
+             * the copy hidden by the per-frame position check */
+            return !!(lmMultiboxIdMaster(cell) || (cell && cell._lmMbPosDup));
         },
 
 
@@ -67206,53 +67268,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * Skip rendering duplicate spectator cell if the primary
                  * socket is already drawing the same server cell.
                  */
-                if (
-                    cell.spectator &&
-                    cell.spectator > 0 &&
-                    !cell.isPlayerCell &&
-                    !cell.isPlayerCellMulti
-                ) {
-                    var rawID =
-                        cell.id %
-                        1000000000;
-
-                    var master =
-                        LM.indexedCells[
-                            rawID
-                        ];
-
-                    if (!master) {
-                        for (
-                            var sNum = 1;
-                            sNum < cell.spectator;
-                            sNum++
-                        ) {
-                            var candidate =
-                                LM.indexedCells[
-                                    rawID +
-                                    sNum *
-                                    1000000000
-                                ];
-
-                            if (
-                                candidate &&
-                                !candidate.removed
-                            ) {
-                                master =
-                                    candidate;
-
-                                break;
-                            }
-                        }
-                    }
-
-                    if (
-                        master &&
-                        master !== cell &&
-                        !master.removed
-                    ) {
-                        continue;
-                    }
+                if (lmMultiboxIdMaster(cell)) {
+                    continue;
                 }
 
 
@@ -69502,17 +69519,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _cW = 0;
 
                 /* Own multibox cells are also seen by the main socket (raw id). The unit's
-                 * own copy (id + number * 1e9) is drawn with its profile, so the main copy is
-                 * hidden (not removed: it stays in LM.cells and keeps moving, the unit copy
-                 * snaps to it in moveCell) instead of being drawn a second time as an enemy. */
+                 * own copy (id + number * LM_UNIT_ID_STEP) is drawn with its profile, so the
+                 * main copy is hidden (not removed: it stays in LM.cells and keeps moving, the
+                 * unit copy snaps to it in moveCell) instead of being drawn a second time as
+                 * an enemy. */
                 var _mbOwnOffsets = null;
                 if (LM.multiBoxPlayerExists && LM.playerCellsMulti && LM.playerCellsMulti.length && window.spects && window.spects.length) {
                     _mbOwnOffsets = [];
                     for (var _mbI = 0; _mbI < window.spects.length; _mbI++) {
                         var _mbSp = window.spects[_mbI];
-                        if (_mbSp && _mbSp.player && _mbSp.number > 0) _mbOwnOffsets.push(_mbSp.number * 1000000000);
+                        if (_mbSp && _mbSp.player && _mbSp.number > 0) _mbOwnOffsets.push(_mbSp.number * LM_UNIT_ID_STEP);
                     }
                 }
+                /* Any multibox connection open: also match copies by position (ids differ
+                 * per connection on agar.io, see lmMultiboxPositionTwin). */
+                var _mbAny = !!(window.spects && window.spects.length);
 
                 for (
                     i = 0;
@@ -69534,57 +69555,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * Suppressed spectator copies remain in indexedCells and
                      * will be restored by their next authoritative packet.
                      */
-                    if (
-                        cell.spectator &&
-                        cell.spectator > 0 &&
-                        !cell.isPlayerCell &&
-                        !cell.isPlayerCellMulti
-                    ) {
-                        var rawID =
-                            cell.id %
-                            1000000000;
+                    if (lmMultiboxIdMaster(cell)) {
+                        cell._renderSuppressed =
+                            true;
 
-                        var master =
-                            LM.indexedCells[
-                                rawID
-                            ];
-
-                        if (!master) {
-                            for (
-                                var sNum = 1;
-                                sNum < cell.spectator;
-                                sNum++
-                            ) {
-                                var candidate =
-                                    LM.indexedCells[
-                                        rawID +
-                                        sNum *
-                                        1000000000
-                                    ];
-
-                                if (
-                                    candidate &&
-                                    !candidate.removed
-                                ) {
-                                    master =
-                                        candidate;
-
-                                    break;
-                                }
-                            }
-                        }
-
-
-                        if (
-                            master &&
-                            master !== cell &&
-                            !master.removed
-                        ) {
-                            cell._renderSuppressed =
-                                true;
-
-                            continue;
-                        }
+                        continue;
                     }
 
 
@@ -69599,6 +69574,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cell._lmMbOwnDup = false;
                         cell.invisible = false;
                     }
+                    if (cell._lmMbPosDup) {
+                        cell._lmMbPosDup = false;
+                        cell.invisible = false;
+                    }
                     if (_mbOwnOffsets && !(cell.spectator > 0) && !cell.isPlayerCell && !cell.isFood) {
                         for (var _mbK = 0; _mbK < _mbOwnOffsets.length; _mbK++) {
                             var _mbOwn = LM.indexedCells[cell.id + _mbOwnOffsets[_mbK]];
@@ -69607,6 +69586,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 cell.invisible = true;
                                 break;
                             }
+                        }
+                    }
+                    /* Not matched by id: the same cell from another connection at the
+                     * same place. Hidden, not dropped, so it keeps moving and is shown
+                     * again as soon as the other copy goes. */
+                    if (_mbAny && !cell.invisible && !cell.isFood) {
+                        var _mbTwin = lmMultiboxPositionTwin(cell);
+                        if (_mbTwin) {
+                            cell._lmMbPosDup = true;
+                            cell.invisible = true;
+                            _mbTwin._lmMbHides = cell;
                         }
                     }
 
