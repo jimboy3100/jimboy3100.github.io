@@ -1517,7 +1517,7 @@ class Spect {
      */
     calibrateWithFood(spectCell, isFood) {
         if (this.foodCalibrated || !legendmod || !this.transformReady()) return;
-        var rawID = spectCell.id % 1000000000;
+        var rawID = lmRawCellId(spectCell.id);
         var mainCell = (legendmod.indexedCells && legendmod.indexedCells[rawID]) ? legendmod.indexedCells[rawID] : null;
         if (!mainCell && legendmod.food) {
             for (var f = 0; f < legendmod.food.length; f++) {
@@ -2003,18 +2003,7 @@ class Spect {
                 cell = legendmod.indexedCells[id];
                 cell.spectator = this.number;
                 if (cell._renderSuppressed) {
-                    var suppressedRawID = id % 1000000000;
-                    var preferredCopy = legendmod.indexedCells[suppressedRawID];
-                    if (preferredCopy === cell || (preferredCopy && preferredCopy.removed)) preferredCopy = null;
-                    if (!preferredCopy) {
-                        for (var preferredNumber = 1; preferredNumber < this.number; preferredNumber++) {
-                            var lowerCopy = legendmod.indexedCells[suppressedRawID + preferredNumber * 1000000000];
-                            if (lowerCopy && lowerCopy !== cell && !lowerCopy.removed) {
-                                preferredCopy = lowerCopy;
-                                break;
-                            }
-                        }
-                    }
+                    var preferredCopy = lmMultiboxIdMaster(cell);
                     if (!preferredCopy) {
                         cell._renderSuppressed = false;
                         if (legendmod.cells.indexOf(cell) === -1) legendmod.cells.push(cell);
@@ -2163,7 +2152,8 @@ class Spect {
 
     newID(id) {
         //return id
-        return id + this.number * 1000000000
+        /* see LM_UNIT_ID_STEP in ogario.v4.js: agar.io ids go past 1e9 */
+        return lmUnitCellId(id, this.number)
     }
 
     calculatePlayerMassAndPosition(ownCells) {
