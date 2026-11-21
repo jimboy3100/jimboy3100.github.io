@@ -5,12 +5,20 @@ function loadMultiCellSkin(spect) {
         ? application.mbSlots[spect.number] : application.selectedOldProfile;
     var prof = profiles[profileIdx];
     if (prof && prof.nick && prof.skinURL) {
-        if (typeof application !== 'undefined' && application.cacheCustomSkin) {
-            application.cacheCustomSkin(prof.nick, prof.color || '#000000', prof.skinURL);
-        }
-        if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
-            core.registerSkin(prof.nick, null, prof.skinURL, null);
-        }
+        lmPreloadUnitSkin(prof.skinURL);
+    }
+}
+
+/*
+ * A unit's profile skin is carried by its own cells (cell.skin = the URL), so it is
+ * only loaded here. It used to be stored under the profile's nick, which is often
+ * the main player's nick too: the main player and the unit then kept swapping skins.
+ */
+function lmPreloadUnitSkin(url) {
+    if (!url || typeof application === 'undefined' || !application || !application.loadSkin) return;
+    var clean = application.checkSkinURL ? application.checkSkinURL(url) : url;
+    if (clean && application.customSkinsCache && !application.customSkinsCache.hasOwnProperty(clean)) {
+        application.loadSkin(application.customSkinsCache, clean);
     }
 }
 
@@ -1301,12 +1309,7 @@ class Spect {
             this.sendNick(prof.nick);
             this.nick = prof.nick;
             if (prof.skinURL) {
-                if (typeof application !== 'undefined' && application.cacheCustomSkin) {
-                    application.cacheCustomSkin(prof.nick, prof.color || '#000000', prof.skinURL);
-                }
-                if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
-                    core.registerSkin(prof.nick, null, prof.skinURL, null);
-                }
+                lmPreloadUnitSkin(prof.skinURL);
             }
         } else {
             this.sendNick($("#nick").val());
@@ -2034,12 +2037,8 @@ class Spect {
                             }
                             if (_mbProf.skinURL) {
                                 cell.skin = _mbProf.skinURL;
-                                if (typeof application !== 'undefined' && application.cacheCustomSkin) {
-                                    application.cacheCustomSkin(_mbProf.nick, _mbProf.color || '#000000', _mbProf.skinURL);
-                                }
-                                if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
-                                    core.registerSkin(_mbProf.nick, null, _mbProf.skinURL, null);
-                                }
+                                cell._lmProfileSkin = true;
+                                lmPreloadUnitSkin(_mbProf.skinURL);
                             }
                         }
 
@@ -2091,7 +2090,8 @@ class Spect {
             if (this.player || cell.isPlayerCell || cell.isPlayerCellMulti) {
                 cell.invisible = false;
             }
-            if (skin) {
+            /* the unit's own cells keep its profile skin (see lmPreloadUnitSkin) */
+            if (skin && !cell._lmProfileSkin) {
                 cell.skin = skin;
             }
             if (extendedFlags & 4) {
