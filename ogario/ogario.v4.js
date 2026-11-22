@@ -38429,6 +38429,7 @@ function thelegendmodproject() {
                     } else {
                         window.legendmod.bgpi = 4;
                     }
+                    this.ghostCellsTime = Date.now();
                     break;
 
                 case 85:
