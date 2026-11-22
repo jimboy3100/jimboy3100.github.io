@@ -199,6 +199,34 @@ function lmMultiboxRing(cell, radius, scale) {
         width: Math.min(width, radius)
     };
 }
+
+/*
+ * Multibox camera (drawRender.getMultiboxFrame): both players are kept on
+ * screen when the zoom that fits them both is at least NEAR x the normal
+ * zoom; at FAR or less the camera only follows the player you control; in
+ * between it blends.
+ */
+var LM_MB_CAMERA_NEAR = 0.8;
+var LM_MB_CAMERA_FAR = 0.6;
+function lmSmoothstep(edge0, edge1, x) {
+    var t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+    return t * t * (3 - 2 * t);
+}
+/* One multibox player for the camera: its centre (cx, cy), size, and the box
+ * around its cells (x +- radius), from where they are drawn. */
+function lmMultiboxPlayerBox(cells, cx, cy, size) {
+    var box = { x: cx, y: cy, size: size, minX: cx, maxX: cx, minY: cy, maxY: cy };
+    for (var i = 0; cells && i < cells.length; i++) {
+        var c = cells[i];
+        if (!c || c.removed || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
+        var r = Number.isFinite(c.size) && c.size > 0 ? c.size : 0;
+        if (c.x - r < box.minX) box.minX = c.x - r;
+        if (c.x + r > box.maxX) box.maxX = c.x + r;
+        if (c.y - r < box.minY) box.minY = c.y - r;
+        if (c.y + r > box.maxY) box.maxY = c.y + r;
+    }
+    return box;
+}
 window.OgVer = 3.543;
 
 
@@ -48677,19 +48705,39 @@ Most cells eaten   : ${mostCellsEaten}
                     ? this.viewScale
                     : 1;
 
+            /*
+             * Aim at what is under the mouse on screen: the centre the frame was
+             * drawn around (drawRender.camX/Y). viewX is where the camera is
+             * heading; with multibox it was at times a different point (the
+             * middle of both players while the camera showed one of them), and
+             * the controlled player went off course.
+             */
+            var screenCam =
+                window.drawRender;
+
             var viewX =
+                screenCam &&
                 Number.isFinite(
-                    this.viewX
+                    screenCam.camX
                 )
-                    ? this.viewX
-                    : 0;
+                    ? screenCam.camX
+                    : Number.isFinite(
+                        this.viewX
+                    )
+                        ? this.viewX
+                        : 0;
 
             var viewY =
+                screenCam &&
                 Number.isFinite(
-                    this.viewY
+                    screenCam.camY
                 )
-                    ? this.viewY
-                    : 0;
+                    ? screenCam.camY
+                    : Number.isFinite(
+                        this.viewY
+                    )
+                        ? this.viewY
+                        : 0;
 
             /*
              * Calculate the ordinary cursor every time so key release can
@@ -68755,8 +68803,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return true;
         },
         setView() {
-            this.setScale(LM.playerSize);
-
             if (LM.playerCells && LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition(); /* includes the units */
             } else {
@@ -68820,42 +68866,31 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            if (defaultmapsettings.middleMultiView) {
-                var sumX = 0, sumY = 0, count = 0;
-                if (LM.playerCells && LM.playerCells.length) {
-                    sumX += (LM.viewXTrue != null ? LM.viewXTrue : LM.viewX);
-                    sumY += (LM.viewYTrue != null ? LM.viewYTrue : LM.viewY);
-                    count++;
-                }
-                if (typeof spects !== "undefined" && spects) {
-                    var neededSpects = (defaultmapsettings.multiboxAmount || 2) - 1;
-                    for (var sI = 0; sI < neededSpects; sI++) {
-                        var sp = spects[sI];
-                        /* a unit whose offset/orientation isn't known yet has no place on this map */
-                        if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0 &&
-                            !(typeof sp.transformReady === 'function' && !sp.transformReady())) {
-                            /* playerX/Y are already client space incl. fix3 (spect getX). */
-                            sumX += sp.playerX;
-                            sumY += sp.playerY;
-                            count++;
-                        }
-                    }
-                }
-                if (count > 0) {
-                    targetCamX = sumX / count;
-                    targetCamY = sumY / count;
-                }
-            } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && getActiveSpect(window.multiboxPlayerEnabled)) {
-                var spect = getActiveSpect(window.multiboxPlayerEnabled);
-                if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length &&
-                    !(typeof spect.transformReady === 'function' && !spect.transformReady())) {
-                    targetCamX = spect.playerX;
-                    targetCamY = spect.playerY;
-                }
+            /*
+             * Multibox camera: one rule whichever player you control (see
+             * getMultiboxFrame). It used to centre on the focused unit while the
+             * mouse aim was worked out from the middle of both players, and the
+             * "close" test flipped on and off: the unit steered off course and
+             * the other player could sit just off screen.
+             */
+            var _mbZoomSize = LM.playerSize;
+            var _mbPlaying = false;
+            var _mbFrame = this.getMultiboxFrame(LM.playerSize);
+            if (_mbFrame) {
+                targetCamX = _mbFrame.x;
+                targetCamY = _mbFrame.y;
+                /* the cursor (getCursorPosition) and anything else reading the view
+                 * centre see the same point as the camera */
+                LM.viewX = targetCamX;
+                LM.viewY = targetCamY;
+                _mbZoomSize = _mbFrame.size;
+                _mbPlaying = true;
             }
+            window.middleMultiViewFlag = !!(_mbFrame && _mbFrame.both > 0.5);
+            this.setScale(_mbZoomSize, _mbFrame ? _mbFrame.zoom : 1, _mbPlaying);
 
             var _activeSpect = window.multiboxPlayerEnabled && spects ? getActiveSpect(window.multiboxPlayerEnabled) : null;
-            var activeHasCells = LM.playerCells.length || (_activeSpect && _activeSpect.playerCellIDs && _activeSpect.playerCellIDs.length);
+            var activeHasCells = LM.playerCells.length || (_activeSpect && _activeSpect.playerCellIDs && _activeSpect.playerCellIDs.length) || !!_mbFrame;
             /* "Smooth multibox camera lerp" off: the camera jumps to the newly focused
              * multibox unit instead of gliding there (the setting had no reader) */
             var _lmCamUnit = window.multiboxPlayerEnabled || 0;
@@ -68877,20 +68912,97 @@ function pickPlayerCellBySize(players, selectBiggest) {
             LM.playerX = this.camX;
             LM.playerY = this.camY;
         },
-        setScale(size) {
+        /*
+         * The zoom the camera eases towards. size = the followed player's size;
+         * unitPlaying: that player is a living multibox unit (Auto zoom used the
+         * spectate zoom whenever the main player was dead).
+         */
+        getTargetScale(size, unitPlaying) {
             if (!LM.autoZoom) {
-                this.scale = (9 * this.scale + this.getZoom()) / 10;
-                LM.viewScale = this.scale;
-                return;
+                return this.getZoom();
             }
             /* delt.io sends the camera and zoom in every opcode 17 (Delta's setViewport uses it
              * while playing too); the own-size formula zoomed far in there (huge cells). */
-            if (LM.play && LM.serverType !== 'deltio') {
-                this.scale = (9 * this.scale + Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom()) / 10;
-            } else {
-                this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10;
+            if ((LM.play || unitPlaying) && LM.serverType !== 'deltio') {
+                return Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom();
             }
+            return LM.scale * this.getZoom();
+        },
+        /* fit (0..1): zoom out to keep both multibox players on screen (getMultiboxFrame) */
+        setScale(size, fit, unitPlaying) {
+            if (!(fit > 0 && fit < 1)) fit = 1;
+            this.scale = (9 * this.scale + this.getTargetScale(size, unitPlaying) * fit) / 10;
             LM.viewScale = this.scale;
+        },
+        /*
+         * ═══════════════════════════════════════════════════════════════════
+         * MULTIBOX CAMERA
+         * ═══════════════════════════════════════════════════════════════════
+         *
+         * null while no multibox unit is alive and placed on the map: the
+         * normal camera. Otherwise { x, y, zoom, both, size }:
+         *
+         *  - one player alive: on that player (the unit also when the main
+         *    player is dead and nothing switched the focus to it);
+         *  - both alive: on the player you control, or, when they are close
+         *    ("View on middle of both (when close)"), on both: centred on the
+         *    box around both players' cells, zoomed out as far as 80 % of the
+         *    normal zoom so that box fits on screen. Between close and far the
+         *    camera blends with the distance (both = 0..1), so it never jumps
+         *    when they drift apart or together;
+         *  - "View on middle of both": always on both (zoom out at most to 80 %).
+         *
+         * size: the controlled player's size, for Auto zoom.
+         */
+        getMultiboxFrame(mainSize) {
+            if (!LM.multiBoxPlayerExists || typeof spects === 'undefined' || !spects || !spects.length) return null;
+            var focus = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null;
+            var unit = null, unitCells = null;
+            var candidates = focus ? [focus].concat(spects) : spects;
+            for (var i = 0; i < candidates.length && !unit; i++) {
+                var sp = candidates[i];
+                /* a unit whose offset/orientation isn't known yet has no place on this map */
+                if (!sp || !sp.player || !sp.playerCellIDs || !sp.playerCellIDs.length || !Number.isFinite(sp.playerX) ||
+                    (typeof sp.transformReady === 'function' && !sp.transformReady())) continue;
+                var cells = sp.getOwnPlayerCells();
+                if (cells.length) {
+                    unit = sp;
+                    unitCells = cells;
+                }
+            }
+            if (!unit) return null;
+            var p2 = lmMultiboxPlayerBox(unitCells, unit.playerX, unit.playerY, unit.playerSize);
+            var mainAlive = LM.playerCells && LM.playerCells.length && Number.isFinite(LM.viewXTrue);
+            if (!mainAlive) {
+                return { x: p2.x, y: p2.y, zoom: 1, both: 0, size: p2.size };
+            }
+            var p1 = lmMultiboxPlayerBox(LM.playerCells, LM.viewXTrue, LM.viewYTrue, mainSize);
+            var controlled = focus === unit ? p2 : p1;
+            var minX = Math.min(p1.minX, p2.minX), maxX = Math.max(p1.maxX, p2.maxX);
+            var minY = Math.min(p1.minY, p2.minY), maxY = Math.max(p1.maxY, p2.maxY);
+            /* zoom factor that fits both (with a 5 % margin each side); >= 1: they already fit */
+            var baseScale = this.getTargetScale(controlled.size, true);
+            var fit = Math.min(
+                (this.canvasWidth || 1) * 0.9 / Math.max(1, maxX - minX),
+                (this.canvasHeight || 1) * 0.9 / Math.max(1, maxY - minY)
+            ) / (baseScale > 0 ? baseScale : 1);
+            var both;
+            if (defaultmapsettings.middleMultiView) {
+                both = 1;
+            } else if (defaultmapsettings.middleMultiViewWhenClose) {
+                both = lmSmoothstep(LM_MB_CAMERA_FAR, LM_MB_CAMERA_NEAR, fit);
+            } else {
+                both = 0;
+            }
+            var boxX = (minX + maxX) / 2, boxY = (minY + maxY) / 2;
+            var zoomBoth = Math.min(1, Math.max(LM_MB_CAMERA_NEAR, fit));
+            return {
+                x: controlled.x + (boxX - controlled.x) * both,
+                y: controlled.y + (boxY - controlled.y) * both,
+                zoom: 1 + (zoomBoth - 1) * both,
+                both: both,
+                size: controlled.size
+            };
         },
         getZoom() {
             return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * LM.zoomValue;
