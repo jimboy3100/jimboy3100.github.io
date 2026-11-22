@@ -143,6 +143,62 @@ function lmMultiboxPositionTwin(cell) {
     }
     return null;
 }
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * MULTIBOX RINGS
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * While multiboxing, each own cell can get a ring inside its edge: player 1
+ * is the main connection's own cells, player 2 the multibox unit's. Each
+ * player has its own on/off, color and size (the ring's width in % of the
+ * cell's radius), so it can be one ring, two different ones, or none.
+ * "Only on the player you control" drops the other player's ring.
+ *
+ * Both renderers take the ring from lmMultiboxRing(): cell.draw() for
+ * Canvas2D, drawWebGLMultiboxRings() for cells drawn by WebGL. The ring is
+ * drawn over the skin and under the nick and mass.
+ */
+var LM_MB_RING_MIN_SCREEN_PX = 2; /* never thinner than this on screen */
+var LM_MB_RING_DEFAULT_COLORS = { 1: '#FF2FD6', 2: '#00E5FF' };
+/* 1 = the main player's own cell, 2 = a multibox unit's own cell, 0 = neither */
+function lmMultiboxRingPlayer(cell) {
+    if (!cell || cell.removed || cell.isFood || cell.isVirus || cell.isEjected) return 0;
+    if (cell.spectator > 0) return cell.isPlayerCellMulti ? 2 : 0;
+    return cell.isPlayerCell ? 1 : 0;
+}
+/* The player the mouse and keys move now: 2 while a unit has the focus. */
+function lmMultiboxControlledPlayer() {
+    return window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled) ? 2 : 1;
+}
+/* Settings can be imported or typed: only a #rgb/#rrggbb color is used. */
+function lmMultiboxRingColor(value, fallback) {
+    return typeof value === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value) ? value : fallback;
+}
+/*
+ * The ring of this cell, or null for none: { player, color, width }, width in
+ * world units. radius = the cell's drawn radius, scale = the camera zoom.
+ */
+function lmMultiboxRing(cell, radius, scale) {
+    var LM = window.legendmod;
+    var s = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null;
+    if (!s || !LM || !LM.multiBoxPlayerExists) return null;
+    if (!(radius > 0) || !Number.isFinite(radius)) return null;
+    var player = lmMultiboxRingPlayer(cell);
+    if (!player) return null;
+    if (!(player === 1 ? s.mbRingsP1 : s.mbRingsP2)) return null;
+    if (s.mbRingsActiveOnly && player !== lmMultiboxControlledPlayer()) return null;
+    var percent = Number(player === 1 ? s.mbRingSizeP1 : s.mbRingSizeP2);
+    if (!Number.isFinite(percent)) percent = 6;
+    percent = Math.min(100, Math.max(1, percent));
+    var width = radius * percent / 100;
+    if (scale > 0) width = Math.max(width, LM_MB_RING_MIN_SCREEN_PX / scale);
+    return {
+        player: player,
+        color: lmMultiboxRingColor(player === 1 ? s.mbRingColorP1 : s.mbRingColorP2, LM_MB_RING_DEFAULT_COLORS[player]),
+        width: Math.min(width, radius)
+    };
+}
 window.OgVer = 3.543;
 
 
@@ -15965,13 +16021,12 @@ var displayText = {
         showChat: 'Show chat on cells',
         showChatMyOwn: 'Show chat on my cells',
         oneColoredSpectator: 'Multibox less render cells',
-        multiBoxShadow: 'Player 1 & 2',
+        multiBoxShadow: 'Player 1 & 2 glow (profile colors)',
         multiKeepMoving: 'Inactive keep moving',
         middleMultiView: 'View on middle of both (disables when close)',
         middleMultiViewWhenClose: 'View on middle of both (when close)',
         multiboxAmount: 'Liczba kont Multibox (2-4)',
         mbSwitchAfterDeath: 'Przelacz po smierci',
-        mbRings: 'Wykrywanie pierscieni Multibox',
         mbFreeze: 'Zamroz nieaktywne konto',
         mbAutoRespawn: 'Automatyczne odradzanie w tle',
         cameraSmoothLerp: 'Plynna kamera Multibox',
@@ -16460,13 +16515,12 @@ var displayText = {
         showChat: 'Show chat on cells',
         showChatMyOwn: 'Show chat on my cells',
         oneColoredSpectator: 'MultiBox less render cells',
-        multiBoxShadow: 'Player 1 & 2',
+        multiBoxShadow: 'Player 1 & 2 glow (profile colors)',
         multiKeepMoving: 'Inactive keep moving',
         middleMultiView: 'View on middle of both (disables when close)',
         middleMultiViewWhenClose: 'View on middle of both (when close)',
         multiboxAmount: 'Multibox slots (2-4)',
         mbSwitchAfterDeath: 'Auto-switch focus after death',
-        mbRings: 'Multibox unit stroke rings',
         mbFreeze: 'Freeze inactive multibox unit',
         mbAutoRespawn: 'Background auto-respawn',
         cameraSmoothLerp: 'Smooth multibox camera lerp',
@@ -18888,7 +18942,17 @@ var defaultmapsettings = {
     middleMultiViewWhenClose: true,
     multiboxAmount: 2,
     mbSwitchAfterDeath: true,
-    mbRings: true,
+    /* Multibox rings (menu: Multibox rings, see lmMultiboxRing). Player 1 is
+     * the main connection, player 2 the multibox unit. Size is the ring's width
+     * in % of the cell's radius, inside the edge. mbRingsP2 replaces mbRings
+     * (which only ringed the unit); loadSettings carries an old "off" over. */
+    mbRingsP1: true,
+    mbRingsP2: true,
+    mbRingColorP1: '#FF2FD6',
+    mbRingColorP2: '#00E5FF',
+    mbRingSizeP1: 6,
+    mbRingSizeP2: 6,
+    mbRingsActiveOnly: false,
     mbFreeze: false,
     mbAutoRespawn: true,
     cameraSmoothLerp: true,
@@ -19122,6 +19186,16 @@ textLanguage.lineSplitHold = textLanguage.lineSplitHold || 'Aim lock after last 
 textLanguage.lineSplitStatus = textLanguage.lineSplitStatus || 'Show line split status';
 textLanguage.lineSplitGuide = textLanguage.lineSplitGuide || 'Draw line split aim line';
 textLanguage['hk-lineSplit'] = textLanguage['hk-lineSplit'] || 'Line split';
+
+/* Multibox rings: same fallback pattern. */
+textLanguage.mbRingsGroup = textLanguage.mbRingsGroup || 'Multibox rings';
+textLanguage.mbRingsP1 = textLanguage.mbRingsP1 || 'Ring around player 1';
+textLanguage.mbRingsP2 = textLanguage.mbRingsP2 || 'Ring around player 2';
+textLanguage.mbRingColorP1 = textLanguage.mbRingColorP1 || 'Player 1 ring color';
+textLanguage.mbRingColorP2 = textLanguage.mbRingColorP2 || 'Player 2 ring color';
+textLanguage.mbRingSizeP1 = textLanguage.mbRingSizeP1 || 'Player 1 ring size (% of the cell)';
+textLanguage.mbRingSizeP2 = textLanguage.mbRingSizeP2 || 'Player 2 ring size (% of the cell)';
+textLanguage.mbRingsActiveOnly = textLanguage.mbRingsActiveOnly || 'Only on the player you control';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -21617,6 +21691,10 @@ function thelegendmodproject() {
                     }
                 }
             }
+            /* "Multibox unit stroke rings" (mbRings) became "Ring around player 2" */
+            if (settings && settings.mbRings === false && !settings.hasOwnProperty('mbRingsP2')) {
+                defaultmapsettings.mbRingsP2 = false;
+            }
         },
         saveSettings(option, name) {
             window.localStorage.setItem(name, JSON.stringify(option));
@@ -22170,6 +22248,29 @@ function thelegendmodproject() {
                 }
             }
         },
+        /* One more switch in an options box made by addOptions (same markup). */
+        addOptionTo(section, option) {
+            if (!defaultmapsettings.hasOwnProperty(option)) return;
+            $(section).append('<label>' + textLanguage[option] + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
+            $('#' + option).prop('checked', defaultmapsettings[option]);
+        },
+        /*
+         * Color picker for a hex color in defaultmapsettings (the theme's
+         * addColorBox stores into the theme settings instead). Same markup and
+         * picker as the theme's color boxes; saved on every change.
+         */
+        addMapColorBox(id, name) {
+            var app = this;
+            $(id).append('<div class=\"color-box\" style=\"padding:6px 0;\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
+            /* Value set as a property: imported settings must not be parsed as HTML. */
+            $(id + ' .' + name + '-picker input').val(defaultmapsettings[name] == null ? '' : String(defaultmapsettings[name]));
+            $(id + ' .' + name + '-picker').colorpicker({
+                'format': 'hex'
+            }).on('changeColor.colorpicker', function (event) {
+                defaultmapsettings[name] = event.color.toHex();
+                app.saveSettings(defaultmapsettings, 'ogarioSettings');
+            });
+        },
         addInputBox(id, name, holder, callback) {
             $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" /></div>');
             /* Set the value as a property: imported settings must not be parsed as HTML. */
@@ -22517,7 +22618,15 @@ function thelegendmodproject() {
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
-            this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
+            this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
+            /* Multibox rings: per player on/off, color and size; both off = no rings. */
+            this.addOptions(["mbRingsP1"], "mbRingsGroup");
+            this.addMapColorBox(".mbRingsGroup", "mbRingColorP1");
+            this.addSliderBox(".mbRingsGroup", "mbRingSizeP1", 1, 100, 1);
+            this.addOptionTo(".mbRingsGroup", "mbRingsP2");
+            this.addMapColorBox(".mbRingsGroup", "mbRingColorP2");
+            this.addSliderBox(".mbRingsGroup", "mbRingSizeP2", 1, 100, 1);
+            this.addOptionTo(".mbRingsGroup", "mbRingsActiveOnly");
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
             Settings.addScanTrickControls();
@@ -33796,11 +33905,6 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-                        if (defaultmapsettings.mbRings && this.isPlayerCellMulti) {
-                            style.strokeStyle = defaultSettings.mbRingColor || '#00E5FF';
-                            style.lineWidth = Math.max(~~(y / 40), 8);
-                            style.stroke();
-                        }
                         //lylko
                         if (
                             defaultmapsettings.customSkins &&
@@ -34173,6 +34277,12 @@ function thelegendmodproject() {
                                 }
                             }
                             this.drawSpecialSkin(style, y)
+                        }
+                        /* Multibox ring: over the skin, under the nick and mass.
+                         * Cells drawn by WebGL get theirs in drawWebGLMultiboxRings(). */
+                        var _mbRing = lmMultiboxRing(this, y, drawRender.scale);
+                        if (_mbRing) {
+                            drawRender.strokeMultiboxRing(style, this.x, this.y, y, _mbRing);
                         }
                     } /* end of else-block for non-WebGL body rendering */
                     if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
@@ -48029,6 +48139,16 @@ Most cells eaten   : ${mostCellsEaten}
             this._playerMaxSize = maxSize;
             this.recalculatePlayerMass();
 
+            this.updateMultiboxUnitPositions();
+        },
+        /*
+         * Each multibox unit's centre (spect.playerX/Y, what the camera follows)
+         * from where its cells are drawn. setView() calls this every frame; it
+         * used to run only while the main player was alive, so with the main
+         * player dead the camera on the unit only moved per packet (plus a 10 ms
+         * timer chain in spect.js).
+         */
+        updateMultiboxUnitPositions() {
             if (this.multiBoxPlayerExists && typeof spects !== "undefined" && spects) {
                 for (var s = 0; s < spects.length; s++) {
                     if (spects[s] && spects[s].playerCellIDs && spects[s].playerCellIDs.length) {
@@ -54288,16 +54408,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
+            /*
+             * "Player 1 & 2" is a Canvas2D shadow glow. Multibox rings no longer
+             * need Canvas2D (drawWebGLMultiboxRings), so multiboxing keeps WebGL:
+             * mbRings (on by default) used to put every multibox frame on Canvas2D.
+             */
             if (
-                (
-                    defaultmapsettings
-                        .multiBoxShadow ||
-                    defaultmapsettings
-                        .mbRings
-                ) &&
+                defaultmapsettings
+                    .multiBoxShadow &&
                 LM.playerCellsMulti &&
                 LM.playerCellsMulti
                     .length
+            ) {
+                return false;
+            }
+            /* No ring program (failed to build): Canvas2D draws the rings. */
+            if (
+                !this.glMbRingProgram &&
+                LM.multiBoxPlayerExists &&
+                (defaultmapsettings.mbRingsP1 || defaultmapsettings.mbRingsP2)
             ) {
                 return false;
             }
@@ -56221,6 +56350,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 // Offscreen Canvas2D for text rendering → GL texture upload
                 this._textCanvas = document.createElement('canvas');
                 this._textCtx = this._textCanvas.getContext('2d');
+
+                // ===== Multibox rings (drawWebGLMultiboxRings), with each cell's depth =====
+                this.initWebGLMultiboxRings(gl, createAndLinkProgram, quadVBO);
 
                 // ===== WebGL2 Solid Ring Shader (per-instance Canvas2D-equivalent stroke width) =====
                 var solidRingVs = `#version 300 es
@@ -62491,6 +62623,163 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             return true;
         },
+        /*
+         * Multibox ring on Canvas2D (see lmMultiboxRing): a band ring.width wide
+         * just inside the edge of a circle of this radius, in the current alpha.
+         */
+        strokeMultiboxRing(ctx, x, y, radius, ring) {
+            if (!ctx || !ring || !(radius > 0) || !(ring.width > 0)) return;
+            ctx.save();
+            try {
+                ctx.beginPath();
+                ctx.arc(x, y, Math.max(0, radius - ring.width / 2), 0, 2 * Math.PI, false);
+                ctx.lineWidth = ring.width;
+                ctx.strokeStyle = ring.color;
+                ctx.stroke();
+            } finally {
+                ctx.restore();
+            }
+        },
+
+        /*
+         * Multibox rings over cells drawn by WebGL: an instanced ring quad per
+         * own cell at that cell's depth, so the ring covers its own body and
+         * skin (LEQUAL, like the body's border) but not bigger cells in front.
+         * Built by initWebGL(), so it is rebuilt after a context loss.
+         *
+         * Instance: x, y, radius, inner radius / radius, r, g, b, a, depth z.
+         */
+        initWebGLMultiboxRings(gl, createAndLinkProgram, quadVBO) {
+            this.glMbRingProgram = null;
+            this.glMbRingVAO = null;
+            this.glMbRingInstanceVBO = null;
+            var vs = `#version 300 es
+                in vec2 a_unitPos;
+                in vec2 a_center;
+                in float a_radius;
+                in float a_inner;
+                in vec4 a_color;
+                in float a_z;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec2 v_local;
+                out float v_inner;
+                out vec4 v_color;
+                void main() {
+                    v_local = a_unitPos;
+                    v_inner = a_inner;
+                    v_color = a_color;
+                    vec2 worldPos = a_center + a_unitPos * a_radius;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, a_z, 1.0);
+                }`;
+            var fs = `#version 300 es
+                precision highp float;
+                in vec2 v_local;
+                in float v_inner;
+                in vec4 v_color;
+                out vec4 fragColor;
+                void main() {
+                    float d = length(v_local);
+                    float aa = max(fwidth(d), 0.0005);
+                    float outerA = 1.0 - smoothstep(1.0 - aa, 1.0, d);
+                    float innerA = smoothstep(v_inner - aa, v_inner, d);
+                    float a = outerA * innerA;
+                    if (a < 0.001) discard;
+                    fragColor = vec4(v_color.rgb, v_color.a * a);
+                }`;
+            var program = createAndLinkProgram(gl, vs, fs);
+            if (!program) return;
+            this.glMbRingMax = 256;
+            this.glMbRingData = new Float32Array(this.glMbRingMax * 9);
+            this.u_mbRing_viewCenter = gl.getUniformLocation(program, 'u_viewCenter');
+            this.u_mbRing_viewScale = gl.getUniformLocation(program, 'u_viewScale');
+            var vao = gl.createVertexArray();
+            gl.bindVertexArray(vao);
+            gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+            var aUnit = gl.getAttribLocation(program, 'a_unitPos');
+            gl.enableVertexAttribArray(aUnit);
+            gl.vertexAttribPointer(aUnit, 2, gl.FLOAT, false, 0, 0);
+            var instanceVBO = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, instanceVBO);
+            gl.bufferData(gl.ARRAY_BUFFER, this.glMbRingData.byteLength, gl.DYNAMIC_DRAW);
+            var stride = 9 * 4;
+            var attribs = [['a_center', 2, 0], ['a_radius', 1, 2], ['a_inner', 1, 3], ['a_color', 4, 4], ['a_z', 1, 8]];
+            for (var i = 0; i < attribs.length; i++) {
+                var loc = gl.getAttribLocation(program, attribs[i][0]);
+                if (loc < 0) continue;
+                gl.enableVertexAttribArray(loc);
+                gl.vertexAttribPointer(loc, attribs[i][1], gl.FLOAT, false, stride, attribs[i][2] * 4);
+                gl.vertexAttribDivisor(loc, 1);
+            }
+            gl.bindVertexArray(null);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            this.glMbRingProgram = program;
+            this.glMbRingVAO = vao;
+            this.glMbRingInstanceVBO = instanceVBO;
+        },
+
+        /*
+         * Fill glMbRingData for the own cells drawn by WebGL this frame
+         * (_webglRendered, _webglZ). Returns the instance count. Separate from
+         * the draw so it can be checked without a GL context.
+         */
+        buildWebGLMultiboxRingData(lists, data, max) {
+            var count = 0;
+            var scale = this.scale || 1;
+            for (var l = 0; l < lists.length; l++) {
+                var list = lists[l];
+                if (!list) continue;
+                for (var i = 0; i < list.length && count < max; i++) {
+                    var cell = list[i];
+                    if (!cell || !cell._webglRendered || cell.invisible === true) continue;
+                    var radius = cell.size;
+                    var ring = lmMultiboxRing(cell, radius, scale);
+                    if (!ring) continue;
+                    /* Expanding Land map deformation moves the body; same point as drawWebGLRingsBatch */
+                    var point = this.getLegendWorldAttachedRenderPoint(cell.x, cell.y, this._elMapPointA);
+                    var rgba = this.parseWebGLOverlayColor(ring.color, LM_MB_RING_DEFAULT_COLORS[ring.player]);
+                    var o = count * 9;
+                    data[o] = point.x;
+                    data[o + 1] = point.y;
+                    data[o + 2] = radius;
+                    data[o + 3] = Math.max(0, 1 - ring.width / radius);
+                    data[o + 4] = rgba[0];
+                    data[o + 5] = rgba[1];
+                    data[o + 6] = rgba[2];
+                    data[o + 7] = rgba[3];
+                    data[o + 8] = cell._webglZ || 0.5;
+                    count++;
+                }
+            }
+            return count;
+        },
+
+        drawWebGLMultiboxRings() {
+            var gl = this.gl;
+            if (!gl || !this.glMbRingProgram || !this.glMbRingVAO) return;
+            var LM = window.legendmod;
+            if (!LM || !LM.multiBoxPlayerExists) return;
+            var count = this.buildWebGLMultiboxRingData([LM.playerCells, LM.playerCellsMulti], this.glMbRingData, this.glMbRingMax);
+            if (!count) return;
+            var scale = this.scale || 1;
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthFunc(gl.LEQUAL);
+            gl.depthMask(false);
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            gl.useProgram(this.glMbRingProgram);
+            gl.uniform2f(this.u_mbRing_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_mbRing_viewScale, 2.0 * scale / this.canvasWidth, 2.0 * scale / this.canvasHeight);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glMbRingInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.glMbRingData.subarray(0, count * 9));
+            gl.bindVertexArray(this.glMbRingVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            gl.depthMask(true);
+        },
+
         drawWebGLRingsBatch(
             players,
             scaleOffset,
@@ -68469,7 +68758,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.setScale(LM.playerSize);
 
             if (LM.playerCells && LM.playerCells.length) {
-                LM.calculatePlayerMassAndPosition();
+                LM.calculatePlayerMassAndPosition(); /* includes the units */
+            } else {
+                LM.updateMultiboxUnitPositions();
             }
 
             var targetCamX = LM.viewX;
@@ -70507,6 +70798,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * There is NOT a jelly-specific text implementation.
                      */
                     else {
+                        /*
+                         * Multibox rings first: over the GPU bodies and skins,
+                         * under the text. A ring failure leaves the cells alone.
+                         */
+                        try {
+                            this.drawWebGLMultiboxRings();
+                        }
+                        catch (
+                            multiboxRingsError
+                        ) {
+                            if (!this._mbRingsErrorLogged) {
+                                this._mbRingsErrorLogged = true;
+                                console.error('[WEBGL WORLD] Multibox rings failed:', multiboxRingsError);
+                            }
+                        }
                         if (
                             this.glTextProgram &&
                             this.glTextVAO
