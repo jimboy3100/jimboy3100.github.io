@@ -118,7 +118,6 @@ class Spect {
         this.staticPositionController = null;
         this.socketErrorTimer = null;
         this.reconnectTimer = null;
-        this.massPositionTimer = null;
         this.pingInterval = null;
         this.mapOffset = 7071 //7071.067811865476
         this.fixX = 1
@@ -135,13 +134,11 @@ class Spect {
         if (this.staticPositionController) clearInterval(this.staticPositionController);
         if (this.socketErrorTimer) clearTimeout(this.socketErrorTimer);
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
-        if (this.massPositionTimer) clearTimeout(this.massPositionTimer);
         if (this.pingInterval) clearInterval(this.pingInterval);
         this.positionController = null;
         this.staticPositionController = null;
         this.socketErrorTimer = null;
         this.reconnectTimer = null;
-        this.massPositionTimer = null;
         this.pingInterval = null;
     }
 
@@ -1732,9 +1729,7 @@ class Spect {
         this.active = false;
         this.playerCellIDs = [];
         if (this.positionController) clearInterval(this.positionController);
-        if (this.massPositionTimer) clearTimeout(this.massPositionTimer);
         this.positionController = null;
-        this.massPositionTimer = null;
 
         // Auto-switch active camera to surviving multibox unit if available
         if (window.multiboxPlayerEnabled === this.number) {
@@ -1844,9 +1839,6 @@ class Spect {
             }
             return text;
         };
-        //
-        if (this.time) this.timerDifference = Date.now() - this.time
-        //
         this.time = Date.now();
         this.removePlayerCell = false;
         let eatEventsLength = view.readUInt16LE(offset);
@@ -1868,10 +1860,15 @@ class Spect {
             //console.log('victim isFood',victimID.isFood)
             offset += 8;
             if (eaterCell && victimCell) {
+                /* Same eat animation as the main connection: moveCell() runs from
+                 * start to target over the animation time, counted from updateTime. */
+                victimCell.startX = victimCell.x;
+                victimCell.startY = victimCell.y;
+                victimCell.startSize = victimCell.size;
                 victimCell.targetX = eaterCell.x;
                 victimCell.targetY = eaterCell.y;
                 victimCell.targetSize = victimCell.size;
-                victimCell.time = this.time;
+                victimCell.time = victimCell.updateTime = this.time;
                 victimCell.removeCell();
             }
         }
@@ -2073,10 +2070,21 @@ class Spect {
                 cell.targetNick = this.nick
                 cell.isPlayerCellMulti = true
             }
+            /*
+             * Interpolate like the main connection (updateCells in ogario.v4.js):
+             * moveCell() goes from where the cell is drawn now to the new position
+             * over the animation time. Unit cells used to set only the target and
+             * snap the size, and never set updateTime, so after their first
+             * 80-120 ms they jumped to each packet (choppy at the server's tick rate,
+             * and so was the camera while following the unit).
+             */
+            cell.startX = cell.x;
+            cell.startY = cell.y;
+            cell.startSize = cell.size;
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
-            cell.size = size;
+            cell.updateTime = this.time;
             cell.isFood = isFood;
             cell.isVirus = isVirus;
             cell.invisible = invisible;
@@ -2200,14 +2208,8 @@ class Spect {
         this.playerSize = size;
         this.playerMass = ~~(targetSize / 100);
         this.recalculatePlayerMass();
-
-        if (this.timerDifference > 10 && !this.massPositionTimer) {
-            this.massPositionTimer = setTimeout(() => {
-                this.massPositionTimer = null;
-                this.timerDifference = this.timerDifference - 10
-                if (this.active) this.calculatePlayerMassAndPosition()
-            }, 10);
-        }
+        /* No 10 ms timer chain any more: setView() calls this every frame
+         * (LM.updateMultiboxUnitPositions), also while the main player is dead. */
     }
 
     recalculatePlayerMass() {
