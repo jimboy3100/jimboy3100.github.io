@@ -40,21 +40,8 @@ function addSpectator() {
 }
 window.addSpectator = addSpectator;
 
-/* "View on middle of both (when close)": true when the main player and the multibox unit
- * (client-space centre ux/uy) are both alive and the unit's centre lies inside the main
- * player's visible area. The old test looked for a non-own cell with the main nick, but
- * the unit's copies of the main cells are kept out of LM.cells, so it was almost never true. */
-function lmMultiUnitIsClose(ux, uy) {
-    if (!defaultmapsettings.middleMultiViewWhenClose || !legendmod.play) return false;
-    if (!legendmod.playerCells || !legendmod.playerCells.length) return false;
-    var mx = legendmod.viewXTrue, my = legendmod.viewYTrue;
-    if (!Number.isFinite(ux) || !Number.isFinite(uy) || !Number.isFinite(mx) || !Number.isFinite(my)) return false;
-    var sc = legendmod.viewScale > 0 ? legendmod.viewScale : 1;
-    var halfW = (legendmod.canvasWidth || window.innerWidth || 1920) / sc / 2;
-    var halfH = (legendmod.canvasHeight || window.innerHeight || 1080) / sc / 2;
-    return Math.abs(mx - ux) < halfW && Math.abs(my - uy) < halfH;
-}
-window.lmMultiUnitIsClose = lmMultiUnitIsClose;
+/* "View on middle of both (when close)" is decided by drawRender.getMultiboxFrame()
+ * (ogario.v4.js), which replaced lmMultiUnitIsClose(). */
 
 function addFullSpectator() {
     let mtp = 4.95,
@@ -937,45 +924,13 @@ class Spect {
 
             case 17:
 
+                /* This connection's own server camera (its server space). The main
+                 * camera follows the unit's drawn cells instead (playerX/Y, see
+                 * drawRender.getMultiboxFrame); these packets used to move it too,
+                 * between frames and to a slightly different point. */
                 this.viewX = view.getFloat32(offset, true);
-                /* Until this connection's offset and orientation are known its position
-                 * can't be placed on the main map: don't move the camera with it. */
-                if (!this.transformReady()) {
-                    if (this.player) window.middleMultiViewFlag = false;
-                    this.viewY = view.getFloat32(offset + 4, true);
-                    this.scale = view.getFloat32(offset + 8, true);
-                    break;
-                }
-                /* viewX is this connection's server space: convert before mixing it into the
-                 * main camera; only the multibox player unit moves the camera. */
-                var _cvX = this.getX(this.viewX);
-                /* only a living player unit decides (spectator sockets used to overwrite the flag) */
-                if (this.player) window.middleMultiViewFlag = !!(this.active && this.playerCellIDs.length && lmMultiUnitIsClose(_cvX, this.getY(view.getFloat32(offset + 4, true))));
-                if (this.player && defaultmapsettings.middleMultiView && legendmod.play) {
-                    legendmod.viewX = (legendmod.viewXTrue + _cvX) / 2;
-                } else if (this.player && window.middleMultiViewFlag) {
-                    legendmod.viewX = (legendmod.viewXTrue + _cvX) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled === this.number && getActiveSpect(window.multiboxPlayerEnabled)) {
-                    legendmod.viewX = _cvX
-                }
-                //var x=this.viewX = view.getFloat32(offset, true);
-                //this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
-                offset += 4;
-                this.viewY = view.getFloat32(offset, true);
-                /* viewY is this connection's server space: convert before mixing it into the
-                 * main camera; only the multibox player unit moves the camera. */
-                var _cvY = this.getY(this.viewY);
-                if (this.player && defaultmapsettings.middleMultiView && legendmod.play) {
-                    legendmod.viewY = (legendmod.viewYTrue + _cvY) / 2;
-                } else if (this.player && window.middleMultiViewFlag) {
-                    legendmod.viewY = (legendmod.viewYTrue + _cvY) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled === this.number && getActiveSpect(window.multiboxPlayerEnabled)) {
-                    legendmod.viewY = _cvY
-                }
-                //var y=this.viewX = view.getFloat32(offset, true);
-                //this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
-                offset += 4;
-                this.scale = view.getFloat32(offset, true);
+                this.viewY = view.getFloat32(offset + 4, true);
+                this.scale = view.getFloat32(offset + 8, true);
                 break;
             case 18:
                 /* No key rotation on 18 (same as the main client since PROTO-3 and Delta). */
@@ -2180,22 +2135,9 @@ class Spect {
             x += n.x / playersLength;
             y += n.y / playersLength;
         }
-        if (!this.transformReady()) {
-            /* Not placed on the main map yet (see getX): leave the camera alone. */
-            if (this.player) window.middleMultiViewFlag = false;
-        } else {
-            if (this.player) window.middleMultiViewFlag = lmMultiUnitIsClose(x, y);
-            if (defaultmapsettings.middleMultiView && legendmod.play) {
-                legendmod.viewX = (legendmod.viewXTrue + x) / 2;
-                legendmod.viewY = (legendmod.viewYTrue + y) / 2;
-            } else if (window.middleMultiViewFlag) {
-                legendmod.viewX = (legendmod.viewXTrue + x) / 2;
-                legendmod.viewY = (legendmod.viewYTrue + y) / 2;
-            } else if (window.multiboxPlayerEnabled === this.number) {
-                legendmod.viewX = x;
-                legendmod.viewY = y;
-            }
-        }
+        /* The camera (which player, both, zoom) is decided in one place,
+         * drawRender.getMultiboxFrame(), from playerX/Y. This used to write the
+         * main view centre too, differently from what the camera showed. */
         this.playerX = x;
         this.playerY = y;
 
