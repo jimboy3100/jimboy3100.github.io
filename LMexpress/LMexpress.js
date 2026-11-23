@@ -5601,9 +5601,23 @@ function SNEZOgarUpload() {
     else {
         //postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", $('#export-settings').val());
         var _lmCode = _lmCloudCode(true);
-        postSNEZ("https://api.legendmod.ml/lm-settings", userid, _lmCloudPass(_lmCode), escape($('#export-settings').val()));
+        try {
+            var _lmUp = new XMLHttpRequest();
+            _lmUp.open("POST", "https://api.legendmod.ml/lm-settings", true);
+            _lmUp.setRequestHeader("username", userid);
+            _lmUp.setRequestHeader("password", _lmCloudPass(_lmCode));
+            _lmUp.onload = function () {
+                /* the old record (no code) could still be read by anyone who knows the id:
+                 * blank it once the settings are stored under the code */
+                if (_lmUp.status === 200) postSNEZ("https://api.legendmod.ml/lm-settings", userid, _lmCloudPass(''), '{}');
+                else toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (' + _lmUp.status + ').');
+            };
+            _lmUp.onerror = function () { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (network).'); };
+            _lmUp.send(escape($('#export-settings').val()));
+        } catch (eUp) { }
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter129 + ". " + Languageletter363 + ": <font color='yellow'><b>" + $('<div>').text(userid).html() + "</b></font>" +
-            "<br>Sync code for your other devices: <font color='yellow'><b>" + _lmCode + "</b></font>", "", { timeOut: 20000, extendedTimeOut: 20000 });
+            "<br>Sync code for your other devices: <font color='yellow'><b>" + _lmCode + "</b></font>" +
+            "<br><small>On another device: Shift+click Download to enter this code.</small>", "", { timeOut: 20000, extendedTimeOut: 20000 });
     }
 }
 
@@ -5638,13 +5652,25 @@ function _lmCloudSettingsFilter(text) {
     return JSON.stringify(json, null, 4);
 }
 
-function SNEZOgarDownload() {
+function SNEZOgarDownload(ev) {
     IdfromLegendmod()
     if (userid == "" || userid == null) {
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
     }
     else {
         var _lmCode = _lmCloudCode(false);
+        var _lmTypedNew = false;
+        if (ev && ev.shiftKey) {
+            /* use the code of another device (this one may already have its own) */
+            var _lmOther = window.prompt('Sync code from your other device:', _lmCode || '');
+            if (_lmOther === null) return;
+            _lmOther = String(_lmOther).trim().toLowerCase();
+            if (!/^[0-9a-f]{24}$/.test(_lmOther)) {
+                toastr.error('<b>[' + Premadeletter123 + ']:</b> That is not a sync code (24 characters, 0-9 and a-f).');
+                return;
+            }
+            if (_lmOther !== _lmCode) { _lmCode = _lmOther; _lmTypedNew = true; }
+        }
         if (!_lmCode) {
             /* new browser: the code shown when the settings were uploaded on another device */
             var _lmTyped = String(window.prompt('Enter the sync code shown when you uploaded your settings on another device.\n\nLeave it empty to load settings uploaded before sync codes existed.') || '').trim().toLowerCase();
@@ -5652,12 +5678,14 @@ function SNEZOgarDownload() {
                 toastr.error('<b>[' + Premadeletter123 + ']:</b> That is not a sync code (24 characters, 0-9 and a-f).');
                 return;
             }
-            if (_lmTyped) { _lmCode = _lmTyped; try { localStorage.setItem('lmCloudSyncCode', _lmCode); } catch (e) { } }
+            if (_lmTyped) { _lmCode = _lmTyped; _lmTypedNew = true; }
         }
         var _lmLoad = function (pass, fallback) {
             getSNEZ("https://api.legendmod.ml/lm-settings", userid, pass, function (xhttp) {
                 if (!xhttp) return;
-                if (xhttp.status === 404) {
+                var _lmBody = String(xhttp.response || '').trim();
+                /* a blanked old record ('{}') counts as missing */
+                if (xhttp.status === 404 || (xhttp.status === 200 && (_lmBody === '' || _lmBody === '{}' || _lmBody === '%7B%7D'))) {
                     if (fallback) return fallback();
                     toastr.warning('<b>[' + Premadeletter123 + ']:</b> No cloud settings found for this id.');
                     return;
@@ -5667,6 +5695,8 @@ function SNEZOgarDownload() {
                     return;
                 }
                 var responseSNEZ = xhttp.response;
+                /* a typed code is kept only once its record was found (a typo was stored for good) */
+                if (_lmTypedNew && pass === _lmCloudPass(_lmCode)) { try { localStorage.setItem('lmCloudSyncCode', _lmCode); } catch (e) { } }
                 $('#import-settings').val(_lmCloudSettingsFilter(unescape(responseSNEZ)));
                 $("#import-settings-btn2").click();
             });
@@ -7629,7 +7659,7 @@ function initializeLM(modVersion) {
     SNEZServers();
     $("#import-settings-btn").attr('class', 'btn btn-success');
     $("#close-exp-imp").before('<button id="SNEZOgarUploadBtn" onclick="SNEZOgarUpload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109 + '</button>');
-    $("#close-exp-imp").before('<button id="SNEZOgarDownloadBtn" onclick="SNEZOgarDownload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109a + '</button>');
+    $("#close-exp-imp").before('<button id="SNEZOgarDownloadBtn" onclick="SNEZOgarDownload(event); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109a + '</button>');
     if (_lmOnLegendWebsite()) {
         $("#close-exp-imp").after('<br><div id="UserProfileUID2">Social ID: <input id="UserProfileID2a" class="user-name" style="display:inline-block"></div>');
         if (localStorage.getItem("userid") != "" && localStorage.getItem("userid") != null && localStorage.getItem("userid") != "null") {

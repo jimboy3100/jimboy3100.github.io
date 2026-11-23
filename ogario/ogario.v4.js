@@ -21346,7 +21346,7 @@ function thelegendmodproject() {
                         //t += textLanguage.score + ': ' + i.playerScore
                         t += Languageletter366 + ': ' + ogario.playerScore
                     }
-                    if (defaultmapsettings.showStatsAlive && this._lmLifeStartAt) {
+                    if (defaultmapsettings.showStatsAlive && this._lmLifeStartAt && ogario.play) {
                         var _lmAs = Math.max(0, Math.floor((Date.now() - this._lmLifeStartAt) / 1000));
                         t += ' | \u23F1 ' + Math.floor(_lmAs / 60) + ':' + ('0' + (_lmAs % 60)).slice(-2);
                     }
@@ -22181,7 +22181,7 @@ function thelegendmodproject() {
                         /* On: remember the current values and turn the costly effects off.
                          * Off: put the remembered values back. Saved below; applied on reload. */
                         var _lmPerfKeys = ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor',
-                            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias'].filter(function (k) { return defaultmapsettings.hasOwnProperty(k); });
+                            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias', 'hudBlur'].filter(function (k) { return defaultmapsettings.hasOwnProperty(k); });
                         if (checked) {
                             var _lmPerfBak = {};
                             _lmPerfKeys.forEach(function (k) { _lmPerfBak[k] = defaultmapsettings[k]; defaultmapsettings[k] = false; });
@@ -22194,6 +22194,8 @@ function thelegendmodproject() {
                             }
                             try { window.localStorage.removeItem('lmPerfBackup'); } catch (e) { }
                         }
+                        /* HUD blur (backdrop-filter over the game canvas) is applied at once */
+                        if (typeof this.applyHudBlur === 'function') this.applyHudBlur();
                         if (window.toastr) toastr.info('Performance mode ' + (checked ? 'on' : 'off') + '. Reload the page to apply it everywhere.');
                         break;
                 }
@@ -23413,7 +23415,8 @@ function thelegendmodproject() {
                     if (!dl) { dl = document.createElement('datalist'); dl.id = listId; document.body.appendChild(dl); }
                     while (dl.firstChild) dl.removeChild(dl.firstChild);
                     read().forEach(function (v) { var o = document.createElement('option'); o.value = v; dl.appendChild(o); });
-                    $(inputSel).attr('list', listId).attr('autocomplete', 'off');
+                    /* the browser's own suggestions stay too (autocomplete is not turned off) */
+                    $(inputSel).attr('list', listId);
                 };
                 render();
                 return function (value) {
@@ -74754,11 +74757,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _lmLim = +defaultmapsettings.fpsLimit;
             if (_lmLim > 0) {
                 var _lmNowF = performance.now();
-                if (drawRender._lmLastDrawAt && _lmNowF - drawRender._lmLastDrawAt < 1000 / _lmLim - 2) {
+                var _lmIv = 1000 / _lmLim, _lmLast = drawRender._lmLastDrawAt;
+                if (_lmLast && _lmNowF - _lmLast < _lmIv - 1) {
                     window.requestAnimationFrame(drawRender.render);
                     return;
                 }
-                drawRender._lmLastDrawAt = _lmNowF;
+                /* step the reference by one interval (resetting it to now snapped the rate to
+                 * refresh/N: 60 became 48 on 144 Hz); after a long gap start again from now */
+                drawRender._lmLastDrawAt = (_lmLast && _lmNowF - _lmLast < 2 * _lmIv) ? _lmLast + _lmIv : _lmNowF;
             }
             /* Always schedule the next frame: one exception in renderFrame()
              * used to stop rendering permanently (frozen game). */
@@ -76161,6 +76167,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
     (function () {
         var baseTitle = null, last = null;
         setInterval(function () {
+            /* leaving a life without a death (server change, quick respawn, token change) did not
+             * reset the life start: time alive and the session time grew across lives */
+            try { if (window.application && window.legendmod && !window.legendmod.play) window.application._lmLifeStartAt = 0; } catch (e0) { }
             try {
                 var on = window.legendmod5 && window.legendmod5.massInTitle && window.legendmod && window.legendmod.play && window.legendmod.playerMass;
                 if (on) {
