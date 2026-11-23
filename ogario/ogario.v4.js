@@ -120,6 +120,8 @@ window.lmT = (function () {
         "leaderboards": {"en":"Leaderboards","el":"Κατατάξεις","es":"Clasificaciones","bg":"Класации","fr":"Classements","ar":"لوحات الصدارة","zh":"排行榜","ru":"Таблицы лидеров","de":"Bestenlisten","tr":"Lider tabloları","pl":"Rankingi","nl":"Ranglijsten"},
         "help": {"en":"Help","el":"Βοήθεια","es":"Ayuda","bg":"Помощ","fr":"Aide","ar":"مساعدة","zh":"說明","ru":"Помощь","de":"Hilfe","tr":"Yardım","pl":"Pomoc","nl":"Hulp"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "boundKeys": {"en":"Bound keys","el":"Πλήκτρα","es":"Teclas asignadas","bg":"Зададени клавиши","fr":"Touches attribuées","ar":"المفاتيح المعيّنة","zh":"已設定按鍵","ru":"Назначенные клавиши","de":"Belegte Tasten","tr":"Atanmış tuşlar","pl":"Przypisane klawisze","nl":"Toegewezen toetsen"},
+        "noBoundKeys": {"en":"No keys are bound.","el":"Δεν υπάρχουν πλήκτρα.","es":"No hay teclas asignadas.","bg":"Няма зададени клавиши.","fr":"Aucune touche attribuée.","ar":"لا توجد مفاتيح معيّنة.","zh":"沒有設定按鍵。","ru":"Клавиши не назначены.","de":"Keine Tasten belegt.","tr":"Atanmış tuş yok.","pl":"Brak przypisanych klawiszy.","nl":"Geen toetsen toegewezen."},
         "searchSettings": {"en":"Search settings...","el":"Αναζήτηση ρυθμίσεων...","es":"Buscar ajustes...","bg":"Търсене в настройките...","fr":"Rechercher un réglage...","ar":"ابحث في الإعدادات...","zh":"搜尋設定...","ru":"Поиск настроек...","de":"Einstellungen suchen...","tr":"Ayarlarda ara...","pl":"Szukaj ustawień...","nl":"Instellingen zoeken..."},
         "itemHourly": {"en":"hourly bonus","el":"ωριαίο μπόνους","es":"bonificación horaria","bg":"бонус на час","fr":"bonus horaire","ar":"مكافأة الساعة","zh":"每小時獎勵","ru":"ежечасный бонус","de":"stündlicher Bonus","tr":"saatlik bonus","pl":"bonus godzinny","nl":"uurbonus"},
         "itemDaily": {"en":"daily quest","el":"ημερήσια αποστολή","es":"misión diaria","bg":"дневна мисия","fr":"quête du jour","ar":"المهمة اليومية","zh":"每日任務","ru":"ежедневное задание","de":"tägliche Quest","tr":"günlük görev","pl":"codzienne zadanie","nl":"dagelijkse missie"},
@@ -74968,7 +74970,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setHotkeysMenu() {
             //var t = this;
             const setup = this;
-            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
+            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button> <button id=\"lm-hk-sheet\" class=\"btn btn-info\">' + _lmTH('boundKeys', 'Bound keys') + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
                 if (hotkeysCommand.hasOwnProperty(command)) {
                     var currentCommand = hotkeysCommand[command],
                         text = '';
@@ -74986,6 +74988,33 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
                     } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
                 }
+            /* Read-only list of the keys that are bound, sorted by key (chat commands show their text) */
+            $(document).off('click.lmHkSheet').on('click.lmHkSheet', '#lm-hk-sheet', function (event) {
+                event.preventDefault();
+                $('#lm-hk-sheet-modal').remove();
+                var esc = function (s) { return $('<div>').text(String(s == null ? '' : s)).html(); };
+                var rows = [];
+                for (var k in hotkeys) {
+                    if (!hotkeys.hasOwnProperty(k) || !k) continue;
+                    var cmd = hotkeys[k];
+                    var hc = hotkeysCommand[cmd];
+                    if (!hc) continue;
+                    var label = hc.label;
+                    if (hc.type === 'command') label = chatCommand[String(cmd).replace('hk-', '')] || label;
+                    rows.push([k, label]);
+                }
+                rows.sort(function (a, b) { return a[0].localeCompare(b[0]); });
+                var body = rows.length ? rows.map(function (r) {
+                    return '<tr><td style="padding:3px 10px 3px 0;white-space:nowrap;"><kbd>' + esc(r[0]) + '</kbd></td><td style="padding:3px 0;">' + esc(r[1]) + '</td></tr>';
+                }).join('') : '<tr><td>' + _lmTH('noBoundKeys', 'No keys are bound.') + '</td></tr>';
+                var m = $('<div id="lm-hk-sheet-modal" class="lm-modal-overlay" style="position:fixed;inset:0;z-index:2000000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);">' +
+                    '<div style="background:#1b1f2a;color:#eee;border-radius:10px;padding:14px 18px;max-width:min(560px,calc(100vw - 32px));max-height:80vh;overflow:auto;font-size:13px;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><b>' + _lmTH('boundKeys', 'Bound keys') + '</b>' +
+                    '<a href="#" class="lm-hk-sheet-close" aria-label="Close" style="color:#aaa;font-size:20px;text-decoration:none;margin-left:16px;">&times;</a></div>' +
+                    '<table>' + body + '</table></div></div>');
+                m.on('click', function (e) { if (e.target === this || $(e.target).hasClass('lm-hk-sheet-close')) { e.preventDefault(); m.remove(); } });
+                $('body').append(m);
+            });
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
                 //hotkeysSetup.resetHotkeys();
