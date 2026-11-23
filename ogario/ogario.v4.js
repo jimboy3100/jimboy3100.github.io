@@ -75097,7 +75097,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             canvas = null;
         },
         countFps(fake) {
-            if (defaultmapsettings.showStatsFPS) {
+            /* also while the net graph is open (its FPS line froze with the FPS stat off) */
+            if (defaultmapsettings.showStatsFPS || window._lmNetGraph) {
                 var Time = Date.now();
                 if (!this.fpsLastRequest) {
                     this.fpsLastRequest = Time;
