@@ -21933,6 +21933,11 @@ function thelegendmodproject() {
                         toastr.warning('<b>[CHAT]:</b> Chat is not connected, message not sent.');
                         return;
                     }
+                    /* Up/Down in an empty chat box recalls these (session only) */
+                    var _lmSh = this._lmSentHist || (this._lmSentHist = []);
+                    if (_lmSh[_lmSh.length - 1] !== value) _lmSh.push(value);
+                    if (_lmSh.length > 20) _lmSh.shift();
+                    this._lmSentIdx = null;
                     message.blur();
                     messageBox.hide();
                 } else {
@@ -77064,6 +77069,23 @@ function timernow() {
     return time;
 }
 
+/* Chat box: Up/Down recall your last sent messages. Only when the box is empty or still
+ * shows a recalled message unchanged, so arrows keep working while you edit text. */
+$(document).on('keydown', '#message', function (e) {
+    if (e.keyCode !== 38 && e.keyCode !== 40) return;
+    var app = window.application, h = app && app._lmSentHist;
+    if (!h || !h.length) return;
+    var v = this.value, idx = app._lmSentIdx;
+    if (v !== '' && !(idx != null && h[idx] === v)) return;
+    if (v === '' || idx == null) idx = h.length;
+    idx += e.keyCode === 38 ? -1 : 1;
+    e.preventDefault();
+    if (idx < 0) idx = 0;
+    if (idx >= h.length) { app._lmSentIdx = null; this.value = ''; return; }
+    app._lmSentIdx = idx;
+    this.value = h[idx];
+    try { this.setSelectionRange(this.value.length, this.value.length); } catch (e2) { }
+});
 function Socket3enabler(srv) {
     if (!window.socket3Opened && window.noOgarioSocket) {
         $("#message").keydown(function (event) {
