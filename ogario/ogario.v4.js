@@ -16241,6 +16241,7 @@ var displayText = {
         glAntialias: 'Wygladzanie krawedzi (po przeladowaniu)',
         performanceMode: 'Tryb wydajnosci (slabsze PC/telefony)',
         fpsLimit: 'Limit FPS (0 = bez limitu)',
+        menuFpsCap: '25 FPS gdy menu jest otwarte (oszczedza baterie)',
         cellContours: 'Only cells contours',
         noNames: 'Wylacz nazwy',
         noColors: 'Wylacz kolory',
@@ -16766,6 +16767,7 @@ var displayText = {
         glAntialias: 'Anti-aliasing (smoother edges, after reload)',
         performanceMode: 'Performance mode (weak PCs/phones)',
         fpsLimit: 'FPS limit (0 = no limit; saves battery)',
+        menuFpsCap: '25 FPS while the menu is open (saves battery)',
         cellContours: 'Only cells contours',
         noNames: 'No names',
         noColors: 'No colors',
@@ -19216,6 +19218,7 @@ var defaultmapsettings = {
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
     fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
+    menuFpsCap: false,            /* like agar.io: 25 fps while the menu is shown and you are not playing */
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -23132,7 +23135,7 @@ function thelegendmodproject() {
                 }
             })();
             //this.addOptions(["unlockedFPS"], "animationGroup");
-            this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode"], "animationGroup");
+            this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode", "menuFpsCap"], "animationGroup");
 
             this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
@@ -75056,6 +75059,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * when the previous frame was drawn too recently. Camera and zoom use the real
              * frame time, so movement speed does not change. */
             var _lmLim = +defaultmapsettings.fpsLimit;
+            if (defaultmapsettings.menuFpsCap && !LM.play && !(_lmLim > 0 && _lmLim <= 25)) {
+                var _lmOv = drawRender._lmOvEl || (drawRender._lmOvEl = document.getElementById('overlays'));
+                if (_lmOv && _lmOv.style.display !== 'none') _lmLim = 25;
+            }
             if (_lmLim > 0) {
                 var _lmNowF = performance.now();
                 var _lmIv = 1000 / _lmLim, _lmLast = drawRender._lmLastDrawAt;
