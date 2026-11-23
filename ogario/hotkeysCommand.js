@@ -270,6 +270,32 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-middleMultiView': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-middleMultiView']) || 'Toggle multibox middle view';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (!application || typeof defaultmapsettings === 'undefined') return;
+					defaultmapsettings.middleMultiView = !defaultmapsettings.middleMultiView;
+					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('middleMultiView');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-mbRings': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-mbRings']) || 'Show/hide multibox rings';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (!application || typeof defaultmapsettings === 'undefined') return;
+					defaultmapsettings.mbRings = !defaultmapsettings.mbRings;
+					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('mbRings');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
