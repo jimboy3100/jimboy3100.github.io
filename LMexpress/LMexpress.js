@@ -5575,6 +5575,22 @@ function IdfromLegendmod() {
         localStorage.setItem("userid", window.userid);
     }
 }
+/* Cloud settings were stored under (user id, "LMSettings"): anyone who knew the id could read or
+ * overwrite them. Each browser now adds a random sync code to the password, so the record key
+ * cannot be guessed. The same code entered on another device loads the same record. The server
+ * is unchanged; old records (no code) can still be loaded once to move them over. */
+function _lmCloudCode(create) {
+    var c = '';
+    try { c = localStorage.getItem('lmCloudSyncCode') || ''; } catch (e) { }
+    if (!c && create) {
+        var a = new Uint8Array(12);
+        try { crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
+        c = Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+        try { localStorage.setItem('lmCloudSyncCode', c); } catch (e) { }
+    }
+    return c;
+}
+function _lmCloudPass(code) { return code ? 'LMSettings:' + code : 'LMSettings'; }
 function SNEZOgarUpload() {
     //$("#export-settings-btn").click();
     //postSNEZ("https://lmsettings.snez.org/", "test", "test1234", "{ a: 1, b: 2, d: 4}");
@@ -5584,8 +5600,10 @@ function SNEZOgarUpload() {
     }
     else {
         //postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", $('#export-settings').val());
-        postSNEZ("https://api.legendmod.ml/lm-settings", userid, "LMSettings", escape($('#export-settings').val()));
-        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter129 + ". " + Languageletter363 + ": <font color='yellow'><b>" + userid + "</b></font>");
+        var _lmCode = _lmCloudCode(true);
+        postSNEZ("https://api.legendmod.ml/lm-settings", userid, _lmCloudPass(_lmCode), escape($('#export-settings').val()));
+        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter129 + ". " + Languageletter363 + ": <font color='yellow'><b>" + $('<div>').text(userid).html() + "</b></font>" +
+            "<br>Sync code for your other devices: <font color='yellow'><b>" + _lmCode + "</b></font>", "", { timeOut: 20000, extendedTimeOut: 20000 });
     }
 }
 
@@ -5626,13 +5644,35 @@ function SNEZOgarDownload() {
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
     }
     else {
-        getSNEZ("https://api.legendmod.ml/lm-settings", userid, "LMSettings", function (xhttp) {
-            if (!xhttp) return;
-            var responseSNEZ = xhttp.response;
-            $('#import-settings').val(_lmCloudSettingsFilter(unescape(responseSNEZ)));
-            //$('#import-settings').val(responseSNEZ);
-            $("#import-settings-btn2").click();
-        });
+        var _lmCode = _lmCloudCode(false);
+        if (!_lmCode) {
+            /* new browser: the code shown when the settings were uploaded on another device */
+            var _lmTyped = String(window.prompt('Enter the sync code shown when you uploaded your settings on another device.\n\nLeave it empty to load settings uploaded before sync codes existed.') || '').trim().toLowerCase();
+            if (_lmTyped && !/^[0-9a-f]{24}$/.test(_lmTyped)) {
+                toastr.error('<b>[' + Premadeletter123 + ']:</b> That is not a sync code (24 characters, 0-9 and a-f).');
+                return;
+            }
+            if (_lmTyped) { _lmCode = _lmTyped; try { localStorage.setItem('lmCloudSyncCode', _lmCode); } catch (e) { } }
+        }
+        var _lmLoad = function (pass, fallback) {
+            getSNEZ("https://api.legendmod.ml/lm-settings", userid, pass, function (xhttp) {
+                if (!xhttp) return;
+                if (xhttp.status === 404) {
+                    if (fallback) return fallback();
+                    toastr.warning('<b>[' + Premadeletter123 + ']:</b> No cloud settings found for this id.');
+                    return;
+                }
+                if (xhttp.status !== 200) {
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud settings could not be loaded.');
+                    return;
+                }
+                var responseSNEZ = xhttp.response;
+                $('#import-settings').val(_lmCloudSettingsFilter(unescape(responseSNEZ)));
+                $("#import-settings-btn2").click();
+            });
+        };
+        /* with a code: its record; nothing there yet = the old record (moved over on the next upload) */
+        _lmLoad(_lmCloudPass(_lmCode), _lmCode ? function () { _lmLoad(_lmCloudPass(''), null); } : null);
     }
 }
 
