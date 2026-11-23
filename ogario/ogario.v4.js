@@ -16560,6 +16560,8 @@ var displayText = {
         sectorsY: 'Sectors Y',
         virusSpikesRatio: 'Virus spikes ratio',
         virusSpikesSize: 'Virus spikes size',
+        gameBrightness: 'Game brightness (%)',
+        gameSaturation: 'Game colour saturation (%)',
         cellsAlpha: 'Przezroczystosc kulek',
         skinsAlpha: 'Przezroczystosc skinow',
         virusAlpha: 'Przezroczystosc wirusow',
@@ -17078,6 +17080,8 @@ var displayText = {
         sectorsY: 'Sectors Y',
         virusSpikesRatio: 'Virus spikes ratio',
         virusSpikesSize: 'Virus spikes size',
+        gameBrightness: 'Game brightness (%)',
+        gameSaturation: 'Game colour saturation (%)',
         cellsAlpha: 'Cells transparency',
         skinsAlpha: 'Skins transparency',
         virusAlpha: 'Virus transparency',
@@ -17751,6 +17755,8 @@ var defaultSettings = {
     sectorsY: 5,
     virusSpikesRatio: 0.46,
     virusSpikesSize: 6,
+    gameBrightness: 100,          /* 100 = unchanged (CSS filter on the game canvases) */
+    gameSaturation: 100,
     namesScale: 1,
     massScale: 3,
     virMassScale: 3,
@@ -19988,6 +19994,8 @@ function thelegendmodproject() {
             this.addSliderBox('#theme-main', 'foodSize', 1, 50, 1, 'setFoodColor');
             this.addSliderBox('#theme-main', 'virusSpikesRatio', 0.03, 0.8, 0.01);
             this.addSliderBox('#theme-main', 'virusSpikesSize', 1, 60, 1);
+            this.addSliderBox('#theme-main', 'gameBrightness', 50, 150, 5, 'setGameFilter');
+            this.addSliderBox('#theme-main', 'gameSaturation', 0, 200, 5, 'setGameFilter');
             this.addSliderBox('#theme-main', 'virusStrokeSize', 2, 40, 1);
             this.addSliderBox('#theme-main', 'bordersWidth', 2, 200, 2);
             this.addSliderBox('#theme-main', 'borderGlowSize', 0, 40, 1);
@@ -20287,6 +20295,17 @@ function thelegendmodproject() {
             var css = '#message,#messages li,.toast-success{background-color:' + defaultSettings.messageColor + '}#message,.message-text,.toast-success .message-text{color:' + defaultSettings.messageTextColor + '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:' + defaultSettings.messageNickColor + '}.message-time{color:' + defaultSettings.messageTimeColor + '}.toast-warning{background-color:' + defaultSettings.commandsColor + '}.command-text,.toast-warning .command-text{color:' + defaultSettings.commandsTextColor + '}.command-nick,.toast-warning .command-nick,.toast-warning .mute-user,.toast-warning .mute-user:hover{color:' + defaultSettings.commandsNickColor + '}.command-time{color:' + defaultSettings.commandsTimeColor + '}#chat-box{background-color:' + defaultSettings.chatBoxColor + '}';
             this.addCustomCSS('chatCSS', css);
         },
+        /* Brightness / saturation of the game view: one CSS rule for the full-screen game
+         * canvases (body > canvas; the minimap is inside #minimap-hud). Both at 100: no filter. */
+        setGameFilter() {
+            var b = +defaultSettings.gameBrightness || 100, s = defaultSettings.gameSaturation;
+            s = (s === 0 || +s) ? +s : 100;
+            var css = (b === 100 && s === 100) ? '' : 'body > canvas{filter:brightness(' + b + '%) saturate(' + s + '%);}';
+            var el = document.getElementById('lm-game-filter');
+            if (!css) { if (el) el.parentNode.removeChild(el); return; }
+            if (!el) { el = document.createElement('style'); el.id = 'lm-game-filter'; document.head.appendChild(el); }
+            if (el.textContent !== css) el.textContent = css;
+        },
         setChatScale() {
             var message = Math.round(14 * defaultSettings.chatScale);
             var toastContainer = Math.round(280 * defaultSettings.chatScale);
@@ -20304,6 +20323,7 @@ function thelegendmodproject() {
         setMiniMap() {
             this.setMiniMapFont();
             this.setMiniMapWidth();
+            this.setGameFilter();
             this.setMiniMapSectorsOpacity();
         },
         switchOnlineStatus() {
