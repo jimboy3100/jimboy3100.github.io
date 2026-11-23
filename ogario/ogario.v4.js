@@ -16363,6 +16363,7 @@ var displayText = {
         showStatsFPS: 'Statystyki: FPS',
         showStatsAlive: 'Statystyki: czas zycia',
         mergeRings: 'Pierscienie laczenia (postep)',
+        mentionNotify: 'Powiadomienie, gdy ktos wspomni Twoj nick (karta w tle)',
         timeFormat: 'Format zegara (0 data+czas, 1 czas, 2 24h)',
         massInTitle: 'Masa w tytule karty',
         showStatsPPS: 'Statystyki: PPS',
@@ -16868,6 +16869,7 @@ var displayText = {
         showStatsFPS: 'FPS: Frames per second',
         showStatsAlive: 'Time alive (this life)',
         mergeRings: 'Merge progress rings on own cells',
+        mentionNotify: 'Desktop notification when someone mentions your nick (tab in background)',
         timeFormat: 'Clock format (0 date+time, 1 time, 2 24h)',
         massInTitle: 'Mass in the browser tab title',
         showStatsPPS: 'PPS: Packets per second',
@@ -19281,6 +19283,7 @@ var defaultmapsettings = {
     showStatsFPS: true,
     showStatsAlive: false,        /* stats HUD: time alive in this life */
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
+    mentionNotify: false,         /* desktop notification for chat mentions while the tab is hidden */
     timeFormat: 0,                /* clock HUD: 0 date+time (as before), 1 time, 2 24h */
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
@@ -22089,6 +22092,13 @@ function thelegendmodproject() {
                     case 'disableChat':
                         this.setDisableChat();
                         break;
+                    case 'mentionNotify':
+                        if (checked && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+                            try { Notification.requestPermission(); } catch (eP) { }
+                        } else if (checked && (typeof Notification === 'undefined' || Notification.permission === 'denied') && window.toastr) {
+                            toastr.warning('Notifications are blocked in this browser for this site.');
+                        }
+                        break;
                     case 'chatSounds':
                         this.setChatSoundsBtn();
                         break;
@@ -22974,7 +22984,7 @@ function thelegendmodproject() {
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
             this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
-            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat"], "chatGroup");
+            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat", "mentionNotify"], "chatGroup");
             /* The Agar Tool universal chat is not started in this version (universalchat() is not called), so the switch would do nothing.
                Keep the stored value, but show the option as unavailable instead of a dead switch. */
             if (!window.ao2t) {
@@ -29739,6 +29749,12 @@ function thelegendmodproject() {
                          * text stays escaped as before) */
                         var _lmOwnNick = String($('#nick').val() || '').trim().toLowerCase();
                         var _lmMention = _lmOwnNick.length >= 3 && plId != this.playerID && String(rawText).toLowerCase().indexOf(_lmOwnNick) !== -1;
+                        /* optional desktop notification while the tab is in the background */
+                        if (_lmMention && defaultmapsettings.mentionNotify && document.hidden && typeof Notification !== 'undefined' &&
+                            Notification.permission === 'granted' && Date.now() - (this._lmMentionNotifAt || 0) > 5000) {
+                            this._lmMentionNotifAt = Date.now();
+                            try { new Notification(String(rawNick).slice(0, 40), { body: String(rawText).slice(0, 120), tag: 'lm-mention' }); } catch (eN) { }
+                        }
                         if (_lmMention && !document.getElementById('lm-mention-css')) {
                             var _lmMcss = document.createElement('style');
                             _lmMcss.id = 'lm-mention-css';
