@@ -16378,6 +16378,7 @@ var displayText = {
         //normalLb: 'Naglowek \"Topka\"',
         centeredLb: 'Wysrodkowana topka',
         fpsAtTop: 'Statystyki na gorze',
+        statsAtCenter: 'Statystyki na dole na srodku',
         tweenMaxEffect: 'Tween max effect',
         top5skins: 'Skins on teamboard',
         showStats: 'Pokaz statystyki',
@@ -16903,6 +16904,7 @@ var displayText = {
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
         fpsAtTop: 'Game stats at the top',
+        statsAtCenter: 'Game stats at the bottom centre',
         tweenMaxEffect: 'Tween max effect',
         top5skins: 'Skins on teamboard',
         showStats: 'Show game stats',
@@ -19332,6 +19334,7 @@ var defaultmapsettings = {
     //normalLb: true,
     centeredLb: true,
     fpsAtTop: true,
+    statsAtCenter: false,         /* stats line at the bottom centre (wins over "at the top") */
     tweenMaxEffect: false,
     top5skins: true,
     showStats: true,
@@ -21334,11 +21337,20 @@ function thelegendmodproject() {
         //},
         setFpsAtTop() {
             //defaultmapsettings.fpsAtTop ? $('#stats-hud').removeClass('hud-bottom').addClass('hud-top') : $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
-            if (defaultmapsettings.fpsAtTop) {
+            var _lmCenter = !!defaultmapsettings.statsAtCenter;
+            if (defaultmapsettings.fpsAtTop && !_lmCenter) {
                 $('#stats-hud').removeClass('hud-bottom').addClass('hud-top');
             } else {
                 $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
             }
+            /* bottom centre (like Delta); the top centre is taken by the target HUD */
+            if (_lmCenter && !document.getElementById('lm-stats-center-css')) {
+                var _lmSc = document.createElement('style');
+                _lmSc.id = 'lm-stats-center-css';
+                _lmSc.textContent = '#stats-hud.lm-stats-center{left:50%;transform:translateX(-50%);text-align:center}';
+                document.head.appendChild(_lmSc);
+            }
+            $('#stats-hud').toggleClass('lm-stats-center', _lmCenter);
         },
         setTweenMaxEffect() {
             if (defaultmapsettings.tweenMaxEffect) initTilt()
@@ -22267,6 +22279,7 @@ function thelegendmodproject() {
                     //this.setNormalLb();
                     //break;
                     case 'fpsAtTop':
+                    case 'statsAtCenter':
                         this.setFpsAtTop();
                         break;
                     case 'tweenMaxEffect':
@@ -23157,7 +23170,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
@@ -78018,6 +78031,8 @@ function lmReplayBarTick() {
     var total = Math.max(1, window.RecordedProtocol[srv].length - 2);
     var cur = Math.max(0, Math.min(total, window.legendmod.playingReplayRecord || 0));
     if (bar.style.display === 'none') bar.style.display = '';
+    var _lmBb = (window.legendmod5 && window.legendmod5.statsAtCenter) ? '40px' : '14px';
+    if (bar.style.bottom !== _lmBb) bar.style.bottom = _lmBb;
     bar.firstChild.style.width = (cur / total * 100).toFixed(1) + '%';
     bar.lastChild.textContent = (window._lmReplayPaused ? '\u275A\u275A ' : '') + cur + ' / ' + total;
 }
