@@ -53406,26 +53406,48 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 0.0001
                             );
 
+                        /*
+                         * Lines thinner than a screen pixel shimmered ("shaking" grid)
+                         * as the camera moved by fractions of a pixel. Keep at least
+                         * ~1.5 px of footprint and dim the line by the same ratio, so
+                         * the grid looks the same but no longer flickers (Delta fades
+                         * its grid with zoom for the same reason).
+                         */
+                        vec2 lineHalf =
+                            max(
+                                vec2(halfLineWidth),
+                                aa * 0.75
+                            );
+                        vec2 lineGain =
+                            clamp(
+                                vec2(halfLineWidth) / lineHalf,
+                                0.0,
+                                1.0
+                            );
                         float verticalLine =
-                            1.0 -
-                            smoothstep(
-                                halfLineWidth -
-                                    aa.x,
-                                halfLineWidth +
-                                    aa.x,
-                                distanceToLine.x
-                            );
-
+                            (
+                                1.0 -
+                                smoothstep(
+                                    lineHalf.x -
+                                        aa.x,
+                                    lineHalf.x +
+                                        aa.x,
+                                    distanceToLine.x
+                                )
+                            ) *
+                            lineGain.x;
                         float horizontalLine =
-                            1.0 -
-                            smoothstep(
-                                halfLineWidth -
-                                    aa.y,
-                                halfLineWidth +
-                                    aa.y,
-                                distanceToLine.y
-                            );
-
+                            (
+                                1.0 -
+                                smoothstep(
+                                    lineHalf.y -
+                                        aa.y,
+                                    lineHalf.y +
+                                        aa.y,
+                                    distanceToLine.y
+                                )
+                            ) *
+                            lineGain.y;
                         float line =
                             max(
                                 verticalLine,
