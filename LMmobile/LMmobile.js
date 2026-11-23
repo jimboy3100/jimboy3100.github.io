@@ -480,7 +480,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false };
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
@@ -493,6 +493,7 @@
                 if (saved.muteVibration !== undefined) prefs.muteVibration = !!saved.muteVibration;
                 if (saved.tapHaptic !== undefined) prefs.tapHaptic = !!saved.tapHaptic;
                 if (saved.quickCmds !== undefined) prefs.quickCmds = !!saved.quickCmds;
+                if (saved.mbButton !== undefined) prefs.mbButton = !!saved.mbButton;
             }
         } catch (e) { }
         function savePrefs() {
@@ -547,7 +548,8 @@
             '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>' +
             '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> No vibration (death, chat)</label>' +
             '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> Short vibration on Split / Feed</label>' +
-            '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> Quick chat buttons (commands 1-4)</label>';
+            '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> Quick chat buttons (commands 1-4)</label>' +
+            '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> Multibox button (second player; uses more data)</label>';
         drawer.appendChild(sp);
 
         /* The panel only shows with class "on", and nothing ever added it, so joystick
@@ -620,6 +622,7 @@
         }
         buildQuickCmds();
         sp.querySelector('#lm-qcmd').addEventListener('change', function () { prefs.quickCmds = this.checked; savePrefs(); buildQuickCmds(); });
+        sp.querySelector('#lm-mbbtn').addEventListener('change', function () { prefs.mbButton = this.checked; savePrefs(); buildMbButton(); if (typeof repositionButtons === 'function') repositionButtons(); });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
@@ -638,6 +641,22 @@
         var b16 = mks('16×');
         smallR.appendChild(bDbl);
         smallR.appendChild(b16);
+        /* optional multibox swap (Tab on desktop): adds the second player, then swaps focus */
+        var bMb = null;
+        function buildMbButton() {
+            if (bMb && bMb.parentNode) bMb.parentNode.removeChild(bMb);
+            bMb = null;
+            if (!prefs.mbButton) return;
+            bMb = mks('\u21C4');
+            bMb.addEventListener('touchstart', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                debounced(function () {
+                    if (typeof application !== 'undefined' && application && typeof application.multiboxswap === 'function') application.multiboxswap();
+                }, 'mbswap', 400);
+            }, { passive: false });
+            smallR.appendChild(bMb);
+        }
+        buildMbButton();
 
         var jO = mk('div'); jO.className = 'lm-jo'; document.body.appendChild(jO);
         var jI = mk('div'); jI.className = 'lm-ji'; document.body.appendChild(jI);
