@@ -16252,6 +16252,7 @@ var displayText = {
         mbFreeze: 'Zamroz nieaktywne konto',
         mbAutoRespawn: 'Automatyczne odradzanie w tle',
         cameraSmoothLerp: 'Plynna kamera Multibox',
+        centerWeightCamera: 'Kamera na srodku masy (wieksze kulki waza wiecej)',
         skipStats: 'Pomin statystyki po smierci',
         showQuest: 'Pokaz zadanie (quest)',
         autoZoom: 'Auto zoom',
@@ -16772,6 +16773,7 @@ var displayText = {
         mbFreeze: 'Freeze inactive multibox unit',
         mbAutoRespawn: 'Background auto-respawn',
         cameraSmoothLerp: 'Smooth multibox camera lerp',
+        centerWeightCamera: 'Camera on the centre of mass (big cells count more)',
         skipStats: 'Skip stats after death',
         showQuest: 'Show quest',
         autoZoom: 'Auto zoom',
@@ -19221,6 +19223,7 @@ var defaultmapsettings = {
     mbFreeze: false,
     mbAutoRespawn: true,
     cameraSmoothLerp: true,
+    centerWeightCamera: false,    /* camera target = mass-weighted centre of the own cells (like Delta) */
     optimizedMass: true,
     shortMass: true,
     cellContours: false,
@@ -23093,7 +23096,7 @@ function thelegendmodproject() {
             //this.addOptions(["unlockedFPS"], "animationGroup");
             this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode"], "animationGroup");
 
-            this.addOptions(["autoZoom"], "zoomGroup");
+            this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
@@ -49050,12 +49053,15 @@ Most cells eaten   : ${mostCellsEaten}
                 else if (defaultmapsettings.non16Sound && _lmPrev16 >= 16 && playersLength < 16 && playersLength > 0) application.playSound(application._lmOptSound('non16'));
             }
             this._lmPrevCells = playersLength;
+            var _lmWS = 0, _lmWX = 0, _lmWY = 0;
             for (let length = 0; length < playersLength; length++) {
                 var n = this.playerCells[length];
                 size += n.size;
                 targetSize += n.targetSize * n.targetSize;
                 x += n.x / playersLength;
                 y += n.y / playersLength;
+                var _lmW = n.size * n.size;
+                _lmWS += _lmW; _lmWX += n.x * _lmW; _lmWY += n.y * _lmW;
                 /* Track min/max inline to avoid redundant sort in recalculatePlayerMass */
                 if (n.size < minSize) minSize = n.size;
                 if (n.size > maxSize) maxSize = n.size;
@@ -49065,6 +49071,9 @@ Most cells eaten   : ${mostCellsEaten}
             this.viewY = y;
             this.viewXTrue = x;
             this.viewYTrue = y;
+            /* mass-weighted centre, used only for the camera with "centerWeightCamera" */
+            this._lmWeightX = _lmWS > 0 ? _lmWX / _lmWS : x;
+            this._lmWeightY = _lmWS > 0 ? _lmWY / _lmWS : y;
 
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
@@ -69408,6 +69417,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             var targetCamX = LM.viewX;
             var targetCamY = LM.viewY;
+            /* optional: follow the mass-weighted centre (viewX itself is unchanged: the minimap,
+             * sectors and multibox read it); multibox views below still take over */
+            if (defaultmapsettings.centerWeightCamera && LM.play && LM.playerCells && LM.playerCells.length &&
+                Number.isFinite(LM._lmWeightX) && Number.isFinite(LM._lmWeightY)) {
+                targetCamX = LM._lmWeightX;
+                targetCamY = LM._lmWeightY;
+            }
 
             /* ═══ World Spectate: mouse-driven panning with center dead zone ═══
              * When in World Spectate on an Expanding Land server, the mouse
