@@ -85,6 +85,23 @@ function _lmSessionStats(update) {
     el.textContent = line.replace('{0}', s.g).replace('{1}', Math.round(s.b).toLocaleString()).replace('{2}', played);
 }
 window._lmSessionStats = _lmSessionStats;
+/* All-time personal bests (option "personalBests"): kept in this browser only.
+ * Returns which records this life broke (never on the very first recorded game). */
+function _lmPersonalBests(update) {
+    var s = { m: 0, t: 0, g: 0 };
+    try { var raw = localStorage.getItem('lmPersonalBests'); if (raw) { var o = JSON.parse(raw); if (o && typeof o === 'object') s = { m: +o.m || 0, t: +o.t || 0, g: +o.g || 0 }; } } catch (e) { }
+    var res = { mass: false, time: false, best: s };
+    if (update) {
+        var m = Math.max(0, +update.best || 0), ms = Math.max(0, Math.min(+update.ms || 0, 6 * 3600 * 1000));
+        if (s.g > 0 && m > s.m) res.mass = true;
+        if (s.g > 0 && ms > s.t) res.time = true;
+        s = { m: Math.max(s.m, m), t: Math.max(s.t, ms), g: s.g + 1 };
+        res.best = s;
+        try { localStorage.setItem('lmPersonalBests', JSON.stringify(s)); } catch (e) { }
+    }
+    return res;
+}
+window._lmPersonalBests = _lmPersonalBests;
 /* Map border colour: the theme colour, or a slowly cycling rainbow with "Rainbow map borders"
  * (returned as #rrggbb so every border path can parse it). */
 /* Background sector label: the custom symbol (max 4 characters) or the usual A1..E5. */
@@ -16411,6 +16428,7 @@ var displayText = {
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
         gameOverStats: 'Game over stats',
         massGraph: 'Mass graph on the Game Over card',
+        personalBests: 'All-time personal bests (New best! on the Game Over card)',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
@@ -16937,6 +16955,7 @@ var displayText = {
         blockPopups: 'Block popups (ads/shop/quest)',
         gameOverStats: 'Game over stats',
         massGraph: 'Mass graph on the Game Over card',
+        personalBests: 'All-time personal bests (New best! on the Game Over card)',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -19368,7 +19387,8 @@ var defaultmapsettings = {
 
     blockPopups: false,
     gameOverStats: false,
-    massGraph: false,             /* graph of your mass over the life on the Game Over card */
+    massGraph: false,
+    personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */             /* graph of your mass over the life on the Game Over card */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -23185,7 +23205,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
@@ -24584,6 +24604,13 @@ function thelegendmodproject() {
             pauseVideos();
             /* session summary: this life's best mass and time alive */
             try { _lmSessionStats({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 }); } catch (e) { }
+            if (defaultmapsettings.personalBests) {
+                try {
+                    this._lmNewBest = _lmPersonalBests({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 });
+                    this._lmNewBest.at = Date.now();
+                    if (window.legendmod && typeof legendmod._lmRefreshBestRow === 'function') legendmod._lmRefreshBestRow();
+                } catch (e) { }
+            }
             this._lmLifeStartAt = 0;
             ogario.play = false;
             ogario.playerColor = null;
@@ -43674,6 +43701,28 @@ function thelegendmodproject() {
                     gx.fillText(fmtMass(gmax), gw - 4, 10);
                 } catch (e) { }
             }
+            this._lmRefreshBestRow = function () {
+                if (!defaultmapsettings.personalBests) return;
+                var md = document.getElementById('lm-gameover-modal');
+                var card = md && md.querySelector('.lm-go-card');
+                if (!card) return;
+                var nb = window.application && application._lmNewBest;
+                var fresh = nb && Date.now() - (nb.at || 0) < 8000;
+                var b = (fresh && nb.best) || _lmPersonalBests().best;
+                if (!b || !b.g) return;
+                var row = document.getElementById('lm-go-best');
+                if (!row) {
+                    row = document.createElement('div');
+                    row.id = 'lm-go-best';
+                    row.style.cssText = 'padding:0 12px 10px;font-size:11px;text-align:center;color:' + tc2 + ';';
+                    card.appendChild(row);
+                }
+                var rec = fresh && (nb.mass || nb.time);
+                row.textContent = (rec ? '\ud83c\udfc5 New best ' + [nb.mass ? 'mass' : '', nb.time ? 'time alive' : ''].filter(Boolean).join(' + ') + '! \u00b7 ' : '') +
+                    'All-time: ' + fmtMass(b.m) + ' \u00b7 ' + fmtTime(Math.round(b.t / 1000)) + ' \u00b7 ' + b.g + ' games';
+                if (rec) row.style.color = mc;
+            };
+            this._lmRefreshBestRow();
             /* Attach close button click */
             var closeBtn = document.getElementById('lm-go-close');
             if (closeBtn) closeBtn.addEventListener('click', function(e) { e.stopPropagation(); dismissGameOver(); });
