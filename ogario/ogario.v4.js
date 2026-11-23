@@ -16346,6 +16346,8 @@ var displayText = {
         messageSound: 'Dzwiek powiadomienia o wiadomosci',
         commandSound: 'Dzwiek powiadomienia o komendzie',
         virusSoundurl: 'Virus shot sound',
+        x16Sound: 'Sound when split into 16 pieces',
+        non16Sound: 'Sound when back below 16 pieces',
         virusSound: 'Virus shot sound',
         potionsDrinker: 'Randomly drink Potions',
         //massBooster: 'Mass *2 booster-> *3 booster',		
@@ -16856,6 +16858,8 @@ var displayText = {
         messageSound: 'Message notification sound',
         commandSound: 'Command notification sound',
         virusSoundurl: 'Virus shot sound',
+        x16Sound: 'Sound when split into 16 pieces',
+        non16Sound: 'Sound when back below 16 pieces',
         virusSound: 'Virus shot sound',
         potionsDrinker: 'Randomly drink Potions',
         //massBooster: 'Mass *2 booster-> *3 booster',
@@ -19344,6 +19348,8 @@ var defaultmapsettings = {
     //                commandSound: 'https://www.legendmod.ml/sounds/notification_02.mp3'
     commandSound: 'https://www.legendmod.ml/sounds/chat-message.mp3',
     virusSoundurl: 'https://www.legendmod.ml/sounds/sound-gunshot.mp3',
+    x16Sound: false,              /* sound when the own cells reach 16 pieces */
+    non16Sound: false,            /* sound when they merge back below 16 */
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
     //
     leftClick: 'hk-macroFeed',
@@ -23008,7 +23014,7 @@ function thelegendmodproject() {
             this.addOptions([], "boardGroup");
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "potionsDrinker"], "massGroup");
+            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "x16Sound", "non16Sound", "potionsDrinker"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
@@ -29869,6 +29875,8 @@ function thelegendmodproject() {
             this.setMessageSound();
             this.setCommandSound();
             this.setvirusSound();
+            this.x16SoundObj = this.setSound('https://www.legendmod.ml/sounds/notification_02.mp3');
+            this.non16SoundObj = this.setSound('https://www.legendmod.ml/sounds/notification-close.mp3');
         },
         setChatSoundsBtn() {
             if (defaultmapsettings.chatSounds) {
@@ -48815,6 +48823,13 @@ Most cells eaten   : ${mostCellsEaten}
             var y = 0;
             var minSize = Infinity, maxSize = 0;
             playersLength = this.playerCells.length;
+            /* optional 16-pieces sounds (like Delta): played once when the count crosses 16 */
+            if (this.play && window.application && (defaultmapsettings.x16Sound || defaultmapsettings.non16Sound)) {
+                var _lmPrev16 = this._lmPrevCells | 0;
+                if (defaultmapsettings.x16Sound && _lmPrev16 < 16 && playersLength >= 16) application.playSound(application.x16SoundObj);
+                else if (defaultmapsettings.non16Sound && _lmPrev16 >= 16 && playersLength < 16 && playersLength > 0) application.playSound(application.non16SoundObj);
+            }
+            this._lmPrevCells = playersLength;
             for (let length = 0; length < playersLength; length++) {
                 var n = this.playerCells[length];
                 size += n.size;
