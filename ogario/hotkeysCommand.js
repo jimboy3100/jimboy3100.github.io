@@ -104,6 +104,26 @@
 				},
 				type: 'normal'
 			},	
+			/* Performance mode on/off without opening the settings (no default key). Goes through the
+			 * settings switch so its backup/restore of the effect settings runs exactly once. */
+			'hk-performanceMode': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-performanceMode']) || 'Toggle performance mode';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (!application || typeof defaultmapsettings === 'undefined') return;
+					var next = !defaultmapsettings.performanceMode;
+					if (document.getElementById('performanceMode') && typeof application.syncHotkeyOption === 'function') {
+						defaultmapsettings.performanceMode = next;
+						application.syncHotkeyOption('performanceMode');
+					} else if (typeof application.setSettings === 'function') {
+						application.setSettings('performanceMode', next);
+					}
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
