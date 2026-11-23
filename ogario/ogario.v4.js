@@ -19353,7 +19353,8 @@ textLanguage.scanTrickStatus =
 
 textLanguage['hk-scanTrick'] =
     textLanguage['hk-scanTrick'] ||
-    'Macro Scan trick';
+    /* same name as in the Scan Trick usage note (it said "Hold Scan Trick", the row said "Macro Scan trick") */
+    'Hold Scan Trick';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -19737,10 +19738,10 @@ function thelegendmodproject() {
                         'border-left:3px solid #00b9ff;' +
                         'background:rgba(0,0,0,.18);' +
                     '">' +
-                    '<strong>Usage:</strong> assign “Hold Scan Trick” ' +
-                    'in Hotkeys. Hold that key to send the cursor far in ' +
-                    'the mouse direction. Hold left mouse too to snap the ' +
-                    'movement direction.' +
+                    '<strong>Usage:</strong> Scan Trick works only while a key is held. ' +
+                    'Open the Hotkeys menu, find “Hold Scan Trick” (it has no key by default) and ' +
+                    'press a key for it. In game, hold that key: the cursor is sent far in the ' +
+                    'mouse direction. Hold left mouse too to snap to the chosen directions.' +
                 '</div>'
             );
         },
@@ -21978,6 +21979,13 @@ function thelegendmodproject() {
             }
         },
         setSettings(id, checked) {
+            /* Scan Trick does nothing until its hold key is set (no default key): say so when it is turned on */
+            if (id === 'scanTrick' && checked === true && window.toastr) {
+                var _lmStBound = false;
+                for (var _lmStK in hotkeys) { if (hotkeys.hasOwnProperty(_lmStK) && hotkeys[_lmStK] === 'hk-scanTrick') { _lmStBound = _lmStK; break; } }
+                if (!_lmStBound) toastr.info('<b>[SCAN TRICK]:</b> Set a key for “Hold Scan Trick” in the Hotkeys menu, then hold it in game.');
+                else toastr.info('<b>[SCAN TRICK]:</b> Hold <b>' + $('<div>').text(_lmStBound).html() + '</b> in game to use it.');
+            }
             if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {
                 //switch (defaultmapsettings[id] = checked, ogario.hasOwnProperty(id) && (ogario[id] = checked), id) {
                 defaultmapsettings[id] = checked;
