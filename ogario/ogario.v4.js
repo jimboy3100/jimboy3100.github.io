@@ -23367,7 +23367,32 @@ function thelegendmodproject() {
             $(document).on("click", "#server-reconnect", function () {
                 app.gameServerReconnect();
             });
+            /* Recent servers / party tokens: the last 5 values joined are offered as suggestions
+             * in the token boxes (a datalist: no layout change, the join path is unchanged). */
+            var _lmRecent = function (storeKey, listId, inputSel) {
+                var read = function () { try { var a = JSON.parse(localStorage.getItem(storeKey) || '[]'); return Array.isArray(a) ? a.filter(function (v) { return typeof v === 'string' && v; }) : []; } catch (e) { return []; } };
+                var render = function () {
+                    var dl = document.getElementById(listId);
+                    if (!dl) { dl = document.createElement('datalist'); dl.id = listId; document.body.appendChild(dl); }
+                    while (dl.firstChild) dl.removeChild(dl.firstChild);
+                    read().forEach(function (v) { var o = document.createElement('option'); o.value = v; dl.appendChild(o); });
+                    $(inputSel).attr('list', listId).attr('autocomplete', 'off');
+                };
+                render();
+                return function (value) {
+                    value = String(value || '').trim();
+                    if (!value || value.length > 300) return;
+                    var a = read().filter(function (v) { return v !== value; });
+                    a.unshift(value);
+                    try { localStorage.setItem(storeKey, JSON.stringify(a.slice(0, 5))); } catch (e) { }
+                    render();
+                };
+            };
+            var _lmRememberServer = _lmRecent('lmRecentServers', 'lm-recent-servers', '#server-token');
+            var _lmRememberParty = _lmRecent('lmRecentParties', 'lm-recent-parties', '#party-token');
+            $(document).on("click", "#join-party-btn-2", function () { _lmRememberParty($("#party-token").val()); });
             $(document).on("click", "#server-join", function () {
+                _lmRememberServer($("#server-token").val());
                 app.gameServerJoin($("#server-token").val());
             });
             /* Profile edits were written to the profile only by setPlayerSettings (Play),
