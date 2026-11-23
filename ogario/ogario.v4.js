@@ -16362,6 +16362,7 @@ var displayText = {
         showTime: 'Pokaz aktualny czas',
         showDevConsole: 'Show developer console',
         showLbData: 'Pokaz mase w topce',
+        lbHideBots: 'Zwin powtarzajace sie nicki (boty) w topce',
         //normalLb: 'Naglowek \"Topka\"',
         centeredLb: 'Wysrodkowana topka',
         fpsAtTop: 'Statystyki na gorze',
@@ -16877,6 +16878,7 @@ var displayText = {
         showTime: 'Show current time',
         showDevConsole: 'Show developer console',
         showLbData: 'Show leaderboard mass',
+        lbHideBots: 'Leaderboard: collapse repeated (bot) names',
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
         fpsAtTop: 'Game stats at the top',
@@ -19292,6 +19294,7 @@ var defaultmapsettings = {
     showTop5: true,
     showTargeting: true,
     showLbData: true,
+    lbHideBots: false,            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
     showDevConsole: false,
     //normalLb: true,
@@ -23094,7 +23097,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
@@ -46302,6 +46305,16 @@ Most cells eaten   : ${mostCellsEaten}
             	
             }*/
             //			
+            /* optional: a nick seen 3+ times (bots, same rule as the bot counter) is listed once
+             * as "name x N"; own, teammate and friend rows are never collapsed */
+            var _lmBotCnt = null, _lmBotSeen = null, _lmLbHidden = null;
+            if (defaultmapsettings.lbHideBots) {
+                _lmBotCnt = Object.create(null); _lmBotSeen = Object.create(null); _lmLbHidden = Object.create(null);
+                for (var _lmBi = 0; _lmBi < this.leaderboard.length; _lmBi++) {
+                    var _lmBk = '#' + this.leaderboard[_lmBi].nick;
+                    _lmBotCnt[_lmBk] = (_lmBotCnt[_lmBk] || 0) + 1;
+                }
+            }
             for (var temp = 0; temp < this.leaderboard.length && defaultmapsettings.leaderboardlimit != temp; temp++) {
                 var html = '<span>';
                 if (this.leaderboard[temp].id === 'isPlayer') {
@@ -46316,7 +46329,16 @@ Most cells eaten   : ${mostCellsEaten}
                     }
 
                 }
-                teamText += html + (temp + 1) + '. ' + application.escapeHTML(this.leaderboard[temp].nick) + '</span>';
+                var _lmBotSuffix = '';
+                if (_lmBotCnt && html === '<span>') {
+                    var _lmBk2 = '#' + this.leaderboard[temp].nick;
+                    if (_lmBotCnt[_lmBk2] > 2) {
+                        if (_lmBotSeen[_lmBk2]) { _lmLbHidden[temp] = 1; continue; }
+                        _lmBotSeen[_lmBk2] = 1;
+                        _lmBotSuffix = ' <span class="top5-mass-color">\u00d7' + _lmBotCnt[_lmBk2] + '</span>';
+                    }
+                }
+                teamText += html + (temp + 1) + '. ' + application.escapeHTML(this.leaderboard[temp].nick) + _lmBotSuffix + '</span>';
             }
             //
             if (LM.multiBoxPlayerExists) {
@@ -46403,6 +46425,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (defaultmapsettings.showLbData) {
                 for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
+                    if (_lmLbHidden && _lmLbHidden[l2ngth]) continue; /* row collapsed (lbHideBots) */
                     //
                     var w = this.ghostCells[l2ngth].x;
                     var u = this.ghostCells[l2ngth].y;
