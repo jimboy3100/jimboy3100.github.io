@@ -16376,6 +16376,7 @@ var displayText = {
         mergeRings: 'Pierscienie laczenia (postep)',
         mentionNotify: 'Powiadomienie, gdy ktos wspomni Twoj nick (karta w tle)',
         rainbowMapBorders: 'Teczowe granice mapy',
+        hudBlur: 'Rozmycie tla HUD (0 = wylaczone)',
         timeFormat: 'Format zegara (0 data+czas, 1 czas, 2 24h)',
         massInTitle: 'Masa w tytule karty',
         showStatsPPS: 'Statystyki: PPS',
@@ -16883,6 +16884,7 @@ var displayText = {
         mergeRings: 'Merge progress rings on own cells',
         mentionNotify: 'Desktop notification when someone mentions your nick (tab in background)',
         rainbowMapBorders: 'Rainbow map borders',
+        hudBlur: 'HUD background blur (0 = off)',
         timeFormat: 'Clock format (0 date+time, 1 time, 2 24h)',
         massInTitle: 'Mass in the browser tab title',
         showStatsPPS: 'PPS: Packets per second',
@@ -19298,6 +19300,7 @@ var defaultmapsettings = {
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
     mentionNotify: false,         /* desktop notification for chat mentions while the tab is hidden */
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
+    hudBlur: 0,                   /* frosted-glass blur behind HUD panels, px (0 = off) */
     timeFormat: 0,                /* clock HUD: 0 date+time (as before), 1 time, 2 24h */
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
@@ -21467,6 +21470,14 @@ function thelegendmodproject() {
                 }
             }
         },
+        /* "HUD background blur": frosted-glass panels (leaderboard, minimap, stats, team...) */
+        applyHudBlur() {
+            var px = Math.max(0, Math.min(8, +defaultmapsettings.hudBlur || 0));
+            var st = document.getElementById('lm-hud-blur');
+            if (!px) { if (st) st.parentNode.removeChild(st); return; }
+            if (!st) { st = document.createElement('style'); st.id = 'lm-hud-blur'; document.head.appendChild(st); }
+            st.textContent = '.hud,.hud-b,.hud-c{-webkit-backdrop-filter:blur(' + px + 'px);backdrop-filter:blur(' + px + 'px)}';
+        },
         displayTime() {
             if (defaultmapsettings.showTime) {
                 /* Clock format: 0 = date and time (as before), 1 = time only, 2 = 24-hour HH:MM:SS */
@@ -23061,6 +23072,8 @@ function thelegendmodproject() {
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
             this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
+            this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
+            this.applyHudBlur();
 
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
             this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);
