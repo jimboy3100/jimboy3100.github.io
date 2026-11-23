@@ -85,6 +85,17 @@ function _lmSessionStats(update) {
     el.textContent = line.replace('{0}', s.g).replace('{1}', Math.round(s.b).toLocaleString()).replace('{2}', played);
 }
 window._lmSessionStats = _lmSessionStats;
+/* Map border colour: the theme colour, or a slowly cycling rainbow with "Rainbow map borders"
+ * (returned as #rrggbb so every border path can parse it). */
+function _lmBorderColorNow() {
+    var base = (typeof defaultSettings !== 'undefined' && defaultSettings.bordersColor) || '#ff0000';
+    if (typeof defaultmapsettings === 'undefined' || !defaultmapsettings.rainbowMapBorders) return base;
+    var h = ((Date.now() / 20) % 360) / 60, x = 1 - Math.abs(h % 2 - 1), r = 0, g = 0, b = 0;
+    if (h < 1) { r = 1; g = x; } else if (h < 2) { r = x; g = 1; } else if (h < 3) { g = 1; b = x; }
+    else if (h < 4) { g = x; b = 1; } else if (h < 5) { r = x; b = 1; } else { r = 1; b = x; }
+    var hx = function (v) { return ('0' + Math.round(v * 255).toString(16)).slice(-2); };
+    return '#' + hx(r) + hx(g) + hx(b);
+}
 window.lmT = (function () {
     var langs = { '1': 'en', '2': 'el', '3': 'es', '4': 'bg', '5': 'fr', '6': 'ar', '7': 'zh', '8': 'ru', '9': 'de', '10': 'tr', '11': 'pl', '12': 'nl' };
     var text = {
@@ -16364,6 +16375,7 @@ var displayText = {
         showStatsAlive: 'Statystyki: czas zycia',
         mergeRings: 'Pierscienie laczenia (postep)',
         mentionNotify: 'Powiadomienie, gdy ktos wspomni Twoj nick (karta w tle)',
+        rainbowMapBorders: 'Teczowe granice mapy',
         timeFormat: 'Format zegara (0 data+czas, 1 czas, 2 24h)',
         massInTitle: 'Masa w tytule karty',
         showStatsPPS: 'Statystyki: PPS',
@@ -16870,6 +16882,7 @@ var displayText = {
         showStatsAlive: 'Time alive (this life)',
         mergeRings: 'Merge progress rings on own cells',
         mentionNotify: 'Desktop notification when someone mentions your nick (tab in background)',
+        rainbowMapBorders: 'Rainbow map borders',
         timeFormat: 'Clock format (0 date+time, 1 time, 2 24h)',
         massInTitle: 'Mass in the browser tab title',
         showStatsPPS: 'PPS: Packets per second',
@@ -19284,6 +19297,7 @@ var defaultmapsettings = {
     showStatsAlive: false,        /* stats HUD: time alive in this life */
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
     mentionNotify: false,         /* desktop notification for chat mentions while the tab is hidden */
+    rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
     timeFormat: 0,                /* clock HUD: 0 date+time (as before), 1 time, 2 24h */
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
@@ -22983,7 +22997,7 @@ function thelegendmodproject() {
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
-            this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
+            this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow", "rainbowMapBorders"], "gridGroup");
             this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat", "mentionNotify"], "chatGroup");
             /* The Agar Tool universal chat is not started in this version (universalchat() is not called), so the switch would do nothing.
                Keep the stored value, but show the option as unavailable instead of a dead switch. */
@@ -60585,7 +60599,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 var borderRGBA =
                     this._legendWorldMapParseRGBA(
-                        defaultSettings.bordersColor ||
+                        _lmBorderColorNow() ||
                             '#ff0000',
                         '#ff0000',
                         1
@@ -70325,7 +70339,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _bMinY,
                         _bMaxX,
                         _bMaxY,
-                        defaultSettings.bordersColor,
+                        _lmBorderColorNow(),
                         defaultSettings.bordersWidth
                     );
                 }
