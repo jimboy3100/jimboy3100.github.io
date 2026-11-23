@@ -480,7 +480,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false };
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
@@ -492,6 +492,7 @@
                 if (saved.swipeSplit !== undefined) prefs.swipeSplit = !!saved.swipeSplit;
                 if (saved.muteVibration !== undefined) prefs.muteVibration = !!saved.muteVibration;
                 if (saved.tapHaptic !== undefined) prefs.tapHaptic = !!saved.tapHaptic;
+                if (saved.quickCmds !== undefined) prefs.quickCmds = !!saved.quickCmds;
             }
         } catch (e) { }
         function savePrefs() {
@@ -545,7 +546,8 @@
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
             '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>' +
             '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> No vibration (death, chat)</label>' +
-            '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> Short vibration on Split / Feed</label>';
+            '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> Short vibration on Split / Feed</label>' +
+            '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> Quick chat buttons (commands 1-4)</label>';
         drawer.appendChild(sp);
 
         /* The panel only shows with class "on", and nothing ever added it, so joystick
@@ -594,6 +596,30 @@
         });
         sp.querySelector('#lm-novib').addEventListener('change', function () { prefs.muteVibration = this.checked; savePrefs(); });
         sp.querySelector('#lm-taphap').addEventListener('change', function () { prefs.tapHaptic = this.checked; savePrefs(); });
+        /* Quick chat: chat commands 1-4 (Hotkeys > command texts) with one tap instead of the
+         * keyboard; sent like the desktop command hotkeys (Expanding Land 2 s window included) */
+        var quickBtns = [];
+        function buildQuickCmds() {
+            quickBtns.forEach(function (b) { if (b.parentNode) b.parentNode.removeChild(b); });
+            quickBtns = [];
+            if (!prefs.quickCmds) return;
+            for (var qi = 1; qi <= 4; qi++) {
+                (function (n) {
+                    var b = mkd(String(n));
+                    try { if (typeof chatCommand !== 'undefined' && chatCommand['comm' + n]) b.title = String(chatCommand['comm' + n]); } catch (e) { }
+                    b.addEventListener('touchstart', function (e) {
+                        e.preventDefault(); e.stopPropagation();
+                        debounced(function () {
+                            if (typeof application !== 'undefined' && application && typeof application.sendCommand === 'function') application.sendCommand(n);
+                        }, 'qcmd' + n, 600);
+                    }, { passive: false });
+                    drawer.appendChild(b);
+                    quickBtns.push(b);
+                })(qi);
+            }
+        }
+        buildQuickCmds();
+        sp.querySelector('#lm-qcmd').addEventListener('change', function () { prefs.quickCmds = this.checked; savePrefs(); buildQuickCmds(); });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
