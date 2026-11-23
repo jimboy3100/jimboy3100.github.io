@@ -120,6 +120,7 @@ window.lmT = (function () {
         "leaderboards": {"en":"Leaderboards","el":"Κατατάξεις","es":"Clasificaciones","bg":"Класации","fr":"Classements","ar":"لوحات الصدارة","zh":"排行榜","ru":"Таблицы лидеров","de":"Bestenlisten","tr":"Lider tabloları","pl":"Rankingi","nl":"Ranglijsten"},
         "help": {"en":"Help","el":"Βοήθεια","es":"Ayuda","bg":"Помощ","fr":"Aide","ar":"مساعدة","zh":"說明","ru":"Помощь","de":"Hilfe","tr":"Yardım","pl":"Pomoc","nl":"Hulp"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "searchSettings": {"en":"Search settings...","el":"Αναζήτηση ρυθμίσεων...","es":"Buscar ajustes...","bg":"Търсене в настройките...","fr":"Rechercher un réglage...","ar":"ابحث في الإعدادات...","zh":"搜尋設定...","ru":"Поиск настроек...","de":"Einstellungen suchen...","tr":"Ayarlarda ara...","pl":"Szukaj ustawień...","nl":"Instellingen zoeken..."},
         "itemHourly": {"en":"hourly bonus","el":"ωριαίο μπόνους","es":"bonificación horaria","bg":"бонус на час","fr":"bonus horaire","ar":"مكافأة الساعة","zh":"每小時獎勵","ru":"ежечасный бонус","de":"stündlicher Bonus","tr":"saatlik bonus","pl":"bonus godzinny","nl":"uurbonus"},
         "itemDaily": {"en":"daily quest","el":"ημερήσια αποστολή","es":"misión diaria","bg":"дневна мисия","fr":"quête du jour","ar":"المهمة اليومية","zh":"每日任務","ru":"ежедневное задание","de":"tägliche Quest","tr":"günlük görev","pl":"codzienne zadanie","nl":"dagelijkse missie"},
         "itemGift": {"en":"gift","el":"δώρο","es":"regalo","bg":"подарък","fr":"cadeau","ar":"هدية","zh":"禮物","ru":"подарок","de":"Geschenk","tr":"hediye","pl":"prezent","nl":"cadeau"},
@@ -22863,6 +22864,48 @@ function thelegendmodproject() {
             document.head.appendChild(_adStyle);
             $("#noNames, #showMass").remove();
             $("#og-settings .submenu-panel").append('<div id="og-options"></div>');
+            /* Settings search: ~300 options in many sections. Typing hides the options (and
+             * sections) whose text does not match; clearing the box shows everything again.
+             * Display only: no setting is read or changed. */
+            (function () {
+                var ph = (window.lmT && window.lmT('searchSettings')) || 'Search settings...';
+                var box = $('<div class="lm-settings-search-wrap" style="padding:6px 8px 2px;"></div>');
+                var inp = $('<input type="search" id="lm-settings-search" class="form-control input-sm" autocomplete="off">').attr('placeholder', '\uD83D\uDD0D ' + ph);
+                box.append(inp);
+                $('#og-options').before(box);
+                var timer = null;
+                var norm = function (s) {
+                    s = String(s || '');
+                    try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) { }
+                    return s.toLowerCase();
+                };
+                var apply = function () {
+                    var q = norm(inp.val()).trim();
+                    $('#og-options > .options-box').each(function () {
+                        var sec = $(this);
+                        var items = sec.children().not('h5');
+                        if (!q) { items.removeClass('lm-ss-hide'); sec.removeClass('lm-ss-hide'); return; }
+                        var headHit = norm(sec.children('h5').text()).indexOf(q) >= 0;
+                        var any = false;
+                        items.each(function () {
+                            /* the option's own text only: a dropdown's choices (e.g. every hotkey command) matched everything */
+                            var own = $(this).clone(); own.find('select, option, script, style').remove();
+                            var hit = headHit || norm(own.text()).indexOf(q) >= 0;
+                            $(this).toggleClass('lm-ss-hide', !hit);
+                            if (hit) any = true;
+                        });
+                        sec.toggleClass('lm-ss-hide', !any && !headHit);
+                    });
+                };
+                inp.on('input', function () { clearTimeout(timer); timer = setTimeout(apply, 120); });
+                /* keys typed here are text, not hotkeys (the hotkey handler skips inputs) */
+                if (!document.getElementById('lm-ss-style')) {
+                    var st = document.createElement('style');
+                    st.id = 'lm-ss-style';
+                    st.textContent = '#og-options .lm-ss-hide{display:none!important}';
+                    document.head.appendChild(st);
+                }
+            })();
             //this.addOptions(["unlockedFPS"], "animationGroup");
             this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode"], "animationGroup");
 
