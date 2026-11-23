@@ -3390,8 +3390,14 @@ function _showMobileSkinBundlesModal(skinName, productId) {
 }
 window._showMobileSkinBundlesModal = _showMobileSkinBundlesModal;
 
-/* Start fetching mobile config on page load */
-_lmFetchMobileConfig();
+/*
+ * DISABLED: mobile transactions only carry a generic price-tier SKU
+ * (e.g. com.miniclip.agar.io.tier_5, shared by hundreds of bundles).
+ * Buying it on web charged the player through Xsolla but agar.io could not
+ * tell which bundle was bought, so nothing was delivered. Without this fetch
+ * getMobileSkinTransactions() returns [] and INAPP skins show "Promo Only".
+ */
+/* _lmFetchMobileConfig(); */
 
 
 /* Start the periodic promo refresh as soon as this file loads */
@@ -4841,6 +4847,32 @@ function openOfficialAgarIAP(
         ) {
             toastr.error(
                 '<b>[SHOP]:</b> Missing or invalid purchase ID.'
+            );
+        }
+
+        return false;
+    }
+
+    /*
+     * Generic mobile price-tier SKUs do not identify a bundle on web:
+     * Xsolla charges for them but agar.io delivers nothing. Never sell them.
+     */
+    if (
+        /\.tier_\d+$/
+            .test(
+                purchaseId
+            )
+    ) {
+        console.warn(
+            '[SHOP] Blocked generic price-tier purchase ID:',
+            purchaseId
+        );
+
+        if (
+            window.toastr
+        ) {
+            toastr.error(
+                '<b>[SHOP]:</b> This offer cannot be bought on web. It is only available through Agar.io’s in-game promotions.'
             );
         }
 
