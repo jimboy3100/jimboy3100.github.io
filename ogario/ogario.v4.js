@@ -16217,6 +16217,7 @@ var displayText = {
         recordReplays: 'Nagrywaj powtorki (pamiec)',
         glAntialias: 'Wygladzanie krawedzi (po przeladowaniu)',
         performanceMode: 'Tryb wydajnosci (slabsze PC/telefony)',
+        fpsLimit: 'Limit FPS (0 = bez limitu)',
         cellContours: 'Only cells contours',
         noNames: 'Wylacz nazwy',
         noColors: 'Wylacz kolory',
@@ -16717,6 +16718,7 @@ var displayText = {
         recordReplays: 'Record replays (uses memory)',
         glAntialias: 'Anti-aliasing (smoother edges, after reload)',
         performanceMode: 'Performance mode (weak PCs/phones)',
+        fpsLimit: 'FPS limit (0 = no limit; saves battery)',
         cellContours: 'Only cells contours',
         noNames: 'No names',
         noColors: 'No colors',
@@ -19139,6 +19141,7 @@ var defaultmapsettings = {
     recordReplays: true,          /* off = no packets kept for replays (saves memory) */
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
+    fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -23012,6 +23015,7 @@ function thelegendmodproject() {
                 $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper");
             }
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
+            this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
 
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
             this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);
@@ -74652,6 +74656,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
+            /* Optional FPS limit (setting "FPS limit", 0 = off): skip this display refresh
+             * when the previous frame was drawn too recently. Camera and zoom use the real
+             * frame time, so movement speed does not change. */
+            var _lmLim = +defaultmapsettings.fpsLimit;
+            if (_lmLim > 0) {
+                var _lmNowF = performance.now();
+                if (drawRender._lmLastDrawAt && _lmNowF - drawRender._lmLastDrawAt < 1000 / _lmLim - 2) {
+                    window.requestAnimationFrame(drawRender.render);
+                    return;
+                }
+                drawRender._lmLastDrawAt = _lmNowF;
+            }
             /* Always schedule the next frame: one exception in renderFrame()
              * used to stop rendering permanently (frozen game). */
             try {
