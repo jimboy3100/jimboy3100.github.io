@@ -327,6 +327,17 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-netGraph': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-netGraph']) || 'Show / hide net graph (FPS, ping)';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof window.lmToggleNetGraph === 'function') window.lmToggleNetGraph();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';

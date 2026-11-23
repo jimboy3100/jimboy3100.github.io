@@ -77232,6 +77232,48 @@ setInterval(function () {
         if (el) el.style.display = show ? '' : 'none';
     } catch (e) { }
 }, 333);
+/* Net graph (hotkey, no default key; not saved): FPS and ping of the last ~30 s,
+ * sampled 4x per second. Nothing runs until it is opened. */
+window.lmToggleNetGraph = function () {
+    var g = window._lmNetGraph;
+    if (g) {
+        clearInterval(g.timer);
+        if (g.cv.parentNode) g.cv.parentNode.removeChild(g.cv);
+        window._lmNetGraph = null;
+        return;
+    }
+    var cv = document.createElement('canvas');
+    cv.id = 'lm-net-graph';
+    cv.width = 180; cv.height = 64;
+    cv.style.cssText = 'position:fixed;left:10px;top:45%;z-index:150;pointer-events:none;background:rgba(0,0,0,0.45);border-radius:4px;';
+    document.body.appendChild(cv);
+    g = window._lmNetGraph = { cv: cv, fps: [], ping: [], timer: 0 };
+    g.timer = setInterval(function () {
+        try {
+            var dr = window.drawRender || (typeof drawRender !== 'undefined' ? drawRender : null);
+            var f = dr ? +dr.fps || 0 : 0, p = dr ? +dr.ping || 0 : 0;
+            g.fps.push(f); g.ping.push(p);
+            if (g.fps.length > 120) { g.fps.shift(); g.ping.shift(); }
+            var x = cv.getContext('2d'), w = cv.width, h = cv.height;
+            x.clearRect(0, 0, w, h);
+            var line = function (arr, max, col) {
+                x.beginPath();
+                for (var i = 0; i < arr.length; i++) {
+                    var px = w - (arr.length - 1 - i) * (w / 120), py = h - 2 - Math.min(1, arr[i] / max) * (h - 16);
+                    if (i) x.lineTo(px, py); else x.moveTo(px, py);
+                }
+                x.strokeStyle = col; x.lineWidth = 1.2; x.stroke();
+            };
+            var pMax = 100;
+            for (var i = 0; i < g.ping.length; i++) if (g.ping[i] > pMax) pMax = g.ping[i];
+            line(g.fps, 144, '#5fe35f');
+            line(g.ping, pMax, '#ffb84d');
+            x.font = '10px sans-serif'; x.textBaseline = 'top';
+            x.fillStyle = '#5fe35f'; x.fillText('FPS ' + f, 4, 2);
+            x.fillStyle = '#ffb84d'; x.fillText('PING ' + (p || '-'), 70, 2);
+        } catch (e) { }
+    }, 250);
+};
 function Socket3enabler(srv) {
     if (!window.socket3Opened && window.noOgarioSocket) {
         $("#message").keydown(function (event) {
