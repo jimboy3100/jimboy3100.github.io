@@ -480,7 +480,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false };
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
@@ -494,6 +494,7 @@
                 if (saved.tapHaptic !== undefined) prefs.tapHaptic = !!saved.tapHaptic;
                 if (saved.quickCmds !== undefined) prefs.quickCmds = !!saved.quickCmds;
                 if (saved.mbButton !== undefined) prefs.mbButton = !!saved.mbButton;
+                if (saved.stopOnRelease !== undefined) prefs.stopOnRelease = !!saved.stopOnRelease;
             }
         } catch (e) { }
         function savePrefs() {
@@ -547,6 +548,7 @@
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
             '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>' +
             '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> No vibration on death and chat</label>' +
+            '<label><input type="checkbox" id="lm-stoprel"' + (prefs.stopOnRelease ? ' checked' : '') + '> Stop on release (cell stops when you lift the joystick thumb)</label>' +
             '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> Short vibration on Split / Feed</label>' +
             '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> Quick chat buttons (commands 1-4)</label>' +
             '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> Multibox button (second player; uses more data)</label>';
@@ -597,6 +599,7 @@
             savePrefs();
         });
         sp.querySelector('#lm-novib').addEventListener('change', function () { prefs.muteVibration = this.checked; savePrefs(); });
+        sp.querySelector('#lm-stoprel').addEventListener('change', function () { prefs.stopOnRelease = this.checked; savePrefs(); });
         sp.querySelector('#lm-taphap').addEventListener('change', function () { prefs.tapHaptic = this.checked; savePrefs(); });
         /* Quick chat: chat commands 1-4 (Hotkeys > command texts) with one tap instead of the
          * keyboard; sent like the desktop command hotkeys (Expanding Land 2 s window included) */
@@ -992,6 +995,8 @@
                 if (e.changedTouches[i].identifier === jId) {
                     jId = null;
                     jHide();
+                    /* optional (like agar.io "Stop on Release"): point at the screen centre, where the cell is */
+                    if (prefs.stopOnRelease) mouseAt(window.innerWidth / 2, window.innerHeight / 2);
                     break;
                 }
             }
