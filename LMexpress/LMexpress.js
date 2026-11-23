@@ -8472,13 +8472,78 @@ function AgarBannedUIDs(onLoaded) {
     catch (error) { }
 }
 
+/*
+ * The ban list's username/password are public in this file, so the server
+ * (api.legendmod.ml/lm-settings) also requires the admin key (x-lm-admin header,
+ * /etc/lm-settings/admin.key on the VPS) for writes. Asked once, kept in this browser.
+ */
+function _lmBanAdminKey(forcePrompt) {
+    var key = '';
+    try { key = localStorage.getItem('lmBanAdminKey') || ''; } catch (e) { }
+    if (!key || forcePrompt) {
+        key = String(window.prompt('Ban list admin key (from /etc/lm-settings/admin.key on the VPS):') || '').trim();
+        if (key) { try { localStorage.setItem('lmBanAdminKey', key); } catch (e) { } }
+    }
+    return key;
+}
+
+function _lmPostBanList() {
+    var key = _lmBanAdminKey(false);
+    if (!key) {
+        toastr.error('<b>[ADMIN]:</b> Ban list not saved: no admin key entered.');
+        AgarBannedUIDsResync();
+        return;
+    }
+    try {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", 'https://api.legendmod.ml/lm-settings', true);
+        xhttp.setRequestHeader("username", 'LMAgarBannedUIDs');
+        xhttp.setRequestHeader("password", 'LMAgarBannedUIDsPass');
+        xhttp.setRequestHeader("x-lm-admin", key);
+        xhttp.onload = function () {
+            if (xhttp.status === 200) {
+                toastr.success('<b>[ADMIN]:</b> Ban list saved.');
+                return;
+            }
+            if (xhttp.status === 403) {
+                try { localStorage.removeItem('lmBanAdminKey'); } catch (e) { }
+                toastr.error('<b>[ADMIN]:</b> Wrong admin key: the ban list was not changed. Try again to enter it.');
+            } else {
+                toastr.error('<b>[ADMIN]:</b> Ban list not saved (HTTP ' + xhttp.status + ').');
+            }
+            AgarBannedUIDsResync();
+        };
+        xhttp.onerror = function () {
+            toastr.error('<b>[ADMIN]:</b> Ban list not saved (network error).');
+            AgarBannedUIDsResync();
+        };
+        xhttp.send(JSON.stringify(window.bannedUserUIDs));
+    } catch (e) { }
+}
+
+/* After a refused write, reload the server's list so the panel shows what is really stored. */
+function AgarBannedUIDsResync() {
+    getSNEZ("https://api.legendmod.ml/lm-settings", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass", function (xhttp) {
+        try {
+            if (!xhttp) return;
+            if (xhttp.status === 404) { window.bannedUserUIDs.length = 0; return; }
+            if (xhttp.status !== 200 || !xhttp.response) return;
+            var list = JSON.parse(xhttp.response);
+            window.bannedUserUIDs.length = 0;
+            for (var k in list) {
+                if (Object.prototype.hasOwnProperty.call(list, k) && typeof list[k] === 'string') window.bannedUserUIDs.push(list[k]);
+            }
+        } catch (e) { }
+    });
+}
+
 function AddAgarBannedUIDs(UID) {
     if (window.bannedUserUIDs && window.AgarBannedUIDsAdded) {
 
         /* Validate the UID being banned (it used to check the admin's own agarioUID). */
         if (!window.bannedUserUIDs.includes(UID) && UID != null && UID != "" && String(UID).includes('-')) {
             window.bannedUserUIDs[window.bannedUserUIDs.length] = UID;
-            postSNEZ('https://api.legendmod.ml/lm-settings', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify(window.bannedUserUIDs));
+            _lmPostBanList();
         }
     }
 }
@@ -8491,7 +8556,7 @@ function RemoveAgarBannedUIDs(UID) {
                     bannedUserUIDs.splice(i, 1);
                 }
             }
-            postSNEZ('https://api.legendmod.ml/lm-settings', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify(window.bannedUserUIDs));
+            _lmPostBanList();
         }
     }
 }
