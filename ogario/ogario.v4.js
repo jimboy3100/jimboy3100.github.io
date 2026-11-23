@@ -16404,6 +16404,7 @@ var displayText = {
         timeFormat: 'Format zegara (0 data+czas, 1 czas, 2 24h)',
         massInTitle: 'Masa w tytule karty',
         showStatsPPS: 'Statystyki: PPS',
+        showStatsJitter: 'Statystyki: wahania pingu (+/- ms)',
         showStatsServerHz: 'Statystyki: Server Hz (Expanding Land)',
 
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
@@ -16928,6 +16929,7 @@ var displayText = {
         timeFormat: 'Clock format (0 date+time, 1 time, 2 24h)',
         massInTitle: 'Mass in the browser tab title',
         showStatsPPS: 'PPS: Packets per second',
+        showStatsJitter: 'Ping jitter (+/- ms, next to PING)',
         showStatsServerHz: 'Server Hz (Expanding Land)',
 
         blockPopups: 'Block popups (ads/shop/quest)',
@@ -19358,6 +19360,7 @@ var defaultmapsettings = {
     timeFormat: 0,                /* clock HUD: 0 date+time (as before), 1 time, 2 24h */
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
+    showStatsJitter: false,       /* standard deviation of the last 20 pings, shown as PING: 45 ±6 */
     showStatsServerHz: true,
 
     blockPopups: false,
@@ -20327,7 +20330,7 @@ function thelegendmodproject() {
         setSectorsSymbol() { /* drawn every frame: nothing to rebuild */ },
         setGameFilter() {
             var b = +defaultSettings.gameBrightness || 100, s = defaultSettings.gameSaturation;
-            s = (s === 0 || +s) ? +s : 100;
+            s = (s !== '' && s != null && isFinite(+s)) ? +s : 100;
             var css = (b === 100 && s === 100) ? '' : 'body > canvas{filter:brightness(' + b + '%) saturate(' + s + '%);}';
             var el = document.getElementById('lm-game-filter');
             if (!css) { if (el) el.parentNode.removeChild(el); return; }
@@ -21347,7 +21350,7 @@ function thelegendmodproject() {
             if (_lmCenter && !document.getElementById('lm-stats-center-css')) {
                 var _lmSc = document.createElement('style');
                 _lmSc.id = 'lm-stats-center-css';
-                _lmSc.textContent = '#stats-hud.lm-stats-center{left:50%;transform:translateX(-50%);text-align:center}';
+                _lmSc.textContent = '#stats-hud.lm-stats-center{left:0;right:0;margin:0 auto;width:max-content;max-width:calc(100% - 20px);text-align:center}';
                 document.head.appendChild(_lmSc);
             }
             $('#stats-hud').toggleClass('lm-stats-center', _lmCenter);
@@ -21546,6 +21549,14 @@ function thelegendmodproject() {
                     var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && getActiveSpect(window.multiboxPlayerEnabled)) ? getActiveSpect(window.multiboxPlayerEnabled) : null;
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
                     if (currentPing) t += ' | PING: ' + currentPing;
+                    var _lmPh2 = drawRender._lmPingHist;
+                    if (currentPing && defaultmapsettings.showStatsJitter && !(activeSpect && activeSpect.ping != null) && _lmPh2 && _lmPh2.length >= 3) {
+                        var _lmPm = 0, _lmPv = 0, _lmPi;
+                        for (_lmPi = 0; _lmPi < _lmPh2.length; _lmPi++) _lmPm += _lmPh2[_lmPi];
+                        _lmPm /= _lmPh2.length;
+                        for (_lmPi = 0; _lmPi < _lmPh2.length; _lmPi++) _lmPv += (_lmPh2[_lmPi] - _lmPm) * (_lmPh2[_lmPi] - _lmPm);
+                        t += ' \u00b1' + Math.round(Math.sqrt(_lmPv / _lmPh2.length));
+                    }
                     if (window.multiboxPlayerEnabled) {
                         t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>';
                     } else if (legendmod.multiBoxPlayerExists) {
@@ -23171,7 +23182,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
@@ -24378,7 +24389,7 @@ function thelegendmodproject() {
              * (the 3 s window only merges the two reports of the SAME death; a spawn-kill
              * got no death handling: no auto-respawn, no menu) */
             this._lmLastDeathAt = 0;
-            if (!this._lmLifeStartAt) { this._lmLifeStartAt = Date.now(); this._lmMassHist = []; }
+            if (!this._lmLifeStartAt) { this._lmLifeStartAt = Date.now(); this._lmMassHist = []; this._lmMassStride = 1; this._lmMassAcc = 0; this._lmMassAccN = 0; }
 
             /* The Game Over card (screen centre, top z-index) took the mouse and stayed for 12 s
              * after a quick respawn. Keep it readable but let the mouse through to the game (its
@@ -41469,7 +41480,13 @@ function thelegendmodproject() {
                     } catch (nprErr) { }
                     break;
                 case 31:
-                    if (window.agarpingstarted) drawRender.ping = Date.now() - window.agarpingstarted;
+                    if (window.agarpingstarted) {
+                        drawRender.ping = Date.now() - window.agarpingstarted;
+                        /* last 20 samples for the optional jitter display */
+                        var _lmPh = drawRender._lmPingHist || (drawRender._lmPingHist = []);
+                        _lmPh.push(drawRender.ping);
+                        if (_lmPh.length > 20) _lmPh.shift();
+                    }
                     break;
                 //ping 30 pong 31
                 case 33:
@@ -76457,11 +76474,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
             try {
                 if (window.legendmod5 && window.legendmod5.massGraph && window.application && window.legendmod && window.legendmod.play && window.legendmod.playerMass) {
                     var _lmH = window.application._lmMassHist || (window.application._lmMassHist = []);
-                    _lmH.push(window.legendmod.playerMass);
+                    var _lmApp = window.application, _lmStr = _lmApp._lmMassStride || 1;
+                    _lmApp._lmMassAcc = Math.max(_lmApp._lmMassAcc || 0, window.legendmod.playerMass);
+                    _lmApp._lmMassAccN = (_lmApp._lmMassAccN || 0) + 1;
+                    if (_lmApp._lmMassAccN >= _lmStr) {
+                        _lmH.push(_lmApp._lmMassAcc);
+                        _lmApp._lmMassAcc = 0; _lmApp._lmMassAccN = 0;
+                    }
                     if (_lmH.length > 600) {
+                        /* halve and double the stride, so every point keeps covering the same time */
                         var _lmH2 = [];
                         for (var _lmHi = 0; _lmHi < _lmH.length; _lmHi += 2) _lmH2.push(Math.max(_lmH[_lmHi], _lmH[_lmHi + 1] || 0));
-                        window.application._lmMassHist = _lmH2;
+                        _lmApp._lmMassHist = _lmH2;
+                        _lmApp._lmMassStride = _lmStr * 2;
                     }
                 }
             } catch (e1) { }
