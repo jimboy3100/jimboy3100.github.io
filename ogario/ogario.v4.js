@@ -90,7 +90,9 @@ window._lmSessionStats = _lmSessionStats;
 function _lmBorderColorNow() {
     var base = (typeof defaultSettings !== 'undefined' && defaultSettings.bordersColor) || '#ff0000';
     if (typeof defaultmapsettings === 'undefined' || !defaultmapsettings.rainbowMapBorders) return base;
-    var h = ((Date.now() / 20) % 360) / 60, x = 1 - Math.abs(h % 2 - 1), r = 0, g = 0, b = 0;
+    var sp = +defaultmapsettings.rainbowBorderSpeed;
+    if (!(sp >= 1 && sp <= 50)) sp = 5;
+    var h = ((Date.now() * sp / 100) % 360) / 60, x = 1 - Math.abs(h % 2 - 1), r = 0, g = 0, b = 0;
     if (h < 1) { r = 1; g = x; } else if (h < 2) { r = x; g = 1; } else if (h < 3) { g = 1; b = x; }
     else if (h < 4) { g = x; b = 1; } else if (h < 5) { r = x; b = 1; } else { r = 1; b = x; }
     var hx = function (v) { return ('0' + Math.round(v * 255).toString(16)).slice(-2); };
@@ -16265,6 +16267,7 @@ var displayText = {
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
         zoomSpeedValue2: 'Szybkosc zoomu',
+        zoomSmooth: 'Plynnosc zoomu (szybkosc dojscia)',
         videoSkinSoundLevel: 'Video skin sound level',
         leaderboardlimit: 'Leaderboard Players',
         teamboardlimit: 'Team Players',
@@ -16387,6 +16390,7 @@ var displayText = {
         mergeRings: 'Pierscienie laczenia (postep)',
         mentionNotify: 'Powiadomienie, gdy ktos wspomni Twoj nick (karta w tle)',
         rainbowMapBorders: 'Teczowe granice mapy',
+        rainbowBorderSpeed: 'Szybkosc teczowych granic',
         hudBlur: 'Rozmycie tla HUD (0 = wylaczone)',
         timeFormat: 'Format zegara (0 data+czas, 1 czas, 2 24h)',
         massInTitle: 'Masa w tytule karty',
@@ -16783,6 +16787,7 @@ var displayText = {
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
         zoomSpeedValue2: 'Zoom speed',
+        zoomSmooth: 'Zoom glide speed',
         videoSkinSoundLevel: 'Video skin sound level',
         leaderboardlimit: 'Leaderboard Players',
         teamboardlimit: 'Team Players',
@@ -16905,6 +16910,7 @@ var displayText = {
         mergeRings: 'Merge progress rings on own cells',
         mentionNotify: 'Desktop notification when someone mentions your nick (tab in background)',
         rainbowMapBorders: 'Rainbow map borders',
+        rainbowBorderSpeed: 'Rainbow border speed',
         hudBlur: 'HUD background blur (0 = off)',
         timeFormat: 'Clock format (0 date+time, 1 time, 2 24h)',
         massInTitle: 'Mass in the browser tab title',
@@ -19329,6 +19335,7 @@ var defaultmapsettings = {
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
     mentionNotify: false,         /* desktop notification for chat mentions while the tab is hidden */
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
+    rainbowBorderSpeed: 5,        /* 5 = the original speed */
     hudBlur: 0,                   /* frosted-glass blur behind HUD panels, px (0 = off) */
     timeFormat: 0,                /* clock HUD: 0 date+time (as before), 1 time, 2 24h */
     massInTitle: false,           /* browser tab title shows the mass while playing */
@@ -19364,6 +19371,7 @@ var defaultmapsettings = {
     ////
     //'zoomSpeedValue: .87,
     zoomSpeedValue2: -0.13,
+    zoomSmooth: 10,               /* how fast the zoom glides to its target; 10 = unchanged */
     videoSkinSoundLevel: 1,
     leaderboardlimit: 20,
     teamboardlimit: 20,
@@ -23159,9 +23167,11 @@ function thelegendmodproject() {
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
             this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
             this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
+            this.addSliderBox(".gridGroup", "rainbowBorderSpeed", 1, 20, 1);
             this.applyHudBlur();
 
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
+            this.addSliderBox(".zoomGroup", "zoomSmooth", 2, 40, 1);
             this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);
             this.addSliderBox(".boardGroup", "leaderboardlimit", 10, 30, 5);
             this.addSliderBox(".boardGroup", "teamboardlimit", 5, 40, 5);
@@ -69515,7 +69525,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         setScale(size) {
             /* was (9*scale + target)/10 per frame: same at 60 fps, frame-rate independent otherwise */
-            var _lmKZoom = 1 - Math.pow(0.9, this._lmFrameF || 1);
+            var _lmZs = +defaultmapsettings.zoomSmooth;
+            if (!(_lmZs >= 1 && _lmZs <= 50)) _lmZs = 10;
+            var _lmKZoom = 1 - Math.pow(1 - _lmZs / 100, this._lmFrameF || 1);
             if (!LM.autoZoom) {
                 this.scale += (this.getZoom() - this.scale) * _lmKZoom;
                 LM.viewScale = this.scale;
