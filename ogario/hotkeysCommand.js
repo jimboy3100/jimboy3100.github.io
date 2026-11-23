@@ -296,6 +296,17 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-bigMinimap': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-bigMinimap']) || 'Enlarge / restore minimap';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof Settings !== 'undefined' && Settings && typeof Settings.lmToggleBigMinimap === 'function') Settings.lmToggleBigMinimap();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';

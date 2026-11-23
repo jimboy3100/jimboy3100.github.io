@@ -19560,7 +19560,31 @@ function thelegendmodproject() {
             }
         },
         saveThemeSettings() {
-            window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(defaultSettings));
+            var _lmTs = defaultSettings;
+            if (this._lmMiniBigOrig) {
+                /* the enlarged minimap (hotkey) is temporary: save the normal width */
+                _lmTs = $.extend({}, defaultSettings);
+                _lmTs.miniMapWidth = this._lmMiniBigOrig;
+                _lmTs.miniMapTop = Math.round(20 * this._lmMiniBigOrig / 200);
+            }
+            window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(_lmTs));
+        },
+        /* Hotkey (no default key): enlarge the minimap to ~1.8x, press again to restore.
+         * Not saved; moving the width slider ends it. */
+        lmToggleBigMinimap() {
+            if (this._lmMiniBigOrig) {
+                defaultSettings.miniMapWidth = this._lmMiniBigOrig;
+                this._lmMiniBigOrig = 0;
+            } else {
+                var _lmO = defaultSettings.miniMapWidth;
+                var _lmB = Math.min(Math.round(_lmO * 1.8), 600, Math.floor(Math.min(window.innerWidth, window.innerHeight) * 0.8));
+                if (!(_lmB > _lmO)) return;
+                this._lmMiniBigOrig = _lmO;
+                defaultSettings.miniMapWidth = _lmB;
+            }
+            if (ogario.hasOwnProperty('miniMapWidth')) ogario.miniMapWidth = defaultSettings.miniMapWidth;
+            this._lmMiniBigBusy = true;
+            try { this.setMiniMapWidth(); } finally { this._lmMiniBigBusy = false; }
         },
         restoreThemeSettings() {
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
@@ -20287,6 +20311,8 @@ function thelegendmodproject() {
             }
         },
         setMiniMapWidth() {
+            /* a slider change replaces the temporary enlarged width */
+            if (!this._lmMiniBigBusy) this._lmMiniBigOrig = 0;
             var t = defaultSettings.miniMapWidth / 200;
             defaultSettings.miniMapTop = Math.round(20 * t);
             $('#minimap-hud').css({
