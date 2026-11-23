@@ -307,6 +307,26 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-copyServerLink': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-copyServerLink']) || 'Copy server link + password (TK&PW)';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* same as the TK&PW button in the menu */
+					var b = document.getElementById('copySIPandPass');
+					if (b) {
+						$(b).trigger('click');
+						/* the copy selects a hidden input: give the keys back to the game */
+						var ae = document.activeElement;
+						if (ae && ae.id === 'tempCopy') ae.blur();
+						if (window.toastr) toastr.info('Server link copied.');
+					}
+					else if (window.toastr) toastr.info('Server link: not available yet.');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
