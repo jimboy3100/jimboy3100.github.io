@@ -56,6 +56,35 @@ window._lmPopSplitDelay = function () {
  * Unknown keys or languages fall back to English. */
 /* escaped window.lmT for HTML (toastr / innerHTML); English when lmT is missing */
 function _lmTH(key, en) { var s = (window.lmT && window.lmT(key)) || en; if (!s || s === key) s = en; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+/* Session summary under the menu footer: games, best mass and time played in this tab
+ * (sessionStorage: resets when the tab closes). Display only. */
+function _lmSessionStats(update) {
+    var s = { g: 0, b: 0, t: 0 };
+    try { var raw = sessionStorage.getItem('lmSessionStats'); if (raw) { var o = JSON.parse(raw); if (o && typeof o === 'object') s = { g: +o.g || 0, b: +o.b || 0, t: +o.t || 0 }; } } catch (e) { }
+    if (update) {
+        s.g += 1;
+        s.b = Math.max(s.b, +update.best || 0);
+        s.t += Math.max(0, Math.min(+update.ms || 0, 6 * 3600 * 1000));
+        try { sessionStorage.setItem('lmSessionStats', JSON.stringify(s)); } catch (e) { }
+    }
+    if (!s.g) return;
+    var el = document.getElementById('lm-session-stats');
+    if (!el) {
+        var foot = document.getElementById('menu-footer');
+        if (!foot || !foot.parentNode) return;
+        el = document.createElement('div');
+        el.id = 'lm-session-stats';
+        el.className = 'menu-main-color';
+        el.style.cssText = 'font-size:11px;opacity:.75;text-align:center;margin-top:2px;';
+        foot.parentNode.insertBefore(el, foot.nextSibling);
+    }
+    var mins = Math.round(s.t / 60000);
+    var played = mins >= 60 ? Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm' : mins + 'm';
+    var line = (window.lmT && window.lmT('sessionLine')) || 'This session: {0} games · best mass {1} · {2} played';
+    if (line === 'sessionLine') line = 'This session: {0} games · best mass {1} · {2} played';
+    el.textContent = line.replace('{0}', s.g).replace('{1}', Math.round(s.b).toLocaleString()).replace('{2}', played);
+}
+window._lmSessionStats = _lmSessionStats;
 window.lmT = (function () {
     var langs = { '1': 'en', '2': 'el', '3': 'es', '4': 'bg', '5': 'fr', '6': 'ar', '7': 'zh', '8': 'ru', '9': 'de', '10': 'tr', '11': 'pl', '12': 'nl' };
     var text = {
@@ -120,6 +149,7 @@ window.lmT = (function () {
         "leaderboards": {"en":"Leaderboards","el":"Κατατάξεις","es":"Clasificaciones","bg":"Класации","fr":"Classements","ar":"لوحات الصدارة","zh":"排行榜","ru":"Таблицы лидеров","de":"Bestenlisten","tr":"Lider tabloları","pl":"Rankingi","nl":"Ranglijsten"},
         "help": {"en":"Help","el":"Βοήθεια","es":"Ayuda","bg":"Помощ","fr":"Aide","ar":"مساعدة","zh":"說明","ru":"Помощь","de":"Hilfe","tr":"Yardım","pl":"Pomoc","nl":"Hulp"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "sessionLine": {"en":"This session: {0} games · best mass {1} · {2} played","el":"Αυτή η συνεδρία: {0} παιχνίδια · καλύτερη μάζα {1} · {2} παιχνιδιού","es":"Esta sesión: {0} partidas · mejor masa {1} · {2} jugado","bg":"Тази сесия: {0} игри · най-голяма маса {1} · {2} игра","fr":"Cette session : {0} parties · meilleure masse {1} · {2} de jeu","ar":"هذه الجلسة: {0} ألعاب · أعلى كتلة {1} · {2} لعب","zh":"本次：{0} 場 · 最高質量 {1} · 遊玩 {2}","ru":"Эта сессия: {0} игр · лучшая масса {1} · {2} в игре","de":"Diese Sitzung: {0} Spiele · beste Masse {1} · {2} gespielt","tr":"Bu oturum: {0} oyun · en iyi kütle {1} · {2} oynandı","pl":"Ta sesja: {0} gier · najlepsza masa {1} · {2} gry","nl":"Deze sessie: {0} spellen · beste massa {1} · {2} gespeeld"},
         "boundKeys": {"en":"Bound keys","el":"Πλήκτρα","es":"Teclas asignadas","bg":"Зададени клавиши","fr":"Touches attribuées","ar":"المفاتيح المعيّنة","zh":"已設定按鍵","ru":"Назначенные клавиши","de":"Belegte Tasten","tr":"Atanmış tuşlar","pl":"Przypisane klawisze","nl":"Toegewezen toetsen"},
         "noBoundKeys": {"en":"No keys are bound.","el":"Δεν υπάρχουν πλήκτρα.","es":"No hay teclas asignadas.","bg":"Няма зададени клавиши.","fr":"Aucune touche attribuée.","ar":"لا توجد مفاتيح معيّنة.","zh":"沒有設定按鍵。","ru":"Клавиши не назначены.","de":"Keine Tasten belegt.","tr":"Atanmış tuş yok.","pl":"Brak przypisanych klawiszy.","nl":"Geen toetsen toegewezen."},
         "searchSettings": {"en":"Search settings...","el":"Αναζήτηση ρυθμίσεων...","es":"Buscar ajustes...","bg":"Търсене в настройките...","fr":"Rechercher un réglage...","ar":"ابحث في الإعدادات...","zh":"搜尋設定...","ru":"Поиск настроек...","de":"Einstellungen suchen...","tr":"Ayarlarda ara...","pl":"Szukaj ustawień...","nl":"Instellingen zoeken..."},
@@ -24128,6 +24158,7 @@ function thelegendmodproject() {
              * (the 3 s window only merges the two reports of the SAME death; a spawn-kill
              * got no death handling: no auto-respawn, no menu) */
             this._lmLastDeathAt = 0;
+            if (!this._lmLifeStartAt) this._lmLifeStartAt = Date.now();
 
             /* The Game Over card (screen centre, top z-index) took the mouse and stayed for 12 s
              * after a quick respawn. Keep it readable but let the mouse through to the game (its
@@ -24317,6 +24348,9 @@ function thelegendmodproject() {
             this._lmLastDeathAt = _lmNow;
             //
             pauseVideos();
+            /* session summary: this life's best mass and time alive */
+            try { _lmSessionStats({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 }); } catch (e) { }
+            this._lmLifeStartAt = 0;
             ogario.play = false;
             ogario.playerColor = null;
             ogario.foodIsHidden = false;
@@ -76014,6 +76048,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
     LM.init();
     drawRender.init();
     if (window.master && window.master.init) window.master.init();
+    /* session summary after a reload in the same tab */
+    setTimeout(function () { try { _lmSessionStats(); } catch (e) { } }, 3000);
     /* Initialize WASM acceleration modules (async, non-blocking) */
     /* WasmCellParser is not used since its updateCells path was removed: its init only downloaded and
      * compiled cell_parser.wasm from jsDelivr on every load */
