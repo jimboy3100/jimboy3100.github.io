@@ -16310,6 +16310,7 @@ var displayText = {
         showMiniMapGuides: 'Pokaz prowadnice na minimapie',
         showExtraMiniMapGuides: 'Show extra minimap guides',
         showMiniMapGhostCells: 'Pokaz duchy kulek na minimapie',
+        showMiniMapTrail: 'Pokaz wlasny slad na minimapie',
         oneColoredTeammates: 'Jednokolorowi gracze',
         //optimizedFood: 'Zoptymalizowany pokarm',
         rainbowFood: 'Kolorowy pokarm',
@@ -16822,6 +16823,7 @@ var displayText = {
         showMiniMapGuides: 'Show minimap guides',
         showExtraMiniMapGuides: 'Show extra minimap guides',
         showMiniMapGhostCells: 'Show ghost cells',
+        showMiniMapTrail: 'Show own trail on the minimap',
         oneColoredTeammates: 'One-colored teammates',
         //optimizedFood: 'Optimized food',
         rainbowFood: 'Rainbow food',
@@ -19249,6 +19251,7 @@ var defaultmapsettings = {
     showMiniMapGuides: true,
     showExtraMiniMapGuides: true,
     showMiniMapGhostCells: true,
+    showMiniMapTrail: false,      /* last ~60 s of the own path on the minimap */
     oneColoredTeammates: false,
     //optimizedFood: true,
     rainbowFood: true,
@@ -23033,7 +23036,7 @@ function thelegendmodproject() {
                 $('#universalChat').prop('disabled', true).before('<small>(unavailable) </small>').closest('label').attr('title', 'Agar Tool universal chat is not available in this version').css('opacity', 0.6);
             }
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
-            this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
+            this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
             this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
@@ -26258,6 +26261,36 @@ function thelegendmodproject() {
                         }
                     }
                     //				
+                    /* optional own trail: a point every 500 ms, last 120 (~60 s); cleared when not
+                     * playing, on a map size change and on a jump (respawn, multibox swap) */
+                    if (defaultmapsettings.showMiniMapTrail) {
+                        var _lmTr = this._lmTrail || (this._lmTrail = []);
+                        if (!ogario.play || this._lmTrailMap !== LM.mapSize) {
+                            _lmTr.length = 0;
+                            this._lmTrailMap = LM.mapSize;
+                        } else {
+                            var _lmTrNow = Date.now();
+                            if (_lmTrNow - (this._lmTrailT || 0) >= 500) {
+                                this._lmTrailT = _lmTrNow;
+                                var _lmTrLast = _lmTr[_lmTr.length - 1];
+                                if (_lmTrLast && Math.abs(_lmTrLast.x - ogario.playerX) + Math.abs(_lmTrLast.y - ogario.playerY) > (LM.mapSize || 14000) / 4) _lmTr.length = 0;
+                                _lmTr.push({ x: ogario.playerX, y: ogario.playerY });
+                                if (_lmTr.length > 120) _lmTr.shift();
+                            }
+                            if (_lmTr.length > 1) {
+                                this.miniMapCtx.save();
+                                this.miniMapCtx.globalAlpha = 0.45;
+                                this.miniMapCtx.lineWidth = 1.5;
+                                this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellColor;
+                                this.miniMapCtx.beginPath();
+                                this.miniMapCtx.moveTo((_lmTr[0].x + r) * n, (_lmTr[0].y + l) * n);
+                                for (var _lmTi2 = 1; _lmTi2 < _lmTr.length; _lmTi2++) this.miniMapCtx.lineTo((_lmTr[_lmTi2].x + r) * n, (_lmTr[_lmTi2].y + l) * n);
+                                this.miniMapCtx.lineTo((ogario.playerX + r) * n, (ogario.playerY + l) * n);
+                                this.miniMapCtx.stroke();
+                                this.miniMapCtx.restore();
+                            }
+                        }
+                    }
                     if (this.miniMapCtx.beginPath(),
                         this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
                             defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
