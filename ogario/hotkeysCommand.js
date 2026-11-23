@@ -124,6 +124,19 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-mergeRings': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-mergeRings']) || 'Show/hide merge rings';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (!application || typeof defaultmapsettings === 'undefined') return;
+					defaultmapsettings.mergeRings = defaultmapsettings.mergeRings === false;
+					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('mergeRings');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';

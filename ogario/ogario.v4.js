@@ -16361,6 +16361,9 @@ var displayText = {
         showStatsWorldSize: 'World Size (Expanding Land)',
         showStatsDecayInfo: 'Decay Info (Expanding Land)',
         showStatsFPS: 'Statystyki: FPS',
+        showStatsAlive: 'Statystyki: czas zycia',
+        mergeRings: 'Pierscienie laczenia (postep)',
+        massInTitle: 'Masa w tytule karty',
         showStatsPPS: 'Statystyki: PPS',
         showStatsServerHz: 'Statystyki: Server Hz (Expanding Land)',
 
@@ -16862,6 +16865,9 @@ var displayText = {
         showStatsWorldSize: 'World Size (Expanding Land)',
         showStatsDecayInfo: 'Decay Info (Expanding Land)',
         showStatsFPS: 'FPS: Frames per second',
+        showStatsAlive: 'Time alive (this life)',
+        mergeRings: 'Merge progress rings on own cells',
+        massInTitle: 'Mass in the browser tab title',
         showStatsPPS: 'PPS: Packets per second',
         showStatsServerHz: 'Server Hz (Expanding Land)',
 
@@ -19271,6 +19277,9 @@ var defaultmapsettings = {
     showStatsWorldSize: true,
     showStatsDecayInfo: true,
     showStatsFPS: true,
+    showStatsAlive: false,        /* stats HUD: time alive in this life */
+    mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
+    massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
     showStatsServerHz: true,
 
@@ -21314,6 +21323,10 @@ function thelegendmodproject() {
                         //t += textLanguage.score + ': ' + i.playerScore
                         t += Languageletter366 + ': ' + ogario.playerScore
                     }
+                    if (defaultmapsettings.showStatsAlive && this._lmLifeStartAt) {
+                        var _lmAs = Math.max(0, Math.floor((Date.now() - this._lmLifeStartAt) / 1000));
+                        t += ' | \u23F1 ' + Math.floor(_lmAs / 60) + ':' + ('0' + (_lmAs % 60)).slice(-2);
+                    }
                     if (defaultmapsettings.showStatsN16 && ogario.playerSplitCells) {
                         t += ' | ' + ogario.playerSplitCells + '/16'
                     }
@@ -22992,7 +23005,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
@@ -71831,8 +71844,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawSplitVectorGuide(this.ctx, LM.playerCellsMulti);
                     }
 
-                    if (LM.playerCells && LM.playerCells.length) this.drawMergeProgressRings(this.ctx, LM.playerCells);
-                    if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawMergeProgressRings(this.ctx, LM.playerCellsMulti);
+                    /* "Merge rings" setting (on by default, as before) */
+                    if (defaultmapsettings.mergeRings !== false) {
+                        if (LM.playerCells && LM.playerCells.length) this.drawMergeProgressRings(this.ctx, LM.playerCells);
+                        if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawMergeProgressRings(this.ctx, LM.playerCellsMulti);
+                    }
                 }
             }
         },
@@ -76064,6 +76080,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
     LM.init();
     drawRender.init();
     if (window.master && window.master.init) window.master.init();
+    /* "Mass in the browser tab title": written only when the text changes; the original
+     * title comes back when the setting is off or the player is not playing */
+    (function () {
+        var baseTitle = null, last = null;
+        setInterval(function () {
+            try {
+                var on = window.legendmod5 && window.legendmod5.massInTitle && window.legendmod && window.legendmod.play && window.legendmod.playerMass;
+                if (on) {
+                    if (baseTitle === null) baseTitle = document.title;
+                    var m = window.legendmod.playerMass;
+                    var txt = (m >= 1000 ? (Math.round(m / 100) / 10) + 'k' : String(m)) + ' \u00B7 ' + baseTitle;
+                    if (txt !== last) { document.title = txt; last = txt; }
+                } else if (baseTitle !== null) {
+                    document.title = baseTitle;
+                    baseTitle = null; last = null;
+                }
+            } catch (e) { }
+        }, 1000);
+    })();
     /* session summary after a reload in the same tab */
     setTimeout(function () { try { _lmSessionStats(); } catch (e) { } }, 3000);
     /* Initialize WASM acceleration modules (async, non-blocking) */
