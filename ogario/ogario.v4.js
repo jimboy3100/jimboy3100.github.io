@@ -68953,6 +68953,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (window.clientProfiler) window.clientProfiler.recordWebGL(performance.now() - _tGL);
             return true;
         },
+        /* A multibox unit's playerX/Y is updated only when its packets arrive (plus a 10 ms
+         * timer chain), not per frame: the camera chased a target that moved in steps and
+         * shook. Average the unit's own cells as they are drawn now, like the main player
+         * (and like Delta's unit.view); fall back to playerX/Y. */
+        _lmSpectCenter(sp) {
+            if (!sp) return null;
+            var own = typeof sp.getOwnPlayerCells === 'function' ? sp.getOwnPlayerCells() : null;
+            if (own && own.length) {
+                var sx = 0, sy = 0, n = 0;
+                for (var i = 0; i < own.length; i++) {
+                    var c = own[i];
+                    if (c && Number.isFinite(c.x) && Number.isFinite(c.y)) { sx += c.x; sy += c.y; n++; }
+                }
+                if (n) return { x: sx / n, y: sy / n };
+            }
+            if (sp.playerX != null && sp.playerX !== 0) return { x: sp.playerX, y: sp.playerY };
+            return null;
+        },
         setView() {
             /* Frame-time factor (1.0 at 60 fps): camera, zoom and World Spectate pan now
              * move at the same speed on every refresh rate (144 Hz zoomed 2.4x faster).
@@ -69037,8 +69055,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         var sp = spects[sI];
                         if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
                             /* playerX/Y are already client space incl. fix3 (spect getX). */
-                            sumX += sp.playerX;
-                            sumY += sp.playerY;
+                            var _lmMc = this._lmSpectCenter(sp);
+                            sumX += _lmMc ? _lmMc.x : sp.playerX;
+                            sumY += _lmMc ? _lmMc.y : sp.playerY;
                             count++;
                         }
                     }
@@ -69050,8 +69069,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && getActiveSpect(window.multiboxPlayerEnabled)) {
                 var spect = getActiveSpect(window.multiboxPlayerEnabled);
                 if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
-                    targetCamX = spect.playerX;
-                    targetCamY = spect.playerY;
+                    var _lmSc = this._lmSpectCenter(spect);
+                    targetCamX = _lmSc ? _lmSc.x : spect.playerX;
+                    targetCamY = _lmSc ? _lmSc.y : spect.playerY;
                 }
             }
 
