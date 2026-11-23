@@ -115,6 +115,7 @@ $("#watchReplaybtn").click(function() {
 });
 $("#stopReplaybtn").click(function() {
 	clearTimeout(window.replayTimeOuts)
+	window._lmReplayPaused = false;
 	$('#pause-hud').text(textLanguage.pause);
 	$('#pause-hud').hide()
 	$("#stopReplaybtn").prop('disabled', true);

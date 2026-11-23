@@ -77542,8 +77542,9 @@ function LMadvertisement2020() {
 
 
 
-function playReplayLM(temp) {
+function playReplayLM(temp, startAt) {
     if (temp && window.RecordedProtocol[temp]) {
+        window._lmReplayPaused = false;
         /*if (window.replayTimeOuts.length){
             for (var i=0;i<window.replayTimeOuts;i++){
                 clearTimeout(window.replayTimeOuts[i])
@@ -77594,8 +77595,10 @@ function playReplayLM(temp) {
         //start
         //window.playrecord = 0
         /* Read the range first: the first tick used the previous run's values. */
-        window.startReplayTime = $("#startReplayTime").val()
-        window.endReplayTime = $("#endReplayTime").val()
+        window.startReplayTime = startAt != null ? startAt : $("#startReplayTime").val()
+        /* End falls back to the last packet (with the replay window closed it was undefined: the
+         * whole replay then ran in "Loading..." skip mode) */
+        window.endReplayTime = $("#endReplayTime").val() || (window.RecordedProtocol[temp].length - 2)
         intervalPlayingRecord()
 
         $("#stopReplaybtn").prop('disabled', false);
@@ -77620,6 +77623,60 @@ function playReplayLM(temp) {
     }
 }
 
+/* Replay controls (hotkeys, no default keys): pause/resume, speed, seek by 250 packets.
+ * The playback chain handles one packet per tick and then schedules the next, so clearing
+ * the pending timer pauses at the next unhandled packet; resuming restarts the chain. */
+function lmReplayActive() {
+    var srv = window.legendmod && window.legendmod.playingReplayServer;
+    return !!(srv && window.RecordedProtocol && window.RecordedProtocol[srv] && String($("#server-token").val() || '').indexOf('replay^' + srv) !== -1 && !$("#stopReplaybtn").prop('disabled'));
+}
+function lmReplayNeedActive() {
+    if (lmReplayActive()) return true;
+    if (window.toastr) toastr.info('Replay only: watch a replay first.');
+    return false;
+}
+function lmReplayTogglePause() {
+    if (!lmReplayNeedActive()) return;
+    if (window._lmReplayPaused) {
+        window._lmReplayPaused = false;
+        $('#pause-hud').text(textLanguage.pause).hide();
+        clearTimeout(window.replayTimeOuts);
+        intervalPlayingRecord();
+    } else {
+        clearTimeout(window.replayTimeOuts);
+        window._lmReplayPaused = true;
+        $('#pause-hud').text('Replay paused').show();
+    }
+}
+function lmReplaySpeed(f) {
+    if (!lmReplayNeedActive()) return;
+    var v = parseFloat(window.replayTiming) || 20, s = v < 0 ? -1 : 1;
+    v = Math.min(200, Math.max(1, Math.round(Math.abs(v) * f))) * s;
+    window.replayTiming = v;
+    try { localStorage.setItem('replayTiming', v); } catch (e) { }
+    if (window.toastr) toastr.info('Replay delay: ' + Math.abs(v) + ' ms per packet');
+}
+function lmReplaySeek(delta) {
+    if (!lmReplayNeedActive()) return;
+    if (parseFloat(window.replayTiming) < 0) { if (window.toastr) toastr.info('Seeking is not available while playing backwards.'); return; }
+    var srv = window.legendmod.playingReplayServer;
+    var cur = window.legendmod.playingReplayRecord || 0;
+    var last = window.RecordedProtocol[srv].length - 2;
+    var target = Math.max(0, Math.min(last, cur + delta));
+    clearTimeout(window.replayTimeOuts);
+    window._lmReplayPaused = false;
+    if (target > cur) {
+        /* forward: the existing skip runs to the new start */
+        window.startReplayTime = target;
+        intervalPlayingRecord();
+    } else {
+        /* back: restart and skip forward to the target */
+        playReplayLM(srv, target);
+    }
+}
+window.lmReplayTogglePause = lmReplayTogglePause;
+window.lmReplaySpeed = lmReplaySpeed;
+window.lmReplaySeek = lmReplaySeek;
 function intervalPlayingRecord() {
     if ($("#greyScale").length) {
         window.replayGreyScale = $("#greyScale").prop("checked") === true
@@ -77670,8 +77727,14 @@ function intervalPlayingRecord() {
             if (window.replayTiming2 === 0 && !legendmod.playingReplayRewindNow) {
                 var _lmRecArr = window.RecordedProtocol[tempo];
                 var _lmRecStart = parseInt(window.startReplayTime) || 0;
-                var _lmRecTarget = (legendmod.playingReplayRewind || legendmod.playingReplayRecord >= _lmRecStart)
-                    ? _lmRecArr.length - 2 : _lmRecStart - 1;
+                /* skip to Start when before it, to the end only when past End (or for the rewind run);
+                 * at Start itself nothing is skipped (it used to run straight to the end: Start and
+                 * seeking did not work) */
+                var _lmRecEnd = parseInt(window.endReplayTime);
+                if (!(_lmRecEnd >= 0)) _lmRecEnd = _lmRecArr.length - 2;
+                var _lmRecTarget = legendmod.playingReplayRewind ? _lmRecArr.length - 2
+                    : (legendmod.playingReplayRecord < _lmRecStart ? _lmRecStart - 1
+                        : (legendmod.playingReplayRecord > _lmRecEnd ? _lmRecArr.length - 2 : legendmod.playingReplayRecord));
                 var _lmRecBatch = Math.min(200, Math.max(10, window.replaySkippedLoops || 100));
                 for (var _lmRecN = 0; _lmRecN < _lmRecBatch && legendmod.playingReplayRecord + 1 < _lmRecTarget; _lmRecN++) {
                     legendmod.playingReplayRecord++;

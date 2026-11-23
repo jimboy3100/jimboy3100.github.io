@@ -215,6 +215,61 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-replayPause': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayPause']) || 'Replay: pause/resume';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof window.lmReplayTogglePause === 'function') window.lmReplayTogglePause();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-replayFaster': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayFaster']) || 'Replay: faster';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof window.lmReplaySpeed === 'function') window.lmReplaySpeed(0.5);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-replaySlower': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replaySlower']) || 'Replay: slower';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof window.lmReplaySpeed === 'function') window.lmReplaySpeed(2);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-replayFwd': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayFwd']) || 'Replay: forward 250 packets';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof window.lmReplaySeek === 'function') window.lmReplaySeek(250);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-replayBack': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayBack']) || 'Replay: back 250 packets';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof window.lmReplaySeek === 'function') window.lmReplaySeek(-250);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
