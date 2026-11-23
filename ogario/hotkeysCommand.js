@@ -1,6 +1,25 @@
 //v1.3j
         keyBlind = {};
         hotkeys = {};
+        /* Expanding Land panel hotkeys (no default keys): only on Expanding Land and when the
+         * panel buttons are enabled (logged in, same check as the buttons); the key closes the
+         * panel again when it is open */
+        window._lmElPanelKey = function (modalId, open) {
+            try {
+                var L = window.legendmod;
+                if (!L || !L.isLegendWorld) return;
+                if (modalId) {
+                    var cur = document.getElementById(modalId);
+                    if (cur) { cur.parentNode.removeChild(cur); return; }
+                }
+                var btn = document.getElementById('lm-leagues-btn');
+                if (!btn || btn.disabled) {
+                    if (window.toastr) toastr.info((window._lmLoginHint && window._lmLoginHint()) || 'Log in and play a game session first');
+                    return;
+                }
+                open();
+            } catch (e) { }
+        };
         hotkeysCommand = {
             'hk-feed': {
                 label: textLanguage['hk-feed'],
@@ -133,6 +152,61 @@
 					if (!application || typeof defaultmapsettings === 'undefined') return;
 					defaultmapsettings.mergeRings = defaultmapsettings.mergeRings === false;
 					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('mergeRings');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-elLeagues': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elLeagues']) || 'Expanding Land: Leagues';
+				},
+				defaultKey: '',
+				keyDown() {
+					_lmElPanelKey('lm-leagues-modal', function () { if (typeof window.showLeaguesModal === 'function') window.showLeaguesModal(); });
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-elShop': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elShop']) || 'Expanding Land: Shop';
+				},
+				defaultKey: '',
+				keyDown() {
+					_lmElPanelKey('lm-main-shop-modal', function () { if (typeof window.showShopModal === 'function') window.showShopModal(); });
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-elChallenges': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elChallenges']) || 'Expanding Land: Challenges';
+				},
+				defaultKey: '',
+				keyDown() {
+					_lmElPanelKey('lm-challenges-modal', function () { if (typeof window.showChallengesModal === 'function') window.showChallengesModal(); });
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-elPotions': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elPotions']) || 'Expanding Land: Potions help';
+				},
+				defaultKey: '',
+				keyDown() {
+					_lmElPanelKey('lm-potions-help-modal', function () { if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal(); });
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-elClaimAll': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elClaimAll']) || 'Expanding Land: Claim All';
+				},
+				defaultKey: '',
+				keyDown() {
+					_lmElPanelKey('', function () { if (typeof window.claimAllRewardsAndGifts === 'function') window.claimAllRewardsAndGifts(); });
 				},
 				keyUp: null,
 				type: 'normal'
