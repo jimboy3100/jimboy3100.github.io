@@ -22122,6 +22122,10 @@ function thelegendmodproject() {
                 if (!_lmStBound) toastr.info('<b>[SCAN TRICK]:</b> Set a key for “Hold Scan Trick” in the Hotkeys menu, then hold it in game.');
                 else toastr.info('<b>[SCAN TRICK]:</b> Hold <b>' + $('<div>').text(_lmStBound).html() + '</b> in game to use it.');
             }
+            if (checked === true && (id === 'x16Sound' || id === 'non16Sound' || id === 'virusPopSound' || id === 'virusEatSound')) {
+                defaultmapsettings[id] = true;
+                this._lmLoadOptSounds();
+            }
             if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {
                 //switch (defaultmapsettings[id] = checked, ogario.hasOwnProperty(id) && (ogario[id] = checked), id) {
                 defaultmapsettings[id] = checked;
@@ -29952,10 +29956,25 @@ function thelegendmodproject() {
             this.setMessageSound();
             this.setCommandSound();
             this.setvirusSound();
-            this.x16SoundObj = this.setSound('https://www.legendmod.ml/sounds/notification_02.mp3');
-            this.non16SoundObj = this.setSound('https://www.legendmod.ml/sounds/notification-close.mp3');
-            this.virusPopSoundObj = this.setSound('https://www.legendmod.ml/sounds/notification-open.mp3');
-            this.virusEatSoundObj = this.setSound('https://www.legendmod.ml/sounds/notification_01.mp3');
+            this._lmLoadOptSounds();
+        },
+        /* optional sounds (16 pieces, viruses): loaded only when their option is on */
+        _lmOptSoundUrls: {
+            x16: 'https://www.legendmod.ml/sounds/notification_02.mp3',
+            non16: 'https://www.legendmod.ml/sounds/notification-close.mp3',
+            virusPop: 'https://www.legendmod.ml/sounds/notification-open.mp3',
+            virusEat: 'https://www.legendmod.ml/sounds/notification_01.mp3'
+        },
+        _lmOptSound(k) {
+            var c = this._lmOptSoundCache || (this._lmOptSoundCache = {});
+            if (!c[k] && this._lmOptSoundUrls[k]) c[k] = this.setSound(this._lmOptSoundUrls[k]);
+            return c[k] || null;
+        },
+        _lmLoadOptSounds() {
+            if (defaultmapsettings.x16Sound) this._lmOptSound('x16');
+            if (defaultmapsettings.non16Sound) this._lmOptSound('non16');
+            if (defaultmapsettings.virusPopSound) this._lmOptSound('virusPop');
+            if (defaultmapsettings.virusEatSound) this._lmOptSound('virusEat');
         },
         setChatSoundsBtn() {
             if (defaultmapsettings.chatSounds) {
@@ -37399,7 +37418,8 @@ function thelegendmodproject() {
                     clearTimeout(window.replayTimeOuts);
                     window.replayTimeOuts = null;
                 }
-                if ($('#pause-hud').text() === "Loading...") {
+                if ($('#pause-hud').text() === "Loading..." || window._lmReplayPaused) {
+                    window._lmReplayPaused = false;
                     $('#pause-hud').text(textLanguage.pause);
                     $('#pause-hud').hide()
                 }
@@ -47772,6 +47792,15 @@ Most cells eaten   : ${mostCellsEaten}
                 }
 
 
+                /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces (all servers) */
+                if (eaterID && victimID.isVirus && (eaterID.isPlayerCell || eaterID.isPlayerCellMulti) && window.application &&
+                    (defaultmapsettings.virusPopSound || defaultmapsettings.virusEatSound)) {
+                    var _lmVirFull = this.playerCells.length >= 16;
+                    if ((_lmVirFull ? defaultmapsettings.virusEatSound : defaultmapsettings.virusPopSound) && Date.now() - (this._lmVirSndAt || 0) > 300) {
+                        this._lmVirSndAt = Date.now();
+                        application.playSound(application._lmOptSound(_lmVirFull ? 'virusEat' : 'virusPop'));
+                    }
+                }
                 /*
                  * ========================================================
                  * EXPANDING LAND CINEMATIC EAT EFFECTS
@@ -47803,15 +47832,6 @@ Most cells eaten   : ${mostCellsEaten}
                     }
 
 
-                    /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces */
-                    if (eaterID && victimID.isVirus && (eaterID.isPlayerCell || eaterID.isPlayerCellMulti) && window.application &&
-                        (defaultmapsettings.virusPopSound || defaultmapsettings.virusEatSound)) {
-                        var _lmVirFull = this.playerCells.length >= 16;
-                        if ((_lmVirFull ? defaultmapsettings.virusEatSound : defaultmapsettings.virusPopSound) && Date.now() - (this._lmVirSndAt || 0) > 300) {
-                            this._lmVirSndAt = Date.now();
-                            application.playSound(_lmVirFull ? application.virusEatSoundObj : application.virusPopSoundObj);
-                        }
-                    }
                     /*
                      * ----------------------------------------------------
                      * 2. EATER PULSE
@@ -48968,8 +48988,8 @@ Most cells eaten   : ${mostCellsEaten}
             /* optional 16-pieces sounds (like Delta): played once when the count crosses 16 */
             if (this.play && window.application && (defaultmapsettings.x16Sound || defaultmapsettings.non16Sound)) {
                 var _lmPrev16 = this._lmPrevCells | 0;
-                if (defaultmapsettings.x16Sound && _lmPrev16 < 16 && playersLength >= 16) application.playSound(application.x16SoundObj);
-                else if (defaultmapsettings.non16Sound && _lmPrev16 >= 16 && playersLength < 16 && playersLength > 0) application.playSound(application.non16SoundObj);
+                if (defaultmapsettings.x16Sound && _lmPrev16 < 16 && playersLength >= 16) application.playSound(application._lmOptSound('x16'));
+                else if (defaultmapsettings.non16Sound && _lmPrev16 >= 16 && playersLength < 16 && playersLength > 0) application.playSound(application._lmOptSound('non16'));
             }
             this._lmPrevCells = playersLength;
             for (let length = 0; length < playersLength; length++) {
@@ -69324,6 +69344,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             if (LM.playerCells && LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition();
+            } else if (LM) {
+                LM._lmPrevCells = 0;
             }
 
             var targetCamX = LM.viewX;
@@ -77752,7 +77774,7 @@ function playReplayLM(temp, startAt) {
         //start
         //window.playrecord = 0
         /* Read the range first: the first tick used the previous run's values. */
-        window.startReplayTime = startAt != null ? startAt : $("#startReplayTime").val()
+        window.startReplayTime = startAt != null ? startAt : ($("#startReplayTime").val() || 0)
         /* End falls back to the last packet (with the replay window closed it was undefined: the
          * whole replay then ran in "Loading..." skip mode) */
         window.endReplayTime = $("#endReplayTime").val() || (window.RecordedProtocol[temp].length - 2)
@@ -77820,7 +77842,9 @@ function lmReplaySeek(delta) {
     var cur = window.legendmod.playingReplayRecord || 0;
     var last = window.RecordedProtocol[srv].length - 2;
     var target = Math.max(0, Math.min(last, cur + delta));
+    if (target === cur) return;
     clearTimeout(window.replayTimeOuts);
+    if (window._lmReplayPaused) $('#pause-hud').text(textLanguage.pause).hide();
     window._lmReplayPaused = false;
     if (target > cur) {
         /* forward: the existing skip runs to the new start */
