@@ -16395,6 +16395,7 @@ var displayText = {
 
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
         gameOverStats: 'Game over stats',
+        massGraph: 'Mass graph on the Game Over card',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
@@ -16910,6 +16911,7 @@ var displayText = {
 
         blockPopups: 'Block popups (ads/shop/quest)',
         gameOverStats: 'Game over stats',
+        massGraph: 'Mass graph on the Game Over card',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -19329,6 +19331,7 @@ var defaultmapsettings = {
 
     blockPopups: false,
     gameOverStats: false,
+    massGraph: false,             /* graph of your mass over the life on the Game Over card */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -23105,7 +23108,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
@@ -24310,7 +24313,7 @@ function thelegendmodproject() {
              * (the 3 s window only merges the two reports of the SAME death; a spawn-kill
              * got no death handling: no auto-respawn, no menu) */
             this._lmLastDeathAt = 0;
-            if (!this._lmLifeStartAt) this._lmLifeStartAt = Date.now();
+            if (!this._lmLifeStartAt) { this._lmLifeStartAt = Date.now(); this._lmMassHist = []; }
 
             /* The Game Over card (screen centre, top z-index) took the mouse and stayed for 12 s
              * after a quick respawn. Keep it readable but let the mouse through to the game (its
@@ -43482,6 +43485,8 @@ function thelegendmodproject() {
                 { icon: '🦠', label: _lmTH('virusesEaten', 'Viruses Eaten'),    value: (u.virusesEaten || 0).toLocaleString() }
             ];
 
+            /* optional mass graph of the life that just ended */
+            var _lmGraph = defaultmapsettings.massGraph && window.application && application._lmMassHist && application._lmMassHist.length >= 3 ? application._lmMassHist.slice() : null;
             /* Build HTML */
             var rows = '';
             for (var i = 0; i < stats.length; i++) {
@@ -43532,6 +43537,7 @@ function thelegendmodproject() {
 
                 /* Stats */
                 '<div style="padding:8px 12px 12px;">' + rows + '</div>' +
+                (_lmGraph ? '<div style="padding:0 12px 12px;"><canvas id="lm-go-graph" width="276" height="60" style="width:276px;height:60px;display:block;border-radius:4px;background:rgba(0,0,0,0.2);"></canvas></div>' : '') +
 
                 '</div></div>';
 
@@ -43566,6 +43572,23 @@ function thelegendmodproject() {
             var modal = container.firstChild;
             document.body.appendChild(modal);
 
+            if (_lmGraph) {
+                try {
+                    var gc = document.getElementById('lm-go-graph'), gx = gc.getContext('2d');
+                    var gw = gc.width, gh = gc.height, gmax = 1;
+                    for (var gi = 0; gi < _lmGraph.length; gi++) if (_lmGraph[gi] > gmax) gmax = _lmGraph[gi];
+                    gx.beginPath();
+                    for (gi = 0; gi < _lmGraph.length; gi++) {
+                        var px = gi / (_lmGraph.length - 1) * (gw - 2) + 1, py = gh - 2 - _lmGraph[gi] / gmax * (gh - 14);
+                        if (gi) gx.lineTo(px, py); else gx.moveTo(px, py);
+                    }
+                    gx.strokeStyle = mc; gx.lineWidth = 1.5; gx.stroke();
+                    gx.lineTo(gw - 1, gh - 1); gx.lineTo(1, gh - 1); gx.closePath();
+                    gx.globalAlpha = 0.18; gx.fillStyle = mc; gx.fill(); gx.globalAlpha = 1;
+                    gx.fillStyle = tc2; gx.font = '10px sans-serif'; gx.textAlign = 'right';
+                    gx.fillText(fmtMass(gmax), gw - 4, 10);
+                } catch (e) { }
+            }
             /* Attach close button click */
             var closeBtn = document.getElementById('lm-go-close');
             if (closeBtn) closeBtn.addEventListener('click', function(e) { e.stopPropagation(); dismissGameOver(); });
@@ -76358,6 +76381,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* leaving a life without a death (server change, quick respawn, token change) did not
              * reset the life start: time alive and the session time grew across lives */
             try { if (window.application && window.legendmod && !window.legendmod.play) window.application._lmLifeStartAt = 0; } catch (e0) { }
+            try {
+                if (window.legendmod5 && window.legendmod5.massGraph && window.application && window.legendmod && window.legendmod.play && window.legendmod.playerMass) {
+                    var _lmH = window.application._lmMassHist || (window.application._lmMassHist = []);
+                    _lmH.push(window.legendmod.playerMass);
+                    if (_lmH.length > 600) {
+                        var _lmH2 = [];
+                        for (var _lmHi = 0; _lmHi < _lmH.length; _lmHi += 2) _lmH2.push(Math.max(_lmH[_lmHi], _lmH[_lmHi + 1] || 0));
+                        window.application._lmMassHist = _lmH2;
+                    }
+                }
+            } catch (e1) { }
             try {
                 var on = window.legendmod5 && window.legendmod5.massInTitle && window.legendmod && window.legendmod.play && window.legendmod.playerMass;
                 if (on) {
