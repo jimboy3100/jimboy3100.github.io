@@ -8281,7 +8281,22 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         var st = btn.querySelector('.lm-claim-st');
         if (!st) { st = document.createElement('span'); st.className = 'lm-claim-st'; btn.appendChild(st); }
         if (st.textContent !== extra) st.textContent = extra;
+        /* optional reminder (bell next to Claim All): one toast each time something becomes ready */
+        var nowReady = extra === ' \u25CF';
+        var remind = false;
+        try { remind = localStorage.getItem('lmClaimRemind') === '1'; } catch (e) { }
+        if (nowReady && !window._lmClaimWasReady && remind && window.toastr && !force) {
+            toastr.info('<b>[' + _lmUE('claimAll', 'Claim All') + ']:</b> ' + _lmUE('rewardReady', 'A reward is ready to claim.'));
+        }
+        window._lmClaimWasReady = nowReady;
     };
+    $(document).off('click.lmClaimRemind').on('click.lmClaimRemind', '#lm-claim-remind', function (e) {
+        e.preventDefault();
+        var on = false;
+        try { on = localStorage.getItem('lmClaimRemind') !== '1'; localStorage.setItem('lmClaimRemind', on ? '1' : '0'); } catch (er) { }
+        this.textContent = on ? '\uD83D\uDD14' : '\uD83D\uDD15';
+        if (window.toastr) toastr.info(on ? _lmUE('remindOn', 'You will be reminded when a reward is ready.') : _lmUE('remindOff', 'Reward reminder off.'));
+    });
     setInterval(function () { if (!document.hidden) window._lmUpdateClaimLabel(false); }, 30000);
     setTimeout(function () { window._lmUpdateClaimLabel(false); }, 4000);
     window.getHourlyBonusTimeLeftString = function() {
@@ -10749,6 +10764,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="Claim the hourly bonus, the daily quest and gifts that are ready">
                 \uD83C\uDF81 ${(window.lmT ? window.lmT('claimAll') : 'Claim All').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}
             </button>
+            <button id="lm-claim-remind" class="btn btn-default" style="flex: 0 0 auto; padding: 6px 7px; font-size: 11px; cursor: pointer;" title="Remind me when a reward is ready">${(function () { try { return localStorage.getItem('lmClaimRemind') === '1' ? '\uD83D\uDD14' : '\uD83D\uDD15'; } catch (e) { return '\uD83D\uDD15'; } })()}</button>
 
         `;
 
@@ -11002,7 +11018,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             '#SpecialDealsBtn, ' +
             '#SpecialDealsQuickBtn, ' +
             '.lm-skins-btn, ' +
-            '#lm-extended-menu-btns button'
+            '#lm-extended-menu-btns button:not(#lm-claim-remind)' /* the reminder bell is a local setting */
         );
 
         menuBtns
