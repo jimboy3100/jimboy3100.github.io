@@ -16363,6 +16363,7 @@ var displayText = {
         showStatsFPS: 'Statystyki: FPS',
         showStatsAlive: 'Statystyki: czas zycia',
         mergeRings: 'Pierscienie laczenia (postep)',
+        timeFormat: 'Format zegara (0 data+czas, 1 czas, 2 24h)',
         massInTitle: 'Masa w tytule karty',
         showStatsPPS: 'Statystyki: PPS',
         showStatsServerHz: 'Statystyki: Server Hz (Expanding Land)',
@@ -16867,6 +16868,7 @@ var displayText = {
         showStatsFPS: 'FPS: Frames per second',
         showStatsAlive: 'Time alive (this life)',
         mergeRings: 'Merge progress rings on own cells',
+        timeFormat: 'Clock format (0 date+time, 1 time, 2 24h)',
         massInTitle: 'Mass in the browser tab title',
         showStatsPPS: 'PPS: Packets per second',
         showStatsServerHz: 'Server Hz (Expanding Land)',
@@ -19279,6 +19281,7 @@ var defaultmapsettings = {
     showStatsFPS: true,
     showStatsAlive: false,        /* stats HUD: time alive in this life */
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
+    timeFormat: 0,                /* clock HUD: 0 date+time (as before), 1 time, 2 24h */
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
     showStatsServerHz: true,
@@ -21449,7 +21452,11 @@ function thelegendmodproject() {
         },
         displayTime() {
             if (defaultmapsettings.showTime) {
-                var time = new Date().toLocaleString();
+                /* Clock format: 0 = date and time (as before), 1 = time only, 2 = 24-hour HH:MM:SS */
+                var _lmNowD = new Date(), _lmTf = +defaultmapsettings.timeFormat || 0, time;
+                if (_lmTf === 1) time = _lmNowD.toLocaleTimeString();
+                else if (_lmTf === 2) time = ('0' + _lmNowD.getHours()).slice(-2) + ':' + ('0' + _lmNowD.getMinutes()).slice(-2) + ':' + ('0' + _lmNowD.getSeconds()).slice(-2);
+                else time = _lmNowD.toLocaleString();
                 this.timeHUD.textContent = time;
                 if (!this._displayTimeInterval) {
                     var app = this;
@@ -23029,6 +23036,7 @@ function thelegendmodproject() {
             }
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
+            this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
 
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
             this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);
