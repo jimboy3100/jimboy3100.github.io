@@ -23434,6 +23434,12 @@ function thelegendmodproject() {
             var _lmRememberServer = _lmRecent('lmRecentServers', 'lm-recent-servers', '#server-token');
             var _lmRememberParty = _lmRecent('lmRecentParties', 'lm-recent-parties', '#party-token');
             $(document).on("click", "#join-party-btn-2", function () { _lmRememberParty($("#party-token").val()); });
+            /* Enter in a token box presses its Join button (it did nothing) */
+            $(document).on("keydown", "#server-token, #party-token", function (e) {
+                if (e.key !== "Enter" && e.keyCode !== 13) return;
+                e.preventDefault();
+                $(this.id === "server-token" ? "#server-join" : "#join-party-btn-2").first().trigger("click");
+            });
             $(document).on("click", "#server-join", function () {
                 _lmRememberServer($("#server-token").val());
                 app.gameServerJoin($("#server-token").val());
