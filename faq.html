@@ -40,7 +40,7 @@
                 "name": "How do I install Legend Mod?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "For Chrome/Edge/Brave: Install 'Legend Express' from the Chrome Web Store. For Firefox/Opera: Install Tampermonkey, then add the Legend Mod userscript. For mobile: Use Kiwi Browser (Android) or Orion (iOS) with Tampermonkey. Full instructions at legendmod.ml/download.html"
+                    "text": "For Chrome/Edge/Brave: Install 'Legend Express' from the Chrome Web Store. For Firefox/Opera: Install Tampermonkey, then add the Legend Mod userscript. For mobile: open www.legendmod.ml/play.html on your phone (touch controls load automatically), or use Firefox for Android or Orion (iOS) with Tampermonkey."
                 }
             },
             {
@@ -178,7 +178,7 @@
     </div>
     <div class="faq-item">
         <div class="faq-q">How do I install Legend Mod?</div>
-        <div class="faq-a"><p>For <strong>Chrome/Edge/Brave</strong>: Install <a href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja">"Legend Express"</a> from the Chrome Web Store. For <strong>Firefox/Opera</strong>: Install Tampermonkey, then add the Legend Mod userscript. For <strong>mobile</strong>: Use Kiwi Browser (Android) or Orion (iOS) with Tampermonkey. Full instructions at <a href="/">legendmod.ml/download</a>.</p></div>
+        <div class="faq-a"><p>For <strong>Chrome/Edge/Brave</strong>: Install <a href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja">"Legend Express"</a> from the Chrome Web Store. For <strong>Firefox/Opera</strong>: Install Tampermonkey, then add the Legend Mod userscript. For <strong>mobile</strong>: open <a href="https://www.legendmod.ml/play.html">www.legendmod.ml/play.html</a> on your phone (touch controls load automatically), or use Firefox for Android or Orion (iOS) with Tampermonkey.</p></div>
     </div>
     <div class="faq-item">
         <div class="faq-q">Is Legend Mod free?</div>
@@ -248,10 +248,19 @@
 </footer>
 
 <script>
+/* questions are plain divs: also reachable and openable with the keyboard (Tab, Enter/Space) */
 document.querySelectorAll('.faq-q').forEach(function(q) {
-    q.addEventListener('click', function() {
-        var item = this.parentElement;
+    q.setAttribute('role', 'button');
+    q.setAttribute('tabindex', '0');
+    q.setAttribute('aria-expanded', q.parentElement.classList.contains('open') ? 'true' : 'false');
+    function toggle() {
+        var item = q.parentElement;
         item.classList.toggle('open');
+        q.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
+    }
+    q.addEventListener('click', toggle);
+    q.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
     });
 });
 </script>

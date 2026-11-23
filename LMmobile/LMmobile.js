@@ -21,6 +21,8 @@
     if (!(window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches)) return;
 
     /* ── Global flag for other scripts to detect mobile mode ── */
+    /* loaded twice: two sets of buttons, every tap split twice */
+    if (window.LM_IS_MOBILE) return;
     window.LM_IS_MOBILE = true;
 
     /* ═══════════════════════════════════════════════════════════
@@ -48,13 +50,13 @@
         'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
         /* ── Drawer: always visible, horizontal row to right of ☰ ── */
-        '#lm-drawer{display:flex;flex-direction:row;align-items:flex-end;gap:5px;' +
+        '#lm-drawer{display:flex;flex-direction:row;align-items:flex-end;gap:8px;' + /* was 5px: mis-taps toggled AutoPlay */
         'pointer-events:auto}' +
 
         /* ── Drawer button: smaller than trigger, equal size ── */
         '.lm-d{pointer-events:auto;touch-action:none;cursor:pointer;' +
         'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
-        'width:36px;height:36px;font-size:15px;' +
+        'width:40px;height:40px;font-size:16px;' + /* was 36px */
         'background:rgba(0,36,62,.50);border:1.5px solid rgba(1,217,204,.22);' +
         'box-shadow:0 0 6px rgba(1,217,204,.06);' +
         'color:rgba(255,255,255,.8);font-family:Ubuntu,Roboto,sans-serif;' +
@@ -68,9 +70,10 @@
         'display:flex;flex-direction:column;align-items:center;gap:10px}' +
 
         /* ── SMALL ROW: 4× + 16× (positioned by JS above minimap) ── */
+        '.lm-menu #lm-mc-r,.lm-menu #lm-mc-sm{display:none!important}' +
         '#lm-mc-sm{position:fixed;z-index:100000;' +
         'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-        'display:flex;flex-direction:row;align-items:center;gap:6px}' +
+        'display:flex;flex-direction:row;align-items:center;gap:10px}' + /* was 6px, next to the minimap */
 
         /* ── Shared button base (clean, subtle) ── */
         '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
@@ -97,7 +100,7 @@
         '.lm-bi .i{font-size:clamp(22px,6vmin,30px);line-height:1}' +
         '.lm-bi .l{font-size:clamp(8px,2.2vmin,11px);opacity:.55;letter-spacing:1.2px;text-transform:uppercase}' +
 
-        '.lm-s{width:clamp(40px,10vmin,50px);height:clamp(40px,10vmin,50px);font-size:13px;' +
+        '.lm-s{width:clamp(44px,10vmin,52px);height:clamp(44px,10vmin,52px);font-size:13px;' + /* min 44px touch target */
         'background:rgba(0,47,82,.50);border-color:rgba(141,95,230,.35);' +
         'box-shadow:0 0 6px rgba(141,95,230,.10)}' +
         '.lm-s.p{background:rgba(141,95,230,.25);border-color:rgba(141,95,230,.75)}' +
@@ -275,7 +278,7 @@
             /* Expose globally so other code (menu toggle) can call it instantly */
             window._lm_fitHC = fit;
             fit();
-            setInterval(fit, 4000); /* slow fallback — main triggers are events below */
+            setInterval(function () { if (!document.hidden) fit(); }, 4000); /* slow fallback — main triggers are events below */
             window.addEventListener('resize', fit);
             window.addEventListener('orientationchange', function () { requestAnimationFrame(fit); });
         })();
@@ -418,9 +421,12 @@
             }
             scan();
             /* MutationObserver handles late-loading buttons */
+            /* Play buttons rebuilt after the first 30 s were never hooked. Keep watching, but only
+             * the menu (#helloContainer), not every DOM change on the page. */
             var _btnObs = new MutationObserver(function() { scan(); });
-            _btnObs.observe(document.body, { childList: true, subtree: true });
-            setTimeout(function() { _btnObs.disconnect(); }, 30000);
+            var _btnRoot = document.getElementById('helloContainer');
+            _btnObs.observe(_btnRoot || document.body, { childList: true, subtree: true });
+            if (!_btnRoot) setTimeout(function() { _btnObs.disconnect(); }, 30000);
         })();
 
         /* ── Persistent portrait overlay (replaces one-time toast) ── */
@@ -433,7 +439,9 @@
         function checkOrientation() {
             var isPortrait = window.innerHeight > window.innerWidth;
             var isPlaying = !isMenuVisible();
-            if (isPortrait && isPlaying) {
+            /* tablets (short side 768 px or more) can play in portrait: no "rotate" overlay */
+            var isTablet = Math.min(window.innerWidth, window.innerHeight) >= 768;
+            if (isPortrait && isPlaying && !isTablet) {
                 portOv.classList.add('on');
             } else {
                 portOv.classList.remove('on');
@@ -444,6 +452,8 @@
         /* No recurring fallback needed — resize + orientationchange events cover it */
 
         /* ── Wake Lock (prevent screen from sleeping during gameplay) ── */
+        /* (not used: the menu sync below takes the lock while playing and releases it in the
+         * menu; this one was taken at load and never released, so the screen never slept) */
         var wakeLock = null;
         function requestWakeLock() {
             try {
@@ -454,11 +464,7 @@
                 }
             } catch (e) { }
         }
-        requestWakeLock();
-        // Re-acquire on tab becoming visible again
-        document.addEventListener('visibilitychange', function () {
-            if (document.visibilityState === 'visible') requestWakeLock();
-        });
+
 
         /* ═══════════════════════════════════════════════════════
          *  DOM — Game-controller layout
@@ -535,10 +541,19 @@
             '<input type="range" id="lm-op" min="20" max="100" step="5" value="' + Math.round(prefs.btnOpacity * 100) + '">' +
             '<label>Btn Size <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
-            '<label>HUD Fade <span id="lm-hf-v">' + Math.round(prefs.hudFade * 100) + '%</span></label>' +
-            '<input type="range" id="lm-hf" min="20" max="100" step="5" value="' + Math.round(prefs.hudFade * 100) + '">' +
             '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>';
         drawer.appendChild(sp);
+
+        /* The panel only shows with class "on", and nothing ever added it, so joystick
+         * sensitivity, opacity, button size and flick split could not be changed. */
+        var bCfg = mkd('⚙');
+        drawer.insertBefore(bCfg, sp);
+        bCfg.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            sp.classList.toggle('on');
+            /* the panel sits in the button group, which has the button opacity: show it solid */
+            rootL.style.opacity = sp.classList.contains('on') ? 1 : prefs.btnOpacity;
+        }, { passive: false });
 
         function applyPrefs() {
             rootL.style.opacity = prefs.btnOpacity;
@@ -568,11 +583,7 @@
             sp.querySelector('#lm-bs-v').textContent = this.value + '%';
             applyPrefs(); savePrefs();
         });
-        sp.querySelector('#lm-hf').addEventListener('input', function () {
-            prefs.hudFade = parseInt(this.value) / 100;
-            sp.querySelector('#lm-hf-v').textContent = this.value + '%';
-            savePrefs();
-        });
+        /* (HUD Fade slider removed: nothing read prefs.hudFade) */
         sp.querySelector('#lm-sw').addEventListener('change', function () {
             prefs.swipeSplit = this.checked;
             savePrefs();
@@ -648,12 +659,17 @@
         /* ═══════════════════════════════════════════════════════
          *  BUTTON DEBOUNCE — prevents accidental double-fires
          * ═══════════════════════════════════════════════════════ */
-        var lastAction = 0;
-        var DEBOUNCE = 150; // ms
-        function debounced(fn) {
+        /* One shared 150 ms window dropped real taps: a fast second Split, or Split then 4x.
+         * A finger cannot fire touchstart twice, so keep a separate time per button: 40 ms for
+         * Split, 150 ms for 4x/16x (a 16-way split must not fire twice). */
+        var lastActionByKey = {};
+        var DEBOUNCE = 150; // ms (default)
+        function debounced(fn, key, ms) {
             var now = Date.now();
-            if (now - lastAction < DEBOUNCE) return;
-            lastAction = now;
+            key = key || 'any';
+            ms = ms || DEBOUNCE;
+            if (now - (lastActionByKey[key] || 0) < ms) return;
+            lastActionByKey[key] = now;
             fn();
         }
 
@@ -662,7 +678,12 @@
          * ═══════════════════════════════════════════════════════ */
         bSplit.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
-            debounced(function () { emitKey(32); });
+            /* call the split command directly: Space follows the player's hotkey map, which
+             * imported desktop settings may have changed */
+            debounced(function () {
+                if (typeof application !== 'undefined' && application.split) application.split();
+                else emitKey(32);
+            }, 'split', 40);
         }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
@@ -673,7 +694,7 @@
             debounced(function () {
                 if (typeof application !== 'undefined' && application.doubleSplit)
                     application.doubleSplit();
-            });
+            }, 'dbl');
         }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
@@ -684,7 +705,7 @@
             debounced(function () {
                 if (typeof application !== 'undefined' && application.split16)
                     application.split16();
-            });
+            }, 's16');
         }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
@@ -704,7 +725,8 @@
             bAI.classList.toggle('lm-active', !!window.autoPlay);
             bPaus.classList.toggle('lm-active', typeof application !== 'undefined' && !!application.pause);
         }
-        setInterval(syncAiPause, 500);
+        /* background timers skip work while the tab is hidden */
+        setInterval(function () { if (!document.hidden) syncAiPause(); }, 500);
 
         /* ═══════════════════════════════════════════════════════
          *  PAUSE — calls application.setPause()
@@ -721,19 +743,39 @@
          *  FEED — W (keyCode 87), hold to repeat
          * ═══════════════════════════════════════════════════════ */
         var feedIv = null;
-        bFeed.addEventListener('touchstart', function (e) {
-            e.preventDefault(); e.stopPropagation();
+        var feedMacroOn = false;
+        /* Use the game's own macro feed: it follows the player's feed-speed setting (this fed a
+         * fixed 20/s), pauses in a hidden tab, and is the real feed command even if W was
+         * rebound. The old 50 ms key loop stays as a fallback. */
+        function feedStart() {
+            if (typeof application !== 'undefined' && application.macroFeed) {
+                feedMacroOn = true;
+                application.macroFeed(true);
+                return;
+            }
             emitKey(87);
             /* A second finger on the button must not orphan the running interval. */
             clearInterval(feedIv);
             feedIv = setInterval(function () { emitKey(87); }, 50);
+        }
+        function feedStop() {
+            if (feedMacroOn && typeof application !== 'undefined' && application.macroFeed) application.macroFeed(false);
+            feedMacroOn = false;
+            clearInterval(feedIv); feedIv = null;
+        }
+        window._lmMobileFeedStop = feedStop;
+        bFeed.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            feedStart();
         }, { passive: false });
         bFeed.addEventListener('touchend', function (e) {
             /* Keep feeding while another finger still rests on the button. */
             if (e && e.targetTouches && e.targetTouches.length > 0) return;
-            clearInterval(feedIv); feedIv = null;
+            feedStop();
         }, { passive: true });
-        bFeed.addEventListener('touchcancel', function () { clearInterval(feedIv); feedIv = null; }, { passive: true });
+        bFeed.addEventListener('touchcancel', function () { feedStop(); }, { passive: true });
+        /* also stop when the tab is hidden (touchend may never arrive) */
+        document.addEventListener('visibilitychange', function () { if (document.hidden) feedStop(); });
 
         /* (game menu is accessed via the drawer — ☰ now only toggles the drawer) */
 
@@ -747,6 +789,9 @@
             chatOn ? chatClose() : chatOpen();
         }, { passive: false });
 
+        /* One Enter listener at a time: closing chat with the 💬 button left the old one
+         * attached, and chatClose's own synthetic Enter then ran chatClose again. */
+        var chatEnterFn = null;
         function chatOpen() {
             chatOn = true;
             // Open chat box — dispatch Enter on document to open game's chat
@@ -761,18 +806,24 @@
                 var inp2 = document.getElementById('message');
                 if (inp2) {
                     inp2.focus();
-                    inp2.addEventListener('keydown', function onEnter(ev) {
+                    if (chatEnterFn) inp2.removeEventListener('keydown', chatEnterFn);
+                    chatEnterFn = function onEnter(ev) {
                         if (ev.keyCode === 13 || ev.key === 'Enter') {
                             inp2.removeEventListener('keydown', onEnter);
+                            chatEnterFn = null;
                             setTimeout(function () { chatClose(); }, 50);
                         }
-                    });
+                    };
+                    inp2.addEventListener('keydown', chatEnterFn);
                 }
             }, 120);
         }
 
         function chatClose() {
             var inp = document.getElementById('message');
+            /* first, before the synthetic Enter below: it must not reach a leftover listener */
+            if (chatEnterFn && inp) inp.removeEventListener('keydown', chatEnterFn);
+            chatEnterFn = null;
             if (inp && inp.value.length > 0) {
                 // Send the message by dispatching Enter on the input
                 var ev = document.createEvent('Event');
@@ -836,7 +887,8 @@
                 if (!prefs.swipeSplit || Date.now() - swStart.t > SW_MAX_MS) { swStart = null; break; }
                 // swipe right → split
                 if (dx > SW_THRESH && Math.abs(dy) < dx) {
-                    emitKey(32);
+                    /* like the Split button: Space can be remapped by imported hotkeys */
+                    if (typeof application !== 'undefined' && application && typeof application.split === 'function') application.split(); else emitKey(32);
                 }
                 // swipe up → double split
                 else if (-dy > SW_THRESH && Math.abs(dx) < -dy) {
@@ -861,14 +913,21 @@
 
         window.addEventListener('resize', function () {
             asp = window.innerWidth / window.innerHeight;
+            /* rotated with the thumb down: the old centre is in the other orientation's
+             * coordinates (the cell jumped to a wrong direction) - start again on the next touch */
+            if (jId !== null) { jId = null; jHide(); }
+            pOn = false;
         });
 
         canvas.addEventListener('touchstart', function (e) {
             if (chatOn || e.targetTouches.length !== 1) return;
             var t = e.changedTouches[0];
             jId = t.identifier;
+            jStartTime = Date.now();
             org.x = t.clientX; org.y = t.clientY;
-            mouseAt(t.clientX, t.clientY);
+            /* no mouseAt(thumb position) here: it turned the cell toward wherever the thumb
+             * landed (usually bottom-left) on every re-grip; keep the last direction until the
+             * thumb moves */
             
             jShow(org.x, org.y, org.x, org.y);
             /* swStart is kept: the swipe touchend decides by duration (this listener runs after the swipe one) */
@@ -887,10 +946,14 @@
         canvas.addEventListener('touchcancel', function () {
             jId = null;
             jHide();
+            /* system gesture / call during a pinch left it on (stale zoom jump, frozen steering) */
+            pOn = false; pDist = 0; swStart = null;
         }, { passive: true });
 
         canvas.addEventListener('touchmove', function (e) {
-            if (e.targetTouches.length >= 2) return;
+            /* a second finger resting on the canvas (missed Split) froze the steering; the
+             * joystick finger is found by id, so only an actual pinch stops it */
+            if (pOn) return;
             var t = tById(e.changedTouches, jId);
             if (!t) return;
 
@@ -901,7 +964,10 @@
 
             var dx = rx0 * prefs.jsSensitivity;
             var dy = ry0 * prefs.jsSensitivity;
-            var cx = window.innerWidth / 2 + dx / asp;
+            /* no "/ asp": the game maps both cursor axes with the same scale
+             * (screenDX / viewScale, screenDY / viewScale), so dividing x by the screen aspect
+             * bent every diagonal toward vertical (45 deg became about 65 deg on a 20:9 phone) */
+            var cx = window.innerWidth / 2 + dx;
             var cy = window.innerHeight / 2 + dy;
             mouseAt(cx, cy);
 
@@ -922,6 +988,7 @@
          *    Spread fingers = zoom IN for both
          * ═══════════════════════════════════════════════════════ */
         var pDist = 0, pOn = false;
+        var jStartTime = 0; /* when the steering finger touched down (set in the joystick touchstart) */
 
         function isMenuVisible() {
             var ov = document.getElementById('overlays');
@@ -933,6 +1000,9 @@
 
         canvas.addEventListener('touchstart', function (e) {
             if (e.targetTouches.length === 2) {
+                /* A second finger that only missed the Split button stopped the steering.
+                 * Pinch only when both fingers came down together (within 200 ms). */
+                if (jId !== null && Date.now() - jStartTime > 200) return;
                 pOn = true;
                 pDist = dist(e.targetTouches[0], e.targetTouches[1]);
                 jHide(); jId = null;
@@ -1106,7 +1176,10 @@
             // Firefox: game listens for DOMMouseScroll on document (ogario.v4.js:15358)
             try {
                 var ff = new Event('DOMMouseScroll', {bubbles:true, cancelable:true});
-                ff.detail = dy > 0 ? -1 : 1;
+                /* same as the Chrome path: there the game reads wheelDelta (= -deltaY) / -120,
+                 * i.e. dy / 120. A full +-1 step with the opposite sign zoomed the wrong way and
+                 * far too fast on Firefox. */
+                ff.detail = dy / 120;
                 ff.axis = 2; // vertical
                 document.dispatchEvent(ff);
             } catch(e) {}
@@ -1129,7 +1202,8 @@
         }
         function jHide() { jO.style.display = 'none'; jI.style.display = 'none'; }
 
-        document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+        /* inputs keep their long-press menu (paste a party code / nick) */
+        document.addEventListener('contextmenu', function (e) { if (!e.target || !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) e.preventDefault(); });
         document.body.addEventListener('touchmove', function (e) {
             if (e.target === canvas || e.target === document.body) e.preventDefault();
         }, { passive: false });
@@ -1262,7 +1336,7 @@
             }
         }
         repositionButtons();
-        setInterval(repositionButtons, 2500);
+        setInterval(function () { if (!document.hidden) repositionButtons(); }, 2500);
         window.addEventListener('resize', repositionButtons);
         window.addEventListener('orientationchange', function () {
             /* Single rAF ensures layout is complete after rotation */
@@ -1286,8 +1360,11 @@
          *  helloContainer visible → exit fullscreen (browser only)
          * ═══════════════════════════════════════════════════════ */
         var _prevMenuVisible = isMenuVisible();
+        /* Split/Feed/4x/16x sat above the menu (z-index) and ate its taps; hide them there */
+        document.body.classList.toggle('lm-menu', !!_prevMenuVisible);
         setInterval(function () {
             var nowVisible = isMenuVisible();
+            document.body.classList.toggle('lm-menu', !!nowVisible);
             if (nowVisible !== _prevMenuVisible) {
                 /* show/hide the portrait overlay on play/death too, not only on rotation */
                 checkOrientation();
@@ -1301,14 +1378,10 @@
                         }).catch(function () { });
                     }
                 } else {
-                    if (!isTWA) {
-                        // Menu appeared (died/opened) → exit fullscreen (browser only)
-                        try {
-                            if (document.fullscreenElement || document.webkitFullscreenElement) {
-                                (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-                            }
-                        } catch (e) { }
-                    }
+                    /* Menu appeared (died/opened). It no longer leaves fullscreen: getting back in
+                     * needs a tap on Play, so with auto-respawn the phone stayed out of fullscreen
+                     * (the browser's own back gesture still exits). A held Feed button stops here. */
+                    if (typeof window._lmMobileFeedStop === 'function') window._lmMobileFeedStop();
                     // Release wake lock when not playing
                     if (window._lmWakeLock) {
                         try { window._lmWakeLock.release(); } catch (e) { }
@@ -1354,11 +1427,13 @@
          *  TAP CANVAS TO CLOSE DRAWER
          * ═══════════════════════════════════════════════════════ */
         document.addEventListener('touchstart', function (e) {
-            if (!drawer.classList.contains('on')) return;
+            /* the settings panel (opened by the gear) also closes when tapping elsewhere */
+            if (!drawer.classList.contains('on') && !sp.classList.contains('on')) return;
             // If tap is outside the drawer, menu button, and settings panel — close
             if (rootL.contains(e.target)) return;
             drawer.classList.remove('on');
             sp.classList.remove('on');
+            rootL.style.opacity = prefs.btnOpacity;
         }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
@@ -1368,11 +1443,16 @@
             window.visualViewport.addEventListener('resize', function () {
                 var vv = window.visualViewport;
                 var kbHeight = window.innerHeight - vv.height;
+                /* the visible chat input is #message-box (#lm-cb is hidden): keep it above the
+                 * keyboard where the keyboard only shrinks the visual viewport (iOS, new Chrome) */
+                var mb = document.getElementById('message-box');
                 if (kbHeight > 100) {
                     // Keyboard is open — shift chat bar above keyboard
                     cBar.style.bottom = kbHeight + 'px';
+                    if (mb) mb.style.setProperty('bottom', (kbHeight + 8) + 'px', 'important');
                 } else {
                     cBar.style.bottom = '';
+                    if (mb) mb.style.removeProperty('bottom');
                 }
             });
         }

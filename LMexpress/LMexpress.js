@@ -83,6 +83,8 @@ var yt3url = "UD-MkihnOXg";
 var yt4url = "vpoqWs6BuIY";
 var yt5url = "VUvfn5-BLM8";
 var yt6url = "CnIfNSpCf70";
+/* a cleared chat icon / YouTube field falls back to these (it sent [img][/img] / [yt][/yt]) */
+var _lmChatDefaults = { pic1urlimg: pic1urlimg, pic2urlimg: pic2urlimg, pic3urlimg: pic3urlimg, pic4urlimg: pic4urlimg, pic5urlimg: pic5urlimg, pic6urlimg: pic6urlimg, yt1url: yt1url, yt2url: yt2url, yt3url: yt3url, yt4url: yt4url, yt5url: yt5url, yt6url: yt6url };
 var yt1data = "Rick Astley - Never Gonna Give You Up";
 var yt2data = "Survivor - Eye Of The Tiger";
 var yt3data = "Lion king - The Lion Sleeps Tonight";
@@ -1167,8 +1169,10 @@ function foundNames(leaderboard, names, minNamesFound) {
 
 
 
+/* thismode is the party token from the pasted link; #server does not exist, so the
+ * token was always empty and the player joined no party */
 function joinpartyfromconnect(thismode) {
-    $("#party-token").val($("#server").val());
+    $("#party-token").val(String(thismode || $("#server").val() || "").trim());
     $("#join-party-btn-2").click();
     legendmod.gameMode = ":party";
     return realmode = legendmod.gameMode;
@@ -1539,16 +1543,19 @@ function Teamer20() {
     fakeSkinReport($('#TeamboardInput10').val())
 }
 
+/* returns true when the browser copied the text (callers that ignore it are unchanged) */
 function copy(text) {
+    var ok = false;
     $("#tempCopy").val(text);
     $("#tempCopy").show();
     $("#tempCopy").select();
-    document.execCommand('copy');
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
     $("#tempCopy").hide();
     $("#tempCopy").val("");
+    return ok;
 }
 function LegendSettingsfirst() {
-    $('#export-settings').before('<label><input type="checkbox" id="export-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> API</label>');
+    $('#export-settings').before('<label><input type="checkbox" id="export-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> Legend Mod settings</label>');
     var elemLegendSwitch = document.querySelector('#export-LegendSettings');
     var ogarioswitchbackcolor = $("input#export-ogarioThemeSettings.js-switch").next().css("background-color");
     var switcheryLegendSwitch = new Switchery(elemLegendSwitch, {
@@ -1556,7 +1563,7 @@ function LegendSettingsfirst() {
         color: ogarioswitchbackcolor,
         jackColor: 'rgb(250, 250, 250)'
     });
-    $('#import-settings').before('<label><input type="checkbox" id="import-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> API</label>');
+    $('#import-settings').before('<label><input type="checkbox" id="import-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> Legend Mod settings</label>');
     var elemLegendSwitch2 = document.querySelector('#import-LegendSettings');
     var switcheryLegendSwitch2 = new Switchery(elemLegendSwitch2, {
         size: 'small',
@@ -1571,9 +1578,41 @@ function LegendSettingsfirst() {
          * rewrote the text without the API part (also what Upload sends): add it after that. */
         setTimeout(function () {
             LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
-            copy($("#export-settings").val());
+            if (copy($("#export-settings").val()) && window.toastr) toastr.success('Settings copied to the clipboard.');
         }, 0);
     });
+
+    /* Save the export as a file and load an import from a file (no copy/paste needed) */
+    if (!document.getElementById('lm-export-download')) {
+        $('<button id="lm-export-download" class="btn btn-block btn-primary" type="button">Download settings (.json)</button>')
+            .insertAfter('#export-settings-btn')
+            .on('click', function () {
+                var text = $('#export-settings').val() || '';
+                if (!text) { if (window.toastr) toastr.warning('Press Export first.'); return; }
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+                a.download = 'legendmod-settings.json';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+            });
+        var fileIn = $('<input type="file" accept=".json,.txt,application/json,text/plain" style="display:none">');
+        $('<button id="lm-import-file" class="btn btn-block btn-primary" type="button">Load settings from a file</button>')
+            .insertBefore('#import-settings')
+            .on('click', function () { fileIn.val(''); fileIn.trigger('click'); });
+        fileIn.insertBefore('#import-settings').on('change', function () {
+            var file = this.files && this.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function () {
+                $('#import-settings').val(String(reader.result || ''));
+                if (window.toastr) toastr.info('File loaded. Press Import to apply it.');
+            };
+            reader.onerror = function () { if (window.toastr) toastr.error('The file could not be read.'); };
+            reader.readAsText(file);
+        });
+    }
 
     $("#import-settings-btn").clone().insertAfter("#import-settings-btn").attr('id', 'import-settings-btn2');
 
@@ -1841,7 +1880,12 @@ function parseLegendJSONAPI(LegendJSON) {
 
 function LegendSettingsImport(switcheryLegendSwitch2) {
     if (switcheryLegendSwitch2.isChecked()) {
-        try { LegendJSON = JSON.parse(document.getElementById("import-settings").value); } catch (e) { console.warn("Invalid import JSON:", e); return; }
+        try { LegendJSON = JSON.parse(document.getElementById("import-settings").value); } catch (e) {
+            console.warn("Invalid import JSON:", e);
+            /* the player saw nothing before */
+            if (window.toastr) toastr.error('Import failed: this is not valid Legend Mod settings text.');
+            return;
+        }
         //        parseLegendJSONAPI(LegendJSON);
         saveLegendJSONAPI();
         setTimeout(function () {
@@ -1981,6 +2025,11 @@ function _lmEscHtml(value) {
 
 function _lmYoutubeId(url) {
     var id = getParameterByName("v", url);
+    /* YouTube's Share button gives youtu.be/ID?si=..., and Shorts/embed/live links have no ?v= */
+    if (!id) {
+        var m = String(url || '').match(/(?:youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{6,20})/);
+        id = m ? m[1] : null;
+    }
     return /^[A-Za-z0-9_-]{6,20}$/.test(String(id || '')) ? id : null;
 }
 
@@ -1991,6 +2040,10 @@ function _lmTagLabel(name, fallback) {
 /* Several call sites outside the scope that defines escapeHtml use it as a global. */
 if (typeof window.escapeHtml !== "function") window.escapeHtml = _lmEscHtml;
 
+/* true when the URL's host matches re ("evil.example/discord.com" is not Discord) */
+function _lmHostIs(value, re) {
+    try { return re.test(new URL(value).hostname.toLowerCase()); } catch (e) { return false; }
+}
 function _lmSafeChatUrl(value) {
     return /^https?:\/\/[^\s"'<>`\\]+$/i.test(String(value || ''));
 }
@@ -2020,7 +2073,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         _lmToast.find("#acceptURL").click(function () {
             window.open(MSGCOMMANDS, '_blank');
         });
-    } else if (MSGCOMMANDS.includes("[tag]")) {
+    } else if (MSGCOMMANDS.includes("[tag]") && MSGCOMMANDS.includes("[/tag]")) { /* "type [tag] to join" is a sentence */
         if ($("#nick").val().includes("tag") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[tag]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/tag]')[0];
@@ -2054,8 +2107,12 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         var _lmYutId = _lmYoutubeId(MSGCOMMANDS);
         if (!_lmYutId) return;
+        /* one standard form for the player (youtu.be / Shorts links included) */
+        var _lmYutList = getParameterByName("list", MSGCOMMANDS);
+        MSGCOMMANDS = "https://www.youtube.com/watch?v=" + _lmYutId +
+            (/^[A-Za-z0-9_-]{6,64}$/.test(String(_lmYutList || '')) ? "&list=" + _lmYutList : "");
         if ($("#nick").val().includes("yut") == false) _lmRemoveCmdMsg();
-        var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
+        var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=0&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
         }).css("width", "300px");
@@ -2072,7 +2129,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
-        if (MSGCOMMANDS.includes("join.skype.com/")) {
+        if (_lmHostIs(MSGCOMMANDS, /^join\.skype\.com$/)) {
             if ($("#nick").val().includes("skype") == false) _lmRemoveCmdMsg();
             var _lmToast = toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 10000,
@@ -2089,7 +2146,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
-        if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg") || MSGCOMMANDS.includes("discord.com")) {
+        if (_lmHostIs(MSGCOMMANDS, /(^|\.)(discord\.gg|discord\.com|discordapp\.com)$/)) {
             if ($("#nick").val().includes("discord") == false) _lmRemoveCmdMsg();
             var _lmToast = toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
@@ -2099,7 +2156,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
                 window.open(MSGCOMMANDS, '_blank');
             });
         }
-    } else if (MSGCOMMANDS.includes("Legend.Mod")) {
+    } else if (MSGCOMMANDS.includes("Legend.Mod&?player=")) { /* the format dosendmsgcommand sends; a sentence naming Legend.Mod was deleted */
 
         playerMsg = getParameterByName("player", MSGCOMMANDS);
         commandMsg = getParameterByName("com", MSGCOMMANDS);
@@ -2113,19 +2170,23 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
                 opacity: 0.8
             });
             setTimeout(function () {
-                $("#top5-hud").css('background-image', 'url(" ")').css({
-                    opacity: 1
+                /* put back the player's own team-board image (it was wiped until reload) */
+                $("#top5-hud").css('background-image', 'url("' + (teambimg || ' ') + '")').css({
+                    opacity: teambimg ? 0.8 : 1
                 });
             }, 12000);
         } else if (commandMsg == "Hello") {
             if ($('#message-box').css('display') == 'none') {
                 if ($("#clantag").val() != "") {
-                    var nickname = $("#nick").val();
+                    /* a second Hello within 5 s saved "Hello Team" as the nick to restore */
+                    if (window._lmHelloNick == null) window._lmHelloNick = $("#nick").val();
+                    clearTimeout(window._lmHelloT);
                     $("#nick").val("Hello Team");
                     $("#helloContainer").show();
                     newsubmit();
-                    setTimeout(function () {
-                        $("#nick").val(nickname);
+                    window._lmHelloT = setTimeout(function () {
+                        $("#nick").val(window._lmHelloNick);
+                        window._lmHelloNick = null;
                         $("#helloContainer").show();
                         newsubmit();
                     }, 5000);
@@ -2198,6 +2259,8 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         MSGCOMMANDS = MSGCOMMANDS.split("[DosAttack]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosAttack]')[0];
         var nameArr = MSGCOMMANDS.split(',');
+        /* missing or bad coordinates showed "Attack NaN" and drew the marker at NaN */
+        if (!isFinite(parseFloat(nameArr[0])) || !isFinite(parseFloat(nameArr[1]))) return;
         window.targetingLeadclientX = nameArr[0]
         window.targetingLeadclientY = nameArr[1]
         window.targetingLeadX = parseFloat(window.targetingLeadclientX) - legendmod.mapOffsetX
@@ -2209,6 +2272,8 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         MSGCOMMANDS = MSGCOMMANDS.split("[DosFight]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosFight]')[0];
         var nameArr = MSGCOMMANDS.split(',');
+        /* missing or bad coordinates showed "Attack NaN" and drew the marker at NaN */
+        if (!isFinite(parseFloat(nameArr[0])) || !isFinite(parseFloat(nameArr[1]))) return;
         window.targetingLeadclientX = nameArr[0]
         window.targetingLeadclientY = nameArr[1]
         window.targetingLeadX = parseFloat(window.targetingLeadclientX) - legendmod.mapOffsetX
@@ -2220,6 +2285,8 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         MSGCOMMANDS = MSGCOMMANDS.split("[DosRun]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/DosRun]')[0];
         var nameArr = MSGCOMMANDS.split(',');
+        /* missing or bad coordinates showed "Attack NaN" and drew the marker at NaN */
+        if (!isFinite(parseFloat(nameArr[0])) || !isFinite(parseFloat(nameArr[1]))) return;
         window.targetingLeadclientX = nameArr[0]
         window.targetingLeadclientY = nameArr[1]
         window.targetingLeadX = parseFloat(window.targetingLeadclientX) - legendmod.mapOffsetX
@@ -2744,7 +2811,7 @@ function universalchat() {
 
         var msg = '[Universal chat]:' + $("#message").val();
         var msgLM = $("#message").val();
-        if (msgLM.indexOf('[url]') == -1 && msgLM.indexOf('[yut]') == -1 && msgLM.indexOf('[skype]') == -1 && msgLM.indexOf('[discord]') == -1 && msgLM.indexOf('[srv]') == -1 && msgLM.indexOf('[tag]') == -1 && msgLM.indexOf('Legend.Mod') == -1 && msgLM.indexOf('https://agar.io/sip=151.80.91.73:1511') == -1) {
+        if (msgLM.indexOf('[url]') == -1 && msgLM.indexOf('[yut]') == -1 && msgLM.indexOf('[skype]') == -1 && msgLM.indexOf('[discord]') == -1 && msgLM.indexOf('[srv]') == -1 && msgLM.indexOf('[tag]') == -1 && msgLM.indexOf('Legend.Mod&?player=') == -1 && msgLM.indexOf('https://agar.io/sip=151.80.91.73:1511') == -1) {
             if (msgLM.length) {
                 my.atSendChat(0, $('#nick').val(), 'LM:' + msg);
                 if (flg.ogar) {
@@ -3671,7 +3738,9 @@ function appendLog2(message, message2) {
         "click",
         function (event) {
             event.preventDefault();
-            connectto(String(message2 || ""));
+            /* bot-list entries pass no server: connectto("") emptied the server token */
+            if (!message2) return;
+            connectto(String(message2));
         }
     );
 
@@ -4018,7 +4087,7 @@ function setyt6data() {
 }
 
 function setyt1url() {
-    yt1url = $("#yt1url").val();
+    yt1url = String($("#yt1url").val() || "").trim() || _lmChatDefaults.yt1url;
     if (getParameterByName("v", yt1url) != null) {
         yt1url = getParameterByName("v", yt1url);
     }
@@ -4027,7 +4096,7 @@ function setyt1url() {
 }
 
 function setyt2url() {
-    yt2url = $("#yt2url").val();
+    yt2url = String($("#yt2url").val() || "").trim() || _lmChatDefaults.yt2url;
     if (getParameterByName("v", yt2url) != null) {
         yt2url = getParameterByName("v", yt2url);
     }
@@ -4036,7 +4105,7 @@ function setyt2url() {
 }
 
 function setyt3url() {
-    yt3url = $("#yt3url").val();
+    yt3url = String($("#yt3url").val() || "").trim() || _lmChatDefaults.yt3url;
     if (getParameterByName("v", yt3url) != null) {
         yt3url = getParameterByName("v", yt3url);
     }
@@ -4045,7 +4114,7 @@ function setyt3url() {
 }
 
 function setyt4url() {
-    yt4url = $("#yt4url").val();
+    yt4url = String($("#yt4url").val() || "").trim() || _lmChatDefaults.yt4url;
     if (getParameterByName("v", yt4url) != null) {
         yt4url = getParameterByName("v", yt4url);
     }
@@ -4054,7 +4123,7 @@ function setyt4url() {
 }
 
 function setyt5url() {
-    yt5url = $("#yt5url").val();
+    yt5url = String($("#yt5url").val() || "").trim() || _lmChatDefaults.yt5url;
     if (getParameterByName("v", yt5url) != null) {
         yt5url = getParameterByName("v", yt5url);
     }
@@ -4063,7 +4132,7 @@ function setyt5url() {
 }
 
 function setyt6url() {
-    yt6url = $("#yt6url").val();
+    yt6url = String($("#yt6url").val() || "").trim() || _lmChatDefaults.yt6url;
     if (getParameterByName("v", yt6url) != null) {
         yt6url = getParameterByName("v", yt6url);
     }
@@ -4338,13 +4407,13 @@ function dosendmsgcommand() {
     if (application.lastSentClanTag == "" || $("#clantag").val() == "") {
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter39);
     } else {
-        application.sendChatMessage(101, "Legend.Mod&?player=" + $("#nick").val() + "&?com=" + commandMsg + "&?do=" + otherMsg)
+        application.sendChatMessage(101, "Legend.Mod&?player=" + encodeURIComponent($("#nick").val()) + "&?com=" + commandMsg + "&?do=" + otherMsg)
         /*
         if ($('#message-box').css('display') == 'none') {
             KeyEvent.simulate(13, 13);
         };
         setTimeout(function() {
-            $("#message").val("Legend.Mod&?player=" + $("#nick").val() + "&?com=" + commandMsg + "&?do=" + otherMsg);
+            $("#message").val("Legend.Mod&?player=" + encodeURIComponent($("#nick").val()) + "&?com=" + commandMsg + "&?do=" + otherMsg);
             KeyEvent.simulate(13, 13);
             if ($('#message').css('display') == 'block') {
                 KeyEvent.simulate(13, 13);
@@ -4662,37 +4731,37 @@ function setimgHref() {
 
 
 function setpic1url() {
-    pic1urlimg = $("#pic1url").val();
+    pic1urlimg = String($("#pic1url").val() || "").trim() || _lmChatDefaults.pic1urlimg;
     localStorage.setItem("pic1urlimg", pic1urlimg);
     return pic1urlimg;
 }
 
 function setpic2url() {
-    pic2urlimg = $("#pic2url").val();
+    pic2urlimg = String($("#pic2url").val() || "").trim() || _lmChatDefaults.pic2urlimg;
     localStorage.setItem("pic2urlimg", pic2urlimg);
     return pic2urlimg;
 }
 
 function setpic3url() {
-    pic3urlimg = $("#pic3url").val();
+    pic3urlimg = String($("#pic3url").val() || "").trim() || _lmChatDefaults.pic3urlimg;
     localStorage.setItem("pic3urlimg", pic3urlimg);
     return pic3urlimg;
 }
 
 function setpic4url() {
-    pic4urlimg = $("#pic4url").val();
+    pic4urlimg = String($("#pic4url").val() || "").trim() || _lmChatDefaults.pic4urlimg;
     localStorage.setItem("pic4urlimg", pic4urlimg);
     return pic4urlimg;
 }
 
 function setpic5url() {
-    pic5urlimg = $("#pic5url").val();
+    pic5urlimg = String($("#pic5url").val() || "").trim() || _lmChatDefaults.pic5urlimg;
     localStorage.setItem("pic5urlimg", pic5urlimg);
     return pic5urlimg;
 }
 
 function setpic6url() {
-    pic6urlimg = $("#pic6url").val();
+    pic6urlimg = String($("#pic6url").val() || "").trim() || _lmChatDefaults.pic6urlimg;
     localStorage.setItem("pic6urlimg", pic6urlimg);
     return pic6urlimg;
 }
@@ -4745,7 +4814,7 @@ function openbleedmod() {
 function openrotatingmod() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/extras/rotating500images.js";
+    s.src = "https://www.legendmod.ml/extras/rotating500images.js";
     $("body").append(s);
 }
 
@@ -4758,10 +4827,13 @@ function languagemodfun() {
     }
 }
 
-function changeModLanguage() {
+/* fromUser: the dropdown was changed (not the start-up call in languagemodfun) */
+function changeModLanguage(fromUser) {
     /* keep the global in sync: the language pack handler reads it (Arabic check) */
     languagemod = $("#legendlanguages").val();
     localStorage.setItem("languagemod", languagemod);
+    /* the settings-tab labels are picked at start-up (ogario.v4.js), so say how to apply them */
+    if (fromUser === true && window.toastr) toastr.info('Reload the page to show the new language in every menu.');
     if ($("#legendlanguages").val() == 1) {
         languageinjector("https://www.legendmod.ml/languages/LanguagePackEnglish.js");
     }
@@ -5337,7 +5409,8 @@ function settrolling() {
         });
     }, 4000);
     setTimeout(function () {
-        $("#canvas").css('background-image', 'url(" ")').css({
+        /* put back the player's own canvas image (it was wiped until reload) */
+        $("#canvas").css('background-image', 'url("' + (canvasbimg || ' ') + '")').css({
             opacity: 1
         });
         $("#leaderboard-hud").css('background-image', 'url("' + leadbimg + '")').css({
@@ -5621,17 +5694,28 @@ function SNEZServers() {
         server: "wss://api.legendmod.ml/lm-ws",
         client: null,
         connect: function () {
-            socket.client = new WebSocket(socket.server);
-            socket.client.onopen = socket.updateServerDetails;
+            try {
+                socket.client = new WebSocket(socket.server);
+            } catch (e) {
+                return socket.reconnect();
+            }
+            socket.client.onopen = function () {
+                socket._retryDelay = 5000;
+                socket.updateServerDetails();
+            };
             socket.client.onclose = socket.reconnect;
             socket.client.onmessage = socket.onMessage;
         },
         reconnect: function () {
-            console.log("Reconnecting in 5 seconds...");
+            /* every client retried every 5 s in step while the server was down: back off
+             * to 2 minutes, with jitter (5 s again after a successful connect) */
+            var delay = socket._retryDelay || 5000;
+            socket._retryDelay = Math.min(delay * 2, 120000);
+            console.log("Reconnecting in " + Math.round(delay / 1000) + " seconds...");
 
             setTimeout(function () {
                 socket.connect();
-            }, 5000);
+            }, delay + Math.random() * 3000);
         },
         updateServerDetails: function () {
             //        console.log("Details have changed");
@@ -6640,8 +6724,8 @@ function initializeLM(modVersion) {
 
     $("#minimap-hud").prepend('<div id="timertools-hud" class="hud" align="center" style="width: 50%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -90px; display: block;">' +
         '<button id="playtimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: block;" onclick="startTimer();" data-toggle="tooltip" data-original-title="Start Timer"" ><i id="playtime" class="fa fa-play-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="stoptimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: none;" onclick="stopTimer();" data-toggle="tooltip" data-original-title="Pause Timer""><i id="pausetime" class="fa fa-pause-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="cleartimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: none;" onclick="clearTimer();" data-toggle="tooltip" data-original-title="Stop Timer"><i id="cleartime" class="fa fa-stop-circle" style="padding-left: 0px;"></i></button>' +
+        '<button id="stoptimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="stopTimer();" data-toggle="tooltip" data-original-title="Pause Timer""><i id="pausetime" class="fa fa-pause-circle" style="padding-left: 0px;"></i></button>' +
+        '<button id="cleartimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="clearTimer();" data-toggle="tooltip" data-original-title="Stop Timer"><i id="cleartime" class="fa fa-stop-circle" style="padding-left: 0px;"></i></button>' +
         '<a id="timer" style="padding: 0px; color: #d6d3d3; width: 12%; height: 100% position: absolute; right: 0px;">00:00</a>');
     $(".menu-tabs>:nth-child(2)").after('<li class="legend-tab" style="width: 16.66%; padding:12px;" data-toggle="tooltip" data-original-title="API" data-placement="top"><a style="margin-top: 2px; height: 100%; padding:12px;" onclick="$(\'#main-menu\').children(\'div\').hide(); $(\'.menu-tabs\').children(\'li\').removeClass(\'active\'); $(\'.menu-tabs\').children(\'li\').children(\'a\').removeClass(\'active\'); $(\'#legend\').fadeIn(); $(this).addClass(\'active\'); $(this).parent().addClass(\'active\'); " href="javascript:void(0);" class="fa fa-puzzle-piece fa-lg"></a></li>');
     $(".menu-tabs").children().attr("style", "width: 14.28%");
@@ -6729,7 +6813,7 @@ function initializeLM(modVersion) {
         '</div></div>' +
 
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://www.legendmod.ml/languages/LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
-        '<select id="legendlanguages" class="form-control" onchange="changeModLanguage();" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
+        '<select id="legendlanguages" class="form-control" onchange="changeModLanguage(true);" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
         '<option value="1" data-itr="" selected>English</option>' +
         '<option value="6" data-itr="">Arabic</option>' +
         '<option value="4" data-itr="">Bulgarian</option>' +
@@ -6793,7 +6877,8 @@ function initializeLM(modVersion) {
     $("#note6").val(localStorage.getItem('note6'));
     $("#note7").val(localStorage.getItem('note7'));
 
-    $(".note").keyup(function (event) {
+    /* input/change also catch right-click paste, long-press paste and autofill (keyup missed them) */
+    $(".note").on("input change keyup", function (event) {
         localStorage.setItem(event.target.id, $(event.target).val());
     });
     var initialMusicUrl = (localStorage.getItem("musicUrl") == null ? defaultMusicUrl : localStorage.getItem("musicUrl"));
@@ -7002,21 +7087,21 @@ function initializeLM(modVersion) {
     $("#copySIPandPass").click(function () {
         if (searchSip != null) {
             if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
+                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val());
                 copy(CopyTkPwLb2);
             } else if (realmode != ":party") {
-                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val()) + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val()) + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
 
             }
         } else {
             if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
+                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val());
                 copy(CopyTkPwLb2);
             } else if (realmode != ":party") {
-                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val()) + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val()) + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             }
         }
@@ -7025,20 +7110,20 @@ function initializeLM(modVersion) {
     $("#copySIPPassLB").click(function () {
         if (searchSip != null) {
             if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
+                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val());
                 copyToClipboardAll();
             } else if (realmode != ":party") {
-                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val()) + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val()) + "&r=" + $('#region').val() + "&m=" + realmode;
                 copyToClipboardAll(); /* TK&ALL: include leaderboard, teamboard and nick like the other branches */
             }
         } else {
             if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
+                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val());
                 copyToClipboardAll();
             } else if (realmode != ":party") {
-                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                if (_lmOnLegendWebsite()) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val()) + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val()) + "&r=" + $('#region').val() + "&m=" + realmode;
                 copyToClipboardAll();
             }
         }
@@ -7060,7 +7145,29 @@ function initializeLM(modVersion) {
 
     $("#searchBtn").click(function () {
         if (!searching) {
+            var _lmQ = String($("#searchInput").val() || "").trim();
+            var _lmQl = _lmQ.toLowerCase();
+            /* Links, tokens and IPs need no player-name lookup: they had to fail the name match
+             * and wait for an "Accept manual search?" click first. */
+            var _lmIsLink = _lmQl.indexOf("agar.io/#") >= 0 || _lmQl.indexOf("ws://") === 0 || _lmQl.indexOf("wss://") === 0 ||
+                _lmQl.indexOf("sip=") >= 0 || _lmQl.indexOf("search=") >= 0 || /^[0-9.]+:[0-9]+$/.test(_lmQl);
+            if (_lmQ && _lmIsLink) {
+                searchHandler(_lmQ);
+                return;
+            }
             var client = getSNEZServers();
+            /* The name lookup server (lm-ws) down: the button did nothing and said nothing.
+             * If it never opens, say so and search the text directly. */
+            var _lmOpened = false, _lmFellBack = false;
+            var _lmFallback = function () {
+                if (_lmOpened || _lmFellBack) return;
+                _lmFellBack = true;
+                if (window.toastr) toastr.warning("The player search server is not reachable. Searching the text as a server or token instead.");
+                if (_lmQ) searchHandler(_lmQ);
+            };
+            client.onOpenCallback = function () { _lmOpened = true; };
+            client.onCloseCallback = _lmFallback;
+            setTimeout(_lmFallback, 8000);
             client.connect();
         } else {
             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
@@ -7348,6 +7455,7 @@ function initializeLM(modVersion) {
         if (checked) {
             localStorage.setItem("MAINBTBtn", true);
             var headID = document.getElementsByTagName("head")[0];
+            $('#RNCN').remove(); /* one style tag, not one more per toggle */
             $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
                 '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel{border-radius: 10px;}.menu-tabs,' +
                 '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0;} #hotkeys {border-radius: 10px;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0;}  ' +
@@ -7359,6 +7467,7 @@ function initializeLM(modVersion) {
         } else {
             localStorage.setItem("MAINBTBtn", false);
             var headID = document.getElementsByTagName("head")[0];
+            $('#RNCN').remove(); /* one style tag, not one more per toggle */
             $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
                 '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, .menu-tabs,' +
                 '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys,  #hotkeys, .skin, .input-group-btn, .input-group.nick,  ' +
@@ -7387,7 +7496,11 @@ function initializeLM(modVersion) {
     });
     $("#HideAllBthn").click(function () {
         var checked = !($(this).attr('aria-pressed') == "true");
+        /* un-hiding showed every HUD, also the ones turned off in the settings (minimap, top 5,
+         * targeting, stats), and never the clock: remember what was shown */
+        var _lmHudSel = "#shortcuts-hud,#exp-bar,#time-hud,#leaderboard-hud,#minimap-hud,#stats-hud,#top5-hud,#target-hud,#target-panel-hud";
         if (checked) {
+            window._lmHiddenHuds = $(_lmHudSel).filter(function () { return $(this).css("display") !== "none"; });
             $("#shortcuts-hud").hide();
 
             $("#exp-bar").hide();
@@ -7399,6 +7512,10 @@ function initializeLM(modVersion) {
             $("#target-hud").hide();
             $("#target-panel-hud").hide();
             $(this).html('<i class="fa fa-exclamation-triangle"></i>' + Premadeletter48);
+        } else if (window._lmHiddenHuds) {
+            window._lmHiddenHuds.show();
+            window._lmHiddenHuds = null;
+            $(this).html('<i class="fa fa-exclamation-triangle"></i>' + Premadeletter49);
         } else {
             $("#shortcuts-hud").show();
             $("#exp-bar").show();
@@ -7440,6 +7557,24 @@ function initializeLM(modVersion) {
     $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="Website" data-placement="left">v' + modVersion + semimodVersion +
         '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>' +
         '<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">☕︎</a>');
+    /* Build number next to the release label (bug reports can name it), plus a one-time
+     * "What's new" toast when the build changes for someone who played before. */
+    if (window.OgVer && !$('#menu-footer .lm-ogver').length) {
+        $('#menu-footer a[href="https://jimboy3100.github.io"]').first()
+            .append('<small class="lm-ogver" style="opacity:.6;"> · ' + String(window.OgVer) + '</small>');
+        try {
+            var _lmSeenVer = localStorage.getItem('lmLastSeenOgVer');
+            if (_lmSeenVer && _lmSeenVer !== String(window.OgVer) && window.toastr) {
+                toastr.info('<b>Legend Mod updated (' + String(window.OgVer) + ')</b><br>' +
+                    '• Smoother FPS in busy servers (skins no longer slow down every cell)<br>' +
+                    '• Same camera and zoom speed on 60/144/240 Hz screens<br>' +
+                    '• Line lock aims straight, feed macro hits the set speed<br>' +
+                    '• Google sign-in updated on legendmod.ml / Expanding Land<br>' +
+                    '• Faster reconnect, many menu and mobile fixes', '', { timeOut: 12000, extendedTimeOut: 4000 });
+            }
+            localStorage.setItem('lmLastSeenOgVer', String(window.OgVer));
+        } catch (e) { }
+    }
     $("#shortcuts-hud").hide();
     $("#exp-bar").hide();
     $("#time-hud").hide();
@@ -7588,7 +7723,8 @@ function initializeLM(modVersion) {
             MSGNICK = $el.find('.message-nick').first().text().replace(": ", "");
             if (!MSGCOMMANDS) continue;
             _msgEl.attr('data-lm-done', '1');
-            MsgCommands1(MSGCOMMANDS, MSGNICK, _msgEl);
+            /* one malformed command must not drop the rest of the queued messages */
+            try { MsgCommands1(MSGCOMMANDS, MSGNICK, _msgEl); } catch (e) { console.warn('[LM] chat command failed:', e); }
         }
     }
     /* collect the .toast-success / .message elements touched by these mutations;
@@ -7687,7 +7823,8 @@ function joinSIPonstart() {
     } else if (url.includes('https://agar.io/#') == true) {
         $('#gamemode').val(":party");
         realmodereturnfromStart();
-        joinpartyfromconnect();
+        /* the party token is the part after "#" in the launch link */
+        joinpartyfromconnect(String(url.split('https://agar.io/#')[1] || '').split(/[?&]/)[0]);
     }
 }
 
@@ -8249,7 +8386,7 @@ function BeforeSpecialDeals(tab) {
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.id = "lm-special-deals-script";
     SpecialDealsJS.type = "text/javascript";
-    SpecialDealsJS.src = "https://jimboy3100.github.io/LMexpress/skinsAndDeals.js";
+    SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/skinsAndDeals.js?v=" + (window.OgVer || "");
 
     SpecialDealsJS.onload = function() {
         window._specialDealsScriptLoading = false;
@@ -8280,13 +8417,13 @@ function BeforeSpecialDeals(tab) {
 function BeforeLegendmodShop() {
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.type = "text/javascript";
-    SpecialDealsJS.src = "https://jimboy3100.github.io/LMexpress/shop/shop.js";
+    SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/shop/shop.js?v=" + (window.OgVer || "");
     $("body").append(SpecialDealsJS);
 }
 function BeforeReplay() {
     var ReplayJS = document.createElement("script");
     ReplayJS.type = "text/javascript";
-    ReplayJS.src = "https://jimboy3100.github.io/LMexpress/replay.js";
+    ReplayJS.src = "https://www.legendmod.ml/LMexpress/replay.js?v=" + (window.OgVer || ""); /* no redirect, no stale cached copy */
     $("body").append(ReplayJS);
 }
 

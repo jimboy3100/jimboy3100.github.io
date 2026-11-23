@@ -127,7 +127,9 @@ function getParameterByName2(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
             results = regex.exec(location.search);
-        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        if (results === null) return "";
+        /* a malformed "%" in the link threw here, at load time */
+        try { return decodeURIComponent(results[1].replace(/\+/g, " ")); } catch (e) { return results[1].replace(/\+/g, " "); }
     } else {
         var arr = location.href.split("/");
         return arr[arr.length - 1];

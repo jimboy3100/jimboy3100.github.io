@@ -8,7 +8,10 @@
   "orientation": "landscape",
   "theme_color": "#00243e",
   "background_color": "#00243e",
-  "categories": ["games", "entertainment"],
+  "categories": [
+    "games",
+    "entertainment"
+  ],
   "lang": "en",
   "dir": "ltr",
   "prefer_related_applications": false,
@@ -24,16 +27,22 @@
       "type": "image/png"
     },
     {
-      "src": "/banners/icon128.png",
+      "src": "/banners/icon192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/banners/icon128.png",
+      "src": "/banners/icon512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/banners/icon512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "screenshots": [],
@@ -42,7 +51,12 @@
     {
       "name": "Play Now",
       "url": "/play.html",
-      "icons": [{ "src": "/banners/icon128.png", "sizes": "128x128" }]
+      "icons": [
+        {
+          "src": "/banners/icon192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

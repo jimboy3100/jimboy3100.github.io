@@ -147,7 +147,11 @@ function calcTarget() {
                     target2.x = PlayerCell.x;
                     target2.y = PlayerCell.y;
                     //console.log("Target mass: " + PlayerCell.mass);
-                    if (PlayerCell.mass != 0 && PlayerCell.mass != "0" && PlayerCell.name != "" && PlayerCell.nick != null) { //2nd time to check
+                    /* it ejected on every update packet until the bot was tiny: keep at least
+                     * 200 mass and feed at most every 100 ms */
+                    if (PlayerCell.mass != 0 && PlayerCell.mass != "0" && PlayerCell.name != "" && PlayerCell.nick != null &&
+                        biggercell && biggercell.mass > 200 && performance.now() >= (window._lmTeamFeedUntil || 0)) { //2nd time to check
+                        window._lmTeamFeedUntil = performance.now() + 100;
                         doFeed = true;
                     }
                     //}
@@ -219,7 +223,7 @@ function calcTarget() {
 
 
                     }
-                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercell.mass && biggercell.mass > 130 && !VirusCellDontDoTheRest) { //acting when you have the upper hand
+                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercell.mass && biggercell.mass > 130 && !VirusCellDontDoTheRest && !PlayerCell.isVirus) { //acting when you have the upper hand (never a virus: following one popped the bot)
 
 
                     if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercell.mass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercell.mass && biggercell.mass > 260)) { //split only when you have 1 cell 
@@ -429,7 +433,9 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
                 target2.y = legendmod.mapMaxY; //go down
             }
             defineCornercaseX = "right";
-            distanceCornerX = PlayerCell.x - legendmod.mapMinX;
+            /* distance to the RIGHT wall (it measured from the left wall, so the
+             * "closest wall" choice below was wrong near the right side) */
+            distanceCornerX = legendmod.mapMaxX - PlayerCell.x;
             $('#pause-hud').html("Avoiding corners X+ " + PlayerCell.x);
         }
         if (PlayerCell.y > legendmod.mapMaxY - 760) {
@@ -439,7 +445,8 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
                 target2.x = legendmod.mapMaxX; //go right
             }
             defineCornercaseY = "down";
-            distanceCornerY = PlayerCell.y - legendmod.mapMinY;
+            /* distance to the BOTTOM wall (it measured from the top wall) */
+            distanceCornerY = legendmod.mapMaxY - PlayerCell.y;
             $('#pause-hud').html("Avoiding corners Y+ " + PlayerCell.x);
         }
         //min are up left, max are down right
@@ -458,7 +465,7 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
             }
         } else if (defineCornercaseX == "right" && defineCornercaseY == "up" && (PlayerCell.x < legendmod.mapMinX + 520 || PlayerCell.y < legendmod.mapMinY + 520 || PlayerCell.x > legendmod.mapMaxX - 520 || PlayerCell.y > legendmod.mapMaxY - 520)) {
             if (Math.abs(distanceCornerX) < Math.abs(distanceCornerY)) { //is very right
-                target2.x = legendmod.mapMaxX; //go left
+                target2.x = legendmod.mapMinX; //go left (it used mapMaxX: straight into the right wall)
             } else { //is very up
                 target2.y = legendmod.mapMaxY; //go down
             }

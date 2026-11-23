@@ -330,16 +330,7 @@ if (!window.recovery) {
         ws.CLOSED = 3;
         window.WebSocket = ws;
 
-        document.head.appendChild(document.createElement('script')).src =
-            'https://www.googletagmanager.com/gtag/js?id=UA-145106226-2';
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-            window.dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', 'UA-145106226-2');
+        /* (dead Universal Analytics tag UA-145106226-2 removed: UA shut down 2023-07-01) */
     }
 
-    var x = new XMLHttpRequest();
-    //x.open("GET", "https://example.com", false);
 }

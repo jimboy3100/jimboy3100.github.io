@@ -61,7 +61,15 @@ var WasmQuadTree = (function () {
                 }
             };
 
-            var response = await fetch(wasmUrl);
+            /* own host first (CORS *, always the current build); jsDelivr's cached @master copy
+             * answered 403 at times and lagged behind updates - kept as the fallback */
+            var response = null;
+            try {
+                response = await fetch('https://www.legendmod.ml/wasm/quadtree.wasm');
+                if (!response.ok) response = null;
+            } catch (e) { response = null; }
+            if (!response) response = await fetch(wasmUrl);
+            if (!response.ok) throw new Error('quadtree.wasm HTTP ' + response.status);
             var bytes = await response.arrayBuffer();
             var result = await WebAssembly.instantiate(bytes, importObject);
             instance = result.instance;

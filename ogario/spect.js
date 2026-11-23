@@ -197,6 +197,14 @@ class Spect {
         this.closedByUser = false
         this.timeStarted = Date.now()
         this.ws = legendmod.ws
+        /* A second connect() (Tab on a unit that is still connecting) left the old socket
+         * open on the game server; extra connections count toward the per-IP limit. */
+        if (this.socket) {
+            const oldSocket = this.socket;
+            this.socket = null;
+            oldSocket.onopen = oldSocket.onmessage = oldSocket.onerror = oldSocket.onclose = null;
+            try { oldSocket.close(); } catch (e) { }
+        }
         const generation = ++this.connectionGeneration;
         const createSocket = window.createLegendWebSocket || function (url) { return new WebSocket(url); };
         const socket = createSocket(legendmod.ws);
@@ -281,6 +289,10 @@ class Spect {
         const shouldReconnect = !this.closedByUser;
         this.connectionOpened = false
         this.socket = null;
+        /* a kicked/dropped unit kept the focus: the main cell and camera stayed frozen for
+         * the whole reconnect backoff (and no menu when the main player was dead) */
+        if (this.active) this.terminate();
+        else if (window.multiboxPlayerEnabled === this.number && legendmod.play) window.multiboxPlayerEnabled = null;
         this.flushCellsData()
         this.resetConnectionState()
         console.log('closed')
@@ -506,8 +518,13 @@ class Spect {
             if (legendmod.pause) {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
             } else if (window.multiboxPlayerEnabled === this.number || this.isFreeSpectate || window.multiboxFollowMouse) {
-                /* Only the controlled unit follows the cursor (any truthy value moved every unit). */
-                this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+                /* Only the controlled unit follows the cursor (any truthy value moved every unit).
+                 * Same rules as the main cell: line lock / dance aim, and no update while a crazy
+                 * double split holds the position (window.lockPosition). */
+                if (!(window.lockPosition && window.multiboxPlayerEnabled === this.number)) {
+                    var _lmAim = this._lmAimTarget();
+                    this.sendPosition(this.convertX(_lmAim[0]), this.convertY(_lmAim[1]));
+                }
 
                 /* Keep-moving offset in server space (playerX/Y are client space). */
                 this.distX = this.convertX(legendmod.cursorX) - this.convertX(this.playerX)
@@ -520,9 +537,36 @@ class Spect {
                     this.sendPosition(this.convertX(this.playerX) + this.distX, this.convertY(this.playerY) + this.distY);
                 }
             }
-        }, 50);
+        }, 40); /* 40 ms like the main cell's cursor (was 50) */
         //this.sendSpectate()
         //this.sendFreeSpectate()
+    }
+
+    /* Cursor target for the controlled unit, in client space (like legendmod.cursorX/Y).
+     * Mirrors LM.sendPosition: line lock snaps to the nearest of 8 directions, dance spins. */
+    _lmAimTarget() {
+        var cx = legendmod.cursorX, cy = legendmod.cursorY;
+        if ((window.followStraight || legendmod.dance) && window.multiboxPlayerEnabled === this.number &&
+            Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+            var d;
+            if (window.followStraight) {
+                var dx = cx - this.playerX, dy = cy - this.playerY;
+                if (dx || dy) {
+                    d = (Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) + 10) % 8;
+                    this._lmLineDir = d;
+                } else {
+                    d = this._lmLineDir;
+                }
+            } else {
+                d = ~~((Date.now() / 40) % 8);
+            }
+            if (d !== undefined) {
+                var DX = [0, 1, 1, 1, 0, -1, -1, -1], DY = [-1, -1, 0, 1, 1, 1, 0, -1], D = 50000;
+                cx = this.playerX + DX[d] * D;
+                cy = this.playerY + DY[d] * D;
+            }
+        }
+        return [cx, cy];
     }
 
     sendSpectate() {
@@ -567,7 +611,11 @@ class Spect {
     }
 
     sendSplit() {
-        this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+        /* aim like the cursor loop (line lock / dance); a crazy split keeps the held position */
+        if (!(window.lockPosition && window.multiboxPlayerEnabled === this.number)) {
+            var _lmAim = this._lmAimTarget();
+            this.sendPosition(this.convertX(_lmAim[0]), this.convertY(_lmAim[1]));
+        }
         this.sendAction(17);
     }
 
@@ -1514,9 +1562,10 @@ class Spect {
 
         // Auto-switch active camera to surviving multibox unit if available
         if (window.multiboxPlayerEnabled === this.number) {
-            if (legendmod.play) {
-                window.multiboxPlayerEnabled = null;
-            } else {
+            /* no other living unit: the focus stayed on this dead one and spectating then
+             * followed nobody (the main camera ignores its view while a unit has focus) */
+            window.multiboxPlayerEnabled = null;
+            if (!legendmod.play) {
                 for (var s = 0; s < spects.length; s++) {
                     if (spects[s] && spects[s] !== this && spects[s].active) {
                         window.multiboxPlayerEnabled = spects[s].number;
@@ -1545,12 +1594,18 @@ class Spect {
         /* The player switched to this dead unit: keep the focus on it until it
          * spawns (beforecalculation used to hand it back on the next packet). */
         this._lmWantFocusAt = Date.now();
+        this._lmFocusOnSpawn = true;
         if (this.isSocketOpen()) {
             /* Repeated Tab presses must not start a captcha + spawn each. */
             if (Date.now() - (this._lmLastSpawnReq || 0) <= 2000) return;
             this._lmLastSpawnReq = Date.now();
             this.handleSendNick();
+        } else if (this.socket && this.socket.readyState === WebSocket.CONNECTING) {
+            /* already connecting: the server's login reply (opcode 102) spawns it */
+            return;
         } else {
+            /* a manual respawn gets the full retry budget again */
+            this._reconnectAttempts = 0;
             this.connect();
         }
     }
@@ -1919,7 +1974,12 @@ class Spect {
         if (ownCells.length) {
             if (!this.openSecond) {
                 this.openSecond = true;
-                window.multiboxPlayerEnabled = this.number
+                /* first spawn of this unit, a spawn the player asked for (Tab), or the main
+                 * cell is dead: focus it. A background reconnect + auto-respawn used to take
+                 * the focus mid-fight and freeze the main cell. */
+                if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || !legendmod.play) window.multiboxPlayerEnabled = this.number;
+                this._lmSpawnedOnce = true;
+                this._lmFocusOnSpawn = false;
             }
             this.calculatePlayerMassAndPosition(ownCells);
         } else if (window.multiboxPlayerEnabled === this.number &&

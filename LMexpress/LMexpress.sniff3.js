@@ -187,7 +187,9 @@ var textspeach="";
             }
             $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
             $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
-            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="' + cfg.prefix + '"/></label>');
+            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;"/></label>');
+            /* as a property: a prefix with a quote broke the attribute */
+            $("#voice-prefix").val(cfg.prefix);
 			$("#voice-prefix").blur(function() {
 					fn_config_save();
 			});
@@ -242,4 +244,5 @@ var textspeach="";
 //	}, 4000);
 
 //trigger twemoji emoji icons 
-var twemoji; if (twemoji) twemoji.parse(document.getElementsByClassName("emoji-content")[0]);
+/* lazy: about 1,300 picker images were downloaded at start even if the picker is never opened */
+var twemoji; if (twemoji && document.getElementsByClassName("emoji-content")[0]) twemoji.parse(document.getElementsByClassName("emoji-content")[0], { attributes: function () { return { loading: "lazy" }; } });

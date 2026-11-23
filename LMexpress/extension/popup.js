@@ -12,9 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.storage.local.set({ enabled: toggle.checked }, () => {
             console.log('Legend Express: Enabled set to', toggle.checked);
         });
+        /* the content script reads the switch when agar.io loads */
+        document.getElementById('reloadHint').style.display = 'block';
     });
 
     // Links
+    document.getElementById('play').addEventListener('click', () => {
+        window.open('https://agar.io/', '_blank');
+    });
     document.getElementById('website').addEventListener('click', () => {
         window.open('https://www.legendmod.ml', '_blank');
     });

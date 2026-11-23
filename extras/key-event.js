@@ -194,7 +194,12 @@ function playSound(url){
   audio.onended = function(){
     audio.remove() //Remove when played.
   };
+  /* a blocked autoplay (before the first click) or a broken file never "ends":
+   * the element stayed in the page for every chat sound */
+  audio.onerror = function(){ audio.remove(); };
   document.body.appendChild(audio);
+  var p = audio.play && audio.play();
+  if (p && p.catch) p.catch(function(){ audio.remove(); });
 }
 
 //4. Copy CSS

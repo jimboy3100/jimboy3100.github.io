@@ -1505,6 +1505,29 @@ input.hide-url::selection,input.stream-mode::selection{
     color:#fff;
     border-color:#8096a7 
 }
+#hotkeys-cfg .custom-key{
+    position:relative
+}
+#hotkeys-cfg .lm-hk-clear{
+    position:absolute;
+    right:-4px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#e74c3c;
+    font-weight:700;
+    text-decoration:none;
+    line-height:1;
+    opacity:.6
+}
+#hotkeys-cfg .lm-hk-clear:hover{
+    opacity:1;
+    color:#ff6b5b;
+    text-decoration:none
+}
+#exp-imp textarea{
+    width:100%;
+    box-sizing:border-box
+}
 #hotkeys-cfg .custom-key-in{
     color:#fff;
     background-color:#8d5fe6;
@@ -1517,6 +1540,8 @@ input.hide-url::selection,input.stream-mode::selection{
 }
 #exp-imp{
     width:700px;
+    max-width:96vw;
+    box-sizing:border-box;
     display:none;
     background-color:#00243e;
     color:#fff;

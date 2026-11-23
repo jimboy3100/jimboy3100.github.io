@@ -3,17 +3,17 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<div class="modal-backdrop fade in"></div>' +
     '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
     '<div class="modal-content">' +
-    '<div id="CloseReplay2" class="modal-header"><button id="CloseReplay" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQReplay type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+    '<div id="CloseReplay2" class="modal-header"><button id="CloseReplay" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQReplay" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
     '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Replay' + '</h4>' +
     '</div>' +
     '<div class="modal-body">' +
     '<select id="savedArenas" class="form-control" required="" style="display:inline; margin-bottom: 10px; width: 70%"></select>' +	
 	'<button id="watchReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal">Watch</button>' +
-	'<button onclick="saveTextAsFile()" "display:inline;">Save</button>' +
+	'<button onclick="saveTextAsFile()" style="display:inline;">Save</button>' +
     '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block" disabled>' +
     '<br>' +
     '<br>' +
-    '<color="red" style="display:inline"> Speed:</color><input id="arenaReplaySpeed" value="20" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
+    '<color="red" style="display:inline" title="Milliseconds per recorded packet: lower = faster"> Delay (ms):</color><input id="arenaReplaySpeed" value="20" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
 	//'<color="red" style="display:inline;"> PPS:</color><div id="arenaReplayPPS" style="display:inline;width: 10%;"></div><input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +
     '<color="red" style="display:inline;"> <input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +	
     '<br>' +
@@ -157,9 +157,15 @@ function saveTextAsFile()
 	
 //for saving
 
+/* nothing selected (or a removed recording) threw on RecordedProtocol[null].length */
+var _lmSel = $('#savedArenas').val();
+if (!_lmSel || !window.RecordedProtocol[_lmSel]) {
+	if (window.toastr) toastr.warning('Choose a recorded game first.');
+	return;
+}
 savedBuffedReplayProtocol=[]
-for (var i=0; i<window.RecordedProtocol[$('#savedArenas').val()].length;i++){
-	savedBuffedReplayProtocol[i] = ab2str(window.RecordedProtocol[$('#savedArenas').val()][i].buffer)
+for (var i=0; i<window.RecordedProtocol[_lmSel].length;i++){
+	savedBuffedReplayProtocol[i] = ab2str(window.RecordedProtocol[_lmSel][i].buffer)
 }
 try{
 savedBuffedReplayProtocol[savedBuffedReplayProtocol.length]=window.RecordedArenasSpecifications[$("#savedArenas").val()]
@@ -182,6 +188,8 @@ var tempo = JSON.stringify(savedBuffedReplayProtocol);
     document.body.appendChild(downloadLink);
  
     downloadLink.click();
+    /* the blob URL kept the whole file in memory until the page was closed */
+    setTimeout(function () { window.URL.revokeObjectURL(textToSaveAsURL); }, 10000);
 }
  
 function destroyClickedElement(event)
@@ -189,7 +197,9 @@ function destroyClickedElement(event)
     document.body.removeChild(event.target);
 }
  
-function loadFileAsText(file)
+/* onDone: called once the file is parsed and the totals are shown (the ?replay= link
+ * waited a fixed second instead, which was too short for big files) */
+function loadFileAsText(file, onDone)
 {
 	if (!file){
 		var fileToLoad = document.getElementById("fileToLoad").files[0];
@@ -204,15 +214,25 @@ function loadFileAsText(file)
         var textFromFileLoaded = fileLoadedEvent.target.result;
         var tempo = textFromFileLoaded;
 //for loading
-var tempo2 = JSON.parse(tempo);
+var tempo2;
+try { tempo2 = JSON.parse(tempo); } catch (e) { tempo2 = null; }
+if (!Array.isArray(tempo2) || tempo2.length < 2) {
+	if (window.toastr) toastr.error('This replay file could not be read.');
+	return;
+}
 window.RecordedProtocol[fileToLoad.name]=[]
-window.RecordedProtocolArenas.push(fileToLoad.name)
-
 var x = document.getElementById("savedArenas");
-var option = document.createElement("option");
-option.text = fileToLoad.name;
-x.add(option);
-x.options[x.length-1].selected = true;
+/* the same file loaded twice was listed twice, and dropping one copy later
+ * deleted the data both entries shared */
+if (window.RecordedProtocolArenas.indexOf(fileToLoad.name) < 0) {
+	window.RecordedProtocolArenas.push(fileToLoad.name)
+	var option = document.createElement("option");
+	option.text = fileToLoad.name;
+	x.add(option);
+	x.options[x.length-1].selected = true;
+} else {
+	$(x).val(fileToLoad.name);
+}
 
 for (var i=0; i<tempo2.length-1;i++){
 	window.RecordedProtocol[fileToLoad.name][i]=[]
@@ -221,10 +241,12 @@ for (var i=0; i<tempo2.length-1;i++){
 	window.RecordedProtocol[fileToLoad.name][i]=new DataView(str2ab(tempo2[i]));
 	
 }
-var temp1=tempo2[tempo2.length-1][0]
-var temp2=tempo2[tempo2.length-1][2]
-var temp3=tempo2[tempo2.length-1][1]
-var temp4=tempo2[tempo2.length-1][3]
+/* the last entry holds the game info; a file saved without it ends with null */
+var _lmSpec = Array.isArray(tempo2[tempo2.length-1]) ? tempo2[tempo2.length-1] : [];
+var temp1=_lmSpec[0]
+var temp2=_lmSpec[2]
+var temp3=_lmSpec[1]
+var temp4=_lmSpec[3]
 
 		try{
         var dateThen = new Date(temp1)
@@ -233,11 +255,13 @@ var temp4=tempo2[tempo2.length-1][3]
 		var tempGameMode = " Mode" + temp3
 		var tempGameNick = " Nick:" + temp4
 		var dateThen2 = dateThen.getDate() + "/" + monthErrorFix + "/" + dateThen.getFullYear() + " " + dateThen.getHours() + ":" + dateThen.getMinutes() + ":" + dateThen.getSeconds() + tempRegion + tempGameMode + tempGameNick
-		window.RecordedArenasSpecifications[$("#savedArenas").val()]=tempo2[tempo2.length-1]
+		window.RecordedArenasSpecifications[$("#savedArenas").val()]=_lmSpec
 		$("#arenaReplaySpecifications").val(dateThen2)
 		$("#arenaReplaySpecifications").blur();
-		revealReplayTotal()
 		} catch (e) {}
+		/* outside the try: a file without game info left the old totals on screen */
+		try { revealReplayTotal() } catch (e) {}
+		if (typeof onDone === 'function') onDone();
 		
 	
     };
@@ -266,15 +290,19 @@ return buf;
 	//return bufView;
 }
 function loadReplayFromWeb(temp2){
+	/* jimboy3100.github.io answers with a 301 that has no CORS header, so cross-origin loads of
+	 * the links shown on the website fail; the target host (www.legendmod.ml) allows them. */
+	temp2 = String(temp2).replace(/^(https?:)?\/\/jimboy3100\.github\.io\//i, "https://www.legendmod.ml/");
 	$.ajax(temp2, {
-        error() {},
+        error() {
+			toastr.error("<b>[" + Premadeletter123 + "]:</b> " + "Could not download the replay file");
+		},
         success(sketchContents) {
 			if (temp2.includes(".lm")){
 				temp2 = temp2.split("/").pop();
 				var replayWebLoaded = new Blob([sketchContents], {type:"text/plain"});
 				replayWebLoaded.name = temp2 
-				loadFileAsText(replayWebLoaded)
-				setTimeout(function() {
+				loadFileAsText(replayWebLoaded, function() {
 
 					window.replayStart = parseInt(window.replayStart)
 					window.replayEnd = parseInt(window.replayEnd)
@@ -288,7 +316,7 @@ function loadReplayFromWeb(temp2){
 					}
 					$("#watchReplaybtn").click()
 					application.onSpectate()	
-				}, 1000);				
+				});				
 			}
 			else{
 				toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Requested file is not .lm");
@@ -296,6 +324,8 @@ function loadReplayFromWeb(temp2){
         },
         method: "GET",
         cache: false,
-        crossDomain: true
+        crossDomain: true,
+        /* never let jQuery parse the file itself when a host sends application/json */
+        dataType: "text"
     });
 }

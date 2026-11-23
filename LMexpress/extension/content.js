@@ -3,7 +3,10 @@
 const version = 2;
 const modVersion = chrome.runtime.getManifest().version;
 
-// Helper for cross-origin fetch via background script
+// Helper for cross-origin fetch via background script.
+// The background answers { status, data } or { error }; a missing answer (service worker
+// gone), a network error or a non-2xx status goes to details.onerror instead of being
+// written into the page.
 function GM_xmlhttpRequest(details) {
     chrome.runtime.sendMessage({
         type: 'fetch',
@@ -12,20 +15,18 @@ function GM_xmlhttpRequest(details) {
             method: details.method || 'GET'
         }
     }, (response) => {
-        if (response.error) {
-            console.error('Fetch error:', response.error);
-        } else if (details.onload) {
-            details.onload({ responseText: response.data });
+        if (chrome.runtime.lastError || !response || response.error ||
+            !(response.status >= 200 && response.status < 300)) {
+            console.error('[Legend Express] Fetch failed:', details.url,
+                (chrome.runtime.lastError && chrome.runtime.lastError.message) || (response && (response.error || response.status)));
+            if (details.onerror) details.onerror(response);
+            return;
+        }
+        if (details.onload) {
+            details.onload({ responseText: response.data, status: response.status });
         }
     });
 }
-
-// Mock GM_info
-const GM_info = {
-    script: {
-        version: modVersion
-    }
-};
 
 // Check enabled state before proceeding
 chrome.storage.local.get({ enabled: true }, (result) => {
@@ -55,67 +56,39 @@ chrome.storage.local.get({ enabled: true }, (result) => {
     }
 });
 
+/*
+ * Only "/", "/legendmod..." and "/captcha" reach runMod() (see above), so only those two
+ * pages are loaded. The old other-mod modes (hslo, agartool, ogario, vanilla, delta, neo,
+ * mobile) could never be reached from this extension and ran downloaded code inside the
+ * page, which the Chrome Web Store does not allow; they were removed. The Tampermonkey
+ * userscript (LMexpress.user.js) still offers them.
+ */
 function runMod() {
     document.documentElement.innerHTML = "";
-    let mode = location.pathname.slice(1);
-    if (mode.startsWith("legendmod")) mode = "legendmod";
-
-    let modwebsite;
-    switch (mode) {
-        case 'normal':
-            modwebsite = 'https://agar.io';
-            Htmlscript(modwebsite);
-            break;
-        case 'hslo':
-            modwebsite = 'https://hslo.io/install.user.js';
-            Userscript(modwebsite);
-            break;
-        case 'agartool':
-            modwebsite = 'https://www.agartool.io/agartool.user.js';
-            Userscript(modwebsite);
-            break;
-        case 'vanilla':
-            /* https only: code fetched over plain http could be swapped on the network path and would run on agar.io */
-            modwebsite = 'https://imasters.org.ru/agar/js/vanilla.user.js';
-            Userscript(modwebsite);
-            break;
-        case 'ogario':
-            modwebsite = 'https://cdn.ogario.ovh/v4/beta/ogario.v4.user.js';
-            Userscript(modwebsite);
-            break;
-        case 'delta':
-            modwebsite = 'https://deltav4.glitch.me/v4/index.html';
-            Htmlscript(modwebsite);
-            break;
-        case 'neo':
-            modwebsite = 'https://www.legendmod.ml/play.html?' + version;
-            Htmlscript(modwebsite);
-            setTimeout(function () {
-                modwebsite = 'https://jimboy3100.github.io/ExampleScripts/Neoprivate.js';
-                Userscript(modwebsite);
-            }, 5000);
-            break;
-        case 'mobile':
-            modwebsite = 'https://www.legendmod.ml/play.html';
-            Htmlscript(modwebsite);
-            setTimeout(function () {
-                modwebsite = 'https://www.legendmod.ml/ExampleScripts/gamepad.user.js';
-                Userscript(modwebsite);
-            }, 5000);
-            break;
-        case 'captcha':
-            modwebsite = 'https://www.legendmod.ml/ogario/captcha.html'
-            Htmlscript(modwebsite);
-            break;
-        case 'legendmod': default:
-            modwebsite = 'https://www.legendmod.ml/play.html?' + version;
-            Htmlscript(modwebsite);
-            break;
+    const mode = location.pathname.slice(1);
+    if (mode === 'captcha') {
+        Htmlscript('https://www.legendmod.ml/ogario/captcha.html');
+    } else {
+        Htmlscript('https://www.legendmod.ml/play.html?' + version);
     }
 }
 
 function inject(page) {
     return page.replace("</body>", "<script>init('" + modVersion + "');</script></body>");
+}
+
+/* Shown instead of a blank white page when Legend Mod cannot be loaded. */
+function showLoadError() {
+    document.open();
+    document.write('<!doctype html><html><head><meta charset="utf-8"><title>Legend Mod</title></head>' +
+        '<body style="margin:0;background:#00243e;color:#fff;font:16px Ubuntu,Arial,sans-serif;text-align:center;padding-top:20vh">' +
+        '<h2 style="margin:0 0 12px">Legend Mod could not be loaded</h2>' +
+        '<div style="opacity:.8">A network problem or the Legend Mod server did not answer.</div><br>' +
+        '<a style="color:#ffd200" href="' + location.pathname + location.search + location.hash + '">Try again</a>' +
+        ' &nbsp;·&nbsp; ' +
+        '<a style="color:#ffd200" href="https://www.legendmod.ml/" target="_blank" rel="noopener">Legend Mod website</a>' +
+        '</body></html>');
+    document.close();
 }
 
 function Htmlscript(modwebsite) {
@@ -132,25 +105,7 @@ function Htmlscript(modwebsite) {
                 }
             }, 2000);
             document.close();
-        }
-    });
-}
-
-function Userscript(modwebsite) {
-    /* Never run remote code that did not come over https */
-    if (!/^https:\/\//i.test(modwebsite)) {
-        console.error('[LMexpress] Refusing to run a userscript that is not served over https: ' + modwebsite);
-        return;
-    }
-    GM_xmlhttpRequest({
-        method: "GET",
-        url: modwebsite,
-        onload: function (e) {
-            // Note: In Chrome extensions, new Function can be blocked by CSP
-            // This might need a different injection method if the external script is complex
-            const script = document.createElement('script');
-            script.textContent = `(function(GM_info, GM_xmlhttpRequest) { ${e.responseText} })(JSON.parse('${JSON.stringify(GM_info)}'), ${GM_xmlhttpRequest.toString()});`;
-            document.head.appendChild(script);
-        }
+        },
+        onerror: showLoadError
     });
 }

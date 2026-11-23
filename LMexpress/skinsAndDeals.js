@@ -1,3 +1,94 @@
+/* Skin shop text in the Legend Mod language (language picker; 1 = English). The rest of the
+ * new UI is still English; more keys can be added here. */
+var _LM_SHOP_LANGS = { '1': 'en', '2': 'el', '3': 'es', '4': 'bg', '5': 'fr', '6': 'ar', '7': 'zh', '8': 'ru', '9': 'de', '10': 'tr', '11': 'pl', '12': 'nl' };
+var _LM_SHOP_TEXT = {
+    "tabSkins": {"en":"Agar.io Skins","el":"Skins του Agar.io","es":"Skins de Agar.io","bg":"Скинове за Agar.io","fr":"Skins Agar.io","ar":"سكنات Agar.io","zh":"Agar.io 造型","ru":"Скины Agar.io","de":"Agar.io-Skins","tr":"Agar.io Kostümleri","pl":"Skiny Agar.io","nl":"Agar.io-skins"},
+    "tabUpload": {"en":"Custom Skin Uploader","el":"Ανέβασμα δικού σου skin","es":"Subir skin personalizado","bg":"Качване на собствен скин","fr":"Importer un skin personnalisé","ar":"رفع سكن مخصص","zh":"上傳自訂造型","ru":"Загрузка своего скина","de":"Eigenen Skin hochladen","tr":"Özel kostüm yükle","pl":"Wgraj własny skin","nl":"Eigen skin uploaden"},
+    "tabDeals": {"en":"Special Deals","el":"Ειδικές προσφορές","es":"Ofertas especiales","bg":"Специални оферти","fr":"Offres spéciales","ar":"عروض خاصة","zh":"特別優惠","ru":"Спецпредложения","de":"Sonderangebote","tr":"Özel fırsatlar","pl":"Oferty specjalne","nl":"Speciale aanbiedingen"},
+    "titleDeals": {"en":"Special & Daily Deals","el":"Ειδικές & ημερήσιες προσφορές","es":"Ofertas especiales y diarias","bg":"Специални и дневни оферти","fr":"Offres spéciales et du jour","ar":"عروض خاصة ويومية","zh":"特別與每日優惠","ru":"Спецпредложения и предложения дня","de":"Sonder- & Tagesangebote","tr":"Özel ve günlük fırsatlar","pl":"Oferty specjalne i dnia","nl":"Speciale & dagaanbiedingen"},
+    "equipped": {"en":"Currently Equipped Skin","el":"Τρέχον skin","es":"Skin equipado actualmente","bg":"Текущо екипиран скин","fr":"Skin équipé actuellement","ar":"السكن المجهز حاليًا","zh":"目前裝備的造型","ru":"Текущий скин","de":"Aktuell ausgerüsteter Skin","tr":"Şu an kullanılan kostüm","pl":"Aktualnie założony skin","nl":"Huidige skin"},
+    "unequip": {"en":"Unequip","el":"Αφαίρεση","es":"Quitar","bg":"Свали","fr":"Retirer","ar":"إزالة","zh":"卸下","ru":"Снять","de":"Ablegen","tr":"Çıkar","pl":"Zdejmij","nl":"Verwijderen"},
+    "search": {
+        "en": "Search skins by name...",
+        "el": "Αναζήτηση skin με όνομα...",
+        "es": "Buscar skins por nombre...",
+        "bg": "Търсене на скинове по име...",
+        "fr": "Rechercher un skin par nom...",
+        "ar": "ابحث عن السكنات بالاسم...",
+        "zh": "按名稱搜尋造型...",
+        "ru": "Поиск скинов по названию...",
+        "de": "Skins nach Namen suchen...",
+        "tr": "Kostümleri ada göre ara...",
+        "pl": "Szukaj skinów po nazwie...",
+        "nl": "Zoek skins op naam..."
+    },
+    "more": {
+        "en": "Load More Skins",
+        "el": "Περισσότερα skins",
+        "es": "Cargar más skins",
+        "bg": "Още скинове",
+        "fr": "Plus de skins",
+        "ar": "تحميل المزيد",
+        "zh": "載入更多造型",
+        "ru": "Загрузить ещё",
+        "de": "Mehr Skins laden",
+        "tr": "Daha fazla kostüm",
+        "pl": "Więcej skinów",
+        "nl": "Meer skins laden"
+    },
+    "left": {
+        "en": "remaining",
+        "el": "απομένουν",
+        "es": "restantes",
+        "bg": "остават",
+        "fr": "restants",
+        "ar": "متبقية",
+        "zh": "剩餘",
+        "ru": "осталось",
+        "de": "übrig",
+        "tr": "kaldı",
+        "pl": "pozostało",
+        "nl": "over"
+    },
+    "nomatch": {
+        "en": "No skins match",
+        "el": "Κανένα skin δεν ταιριάζει με",
+        "es": "Ningún skin coincide con",
+        "bg": "Няма скинове за",
+        "fr": "Aucun skin ne correspond à",
+        "ar": "لا توجد سكنات مطابقة لـ",
+        "zh": "沒有符合的造型：",
+        "ru": "Нет скинов по запросу",
+        "de": "Keine Skins für",
+        "tr": "Eşleşen kostüm yok:",
+        "pl": "Brak skinów dla",
+        "nl": "Geen skins voor"
+    },
+    "none": {
+        "en": "No skins to show.",
+        "el": "Δεν υπάρχουν skins.",
+        "es": "No hay skins para mostrar.",
+        "bg": "Няма скинове.",
+        "fr": "Aucun skin à afficher.",
+        "ar": "لا توجد سكنات.",
+        "zh": "沒有可顯示的造型。",
+        "ru": "Нет скинов.",
+        "de": "Keine Skins vorhanden.",
+        "tr": "Gösterilecek kostüm yok.",
+        "pl": "Brak skinów.",
+        "nl": "Geen skins om te tonen."
+    }
+};
+function lmShopT(key) {
+    var code = 'en';
+    try { code = _LM_SHOP_LANGS[String(localStorage.getItem('languagemod'))] || 'en'; } catch (e) { }
+    var row = _LM_SHOP_TEXT[key] || {};
+    return row[code] || row.en || '';
+}
+window.lmShopT = lmShopT;
+/* HTML-escaped lmShopT for markup ("&" in "Special & Daily Deals") */
+function lmShopTH(key) { return String(lmShopT(key)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
 //OLD DEALS
 //v2.23
 
@@ -119,6 +210,8 @@ function SpecialDeals(defaultTab) {
         if (requestedTab.length) {
             requestedTab.trigger('click');
         }
+        /* closing stopped the 60 s offer scan; restart it (a second start is ignored) */
+        if (typeof _lmStartPromoRefresh === 'function') _lmStartPromoRefresh();
 
         return;
     }
@@ -228,6 +321,11 @@ function SpecialDeals(defaultTab) {
             '#skinSearchBar::placeholder { color: ' + tc2 + '; }',
             '.skin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 50vh; overflow-y: auto; padding: 4px; }',
             '.skin-grid::-webkit-scrollbar { width: 6px; }',
+            /* short windows (1366x768): the dialog was taller than the screen, its close button above
+             * the top and Load More clipped; narrow ones clipped tabs/buttons */
+            '#specialShopModal .modal-content { max-height: calc(100vh - 16px); overflow-y: auto; min-width: min(340px, 100%); }',
+            '.skin-grid { max-height: min(50vh, max(160px, calc(100vh - 400px))); }',
+            '@media (max-width: 480px) { .skin-filter-bar { flex-wrap: wrap; } .skin-filter-btn { white-space: normal; min-width: 0; } .shop-tab { letter-spacing: 0; font-size: 12px; } }',
             '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
             '.skin-grid::-webkit-scrollbar-thumb { background: ' + pc2 + '; border-radius: 3px; }',
             '.skin-grid::-webkit-scrollbar-thumb:hover { background: ' + tc2 + '; }',
@@ -285,8 +383,8 @@ function SpecialDeals(defaultTab) {
         var isSkins = (!isDeals && !isUpload);
 
         var initialTabTitle = isDeals
-            ? '<i class="fa fa-briefcase"></i> Special & Daily Deals'
-            : (isUpload ? '<i class="fa fa-upload"></i> Custom Skin Uploader' : '<i class="fa fa-paint-brush"></i> Agar.io Skins');
+            ? '<i class="fa fa-briefcase"></i> ' + lmShopTH('titleDeals')
+            : (isUpload ? '<i class="fa fa-upload"></i> ' + lmShopTH('tabUpload') : '<i class="fa fa-paint-brush"></i> ' + lmShopTH('tabSkins'));
 
         var skinsTabClass = isSkins ? 'shop-tab active' : 'shop-tab';
         var uploadTabClass = isUpload ? 'shop-tab active' : 'shop-tab';
@@ -311,9 +409,9 @@ function SpecialDeals(defaultTab) {
 
         // Tab bar
         '<div class="shop-tabs">' +
-        '<div class="' + skinsTabClass + '" data-tab="skins"><i class="fa fa-paint-brush"></i> Agar.io Skins</div>' +
-        '<div class="' + uploadTabClass + '" data-tab="upload"><i class="fa fa-upload"></i> Custom Skin Uploader</div>' +
-        '<div class="' + dealsTabClass + '" data-tab="deals"><i class="fa fa-briefcase"></i> Special Deals</div>' +
+        '<div class="' + skinsTabClass + '" data-tab="skins"><i class="fa fa-paint-brush"></i> ' + lmShopTH('tabSkins') + '</div>' +
+        '<div class="' + uploadTabClass + '" data-tab="upload"><i class="fa fa-upload"></i> ' + lmShopTH('tabUpload') + '</div>' +
+        '<div class="' + dealsTabClass + '" data-tab="deals"><i class="fa fa-briefcase"></i> ' + lmShopTH('tabDeals') + '</div>' +
         '</div>' +
 
         // === 1. Skins tab ===
@@ -324,10 +422,10 @@ function SpecialDeals(defaultTab) {
             '<div class="active-skin-banner" id="activeSkinBanner">' +
             '<img id="activeSkinImg" src="" alt="Active Skin" onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
             '<div class="info">' +
-            '<div class="title">&#x2714; Currently Equipped Skin</div>' +
+            '<div class="title">&#x2714; ' + lmShopTH('equipped') + '</div>' +
             '<div class="name" id="activeSkinName">None (Default)</div>' +
             '</div>' +
-            '<button class="unequip-btn" id="unequipSkinBtn" onclick="unequipSkin();">Unequip</button>' +
+            '<button class="unequip-btn" id="unequipSkinBtn" onclick="unequipSkin();">' + lmShopTH('unequip') + '</button>' +
             '</div>' +
 
             '<div class="skin-filter-bar" style="display: flex; gap: 6px; margin-bottom: 10px;">' +
@@ -336,10 +434,10 @@ function SpecialDeals(defaultTab) {
             '<button class="btn btn-xs skin-filter-btn" data-filter="new" title="The newest Agar.io skins, newest first" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x1F195; New Skins</button>' +
             '<button class="btn btn-xs" id="checkForOffersBtn" onclick="window._lmCheckForOffersManual()" title="Scan for active Agar.io promotional offers" style="flex: 0 0 auto; background: #ff9800; color: #fff; font-weight: 700; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">&#x1F514; Offers</button>' +
             '</div>' +
-            '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
+            '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; ' + $('<div>').text(lmShopT('search')).html() + '">' +
             '<div class="skin-grid" id="skinGrid"></div>' +
             '<div class="skin-stats"><span id="skinCount">0</span> skins shown <span id="skinTotal">0</span> total</div>' +
-            '<button type="button" class="skin-load-more" id="skinLoadMore" style="display:none;">Load More Skins</button>' +
+            '<button type="button" class="skin-load-more" id="skinLoadMore" style="display:none;">' + $('<div>').text(lmShopT('more')).html() + '</button>' +
             '</div>' +
             '</div>' +
 
@@ -2324,11 +2422,11 @@ function SpecialDeals(defaultTab) {
 
             var headerTitle = $('#specialShopModal .modal-title');
             if (tab === 'deals') {
-                headerTitle.html('<i class="fa fa-briefcase"></i> Special & Daily Deals');
+                headerTitle.html('<i class="fa fa-briefcase"></i> ' + lmShopTH('titleDeals'));
             } else if (tab === 'upload') {
-                headerTitle.html('<i class="fa fa-upload"></i> Custom Skin Uploader');
+                headerTitle.html('<i class="fa fa-upload"></i> ' + lmShopTH('tabUpload'));
             } else {
-                headerTitle.html('<i class="fa fa-paint-brush"></i> Agar.io Skins');
+                headerTitle.html('<i class="fa fa-paint-brush"></i> ' + lmShopTH('tabSkins'));
             }
 
             if (tab === 'skins') {
@@ -2523,6 +2621,19 @@ function SpecialDeals(defaultTab) {
             window.closeSpecialShopModal();
         });
 
+        if (!window._lmShopSubEsc) {
+            window._lmShopSubEsc = true;
+            /* packs / bundles / buy-confirm dialogs: Esc closed the shop behind them and left them
+             * floating over the game */
+            window.addEventListener('keydown', function (e) {
+                if (e.keyCode !== 27 && e.key !== 'Escape') return;
+                var sub = $('#skin-packs-modal, #mobile-bundles-modal, #deal-buy-confirm-modal').last();
+                if (!sub.length) return;
+                e.preventDefault();
+                e.stopPropagation();
+                sub.remove();
+            }, true);
+        }
         $(document).off('keydown.shopModal').on('keydown.shopModal', function(e) {
             /* The modal stays in the DOM after closing; only react while it is visible. */
             if (e.which === 27 && $('#specialShopModal').is(':visible')) {
@@ -4033,7 +4144,7 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm, headerText)
     modal.className = 'lm-modal-overlay';
     modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML = 
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
                 _sdEscHtml(headerText || '🛒 Purchase Confirmation') +
             '</div>' +
@@ -5517,6 +5628,12 @@ function populateSkins() {
      * Load More calls this too, so it cannot operate on an empty/stale
      * global skinShopFiltered cache.
      */
+    /* search ignores accents and case: "pokemon" finds "Pokémon" */
+    function _lmSkinFold(s) {
+        s = String(s || '');
+        try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) { }
+        return s.toLowerCase();
+    }
     function rebuildSkinShopFiltered() {
         var activeFilter =
             $('.skin-filter-btn.active')
@@ -5533,7 +5650,7 @@ function populateSkins() {
         var searchEl = $('#skinSearchBar');
         var query =
             searchEl.length && searchEl.val()
-                ? String(searchEl.val()).toLowerCase().trim()
+                ? _lmSkinFold(String(searchEl.val()).trim())
                 : '';
 
         var ownedSkinsObj = getOwnedSkinsMap();
@@ -5579,8 +5696,8 @@ function populateSkins() {
                     }
             if (currentFilter === 'owned' && !isSkinOwned(skin, ownedSkinsObj)) return false;
             if (query !== '') {
-                var name = (skin.displayName || skin.productId.replace('skin_', '').replace(/_/g, ' ')).toLowerCase();
-                var productId = skin.productId.toLowerCase();
+                var name = _lmSkinFold(skin.displayName || skin.productId.replace('skin_', '').replace(/_/g, ' '));
+                var productId = _lmSkinFold(skin.productId);
                 if (name.indexOf(query) === -1 && productId.indexOf(query) === -1) return false;
             }
             return true;
@@ -5663,6 +5780,20 @@ function populateSkins() {
             markSkinsAsSeen(skins);
         }
 
+        /* a search with no result showed an empty grid */
+        if (!skinShopFiltered || skinShopFiltered.length === 0) {
+            var _lmQ = String($('#skinSearchBar').val() || '').trim();
+            grid.innerHTML =
+                '<div style="grid-column:1/-1;text-align:center;padding:30px;color:' +
+                getShopTheme().tc2 + ';font-size:13px;">' +
+                (_lmQ ? $('<div>').text(lmShopT('nomatch')).html() + ' “' + $('<div>').text(_lmQ).html() + '”.' : $('<div>').text(lmShopT('none')).html()) +
+                '</div>';
+            $('#skinCount').text(0);
+            $('#skinTotal').text(0);
+            $('#skinLoadMore').hide();
+            return;
+        }
+
         renderSkinPage(false);
     }
 
@@ -5696,6 +5827,20 @@ function populateSkins() {
                     }, 140);
             }
         );
+
+    /* Load the next page by itself near the bottom of the grid. #skinGrid is what scrolls and
+     * Load More sits below it, always visible: an observer on the button loaded one extra page
+     * on open and never on scrolling. */
+    (function () {
+        if (window._lmSkinMoreObs) { window._lmSkinMoreObs.disconnect(); window._lmSkinMoreObs = null; window._lmSkinMoreObsEl = null; }
+        var g = document.getElementById('skinGrid');
+        if (!g || g._lmMore) return;
+        g._lmMore = true;
+        g.addEventListener('scroll', function () {
+            var b = document.getElementById('skinLoadMore');
+            if (b && !b.disabled && $(b).is(':visible') && g.scrollTop + g.clientHeight >= g.scrollHeight - 150) $(b).trigger('click');
+        }, { passive: true });
+    })();
 
     // Load more handler
     $('#skinLoadMore')
@@ -7324,9 +7469,9 @@ function updatePaginationUI() {
             .css('display', 'block')
             .show()
             .text(
-                'Load More Skins (' +
-                (total - renderedCount) +
-                ' remaining)'
+                lmShopT('more') + ' (' +
+                (total - renderedCount) + ' ' + lmShopT('left') +
+                ')'
             );
     } else {
         loadMoreButton.hide();
@@ -7840,6 +7985,15 @@ function renderSkinPage(
             image.addEventListener(
                 'error',
                 function () {
+                    /* one retry with a cache-buster (a CDN hiccup hid the image for good);
+                     * the skin name stays visible under the picture either way */
+                    var src = this.getAttribute('src') || '';
+                    if (!this._lmRetried && src && src.indexOf('data:') !== 0) {
+                        this._lmRetried = true;
+                        this.src = src + (src.indexOf('?') < 0 ? '?' : '&') + 'r=1';
+                        return;
+                    }
+
                     this.removeAttribute(
                         'data-src'
                     );

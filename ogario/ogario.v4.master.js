@@ -1,6 +1,8 @@
 //v12.84
 
 var consoleMsgLMMaster = "[Master] ";
+/* translated text from window.lmT (ogario.v4.js); English when it is not loaded */
+function _lmMT(key, en) { try { var s = window.lmT && window.lmT(key); return s && s !== key ? s : en; } catch (e) { return en; } }
 
 // ── Centralized URL constants (single source of truth) ──
 // All other files must use these instead of hardcoding domains.
@@ -254,9 +256,8 @@ function legendmaster(self) {
             return true;
         }
 
-        alert(
-            "Facebook login is unavailable. Check browser extensions and privacy settings."
-        );
+        var _lmFbUnav = "Facebook login is unavailable. Check browser extensions and privacy settings.";
+        if (window.toastr) toastr.warning(_lmFbUnav); else alert(_lmFbUnav);
 
         return false;
     }
@@ -293,6 +294,11 @@ function legendmaster(self) {
 					console.warn("[Master] Late multibox Facebook login kept for multibox only");
 				}
 				else{
+					/* saved on success too: the relogin path calls logout() right after
+					 * FB.login(), which clears the provider while the popup is open */
+					options.loginIntent = "1";
+					options.context = "facebook";
+					self.updateStorage();
 					master.doLoginWithFB(accessToken);
 					self.FB.api("/me/picture?width=180&height=180", function(images) {
 						if (images.data && images.data.url) {
@@ -322,7 +328,188 @@ function legendmaster(self) {
         }
     }
 
+    /*
+     * Google login on our own domains (www.legendmod.ml, expanding.land's game iframe,
+     * jimboy3100.github.io) through Google Identity Services.
+     *
+     * gapi.auth2 cannot work there (verified in a browser):
+     *   - agar.io's client: "Not a valid origin ... https://www.legendmod.ml"
+     *   - the Legend Mod client (477064...): "You have created a new client application that
+     *     uses libraries ... that are deprecated" (Google blocks gapi.auth2 for it).
+     * google.accounts.id returns the same kind of Google ID token (JWT) that gapi's
+     * getAuthResponse().id_token gave, so doLoginWithGPlus() and the server see the same
+     * token type as before. (The GIS version removed in July used the OAuth token client,
+     * which returns an access token instead.) agar.io keeps gapi.auth2 unchanged.
+     */
+    var _LM_GIS_CLIENT_ID = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
+    function _lmUseGis() {
+        return /(^|\.)(legendmod\.ml|expanding\.land|jimboy3100\.github\.io)$/i.test(location.hostname || "");
+    }
+    function _lmDecodeJwtPayload(token) {
+        try {
+            var p = String(token).split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+            while (p.length % 4) p += "=";
+            return JSON.parse(decodeURIComponent(escape(atob(p))));
+        } catch (e) {
+            return null;
+        }
+    }
+    function _lmSetupGis() {
+        var btn = document.getElementById("gplusLogin");
+        if (!btn) {
+            console.warn("[Master] Google login button #gplusLogin was not found");
+            return;
+        }
+        var gisReady = false;
+        var pendingRefresh = null;
+        var refreshTimer = null;
+        var userAsked = false;
+        var gisFailed = false;
+        var fallbackBox = null;
+
+        function showFallbackButton() {
+            if (!gisReady || !self.google || !self.google.accounts) return;
+            if (!fallbackBox) {
+                fallbackBox = document.createElement("div");
+                fallbackBox.id = "lm-gis-btn";
+                fallbackBox.style.cssText = "margin-top:6px;display:flex;justify-content:center;";
+                btn.parentNode.insertBefore(fallbackBox, btn.nextSibling);
+                try {
+                    self.google.accounts.id.renderButton(fallbackBox, { type: "standard", theme: "filled_blue", size: "large", text: "signin_with", shape: "rectangular" });
+                } catch (e) {
+                    console.warn("[Master] Google button render failed:", e);
+                }
+            }
+            fallbackBox.style.display = "flex";
+        }
+
+        function onCredential(resp) {
+            var idToken = resp && resp.credential;
+            /* a credential after the player clicked Google is a login, even while a silent
+             * token refresh was waiting (it gets the token too) */
+            var asked = userAsked;
+            userAsked = false;
+            if (pendingRefresh) {
+                var cb = pendingRefresh;
+                pendingRefresh = null;
+                clearTimeout(refreshTimer);
+                cb(idToken || null);
+                if (!asked) return;
+            }
+            if (!idToken) return;
+            if (fallbackBox) fallbackBox.style.display = "none";
+            if (window.MultiPending) {
+                master.accessTokenGPlus = idToken;
+                master.accessTokenGPlusAt = Date.now();
+                MultiTokenReady(window.MultiPending);
+                window.MultiPending = null;
+                return;
+            }
+            options.loginIntent = "1";
+            options.context = "google";
+            master.doLoginWithGPlus(idToken);
+            var profile = _lmDecodeJwtPayload(idToken) || {};
+            if (profile.picture) options.userInfo.picture = profile.picture;
+            self.updateStorage();
+            _lmApplyGoogleProfile(profile);
+            $("#helloContainer").attr("data-logged-in", "1");
+            $("#login-facebook").attr("class", "menu-bar-button");
+            $("#login-google").attr("class", "menu-bar-button barf");
+            toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Google!");
+            window.loggedIn = true;
+        }
+
+        /* refreshSocialToken() uses this: a silent prompt for a returning user */
+        window._lmGisRefresh = function (cb) {
+            if (!gisReady || !self.google || !self.google.accounts) return cb(null);
+            pendingRefresh = cb;
+            /* One Tap left open without an answer: give up after 15 s */
+            clearTimeout(refreshTimer);
+            refreshTimer = setTimeout(function () {
+                if (pendingRefresh === cb) {
+                    pendingRefresh = null;
+                    cb(null);
+                }
+            }, 15000);
+            try {
+                self.google.accounts.id.prompt(function (n) {
+                    if (pendingRefresh === cb && n && ((n.isNotDisplayed && n.isNotDisplayed()) || (n.isSkippedMoment && n.isSkippedMoment()))) {
+                        pendingRefresh = null;
+                        cb(null);
+                    }
+                });
+            } catch (e) {
+                pendingRefresh = null;
+                cb(null);
+            }
+        };
+
+        btn.addEventListener("click", function () {
+            /* the provider is saved by onCredential once sign-in succeeds: a cancelled Google
+             * attempt must not switch off a Facebook player's automatic login */
+            if (!gisReady) {
+                toastr.warning(gisFailed ? "Google sign-in is blocked by an extension or a privacy setting." :
+                    "Google sign-in is still loading. Please try again in a moment.");
+                return;
+            }
+            userAsked = true;
+            try {
+                self.google.accounts.id.prompt(function (n) {
+                    /* One Tap was not shown (cookies, iframe, cool-down): offer Google's own button */
+                    if (n && ((n.isNotDisplayed && n.isNotDisplayed()) || (n.isSkippedMoment && n.isSkippedMoment()))) {
+                        showFallbackButton();
+                    }
+                });
+            } catch (e) {
+                showFallbackButton();
+            }
+        });
+
+        var s = document.createElement("script");
+        s.src = "https://accounts.google.com/gsi/client";
+        s.async = true;
+        s.defer = true;
+        s.onload = function () {
+            try {
+                self.google.accounts.id.initialize({
+                    client_id: _LM_GIS_CLIENT_ID,
+                    callback: onCredential,
+                    auto_select: true,
+                    cancel_on_tap_outside: true,
+                    itp_support: true
+                });
+                gisReady = true;
+                /* like gapi's get(): a player who logged in with Google last time is signed in
+                 * again silently when the browser allows it (no button pops up on failure) */
+                if ("1" === options.loginIntent && options.context === "google") {
+                    try {
+                        self.google.accounts.id.prompt(function (n) {
+                            /* silent sign-in not possible (cool-down, blocked cookies): the saved
+                             * profile shown at load would look logged in while playing as guest */
+                            if (n && ((n.isNotDisplayed && n.isNotDisplayed()) || (n.isSkippedMoment && n.isSkippedMoment())) &&
+                                !window.loggedIn && !pendingRefresh) {
+                                $("#helloContainer").attr("data-logged-in", "0");
+                                toastr.info("<b>[" + Premadeletter123 + "]:</b> Click Google to sign in again.");
+                            }
+                        });
+                    } catch (e) { }
+                }
+            } catch (e) {
+                console.error("[Master] Google Identity Services init failed:", e);
+            }
+        };
+        s.onerror = function () {
+            gisFailed = true;
+            console.warn("[Master] Google Identity Services could not be loaded (blocked?)");
+        };
+        document.head.appendChild(s);
+    }
+
     function setup() {
+        if (_lmUseGis()) {
+            _lmSetupGis();
+            return;
+        }
         if (
             !self.gapi ||
             typeof self.gapi.load !== "function"
@@ -365,19 +552,41 @@ function legendmaster(self) {
                 return;
             }
 
+            var prevLogin = null;
             contextMenu.addEventListener(
                 "click",
                 function() {
                     /* A multibox login must not change the main account's saved provider. */
                     if (window.MultiPending) return;
+                    /* transform() needs the Google context before the popup answers; a cancelled
+                     * or failed sign-in puts the previous provider back (Facebook auto-login) */
+                    prevLogin = { loginIntent: options.loginIntent, context: options.context };
                     options.loginIntent = "1";
                     options.context = "google";
                     self.updateStorage();
                 }
             );
 
+            /* Success already arrives through api.currentUser.listen(transform) below, so the
+             * success callback here is a no-op; a cancelled or blocked sign-in was silent. */
             api.attachClickHandler(
-                contextMenu
+                contextMenu,
+                {},
+                function () { },
+                function (err) {
+                    var code = err && err.error;
+                    if (prevLogin && options.context === "google") {
+                        options.loginIntent = prevLogin.loginIntent;
+                        options.context = prevLogin.context;
+                        self.updateStorage();
+                    }
+                    prevLogin = null;
+                    if (window.toastr) {
+                        toastr.error(code === "popup_closed_by_user"
+                            ? "Google sign-in was cancelled."
+                            : "Google sign-in failed. Allow popups and third-party cookies for this site, then try again.");
+                    }
+                }
             );
 
             api.currentUser.listen(
@@ -716,7 +925,7 @@ function legendmaster(self) {
                             canvasLayersManager.reconnect(false, "country-request-fallback");
                         }
                     } else if (window.toastr) {
-                        toastr.warning('<b>[Master]:</b> Could not determine your region. Select a region manually.');
+                        toastr.warning('<b>[Master]:</b> ' + _lmMT('noRegion', 'Could not determine your region. Select a region manually.'));
                     }
                 },
                 success(playlistCopy) {
@@ -816,7 +1025,10 @@ function legendmaster(self) {
         refreshRegionInfo() {
             var that = this;
             this.makeMasterSimpleRequest("info", "text", function(data) {
-                var regions = (data = JSON.parse(data)).regions;
+                /* a non-JSON answer (proxy/error page) left the counts stale with an exception */
+                try { data = JSON.parse(data); } catch (e) { return; }
+                var regions = data && data.regions;
+                if (!regions) return;
                 var i;
                 for (i in regions) {
                     if (regions.hasOwnProperty(i)) {
@@ -1033,7 +1245,7 @@ function legendmaster(self) {
             this._lmFindGaveUp = true;
             console.warn("[Master] No server found after 3 attempts");
             if (window.toastr) {
-                toastr.error("<b>[Master]:</b> Could not find a server. Press Play, or change the region or mode, to try again.");
+                toastr.error("<b>[Master]:</b> " + _lmMT("noServer", "Could not find a server. Press Play, or change the region or mode, to try again."));
             }
             return true;
         },
@@ -1180,7 +1392,7 @@ function legendmaster(self) {
 
                 if (window.toastr) {
                     toastr.warning(
-                        "<b>[Master]:</b> Enter a valid party token."
+                        "<b>[Master]:</b> " + _lmMT("partyToken", "Enter a valid party token.")
                     );
                 }
 
@@ -1232,7 +1444,7 @@ function legendmaster(self) {
                             toastr.warning(
                                 "<b>[Master]:</b> " +
                                 (joinStatus === "party_full"
-                                    ? "This party is full."
+                                    ? _lmMT("partyFull", "This party is full.")
                                     : "Could not join the party (" + String(joinStatus).replace(/[^\w-]/g, "") + ").")
                             );
                         }
@@ -1279,7 +1491,7 @@ function legendmaster(self) {
                         var rejoinDelay = 2000 * (rejoinTries + 1);
                         console.warn("[Master] Party rejoin failed, retrying in " + rejoinDelay + " ms");
                         if (rejoinTries === 0 && window.toastr) {
-                            toastr.warning("<b>[Master]:</b> Connection lost. Trying to rejoin your party...");
+                            toastr.warning("<b>[Master]:</b> " + _lmMT("partyRejoin", "Connection lost. Trying to rejoin your party..."));
                         }
                         setTimeout(function() {
                             /* The user picked another server/mode meanwhile: their choice wins. */
@@ -1571,7 +1783,7 @@ function legendmaster(self) {
                         if (window.legendmod) window.legendmod.accessTokenSent = false;
                         refreshMaster.login();
                     } else if (typeof toastr !== "undefined") {
-                        toastr.warning("<b>[SERVER]:</b> Your login expired. Please log in again.");
+                        toastr.warning("<b>[SERVER]:</b> " + _lmMT("loginExpired", "Your login expired. Please log in again."));
                     }
                 });
             }
@@ -1588,7 +1800,7 @@ function legendmaster(self) {
                 window._lwReconnecting = false;
                 console.warn("[Master] Giving up after 8 failed reconnects");
                 if (typeof toastr !== "undefined") {
-                    toastr.error("<b>[SERVER]:</b> The connection keeps dropping. Press Play or change the server to try again.");
+                    toastr.error("<b>[SERVER]:</b> " + _lmMT("connDrops", "The connection keeps dropping. Press Play or change the server to try again."));
                 }
                 return;
             }
@@ -1783,6 +1995,17 @@ function legendmaster(self) {
                     } else {
                         done(false);
                     }
+                } else if (this.context === "google" && typeof window._lmGisRefresh === "function") {
+                    /* our domains (Google Identity Services): silent re-sign-in of a returning user */
+                    window._lmGisRefresh(function (idToken) {
+                        if (idToken && m.context === "google") {
+                            m.accessToken = idToken;
+                            m._tokenTime = Date.now();
+                            done(true);
+                        } else {
+                            done(false);
+                        }
+                    });
                 } else if (this.context === "facebook" && self.FB && typeof self.FB.getLoginStatus === "function") {
                     self.FB.getLoginStatus(function (res) {
                         if (res && res.status === "connected" && res.authResponse && res.authResponse.accessToken && m.context === "facebook") {
@@ -1895,8 +2118,18 @@ function legendmaster(self) {
 		}		
     };
     self.getStorage = function() {
-        if (null !== self.localStorage.getItem("storeObjectInfo")) {
-            options = JSON.parse(self.localStorage.getItem("storeObjectInfo"));
+        var raw = self.localStorage.getItem("storeObjectInfo");
+        if (null !== raw) {
+            /* a damaged or "null" value used to throw here and break every login */
+            try {
+                var stored = JSON.parse(raw);
+                if (stored && typeof stored === "object") {
+                    if (!stored.userInfo || typeof stored.userInfo !== "object") stored.userInfo = {};
+                    options = stored;
+                }
+            } catch (e) {
+                self.localStorage.removeItem("storeObjectInfo");
+            }
         }
     };
     self.updateStorage = function() {
@@ -1913,7 +2146,16 @@ function legendmaster(self) {
         if (options.context === "google" && api) {
             api.signOut();
         }
+        /* Google Identity Services (own domains): without this, the next click picks the same
+         * account again automatically and the player cannot switch accounts */
+        if (self.google && self.google.accounts && self.google.accounts.id) {
+            try { self.google.accounts.id.disableAutoSelect(); } catch (e) { }
+        }
         self.localStorage.removeItem("storeObjectInfo");
+        /* the in-memory copy would be written back by the next updateStorage() */
+        options.loginIntent = "0";
+        options.context = null;
+        if (options.userInfo) options.userInfo.picture = "";
         $("#helloContainer").attr("data-logged-in", "0");
 		$('.progress-bar-star3').text(0);
 		$('.progress-bar-star2').text(0);
@@ -1932,7 +2174,9 @@ function legendmaster(self) {
 		continuelogout();
     };
     self.facebookLogin = function() {
-        alert("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " You seem to have something blocking Facebook on your browser, please check for any extensions");
+        /* alert() takes one argument: the console colour codes were shown as "[31m%s[34m%s[0m" */
+        var _lmFbMsg = "Facebook login is blocked in your browser. Please check your extensions (ad/tracker blockers) and try again.";
+        if (window.toastr) toastr.warning(_lmFbMsg); else alert(_lmFbMsg);
     };
 	
 	// FB/Google OAuth init — always run, including on private servers
@@ -1943,7 +2187,9 @@ function legendmaster(self) {
             cookie: true,
             xfbml: true,
             status: true,
-            version: "v2.8"
+            /* same Graph API version as agar.io's own client for this app id
+             * (agario/bundle_start.js FB.init); v2.8 expired in 2019 */
+            version: "v3.2"
         });
         l = true;
         login();
@@ -2004,7 +2250,9 @@ function doFB() {
         var facebookID = fbresponse && fbresponse.id || "";
         var gender = fbresponse && fbresponse.gender || "";
 
-        $(".agario-profile-picture").attr('src', 'https://graph.facebook.com/' + encodeURIComponent(facebookID) + '/picture?type=large');
+        /* without an access token Graph returns a grey silhouette for app-scoped ids; the
+         * tokened /me/picture result (stored in options) is the real one, so keep it */
+        $(".agario-profile-picture").attr('src', (options.userInfo && options.userInfo.picture) || ('https://graph.facebook.com/' + encodeURIComponent(facebookID) + '/picture?type=large'));
         $("#UserProfileName1").text(firstName);
         $("#UserProfileUID1").val(facebookID);
 		$("#replayuid").val(facebookID)
@@ -2036,6 +2284,29 @@ function doFB() {
 		window.master.fbUsers = response.data;
 	}, {scope: 'user_friends'});	
 }
+/* Same as doGl(), for a Google Identity Services login: the profile comes from the
+ * ID token payload (sub = the Google user id that getId() returned). */
+function _lmApplyGoogleProfile(p) {
+    p = p || {};
+    var GgImg = p.picture || "";
+    var GgProfileName = p.given_name || p.name || "";
+    var GgProfileSurName = p.family_name || "";
+    var GgUID = p.sub || "";
+    if (GgImg) $(".agario-profile-picture").attr('src', GgImg);
+    $("#UserProfileName1").text(GgProfileName);
+    $("#UserProfileUID1").val(GgUID);
+    $("#replayuid").val(GgUID);
+    if (GgUID && userid == GgUID) {
+        setLevelProgressBar();
+    }
+    userfirstname = GgProfileName;
+    userid = GgUID;
+    userlastname = GgProfileSurName;
+    if (userfirstname) localStorage.setItem("userfirstname", userfirstname);
+    if (userlastname) localStorage.setItem("userlastname", userlastname);
+    if (userid) localStorage.setItem("userid", userid);
+}
+
 function doGl() {
 	var GgImg = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getImageUrl();
 	var GgProfileName = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getGivenName(); //First Name

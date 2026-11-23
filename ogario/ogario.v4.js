@@ -28,7 +28,234 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.546;
+window.OgVer = 3.547;
+/* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
+ * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
+ * handler: 2 = not enough currency, 3 = not available. */
+/* Login hint for gated buttons: Expanding Land logs in with Discord or Google, agar.io with
+ * Google or Facebook (the hint always said Google/Facebook). */
+window._lmLoginHint = function () {
+    var el = (window.legendmod && (window.legendmod.isLegendWorld === true || window.legendmod.serverType === 'expandingland')) ||
+        (function (h) { h = String(h || '').toLowerCase(); return h === 'expanding.land' || h.slice(-15) === '.expanding.land'; })(location.hostname) || window.expandingLand === true;
+    return el ? 'Sign in with Discord or Google and play one game first.'
+              : 'Log in with Google or Facebook and play one game first.';
+};
+/* Split macro timing from Settings (Macro group). Defaults are the old fixed values
+ * (40 ms between splits, 200 ms for pop split), so nothing changes until a slider is moved. */
+window._lmSplitDelay = function (n) {
+    var d = Number(typeof defaultmapsettings !== 'undefined' && defaultmapsettings.macroSplitDelay);
+    if (!(d >= 10 && d <= 500)) d = 40;
+    return Math.round(d * (n || 1));
+};
+window._lmPopSplitDelay = function () {
+    var d = Number(typeof defaultmapsettings !== 'undefined' && defaultmapsettings.macroPopSplitDelay);
+    if (!(d >= 50 && d <= 1000)) d = 200;
+    return d;
+};
+/* Text for the newer menus in the Legend Mod language (picker value 1-12; 1 = English).
+ * Unknown keys or languages fall back to English. */
+/* escaped window.lmT for HTML (toastr / innerHTML); English when lmT is missing */
+function _lmTH(key, en) { var s = (window.lmT && window.lmT(key)) || en; if (!s || s === key) s = en; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+window.lmT = (function () {
+    var langs = { '1': 'en', '2': 'el', '3': 'es', '4': 'bg', '5': 'fr', '6': 'ar', '7': 'zh', '8': 'ru', '9': 'de', '10': 'tr', '11': 'pl', '12': 'nl' };
+    var text = {
+        "leagues": {
+            "en": "Leagues",
+            "el": "Πρωταθλήματα",
+            "es": "Ligas",
+            "bg": "Лиги",
+            "fr": "Ligues",
+            "ar": "الدوريات",
+            "zh": "聯賽",
+            "ru": "Лиги",
+            "de": "Ligen",
+            "tr": "Ligler",
+            "pl": "Ligi",
+            "nl": "Competities"
+        },
+        "friends": {
+            "en": "Friends",
+            "el": "Φίλοι",
+            "es": "Amigos",
+            "bg": "Приятели",
+            "fr": "Amis",
+            "ar": "الأصدقاء",
+            "zh": "好友",
+            "ru": "Друзья",
+            "de": "Freunde",
+            "tr": "Arkadaşlar",
+            "pl": "Znajomi",
+            "nl": "Vrienden"
+        },
+        "claimAll": {
+            "en": "Claim All",
+            "el": "Συλλογή όλων",
+            "es": "Reclamar todo",
+            "bg": "Вземи всички",
+            "fr": "Tout récupérer",
+            "ar": "استلام الكل",
+            "zh": "全部領取",
+            "ru": "Забрать всё",
+            "de": "Alles abholen",
+            "tr": "Hepsini al",
+            "pl": "Odbierz wszystko",
+            "nl": "Alles ophalen"
+        },
+        "offer": {
+            "en": "Official Offer",
+            "el": "Επίσημη προσφορά",
+            "es": "Oferta oficial",
+            "bg": "Официална оферта",
+            "fr": "Offre officielle",
+            "ar": "العرض الرسمي",
+            "zh": "官方優惠",
+            "ru": "Официальное предложение",
+            "de": "Offizielles Angebot",
+            "tr": "Resmi teklif",
+            "pl": "Oficjalna oferta",
+            "nl": "Officiële aanbieding"
+        },
+        "retry": {"en":"Retry","el":"Ξανά","es":"Reintentar","bg":"Опитай пак","fr":"Réessayer","ar":"إعادة المحاولة","zh":"重試","ru":"Повторить","de":"Erneut versuchen","tr":"Tekrar dene","pl":"Ponów","nl":"Opnieuw"},
+        "close": {"en":"Close","el":"Κλείσιμο","es":"Cerrar","bg":"Затвори","fr":"Fermer","ar":"إغلاق","zh":"關閉","ru":"Закрыть","de":"Schließen","tr":"Kapat","pl":"Zamknij","nl":"Sluiten"},
+        "leaderboards": {"en":"Leaderboards","el":"Κατατάξεις","es":"Clasificaciones","bg":"Класации","fr":"Classements","ar":"لوحات الصدارة","zh":"排行榜","ru":"Таблицы лидеров","de":"Bestenlisten","tr":"Lider tabloları","pl":"Rankingi","nl":"Ranglijsten"},
+        "help": {"en":"Help","el":"Βοήθεια","es":"Ayuda","bg":"Помощ","fr":"Aide","ar":"مساعدة","zh":"說明","ru":"Помощь","de":"Hilfe","tr":"Yardım","pl":"Pomoc","nl":"Hulp"},
+        "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "itemHourly": {"en":"hourly bonus","el":"ωριαίο μπόνους","es":"bonificación horaria","bg":"бонус на час","fr":"bonus horaire","ar":"مكافأة الساعة","zh":"每小時獎勵","ru":"ежечасный бонус","de":"stündlicher Bonus","tr":"saatlik bonus","pl":"bonus godzinny","nl":"uurbonus"},
+        "itemDaily": {"en":"daily quest","el":"ημερήσια αποστολή","es":"misión diaria","bg":"дневна мисия","fr":"quête du jour","ar":"المهمة اليومية","zh":"每日任務","ru":"ежедневное задание","de":"tägliche Quest","tr":"günlük görev","pl":"codzienne zadanie","nl":"dagelijkse missie"},
+        "itemGift": {"en":"gift","el":"δώρο","es":"regalo","bg":"подарък","fr":"cadeau","ar":"هدية","zh":"禮物","ru":"подарок","de":"Geschenk","tr":"hediye","pl":"prezent","nl":"cadeau"},
+        "itemIn": {"en":"{0} in {1}","el":"{0} σε {1}","es":"{0} en {1}","bg":"{0} след {1}","fr":"{0} dans {1}","ar":"{0} بعد {1}","zh":"{0}：{1} 後","ru":"{0} через {1}","de":"{0} in {1}","tr":"{0}: {1} sonra","pl":"{0} za {1}","nl":"{0} over {1}"},
+        "dailyRunning": {"en":"daily quest still running","el":"η ημερήσια αποστολή τρέχει ακόμη","es":"la misión diaria sigue activa","bg":"дневната мисия още тече","fr":"quête du jour encore en cours","ar":"المهمة اليومية ما زالت جارية","zh":"每日任務仍在進行","ru":"ежедневное задание ещё идёт","de":"tägliche Quest läuft noch","tr":"günlük görev hâlâ sürüyor","pl":"codzienne zadanie wciąż trwa","nl":"dagelijkse missie loopt nog"},
+        "nextDaily": {"en":"next daily quest","el":"επόμενη ημερήσια αποστολή","es":"próxima misión diaria","bg":"следваща дневна мисия","fr":"prochaine quête du jour","ar":"المهمة اليومية التالية","zh":"下一個每日任務","ru":"следующее ежедневное задание","de":"nächste tägliche Quest","tr":"sonraki günlük görev","pl":"następne codzienne zadanie","nl":"volgende dagelijkse missie"},
+        "statsTitle": {"en":"Player Profile Stats","el":"Στατιστικά προφίλ","es":"Estadísticas del perfil","bg":"Статистика на профила","fr":"Statistiques du profil","ar":"إحصائيات الملف الشخصي","zh":"玩家資料統計","ru":"Статистика профиля","de":"Profilstatistik","tr":"Profil istatistikleri","pl":"Statystyki profilu","nl":"Profielstatistieken"},
+        "levelWord": {"en":"Level","el":"Επίπεδο","es":"Nivel","bg":"Ниво","fr":"Niveau","ar":"المستوى","zh":"等級","ru":"Уровень","de":"Level","tr":"Seviye","pl":"Poziom","nl":"Level"},
+        "gamesPlayed": {"en":"Games Played","el":"Παιχνίδια","es":"Partidas jugadas","bg":"Изиграни игри","fr":"Parties jouées","ar":"الألعاب الملعوبة","zh":"遊戲場數","ru":"Сыграно игр","de":"Gespielte Spiele","tr":"Oynanan oyunlar","pl":"Rozegrane gry","nl":"Gespeelde spellen"},
+        "rewardCollected": {"en":"Reward collected!","el":"Η ανταμοιβή παραλήφθηκε!","es":"¡Recompensa recogida!","bg":"Наградата е получена!","fr":"Récompense récupérée !","ar":"تم استلام المكافأة!","zh":"已領取獎勵！","ru":"Награда получена!","de":"Belohnung erhalten!","tr":"Ödül alındı!","pl":"Nagroda odebrana!","nl":"Beloning ontvangen!"},
+        "nextInMin": {"en":"Next one in {0} min.","el":"Η επόμενη σε {0} λεπτά.","es":"La siguiente en {0} min.","bg":"Следващата след {0} мин.","fr":"La prochaine dans {0} min.","ar":"التالية بعد {0} دقيقة.","zh":"下一次在 {0} 分鐘後。","ru":"Следующая через {0} мин.","de":"Die nächste in {0} Min.","tr":"Sonraki {0} dk sonra.","pl":"Następna za {0} min.","nl":"Volgende over {0} min."},
+        "boostActivated": {"en":"Boost activated!","el":"Το boost ενεργοποιήθηκε!","es":"¡Potenciador activado!","bg":"Бустът е активиран!","fr":"Boost activé !","ar":"تم تفعيل التعزيز!","zh":"加成已啟用！","ru":"Ускорение активировано!","de":"Boost aktiviert!","tr":"Takviye etkin!","pl":"Wzmocnienie włączone!","nl":"Boost geactiveerd!"},
+        "expiresInMin": {"en":"Expires in {0} min","el":"Λήγει σε {0} λεπτά","es":"Caduca en {0} min","bg":"Изтича след {0} мин","fr":"Expire dans {0} min","ar":"ينتهي خلال {0} دقيقة","zh":"{0} 分鐘後到期","ru":"Истекает через {0} мин","de":"Läuft in {0} Min. ab","tr":"{0} dk sonra bitiyor","pl":"Wygasa za {0} min","nl":"Verloopt over {0} min"},
+        "questActivated": {"en":"Quest activated!","el":"Η αποστολή ενεργοποιήθηκε!","es":"¡Misión activada!","bg":"Мисията е активирана!","fr":"Quête activée !","ar":"تم تفعيل المهمة!","zh":"任務已啟用！","ru":"Задание активировано!","de":"Quest aktiviert!","tr":"Görev etkin!","pl":"Zadanie włączone!","nl":"Missie geactiveerd!"},
+        "questType": {"en":"Type: {0}","el":"Τύπος: {0}","es":"Tipo: {0}","bg":"Тип: {0}","fr":"Type : {0}","ar":"النوع: {0}","zh":"類型：{0}","ru":"Тип: {0}","de":"Typ: {0}","tr":"Tür: {0}","pl":"Typ: {0}","nl":"Type: {0}"},
+        "potionOpened": {"en":"Potion opened!","el":"Το φίλτρο άνοιξε!","es":"¡Poción abierta!","bg":"Отварата е отворена!","fr":"Potion ouverte !","ar":"تم فتح الجرعة!","zh":"藥水已開啟！","ru":"Зелье открыто!","de":"Trank geöffnet!","tr":"İksir açıldı!","pl":"Eliksir otwarty!","nl":"Drankje geopend!"},
+        "brewingStarted": {"en":"Brewing started!","el":"Η παρασκευή ξεκίνησε!","es":"¡Preparación iniciada!","bg":"Варенето започна!","fr":"Préparation lancée !","ar":"بدأ التحضير!","zh":"開始釀造！","ru":"Варка началась!","de":"Brauen gestartet!","tr":"Demleme başladı!","pl":"Warzenie rozpoczęte!","nl":"Brouwen gestart!"},
+        "activatingQuest": {"en":"Activating quest...","el":"Ενεργοποίηση αποστολής...","es":"Activando misión...","bg":"Активиране на мисия...","fr":"Activation de la quête...","ar":"جارٍ تفعيل المهمة...","zh":"正在啟用任務...","ru":"Активация задания...","de":"Quest wird aktiviert...","tr":"Görev etkinleştiriliyor...","pl":"Włączanie zadania...","nl":"Missie activeren..."},
+        "activatingBoost": {"en":"Activating boost...","el":"Ενεργοποίηση boost...","es":"Activando potenciador...","bg":"Активиране на буст...","fr":"Activation du boost...","ar":"جارٍ تفعيل التعزيز...","zh":"正在啟用加成...","ru":"Активация ускорения...","de":"Boost wird aktiviert...","tr":"Takviye etkinleştiriliyor...","pl":"Włączanie wzmocnienia...","nl":"Boost activeren..."},
+        "claimed": {"en":"Claimed: {0}","el":"Παραλήφθηκαν: {0}","es":"Recogido: {0}","bg":"Получено: {0}","fr":"Récupéré : {0}","ar":"تم الاستلام: {0}","zh":"已領取：{0}","ru":"Получено: {0}","de":"Erhalten: {0}","tr":"Alındı: {0}","pl":"Odebrano: {0}","nl":"Ontvangen: {0}"},
+        "claimWaiting": {"en":"Waiting: {0}","el":"Σε αναμονή: {0}","es":"Pendiente: {0}","bg":"Изчакващи: {0}","fr":"En attente : {0}","ar":"بالانتظار: {0}","zh":"等待中：{0}","ru":"Ожидают: {0}","de":"Wartend: {0}","tr":"Bekleyen: {0}","pl":"Oczekuje: {0}","nl":"Wachtend: {0}"},
+        "nothingToClaim": {"en":"Nothing to claim right now","el":"Δεν υπάρχει κάτι για παραλαβή τώρα","es":"No hay nada que recoger ahora","bg":"Няма какво да се получи сега","fr":"Rien à récupérer pour le moment","ar":"لا يوجد ما يمكن استلامه الآن","zh":"目前沒有可領取的項目","ru":"Сейчас нечего получать","de":"Gerade nichts abzuholen","tr":"Şu an alınacak bir şey yok","pl":"Nie ma teraz nic do odebrania","nl":"Er is nu niets op te halen"},
+        "levelRewardsNote": {"en":"Level rewards are given by the server on level-up.","el":"Οι ανταμοιβές επιπέδου δίνονται από τον διακομιστή όταν ανεβαίνεις επίπεδο.","es":"El servidor entrega las recompensas de nivel al subir de nivel.","bg":"Наградите за ниво се дават от сървъра при ново ниво.","fr":"Les récompenses de niveau sont données par le serveur à chaque niveau.","ar":"يمنح الخادم مكافآت المستوى عند الترقية.","zh":"等級獎勵會在升級時由伺服器發放。","ru":"Награды за уровень выдаёт сервер при повышении уровня.","de":"Level-Belohnungen gibt der Server beim Levelaufstieg.","tr":"Seviye ödülleri seviye atlayınca sunucu tarafından verilir.","pl":"Nagrody za poziom serwer daje po awansie.","nl":"Levelbeloningen geeft de server bij een level-up."},
+        "rewardsTimers": {"en":"ACCOUNT REWARDS & TIMERS","el":"ΑΝΤΑΜΟΙΒΕΣ & ΧΡΟΝΟΜΕΤΡΑ","es":"RECOMPENSAS Y TEMPORIZADORES","bg":"НАГРАДИ И ТАЙМЕРИ","fr":"RÉCOMPENSES ET MINUTEURS","ar":"مكافآت ومؤقتات الحساب","zh":"帳號獎勵與計時","ru":"НАГРАДЫ И ТАЙМЕРЫ","de":"BELOHNUNGEN & TIMER","tr":"HESAP ÖDÜLLERİ VE SÜRELER","pl":"NAGRODY I LICZNIKI","nl":"BELONINGEN & TIMERS"},
+        "levelNext": {"en":"Level {0} → {1}","el":"Επίπεδο {0} → {1}","es":"Nivel {0} → {1}","bg":"Ниво {0} → {1}","fr":"Niveau {0} → {1}","ar":"المستوى {0} → {1}","zh":"等級 {0} → {1}","ru":"Уровень {0} → {1}","de":"Level {0} → {1}","tr":"Seviye {0} → {1}","pl":"Poziom {0} → {1}","nl":"Level {0} → {1}"},
+        "noReward": {"en":"No configured reward","el":"Δεν έχει οριστεί ανταμοιβή","es":"Sin recompensa configurada","bg":"Няма зададена награда","fr":"Aucune récompense configurée","ar":"لا توجد مكافأة محددة","zh":"未設定獎勵","ru":"Награда не задана","de":"Keine Belohnung festgelegt","tr":"Ayarlı ödül yok","pl":"Brak ustawionej nagrody","nl":"Geen beloning ingesteld"},
+        "hourlyBonus": {"en":"Hourly Bonus","el":"Ωριαίο μπόνους","es":"Bonificación horaria","bg":"Бонус на всеки час","fr":"Bonus horaire","ar":"المكافأة كل ساعة","zh":"每小時獎勵","ru":"Ежечасный бонус","de":"Stündlicher Bonus","tr":"Saatlik bonus","pl":"Bonus godzinny","nl":"Uurbonus"},
+        "timedReward": {"en":"Configured timed reward","el":"Χρονομετρημένη ανταμοιβή","es":"Recompensa por tiempo","bg":"Награда по време","fr":"Récompense temporisée","ar":"مكافأة مؤقتة","zh":"定時獎勵","ru":"Награда по таймеру","de":"Zeitbelohnung","tr":"Zamanlı ödül","pl":"Nagroda czasowa","nl":"Tijdbeloning"},
+        "dailyQuest": {"en":"Daily Quest","el":"Ημερήσια αποστολή","es":"Misión diaria","bg":"Дневна мисия","fr":"Quête du jour","ar":"المهمة اليومية","zh":"每日任務","ru":"Ежедневное задание","de":"Tägliche Quest","tr":"Günlük görev","pl":"Codzienne zadanie","nl":"Dagelijkse missie"},
+        "ready": {"en":"READY","el":"ΕΤΟΙΜΟ","es":"LISTO","bg":"ГОТОВО","fr":"PRÊT","ar":"جاهز","zh":"可領取","ru":"ГОТОВО","de":"BEREIT","tr":"HAZIR","pl":"GOTOWE","nl":"KLAAR"},
+        "waitingServer": {"en":"Waiting for server","el":"Αναμονή για τον διακομιστή","es":"Esperando al servidor","bg":"Изчакване на сървъра","fr":"En attente du serveur","ar":"بانتظار الخادم","zh":"等待伺服器","ru":"Ожидание сервера","de":"Warte auf Server","tr":"Sunucu bekleniyor","pl":"Czekam na serwer","nl":"Wachten op server"},
+        "pEmpty": {"en":"EMPTY","el":"ΑΔΕΙΟ","es":"VACÍO","bg":"ПРАЗНО","fr":"VIDE","ar":"فارغ","zh":"空","ru":"ПУСТО","de":"LEER","tr":"BOŞ","pl":"PUSTE","nl":"LEEG"},
+        "pBrew": {"en":"BREW","el":"ΠΑΡΑΣΚΕΥΗ","es":"PREPARAR","bg":"ВАРИ","fr":"PRÉPARER","ar":"تحضير","zh":"釀造","ru":"ВАРИТЬ","de":"BRAUEN","tr":"DEMLE","pl":"WARZ","nl":"BROUWEN"},
+        "pWaiting": {"en":"WAITING","el":"ΑΝΑΜΟΝΗ","es":"EN ESPERA","bg":"ИЗЧАКВА","fr":"EN ATTENTE","ar":"انتظار","zh":"等待中","ru":"ОЖИДАНИЕ","de":"WARTET","tr":"BEKLİYOR","pl":"CZEKA","nl":"WACHT"},
+        "pOpen": {"en":"OPEN","el":"ΑΝΟΙΓΜΑ","es":"ABRIR","bg":"ОТВОРИ","fr":"OUVRIR","ar":"افتح","zh":"開啟","ru":"ОТКРЫТЬ","de":"ÖFFNEN","tr":"AÇ","pl":"OTWÓRZ","nl":"OPENEN"},
+        "anotherBrewing": {"en":"Another potion is brewing","el":"Παρασκευάζεται άλλο φίλτρο","es":"Se está preparando otra poción","bg":"Вари се друга отвара","fr":"Une autre potion est en préparation","ar":"جرعة أخرى قيد التحضير","zh":"另一瓶藥水正在釀造","ru":"Варится другое зелье","de":"Ein anderer Trank wird gebraut","tr":"Başka bir iksir demleniyor","pl":"Warzy się inny eliksir","nl":"Er wordt een ander drankje gebrouwen"},
+        "skip": {"en":"Skip","el":"Παράλειψη","es":"Saltar","bg":"Пропусни","fr":"Passer","ar":"تخطي","zh":"跳過","ru":"Пропустить","de":"Überspringen","tr":"Atla","pl":"Pomiń","nl":"Overslaan"},
+        "skipOwned": {"en":"Skip (owned)","el":"Παράλειψη (δικό σου)","es":"Saltar (tuyo)","bg":"Пропусни (притежаваш)","fr":"Passer (possédé)","ar":"تخطي (مملوك)","zh":"跳過（已擁有）","ru":"Пропустить (есть)","de":"Überspringen (vorhanden)","tr":"Atla (sahipsin)","pl":"Pomiń (posiadasz)","nl":"Overslaan (in bezit)"},
+        "gameOver": {"en":"Game Over","el":"Τέλος παιχνιδιού","es":"Fin del juego","bg":"Край на играта","fr":"Partie terminée","ar":"انتهت اللعبة","zh":"遊戲結束","ru":"Игра окончена","de":"Spiel vorbei","tr":"Oyun bitti","pl":"Koniec gry","nl":"Game over"},
+        "finalMass": {"en":"Final Mass","el":"Τελική μάζα","es":"Masa final","bg":"Крайна маса","fr":"Masse finale","ar":"الكتلة النهائية","zh":"最終質量","ru":"Итоговая масса","de":"Endmasse","tr":"Son kütle","pl":"Masa końcowa","nl":"Eindmassa"},
+        "highestMass": {"en":"Highest Mass","el":"Μέγιστη μάζα","es":"Masa máxima","bg":"Най-голяма маса","fr":"Masse maximale","ar":"أعلى كتلة","zh":"最高質量","ru":"Макс. масса","de":"Höchste Masse","tr":"En yüksek kütle","pl":"Najwyższa masa","nl":"Hoogste massa"},
+        "topPosition": {"en":"Top Position","el":"Καλύτερη θέση","es":"Mejor posición","bg":"Най-добра позиция","fr":"Meilleure position","ar":"أفضل مركز","zh":"最佳排名","ru":"Лучшее место","de":"Beste Platzierung","tr":"En iyi sıra","pl":"Najlepsza pozycja","nl":"Beste positie"},
+        "finalPosition": {"en":"Final Position","el":"Τελική θέση","es":"Posición final","bg":"Крайна позиция","fr":"Position finale","ar":"المركز النهائي","zh":"最終排名","ru":"Итоговое место","de":"Endplatzierung","tr":"Son sıra","pl":"Pozycja końcowa","nl":"Eindpositie"},
+        "timeAlive": {"en":"Time Alive","el":"Χρόνος ζωής","es":"Tiempo vivo","bg":"Време в игра","fr":"Temps en vie","ar":"مدة البقاء","zh":"存活時間","ru":"Время жизни","de":"Überlebenszeit","tr":"Hayatta kalma","pl":"Czas życia","nl":"Tijd in leven"},
+        "timeOnLb": {"en":"Time on LB","el":"Χρόνος στον πίνακα","es":"Tiempo en el ranking","bg":"Време в класацията","fr":"Temps au classement","ar":"الوقت في الترتيب","zh":"排行榜時間","ru":"Время в топе","de":"Zeit in der Rangliste","tr":"Sıralamada süre","pl":"Czas w rankingu","nl":"Tijd in ranglijst"},
+        "massConsumed": {"en":"Mass Consumed","el":"Μάζα που φαγώθηκε","es":"Masa consumida","bg":"Изядена маса","fr":"Masse consommée","ar":"الكتلة المستهلكة","zh":"吞噬質量","ru":"Съедено массы","de":"Gefressene Masse","tr":"Yenen kütle","pl":"Zjedzona masa","nl":"Gegeten massa"},
+        "foodEaten": {"en":"Food Eaten","el":"Τροφή","es":"Comida","bg":"Изядена храна","fr":"Nourriture mangée","ar":"الطعام المأكول","zh":"吃掉的食物","ru":"Съедено еды","de":"Gefressenes Futter","tr":"Yenen yem","pl":"Zjedzone jedzenie","nl":"Gegeten voedsel"},
+        "playersEaten": {"en":"Players Eaten","el":"Παίκτες που φαγώθηκαν","es":"Jugadores comidos","bg":"Изядени играчи","fr":"Joueurs mangés","ar":"اللاعبون المأكولون","zh":"吃掉的玩家","ru":"Съедено игроков","de":"Gefressene Spieler","tr":"Yenen oyuncular","pl":"Zjedzeni gracze","nl":"Gegeten spelers"},
+        "cellsEaten": {"en":"Cells Eaten","el":"Κύτταρα που φαγώθηκαν","es":"Células comidas","bg":"Изядени клетки","fr":"Cellules mangées","ar":"الخلايا المأكولة","zh":"吃掉的細胞","ru":"Съедено клеток","de":"Gefressene Zellen","tr":"Yenen hücreler","pl":"Zjedzone komórki","nl":"Gegeten cellen"},
+        "virusesEaten": {"en":"Viruses Eaten","el":"Ιοί που φαγώθηκαν","es":"Virus comidos","bg":"Изядени вируси","fr":"Virus mangés","ar":"الفيروسات المأكولة","zh":"吃掉的病毒","ru":"Съедено вирусов","de":"Gefressene Viren","tr":"Yenen virüsler","pl":"Zjedzone wirusy","nl":"Gegeten virussen"},
+        "mapExpanding": {"en":"Map expanding — new territory ahead!","el":"Ο χάρτης μεγαλώνει — νέο έδαφος μπροστά!","es":"El mapa se amplía: ¡nuevo territorio!","bg":"Картата се разширява — нова територия!","fr":"La carte s'agrandit : nouveau territoire !","ar":"الخريطة تتوسع — منطقة جديدة أمامك!","zh":"地圖正在擴大——前方有新領域！","ru":"Карта расширяется — впереди новая территория!","de":"Die Karte wächst – neues Gebiet voraus!","tr":"Harita genişliyor — yeni bölge geliyor!","pl":"Mapa się powiększa — nowy teren przed tobą!","nl":"De kaart wordt groter — nieuw gebied!"},
+        "mapShrinking": {"en":"Map shrinking in {0}s — move inward","el":"Ο χάρτης μικραίνει σε {0}s — κινήσου προς τα μέσα","es":"El mapa se reduce en {0}s: muévete hacia dentro","bg":"Картата се свива след {0}s — движи се навътре","fr":"La carte rétrécit dans {0}s : rentrez vers l'intérieur","ar":"الخريطة تتقلص خلال {0}ث — تحرك للداخل","zh":"地圖將在 {0} 秒後縮小——往內移動","ru":"Карта сожмётся через {0} с — двигайтесь к центру","de":"Karte schrumpft in {0}s – nach innen bewegen","tr":"Harita {0} sn içinde küçülüyor — içeri ilerle","pl":"Mapa zmniejszy się za {0}s — idź do środka","nl":"Kaart krimpt over {0}s — ga naar binnen"},
+        "dangerZone": {"en":"Danger zone — leave the red area","el":"Επικίνδυνη ζώνη — βγες από την κόκκινη περιοχή","es":"Zona de peligro: sal del área roja","bg":"Опасна зона — напусни червената област","fr":"Zone de danger : quittez la zone rouge","ar":"منطقة خطر — اخرج من المنطقة الحمراء","zh":"危險區域——離開紅色區域","ru":"Опасная зона — покиньте красную область","de":"Gefahrenzone – verlasse den roten Bereich","tr":"Tehlike bölgesi — kırmızı alandan çık","pl":"Strefa zagrożenia — opuść czerwony obszar","nl":"Gevarenzone — verlaat het rode gebied"},
+        "noServer": {"en":"Could not find a server. Press Play, or change the region or mode, to try again.","el":"Δεν βρέθηκε διακομιστής. Πατήστε Play ή αλλάξτε περιοχή ή λειτουργία για να δοκιμάσετε ξανά.","es":"No se encontró ningún servidor. Pulsa Jugar o cambia la región o el modo para intentarlo de nuevo.","bg":"Не е намерен сървър. Натиснете Play или сменете региона или режима, за да опитате отново.","fr":"Aucun serveur trouvé. Appuyez sur Jouer, ou changez de région ou de mode, pour réessayer.","ar":"تعذر العثور على خادم. اضغط تشغيل أو غيّر المنطقة أو الوضع للمحاولة مرة أخرى.","zh":"找不到伺服器。請按 Play，或更改地區或模式後再試一次。","ru":"Сервер не найден. Нажмите «Играть» или смените регион или режим, чтобы попробовать снова.","de":"Kein Server gefunden. Drücke Play oder ändere Region oder Modus, um es erneut zu versuchen.","tr":"Sunucu bulunamadı. Tekrar denemek için Oyna'ya basın veya bölgeyi ya da modu değiştirin.","pl":"Nie znaleziono serwera. Naciśnij Graj albo zmień region lub tryb, aby spróbować ponownie.","nl":"Geen server gevonden. Druk op Spelen of kies een andere regio of modus om het opnieuw te proberen."},
+        "noRegion": {"en":"Could not determine your region. Select a region manually.","el":"Δεν ήταν δυνατός ο εντοπισμός της περιοχής σας. Επιλέξτε περιοχή χειροκίνητα.","es":"No se pudo determinar tu región. Selecciona una región manualmente.","bg":"Регионът ви не можа да бъде определен. Изберете регион ръчно.","fr":"Impossible de déterminer votre région. Choisissez une région manuellement.","ar":"تعذر تحديد منطقتك. اختر منطقة يدويًا.","zh":"無法判斷你的地區。請手動選擇地區。","ru":"Не удалось определить ваш регион. Выберите регион вручную.","de":"Deine Region konnte nicht ermittelt werden. Wähle eine Region manuell.","tr":"Bölgeniz belirlenemedi. Lütfen bölgeyi elle seçin.","pl":"Nie udało się ustalić Twojego regionu. Wybierz region ręcznie.","nl":"Je regio kon niet worden bepaald. Kies handmatig een regio."},
+        "partyRejoin": {"en":"Connection lost. Trying to rejoin your party...","el":"Η σύνδεση χάθηκε. Προσπάθεια επανασύνδεσης στο πάρτι σας...","es":"Conexión perdida. Intentando volver a unirte a tu grupo...","bg":"Връзката е загубена. Опит за повторно присъединяване към групата...","fr":"Connexion perdue. Tentative de rejoindre votre groupe...","ar":"انقطع الاتصال. جارٍ محاولة إعادة الانضمام إلى مجموعتك...","zh":"連線中斷。正在嘗試重新加入你的隊伍...","ru":"Соединение потеряно. Пытаемся вернуть вас в группу...","de":"Verbindung verloren. Versuche, deiner Party wieder beizutreten...","tr":"Bağlantı koptu. Partinize yeniden katılmaya çalışılıyor...","pl":"Utracono połączenie. Próba ponownego dołączenia do drużyny...","nl":"Verbinding verbroken. Bezig met opnieuw deelnemen aan je party..."},
+        "loginExpired": {"en":"Your login expired. Please log in again.","el":"Η σύνδεσή σας έληξε. Συνδεθείτε ξανά.","es":"Tu sesión ha caducado. Inicia sesión de nuevo.","bg":"Входът ви е изтекъл. Моля, влезте отново.","fr":"Votre connexion a expiré. Veuillez vous reconnecter.","ar":"انتهت صلاحية تسجيل دخولك. يرجى تسجيل الدخول مرة أخرى.","zh":"登入已過期。請重新登入。","ru":"Срок входа истёк. Войдите снова.","de":"Deine Anmeldung ist abgelaufen. Bitte melde dich erneut an.","tr":"Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.","pl":"Sesja logowania wygasła. Zaloguj się ponownie.","nl":"Je login is verlopen. Log opnieuw in."},
+        "connDrops": {"en":"The connection keeps dropping. Press Play or change the server to try again.","el":"Η σύνδεση διακόπτεται συνεχώς. Πατήστε Play ή αλλάξτε διακομιστή για να δοκιμάσετε ξανά.","es":"La conexión se corta continuamente. Pulsa Jugar o cambia de servidor para intentarlo de nuevo.","bg":"Връзката постоянно прекъсва. Натиснете Play или сменете сървъра, за да опитате отново.","fr":"La connexion ne cesse de tomber. Appuyez sur Jouer ou changez de serveur pour réessayer.","ar":"الاتصال ينقطع باستمرار. اضغط تشغيل أو غيّر الخادم للمحاولة مرة أخرى.","zh":"連線一直中斷。請按 Play 或更換伺服器後再試一次。","ru":"Соединение постоянно обрывается. Нажмите «Играть» или смените сервер, чтобы попробовать снова.","de":"Die Verbindung bricht ständig ab. Drücke Play oder wechsle den Server, um es erneut zu versuchen.","tr":"Bağlantı sürekli kopuyor. Tekrar denemek için Oyna'ya basın veya sunucuyu değiştirin.","pl":"Połączenie ciągle się zrywa. Naciśnij Graj albo zmień serwer, aby spróbować ponownie.","nl":"De verbinding valt steeds weg. Druk op Spelen of kies een andere server om het opnieuw te proberen."},
+        "partyFull": {"en":"This party is full.","el":"Αυτό το πάρτι είναι γεμάτο.","es":"Este grupo está lleno.","bg":"Тази група е пълна.","fr":"Ce groupe est complet.","ar":"هذه المجموعة ممتلئة.","zh":"此隊伍已滿。","ru":"Эта группа заполнена.","de":"Diese Party ist voll.","tr":"Bu parti dolu.","pl":"Ta drużyna jest pełna.","nl":"Deze party is vol."},
+        "partyToken": {"en":"Enter a valid party token.","el":"Εισαγάγετε έγκυρο κωδικό πάρτι.","es":"Introduce un código de grupo válido.","bg":"Въведете валиден код на група.","fr":"Entrez un code de groupe valide.","ar":"أدخل رمز مجموعة صالحًا.","zh":"請輸入有效的隊伍代碼。","ru":"Введите действительный код группы.","de":"Gib einen gültigen Party-Code ein.","tr":"Geçerli bir parti kodu girin.","pl":"Wpisz prawidłowy kod drużyny.","nl":"Voer een geldige partycode in."},
+        "needLogin": {
+            "en": "LOGIN & PLAY NEEDED",
+            "el": "ΧΡΕΙΑΖΕΤΑΙ ΣΥΝΔΕΣΗ & ΠΑΙΧΝΙΔΙ",
+            "es": "INICIA SESIÓN Y JUEGA",
+            "bg": "ВЛЕЗ И ИГРАЙ",
+            "fr": "CONNEXION + PARTIE REQUISES",
+            "ar": "سجّل الدخول والعب",
+            "zh": "需要登入並遊玩",
+            "ru": "ВОЙДИ И СЫГРАЙ",
+            "de": "LOGIN & SPIEL NÖTIG",
+            "tr": "GİRİŞ VE OYUN GEREKLİ",
+            "pl": "ZALOGUJ SIĘ I ZAGRAJ",
+            "nl": "INLOGGEN & SPELEN NODIG"
+        }
+    };
+    return function (key) {
+        var code = 'en';
+        try { code = langs[String(window.localStorage.getItem('languagemod'))] || 'en'; } catch (e) { }
+        var row = text[key] || {};
+        return row[code] || row.en || key;
+    };
+})();
+/* Chat popups had no limit: a spammer could cover the screen for 15 s per message.
+ * Keep the newest 6 chat/command popups (system popups are not touched). */
+window._lmTrimChatToasts = function () {
+    var chat = $('#toast-container > .toast').filter(function () { return $(this).find('.message-nick, .command-nick').length > 0; });
+    if (chat.length > 6) chat.slice(0, chat.length - 6).remove();
+};
+window._lmPurchaseFailToast = function (what, reason) {
+    if (!window.toastr) return;
+    var code = Number(reason);
+    if (code === 2) toastr.error('<b>[' + what + ']:</b> Not enough DNA/coins.');
+    else if (code === 3) toastr.error('<b>[' + what + ']:</b> This is not available right now.');
+    else toastr.warning('<b>[' + what + ']:</b> Purchase failed.');
+};
+/* Chat: Up / Down in the message box recall the last 20 lines you sent. Recorded in the
+ * capture phase, before the game's Enter handler clears the box. The game's hotkeys are
+ * skipped while a text field has focus, so the arrows never reach them here. */
+(function () {
+    var sent = [], pos = -1, draft = '';
+    window.addEventListener('keydown', function (ev) {
+        var t = ev.target;
+        if (!t || t.id !== 'message') return;
+        var k = ev.keyCode;
+        if (k === 13) {
+            var v = String(t.value || '').trim();
+            if (v && sent[sent.length - 1] !== v) { sent.push(v); if (sent.length > 20) sent.shift(); }
+            pos = -1;
+            draft = '';
+        } else if ((k === 38 || k === 40) && sent.length) {
+            if (pos === -1) { if (k === 40) return; draft = t.value; pos = sent.length; }
+            pos += (k === 38 ? -1 : 1);
+            if (pos < 0) pos = 0;
+            ev.preventDefault();
+            if (pos >= sent.length) { pos = -1; t.value = draft; } else { t.value = sent[pos]; }
+        }
+    }, true);
+})();
+/* Last 30 uncaught errors, kept in memory only for "Copy debug info" (Settings tab). */
+window._lmRecentErrors = window._lmRecentErrors || [];
+(function () {
+    function keep(msg) {
+        var list = window._lmRecentErrors;
+        list.push(new Date().toISOString().slice(11, 19) + ' ' + String(msg).slice(0, 300));
+        if (list.length > 30) list.shift();
+    }
+    window.addEventListener('error', function (e) {
+        if (!e) return;
+        var where = e.filename ? ' @' + String(e.filename).split('/').slice(3).join('/') + ':' + e.lineno : '';
+        keep((e.message || (e.target && e.target.src ? 'failed to load ' + e.target.src : 'error')) + where);
+    }, true);
+    window.addEventListener('unhandledrejection', function (e) {
+        var r = e && e.reason;
+        keep('unhandled promise: ' + (r && (r.message || r)) );
+    });
+})();
 
 
 /*
@@ -418,7 +645,7 @@ window.OgVer = 3.546;
             var allMenuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn, #lm-friends-btn, #lm-official-offer-btn, #adRewardBtn');
             allMenuBtns.prop('disabled', true);
             allMenuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' })
-                .attr('title', 'Log in with Google/Facebook and play a game session first');
+                .attr('title', window._lmLoginHint ? window._lmLoginHint() : 'Log in and play a game session first');
         },
         false
     );
@@ -743,7 +970,9 @@ function readLocalStorageJSON(key, fallbackValue) {
                 var req = store.get(url);
                 req.onsuccess = function () {
                     var record = req.result;
-                    if (record && record.data) {
+                    /* refresh the LRU time at most once a day: every cache hit rewrote the whole
+                     * image (hundreds of read-write transactions at start-up) */
+                    if (record && record.data && Date.now() - (record.timestamp || 0) > 86400000) {
                         record.timestamp = Date.now();
                         store.put(record, url);
                     }
@@ -835,6 +1064,13 @@ function readLocalStorageJSON(key, fallbackValue) {
                 tx.oncomplete = function () {
                     setTimeout(function () { self.evictIfNeeded("skins", 1000); }, 0);
                 };
+                /* storage full: the put aborts, oncomplete never runs, and nothing was saved
+                 * again for good. Make room so later skins are cached. */
+                tx.onabort = function () {
+                    if (tx.error && tx.error.name === "QuotaExceededError") {
+                        setTimeout(function () { self.evictIfNeeded("skins", 600); }, 0);
+                    }
+                };
             } catch (e) { }
         },
         getAudio: function (url, cb) {
@@ -868,6 +1104,11 @@ function readLocalStorageJSON(key, fallbackValue) {
                 var self = this;
                 tx.oncomplete = function () {
                     setTimeout(function () { self.evictIfNeeded("audio", 100); }, 0);
+                };
+                tx.onabort = function () {
+                    if (tx.error && tx.error.name === "QuotaExceededError") {
+                        setTimeout(function () { self.evictIfNeeded("audio", 60); }, 0);
+                    }
                 };
             } catch (e) { }
         },
@@ -1015,11 +1256,35 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         console.log('[LW AUTH] Attempt #' + a.attemptId + ' accepted OAuth result (' + provider + ')');
         return true;
     };
+    /*
+     * A failed Expanding Land login left the menu looking logged in: the Discord flow sets
+     * data-logged-in="1" before the server answers (about line 1239), and every failure path
+     * only reset the state and logged to the console. Put the logged-out menu back (the CSS
+     * shows the login buttons for data-logged-in="0") and tell the player what to do.
+     * Not when the server already confirmed a login or another provider (Facebook/Google)
+     * still has a token.
+     */
+    window._lwShowLoginFailure = function (devMsg) {
+        if (window.legendmod && window.legendmod.loginConfirmed === true) return;
+        var otherLogin = window.master && window.master.accessToken && (window.master.context === 'facebook' || window.master.context === 'google');
+        if (!otherLogin) {
+            var hello = document.getElementById('helloContainer');
+            if (hello) hello.setAttribute('data-logged-in', '0');
+        }
+        var m = String(devMsg || '');
+        var text = /Popup was blocked/i.test(m) ? 'Your browser blocked the login popup. Allow popups for this site and press Sign in again.'
+            : /Socket did not open/i.test(m) ? 'Could not reach the Expanding Land server. Check your connection and try again.'
+            : /not expanding land/i.test(m) ? 'This login works on Expanding Land servers. Join an Expanding Land server and sign in again.'
+            : /timed out/i.test(m) ? 'Expanding Land did not confirm the login. Please try again.'
+            : 'The login did not complete. Please try again.';
+        if (window.toastr) toastr.error(text);
+    };
     window._lwFailAuthAttempt = function (attemptId, provider, message) {
         var a = window._lwAuth;
         if (!a || a.attemptId !== attemptId || a.provider !== provider || a.state === 'logged_in') return;
         if (message) console.error(message);
         window._lwResetAuthState();
+        window._lwShowLoginFailure(message);
     };
     window._lwIsCurrentAuthAttempt = function (attemptId, provider) {
         var a = window._lwAuth;
@@ -1035,6 +1300,9 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 window._lwAuth.state !== 'logged_in') {
                 console.warn('[LW AUTH] Login attempt #' + attemptId + ' timed out');
                 window._lwResetAuthState();
+                /* on a non Expanding Land server the login is never sent (see _lw_authServerGate) */
+                var _lwGateNow = (typeof _lw_authServerGate === 'function') ? _lw_authServerGate() : '';
+                window._lwShowLoginFailure(_lwGateNow === 'skip' ? 'not expanding land' : 'timed out');
             }
         }, ms || 20000);
     };
@@ -1607,7 +1875,17 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             'lm-leagues-modal',
             'league-modal',
             'leaguesModal',
-            'specialShopModal'
+            'specialShopModal',
+            /* these showed the old account's balances, results and stats after a logout */
+            'lm-main-shop-modal',
+            'lm-premium-potions-modal',
+            'lm-xp-boost-modal',
+            'lm-mass-boost-modal',
+            'lm-rush-boost-modal',
+            'lm-potions-help-modal',
+            'lm-lastweek-modal',
+            'lm-prizes-modal',
+            'lm-stats-modal'
         ].forEach(function (id) {
             var element = document.getElementById(id);
 
@@ -1680,6 +1958,24 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
                 window.fbLoggedIn = false;
             }
         }, 0);
+
+        /* The previous account's timed events, quests, boosts and friends stayed on screen (and
+         * its daily-quest timer could still fire) after a logout or account switch. The next
+         * login rebuilds all of these from the server. */
+        try {
+            window._lmTimedEventState = Object.create(null);
+            window.hourlyBonusFinalTimer = 0;
+            if (window.coinsTimer) { clearTimeout(window.coinsTimer); window.coinsTimer = null; }
+            if (window.dailyQuestTimer) { clearTimeout(window.dailyQuestTimer); window.dailyQuestTimer = null; }
+            window._lmActiveQuests = []; /* an array, as in displayActiveQuests */
+            window._lmActiveBoosts = Object.create(null);
+            if (window._lmBoostTicker) { clearInterval(window._lmBoostTicker); window._lmBoostTicker = null; }
+            if (window._lmQuestTicker) { clearInterval(window._lmQuestTicker); window._lmQuestTicker = null; }
+            window._friendListData = null;
+            $('#quest-active, #xp-active, #mass-active').empty();
+            document.dispatchEvent(new CustomEvent('lm-timed-events-updated'));
+        } catch (lmClearErr) {
+        }
 
         try {
             document.dispatchEvent(
@@ -2415,7 +2711,8 @@ const awsRegions = [
 function changeregion() {
     window._lmGamemodeSeq = (window._lmGamemodeSeq || 0) + 1;
     if ($('#region').val() === "Private") {
-        deleteGamemode(true);
+        /* true, true: build the list and return to the last private server the player used */
+        deleteGamemode(true, true);
     } else {
         if (window.gamemodeBackup) {
             /* Leaving Private: the private socket replaced agar.io without an onDisconnect,
@@ -2431,7 +2728,13 @@ function changeregion() {
     }
 }
 
-function deleteGamemode(temp) {
+/* restoreLast: only from the region picker (changeregion). ?sip= links (joinSIPonstart)
+ * and replays keep 5001 exactly as before. */
+function deleteGamemode(temp, restoreLast) {
+    var _lmSavedPs = '';
+    if (restoreLast === true) {
+        try { _lmSavedPs = String(window.localStorage.getItem('lmLastPrivateServer') || '').replace(/[^0-9]/g, ''); } catch (e) { }
+    }
     var privateModOptions
 
     privateModOptions = [
@@ -2616,8 +2919,10 @@ function deleteGamemode(temp) {
         if (el.disabled) opt.disabled = true;
         $('#gamemode').append(opt);
     });
-    $('#gamemode').val('5001');
-    $('#gamemode option[value="5001"]').prop('selected', true);
+    /* the saved server must still be in the list and enabled, otherwise 5001 as before */
+    var _lmStartPs = (_lmSavedPs && $('#gamemode option[value="' + _lmSavedPs + '"]:not(:disabled)').length) ? _lmSavedPs : '5001';
+    $('#gamemode').val(_lmStartPs);
+    $('#gamemode option[value="' + _lmStartPs + '"]').prop('selected', true);
     /* With temp === true the change is triggered right after the handler is bound
        (end of this function); triggering it again here connected twice in 100 ms. */
     if (temp !== true) setTimeout(function () {
@@ -2626,13 +2931,17 @@ function deleteGamemode(temp) {
         $('#gamemode')[0].selectedIndex = 0;
         $('#gamemode').trigger('change');
     }, 100);
-    $('#gamemode').off('change').on('change', function () {
+    $('#gamemode').off('change').on('change', function (_lmGmEv) {
         /* Load-balancer replies arrive later; drop them if the user picked something else. */
         var _lmGmSeq = window._lmGamemodeSeq = (window._lmGamemodeSeq || 0) + 1;
         var _lmGmStale = function (val) {
             return _lmGmSeq !== window._lmGamemodeSeq || parseInt($('#gamemode').val()) !== val || $('#region').val() !== "Private";
         };
         if ($('#region').val() == "Private") {
+            /* remember only the player's own pick, not the automatic 5001 selection */
+            if (!(_lmGmEv && _lmGmEv.isTrigger)) {
+                try { window.localStorage.setItem('lmLastPrivateServer', String($('#gamemode').val() || '')); } catch (e) { }
+            }
             /*
             var now = new Date();
             var now2 = now.getUTCHours();
@@ -2918,7 +3227,7 @@ wss://myagar.pro:1445/ crazy
         */
     });
     if (temp === true) {
-        $('#gamemode option[value=5001]').prop('selected', 'selected').change();
+        $('#gamemode option[value="' + _lmStartPs + '"]').prop('selected', 'selected').change();
     }
 }
 
@@ -4139,6 +4448,7 @@ function buyBoost(
                             productId,
                             reason
                         );
+                        if (window._lmPurchaseFailToast) window._lmPurchaseFailToast('BOOST', reason);
                     }
             }
         );
@@ -4184,11 +4494,16 @@ function useBoost(
             .activateBoost ===
             'function'
     ) {
-        return window
-            .application
-            .activateBoost(
-                info.productId
-            );
+        /* a second click before the server answered (opcode 113) sent a second activation
+             * and could use up another boost item; the 113 reply clears this */
+            var _lmBoostPend = window._lmBoostPending || (window._lmBoostPending = {});
+            if (_lmBoostPend[info.productId] && Date.now() - _lmBoostPend[info.productId] < 10000) {
+                if (window.toastr) toastr.info('<b>[BOOST]:</b> Activation already sent, waiting for the server.');
+                return false;
+            }
+            var _lmBoostSent = window.application.activateBoost(info.productId);
+            if (_lmBoostSent) _lmBoostPend[info.productId] = Date.now();
+            return _lmBoostSent;
     }
 
 
@@ -5074,8 +5389,18 @@ function sweepVideoSkins() {
     var now = Date.now();
     for (var url in window.videoSkinPlayer) {
         var v = window.videoSkinPlayer[url];
-        if (v && v.playing && now - (window.videoSkinLastDraw[url] || 0) > 3000) {
+        if (!v) continue;
+        var idle = now - (window.videoSkinLastDraw[url] || 0);
+        /* !paused (not .playing): a video stalled while buffering was never paused */
+        if (!v.paused && idle > 3000) {
             try { v.pause(); } catch (e) { }
+        }
+        /* Not drawn for a minute: free the element and its buffered data (every video
+         * seen stayed in memory for the whole session). checkVideos1 recreates it. */
+        if (idle > 60000) {
+            try { v.removeAttribute('src'); v.load(); } catch (e) { }
+            delete window.videoSkinPlayer[url];
+            window.videoSkinPlayerflag[url] = null;
         }
     }
 }
@@ -5087,7 +5412,9 @@ function checkVideos(a, b) {
     //setTimeout(function() {
     if (window.videoSkinPlayer[a] && window.videoSkinPlayer[a].readyState == 4) {
         if (!window.videoSkinPlayer[a].playing) {
-            window.videoSkinPlayer[a].play();
+            /* play() rejects when paused by the sweeper or before the first click */
+            var _lmVp = window.videoSkinPlayer[a].play();
+            if (_lmVp && _lmVp.catch) _lmVp.catch(function () { });
             //setTimeout(function() {
             checkVideos2(a, b);
             //}, 2000);
@@ -15854,6 +16181,9 @@ var displayText = {
         macroGroup: 'Macros',
         noSkins: 'Wylacz skiny',
         highDPI: 'Wysoka rozdzielczosc (HiDPI)',
+        recordReplays: 'Nagrywaj powtorki (pamiec)',
+        glAntialias: 'Wygladzanie krawedzi (po przeladowaniu)',
+        performanceMode: 'Tryb wydajnosci (slabsze PC/telefony)',
         cellContours: 'Only cells contours',
         noNames: 'Wylacz nazwy',
         noColors: 'Wylacz kolory',
@@ -15877,6 +16207,8 @@ var displayText = {
         unlockedFPS: 'Frames per sec',
         animation: 'Opoznienie animacji',
         macroFeeding: 'Macro feed (ms)',
+        macroSplitDelay: 'Macro split delay (ms)',
+        macroPopSplitDelay: 'Pop split delay (ms)',
         //hideSizes: 'Hide everything with size smaller than',
         profileNumber: 'Profiles Number',
         suckAnimation: 'Cell Eat [Sucking] Animation',
@@ -16349,6 +16681,9 @@ var displayText = {
         macroGroup: 'Macros',
         noSkins: 'No skins',
         highDPI: 'High DPI rendering (sharper, slower)',
+        recordReplays: 'Record replays (uses memory)',
+        glAntialias: 'Anti-aliasing (smoother edges, after reload)',
+        performanceMode: 'Performance mode (weak PCs/phones)',
         cellContours: 'Only cells contours',
         noNames: 'No names',
         noColors: 'No colors',
@@ -16372,6 +16707,8 @@ var displayText = {
         unlockedFPS: 'Frames per sec',
         animation: 'Animation delay',
         macroFeeding: 'Macro feed (ms)',
+        macroSplitDelay: 'Macro split delay (ms)',
+        macroPopSplitDelay: 'Pop split delay (ms)',
         //hideSizes: 'Hide everything with size smaller than',
         profileNumber: 'Profiles Number',
         suckAnimation: 'Cell Eat [Sucking] Animation',
@@ -18766,6 +19103,9 @@ var defaultmapsettings = {
     autoZoom: false,
     unlockedFPS: false,
     highDPI: false,
+    recordReplays: true,          /* off = no packets kept for replays (saves memory) */
+    glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
+    performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -18907,6 +19247,8 @@ var defaultmapsettings = {
     showSkinsPanel: true,
     animation: 80,
     macroFeeding: 80,
+    macroSplitDelay: 40,          /* ms between the splits of double/triple/16 split macros */
+    macroPopSplitDelay: 200,      /* ms between the two splits of pop split */
     reverseTrick: false,
     //hideSizes: 0,
     dominationRate: 4 / 3,
@@ -18953,8 +19295,18 @@ var ogarcopythelb = {
 
 var lang = 'en';
 userLanguage = window.navigator.language || window.navigator.userLanguage;
-if (userLanguage && displayText.hasOwnProperty(userLanguage)) {
+/* The Legend Mod language picker wins for English (1) and Polish (11, the only other label set here);
+ * otherwise the browser language, also as "pl-PL" -> "pl" (an exact "pl" match was needed). */
+var _lmLangPick = null;
+try { _lmLangPick = window.localStorage.getItem('languagemod'); } catch (e) { }
+if (_lmLangPick === '11' && displayText.hasOwnProperty('pl')) {
+    lang = 'pl';
+} else if (_lmLangPick === '1') {
+    lang = 'en'; /* picked English; other picks have no label set here: browser rule below */
+} else if (userLanguage && displayText.hasOwnProperty(userLanguage)) {
     lang = userLanguage;
+} else if (userLanguage && displayText.hasOwnProperty(String(userLanguage).split('-')[0])) {
+    lang = String(userLanguage).split('-')[0];
 }
 var textLanguage = displayText[lang];
 /*
@@ -19620,9 +19972,21 @@ function thelegendmodproject() {
                     ogarhusettings();
                     //ogarhusettingsImportExportMobile();
                 });
+            /* Theme changes are shown at once but were lost on reload unless Save was pressed
+             * (the Settings tab saves on every change). Save shortly after the player changes a
+             * colour, slider or option in this tab. Only user input here triggers it, so values
+             * that other code changes for itself are never written. */
+            var _lmThemeSaveT = null;
+            $(document).on('changeColor.colorpicker input change', '#theme input, #theme select, #theme .input-group', function () {
+                clearTimeout(_lmThemeSaveT);
+                _lmThemeSaveT = setTimeout(function () { Settings.saveThemeSettings(); }, 600);
+            });
             $('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + textLanguage.restoreThemeSettings + '</a></div>'),
                 $(document).on('click', '#theme .restore-settings a', function (e) {
-                    e.preventDefault(), Settings.restoreThemeSettings();
+                    e.preventDefault();
+                    /* one click wiped the whole theme and reloaded: ask first */
+                    if (!window.confirm('Reset the theme to the default? This cannot be undone.')) return; clearTimeout(_lmThemeSaveT); /* a pending auto-save must not write the old theme back */
+                    Settings.restoreThemeSettings();
                 }), $('.skin').colorpicker({
                     'format': 'hex',
                     'input': '#color'
@@ -19867,6 +20231,9 @@ function thelegendmodproject() {
         setChatPosition() {
             if (defaultSettings.chatPos) {
                 toastr.remove();
+                /* an unknown imported value threw during start-up */
+                if (!chatPositions[defaultSettings.chatPos]) defaultSettings.chatPos = 'bottomleft';
+                if (!chatPositions[defaultSettings.chatPos]) return;
                 toastr.options.positionClass = chatPositions[defaultSettings.chatPos].positionClass;
             }
         },
@@ -20054,7 +20421,8 @@ function thelegendmodproject() {
                 this.macrobotFeedActive = true;
 
                 var app = this;
-                var lastFeedTime = 0;
+                /* the first feed was just sent: time the next one from now */
+                var lastFeedTime = performance.now();
 
                 this.Botseject();
 
@@ -20072,7 +20440,9 @@ function thelegendmodproject() {
                     }
 
                     if (now - lastFeedTime >= delay) {
-                        lastFeedTime = now;
+                        /* advance by the delay (not to now): the slider rate is kept instead of
+                         * snapping to whole frames (20 ms at 60 fps fed 30/s); resync after a stall */
+                        lastFeedTime = (now - lastFeedTime > 4 * delay) ? now : lastFeedTime + delay;
                         app.Botseject();
                     }
 
@@ -20107,7 +20477,8 @@ function thelegendmodproject() {
                 this.macroFeedActive = true;
 
                 var app = this;
-                var lastFeedTime = 0;
+                /* the first feed was just sent: time the next one from now */
+                var lastFeedTime = performance.now();
 
                 this.feed();
 
@@ -20125,7 +20496,9 @@ function thelegendmodproject() {
                     }
 
                     if (now - lastFeedTime >= delay) {
-                        lastFeedTime = now;
+                        /* advance by the delay (not to now): the slider rate is kept instead of
+                         * snapping to whole frames (20 ms at 60 fps fed 30/s); resync after a stall */
+                        lastFeedTime = (now - lastFeedTime > 4 * delay) ? now : lastFeedTime + delay;
                         app.feed();
                     }
 
@@ -20179,27 +20552,27 @@ function thelegendmodproject() {
             app.Botsplit();
             setTimeout(function () {
                 app.Botsplit();
-            }, 40);
+            }, window._lmSplitDelay(1));
         },
         popBotSplit() {
             var app = this;
             app.Botsplit();
             setTimeout(function () {
                 app.Botsplit();
-            }, 200);
+            }, window._lmPopSplitDelay());
         },
         splitBot16() {
             var app = this;
             app.Botsplit();
             setTimeout(function () {
                 app.Botsplit();
-            }, 40);
+            }, window._lmSplitDelay(1));
             setTimeout(function () {
                 app.Botsplit();
-            }, 80);
+            }, window._lmSplitDelay(2));
             setTimeout(function () {
                 app.Botsplit();
-            }, 120);
+            }, window._lmSplitDelay(3));
         },
         split() {
             if (window.core && window.core.split) window.core.split();
@@ -20217,7 +20590,7 @@ function thelegendmodproject() {
                 /* the unit switched since the macro started: do not split the other one */
                 if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
-            }, 40);
+            }, window._lmSplitDelay(1));
         },
         crazyDoubleSplit() {
             var app = this;
@@ -20226,7 +20599,7 @@ function thelegendmodproject() {
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 window.lockPosition = true;
                 if (window.core && window.core.doubleSplit) window.core.doubleSplit();
-                setTimeout(function () { window.lockPosition = false; }, 40);
+                setTimeout(function () { window.lockPosition = false; }, window._lmSplitDelay(1));
                 return;
             }
             window.lockPosition = true
@@ -20236,7 +20609,7 @@ function thelegendmodproject() {
                 if (window.multiboxPlayerEnabled !== _lmSplitUnit) { window.lockPosition = false; return; }
                 app.split();
                 window.lockPosition = false
-            }, 40);
+            }, window._lmSplitDelay(1));
         },
         popSplit() {
             var app = this;
@@ -20246,7 +20619,7 @@ function thelegendmodproject() {
                 /* the unit switched since the macro started: do not split the other one */
                 if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
-            }, 200);
+            }, window._lmPopSplitDelay());
         },
         tripleSplit() {
             var app = this;
@@ -20262,13 +20635,13 @@ function thelegendmodproject() {
                 /* the unit switched since the macro started: do not split the other one */
                 if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
-            }, 40);
+            }, window._lmSplitDelay(1));
             setTimeout(function () {
                 /* the unit switched since the macro started: do not split the other one */
                 if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
                 //window.lockPosition = false
-            }, 80);
+            }, window._lmSplitDelay(2));
         },
         split16() {
             var app = this;
@@ -20283,17 +20656,17 @@ function thelegendmodproject() {
                 /* the unit switched since the macro started: do not split the other one */
                 if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
-            }, 40);
+            }, window._lmSplitDelay(1));
             setTimeout(function () {
                 /* the unit switched since the macro started: do not split the other one */
                 if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
-            }, 80);
+            }, window._lmSplitDelay(2));
             setTimeout(function () {
                 /* the unit switched since the macro started: do not split the other one */
                 if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
                 app.split();
-            }, 120);
+            }, window._lmSplitDelay(3));
         },
         /* ─── §4.3 UI Toggle Methods ─── */
         toggleSkins() {
@@ -20421,7 +20794,12 @@ function thelegendmodproject() {
             this.syncHotkeyOption('transparentSkins');
         },
         setShowStats() {
-            $('#stats-hud').toggle();
+            /* toggling only the element showed a frozen HUD when "Show game stats" was off
+             * (its 250 ms update stops then) and left the checkbox out of sync */
+            defaultmapsettings.showStats = !defaultmapsettings.showStats;
+            this.displayStats();
+            if (defaultmapsettings.showStats) $('#stats-hud').show();
+            this.syncHotkeyOption('showStats');
         },
         setShowFood() {
             ogario.showFood = !ogario.showFood;
@@ -20534,7 +20912,10 @@ function thelegendmodproject() {
             }
             this.retryResp++;
             const app = this;
-            setTimeout(() => {
+            /* one chain only (pressing quick respawn twice ran two, each sending spawns) */
+            clearTimeout(this._lmTryRespT);
+            this._lmTryRespT = setTimeout(() => {
+                app._lmTryRespT = null;
                 if ($('.btn-play-guest').is(':visible')) {
                     $('.btn-play-guest').click();
                 } else {
@@ -20550,6 +20931,8 @@ function thelegendmodproject() {
                 this.hideMenu();
                 this.gameServerConnect(this.ws);
                 ogario.play = false;
+                clearTimeout(this._lmTryRespT);
+                this.retryResp = 0;
                 this.tryResp();
             }
         },
@@ -20565,6 +20948,8 @@ function thelegendmodproject() {
                 return;
             }
             this.setAutoResp();
+            /* the death callers run showMenu(300) right after this: see showMenu */
+            this._lmAutoRespAt = Date.now();
             $('#overlays').stop().hide();
             if ($('.btn-play-guest').is(':visible')) {
                 $('.btn-play-guest').click();
@@ -20577,7 +20962,12 @@ function thelegendmodproject() {
                 if (!$('#skipStats').prop('checked')) {
                     $('#skipStats').click();
                     this.skipStats = true;
+                    /* turned on for auto-respawn only: turned off again with it */
+                    this._lmSkipStatsByAutoResp = true;
                 }
+            } else if (this._lmSkipStatsByAutoResp) {
+                this._lmSkipStatsByAutoResp = false;
+                if ($('#skipStats').prop('checked')) $('#skipStats').click();
             }
         },
         toggleAutoResp() {
@@ -20830,8 +21220,16 @@ function thelegendmodproject() {
             if (!this.leaderboardPositionsHUD) {
                 return;
             }
-            this.leaderboardPositionsHUD.innerHTML = position;
-            this.leaderboardDataHUD.innerHTML = data;
+            /* Unchanged leaderboard: skip the two innerHTML rewrites (runs on every packet) */
+            /* cache lives on the element, so a rebuilt HUD element always gets its first write */
+            if (this.leaderboardPositionsHUD._lmHtml !== position) {
+                this.leaderboardPositionsHUD.innerHTML = position;
+                this.leaderboardPositionsHUD._lmHtml = position;
+            }
+            if (this.leaderboardDataHUD._lmHtml !== data) {
+                this.leaderboardDataHUD.innerHTML = data;
+                this.leaderboardDataHUD._lmHtml = data;
+            }
         },
         displayStats() {
             if (defaultmapsettings.showStats) {
@@ -21342,7 +21740,8 @@ function thelegendmodproject() {
             var messageBox = $('#message-box');
             var message = $('#message');
             if (messageBox.is(':visible')) {
-                const value = message.val();
+                /* spaces only: nothing to send (it sent "Nick:    " and used the rate window) */
+                const value = message.val().trim();
                 if (value.length) {
 
                     /* Expanding Land drops chat (99/202) sent within 2 s of the previous
@@ -21389,6 +21788,18 @@ function thelegendmodproject() {
         },
         /* ─── §4.5 Menu & Settings ─── */
         showMenu(value) {
+            /* auto-respawn just pressed Play: the death handlers' showMenu(300) faded the menu
+            * back in over the respawn (for the whole captcha / round trip). Skip it; if the
+            * respawn did not happen within 3 s, show the menu after all. */
+            if (defaultmapsettings.autoResp && this._lmAutoRespAt && Date.now() - this._lmAutoRespAt < 1000 && !ogario.play) {
+                var _lmApp = this;
+                clearTimeout(this._lmAutoRespMenuT);
+                this._lmAutoRespMenuT = setTimeout(function () {
+                    _lmApp._lmAutoRespAt = 0;
+                    if (!ogario.play) _lmApp.showMenu(value);
+                }, 3000);
+                return;
+            }
             /*
              * ============================================================
              * EXPANDING LAND CINEMATIC LOCK
@@ -21505,7 +21916,8 @@ function thelegendmodproject() {
             let options = {
                 ogarioCommands: chatCommand,
                 ogarioHotkeys: hotkeys,
-                ogarioPlayerProfiles: profiles,
+                /* profiles hidden by a lower profile count were left out (lost on a new browser) */
+                ogarioPlayerProfiles: profiles.concat((function () { var x = readLocalStorageJSON('ogarioPlayerProfilesExtra', []); return Array.isArray(x) ? x : []; })()),
                 ogarioSettings: defaultmapsettings,
                 ogarioThemeSettings: defaultSettings
 
@@ -21524,6 +21936,9 @@ function thelegendmodproject() {
             options = null;
         },
         importSettings() {
+            /* a pending slider save would overwrite the imported settings before the reload */
+            clearTimeout(this._lmSettingsSaveT);
+            this._lmSettingsSaveT = null;
             $('#import-settings').blur();
             let importValue = $('#import-settings').val();
             if (importValue) {
@@ -21547,12 +21962,16 @@ function thelegendmodproject() {
                             continue;
                         }
                         window.localStorage.setItem(value, JSON.stringify(importValue[value]));
+                        /* the import holds the hidden profiles too: keeping the old ones duplicated them */
+                        if (value === 'ogarioPlayerProfiles') window.localStorage.removeItem('ogarioPlayerProfilesExtra');
                     }
                 }
                 window.location.reload();
             }
         },
         restoreSettings() {
+            clearTimeout(this._lmSettingsSaveT);
+            this._lmSettingsSaveT = null;
             if (window.localStorage.getItem('ogarioSettings') !== null) {
                 window.localStorage.removeItem('ogarioSettings');
                 window.location.reload();
@@ -21581,6 +22000,20 @@ function thelegendmodproject() {
                     case 'highDPI':
                         if (typeof drawRender !== 'undefined' && drawRender && drawRender.resizeCanvas) {
                             drawRender.resizeCanvas();
+                        }
+                        break;
+                    case 'recordReplays':
+                        /* switched off: free the recordings held in memory, except a replay
+                         * that is playing right now (array edited in place, not replaced) */
+                        if (!checked && window.RecordedProtocol && Array.isArray(window.RecordedProtocolArenas)) {
+                            var _lmKeepRec = window.legendmod && window.legendmod.playingReplayServer;
+                            for (var _lmRi = window.RecordedProtocolArenas.length - 1; _lmRi >= 0; _lmRi--) {
+                                var _lmRk = window.RecordedProtocolArenas[_lmRi];
+                                if (_lmRk === _lmKeepRec) continue;
+                                window.RecordedProtocolArenas.splice(_lmRi, 1);
+                                delete window.RecordedProtocol[_lmRk];
+                                if (window.RecordedArenasSpecifications) delete window.RecordedArenasSpecifications[_lmRk];
+                            }
                         }
                         break;
                     case 'showMiniMap':
@@ -21642,6 +22075,28 @@ function thelegendmodproject() {
                     case 'blockPopups':
                         this.setBlockPopups();
                         break;
+                    case 'glAntialias':
+                        if (window.toastr) toastr.info('Reload the page to apply anti-aliasing.');
+                        break;
+                    case 'performanceMode':
+                        /* On: remember the current values and turn the costly effects off.
+                         * Off: put the remembered values back. Saved below; applied on reload. */
+                        var _lmPerfKeys = ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor',
+                            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias'].filter(function (k) { return defaultmapsettings.hasOwnProperty(k); });
+                        if (checked) {
+                            var _lmPerfBak = {};
+                            _lmPerfKeys.forEach(function (k) { _lmPerfBak[k] = defaultmapsettings[k]; defaultmapsettings[k] = false; });
+                            try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(_lmPerfBak)); } catch (e) { }
+                        } else {
+                            var _lmPerfOld = null;
+                            try { _lmPerfOld = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { }
+                            if (_lmPerfOld) {
+                                _lmPerfKeys.forEach(function (k) { if (_lmPerfOld.hasOwnProperty(k)) defaultmapsettings[k] = _lmPerfOld[k]; });
+                            }
+                            try { window.localStorage.removeItem('lmPerfBackup'); } catch (e) { }
+                        }
+                        if (window.toastr) toastr.info('Performance mode ' + (checked ? 'on' : 'off') + '. Reload the page to apply it everywhere.');
+                        break;
                 }
                 this.saveSettings(defaultmapsettings, 'ogarioSettings');
             }
@@ -21663,6 +22118,10 @@ function thelegendmodproject() {
         },
         /* ─── §4.6 Profile Management ─── */
         loadProfiles() {
+            /* an imported or damaged profile count (0, -1, "x") emptied the list and the
+             * selected-profile maths (% 0) threw at every start: keep it in the slider range */
+            var _lmPn = parseInt(defaultmapsettings.profileNumber, 10);
+            defaultmapsettings.profileNumber = isFinite(_lmPn) ? Math.min(54, Math.max(10, _lmPn)) : 15;
             if (null !== window.localStorage.getItem('ogarioPlayerProfiles')) {
                 profiles =
                     readLocalStorageJSON(
@@ -21676,6 +22135,13 @@ function thelegendmodproject() {
                 /* An imported or corrupted entry that is not an object (null, "x") made
                  * setMenu throw on every load: replace it with a default profile. */
                 for (var pi = 0; pi < profiles.length; pi++) {
+                    /* a profile without skinURL/nick (e.g. {"nick":"x"}) threw in setSkinPreview */
+                    if (profiles[pi] && typeof profiles[pi] === 'object') {
+                        if (typeof profiles[pi].nick !== 'string') profiles[pi].nick = 'Profile #' + (pi + 1);
+                        if (typeof profiles[pi].clanTag !== 'string') profiles[pi].clanTag = '';
+                        if (typeof profiles[pi].skinURL !== 'string') profiles[pi].skinURL = '';
+                        if (typeof profiles[pi].color !== 'string') profiles[pi].color = defaultSettings.mainColor;
+                    }
                     if (!profiles[pi] || typeof profiles[pi] !== 'object') {
                         profiles[pi] = {
                             'nick': 'Profile #' + (pi + 1),
@@ -21850,6 +22316,11 @@ function thelegendmodproject() {
              * or a slow earlier load showed the wrong (or a duplicate) skin. */
             var previewReqs = this._lmSkinPreviewReq || (this._lmSkinPreviewReq = {});
             var req = previewReqs[e] = (previewReqs[e] || 0) + 1;
+            /* clear the "could not load" mark from a previous attempt (only the one we set) */
+            var _lmPv = $('#' + e);
+            if (_lmPv.attr('data-lm-skin-err')) {
+                _lmPv.removeClass('lm-skin-error').removeAttr('title').removeAttr('data-lm-skin-err');
+            }
             if (t.includes && (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg"))) {
                 //if (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg")) {
                 //console.log("stage 1 videos");
@@ -21895,6 +22366,18 @@ function thelegendmodproject() {
                     o.onload = function () {
                         if (previewReqs[e] !== req) return;
                         app.changeSkinPreview(o, e);
+                    };
+                    /* a dead link or a host that blocks cross-origin use failed silently */
+                    o.onerror = function () {
+                        if (previewReqs[e] !== req) return;
+                        if (!document.getElementById('lm-skin-err-css')) {
+                            var _lmCss = document.createElement('style');
+                            _lmCss.id = 'lm-skin-err-css';
+                            _lmCss.textContent = '.lm-skin-error{box-shadow:0 0 0 3px #e74c3c inset !important;}';
+                            document.head.appendChild(_lmCss);
+                        }
+                        $('#' + e).addClass('lm-skin-error').attr('data-lm-skin-err', '1')
+                            .attr('title', 'Skin could not load: the link is dead or its host blocks it (CORS)');
                     };
                 }
             }
@@ -22055,9 +22538,22 @@ function thelegendmodproject() {
             /* Set the value as a property: imported settings must not be parsed as HTML. */
             $('#' + name).val(defaultmapsettings[name] == null ? '' : String(defaultmapsettings[name]));
             var app = this;
+            /* sound URL boxes: every key created a new Audio and fetched the half-typed URL
+             * (media errors) and saved all settings; apply when typing pauses or on leaving */
+            var _lmT = null;
+            var apply = function (el) {
+                clearTimeout(_lmT);
+                _lmT = null;
+                defaultmapsettings[name] = el.value;
+                app[callback]();
+                app.saveSettings(defaultmapsettings, 'ogarioSettings');
+            };
             $('#' + name).on('input', function () {
-                defaultmapsettings[name] = this.value, app[callback](),
-                    app.saveSettings(defaultmapsettings, 'ogarioSettings');
+                var el = this;
+                clearTimeout(_lmT);
+                _lmT = setTimeout(function () { apply(el); }, 600);
+            }).on('change', function () {
+                apply(this);
             });
         },
         addSliderBox(id, name, min, max, step, callback) {
@@ -22066,19 +22562,33 @@ function thelegendmodproject() {
             $('#' + name + '-value').text(defaultmapsettings[name]);
             $('#' + name + '-slider').val(defaultmapsettings[name]);
             var app = this;
+            /* dragging wrote all settings to localStorage dozens of times a second: save once
+             * the slider rests (400 ms) and right away on release ('change') */
+            var saveSoon = function () {
+                clearTimeout(app._lmSettingsSaveT);
+                app._lmSettingsSaveT = setTimeout(function () {
+                    app._lmSettingsSaveT = null;
+                    app.saveSettings(defaultmapsettings, 'ogarioSettings');
+                }, 400);
+            };
+            $('#' + name + '-slider').on('change', function () {
+                clearTimeout(app._lmSettingsSaveT);
+                app._lmSettingsSaveT = null;
+                app.saveSettings(defaultmapsettings, 'ogarioSettings');
+            });
             callback ? $('#' + name + '-slider').on('input', function () {
                 var t = parseFloat($(this).val());
                 $('#' + name + '-value').text(t);
                 defaultmapsettings[name] = t;
                 if (ogario.hasOwnProperty(name)) ogario[name] = t;
                 app[callback]();
-                app.saveSettings(defaultmapsettings, 'ogarioSettings');
+                saveSoon();
             }) : $('#' + name + '-slider').on('input', function () {
                 var t = parseFloat($(this).val());
                 $('#' + name + '-value').text(t);
                 defaultmapsettings[name] = t;
                 if (ogario.hasOwnProperty(name)) ogario[name] = t;
-                app.saveSettings(defaultmapsettings, 'ogarioSettings');
+                saveSoon();
             });
         },
         setLang() {
@@ -22346,7 +22856,7 @@ function thelegendmodproject() {
             $("#noNames, #showMass").remove();
             $("#og-settings .submenu-panel").append('<div id="og-options"></div>');
             //this.addOptions(["unlockedFPS"], "animationGroup");
-            this.addOptions(["highDPI"], "animationGroup");
+            this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode"], "animationGroup");
 
             this.addOptions(["autoZoom"], "zoomGroup");
             this.addOptions([], "boardGroup");
@@ -22427,10 +22937,15 @@ function thelegendmodproject() {
 
             this.addSliderBox(".profiles", "profileNumber", 10, 54, 1);
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
+            this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
+            this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
             // this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
             $("#og-settings").append('<div class="restore-settings"><a href="#">' + textLanguage.restoreSettings + "</a></div>");
+            /* Bug reports: copy versions, browser, GPU, server and the last errors to the
+             * clipboard. Nothing is sent anywhere; the player pastes it into Discord. */
+            $("#og-settings").append('<div class="restore-settings"><a href="#" id="lm-copy-debug">Copy debug info</a></div>');
             $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + textLanguage.thanks + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + textLanguage.playlist + "</a></span></div>");
             $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + textLanguage.sounds + "</h5></div>");
             $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
@@ -22468,13 +22983,22 @@ function thelegendmodproject() {
             $("body").append('<div id="chat-box"></div>');
             //$("#chat-emoticons").disMojiPicker();
             if ($("#chat-emoticons").disMojiPicker) $("#chat-emoticons").disMojiPicker();
-            var Opera = (navigator.userAgent.match(/Opera|OPR\//) ? true : false);
-            if (Opera) {
-                $("#chat-emoticons").click(emoji => document.getElementById("message").value += emoji.target.textContent);
-            }
-            else {
-                $("#chat-emoticons").picker(emoji => document.getElementById("message").value += emoji);
-            }
+            /* One handler for all browsers. The picker read only twemoji's <img alt> ("undefined"
+             * was typed when the twemoji CDN was blocked), Opera got tab/whitespace text, and
+             * the emoji was appended at the end past the 80-character limit. */
+            $("#chat-emoticons").on("click", ".picker-emoji-content span", function () {
+                var $s = $(this);
+                var txt = $s.children("img").attr("alt") || $s.text();
+                var el = document.getElementById("message");
+                if (!txt || !el) return false;
+                var s = typeof el.selectionStart === "number" ? el.selectionStart : el.value.length;
+                var e = typeof el.selectionEnd === "number" ? el.selectionEnd : s;
+                var v = el.value.slice(0, s) + txt + el.value.slice(e);
+                if (el.maxLength > 0 && v.length > el.maxLength) return false;
+                el.value = v;
+                try { el.focus(); el.selectionStart = el.selectionEnd = s + txt.length; } catch (err) { }
+                return false;
+            });
 
 
             //var twemoji; if (twemoji) twemoji.parse(document.getElementsByClassName("emoji-content")[0]); this needs on LMexpress.sniff3.js
@@ -22492,14 +23016,14 @@ function thelegendmodproject() {
             this.addOption("#exp-imp-settings", "export-ogarioPlayerProfiles",
                 textLanguage.profiles, true), this.addOption("#exp-imp-settings", "export-ogarioSettings", textLanguage.settings, true);
             this.addOption("#exp-imp-settings", "export-ogarioThemeSettings", textLanguage.theme, true);
-            $("#exp-imp-settings").append('<textarea id="export-settings" class="form-control" rows="14" cols="100" spellcheck="false" readonly /><button id="export-settings-btn" class="btn btn-block btn-success">' + textLanguage.exportSettings + "</button>");
+            $("#exp-imp-settings").append('<textarea id="export-settings" class="form-control" rows="14" cols="100" spellcheck="false" readonly></textarea><button id="export-settings-btn" class="btn btn-block btn-success">' + textLanguage.exportSettings + "</button>");
             $("#exp-imp-settings").append("<h1>" + textLanguage.importSettings + "</h1><h2>" +
                 textLanguage.importInfo + "</h2>"), this.addOption("#exp-imp-settings", "import-ogarioCommands", textLanguage.commands, true);
             this.addOption("#exp-imp-settings", "import-ogarioHotkeys", textLanguage.hotkeys, true);
             this.addOption("#exp-imp-settings", "import-ogarioPlayerProfiles", textLanguage.profiles, true);
             this.addOption("#exp-imp-settings", "import-ogarioSettings", textLanguage.settings, true);
             this.addOption("#exp-imp-settings", "import-ogarioThemeSettings", textLanguage.theme, true);
-            $("#exp-imp-settings").append('<textarea id="import-settings" class="form-control" rows="14" cols="100" spellcheck="false" /><button id="import-settings-btn" class="btn btn-block btn-success">' +
+            $("#exp-imp-settings").append('<textarea id="import-settings" class="form-control" rows="14" cols="100" spellcheck="false"></textarea><button id="import-settings-btn" class="btn btn-block btn-success">' +
                 textLanguage.importSettings + "</button>");
             if (Settings) Settings.setThemeMenu();
             /** @type {number} */
@@ -22657,10 +23181,19 @@ function thelegendmodproject() {
                 trigger: 'manual',
                 animation: false
             });
-            $(document).on(`input click`, `#skin`, function () {
+            /* typing: wait 300 ms before loading two preview images (it loaded them on every key) */
+            var _lmSkinInputT = null;
+            $(document).on(`input click`, `#skin`, function (ev) {
                 const value = this.value;
-                app.setSkinPreview(value, `skin-preview`);
-                app.setSkinPreview(value, `profile-` + app.selectedProfile);
+                /* the profile typed into: switching profile within the 300 ms showed this skin
+                 * on the newly selected profile */
+                const idx = app.selectedProfile;
+                clearTimeout(_lmSkinInputT);
+                var show = function () {
+                    if (idx === app.selectedProfile) app.setSkinPreview(value, `skin-preview`);
+                    app.setSkinPreview(value, `profile-` + idx);
+                };
+                if (ev && ev.type === 'input') _lmSkinInputT = setTimeout(show, 300); else show();
             });
             $(document).on(`click`, '.skin .example-url a', function (event) {
                 event.preventDefault();
@@ -22753,8 +23286,39 @@ function thelegendmodproject() {
                     //}
                 }
             });
+            $(document).on("click", "#lm-copy-debug", function (ev) {
+                ev.preventDefault();
+                ev.stopImmediatePropagation();
+                var lines = [];
+                try {
+                    var gpu = '';
+                    try {
+                        var _gl = window.drawRender && drawRender.gl;
+                        var _dbg = _gl && _gl.getExtension('WEBGL_debug_renderer_info');
+                        gpu = _dbg ? _gl.getParameter(_dbg.UNMASKED_RENDERER_WEBGL) : (_gl ? 'WebGL2' : 'no WebGL');
+                    } catch (e) { gpu = '?'; }
+                    var lm = window.legendmod || {};
+                    lines.push('Legend Mod build ' + window.OgVer + ', loader ' + (window.LMVersion || '?'));
+                    lines.push('Page: ' + location.hostname + ', browser: ' + navigator.userAgent);
+                    lines.push('Screen: ' + window.innerWidth + 'x' + window.innerHeight + ' @' + (window.devicePixelRatio || 1) + ', GPU: ' + gpu);
+                    lines.push('Server: ' + (lm.ws || '-') + ' (' + (lm.serverType || '-') + '), region ' + $('#region').val() + ', mode ' + $('#gamemode').val());
+                    var errs = window._lmRecentErrors || [];
+                    lines.push('Last errors (' + errs.length + '):');
+                    for (var i = 0; i < errs.length; i++) lines.push('  ' + errs[i]);
+                } catch (e) { lines.push('debug info error: ' + e); }
+                var text = lines.join('\n');
+                var done = function (ok) { if (window.toastr) ok ? toastr.success('Debug info copied. Paste it into your bug report.') : toastr.warning('Could not copy. Select the text in the console instead.'); if (!ok) console.log(text); };
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+                } else {
+                    done(false);
+                }
+            });
             $(document).on("click", "#og-settings .restore-settings a", function (result) {
+                if (this.id === 'lm-copy-debug') return;
                 result.preventDefault();
+                /* one click wiped all game settings and reloaded: ask first */
+                if (!window.confirm('Reset all game settings to the default? This cannot be undone.')) return;
                 app.restoreSettings();
             });
             $(document).on("click", "#og-settings .btn-export", function (result) {
@@ -22889,8 +23453,9 @@ function thelegendmodproject() {
                 result.preventDefault();
                 /** @type {boolean} */
                 defaultmapsettings.chatSounds = !defaultmapsettings.chatSounds;
-                app.saveSettings(defaultmapsettings, "ogarioSettings");
                 app.setChatSoundsBtn();
+                /* the settings switch kept the old state: sync it (this also saves) */
+                app.syncHotkeyOption('chatSounds');
             });
             $(document).on("click", ".chat-active-users", function (event) {
                 event.preventDefault();
@@ -22948,6 +23513,23 @@ function thelegendmodproject() {
                     "size": "small"
                 });
             });
+            /* Switchery hides the real checkbox, so the switches could not be used with the
+             * keyboard: make them focusable and toggle them with Space / Enter. Handled in the
+             * capture phase on window and stopped there, so the key never reaches the game's
+             * hotkeys (Space = split). */
+            $('.switchery').attr({ tabindex: '0', role: 'switch' });
+            if (!window._lmSwitchKeys) {
+                window._lmSwitchKeys = true;
+                window.addEventListener('keydown', function (ev) {
+                    var t = ev.target;
+                    if (!t || !t.classList || !t.classList.contains('switchery')) return;
+                    if (ev.key === ' ' || ev.key === 'Enter' || ev.keyCode === 32 || ev.keyCode === 13) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        t.click();
+                    }
+                }, true);
+            }
             $("input[type='range']").rangeslider({
                 "polyfill": false
             });
@@ -23489,6 +24071,33 @@ function thelegendmodproject() {
         onPlayerSpawn() {
             ogario.play =
                 true;
+            /* a new life: its death must be handled even within 3 s of the previous one
+             * (the 3 s window only merges the two reports of the SAME death; a spawn-kill
+             * got no death handling: no auto-respawn, no menu) */
+            this._lmLastDeathAt = 0;
+
+            /* The Game Over card (screen centre, top z-index) took the mouse and stayed for 12 s
+             * after a quick respawn. Keep it readable but let the mouse through to the game (its
+             * close button stays clickable) and close it 3 s after spawning. It belongs to the
+             * protocol object (window.legendmod.showSessionStats), whose timer is replaced here. */
+            var _lmGoCard = document.getElementById('lm-gameover-modal');
+            if (_lmGoCard) {
+                _lmGoCard.style.pointerEvents = 'none';
+                var _lmGoX = document.getElementById('lm-go-close');
+                if (_lmGoX) _lmGoX.style.pointerEvents = 'auto';
+                if (window.legendmod) {
+                    if (window.legendmod._gameOverDismissTimer) clearTimeout(window.legendmod._gameOverDismissTimer);
+                    window.legendmod._gameOverDismissTimer = setTimeout(function () {
+                        window.legendmod._gameOverDismissTimer = null;
+                        var _lmGoNow = document.getElementById('lm-gameover-modal');
+                        if (_lmGoNow === _lmGoCard && _lmGoNow.parentNode) {
+                            _lmGoNow.style.transition = 'opacity .3s';
+                            _lmGoNow.style.opacity = '0';
+                            setTimeout(function () { if (_lmGoNow.parentNode) _lmGoNow.parentNode.removeChild(_lmGoNow); }, 350);
+                        }
+                    }, 3000);
+                }
+            }
 
 
             /*
@@ -23667,6 +24276,12 @@ function thelegendmodproject() {
                 this.pause = false;
                 ogario.pause = false;
                 $('#pause-hud').hide();
+            }
+            /* Permanent feed (toggle) ends with the life too: it kept ejecting while dead
+             * and fed the new cell away right after respawn */
+            if (this.feedIntervalPerm) {
+                clearTimeout(this.feedIntervalPerm);
+                this.feedIntervalPerm = null;
             }
             //this.showMenu(300);
             this.sendPlayerDeath();
@@ -23972,8 +24587,10 @@ function thelegendmodproject() {
                     Number.isFinite(imageHeight) &&
                     imageWidth > 0 &&
                     imageHeight > 0 &&
-                    imageWidth <= 2000 &&
-                    imageHeight <= 2000;
+                    /* 2048 (was 2000): the common 2048 px uploads were rejected and refetched
+                     * forever; cacheSkin scales them down to 512 anyway */
+                    imageWidth <= 2048 &&
+                    imageHeight <= 2048;
 
                 if (!validImage) {
                     /*
@@ -24412,9 +25029,21 @@ function thelegendmodproject() {
                     return;
                 }
 
-                var isCorsBlocked = url.includes('imgur.com') ||
-                    url.includes('legendmod.ml') ||
-                    url.includes('agario.miniclippt.com');
+                /*
+                 * Checked in a browser (2026-11): imgur and www.legendmod.ml send
+                 * Access-Control-Allow-Origin: *, so they load with CORS (untainted, so the
+                 * WebGL renderer can use them, and fetch can cache them). imgur also needs
+                 * no Referer. jimboy3100.github.io answers with a 301 to www.legendmod.ml
+                 * that has no CORS header, which made every CORS load of it fail: request the
+                 * same file on www.legendmod.ml directly. The cache key and the mirror
+                 * fallback still use the original url. agar.io's CDN stays as before (could
+                 * not be verified).
+                 */
+                var isCorsBlocked = url.includes('agario.miniclippt.com');
+                var lmNoReferrer = url.includes('imgur.com');
+                var netUrl = url.indexOf('https://jimboy3100.github.io/') === 0
+                    ? 'https://www.legendmod.ml/' + url.slice('https://jimboy3100.github.io/'.length)
+                    : url;
 
                 var fallbackToImageTag = function () {
                     if (isResolved || (img && img[url])) { onDone(); return; }
@@ -24436,6 +25065,7 @@ function thelegendmodproject() {
                     } else {
                         directImage.crossOrigin =
                             'anonymous';
+                        if (lmNoReferrer) directImage.referrerPolicy = 'no-referrer';
                     }
 
                     var _loadTimer = setTimeout(function () {
@@ -24648,7 +25278,7 @@ function thelegendmodproject() {
                         }
                         app._lmSkinMirrorFrom = null;
                     };
-                    directImage.src = url;
+                    directImage.src = netUrl;
                 };
 
                 /* Single Fetch Strategy for CORS-enabled assets */
@@ -24676,15 +25306,12 @@ function thelegendmodproject() {
                             }, 8000);
                     }
 
+                    var lmFetchOpts = {};
+                    if (networkAbortController) lmFetchOpts.signal = networkAbortController.signal;
+                    if (lmNoReferrer) lmFetchOpts.referrerPolicy = 'no-referrer';
                     fetch(
-                        url,
-                        networkAbortController
-                            ? {
-                                signal:
-                                    networkAbortController
-                                        .signal
-                            }
-                            : undefined
+                        netUrl,
+                        lmFetchOpts
                     ).then(function (res) {
                         /*
                          * Keep the timeout active while the complete response
@@ -24893,6 +25520,7 @@ function thelegendmodproject() {
                         }
                     } catch (error) { }
                     try {
+                        i._lmCircle = true; /* already cut to a circle: no clip needed when drawn */
                         this.customSkinsCache[e + "_cached"] = i;
                         if (window.drawRender && window.drawRender.uploadSkinTexture) {
                             window.drawRender.uploadSkinTexture(e, i);
@@ -24960,6 +25588,7 @@ function thelegendmodproject() {
                         }
                     } catch (error) { }
                     try {
+                        i._lmCircle = true;
                         this.customSkinsCache[e + "_cached3"] = i;
                         if (window.drawRender && window.drawRender.uploadSkinTexture) {
                             window.drawRender.uploadSkinTexture(e + "_cached3", i);
@@ -26771,6 +27400,10 @@ function thelegendmodproject() {
         readQuadrantRequest(view) {
             if (view.byteLength < 3) return;
             var requesterID = view.getUint16(1, true);
+            /* the minimap (which refreshes currentSector) is skipped while the tab is hidden */
+            if (document.hidden && typeof this.calculateMapSector === 'function') {
+                this.currentSector = this.calculateMapSector(ogario.playerX, ogario.playerY, true);
+            }
             var myQuadrantStr = this.currentSector || '';
             var quadChar = myQuadrantStr.charCodeAt(0) || 65;
             var quadNum = parseInt(myQuadrantStr.slice(1)) || 1;
@@ -28565,10 +29198,22 @@ function thelegendmodproject() {
                 //if (window.legendmod.delstate > 3) window.legendmod.delstate = -1; //Sonia3
                 if (window.legendmod.delstate > 3) window.legendmod.delstate = -1; //Sonia3
             } //Sonia3
+            /* A target that left the party or disconnected stayed on "[dead]" until cancelled by
+             * hand. A dead target normally comes back alive on respawn; clear it after 60 s. */
+            if (this.targetStatus === 2 && this.targetID) {
+                this._lmTargetDeadAt = this._lmTargetDeadAt || Date.now();
+                if (Date.now() - this._lmTargetDeadAt > 60000) {
+                    this._lmTargetDeadAt = 0;
+                    this.cancelTargeting();
+                }
+            } else {
+                this._lmTargetDeadAt = 0;
+            }
             var t = 0;
             for (; t < this.teamPlayers.length; t++) {
                 var e = this.teamPlayers[t];
-                if (e.alive && Date.now() - e.updateTime >= 2000 || 0 === e.mass) {
+                /* positions arrive once per second: two lost updates (2 s) hid a live teammate */
+                if (e.alive && Date.now() - e.updateTime >= 3000 || 0 === e.mass) {
                     e.alive = false;
                     if (this.targeting && this.targetID && e.id === this.targetID) {
                         this.setTargetStatus(2);
@@ -28670,10 +29315,13 @@ function thelegendmodproject() {
             }
 
             var msg = nick + ': ' + text;
-            var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
-            var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
+            /* Advert filter: the word must start at a word boundary and only the text is
+             * checked. It hid ordinary lines ("Tom is tired" holds "m is ti", "bus en paris")
+             * and every line from a player whose nick contains "misti". */
+            var pattern = /(^|[^a-z])s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a/i;
+            var pattern2 = /(^|[^a-z])m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i/i;
 
-            if (pattern.test(msg) || pattern2.test(msg)) {
+            if (pattern.test(text) || pattern2.test(text)) {
                 return;
             }
 
@@ -28686,24 +29334,30 @@ function thelegendmodproject() {
             }
         },
         readChatMessage(t) {
+            /* a short packet threw a RangeError on getUint32(6) */
+            if (!t || t.byteLength < 10) return;
             if (!defaultmapsettings.disableChat) {
                 var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
                 var caseof = t.getUint8(1); //caseof 101 or 102
                 var plId = t.getUint32(2, true);
                 var o = t.getUint32(6, true);
                 if (!(this.isChatUserMuted(plId) || 0 !== o && o !== this.playerID && plId !== this.playerID)) { //not for those
-                    for (var msg = '', n = 10; n < t.byteLength; n += 2) {
+                    for (var msg = '', n = 10; n + 1 < t.byteLength; n += 2) { /* odd length: no half character read */
                         var r = t.getUint16(n, true);
                         if (0 === r) break;
                         msg += String.fromCharCode(r);
                     }
-                    var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
-                    var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
+                    /* same advert filter as above: word boundary, message text only */
+                    var pattern = /(^|[^a-z])s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a/i;
+                    var pattern2 = /(^|[^a-z])m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i/i;
                     var pattern3 = "𝕊𝕖𝕟𝕡𝕒.𝕚𝕠";
+                    var _lmSep = msg.indexOf(': ');
+                    var _lmTxt = _lmSep >= 0 ? msg.slice(_lmSep + 2) : msg;
                     //var pattern = /.*(s).*e.*n.*p.*a.*/i;
                     //var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
-                    if (!pattern.test(msg) && !pattern2.test(msg) && !msg.includes(pattern3)) {
+                    var _lmNickMuted = !!(this._lmMutedNicks && _lmSep > 0 && this._lmMutedNicks.has(msg.slice(0, _lmSep)));
+                    if (!_lmNickMuted && !pattern.test(_lmTxt) && !pattern2.test(_lmTxt) && !msg.includes(pattern3)) {
 
                         if (legendmod.integrity || !LM.chatableServer) {
                             this.displayChatMessage(time, caseof, plId, msg);
@@ -28791,6 +29445,12 @@ function thelegendmodproject() {
             var _lmCommandText = chatCommand['comm' + command];
             if (typeof _lmCommandText !== 'string' || !_lmCommandText.length) return;
             var prepareCommand = this.prepareCommand(_lmCommandText);
+            /* Expanding Land drops chat within 2 s and restarts its window even for dropped
+             * messages: a command hotkey made the next typed message vanish silently */
+            if (LM.isLegendWorld && this.lmLegendChatTooSoon()) {
+                toastr.warning('<b>[CHAT]:</b> Slow down: one message every 2 seconds.');
+                return;
+            }
             this.sendChatMessage(102, prepareCommand);
 
             //		
@@ -28799,6 +29459,7 @@ function thelegendmodproject() {
 
                 var view = application.buildChat99View(prepareCommand);
                 legendmod.sendMessage(view);
+                if (LM.isLegendWorld) this._lmLegendChatLast = Date.now();
             }
             //
         },
@@ -28840,6 +29501,8 @@ function thelegendmodproject() {
                 var User = this.getChatUserNick(id);
                 this.chatMutedUsers[id] = User;
                 this.chatMutedUserIDs.push(id);
+                /* relay players get a new id when they reconnect: remember the nick too */
+                if (User) (this._lmMutedNicks || (this._lmMutedNicks = new Set())).add(User);
                 toastr.error(textLanguage.userMuted.replace('%user%', '<strong>' + this.escapeHTML(User) + '</strong>') + ' <button data-user-id=\"' + id + '\" class=\"btn btn-xs btn-green btn-unmute-user\">' + textLanguage.unmute + '</button>');
             }
         },
@@ -28848,6 +29511,7 @@ function thelegendmodproject() {
                 var User = this.chatMutedUserIDs.indexOf(id);
                 if (-1 != User) {
                     this.chatMutedUserIDs.splice(User, 1);
+                    if (this._lmMutedNicks) this._lmMutedNicks.delete(this.chatMutedUsers[id]);
                     toastr.info(textLanguage.userUnmuted.replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUsers[id]) + "</strong>"));
                     delete this.chatMutedUsers[id];
                 }
@@ -28863,7 +29527,7 @@ function thelegendmodproject() {
             var isImage = /\[img\](https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png|gif)\??\d*)\[\/img\]/i;
             if (isImage.test(string)) return defaultmapsettings.showChatImages ? '<img src=\"' + string.match(isImage)[1].replace('http:', 'https:') + '\" style=\"width:100%;border:none;\">' : '';
             var url = /\[yt\]([\w-]{11})\[\/yt\]/i;
-            if (url.test(string)) return defaultmapsettings.showChatVideos ? '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/' + string.match(url)[1] + '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />' : '';
+            if (url.test(string)) return defaultmapsettings.showChatVideos ? '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/' + string.match(url)[1] + '?vq=tiny\" loading=\"lazy\" frameborder=\"0\"></iframe>' : '';
             let escapedHtml = this.escapeHTML(string);
             if (defaultmapsettings.chatEmoticons) {
                 escapedHtml = this.parseEmoticons(escapedHtml);
@@ -28905,7 +29569,16 @@ function thelegendmodproject() {
                     }
                 }
                 //
-                if (!(0 === a.length || fancyCount2(a) > 15 || 0 === n.length)) {
+                /* The [SERVER]/[ADMIN]/[MOD] prefixes counted toward the 15-character nick limit,
+                 * so official messages from longer names were dropped: measure the nick alone. */
+                var _lmBaseNick = a, _lmPre = ['[ADMIN] ', '[MOD] ', '[SERVER] ', '[SERVER]'], _lmCut = true;
+                while (_lmCut) {
+                    _lmCut = false;
+                    for (var _lmPi = 0; _lmPi < _lmPre.length; _lmPi++) {
+                        if (_lmBaseNick.indexOf(_lmPre[_lmPi]) === 0) { _lmBaseNick = _lmBaseNick.slice(_lmPre[_lmPi].length); _lmCut = true; }
+                    }
+                }
+                if (!(0 === a.length || fancyCount2(_lmBaseNick) > 15 || 0 === n.length)) {
                     //if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                     /* History entries feed the canvas chat bubbles (plain text, matched to the
                      * raw cell nick): store the raw nick, and the raw text unless the parsed
@@ -28925,17 +29598,32 @@ function thelegendmodproject() {
                             'time': Date.now()
                         });
                         this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                        /* highlight a line that mentions my nick (only a fixed class is added; the
+                         * text stays escaped as before) */
+                        var _lmOwnNick = String($('#nick').val() || '').trim().toLowerCase();
+                        var _lmMention = _lmOwnNick.length >= 3 && plId != this.playerID && String(rawText).toLowerCase().indexOf(_lmOwnNick) !== -1;
+                        if (_lmMention && !document.getElementById('lm-mention-css')) {
+                            var _lmMcss = document.createElement('style');
+                            _lmMcss.id = 'lm-mention-css';
+                            _lmMcss.textContent = '#chat-box .message.lm-mention{background:rgba(255,210,0,.14);border-left:3px solid #ffd200;padding-left:3px}';
+                            document.head.appendChild(_lmMcss);
+                        }
+                        /* scroll only if the reader is already at the bottom (it pulled readers back down) */
+                        var _lmBoxEl = document.getElementById('chat-box');
+                        var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
-                            $('#chat-box').animate({
+                            /* stop(): one 500 ms animation was queued per message, so a burst scrolled for seconds */
+                            (_lmAtBottom ? $('#chat-box').stop(true).animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
-                            }, 500),
-                            void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && this.playSound(this.messageSound)); /* hidden chat box: silent, like the popups */
+                            }, 200) : 0),
+                            void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.messageSound)); /* own messages: no sound */ /* hidden chat box: silent, like the popups */
                         defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
-                            defaultmapsettings.chatSounds && this.playSound(this.messageSound));
+                            defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
+                        window._lmTrimChatToasts && window._lmTrimChatToasts();
                     } else if (102 === caseof) {
                         this.commandHistory.push({
                             'nick': rawNick,
@@ -28945,16 +29633,21 @@ function thelegendmodproject() {
                             'time': Date.now()
                         });
                         this.commandHistory.length > 15 && this.commandHistory.shift();
+                        /* scroll only if the reader is already at the bottom (it pulled readers back down) */
+                        var _lmBoxEl = document.getElementById('chat-box');
+                        var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
-                            $('#chat-box').animate({
+                            /* stop(): one 500 ms animation was queued per message, so a burst scrolled for seconds */
+                            (_lmAtBottom ? $('#chat-box').stop(true).animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
-                            }, 500),
-                            void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && this.playSound(this.commandSound));
+                            }, 200) : 0),
+                            void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.commandSound));
                         defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
-                            defaultmapsettings.chatSounds && this.playSound(this.commandSound));
+                            defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.commandSound));
+                        window._lmTrimChatToasts && window._lmTrimChatToasts();
                     } else {
                         /* Other message types: always treat the remote text as plain text. */
                         $('#messages').append($('<li>').text(msg));
@@ -29645,12 +30338,12 @@ function thelegendmodproject() {
         },
         activateQuest(productId) {
             console.log("[LM] Activate Quest: " + productId);
-            toastr.info('<b>[SERVER]:</b> Activating quest...');
+            toastr.info('<b>[SERVER]:</b> ' + _lmTH('activatingQuest', 'Activating quest...'));
             return this.sendProto(114, { activateQuestRequestField: { productId: productId } });
         },
         activateBoost(productId) {
             console.log("[LM] Activate Boost: " + productId);
-            toastr.info('<b>[SERVER]:</b> Activating boost...');
+            toastr.info('<b>[SERVER]:</b> ' + _lmTH('activatingBoost', 'Activating boost...'));
             return this.sendProto(112, { activateBoostRequestField: { productId: productId } });
         },
         requestAdRewardToken() {
@@ -30803,6 +31496,14 @@ function thelegendmodproject() {
             if (!app._lmIntervalsSet) {
                 app._lmIntervalsSet = true;
                 setInterval(function () {
+                    /* hidden tab: nothing to see; the next visible tick recomputes sector/position */
+                    if (document.hidden) return;
+                    /* minimap switched off: it was still drawn 30x/s; only keep the sector
+                     * (team chat %currentSector%, quadrant replies) up to date */
+                    if (!defaultmapsettings.showMiniMap) {
+                        if (ogario.mapOffsetFixed) app.currentSector = app.calculateMapSector(ogario.playerX, ogario.playerY, true);
+                        return;
+                    }
                     app.drawMiniMap();
                 }, 33);
                 setInterval(function () {
@@ -31652,11 +32353,18 @@ function thelegendmodproject() {
                     10;
 
 
-                var angle =
-                    2 *
-                    Math.PI *
-                    pointIndex /
-                    len;
+                /* cos/sin of 2*PI*i/len from a table per point count (same expression, so the
+                 * same values): 2 trig calls per point per frame for every jelly cell before */
+                var _lmTrig = window._lmJellyTrig && window._lmJellyTrig[len];
+                if (!_lmTrig) {
+                    window._lmJellyTrig = window._lmJellyTrig || {};
+                    _lmTrig = { c: new Float64Array(len), s: new Float64Array(len) };
+                    for (var _lmTi = 0; _lmTi < len; _lmTi++) {
+                        _lmTrig.c[_lmTi] = Math.cos(2 * Math.PI * _lmTi / len);
+                        _lmTrig.s[_lmTi] = Math.sin(2 * Math.PI * _lmTi / len);
+                    }
+                    window._lmJellyTrig[len] = _lmTrig;
+                }
 
 
                 var renderRadius =
@@ -31706,16 +32414,12 @@ function thelegendmodproject() {
 
                 curP.x =
                     this.x +
-                    Math.cos(
-                        angle
-                    ) *
+                    _lmTrig.c[pointIndex] *
                     renderRadius;
 
                 curP.y =
                     this.y +
-                    Math.sin(
-                        angle
-                    ) *
+                    _lmTrig.s[pointIndex] *
                     renderRadius;
             }
         };
@@ -33862,6 +34566,11 @@ function thelegendmodproject() {
                                          * Always use the current circular
                                          * geometry rather than old point state.
                                          */
+                                        /* a cached skin canvas is already circular: the clip per
+                                         * skinned cell per frame only cost time */
+                                        if (node && node._lmCircle && node.width > 0) {
+                                            style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                        } else {
                                         style.save();
 
 
@@ -33925,6 +34634,7 @@ function thelegendmodproject() {
                                         }
                                         finally {
                                             style.restore();
+                                        }
                                         }
                                     }
 
@@ -34044,7 +34754,7 @@ function thelegendmodproject() {
                     } /* end of else-block for non-WebGL body rendering */
                     if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
                         window.teammatenicks && this.targetNick != "" &&
-                        (window.teammatenicks.includes(this.targetNick))) {
+                        (window._lmTeammateNickSet ? window._lmTeammateNickSet.has(this.targetNick) : window.teammatenicks.includes(this.targetNick))) {
                         drawRender.drawTeammatesInd(style, this.x, this.y, y)
                     }
 
@@ -36368,16 +37078,24 @@ function thelegendmodproject() {
                     console.log(consoleMsgLM + ' Auto-reconnect timed out after ' + Math.round(_reconnElapsed / 1000) + 's — server appears offline');
                     this._reconnAttempts = 0;
                     this._reconnStartTime = 0;
+                    this._lmReconnWs = null;
+                    if (window.toastr) toastr.warning('Connection to the server was lost. Press Play to reconnect.');
                     return;
                 }
 
                 if (this._reconnAttempts < maxAttempts) {
                     this._reconnAttempts++;
-                    var delay = Math.min(3000 * Math.pow(2, this._reconnAttempts - 1), 30000);
+                    /* first retry after ~1 s (was 3 s), doubling up to 30 s; +-20% jitter so a
+                     * server restart is not hit by every player in the same instant */
+                    var delay = Math.round(Math.min(1000 * Math.pow(2, this._reconnAttempts - 1), 30000) * (0.8 + Math.random() * 0.4));
                     var attempt = this._reconnAttempts;
                     console.log(consoleMsgLM + ' Auto-reconnect attempt ' + attempt + '/' + maxAttempts + ' in ' + (delay / 1000) + 's');
                     var self = this;
+                    /* kept for the 'online' listener (lastWs is local here) */
+                    this._lmReconnWs = lastWs;
                     this._reconnTimer = setTimeout(function () {
+                        /* fired: no retry is pending any more (the id was never cleared) */
+                        self._reconnTimer = null;
                         console.log(consoleMsgLM + ' Reconnecting to ' + lastWs);
                         if (window.core && window.core.connect) {
                             self._lmAutoReconnect = true;
@@ -36389,18 +37107,23 @@ function thelegendmodproject() {
                     console.log(consoleMsgLM + ' Auto-reconnect exhausted (' + maxAttempts + ' attempts)');
                     this._reconnAttempts = 0;
                     this._reconnStartTime = 0;
+                    this._lmReconnWs = null;
+                    if (window.toastr) toastr.warning('Connection to the server was lost. Press Play to reconnect.');
                 }
             }
         },
         replayfunctions() {
-            if (window.replayTimeOuts.length && this.ws && !this.ws.includes("replay")) {
-                for (var i = 0; i < window.replayTimeOuts.length; i++) {
-                    clearTimeout(window.replayTimeOuts[i])
+            /* replayTimeOuts holds one setTimeout id (playReplayLM), not an array, so the old
+             * ".length" test never stopped a running replay when a live server was joined */
+            if (this.ws && !this.ws.includes("replay")) {
+                if (window.replayTimeOuts) {
+                    clearTimeout(window.replayTimeOuts);
+                    window.replayTimeOuts = null;
                 }
-                window.replayTimeOuts = []
-            } else if (this.ws && !this.ws.includes("replay") && $('#pause-hud').text() === "Loading...") {
-                $('#pause-hud').text(textLanguage.pause);
-                $('#pause-hud').hide()
+                if ($('#pause-hud').text() === "Loading...") {
+                    $('#pause-hud').text(textLanguage.pause);
+                    $('#pause-hud').hide()
+                }
             }
             //if (!window.RecordedProtocol[$("#server-token").val()]){
             //console.log('a'+$("#server-token").val())		
@@ -36736,7 +37459,7 @@ function thelegendmodproject() {
              * client view and causes cells to disappear even though server
              * ignores the join (cell_count > 0). */
             if (ogario.play) {
-                if (window.LM && typeof window.LM.displayChatMsg === 'function') window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                /* Play also resumes the game from the menu: no client-made "[SERVER]" chat line each time */
                 return;
             }
 
@@ -37295,15 +38018,17 @@ function thelegendmodproject() {
                     let d = ~~((Date.now() / 40) % 8),
                         distance = 50000;
                     if (window.followStraight) {
-
-                        if (this.cursorX - this.playerX > 0 && this.cursorY - this.playerY > 0) d = 3
-                        else if (this.cursorX - this.playerX < 0 && this.cursorY - this.playerY > 0) d = 5
-                        else if (this.cursorX - this.playerX < 0 && this.cursorY - this.playerY < 0) d = 7
-                        else if (this.cursorX - this.playerX > 0 && this.cursorY - this.playerY < 0) d = 1
-                        else if (this.cursorX - this.playerX < 0) d = 6
-                        else if (this.cursorX - this.playerX > 0) d = 2
-                        else if (this.cursorY - this.playerY > 0) d = 4
-                        else if (this.cursorY - this.playerY < 0) d = 0
+                        /* Snap to the nearest of the 8 directions (0 up, 1 up-right, 2 right,
+                         * 3 down-right, 4 down, 5 down-left, 6 left, 7 up-left). The sign-only
+                         * test could only reach the diagonals: straight needed dx or dy == 0.
+                         * Cursor on the cell: keep the last direction (it used the dance clock). */
+                        var _lmLdx = this.cursorX - this.playerX, _lmLdy = this.cursorY - this.playerY;
+                        if (_lmLdx || _lmLdy) {
+                            d = (Math.round(Math.atan2(_lmLdy, _lmLdx) / (Math.PI / 4)) + 10) % 8;
+                            this._lmLineDir = d;
+                        } else if (this._lmLineDir !== undefined) {
+                            d = this._lmLineDir;
+                        }
                     }
                     switch (d) {
                         case 7:
@@ -37395,12 +38120,13 @@ function thelegendmodproject() {
                     this.distX = cursorX - (window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue)
                     this.distY = cursorY - (window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue)
                 }
-                /* The 10 ms timer resends an unchanged cursor at most every 40 ms (the official
-                 * client's rate): ~100 identical packets/s while the mouse rests. A moving cursor,
-                 * splits, feeds and other direct calls still go out immediately. */
+                /* The periodic timer now runs every 40 ms (the official client's rate). An unchanged
+                 * cursor is skipped only if it went out less than 35 ms ago: with "< 40", timer
+                 * jitter (a tick after 39 ms) skipped every other resend while the mouse rested.
+                 * A moving cursor, splits, feeds and other direct calls still go out at once. */
                 var _lmCursorNow = Date.now();
                 if (periodic && cursorX === this._lmLastCursorX && cursorY === this._lmLastCursorY &&
-                    _lmCursorNow - (this._lmLastCursorAt || 0) < 40) {
+                    _lmCursorNow - (this._lmLastCursorAt || 0) < 35) {
                     return;
                 }
                 this._lmLastCursorX = cursorX;
@@ -38020,19 +38746,19 @@ function thelegendmodproject() {
                     me.phase = 1;
                     me.active = true;
                     console.log('%c[LW]%c Expanding: ' + ~~currentSize + ' → ' + ~~targetSize, 'color:#3f3', 'color:inherit');
-                    if (typeof toastr !== 'undefined') toastr.info('🌍 Map expanding — new territory ahead!');
+                    if (typeof toastr !== 'undefined') toastr.info('🌍 ' + _lmTH('mapExpanding', 'Map expanding — new territory ahead!'));
                     break;
                 case 2: // MAP_CONTRACTION_WARNING
                     me.phase = 2;
                     me.active = true;
                     console.log('%c[LW]%c Warning: shrink in ' + Math.round(warningDur / 25) + 's', 'color:#ff0', 'color:inherit');
-                    if (typeof toastr !== 'undefined') toastr.warning('Map shrinking in ' + Math.round(warningDur / 25) + 's — move inward');
+                    if (typeof toastr !== 'undefined') toastr.warning(_lmTH('mapShrinking', 'Map shrinking in {0}s — move inward').replace('{0}', Math.round(warningDur / 25)));
                     break;
                 case 3: // MAP_CONTRACTION_DANGER
                     me.phase = 3;
                     me.active = true;
                     console.log('%c[LW]%c Danger zone active', 'color:#f33', 'color:inherit');
-                    if (typeof toastr !== 'undefined') toastr.error('Danger zone — leave the red area');
+                    if (typeof toastr !== 'undefined') toastr.error(_lmTH('dangerZone', 'Danger zone — leave the red area'));
                     break;
                 case 4: // MAP_SHRINK_START
                     me.phase = 4;
@@ -38053,7 +38779,8 @@ function thelegendmodproject() {
             /* Cap one recording at ~1 hour of packets so long sessions cannot exhaust memory. */
             /* One #server-token lookup per packet instead of two. */
             var _recServerToken;
-            if (window.catholicCalculator < 90000 && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+            /* recordReplays off: keep no packets (an undefined setting counts as on) */
+            if (defaultmapsettings.recordReplays !== false && window.catholicCalculator < 90000 && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
 
                 //window.RecordedProtocolArenas[legendmod.ws][]
@@ -38900,7 +39627,9 @@ function thelegendmodproject() {
                     this.chatableServer = true;
                     /* Opcode 99 has no sender id (all of it used id 1000, so the mute button did nothing):
                      * each nick gets its own id, which the mute list checks. */
-                    if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
+                    /* With a clan tag, public chat stays hidden (team only), but official
+                     * [SERVER]/[ADMIN]/[MOD] messages (restart warnings, notices) are shown too. */
+                    if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && ($("#clantag").val() === "" || server || admin || mod)) {
                         var _lmSrvChatId = application.serverChatUserId(name);
                         if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
@@ -40536,6 +41265,9 @@ function thelegendmodproject() {
                         var _gameOverStatsForced =
                             !!window
                                 ._forceGameOverStats;
+                        /* consumed here (the queued Expanding Land path keeps its own copy):
+                         * a leftover flag showed the card on a later death with the setting off */
+                        window._forceGameOverStats = false;
 
 
                         var _isElGameOver =
@@ -41187,6 +41919,11 @@ function thelegendmodproject() {
                             } else {
                                 console.log('[LM] Timed event reward claimed!');
                             }
+                            /* the claim was silent for the player (console only) */
+                            if (te.productUpdates && te.productUpdates.length && window.toastr) {
+                                var _lmNext = te.userTimedEvent ? Math.floor((te.userTimedEvent.nextAvailableInSeconds || 0) / 60) : 0;
+                                toastr.success('<b>[REWARD]:</b> ' + _lmTH('rewardCollected', 'Reward collected!') + (_lmNext > 0 ? ' ' + _lmTH('nextInMin', 'Next one in {0} min.').replace('{0}', _lmNext) : ''));
+                            }
                             if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
@@ -41197,6 +41934,7 @@ function thelegendmodproject() {
                 case 113:
                     // Boost activation response
                     try {
+                        window._lmBoostPending = {}; /* reply arrived: USE may be pressed again */
                         var ba = r.uncompressedData.activateBoostResponseField;
                         if (ba) {
                             if (ba.productUpdates && ba.productUpdates.length) {
@@ -41226,7 +41964,7 @@ function thelegendmodproject() {
                                 mergedBoosts.push(newBoost);
                                 this.displayActiveBoosts(mergedBoosts);
                                 var expMins = Math.floor(newBoostSecs / 60);
-                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680; Expires in ' + expMins + ' min');
+                                toastr.success('<b>[SERVER]:</b> ' + _lmTH('boostActivated', 'Boost activated!') + ' &#x1F680; ' + _lmTH('expiresInMin', 'Expires in {0} min').replace('{0}', expMins));
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
@@ -41252,9 +41990,9 @@ function thelegendmodproject() {
                                 toastr.error('<b>[SERVER]:</b> Quest could not be activated.');
                             } else if (qa.userQuest) {
                                 this.displayActiveQuests([qa.userQuest]);
-                                toastr.success('<b>[SERVER]:</b> Quest activated! &#x1F3AF; Type: ' + (qa.userQuest.type || 'unknown'));
+                                toastr.success('<b>[SERVER]:</b> ' + _lmTH('questActivated', 'Quest activated!') + ' &#x1F3AF; ' + _lmTH('questType', 'Type: {0}').replace('{0}', String(qa.userQuest.type || 'unknown').replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; })));
                             } else {
-                                toastr.success('<b>[SERVER]:</b> Quest activated! &#x1F3AF;');
+                                toastr.success('<b>[SERVER]:</b> ' + _lmTH('questActivated', 'Quest activated!') + ' &#x1F3AF;');
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
@@ -41318,10 +42056,10 @@ function thelegendmodproject() {
                                             detail: { rewards: opprRewards }
                                         }));
                                     } catch (opprEvtErr) {
-                                        toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                                        toastr.success('<b>[SERVER]:</b> ' + _lmTH('potionOpened', 'Potion opened!') + ' &#x1F9EA;');
                                     }
                                 } else {
-                                    toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                                    toastr.success('<b>[SERVER]:</b> ' + _lmTH('potionOpened', 'Potion opened!') + ' &#x1F9EA;');
                                 }
                             } else if (opprResult === 2) {
                                 toastr.error('<b>[SERVER]:</b> Potion not opened — not enough currency.');
@@ -41343,7 +42081,7 @@ function thelegendmodproject() {
                                 /* Success */
                                 this.updatePotions(u.userPotions);
                                 if (typeof window._lmSyncOfficialPotionSlots === 'function') window._lmSyncOfficialPotionSlots(u.userPotions);
-                                if (window.toastr) toastr.success('<b>[POTION]:</b> Brewing started! \u2615');
+                                if (window.toastr) toastr.success('<b>[POTION]:</b> ' + _lmTH('brewingStarted', 'Brewing started!') + ' \u2615');
                                 /* Official onStartBrewing: activate the potionSkipBrew timed event
                                  * once the brew is running (skip-brew price timer). */
                                 if (window.application && typeof window.application.activateTimedEvent === 'function') {
@@ -42432,17 +43170,17 @@ function thelegendmodproject() {
 
             /* Stat rows data */
             var stats = [
-                { icon: '💀', label: 'Final Mass',       value: fmtMass(u.finalMass),        accent: true },
-                { icon: '👑', label: 'Highest Mass',     value: fmtMass(u.highestMass),       accent: true },
-                { icon: '🏆', label: 'Top Position',     value: '#' + (u.topPosition || '—') },
-                { icon: '📍', label: 'Final Position',   value: '#' + (u.finalPosition || '—') },
-                { icon: '⏱️', label: 'Time Alive',       value: fmtTime(u.timeTotal || u.longestTimeAlive) },
-                { icon: '📊', label: 'Time on LB',       value: fmtTime(u.timeInLeaderboard) },
-                { icon: '🍽️', label: 'Mass Consumed',    value: fmtMass(u.massConsumed) },
-                { icon: '🔵', label: 'Food Eaten',       value: (u.foodEaten || 0).toLocaleString() },
-                { icon: '⚔️', label: 'Players Eaten',    value: (u.playersEaten || 0).toLocaleString() },
-                { icon: '🟢', label: 'Cells Eaten',      value: (u.normalCellsEaten || 0).toLocaleString() },
-                { icon: '🦠', label: 'Viruses Eaten',    value: (u.virusesEaten || 0).toLocaleString() }
+                { icon: '💀', label: _lmTH('finalMass', 'Final Mass'),       value: fmtMass(u.finalMass),        accent: true },
+                { icon: '👑', label: _lmTH('highestMass', 'Highest Mass'),     value: fmtMass(u.highestMass),       accent: true },
+                { icon: '🏆', label: _lmTH('topPosition', 'Top Position'),     value: u.topPosition ? '#' + u.topPosition : '—' },
+                { icon: '📍', label: _lmTH('finalPosition', 'Final Position'),   value: u.finalPosition ? '#' + u.finalPosition : '—' },
+                { icon: '⏱️', label: _lmTH('timeAlive', 'Time Alive'),       value: fmtTime(u.timeTotal || u.longestTimeAlive) },
+                { icon: '📊', label: _lmTH('timeOnLb', 'Time on LB'),       value: fmtTime(u.timeInLeaderboard) },
+                { icon: '🍽️', label: _lmTH('massConsumed', 'Mass Consumed'),    value: fmtMass(u.massConsumed) },
+                { icon: '🔵', label: _lmTH('foodEaten', 'Food Eaten'),       value: (u.foodEaten || 0).toLocaleString() },
+                { icon: '⚔️', label: _lmTH('playersEaten', 'Players Eaten'),    value: (u.playersEaten || 0).toLocaleString() },
+                { icon: '🟢', label: _lmTH('cellsEaten', 'Cells Eaten'),      value: (u.normalCellsEaten || 0).toLocaleString() },
+                { icon: '🦠', label: _lmTH('virusesEaten', 'Viruses Eaten'),    value: (u.virusesEaten || 0).toLocaleString() }
             ];
 
             /* Build HTML */
@@ -42485,7 +43223,7 @@ function thelegendmodproject() {
                 ' onmouseout="this.style.color=\'' + tc2 + '\';this.style.background=\'rgba(255,255,255,0.05)\'"' +
                 '>✕</div>' +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
-                '☠️ Game Over</div>' +
+                '☠️ ' + _lmTH('gameOver', 'Game Over') + '</div>' +
                 '</div>' +
 
                 /* Stats */
@@ -44072,11 +44810,14 @@ function thelegendmodproject() {
         getImg(url, name, callback) {
             const app = this;
             var img = new Image();
-            var isCorsBlocked = url.includes('imgur.com') || url.includes('legendmod.ml') || url.includes('agario.miniclippt.com');
+            /* same rules as loadSkin's network path (see there): imgur and www.legendmod.ml
+             * support CORS; jimboy3100.github.io is requested on www.legendmod.ml directly */
+            var isCorsBlocked = url.includes('agario.miniclippt.com');
             if (isCorsBlocked) {
                 img.referrerPolicy = 'no-referrer';
             } else {
                 img.crossOrigin = 'anonymous';
+                if (url.includes('imgur.com')) img.referrerPolicy = 'no-referrer';
             }
             img.setAttribute("alt", name);
             img.onload = function () {
@@ -44149,7 +44890,9 @@ function thelegendmodproject() {
                     return url;
                 }
             };
-            img.src = url;
+            img.src = url.indexOf('https://jimboy3100.github.io/') === 0
+                ? 'https://www.legendmod.ml/' + url.slice('https://jimboy3100.github.io/'.length)
+                : url;
         },
         getLink(link) {
             var type = "premium";
@@ -44867,6 +45610,29 @@ function thelegendmodproject() {
             }
 
 
+            /* The "... remaining" text was built once and never counted down (boosts redraw every
+             * 30 s). Redraw the quests the same way from expiresAt; expired ones drop out. */
+            if (window._lmQuestTicker) {
+                clearInterval(window._lmQuestTicker);
+                window._lmQuestTicker = null;
+            }
+            if (window._lmActiveQuests.length) {
+                var _lmQuestApp = this;
+                window._lmQuestTicker = setInterval(function () {
+                    if (document.hidden) return;
+                    var list = window._lmActiveQuests || [];
+                    var now = Date.now(), raws = [];
+                    for (var qi = 0; qi < list.length; qi++) {
+                        var q = list[qi];
+                        if (!q || !q.raw) continue;
+                        var left = Math.floor(((Number(q.expiresAt) || 0) - now) / 1000);
+                        if (left <= 0) continue;
+                        raws.push(Object.assign({}, q.raw, { expiresInSeconds: left }));
+                    }
+                    _lmQuestApp.displayActiveQuests(raws);
+                }, 30000);
+            }
+
             try {
                 document.dispatchEvent(
                     new CustomEvent(
@@ -44910,6 +45676,9 @@ function thelegendmodproject() {
             var gamesPlayed = Number(s.gamesPlayed) || 0;
             var highestMass = Number(s.highestMass) || 0;
             var longestTimeAlive = Number(s.longestTimeAlive) || 0;
+            /* seconds -> "1h 05m 09s" (was "0.083 H") */
+            var _lmLta = Math.max(0, Math.floor(longestTimeAlive));
+            var _lmLtaText = (_lmLta >= 3600 ? Math.floor(_lmLta / 3600) + 'h ' : '') + ('0' + Math.floor(_lmLta % 3600 / 60)).slice(-2) + 'm ' + ('0' + _lmLta % 60).slice(-2) + 's';
             var mostCellsEaten = Number(s.mostCellsEaten) || 0;
 
             if (lmScoreVal > 40) {
@@ -44923,7 +45692,7 @@ function thelegendmodproject() {
 All time score     : ${allTimeScore}<br/>
 Games played      : ${gamesPlayed}<br/>
 Highest mass      : ${highestMass}<br/>
-Longest time alive : ${(longestTimeAlive / 3600).toFixed(3)} H<br/>
+Longest time alive : ${_lmLtaText}<br/>
 Mass consumed     : ${massConsumed}<br/>
 Most cells eaten   : ${mostCellsEaten}
       `)
@@ -45205,6 +45974,8 @@ Most cells eaten   : ${mostCellsEaten}
             if (window.agartoolteammatenicks != undefined) {
                 window.teammatenicks = window.teammatenicks.concat(window.agartoolteammatenicks);
             }
+            /* Set copy for the per-cell, per-frame teammate check; the array stays for its other readers */
+            window._lmTeammateNickSet = new Set(window.teammatenicks);
             let text = '';
             let teamText = '';
 
@@ -45497,6 +46268,10 @@ Most cells eaten   : ${mostCellsEaten}
              * death silently spawn a new multibox unit instead of the death menu. */
             this.multiBoxPlayerExists = false;
             if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
+            /* every unit is closed: a focus left on one froze the main cell and camera
+             * (HUD "[MB 2/1]") */
+            window.multiboxPlayerEnabled = null;
+            window.multiboxPlayerEnabledSaved = null;
         },
         setMapOffset(left, top, right, bottom) {
             var temp, temp2;
@@ -48683,6 +49458,13 @@ Most cells eaten   : ${mostCellsEaten}
                 true
             );
 
+            /* Ctrl+wheel and touchpad pinch (sent as Ctrl+wheel) over the game zoomed the whole
+             * page (HUD and menus) besides the game zoom */
+            try {
+                window.addEventListener('wheel', function (e) {
+                    if (e.ctrlKey && e.target && e.target.id === 'canvas') e.preventDefault();
+                }, { passive: false });
+            } catch (e) { }
             /firefox/i.test(navigator.userAgent) ? document.addEventListener('DOMMouseScroll', function (e) {
                 app.setZoom(e);
             }, false) : document.body.onmousewheel = function (e) {
@@ -48693,6 +49475,20 @@ Most cells eaten   : ${mostCellsEaten}
         }
     };
     window.legendmod = LM; // look at this
+    /* Network back while an auto-reconnect is waiting: connect now instead of
+     * sitting out the backoff. Never when no retry is pending or a socket is
+     * already connecting/open (no second socket). */
+    window.addEventListener('online', function () {
+        if (!LM._reconnTimer || !LM._lmReconnWs) return;
+        if (LM.socket && LM.socket.readyState <= 1) return;
+        clearTimeout(LM._reconnTimer);
+        LM._reconnTimer = null;
+        if (window.core && window.core.connect) {
+            LM._lmAutoReconnect = true;
+            window.core.connect(LM._lmReconnWs);
+            LM._lmAutoReconnect = false;
+        }
+    });
     // ── Garix fingerprint: generated lazily on first Garix connection ──
     LM._generateGarixFingerprint = async function () {
         if (LM.garixFingerprint) return; // already generated
@@ -54333,89 +55129,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         initWebGL() {
             try {
-                // Initialize Client WebAssembly & Background Web Worker Thread Engine
-                // Initialize Client WebAssembly & Background Web Worker Thread Engine
-                if (!window.legendClientWorker) {
-                    try {
-                        var workerCode = "self.onmessage=function(e){var d=e.data;if(d.type==='CULL'){var c=d.coords,mX=d.minX,mY=d.minY,MX=d.maxX,MY=d.maxY,v=[];for(var i=0;i<c.length;i+=3){var x=c[i],y=c[i+1],r=c[i+2];if(x+r>=mX&&x-r<=MX&&y+r>=mY&&y-r<=MY)v.push(i/3);}self.postMessage({type:'CULL_RES',visible:v});}};";
-                        var blob = new Blob([workerCode], { type: 'application/javascript' });
-                        window.legendClientWorker = new Worker(URL.createObjectURL(blob));
-
-
-                        // High-Speed Wasm SIMD API Fallback
-                        window.legendWasmMemory = new WebAssembly.Memory({ initial: 256, maximum: 256 }); // 16MB
-                        window.legendWasmInstance = {
-                            exports: {
-                                memory: window.legendWasmMemory,
-                                wasm_cull_cells: function (coordsPtr, count, minX, minY, maxX, maxY, outPtr) {
-                                    var coords = new Float32Array(window.legendWasmMemory.buffer, coordsPtr, count * 3);
-                                    var out = new Int32Array(window.legendWasmMemory.buffer, outPtr, count);
-                                    var visibleCount = 0;
-                                    for (var i = 0; i < count; i++) {
-                                        var x = coords[i * 3], y = coords[i * 3 + 1], r = coords[i * 3 + 2];
-                                        if (x + r >= minX && x - r <= maxX && y + r >= minY && y - r <= maxY) {
-                                            out[visibleCount++] = i;
-                                        }
-                                    }
-                                    return visibleCount;
-                                },
-                                wasm_quickselect_cells: function (distsPtr, idsPtr, n, k) {
-                                    var dists = new Float32Array(window.legendWasmMemory.buffer, distsPtr, n);
-                                    var ids = new Int32Array(window.legendWasmMemory.buffer, idsPtr, n);
-                                    if (n <= 0 || k <= 0) return 0;
-                                    if (k >= n) return n;
-                                    var left = 0, right = n - 1;
-                                    while (left < right) {
-                                        var pivot = dists[right];
-                                        var i = left - 1;
-                                        for (var j = left; j < right; j++) {
-                                            if (dists[j] <= pivot) {
-                                                i++;
-                                                var tf = dists[i]; dists[i] = dists[j]; dists[j] = tf;
-                                                var ti = ids[i]; ids[i] = ids[j]; ids[j] = ti;
-                                            }
-                                        }
-                                        var tf2 = dists[i + 1]; dists[i + 1] = dists[right]; dists[right] = tf2;
-                                        var ti2 = ids[i + 1]; ids[i + 1] = ids[right]; ids[right] = ti2;
-                                        var pivotIdx = i + 1;
-                                        if (pivotIdx === k) break;
-                                        if (pivotIdx < k) left = pivotIdx + 1;
-                                        else right = pivotIdx - 1;
-                                    }
-                                    return k;
-                                },
-                                wasm_lz4_decompress: function (inPtr, inLen, outPtr, outMaxLen) {
-                                    var mem = new Uint8Array(window.legendWasmMemory.buffer);
-                                    var src = inPtr;
-                                    var dst = outPtr;
-                                    var srcEnd = inPtr + inLen;
-                                    var dstEnd = outPtr + outMaxLen;
-                                    while (src < srcEnd) {
-                                        var token = mem[src++];
-                                        var litLen = token >> 4;
-                                        if (litLen === 15) {
-                                            var l = 0;
-                                            do { l = mem[src++]; litLen += l; } while (l === 255);
-                                        }
-                                        for (var i = 0; i < litLen; i++) mem[dst++] = mem[src++];
-                                        if (src >= srcEnd) break;
-                                        var offset = mem[src++] | (mem[src++] << 8);
-                                        var matchLen = token & 15;
-                                        if (matchLen === 15) {
-                                            var m = 0;
-                                            do { m = mem[src++]; matchLen += m; } while (m === 255);
-                                        }
-                                        matchLen += 4;
-                                        var matchPos = dst - offset;
-                                        for (var j = 0; j < matchLen; j++) mem[dst++] = mem[matchPos++];
-                                    }
-                                    return dst - outPtr;
-                                }
-                            }
-                        };
-
-                    } catch (we) { }
-                }
+                /* (removed: unused Worker + 16 MB WebAssembly.Memory "fake WASM" block; nothing called it) */
 
                 if (!this.glCanvas) {
                     this.glCanvas =
@@ -54469,7 +55183,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _self.resizeCanvas();
                     }, false);
                 }
-                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: true });
+                /* antialias follows the "Anti-aliasing" setting (MSAA is costly on integrated GPUs) */
+                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: defaultmapsettings.glAntialias !== false, depth: true });
                 if (!gl) return;
                 this.gl = gl;
 
@@ -56988,10 +57703,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
             try {
                 var srcCanvas = node;
                 if (node.width && node.height && (node.width !== size || node.height !== size)) {
-                    var tmp = document.createElement('canvas');
-                    tmp.width = size;
-                    tmp.height = size;
+                    /* one reused scratch canvas instead of a new canvas per skin (stutter when many
+                     * skins load at once). Cleared first (transparent skins), and dropped on any
+                     * failure below: a canvas tainted by a non-CORS image stays tainted. */
+                    var tmp = this._lmSkinScratch || (this._lmSkinScratch = document.createElement('canvas'));
+                    if (tmp.width !== size || tmp.height !== size) {
+                        tmp.width = size;
+                        tmp.height = size;
+                    }
                     var tmpCtx = tmp.getContext('2d');
+                    tmpCtx.clearRect(0, 0, size, size);
                     tmpCtx.drawImage(node, 0, 0, size, size);
                     srcCanvas = tmp;
                 }
@@ -57020,6 +57741,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 return layer;
             } catch (error) {
+                /* a tainted scratch canvas would fail every later upload: start a fresh one */
+                this._lmSkinScratch = null;
                 try {
                     gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
                 } catch (unbindError) { }
@@ -63455,7 +64178,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             /* Check if cell has a skin (for hideTeammatesNames, matching Canvas2D's `node`) */
             var hasSkin = false;
-            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+            /* only read together with hideTeammatesNames: skip the per-cell skin lookup otherwise */
+            if (defaultmapsettings.hideTeammatesNames && defaultmapsettings.customSkins && LM.showCustomSkins) {
                 hasSkin = !!application.getCustomSkin(cell.targetNick, cell.color, cell.skin);
             }
 
@@ -63476,7 +64200,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var strokeScale = defaultSettings.strokeScale || 1;
             var baseWorldFontSize = Math.max(cellSize * 0.3, 26);
             var nickWorldFontSize = baseWorldFontSize * namesScale;
-            var nickFontSize = Math.max(6, Math.round(nickWorldFontSize * viewScale));
+            /* Raster size in ~12.5% steps (power-of-1.125 buckets): the on-screen size comes from
+             * nickWorldH, so this only affects sharpness, and a zoom no longer makes a new texture
+             * for every whole pixel (20->40 px: 7 textures per name instead of 21). */
+            var _lmNickRaw = nickWorldFontSize * viewScale;
+            var nickFontSize = Math.max(6, Math.round(Math.pow(1.125, Math.round(Math.log(_lmNickRaw) / Math.log(1.125)))));
 
             /* Read colors and font from settings (matching Canvas2D path) */
             var nickColor = defaultSettings.namesColor || '#ffffff';
@@ -65405,6 +66133,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         skinUrl
                     )
             ) {
+                /* the caller still forces the Canvas2D frame for videos only */
+                result.video = true;
                 return result;
             }
 
@@ -66448,10 +67178,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
 
+                    /*
+                     * Only a video skin forces the whole frame to Canvas2D.
+                     * A skin that is still loading (or failed) keeps the cell in
+                     * this GPU batch body-only (layer -1, the normal no-skin path);
+                     * the resolver already queued the load/upload, so the skin
+                     * appears a frame or two later. The cell never changes layer,
+                     * so the "no per-cell fallback" z-order rule still holds.
+                     */
                     if (
                         skinRes.requested &&
                         skinRes.layer <
-                            0
+                            0 &&
+                        skinRes.video
                     ) {
                         return abortCellBatch();
                     }
@@ -67902,9 +68641,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
 
                 /* Never allow a per-cell fallback. A partial WebGL batch is on a
-                 * separate canvas layer and therefore cannot preserve global z-order. */
+                 * separate canvas layer and therefore cannot preserve global z-order.
+                 * A skin that is still loading (or failed) no longer aborts the whole
+                 * frame: the cell stays in this GPU batch body-only (skinLayer -1, the
+                 * normal no-skin path) until the upload above succeeds. Video skins
+                 * already returned abortCellBatch() before this point. */
                 if (skinRequested && skinLayer < 0) {
-                    return abortCellBatch();
+                    skinRequested = false;
                 }
 
                 var idx =
@@ -68181,6 +68924,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return true;
         },
         setView() {
+            /* Frame-time factor (1.0 at 60 fps): camera, zoom and World Spectate pan now
+             * move at the same speed on every refresh rate (144 Hz zoomed 2.4x faster).
+             * Capped at 100 ms so a return from a hidden tab does not jump. */
+            var _lmViewNow = performance.now();
+            var _lmViewDt = this._lmViewT ? Math.min(100, Math.max(0, _lmViewNow - this._lmViewT)) : 16.667;
+            this._lmViewT = _lmViewNow;
+            this._lmFrameF = _lmViewDt / 16.667;
             this.setScale(LM.playerSize);
 
             if (LM.playerCells && LM.playerCells.length) {
@@ -68217,8 +68967,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     _wsPanDY = (_wsNY > 0 ? _wsNY - _wsDZ : _wsNY + _wsDZ) / (1 - _wsDZ);
                 }
 
-                // Pan speed: ~50 game units/frame at full displacement
-                var _wsPanSpeed = 50;
+                // Pan speed: ~50 game units per 60 fps frame at full displacement (frame-rate independent)
+                var _wsPanSpeed = 50 * (this._lmFrameF || 1);
                 LM._worldSpecPanX += _wsPanDX * _wsPanSpeed;
                 LM._worldSpecPanY += _wsPanDY * _wsPanSpeed;
 
@@ -68287,29 +69037,35 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.camX = targetCamX;
                     this.camY = targetCamY;
                 } else {
-                    this.camX = (this.camX + 2 * targetCamX) / 3;
-                    this.camY = (this.camY + 2 * targetCamY) / 3;
+                    /* was (camX + 2*target)/3 per frame: same at 60 fps */
+                    var _lmKCam = 1 - Math.pow(1 / 3, this._lmFrameF || 1);
+                    this.camX += (targetCamX - this.camX) * _lmKCam;
+                    this.camY += (targetCamY - this.camY) * _lmKCam;
                 }
             } else {
-                this.camX = (29 * this.camX + targetCamX) / 30;
-                this.camY = (29 * this.camY + targetCamY) / 30;
+                /* was (29*camX + target)/30 per frame: same at 60 fps */
+                var _lmKSpec = 1 - Math.pow(29 / 30, this._lmFrameF || 1);
+                this.camX += (targetCamX - this.camX) * _lmKSpec;
+                this.camY += (targetCamY - this.camY) * _lmKSpec;
             }
 
             LM.playerX = this.camX;
             LM.playerY = this.camY;
         },
         setScale(size) {
+            /* was (9*scale + target)/10 per frame: same at 60 fps, frame-rate independent otherwise */
+            var _lmKZoom = 1 - Math.pow(0.9, this._lmFrameF || 1);
             if (!LM.autoZoom) {
-                this.scale = (9 * this.scale + this.getZoom()) / 10;
+                this.scale += (this.getZoom() - this.scale) * _lmKZoom;
                 LM.viewScale = this.scale;
                 return;
             }
             /* delt.io sends the camera and zoom in every opcode 17 (Delta's setViewport uses it
              * while playing too); the own-size formula zoomed far in there (huge cells). */
             if (LM.play && LM.serverType !== 'deltio') {
-                this.scale = (9 * this.scale + Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom()) / 10;
+                this.scale += (Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom() - this.scale) * _lmKZoom;
             } else {
-                this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10;
+                this.scale += (LM.scale * this.getZoom() - this.scale) * _lmKZoom;
             }
             LM.viewScale = this.scale;
         },
@@ -69256,10 +70012,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     );
 
                     this.backgroundCtx.restore();
+                    this._lmBgDirty = true;
                 }
                 else if (
-                    this.backgroundCtx
+                    this.backgroundCtx &&
+                    /* nothing else draws here: clear once after the last background, then skip */
+                    this._lmBgDirty !== false
                 ) {
+                    this._lmBgDirty = false;
                     this.backgroundCtx.clearRect(
                         0,
                         0,
@@ -71000,10 +71760,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cell.splitTime = now;
                     }
                     var mass = cell.mass || ~~(cell.size * cell.size / 100);
-                    var duration = 30 + (mass * 0.02);
-                    var elapsed = (now - cell.splitTime) / 1000;
-                    var remaining = Math.max(0, duration - elapsed);
-                    var progress = Math.min(1, elapsed / duration);
+                    var duration, elapsed, remaining, progress;
+                    /* While the merge timer (mergetimer.js) counts this cell, use its deadline so the
+                     * ring and the number agree. Its deadline is in performance.now() time, not Date.now(). */
+                    var _lmMd = (playerCells === LM.playerCells && window.MergeTimerController &&
+                        typeof window.MergeTimerController.isActive === 'function' && window.MergeTimerController.isActive() &&
+                        window.playerCellsId && cell.id !== undefined) ? window.playerCellsId[cell.id] : null;
+                    if (_lmMd && _lmMd._mergeState === 'counting' && Number.isFinite(_lmMd._mergeDeadline) && _lmMd._mergeDurationSec > 0) {
+                        duration = _lmMd._mergeDurationSec;
+                        remaining = Math.max(0, (_lmMd._mergeDeadline - performance.now()) / 1000);
+                        elapsed = duration - remaining;
+                        progress = Math.min(1, elapsed / duration);
+                    } else {
+                        duration = 30 + (mass * 0.02);
+                        elapsed = (now - cell.splitTime) / 1000;
+                        remaining = Math.max(0, duration - elapsed);
+                        progress = Math.min(1, elapsed / duration);
+                    }
 
                     if (remaining > 0 && progress < 1) {
                         var radius = cell.size + 6;
@@ -74117,14 +74890,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         var replaceHk = command.replace('hk-', '');
                         /* chat command texts are user/imported text: escape them for the value attribute (a quote cut the text off) */
                         var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
-                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
-                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
+                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
                 }
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
                 //hotkeysSetup.resetHotkeys();
                 setup.resetHotkeys();
             }),
+                /* the x next to a key clears that binding (same as pressing DEL in the field);
+                 * Save keeps it, Close reverts it like any other change */
+                $(document).on('click', '#hotkeys-cfg .lm-hk-clear', function (event) {
+                    event.preventDefault();
+                    var _lmHkId = $(this).attr('data-hk');
+                    if (_lmHkId) setup.setHotkey('DEL', _lmHkId);
+                }),
                 $(document).on('click', '#save-hotkeys', function (event) {
                     event.preventDefault();
                     //hotkeysSetup.saveHotkeys();
@@ -74286,6 +75066,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setHotkey(key, id) {
             if (id && (this.lastPressedKey !== key || this.lastKeyId !== id)) {
                 var value = $('#' + id).val();
+                /* the key really bound to this command (the field text could differ) */
+                for (var _lmOldKey in hotkeys) {
+                    if (hotkeys.hasOwnProperty(_lmOldKey) && hotkeys[_lmOldKey] === id) { value = _lmOldKey; break; }
+                }
                 if (this.deleteHotkey(value, id), 'DEL' !== key) {
                     if (hotkeys[key] && hotkeys[key] !== id) {
                         var hotkey = hotkeys[key],
@@ -74295,6 +75079,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             $('#' + hotkey).val(defaultKey)
                         } else {
                             this.deleteHotkey(key, hotkey);
+                        }
+                        /* the other command lost this key: say so (it used to happen silently).
+                         * Labels can be player-typed command text: escape before toastr (HTML). */
+                        if (window.toastr) {
+                            var _lmHkLbl = $('<div>').text((hotkeysCommand[hotkey] && hotkeysCommand[hotkey].label) || hotkey).html();
+                            toastr.info('<b>' + _lmHkLbl + '</b> ' + (defaultKey ? 'moved to <b>' + $('<div>').text(defaultKey).html() + '</b>' : 'is now unbound'));
                         }
                     }
                     hotkeys[key] = id,
@@ -74370,6 +75160,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _lmT = event.target;
             if (_lmT && (_lmT.tagName === 'INPUT' || _lmT.tagName === 'TEXTAREA' || _lmT.isContentEditable)) return;
             if (window.legendmod && window.legendmod.play) return;
+            /* a held Q toggled it on every auto-repeat (random end state); ALT+Q / CTRL+Q
+             * are other hotkeys */
+            if (event.repeat || event.ctrlKey || event.altKey || event.metaKey) return;
             if (81 === event.keyCode && window.core.specialOn) {
                 window.core.specialOn();
             }
@@ -74410,7 +75203,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         } else {
             helloContainerHeight = ogario.menuHeight || 618;
         }
-        var scale = Math.min(1, innerHeigth / helloContainerHeight);
+        /* fit the width too: the 920-974 px menu was cut off in narrow windows (split screen,
+         * portrait tablets). transform does not change outerWidth, so this is the unscaled width. */
+        var helloContainerWidth = helloContainer.outerWidth() || 974;
+        var scale = Math.min(1, innerHeigth / helloContainerHeight, Math.max(0.2, (innerWidth - 16) / helloContainerWidth));
         //
         scale = scale * defaultSettings.hudScale;
         //
@@ -74506,6 +75302,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
         var _isTypingTarget = _hkTarget.tagName === 'INPUT' || _hkTarget.tagName === 'TEXTAREA' || _hkTarget.tagName === 'SELECT' || _hkTarget.isContentEditable === true;
         /* ESC always reaches the handler (opening the menu), as before. */
         var _isEscOutsideInput = pressedKey === 'ESC' && _hkTarget.tagName !== 'INPUT';
+        /* ESC in the chat input did nothing: cancel the message and close the box */
+        if (pressedKey === 'ESC' && _hkTarget.id === 'message') {
+            event.preventDefault();
+            _hkTarget.value = '';
+            _hkTarget.blur();
+            $('#message-box').hide();
+            return;
+        }
+        /* a hotkey field takes keys, never text: auto-repeat of a held key typed into it
+         * ("E" became "Eeee") and the old key then stayed bound */
+        if (_hkTarget.className === hotkeysSetup.inputClassName) event.preventDefault();
         if ((!_isTypingTarget || _isEscOutsideInput || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && _hkTarget.id === 'message' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
 
             _lmHeldByCode[event.keyCode] = pressedKey;
@@ -74513,7 +75320,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return event.preventDefault(), void (application && application.showMenu());
             }
             if (event.target.className === hotkeysSetup.inputClassName) {
-                return event.preventDefault(), void hotkeysSetup.setHotkey(pressedKey, event.target.id);
+                return event.preventDefault(), void hotkeysSetup.setHotkey(8 === event.keyCode ? 'DEL' : pressedKey, event.target.id); /* Backspace clears, like DEL */
             }
             if (hotkeys[pressedKey]) {
                 event.preventDefault();
@@ -74569,6 +75376,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             try { window.onmouseup({ which: Number(which) }); } catch (e) { }
         });
         _lmMouseHeld = {};
+        /* the keyUps already ran above: a later keyup of that key (e.g. typing in chat)
+         * must not run them again */
+        _lmHeldByCode = {};
     });
     var _lmMouseHeld = {};
     /* mouse button -> command whose keyDown it ran; cleared on mouseup */
@@ -74604,6 +75414,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return;
         }
         if (_lmMT.tagName === 'INPUT' || _lmMT.tagName === 'TEXTAREA' || _lmMT.tagName === 'SELECT' || _lmMT.tagName === 'BUTTON' || _lmMT.isContentEditable === true) return;
+        /* HUD icons are <a> links (fullscreen, targeting, rotate...): with mouse split/feed on,
+         * clicking them also split or fed */
+        if (_lmMT.closest && _lmMT.closest('a, label, .switchery')) return;
         if (!$("#overlays").is(":visible")) {
             //console.log(event.which)
             if (2 === event.which) {
@@ -74758,9 +75571,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
     if ('/legendmod' === window.location.pathname) {
         changeUrl('/' + window.location.hash);
     }
+    /* One resize per animation frame, and none when size and DPR did not change
+     * (resizeCanvas reallocates every canvas). Direct resizeCanvas() calls elsewhere are unchanged. */
+    var _lmResizeRaf = 0, _lmLastResizeKey = '';
     window.onresize = function () {
-        drawRender.resizeCanvas();
-        ogarhusettings();
+        if (_lmResizeRaf) return;
+        _lmResizeRaf = requestAnimationFrame(function () {
+            _lmResizeRaf = 0;
+            var key = window.innerWidth + 'x' + window.innerHeight + '@' + (window.devicePixelRatio || 1);
+            if (key === _lmLastResizeKey) return;
+            _lmLastResizeKey = key;
+            drawRender.resizeCanvas();
+            ogarhusettings();
+        });
         //ogarhusettingsImportExportMobile();
     };
     spectateBlind();
@@ -75070,7 +75893,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
     drawRender.init();
     if (window.master && window.master.init) window.master.init();
     /* Initialize WASM acceleration modules (async, non-blocking) */
-    if (typeof WasmCellParser !== 'undefined') WasmCellParser.init().catch(function(e) { console.warn('[WASM] CellParser init failed:', e); });
+    /* WasmCellParser is not used since its updateCells path was removed: its init only downloaded and
+     * compiled cell_parser.wasm from jsDelivr on every load */
     if (typeof WasmQuadTree !== 'undefined') WasmQuadTree.init().catch(function(e) { console.warn('[WASM] QuadTree init failed:', e); });
     ogarhusettings();
     ogarhusettingsImportExportMobile();
@@ -75322,8 +76146,17 @@ function minimapCell(envId, cb, i, s) {
              * Smooth interpolation: lerp animated position
              * toward raw target at ~97% per frame.
              */
-            this.lastX = (29 * this.lastX + this.x) / 30;
-            this.lastY = (29 * this.lastY + this.y) / 30;
+            /* 1/30 per 33 ms tick trailed about a second behind (positions arrive once a
+             * second) and slid across the map after a respawn: 20% per tick, and jump when the
+             * teammate moved more than 2000 units (respawn / teleport). */
+            var _lmMdx = this.x - this.lastX, _lmMdy = this.y - this.lastY;
+            if (!isFinite(_lmMdx) || !isFinite(_lmMdy) || _lmMdx * _lmMdx + _lmMdy * _lmMdy > 4000000) {
+                this.lastX = this.x;
+                this.lastY = this.y;
+            } else {
+                this.lastX += _lmMdx * 0.2;
+                this.lastY += _lmMdy * 0.2;
+            }
 
             var w = (this.lastX + margin) * mult;
             var h = (this.lastY + margin) * mult;
@@ -75676,7 +76509,13 @@ function getParameterByName(name, url) {
         results = regex.exec(url);
     if (!results) return null;
     if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+    /* a stray "%" (for example in a clan tag inside a shared link) threw URIError here,
+     * which stopped the code that read the link from loading */
+    try {
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    } catch (e) {
+        return results[2].replace(/\+/g, " ");
+    }
 }
 
 function kFormatter(num) {
@@ -75922,12 +76761,7 @@ function opennamechars() {
     $("body").append(s);
 }
 
-function legendformIframe() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/legendformIframe.js";
-    $("body").append(s);
-}
+/* legendformIframe() removed: it loaded /legendformIframe.js, which does not exist, and its only caller is commented out */
 
 /*
  * ═════════════════════════════════════════════════════════════════════════════
@@ -76526,19 +77360,19 @@ function intervalPlayingRecord() {
             var replayPacket = window.RecordedProtocol[tempo][legendmod.playingReplayRecord];
             if (replayPacket) legendmod.handleMessage(replayPacket) //main fuction for replay
             //
-            if (!legendmod.playingReplayRewind && window.replayTiming2 === 0) {
-                /*if (window.replaySkippedLoops > 99 && legendmod.playingReplayRecord + 100 < window.RecordedProtocol[tempo].length - 1) {
-                    for (var i = 0; i < window.replaySkippedLoops - 1; i++) { // 100 times more
-                        legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
-                        legendmod.playingReplayRecord++
-                    }
-                } else */ if (window.replaySkippedLoops > 9 && legendmod.playingReplayRecord + 10 < window.RecordedProtocol[tempo].length - 1) {
-                    for (var i = 0; i < 9; i++) { // 10 times more
-                        setTimeout(function () {
-                            legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
-                            legendmod.playingReplayRecord++
-                        }, 0);
-                    }
+            /* Skipping (before Start, after End, or the rewind's run to the end): handle packets in
+             * one synchronous batch. It used 9 setTimeout(0) calls per tick (about 10 packets per
+             * 4 ms) and nothing at all during rewind, so a rewind showed "Loading..." for minutes.
+             * Packets are still handled in order, each exactly once. */
+            if (window.replayTiming2 === 0 && !legendmod.playingReplayRewindNow) {
+                var _lmRecArr = window.RecordedProtocol[tempo];
+                var _lmRecStart = parseInt(window.startReplayTime) || 0;
+                var _lmRecTarget = (legendmod.playingReplayRewind || legendmod.playingReplayRecord >= _lmRecStart)
+                    ? _lmRecArr.length - 2 : _lmRecStart - 1;
+                var _lmRecBatch = Math.min(200, Math.max(10, window.replaySkippedLoops || 100));
+                for (var _lmRecN = 0; _lmRecN < _lmRecBatch && legendmod.playingReplayRecord + 1 < _lmRecTarget; _lmRecN++) {
+                    legendmod.playingReplayRecord++;
+                    if (_lmRecArr[legendmod.playingReplayRecord]) legendmod.handleMessage(_lmRecArr[legendmod.playingReplayRecord]);
                 }
             }
             //
@@ -76700,7 +77534,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     try {
         var extUiScript = document.createElement('script');
         extUiScript.type = 'text/javascript';
-        extUiScript.src = 'https://www.legendmod.ml/LMexpress/lm_extended_ui.js';
+        extUiScript.src = 'https://www.legendmod.ml/LMexpress/lm_extended_ui.js?v=' + (window.OgVer || ''); /* version: no stale cached copy after an update */
         document.body.appendChild(extUiScript);
     } catch (e) {
         console.warn('[LM] Error auto-loading extended UI script:', e);

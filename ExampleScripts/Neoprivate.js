@@ -12,7 +12,8 @@
 // @grant        none
 // @run-at		 document-start
 // ==/UserScript==
-    window.scver = GM_info.script.version
+    /* GM_info only exists when a userscript manager runs this; the browser extension loads it as a plain <script> */
+    window.scver = (typeof GM_info !== "undefined" && GM_info && GM_info.script) ? GM_info.script.version : (window.lmModVersion || "")
     var global = window;
     var base = ['https://deltav4.glitch.me/sc/','.json'].join(localStorage.inviteKey||'ogar').slice(0,-2);
     var str = '';

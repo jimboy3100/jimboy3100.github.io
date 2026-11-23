@@ -32,6 +32,9 @@ window.ExternalScripts = true;
         cellData._mergeDeadline =
             now + mergeDurationSec * 1000;
 
+        /* total length, read by the merge ring in ogario.v4.js so both show the same time */
+        cellData._mergeDurationSec = mergeDurationSec;
+
         cellData._mergeState = "counting";
     }
 

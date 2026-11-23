@@ -654,17 +654,7 @@
                 keyUp: null,
                 type: 'normal'
             },*/
-            'hk-macroFeed': {
-                label: textLanguage['hk-macroFeed'],
-                defaultKey: 'E',
-                keyDown() {
-                    application && application.macroFeed(!0);
-                },
-                keyUp() {
-                    application && application.macroFeed(!1);
-                },
-                type: 'normal'
-            },				
+            /* (second, identical 'hk-macroFeed' entry removed: duplicate key, the first one stays) */
             'hk-bots-macrofeed': {
                 label: textLanguage['hk-bots-macrofeed'],
                 defaultKey: '',

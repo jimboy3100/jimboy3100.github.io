@@ -87,7 +87,11 @@ function celltimer() {
                         if (_antiPauseResetTimer) clearTimeout(_antiPauseResetTimer);
                         $('#pause-hud').text("PAUSE! Anti beat:: " + tempshow.toFixed(5) + "%");
                         _antiPauseResetTimer = setTimeout(function() {
-                            $('#pause-hud').text("PAUSE!");
+                            /* only undo our own text: it overwrote the replay's "Loading..." and
+                             * the translated pause text with a hard-coded English "PAUSE!" */
+                            if ($('#pause-hud').text().indexOf("PAUSE! Anti beat") === 0) {
+                                $('#pause-hud').text((typeof textLanguage !== 'undefined' && textLanguage.pause) || "PAUSE!");
+                            }
                             _antiPauseResetTimer = null;
                         }, 3000);
                     }

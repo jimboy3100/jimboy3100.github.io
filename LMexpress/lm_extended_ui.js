@@ -1,3 +1,6 @@
+/* window.lmT text (ogario.v4.js) with English fallback: _lmUR plain text, _lmUE escaped for HTML */
+function _lmUR(k, en) { var s = window.lmT && window.lmT(k); return (s && s !== k) ? s : en; }
+function _lmUE(k, en) { return String(_lmUR(k, en)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 /*
  * Re-enable a "BUYING..." button once the soft purchase is no longer pending
  * (opcode 71 success/failure or the 20 s timeout). The buttons used to stay
@@ -2381,7 +2384,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         if (!listContainer) return;
         var t = getTheme();
         var retryHtml = withRetry
-            ? `<div style="margin-top: 14px;"><button class="btn" onclick="window.retryCurrentLeaguesRequest();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">Retry</button></div>`
+            ? `<div style="margin-top: 14px;"><button class="btn" onclick="window.retryCurrentLeaguesRequest();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">${(window.lmT ? window.lmT('retry') : 'Retry').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</button></div>`
             : '';
         listContainer.innerHTML = `
             <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 14px; font-weight: 600;">
@@ -2632,8 +2635,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 680px;">
                 <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <div style="width: 100%; text-align: center; position: relative;">
-                        <span style="font-size: 18px; font-weight: 800; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">Leaderboards</span>
-                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px;" onclick="document.getElementById('lm-leagues-modal').remove();">&times;</button>
+                        <span style="font-size: 18px; font-weight: 800; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">${(window.lmT ? window.lmT('leaderboards') : 'Leaderboards').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+                        <button type="button" aria-label="Close" class="lm-modal-close" style="position: absolute; right: 0; top: -4px;" onclick="document.getElementById('lm-leagues-modal').remove();">&times;</button>
                     </div>
                 </div>
 
@@ -2782,7 +2785,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     <div style="text-align: center; padding: 40px 20px; color: ${lt.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
                         <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
                         Agar.io did not return weekly results.
-                        <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${lt.b1}; color: ${lt.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">Retry</button></div>
+                        <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${lt.b1}; color: ${lt.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">${(window.lmT ? window.lmT('retry') : 'Retry').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</button></div>
                     </div>
                 `;
             }
@@ -3223,6 +3226,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
                         '<button ' +
                             'type="button" ' +
+                            'aria-label="Close" ' +
                             'class="lm-modal-close" ' +
                             'style="' +
                                 'position:absolute;' +
@@ -3372,7 +3376,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 <div class="lm-modal-header" style="background: ${gradient}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);">
                     <div style="width: 100%; text-align: center; position: relative;">
                         <span style="font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${title}</span>
-                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: #fff;" onclick="document.getElementById('lm-lastweek-modal').remove();">&times;</button>
+                        <button type="button" aria-label="Close" class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: #fff;" onclick="document.getElementById('lm-lastweek-modal').remove();">&times;</button>
                     </div>
                 </div>
 
@@ -3384,7 +3388,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 </div>
 
                 <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <button class="btn" onclick="document.getElementById('lm-lastweek-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">Close</button>
+                    <button class="btn" onclick="document.getElementById('lm-lastweek-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">${(window.lmT ? window.lmT('close') : 'Close').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</button>
                 </div>
             </div>
         `;
@@ -3465,7 +3469,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
                             <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
                             Weekly results could not be loaded.
-                            <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">Retry</button></div>
+                            <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">${(window.lmT ? window.lmT('retry') : 'Retry').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</button></div>
                         </div>
                     `;
                 }
@@ -3734,7 +3738,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 <div class="lm-modal-header" style="background: ${t.pc2}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <div style="width: 100%; text-align: center; position: relative;">
                         <span style="font-size: 17px; font-weight: 900; color: ${t.tc};">World Information</span>
-                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: ${t.tc};" onclick="document.getElementById('lm-leaguesinfo-modal').remove();">&times;</button>
+                        <button type="button" aria-label="Close" class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: ${t.tc};" onclick="document.getElementById('lm-leaguesinfo-modal').remove();">&times;</button>
                     </div>
                 </div>
 
@@ -3747,7 +3751,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 </div>
 
                 <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <button class="btn" onclick="document.getElementById('lm-leaguesinfo-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">Close</button>
+                    <button class="btn" onclick="document.getElementById('lm-leaguesinfo-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">${(window.lmT ? window.lmT('close') : 'Close').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</button>
                 </div>
             </div>
         `;
@@ -3816,8 +3820,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             '<div class="lm-modal-container" style="background: ' + t.pc + '; border-color: ' + t.b2 + '; width: 420px;">' +
                 '<div class="lm-modal-header" style="background: ' + t.pc2 + '; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">' +
                     '<div style="width: 100%; text-align: center; position: relative;">' +
-                        '<span style="font-size: 17px; font-weight: 900; color: ' + t.tc + ';"><i class="fa fa-users"></i> Friends</span>' +
-                        '<button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: ' + t.tc + ';" onclick="document.getElementById(\'lm-friends-modal\').remove();">&times;</button>' +
+                        '<span style="font-size: 17px; font-weight: 900; color: ' + t.tc + ';"><i class="fa fa-users"></i> ' + (window.lmT ? window.lmT('friends') : 'Friends').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' +
+                        '<button type="button" aria-label="Close" class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: ' + t.tc + ';" onclick="document.getElementById(\'lm-friends-modal\').remove();">&times;</button>' +
                     '</div>' +
                 '</div>' +
                 '<div id="lm-friends-summary" style="padding: 8px 20px; text-align: center; font-size: 12px; color: ' + t.tc2 + '; font-weight: 600; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);"></div>' +
@@ -3867,7 +3871,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         // Replays the last server-pushed 147 list (the client never requests it)
         if (window.application && typeof window.application.requestFriendListUpdate === 'function') {
-            window.application.requestFriendListUpdate();
+            /* false = no list was pushed yet: show the empty state now instead of a 5 s spinner */
+            if (window.application.requestFriendListUpdate() === false) {
+                window._renderFriendsList({ friends: [], totalOnline: 0 });
+                return;
+            }
         } else if (window.core && window.core.proxyMobileData) {
             // Try direct proto send
             try {
@@ -4269,7 +4277,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 640px;">
                 <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 18px; font-weight: 900; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">Help</span>
+                        <span style="font-size: 18px; font-weight: 900; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">${(window.lmT ? window.lmT('help') : 'Help').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <div style="background: rgba(0,211,255,0.15); border: 1px solid #00d3ff; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #00d3ff;">
@@ -4278,7 +4286,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         <div style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #ffd700;">
                             💰 ${coinsBalance.toLocaleString()}
                         </div>
-                        <button class="lm-modal-close" onclick="document.getElementById('lm-potions-help-modal').remove();">&times;</button>
+                        <button type="button" aria-label="Close" class="lm-modal-close" onclick="document.getElementById('lm-potions-help-modal').remove();">&times;</button>
                     </div>
                 </div>
 
@@ -4293,7 +4301,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 </div>
 
                 <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <button class="btn" onclick="document.getElementById('lm-potions-help-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">Close</button>
+                    <button class="btn" onclick="document.getElementById('lm-potions-help-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">${(window.lmT ? window.lmT('close') : 'Close').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</button>
                 </div>
             </div>
         `;
@@ -5244,7 +5252,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 gradient: 'linear-gradient(180deg, #fdd835 0%, #f57f17 100%)',
                 icon: '🎭',
                 bgGraphic: 'linear-gradient(135deg, rgba(255,193,7,0.2) 0%, rgba(255,87,34,0.4) 100%)',
-                badge: '1',
+                badge: '', /* was a fixed "1" (no real count behind it) */
                 action: function() {
                     document.getElementById('lm-main-shop-modal').remove();
                     if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
@@ -5318,15 +5326,15 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         modal.innerHTML = `
             <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 660px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
                 <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
-                    <div style="font-size: 24px; font-weight: 900; color: #444; letter-spacing: 0.5px;">Shop</div>
+                    <div style="font-size: 24px; font-weight: 900; color: #444; letter-spacing: 0.5px;">${(window.lmT ? window.lmT('shop') : 'Shop').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
                             <span>🧬 ${dnaBalance.toLocaleString()}</span>
-                            <span style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                            <span role="button" title="Get more" onclick="var m=document.getElementById('lm-main-shop-modal'); if (m) m.remove(); if (window.openShop) window.openShop('dna');" style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
                         </div>
                         <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
                             <span>💰 ${coinsBalance.toLocaleString()}</span>
-                            <span style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                            <span role="button" title="Get more" onclick="var m=document.getElementById('lm-main-shop-modal'); if (m) m.remove(); if (window.openShop) window.openShop('coins');" style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
                         </div>
                         <button onclick="document.getElementById('lm-main-shop-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
                     </div>
@@ -5485,9 +5493,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     ? (window._lmGetCurrencyBalance(info.currency) >= Number(info.price))
                     : true;
                 var buyDisabled = !info.purchaseId
-                    ? ' disabled style="opacity:.4;cursor:not-allowed;"'
+                    ? ' disabled'
                     : (!_ppCanAfford
-                        ? ' disabled style="opacity:.45;cursor:not-allowed;filter:grayscale(40%);"'
+                        ? ' disabled'
                         : '');
 
                 cardsHtml +=
@@ -5495,7 +5503,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         '<button class="lm-premium-potion-info" data-product-id="' + window._lmEconomyEscape(pid) + '" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="Potion Info">?</button>' +
                         '<div style="width:80px;height:80px;border-radius:50%;margin:8px 0 10px;display:flex;align-items:center;justify-content:center;font-size:38px;background:radial-gradient(circle,' + colors.border + '22,' + colors.border + '44);border:3px solid ' + colors.border + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' +
                         '<div style="font-size:15px;font-weight:900;color:#333;margin-bottom:4px;">' + window._lmEconomyEscape(baseName) + '</div>' +
-                        '<button class="btn lm-buy-premium-potion" data-product-id="' + window._lmEconomyEscape(pid) + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;cursor:pointer;width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
+                        '<button class="btn lm-buy-premium-potion" data-product-id="' + window._lmEconomyEscape(pid) + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;' + (buyDisabled ? 'opacity:.45;cursor:not-allowed;filter:grayscale(40%);' : 'cursor:pointer;') + 'width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
                     '</div>';
             });
         }
@@ -6419,7 +6427,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     <div class="lm-modal-title" style="color: ${t.b1};">
                         <span>👥</span> Friends & Party Rooms
                     </div>
-                    <button class="lm-modal-close" onclick="document.getElementById('lm-friends-modal').remove();">&times;</button>
+                    <button type="button" aria-label="Close" class="lm-modal-close" onclick="document.getElementById('lm-friends-modal').remove();">&times;</button>
                 </div>
                 <div class="lm-modal-body" id="lm-friends-body">
                     <div style="text-align: center; padding: 30px; color: ${t.tc2};">
@@ -6742,11 +6750,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 /*
                  * Preserve the old behaviour for ordinary LM modals:
                  *
-                 *      ESC removes all non-queued overlays.
+                 *      ESC removes the topmost overlay (it used to remove all of them,
+                 *      closing e.g. Leagues under Weekly Results too).
                  */
                 $(
                     '.lm-modal-overlay'
                 )
+                    .last()
                     .remove();
             }
         );
@@ -8200,21 +8210,21 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 ? window.getLiveTimedEventSecondsRemaining : function () { return null; };
             var _hourlySecs = _secs('hourlyBonus');
             if (_hourlySecs === 0) {
-                window.application.activateTimedEvent("hourlyBonus");
-                _claimed.push('hourly bonus');
+                /* activateTimedEvent returns false when nothing was sent (not connected/logged in) */
+                if (window.application.activateTimedEvent("hourlyBonus")) _claimed.push(_lmUE('itemHourly', 'hourly bonus'));
             } else if (_hourlySecs > 0) {
-                _waiting.push('hourly bonus in ' + _fmtLeft(_hourlySecs));
+                _waiting.push(_lmUE('itemIn', '{0} in {1}').replace('{0}', _lmUE('itemHourly', 'hourly bonus')).replace('{1}', _fmtLeft(_hourlySecs)));
             }
             var _dailySecs = _secs('dailyQuest');
             /* The list is never pruned: an expired quest is not active. */
             var _noQuest = !(window._lmActiveQuests || []).some(function (q) { return q && q.expiresAt > Date.now(); });
             if (_noQuest && (_dailySecs === 0 || _dailySecs === null) && typeof window.questActivationReq === 'function') {
-                window.questActivationReq();
-                _claimed.push('daily quest');
+                /* false: nothing was sent (not connected / not logged in) */
+                if (window.questActivationReq() !== false) _claimed.push(_lmUE('itemDaily', 'daily quest'));
             } else if (!_noQuest) {
-                _waiting.push('daily quest still running');
+                _waiting.push(_lmUE('dailyRunning', 'daily quest still running'));
             } else if (_dailySecs > 0) {
-                _waiting.push('next daily quest in ' + _fmtLeft(_dailySecs));
+                _waiting.push(_lmUE('itemIn', '{0} in {1}').replace('{0}', _lmUE('nextDaily', 'next daily quest')).replace('{1}', _fmtLeft(_dailySecs)));
             }
         }
         try {
@@ -8227,7 +8237,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 _claimable.some(function (g) { return g && g.facebookIdFrom === _fake.fictionalPlayerFbId; });
             if (_hasFakeGift && typeof window.claimGifts === 'function') {
                 if (window.claimGifts([String(_fake.fictionalGiftRequestId)]) !== false) {
-                    _claimed.push('gift');
+                    _claimed.push(_lmUE('itemGift', 'gift'));
                     /* Claimed once; the next login lists it again only if it is still claimable. */
                     window._lmUserGifts.claimable = _claimable.filter(function (g) { return !g || g.facebookIdFrom !== _fake.fictionalPlayerFbId; });
                 }
@@ -8235,16 +8245,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         } catch (giftErr) { console.warn('[LM] Claim gift error:', giftErr); }
         try {
             if (window.toastr) {
-                if (_claimed.length) toastr.success('<b>[CLAIM]:</b> Claimed: ' + _claimed.join(', ') + (_waiting.length ? '. Waiting: ' + _waiting.join(', ') : '') + '.');
-                else toastr.info('<b>[CLAIM]:</b> Nothing to claim right now' + (_waiting.length ? ': ' + _waiting.join(', ') : '') + '. Level rewards are given by the server on level-up.');
+                if (_claimed.length) toastr.success('<b>[CLAIM]:</b> ' + _lmUE('claimed', 'Claimed: {0}').replace('{0}', _claimed.join(', ')) + (_waiting.length ? '. ' + _lmUE('claimWaiting', 'Waiting: {0}').replace('{0}', _waiting.join(', ')) : '') + '.');
+                else toastr.info('<b>[CLAIM]:</b> ' + _lmUE('nothingToClaim', 'Nothing to claim right now') + (_waiting.length ? ': ' + _waiting.join(', ') : '') + '. ' + _lmUE('levelRewardsNote', 'Level rewards are given by the server on level-up.'));
             }
         } catch (toastErr) { }
 
         setTimeout(function() {
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = '🎁 Claim All ✓';
-                setTimeout(function() { btn.innerHTML = '🎁 Claim All'; }, 3000);
+                btn.innerHTML = '🎁 ' + (window.lmT ? window.lmT('claimAll') : 'Claim All').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') + (_claimed.length ? ' ✓' : '');
+                setTimeout(function() { btn.innerHTML = '🎁 ' + (window.lmT ? window.lmT('claimAll') : 'Claim All').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }, 3000);
             }
         }, 1200);
     };
@@ -8500,7 +8510,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     )
                 )
             ) {
-                return 'Waiting for server';
+                return _lmUR('waitingServer', 'Waiting for server');
             }
 
 
@@ -8935,14 +8945,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 !window._lmTimedEventState
             ) {
                 hourlyTimerText =
-                    'Waiting for server';
+                    _lmUR('waitingServer', 'Waiting for server');
             } else if (
                 hourlySeconds === null ||
                 hourlySeconds <=
                 0
             ) {
                 hourlyTimerText =
-                    'READY';
+                    _lmUR('ready', 'READY');
             } else {
                 hourlyTimerText =
                     window
@@ -8989,14 +8999,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 !window._lmTimedEventState
             ) {
                 dailyTimerText =
-                    'Waiting for server';
+                    _lmUR('waitingServer', 'Waiting for server');
             } else if (
                 dailySeconds === null ||
                 dailySeconds <=
                 0
             ) {
                 dailyTimerText =
-                    'READY';
+                    _lmUR('ready', 'READY');
             } else {
                 dailyTimerText =
                     window
@@ -9151,7 +9161,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         'font-size:11px;' +
                         'letter-spacing:.5px;' +
                     '">' +
-                        'ACCOUNT REWARDS &amp; TIMERS' +
+                        _lmUE('rewardsTimers', 'ACCOUNT REWARDS & TIMERS') +
                     '</strong>' +
 
                 '</div>';
@@ -9160,18 +9170,12 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             html +=
                 buildRow(
                     '\u2B50',
-                    'Level ' +
-                        level +
-                        ' \u2192 ' +
-                        (
-                            level +
-                            1
-                        ),
+                    _lmUR('levelNext', 'Level {0} \u2192 {1}').replace('{0}', level).replace('{1}', level + 1),
                     levelRewardText ||
                         (
                             levelRewardId
                                 ? levelRewardId
-                                : 'No configured reward'
+                                : _lmUR('noReward', 'No configured reward')
                         ),
                     ''
                 );
@@ -9180,9 +9184,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             html +=
                 buildRow(
                     '\uD83D\uDCB0',
-                    'Hourly Bonus',
+                    _lmUR('hourlyBonus', 'Hourly Bonus'),
                     hourlyRewardText ||
-                        'Configured timed reward',
+                        _lmUR('timedReward', 'Configured timed reward'),
                     '<div style="' +
                         'font-size:10px;' +
                         'font-weight:700;' +
@@ -9265,7 +9269,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             html +=
                 buildRow(
                     '\uD83C\uDFAF',
-                    'Daily Quest',
+                    _lmUR('dailyQuest', 'Daily Quest'),
                     dailyTimerText,
                     dailyButtonHtml
                 );
@@ -9459,7 +9463,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                         window._lmEconomyEscape(theme.b3) + ';color:' +
                                         window._lmEconomyEscape(theme.btc) +
                                         ';border:0;border-radius:4px;white-space:nowrap;margin-top:2px;cursor:pointer;"' +
-                                '>Skip (owned)</button>';
+                                '>' + _lmUE('skipOwned', 'Skip (owned)') + '</button>';
                         } else if (ppInfo && ppInfo.purchaseId &&
                             ppInfo.currentPrice !== null && ppInfo.currentPrice !== undefined) {
                             var ppPrice = Math.max(0, Number(ppInfo.currentPrice) || 0);
@@ -9472,11 +9476,12 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                     'data-potion-id="' + window._lmEconomyEscape(ppId) + '" ' +
                                     'data-slot="' + slot + '" ' +
                                     'data-purchase-id="' + window._lmEconomyEscape(ppInfo.purchaseId) + '" ' +
+                                    (typeof window._lmHasPendingSoftPurchase === 'function' && window._lmHasPendingSoftPurchase(ppInfo.purchaseId) ? 'disabled ' : '') +
                                     'style="font-size:8px;padding:2px 5px;background:' +
                                         window._lmEconomyEscape(theme.b3) + ';color:' +
                                         window._lmEconomyEscape(theme.btc) +
                                         ';border:0;border-radius:4px;white-space:nowrap;margin-top:2px;cursor:pointer;"' +
-                                '>Skip ' + window._lmEconomyEscape(ppPriceText) + '</button>';
+                                '>' + _lmUE('skip', 'Skip') + ' ' + window._lmEconomyEscape(ppPriceText) + '</button>';
                         }
                     }
                 }
@@ -9485,15 +9490,15 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 /* Status line */
                 var pStatus = '';
                 if (pState === 'empty') {
-                    pStatus = '<div style="font-size:8px;color:#888;font-weight:700;">EMPTY</div>';
+                    pStatus = '<div style="font-size:8px;color:#888;font-weight:700;">' + _lmUE('pEmpty', 'EMPTY') + '</div>';
                 } else if (pState === 'brew') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
-                        '<div style="font-size:8px;color:#8bc34a;font-weight:700;">\u25B6 BREW</div>';
+                        '<div style="font-size:8px;color:#8bc34a;font-weight:700;">\u25B6 ' + _lmUE('pBrew', 'BREW') + '</div>';
                 } else if (pState === 'wait') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
-                        '<div style="font-size:8px;color:#888;font-weight:700;" title="Another potion is brewing">WAITING</div>';
+                        '<div style="font-size:8px;color:#888;font-weight:700;" title="' + _lmUE('anotherBrewing', 'Another potion is brewing') + '">' + _lmUE('pWaiting', 'WAITING') + '</div>';
                 } else if (pState === 'brewing') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
@@ -9502,7 +9507,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 } else if (pState === 'open') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
-                        '<div style="font-size:8px;color:#ce93d8;font-weight:800;">\u2728 OPEN</div>';
+                        '<div style="font-size:8px;color:#ce93d8;font-weight:800;">\u2728 ' + _lmUE('pOpen', 'OPEN') + '</div>';
                 }
 
 
@@ -9511,7 +9516,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 var pActionAttr = '';
                 var pCursor = '';
 
-                if (pState === 'brew') {
+                var pBusy = window._lmPotionBusy && Date.now() - (window._lmPotionBusy[slot] || 0) < 5000;
+                if (pBusy && (pState === 'brew' || pState === 'open')) {
+                    pCursor = 'cursor:not-allowed;opacity:.45;';
+                } else if (pState === 'brew') {
                     pActionClass = ' lm-potion-action';
                     pActionAttr = ' data-slot="' + slot + '" data-action="brew"';
                     pCursor = 'cursor:pointer;';
@@ -9662,6 +9670,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 }
 
 
+                if (purchaseId && typeof window._lmHasPendingSoftPurchase === 'function' &&
+                    window._lmHasPendingSoftPurchase(purchaseId)) {
+                    if (window.toastr) toastr.info('<b>[POTION]:</b> The skip purchase is still being processed.');
+                    return false;
+                }
                 button.prop(
                     'disabled',
                     true
@@ -9742,6 +9755,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                         purchaseId,
                                         reason
                                     );
+                                    if (window._lmPurchaseFailToast) window._lmPurchaseFailToast('POTION', reason);
                                 },
 
                             // No opcode 71 within the timeout: onFailure
@@ -9948,6 +9962,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                         purchaseId,
                                         reason
                                     );
+                                    if (window._lmPurchaseFailToast) window._lmPurchaseFailToast('EVENT', reason);
                                 }
                         }
                     );
@@ -10037,6 +10052,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                  * will replace this entire DOM, so we never
                  * need to manually un-dim.
                  */
+                /* the 5 s panel refresh rebuilt the DOM (busy class lost) before the
+                 * server answered: remember the slot for 5 s or until lm-potions-updated */
+                window._lmPotionBusy = window._lmPotionBusy || {};
+                if (Date.now() - (window._lmPotionBusy[slot] || 0) < 5000) {
+                    return false;
+                }
+                window._lmPotionBusy[slot] = Date.now();
                 el.addClass(
                     'lm-potion-busy'
                 );
@@ -10153,6 +10175,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
     document.addEventListener(
         'lm-potions-updated',
         function () {
+            window._lmPotionBusy = {};
             if (
                 typeof window
                     .renderAgarEconomyPanel ===
@@ -10195,25 +10218,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
     );
 
 
-    /*
-     * Immediately re-render when potion state changes.
-     *
-     * Fired by updatePotions() after brew/open responses and by the
-     * autobrewTimer callback when it promotes expired brews to "open".
-     */
-    document.addEventListener(
-        'lm-potions-updated',
-        function () {
-            if (
-                typeof window
-                    .renderAgarEconomyPanel ===
-                    'function'
-            ) {
-                window
-                    .renderAgarEconomyPanel();
-            }
-        }
-    );
+    /* (a second, identical lm-potions-updated listener rendered the panel twice per update) */
 
 
     /*
@@ -10508,6 +10513,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         closeBtn.className = 'btn';
         closeBtn.style.cssText = 'background:transparent;border:none;color:' + t.tc2 + ';font-size:22px;cursor:pointer;padding:0 4px;';
         closeBtn.innerHTML = '&times;';
+        closeBtn.setAttribute('aria-label', 'Close');
         closeBtn.onclick = function () { modal.remove(); };
 
         header.appendChild(headerLeft);
@@ -10703,20 +10709,20 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         btnGroup.id = 'lm-extended-menu-btns';
         btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
-            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
-                🔥 Official Offer
-                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY NEEDED</div>
+            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="${(window._lmLoginHint ? window._lmLoginHint() : 'Log in and play a game session first').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}">
+                🔥 ${(window.lmT ? window.lmT('offer') : 'Official Offer').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}
+                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">${(window.lmT ? window.lmT('needLogin') : 'LOGIN & PLAY NEEDED').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}</div>
             </button>
-            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
-                <i class="fa fa-trophy"></i> Leagues
-                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY NEEDED</div>
+            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="${(window._lmLoginHint ? window._lmLoginHint() : 'Log in and play a game session first').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}">
+                <i class="fa fa-trophy"></i> ${(window.lmT ? window.lmT('leagues') : 'Leagues').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}
+                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">${(window.lmT ? window.lmT('needLogin') : 'LOGIN & PLAY NEEDED').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}</div>
             </button>
             <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
-                <i class="fa fa-users"></i> Friends
-                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY NEEDED</div>
+                <i class="fa fa-users"></i> ${(window.lmT ? window.lmT('friends') : 'Friends').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}
+                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">${(window.lmT ? window.lmT('needLogin') : 'LOGIN & PLAY NEEDED').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}</div>
             </button>
             <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="Claim the hourly bonus, the daily quest and gifts that are ready">
-                \uD83C\uDF81 Claim All
+                \uD83C\uDF81 ${(window.lmT ? window.lmT('claimAll') : 'Claim All').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}
             </button>
 
         `;
@@ -10749,31 +10755,31 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 500px;">
                 <div class="lm-modal-header" style="background: ${t.pc2};">
                     <div class="lm-modal-title" style="color: ${t.mc};">
-                        <span>👤</span> Player Profile Stats
+                        <span>👤</span> ${_lmUE('statsTitle', 'Player Profile Stats')}
                     </div>
-                    <button class="lm-modal-close" onclick="document.getElementById('lm-stats-modal').remove();">&times;</button>
+                    <button type="button" aria-label="Close" class="lm-modal-close" onclick="document.getElementById('lm-stats-modal').remove();">&times;</button>
                 </div>
                 <div class="lm-modal-body">
                     <div class="lm-stats-grid">
                         <div class="lm-stat-card">
                             <span style="font-size: 24px;">🎖️</span>
                             <div class="lm-stat-value" style="color: ${t.mc};">${stats.level || 1}</div>
-                            <div class="lm-stat-label">Level</div>
+                            <div class="lm-stat-label">${_lmUE('levelWord', 'Level')}</div>
                         </div>
                         <div class="lm-stat-card">
                             <span style="font-size: 24px;">👑</span>
                             <div class="lm-stat-value" style="color: ${t.b2};">${(stats.highestMass || 0).toLocaleString()}</div>
-                            <div class="lm-stat-label">Highest Mass</div>
+                            <div class="lm-stat-label">${_lmUE('highestMass', 'Highest Mass')}</div>
                         </div>
                         <div class="lm-stat-card">
                             <span style="font-size: 24px;">⚔️</span>
                             <div class="lm-stat-value" style="color: ${t.b3};">${(stats.mostCellsEaten || stats.cellsEaten || 0).toLocaleString()}</div>
-                            <div class="lm-stat-label">Cells Eaten</div>
+                            <div class="lm-stat-label">${_lmUE('cellsEaten', 'Cells Eaten')}</div>
                         </div>
                         <div class="lm-stat-card">
                             <span style="font-size: 24px;">🎮</span>
                             <div class="lm-stat-value" style="color: ${t.b4};">${(stats.gamesPlayed || 0).toLocaleString()}</div>
-                            <div class="lm-stat-label">Games Played</div>
+                            <div class="lm-stat-label">${_lmUE('gamesPlayed', 'Games Played')}</div>
                         </div>
                     </div>
                 </div>
@@ -10873,7 +10879,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         if (!isLoggedIn || !hasUID) {
             if (window.toastr) {
                 toastr.error(
-                    '<b>[LOGIN REQUIRED]:</b> Log in with Google/Facebook and play a game session first.'
+                    '<b>[LOGIN REQUIRED]:</b> ' + (window._lmLoginHint ? window._lmLoginHint() : 'Log in and play a game session first.')
                 );
             }
 
@@ -10981,7 +10987,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 buttonsEnabled ? 'false' : 'true'
             );
 
-        var ribbonBadgeHtml = '<div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY NEEDED</div>';
+        var ribbonBadgeHtml = '<div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">' + (window.lmT ? window.lmT('needLogin') : 'LOGIN & PLAY NEEDED').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') + '</div>';
 
         if (buttonsEnabled) {
             menuBtns.css({
@@ -11244,6 +11250,25 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         window.renderPromoRewardBanner();
     };
 
+    /*
+     * Reward links use agar.io's own format, ?awardToken=... (see agario/bundle_start.js,
+     * registerQueryHandlers). This function was called below but never defined, so the
+     * banner never appeared. The loaders keep the launch URL in localStorage "url".
+     * Only URL-safe token characters are accepted.
+     */
+    if (typeof window.parseRewardToken !== 'function') {
+        window.parseRewardToken = function (href) {
+            function pick(u) {
+                if (!u) return '';
+                try { return new URL(String(u), location.href).searchParams.get('awardToken') || ''; }
+                catch (e) { return ''; }
+            }
+            var token = pick(href);
+            if (!token) { try { token = pick(localStorage.getItem('url')); } catch (e) { token = ''; } }
+            return /^[A-Za-z0-9._~-]{3,256}$/.test(token) ? token : '';
+        };
+    }
+
     // Render Promo Reward Banner inside Profile Tab (#profile) panel
     window.renderPromoRewardBanner = function() {
         var profileTab = $('#profile');
@@ -11283,11 +11308,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         }
 
         bannerEl.dataset.token = token;
-        var displayToken = token.length > 20 ? (token.substring(0, 18) + '...') : token;
+        /* escaped: the token comes from the page URL */
+        var displayToken = $('<div>').text(token.length > 20 ? (token.substring(0, 18) + '...') : token).html();
 
         bannerEl.innerHTML = `
             <a id="legendAdAnchor3" href="#" onclick="window.claimPromoBannerReward(); return false;" style="display: block; text-decoration: none;">
-                <img id="lm-promo-banner-img" src="https://jimboy3100.github.io/banners/rewardlinkbanner.png" style="width: 100%; max-height: 80px; object-fit: cover; border-radius: 6px; display: block;" onerror="this.style.display='none';">
                 <div id="lm-promo-banner-title" style="color: #00ff88; font-size: 13px; font-weight: 800; margin-top: 6px; text-shadow: 0 1px 3px #000; letter-spacing: 0.5px;">
                     🎁 REDEEM PROMO REWARD (${displayToken})
                 </div>

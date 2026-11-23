@@ -21,15 +21,23 @@ function CaptchaRouter(arg) {
     var _captchaV3Busy = false;
     var _captchaV3Queue = [];
 
-    function requestCaptchaV3(t, e, _tries) {
+    /* _retried: a failed or timed-out check is tried once more, then the player is told
+     * (the spawn request just never came back, so the player could not spawn and saw nothing) */
+    /* Play hid the menu before the captcha: "press Play again" needs the menu back */
+    function lmReopenMenu() {
+        try { if (window.application && window.legendmod && !window.legendmod.play) window.application.showMenu(300); } catch (err) { }
+    }
+    function requestCaptchaV3(t, e, _tries, _retried) {
         if (!window.grecaptchaV3 || typeof window.grecaptchaV3.execute !== "function") {
             /* Not loaded yet: retry for ~15 s instead of dropping the request. */
             _tries = (_tries || 0) + 1;
             if (_tries > 15) {
                 console.warn("[Captcha] reCAPTCHA v3 did not load; request dropped");
+                if (window.toastr) toastr.error("The captcha could not load. Check your connection or ad blocker, then press Play again.");
+                lmReopenMenu();
                 return;
             }
-            setTimeout(function () { requestCaptchaV3(t, e, _tries); }, 1000);
+            setTimeout(function () { requestCaptchaV3(t, e, _tries, _retried); }, 1000);
             return;
         }
         if (_captchaV3Busy) {
@@ -47,10 +55,19 @@ function CaptchaRouter(arg) {
             var queued = _captchaV3Queue.shift();
             if (queued) requestCaptchaV3(queued[0], queued[1]);
         }
+        function fail() {
+            next();
+            if (!_retried) {
+                setTimeout(function () { requestCaptchaV3(t, e, 0, true); }, 500);
+            } else if (window.toastr) {
+                toastr.error("The captcha check failed. Press Play again.");
+            }
+            if (_retried) lmReopenMenu();
+        }
         /* execute() can stay pending forever (blocked iframe): do not wedge the queue. */
         var hangTimer = setTimeout(function () {
             console.warn("[Captcha] reCAPTCHA v3 execute timed out");
-            next();
+            fail();
         }, 15000);
 
         try {
@@ -68,11 +85,11 @@ function CaptchaRouter(arg) {
                 e(t)
             }, function(err) {
                 console.warn("[Captcha] reCAPTCHA v3 execute failed:", err);
-                next();
+                fail();
             })
         } catch (err) {
             console.warn("[Captcha] reCAPTCHA v3 request failed:", err);
-            next();
+            fail();
         }
     }
 
