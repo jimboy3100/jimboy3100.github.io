@@ -1939,7 +1939,8 @@ function _lmImportUserscripts(ls) {
 }
 
 function saveLegendJSONAPI() {
-    if (LegendJSON.legendSettings != undefined) {
+    /* pasted text "null" or a number parsed fine and then threw here */
+    if (LegendJSON && typeof LegendJSON === 'object' && LegendJSON.legendSettings != undefined) {
 
         _lmImportSet("gamemode", LegendJSON.legendSettings.previousMode);
         _lmImportSet("checkonlyonce", LegendJSON.legendSettings.checkonlyonce);

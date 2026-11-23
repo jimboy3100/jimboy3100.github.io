@@ -320,7 +320,7 @@
 						/* the copy selects a hidden input: give the keys back to the game */
 						var ae = document.activeElement;
 						if (ae && ae.id === 'tempCopy') ae.blur();
-						if (window.toastr) toastr.info('Server link copied.');
+						if (window.toastr) { if (String($('#server-token').val() || '').trim()) toastr.info('Server link copied.'); else toastr.info('Server link: not available yet.'); }
 					}
 					else if (window.toastr) toastr.info('Server link: not available yet.');
 				},

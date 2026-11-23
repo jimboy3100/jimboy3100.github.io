@@ -922,6 +922,7 @@
          *  "Flick split" setting is on (off by default) and the finger is lifted quickly: a normal
          *  steering drag is held longer than SW_MAX_MS and never splits. */
         var swStart = null;
+        var swFiredAt = 0; /* last flick split (Stop on release waits for its second split) */
         var SW_THRESH = 50; // min px to count as swipe
         var SW_MAX_MS = 250; // a flick: lifted within this time
         canvas.addEventListener('touchstart', function (e) {
@@ -944,11 +945,13 @@
                 if (!prefs.swipeSplit || Date.now() - swStart.t > SW_MAX_MS) { swStart = null; break; }
                 // swipe right → split
                 if (dx > SW_THRESH && Math.abs(dy) < dx) {
+                    swFiredAt = Date.now();
                     /* like the Split button: Space can be remapped by imported hotkeys */
                     if (typeof application !== 'undefined' && application && typeof application.split === 'function') application.split(); else emitKey(32);
                 }
                 // swipe up → double split
                 else if (-dy > SW_THRESH && Math.abs(dx) < -dy) {
+                    swFiredAt = Date.now();
                     if (typeof application !== 'undefined' && application.doubleSplit)
                         application.doubleSplit();
                 }
@@ -996,7 +999,13 @@
                     jId = null;
                     jHide();
                     /* optional (like agar.io "Stop on Release"): point at the screen centre, where the cell is */
-                    if (prefs.stopOnRelease) mouseAt(window.innerWidth / 2, window.innerHeight / 2);
+                    if (prefs.stopOnRelease) {
+                        if (Date.now() - swFiredAt < 50) {
+                            /* a flick split just fired: its second (double) split is sent ~40 ms later
+                             * toward the current pointer, so centre after it; skip if the thumb is back */
+                            setTimeout(function () { if (jId === null) mouseAt(window.innerWidth / 2, window.innerHeight / 2); }, 120);
+                        } else mouseAt(window.innerWidth / 2, window.innerHeight / 2);
+                    }
                     break;
                 }
             }

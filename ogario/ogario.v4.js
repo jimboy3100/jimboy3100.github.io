@@ -19387,8 +19387,8 @@ var defaultmapsettings = {
 
     blockPopups: false,
     gameOverStats: false,
-    massGraph: false,
-    personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */             /* graph of your mass over the life on the Game Over card */
+    massGraph: false,             /* graph of your mass over the life on the Game Over card */
+    personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -19656,6 +19656,7 @@ function thelegendmodproject() {
         restoreThemeSettings() {
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
                 window.localStorage.removeItem('ogarioThemeSettings');
+                window._lmSettingsReload = true;
                 window.location.reload();
             }
         },
@@ -22166,6 +22167,7 @@ function thelegendmodproject() {
                     }
                 }
             }
+            if (options.ogarioHotkeys) options.ogarioHotkeysKnown = Object.keys(hotkeysCommand);
             options = JSON.stringify(options);
             $('#export-settings').val(options);
             $('#import-settings').val('');
@@ -22197,11 +22199,21 @@ function thelegendmodproject() {
                         if (!checked) {
                             continue;
                         }
-                        window.localStorage.setItem(value, JSON.stringify(importValue[value]));
+                        try {
+                            window.localStorage.setItem(value, JSON.stringify(importValue[value]));
+                        } catch (writeErr) {
+                            toastr.error('<b>[SETTINGS]:</b> Import stopped: the browser storage is full (' + value + ' not saved).');
+                            return;
+                        }
                         /* the import holds the hidden profiles too: keeping the old ones duplicated them */
                         if (value === 'ogarioPlayerProfiles') window.localStorage.removeItem('ogarioPlayerProfilesExtra');
+                        /* 2. which commands existed when the file was saved: newer ones get their free default keys */
+                        if (value === 'ogarioHotkeys' && Array.isArray(importValue.ogarioHotkeysKnown)) {
+                            try { window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(importValue.ogarioHotkeysKnown.filter(function (k) { return typeof k === 'string'; }))); } catch (eK) { }
+                        }
                     }
                 }
+                window._lmSettingsReload = true;
                 window.location.reload();
             }
         },
@@ -22210,6 +22222,7 @@ function thelegendmodproject() {
             this._lmSettingsSaveT = null;
             if (window.localStorage.getItem('ogarioSettings') !== null) {
                 window.localStorage.removeItem('ogarioSettings');
+                window._lmSettingsReload = true;
                 window.location.reload();
             }
         },
@@ -43720,7 +43733,7 @@ function thelegendmodproject() {
                 var rec = fresh && (nb.mass || nb.time);
                 row.textContent = (rec ? '\ud83c\udfc5 New best ' + [nb.mass ? 'mass' : '', nb.time ? 'time alive' : ''].filter(Boolean).join(' + ') + '! \u00b7 ' : '') +
                     'All-time: ' + fmtMass(b.m) + ' \u00b7 ' + fmtTime(Math.round(b.t / 1000)) + ' \u00b7 ' + b.g + ' games';
-                if (rec) row.style.color = mc;
+                row.style.color = rec ? mc : tc2;
             };
             this._lmRefreshBestRow();
             /* Attach close button click */
@@ -75374,7 +75387,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 'f': 'NUM6', 'g': 'NUM7', 'h': 'NUM8', 'i': 'NUM9', 'j': 'NUM*', 'n': 'NUM.', 'o': 'NUM/',
                 'p': 'F1', 'q': 'F2', 'r': 'F3', 's': 'F4', 't': 'F5', 'u': 'F6', 'v': 'F7', 'w': 'F8',
                 'x': 'F9', 'y': 'F10', 'z': 'F11', '{': 'F12',
-                '\u00BC': ',', '\u00BE': '.', '\u00BF': '/', '\u00DB': '[', '\u00DC': '\\', '\u00DD': ']', '\u00DE': "'"
+                '\u00BC': ',', '\u00BE': '.', '\u00BF': '/', '\u00DB': '[', '\u00DC': '\\', '\u00DD': ']', '\u00DE': "'",
+                '!': 'PGUP', '"': 'PGDN', '#': 'END', '$': 'HOME'
             };
             var rename = function (name) {
                 var last = name.charAt(name.length - 1);
@@ -75597,6 +75611,28 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     break;
                 case 46:
                     normalKey = 'DEL';
+                    break;
+                case 33:
+                    normalKey = 'PGUP';
+                    break;
+                case 34:
+                    normalKey = 'PGDN';
+                    break;
+                case 35:
+                    normalKey = 'END';
+                    break;
+                case 36:
+                    normalKey = 'HOME';
+                    break;
+                case 45:
+                    normalKey = 'INS';
+                    break;
+                case 91:
+                case 92:
+                    normalKey = 'META';
+                    break;
+                case 93:
+                    normalKey = 'MENU';
                     break;
                 case 61:
                 case 187:
@@ -76172,6 +76208,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
     };
     window.onbeforeunload = function (event) {
+        if (window._lmSettingsReload) return;
         if (ogario.play) {
             return textLanguage.exit;
         } else {
@@ -76526,7 +76563,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setInterval(function () {
             /* leaving a life without a death (server change, quick respawn, token change) did not
              * reset the life start: time alive and the session time grew across lives */
-            try { if (window.application && window.legendmod && !window.legendmod.play) window.application._lmLifeStartAt = 0; } catch (e0) { }
+            try { if (window.application && window.legendmod && !window.legendmod.play && !(+window._elDeathUiLockedUntil > Date.now())) window.application._lmLifeStartAt = 0; } catch (e0) { }
             try {
                 if (window.legendmod5 && window.legendmod5.massGraph && window.application && window.legendmod && window.legendmod.play && window.legendmod.playerMass) {
                     var _lmH = window.application._lmMassHist || (window.application._lmMassHist = []);
