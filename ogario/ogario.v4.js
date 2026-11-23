@@ -16348,6 +16348,8 @@ var displayText = {
         virusSoundurl: 'Virus shot sound',
         x16Sound: 'Sound when split into 16 pieces',
         non16Sound: 'Sound when back below 16 pieces',
+        virusPopSound: 'Sound when you pop a virus',
+        virusEatSound: 'Sound when you eat a virus at 16 pieces',
         virusSound: 'Virus shot sound',
         potionsDrinker: 'Randomly drink Potions',
         //massBooster: 'Mass *2 booster-> *3 booster',		
@@ -16860,6 +16862,8 @@ var displayText = {
         virusSoundurl: 'Virus shot sound',
         x16Sound: 'Sound when split into 16 pieces',
         non16Sound: 'Sound when back below 16 pieces',
+        virusPopSound: 'Sound when you pop a virus',
+        virusEatSound: 'Sound when you eat a virus at 16 pieces',
         virusSound: 'Virus shot sound',
         potionsDrinker: 'Randomly drink Potions',
         //massBooster: 'Mass *2 booster-> *3 booster',
@@ -19350,6 +19354,8 @@ var defaultmapsettings = {
     virusSoundurl: 'https://www.legendmod.ml/sounds/sound-gunshot.mp3',
     x16Sound: false,              /* sound when the own cells reach 16 pieces */
     non16Sound: false,            /* sound when they merge back below 16 */
+    virusPopSound: false,         /* sound when an own cell pops a virus */
+    virusEatSound: false,         /* sound when an own cell eats a virus at 16 pieces */
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
     //
     leftClick: 'hk-macroFeed',
@@ -23014,7 +23020,7 @@ function thelegendmodproject() {
             this.addOptions([], "boardGroup");
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "x16Sound", "non16Sound", "potionsDrinker"], "massGroup");
+            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "potionsDrinker"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
@@ -29877,6 +29883,8 @@ function thelegendmodproject() {
             this.setvirusSound();
             this.x16SoundObj = this.setSound('https://www.legendmod.ml/sounds/notification_02.mp3');
             this.non16SoundObj = this.setSound('https://www.legendmod.ml/sounds/notification-close.mp3');
+            this.virusPopSoundObj = this.setSound('https://www.legendmod.ml/sounds/notification-open.mp3');
+            this.virusEatSoundObj = this.setSound('https://www.legendmod.ml/sounds/notification_01.mp3');
         },
         setChatSoundsBtn() {
             if (defaultmapsettings.chatSounds) {
@@ -47670,6 +47678,15 @@ Most cells eaten   : ${mostCellsEaten}
                     }
 
 
+                    /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces */
+                    if (eaterID && victimID.isVirus && (eaterID.isPlayerCell || eaterID.isPlayerCellMulti) && window.application &&
+                        (defaultmapsettings.virusPopSound || defaultmapsettings.virusEatSound)) {
+                        var _lmVirFull = this.playerCells.length >= 16;
+                        if ((_lmVirFull ? defaultmapsettings.virusEatSound : defaultmapsettings.virusPopSound) && Date.now() - (this._lmVirSndAt || 0) > 300) {
+                            this._lmVirSndAt = Date.now();
+                            application.playSound(_lmVirFull ? application.virusEatSoundObj : application.virusPopSoundObj);
+                        }
+                    }
                     /*
                      * ----------------------------------------------------
                      * 2. EATER PULSE
