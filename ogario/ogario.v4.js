@@ -16368,6 +16368,7 @@ var displayText = {
         showLbData: 'Pokaz mase w topce',
         lbHideBots: 'Zwin powtarzajace sie nicki (boty) w topce',
         lbPassToast: 'Powiadomienie gdy awansujesz w topce',
+        noFocusHud: 'Pokaz NO FOCUS gdy okno gry nie jest aktywne',
         //normalLb: 'Naglowek \"Topka\"',
         centeredLb: 'Wysrodkowana topka',
         fpsAtTop: 'Statystyki na gorze',
@@ -16891,6 +16892,7 @@ var displayText = {
         showLbData: 'Show leaderboard mass',
         lbHideBots: 'Leaderboard: collapse repeated (bot) names',
         lbPassToast: 'Leaderboard: notify when you move up',
+        noFocusHud: 'Show NO FOCUS when the game window is not active',
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
         fpsAtTop: 'Game stats at the top',
@@ -19314,7 +19316,8 @@ var defaultmapsettings = {
     showTargeting: true,
     showLbData: true,
     lbHideBots: false,
-    lbPassToast: false,           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
+    lbPassToast: false,
+    noFocusHud: false,            /* warn while playing when keys/mouse no longer reach the game (alt-tab, 2nd window) */           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
     showDevConsole: false,
     //normalLb: true,
@@ -23143,7 +23146,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
@@ -77114,6 +77117,23 @@ $(document).on('keydown', '#message', function (e) {
     this.value = h[idx];
     try { this.setSelectionRange(this.value.length, this.value.length); } catch (e2) { }
 });
+/* "NO FOCUS" tag (like Delta): while playing, the window lost focus so hotkeys and the
+ * mouse no longer reach the game. Checked 3x per second; nothing is created while off. */
+setInterval(function () {
+    try {
+        var el = document.getElementById('lm-nofocus');
+        var show = !!(window.legendmod5 && window.legendmod5.noFocusHud && window.legendmod && window.legendmod.play && !document.hasFocus());
+        if (show && !el) {
+            el = document.createElement('div');
+            el.id = 'lm-nofocus';
+            el.textContent = 'NO FOCUS';
+            el.style.cssText = 'position:fixed;top:38%;left:50%;transform:translateX(-50%);z-index:150;pointer-events:none;' +
+                'font:700 28px sans-serif;letter-spacing:3px;color:#ff4d4d;text-shadow:0 0 6px #000,0 0 2px #000;';
+            document.body.appendChild(el);
+        }
+        if (el) el.style.display = show ? '' : 'none';
+    } catch (e) { }
+}, 333);
 function Socket3enabler(srv) {
     if (!window.socket3Opened && window.noOgarioSocket) {
         $("#message").keydown(function (event) {
