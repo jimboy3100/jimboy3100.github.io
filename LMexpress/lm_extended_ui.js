@@ -8285,6 +8285,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         var nowReady = extra === ' \u25CF';
         var remind = false;
         try { remind = localStorage.getItem('lmClaimRemind') === '1'; } catch (e) { }
+        var playing = !!(window.legendmod && window.legendmod.play);
+        /* first check after load: remember the state only (no toast for what was already ready);
+         * while playing the toast waits for the menu */
+        if (window._lmClaimWasReady === undefined) { window._lmClaimWasReady = nowReady; return; }
+        if (playing && nowReady && !window._lmClaimWasReady) return;
         if (nowReady && !window._lmClaimWasReady && remind && window.toastr && !force) {
             toastr.info('<b>[' + _lmUE('claimAll', 'Claim All') + ']:</b> ' + _lmUE('rewardReady', 'A reward is ready to claim.'));
         }
@@ -10761,7 +10766,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 <i class="fa fa-users"></i> ${(window.lmT ? window.lmT('friends') : 'Friends').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}
                 <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">${(window.lmT ? window.lmT('needLogin') : 'LOGIN & PLAY NEEDED').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}</div>
             </button>
-            <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer;" title="Claim the hourly bonus, the daily quest and gifts that are ready">
+            <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;" title="Claim the hourly bonus, the daily quest and gifts that are ready">
                 \uD83C\uDF81 ${(window.lmT ? window.lmT('claimAll') : 'Claim All').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')}
             </button>
             <button id="lm-claim-remind" class="btn btn-default" style="flex: 0 0 auto; padding: 6px 7px; font-size: 11px; cursor: pointer;" title="Remind me when a reward is ready">${(function () { try { return localStorage.getItem('lmClaimRemind') === '1' ? '\uD83D\uDD14' : '\uD83D\uDD15'; } catch (e) { return '\uD83D\uDD15'; } })()}</button>

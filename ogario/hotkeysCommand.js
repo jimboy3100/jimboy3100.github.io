@@ -7,7 +7,11 @@
         window._lmElPanelKey = function (modalId, open) {
             try {
                 var L = window.legendmod;
-                if (!L || !L.isLegendWorld) return;
+                var onEl = !!(L && (L.isLegendWorld || L.serverType === 'expandingland'));
+                if (!onEl) {
+                    if (window.toastr) toastr.info('Expanding Land only: join an Expanding Land server first.');
+                    return;
+                }
                 if (modalId) {
                     var cur = document.getElementById(modalId);
                     if (cur) { cur.parentNode.removeChild(cur); return; }
@@ -206,7 +210,7 @@
 				},
 				defaultKey: '',
 				keyDown() {
-					_lmElPanelKey('', function () { if (typeof window.claimAllRewardsAndGifts === 'function') window.claimAllRewardsAndGifts(); });
+					_lmElPanelKey('', function () { var b = document.getElementById('lm-claim-all-btn'); if (b && (b.disabled || /\u23F3/.test(b.textContent))) return; /* same double-press guard as the button */ if (typeof window.claimAllRewardsAndGifts === 'function') window.claimAllRewardsAndGifts(); });
 				},
 				keyUp: null,
 				type: 'normal'

@@ -546,7 +546,7 @@
             '<label>Btn Size <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
             '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>' +
-            '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> No vibration (death, chat)</label>' +
+            '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> No vibration on death and chat</label>' +
             '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> Short vibration on Split / Feed</label>' +
             '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> Quick chat buttons (commands 1-4)</label>' +
             '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> Multibox button (second player; uses more data)</label>';
@@ -615,7 +615,7 @@
                             if (typeof application !== 'undefined' && application && typeof application.sendCommand === 'function') application.sendCommand(n);
                         }, 'qcmd' + n, 600);
                     }, { passive: false });
-                    drawer.appendChild(b);
+                    drawer.insertBefore(b, bCfg);
                     quickBtns.push(b);
                 })(qi);
             }
@@ -647,14 +647,15 @@
             if (bMb && bMb.parentNode) bMb.parentNode.removeChild(bMb);
             bMb = null;
             if (!prefs.mbButton) return;
-            bMb = mks('\u21C4');
+            bMb = mkd('\u21C4');
             bMb.addEventListener('touchstart', function (e) {
                 e.preventDefault(); e.stopPropagation();
                 debounced(function () {
                     if (typeof application !== 'undefined' && application && typeof application.multiboxswap === 'function') application.multiboxswap();
                 }, 'mbswap', 400);
             }, { passive: false });
-            smallR.appendChild(bMb);
+            /* in the left row (the 4x/16x row above the minimap could reach over SPLIT) */
+            drawer.insertBefore(bMb, bCfg);
         }
         buildMbButton();
 
@@ -1111,7 +1112,7 @@
          * ═══════════════════════════════════════════════════════ */
         function vibrate(pattern) {
             /* "No vibration": the phone buzzed on every death and chat message with no way to stop it */
-            if (prefs.muteVibration) return;
+            if (prefs.muteVibration && pattern !== 10) return; /* 10 ms = the opt-in Split/Feed tap */
             try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { }
         }
 
