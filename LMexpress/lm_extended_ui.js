@@ -8254,11 +8254,36 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '🎁 ' + (window.lmT ? window.lmT('claimAll') : 'Claim All').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') + (_claimed.length ? ' ✓' : '');
-                setTimeout(function() { btn.innerHTML = '🎁 ' + (window.lmT ? window.lmT('claimAll') : 'Claim All').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }, 3000);
+                setTimeout(function() { if (typeof window._lmUpdateClaimLabel === 'function') window._lmUpdateClaimLabel(true); }, 3000);
             }
         }, 1200);
     };
 
+    /* Claim All label shows whether something can be claimed now (●) or when the hourly
+     * bonus is next (· 23m). Display only, same rules as claimAllRewardsAndGifts. */
+    window._lmUpdateClaimLabel = function (force) {
+        var btn = document.getElementById('lm-claim-all-btn');
+        if (!btn || (btn.disabled && !force) || /\u23F3/.test(btn.textContent)) return;
+        var base = '\uD83C\uDF81 ' + _lmUE('claimAll', 'Claim All');
+        var extra = '';
+        try {
+            var secs = typeof window.getLiveTimedEventSecondsRemaining === 'function' ? window.getLiveTimedEventSecondsRemaining : null;
+            if (secs) {
+                var h = secs('hourlyBonus'), d = secs('dailyQuest');
+                var noQuest = !(window._lmActiveQuests || []).some(function (q) { return q && q.expiresAt > Date.now(); });
+                if (h === 0 || (noQuest && d === 0)) extra = ' \u25CF';
+                else if (h > 0) { var mins = Math.ceil(h / 60); extra = ' \u00B7 ' + (mins >= 60 ? Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm' : mins + 'm'); }
+            }
+        } catch (e) { }
+        /* after a claim the label is put back (as before); otherwise only the status span
+         * changes, so the rest of the button (e.g. the login ribbon) stays */
+        if (force) { btn.innerHTML = base; btn.disabled = false; }
+        var st = btn.querySelector('.lm-claim-st');
+        if (!st) { st = document.createElement('span'); st.className = 'lm-claim-st'; btn.appendChild(st); }
+        if (st.textContent !== extra) st.textContent = extra;
+    };
+    setInterval(function () { if (!document.hidden) window._lmUpdateClaimLabel(false); }, 30000);
+    setTimeout(function () { window._lmUpdateClaimLabel(false); }, 4000);
     window.getHourlyBonusTimeLeftString = function() {
         var ms = (window.application && typeof window.application.freeCoinTimeLeft === 'function') 
             ? window.application.freeCoinTimeLeft() 
