@@ -16363,6 +16363,7 @@ var displayText = {
         showDevConsole: 'Show developer console',
         showLbData: 'Pokaz mase w topce',
         lbHideBots: 'Zwin powtarzajace sie nicki (boty) w topce',
+        lbPassToast: 'Powiadomienie gdy awansujesz w topce',
         //normalLb: 'Naglowek \"Topka\"',
         centeredLb: 'Wysrodkowana topka',
         fpsAtTop: 'Statystyki na gorze',
@@ -16879,6 +16880,7 @@ var displayText = {
         showDevConsole: 'Show developer console',
         showLbData: 'Show leaderboard mass',
         lbHideBots: 'Leaderboard: collapse repeated (bot) names',
+        lbPassToast: 'Leaderboard: notify when you move up',
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
         fpsAtTop: 'Game stats at the top',
@@ -19294,7 +19296,8 @@ var defaultmapsettings = {
     showTop5: true,
     showTargeting: true,
     showLbData: true,
-    lbHideBots: false,            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
+    lbHideBots: false,
+    lbPassToast: false,           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
     showDevConsole: false,
     //normalLb: true,
@@ -23097,7 +23100,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
@@ -46440,6 +46443,17 @@ Most cells eaten   : ${mostCellsEaten}
                     text += '<span class=\"hud-main-color\">[' + application.calculateMapSector(w + legendmod.mapOffsetX, u + legendmod.mapOffsetY) + ']</span>', text += '</span>';
                 }
             }
+            /* optional: toast when you move up 1-3 places while playing (bigger jumps are
+             * respawns, multibox swaps or server changes, not passes) */
+            if (defaultmapsettings.lbPassToast) {
+                var _lmLbPos = this.play ? (this.playerPosition | 0) : 0;
+                var _lmLbPrev = this._lmPrevLbPos | 0;
+                if (_lmLbPos > 0 && _lmLbPrev > 0 && _lmLbPos < _lmLbPrev && _lmLbPrev - _lmLbPos <= 3 && window.toastr) {
+                    var _lmLbBelow = this.leaderboard[_lmLbPos];
+                    toastr.info('\u25B2 #' + _lmLbPos + (_lmLbBelow && _lmLbBelow.nick ? ' (' + application.escapeHTML(_lmLbBelow.nick) + ')' : ''));
+                }
+                this._lmPrevLbPos = _lmLbPos;
+            } else this._lmPrevLbPos = 0;
             application.displayLeaderboard(teamText, text);
             //application['displayPartyBots']();
 
