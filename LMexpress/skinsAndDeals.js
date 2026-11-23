@@ -2373,6 +2373,9 @@ function SpecialDeals(defaultTab) {
             $('#specialShopModal .shop-tab[data-tab="' + defaultTab + '"]').trigger('click');
         }
 
+        /* Closing the shop stops the 60 s promo refresh; start it again on every open. */
+        _lmStartPromoRefresh();
+
         $("#ss-select-agarVersionDestinations").change(function() {
             var selectedVer = $("#ss-select-agarVersionDestinations").val();
             var newUrl = window.LM_CONFIG_CDN + "/" + selectedVer + "GameConfiguration.json";
@@ -3072,26 +3075,46 @@ function _promoConfigHasSkin(config, productId) {
  * Updates window._lmOfficialPromotion when a new promo element is found.
  */
 function _lmScanDomForPromos() {
-    /* Selectors that agar.io's official client uses for offer popups */
+    var current = window._lmOfficialPromotion;
+
+    /* A DOM-detected promo whose element is gone or hidden has ended. */
+    if (current && current.system === 'dom-scan' &&
+        (!current._domEl || !document.contains(current._domEl) || current._domEl.offsetParent === null)) {
+        window._lmOfficialPromotion = current = null;
+    }
+
+    /* A promo from agar.io's promo event carries its offer config; a DOM guess must not replace it. */
+    if (current && current.config) return false;
+
+    /* Only the official client's own offer containers. The old [class*="offer"] /
+     * [class*="promo"] wildcards matched Legend Mod's own shop (e.g. .deal-offer-btn),
+     * so "Active Offer!" clicked an unrelated, possibly real-money, button. */
     var selectors = [
         '.offer-popup', '.promo-badge', '.offer-banner',
-        '.promo-badge-container', '#mainui-offers',
-        '[class*="offer"]', '[class*="promo"]'
+        '.promo-badge-container', '#mainui-offers'
     ];
     var el = null;
     for (var i = 0; i < selectors.length; i++) {
-        try { el = document.querySelector(selectors[i]); } catch (e) { continue; }
-        if (el && el.offsetParent !== null) break; /* visible element found */
-        el = null;
+        var found = [];
+        try { found = document.querySelectorAll(selectors[i]); } catch (e) { continue; }
+        for (var fi = 0; fi < found.length; fi++) {
+            var cand = found[fi];
+            if (cand.offsetParent === null) continue; /* hidden */
+            if (cand.closest && cand.closest('#specialShopModal, .lm-modal-overlay, #mobile-bundles-modal')) continue;
+            el = cand;
+            break;
+        }
+        if (el) break;
     }
     if (!el) return false;
 
     /* Already captured this element */
-    if (window._lmOfficialPromotion && window._lmOfficialPromotion._domEl === el) return false;
+    if (current && current._domEl === el) return false;
 
     /* Try to extract a callback from the element */
     var callback = null;
     var btn = el.querySelector('button') || el.querySelector('[role="button"]') || el;
+    if (btn && btn.closest && btn.closest('#specialShopModal')) btn = null;
     if (btn) {
         callback = function () {
             try { btn.click(); } catch (e) { console.warn('[PROMO] DOM click failed:', e); }
@@ -3140,6 +3163,13 @@ function _lmScanDomForPromos() {
  * Periodic promo refresh: re-scans DOM for promo elements, and updates any
  * visible "Promo Only" buttons to "Active Offer!" when a promotion is detected.
  */
+/* A promo applies to a skin only when its offer config lists that skin. A promo
+ * without config (DOM-detected) says nothing about which skins it contains. */
+function _lmPromoHasSkin(promo, productId) {
+    return !!(promo && typeof promo.callback === 'function' && promo.config &&
+        _promoConfigHasSkin(promo.config, productId));
+}
+
 var _lmPromoRefreshTimer = null;
 function _lmStartPromoRefresh() {
     if (_lmPromoRefreshTimer) return; /* already running */
@@ -3160,7 +3190,7 @@ function _lmStartPromoRefresh() {
             var pid = btn.getAttribute('data-product-id');
             if (!pid) continue;
             /* Check if this skin is in the promo */
-            if (promo.config && !_promoConfigHasSkin(promo.config, pid)) continue;
+            if (!_lmPromoHasSkin(promo, pid)) continue;
             /* Update to Active Offer */
             btn.textContent = '\uD83C\uDF81 Active Offer!';
             btn.disabled = false;
@@ -3409,11 +3439,15 @@ function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
     /* Tag button with its productId for the periodic promo refresh to find it */
     button.setAttribute('data-product-id', productId);
 
+    /* The INAPP branch of renderSkinPage already wired this button to the promo:
+     * a second listener ran the offer (or purchase) twice per click. */
+    if (button.getAttribute('data-purchase-state') === 'promo-active') return;
+
     /* Check if this skin is in an active live promotion first. */
     var _promo = window._lmOfficialPromotion;
-    var _promoHasSkin = _promo && _promo.callback &&
-        (!_promo.config || _promoConfigHasSkin(_promo.config, productId));
+    var _promoHasSkin = _lmPromoHasSkin(_promo, productId);
     if (_promoHasSkin) {
+        button.setAttribute('data-purchase-state', 'promo-active');
         button.textContent = '\uD83C\uDF81 Active Offer!';
         button.disabled = false;
         button.style.opacity = '1';
@@ -4879,6 +4913,24 @@ function openOfficialAgarIAP(
         return false;
     }
 
+    if (!_lmPurchaseAllowedForShownConfig(purchaseId)) {
+        console.warn(
+            '[SHOP] Blocked purchase from a non-live config:',
+            purchaseId,
+            window.MiniclipConfigDestination
+        );
+
+        if (
+            window.toastr
+        ) {
+            toastr.error(
+                '<b>[SHOP]:</b> This item comes from an older agar.io version and is not sold the same way today. Switch the shop back to the latest version to buy.'
+            );
+        }
+
+        return false;
+    }
+
     var officialUser =
         window.Core &&
         window.Core.user
@@ -4898,11 +4950,13 @@ function openOfficialAgarIAP(
         '';
 
     /* If the "Friend UID" checkbox is checked, override with the manual UID input */
+    var usingFriendUID = false;
     var lockUIDCheckbox = document.getElementById('checkBoxLockUID');
     if (lockUIDCheckbox && lockUIDCheckbox.checked) {
         var manualUID = String($('#agario_uid_input').val() || '').trim();
         if (manualUID.length > 10) {
             xsollaToken = manualUID;
+            usingFriendUID = true;
         }
     }
 
@@ -5027,7 +5081,27 @@ function openOfficialAgarIAP(
      * It uses the payment model already configured by the live production
      * environment.
      */
+    /*
+     * The official makePurchase always credits Core.user.xsollaToken and charges in
+     * the client's own currency. Skip it when the user chose a Friend UID (the gift
+     * went to the buyer) or a currency other than the client's (the card showed one
+     * price, Xsolla charged another): the direct request below honours both.
+     */
+    var officialCurrency = '';
+    try {
+        officialCurrency = String(
+            window.Core.services.shop._payModel.getCurrencyCode() || ''
+        ).toUpperCase();
+    } catch (officialCurrencyError) {
+        officialCurrency = '';
+    }
+
+    var officialPurchaseMatchesChoice =
+        !usingFriendUID &&
+        (!officialCurrency || officialCurrency === currency);
+
     if (
+        officialPurchaseMatchesChoice &&
         window.agarApp &&
         window.agarApp.API &&
         typeof window.agarApp.API
@@ -8060,10 +8134,10 @@ function renderSkinPage(
                 ) {
                     /* Check if this skin is in an active live promotion. */
                     var _promo = window._lmOfficialPromotion;
-                    var _promoHasSkin = _promo && _promo.callback &&
-                        (!_promo.config || _promoConfigHasSkin(_promo.config, productId));
+                    var _promoHasSkin = _lmPromoHasSkin(_promo, productId);
                     buyButton.setAttribute('data-product-id', productId);
                     if (_promoHasSkin) {
+                        buyButton.setAttribute('data-purchase-state', 'promo-active');
                         buyButton.textContent =
                             '\uD83C\uDF81 Active Offer!';
                         buyButton.disabled = false;
@@ -9027,9 +9101,57 @@ function letterCount(string, letter, caseSensitive) {
     return count;
 }
 
+/* True while the shop shows agar.io's current config (not a library version / custom URL). */
+function _lmShopShowsLiveConfig() {
+    return !window.MiniclipConfigDestination ||
+        (typeof window.LM_CONFIG_URL === 'function' &&
+            window.MiniclipConfigDestination === window.LM_CONFIG_URL());
+}
+
+function _lmIAPBundleMap(config) {
+    var map = {};
+    var rows = config && config.gameConfig && config.gameConfig['Wallet - In-App Purchases'];
+    if (!rows || !rows.length) return null;
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (!row) continue;
+        var id = (row.id && row.id._value) || row.id;
+        var bundle = (row.bundleId && row.bundleId._value) || row.bundleId;
+        if (id) map[String(id)] = String(bundle || '');
+    }
+    return map;
+}
+
+function _lmRememberLiveIAPs(config) {
+    var map = _lmIAPBundleMap(config);
+    if (map) window._lmLiveIAPMap = map;
+}
+
+/*
+ * An older library version / custom config lists purchase IDs that agar.io may have
+ * retired, or that now deliver a different bundle. Xsolla still charges for them, but
+ * agar.io delivers nothing (or something else). Allow a purchase from a non-live config
+ * only when the live catalogue sells the same ID with the same bundle.
+ */
+function _lmPurchaseAllowedForShownConfig(purchaseId) {
+    if (_lmShopShowsLiveConfig()) return true;
+    var live = window._lmLiveIAPMap;
+    if (!live || !Object.prototype.hasOwnProperty.call(live, purchaseId)) return false;
+    var shown = _lmIAPBundleMap(window.GameConfiguration);
+    if (shown && Object.prototype.hasOwnProperty.call(shown, purchaseId) &&
+        shown[purchaseId] !== live[purchaseId]) return false;
+    return true;
+}
+
 function LoadGameConfiguration() {
     function _onConfigReady() {
         window._isLoadingGameConfig = false;
+
+        /* Remember agar.io's live catalogue (purchase ID -> bundle) so purchases made
+         * while an older library version is shown can be checked against it. */
+        if (_lmShopShowsLiveConfig()) {
+            _lmRememberLiveIAPs(window.GameConfiguration);
+        }
 
         /*
          * Legacy select/config metadata remains available.

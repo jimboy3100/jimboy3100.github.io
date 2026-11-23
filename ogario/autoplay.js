@@ -483,7 +483,7 @@ function calcDistVirus(x, y, vx, vx) {
 }
 
 function AnnounceDangerCellOpposite(x, y) {
-    $('#pause-hud').html("<font color='red'>Danger: <font> " + x + " and " + y + " are diametral");
+    $('#pause-hud').html("<font color='red'>Danger: <font> " + _apEsc(x) + " and " + _apEsc(y) + " are diametral");
 }
 
 function AnnounceBadCellShooting(vx, vy, name, x, y) {

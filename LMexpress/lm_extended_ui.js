@@ -2449,15 +2449,25 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             return sent;
         }
         var now = Date.now();
+        /* One queued send per request type: reopening the modal reuses it. Queuing
+         * more used to hit the clock-jump cap below and fire two requests inside
+         * the server's cooldown (one was silently dropped). */
+        var pending = window._lmLeaguesPending || (window._lmLeaguesPending = {});
+        if (pending[requestType]) {
+            return Math.max(1, pending[requestType] - now);
+        }
         var waitMs = window._lmLastLeaguesRequestAt + cooldownMs - now;
         if (waitMs <= 0) {
             return send() ? 0 : -1;
         }
-        // A slot may already be reserved by a queued request; cap clock jumps.
+        // With at most one queued send per type the wait stays under 3 cooldowns;
+        // a longer wait means the clock jumped back.
         if (waitMs > 3 * cooldownMs) waitMs = cooldownMs;
         // Reserve the slot so a second queued request waits for this one.
         window._lmLastLeaguesRequestAt = now + waitMs;
+        pending[requestType] = now + waitMs;
         setTimeout(function() {
+            delete pending[requestType];
             try {
                 send();
             } catch (delayedLeaguesRequestError) {
@@ -8183,7 +8193,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
          */
         /* say what was claimed and why the rest was not: the button looked dead when nothing was ready */
         var _claimed = [], _waiting = [];
-        var _fmtLeft = function (s) { s = Math.max(0, Math.round(s)); var h = Math.floor(s / 3600), m = Math.ceil((s % 3600) / 60); return h ? (h + 'h ' + m + 'm') : (m + 'm'); };
+        /* Round up to whole minutes first: rounding the minutes apart from the hours gave "1h 60m". */
+        var _fmtLeft = function (s) { var mins = Math.ceil(Math.max(0, s) / 60); var h = Math.floor(mins / 60), m = mins % 60; return h ? (h + 'h ' + m + 'm') : (m + 'm'); };
         if (window.application && typeof window.application.activateTimedEvent === 'function') {
             var _secs = typeof window.getLiveTimedEventSecondsRemaining === 'function'
                 ? window.getLiveTimedEventSecondsRemaining : function () { return null; };
@@ -11734,17 +11745,26 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
     // Auto-initialize menu buttons and profile sync when DOM is ready
     $(document).ready(function() {
+        /* The friend list (147) can arrive before #lm-friends-btn exists, or the button
+         * can be rebuilt hidden: reveal it from the stored list, not only on the event. */
+        var revealFriendsBtnFromData = function () {
+            var fl = window._friendListData;
+            if (fl && fl.friends && fl.friends.length) $('#lm-friends-btn').css('display', '');
+        };
         setTimeout(function() {
             initMenuButtons();
             initBoostDropdown();
             syncProfileTabUI();
+            revealFriendsBtnFromData();
             setInterval(function() {
-                /* Skip when tab is hidden or menu is not visible — no DOM work needed */
+                /* Skip when the tab is hidden or the menu is not visible (ogario hides
+                 * #overlays while playing; #mainPanel is removed at init). */
                 if (document.hidden) return;
-                var menu = document.getElementById('mainPanel');
+                var menu = document.getElementById('overlays');
                 if (menu && menu.style.display === 'none') return;
                 initMenuButtons();
                 syncProfileTabUI();
+                revealFriendsBtnFromData();
             }, 5000);
         }, 1000);
 

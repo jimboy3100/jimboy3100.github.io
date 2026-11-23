@@ -148,8 +148,10 @@ if(Externalletter13==null){Externalletter13 = "IMPORTANT NOTICE: Do not keep URL
 
 
 /* Read theme values at point-of-use — LMexpress.js globals may not exist yet */
-var _legbgpic = (typeof legbgpic !== 'undefined') ? legbgpic : ($("#menuBg").val() || '');
-var _legbgcolor = (typeof legbgcolor !== 'undefined') ? legbgcolor : ($("#menuPanelColor").val() || '');
+/* Theme values can come from imported or cloud settings: keep only characters that
+ * cannot leave the CSS url()/colour or the HTML attribute. */
+var _legbgpic = String((typeof legbgpic !== 'undefined') ? legbgpic : ($("#menuBg").val() || '')).replace(/["'()<>\\\s`]/g, '');
+var _legbgcolor = String((typeof legbgcolor !== 'undefined') ? legbgcolor : ($("#menuPanelColor").val() || '')).replace(/[^#a-zA-Z0-9(),.%\s-]/g, '');
 
 $("#menu-footer").after('<div id="userscripts" style="background-image: url('+_legbgpic+'); background-color: '+_legbgcolor+'; border: 1px solid black; height: 600px; width: 600px; ";>'+
 	'<div id="Userscriptshud" style="display:block; margin-left: 10px; margin-right: 10px;">'+ //margin-left: 10px"

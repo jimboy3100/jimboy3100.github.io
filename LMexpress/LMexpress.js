@@ -198,6 +198,10 @@ var AdminClanSymbol;
 var AdminPassword;
 var AdminRights = 0;
 var LegendClanSymbol = "0";
+/* Theme values (menuBg URL, panel colour) can come from imported or cloud settings:
+ * keep only characters that cannot leave a CSS url()/colour or the HTML attribute. */
+function _lmCssUrl(u) { return String(u == null ? '' : u).replace(/["'()<>\\\s`]/g, ''); }
+function _lmCssColor(c) { return String(c == null ? '' : c).replace(/[^#a-zA-Z0-9(),.%\s-]/g, ''); }
 var legbgcolor = $("#menuPanelColor").val();
 var legbgpic = $("#menuBg").val();
 var legmaincolor = $("#hudMainColor ").val();
@@ -1198,7 +1202,7 @@ function ReportFakesSkin() {
         Temporaryletter1 = "Teamboard";
     }
 
-    $("#menu-footer").after('<div id="SkinChanger" style="display: none; background-image: url(' + legbgpic + '); background-color: ' + legbgcolor + '; border: 1px solid black; height: 540px; width: 500px; ";>' +
+    $("#menu-footer").after('<div id="SkinChanger" style="display: none; background-image: url(' + _lmCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + '; border: 1px solid black; height: 540px; width: 500px; ";>' +
         '<div id="SkinChangerhud" style="display:block; margin-left: 10px; margin-right: 10px;">' + //margin-left: 10px"
         '<div id="SkinChangertoolshud1" align="middle"><h5 class="main-color"><b>' + Premadeletter119 + '</b></h5>' +
         '<p style="color:white; font-size:12px; margin-bottom: -4px;" align="middle">' + Premadeletter120 +
@@ -2585,7 +2589,7 @@ function universalchat() {
         local_style += '}';
         local_style += '#ao2t-cfg-dlg {';
         local_style += ' border-radius:0; font-size: 80%; padding: 2px 10px; position: fixed;';
-        local_style += ' pointer-events: auto; background-image: url(' + legbgpic + '); background-color: ' + legbgcolor + ' ; color: #ffffff;';
+        local_style += ' pointer-events: auto; background-image: url(' + _lmCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + ' ; color: #ffffff;';
         local_style += ' overflow: hidden;';
         local_style += '}';
         local_style += '#ao2t-cfg-dlg * {';
@@ -4698,10 +4702,15 @@ function setdiscwebhook1() {
     var containsrealwebhook = $('#discwebhook1').val();
     if (~containsrealwebhook.indexOf("discordapp.com/api/webhooks/") || ~containsrealwebhook.indexOf("discord.com/api/webhooks/")) {
         localStorage.setItem("discwebhook1", discwebhook1);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://www.legendmod.ml/agarscripts/DiscordSIP.user.js";
-        $("body").append(s);
+        /* Load the script once: it reads the webhook globals when it posts. Every blur
+         * of the field used to append another copy, stacking its handlers and timers. */
+        if (!window._lmDiscordSIPLoaded) {
+            window._lmDiscordSIPLoaded = true;
+            var s = document.createElement("script");
+            s.type = "text/javascript";
+            s.src = "https://www.legendmod.ml/agarscripts/DiscordSIP.user.js";
+            $("body").append(s);
+        }
     } else {
         if (containsrealwebhook == "") {
             localStorage.setItem("discwebhook1", discwebhook1);
@@ -8581,10 +8590,22 @@ function startTranslating() {
 
     var observerMut = new MutationObserver(callbackMut);
 
+    /* Translate each newly added message once. Translating "the last child" once per
+     * mutation record sent every message twice when the 200-message trim added a
+     * removal record next to the append. */
     function callbackMut(mutationList, observerMut) {
+        if (!defaultmapsettings.showChatTranslation) return;
         mutationList.forEach((mutation) => {
-            if (defaultmapsettings.showChatTranslation && targetNode.lastChild.classList.contains('message') && !targetNode.lastChild.classList.contains('command')) {
-                doMainTranslation(targetNode, targetNode.lastChild.lastChild.firstChild.textContent)
+            for (var ai = 0; ai < mutation.addedNodes.length; ai++) {
+                var msgNode = mutation.addedNodes[ai];
+                if (!msgNode || msgNode.nodeType !== 1 || !msgNode.classList) continue;
+                if (!msgNode.classList.contains('message') || msgNode.classList.contains('command')) continue;
+                if (msgNode.getAttribute('data-lm-translated')) continue;
+                var textHost = msgNode.lastChild;
+                var textNode = textHost && textHost.firstChild;
+                if (!textNode || !textNode.textContent) continue;
+                msgNode.setAttribute('data-lm-translated', '1');
+                doMainTranslation(targetNode, textNode.textContent, msgNode);
             }
         });
     };
@@ -8592,7 +8613,7 @@ function startTranslating() {
     observerMut.observe(targetNode, observerOptions);
 
 }
-function doMainTranslation(targetNode, bb) {
+function doMainTranslation(targetNode, bb, msgNode) {
     //if(targetNode.lastChild.classList.contains('message')) {
     var trText = document.createElement('span');
     var GrText
@@ -8615,7 +8636,8 @@ function doMainTranslation(targetNode, bb) {
     }
     ajax.send();
 
-    targetNode.lastChild.lastChild.appendChild(trText);
+    var trHost = msgNode ? msgNode.lastChild : (targetNode.lastChild && targetNode.lastChild.lastChild);
+    if (trHost) trHost.appendChild(trText);
     //window.cc = targetNode.children[0].children[1].text
     //}
 }
@@ -8798,7 +8820,7 @@ function adminstuff() {
 
     var legbgpic = $("#menuBg").val();
     var legbgcolor = $("#menuPanelColor").val();
-    $("#menu-footer").after('<div id="administrationtools" style="display: none; background-image: url(' + legbgpic + '); background-color: ' + legbgcolor + '; border: 1px solid black; height: 165px; width: 500px; ";>' +
+    $("#menu-footer").after('<div id="administrationtools" style="display: none; background-image: url(' + _lmCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + '; border: 1px solid black; height: 165px; width: 500px; ";>' +
         '<div id="administrationtoolshud" style="display:block; margin-left: 10px; margin-right: 10px;">' + //margin-left: 10px"
         '<div id="administrationtoolshud1" align="middle"><h5 class="main-color">ADMINISTRATOR TOOLS</h5>' +
         '<p style="color:white; font-size:12px";" align="middle">Enter your Clan symbol and ADMIN Password</p>' +

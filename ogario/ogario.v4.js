@@ -28,7 +28,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.544;
+window.OgVer = 3.545;
 
 
 /*
@@ -1081,21 +1081,30 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
         }
     }
 
-    /* Known servers that are not Expanding Land must never get the Discord token or
-     * profile. (window.LM is only a UI stub; the connection state is on legendmod.) */
-    function _lw_isNonLwServer() {
-        if (typeof legendmod === 'undefined' || !legendmod || legendmod.isLegendWorld) return false;
-        return ['agario', 'imsolo', 'agar2', 'garix', 'sigmally', 'senpa'].indexOf(legendmod.serverType) !== -1;
+    /* Only Expanding Land may get the login token or Discord profile (opcodes 102/204).
+     * Allowlist, not blocklist: delt.io ('deltio') and custom ?sip= servers ('private')
+     * are third parties. A proxied Expanding Land URL starts as 'private' and becomes
+     * 'expandingland' when its opcode-240 beacon arrives, so 'private'/unknown waits
+     * (the scheduler retries) instead of sending.
+     * Returns 'send', 'wait' or 'skip'. (window.LM is only a UI stub; the connection
+     * state is on legendmod.) */
+    function _lw_authServerGate() {
+        if (typeof legendmod === 'undefined' || !legendmod) return 'wait';
+        if (legendmod.isLegendWorld === true || legendmod.serverType === 'expandingland') return 'send';
+        if (!legendmod.serverType || legendmod.serverType === 'private') return 'wait';
+        return 'skip';
     }
 
     function _lw_sendLogin102(token, socialId, displayName, attemptId, provider) {
         attemptId = attemptId || (window._lwAuth && window._lwAuth.attemptId);
         provider = provider || (window._lwAuth && window._lwAuth.provider);
         _lwScheduleAuthSocketSend(provider + ':102', attemptId, provider, 0, function () {
-            if (_lw_isNonLwServer()) {
+            var gate102 = _lw_authServerGate();
+            if (gate102 === 'skip') {
                 console.log('[LW Login] Skipping opcode 102 for non Expanding Land server: ' + legendmod.serverType);
                 return true;
             }
+            if (gate102 === 'wait') return false;
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 /* Prepend social ID and display name as header lines before the token.
                  * Format: "SID:<socialId>\nNAME:<displayName>\n<token>"
@@ -1136,10 +1145,12 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
     function _lw_sendDiscordProfile(discordUser, attemptId) {
         attemptId = attemptId || (window._lwAuth && window._lwAuth.attemptId);
         _lwScheduleAuthSocketSend('discord:204', attemptId, 'discord', 500, function () {
-            if (_lw_isNonLwServer()) {
+            var gate204 = _lw_authServerGate();
+            if (gate204 === 'skip') {
                 console.log('[LW Discord] Skipping opcode 204 for non Expanding Land server: ' + legendmod.serverType);
                 return true;
             }
+            if (gate204 === 'wait') return false;
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 var socialId = discordUser.id || '';
                 var displayName = discordUser.globalName || discordUser.username || '';
@@ -25929,7 +25940,17 @@ function thelegendmodproject() {
             } else {
                 /* Private server: legendmod owns the game socket.
                  * We wire handleMessage into ogarioWS relay instead. */
-                this.socket.onopen = () => { app._lmResetSentPartyData(); app.sendPartyData(); };
+                this.socket.onopen = () => {
+                    app._lmResetSentPartyData();
+                    app.sendPartyData();
+                    /* A working relay ends any public-relay retry state; otherwise the 60 s
+                     * slow poll kept closing this socket and flushing teammates every minute. */
+                    app._lmRelayRetries = 0;
+                    if (app._lmRelaySlowPoll) {
+                        clearInterval(app._lmRelaySlowPoll);
+                        app._lmRelaySlowPoll = null;
+                    }
+                };
             }
             var _lmSock = this.socket;
             this.socket.onclose = function (buf) {
@@ -25942,7 +25963,10 @@ function thelegendmodproject() {
                     /* After 20 failed reconnects, switch to slow polling (every 60s) */
                     if (!app._lmRelaySlowPoll) {
                         app._lmRelaySlowPoll = setInterval(function () {
-                            if (app._lmRelayRetries <= 20) {
+                            /* The slow poll only revives the public relay: in private mode
+                             * connect() would tear down the working private relay. */
+                            if (app._lmRelayRetries <= 20 || app.privateMode) {
+                                app._lmRelayRetries = app.privateMode ? 0 : app._lmRelayRetries;
                                 clearInterval(app._lmRelaySlowPoll);
                                 app._lmRelaySlowPoll = null;
                                 return;
@@ -34028,7 +34052,7 @@ function thelegendmodproject() {
                      * as WebGL textured quads with depth testing for correct z-order.
                      * Chat bubbles and merge timers still render on Canvas2D (overlay effects). */
                     if (!_wasWebGL) {
-                        if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
+                        if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved || this._lmDrawNoText) {
                             //return;
                         }
                         else {
@@ -39850,7 +39874,8 @@ function thelegendmodproject() {
                             var gcProvider = '';
                             for (var gci = 0; gci < gcLen && 2 + gci < data.byteLength; gci++) gcProvider += String.fromCharCode(data.getUint8(2 + gci));
                             console.warn('%c[Garix]%c Captcha requested (provider=' + gcProvider + '), not supported', 'color:#f8a', 'color:inherit');
-                            if (window.toastr) toastr.warning('Garix requires a captcha (' + gcProvider + ') that Legend Mod cannot solve. Spawning may be refused; use the official Garix client.');
+                            /* The provider string comes from the server: escape it, toastr renders HTML. */
+                            if (window.toastr) toastr.warning('Garix requires a captcha (' + application.escapeHTML(gcProvider) + ') that Legend Mod cannot solve. Spawning may be refused; use the official Garix client.');
                         }
                         break;
                     }
@@ -41196,7 +41221,7 @@ function thelegendmodproject() {
                                     if (!prevBoost || prevBoostId === newBoostId) continue;
                                     if (newBoostType && prevBoost.type === newBoostType) continue;
                                     var prevBoostLeft = Math.ceil(((Number(prevBoost.expiresAt) || 0) - boostNow) / 1000);
-                                    if (prevBoostLeft > 0) mergedBoosts.push({ productId: prevBoostId, expiresInSeconds: prevBoostLeft });
+                                    if (prevBoostLeft > 0) mergedBoosts.push({ productId: prevBoostId, expiresInSeconds: prevBoostLeft, _lmExpiresAt: Number(prevBoost.expiresAt) });
                                 }
                                 mergedBoosts.push(newBoost);
                                 this.displayActiveBoosts(mergedBoosts);
@@ -44272,9 +44297,11 @@ function thelegendmodproject() {
 
 
                 var expiresAt =
-                    receivedAt +
-                    secondsRemaining *
-                    1000;
+                    Number(item._lmExpiresAt) > 0
+                        ? Number(item._lmExpiresAt)
+                        : receivedAt +
+                            secondsRemaining *
+                            1000;
 
 
                 var displayName =
@@ -44451,8 +44478,11 @@ function thelegendmodproject() {
                     var tickNow = Date.now();
                     var tickActive = window._lmActiveBoosts || {};
                     for (var tickId in tickActive) {
-                        var tickLeft = Math.ceil(((Number(tickActive[tickId] && tickActive[tickId].expiresAt) || 0) - tickNow) / 1000);
-                        if (tickLeft > 0) tickList.push({ productId: tickId, expiresInSeconds: tickLeft });
+                        var tickExpiresAt = Number(tickActive[tickId] && tickActive[tickId].expiresAt) || 0;
+                        var tickLeft = Math.ceil((tickExpiresAt - tickNow) / 1000);
+                        /* Carry the exact expiry: rebuilding it from the rounded-up seconds
+                         * pushed it up to 1 s later on every 30 s tick. */
+                        if (tickLeft > 0) tickList.push({ productId: tickId, expiresInSeconds: tickLeft, _lmExpiresAt: tickExpiresAt });
                     }
                     boostTickerApp.displayActiveBoosts(tickList);
                 }, 30000);
@@ -69469,8 +69499,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             if (!((LM.hideSmallBots && rCell.size <= 36) || rCell.invisible === true)) {
                                 rCell.moveCell();
                             }
-                            /* EXPANDING LAND — deform removed-cell render (jelly ON = no-op) */
-                            this.drawLegendWorldDeformedCanvasCell(rCell, this.ctx, false);
+                            /* EXPANDING LAND — deform removed-cell render (jelly ON = no-op).
+                             * cellMoved used to be true here, which also hid the nick/mass of
+                             * eaten cells; the move now happens above, so hide the text with
+                             * its own flag, only for this draw. */
+                            rCell._lmDrawNoText = true;
+                            try {
+                                this.drawLegendWorldDeformedCanvasCell(rCell, this.ctx, false);
+                            } finally {
+                                rCell._lmDrawNoText = false;
+                            }
                         } catch (eRCell) { }
                     }
                 }
@@ -73972,10 +74010,28 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (named.hasOwnProperty(last) && (prefix === '' || prefix === 'CTRL+' || prefix === 'ALT+')) return prefix + named[last];
                 return null;
             };
+            /* Numpad + and - were stored as 'k' and 'm' (real letters are upper case);
+             * they are now '+' and '-'. The user's numpad binding wins over the untouched
+             * default on '+' / '-' (quit game / switch server mode); otherwise the old
+             * binding was dropped and numpad + quit the game instead of running it. */
+            var numpadOld = { 'k': '+', 'm': '-' };
             var keys = Object.keys(hotkeys);
             for (var i = 0; i < keys.length; i++) {
                 var oldKey = keys[i];
                 if (oldKey === 'spec-messageKey') continue;
+                var npLast = oldKey.charAt(oldKey.length - 1);
+                var npPrefix = oldKey.slice(0, -1);
+                if (numpadOld.hasOwnProperty(npLast) && (npPrefix === '' || npPrefix === 'CTRL+' || npPrefix === 'ALT+')) {
+                    var npTarget = npPrefix + numpadOld[npLast];
+                    var npOccupant = hotkeys[npTarget];
+                    var npOccupantIsDefault = !!(npOccupant && hotkeysCommand[npOccupant] &&
+                        hotkeysCommand[npOccupant].defaultKey === npTarget);
+                    if (!hotkeys.hasOwnProperty(npTarget) || npOccupantIsDefault) {
+                        hotkeys[npTarget] = hotkeys[oldKey];
+                    }
+                    delete hotkeys[oldKey];
+                    continue;
+                }
                 var newKey = rename(oldKey);
                 if (newKey === null) continue;
                 if (!hotkeys.hasOwnProperty(newKey)) hotkeys[newKey] = hotkeys[oldKey];
@@ -76467,7 +76523,8 @@ function intervalPlayingRecord() {
         var tempo = legendmod.playingReplayServer
         if ($("#server-token").val().includes("replay^" + tempo)) {
 
-            legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord]) //main fuction for replay
+            var replayPacket = window.RecordedProtocol[tempo][legendmod.playingReplayRecord];
+            if (replayPacket) legendmod.handleMessage(replayPacket) //main fuction for replay
             //
             if (!legendmod.playingReplayRewind && window.replayTiming2 === 0) {
                 /*if (window.replaySkippedLoops > 99 && legendmod.playingReplayRecord + 100 < window.RecordedProtocol[tempo].length - 1) {
@@ -76487,7 +76544,11 @@ function intervalPlayingRecord() {
             //
             $("#totalReplayPackets").val(legendmod.playingReplayRecord + "/" + window.RecordedProtocolPackets)
 
-            if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 1 && legendmod.playingReplayRecord >= 0) {
+            /* Playing backwards stops at packet 0: stepping on scheduled packet -1, which
+             * threw in handleMessage and never reached "Finished". */
+            var replayGoingBack = !(parseFloat(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow);
+            if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 1 && legendmod.playingReplayRecord >= 0 &&
+                !(replayGoingBack && legendmod.playingReplayRecord <= 0)) {
                 intervalPlayingRecord();
                 if (parseFloat(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
                     //if (parseInt(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {

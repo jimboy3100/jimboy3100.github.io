@@ -154,15 +154,17 @@ if (window.EnvConfig.master_url != null) {
             var latestIdText = "";
 
             if (typeof sketchContents === "string") {
-                var latestIdContainer =
-                    document.createElement("div");
-
-                latestIdContainer.innerHTML =
-                    sketchContents;
+                /* Parse in an inert document: innerHTML on a div of the live page ran
+                 * <img onerror> handlers from the response. */
+                var latestIdDoc =
+                    new DOMParser().parseFromString(
+                        sketchContents,
+                        "text/html"
+                    );
 
                 latestIdText =
                     String(
-                        latestIdContainer.textContent || ""
+                        (latestIdDoc.body && latestIdDoc.body.textContent) || ""
                     ).trim();
             }
 
@@ -718,7 +720,8 @@ function legendmaster(self) {
                     }
                 },
                 success(playlistCopy) {
-                $("#response").html(JSON.stringify(playlistCopy, null, 4));
+                /* .text(): JSON.stringify does not escape < and >. */
+                $("#response").text(JSON.stringify(playlistCopy, null, 4));
                 if (playlistCopy != null) {
                     localStorage.setItem("userData", JSON.stringify(playlistCopy));
                 }
@@ -1152,7 +1155,8 @@ function legendmaster(self) {
             }
             this.setGameMode(":party");
         },
-        joinParty(d) {
+        joinParty(d, joinOptions) {
+            joinOptions = joinOptions || {};
             if (window.legendModFromWebsite) {
                 return;
             }
@@ -1260,11 +1264,31 @@ function legendmaster(self) {
                     scopeHeaderOverrides.endpoint =
                         endpoint;
 
+                    scopeHeaderOverrides._lmPartyRejoinTries = 0;
                     scopeHeaderOverrides
                         .setPartyState("9");
                 },
                 function() {
                     if (joinGeneration !== scopeHeaderOverrides.connectionGeneration) return;
+                    /* A rejoin after a disconnect whose getToken request failed (network
+                     * still down) retries with backoff instead of dropping the party code
+                     * and sending the player to a random FFA arena. */
+                    var rejoinTries = scopeHeaderOverrides._lmPartyRejoinTries || 0;
+                    if (joinOptions.rejoin && rejoinTries < 5) {
+                        scopeHeaderOverrides._lmPartyRejoinTries = rejoinTries + 1;
+                        var rejoinDelay = 2000 * (rejoinTries + 1);
+                        console.warn("[Master] Party rejoin failed, retrying in " + rejoinDelay + " ms");
+                        if (rejoinTries === 0 && window.toastr) {
+                            toastr.warning("<b>[Master]:</b> Connection lost. Trying to rejoin your party...");
+                        }
+                        setTimeout(function() {
+                            /* The user picked another server/mode meanwhile: their choice wins. */
+                            if (joinGeneration !== scopeHeaderOverrides.connectionGeneration) return;
+                            scopeHeaderOverrides.joinParty(d, joinOptions);
+                        }, rejoinDelay);
+                        return;
+                    }
+                    scopeHeaderOverrides._lmPartyRejoinTries = 0;
                     scopeHeaderOverrides
                         .setPartyState("6");
                     scopeHeaderOverrides._lmPartyJoinFailed(previousMode);
@@ -1407,6 +1431,9 @@ function legendmaster(self) {
                 if (this._lmDirectGen === this.connectionGeneration && currentLm.ws !== this.ws && self.core) {
                     this.reconnectReason = reason || "unspecified";
                     self.core.connect(currentLm.ws);
+                    /* Without this the failure counter in onDisconnect reset on every
+                     * drop of a ?sip=/token arena: endless reconnects with no delay. */
+                    this._lastConnectAt = Date.now();
                     return;
                 }
             }
@@ -1424,7 +1451,7 @@ function legendmaster(self) {
             /* In a party, findServer(":party") would create a NEW party and overwrite the
              * code; rejoin the current one instead. */
             if (!table && this.gameMode === ":party" && this.partyToken) {
-                this.joinParty(this.partyToken);
+                this.joinParty(this.partyToken, { rejoin: true });
                 return;
             }
 
@@ -1594,7 +1621,11 @@ function legendmaster(self) {
                 doReconnect();
             }
 
-            setTimeout(function() {
+            /* Only the newest reconnect may clear the flag: an older timer used to clear
+             * it while a later, longer-delayed reconnect was still pending. */
+            if (this._lwReconnectingTimer) clearTimeout(this._lwReconnectingTimer);
+            this._lwReconnectingTimer = setTimeout(function() {
+                master._lwReconnectingTimer = null;
                 window._lwReconnecting = false;
             }, 3000 + reconnectDelay);
         },
