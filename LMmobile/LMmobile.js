@@ -480,7 +480,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false };
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
@@ -490,6 +490,8 @@
                 if (saved.hudFade !== undefined) prefs.hudFade = saved.hudFade;
                 if (saved.targetMode !== undefined) prefs.targetMode = saved.targetMode;
                 if (saved.swipeSplit !== undefined) prefs.swipeSplit = !!saved.swipeSplit;
+                if (saved.muteVibration !== undefined) prefs.muteVibration = !!saved.muteVibration;
+                if (saved.tapHaptic !== undefined) prefs.tapHaptic = !!saved.tapHaptic;
             }
         } catch (e) { }
         function savePrefs() {
@@ -541,7 +543,9 @@
             '<input type="range" id="lm-op" min="20" max="100" step="5" value="' + Math.round(prefs.btnOpacity * 100) + '">' +
             '<label>Btn Size <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
-            '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>';
+            '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>' +
+            '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> No vibration (death, chat)</label>' +
+            '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> Short vibration on Split / Feed</label>';
         drawer.appendChild(sp);
 
         /* The panel only shows with class "on", and nothing ever added it, so joystick
@@ -588,6 +592,8 @@
             prefs.swipeSplit = this.checked;
             savePrefs();
         });
+        sp.querySelector('#lm-novib').addEventListener('change', function () { prefs.muteVibration = this.checked; savePrefs(); });
+        sp.querySelector('#lm-taphap').addEventListener('change', function () { prefs.tapHaptic = this.checked; savePrefs(); });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
@@ -678,6 +684,7 @@
          * ═══════════════════════════════════════════════════════ */
         bSplit.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            if (prefs.tapHaptic) vibrate(10);
             /* call the split command directly: Space follows the player's hotkey map, which
              * imported desktop settings may have changed */
             debounced(function () {
@@ -766,6 +773,7 @@
         window._lmMobileFeedStop = feedStop;
         bFeed.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            if (prefs.tapHaptic) vibrate(10);
             feedStart();
         }, { passive: false });
         bFeed.addEventListener('touchend', function (e) {
@@ -1057,6 +1065,8 @@
          *  HAPTIC FEEDBACK
          * ═══════════════════════════════════════════════════════ */
         function vibrate(pattern) {
+            /* "No vibration": the phone buzzed on every death and chat message with no way to stop it */
+            if (prefs.muteVibration) return;
             try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { }
         }
 
