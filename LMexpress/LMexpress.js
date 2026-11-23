@@ -884,6 +884,10 @@ function searchTKHandler(searchStr) {
         return false;
     }
     $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
+    /* the IP check before this hid the menu and faded in the search overlay; a party link
+     * never searches, so bring the menu back (the overlay stayed over the game) */
+    hideSearchHud();
+    showMenu2();
     return true;
 }
 
@@ -2514,7 +2518,12 @@ function universalchat() {
                     //playSound($('#commandSound').val());
                 } else if (~msg.indexOf("minimap server")) {
                     toastr.warning('<div class="toast-message"><span class="message-nick">' + this.name + ': </span><span class="message-text">' + msg + '</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-                } else if (~msg.indexOf($('#nick').val() + ':')) {
+                } else if ((function () {
+                    /* an empty nick matched every line (":") and "Al" matched "Pal: hi": compare
+                     * the escaped own nick at the start of the line only */
+                    var own = escapeHtml(String($('#nick').val() || '')) + ':';
+                    return own.length > 1 && (msg.indexOf(own) === 0 || msg.indexOf('@' + own) === 0);
+                })()) {
                     if (window.noOgarioSocket) {
                         toastr["success"]('<div class="toast-message"><span class="message-nick">' + this.name + ': </span><span class="message-text">' + msg + '</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
                         playSound($('#messageSound').val());

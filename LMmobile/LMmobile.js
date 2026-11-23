@@ -1430,6 +1430,8 @@
                     // Keep screen on while playing
                     if ('wakeLock' in navigator) {
                         navigator.wakeLock.request('screen').then(function (wl) {
+                            /* died before the lock was granted: the menu is up, do not keep the screen on */
+                            if (isMenuVisible()) { try { wl.release(); } catch (e) { } return; }
                             window._lmWakeLock = wl;
                         }).catch(function () { });
                     }
@@ -1452,6 +1454,8 @@
         document.addEventListener('visibilitychange', function () {
             if (document.visibilityState === 'visible' && !isMenuVisible() && 'wakeLock' in navigator) {
                 navigator.wakeLock.request('screen').then(function (wl) {
+                    /* died before the lock was granted: the menu is up, do not keep the screen on */
+                    if (isMenuVisible()) { try { wl.release(); } catch (e) { } return; }
                     window._lmWakeLock = wl;
                 }).catch(function () { });
             }
