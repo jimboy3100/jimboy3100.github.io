@@ -185,6 +185,7 @@ window.lmT = (function () {
         "leaderboards": {"en":"Leaderboards","el":"Κατατάξεις","es":"Clasificaciones","bg":"Класации","fr":"Classements","ar":"لوحات الصدارة","zh":"排行榜","ru":"Таблицы лидеров","de":"Bestenlisten","tr":"Lider tabloları","pl":"Rankingi","nl":"Ranglijsten"},
         "help": {"en":"Help","el":"Βοήθεια","es":"Ayuda","bg":"Помощ","fr":"Aide","ar":"مساعدة","zh":"說明","ru":"Помощь","de":"Hilfe","tr":"Yardım","pl":"Pomoc","nl":"Hulp"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "eatenBy": {"en":"Eaten by","el":"Σε έφαγε","es":"Comido por","bg":"Изяден от","fr":"Mangé par","ar":"أكلك","zh":"被吃掉","ru":"Съеден","de":"Gefressen von","tr":"Seni yiyen","pl":"Zjedzony przez","nl":"Opgegeten door"},
         "copyStats": {"en":"Copy stats","el":"Αντιγραφή στατιστικών","es":"Copiar estadísticas","bg":"Копирай статистиката","fr":"Copier les stats","ar":"نسخ الإحصائيات","zh":"複製統計","ru":"Копировать статистику","de":"Statistik kopieren","tr":"İstatistikleri kopyala","pl":"Kopiuj statystyki","nl":"Statistieken kopiëren"},
         "rewardReady": {"en":"A reward is ready to claim.","el":"Μια ανταμοιβή είναι έτοιμη.","es":"Hay una recompensa lista.","bg":"Има готова награда.","fr":"Une récompense est prête.","ar":"هناك مكافأة جاهزة للاستلام.","zh":"有獎勵可以領取。","ru":"Награда готова.","de":"Eine Belohnung ist bereit.","tr":"Alınacak bir ödül var.","pl":"Nagroda gotowa do odebrania.","nl":"Er staat een beloning klaar."},
         "remindOn": {"en":"You will be reminded when a reward is ready.","el":"Θα ειδοποιηθείς όταν μια ανταμοιβή είναι έτοιμη.","es":"Te avisaremos cuando haya una recompensa lista.","bg":"Ще получиш напомняне, когато има готова награда.","fr":"Vous serez prévenu quand une récompense sera prête.","ar":"سيتم تذكيرك عندما تكون المكافأة جاهزة.","zh":"獎勵可領取時會提醒你。","ru":"Вы получите напоминание, когда награда будет готова.","de":"Du wirst erinnert, wenn eine Belohnung bereit ist.","tr":"Bir ödül hazır olduğunda hatırlatılacaksın.","pl":"Przypomnimy, gdy nagroda będzie gotowa.","nl":"Je krijgt een herinnering als er een beloning klaarstaat."},
@@ -16429,6 +16430,7 @@ var displayText = {
         gameOverStats: 'Game over stats',
         massGraph: 'Mass graph on the Game Over card',
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
+        showKiller: 'Who ate you, on the Game Over card',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
@@ -16956,6 +16958,7 @@ var displayText = {
         gameOverStats: 'Game over stats',
         massGraph: 'Mass graph on the Game Over card',
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
+        showKiller: 'Who ate you, on the Game Over card',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -19389,6 +19392,7 @@ var defaultmapsettings = {
     gameOverStats: false,
     massGraph: false,             /* graph of your mass over the life on the Game Over card */
     personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
+    showKiller: false,            /* "Eaten by: nick (mass)" row on the Game Over card */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -23218,7 +23222,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "showKiller", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
@@ -24425,6 +24429,7 @@ function thelegendmodproject() {
              * (the 3 s window only merges the two reports of the SAME death; a spawn-kill
              * got no death handling: no auto-respawn, no menu) */
             this._lmLastDeathAt = 0;
+            if (window.legendmod) legendmod._lmKiller = null;
             if (!this._lmLifeStartAt) { this._lmLifeStartAt = Date.now(); this._lmMassHist = []; this._lmMassStride = 1; this._lmMassAcc = 0; this._lmMassAccN = 0; }
 
             /* The Game Over card (screen centre, top z-index) took the mouse and stayed for 12 s
@@ -43610,6 +43615,12 @@ function thelegendmodproject() {
                 { icon: '🦠', label: _lmTH('virusesEaten', 'Viruses Eaten'),    value: (u.virusesEaten || 0).toLocaleString() }
             ];
 
+            /* optional: who ate the last cell (recorded in the eat loop, at most 15 s ago) */
+            var _lmK = this._lmKiller;
+            if (defaultmapsettings.showKiller && _lmK && Date.now() - _lmK.at < 15000) {
+                var _lmKName = _lmK.virus ? 'Virus' : (_lmK.nick ? application.escapeHTML(_lmK.nick) : 'An unnamed cell');
+                stats.unshift({ icon: '\ud83d\udde1\ufe0f', label: _lmTH('eatenBy', 'Eaten by'), value: _lmKName + (_lmK.virus ? '' : ' (' + fmtMass(_lmK.mass) + ')'), accent: true });
+            }
             /* optional mass graph of the life that just ended */
             var _lmGraph = defaultmapsettings.massGraph && window.application && application._lmMassHist && application._lmMassHist.length >= 3 ? application._lmMassHist.slice() : null;
             /* Build HTML */
@@ -47962,6 +47973,10 @@ Most cells eaten   : ${mostCellsEaten}
                 }
 
 
+                /* optional: remember who ate my cell (Game Over card "Eaten by") */
+                if (defaultmapsettings.showKiller && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1) {
+                    this._lmKiller = { nick: String(eaterID.targetNick || ''), mass: ~~(eaterID.size * eaterID.size / 100), virus: !!eaterID.isVirus, at: Date.now() };
+                }
                 /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces (all servers) */
                 if (eaterID && victimID.isVirus && (eaterID.isPlayerCell || eaterID.isPlayerCellMulti) && window.application &&
                     (defaultmapsettings.virusPopSound || defaultmapsettings.virusEatSound)) {
