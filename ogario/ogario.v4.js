@@ -77858,6 +77858,42 @@ function lmReplaySeek(delta) {
 window.lmReplayTogglePause = lmReplayTogglePause;
 window.lmReplaySpeed = lmReplaySpeed;
 window.lmReplaySeek = lmReplaySeek;
+/* Replay progress bar: shown only while a replay plays; click to seek there. */
+function lmReplayBarTick() {
+    var bar = document.getElementById('lm-replay-bar');
+    var srv = window.legendmod && window.legendmod.playingReplayServer;
+    if (!srv || !lmReplayActive()) {
+        if (bar && bar.style.display !== 'none') bar.style.display = 'none';
+        return;
+    }
+    if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'lm-replay-bar';
+        bar.title = 'Replay: click to seek';
+        bar.style.cssText = 'position:fixed;left:30%;width:40%;bottom:14px;height:10px;z-index:200;cursor:pointer;' +
+            'background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.25);border-radius:5px;overflow:hidden;pointer-events:auto;';
+        bar.innerHTML = '<div class="lm-rb-fill" style="height:100%;width:0;background:' + ((window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc') + ';"></div>' +
+            '<span class="lm-rb-txt" style="position:absolute;right:6px;top:-16px;font-size:10px;color:#fff;text-shadow:0 0 3px #000;pointer-events:none;"></span>';
+        bar.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var s = window.legendmod && window.legendmod.playingReplayServer;
+            if (!s || !window.RecordedProtocol || !window.RecordedProtocol[s]) return;
+            var r = bar.getBoundingClientRect();
+            var f = Math.max(0, Math.min(1, (e.clientX - r.left) / (r.width || 1)));
+            var last = window.RecordedProtocol[s].length - 2;
+            var cur = window.legendmod.playingReplayRecord || 0;
+            lmReplaySeek(Math.round(f * last) - cur);
+        });
+        document.body.appendChild(bar);
+    }
+    var total = Math.max(1, window.RecordedProtocol[srv].length - 2);
+    var cur = Math.max(0, Math.min(total, window.legendmod.playingReplayRecord || 0));
+    if (bar.style.display === 'none') bar.style.display = '';
+    bar.firstChild.style.width = (cur / total * 100).toFixed(1) + '%';
+    bar.lastChild.textContent = (window._lmReplayPaused ? '\u275A\u275A ' : '') + cur + ' / ' + total;
+}
+setInterval(function () { try { lmReplayBarTick(); } catch (e) { } }, 250);
 function intervalPlayingRecord() {
     if ($("#greyScale").length) {
         window.replayGreyScale = $("#greyScale").prop("checked") === true
