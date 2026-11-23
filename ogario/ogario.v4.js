@@ -160,6 +160,7 @@ window.lmT = (function () {
         "leaderboards": {"en":"Leaderboards","el":"Κατατάξεις","es":"Clasificaciones","bg":"Класации","fr":"Classements","ar":"لوحات الصدارة","zh":"排行榜","ru":"Таблицы лидеров","de":"Bestenlisten","tr":"Lider tabloları","pl":"Rankingi","nl":"Ranglijsten"},
         "help": {"en":"Help","el":"Βοήθεια","es":"Ayuda","bg":"Помощ","fr":"Aide","ar":"مساعدة","zh":"說明","ru":"Помощь","de":"Hilfe","tr":"Yardım","pl":"Pomoc","nl":"Hulp"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "copyStats": {"en":"Copy stats","el":"Αντιγραφή στατιστικών","es":"Copiar estadísticas","bg":"Копирай статистиката","fr":"Copier les stats","ar":"نسخ الإحصائيات","zh":"複製統計","ru":"Копировать статистику","de":"Statistik kopieren","tr":"İstatistikleri kopyala","pl":"Kopiuj statystyki","nl":"Statistieken kopiëren"},
         "rewardReady": {"en":"A reward is ready to claim.","el":"Μια ανταμοιβή είναι έτοιμη.","es":"Hay una recompensa lista.","bg":"Има готова награда.","fr":"Une récompense est prête.","ar":"هناك مكافأة جاهزة للاستلام.","zh":"有獎勵可以領取。","ru":"Награда готова.","de":"Eine Belohnung ist bereit.","tr":"Alınacak bir ödül var.","pl":"Nagroda gotowa do odebrania.","nl":"Er staat een beloning klaar."},
         "remindOn": {"en":"You will be reminded when a reward is ready.","el":"Θα ειδοποιηθείς όταν μια ανταμοιβή είναι έτοιμη.","es":"Te avisaremos cuando haya una recompensa lista.","bg":"Ще получиш напомняне, когато има готова награда.","fr":"Vous serez prévenu quand une récompense sera prête.","ar":"سيتم تذكيرك عندما تكون المكافأة جاهزة.","zh":"獎勵可領取時會提醒你。","ru":"Вы получите напоминание, когда награда будет готова.","de":"Du wirst erinnert, wenn eine Belohnung bereit ist.","tr":"Bir ödül hazır olduğunda hatırlatılacaksın.","pl":"Przypomnimy, gdy nagroda będzie gotowa.","nl":"Je krijgt een herinnering als er een beloning klaarstaat."},
         "remindOff": {"en":"Reward reminder off.","el":"Η υπενθύμιση ανταμοιβής απενεργοποιήθηκε.","es":"Recordatorio de recompensas desactivado.","bg":"Напомнянето за награди е изключено.","fr":"Rappel des récompenses désactivé.","ar":"تم إيقاف تذكير المكافآت.","zh":"已關閉獎勵提醒。","ru":"Напоминание о наградах выключено.","de":"Belohnungs-Erinnerung aus.","tr":"Ödül hatırlatıcısı kapalı.","pl":"Przypomnienie o nagrodach wyłączone.","nl":"Beloningsherinnering uit."},
@@ -21623,6 +21624,7 @@ function thelegendmodproject() {
                     }
                     /* After the loop: inside it, s++ ran past the last entry (TypeError on
                      * top5[s]) and an empty team never cleared the list. */
+                    this._lastTop5Html = null;
                     this.top5pos.innerHTML = t;
                     if (ogario.play && ogario.playerMass) {
                         e += ogario.playerMass;
@@ -26407,7 +26409,9 @@ function thelegendmodproject() {
         setVirusStrokeColor(size) {
             if (ogario.play && ogario.playerMaxMass !== 0) {
                 const floor = Math.floor(size * size / 100);
-                const biggestCell = floor / (this.selectBiggestCell ? ogario.playerMaxMass : ogario.playerMinMass);
+                const _lmVDiv = this.selectBiggestCell ? ogario.playerMaxMass : ogario.playerMinMass;
+                if (!_lmVDiv) return defaultSettings.virusStrokeColor;
+                const biggestCell = floor / _lmVDiv;
                 if (biggestCell > 0.76) {
                     return '#FFDC00';
                 }
@@ -26666,6 +26670,8 @@ function thelegendmodproject() {
             if (text) {
                 if (this.serverToken !== text) {
                     this.serverToken = text;
+                    /* death markers belong to the previous server (and its coordinate frame) */
+                    this.deathLocations = []; this.lastDeath = -1;
                     this.flushData();
                     this.flushCells();
                 }
@@ -43463,6 +43469,11 @@ function thelegendmodproject() {
                 ' onmouseover="this.style.color=\'' + mc + '\';this.style.background=\'rgba(255,255,255,0.1)\'"' +
                 ' onmouseout="this.style.color=\'' + tc2 + '\';this.style.background=\'rgba(255,255,255,0.05)\'"' +
                 '>✕</div>' +
+                '<div id="lm-go-copy" title="' + _lmTH('copyStats', 'Copy stats') + '" style="' +
+                'position:absolute;top:8px;left:12px;cursor:pointer;' +
+                'font-size:13px;color:' + tc2 + ';line-height:1;' +
+                'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
+                'border-radius:4px;background:rgba(255,255,255,0.05);">📋</div>' +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
                 '☠️ ' + _lmTH('gameOver', 'Game Over') + '</div>' +
                 '</div>' +
@@ -43506,6 +43517,22 @@ function thelegendmodproject() {
             /* Attach close button click */
             var closeBtn = document.getElementById('lm-go-close');
             if (closeBtn) closeBtn.addEventListener('click', function(e) { e.stopPropagation(); dismissGameOver(); });
+            var copyBtn = document.getElementById('lm-go-copy');
+            if (copyBtn) copyBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var lines = [];
+                var rowsEl = modal.querySelectorAll('.lm-go-row');
+                for (var ri = 0; ri < rowsEl.length; ri++) {
+                    var lb = rowsEl[ri].querySelector('.lm-go-label'), vl = rowsEl[ri].querySelector('.lm-go-value');
+                    if (lb && vl) lines.push(lb.textContent + ': ' + vl.textContent);
+                }
+                var text = 'Legend Mod - ' + (window.lmT ? window.lmT('gameOver') : 'Game Over') + '\n' + lines.join('\n');
+                var done = function (ok) { if (window.toastr) ok ? toastr.success(window.lmT ? window.lmT('copyStats') + ' ✓' : 'Copied') : toastr.warning('Could not copy.'); };
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+                    else done(false);
+                } catch (err) { done(false); }
+            });
 
             /* Auto-dismiss after 12 seconds. Cancel the previous modal's timer so it
              * does not close this one early (dismissGameOver looks the modal up by id). */
@@ -46394,8 +46421,10 @@ Most cells eaten   : ${mostCellsEaten}
             if (window.clientProfiler) window.clientProfiler.recordLeaderboard(performance.now() - _tLb);
         },
         targetingLead(o) {
-            window.targetingLeadX = legendmod.ghostCells[o].x;
-            window.targetingLeadY = legendmod.ghostCells[o].y;
+            var _lmG = legendmod.ghostCells && legendmod.ghostCells[o];
+            if (!_lmG) return;
+            window.targetingLeadX = _lmG.x;
+            window.targetingLeadY = _lmG.y;
             legendmod.drawCommander2 = true;
         },
         flushCellsData(preserveMapGeometry) {
