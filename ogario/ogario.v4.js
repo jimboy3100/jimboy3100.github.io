@@ -42644,6 +42644,7 @@ function thelegendmodproject() {
                     } else {
                         window.legendmod.bgpi = 4;
                     }
+                    this.ghostCellsTime = Date.now();
                     break;
 
                 case 85:
@@ -81450,6 +81451,1080 @@ function appendLMhiFbPs() {
         MSGNICK = $(".message-nick").last().text().replace(": ", "");
     });
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * §11b  SERVER BROWSER
+ *       A dropdown under the server token box (#server-info) that lists the
+ *       agar.io arenas of the selected region and mode with their player counts.
+ *       The server you are on is always first; picking another one joins it.
+ *
+ *       Finding servers: findServer is asked a few times for the selected region
+ *       and mode (the bouncer hands out another arena now and then), the same
+ *       request master sends once when it connects.
+ *       Counting players: the server you are on is counted from its opcode 69
+ *       list (LM.ghostCells), plus you while you play FFA. Every other server
+ *       gets a short spectator connection ("probe") that waits for the same list
+ *       and closes. Probes use the WebSocket of an about:blank iframe, so the
+ *       WebSocket wrappers on this page never see them, and they only run while
+ *       nobody (main player or multibox unit) is playing and the tab is visible.
+ *
+ *       Each region + mode (FFA, Battle Royale, Teams, Experimental) keeps its own
+ *       list. Party arenas belong to one party each, so Party mode only shows the
+ *       current server and never scans: findServer(":party") makes a new party.
+ *       Private servers and the legendmod.ml website get no list (the row hides).
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+(function lmServerBrowser() {
+    'use strict';
+
+    var SB = Object.freeze({
+        scanMaxRequests: 12,      /* findServer requests per scan */
+        scanDelayMs: 450,         /* pause between two of them */
+        scanDuplicateStop: 5,     /* stop after this many answers in a row add nothing new */
+        scanMaxErrors: 2,         /* failed requests before a scan gives up */
+        probeConcurrency: 4,
+        probeTimeoutMs: 25000,
+        probeObservationMs: 12000, /* after spectating, wait this long for the player list */
+        probeRefreshMs: 20000,
+        probeRetryAfterMs: 5000,
+        offlineAfterFails: 3,     /* failed connects before a server leaves the list */
+        joinTimeoutMs: 15000,
+        noticeMs: 15000,
+        tickMs: 1000
+    });
+
+    var SB_MODE_LABELS = {
+        ':ffa': 'FFA',
+        ':battleroyale': 'Battle Royale',
+        ':teams': 'Teams',
+        ':experimental': 'Experimental',
+        ':party': 'Party'
+    };
+
+    /* ---------- pure helpers ---------- */
+
+    function sbNormalizeMode(mode) {
+        mode = String(mode == null ? '' : mode).trim().toLowerCase();
+        if (!mode || mode === ':') return ':ffa';
+        return mode.charAt(0) === ':' ? mode : ':' + mode;
+    }
+
+    /* One spelling per arena: no scheme, query, :443 or trailing slash. */
+    function sbHostKey(value) {
+        return String(value == null ? '' : value).trim()
+            .replace(/^wss?:\/\//i, '')
+            .replace(/[?#].*$/, '')
+            .replace(/:443(?=\/|$)/, '')
+            .replace(/\/+$/, '')
+            .toLowerCase();
+    }
+
+    function sbHostTail(host) {
+        var parts = sbHostKey(host).split('/');
+        return parts[parts.length - 1] || String(host || '');
+    }
+
+    function sbWebSocketUrl(endpoint) {
+        var value = String(endpoint == null ? '' : endpoint).trim();
+        return /^wss?:\/\//i.test(value) ? value : 'wss://' + value;
+    }
+
+    /* The host + path the client key is made from, as LM.generateClientKey reads it. */
+    function sbArenaName(url) {
+        try {
+            var parsed = new URL(url);
+            return parsed.hostname + parsed.pathname.replace(/\/$/, '');
+        } catch (e) {
+            return sbHostKey(url).replace(/:\d+(?=\/|$)/, '');
+        }
+    }
+
+    function sbRegionLabel(region) {
+        return String(region || '')
+            .replace(/^[A-Z]{2}-/i, '')
+            .replace(/[-_]+/g, ' ')
+            .trim() || 'Server';
+    }
+
+    function sbEscHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
+    function sbPlayers(n) {
+        return n + (n === 1 ? ' player' : ' players');
+    }
+
+    function sbReadUint32LE(bytes, offset) {
+        return (bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)) >>> 0;
+    }
+
+    function sbReadCString(bytes, offset) {
+        var end = offset;
+        while (end < bytes.length && bytes[end] !== 0) end++;
+        try {
+            return new TextDecoder().decode(bytes.subarray(offset, end));
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function sbXor(bytes, key) {
+        var out = new Uint8Array(bytes.length);
+        for (var i = 0; i < bytes.length; i++) {
+            out[i] = bytes[i] ^ ((key >>> ((i & 3) * 8)) & 255);
+        }
+        return out;
+    }
+
+    /* Opcode 241: server key + NUL-terminated server version, sent unencrypted. */
+    function sbParseKeyPacket(raw, clientVersion) {
+        if (!raw || raw.length < 6 || raw[0] !== 241) return null;
+        var serverKey = sbReadUint32LE(raw, 1);
+        return {
+            serverKey: serverKey,
+            serverVersion: sbReadCString(raw, 5),
+            incomingKey: (serverKey ^ clientVersion) >>> 0
+        };
+    }
+
+    /* LM.shiftKey without the disableIntegrity switch. */
+    function sbRotateKey(key) {
+        key = Math.imul(key, 1540483477) >> 0;
+        key = (Math.imul((key >>> 24) ^ key, 1540483477) >> 0) ^ 114296087;
+        key = Math.imul((key >>> 13) ^ key, 1540483477) >> 0;
+        return ((key >>> 15) ^ key) >>> 0;
+    }
+
+    /* MurmurHash2 over host + path + server version: the same value as
+     * LM.generateClientKey(ws, <version bytes with their NUL>), without its globals. */
+    function sbMurmur2(string, seed) {
+        var mul = function (a) {
+            return ((a & 0xffff) * 1540483477 + ((((a >>> 16) * 1540483477) & 0xffff) << 16)) | 0;
+        };
+        var length = string.length;
+        var h = seed ^ length;
+        var index = 0;
+        while (length >= 4) {
+            var k = (string.charCodeAt(index) & 255) |
+                ((string.charCodeAt(index + 1) & 255) << 8) |
+                ((string.charCodeAt(index + 2) & 255) << 16) |
+                ((string.charCodeAt(index + 3) & 255) << 24);
+            k = mul(k);
+            k ^= k >>> 24;
+            k = mul(k);
+            h = mul(h) ^ k;
+            length -= 4;
+            index += 4;
+        }
+        switch (length) {
+            case 3:
+                h ^= (string.charCodeAt(index + 2) & 255) << 16;
+            // falls through
+            case 2:
+                h ^= (string.charCodeAt(index + 1) & 255) << 8;
+            // falls through
+            case 1:
+                h ^= string.charCodeAt(index) & 255;
+                h = mul(h);
+        }
+        h ^= h >>> 13;
+        h = mul(h);
+        h ^= h >>> 15;
+        return h >>> 0;
+    }
+
+    /* The socket lives in another realm, so instanceof ArrayBuffer would fail. */
+    function sbToBytes(data) {
+        if (!data) return null;
+        if (Object.prototype.toString.call(data) === '[object ArrayBuffer]') return new Uint8Array(data);
+        if (ArrayBuffer.isView(data)) return new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+        return null;
+    }
+
+    /* Opcode 255: uint32 size + LZ4 block (LM.decompressMessage). */
+    function sbExpand(bytes) {
+        if (bytes[0] !== 255) return bytes;
+        if (bytes.length < 5) throw Error('Short compressed header');
+        var size = sbReadUint32LE(bytes, 1);
+        if (size > 4 * 1024 * 1024) throw Error('Oversized packet');
+        var out = new Uint8Array(size);
+        var i = 5;
+        var o = 0;
+        var read = function () {
+            if (i >= bytes.length) throw Error('Truncated LZ4');
+            return bytes[i++];
+        };
+        while (i < bytes.length) {
+            var token = read();
+            var n = token >>> 4;
+            var x;
+            if (n === 15) {
+                do {
+                    x = read();
+                    n += x;
+                } while (x === 255);
+            }
+            if (i + n > bytes.length || o + n > size) throw Error('Invalid literals');
+            out.set(bytes.subarray(i, i + n), o);
+            i += n;
+            o += n;
+            if (i === bytes.length) break;
+            var offset = read() | (read() << 8);
+            if (!offset || offset > o) throw Error('Invalid match');
+            n = token & 15;
+            if (n === 15) {
+                do {
+                    x = read();
+                    n += x;
+                } while (x === 255);
+            }
+            n += 4;
+            if (o + n > size) throw Error('Match overflow');
+            for (var j = 0; j < n; j++) {
+                out[o] = out[o - offset];
+                o++;
+            }
+        }
+        if (o !== size) throw Error('Size mismatch');
+        return out;
+    }
+
+    /* Opcode 69: uint16 count + 13 bytes per player. null when it is not that packet. */
+    function sbReadPopulation(bytes) {
+        if (bytes.length >= 3 && bytes[0] === 69) {
+            var n = bytes[1] | (bytes[2] << 8);
+            return bytes.length === 3 + n * 13 ? n : null;
+        }
+        return null;
+    }
+
+    function sbIsWorldTraffic(bytes) {
+        return (bytes[0] === 16 && bytes.length >= 7) ||
+            (bytes[0] === 17 && bytes.length === 13) ||
+            (bytes[0] === 64 && bytes.length >= 33);
+    }
+
+    /* ---------- state ---------- */
+
+    var sbLists = new Map();   /* "region|mode" -> { region, mode, servers: Map(host -> entry), ... } */
+    var sbActiveKey = '';
+    var sbScan = { token: 0, running: false, key: '', attempt: 0, error: '', timer: null };
+    var sbJoin = null;         /* { host, key, alias, startedAt } */
+    var sbNotice = null;       /* { text, at } */
+    var sbCurrent = { host: '', key: '', since: 0, raw: null, rawAt: 0 };
+    var sbProbe = { frame: null, queue: [], active: 0, cancels: new Set(), lastCycle: 0 };
+    var sbLastSignature = '';
+    var sbStarted = false;
+
+    function sbAnyoneAlive() {
+        var lm = window.legendmod;
+        if (lm && lm.play) return true;
+        var units = window.spects;
+        if (units && units.length) {
+            for (var i = 0; i < units.length; i++) {
+                if (units[i] && units[i].active) return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * visible:   show the row (an agar.io region, and not on a private server)
+     * scannable: the list can be scanned and probed (every mode but Party)
+     */
+    function sbContext() {
+        var m = window.master;
+        var lm = window.legendmod;
+        var ctx = {
+            visible: false,
+            scannable: false,
+            region: '',
+            mode: '',
+            key: '',
+            currentHost: '',
+            connected: false,
+            alive: sbAnyoneAlive(),
+            mainAlive: !!(lm && lm.play)
+        };
+        if (!m || !lm || window.legendModFromWebsite) return ctx;
+        ctx.region = String(m.region || '');
+        ctx.mode = sbNormalizeMode(m.gameMode);
+        if (!ctx.region || ctx.region === 'Private' || !SB_MODE_LABELS[ctx.mode]) return ctx;
+        var ws = lm.ws ? String(lm.ws) : '';
+        var onArena = !!ws && lm.serverType === 'agario';
+        /* Connected to a private server picked from the list or by token */
+        if (ws && !onArena) return ctx;
+        ctx.key = ctx.region + '|' + ctx.mode;
+        ctx.visible = true;
+        ctx.scannable = ctx.mode !== ':party';
+        if (onArena) {
+            ctx.currentHost = sbHostKey(ws);
+            ctx.connected = !!(lm.socket && lm.socket.readyState === 1);
+        }
+        return ctx;
+    }
+
+    function sbGetList(key, region, mode) {
+        var list = sbLists.get(key);
+        if (!list) {
+            list = { key: key, region: region, mode: mode, servers: new Map(), nextAlias: 1, autoScanned: false };
+            sbLists.set(key, list);
+        }
+        return list;
+    }
+
+    function sbAddServer(list, endpoint) {
+        var host = sbHostKey(endpoint);
+        if (!host || host === '0.0.0.0:0') return null;
+        var entry = list.servers.get(host);
+        if (!entry) {
+            entry = {
+                host: host,
+                endpoint: String(endpoint).trim(),
+                listKey: list.key,
+                index: list.nextAlias,
+                alias: sbRegionLabel(list.region) + ' ' + list.nextAlias,
+                players: null,
+                checkedAt: 0,
+                status: '',
+                queued: false,
+                active: false,
+                lastAttempt: 0,
+                fails: 0,
+                offline: false
+            };
+            list.nextAlias++;
+            list.servers.set(host, entry);
+        }
+        if (entry.offline) {
+            entry.offline = false;
+            entry.fails = 0;
+        }
+        return entry;
+    }
+
+    function sbSetNotice(text) {
+        sbNotice = text ? { text: text, at: Date.now() } : null;
+    }
+
+    /* ---------- current server ---------- */
+
+    function sbTrackCurrent(ctx) {
+        var host = ctx.currentHost;
+        if (host !== sbCurrent.host) {
+            /* Leaving a server: keep its last live count until a probe replaces it. */
+            var oldList = sbLists.get(sbCurrent.key);
+            var old = oldList && oldList.servers.get(sbCurrent.host);
+            if (old && sbCurrent.raw !== null) {
+                old.players = sbCurrent.raw;
+                old.checkedAt = sbCurrent.rawAt;
+                old.status = 'cached';
+            }
+            sbCurrent = { host: host, key: ctx.key, since: Date.now(), raw: null, rawAt: 0 };
+            if (old && oldList.key === ctx.key) sbQueueProbe(old, true);
+        }
+        if (!host) return;
+
+        var lm = window.legendmod;
+        if (ctx.connected && lm && Array.isArray(lm.ghostCells) && lm.ghostCellsTime >= sbCurrent.since) {
+            sbCurrent.raw = lm.ghostCells.length;
+            sbCurrent.rawAt = lm.ghostCellsTime;
+        }
+
+        /* The current arena joins this region + mode's list only when master (or this
+         * list) connected to it for them: not after a token / ?sip= join, and not in
+         * the moment between a mode change and master's reconnect. */
+        if (!ctx.key || sbCurrent.key !== ctx.key) return;
+        var list = sbGetList(ctx.key, ctx.region, ctx.mode);
+        var entry = list.servers.get(host);
+        var m = window.master;
+        if (!entry && m && m.serverIP && sbHostKey(m.serverIP) === host) entry = sbAddServer(list, m.serverIP);
+        if (!entry) return;
+        entry.fails = 0;
+        entry.offline = false;
+        if (sbCurrent.raw !== null) {
+            entry.players = sbCurrent.raw;
+            entry.checkedAt = sbCurrent.rawAt;
+            entry.status = 'live';
+        }
+    }
+
+    function sbCurrentCount(ctx) {
+        if (!ctx.currentHost || sbCurrent.host !== ctx.currentHost || sbCurrent.raw === null) return null;
+        /* The FFA list leaves out your own player (the Piccolo mod's rule) */
+        return sbCurrent.raw + (ctx.mode === ':ffa' && ctx.mainAlive ? 1 : 0);
+    }
+
+    /* ---------- finding servers ---------- */
+
+    function sbCancelScan(text) {
+        sbScan.token++;
+        clearTimeout(sbScan.timer);
+        sbScan.timer = null;
+        sbScan.running = false;
+        if (text) sbSetNotice(text);
+    }
+
+    function sbStartScan(manual) {
+        var ctx = sbContext();
+        if (!ctx.scannable) return false;
+        var m = window.master;
+        if (!m || typeof m.makeMasterRequest !== 'function' || typeof m.setRequestMsg !== 'function') {
+            sbScan.error = 'Matchmaking is not ready yet. Try again in a moment.';
+            return false;
+        }
+        if (sbScan.running) {
+            if (!manual) return false;
+            sbCancelScan();
+        }
+        var list = sbGetList(ctx.key, ctx.region, ctx.mode);
+        list.autoScanned = true;
+        var token = ++sbScan.token;
+        var endpointVersion = (window.LMagarioheaders && window.LMagarioheaders.endpoint_version) || 'v4';
+        var seen = new Set();
+        var duplicates = 0;
+        var errors = 0;
+        sbScan.running = true;
+        sbScan.key = list.key;
+        sbScan.attempt = 0;
+        sbScan.error = '';
+        sbSetNotice('');
+
+        function finish(error) {
+            if (token !== sbScan.token) return;
+            clearTimeout(sbScan.timer);
+            sbScan.timer = null;
+            sbScan.running = false;
+            sbScan.error = error || '';
+            console.log('[Servers] ' + sbRegionLabel(list.region) + ' ' + SB_MODE_LABELS[list.mode] + ': ' +
+                seen.size + ' server(s) answered, ' + list.servers.size + ' known' + (error ? ' (' + error + ')' : ''));
+            sbRender();
+        }
+
+        function next() {
+            if (token !== sbScan.token) return;
+            if (duplicates >= SB.scanDuplicateStop || sbScan.attempt >= SB.scanMaxRequests) {
+                finish();
+                return;
+            }
+            sbScan.timer = setTimeout(step, SB.scanDelayMs);
+            sbRender();
+        }
+
+        function step() {
+            if (token !== sbScan.token) return;
+            if (sbContext().key !== list.key) {
+                finish();
+                return;
+            }
+            sbScan.attempt++;
+            sbRender();
+            m.makeMasterRequest(endpointVersion + '/findServer', m.setRequestMsg(list.region, list.mode), function (response) {
+                if (token !== sbScan.token) return;
+                if (response && response.status === 'invalid_client') {
+                    finish('Matchmaking refused this client version. Reload the page and scan again.');
+                    return;
+                }
+                var endpoint = response && response.endpoints && response.endpoints.https;
+                var entry = endpoint ? sbAddServer(list, endpoint) : null;
+                if (entry) {
+                    duplicates = seen.has(entry.host) ? duplicates + 1 : 0;
+                    seen.add(entry.host);
+                    sbQueueProbe(entry, false);
+                } else {
+                    duplicates++;
+                }
+                next();
+            }, function () {
+                if (token !== sbScan.token) return;
+                if (++errors >= SB.scanMaxErrors) {
+                    finish('Matchmaking did not answer. Press Scan to try again.');
+                    return;
+                }
+                next();
+            });
+        }
+
+        step();
+        return true;
+    }
+
+    /* ---------- player count probes ---------- */
+
+    function sbProbeRealm() {
+        var frame = sbProbe.frame;
+        if (frame && frame.isConnected && frame.contentWindow && frame.contentWindow.WebSocket) return frame.contentWindow;
+        if (!document.documentElement) return null;
+        frame = document.createElement('iframe');
+        frame.id = 'lm-server-probe-frame';
+        frame.setAttribute('aria-hidden', 'true');
+        frame.setAttribute('tabindex', '-1');
+        frame.style.cssText = 'position:fixed;width:1px;height:1px;left:-10000px;top:-10000px;opacity:0;pointer-events:none;border:0;';
+        document.documentElement.appendChild(frame);
+        sbProbe.frame = frame;
+        return frame.contentWindow;
+    }
+
+    function sbStopProbes() {
+        Array.from(sbProbe.cancels).forEach(function (cancel) {
+            cancel();
+        });
+        sbProbe.queue.forEach(function (entry) {
+            entry.queued = false;
+        });
+        sbProbe.queue = [];
+    }
+
+    function sbProbeAllowed(ctx, entry) {
+        return !!entry && ctx.scannable && !ctx.alive && !document.hidden && !sbJoin &&
+            entry.listKey === ctx.key && entry.host !== ctx.currentHost && !entry.offline;
+    }
+
+    function sbQueueProbe(entry, force) {
+        var ctx = sbContext();
+        if (!sbProbeAllowed(ctx, entry) || entry.queued || entry.active) return;
+        if (!force && entry.lastAttempt && Date.now() - entry.lastAttempt < SB.probeRetryAfterMs) return;
+        entry.queued = true;
+        sbProbe.queue.push(entry);
+        sbPumpProbes();
+    }
+
+    function sbQueueAll(force) {
+        var list = sbLists.get(sbActiveKey);
+        if (!list) return;
+        list.servers.forEach(function (entry) {
+            sbQueueProbe(entry, force);
+        });
+    }
+
+    function sbPumpProbes() {
+        while (sbProbe.active < SB.probeConcurrency && sbProbe.queue.length) {
+            var entry = sbProbe.queue.shift();
+            entry.queued = false;
+            var list = sbLists.get(entry.listKey);
+            if (!list || list.servers.get(entry.host) !== entry || entry.active || !sbProbeAllowed(sbContext(), entry)) continue;
+            entry.active = true;
+            entry.lastAttempt = Date.now();
+            sbProbe.active++;
+            sbRunProbe(entry, sbProbeDone.bind(null, entry));
+        }
+    }
+
+    function sbProbeDone(entry, result) {
+        entry.active = false;
+        sbProbe.active--;
+        if (result.ok) {
+            entry.players = result.count;
+            entry.checkedAt = Date.now();
+            entry.status = result.count === 0 ? 'empty' : 'measured';
+            entry.fails = 0;
+        } else if (result.reason !== 'cancelled') {
+            entry.status = result.reason;
+            /* Only "could not even connect" counts towards dropping the server */
+            if (/^(socket-error|closed|timeout)-connecting$|^socket-create-failed$/.test(result.reason)) {
+                entry.fails++;
+                if (entry.fails >= SB.offlineAfterFails && entry.host !== sbCurrent.host) {
+                    entry.offline = true;
+                    entry.players = null;
+                }
+            }
+        }
+        sbRender();
+        sbPumpProbes();
+    }
+
+    /*
+     * Spectator connection: handshake (254 protocol, 255 client version), wait for
+     * the 241 key, answer 242 with spectate (1), reply to pings (226 -> 227) and
+     * finish on the first 69 player list. No login is ever sent.
+     */
+    function sbRunProbe(entry, done) {
+        var realm = sbProbeRealm();
+        var ProbeWebSocket = realm && realm.WebSocket;
+        if (!ProbeWebSocket) {
+            done({ ok: false, reason: 'probe-realm-unavailable' });
+            return;
+        }
+        var lm = window.legendmod || {};
+        var m = window.master || {};
+        var clientVersion = (Number(lm.clientVersion) || Number(m.clientVersion) || 0) >>> 0;
+        var protocolVersion = (Number(lm.protocolVersion) || Number(m.protocolVersion) || 0) >>> 0;
+        if (!clientVersion || !protocolVersion) {
+            done({ ok: false, reason: 'versions-unknown' });
+            return;
+        }
+        var url = sbWebSocketUrl(entry.endpoint);
+        var arenaName = sbArenaName(url);
+        var incomingKey = null;
+        var outgoingKey = null;
+        var spectateSent = false;
+        var finished = false;
+        var stage = 'connecting';
+        var healthAfterSpectate = 0;
+        var positiveLeaderboard = false;
+        var observeTimer = null;
+        var socket = null;
+
+        var cancel = function () {
+            finish({ ok: false, reason: 'cancelled' });
+        };
+        sbProbe.cancels.add(cancel);
+        var timeout = setTimeout(function () {
+            finish({ ok: false, reason: 'timeout-' + stage });
+        }, SB.probeTimeoutMs);
+
+        function finish(result) {
+            if (finished) return;
+            finished = true;
+            sbProbe.cancels.delete(cancel);
+            clearTimeout(timeout);
+            clearTimeout(observeTimer);
+            if (socket) {
+                socket.onopen = socket.onmessage = socket.onclose = socket.onerror = null;
+                try {
+                    if (socket.readyState < 2) socket.close();
+                } catch (e) { }
+            }
+            done(result);
+        }
+
+        function sendEncrypted(plain) {
+            if (outgoingKey === null || !socket || socket.readyState !== 1) return false;
+            try {
+                socket.send(sbXor(plain, outgoingKey));
+            } catch (e) {
+                return false;
+            }
+            outgoingKey = sbRotateKey(outgoingKey);
+            return true;
+        }
+
+        function uint32Packet(opcode, value) {
+            return Uint8Array.of(opcode, value & 255, (value >>> 8) & 255, (value >>> 16) & 255, (value >>> 24) & 255);
+        }
+
+        function receive(data) {
+            var raw = sbToBytes(data);
+            if (finished || !raw || !raw.length) return;
+            if (incomingKey === null) {
+                var keyPacket = sbParseKeyPacket(raw, clientVersion);
+                if (keyPacket) {
+                    incomingKey = keyPacket.incomingKey;
+                    outgoingKey = sbMurmur2(arenaName + keyPacket.serverVersion, 255);
+                    stage = 'server-ready';
+                }
+                return;
+            }
+            var plain = sbExpand(sbXor(raw, incomingKey));
+            var opcode = plain[0];
+            if (opcode === 242 && !spectateSent) {
+                if (!sendEncrypted(Uint8Array.of(1))) {
+                    finish({ ok: false, reason: 'spectate-send-failed' });
+                    return;
+                }
+                spectateSent = true;
+                stage = 'population';
+                observeTimer = setTimeout(function () {
+                    finish({
+                        ok: false,
+                        reason: positiveLeaderboard ? 'players-present-count-unavailable'
+                            : healthAfterSpectate ? 'population-list-not-received'
+                                : 'no-traffic-after-spectate'
+                    });
+                }, SB.probeObservationMs);
+                return;
+            }
+            var ping = opcode === 226 && plain.length === 3;
+            if (ping) {
+                var pong = plain.slice();
+                pong[0] = 227;
+                if (!sendEncrypted(pong)) {
+                    finish({ ok: false, reason: 'ping-reply-failed' });
+                    return;
+                }
+            }
+            if (spectateSent && (ping || sbIsWorldTraffic(plain))) healthAfterSpectate++;
+            if (opcode === 50 && plain.length >= 5) {
+                var n = sbReadUint32LE(plain, 1);
+                if (n <= 16 && plain.length === 5 + n * 4) {
+                    var view = new DataView(plain.buffer, plain.byteOffset, plain.byteLength);
+                    for (var i = 0; i < n; i++) {
+                        var fraction = view.getFloat32(5 + i * 4, true);
+                        if (isFinite(fraction) && fraction > 0) positiveLeaderboard = true;
+                    }
+                }
+            }
+            var count = sbReadPopulation(plain);
+            if (count !== null) finish({ ok: true, count: count });
+        }
+
+        try {
+            socket = new ProbeWebSocket(url);
+            socket.binaryType = 'arraybuffer';
+        } catch (e) {
+            finish({ ok: false, reason: 'socket-create-failed' });
+            return;
+        }
+        socket.onopen = function () {
+            stage = 'handshake';
+            try {
+                socket.send(uint32Packet(254, protocolVersion));
+                socket.send(uint32Packet(255, clientVersion));
+            } catch (e) {
+                finish({ ok: false, reason: 'handshake-send-failed' });
+            }
+        };
+        socket.onmessage = function (event) {
+            if (finished) return;
+            try {
+                receive(event.data);
+            } catch (e) {
+                finish({ ok: false, reason: 'decode-error' });
+            }
+        };
+        socket.onclose = function () {
+            finish({ ok: false, reason: 'closed-' + stage });
+        };
+        socket.onerror = function () {
+            finish({ ok: false, reason: 'socket-error-' + stage });
+        };
+    }
+
+    function sbRefreshCounts() {
+        sbProbe.lastCycle = Date.now();
+        sbQueueAll(true);
+    }
+
+    /* ---------- joining ---------- */
+
+    /* What master.findServer does with an answer: remember the endpoint and connect. */
+    function sbRequestJoin(host) {
+        host = sbHostKey(host);
+        var ctx = sbContext();
+        if (!host || !ctx.scannable || host === ctx.currentHost || sbJoin) return false;
+        var list = sbLists.get(ctx.key);
+        var entry = list && list.servers.get(host);
+        var m = window.master;
+        if (!entry || entry.offline || !m || typeof m.connect !== 'function') return false;
+        if (ctx.alive && !window.confirm('Leave this game and join ' + entry.alias + '?')) return false;
+
+        sbCancelScan();
+        sbStopProbes();
+        sbSetNotice('');
+        sbJoin = { host: host, key: ctx.key, alias: entry.alias, startedAt: Date.now() };
+        try {
+            var generation = ++m.connectionGeneration;
+            m.curValidFindServer++;
+            clearTimeout(m.findServerTimer);
+            m.findServerTimer = null;
+            m._lmFindGaveUp = false;
+            m.backoffPeriod = 500;
+            m.serverIP = entry.endpoint;
+            m.connect(entry.endpoint, generation);
+        } catch (e) {
+            sbJoin = null;
+            sbSetNotice('Could not switch server: ' + (e && e.message ? e.message : e));
+            console.error('[Servers] Join failed:', e);
+            return false;
+        }
+        console.log('[Servers] Joining ' + entry.alias + ' (' + entry.endpoint + ')');
+        if (window.toastr) toastr.info('<b>[Servers]:</b> Joining ' + sbEscHtml(entry.alias) + '…');
+        return true;
+    }
+
+    function sbCheckJoin(ctx) {
+        if (!sbJoin) return;
+        if (sbJoin.key !== ctx.key) {
+            sbJoin = null;
+        } else if (ctx.currentHost === sbJoin.host && ctx.connected) {
+            sbJoin = null;
+        } else if (Date.now() - sbJoin.startedAt > SB.joinTimeoutMs) {
+            sbSetNotice('Could not join ' + sbJoin.alias + '. Pick it again to retry.');
+            sbJoin = null;
+        }
+    }
+
+    /* ---------- dropdown ---------- */
+
+    function sbInstallStyles() {
+        if (document.getElementById('lm-server-list-style')) return;
+        var style = document.createElement('style');
+        style.id = 'lm-server-list-style';
+        style.textContent =
+            '#lm-server-list-row{clear:both;padding-top:6px}' +
+            '#lm-server-list{float:left;width:65%;height:34px;padding:4px 8px}' +
+            '#lm-server-list option.lm-server-current{font-weight:bold}' +
+            '#lm-server-scan{float:right;width:33%;height:34px;padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+            '#lm-server-status{clear:both;padding-top:3px;font-size:11px;line-height:14px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}';
+        (document.head || document.documentElement).appendChild(style);
+    }
+
+    function sbEnsureUI() {
+        var info = document.getElementById('server-info');
+        if (!info) return null;
+        var row = document.getElementById('lm-server-list-row');
+        if (row && row.parentNode === info) return row;
+        if (row) row.parentNode.removeChild(row);
+        sbInstallStyles();
+        row = document.createElement('div');
+        row.id = 'lm-server-list-row';
+        row.className = 'clearfix';
+        row.style.display = 'none';
+        row.innerHTML =
+            '<select id="lm-server-list" class="form-control" aria-label="Switch server"></select>' +
+            '<button type="button" id="lm-server-scan" class="btn btn-primary"><i class="fa fa-search"></i> <span>Scan</span></button>' +
+            '<div id="lm-server-status"></div>';
+        var party = document.getElementById('ogario-party');
+        if (party && party.parentNode === info) info.insertBefore(row, party);
+        else info.appendChild(row);
+
+        var select = row.querySelector('#lm-server-list');
+        select.addEventListener('change', function () {
+            var host = select.value;
+            select.blur();
+            sbRequestJoin(host);
+            sbLastSignature = '';
+            sbRender();
+        });
+        /* Opening the list asks every server for a fresh count */
+        select.addEventListener('focus', function () {
+            sbRefreshCounts();
+        });
+        select.addEventListener('blur', function () {
+            sbLastSignature = '';
+            sbRender();
+        });
+        row.querySelector('#lm-server-scan').addEventListener('click', function () {
+            if (sbScan.running) sbCancelScan('Scan stopped.');
+            else sbStartScan(true);
+            sbRender();
+        });
+        sbLastSignature = '';
+        return row;
+    }
+
+    function sbCountText(entry) {
+        if (entry.players !== null) return sbPlayers(entry.players);
+        if (entry.active || entry.queued) return 'checking…';
+        return '? players';
+    }
+
+    function sbEntryTitle(entry) {
+        var title = entry.alias + ' — ' + sbHostTail(entry.host);
+        if (entry.checkedAt) title += '\nCounted at ' + new Date(entry.checkedAt).toLocaleTimeString();
+        if (entry.status && entry.status !== 'live' && entry.status !== 'measured') title += '\nLast check: ' + entry.status;
+        return title;
+    }
+
+    /* Current server first, then the most players; servers not counted yet last. */
+    function sbBuildItems(ctx) {
+        var list = ctx.key ? sbLists.get(ctx.key) : null;
+        var items = [];
+        if (ctx.currentHost) {
+            var current = list && list.servers.get(ctx.currentHost);
+            var count = sbCurrentCount(ctx);
+            var partyToken = window.master && window.master.partyToken;
+            var name = ctx.mode === ':party' ? 'Party' + (partyToken ? ' ' + partyToken : ' server')
+                : current ? current.alias : 'This server';
+            items.push({
+                value: ctx.currentHost,
+                text: '★ ' + name + ' · ' + (count !== null ? sbPlayers(count) : ctx.connected ? 'counting…' : 'connecting…') + ' · you’re here',
+                title: (current ? sbEntryTitle(current) : name + ' — ' + sbHostTail(ctx.currentHost)),
+                current: true
+            });
+        }
+        if (list && ctx.scannable) {
+            var others = [];
+            list.servers.forEach(function (entry) {
+                if (entry.host !== ctx.currentHost && !entry.offline) others.push(entry);
+            });
+            others.sort(function (a, b) {
+                var pa = a.players === null ? -1 : a.players;
+                var pb = b.players === null ? -1 : b.players;
+                return pb - pa || a.index - b.index;
+            });
+            others.forEach(function (entry) {
+                var joining = sbJoin && sbJoin.host === entry.host;
+                items.push({
+                    value: entry.host,
+                    text: entry.alias + ' · ' + (joining ? 'joining…' : sbCountText(entry)),
+                    title: sbEntryTitle(entry),
+                    current: false
+                });
+            });
+        }
+        if (!items.length) {
+            items.push({ value: '', text: sbScan.running ? 'Looking for servers…' : 'No servers found yet', title: '', current: false, disabled: true });
+        }
+        return items;
+    }
+
+    function sbFillOption(option, item) {
+        if (option.value !== item.value) option.value = item.value;
+        if (option.textContent !== item.text) option.textContent = item.text;
+        if (option.title !== item.title) option.title = item.title;
+        option.className = item.current ? 'lm-server-current' : '';
+        option.disabled = !!item.disabled;
+    }
+
+    function sbStatusText(ctx) {
+        var list = ctx.key ? sbLists.get(ctx.key) : null;
+        var where = sbRegionLabel(ctx.region) + ' ' + (SB_MODE_LABELS[ctx.mode] || '');
+        if (sbJoin) return 'Joining ' + sbJoin.alias + '…';
+        if (sbNotice && sbNotice.text && Date.now() - sbNotice.at < SB.noticeMs) return sbNotice.text;
+        if (ctx.mode === ':party') return 'Party servers belong to one party each, so only yours is listed.';
+        if (sbScan.running && sbScan.key === ctx.key) {
+            return 'Looking for ' + where + ' servers ' + sbScan.attempt + '/' + SB.scanMaxRequests + '…';
+        }
+        if (sbScan.error && sbScan.key === ctx.key) return sbScan.error;
+        var known = 0;
+        if (list) {
+            list.servers.forEach(function (entry) {
+                if (!entry.offline) known++;
+            });
+        }
+        if (!known) return ctx.connected ? 'Press Scan to look for other ' + where + ' servers.' : 'Waiting for the connection…';
+        return known + ' ' + where + ' server' + (known === 1 ? '' : 's') +
+            (ctx.alive ? ' · counts pause while you play' : ' · counts refresh every ' + Math.round(SB.probeRefreshMs / 1000) + ' s');
+    }
+
+    function sbRender(ctx) {
+        ctx = ctx || sbContext();
+        var row = sbEnsureUI();
+        if (!row) return;
+        if (!ctx.visible) {
+            if (row.style.display !== 'none') row.style.display = 'none';
+            return;
+        }
+        if (row.style.display === 'none') row.style.display = '';
+
+        var select = row.querySelector('#lm-server-list');
+        var items = sbBuildItems(ctx);
+        var selected = sbJoin ? sbJoin.host : items[0].value;
+        var focused = document.activeElement === select;
+        var signature = JSON.stringify([items, selected]);
+        if (signature !== sbLastSignature) {
+            if (focused) {
+                /* The list may be open: change the words only, never the order */
+                var byValue = {};
+                Array.prototype.forEach.call(select.options, function (option) {
+                    byValue[option.value] = option;
+                });
+                items.forEach(function (item) {
+                    var option = byValue[item.value];
+                    if (!option) {
+                        option = document.createElement('option');
+                        select.appendChild(option);
+                    }
+                    sbFillOption(option, item);
+                });
+                sbLastSignature = '';
+            } else {
+                while (select.options.length > items.length) select.removeChild(select.lastChild);
+                items.forEach(function (item, i) {
+                    var option = select.options[i];
+                    if (!option) {
+                        option = document.createElement('option');
+                        select.appendChild(option);
+                    }
+                    sbFillOption(option, item);
+                });
+                select.value = selected;
+                sbLastSignature = signature;
+            }
+        }
+        select.disabled = !!sbJoin;
+
+        var button = row.querySelector('#lm-server-scan');
+        var scanning = sbScan.running && sbScan.key === ctx.key;
+        button.disabled = !ctx.scannable || !!sbJoin;
+        button.className = 'btn ' + (scanning ? 'btn-danger' : 'btn-primary');
+        button.title = ctx.scannable ? (scanning ? 'Stop looking for servers' : 'Look for more ' + sbRegionLabel(ctx.region) + ' ' + SB_MODE_LABELS[ctx.mode] + ' servers') : 'Party servers can’t be scanned';
+        var label = button.querySelector('span');
+        var icon = button.querySelector('i');
+        if (label.textContent !== (scanning ? 'Stop' : 'Scan')) label.textContent = scanning ? 'Stop' : 'Scan';
+        icon.className = scanning ? 'fa fa-stop' : 'fa fa-search';
+
+        var status = row.querySelector('#lm-server-status');
+        var text = sbStatusText(ctx);
+        if (status.textContent !== text) {
+            status.textContent = text;
+            status.title = text;
+        }
+    }
+
+    /* ---------- loop ---------- */
+
+    function sbTick() {
+        var ctx = sbContext();
+        if (ctx.key !== sbActiveKey) {
+            /* Region or mode changed: each one keeps its own list */
+            sbCancelScan();
+            sbStopProbes();
+            sbActiveKey = ctx.key;
+            sbProbe.lastCycle = 0;
+            sbLastSignature = '';
+        }
+        sbCheckJoin(ctx);
+        sbTrackCurrent(ctx);
+        if (ctx.alive || document.hidden || !ctx.scannable) {
+            sbStopProbes();
+        } else if (!sbJoin) {
+            var list = sbLists.get(ctx.key);
+            if (ctx.connected && (!list || !list.autoScanned) && !sbScan.running) {
+                sbStartScan(false);
+            } else if (Date.now() - sbProbe.lastCycle >= SB.probeRefreshMs) {
+                sbProbe.lastCycle = Date.now();
+                sbQueueAll(true);
+            }
+        }
+        sbRender(ctx);
+    }
+
+    function sbStart() {
+        if (sbStarted) return;
+        sbStarted = true;
+        setInterval(sbTick, SB.tickMs);
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) sbProbe.lastCycle = 0;
+            sbTick();
+        });
+        /* Switch lists as soon as the region or mode changes, not on the next tick */
+        document.addEventListener('change', function (event) {
+            var id = event.target && event.target.id;
+            if (id === 'gamemode' || id === 'region') setTimeout(sbTick, 0);
+        });
+        window.addEventListener('beforeunload', sbStopProbes);
+        sbTick();
+    }
+
+    window.LMServerBrowser = {
+        settings: SB,
+        lists: sbLists,
+        scan: function () {
+            return sbStartScan(true);
+        },
+        refresh: sbRefreshCounts,
+        join: sbRequestJoin,
+        helpers: {
+            normalizeMode: sbNormalizeMode,
+            hostKey: sbHostKey,
+            arenaName: sbArenaName,
+            regionLabel: sbRegionLabel,
+            murmur2: sbMurmur2,
+            rotateKey: sbRotateKey,
+            xor: sbXor,
+            parseKeyPacket: sbParseKeyPacket,
+            expand: sbExpand,
+            readPopulation: sbReadPopulation,
+            context: sbContext,
+            tick: sbTick
+        }
+    };
+
+    sbStart();
+})();
 
 /* ═══════════════════════════════════════════════════════════════════════════════
  * §12  REVERSE TRICK
