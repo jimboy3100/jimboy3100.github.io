@@ -383,6 +383,18 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-notifCentre': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-notifCentre']) || 'Open the notification centre';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* opens / closes the list (ogario/modules/notifications.js), also while its option is off */
+					if (window.LMNotifications) window.LMNotifications.toggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-pingHelp': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingHelp']) || 'Team ping: Help';
