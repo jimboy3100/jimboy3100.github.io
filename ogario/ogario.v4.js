@@ -102,6 +102,112 @@ function _lmPersonalBests(update) {
     return res;
 }
 window._lmPersonalBests = _lmPersonalBests;
+/* Match history (option "matchHistory"): the last 50 lives, kept in this browser only
+ * (localStorage 'lmMatchHistory'). Corrupt data reads as an empty list. */
+function _lmMatchHistory(add) {
+    var list = [];
+    try { var raw = localStorage.getItem('lmMatchHistory'); if (raw) { var o = JSON.parse(raw); if (Array.isArray(o)) list = o.filter(function (r) { return r && typeof r === 'object' && !Array.isArray(r); }); } } catch (e) { list = []; }
+    if (add) {
+        list.push(add);
+        if (list.length > 50) list = list.slice(list.length - 50);
+        try { localStorage.setItem('lmMatchHistory', JSON.stringify(list)); } catch (e) { }
+    }
+    return list;
+}
+window._lmMatchHistory = _lmMatchHistory;
+/* server address without scheme, port, path, query (tokens) or credentials */
+function _lmHostOnly(u) {
+    u = String(u || '');
+    if (!u) return '';
+    try { var h = new URL(u.replace(/^ws(s?):/i, 'http$1:')).hostname; if (h) return h.slice(0, 80); } catch (e) { }
+    var m = /^(?:[a-z][a-z0-9+.-]*:\/\/)?(?:[^@\/?#]*@)?([^:\/?#@]+)/i.exec(u);
+    return m ? m[1].slice(0, 80) : '';
+}
+window._lmHostOnly = _lmHostOnly;
+function _lmMhT(k, en) { var s = window.lmT && window.lmT(k); return s && s !== k ? s : en; }
+/* "Match history" link under the menu footer (only while the option is on) */
+function _lmMatchHistoryButton() {
+    var on = typeof defaultmapsettings !== 'undefined' && defaultmapsettings.matchHistory;
+    var b = document.getElementById('lm-mh-btn');
+    if (!on) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }
+    if (!b) {
+        var foot = document.getElementById('menu-footer');
+        if (!foot || !foot.parentNode) return;
+        var ref = document.getElementById('lm-session-stats');
+        if (!ref || ref.parentNode !== foot.parentNode) ref = foot;
+        b = document.createElement('div');
+        b.id = 'lm-mh-btn';
+        b.className = 'menu-main-color';
+        b.style.cssText = 'font-size:11px;text-align:center;margin-top:2px;cursor:pointer;text-decoration:underline;opacity:.85;';
+        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); _lmMatchHistoryOpen(); });
+        ref.parentNode.insertBefore(b, ref.nextSibling);
+    }
+    b.textContent = '📜 ' + _lmMhT('matchHistory', 'Match history');
+}
+window._lmMatchHistoryButton = _lmMatchHistoryButton;
+/* the history window: newest first, built with textContent only; Esc or the cross closes it */
+function _lmMatchHistoryOpen() {
+    var old = document.getElementById('lm-mh-modal');
+    if (old && old._lmClose) old._lmClose();
+    var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
+    var mc = ds.menuMainColor || '#01d9cc', pc = ds.menuPanelColor || '#00243e', pc2 = ds.menuPanelColor2 || '#002f52';
+    var tc = ds.menuTextColor || '#ffffff', tc2 = ds.menuTextColor2 || '#8096a7';
+    var el = function (tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text !== undefined) e.textContent = text; return e; };
+    var fmtTime = function (ms) { var s = Math.max(0, Math.round((+ms || 0) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); s = s % 60; return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s; };
+    var md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:620px;max-width:calc(100vw - 32px);max-height:80vh;' +
+        'display:flex;flex-direction:column;z-index:2147483647;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
+        'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:12px;overflow:hidden;');
+    md.id = 'lm-mh-modal';
+    var head = el('div', 'padding:10px 44px 8px 80px;text-align:center;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
+    head.appendChild(el('div', 'font-size:16px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', _lmMhT('matchHistory', 'Match history')));
+    var x = el('div', 'position:absolute;top:8px;right:12px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.05);', '✕');
+    x.id = 'lm-mh-close';
+    x.title = _lmMhT('close', 'Close');
+    var clr = el('div', 'position:absolute;top:8px;left:12px;cursor:pointer;font-size:11px;color:' + tc2 + ';line-height:24px;height:24px;padding:0 8px;border-radius:4px;background:rgba(255,255,255,0.05);', _lmMhT('mhClear', 'Clear'));
+    clr.id = 'lm-mh-clear';
+    head.appendChild(x);
+    head.appendChild(clr);
+    md.appendChild(head);
+    var body = el('div', 'padding:6px 10px 10px;overflow:auto;-webkit-overflow-scrolling:touch;');
+    md.appendChild(body);
+    var fill = function () {
+        while (body.firstChild) body.removeChild(body.firstChild);
+        var list = _lmMatchHistory().slice().reverse();
+        if (!list.length) { body.appendChild(el('div', 'padding:16px;text-align:center;color:' + tc2 + ';', _lmMhT('mhEmpty', 'No games recorded yet.'))); return; }
+        var tb = el('table', 'width:100%;border-collapse:collapse;white-space:nowrap;');
+        var tr = el('tr');
+        [_lmMhT('mhDate', 'Date'), _lmMhT('mhMass', 'Mass'), _lmMhT('timeAlive', 'Time Alive'), _lmMhT('eatenBy', 'Eaten by'), _lmMhT('mhServer', 'Server'), _lmMhT('mhMode', 'Mode')].forEach(function (h) {
+            tr.appendChild(el('th', 'text-align:left;padding:4px 6px;font-size:11px;font-weight:400;color:' + tc2 + ';border-bottom:1px solid ' + pc2 + ';position:sticky;top:0;background:' + pc + ';', h));
+        });
+        tb.appendChild(tr);
+        list.forEach(function (r) {
+            var t = +r.t, d = t > 0 ? new Date(t) : null;
+            var k = r.killer && typeof r.killer === 'object' ? r.killer : null;
+            var kt = !k ? '—' : k.virus ? 'Virus' : (String(k.nick || '') || '?') + ' (' + Math.round(+k.mass || 0).toLocaleString() + ')';
+            var row = el('tr');
+            row.className = 'lm-mh-row';
+            [d && !isNaN(d.getTime()) ? d.toLocaleString() : '—', Math.round(+r.mass || 0).toLocaleString(), fmtTime(r.ms), kt, String(r.server || '') || '—', String(r.mode || '') || '—'].forEach(function (v, i) {
+                row.appendChild(el('td', 'padding:3px 6px;border-bottom:1px solid rgba(255,255,255,0.05);' + (i === 1 ? 'color:' + mc + ';font-weight:700;' : '') + (i === 3 || i === 4 ? 'max-width:150px;overflow:hidden;text-overflow:ellipsis;' : ''), v));
+            });
+            tb.appendChild(row);
+        });
+        body.appendChild(tb);
+    };
+    fill();
+    var onKey = function (e) { if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopPropagation(); close(); } };
+    var close = function () { window.removeEventListener('keydown', onKey, true); if (md.parentNode) md.parentNode.removeChild(md); };
+    md._lmClose = close;
+    x.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+    clr.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!window.confirm(_lmMhT('mhClearConfirm', 'Clear the match history?'))) return;
+        try { localStorage.removeItem('lmMatchHistory'); } catch (er) { }
+        fill();
+    });
+    window.addEventListener('keydown', onKey, true);
+    document.body.appendChild(md);
+}
+window._lmMatchHistoryOpen = _lmMatchHistoryOpen;
 /* Map border colour: the theme colour, or a slowly cycling rainbow with "Rainbow map borders"
  * (returned as #rrggbb so every border path can parse it). */
 /* Background sector label: the custom symbol (max 4 characters) or the usual A1..E5. */
@@ -184,6 +290,14 @@ window.lmT = (function () {
         "close": {"en":"Close","el":"Κλείσιμο","es":"Cerrar","bg":"Затвори","fr":"Fermer","ar":"إغلاق","zh":"關閉","ru":"Закрыть","de":"Schließen","tr":"Kapat","pl":"Zamknij","nl":"Sluiten"},
         "leaderboards": {"en":"Leaderboards","el":"Κατατάξεις","es":"Clasificaciones","bg":"Класации","fr":"Classements","ar":"لوحات الصدارة","zh":"排行榜","ru":"Таблицы лидеров","de":"Bestenlisten","tr":"Lider tabloları","pl":"Rankingi","nl":"Ranglijsten"},
         "help": {"en":"Help","el":"Βοήθεια","es":"Ayuda","bg":"Помощ","fr":"Aide","ar":"مساعدة","zh":"說明","ru":"Помощь","de":"Hilfe","tr":"Yardım","pl":"Pomoc","nl":"Hulp"},
+        "matchHistory": {"en":"Match history","el":"Ιστορικό αγώνων","es":"Historial de partidas","bg":"История на игрите","fr":"Historique des parties","ar":"سجل المباريات","zh":"對戰記錄","ru":"История матчей","de":"Spielverlauf","tr":"Maç geçmişi","pl":"Historia meczów","nl":"Speelgeschiedenis"},
+        "mhDate": {"en":"Date","el":"Ημερομηνία","es":"Fecha","bg":"Дата","fr":"Date","ar":"التاريخ","zh":"日期","ru":"Дата","de":"Datum","tr":"Tarih","pl":"Data","nl":"Datum"},
+        "mhMass": {"en":"Mass","el":"Μάζα","es":"Masa","bg":"Маса","fr":"Masse","ar":"الكتلة","zh":"質量","ru":"Масса","de":"Masse","tr":"Kütle","pl":"Masa","nl":"Massa"},
+        "mhServer": {"en":"Server","el":"Διακομιστής","es":"Servidor","bg":"Сървър","fr":"Serveur","ar":"الخادم","zh":"伺服器","ru":"Сервер","de":"Server","tr":"Sunucu","pl":"Serwer","nl":"Server"},
+        "mhMode": {"en":"Mode","el":"Λειτουργία","es":"Modo","bg":"Режим","fr":"Mode","ar":"الوضع","zh":"模式","ru":"Режим","de":"Modus","tr":"Mod","pl":"Tryb","nl":"Modus"},
+        "mhClear": {"en":"Clear","el":"Εκκαθάριση","es":"Borrar","bg":"Изчисти","fr":"Effacer","ar":"مسح","zh":"清除","ru":"Очистить","de":"Leeren","tr":"Temizle","pl":"Wyczyść","nl":"Wissen"},
+        "mhClearConfirm": {"en":"Clear the match history?","el":"Εκκαθάριση του ιστορικού αγώνων;","es":"¿Borrar el historial de partidas?","bg":"Да се изчисти ли историята на игрите?","fr":"Effacer l’historique des parties ?","ar":"مسح سجل المباريات؟","zh":"清除對戰記錄？","ru":"Очистить историю матчей?","de":"Spielverlauf leeren?","tr":"Maç geçmişi temizlensin mi?","pl":"Wyczyścić historię meczów?","nl":"Speelgeschiedenis wissen?"},
+        "mhEmpty": {"en":"No games recorded yet.","el":"Δεν έχουν καταγραφεί παιχνίδια ακόμη.","es":"Aún no hay partidas registradas.","bg":"Все още няма записани игри.","fr":"Aucune partie enregistrée pour l’instant.","ar":"لا توجد مباريات مسجلة بعد.","zh":"尚無記錄的遊戲。","ru":"Пока нет записанных игр.","de":"Noch keine Spiele gespeichert.","tr":"Henüz kayıtlı oyun yok.","pl":"Brak zapisanych gier.","nl":"Nog geen spellen opgeslagen."},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
         "eatenBy": {"en":"Eaten by","el":"Σε έφαγε","es":"Comido por","bg":"Изяден от","fr":"Mangé par","ar":"أكلك","zh":"被吃掉","ru":"Съеден","de":"Gefressen von","tr":"Seni yiyen","pl":"Zjedzony przez","nl":"Opgegeten door"},
         "copyStats": {"en":"Copy stats","el":"Αντιγραφή στατιστικών","es":"Copiar estadísticas","bg":"Копирай статистиката","fr":"Copier les stats","ar":"نسخ الإحصائيات","zh":"複製統計","ru":"Копировать статистику","de":"Statistik kopieren","tr":"İstatistikleri kopyala","pl":"Kopiuj statystyki","nl":"Statistieken kopiëren"},
@@ -16431,6 +16545,7 @@ var displayText = {
         gameOverStats: 'Game over stats',
         massGraph: 'Mass graph on the Game Over card',
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
+        matchHistory: 'Historia meczów (ostatnie 50 gier, przycisk pod menu)',
         showKiller: 'Who ate you, on the Game Over card',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
@@ -16960,6 +17075,7 @@ var displayText = {
         gameOverStats: 'Game over stats',
         massGraph: 'Mass graph on the Game Over card',
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
+        matchHistory: 'Match history (last 50 games, button under the menu)',
         showKiller: 'Who ate you, on the Game Over card',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
@@ -19394,7 +19510,8 @@ var defaultmapsettings = {
     blockPopups: false,
     gameOverStats: false,
     massGraph: false,             /* graph of your mass over the life on the Game Over card */
-    personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
+    personalBests: false,
+    matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */         /* best mass, longest life and games kept in this browser (localStorage) */
     showKiller: false,            /* "Eaten by: nick (mass)" row on the Game Over card */
     streamMode: false,
     hideSkinUrl: false,
@@ -22252,6 +22369,9 @@ function thelegendmodproject() {
                     ogario[id] = checked;
                 }
                 switch (id) {
+                    case 'matchHistory':
+                        _lmMatchHistoryButton();
+                        break;
                     case 'autoResp':
                         this.setAutoResp();
                         break;
@@ -23225,7 +23345,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "showKiller", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
@@ -24631,6 +24751,21 @@ function thelegendmodproject() {
                     this._lmNewBest = _lmPersonalBests({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 });
                     this._lmNewBest.at = Date.now();
                     if (window.legendmod && typeof legendmod._lmRefreshBestRow === 'function') legendmod._lmRefreshBestRow();
+                } catch (e) { }
+            }
+            /* optional match history: one record per life (server host only, no tokens) */
+            if (defaultmapsettings.matchHistory) {
+                try {
+                    var _lmMhK = window.legendmod && legendmod._lmKiller;
+                    _lmMatchHistory({
+                        t: _lmNow,
+                        mass: Math.round(+ogario.playerScore || 0),
+                        ms: this._lmLifeStartAt ? Math.max(0, Math.min(_lmNow - this._lmLifeStartAt, 6 * 3600 * 1000)) : 0,
+                        killer: _lmMhK && _lmNow - (_lmMhK.at || 0) < 15000 ? { nick: String(_lmMhK.nick || '').slice(0, 40), mass: ~~_lmMhK.mass, virus: !!_lmMhK.virus } : null,
+                        server: _lmHostOnly(window.legendmod && legendmod.ws),
+                        mode: String(($('#gamemode option:selected').text() || '').trim() || $('#gamemode').val() || '').slice(0, 30)
+                    });
+                    _lmMatchHistoryButton();
                 } catch (e) { }
             }
             this._lmLifeStartAt = 0;
@@ -48023,7 +48158,7 @@ Most cells eaten   : ${mostCellsEaten}
                 /* optional: remember who ate my cell (Game Over card "Eaten by") */
                 /* not when the eater is one of mine: own cell (ownership set of this packet) or my
                  * multibox unit (its copy is stored under id + unit number * 1e9 with isPlayerCellMulti) */
-                if (defaultmapsettings.showKiller && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
+                if ((defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
                     !(this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)) &&
                     !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[eaterRawID + s.number * 1000000000]; return !!(c && c.isPlayerCellMulti); })) {
                     this._lmKiller = { nick: String(eaterID.targetNick || ''), mass: ~~(eaterID.size * eaterID.size / 100), virus: !!eaterID.isVirus, at: Date.now() };
@@ -76665,7 +76800,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }, 1000);
     })();
     /* session summary after a reload in the same tab */
-    setTimeout(function () { try { _lmSessionStats(); } catch (e) { } }, 3000);
+    setTimeout(function () { try { _lmSessionStats(); } catch (e) { } try { _lmMatchHistoryButton(); } catch (e) { } }, 3000);
     /* Initialize WASM acceleration modules (async, non-blocking) */
     /* WasmCellParser is not used since its updateCells path was removed: its init only downloaded and
      * compiled cell_parser.wasm from jsDelivr on every load */
