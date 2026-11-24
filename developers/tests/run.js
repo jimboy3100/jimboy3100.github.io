@@ -19,7 +19,7 @@ const argVal = (name, def) => { const i = args.indexOf(name); return i >= 0 && a
 const secs = Number(argVal('--secs', process.env.SMOKE_SECS || 14));
 const only = argVal('--only', '');
 
-const FILES = ['ogario/ogario.v4.js', 'ogario/hotkeysCommand.js', 'ogario/spect.js', 'ogario/gamepad.js',
+const FILES = ['ogario/ogario.v4.js', 'ogario/hotkeysCommand.js', 'ogario/spect.js', 'ogario/gamepad.js', 'ogario/modules/deathrecap.js',
   'LMexpress/LMexpress.js', 'LMexpress/lm_extended_ui.js', 'LMexpress/skinsAndDeals.js', 'LMexpress/replay.js',
   'LMmobile/LMmobile.js'];
 const OPTIONAL = new Set(['ogario/gamepad.js']);
