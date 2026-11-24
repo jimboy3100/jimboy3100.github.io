@@ -140,7 +140,7 @@ const hk = fs.readFileSync(path.join(root, 'ogario', 'hotkeysCommand.js'), 'utf8
 check('hotkey hk-serverManager has no default key', /'hk-serverManager': \{[\s\S]{0,300}defaultKey: ''/.test(hk));
 const cc = fs.readFileSync(path.join(root, 'ogario', 'modules', 'commandcentre.js'), 'utf8');
 check('Command Centre lists the Servers window', /id: 'servers'[^\n]*LMServerManager\.open\(\)/.test(cc));
-check('export / import carry lmServerFavs with the gameplay settings', /'lmGamepad', 'lmServerFavs'\]/.test(main) && /_impSet\('lmServerFavs'/.test(main));
+check('export / import carry lmServerFavs with the gameplay settings', /\['lmPerfBackup'[^\]]*'lmServerFavs'[^\]]*\]\.forEach/.test(main) && /_impSet\('lmServerFavs'/.test(main));
 check('loader loads the module', main.indexOf("ogario/modules/servermanager.js?v=") !== -1);
 check('private server list is shared with the window', /window\._lmPrivateModOptions = _lmPrivateModOptions;/.test(main) && /var privateModOptions = _lmPrivateModOptions\(\);/.test(main));
 
