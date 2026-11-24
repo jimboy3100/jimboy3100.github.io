@@ -21740,6 +21740,52 @@ function lmSettingValue(key, value) {
     if (typeof def === 'string') return typeof value === 'string' ? value : undefined;
     return typeof value === typeof def ? value : undefined;
 }
+/* The settings export carries these stored keys with the gameplay settings: the configuration of
+ * the phone controls, the gamepad and the add-on windows. Configuration only: never game history,
+ * statistics, recordings, watch lists, backups, secrets or plugin code. type: 'o' an object, 'a' an
+ * array; clear: the import removes it when the export has none (it described the settings being
+ * replaced). Each module checks the value again when it reads it. */
+var LM_EXPORT_KEYS = [
+    { key: 'lmPerfBackup', type: 'o', clear: true },
+    { key: 'lmPresetUndo', type: 'o', clear: true },
+    { key: 'lm-mobile-prefs', type: 'o' },
+    { key: 'lmGamepad', type: 'o' },
+    { key: 'lm-mobile-layouts', type: 'o' },
+    { key: 'lmSettingsProfiles', type: 'a' },
+    { key: 'lmSettingsProfilesRules', type: 'o' },
+    { key: 'lmHudLayouts', type: 'o' },
+    { key: 'lmCustomMacros', type: 'o' },
+    { key: 'lm-zoom-bookmarks', type: 'a' },
+    { key: 'lmThemeWorkshop', type: 'o' },
+    { key: 'lm-director', type: 'o' },
+    { key: 'lm-director-bookmarks', type: 'a' },
+    { key: 'lmPracticeCfg', type: 'o' },
+    { key: 'lmAnalyticsGoals', type: 'o' }
+];
+function lmExportFits(e, v) {
+    return e.type === 'a' ? Array.isArray(v) : !!v && typeof v === 'object' && !Array.isArray(v);
+}
+/* the registered keys found in storage ls, as { key: value } */
+function lmExportExtras(ls) {
+    var out = {};
+    LM_EXPORT_KEYS.forEach(function (e) {
+        try {
+            var v = JSON.parse(ls.getItem(e.key) || 'null');
+            if (lmExportFits(e, v)) out[e.key] = v;
+        } catch (err) { }
+    });
+    return out;
+}
+/* writes the registered keys of an import through set(key, text) / remove(key) (the import's
+ * transaction); step(key) names the key being written, for the error message */
+function lmImportExtras(src, set, remove, step) {
+    LM_EXPORT_KEYS.forEach(function (e) {
+        if (step) step(e.key);
+        var v = Object.prototype.hasOwnProperty.call(src, e.key) ? src[e.key] : undefined;
+        if (lmExportFits(e, v)) set(e.key, JSON.stringify(v));
+        else if (e.clear) remove(e.key);
+    });
+}
 /* ─── §3.3 profiles — Player Profile Storage ─── */
 var profiles = [];
 var ogarcopythelb = {
@@ -26228,16 +26274,10 @@ function thelegendmodproject() {
             if (options.ogarioHotkeys) options.ogarioHotkeysKnown = Object.keys(hotkeysCommand);
             /* Issue #15: include Performance Mode backup and preset undo snapshot so they survive a browser wipe.
              * They hold gameplay settings, so they go with those only (the import reads them only
-             * with those too). The phone controls (LMmobile gear panel: joystick sensitivity,
-             * button size and opacity, toggles), the phone control layouts (LMmobile-editor.js) and the
-             * gamepad buttons and profiles go with them as well. */
+             * with those too). The configuration of the phone controls, the gamepad and the add-on
+             * windows (LM_EXPORT_KEYS) goes with them as well. */
             if (options.ogarioSettings) {
-                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs', 'lmGamepad', 'lm-mobile-layouts', 'lmSettingsProfiles', 'lmSettingsProfilesRules'].forEach(function (k) {
-                    try {
-                        var v = JSON.parse(window.localStorage.getItem(k) || 'null');
-                        if (v && typeof v === 'object' && !Array.isArray(v)) options[k] = v;
-                    } catch (e) { }
-                });
+                try { Object.assign(options, lmExportExtras(window.localStorage)); } catch (e) { }
             }
             options = JSON.stringify(options);
             $('#export-settings').val(options);
@@ -26305,7 +26345,6 @@ function thelegendmodproject() {
                 var _impSelected = function (key) {
                     return Object.prototype.hasOwnProperty.call(importValue, key) && $('#import-' + key).prop('checked');
                 };
-                var _impObject = function (v) { return !!v && typeof v === 'object' && !Array.isArray(v); };
                 var _impStep = '';
                 try {
                     for (var _impI = 0; _impI < importKeys.length; _impI++) {
@@ -26327,29 +26366,12 @@ function thelegendmodproject() {
                         }
                         /* Performance mode's backup and the preset undo snapshot belong to the
                          * gameplay settings: only with them, and the old ones go when the import
-                         * has none (they described the settings being replaced) */
+                         * has none (they described the settings being replaced). The configuration
+                         * of the phone controls, the gamepad and the add-on windows only when the
+                         * export has it (one from a computer has no phone controls and leaves this
+                         * phone's as they are); each module checks its values on load. */
                         if (value === 'ogarioSettings') {
-                            _impStep = 'lmPerfBackup';
-                            if (_impObject(importValue.lmPerfBackup)) _impSet('lmPerfBackup', JSON.stringify(importValue.lmPerfBackup));
-                            else _impRemove('lmPerfBackup');
-                            _impStep = 'lmPresetUndo';
-                            if (_impObject(importValue.lmPresetUndo)) _impSet('lmPresetUndo', JSON.stringify(importValue.lmPresetUndo));
-                            else _impRemove('lmPresetUndo');
-                            /* phone controls: only when the export has them (one from a computer has
-                             * none and leaves this phone's as they are). LMmobile checks the values. */
-                            _impStep = 'lm-mobile-prefs';
-                            if (_impObject(importValue['lm-mobile-prefs'])) _impSet('lm-mobile-prefs', JSON.stringify(importValue['lm-mobile-prefs']));
-                            /* gamepad buttons and profiles: the same, ogario/gamepad.js checks them on load */
-                            _impStep = 'lmGamepad';
-                            if (_impObject(importValue.lmGamepad)) _impSet('lmGamepad', JSON.stringify(importValue.lmGamepad));
-                            /* phone control layouts: the same, LMmobile-editor.js checks them on load */
-                            _impStep = 'lm-mobile-layouts';
-                            if (_impObject(importValue['lm-mobile-layouts'])) _impSet('lm-mobile-layouts', JSON.stringify(importValue['lm-mobile-layouts']));
-                            /* settings profiles and auto-switching rules: validated by profiles.js on load */
-                            _impStep = 'lmSettingsProfiles';
-                            if (Array.isArray(importValue.lmSettingsProfiles)) _impSet('lmSettingsProfiles', JSON.stringify(importValue.lmSettingsProfiles));
-                            _impStep = 'lmSettingsProfilesRules';
-                            if (_impObject(importValue.lmSettingsProfilesRules)) _impSet('lmSettingsProfilesRules', JSON.stringify(importValue.lmSettingsProfilesRules));
+                            lmImportExtras(importValue, _impSet, _impRemove, function (k) { _impStep = k; });
                         }
                     }
                 } catch (writeErr) {
@@ -26598,11 +26620,18 @@ function thelegendmodproject() {
                             if (checked) {
                                 var _lmPerfBak = {};
                                 _lmPerfKeys.forEach(function (k) { _lmPerfBak[k] = defaultmapsettings[k]; });
-                                try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(_lmPerfBak)); } catch (e) { }
+                                window._lmPerfBackupMem = null;
+                                try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(_lmPerfBak)); } catch (e) {
+                                    /* storage full: the values are kept until the page is reloaded, and the player is told */
+                                    window._lmPerfBackupMem = _lmPerfBak;
+                                    if (window.toastr) toastr.warning('<b>[PERFORMANCE]:</b> The browser storage is full: turning Performance mode off puts your effect settings back only until the page is reloaded.');
+                                }
                                 _lmPerfKeys.forEach(function (k) { _lmPerfSet(k, k === 'hudBlur' ? 0 : false); });
                             } else {
                                 var _lmPerfOld = null;
                                 try { _lmPerfOld = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { }
+                                if (!_lmPerfOld && window._lmPerfBackupMem) _lmPerfOld = window._lmPerfBackupMem;
+                                window._lmPerfBackupMem = null;
                                 if (_lmPerfOld && typeof _lmPerfOld === 'object') {
                                     _lmPerfKeys.forEach(function (k) {
                                         if (!Object.prototype.hasOwnProperty.call(_lmPerfOld, k)) return;

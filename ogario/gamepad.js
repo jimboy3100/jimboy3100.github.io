@@ -712,6 +712,8 @@
             suspended = !!on;
             if (suspended) { setFeed(false); setHolds({}); lastMove = null; }
         },
+        /* lets go of everything held (before the buttons are replaced from outside, e.g. a settings profile) */
+        release: function () { setFeed(false); setHolds({}); },
         buttonDown: function (b, i) { return buttonDown(b, i, opt('gamepadTrigger')); },
         suggestDeadzone: suggestDeadzone,
         testRumble: function (pad) { return rumble(pad, 250, 0.7, true); },

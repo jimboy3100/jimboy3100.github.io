@@ -412,17 +412,28 @@
         if (p && GRIDS.indexOf(p.grid) >= 0) st.prefs.grid = p.grid;
         return save();
     };
-    /* Applies a saved layout by name; '' or null: the normal HUD. For scripts and settings profiles. */
+    /* Applies a saved layout by name; '' or null: the normal HUD. For scripts and settings profiles.
+     * false (nothing changes) when there is no such layout or it cannot be saved. */
     api.applyLayout = function (name, quiet) {
         var st = load(), l = name ? layoutByName(name) : null;
         if (name && !l) return false;
-        st.active = l ? l.name : '';
+        var prev = st.active, next = l ? l.name : '';
+        st.active = next;
+        if (prev !== next && !save()) { st.active = prev; return false; }
         boosts = {};
-        var ok = save();
         if (!preview) { eff = {}; render(); }
         syncSelect();
         if (!quiet && W.toastr) { try { W.toastr.info(esc(tx('applied') + (l ? l.name : tx('defaultHud')))); } catch (e) { } }
-        return ok;
+        return true;
+    };
+    /* the stored layouts as text with another active one ('' the normal HUD), or null when there
+     * is no such layout; nothing changes (settings profiles write it in their own transaction) */
+    api.storeText = function (name) {
+        var l = name ? layoutByName(name) : null;
+        if (name && !l) return null;
+        var o = clone(load());
+        o.active = l ? l.name : '';
+        return JSON.stringify(o);
     };
     /* Saves (or replaces) a layout; returns its stored name or '' (bad name, full list, storage full). */
     api.saveLayout = function (name, c) {
@@ -443,11 +454,11 @@
     api.deleteLayout = function (name) {
         var st = load(), i = findIndex(st.list, name);
         if (i < 0) return false;
-        var n = st.list[i].name;
+        var n = st.list[i].name, before = { list: st.list.slice(), active: st.active, links: clone(st.links) };
         st.list.splice(i, 1);
         if (st.active === n) st.active = '';
         for (var pid in st.links) if (own.call(st.links, pid) && st.links[pid] === n) delete st.links[pid];
-        save();
+        if (!save()) { st.list = before.list; st.active = before.active; st.links = before.links; return false; }
         if (!preview) refresh();
         syncSelect();
         return true;
@@ -457,8 +468,11 @@
         var st = load();
         if (typeof profileId !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(profileId)) return false;
         var l = name ? layoutByName(name) : null;
+        var had = own.call(st.links, profileId), old = st.links[profileId];
         if (l) st.links[profileId] = l.name; else delete st.links[profileId];
-        return save();
+        if (save()) return true;
+        if (had) st.links[profileId] = old; else delete st.links[profileId];
+        return false;
     };
     api.links = function () { return clone(load().links); };
     api.profileLayout = function (profileId) { var n = load().links[profileId]; return typeof n === 'string' ? n : ''; };

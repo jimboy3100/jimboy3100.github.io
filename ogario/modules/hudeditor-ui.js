@@ -452,7 +452,7 @@
         var n = core.cleanName(nameIn.value) || curName || t('custom');
         var r = HE.saveLayout(n, draft);
         if (!r) { toast('warning', t('saveFail')); return false; }
-        HE.applyLayout(r, true);
+        if (!HE.applyLayout(r, true)) { fillLayouts(); toast('warning', t('saveFail')); return false; }
         curName = r;
         nameIn.value = r;
         baseSig = sig();
@@ -463,12 +463,12 @@
     function done() {
         /* nothing changed: keep what was active, or the chosen saved layout */
         if (!dirty() && (!core.cleanName(nameIn.value) || core.cleanName(nameIn.value) === curName)) {
-            HE.applyLayout(curName, true);
+            if (!HE.applyLayout(curName, true)) toast('warning', t('saveFail'));
             close(true);
             return;
         }
         if (!Object.keys(core.cleanComps(draft)).length && !core.cleanName(nameIn.value) && !curName) {
-            HE.applyLayout('', true);
+            if (!HE.applyLayout('', true)) toast('warning', t('saveFail'));
             close(true);
             return;
         }
@@ -519,7 +519,7 @@
         delBtn = btn(t('del'), t('del'), function () {
             if (!layoutSel.value) return;
             if (Date.now() - delArm > 4000) { delArm = Date.now(); delBtn.textContent = t('delSure'); return; }
-            HE.deleteLayout(layoutSel.value);
+            if (!HE.deleteLayout(layoutSel.value)) { toast('warning', t('saveFail')); return; }
             loadLayout('');
         }, 'warn lm-he-del');
         r1.appendChild(delBtn);
@@ -562,8 +562,10 @@
         profSel.addEventListener('change', function () {
             var name = layoutSel.value, links = HE.links();
             if (!name) return;
-            for (var pid in links) if (own.call(links, pid) && links[pid] === name) HE.linkProfile(pid, '');
-            if (profSel.value) HE.linkProfile(profSel.value, name);
+            var ok = true;
+            for (var pid in links) if (own.call(links, pid) && links[pid] === name) ok = HE.linkProfile(pid, '') && ok;
+            if (profSel.value) ok = HE.linkProfile(profSel.value, name) && ok;
+            if (!ok) { fillProfiles(); toast('warning', t('saveFail')); }
         });
         r4.appendChild(profSel);
         body.appendChild(r4);
