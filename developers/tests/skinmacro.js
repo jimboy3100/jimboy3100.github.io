@@ -1,17 +1,14 @@
-/* Skin editor and custom macro checks: runs ogario/modules/skineditor.js and macroeditor.js in a
- * vm with a stub localStorage, fake timers and a fake application, so the crop maths, the game
- * text layout, the saved-image list, macro validation, the timeline limits and the runner (which
+/* Custom macro checks (the skin editor moved to skins/skinchecker.html): runs ogario/modules/macroeditor.js in a
+ * vm with a stub localStorage, fake timers and a fake application, so macro validation, the timeline limits and the runner (which
  * must only use application.split / feed / sendPosition and never go faster than the existing
  * macros) can be tested without a browser.
  * node developers/tests/skinmacro.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const dir = path.join(__dirname, '..', '..', 'ogario', 'modules');
-const skinSrc = fs.readFileSync(path.join(dir, 'skineditor.js'), 'utf8');
 const macroSrc = fs.readFileSync(path.join(dir, 'macroeditor.js'), 'utf8');
 
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
-const near = (a, b, e) => Math.abs(a - b) <= (e || 1e-9);
 
 function makeStorage(limit) {
   const data = {};
@@ -59,80 +56,6 @@ function boot(src, opts) {
     now = end;
   };
   return { win, sent, advance, timers };
-}
-
-/* ═══ Skin editor ═══ */
-{
-  const { win } = boot(skinSrc);
-  const SE = win.LMSkinEditor;
-  check('skin: LMSkinEditor defined', !!(SE && SE.core && typeof SE.open === 'function'));
-  const c = SE.core;
-  /* loading twice does nothing */
-  const before = win.LMSkinEditor;
-  vm.runInContext(skinSrc, vm.createContext({ window: win, document: {} }));
-  check('skin: second load is ignored', win.LMSkinEditor === before);
-
-  const s0 = c.cleanState(null);
-  check('skin: default state', s0.x === 0 && s0.y === 0 && s0.zoom === 1 && s0.rot === 0);
-  const s1 = c.cleanState({ x: 9, y: -9, zoom: 100, rot: 450 });
-  check('skin: state clamped', s1.x === 2 && s1.y === -2 && s1.zoom === 8 && s1.rot === 90);
-  const sb = c.cleanState({ x: 'a', y: undefined, zoom: NaN, rot: Infinity });
-  check('skin: bad numbers -> neutral defaults', sb.x === 0 && sb.y === 0 && sb.zoom === 1 && sb.rot === 0);
-  check('skin: rotation wraps to -180..180', c.normRot(190) === -170 && c.normRot(-190) === 170 && c.normRot(360) === 0);
-
-  /* zoom 1: the shorter side fills the circle exactly */
-  const tr = c.transform({}, 800, 400, 512);
-  check('skin: transform centred', tr.tx === 256 && tr.ty === 256 && tr.rad === 0);
-  check('skin: shorter side covers the crop at zoom 1', near(tr.scale * 400, 512));
-  const tr2 = c.transform({ x: 0.25, y: -0.5, zoom: 2, rot: 90 }, 100, 100, 200);
-  check('skin: offsets in crop diameters', tr2.tx === 150 && tr2.ty === 0 && near(tr2.scale, 4) && near(tr2.rad, Math.PI / 2));
-  check('skin: transform scales with the output size', near(c.transform({ zoom: 1.5 }, 300, 300, 512).scale * 2, c.transform({ zoom: 1.5 }, 300, 300, 1024).scale));
-
-  /* game text: Delta-style size model of setFontSize (nick 30% of the size, at least 26) */
-  const look = { namesScale: 1, massScale: 3, strokeScale: 1, namesStroke: true, massStroke: true, nick: 'Bob' };
-  const L1 = c.textLayout(500, look);
-  check('skin: name size 30% of the cell size', near(L1.name.size, 150));
-  check('skin: mass 0.85 of the name at mass scale 3', near(L1.massT.size, 127.5));
-  check('skin: name baseline and stroke', near(L1.name.base, 60) && near(L1.name.stroke, 15));
-  check('skin: mass under the name', near(L1.massT.base, 0.7 * 150 + 1.1 * 127.5));
-  check('skin: mass value', L1.mass === 2500 && L1.massTxt === '2500');
-  const L2 = c.textLayout(60, look);
-  check('skin: small cells keep the minimum name size 26', near(L2.name.size, 26));
-  const L3 = c.textLayout(500, Object.assign({}, look, { nick: '' }));
-  check('skin: no name -> mass centred', L3.name === null && near(L3.massT.base, 0.4 * 127.5));
-  const L4 = c.textLayout(500, Object.assign({}, look, { showMass: false, namesStroke: false }));
-  check('skin: hidden mass, no stroke', L4.massT === null && L4.name.stroke === 0);
-  check('skin: tiny cells have no mass', c.textLayout(40, look).massT === null);
-  check('skin: mass scale 6 doubles the mass', near(c.textLayout(500, Object.assign({}, look, { massScale: 6 })).massT.size, 255));
-  check('skin: short mass', c.massText(500, true) === '2.5k' && c.massText(100, true) === '100');
-
-  /* stored list */
-  const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
-  check('skin: PNG data URL accepted', c.isPngDataUrl(png));
-  check('skin: other data rejected', !c.isPngDataUrl('data:text/html;base64,PHNjcmlwdD4=') && !c.isPngDataUrl('javascript:alert(1)') && !c.isPngDataUrl(png + '"><img>') && !c.isPngDataUrl(null));
-  check('skin: oversized data URL rejected', !c.isPngDataUrl('data:image/png;base64,' + 'A'.repeat(500000)));
-  const dirty = JSON.stringify([
-    { n: 'One<script>', d: png, t: 5 }, { n: 'dup', d: png }, { n: 'bad', d: 'data:image/svg+xml;base64,AAAA' },
-    null, 7, { d: png.replace('AAAA', 'AAAB'), t: -3 }
-  ]);
-  const cl = c.cleanList(dirty);
-  check('skin: list validated (bad, duplicate and junk dropped)', cl.length === 2);
-  check('skin: names cleaned', cl[0].n === 'Onescript' && cl[1].n === 'Skin' && cl[1].t === 0);
-  check('skin: broken JSON -> empty list', c.cleanList('{oops').length === 0 && c.cleanList('{"a":1}').length === 0);
-  let list = [];
-  for (let i = 0; i < 9; i++) list = c.addToList(list, { n: 'S' + i, d: png.replace('AAAA', 'AA' + String.fromCharCode(65 + i) + 'A'), t: i + 1 });
-  check('skin: list keeps the newest ' + c.MAX_SAVED, list.length === c.MAX_SAVED && list[0].n === 'S8');
-  list = c.addToList(list, { n: 'again', d: list[3].d });
-  check('skin: re-saving moves it to the top without a duplicate', list.length === c.MAX_SAVED && list[0].n === 'again' && list.filter(x => x.d === list[0].d).length === 1);
-  check('skin: savedList reads storage', (() => { win.localStorage.setItem(c.KEY, JSON.stringify(cl)); return SE.savedList().length === 2; })());
-  check('skin: savedList survives blocked storage', (() => { const g = win.localStorage.getItem; win.localStorage.getItem = () => { throw new Error('blocked'); }; const r = SE.savedList(); win.localStorage.getItem = g; return Array.isArray(r) && r.length === 0; })());
-
-  /* sources */
-  check('skin: https link accepted', c.validSrc(' https://i.example.com/a.png ') === 'https://i.example.com/a.png');
-  check('skin: data image accepted', c.validSrc(png) === png);
-  check('skin: other schemes rejected', c.validSrc('javascript:alert(1)') === '' && c.validSrc('file:///c:/x.png') === '' && c.validSrc('http://nodot/x') === '' && c.validSrc('https://a.b/x y') === '');
-  check('skin: file name cleaned', /^skin-My_Nick-\d{8}-\d{4}\.png$/.test(c.fileName('My Nick<>', Date.UTC(2026, 0, 2))) && /^skin-legendmod-/.test(c.fileName('', 0)));
-  check('skin: preview sizes increase', c.PREVIEW.length >= 3 && c.PREVIEW.every((p, i) => !i || (p.size > c.PREVIEW[i - 1].size && p.r > c.PREVIEW[i - 1].r)));
 }
 
 /* ═══ Custom macros ═══ */
@@ -214,5 +137,5 @@ function boot(src, opts) {
   check('macro: no macros -> storage key removed', win.localStorage.getItem(c.KEY) === null);
 }
 
-console.log(fail ? fail + ' FAILED' : 'all skin editor / custom macro checks passed');
+console.log(fail ? fail + ' FAILED' : 'all custom macro checks passed');
 process.exit(fail ? 1 : 0);
