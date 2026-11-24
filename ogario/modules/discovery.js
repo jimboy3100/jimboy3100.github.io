@@ -199,7 +199,7 @@
             d: { en: 'For spectating: auto camera on the action, watchlist, camera bookmarks and a broadcast HUD.', el: 'Για θέαση: αυτόματη κάμερα, λίστα παρακολούθησης, σελιδοδείκτες κάμερας, HUD μετάδοσης.' },
             opts: [], win: opener('LMDirector.open') },
         { id: 'companion', en: 'Stream overlay', el: 'Επικάλυψη stream',
-            d: { en: 'A second screen or OBS source with mass, rank, minimap and leaderboard; a result image of a life.', el: 'Δεύτερη οθόνη ή πηγή OBS με μάζα, θέση, χάρτη και κατάταξη· εικόνα αποτελέσματος.' },
+            d: { en: 'A second screen or OBS source with mass, rank, minimap and leaderboard.', el: 'Δεύτερη οθόνη ή πηγή OBS με μάζα, θέση, χάρτη και κατάταξη.' },
             opts: ['companionLive', 'companionChat'], win: opener('LMCompanion.open') },
         { id: 'touchEditor', en: 'Touch control editor', el: 'Επεξεργασία κουμπιών αφής',
             d: { en: 'Phones: move and resize the touch buttons and the joystick.', el: 'Κινητά: μετακίνηση και μέγεθος κουμπιών αφής και joystick.' },

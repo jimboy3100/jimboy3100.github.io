@@ -253,7 +253,6 @@
         friends: { en: 'Friends', el: 'Φίλοι' },
         mobileControls: { en: 'Edit touch controls', el: 'Επεξεργασία κουμπιών αφής' },
         companion: { en: 'Open companion (stream overlay)', el: 'Άνοιγμα companion (επικάλυψη stream)' },
-        resultImage: { en: 'Result image', el: 'Εικόνα αποτελέσματος' },
         director: { en: 'Spectator director', el: 'Σκηνοθέτης θέασης' },
         hudEditor: { en: 'Edit HUD (move and resize the HUD boxes, layouts)', el: 'Επεξεργασία HUD (μετακίνηση και μέγεθος πλαισίων, διατάξεις)' },
         practice: { en: 'Practice arena (offline drills, bots, ghost)', el: 'Αρένα εξάσκησης (εκτός σύνδεσης, bots, φάντασμα)' },
@@ -426,7 +425,6 @@
         /* phones only: the touch control editor of LMmobile.js */
         { id: 'mobileControls', en: tEn('mobileControls'), label: function () { return t('mobileControls'); }, avail: function () { return !!(W._lmMobileHost && typeof W._lmMobileHost.openEditor === 'function'); }, run: function () { W._lmMobileHost.openEditor(); } },
         { id: 'companion', en: tEn('companion'), label: function () { return t('companion'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.open); }, run: function () { W.LMCompanion.open(); } },
-        { id: 'resultImage', en: tEn('resultImage'), label: function () { return t('resultImage'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.resultImage); }, run: function () { W.LMCompanion.resultImage(); } },
         { id: 'director', en: tEn('director'), label: function () { return t('director'); }, avail: function () { return !!(W.LMDirector && typeof W.LMDirector.open === 'function'); }, run: function () { W.LMDirector.open(); } },
         { id: 'hudEditor', en: tEn('hudEditor'), label: function () { return t('hudEditor'); }, avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } },
         /* ogario/modules/practice.js (loaded on first use by lmPractice in ogario.v4.js) */

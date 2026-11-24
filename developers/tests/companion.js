@@ -1,6 +1,6 @@
 /* Stream overlay / companion checks: runs ogario/modules/companion.js in a vm (no DOM, so only
  * the pure helpers in LMCompanion.core exist) and tests the state builder (hidden information
- * never published), the throttling, the URL parameters of companion.html and the result image.
+ * never published), the throttling and the URL parameters of companion.html.
  * node developers/tests/companion.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const repo = path.join(__dirname, '..', '..');
@@ -137,36 +137,6 @@ check('inside a frame: window (the channel is partitioned by the top site)', pla
 plan = C.openPlan({ hostname: 'evil-legendmod.ml', protocol: 'https:', origin: 'https://evil-legendmod.ml' }, false);
 check('look-alike host is not trusted', plan.mode === 'popup');
 
-/* ── result image ── */
-const life = { nick: 'Me', mass: 3456, rank: 2, alive: 125000, kills: 3, mode: 'FFA', server: 'x.agar.io', at: Date.UTC(2026, 0, 2, 3, 4), trail: [{ x: 0.1, y: 0.1 }, { x: 0.4, y: 0.3 }] };
-let rd = C.resultData(life, {});
-check('result data', rd.nick === 'Me' && rd.mass === 3456 && rd.rank === 2 && rd.kills === 3 && rd.trail.length === 2);
-rd = C.resultData(life, { streamMode: true });
-check('result image: stream mode hides nick and server', rd.nick === '' && rd.server === '' && J(rd).indexOf('Me') < 0);
-check('unknown kills stay unknown', C.resultData({ kills: null }).kills === -1);
-function stubCtx() {
-  const texts = [], fonts = [], calls = { arc: 0, lineTo: 0 };
-  const c = {
-    texts, fonts, calls, font: '', fillStyle: '', strokeStyle: '', lineWidth: 1, textAlign: '', textBaseline: '',
-    createLinearGradient: () => ({ addColorStop() {} }),
-    measureText: s => ({ width: String(s).length * (parseInt(String(c.font).replace(/^\d+ /, ''), 10) || 10) * 0.6 }),
-    fillText: s => { texts.push(String(s)); fonts.push(c.font); }, arc: () => calls.arc++, lineTo: () => calls.lineTo++
-  };
-  ['fillRect', 'strokeRect', 'beginPath', 'moveTo', 'stroke', 'fill'].forEach(m => { c[m] = () => {}; });
-  return c;
-}
-let sc = stubCtx();
-C.drawResult(sc, C.resultData(life, {}), { showTrail: true });
-check('image shows nick, mass, rank, time, kills', sc.texts.indexOf('Me') >= 0 && sc.texts.indexOf('3,456') >= 0 && sc.texts.indexOf('#2') >= 0 && sc.texts.indexOf('2:05') >= 0 && sc.texts.indexOf('3') >= 0);
-check('image draws the trail when asked', sc.calls.lineTo >= 1 && sc.calls.arc >= 1);
-sc = stubCtx();
-C.drawResult(sc, C.resultData(life, { streamMode: true }), { showTrail: false, labels: { result: 'Result' } });
-check('stream mode image: no nick, no server, no trail', sc.texts.indexOf('Me') < 0 && sc.texts.indexOf('Result') >= 0 && !sc.texts.some(s => s.indexOf('agar.io') >= 0) && sc.calls.lineTo === 0);
-sc = stubCtx();
-C.drawResult(sc, C.resultData({ nick: 'W'.repeat(40), mass: 1 }), {});
-const nf = sc.fonts[sc.texts.indexOf('W'.repeat(40))], size = +(/^700 (\d+)px/.exec(nf) || [])[1];
-check('long nick shrunk to fit (' + size + 'px)', size >= 30 && size < 76 && 40 * size * 0.6 <= 1080);
-
 /* ── page and loader wiring ── */
 const page = fs.readFileSync(path.join(repo, 'companion.html'), 'utf8');
 check('companion.html loads the module as a page', page.indexOf('window.LMCompanionPage = true') >= 0 && page.indexOf('src="ogario/modules/companion.js"') >= 0);
@@ -176,8 +146,6 @@ check('companion.html mentions WebRTC pairing as not supported', /WebRTC/.test(p
 const v4 = fs.readFileSync(path.join(repo, 'ogario', 'ogario.v4.js'), 'utf8');
 check('option off by default', /companionLive: false,/.test(v4) && /companionChat: false,/.test(v4));
 check('loader entry', v4.indexOf("ogario/modules/companion.js?v=") >= 0);
-const hk = fs.readFileSync(path.join(repo, 'ogario', 'hotkeysCommand.js'), 'utf8');
-check('result image hotkey has no default key', /'hk-companionResult': \{[\s\S]{0,200}defaultKey: ''/.test(hk));
 
 console.log(fail ? fail + ' FAILED' : 'all passed');
 process.exit(fail ? 1 : 0);

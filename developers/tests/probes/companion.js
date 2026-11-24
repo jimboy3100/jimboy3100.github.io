@@ -1,6 +1,6 @@
 // Stream overlay: off by default (nothing on the channel, nobody listening to LMEvents); turned on,
 // a state arrives on BroadcastChannel('legendmod-live') in this page and in companion.html (iframe,
-// same origin); stream mode removes the nick; the result image window fits the screen and closes.
+// same origin); stream mode removes the nick.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -9,8 +9,7 @@
   if (!s || s.companionLive !== false || s.companionChat !== false) fail.push('companionLive / companionChat should be off by default');
   if (C.isOn()) fail.push('publishing while the option is off');
   if (!document.getElementById('companionLive') || !document.getElementById('companionChat')) fail.push('option switches missing');
-  if (!document.querySelector('#lm-companion-row .lm-companion-open') || !document.querySelector('#lm-companion-row .lm-companion-result')) fail.push('Open companion / Result image buttons missing');
-  if (!hotkeysCommand['hk-companionResult'] || hotkeysCommand['hk-companionResult'].defaultKey !== '') fail.push('hk-companionResult missing or has a default key');
+  if (!document.querySelector('#lm-companion-row .lm-companion-open')) fail.push('Open companion button missing');
   if (['kill', 'personalBest', 'gameStats'].some(function (n) { return LMEvents._has(n); })) fail.push('LMEvents listeners while the option is off');
 
   var got = [];
@@ -74,32 +73,6 @@
       if (!wm || wm.hidden || wm.querySelector('b') || wm.textContent !== '<b>x</b>') fail.push('watermark not shown as plain text');
       if (doc.querySelector('.w-card .nick').textContent.indexOf('ProbeNick') < 0) fail.push('card shows no nick');
       info.pageStatus = doc.getElementById('status').className;
-    }
-
-    /* result image: needs a life; without one it says so (a toast), with the last Game Over stats it opens */
-    var savedStats = LM._lmLastSessionStats, savedAt = LM._lmLastSessionStatsAt;
-    LM._lmLastSessionStats = { highestMass: 4321, topPosition: 2, timeTotal: 95, playersEaten: 3 };
-    LM._lmLastSessionStatsAt = Date.now();
-    var md = C.resultImage();
-    LM._lmLastSessionStats = savedStats; LM._lmLastSessionStatsAt = savedAt;
-    await sleep(150);
-    md = document.getElementById('lm-result-modal');
-    if (!md) fail.push('result image window did not open');
-    else {
-      var cv = md.querySelector('canvas'), r = cv.getBoundingClientRect();
-      info.result = [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)];
-      info.resultBar = Math.round(md.querySelector('.lmr-bar').getBoundingClientRect().height);
-      if (cv.width !== 1200 || cv.height !== 630) fail.push('result canvas is not 1200x630');
-      if (r.left < 0 || r.top < 0 || r.right > innerWidth + 1 || r.bottom > innerHeight + 1) fail.push('result image does not fit the screen');
-      var btns = md.querySelectorAll('button');
-      for (var b = 0; b < btns.length; b++) {
-        var br = btns[b].getBoundingClientRect();
-        if (br.bottom > innerHeight + 1 || br.right > innerWidth + 1) fail.push('result button off screen: ' + btns[b].textContent + ' ' + JSON.stringify([br.left, br.top, br.right, br.bottom, innerWidth, innerHeight, md.getBoundingClientRect().height]));
-        if (br.height < 30) fail.push('result button too small for touch: ' + btns[b].textContent);
-      }
-      try { if (!/^data:image\/png/.test(cv.toDataURL('image/png'))) fail.push('canvas does not export a PNG'); } catch (e) { fail.push('canvas export failed: ' + e.message); }
-      md.querySelector('.lmr-close').click();
-      if (document.getElementById('lm-result-modal')) fail.push('result window did not close');
     }
   } finally {
     LM.playerNick = oldNick;
