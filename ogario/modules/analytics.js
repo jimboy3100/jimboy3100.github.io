@@ -283,7 +283,10 @@
     function coachScores(g) {
         var min = g.ms / 60000, s = {};
         s.survival = Math.round(100 * (1 - Math.exp(-min / 5)));
-        var rate = g.peak / Math.max(min, 0.5);
+        /* P1 fix #50: cap the time denominator to 5 minutes so long domination runs
+         * are not penalized. Without this, rate = peak/minutes decreases as the player
+         * survives longer, even if they maintained high mass throughout. */
+        var rate = g.peak / Math.max(Math.min(min, 5), 0.5);
         s.growth = Math.round(100 * clamp01(Math.log(1 + rate / 50) / Math.LN10 / 2));
         var lm = g.src === 'lm';
         s.splits = lm && g.spl > 0 ? Math.round(100 * clamp01(1 - 2 * g.splLoss)) : null;
@@ -970,7 +973,11 @@
         body.appendChild(wrap);
         var ctx = cv.getContext && cv.getContext('2d');
         if (!ctx) return;
-        var S = cv.width, cs = S / h.res, shape = tracks.length ? tracks[tracks.length - 1].shape : 's';
+        var S = cv.width, cs = S / h.res;
+        /* P1 fix #54: determine shape from all tracks, not just the last one.
+         * Only use circle clip when ALL tracks come from circular maps. */
+        var shape = 's';
+        if (tracks.length && tracks.every(function (tr) { return tr.shape === 'c'; })) shape = 'c';
         ctx.save();
         if (shape === 'c') { ctx.beginPath(); ctx.arc(S / 2, S / 2, S / 2 - 1, 0, Math.PI * 2); ctx.clip(); }
         for (var k = 0; k < h.cells.length; k++) {

@@ -881,7 +881,10 @@
     /* listens to the server changes and gamepads only while the switching is on (nothing runs
      * while it is off, and LMEvents has no listener of ours) */
     var listening = false;
-    function onServerChange() { evaluateSoon(600); }
+    /* P1 fix #19: increased from 600ms to 1500ms. The server handshake (which provides
+     * server type and game mode info needed by auto-switch rules) typically takes
+     * 700-1500ms. At 600ms the rules evaluated before the info was available. */
+    function onServerChange() { evaluateSoon(1500); }
     function onPad() { evaluateSoon(400); }
     function listen(on) {
         if (on === listening) return;

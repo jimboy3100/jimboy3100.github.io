@@ -553,9 +553,14 @@
         if (!net.active) return;
         if (type === 'close') {
             var e = info || {};
-            net.closes.push({ t: Date.now(), code: Math.round(num(e.code)), reason: cleanText(e.reason, 60), clean: e.wasClean !== false, openMs: Math.round(num(e.openMs)) });
+            var clean = e.wasClean !== false;
+            var code = Math.round(num(e.code));
+            net.closes.push({ t: Date.now(), code: code, reason: cleanText(e.reason, 60), clean: clean, openMs: Math.round(num(e.openMs)) });
             if (net.closes.length > 200) net.closes.shift();
-            net.hadClose = true;
+            /* P1 fix #36: a clean close with code 1000 is a voluntary server hop, not a
+             * network disconnect. Only mark hadClose for unexpected disconnects so the
+             * reconnect counter and history reflect actual network problems. */
+            if (!clean || (code !== 1000 && code !== 0)) net.hadClose = true;
         } else if (type === 'open') {
             if (net.hadClose) { net.reconnects++; net.hadClose = false; }
             var h = hostOf(info && info.ws);

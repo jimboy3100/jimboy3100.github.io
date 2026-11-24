@@ -575,7 +575,7 @@
     /* ------------------------------------------------------------------ */
     /* Playback driver                                                     */
     /* ------------------------------------------------------------------ */
-    var P = { driving: false, playing: false, pos: 0, speed: 1, baseWall: 0, baseT: 0, timer: 0, ff: null, pending: null, warned: false, inMs: null, outMs: null };
+    var P = { driving: false, playing: false, pos: 0, speed: 1, baseWall: 0, baseT: 0, timer: 0, ff: null, pending: null, warnCount: 0, inMs: null, outMs: null };
     var SPEEDS = [0.25, 0.5, 1, 2, 4];
     var OPT = { cur: true, spl: true, compact: true, speed: 1, sort: 'new' };
     try {
@@ -610,7 +610,8 @@
         var d = REC.arr[i], l = LM();
         if (!d || !l) return;
         try { l.handleMessage(d); } catch (e) {
-            if (!P.warned) { P.warned = true; console.warn('[Replay Studio] packet ' + i + ' failed:', e); }
+            /* P1 fix #48: allow up to 5 warnings per replay instead of silencing after the first */
+            if (P.warnCount < 5) { P.warnCount++; console.warn('[Replay Studio] packet ' + i + ' failed:', e); }
         }
     }
     function setPos(pos) {
@@ -744,7 +745,7 @@
         openRec(key);
         P.driving = true;
         P.playing = false;
-        P.warned = false;
+        P.warnCount = 0;
         setPos(0);
         applySkins(REC.spec);
         $('#stopReplaybtn').prop('disabled', false);
