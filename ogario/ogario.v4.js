@@ -16487,6 +16487,10 @@ var displayText = {
         'hk-chatMessage': 'Napisz wiadomosc na czacie',
         'hk-quickResp': 'Szybkie odrodzenie (respawn)',
         'hk-autoResp': 'Wlacz/wylacz auto odrodzenie',
+        'hk-pingHelp': 'Ping druzyny: Pomoc',
+        'hk-pingDanger': 'Ping druzyny: Niebezpieczenstwo',
+        'hk-pingGoHere': 'Ping druzyny: Idz tutaj',
+        'hk-pingVirus': 'Ping druzyny: Tu jest wirus',
         'hk-switchServerMode': 'Przelacz serwer [publiczny/prywatny]',
         'hk-showTargeting': 'Pokaz/ukryj panel namierzania',
         'hk-voiceChat': 'Glos do tekstu',
@@ -17018,6 +17022,10 @@ var displayText = {
         'hk-autoResp': 'Toggle auto respawn',
         'hk-quitGame': 'Quit game (Expanding Land)',
         'hk-wave': 'Send wave to teammates (Delta compatible)',
+        'hk-pingHelp': 'Team ping: Help',
+        'hk-pingDanger': 'Team ping: Danger',
+        'hk-pingGoHere': 'Team ping: Go here',
+        'hk-pingVirus': 'Team ping: Virus here',
         'hk-switchServerMode': 'Switch server [public/private]',
         'hk-showTargeting': 'Show/hide targeting panel',
         'hk-voiceChat': 'Voice to text',
@@ -26489,6 +26497,7 @@ function thelegendmodproject() {
                             this.teamPlayers[c].drawPosition(this.miniMapCtx, _tmMargin, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                         }
                     }
+                    if (LM._lmPings && LM._lmPings.length) this.drawLmPingsMiniMap(this.miniMapCtx, r, l, n);
                     if (this.deathLocations.length > 0) {
                         /* Expanding Land stores the raw position (updateDeathLocations): draw it
                          * with the own dot's offsets r/l, or it landed toward the top-left. */
@@ -27856,8 +27865,70 @@ function thelegendmodproject() {
             var color = '#00e6ff';
             var idx = this.checkPlayerID(playerID);
             if (idx !== null && this.teamPlayers[idx] && this.teamPlayers[idx].color) color = this.teamPlayers[idx].color;
+            /* hex only: anything else threw in the wave gradient and dropped whole frames */
+            if (typeof color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color)) color = '#00e6ff';
             if (lm.Waves.length > 30) lm.Waves.splice(0, lm.Waves.length - 30);
             lm.sendWaves(wx - (ogario.mapOffsetX || 0), wy - (ogario.mapOffsetY || 0), color, 1000, 'wave:' + playerID, false);
+            /* typed pings (5..8): also a short-lived label and minimap marker */
+            if (this.lmPingLabel(type)) this.addLmPing(wx - (ogario.mapOffsetX || 0), wy - (ogario.mapOffsetY || 0), type, color);
+        },
+        /* Typed team pings: fixed labels chosen by type (network text is never shown) */
+        lmPingLabel(type) {
+            switch (type) {
+                case 5: return '\u271A Help';
+                case 6: return '\u26A0 Danger';
+                case 7: return '\u279C Go here';
+                case 8: return '\u2739 Virus here';
+            }
+            return null;
+        },
+        addLmPing(x, y, type, color) {
+            var lm = window.legendmod;
+            var label = this.lmPingLabel(type);
+            if (!lm || !label || !Number.isFinite(x) || !Number.isFinite(y)) return;
+            if (typeof color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color)) color = '#00e6ff';
+            var list = lm._lmPings || (lm._lmPings = []);
+            list.push({ x: x, y: y, type: type, label: label, color: color, time: Date.now() });
+            if (list.length > 20) list.splice(0, list.length - 20);
+        },
+        /* hk-ping*: wave + label at the cursor, sent to teammates as opcode 45 with the type */
+        sendTeamPing(type) {
+            var lm = window.legendmod;
+            if (!lm || !lm.sendWaves || !Array.isArray(lm.Waves) || !this.lmPingLabel(type)) return;
+            var now = Date.now();
+            if (this._lmLastPing && now - this._lmLastPing < 500) return;
+            var x = lm.cursorX, y = lm.cursorY;
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+            this._lmLastPing = now;
+            var color = (typeof ogarcopythelb !== 'undefined' && ogarcopythelb && ogarcopythelb.color) || defaultSettings.splitRangeColor;
+            if (typeof color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color)) color = '#00e6ff';
+            if (lm.Waves.length > 30) lm.Waves.splice(0, lm.Waves.length - 30);
+            lm.sendWaves(x, y, color, 1000, 'wave:self', false);
+            this.addLmPing(x, y, type, color);
+            try {
+                this.sendWavePing(x + (ogario.mapOffsetX || 0), y + (ogario.mapOffsetY || 0), type);
+            } catch (e) { }
+        },
+        drawLmPingsMiniMap(ctx, offX, offY, scale) {
+            var list = LM._lmPings, now = Date.now();
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 10px sans-serif';
+            for (var i = 0; i < list.length; i++) {
+                var p = list[i], age = now - p.time;
+                if (age > 4000 || age < 0) continue;
+                var px = (p.x + offX) * scale, py = (p.y + offY) * scale;
+                ctx.globalAlpha = age < 3000 ? 1 : (4000 - age) / 1000;
+                ctx.strokeStyle = p.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(px, py, 4 + (age % 1000) / 200, 0, this.pi2, false);
+                ctx.stroke();
+                ctx.fillStyle = p.color;
+                ctx.fillText(p.label.charAt(0), px, py - 11);
+            }
+            ctx.restore();
         },
         /* hk-wave: show a wave at the cursor and send it to teammates (Legend Mod and Delta) */
         sendTeamWave() {
@@ -72032,6 +72103,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 this.drawRMB();
 
+                if (LM._lmPings && LM._lmPings.length) this.drawLmPings();
+
 
                 if (
                     window
@@ -72959,6 +73032,36 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             wave.time = Date.now();
             LM.Waves.push(wave)		  		*/
+        },
+        /* typed team pings: label at the ping position, fades after ~4 s */
+        drawLmPings() {
+            var list = LM._lmPings;
+            var ctx = this.ctx, now = Date.now(), k = 0;
+            var sc = this.scale > 0 ? this.scale : 1;
+            var fs = 18 / sc;
+            ctx.save();
+            ctx.font = 'bold ' + fs + 'px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.lineWidth = 4 / sc;
+            ctx.strokeStyle = '#000000';
+            for (var i = 0; i < list.length; i++) {
+                var p = list[i];
+                if (!p) continue;
+                var age = now - p.time;
+                if (age > 4000 || age < 0) continue;
+                var pt = this.deformWorldPoint(p.x, p.y, this._elMapScratch);
+                ctx.globalAlpha = age < 3000 ? 1 : (4000 - age) / 1000;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, 6 / sc, 0, this.pi2, false);
+                ctx.fill();
+                ctx.strokeText(p.label, pt.x, pt.y - 10 / sc);
+                ctx.fillText(p.label, pt.x, pt.y - 10 / sc);
+                list[k++] = p;
+            }
+            list.length = k;
+            ctx.restore();
         },
         drawFBTracking(ctx, players, x, y) { //Yahnych
             for (let length = 0; length < players.length; length++) {
