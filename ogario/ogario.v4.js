@@ -25492,15 +25492,18 @@ function thelegendmodproject() {
                 }
             }
             if (options.ogarioHotkeys) options.ogarioHotkeysKnown = Object.keys(hotkeysCommand);
-            /* Issue #15: include Performance Mode backup and preset undo snapshot so they survive a browser wipe */
-            try {
-                var _expPerfBak = window.localStorage.getItem('lmPerfBackup');
-                if (_expPerfBak) options.lmPerfBackup = JSON.parse(_expPerfBak);
-            } catch (e) { }
-            try {
-                var _expPresetUndo = window.localStorage.getItem('lmPresetUndo');
-                if (_expPresetUndo) options.lmPresetUndo = JSON.parse(_expPresetUndo);
-            } catch (e) { }
+            /* Issue #15: include Performance Mode backup and preset undo snapshot so they survive a browser wipe.
+             * They hold gameplay settings, so they go with those only (the import reads them only
+             * with those too). The phone controls (LMmobile gear panel: joystick sensitivity,
+             * button size and opacity, toggles) go with them as well. */
+            if (options.ogarioSettings) {
+                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs'].forEach(function (k) {
+                    try {
+                        var v = JSON.parse(window.localStorage.getItem(k) || 'null');
+                        if (v && typeof v === 'object' && !Array.isArray(v)) options[k] = v;
+                    } catch (e) { }
+                });
+            }
             options = JSON.stringify(options);
             $('#export-settings').val(options);
             $('#import-settings').val('');
@@ -25597,6 +25600,10 @@ function thelegendmodproject() {
                             _impStep = 'lmPresetUndo';
                             if (_impObject(importValue.lmPresetUndo)) _impSet('lmPresetUndo', JSON.stringify(importValue.lmPresetUndo));
                             else _impRemove('lmPresetUndo');
+                            /* phone controls: only when the export has them (one from a computer has
+                             * none and leaves this phone's as they are). LMmobile checks the values. */
+                            _impStep = 'lm-mobile-prefs';
+                            if (_impObject(importValue['lm-mobile-prefs'])) _impSet('lm-mobile-prefs', JSON.stringify(importValue['lm-mobile-prefs']));
                         }
                     }
                 } catch (writeErr) {
@@ -43256,8 +43263,26 @@ function thelegendmodproject() {
                     break;
             }
         },
+        /* Every game packet (live and replay) comes here. An empty packet is ignored, and a
+         * handler that reads past the end of a truncated or unexpected packet (RangeError
+         * from the DataView) drops that packet with a warning instead of an uncaught error
+         * in the socket handler. The handlers below check their lengths where a short packet
+         * would leave half-updated state (leaderboard, friends, ghost cells, view). */
         handleMessage(data) {
-            //this.pingTimer();		
+            if (!data || typeof data.getUint8 !== 'function' || !(data.byteLength >= 1)) return;
+            try {
+                this._lmHandlePacket(data);
+            } catch (e) {
+                if (!(e instanceof RangeError)) throw e;
+                var _lmNow = Date.now();
+                if (!(this._lmBadPacketAt > _lmNow - 5000)) {
+                    this._lmBadPacketAt = _lmNow;
+                    console.warn('[Protocol] Ignoring a truncated packet (opcode ' + data.getUint8(0) + ', ' + data.byteLength + ' bytes):', e.message);
+                }
+            }
+        },
+        _lmHandlePacket(data) {
+            //this.pingTimer();
             /* Removed: every packet was copied and posted to the worker, which only
              * handles 'CULL' messages and ignored NETWORK_PACKET (1-3 MB/s of garbage). */
             /* Cap one recording at ~1 hour of packets so long sessions cannot exhaust memory. */
@@ -43298,7 +43323,8 @@ function thelegendmodproject() {
                     window.testobjectsOpcode5 = data;
                     this.fbOnline = [];
 
-                    for (; s < data.byteLength;) {
+                    /* {u32 id, fbId\0} records: stop at a record cut short (no id left) */
+                    for (; s + 4 <= data.byteLength;) {
                         let user = {};
 
                         user.id = data.getUint32(s, true);
@@ -43437,16 +43463,24 @@ function thelegendmodproject() {
                     break;
                 case 53:
                     window.testobjectsOpcode53 = data;
+                    /* Read the whole board first and replace the old one only when it is complete:
+                     * a record cut short (id flag without its 4 bytes) keeps the previous board
+                     * instead of an empty or half one. */
+                    var _lbPrev = { leaderboard: this.leaderboard, friends: this.friends, playerPosition: this.playerPosition };
                     this.leaderboard = [];
                     this.friends = this.fbOnline.length;
 
                     this.playerPosition = 0;
+                    var _lbCut = false;
                     if (data.getUint8(0) === 54) {
-                        const pos = data.getUint16(s, true);
-                        s += 2;
-                        //console.log('Friends:', pos)
+                        if (s + 2 > data.byteLength) _lbCut = true;
+                        else {
+                            const pos = data.getUint16(s, true);
+                            s += 2;
+                            //console.log('Friends:', pos)
+                        }
                     }
-                    for (let position = 0; s < data.byteLength;) {
+                    for (let position = 0; !_lbCut && s < data.byteLength;) {
                         var flags = data.getUint8(s++);
                         let nick = '';
                         let id = 0;
@@ -43457,6 +43491,7 @@ function thelegendmodproject() {
                             nick = encode();
                         }
                         if (flags & 4) {
+                            if (s + 4 > data.byteLength) { _lbCut = true; break; }
                             id = data.getUint32(s, true);
                             s += 4;
                         }
@@ -43486,10 +43521,18 @@ function thelegendmodproject() {
                             isFBFriend: isFBFriend
                         });
                     }
+                    if (_lbCut) {
+                        this.leaderboard = _lbPrev.leaderboard;
+                        this.friends = _lbPrev.friends;
+                        this.playerPosition = _lbPrev.playerPosition;
+                        console.warn('[Protocol] Ignoring truncated leaderboard packet:', data.byteLength);
+                        break;
+                    }
                     this.handleLeaderboard();
                     break;
                 case 49: //leaderboard for specific private servers
                     window.testobjectsOpcode49 = data;
+                    var _lb49Prev = this.leaderboard;
                     this.leaderboard = [];
                     /* Garix (Delta GarixProtocol case 49): {u16 pID until 0, name\0, color\0},
                      * then u16 count ghost cells {u16 pID, i32 x, i32 y, u32 mass, u8}.
@@ -43513,6 +43556,8 @@ function thelegendmodproject() {
                         this.handleLeaderboard();
                         break;
                     }
+                    /* too short for the count: keep the previous board (it was emptied above) */
+                    if (s + 4 > data.byteLength) { this.leaderboard = _lb49Prev || []; break; }
                     var count = data.getUint32(s, true);
                     s += 4;
                     if (count > 200 || s > data.byteLength) { break; }

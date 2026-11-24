@@ -493,10 +493,16 @@
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
-                if (saved.jsSensitivity !== undefined) prefs.jsSensitivity = saved.jsSensitivity;
-                if (saved.btnOpacity !== undefined) prefs.btnOpacity = saved.btnOpacity;
-                if (saved.btnScale !== undefined) prefs.btnScale = saved.btnScale;
-                if (saved.hudFade !== undefined) prefs.hudFade = saved.hudFade;
+                /* numbers within their slider's range (a settings import can bring these too):
+                 * a string or NaN here broke the button layout */
+                var num = function (v, min, max, def) {
+                    v = typeof v === 'string' && v.trim() !== '' ? Number(v) : v;
+                    return typeof v === 'number' && isFinite(v) ? Math.min(max, Math.max(min, v)) : def;
+                };
+                if (saved.jsSensitivity !== undefined) prefs.jsSensitivity = num(saved.jsSensitivity, 100, 600, prefs.jsSensitivity);
+                if (saved.btnOpacity !== undefined) prefs.btnOpacity = num(saved.btnOpacity, 0.2, 1, prefs.btnOpacity);
+                if (saved.btnScale !== undefined) prefs.btnScale = num(saved.btnScale, 0.5, 1.5, prefs.btnScale);
+                if (saved.hudFade !== undefined) prefs.hudFade = num(saved.hudFade, 0, 1, prefs.hudFade);
                 if (saved.targetMode !== undefined) prefs.targetMode = !!saved.targetMode;
                 if (saved.swipeSplit !== undefined) prefs.swipeSplit = !!saved.swipeSplit;
                 if (saved.muteVibration !== undefined) prefs.muteVibration = !!saved.muteVibration;
