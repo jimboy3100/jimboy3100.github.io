@@ -21703,6 +21703,8 @@ var _lmLabelI18n = {
         "lmAdaptiveLevel0":"Προσαρμοστικές επιδόσεις: όλα τα εφέ επανήλθαν","lmAdaptiveLevel1":"Προσαρμοστικές επιδόσεις: επίπεδο 1 (διακοσμητικά εφέ ανενεργά προσωρινά)",
         "lmAdaptiveLevel2":"Προσαρμοστικές επιδόσεις: επίπεδο 2 (jelly physics και video skins ανενεργά προσωρινά)","lmAdaptiveLevel3":"Προσαρμοστικές επιδόσεις: επίπεδο 3 (χαμηλότερη ανάλυση προσωρινά)",
         "lmPerfCopy":"Αντιγραφή αναφοράς","lmPerfCopied":"Η αναφορά αντιγράφηκε","lmNetClear":"Διαγραφή ιστορικού","lmNetQuality":"Ποιότητα δικτύου (αυτή η συνεδρία)","lmNetSessions":"Τελευταίες συνεδρίες",
+        "lmPerfEvents":"Συμβάντα (τα νεότερα πρώτα)","lmPerfFreezes":"Παγώματα","lmPerfWorst":"χειρότερο","lmPerfLast":"τελευταίο",
+        "lmPerfKeepRec":"Συνέχιση καταγραφής όταν κλείνει","lmPerfNoEvents":"Κανένα πάγωμα ή άλλο συμβάν ακόμα.",
         "cellContours":"Μόνο περιγράμματα κυττάρων","noNames":"Χωρίς ονόματα","noColors":"Χωρίς χρώματα","showMass":"Εμφάνιση μάζας",
         "showChat":"Εμφάνιση συνομιλίας πάνω στα κύτταρα","showChatMyOwn":"Εμφάνιση συνομιλίας πάνω στα δικά μου κύτταρα",
         "oneColoredSpectator":"MultiBox: λιγότερα κύτταρα στην απόδοση","multiBoxShadow":"Παίκτης 1 & 2","multiKeepMoving":"Ο ανενεργός συνεχίζει να κινείται",
@@ -41534,6 +41536,7 @@ function thelegendmodproject() {
              * This prevents the counter from resetting on flapping connections
              * (open → immediate close → open → immediate close loops). */
             this._connOpenTime = Date.now();
+            if (this === window.legendmod) this._lmResetFreezeDetector();
             /* Network quality history (ogario/modules/perf.js; nothing kept while it is off) */
             if (window.LMPerf && this === window.legendmod) { try { window.LMPerf.netEvent('open', { ws: this.ws }); } catch (e) { } }
             var self = this;
@@ -42360,12 +42363,23 @@ function thelegendmodproject() {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket error');
             this.flushCellsData();
         },
+        /* Freeze detector (drawRender.render): a new connection or a closed one starts it again,
+         * so the last world update and the latches of the previous server do not carry over */
+        _lmResetFreezeDetector() {
+            this._lmLastWorldUpdate = 0;
+            if (window.drawRender) {
+                drawRender._lmStallLogged = 0;
+                drawRender._lmFreezeLogged = 0;
+                drawRender._lmStallMax = 0;
+            }
+        },
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close',
                 /* why: close code/reason, how long it was open, handshake/login state */
                 t ? ('code ' + t.code + (t.reason ? ' reason "' + t.reason + '"' : '') + (t.wasClean === false ? ' (not clean)' : '')) : '',
                 this._connOpenTime ? ('after ' + (Date.now() - this._connOpenTime) + ' ms open') : 'before open',
                 this.clientKey ? '(241 key ok)' : '(no 241 key)', LM.loginConfirmed ? '(logged in)' : '(not logged in)');
+            if (this === window.legendmod) this._lmResetFreezeDetector();
             if (window.LMPerf && this === window.legendmod) {
                 try { window.LMPerf.netEvent('close', { code: t && t.code, reason: t && t.reason, wasClean: t && t.wasClean, openMs: this._connOpenTime ? Date.now() - this._connOpenTime : 0 }); } catch (e) { }
             }
@@ -81899,6 +81913,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
+            /* Performance diagnostics (ogario/modules/perf.js; null while it is off): the time
+             * of every frame callback, also of those the FPS limit skips below */
+            var _lmPf = window._lmPerfFrame;
+            if (_lmPf) { try { _lmPf.raf(performance.now()); } catch (_lmPfE) { } }
             /* Optional FPS limit (setting "FPS limit", 0 = off): skip this display refresh
              * when the previous frame was drawn too recently. Camera and zoom use the real
              * frame time, so movement speed does not change. */
@@ -81923,12 +81941,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
             try {
                 drawRender.countFps();
                 /* frame timing for Adaptive performance / Performance diagnostics
-                 * (ogario/modules/perf.js); null while both are off */
-                var _lmPf = window._lmPerfFrame;
+                 * (ogario/modules/perf.js); also when the frame throws (its time and the
+                 * error are kept, the error still goes to the handler below) */
                 if (_lmPf) {
-                    var _lmPt0 = performance.now();
-                    drawRender.renderFrame();
-                    _lmPf(_lmPt0, performance.now());
+                    var _lmPt0 = performance.now(), _lmPerr = null;
+                    try {
+                        drawRender.renderFrame();
+                    } catch (_lmFrameError) {
+                        _lmPerr = _lmFrameError || 'error';
+                        throw _lmFrameError;
+                    } finally {
+                        try { _lmPf(_lmPt0, performance.now(), _lmPerr); } catch (_lmPfE2) { }
+                    }
                 } else drawRender.renderFrame();
             } catch (renderError) {
                 if (!drawRender._lastRenderErrorLog || Date.now() - drawRender._lastRenderErrorLog > 5000) {
@@ -81956,6 +81980,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var _fl = window.legendmod;
                     if (_fl && _fl._lmLastWorldUpdate && !document.hidden && _fl.isSocketOpen && _fl.isSocketOpen()) {
                         var _gap = Date.now() - _fl._lmLastWorldUpdate;
+                        /* the longest gap of this stall, for the diagnostics event list */
+                        if (_gap > 200 && _gap > (drawRender._lmStallMax || 0)) drawRender._lmStallMax = _gap;
                         /* Short stall tracker: log stalls 200ms–3s that repeat */
                         if (_gap > 200 && _gap <= 3000 && !drawRender._lmStallLogged) {
                             drawRender._lmStallLogged = Date.now();
@@ -81971,11 +81997,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         } else if (_gap < 100 && drawRender._lmStallLogged) {
                             drawRender._lmStallLogged = 0;
                         }
+                        if (_gap < 100 && drawRender._lmStallMax) {
+                            /* Performance diagnostics: world updates stopped this long (kept only
+                             * while it measures); next to the freezes it shows network vs. game */
+                            if (drawRender._lmStallMax >= 250 && window.LMPerf && window.LMPerf.event) {
+                                try { window.LMPerf.event('packet gap', drawRender._lmStallMax, 'no world update' + (_fl.play ? ', playing' : '')); } catch (_lmEvE) { }
+                            }
+                            drawRender._lmStallMax = 0;
+                        }
                         /* Major freeze: >3 s */
                         if (_gap > 3000 && !drawRender._lmFreezeLogged) {
                             drawRender._lmFreezeLogged = Date.now();
+                            /* host only: the address may carry a token */
+                            var _flHost = (/^[a-z][a-z0-9+.\-]*:\/\/(?:[^\/?#@]*@)?(\[[^\]\/?#]*\]|[^\/?#:]+)/i.exec(String(_fl.ws || '')) || [])[1] || '';
                             console.warn('[LM FREEZE] No world update for ' + _gap + ' ms while connected', {
-                                server: _fl.ws, serverType: _fl.serverType,
+                                server: _flHost, serverType: _fl.serverType,
                                 readyState: _fl.socket && _fl.socket.readyState,
                                 bufferedAmount: _fl.socket && _fl.socket.bufferedAmount,
                                 pps: _fl.pps, playing: !!_fl.play,
