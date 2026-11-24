@@ -1131,6 +1131,16 @@ window.lmT = (function () {
         "eventLeft": {"en":"{0}: {1} left","el":"{0}: απομένουν {1}","es":"{0}: quedan {1}","bg":"{0}: остават {1}","fr":"{0} : encore {1}","ar":"{0}: متبقٍ {1}","zh":"{0}：剩餘 {1}","ru":"{0}: осталось {1}","de":"{0}: noch {1}","tr":"{0}: {1} kaldı","pl":"{0}: zostało {1}","nl":"{0}: nog {1}"},
         "lmPresetReducedMotion": {"en":"Reduced motion","el":"Μειωμένη κίνηση","es":"Movimiento reducido","bg":"Намалено движение","fr":"Mouvement réduit","ar":"تقليل الحركة","zh":"減少動態效果","ru":"Меньше движения","de":"Weniger Bewegung","tr":"Azaltılmış hareket","pl":"Ograniczony ruch","nl":"Minder beweging"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "leaguesResetsIn": {"en":"Resets in {t}","el":"Επαναφορά σε {t}","es":"Se reinicia en {t}","bg":"Нулиране след {t}","fr":"Réinitialisation dans {t}","ar":"إعادة التعيين خلال {t}","zh":"{t} 後重置","ru":"Сброс через {t}","de":"Zurücksetzung in {t}","tr":"{t} sonra sıfırlanır","pl":"Reset za {t}","nl":"Reset over {t}"},
+        "avgMass": {"en":"Average Mass","el":"Μέση μάζα","es":"Masa media","bg":"Средна маса","fr":"Masse moyenne","ar":"متوسط الكتلة","zh":"平均質量","ru":"Средняя масса","de":"Durchschnittliche Masse","tr":"Ortalama kütle","pl":"Średnia masa","nl":"Gemiddelde massa"},
+        "leaguePassYou1": {"en":"{name} passed you in the World leaderboard!","el":"{name} σας ξεπέρασε στην Παγκόσμια κατάταξη!","es":"¡{name} te superó en la clasificación Mundial!","bg":"{name} те изпревари в Световната класация!","fr":"{name} vous a dépassé dans le classement Mondial !","ar":"{name} تجاوزك في الترتيب العالمي!","zh":"{name} 在世界排行榜上超越了你！","ru":"{name} обогнал вас в мировом рейтинге!","de":"{name} hat dich in der Weltrangliste überholt!","tr":"{name} Dünya sıralamasında seni geçti!","pl":"{name} wyprzedził cię w rankingu światowym!","nl":"{name} heeft je ingehaald in het Wereldklassement!"},
+        "leaguePassYou2": {"en":"{name} passed you in the Country leaderboard!","el":"{name} σας ξεπέρασε στην κατάταξη Χώρας!","es":"¡{name} te superó en la clasificación de País!","bg":"{name} те изпревари в класацията на Държавата!","fr":"{name} vous a dépassé dans le classement du Pays !","ar":"{name} تجاوزك في ترتيب الدولة!","zh":"{name} 在國家排行榜上超越了你！","ru":"{name} обогнал вас в рейтинге страны!","de":"{name} hat dich in der Länderrangliste überholt!","tr":"{name} Ülke sıralamasında seni geçti!","pl":"{name} wyprzedził cię w rankingu kraju!","nl":"{name} heeft je ingehaald in het Landenklassement!"},
+        "leaguePassYou3": {"en":"{name} passed you in your League!","el":"{name} σας ξεπέρασε στο Πρωτάθλημά σας!","es":"¡{name} te superó en tu Liga!","bg":"{name} те изпревари в твоята Лига!","fr":"{name} vous a dépassé dans votre Ligue !","ar":"{name} تجاوزك في دوريك!","zh":"{name} 在你的聯賽中超越了你！","ru":"{name} обогнал вас в вашей лиге!","de":"{name} hat dich in deiner Liga überholt!","tr":"{name} Liginde seni geçti!","pl":"{name} wyprzedził cię w twojej lidze!","nl":"{name} heeft je ingehaald in je Competitie!"},
+        "leaguePassYou4": {"en":"{name} passed you in the Friends leaderboard!","el":"{name} σας ξεπέρασε στην κατάταξη Φίλων!","es":"¡{name} te superó en la clasificación de Amigos!","bg":"{name} те изпревари в класацията на Приятелите!","fr":"{name} vous a dépassé dans le classement des Amis !","ar":"{name} تجاوزك في ترتيب الأصدقاء!","zh":"{name} 在好友排行榜上超越了你！","ru":"{name} обогнал вас в рейтинге друзей!","de":"{name} hat dich in der Freundesrangliste überholt!","tr":"{name} Arkadaş sıralamasında seni geçti!","pl":"{name} wyprzedził cię w rankingu znajomych!","nl":"{name} heeft je ingehaald in het Vriendenklassement!"},
+        "leaguePassMe1": {"en":"You passed {name} in the World leaderboard!","el":"Ξεπεράσατε τον παίκτη {name} στην Παγκόσμια κατάταξη!","es":"¡Superaste a {name} en la clasificación Mundial!","bg":"Изпревари {name} в Световната класация!","fr":"Vous avez dépassé {name} dans le classement Mondial !","ar":"لقد تجاوزت {name} في الترتيب العالمي!","zh":"你在世界排行榜上超越了 {name}！","ru":"Вы обогнали {name} в мировом рейтинге!","de":"Du hast {name} in der Weltrangliste überholt!","tr":"Dünya sıralamasında {name} oyuncusunu geçtin!","pl":"Wyprzedziłeś {name} w rankingu światowym!","nl":"Je hebt {name} ingehaald in het Wereldklassement!"},
+        "leaguePassMe2": {"en":"You passed {name} in the Country leaderboard!","el":"Ξεπεράσατε τον παίκτη {name} στην κατάταξη Χώρας!","es":"¡Superaste a {name} en la clasificación de País!","bg":"Изпревари {name} в класацията на Държавата!","fr":"Vous avez dépassé {name} dans le classement du Pays !","ar":"لقد تجاوزت {name} في ترتيب الدولة!","zh":"你在國家排行榜上超越了 {name}！","ru":"Вы обогнали {name} в рейтинге страны!","de":"Du hast {name} in der Länderrangliste überholt!","tr":"Ülke sıralamasında {name} oyuncusunu geçtin!","pl":"Wyprzedziłeś {name} w rankingu kraju!","nl":"Je hebt {name} ingehaald in het Landenklassement!"},
+        "leaguePassMe3": {"en":"You passed {name} in your League!","el":"Ξεπεράσατε τον παίκτη {name} στο Πρωτάθλημά σας!","es":"¡Superaste a {name} en tu Liga!","bg":"Изпревари {name} в твоята Лига!","fr":"Vous avez dépassé {name} dans votre Ligue !","ar":"لقد تجاوزت {name} في دوريك!","zh":"你在你的聯賽中超越了 {name}！","ru":"Вы обогнали {name} в вашей лиге!","de":"Du hast {name} in deiner Liga überholt!","tr":"Liginde {name} oyuncusunu geçtin!","pl":"Wyprzedziłeś {name} w twojej lidze!","nl":"Je hebt {name} ingehaald in je Competitie!"},
+        "leaguePassMe4": {"en":"You passed {name} in the Friends leaderboard!","el":"Ξεπεράσατε τον παίκτη {name} στην κατάταξη Φίλων!","es":"¡Superaste a {name} en la clasificación de Amigos!","bg":"Изпревари {name} в класацията на Приятелите!","fr":"Vous avez dépassé {name} dans le classement des Amis !","ar":"لقد تجاوزت {name} في ترتيب الأصدقاء!","zh":"你在好友排行榜上超越了 {name}！","ru":"Вы обогнали {name} в рейтинге друзей!","de":"Du hast {name} in der Freundesrangliste überholt!","tr":"Arkadaş sıralamasında {name} oyuncusunu geçtin!","pl":"Wyprzedziłeś {name} w rankingu znajomych!","nl":"Je hebt {name} ingehaald in het Vriendenklassement!"},
         "room": {"en":"Private room","el":"Ιδιωτικό δωμάτιο","es":"Sala privada","bg":"Частна стая","fr":"Salon privé","ar":"غرفة خاصة","zh":"私人房間","ru":"Приватная комната","de":"Privater Raum","tr":"Özel oda","pl":"Prywatny pokój","nl":"Privékamer"},
         "roomCreate": {"en":"Create","el":"Δημιουργία","es":"Crear","bg":"Създай","fr":"Créer","ar":"إنشاء","zh":"建立","ru":"Создать","de":"Erstellen","tr":"Oluştur","pl":"Utwórz","nl":"Maken"},
         "roomJoin": {"en":"Join","el":"Είσοδος","es":"Unirse","bg":"Влез","fr":"Rejoindre","ar":"انضمام","zh":"加入","ru":"Войти","de":"Beitreten","tr":"Katıl","pl":"Dołącz","nl":"Deelnemen"},
@@ -1303,6 +1313,12 @@ window.lmT = (function () {
         return row[code] || row.en || key;
     };
 })();
+/* League reset countdown: secondsUntilReset (login field 19, leagues reply field 6) kept as an absolute time. */
+window._lmNoteLeaguesReset = function (info) {
+    if (!info) return;
+    var secs = Number(info.secondsUntilReset) || 0;
+    window._lmLeaguesResetAt = secs > 0 ? Date.now() + secs * 1000 : 0;
+};
 /* Chat popups had no limit: a spammer could cover the screen for 15 s per message.
  * Keep the newest 6 chat/command popups (system popups are not touched). */
 window._lmTrimChatToasts = function () {
@@ -45019,6 +45035,7 @@ function thelegendmodproject() {
                     var u = r.uncompressedData.loginResponseField;
                     /* Field 19: the official client enables Leagues only when the login carries it. */
                     window._lmLoginHasLeaguesInfo = !!(u && u.userLeaguesInfo);
+                    try { window._lmNoteLeaguesReset(u && u.userLeaguesInfo); } catch (e) { }
                     /* Preserve previous coins/dna/trophy across re-login to prevent
                      * the UI from flashing to 0 between reset and updateWalletInfo */
                     /* Only carry values over for the SAME account; after an account
@@ -46000,7 +46017,8 @@ function thelegendmodproject() {
                                     level: Number(st.level) || 1,
                                     highestMass: Number(st.userStats.highestMass) || 0,
                                     mostCellsEaten: Number(st.userStats.mostCellsEaten) || 0,
-                                    gamesPlayed: Number(st.userStats.gamesPlayed) || 0
+                                    gamesPlayed: Number(st.userStats.gamesPlayed) || 0,
+                                    allTimeScore: (function (v) { return (v && typeof v === 'object' && v.toNumber) ? v.toNumber() : (v == null ? null : Number(v)); })(st.userStats.allTimeScore)
                                 });
                             } else {
                                 toastr.info('<b>[STATS]:</b> Level ' + (st.level || 1) + ' | Mass Consumed: ' + stMass.toLocaleString() + ' | Highest Mass: ' + (st.userStats.highestMass || 0));
@@ -46373,6 +46391,7 @@ function thelegendmodproject() {
                     try {
                         var lr = r.uncompressedData.userLeaguesInfoResponseField;
                         if (lr) {
+                            try { window._lmNoteLeaguesReset(lr.userLeaguesInfo); } catch (e) { }
                             var responseRequestType = Number(lr.leagueRequestType);
                             if (responseRequestType === 1 || responseRequestType === 2) {
                                 window._lmTakePendingLeagueRequest(responseRequestType);
@@ -46425,9 +46444,18 @@ function thelegendmodproject() {
                             var lpuId = function (id) { id = String(id || '').trim(); var k = id.lastIndexOf('$'); return k >= 0 ? id.slice(k + 1) : id; };
                             var myUserId = lpuId(this.user && this.user.userId);
                             var isMe = function (p) { return !!(p && myUserId && p.userId && lpuId(p.userId) === myUserId); };
+                            /* Name the leaderboard like the official notifications (leagueType 1 world,
+                             * 2 country, 3 league, 4 friends); other values keep the generic text. */
+                            var lpuType = Number(lpu.leagueType);
+                            if (!(lpuType >= 1 && lpuType <= 4)) lpuType = 0;
+                            var lpuSay = function (key, en, name) { return _lmTH(key + lpuType, en).replace('{name}', function () { return name; }); };
                             if (isMe(passedBy) && passedWho && passedWho.displayName) {
+                                if (lpuType) toastr.info('<b>[LEAGUE]:</b> ' + lpuSay('leaguePassMe', 'You passed {name}!', application.escapeHTML(String(passedWho.displayName))));
+                                else
                                 toastr.info('<b>[LEAGUE]:</b> You passed ' + application.escapeHTML(String(passedWho.displayName)) + ' in the league!');
                             } else if (passedBy && passedBy.displayName && !isMe(passedBy)) {
+                                if (lpuType) toastr.info('<b>[LEAGUE]:</b> ' + lpuSay('leaguePassYou', '{name} passed you!', application.escapeHTML(String(passedBy.displayName))));
+                                else
                                 toastr.info('<b>[LEAGUE]:</b> ' + application.escapeHTML(String(passedBy.displayName)) + ' passed you in the league!');
                             }
                             /* Our rank, when the server filled it in on our entry. */
@@ -49926,6 +49954,8 @@ function thelegendmodproject() {
             var _lmLta = Math.max(0, Math.floor(longestTimeAlive));
             var _lmLtaText = (_lmLta >= 3600 ? Math.floor(_lmLta / 3600) + 'h ' : '') + ('0' + Math.floor(_lmLta % 3600 / 60)).slice(-2) + 'm ' + ('0' + _lmLta % 60).slice(-2) + 's';
             var mostCellsEaten = Number(s.mostCellsEaten) || 0;
+            /* Official "Average mass reached": allTimeScore / gamesPlayed; a dash without games. */
+            var _lmAvgMass = (gamesPlayed > 0 && rawAllTimeScore !== null && !isNaN(rawAllTimeScore)) ? Math.floor(rawAllTimeScore / gamesPlayed) : '\u2014';
 
             if (lmScoreVal > 40) {
                 PremiumUsersLMscore();
@@ -49937,6 +49967,7 @@ function thelegendmodproject() {
             $("#stats-content").html(`
 All time score     : ${allTimeScore}<br/>
 Games played      : ${gamesPlayed}<br/>
+${_lmTH('avgMass', 'Average mass')}      : ${_lmAvgMass}<br/>
 Highest mass      : ${highestMass}<br/>
 Longest time alive : ${_lmLtaText}<br/>
 Mass consumed     : ${massConsumed}<br/>

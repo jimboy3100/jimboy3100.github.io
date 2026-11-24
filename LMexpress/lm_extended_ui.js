@@ -2636,6 +2636,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <div style="width: 100%; text-align: center; position: relative;">
                         <span style="font-size: 18px; font-weight: 800; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">${(window.lmT ? window.lmT('leaderboards') : 'Leaderboards').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+                        <div id="lm-leagues-reset" style="display: none; font-size: 11px; font-weight: 600; color: ${t.tc2}; margin-top: 2px;"></div>
                         <button type="button" aria-label="Close" class="lm-modal-close" style="position: absolute; right: 0; top: -4px;" onclick="document.getElementById('lm-leagues-modal').remove();">&times;</button>
                     </div>
                 </div>
@@ -2663,6 +2664,23 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             </div>
         `;
         document.body.appendChild(modal);
+
+        /* League reset countdown (official "Resets in"): one 1 s timer while this window is open. */
+        if (window._lmLeaguesResetTimer) clearInterval(window._lmLeaguesResetTimer);
+        var resetTick = function () {
+            var el = document.getElementById('lm-leagues-reset');
+            if (!el) { clearInterval(window._lmLeaguesResetTimer); window._lmLeaguesResetTimer = null; return; }
+            var secs = Math.floor(((Number(window._lmLeaguesResetAt) || 0) - Date.now()) / 1000);
+            var span = '';
+            if (secs >= 86400) span = Math.floor(secs / 86400) + 'd ' + Math.floor(secs % 86400 / 3600) + 'h';
+            else if (secs >= 3600) span = Math.floor(secs / 3600) + 'h ' + Math.floor(secs % 3600 / 60) + 'm';
+            else if (secs > 0) span = Math.ceil(secs / 60) + 'm';
+            var txt = span ? _lmUR('leaguesResetsIn', 'Resets in {t}').replace('{t}', span) : '';
+            if (el.textContent !== txt) el.textContent = txt;
+            el.style.display = txt ? '' : 'none';
+        };
+        resetTick();
+        window._lmLeaguesResetTimer = setInterval(resetTick, 1000);
 
         // Start a new current-week request generation for this modal.
         window._leaguesModalToken =
@@ -10944,6 +10962,11 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                             <span style="font-size: 24px;">🎮</span>
                             <div class="lm-stat-value" style="color: ${t.b4};">${(stats.gamesPlayed || 0).toLocaleString()}</div>
                             <div class="lm-stat-label">${_lmUE('gamesPlayed', 'Games Played')}</div>
+                        </div>
+                        <div class="lm-stat-card" style="grid-column: 1 / -1;">
+                            <span style="font-size: 24px;">⚖️</span>
+                            <div class="lm-stat-value" style="color: ${t.b2};">${(Number(stats.gamesPlayed) > 0 && stats.allTimeScore != null && isFinite(Number(stats.allTimeScore))) ? Math.floor(Number(stats.allTimeScore) / Number(stats.gamesPlayed)).toLocaleString() : '\u2014'}</div>
+                            <div class="lm-stat-label">${_lmUE('avgMass', 'Average Mass')}</div>
                         </div>
                     </div>
                 </div>
