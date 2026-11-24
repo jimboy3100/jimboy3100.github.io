@@ -199,6 +199,8 @@ message uncompressedData {
                 genericVideoAdRewardTokenRequestField genericVideoAdRewardTokenRequestField = 185;
 
                 genericVideoAdRewardTokenResponseField genericVideoAdRewardTokenResponseField = 186;
+
+                lmServerEventsField lmServerEventsField = 196;// Expanding Land only, after our opcode 240 caps bit 0x04 (not official)
 }
 message loginRequestField{
   int32 realm = 1;
@@ -348,6 +350,18 @@ message lmKiller {
   uint32 mass = 2;
   bool virus = 3;
   bool bot = 4;
+}
+message lmServerEventsField {// Expanding Land scheduled events (events.tsv)
+  uint32 serverTime = 1;// unix seconds
+  repeated lmServerEvent events = 2;// active ones first, then the next one
+}
+message lmServerEvent {
+  string name = 1;
+  string kind = 2;// xp, potion, food, virus
+  uint32 start = 3;// unix seconds
+  uint32 end = 4;
+  bool active = 5;
+  uint32 multiplier = 6;// x100
 }
 message productUpdates {
   int32 origin = 1;
