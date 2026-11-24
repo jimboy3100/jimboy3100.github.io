@@ -629,6 +629,21 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			/* result image of the last (or current) life, ogario/modules/companion.js; pressed again it closes */
+			'hk-companionResult': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-companionResult']) || 'Result image';
+				},
+				defaultKey: '',
+				keyDown() {
+					var c = window.LMCompanion;
+					if (!c || typeof c.resultImage !== 'function') return;
+					if (document.getElementById('lm-result-modal')) c.closeResult();
+					else c.resultImage();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-limitposition': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-limitposition']) || 'Limit Position';

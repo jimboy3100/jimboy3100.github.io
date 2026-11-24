@@ -18701,6 +18701,9 @@ var displayText = {
         commandCentreBar: 'Command Centre quick bar in game (the starred items; Ctrl+K opens the Command Centre)',
         'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
         'hk-serverManager': 'Servers window (favourites, recent, arenas): open / close',
+        companionLive: 'Stream overlay / second screen (companion.html, same browser)',
+        companionChat: 'Stream overlay: include chat lines',
+        'hk-companionResult': 'Result image (PNG of your last or current life)',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -21404,6 +21407,8 @@ var defaultmapsettings = {
     massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
     hideEventBanner: false,       /* hide the Expanding Land event countdown banner (shown only when the server sends events) */
     commandCentreBar: false,      /* quick bar with the Command Centre favourites in game (ogario/modules/commandcentre.js) */
+    companionLive: false,         /* live state on BroadcastChannel('legendmod-live') for companion.html (ogario/modules/companion.js) */
+    companionChat: false,         /* ... with the last chat lines too */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -21679,7 +21684,7 @@ var _lmLabelI18n = {
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
-        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο"
+        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -22984,6 +22989,11 @@ textLanguage.volVideo = textLanguage.volVideo || 'Video skins volume';
 textLanguage.volNotifications = textLanguage.volNotifications || 'Notification sounds volume';
 textLanguage.audioDucking = textLanguage.audioDucking || 'Audio ducking (lower video skins while a chat sound plays)';
 textLanguage['hk-notifCentre'] = textLanguage['hk-notifCentre'] || 'Open the notification centre';
+
+/* Stream overlay / result image: same fallback pattern. */
+textLanguage.companionLive = textLanguage.companionLive || 'Stream overlay / second screen (companion.html, same browser)';
+textLanguage.companionChat = textLanguage.companionChat || 'Stream overlay: include chat lines';
+textLanguage['hk-companionResult'] = textLanguage['hk-companionResult'] || 'Result image (PNG of your last or current life)';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -25947,6 +25957,11 @@ function thelegendmodproject() {
                         /* show / remove the bell now (the module also checks every 2 s) */
                         if (window.LMNotifications) window.LMNotifications.refresh();
                         break;
+                    case 'companionLive':
+                    case 'companionChat':
+                        /* start / stop publishing for companion.html */
+                        if (window.LMCompanion && window.LMCompanion.refresh) window.LMCompanion.refresh();
+                        break;
                     case 'chatSounds':
                         this.setChatSoundsBtn();
                         break;
@@ -26991,7 +27006,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27105,7 +27120,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar", "companionLive", "companionChat"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Multibox rings: per player on/off, color and size; both off = no rings. */
@@ -28573,6 +28588,12 @@ function thelegendmodproject() {
                 try {
                     this._lmNewBest = _lmPersonalBests({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 });
                     this._lmNewBest.at = Date.now();
+                    if ((this._lmNewBest.mass || this._lmNewBest.time) && window.LMEvents._has('personalBest')) {
+                        window.LMEvents.emit('personalBest', {
+                            time: _lmNow, mass: Math.round(+ogario.playerScore || 0), msAlive: this._lmLifeStartAt ? Math.max(0, _lmNow - this._lmLifeStartAt) : 0,
+                            massRecord: !!this._lmNewBest.mass, timeRecord: !!this._lmNewBest.time
+                        });
+                    }
                     if (window.legendmod && typeof legendmod._lmRefreshBestRow === 'function') legendmod._lmRefreshBestRow();
                 } catch (e) { }
             }
@@ -48086,6 +48107,15 @@ function thelegendmodproject() {
         },
         showSessionStats(u) {
             if (!u) return;
+            /* the last Game Over numbers, for the result image (ogario/modules/companion.js) */
+            this._lmLastSessionStats = u;
+            this._lmLastSessionStatsAt = Date.now();
+            if (window.LMEvents._has('gameStats')) {
+                window.LMEvents.emit('gameStats', {
+                    time: Date.now(), playersEaten: ~~u.playersEaten, topPosition: ~~u.topPosition, highestMass: ~~u.highestMass,
+                    finalMass: ~~u.finalMass, secondsAlive: ~~(u.timeTotal || u.longestTimeAlive)
+                });
+            }
 
             /* On Expanding Land, #main-panel must remain visible when showing game-over stats */
             if (
@@ -48200,6 +48230,12 @@ function thelegendmodproject() {
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:4px;background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' +
+                /* result image (ogario/modules/companion.js), mirrored to the share button */
+                (window.LMCompanion && window.LMCompanion.resultImage ? '<div id="lm-go-image" title="' + _lmTH('resultImage', 'Result image') + '" style="' +
+                'position:absolute;top:8px;right:40px;cursor:pointer;' +
+                'font-size:13px;color:' + tc2 + ';line-height:1;' +
+                'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
+                'border-radius:4px;background:rgba(255,255,255,0.05);">\ud83d\uddbc\ufe0f</div>' : '') +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
                 '☠️ ' + _lmTH('gameOver', 'Game Over') + '</div>' +
                 '</div>' +
@@ -48303,6 +48339,12 @@ function thelegendmodproject() {
                     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
                     else done(false);
                 } catch (err) { done(false); }
+            });
+            /* Result image of this life (ogario/modules/companion.js) */
+            var imageBtn = document.getElementById('lm-go-image');
+            if (imageBtn) imageBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (window.LMCompanion) window.LMCompanion.resultImage({ stats: u });
             });
             /* Share: the phone/browser share sheet, else a tweet in a new tab (cancelling the sheet is no error) */
             var shareBtn = document.getElementById('lm-go-share');
@@ -52722,6 +52764,13 @@ Most cells eaten   : ${mostCellsEaten}
                 if ((defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && (eaterID.isPlayerCellMulti ||
                     (window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[lmUnitCellId(eaterRawID, s.number)]; return !!(c && c.isPlayerCellMulti); }))) {
                     this._lmKillerMultiAt = Date.now();
+                }
+                /* LMEvents 'kill': one of my cells ate a cell of another player (not food, ejected
+                 * mass, viruses or my multibox units' cells); only built while someone listens */
+                if (eaterID && !_victimWasPlayer && window.LMEvents._has('kill') &&
+                    (eaterID.isPlayerCell || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID))) &&
+                    !victimID.isFood && !victimID.isEjected && !victimID.isVirus && !victimID.isPlayerCellMulti) {
+                    window.LMEvents.emit('kill', { time: Date.now(), nick: String(victimID.targetNick || '').slice(0, 60), mass: ~~(victimID.size * victimID.size / 100) });
                 }
                 /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces (all servers) */
                 if (eaterID && victimID.isVirus && (eaterID.isPlayerCell || eaterID.isPlayerCellMulti) && window.application &&
@@ -85465,5 +85514,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(serverManagerScript);
     } catch (e) {
         console.warn('[LM] Error loading server manager script:', e);
+    }
+    /* Stream overlay / second screen (publishes only while its option is on) + result image */
+    try {
+        var companionScript = document.createElement('script');
+        companionScript.type = 'text/javascript';
+        companionScript.src = 'https://www.legendmod.ml/ogario/modules/companion.js?v=' + (window.OgVer || '');
+        document.body.appendChild(companionScript);
+    } catch (e) {
+        console.warn('[LM] Error loading companion script:', e);
     }
 })();

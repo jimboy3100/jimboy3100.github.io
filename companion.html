@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<!-- only this site's own files; images (watermark, skin) from https URLs; no network requests -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src https: data:; base-uri 'none'; form-action 'none'">
+<title>Legend Mod companion</title>
+<style>
+:root { --accent: #01d9cc; --panel: rgba(4, 16, 28, 0.82); --text: #ffffff; --muted: rgba(255, 255, 255, 0.62); --line: rgba(255, 255, 255, 0.12); }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: #0b141e; color: var(--text); font: 16px/1.35 "Segoe UI", Ubuntu, Roboto, Arial, sans-serif; }
+body.bg-transparent { background: transparent; }
+body.bg-transparent .w { box-shadow: none; }
+#root { padding: 0.5em; transform-origin: 0 0; }
+.wrap { display: flex; gap: 0.5em; align-items: flex-start; }
+.layout-column { flex-direction: column; }
+.layout-row { flex-direction: row; flex-wrap: wrap; }
+.layout-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15em, 1fr)); }
+.w { background: var(--panel); border-top: 0.18em solid var(--accent); border-radius: 0.4em; padding: 0.5em 0.7em; min-width: 12em; box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.35); }
+.w h3 { margin: 0 0 0.3em; font-size: 0.72em; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.big { font-size: 2em; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.lbl { font-size: 0.72em; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.card { display: flex; gap: 1em; align-items: center; }
+.card .avatar { width: 3em; height: 3em; border-radius: 50%; object-fit: cover; border: 0.12em solid var(--accent); display: none; }
+.card .nick { font-weight: 700; max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card .stat { min-width: 4.5em; }
+.card .stat .big { font-size: 1.6em; }
+.card .stat.mass .big { color: var(--accent); }
+ol.lb { margin: 0; padding: 0 0 0 1.8em; font-size: 0.92em; }
+ol.lb li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 16em; }
+ol.lb li.me { color: var(--accent); font-weight: 700; }
+ul.list { list-style: none; margin: 0; padding: 0; font-size: 0.88em; }
+ul.list li { padding: 0.12em 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+ul.list li:last-child { border-bottom: 0; }
+ul.list .n { color: var(--accent); font-weight: 700; }
+ul.list li.cmd { color: #f3b6ff; }
+ul.list li.kill .n { color: #ff6b6b; }
+.muted { color: var(--muted); font-size: 0.8em; }
+table.stats { border-collapse: collapse; font-size: 0.9em; }
+table.stats td { padding: 0.1em 0.8em 0.1em 0; white-space: nowrap; }
+table.stats td:first-child { color: var(--muted); }
+table.stats td:last-child { font-weight: 700; font-variant-numeric: tabular-nums; max-width: 14em; overflow: hidden; text-overflow: ellipsis; }
+canvas.map { display: block; width: 14em; height: 14em; }
+#status { position: fixed; left: 0.5em; bottom: 0.5em; background: rgba(0, 0, 0, 0.7); color: #fff; padding: 0.3em 0.7em; border-radius: 1em; font-size: 0.8em; }
+#status.live { display: none; }
+#wm { position: fixed; display: flex; align-items: center; gap: 0.4em; pointer-events: none; font-weight: 700; text-shadow: 0 0 0.3em #000; }
+#wm img { max-height: 2.6em; max-width: 10em; }
+#wm.tl { top: 0.6em; left: 0.6em; } #wm.tr { top: 0.6em; right: 0.6em; } #wm.bl { bottom: 0.6em; left: 0.6em; } #wm.br { bottom: 0.6em; right: 0.6em; }
+/* setup page */
+#setup { max-width: 60em; margin: 0 auto 1em; background: #10202f; border-radius: 0.4em; padding: 0.8em 1em; font-size: 0.92em; }
+#setup h1 { font-size: 1.25em; margin: 0 0 0.4em; color: var(--accent); }
+#setup h2 { font-size: 1em; margin: 0.9em 0 0.3em; color: var(--accent); }
+#setup p, #setup li { margin: 0.25em 0; color: #d8e3ec; }
+#setup code { background: rgba(255, 255, 255, 0.08); padding: 0 0.25em; border-radius: 0.2em; overflow-wrap: anywhere; }
+#setup .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(14em, 1fr)); gap: 0.4em 1em; }
+#setup label { display: flex; align-items: center; gap: 0.4em; min-height: 2em; }
+#setup input[type=text], #setup input[type=number], #setup select { background: #0b141e; color: #fff; border: 1px solid #2a4258; border-radius: 0.25em; padding: 0.3em; font: inherit; min-width: 0; flex: 1; }
+#setup .link { display: flex; gap: 0.4em; margin-top: 0.5em; flex-wrap: wrap; }
+#setup .link input { flex: 1 1 20em; }
+#setup button, #setup a.btn { background: var(--accent); color: #002; border: 0; border-radius: 0.25em; padding: 0.4em 0.9em; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; min-height: 2em; }
+</style>
+</head>
+<body>
+<div id="setup" hidden>
+  <h1>Legend Mod companion: stream overlay and second screen</h1>
+  <p>Shows your game live: mass, rank, time alive, minimap, leaderboard, events and (optionally) chat.
+     Nothing goes over the network: the game tab sends the data to this page inside your browser.</p>
+  <h2>1. Turn it on in the game</h2>
+  <p>Settings &rsaquo; HUD &rsaquo; <b>Stream overlay / second screen</b> (off by default). <b>Stream overlay: include chat lines</b> adds the chat.
+     The button <b>Open companion</b> under the option opens this page.</p>
+  <h2>2. Open this page on the game's own address</h2>
+  <ul>
+    <li>The game and this page talk over a <code>BroadcastChannel</code>, which only reaches pages of the <b>same origin in the same browser</b>.</li>
+    <li>Game on <code>https://www.legendmod.ml/...</code>: open <code>https://www.legendmod.ml/companion.html</code>.</li>
+    <li>Game on <code>https://jimboy3100.github.io/...</code>: open <code>https://jimboy3100.github.io/companion.html</code>.</li>
+    <li>Game on agar.io (browser extension) or inside a frame (for example expanding.land): use the <b>Open companion</b> button in the game.
+        It opens this page and sends the data to that one window only. Keep both open; after reloading the game press the button again.</li>
+  </ul>
+  <h2>3. OBS</h2>
+  <ul>
+    <li>An OBS <b>Browser Source</b> is its own browser: it only receives the data if the game runs in that same browser.</li>
+    <li>Works everywhere: open the companion link below in a normal browser window with background <b>green</b>, add it to OBS with
+        <b>Window Capture</b> and a <b>Chroma Key</b> filter.</li>
+    <li><code>bg=transparent</code> is for a source that shares the browser with the game. <code>demo=1</code> shows sample data to place the widgets.</li>
+  </ul>
+  <h2>Privacy</h2>
+  <p>Stream mode (the eye button in the menu) removes your nick, skin, server address and your teammates' nicks before anything is sent;
+     <b>Hide my country</b> and <b>hide skin URL</b> are respected too. Chat is only sent while its option is on.</p>
+  <h2>Phone or another computer</h2>
+  <p>Not supported yet: pairing two devices needs a WebRTC connection (and a way to exchange the connection offer), which this page does not do.
+     The companion only works next to the game in the same browser.</p>
+
+  <h2>Build your overlay link</h2>
+  <div class="grid" id="f-widgets"></div>
+  <div class="grid">
+    <label>Layout <select id="f-layout"><option value="column">column</option><option value="row">row</option><option value="grid">grid</option></select></label>
+    <label>Background <select id="f-bg"><option value="dark">dark</option><option value="transparent">transparent</option><option value="green">green (chroma key)</option><option value="custom">colour...</option></select></label>
+    <label>Colour <input type="text" id="f-bgc" placeholder="#000000" maxlength="9"></label>
+    <label>Scale <input type="number" id="f-scale" min="0.5" max="3" step="0.1" value="1"></label>
+    <label>Accent <input type="text" id="f-accent" placeholder="#01d9cc" maxlength="9"></label>
+    <label>Watermark text <input type="text" id="f-wm" maxlength="60"></label>
+    <label>Watermark image (https) <input type="text" id="f-wmimg" maxlength="500"></label>
+    <label>Watermark corner <select id="f-wmpos"><option value="br">bottom right</option><option value="bl">bottom left</option><option value="tr">top right</option><option value="tl">top left</option></select></label>
+    <label>Chat lines <input type="number" id="f-lines" min="1" max="20" value="6"></label>
+    <label>Events shown <input type="number" id="f-feed" min="1" max="20" value="6"></label>
+  </div>
+  <div class="link"><input type="text" id="f-link" readonly><button type="button" id="f-copy">Copy</button><a class="btn" id="f-open" target="_blank" rel="noopener">Open</a></div>
+  <p class="muted">Live preview of all widgets below.</p>
+</div>
+<div id="root"><div id="wrap" class="wrap"></div></div>
+<div id="wm" hidden></div>
+<div id="status">Waiting for the game&hellip;</div>
+<script>window.LMCompanionPage = true;</script>
+<script src="ogario/modules/companion.js"></script>
+<script>
+(function () {
+    'use strict';
+    var C = window.LMCompanion && window.LMCompanion.core;
+    var statusEl = document.getElementById('status');
+    if (!C) { statusEl.textContent = 'Could not load ogario/modules/companion.js.'; return; }
+    var cfg = C.parseParams(location.search);
+    var widgets = cfg.setup ? C.WIDGETS.slice() : cfg.widgets;
+    var state = null, lastAt = 0, events = [], sess = { games: 0, best: 0 };
+    var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+    /* ── look ── */
+    document.documentElement.style.setProperty('--accent', cfg.accent);
+    if (cfg.bg === 'transparent') document.body.classList.add('bg-transparent');
+    else if (cfg.bg !== 'dark') document.body.style.background = cfg.bg;
+    document.body.style.fontSize = (16 * cfg.scale) + 'px';
+    var wrap = document.getElementById('wrap');
+    wrap.className = 'wrap layout-' + cfg.layout;
+    if (cfg.wm || cfg.wmImg) {
+        var wm = document.getElementById('wm');
+        wm.className = cfg.wmPos;
+        if (cfg.wmImg) { var im = el('img'); im.alt = ''; im.referrerPolicy = 'no-referrer'; im.src = cfg.wmImg; im.onerror = function () { im.remove(); }; wm.appendChild(im); }
+        if (cfg.wm) wm.appendChild(el('span', '', cfg.wm));
+        wm.hidden = false;
+    }
+
+    /* ── widgets ── */
+    var W = {};
+    function panel(id, title) { var p = el('div', 'w w-' + id); if (title) p.appendChild(el('h3', '', title)); wrap.appendChild(p); return p; }
+    function statBox(parent, cls, label) { var s = el('div', 'stat ' + cls); var v = el('div', 'big', '—'); s.appendChild(v); s.appendChild(el('div', 'lbl', label)); parent.appendChild(s); return v; }
+    widgets.forEach(function (id) {
+        var p;
+        if (id === 'card') {
+            p = panel(id);
+            var c = el('div', 'card');
+            var av = el('img', 'avatar'); av.alt = ''; av.referrerPolicy = 'no-referrer'; av.onerror = function () { av.style.display = 'none'; };
+            c.appendChild(av);
+            var col = el('div');
+            var nick = el('div', 'nick', '');
+            col.appendChild(nick);
+            var row = el('div', 'card');
+            col.appendChild(row);
+            c.appendChild(col);
+            p.appendChild(c);
+            W.card = { avatar: av, nick: nick, mass: statBox(row, 'mass', 'Mass'), rank: statBox(row, 'rank', 'Rank'), time: statBox(row, 'time', 'Time alive') };
+        } else if (id === 'mass' || id === 'rank' || id === 'time') {
+            p = panel(id);
+            W[id] = statBox(p, id, { mass: 'Mass', rank: 'Rank', time: 'Time alive' }[id]);
+        } else if (id === 'minimap') {
+            p = panel(id, 'Minimap');
+            W.minimap = el('canvas', 'map');
+            p.appendChild(W.minimap);
+        } else if (id === 'leaderboard') {
+            p = panel(id, 'Leaderboard');
+            W.leaderboard = el('ol', 'lb');
+            p.appendChild(W.leaderboard);
+        } else if (id === 'stats') {
+            p = panel(id, 'Match');
+            W.stats = el('table', 'stats');
+            p.appendChild(W.stats);
+        } else if (id === 'events') {
+            p = panel(id, 'Events');
+            W.events = el('ul', 'list');
+            p.appendChild(W.events);
+        } else if (id === 'chat') {
+            p = panel(id, 'Chat');
+            W.chat = el('ul', 'list');
+            p.appendChild(W.chat);
+        }
+    });
+
+    function setList(ul, items) {
+        while (ul.firstChild) ul.removeChild(ul.firstChild);
+        items.forEach(function (li) { ul.appendChild(li); });
+    }
+    function rankText(r) { return r > 0 ? '#' + r : '—'; }
+    function render() {
+        var s = state || C.buildState({}, {});
+        var alive = s.playing ? s.alive + (lastAt ? Math.min(Date.now() - lastAt, 1000) : 0) : 0;
+        if (W.card) {
+            W.card.nick.textContent = s.nick + (s.country ? ' (' + s.country.toUpperCase() + ')' : '');
+            W.card.nick.style.display = s.nick ? '' : 'none';
+            if (s.skin) { if (W.card.avatar.getAttribute('src') !== s.skin) W.card.avatar.src = s.skin; W.card.avatar.style.display = 'block'; }
+            else W.card.avatar.style.display = 'none';
+            W.card.mass.textContent = s.playing ? C.fmtMass(s.mass) : '—';
+            W.card.rank.textContent = s.playing ? rankText(s.rank) : '—';
+            W.card.time.textContent = s.playing ? C.fmtTime(alive) : '—';
+        }
+        if (W.mass) W.mass.textContent = s.playing ? C.fmtMass(s.mass) : '—';
+        if (W.rank) W.rank.textContent = s.playing ? rankText(s.rank) : '—';
+        if (W.time) W.time.textContent = s.playing ? C.fmtTime(alive) : '—';
+        if (W.leaderboard) {
+            setList(W.leaderboard, s.lb.map(function (e) { var li = el('li', e.me ? 'me' : '', e.nick || (e.me ? 'You' : 'An unnamed cell')); return li; }));
+        }
+        if (W.stats) {
+            var rows = [
+                ['Best mass (this life)', s.playing ? C.fmtMass(s.best) : '—'],
+                ['Cells', s.playing ? String(s.cells) : '—'],
+                ['Players’ cells eaten', s.playing ? String(s.kills) : '—'],
+                ['Best rank', rankText(s.bestRank)],
+                ['Mode', s.mode || s.serverType || '—'],
+                ['Server', s.server || '—'],
+                ['Games here', String(sess.games)],
+                ['Best mass here', sess.best ? C.fmtMass(sess.best) : '—']
+            ];
+            while (W.stats.firstChild) W.stats.removeChild(W.stats.firstChild);
+            rows.forEach(function (r) { var tr = el('tr'); tr.appendChild(el('td', '', r[0])); tr.appendChild(el('td', '', r[1])); W.stats.appendChild(tr); });
+        }
+        if (W.chat) {
+            if (!s.chat) setList(W.chat, [el('li', 'muted', 'Chat is off: turn on "Stream overlay: include chat lines" in the game.')]);
+            else setList(W.chat, s.chat.slice(-cfg.lines).map(function (c) {
+                var li = el('li', c.cmd ? 'cmd' : '');
+                li.appendChild(el('span', 'n', (c.nick || (c.own ? 'You' : '?')) + ': '));
+                li.appendChild(document.createTextNode(c.text));
+                return li;
+            }));
+        }
+        if (W.minimap) drawMap(W.minimap, s.map);
+    }
+    function eventLine(e) {
+        var li = el('li', e.type);
+        if (e.type === 'spawn') li.textContent = 'Spawned';
+        else if (e.type === 'death') li.textContent = 'Died at ' + C.fmtMass(e.mass) + ' mass after ' + C.fmtTime(e.alive);
+        else if (e.type === 'best') li.textContent = 'New personal best: ' + [e.massRecord ? 'mass ' + C.fmtMass(e.mass) : '', e.timeRecord ? 'time alive ' + C.fmtTime(e.alive) : ''].filter(Boolean).join(' + ');
+        else if (e.type === 'kill') { li.appendChild(document.createTextNode('Ate ')); li.appendChild(el('span', 'n', e.nick || 'An unnamed cell')); if (e.mass) li.appendChild(document.createTextNode(' (' + C.fmtMass(e.mass) + ')')); }
+        else if (e.type === 'stats') li.textContent = 'Game over: ' + e.eaten + ' players eaten' + (e.top ? ', top #' + e.top : '');
+        return li;
+    }
+    function addEvent(e) {
+        if (e.type === 'death') { sess.games++; if (e.mass > sess.best) sess.best = e.mass; }
+        events.push(e);
+        if (events.length > 20) events.shift();
+        if (W.events) setList(W.events, events.slice(-cfg.feed).reverse().map(eventLine));
+    }
+    function drawMap(cv, map) {
+        var css = cv.clientWidth || 224, dpr = Math.min(3, window.devicePixelRatio || 1), px = Math.round(css * dpr);
+        if (cv.width !== px) { cv.width = px; cv.height = px; }
+        var ctx = cv.getContext('2d'), S = px;
+        ctx.clearRect(0, 0, S, S);
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.fillRect(0, 0, S, S);
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = dpr;
+        ctx.fillStyle = 'rgba(255,255,255,0.18)';
+        ctx.font = Math.round(9 * dpr) + 'px sans-serif';
+        for (var i = 0; i < 5; i++) for (var j = 0; j < 5; j++) ctx.fillText(String.fromCharCode(65 + j) + (i + 1), i * S / 5 + 3 * dpr, j * S / 5 + 11 * dpr);
+        for (i = 1; i < 5; i++) {
+            ctx.beginPath(); ctx.moveTo(i * S / 5, 0); ctx.lineTo(i * S / 5, S); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, i * S / 5); ctx.lineTo(S, i * S / 5); ctx.stroke();
+        }
+        if (!map) return;
+        var X = function (v) { return Math.max(0, Math.min(1, v)) * S; };
+        ctx.fillStyle = 'rgba(255,255,255,0.28)';
+        map.ghosts.forEach(function (g) { ctx.beginPath(); ctx.arc(X(g.x), X(g.y), Math.max(2 * dpr, g.r * S), 0, Math.PI * 2); ctx.fill(); });
+        if (map.trail.length > 1) {
+            ctx.save();
+            ctx.globalAlpha = 0.5;
+            ctx.strokeStyle = cfg.accent;
+            ctx.lineWidth = 1.5 * dpr;
+            ctx.beginPath();
+            ctx.moveTo(X(map.trail[0].x), X(map.trail[0].y));
+            map.trail.forEach(function (p) { ctx.lineTo(X(p.x), X(p.y)); });
+            ctx.stroke();
+            ctx.restore();
+        }
+        ctx.textAlign = 'center';
+        ctx.font = '600 ' + Math.round(10 * dpr) + 'px sans-serif';
+        map.team.forEach(function (t) {
+            ctx.fillStyle = t.color || cfg.accent;
+            ctx.beginPath(); ctx.arc(X(t.x), X(t.y), 4 * dpr, 0, Math.PI * 2); ctx.fill();
+            if (t.nick) { ctx.fillStyle = '#fff'; ctx.fillText(t.nick, X(t.x), X(t.y) - 7 * dpr); }
+        });
+        if (map.own) {
+            ctx.beginPath(); ctx.arc(X(map.own.x), X(map.own.y), 5.5 * dpr, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff'; ctx.fill();
+            ctx.lineWidth = 2.5 * dpr; ctx.strokeStyle = cfg.accent; ctx.stroke();
+        }
+        ctx.textAlign = 'left';
+    }
+
+    /* ── receiving ── */
+    var seen = {}, seenKeys = [];
+    function accept(d) {
+        if (!d || typeof d !== 'object' || d.v !== C.PROTO) return;
+        var s = String(d.s || '').slice(0, 20), n = +d.n || 0;
+        /* the same message can come twice (channel and window message): keep the newest only */
+        if (s) {
+            if (seen.hasOwnProperty(s) && n <= seen[s]) return;
+            if (!seen.hasOwnProperty(s)) { seenKeys.push(s); if (seenKeys.length > 20) delete seen[seenKeys.shift()]; }
+            seen[s] = n;
+        }
+        if (d.kind === 'state') {
+            state = C.buildState(d.state, { chat: true });
+            lastAt = Date.now();
+            statusEl.className = 'live';
+            render();
+        } else if (d.kind === 'event') {
+            var e = C.buildEvent(d.event);
+            if (e) addEvent(e);
+        } else if (d.kind === 'bye') {
+            lastAt = 0;
+            statusEl.className = '';
+            statusEl.textContent = 'The game stopped sending (option off or tab closed).';
+        }
+    }
+    var bc = null;
+    if (typeof BroadcastChannel === 'function') {
+        try { bc = new BroadcastChannel(C.CHANNEL); bc.onmessage = function (e) { accept(e.data); }; } catch (e) { bc = null; }
+    }
+    /* the game window that opened this page (agar.io, frames): only that window is listened to */
+    window.addEventListener('message', function (e) { if (window.opener && e.source === window.opener) accept(e.data); });
+    function hello() {
+        var m = { v: C.PROTO, kind: 'hello' };
+        if (bc) { try { bc.postMessage(m); } catch (e) { } }
+        if (window.opener) { try { window.opener.postMessage(m, '*'); } catch (e) { } }
+    }
+    hello();
+    setInterval(function () {
+        if (lastAt && Date.now() - lastAt > 5000) {
+            lastAt = 0;
+            statusEl.className = '';
+            statusEl.textContent = 'Waiting for the game…';
+            hello();
+        }
+        if (state && state.playing && lastAt) render();
+    }, 1000);
+    window.LMCompanionView = { accept: accept, state: function () { return state; }, events: function () { return events.slice(); }, config: cfg };
+
+    /* ── sample data (demo=1) ── */
+    if (cfg.demo) {
+        var t0 = Date.now(), k = 0;
+        var demo = function () {
+            var a = (Date.now() - t0) / 9000;
+            accept({ v: C.PROTO, s: 'demo', n: ++k, kind: 'state', state: {
+                playing: true, mass: 4200 + Math.round(800 * Math.sin(a)), best: 5100, cells: 6, rank: 3, bestRank: 2, alive: Date.now() - t0 + 95000, kills: 4,
+                nick: 'Streamer', serverType: 'agario', mode: 'FFA', server: 'demo.server',
+                lb: ['Alpha', 'Bravo', 'Streamer', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet'].map(function (n, i) { return { nick: n, me: i === 2 }; }),
+                map: { own: { x: 0.5 + 0.25 * Math.cos(a), y: 0.5 + 0.25 * Math.sin(a) }, team: [{ x: 0.3, y: 0.7, nick: 'Mate' }], ghosts: [{ x: 0.8, y: 0.2, r: 0.03 }], trail: [] },
+                chat: [{ nick: 'Mate', text: 'gg', cmd: false }, { nick: 'Mate', text: 'Split into me!', cmd: true }]
+            } });
+            if (k % 8 === 1) accept({ v: C.PROTO, s: 'demo', n: ++k, kind: 'event', event: { type: 'kill', t: Date.now(), nick: 'Victim', mass: 320 } });
+        };
+        demo();
+        setInterval(demo, 500);
+    }
+
+    /* ── link builder ── */
+    if (cfg.setup) {
+        var setup = document.getElementById('setup');
+        setup.hidden = false;
+        var $ = function (id) { return document.getElementById(id); };
+        var names = { card: 'Mass / rank / time card', mass: 'Mass only', rank: 'Rank only', time: 'Time alive only', minimap: 'Big minimap', leaderboard: 'Leaderboard', stats: 'Match stats', events: 'Events / kill feed', chat: 'Chat' };
+        C.WIDGETS.forEach(function (w) {
+            var lab = el('label');
+            var cb = el('input');
+            cb.type = 'checkbox';
+            cb.value = w;
+            cb.checked = C.DEFAULT_WIDGETS.indexOf(w) >= 0;
+            lab.appendChild(cb);
+            lab.appendChild(document.createTextNode(names[w] || w));
+            $('f-widgets').appendChild(lab);
+        });
+        var build = function () {
+            var bgSel = $('f-bg').value;
+            var c = {
+                widgets: Array.prototype.filter.call($('f-widgets').querySelectorAll('input'), function (i) { return i.checked; }).map(function (i) { return i.value; }),
+                layout: $('f-layout').value,
+                bg: bgSel === 'custom' ? C.safeColor($('f-bgc').value, 'dark') : bgSel,
+                scale: Math.round(Math.max(0.5, Math.min(3, +$('f-scale').value || 1)) * 100) / 100,
+                wm: C.clip($('f-wm').value, 60),
+                wmImg: C.safeUrl($('f-wmimg').value),
+                wmPos: $('f-wmpos').value,
+                accent: C.safeColor($('f-accent').value, '#01d9cc'),
+                lines: Math.round(Math.max(1, Math.min(20, +$('f-lines').value || 6))),
+                feed: Math.round(Math.max(1, Math.min(20, +$('f-feed').value || 6)))
+            };
+            $('f-wmimg').style.borderColor = $('f-wmimg').value && !c.wmImg ? '#ff5050' : '';
+            var url = location.origin + location.pathname + C.buildQuery(c);
+            $('f-link').value = url;
+            $('f-open').href = url;
+        };
+        setup.addEventListener('input', build);
+        setup.addEventListener('change', build);
+        $('f-copy').addEventListener('click', function () {
+            var v = $('f-link').value;
+            try { navigator.clipboard.writeText(v).then(function () { $('f-copy').textContent = 'Copied'; }, function () { $('f-link').select(); }); }
+            catch (e) { $('f-link').select(); }
+        });
+        build();
+    }
+    render();
+})();
+</script>
+</body>
+</html>
