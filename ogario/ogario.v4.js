@@ -473,8 +473,11 @@ window._lmRoomCode = _lmRoomCode;
 function _lmRoomUrlOk(u) { return typeof u === 'string' && u.length < 600 && /^wss:\/\/api\.legendmod\.ml\/el-room\/[A-HJ-NP-Z2-9]{6}\?t=[A-Za-z0-9._~%:+\/=-]+$/.test(u); }
 function _lmRoomUrlCode(u) { var m = /\/el-room\/([A-HJ-NP-Z2-9]{6})\?/.exec(String(u || '')); return m ? m[1] : ''; }
 function _lmRoomShareLink(code) { return 'https://www.legendmod.ml/play.html?room=' + code; }
+window._lmRoomShareLink = _lmRoomShareLink;
 function _lmRoomConnected() {
     var lm = window.legendmod;
+    /* the room connect still waits (500 ms logout coming from agar.io): no Rejoin, no second ticket */
+    if (_lmRoomState.url && lm && _lmRoomState.pendingTimer && lm._accountDomainSwitchTimer === _lmRoomState.pendingTimer) return true;
     return !!(_lmRoomState.url && lm && lm.ws === _lmRoomState.url && lm.socket && lm.socket.readyState <= 1);
 }
 /* resolves { status, data }; status 0 = network error or no answer in 10 s */
@@ -517,9 +520,11 @@ function _lmRoomGo(url, code, pass, data) {
     if (typeof $ === 'function' && $('#region').val() === 'Private' && $('#gamemode option[value="5003"]').length) $('#gamemode').val('5003');
     if (window.legendmod) window.legendmod.gameMode = ':ffa';
     if (window.core && typeof window.core.connect === 'function') window.core.connect(url);
+    /* set only while this connect waits for its delayed start */
+    _lmRoomState.pendingTimer = window.legendmod && window.legendmod._accountDomainSwitchTimer || null;
     _lmRoomButton();
 }
-/* POST join with { code } or { id }; done(errorText | null) */
+/* POST join with { code } or { id }; done(errorText | null, status) */
 function _lmRoomJoin(body, pass, done) {
     if (pass) body.password = pass;
     _lmRoomFetch('join', body).then(function (res) {
@@ -527,9 +532,16 @@ function _lmRoomJoin(body, pass, done) {
         if (res.status === 200 && d && _lmRoomUrlOk(d.url)) {
             _lmRoomGo(d.url, _lmRoomUrlCode(d.url), pass, d);
             done(null);
-        } else done(_lmRoomErr(res.status === 200 ? 500 : res.status, false));
+        } else done(_lmRoomErr(res.status === 200 ? 500 : res.status, false), res.status);
     });
 }
+/* called by the connection's onopen for a room URL: the room window shows the room as joined */
+window._lmRoomOnOpen = function (ws) {
+    if (!ws || ws !== _lmRoomState.url) return;
+    _lmRoomState.pendingTimer = null;
+    var m = document.getElementById('lm-room-modal');
+    if (m && m._lmOnOpen) m._lmOnOpen();
+};
 /* called by the connection's onClose for a room URL: no auto-reconnect, offer Rejoin */
 window._lmRoomOnClose = function (ws) {
     if (!ws || ws !== _lmRoomState.url) return;
@@ -752,7 +764,15 @@ function _lmRoomOpen(tab, code) {
         if (note !== undefined) say(note, isErr);
     };
     md._lmPaint = paint;
-    var connected = function () { say(T('roomConnecting', 'Connecting…'), false); paint(); };
+    /* 'join' closes the window when the room socket opens, 'create' keeps it open (the code to share) */
+    var after = '';
+    var connected = function (kind) { after = kind || 'join'; say(T('roomConnecting', 'Connecting…'), false); paint(); };
+    md._lmOnOpen = function () {
+        var k = after;
+        after = '';
+        if (k === 'join') { close(); return; }
+        paint(T('roomConnected', 'Connected to the room.'), false);
+    };
     /* list */
     var loadList = function () {
         if (busy) return;
@@ -827,7 +847,7 @@ function _lmRoomOpen(tab, code) {
             if (res.status === 200 && c && _lmRoomUrlOk(d.url)) {
                 _lmRoomState.idleMin = Math.max(0, +d.expiresIdleMin | 0);
                 _lmRoomGo(d.url, c, pass, { mode: d.mode, name: name });
-                connected();
+                connected('create');
             } else say(_lmRoomErr(res.status === 200 ? 500 : res.status, true), true);
         });
     });
@@ -854,7 +874,12 @@ function _lmRoomOpen(tab, code) {
         if (busy || !_lmRoomState.code) return;
         setBusy(true);
         say(T('roomConnecting', 'Connecting…'), false);
-        _lmRoomJoin({ code: _lmRoomState.code }, _lmRoomState.pass, function (err) { setBusy(false); if (err) say(err, true); else connected(); });
+        _lmRoomJoin({ code: _lmRoomState.code }, _lmRoomState.pass, function (err, st) {
+            setBusy(false);
+            /* the broker counts players from a status read every 15 s: the dropped player may still count */
+            if (err) say(st === 409 ? T('roomErrFullRetry', 'The room is full right now. Try again in a few seconds.') : err, true);
+            else connected('join');
+        });
     });
     bCopy.addEventListener('click', function (e) { e.stopPropagation(); _lmRoomCopy(_lmRoomState.code, bCopy, T('roomCopy', 'Copy code')); });
     bCopyLink.addEventListener('click', function (e) { e.stopPropagation(); _lmRoomCopy(_lmRoomShareLink(_lmRoomState.code), bCopyLink, T('roomCopyLink', 'Copy link')); });
@@ -1004,6 +1029,8 @@ window.lmT = (function () {
         "roomErrNotFound": {"en":"Room not found. Check the code (a room closes after 10 minutes without players).","el":"Το δωμάτιο δεν βρέθηκε. Ελέγξτε τον κωδικό (ένα δωμάτιο κλείνει μετά από 10 λεπτά χωρίς παίκτες).","es":"Sala no encontrada. Revisa el código (una sala se cierra tras 10 minutos sin jugadores).","bg":"Стаята не е намерена. Провери кода (стая се затваря след 10 минути без играчи).","fr":"Salon introuvable. Vérifiez le code (un salon ferme après 10 minutes sans joueurs).","ar":"لم يتم العثور على الغرفة. تحقق من الرمز (تُغلق الغرفة بعد 10 دقائق بدون لاعبين).","zh":"找不到房間。請檢查代碼（房間在沒有玩家 10 分鐘後關閉）。","ru":"Комната не найдена. Проверьте код (комната закрывается через 10 мин. без игроков).","de":"Raum nicht gefunden. Prüfe den Code (ein Raum schließt nach 10 Minuten ohne Spieler).","tr":"Oda bulunamadı. Kodu kontrol edin (oda 10 dakika oyuncusuz kalınca kapanır).","pl":"Nie znaleziono pokoju. Sprawdź kod (pokój zamyka się po 10 min bez graczy).","nl":"Kamer niet gevonden. Controleer de code (een kamer sluit na 10 minuten zonder spelers)."},
         "roomErrPassword": {"en":"Wrong password.","el":"Λάθος κωδικός πρόσβασης.","es":"Contraseña incorrecta.","bg":"Грешна парола.","fr":"Mot de passe incorrect.","ar":"كلمة المرور غير صحيحة.","zh":"密碼錯誤。","ru":"Неверный пароль.","de":"Falsches Passwort.","tr":"Yanlış şifre.","pl":"Błędne hasło.","nl":"Onjuist wachtwoord."},
         "roomErrFull": {"en":"The room is full.","el":"Το δωμάτιο είναι γεμάτο.","es":"La sala está llena.","bg":"Стаята е пълна.","fr":"Le salon est plein.","ar":"الغرفة ممتلئة.","zh":"房間已滿。","ru":"Комната заполнена.","de":"Der Raum ist voll.","tr":"Oda dolu.","pl":"Pokój jest pełny.","nl":"De kamer is vol."},
+        "roomErrFullRetry": {"en":"The room is full right now. Try again in a few seconds.","el":"Το δωμάτιο είναι γεμάτο αυτή τη στιγμή. Δοκιμάστε ξανά σε λίγα δευτερόλεπτα.","es":"La sala está llena ahora mismo. Inténtalo de nuevo en unos segundos.","bg":"Стаята е пълна в момента. Опитайте отново след няколко секунди.","fr":"Le salon est plein pour le moment. Réessayez dans quelques secondes.","ar":"الغرفة ممتلئة الآن. حاول مرة أخرى بعد بضع ثوانٍ.","zh":"房間目前已滿。請過幾秒再試。","ru":"Комната сейчас заполнена. Попробуйте снова через несколько секунд.","de":"Der Raum ist gerade voll. Versuche es in ein paar Sekunden erneut.","tr":"Oda şu anda dolu. Birkaç saniye sonra tekrar deneyin.","pl":"Pokój jest teraz pełny. Spróbuj ponownie za kilka sekund.","nl":"De kamer is nu vol. Probeer het over een paar seconden opnieuw."},
+        "roomConnected": {"en":"Connected to the room.","el":"Συνδεθήκατε στο δωμάτιο.","es":"Conectado a la sala.","bg":"Свързахте се със стаята.","fr":"Connecté au salon.","ar":"تم الاتصال بالغرفة.","zh":"已連線到房間。","ru":"Подключено к комнате.","de":"Mit dem Raum verbunden.","tr":"Odaya bağlanıldı.","pl":"Połączono z pokojem.","nl":"Verbonden met de kamer."},
         "roomErrRate": {"en":"Too many requests. Please wait a while and try again.","el":"Πάρα πολλά αιτήματα. Περιμένετε λίγο και δοκιμάστε ξανά.","es":"Demasiadas solicitudes. Espera un poco y vuelve a intentarlo.","bg":"Твърде много заявки. Изчакай малко и опитай отново.","fr":"Trop de demandes. Patientez un peu et réessayez.","ar":"طلبات كثيرة جداً. انتظر قليلاً وحاول مرة أخرى.","zh":"請求太多。請稍候再試。","ru":"Слишком много запросов. Подождите немного и попробуйте снова.","de":"Zu viele Anfragen. Warte etwas und versuche es erneut.","tr":"Çok fazla istek. Biraz bekleyip tekrar deneyin.","pl":"Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.","nl":"Te veel verzoeken. Wacht even en probeer het opnieuw."},
         "roomErrOwn": {"en":"You already have an open room.","el":"Έχετε ήδη ανοιχτό δωμάτιο.","es":"Ya tienes una sala abierta.","bg":"Вече имаш отворена стая.","fr":"Vous avez déjà un salon ouvert.","ar":"لديك غرفة مفتوحة بالفعل.","zh":"你已經有一個開啟的房間。","ru":"У вас уже есть открытая комната.","de":"Du hast schon einen offenen Raum.","tr":"Zaten açık bir odanız var.","pl":"Masz już otwarty pokój.","nl":"Je hebt al een open kamer."},
         "roomErrBusy": {"en":"All private rooms are in use. Try again later.","el":"Όλα τα ιδιωτικά δωμάτια χρησιμοποιούνται. Δοκιμάστε αργότερα.","es":"Todas las salas privadas están en uso. Inténtalo más tarde.","bg":"Всички частни стаи са заети. Опитай по-късно.","fr":"Tous les salons privés sont occupés. Réessayez plus tard.","ar":"جميع الغرف الخاصة مشغولة. حاول لاحقاً.","zh":"所有私人房間都在使用中。請稍後再試。","ru":"Все приватные комнаты заняты. Попробуйте позже.","de":"Alle privaten Räume sind belegt. Versuche es später.","tr":"Tüm özel odalar kullanımda. Daha sonra tekrar deneyin.","pl":"Wszystkie prywatne pokoje są zajęte. Spróbuj później.","nl":"Alle privékamers zijn in gebruik. Probeer het later opnieuw."},
@@ -26261,7 +26288,8 @@ function thelegendmodproject() {
                 $(this.id === "server-token" ? "#server-join" : "#join-party-btn-2").first().trigger("click");
             });
             $(document).on("click", "#server-join", function () {
-                _lmRememberServer($("#server-token").val());
+                /* a private room token is opened through the room window (new ticket), not remembered */
+                if (String($("#server-token").val() || '').indexOf('/el-room/') === -1) _lmRememberServer($("#server-token").val());
                 app.gameServerJoin($("#server-token").val());
             });
             /* Profile edits were written to the profile only by setPlayerSettings (Play),
@@ -29581,6 +29609,8 @@ function thelegendmodproject() {
             }
             if (this.ws.search(/wss?:\/\//) > -1 && this.ws.search(/agar\.io/) === -1 && this.ws.search(/agario/) === -1) {
                 text = this.ws.match(/wss?:\/\/(.+)/)[1]
+                /* private room: the ticket (?t=) differs per player and join; the room is the same for all */
+                if (window._lmIsRoomUrl && window._lmIsRoomUrl(this.ws)) text = text.split('?')[0];
                 this.tokenNeedToBtoa = true
                 this.serverIP = text;
                 //text = btoa(text);
@@ -29682,8 +29712,11 @@ function thelegendmodproject() {
                 return;
             }
             if (!legendmod.integrity) {
-                if ($('#gamemode option:selected').next().length > 0) {
-                    $('#gamemode option:selected').next().prop('selected', 'selected').change();
+                /* "Private room" (5003) has no server: hop past it */
+                var _lmNextGm = $('#gamemode option:selected').next();
+                if (_lmNextGm.is('option[value="5003"]')) _lmNextGm = _lmNextGm.next();
+                if (_lmNextGm.length > 0) {
+                    _lmNextGm.prop('selected', 'selected').change();
                 } else {
                     $('#gamemode option:first').prop('selected', 'selected').change();
                 }
@@ -29693,6 +29726,9 @@ function thelegendmodproject() {
             }
         },
         gameServerJoin(token) {
+            /* a private room token: the room window asks the broker for a ticket */
+            var _lmRoomTk = /\/el-room\/([A-HJ-NP-Z2-9]{6})(?:[?&#]|$)/.exec(String(token || ''));
+            if (_lmRoomTk && typeof window._lmRoomOpen === 'function') { window._lmRoomOpen('join', _lmRoomTk[1]); return; }
             const ws = this.recreateWS(token);
             if (ws) {
                 this.skipServerData = true;
@@ -39471,6 +39507,9 @@ function thelegendmodproject() {
                 app.onOpen();
                 if (window.master && window.master.onConnect) {
                     window.master.onConnect();
+                }
+                if (url.indexOf('/el-room/') !== -1 && typeof window._lmRoomOnOpen === 'function') {
+                    try { window._lmRoomOnOpen(url); } catch (e) { }
                 }
             };
             this.socket.onmessage = function (t) {

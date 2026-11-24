@@ -7201,6 +7201,8 @@ function initializeLM(modVersion) {
     });
 
     $("#copySIPBtn").click(function () {
+        /* private room: the room link (the token's ticket was used and cannot join) */
+        if (_lmRoomCopyLink()) return;
         if (realmode == ":party") {
             CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val();
             copy(CopyTkPwLb2);
@@ -7226,6 +7228,8 @@ function initializeLM(modVersion) {
     });
 
     $("#copySIPandPass").click(function () {
+        /* private room: the room link (the token's ticket was used and cannot join) */
+        if (_lmRoomCopyLink()) return;
         if (searchSip != null) {
             if (realmode == ":party") {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val());
@@ -7249,6 +7253,8 @@ function initializeLM(modVersion) {
     });
 
     $("#copySIPPassLB").click(function () {
+        var _lmRoomL = _lmRoomShareFor();
+        if (_lmRoomL) { CopyTkPwLb2 = _lmRoomL; copyToClipboardAll(); return; }
         if (searchSip != null) {
             if (realmode == ":party") {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + encodeURIComponent($("#clantag").val());
@@ -7923,8 +7929,27 @@ function initializeLM(modVersion) {
 }
 
 
+/* the share link of the private room the player is in, or '' */
+function _lmRoomShareFor() {
+    var m = /\/el-room\/([A-HJ-NP-Z2-9]{6})(?:[?&#]|$)/.exec(String(window.legendmod && window.legendmod.ws || ""));
+    return m && typeof window._lmRoomShareLink === "function" ? window._lmRoomShareLink(m[1]) : "";
+}
+function _lmRoomCopyLink() {
+    var l = _lmRoomShareFor();
+    if (l) copy(l);
+    return !!l;
+}
+
 function joinSIPonstart() {
     if (searchSip != null) {
+        /* an older room share (?sip=...el-room/CODE?t=...): the room window gets a new ticket */
+        var _lmRoomSip = /\/el-room\/([A-HJ-NP-Z2-9]{6})(?:[?&#]|$)/.exec(String(getParameterByName("sip", url) || ""));
+        if (_lmRoomSip) {
+            setTimeout(function () {
+                if (typeof window._lmRoomOpen === "function") window._lmRoomOpen("join", _lmRoomSip[1]);
+            }, 1500);
+            return;
+        }
         var sipTarget = getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "");
 
         if (realmodePS != null && region != null) {
