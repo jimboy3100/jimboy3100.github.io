@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Legend Mod Features — 60+ Agar.io Macros, Custom Skins, FPS Boost, WASM & More</title>
     <link rel="canonical" href="https://www.legendmod.ml/features.html">
-    <meta name="description" content="Explore all Legend Mod features: 60+ macros (tricksplit, popsplit, cannon split), custom animated skins, WASM acceleration, anti-lag FPS boost, multibox, gamepad support, team chat, and multi-server support for agar.io, Sigmally, and Senpa.io.">
+    <meta name="description" content="Explore all Legend Mod features: 60+ macros (tricksplit, popsplit, cannon split), custom animated skins, WASM acceleration, anti-lag FPS boost, multibox, gamepad support, replays with seek, team pings, team chat, settings in 12 languages, and multi-server support for agar.io, Sigmally, and Senpa.io.">
     <meta name="keywords" content="agario mod features, agar.io macros, agario extension features, agario tricksplit, agario popsplit, agario custom skins, agario fps boost, agario anti-lag, agario multibox, agario gamepad, legend mod features, best agario mod features, agario wasm, agario animated skins, agario skin rotator">
     <meta name="author" content="Jimboy3100 — ℄ Legend Clan">
     <meta name="robots" content="index, follow, max-snippet:-1">
@@ -25,16 +25,27 @@
         "@type": "ItemList",
         "name": "Legend Mod Features for Agar.io",
         "description": "Complete list of features in Legend Mod — the most feature-rich agar.io extension.",
-        "numberOfItems": 8,
+        "numberOfItems": 19,
         "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "60+ Macros & Hotkeys" },
             { "@type": "ListItem", "position": 2, "name": "Custom & Animated Skins" },
             { "@type": "ListItem", "position": 3, "name": "Anti-Lag & FPS Boost" },
-            { "@type": "ListItem", "position": 4, "name": "WASM Acceleration" },
-            { "@type": "ListItem", "position": 5, "name": "Multi-Server Support" },
-            { "@type": "ListItem", "position": 6, "name": "Multibox & Dual Tab" },
-            { "@type": "ListItem", "position": 7, "name": "Team Chat & Minimap" },
-            { "@type": "ListItem", "position": 8, "name": "Gamepad Controller Support" }
+            { "@type": "ListItem", "position": 4, "name": "Multi-Server Support" },
+            { "@type": "ListItem", "position": 5, "name": "Team Chat & Minimap" },
+            { "@type": "ListItem", "position": 6, "name": "Team Pings" },
+            { "@type": "ListItem", "position": 7, "name": "Multibox" },
+            { "@type": "ListItem", "position": 8, "name": "Gamepad & Controller Support" },
+            { "@type": "ListItem", "position": 9, "name": "Replays" },
+            { "@type": "ListItem", "position": 10, "name": "Game Over Card & Match History" },
+            { "@type": "ListItem", "position": 11, "name": "Spectating" },
+            { "@type": "ListItem", "position": 12, "name": "Chat Tools" },
+            { "@type": "ListItem", "position": 13, "name": "Smart Settings" },
+            { "@type": "ListItem", "position": 14, "name": "Accessibility" },
+            { "@type": "ListItem", "position": 15, "name": "Mobile Touch Controls" },
+            { "@type": "ListItem", "position": 16, "name": "Expanding Land" },
+            { "@type": "ListItem", "position": 17, "name": "User Script API (LMEvents)" },
+            { "@type": "ListItem", "position": 18, "name": "Map Rotation" },
+            { "@type": "ListItem", "position": 19, "name": "100% Free & Open Source" }
         ]
     }
     </script>
@@ -118,9 +129,10 @@
             <p>Smooth gameplay even on low-end hardware.</p>
             <ul>
                 <li>Built-in anti-lag system</li>
-                <li>WebGL GPU rendering</li>
+                <li>WebGL GPU cell rendering, on by default</li>
                 <li>WASM acceleration <span class="badge badge-new">New</span></li>
-                <li>Configurable rendering quality</li>
+                <li>Performance mode switch for weak PCs and phones</li>
+                <li>Optional FPS limit and 25 FPS while the menu is open (saves battery)</li>
                 <li>Auto-hide food option</li>
             </ul>
         </div>
@@ -149,15 +161,149 @@
             </ul>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">🎮</div>
-            <h3>Multibox & Gamepad <span class="badge badge-exclusive">Exclusive</span></h3>
-            <p>Advanced control options for power users.</p>
+            <div class="feature-icon">📍</div>
+            <h3>Team Pings <span class="badge badge-new">New</span></h3>
+            <p>Mark a spot for your team in one key press.</p>
             <ul>
-                <li>Dual-tab multibox</li>
-                <li>Full gamepad/controller support</li>
-                <li>Per-tab skin profiles</li>
-                <li>Joystick movement, trigger split</li>
-                <li>Xbox, PlayStation, generic USB</li>
+                <li><i>Help</i>, <i>Danger</i>, <i>Go here</i> and <i>Virus here</i> at your cursor</li>
+                <li>Shown to teammates on the map and the minimap</li>
+                <li>Hotkeys with no default key: pick your own in Hotkeys</li>
+                <li>Delta players on the same team see a wave</li>
+                <li>Optional ping button on phones</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👾</div>
+            <h3>Multibox</h3>
+            <p>Play two cells at once from one tab.</p>
+            <ul>
+                <li>A second unit next to your main cell</li>
+                <li>Next / back swap and follow-mouse hotkeys</li>
+                <li>Optional view on the middle of both units</li>
+                <li>Optional unit rings and freeze for the inactive unit</li>
+                <li>Its own skin profile for each unit</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎮</div>
+            <h3>Gamepad & Controller <span class="badge badge-exclusive">Exclusive</span></h3>
+            <p>Play with a controller (optional: turn on <i>Gamepad / controller support</i> in Mouse control).</p>
+            <ul>
+                <li>Left stick moves, right stick zooms</li>
+                <li>A split, X double split, RB 16 split</li>
+                <li>B feed (hold), Y respawn, Start menu</li>
+                <li>LB swaps the multibox unit</li>
+                <li>Xbox, PlayStation and other pads with the standard browser layout</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⏯️</div>
+            <h3>Replays <span class="badge badge-new">New</span></h3>
+            <p>Watch your games back and share them.</p>
+            <ul>
+                <li>Records your games (turn off <i>Record replays</i> to save memory)</li>
+                <li>Pause, faster / slower and seek hotkeys</li>
+                <li>Progress bar while a replay plays: click to seek</li>
+                <li>Share replays with <i>?replay=</i> links and iframes</li>
+                <li>Pause and seek buttons and a touch replay bar on phones</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏁</div>
+            <h3>Game Over Card & Match History <span class="badge badge-new">New</span></h3>
+            <p>See how your last life went.</p>
+            <ul>
+                <li>Copy stats button on the Game Over card</li>
+                <li>Optional mass graph of your life</li>
+                <li>Optional all-time personal bests with a <i>New best!</i> badge</li>
+                <li>Optional <i>Eaten by</i> row with the nick and mass that ate you</li>
+                <li>Optional match history: your last 50 games in a window under the menu</li>
+                <li>Session summary under the menu</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👁️</div>
+            <h3>Spectating <span class="badge badge-new">New</span></h3>
+            <p>Follow the action in free spectate.</p>
+            <ul>
+                <li>Follow a leaderboard player: click a leaderboard mass (optional) or use the <i>follow next leaderboard player</i> hotkey</li>
+                <li>Optional: click a player cell to follow it, click empty space to stop</li>
+                <li>Expanding Land World Spectate: optional minimap click moves the camera there</li>
+                <li>Hotkey to enlarge the minimap</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <h3>Chat Tools <span class="badge badge-new">New</span></h3>
+            <p>A faster, cleaner chat.</p>
+            <ul>
+                <li>Up / Down in the chat box recalls your last messages</li>
+                <li>Click a nick in the chat to put it into your message</li>
+                <li>Optional word filter hides lines with words you choose</li>
+                <li>Optional desktop notification when someone mentions you</li>
+                <li>Hotkey to mute / unmute chat sounds</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚙️</div>
+            <h3>Smart Settings <span class="badge badge-new">New</span></h3>
+            <p>Find and set up options in seconds.</p>
+            <ul>
+                <li>Search box for every option</li>
+                <li>Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (with Undo)</li>
+                <li><b>NEW</b> badges and a <i>Show new options</i> filter</li>
+                <li>Bound keys list in Hotkeys</li>
+                <li>Settings, theme and hotkey labels in 12 languages</li>
+                <li>Download / load settings files and cloud sync with a sync code</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">♿</div>
+            <h3>Accessibility <span class="badge badge-new">New</span></h3>
+            <p>Comfortable to look at for everyone.</p>
+            <ul>
+                <li><i>Colour-blind safe (high contrast)</i> theme preset</li>
+                <li>Optional reduced motion: no screen shake, death particles or Expanding Land join spin</li>
+                <li>Game brightness and saturation sliders</li>
+                <li>Zoom glide speed slider</li>
+                <li>Labels in your language from the language menu</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Mobile Touch Controls <span class="badge badge-new">New</span></h3>
+            <p>Play on your phone or tablet.</p>
+            <ul>
+                <li>Touch joystick with split and feed buttons</li>
+                <li>Optional team ping button: tap for <i>Go here</i>, hold and slide for Help, Danger or Virus here</li>
+                <li>Optional <i>Stop on release</i></li>
+                <li>Optional quick chat buttons, multibox button and vibration settings</li>
+                <li>Replay pause and seek buttons, net graph in the touch settings</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3>Expanding Land <span class="badge badge-new">New</span></h3>
+            <p>Extra features on our own server.</p>
+            <ul>
+                <li>Daily challenges, two new ones each day, with Claim and Claim All</li>
+                <li>Server event countdown (Double XP, potion rain, golden food, virus storm)</li>
+                <li>Leagues with last week&#39;s results</li>
+                <li><i>Eaten by</i> uses the killer the server sends</li>
+                <li>Match history on your account, on every device</li>
+                <li>Hotkeys for Leagues, Shop, Challenges, Potions and Claim All</li>
+            </ul>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🧩</div>
+            <h3>User Script API <span class="badge badge-new">New</span></h3>
+            <p>Write your own add-ons without patching the mod.</p>
+            <ul>
+                <li>Up to 5 user scripts (URL or pasted code)</li>
+                <li><code>window.LMEvents</code>: spawn, death, chat, server change, mass and leaderboard events</li>
+                <li>Helpers: mass, position, playing state, server type, chat and toasts</li>
+                <li>A failing script never breaks the game</li>
+                <li><a href="/developers/LMEvents.md" style="color:var(--accent2)">Read the LMEvents guide</a></li>
             </ul>
         </div>
         <div class="feature-card">

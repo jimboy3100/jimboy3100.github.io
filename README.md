@@ -40,6 +40,13 @@ Website: [www.jimboy3100.github.io](https://jimboy3100.github.io/)
 * Change various textures, add photos on huds and clan's pictures and url links
 * Dying Light Expansion
 * Discord webhook handler's for sending IP, and many more...
+* Replays with pause, speed and seek (click the progress bar)
+* Team pings (Help / Danger / Go here / Virus here) on the map and minimap
+* Gamepad / controller support (optional, in Mouse control)
+* Settings search, presets (Competitive, Battery saver, Streamer, Clean HUD) and labels in 12 languages
+* Game Over card with copy stats, plus optional mass graph, personal bests, who ate you and match history
+* Mobile touch controls with optional ping button, replay controls and Stop on release
+* LMEvents API for user scripts ([how to use it](developers/LMEvents.md))
 
 ### Legend Mod libraries
 [Github](https://github.com/jimboy3100/jimboy3100.github.io/),
