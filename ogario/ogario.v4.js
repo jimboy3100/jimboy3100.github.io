@@ -18116,6 +18116,7 @@ var displayText = {
         adaptivePerf: 'Adaptacyjna wydajnosc (mniej efektow, gdy FPS spada)',
         adaptivePerfTarget: 'Adaptacyjna wydajnosc: docelowe FPS',
         adaptivePerfToasts: 'Adaptacyjna wydajnosc: komunikat przy zmianie',
+        adaptivePerfRes: 'Adaptacyjna wydajnosc: moze obnizyc rozdzielczosc (mniej ostro)',
         netHistory: 'Historia jakosci sieci (ping, wahania, rozlaczenia)',
         lmPerfDiag: 'Diagnostyka wydajnosci',
         'hk-perfDiag': 'Pokaz / ukryj diagnostyke wydajnosci',
@@ -18694,6 +18695,7 @@ var displayText = {
         adaptivePerf: 'Adaptive performance (fewer effects for now while FPS is low)',
         adaptivePerfTarget: 'Adaptive performance: target FPS',
         adaptivePerfToasts: 'Adaptive performance: message when it changes',
+        adaptivePerfRes: 'Adaptive performance: may lower the resolution (blurrier)',
         netHistory: 'Network quality history (ping, jitter, disconnects)',
         lmPerfDiag: 'Performance diagnostics',
         'hk-perfDiag': 'Show / hide performance diagnostics',
@@ -21442,6 +21444,7 @@ var defaultmapsettings = {
     adaptivePerf: false,          /* below the FPS target for a while: effects off for now, back when fast again (runtime only, never saved) */
     adaptivePerfTarget: 60,       /* Adaptive performance target: 30, 60, 90 or 120 FPS */
     adaptivePerfToasts: true,     /* a short message when Adaptive performance changes level */
+    adaptivePerfRes: false,       /* Adaptive performance may also lower the internal resolution (level 3, blurrier picture) */
     netHistory: false,            /* keep a ping / jitter / packet rate / disconnect summary of the last sessions */
     reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
     autoHideNames: true,
@@ -21778,7 +21781,7 @@ var _lmLabelI18n = {
         "glAntialias":"Εξομάλυνση (πιο ομαλές άκρες, μετά από επαναφόρτωση)","performanceMode":"Λειτουργία επιδόσεων (αδύναμα PC/κινητά)",
         "fpsLimit":"Όριο FPS (0 = χωρίς όριο· εξοικονομεί μπαταρία)","menuFpsCap":"25 FPS όταν το μενού είναι ανοιχτό (εξοικονομεί μπαταρία)",
         "adaptivePerf":"Προσαρμοστικές επιδόσεις (λιγότερα εφέ προσωρινά όταν πέφτουν τα FPS)","adaptivePerfTarget":"Προσαρμοστικές επιδόσεις: στόχος FPS",
-        "adaptivePerfToasts":"Προσαρμοστικές επιδόσεις: μήνυμα όταν αλλάζει","netHistory":"Ιστορικό ποιότητας δικτύου (ping, διακύμανση, αποσυνδέσεις)",
+        "adaptivePerfToasts":"Προσαρμοστικές επιδόσεις: μήνυμα όταν αλλάζει","adaptivePerfRes":"Προσαρμοστικές επιδόσεις: μπορεί να μειώσει την ανάλυση (θολότερη εικόνα)","netHistory":"Ιστορικό ποιότητας δικτύου (ping, διακύμανση, αποσυνδέσεις)",
         "lmPerfDiag":"Διαγνωστικά επιδόσεων","hk-perfDiag":"Εμφάνιση / απόκρυψη διαγνωστικών επιδόσεων",
         "lmAdaptiveLevel0":"Προσαρμοστικές επιδόσεις: όλα τα εφέ επανήλθαν","lmAdaptiveLevel1":"Προσαρμοστικές επιδόσεις: επίπεδο 1 (διακοσμητικά εφέ ανενεργά προσωρινά)",
         "lmAdaptiveLevel2":"Προσαρμοστικές επιδόσεις: επίπεδο 2 (jelly physics και video skins ανενεργά προσωρινά)","lmAdaptiveLevel3":"Προσαρμοστικές επιδόσεις: επίπεδο 3 (χαμηλότερη ανάλυση προσωρινά)",
@@ -26549,6 +26552,7 @@ function thelegendmodproject() {
                         this.setBlockPopups();
                         break;
                     case 'adaptivePerf':
+                    case 'adaptivePerfRes':
                     case 'netHistory':
                         if (window.LMPerf) window.LMPerf.configChanged();
                         break;
@@ -27725,6 +27729,7 @@ function thelegendmodproject() {
             this.addOptionTo(".animationGroup", "adaptivePerf");
             this.addSliderBox(".animationGroup", "adaptivePerfTarget", 30, 120, 30);
             this.addOptionTo(".animationGroup", "adaptivePerfToasts");
+            this.addOptionTo(".animationGroup", "adaptivePerfRes");
             this.addOptionTo(".animationGroup", "netHistory");
             $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block btn-primary" style="margin:4px 0 2px;"></button>')
                 .text(textLanguage.lmPerfDiag || 'Performance diagnostics').appendTo('.animationGroup')

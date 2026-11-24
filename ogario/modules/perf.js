@@ -109,7 +109,8 @@
     /* One measured period (dt seconds, usually 1): its FPS, the effective target and the 90th
      * percentile render time in ms (null when unknown). Updates st.level and returns the change
      * made: +1 (one level down in quality), -1 (one level back) or 0. */
-    function controllerStep(st, fps, target, renderP90, dt) {
+    function controllerStep(st, fps, target, renderP90, dt, maxLevel) {
+        var top = maxLevel || MAX_LEVEL;
         dt = dt > 0 ? dt : 1;
         st.t += dt;
         var spare = renderP90 == null || !(target > 0) || renderP90 < (1000 / target) * CTL.headroom;
@@ -124,7 +125,7 @@
             if (st.low > 0) st.low = Math.max(0, st.low - dt);
             st.high = 0;
         }
-        if (st.low >= CTL.downAfter && st.level < MAX_LEVEL) {
+        if (st.low >= CTL.downAfter && st.level < top) {
             if (st.t - st.lastUp < CTL.bounceWindow) st.upAfter = Math.min(CTL.maxUpAfter, st.upAfter * 2);
             st.level++;
             st.low = -CTL.settle;
@@ -954,7 +955,7 @@
         var p90 = fr.secRender.length ? percentile(sortedCopy(fr.secRender), 90) : null;
         /* held back by the screen: as good as it gets, counts as reaching the target */
         if (fps < target && displayBound(sortedCopy(fr.secGame), p90)) fps = target;
-        var change = controllerStep(ctl, fps, target, p90, fr.secTime / 1000);
+        var change = controllerStep(ctl, fps, target, p90, fr.secTime / 1000, topLevel());
         /* a lowered value changed meanwhile (hotkey): the player's choice, left alone */
         if (overrides) overrides.check();
         if (change) applyLevel(true);
@@ -1065,7 +1066,8 @@
         var ov = ensureOverrides();
         var level = adaptiveOn ? ctl.level : 0;
         if (ov) sideEffects(ov.sync(level, fr.menu));
-        applyScale(level >= 3);
+        /* level 3 (lower resolution, blurrier) only when the player allowed it */
+        applyScale(level >= 3 && topLevel() >= 3);
         if (levelChanged) {
             var s = dms();
             if (s && s.adaptivePerfToasts !== false && window.toastr) {
@@ -1592,9 +1594,18 @@
 
     /* ---------- wiring ---------- */
 
+    /* Level 3 lowers the internal resolution (the picture gets blurry): only with the
+     * "may lower the resolution" option; otherwise Adaptive performance stops at level 2. */
+    function topLevel() {
+        var s = dms();
+        return s && s.adaptivePerfRes === true ? 3 : 2;
+    }
+
     function configChanged() {
         var s = dms();
         if (!s) return;
+        /* resolution no longer allowed while at level 3: back to level 2 and full resolution now */
+        if (ctl.level > topLevel()) { ctl.level = topLevel(); applyLevel(true); }
         setAdaptive(!!s.adaptivePerf);
         setNet(!!s.netHistory || diagOpen);
     }

@@ -166,6 +166,9 @@ check('export (nested) holds them too', JSON.parse(JSON.stringify({ ogarioSettin
 frames(pg, 31 * 6, 33.3, 20);
 check('still slow: level 2', pg.ctx.LMPerf.level() === 2 && S.jellyPhisycs === false);
 frames(pg, 31 * 6, 33.3, 20);
+check('resolution option off (default): stays at level 2, full resolution', pg.ctx.LMPerf.level() === 2 && !(pg.ctx._lmAdaptiveScale > 0) && pg.calls.indexOf('resize:0.75') < 0);
+S.adaptivePerfRes = true; pg.ctx.LMPerf.configChanged();
+frames(pg, 31 * 6, 33.3, 20);
 check('still slow: level 3, lower resolution', pg.ctx.LMPerf.level() === 3 && pg.ctx._lmAdaptiveScale === 0.75 && pg.calls.indexOf('resize:0.75') >= 0);
 check('one message per level', pg.toasts.length === 3);
 /* menu opened: own values back (presets and Performance mode see them), frames ignored */
@@ -529,5 +532,14 @@ const methodIn = (name) => new RegExp('\\n {8}' + name.replace(/\$/g, '\\$') + '
 const missing = patches.filter(p => p[1] !== 'Storage.prototype' && !methodIn(p[2])).map(p => p[2]);
 check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')', patches.length >= 20 && missing.length === 0 && patches.every(p => P.SCOPES.indexOf(p[3]) >= 0) || (console.log('  missing:', missing), false));
 
+/* the resolution option switched off while at level 3: back to level 2 and full resolution at once */
+{
+    const rp = page(Object.assign(user(), { adaptivePerf: true, adaptivePerfRes: true }));
+    frames(rp, 120, 16.7, 3);
+    for (let i = 0; i < 4; i++) frames(rp, 31 * 6, 33.3, 20);
+    const was3 = rp.ctx.LMPerf.level() === 3 && rp.ctx._lmAdaptiveScale === 0.75;
+    rp.ctx.legendmod5.adaptivePerfRes = false; rp.ctx.LMPerf.configChanged();
+    check('resolution option off at level 3: level 2, full resolution now', was3 && rp.ctx.LMPerf.level() === 2 && !(rp.ctx._lmAdaptiveScale > 0));
+}
 console.log(fail ? fail + ' failed' : 'all perf checks passed');
 process.exit(fail ? 1 : 0);
