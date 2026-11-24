@@ -135,5 +135,18 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
   check("What's new toast links the guide", /lm-dc-toast-link/.test(lx));
 }
 
+/* a switch that cannot be changed (disabled / read-only) is refused when toggled (audit A9) */
+{
+  check('toggleBox exported', typeof C.toggleBox === 'function');
+  if (typeof C.toggleBox === 'function') {
+    const calls = [];
+    ctx.application = { setSettings(k, v) { calls.push([k, v]); } };
+    const dis = { id: 'universalChat', checked: false, disabled: true, getAttribute: () => null, closest: () => null };
+    check('disabled switch refused', C.toggleBox(dis) === null && dis.checked === false && calls.length === 0);
+    const ok = { id: 'showGrid', checked: false, disabled: false, getAttribute: () => null, closest: () => null };
+    check('enabled switch toggles', C.toggleBox(ok) === true && ok.checked && calls.length === 1);
+  }
+}
+
 console.log(fail ? fail + ' FAILED' : 'all ok');
 process.exit(fail ? 1 : 0);

@@ -212,9 +212,51 @@
         return best || { x: 4, y: 4, dir: 'row', overlap: -1 };
     }
 
+    /* a switch the menu shows as unavailable (disabled, read-only) is not changed from here
+     * either: checked when it runs, the list may be older than the menu */
+    function locked(cb) {
+        if (!cb) return true;
+        try {
+            return !!(cb.disabled || cb.readOnly || cb.getAttribute('aria-disabled') === 'true' ||
+                (typeof cb.closest === 'function' && cb.closest('fieldset[disabled]')));
+        } catch (e) { return true; }
+    }
+    /* a switch goes through the real checkbox: the bubbling change runs setSettings (side
+     * effects, save) and moves the Switchery, as the presets do; null when it is locked */
+    function toggleOpt(cb) {
+        if (locked(cb)) return null;
+        var v = !cb.checked;
+        cb.checked = v;
+        try { cb.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {
+            try { if (W.application) W.application.setSettings(cb.id, v); } catch (e2) { }
+        }
+        return cb.checked;
+    }
+    /* A hold command (macro feed, scan trick...) run from here is pressed briefly. The input
+     * that holds it owns its release: while a key, mouse button or gamepad button holds it
+     * (o.held) this neither presses it again nor releases it, the release is skipped when such
+     * an input took it over meanwhile, and overlapping presses from here make one longer press. */
+    function makeTapper(o) {
+        var pending = {};
+        return function (id, ms) {
+            var c = o.command(id);
+            if (!c || typeof c.keyDown !== 'function') return false;
+            if (typeof c.keyUp !== 'function') { c.keyDown(); return true; }
+            if (!pending[id] && o.held(id)) return true;
+            if (pending[id]) o.clearTimeout(pending[id]);
+            else c.keyDown();
+            pending[id] = o.setTimeout(function () {
+                delete pending[id];
+                if (!o.held(id)) c.keyUp();
+            }, ms || 250);
+            return true;
+        };
+    }
+
     var core = {
         normalize: normalize, splitKey: splitKey, scoreText: scoreText, scoreItem: scoreItem, rank: rank,
-        parseStore: parseStore, withRecent: withRecent, withFav: withFav, placeBar: placeBar, ID_RE: ID_RE
+        parseStore: parseStore, withRecent: withRecent, withFav: withFav, placeBar: placeBar, ID_RE: ID_RE,
+        locked: locked, toggleOpt: toggleOpt, makeTapper: makeTapper
     };
     var api = W.LMCommandCentre = { _core: core };
 
@@ -233,6 +275,7 @@
         on: { en: 'ON', el: 'ΝΑΙ' },
         off: { en: 'OFF', el: 'ΟΧΙ' },
         hold: { en: 'hold', el: 'κράτημα' },
+        locked: { en: 'This setting cannot be changed now.', el: 'Αυτή η ρύθμιση δεν αλλάζει τώρα.' },
         holdTip: { en: 'Hold command: from here it is pressed briefly. Bind a key to hold it.', el: 'Εντολή κρατήματος: από εδώ πατιέται για λίγο. Όρισε πλήκτρο για να την κρατάς.' },
         hk: { en: 'Hotkey', el: 'Πλήκτρο' },
         opt: { en: 'Setting', el: 'Ρύθμιση' },
@@ -489,25 +532,24 @@
         }, 200);
         setTimeout(scroll, 650);
     }
-    /* a switch goes through the real checkbox: the bubbling change runs setSettings (side
-     * effects, save) and moves the Switchery, as the presets do */
-    function toggleOpt(cb) {
-        var v = !cb.checked;
-        cb.checked = v;
-        try { cb.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {
-            try { if (W.application) W.application.setSettings(cb.id, v); } catch (e2) { }
-        }
-        return cb.checked;
-    }
-    function runHotkey(id, hold) {
-        var c = W.hotkeysCommand && W.hotkeysCommand[id];
-        if (!c || typeof c.keyDown !== 'function') return;
-        try { c.keyDown(); } catch (e) { console.warn('[LM] Command Centre:', id, e); }
-        /* a hold command (macro feed, scan trick...) gets its release too: pressed briefly */
-        if (hold && typeof c.keyUp === 'function') {
-            setTimeout(function () { try { c.keyUp(); } catch (e) { } }, 250);
-        }
-    }
+    /* shared with the radial menu (smalltools.js): W.LMCommandCentre.tapHotkey */
+    var tapHotkey = makeTapper({
+        command: function (id) {
+            var c = W.hotkeysCommand && W.hotkeysCommand[id];
+            if (!c || typeof c.keyDown !== 'function') return null;
+            /* a failing command must not stop the palette */
+            return {
+                keyDown: function () { try { c.keyDown(); } catch (e) { console.warn('[LM] Command Centre:', id, e); } },
+                keyUp: typeof c.keyUp === 'function' ? function () { try { c.keyUp(); } catch (e) { } } : null
+            };
+        },
+        /* a key, mouse button (ogario.v4.js) or gamepad button holding the command */
+        held: function (id) { try { return typeof W._lmHotkeyHeld === 'function' && !!W._lmHotkeyHeld(id); } catch (e) { return false; } },
+        setTimeout: function (f, ms) { return setTimeout(f, ms); },
+        clearTimeout: function (h) { clearTimeout(h); }
+    });
+    api.tapHotkey = function (id) { return tapHotkey(id); };
+    function runHotkey(id) { tapHotkey(id); }
     /* run an item; returns true when the palette should stay open (switches) */
     function run(item, fromBar) {
         if (!item) return false;
@@ -521,7 +563,9 @@
                 if (!f || !D.body.contains(f.el)) return false;
                 item = f;
             }
-            toggleOpt(item.el);
+            if (toggleOpt(item.el) === null) {
+                try { if (W.toastr) W.toastr.info(t('locked')); } catch (e) { }
+            }
             syncBar();
             return !fromBar;
         }
@@ -529,7 +573,7 @@
         /* after the palette is gone, so a command that focuses something (chat) keeps it */
         setTimeout(function () {
             try {
-                if (item.kind === 'hk') runHotkey(item.cmd, item.hold);
+                if (item.kind === 'hk') runHotkey(item.cmd);
                 else if (item.kind === 'win' && item.win) item.win.run();
                 else if (item.kind === 'win' || item.kind === 'tab') {
                     var href = (item.el.getAttribute('href') || '');

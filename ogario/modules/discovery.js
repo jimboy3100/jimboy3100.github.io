@@ -207,7 +207,23 @@
     ];
     var CARD_IDS = CARDS.map(function (c) { return c.id; });
 
+    /* a switch goes through the real checkbox, as the Command Centre and the presets do: the
+     * bubbling change runs setSettings (side effects, save) and moves the Switchery. A switch the
+     * menu shows as unavailable (disabled, read-only) is refused: null */
+    function toggleBox(cb) {
+        try {
+            if (!cb || cb.disabled || cb.readOnly || cb.getAttribute('aria-disabled') === 'true' ||
+                (typeof cb.closest === 'function' && cb.closest('fieldset[disabled]'))) return null;
+        } catch (e) { return null; }
+        cb.checked = !cb.checked;
+        try { cb.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {
+            try { if (W.application) W.application.setSettings(cb.id, cb.checked); } catch (e2) { }
+        }
+        return cb.checked;
+    }
+
     var core = {
+        toggleBox: toggleBox,
         SERVER_TYPES: SERVER_TYPES, CAPS: CAPS, CARDS: CARDS, KEY: KEY, MAX_SEEN: MAX_SEEN,
         serverTypeOf: serverTypeOf, capValue: capValue, capNote: capNote, capsFor: capsFor,
         parseStore: parseStore, serializeStore: serializeStore, unseenIds: unseenIds, shouldAutoOpen: shouldAutoOpen, firstState: firstState
@@ -231,6 +247,7 @@
         look: { en: 'Turned on: it is highlighted on the screen.', el: 'Άνοιξε: φαίνεται τονισμένο στην οθόνη.' },
         later: { en: 'Turned on: it shows while you play.', el: 'Άνοιξε: φαίνεται όταν παίζεις.' },
         offNow: { en: 'Turned off.', el: 'Έκλεισε.' },
+        locked: { en: 'This setting cannot be changed now.', el: 'Αυτή η ρύθμιση δεν αλλάζει τώρα.' },
         noMenu: { en: 'Open the settings once first.', el: 'Άνοιξε πρώτα μία φορά τις ρυθμίσεις.' },
         autoShow: { en: 'Show after updates', el: 'Εμφάνιση μετά από ενημερώσεις' },
         close: { en: 'Close', el: 'Κλείσιμο' },
@@ -388,17 +405,7 @@
         var m = card.querySelector('.lm-dc-msg');
         if (m) m.textContent = text || '';
     }
-    /* a switch goes through the real checkbox, as the Command Centre and the presets do: the
-     * bubbling change runs setSettings (side effects, save) and moves the Switchery */
-    function toggle(key) {
-        var cb = checkbox(key);
-        if (!cb) return null;
-        cb.checked = !cb.checked;
-        try { cb.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {
-            try { if (W.application) W.application.setSettings(key, cb.checked); } catch (e2) { }
-        }
-        return cb.checked;
-    }
+    function toggle(key) { return toggleBox(checkbox(key)); }
     function visible(el) {
         if (!el || !el.getBoundingClientRect) return false;
         var r = el.getBoundingClientRect();
@@ -464,7 +471,7 @@
                     chip.addEventListener('click', function () {
                         var on = toggle(key);
                         renderChip(chip, key);
-                        if (on === null) { setMsg(card, t('noMenu')); return; }
+                        if (on === null) { setMsg(card, checkbox(key) ? t('locked') : t('noMenu')); return; }
                         if (on && c.show && c.show[key]) highlight(c.show[key], card);
                         else setMsg(card, on ? t('later') : t('offNow'));
                     });

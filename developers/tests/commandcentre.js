@@ -111,5 +111,56 @@ check('bar: full screen covered -> a fallback spot', typeof p.x === 'number' && 
 p = C.placeBar({ w: 280, h: 600 }, rowS, colS, []);
 check('bar: row wider than the screen -> column', p.dir === 'col');
 
+// switches that cannot be changed are refused when run, not only hidden (audit A9)
+{
+  const calls = [];
+  ctx.application = { setSettings(k, v) { calls.push([k, v]); } };
+  const box = (o) => Object.assign({ id: 'universalChat', checked: false, disabled: false, readOnly: false, getAttribute: () => null, closest: () => null }, o);
+  check('toggle: exported', typeof C.toggleOpt === 'function');
+  if (typeof C.toggleOpt === 'function') {
+    const dis = box({ disabled: true });
+    C.toggleOpt(dis);
+    check('toggle: a disabled switch is not changed', dis.checked === false && calls.length === 0);
+    const ro = box({ readOnly: true });
+    C.toggleOpt(ro);
+    const aria = box({ getAttribute: n => (n === 'aria-disabled' ? 'true' : null) });
+    C.toggleOpt(aria);
+    check('toggle: read-only and aria-disabled switches are not changed', !ro.checked && !aria.checked && calls.length === 0);
+    const ok = box({ id: 'showGrid' });
+    C.toggleOpt(ok);
+    check('toggle: an enabled switch still changes', ok.checked === true && calls.length === 1 && calls[0][0] === 'showGrid');
+  }
+}
+
+// a brief press from the quick bar never releases a key / gamepad held command (audit A9)
+{
+  check('tap: exported', typeof C.makeTapper === 'function');
+  if (typeof C.makeTapper === 'function') {
+    const log = [], timers = [];
+    let held = false;
+    const cmd = { keyDown() { log.push('down'); }, keyUp() { log.push('up'); } };
+    const tap = C.makeTapper({
+      command: id => (id === 'hk-macroFeed' ? cmd : null),
+      held: () => held,
+      setTimeout: (f, ms) => { timers.push(f); return timers.length; },
+      clearTimeout: id => { timers[id - 1] = null; }
+    });
+    const flush = () => { const t = timers.slice(); timers.length = 0; t.forEach(f => f && f()); };
+    held = true;
+    tap('hk-macroFeed');
+    flush();
+    check('tap: a command held by a key is neither pressed again nor released', log.length === 0);
+    held = false;
+    tap('hk-macroFeed');
+    held = true; /* the key is pressed during the brief press */
+    flush();
+    check('tap: the auto release skips a command a key took over', log.join() === 'down');
+    held = false; log.length = 0;
+    tap('hk-macroFeed'); tap('hk-macroFeed'); /* two quick bar presses overlap */
+    flush();
+    check('tap: overlapping presses: one down, one up', log.join() === 'down,up');
+  }
+}
+
 console.log(fail ? fail + ' failed' : 'all command centre checks passed');
 process.exit(fail ? 1 : 0);

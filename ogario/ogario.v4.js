@@ -82980,6 +82980,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMouseCmdHeld[which] = command;
         hotkeysCommand[command].keyDown();
     }
+    /* true while a key, mouse button or gamepad button holds this hotkey command: the input
+     * that pressed a hold command owns its release (Command Centre / radial menu presses check it) */
+    window._lmHotkeyHeld = function (command) {
+        if (!command) return false;
+        for (var k in keyBlind) {
+            if (keyBlind[k] && hotkeys[k] === command) return true;
+        }
+        for (var w in _lmMouseCmdHeld) {
+            if (_lmMouseCmdHeld[w] === command) return true;
+        }
+        try { if (window.LMGamepad && typeof window.LMGamepad.isHeld === 'function' && window.LMGamepad.isHeld(command)) return true; } catch (e) { }
+        return false;
+    };
     /* true while a key or mouse button bound to macro feed is still held */
     window._lmMacroFeedHeld = function () {
         for (var k in keyBlind) {
