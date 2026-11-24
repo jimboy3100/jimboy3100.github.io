@@ -70190,6 +70190,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (!(layer >= 0) && activeKey !== skinUrl && this.glSkinMap[skinUrl] >= 0) {
                 layer = this.glSkinMap[skinUrl];
             }
+            /* -1 = the loaded skin could not be uploaded (tainted, e.g. agar.io custom skins
+             * loaded without CORS): only Canvas2D can draw it, like a video skin */
+            if (!(layer >= 0) && this.glSkinMap[activeKey] === -1) {
+                result.canvasOnly = true;
+            }
 
 
             /*
@@ -70245,6 +70250,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return result;
         },
 
+        /* The WebGL batches set virus mass themselves (setMass() does not run for GPU
+         * viruses): same "Virus shot sound" check and per-virus state as setMass(). */
+        _lmVirusShotSound(cell, rawVirusMass) {
+            if (defaultmapsettings.virusSound && cell._virusSoundMass && rawVirusMass < cell._virusSoundMass) {
+                var virusSoundNow = Date.now();
+                if (!cell._virusSoundAt || virusSoundNow - cell._virusSoundAt > 300) {
+                    cell._virusSoundAt = virusSoundNow;
+                    void application.playSound(application.virusSoundurl);
+                }
+            }
+            cell._virusSoundMass = rawVirusMass;
+        },
         drawWebGLCellBatch(cellsArray) {
             var _tGL = performance.now();
 
@@ -70845,6 +70862,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cell.mass =
                             rawVirusMass;
 
+                        this._lmVirusShotSound(cell, rawVirusMass);
+
 
                         /*
                          * Preserve normal-virus / mother-virus thresholds.
@@ -71159,7 +71178,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         skinRes.requested &&
                         skinRes.layer <
                             0 &&
-                        skinRes.video
+                        (skinRes.video || skinRes.canvasOnly)
                     ) {
                         return abortCellBatch();
                     }
@@ -72187,6 +72206,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     cell.mass =
                         _rawVirusMass;
 
+                    this._lmVirusShotSound(cell, _rawVirusMass);
+
                     /*
                      * Preserve existing Legend Mod thresholds.
                      */
@@ -72261,7 +72282,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (
                             (
                                 cell.isPlayerCell ||
-                                cell.playerCellsMulti
+                                cell.isPlayerCellMulti
                             ) &&
                             defaultmapsettings
                                 .myCustomColor &&
@@ -72569,6 +72590,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         }
                         if (!(mappedLayer >= 0) && activeKey !== skinUrl && this.glSkinMap[skinUrl] >= 0) {
                             mappedLayer = this.glSkinMap[skinUrl];
+                        }
+                        /* a loaded skin that cannot be uploaded (tainted, -1) is drawn by Canvas2D */
+                        if (!(mappedLayer >= 0) && this.glSkinMap[activeKey] === -1) {
+                            return abortCellBatch();
                         }
 
                         if (
@@ -73970,7 +73995,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (
                         defaultmapsettings.showGrid
                     ) {
-                        this.drawWebGLGridShader();
+                        /* no WebGL2 grid layer (unsupported or context lost): Canvas grid */
+                        if (!this.drawWebGLGridShader()) {
+                            this.drawGrid(
+                                this.ctx
+                            );
+                        }
                     }
                     else {
                         this.clearWebGLGrid();
@@ -75310,17 +75340,37 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * Opponent rings and opponent bubbles were already rendered
                  * underneath cells and viruses by drawHelpers().
                  */
-                this.drawPostCellOverlays();
+                /* The main canvas is below the WebGL canvas: when WebGL drew the cells, draw
+                 * the above-cell effects on the overlay canvas with the same world transform.
+                 * Canvas frames (and the death cinematic / join entrance) keep this.ctx. */
+                var _lmFxCtx = this.ctx;
+                if (unifiedWebGLWorldOK && this.overlayCanvas && this.overlayCtx &&
+                    typeof this.ctx.getTransform === 'function' &&
+                    !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active) &&
+                    (((LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) && defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) ||
+                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length))) {
+                    _lmFxCtx = this.overlayCtx;
+                    _lmFxCtx.setTransform(1, 0, 0, 1, 0, 0);
+                    _lmFxCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+                    _lmFxCtx.setTransform(this.ctx.getTransform());
+                    this._lmOverlayFxFrame = true;
+                    if (this.overlayCanvas.style.display !== 'block') this.overlayCanvas.style.display = 'block';
+                    this._lmOverlayFxShown = true;
+                } else if (this._lmOverlayFxShown && this.overlayCanvas) {
+                    this.overlayCanvas.style.display = 'none';
+                    this._lmOverlayFxShown = false;
+                }
+                this.drawPostCellOverlays(_lmFxCtx);
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
-                    this.drawSpawnEffect(this.ctx);
+                    this.drawSpawnEffect(_lmFxCtx);
                 }
                 /* ── Death particle burst rendering ──
                  * Tick physics and draw all active particles. Dead ones are pruned. */
                 if (_deathParticles.length > 0) {
                     var _dpNow = Date.now();
                     var _dpAlive = 0;
-                    var _dpCtx = this.ctx;
+                    var _dpCtx = _lmFxCtx;
                     for (var _pi = 0; _pi < _deathParticles.length; _pi++) {
                         var _dp = _deathParticles[_pi];
                         var _dpAge = _dpNow - _dp.born;
@@ -75391,7 +75441,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 this.drawRMB();
 
-                if (LM._lmPings && LM._lmPings.length) this.drawLmPings();
+                if (LM._lmPings && LM._lmPings.length) this.drawLmPings(_lmFxCtx);
 
 
                 if (
@@ -75484,7 +75534,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         this.overlayCanvas.height = oPH;
                     }
                     oCtx.setTransform(1, 0, 0, 1, 0, 0);
-                    oCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+                    /* already cleared this frame when it holds the above-cell effects */
+                    if (!this._lmOverlayFxFrame) oCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+                    this._lmOverlayFxFrame = false;
                     oCtx.setTransform(this.overlayCanvas.width / oW, 0, 0, this.overlayCanvas.height / oH, 0, 0);
 
                     if (_elDeathVisual && _elDeathVisual.active) {
@@ -75702,24 +75754,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * here. Opponent rings and opponent bubbles are already rendered
          * underneath cells by drawHelpers().
          */
-        drawPostCellOverlays() {
+        drawPostCellOverlays(fxCtx) {
+            var ctx = fxCtx || this.ctx;
             if (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) {
                 if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
                     if (!window.multiboxFollowMouse) {
                         if (!window.multiboxPlayerEnabled) {
-                            if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(this.ctx, LM.playerCells);
+                            if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(ctx, LM.playerCells);
                         } else if (window.multiboxPlayerEnabled && LM.playerCellsMulti && LM.playerCellsMulti.length) {
-                            this.drawSplitVectorGuide(this.ctx, LM.playerCellsMulti);
+                            this.drawSplitVectorGuide(ctx, LM.playerCellsMulti);
                         }
                     } else {
-                        if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(this.ctx, LM.playerCells);
-                        if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawSplitVectorGuide(this.ctx, LM.playerCellsMulti);
+                        if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(ctx, LM.playerCells);
+                        if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawSplitVectorGuide(ctx, LM.playerCellsMulti);
                     }
 
                     /* "Merge rings" setting (on by default, as before) */
                     if (defaultmapsettings.mergeRings !== false) {
-                        if (LM.playerCells && LM.playerCells.length) this.drawMergeProgressRings(this.ctx, LM.playerCells);
-                        if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawMergeProgressRings(this.ctx, LM.playerCellsMulti);
+                        if (LM.playerCells && LM.playerCells.length) this.drawMergeProgressRings(ctx, LM.playerCells);
+                        if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawMergeProgressRings(ctx, LM.playerCellsMulti);
                     }
                 }
             }
@@ -76322,9 +76375,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             LM.Waves.push(wave)		  		*/
         },
         /* typed team pings: label at the ping position, fades after ~4 s */
-        drawLmPings() {
+        drawLmPings(fxCtx) {
             var list = LM._lmPings;
-            var ctx = this.ctx, now = Date.now(), k = 0;
+            var ctx = fxCtx || this.ctx, now = Date.now(), k = 0;
             var sc = this.scale > 0 ? this.scale : 1;
             var fs = 18 / sc;
             ctx.save();
