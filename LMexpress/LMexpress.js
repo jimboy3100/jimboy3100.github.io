@@ -9171,10 +9171,52 @@ function lmThemeSendToModalIframes(sel) {
     }, 200);
 }
 
+/* ── Set --lm-* CSS custom properties on page load so every element that
+ * uses var(--lm-pc), var(--lm-mc), etc. in inline styles (Save for Later,
+ * Results panel, etc.) gets the user's chosen colors immediately. ── */
+(function _lmSetRootThemeVars() {
+    /* Defer slightly so ogario has parsed ogarioThemeSettings from localStorage */
+    setTimeout(function () {
+        try {
+            var _td = lmThemeData();
+            var _r = document.documentElement.style;
+            _r.setProperty('--lm-pc',  _td.pc);
+            _r.setProperty('--lm-pc2', _td.pc2);
+            _r.setProperty('--lm-mc',  _td.mc);
+            _r.setProperty('--lm-tc',  _td.tc);
+            _r.setProperty('--lm-tc2', _td.tc2);
+            _r.setProperty('--lm-op',  _td.op);
+            _r.setProperty('--lm-btc', _td.btc);
+            _r.setProperty('--lm-b1',  _td.b1);
+            _r.setProperty('--lm-b2',  _td.b2);
+            _r.setProperty('--lm-b3',  _td.b3);
+            _r.setProperty('--lm-b4',  _td.b4);
+            if (_td.bg) _r.setProperty('--lm-bg', _td.bg);
+        } catch (e) {}
+    }, 500);
+})();
+
 /* Promo and admin windows (Bootstrap modal markup): themed like the LM windows (Match history,
  * Private room) with the --lm-* menu colours, the close cross on the right and "?" on the left,
  * centred and kept on screen, and only this dialog drags (by its title bar). */
 function lmPromoChrome(sel) {
+    /* Ensure the user's actual theme colors are set as CSS custom properties
+     * on the document root so every var(--lm-*) reference resolves to the
+     * user-chosen color instead of falling through to the hardcoded fallback. */
+    var _td = lmThemeData();
+    var _r = document.documentElement.style;
+    _r.setProperty('--lm-pc',  _td.pc);
+    _r.setProperty('--lm-pc2', _td.pc2);
+    _r.setProperty('--lm-mc',  _td.mc);
+    _r.setProperty('--lm-tc',  _td.tc);
+    _r.setProperty('--lm-tc2', _td.tc2);
+    _r.setProperty('--lm-op',  _td.op);
+    _r.setProperty('--lm-btc', _td.btc);
+    _r.setProperty('--lm-b1',  _td.b1);
+    _r.setProperty('--lm-b2',  _td.b2);
+    _r.setProperty('--lm-b3',  _td.b3);
+    _r.setProperty('--lm-b4',  _td.b4);
+    if (_td.bg) _r.setProperty('--lm-bg', _td.bg);
     if (!document.getElementById('lm-promo-css')) {
         var st = document.createElement('style');
         st.id = 'lm-promo-css';
