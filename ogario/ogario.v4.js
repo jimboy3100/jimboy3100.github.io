@@ -115,7 +115,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.560;
+window.OgVer = 3.561;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -1401,9 +1401,18 @@ function _lmMbCellRadius(cell) {
     if (!Number.isFinite(r) || r <= 0) r = Number(cell.size);
     return Number.isFinite(r) && r > 0 ? r : 0;
 }
+/* One Map and its bucket arrays are reused every frame (no per-frame garbage) */
+var _lmMbGridMap = new Map();
+var _lmMbGridPool = [];
+function _lmMbGridRecycle(bucket) {
+    bucket.length = 0;
+    _lmMbGridPool.push(bucket);
+}
 function _lmMbBuildGrid() {
     var LM = window.legendmod;
-    var grid = new Map();
+    var grid = _lmMbGridMap;
+    grid.forEach(_lmMbGridRecycle);
+    grid.clear();
     var cells = LM && LM.cells;
     for (var i = 0; cells && i < cells.length; i++) {
         var c = cells[i];
@@ -1411,17 +1420,26 @@ function _lmMbBuildGrid() {
         var key = Math.floor(c.x / 256) * 65536 + Math.floor(c.y / 256);
         var bucket = grid.get(key);
         if (bucket) bucket.push(c);
-        else grid.set(key, [c]);
+        else {
+            bucket = _lmMbGridPool.length ? _lmMbGridPool.pop() : [];
+            bucket.push(c);
+            grid.set(key, bucket);
+        }
     }
     return grid;
 }
 function _lmMbIsPreferredTwin(cell, other, radius) {
     if (!other || other === cell || other.removed || other.isFood) return false;
+    /* a hidden copy is not drawn, so this one must stay (else the cell is drawn by no connection) */
+    if (other.invisible === true) return false;
     var mine = cell.spectator > 0 ? cell.spectator : 0;
     var theirs = other.spectator > 0 ? other.spectator : 0;
     if (theirs === mine) return false; /* same connection: a different cell */
     var otherOwn = theirs ? !!other.isPlayerCellMulti : !!other.isPlayerCell;
     if (!otherOwn && !(theirs < mine)) return false; /* this copy is the one drawn */
+    /* Own cell of another connection: only its own copy matches (same colour, no virus).
+     * A virus or an enemy of about the same size over it is a different cell. */
+    if (otherOwn && (cell.isVirus || other.isVirus || other.color !== cell.color)) return false;
     var r2 = _lmMbCellRadius(other);
     if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) return false;
     var tol = Math.max(1.2 * radius, 60);
@@ -20788,7 +20806,7 @@ var defaultmapsettings = {
      * the main connection, player 2 the multibox unit. Size is the ring's width
      * in % of the cell's radius, inside the edge. mbRingsP2 replaces mbRings
      * (which only ringed the unit); loadSettings carries an old "off" over. */
-    mbRingsP1: true,
+    mbRingsP1: false,
     mbRingsP2: true,
     mbRingColorP1: '#FF2FD6',
     mbRingColorP2: '#00E5FF',
@@ -51831,17 +51849,17 @@ Most cells eaten   : ${mostCellsEaten}
 
                 /* optional: remember who ate my cell (Game Over card "Eaten by") */
                 /* not when the eater is one of mine: own cell (ownership set of this packet) or my
-                 * multibox unit (its copy is stored under id + unit number * 1e9 with isPlayerCellMulti) */
+                 * multibox unit (its copy is stored under lmUnitCellId(id, unit number) with isPlayerCellMulti) */
                 /* (a server report from this death, lmKiller, is kept: the last remove packet can come after it) */
                 if ((defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
                     !(this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)) &&
-                    !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[eaterRawID + s.number * 1000000000]; return !!(c && c.isPlayerCellMulti); }) &&
+                    !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[lmUnitCellId(eaterRawID, s.number)]; return !!(c && c.isPlayerCellMulti); }) &&
                     !(this._lmKiller && this._lmKiller.server && Date.now() - this._lmKiller.at < 3000)) {
                     this._lmKiller = { nick: String(eaterID.targetNick || ''), mass: ~~(eaterID.size * eaterID.size / 100), virus: !!eaterID.isVirus, at: Date.now() };
                 }
                 /* my multibox unit ate my cell: a server lmKiller report right after would name that unit */
                 if ((defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && (eaterID.isPlayerCellMulti ||
-                    (window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[eaterRawID + s.number * 1000000000]; return !!(c && c.isPlayerCellMulti); }))) {
+                    (window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[lmUnitCellId(eaterRawID, s.number)]; return !!(c && c.isPlayerCellMulti); }))) {
                     this._lmKillerMultiAt = Date.now();
                 }
                 /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces (all servers) */
@@ -67864,7 +67882,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!ring) continue;
                     /* Expanding Land map deformation moves the body; same point as drawWebGLRingsBatch */
                     var point = this.getLegendWorldAttachedRenderPoint(cell.x, cell.y, this._elMapPointA);
-                    var rgba = this.parseWebGLOverlayColor(ring.color, LM_MB_RING_DEFAULT_COLORS[ring.player]);
+                    /* parsed once per ring colour, not per cell per frame */
+                    var cache = this._lmMbRingRgba || (this._lmMbRingRgba = {});
+                    var rgba = cache[ring.color];
+                    if (!rgba) {
+                        if (Object.keys(cache).length > 16) cache = this._lmMbRingRgba = {};
+                        rgba = cache[ring.color] = this.parseWebGLOverlayColor(ring.color, LM_MB_RING_DEFAULT_COLORS[ring.player]);
+                    }
                     var o = count * 9;
                     data[o] = point.x;
                     data[o + 1] = point.y;
@@ -67886,7 +67910,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (!gl || !this.glMbRingProgram || !this.glMbRingVAO) return;
             var LM = window.legendmod;
             if (!LM || !LM.multiBoxPlayerExists) return;
-            var count = this.buildWebGLMultiboxRingData([LM.playerCells, LM.playerCellsMulti], this.glMbRingData, this.glMbRingMax);
+            var lists = this._lmMbRingLists || (this._lmMbRingLists = [null, null]);
+            lists[0] = LM.playerCells;
+            lists[1] = LM.playerCellsMulti;
+            var count = this.buildWebGLMultiboxRingData(lists, this.glMbRingData, this.glMbRingMax);
             if (!count) return;
             var scale = this.scale || 1;
             gl.enable(gl.DEPTH_TEST);
@@ -73968,6 +73995,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (LM.playerCells && LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition(); /* includes the units */
             } else {
+                /* no cells: the next spawn must not count as a split (non16Sound) */
+                LM._lmPrevCells = 0;
                 LM.updateMultiboxUnitPositions();
             }
 
@@ -74111,7 +74140,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setScale(size, fit, unitPlaying) {
             if (!(fit > 0 && fit < 1)) fit = 1;
             var target = this.getTargetScale(size, unitPlaying) * fit;
-            var k = 1 - Math.pow(9 / 10, this._lmFrameF || 1);
+            /* "Zoom glide speed" (zoomSmooth): 10 = (9*scale + target)/10 per frame at 60 fps */
+            var _lmZs = +defaultmapsettings.zoomSmooth;
+            if (!(_lmZs >= 1 && _lmZs <= 50)) _lmZs = 10;
+            var k = 1 - Math.pow(1 - _lmZs / 100, this._lmFrameF || 1);
             this.scale += (target - this.scale) * k;
             LM.viewScale = this.scale;
         },

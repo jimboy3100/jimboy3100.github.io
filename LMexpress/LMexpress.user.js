@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Express Agar.io Extension
 // @namespace    Legend Express Agario Mod
-// @version      1.8.2
+// @version      1.8.4
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     https://jimboy3100.github.io
 // @author       Jimboy3100
@@ -55,16 +55,19 @@ var extraScriptDelayMs = 5000;
  * script: userscript fetched and run
  * legend: the page is Legend Mod's play.html, so it gets the init(<version>) call
  * extra:  userscript run on top of the Legend page
+ * notice: [title, text, linkUrl, linkText] page shown instead (the mod's server is gone)
  */
 var modes = {
     legendmod: { page: legendPage, legend: true },
     normal:    { page: 'https://agar.io' },
     hslo:      { script: 'https://hslo.io/install.user.js' },
     agartool:  { script: 'https://www.agartool.io/agartool.user.js' },
-    /* https only: code fetched over plain http could be swapped by anyone on the network path and would run on agar.io */
-    vanilla:   { script: 'https://imasters.org.ru/agar/js/vanilla.user.js' },
-    ogario:    { script: 'https://cdn.ogario.ovh/v4/beta/ogario.v4.user.js' },
-    delta:     { page: 'https://deltav4.glitch.me/v4/index.html' },
+    /* Checked 2026-11: imasters.org.ru no longer answers over https (http only, which is
+     * refused here), cdn.ogario.ovh does not resolve, and deltav4.glitch.me only redirects to
+     * the Delta install page. Show a page with the right link instead of a blank page. */
+    vanilla:   { notice: ['Vanilla mod is offline', 'Its server (imasters.org.ru) no longer serves the script over https.', null, null] },
+    ogario:    { notice: ['OGARio is offline', 'Its server (cdn.ogario.ovh) no longer exists.', null, null] },
+    delta:     { notice: ['Delta is installed separately', 'Delta has its own userscript.', 'https://greasyfork.org/scripts/399197-delta-v4', 'Open the Delta install page'] },
     neo:       { page: legendPage, legend: true, extra: 'https://jimboy3100.github.io/ExampleScripts/Neoprivate.js' },
     mobile:    { page: legendPage, legend: true, extra: 'https://www.legendmod.ml/ExampleScripts/gamepad.user.js' },
     captcha:   { page: 'https://www.legendmod.ml/ogario/captcha.html' }
@@ -91,10 +94,26 @@ if (mode.legend) {
 /* Stop agar.io's own page; the mode's page or userscript replaces it */
 document.documentElement.innerHTML = '';
 
-if (mode.page) {
+if (mode.notice) {
+    showLoaderPage(mode.notice[0], mode.notice[1], mode.notice[2], mode.notice[3]);
+} else if (mode.page) {
     loadPage(mode.page, mode.legend, mode.extra);
 } else {
     runUserscript(mode.script, true);
+}
+
+/* Shown instead of a blank white page (the page was already emptied above). */
+function showLoaderPage(title, text, linkUrl, linkText) {
+    var page = '<!doctype html><html><head><meta charset="utf-8"><title>Legend Mod</title></head>' +
+        '<body style="margin:0;background:#00243e;color:#fff;font:16px Ubuntu,Arial,sans-serif;text-align:center;padding-top:20vh">' +
+        '<h2 style="margin:0 0 12px">' + escapeHtml(title) + '</h2><div style="opacity:.8">' + escapeHtml(text) + '</div><br>' +
+        (linkUrl ? '<a style="color:#ffd200" href="' + escapeHtml(linkUrl) + '" target="_blank" rel="noopener">' + escapeHtml(linkText || linkUrl) + '</a> &nbsp;&middot;&nbsp; ' : '') +
+        '<a style="color:#ffd200" href="https://agar.io/legendmod">Play with Legend Mod</a> &nbsp;&middot;&nbsp; ' +
+        '<a style="color:#ffd200" href="https://agar.io/normal">Play without mods</a>' +
+        '</body></html>';
+    document.open();
+    document.write(page);
+    document.close();
 }
 
 function isHttps(url) {

@@ -313,8 +313,8 @@
 				defaultKey: '',
 				keyDown() {
 					if (!application || typeof defaultmapsettings === 'undefined') return;
-					/* mbRings was split into mbRingsP1 and mbRingsP2: toggle both */
-					var _mbNew = !(defaultmapsettings.mbRingsP1 && defaultmapsettings.mbRingsP2);
+					/* mbRings was split into mbRingsP1 and mbRingsP2: toggle both (any ring on = both off) */
+					var _mbNew = !(defaultmapsettings.mbRingsP1 || defaultmapsettings.mbRingsP2);
 					defaultmapsettings.mbRingsP1 = _mbNew;
 					defaultmapsettings.mbRingsP2 = _mbNew;
 					if (typeof application.syncHotkeyOption === 'function') {
