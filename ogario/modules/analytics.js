@@ -655,9 +655,10 @@
         var now = +e.time || Date.now();
         var ms = Math.max(0, Math.min(+e.msAlive || now - L.start, 6 * 3600000));
         var peak = Math.max(L.peak, +e.mass || 0);
-        /* P1 fix #49: If the death event reports 0 mass (fully consumed), update L.end
-         * so retention reflects the wipeout instead of showing 100%. */
-        if (+e.mass === 0 || e.mass === undefined) L.end = 0;
+        /* L.end stays the last mass update before the death: the death event's mass is
+         * playerScore, which is 0 once the cells are gone, so using it made every eaten life
+         * end at 0 and the Coach's retention score a constant 0. Retention compares the peak
+         * with what was still there right before the final hit. */
         if (peak <= 0 && ms < 1000) return;
         if (L.prevPos === 1 && L.lbAt) L.first += Math.min(now - L.lbAt, 5000);
         settleSplits(L, now, true);
