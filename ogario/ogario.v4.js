@@ -18719,7 +18719,6 @@ var displayText = {
         'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
         companionLive: 'Stream overlay / second screen (companion.html, same browser)',
         companionChat: 'Stream overlay: include chat lines',
-        'hk-companionResult': 'Result image (PNG of your last or current life)',
         'hk-hudEditor': 'Edit HUD (move, resize, lock or hide the HUD boxes; saved layouts)',
         accessibilityGroup: 'Accessibility',
         a11yTextScale: 'Menu text size (1 = normal)',
@@ -21727,7 +21726,7 @@ var _lmLabelI18n = {
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
-        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)","accessibilityGroup":"Προσβασιμότητα","a11yTextScale":"Μέγεθος κειμένου μενού (1 = κανονικό)","a11yHudTextScale":"Μέγεθος κειμένου HUD (1 = κανονικό, πάνω από την κλίμακα HUD)","a11yHighContrast":"HUD υψηλής αντίθεσης (συμπαγές φόντο, περιγράμματα)","a11yIndicators":"Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)","a11yNoFlash":"Λιγότερα αναβοσβησίματα (χωρίς κινούμενα στοιχεία σελίδας)","a11yPalette":"Παλέτα αχρωματοψίας για τα χρώματα και τα δαχτυλίδια αντιπάλων","skinCollections":"Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)","hk-radialMenu":"Κυκλικό μενού εντολών (κράτημα)","hk-radialEditor":"Κυκλικό μενού: επιλογή εντολών","hk-hotkeyConflicts":"Συγκρούσεις πλήκτρων","hk-screenshotMode":"Λειτουργία στιγμιότυπου (κρύβει το HUD)","hk-screenshotCapture":"Λήψη στιγμιότυπου (PNG)","hk-screenshotTool":"Παράθυρο στιγμιότυπου","hk-skinCollections":"Συλλογές skins","hk-bugReport":"Αναφορά σφάλματος (διαγνωστικά)","a11yPaletteOff":"Χρώματα θέματος","a11yPaletteDeut":"Δευτερανωπία (αδύναμο πράσινο)","a11yPaletteProt":"Πρωτανωπία (αδύναμο κόκκινο)","a11yPaletteTrit":"Τριτανωπία (αδύναμο μπλε)",
+        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)","accessibilityGroup":"Προσβασιμότητα","a11yTextScale":"Μέγεθος κειμένου μενού (1 = κανονικό)","a11yHudTextScale":"Μέγεθος κειμένου HUD (1 = κανονικό, πάνω από την κλίμακα HUD)","a11yHighContrast":"HUD υψηλής αντίθεσης (συμπαγές φόντο, περιγράμματα)","a11yIndicators":"Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)","a11yNoFlash":"Λιγότερα αναβοσβησίματα (χωρίς κινούμενα στοιχεία σελίδας)","a11yPalette":"Παλέτα αχρωματοψίας για τα χρώματα και τα δαχτυλίδια αντιπάλων","skinCollections":"Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)","hk-radialMenu":"Κυκλικό μενού εντολών (κράτημα)","hk-radialEditor":"Κυκλικό μενού: επιλογή εντολών","hk-hotkeyConflicts":"Συγκρούσεις πλήκτρων","hk-screenshotMode":"Λειτουργία στιγμιότυπου (κρύβει το HUD)","hk-screenshotCapture":"Λήψη στιγμιότυπου (PNG)","hk-screenshotTool":"Παράθυρο στιγμιότυπου","hk-skinCollections":"Συλλογές skins","hk-bugReport":"Αναφορά σφάλματος (διαγνωστικά)","a11yPaletteOff":"Χρώματα θέματος","a11yPaletteDeut":"Δευτερανωπία (αδύναμο πράσινο)","a11yPaletteProt":"Πρωτανωπία (αδύναμο κόκκινο)","a11yPaletteTrit":"Τριτανωπία (αδύναμο μπλε)",
         "lmLabGroup":"Lab (πειραματικά)","hk-lmPlugins":"Άνοιγμα User Scripts (plugins, κατάλογος)","hk-lmLab":"Άνοιγμα του Lab (πειραματικές λειτουργίες)","skinEditor":"Επεξεργασία skin (περικοπή, ζουμ, περιστροφή, προεπισκόπηση, PNG)","macroEditor":"Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)","hk-customMacro1":"Custom macro 1 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro2":"Custom macro 2 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro3":"Custom macro 3 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-lmThemeWorkshop":"Εργαστήριο θεμάτων: άνοιγμα / κλείσιμο"
     },
     "es": {
@@ -23037,10 +23036,9 @@ textLanguage['hk-notifCentre'] = textLanguage['hk-notifCentre'] || 'Open the not
 /* HUD editor hotkey: same fallback pattern */
 textLanguage['hk-hudEditor'] = textLanguage['hk-hudEditor'] || 'Edit HUD (move, resize, lock or hide the HUD boxes; saved layouts)';
 
-/* Stream overlay / result image: same fallback pattern. */
+/* Stream overlay: same fallback pattern. */
 textLanguage.companionLive = textLanguage.companionLive || 'Stream overlay / second screen (companion.html, same browser)';
 textLanguage.companionChat = textLanguage.companionChat || 'Stream overlay: include chat lines';
-textLanguage['hk-companionResult'] = textLanguage['hk-companionResult'] || 'Result image (PNG of your last or current life)';
 /* Small tools and accessibility: same fallback pattern. */
 textLanguage['accessibilityGroup'] = textLanguage['accessibilityGroup'] || 'Accessibility';
 textLanguage['a11yTextScale'] = textLanguage['a11yTextScale'] || 'Menu text size (1 = normal)';
@@ -48249,9 +48247,6 @@ function thelegendmodproject() {
         },
         showSessionStats(u) {
             if (!u) return;
-            /* the last Game Over numbers, for the result image (ogario/modules/companion.js) */
-            this._lmLastSessionStats = u;
-            this._lmLastSessionStatsAt = Date.now();
             if (window.LMEvents._has('gameStats')) {
                 window.LMEvents.emit('gameStats', {
                     time: Date.now(), playersEaten: ~~u.playersEaten, topPosition: ~~u.topPosition, highestMass: ~~u.highestMass,
@@ -48372,12 +48367,6 @@ function thelegendmodproject() {
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:4px;background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' +
-                /* result image (ogario/modules/companion.js), mirrored to the share button */
-                (window.LMCompanion && window.LMCompanion.resultImage ? '<div id="lm-go-image" title="' + _lmTH('resultImage', 'Result image') + '" style="' +
-                'position:absolute;top:8px;right:40px;cursor:pointer;' +
-                'font-size:13px;color:' + tc2 + ';line-height:1;' +
-                'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
-                'border-radius:4px;background:rgba(255,255,255,0.05);">\ud83d\uddbc\ufe0f</div>' : '') +
                 '<div id="lm-go-dlcard" title="Download match card" style="' +
                 'position:absolute;top:8px;left:68px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
@@ -48514,12 +48503,6 @@ function thelegendmodproject() {
                     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
                     else done(false);
                 } catch (err) { done(false); }
-            });
-            /* Result image of this life (ogario/modules/companion.js) */
-            var imageBtn = document.getElementById('lm-go-image');
-            if (imageBtn) imageBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                if (window.LMCompanion) window.LMCompanion.resultImage({ stats: u });
             });
             /* Share: the phone/browser share sheet, else a tweet in a new tab (cancelling the sheet is no error) */
             var shareBtn = document.getElementById('lm-go-share');
@@ -86014,7 +85997,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
             console.warn('[LM] Error loading Replay Studio:', e);
         }
     };
-    /* Stream overlay / second screen (publishes only while its option is on) + result image */
+    /* Stream overlay / second screen (publishes only while its option is on) */
     try {
         var companionScript = document.createElement('script');
         companionScript.type = 'text/javascript';
