@@ -204,6 +204,13 @@
         'display:none!important}' +
         '#menu-footer{display:none!important}' +
         '#LMPromoLegendFFA,#LMPromo,.modal-backdrop,#leaderboard-menu{display:none!important}' +
+        /* replay bar: taller for a thumb and above the buttons (!important beats its inline bottom) */
+        '#lm-replay-bar{height:26px!important;bottom:64px!important}' +
+        /* windows fit short landscape screens; close crosses big enough for a thumb */
+        '.lm-modal-container{max-height:96vh!important;overflow-y:auto!important}#lm-mh-modal{max-height:94vh!important}' +
+        '#lm-mh-close,.lm-modal-close,#lm-challenges-modal .lm-modal-header>button{min-width:44px!important;min-height:44px!important}' +
+        /* net graph: top middle (at the left it sat under the chat box) */
+        '#lm-net-graph{left:50%!important;top:54px!important;transform:translateX(-50%)}' +
 
         /* ── Compact mobile stats overlay ── */
         '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
@@ -480,7 +487,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false };
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
@@ -495,6 +502,8 @@
                 if (saved.quickCmds !== undefined) prefs.quickCmds = !!saved.quickCmds;
                 if (saved.mbButton !== undefined) prefs.mbButton = !!saved.mbButton;
                 if (saved.stopOnRelease !== undefined) prefs.stopOnRelease = !!saved.stopOnRelease;
+                if (saved.pingBtn !== undefined) prefs.pingBtn = !!saved.pingBtn;
+                if (saved.netGraph !== undefined) prefs.netGraph = !!saved.netGraph;
             }
         } catch (e) { }
         function savePrefs() {
@@ -519,6 +528,11 @@
         
         drawer.appendChild(bAI);
         drawer.appendChild(bPaus);
+        /* replay seek: shown only while a replay plays (see syncAiPause) */
+        var bRwd = mkd('\u23EA'), bFwd = mkd('\u23E9');
+        bRwd.style.display = 'none'; bFwd.style.display = 'none';
+        drawer.appendChild(bRwd);
+        drawer.appendChild(bFwd);
         drawer.appendChild(bChat);
 
         var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
@@ -551,7 +565,9 @@
             '<label><input type="checkbox" id="lm-stoprel"' + (prefs.stopOnRelease ? ' checked' : '') + '> Stop on release (cell stops when you lift the joystick thumb)</label>' +
             '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> Short vibration on Split / Feed</label>' +
             '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> Quick chat buttons (commands 1-4)</label>' +
-            '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> Multibox button (second player; uses more data)</label>';
+            '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> Multibox button (second player; uses more data)</label>' +
+            '<label><input type="checkbox" id="lm-pingbtn"' + (prefs.pingBtn ? ' checked' : '') + '> Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)</label>' +
+            '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> Net graph (FPS and ping of the last 30 seconds)</label>';
         drawer.appendChild(sp);
 
         /* The panel only shows with class "on", and nothing ever added it, so joystick
@@ -626,6 +642,8 @@
         buildQuickCmds();
         sp.querySelector('#lm-qcmd').addEventListener('change', function () { prefs.quickCmds = this.checked; savePrefs(); buildQuickCmds(); });
         sp.querySelector('#lm-mbbtn').addEventListener('change', function () { prefs.mbButton = this.checked; savePrefs(); buildMbButton(); if (typeof repositionButtons === 'function') repositionButtons(); });
+        sp.querySelector('#lm-pingbtn').addEventListener('change', function () { prefs.pingBtn = this.checked; savePrefs(); buildPingButton(); });
+        sp.querySelector('#lm-netgraph').addEventListener('change', function () { prefs.netGraph = this.checked; savePrefs(); syncNetGraph(); });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
@@ -661,6 +679,100 @@
             drawer.insertBefore(bMb, bCfg);
         }
         buildMbButton();
+        /* optional team ping (the desktop ping hotkeys): tap = "Go here"; hold (or slide) opens a
+         * 4-way choice, slide the thumb towards one and lift to send it (lifting without sliding
+         * sends nothing). The ping goes where the joystick aims. */
+        var bPing = null, pingRad = null;
+        var PING_DIRS = [[5, 0, -1, '\u271A Help'], [6, -1, 0, '\u26A0 Danger'], [7, 1, 0, '\u279C Go here'], [8, 0, 1, '\u2739 Virus here']];
+        function sendPing(type) {
+            if (typeof application !== 'undefined' && application && typeof application.sendTeamPing === 'function') application.sendTeamPing(type);
+        }
+        function buildPingButton() {
+            if (bPing && bPing.parentNode) bPing.parentNode.removeChild(bPing);
+            if (pingRad && pingRad.parentNode) pingRad.parentNode.removeChild(pingRad);
+            bPing = null; pingRad = null;
+            if (!prefs.pingBtn) return;
+            var b = bPing = mkd('\uD83D\uDCCD');
+            var rad = pingRad = mk('div'); rad.id = 'lm-ping-rad';
+            rad.style.cssText = 'position:fixed;display:none;z-index:100002;pointer-events:none;width:0;height:0';
+            var items = PING_DIRS.map(function (d) {
+                var it = mk('div');
+                it.textContent = d[3];
+                it.style.cssText = 'position:absolute;transform:translate(-50%,-50%);left:' + (d[1] * 64) + 'px;top:' + (d[2] * 46) + 'px;' +
+                    'white-space:nowrap;padding:6px 10px;border-radius:14px;font:700 13px Ubuntu,Roboto,sans-serif;color:#fff;' +
+                    'background:rgba(0,36,62,.88);border:1.5px solid rgba(1,217,204,.35)';
+                rad.appendChild(it);
+                return it;
+            });
+            document.body.appendChild(rad);
+            var tid = null, sx = 0, sy = 0, holdT = 0, open = false, pick = 0;
+            function openRad() {
+                if (open || tid === null) return;
+                open = true;
+                clearTimeout(holdT);
+                /* kept on screen: near the bottom edge it is drawn a little above the thumb */
+                rad.style.left = Math.max(115, Math.min(window.innerWidth - 115, sx)) + 'px';
+                rad.style.top = Math.max(70, Math.min(window.innerHeight - 70, sy)) + 'px';
+                rad.style.display = 'block';
+            }
+            function setPick(x, y) {
+                var dx = x - sx, dy = y - sy;
+                pick = 0;
+                if (dx * dx + dy * dy >= 256) pick = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 6 : 7) : (dy < 0 ? 5 : 8);
+                items.forEach(function (it, i) { it.style.background = PING_DIRS[i][0] === pick ? 'rgba(1,160,150,.95)' : 'rgba(0,36,62,.88)'; });
+            }
+            function findT(e) {
+                for (var i = 0; i < e.changedTouches.length; i++) if (e.changedTouches[i].identifier === tid) return e.changedTouches[i];
+                return null;
+            }
+            function finish(send) {
+                clearTimeout(holdT);
+                var wasOpen = open, p = pick;
+                tid = null; open = false; pick = 0;
+                rad.style.display = 'none';
+                b.classList.remove('p');
+                if (!send) return;
+                if (!wasOpen) sendPing(7);
+                else if (p) sendPing(p);
+            }
+            b.addEventListener('touchstart', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                if (tid !== null) return;
+                var t = e.changedTouches[0];
+                tid = t.identifier; sx = t.clientX; sy = t.clientY; open = false;
+                setPick(sx, sy);
+                b.classList.add('p');
+                holdT = setTimeout(openRad, 350);
+            }, { passive: false });
+            b.addEventListener('touchmove', function (e) {
+                var t = findT(e);
+                if (!t) return;
+                e.preventDefault();
+                var dx = t.clientX - sx, dy = t.clientY - sy;
+                if (!open && dx * dx + dy * dy >= 256) openRad();
+                if (open) setPick(t.clientX, t.clientY);
+            }, { passive: false });
+            b.addEventListener('touchend', function (e) {
+                var t = findT(e);
+                if (!t) return;
+                e.preventDefault();
+                if (open) setPick(t.clientX, t.clientY);
+                finish(true);
+            }, { passive: false });
+            b.addEventListener('touchcancel', function (e) { if (findT(e)) finish(false); }, { passive: true });
+            drawer.insertBefore(b, bCfg);
+        }
+        buildPingButton();
+        /* net graph (the desktop hotkey), kept in step with the setting */
+        function syncNetGraph() {
+            if (typeof window.lmToggleNetGraph === 'function' && !!window._lmNetGraph !== prefs.netGraph) window.lmToggleNetGraph();
+        }
+        if (prefs.netGraph) {
+            (function waitNetGraph(n) {
+                if (typeof window.lmToggleNetGraph === 'function') syncNetGraph();
+                else if (n > 0) setTimeout(function () { waitNetGraph(n - 1); }, 500);
+            })(60);
+        }
 
         var jO = mk('div'); jO.className = 'lm-jo'; document.body.appendChild(jO);
         var jI = mk('div'); jI.className = 'lm-ji'; document.body.appendChild(jI);
@@ -676,7 +788,7 @@
         applyPrefs();
 
         /* ── Press effects ── */
-        [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus].forEach(function (b) {
+        [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus, bRwd, bFwd].forEach(function (b) {
             b.addEventListener('touchstart', function () { b.classList.add('p'); }, { passive: true });
             b.addEventListener('touchend', function () { b.classList.remove('p'); }, { passive: true });
             b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, { passive: true });
@@ -780,6 +892,26 @@
         function syncAiPause() {
             bAI.classList.toggle('lm-active', !!window.autoPlay);
             bPaus.classList.toggle('lm-active', typeof application !== 'undefined' && !!application.pause);
+            var rp = replayBarShown(), rd = rp ? '' : 'none';
+            if (bRwd.style.display !== rd) { bRwd.style.display = rd; bFwd.style.display = rd; }
+            if (!rp) return;
+            bPaus.classList.toggle('lm-active', !!window._lmReplayPaused);
+            /* the replay bar seeks on mousedown: a touch seeks the same way */
+            var rb = document.getElementById('lm-replay-bar');
+            if (rb && !rb._lmTouch) {
+                rb._lmTouch = true;
+                rb.addEventListener('touchstart', function (e) {
+                    var t = e.changedTouches && e.changedTouches[0];
+                    if (!t) return;
+                    e.preventDefault(); e.stopPropagation();
+                    rb.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: t.clientX, clientY: t.clientY }));
+                }, { passive: false });
+            }
+        }
+        /* a replay is playing while its progress bar shows */
+        function replayBarShown() {
+            var rb = document.getElementById('lm-replay-bar');
+            return !!(rb && rb.style.display !== 'none' && rb.getClientRects().length);
         }
         /* background timers skip work while the tab is hidden */
         setInterval(function () { if (!document.hidden) syncAiPause(); }, 500);
@@ -789,11 +921,23 @@
          * ═══════════════════════════════════════════════════════ */
         bPaus.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            /* setPause does nothing for a replay: pause or resume the replay instead */
+            if (replayBarShown() && typeof window.lmReplayTogglePause === 'function') {
+                window.lmReplayTogglePause();
+                syncAiPause();
+                return;
+            }
             if (typeof application !== 'undefined' && application.setPause) {
                 application.setPause();
                 syncAiPause();
             }
         }, { passive: false });
+        [[bRwd, -250], [bFwd, 250]].forEach(function (r) {
+            r[0].addEventListener('touchstart', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                if (replayBarShown() && typeof window.lmReplaySeek === 'function') window.lmReplaySeek(r[1]);
+            }, { passive: false });
+        });
 
         /* ═══════════════════════════════════════════════════════
          *  FEED — W (keyCode 87), hold to repeat
