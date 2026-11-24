@@ -59293,9 +59293,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
              *
              * This has NOTHING to do with Expanding Land or jelly physics.
              */
+            /* Expanding Land Teams uses WebGL: the batch skips skins and the
+             * custom/opponent colours in Teams, and the pie goes on the overlay. */
             if (
                 LM.gameMode ===
-                ':teams'
+                ':teams' &&
+                !_lmElTeamsActive(LM)
             ) {
                 return false;
             }
@@ -70981,6 +70984,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !defaultmapsettings
                     .customSkins ||
                 !LM.showCustomSkins ||
+                /* Teams cells show no skins (same as Cell.draw) */
+                LM.gameMode === ':teams' ||
                 !cell ||
                 cell.isVirus ||
                 cell.isEjected ||
@@ -72892,7 +72897,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
+            /* Teams cells show no skins (same as Cell.draw) */
+            var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins && LM.gameMode !== ':teams';
             var _isParty = ':party' === application.gameMode;
 
             /*
@@ -76510,6 +76516,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.ctx.restore(); // restore DPR scale
             }
 
+            /* WebGL frame: the cells sit above this canvas, so the pie is drawn on the overlay canvas further down */
+            var _lmPieOnOverlay = false;
             if (LM.gameMode === ':teams') {
                 // Agar2: redraw pie if canvas wasn't ready when op50 first arrived
                 if (LM.serverType === 'agar2' && LM.pieChart && LM.pieChart.length && this.canvasWidth > 0) {
@@ -76517,7 +76525,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         this.drawPieChart();
                     } catch (ePieChart) { }
                 }
-                if (this.pieChart && !this.pieChart._failed && (this.pieChart.width > 0 || this.pieChart.naturalWidth > 0)) {
+                _lmPieOnOverlay = !!(this._lmFrameGL && this.overlayCanvas);
+                if (!_lmPieOnOverlay && this.pieChart && !this.pieChart._failed && (this.pieChart.width > 0 || this.pieChart.naturalWidth > 0)) {
                     /* The DPR scale is already restored here: re-apply it so
                      * the CSS-pixel position/size is right on HiDPI. */
                     this.ctx.save();
@@ -76582,6 +76591,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!this._lmOverlayFxFrame) oCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
                     this._lmOverlayFxFrame = false;
                     oCtx.setTransform(this.overlayCanvas.width / oW, 0, 0, this.overlayCanvas.height / oH, 0, 0);
+                    if (_lmPieOnOverlay && this.pieChart && !this.pieChart._failed && (this.pieChart.width > 0 || this.pieChart.naturalWidth > 0)) {
+                        try {
+                            oCtx.drawImage(this.pieChart, oW - this.pieChart.width - 10, 10);
+                        } catch (ePieDraw) {
+                            this.pieChart._failed = true;
+                        }
+                        if (this.overlayCanvas.style.display !== 'block') this.overlayCanvas.style.display = 'block';
+                        this._lmPieOverlayShown = true;
+                    } else if (this._lmPieOverlayShown) {
+                        this._lmPieOverlayShown = false;
+                        if (!this._lmOverlayFxShown) this.overlayCanvas.style.display = 'none';
+                    }
 
                     if (_elDeathVisual && _elDeathVisual.active) {
                         var dNow = Date.now();
