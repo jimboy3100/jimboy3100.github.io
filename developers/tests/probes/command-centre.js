@@ -26,6 +26,8 @@
     if (!kinds.tab || !kinds.win) fail.push('no menu tabs / windows');
     if (all.some(function (it) { return it.id === 'hk:hk-commandCentre'; })) fail.push('lists its own hotkey');
     if (all.some(function (it) { return !it.label; })) fail.push('item without a label');
+    /* the button is added by a 1 s retry: wait for it instead of a fixed time (busy machines were too slow) */
+    for (var wb = 0; wb < 40 && !document.getElementById('lm-cc-open'); wb++) await sleep(100);
     if (!document.getElementById('lm-cc-open')) fail.push('no button next to the settings search');
 
     // Ctrl+K on the page (unless the player bound Ctrl+K to a hotkey)
@@ -82,9 +84,14 @@
     // a slider opens the menu at its place and blinks; a theme tab and the hotkeys window open
     var activeTab = document.querySelector('.menu-tabs li.active a');
     if (CC.run('set:animation')) {
-      await sleep(400);
-      var box = document.getElementById('animation-slider');
-      box = box && box.closest('.slider-box');
+      /* the highlight comes after a short delay and stays 2.4 s: poll for it (up to 2 s) */
+      var box = null;
+      for (var wh = 0; wh < 20; wh++) {
+        await sleep(100);
+        box = document.getElementById('animation-slider');
+        box = box && box.closest('.slider-box');
+        if (box && box.classList.contains('lm-cc-flash')) break;
+      }
       if (!$('#og-settings').is(':visible')) fail.push('slider: settings tab not shown');
       if (!box || !box.classList.contains('lm-cc-flash')) fail.push('slider: not highlighted');
     } else fail.push('no item set:animation');
