@@ -105,11 +105,16 @@
 		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="Flag4July" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUSAFlag4July.png"></div>'		
 	}		
 		
+            /* shopscript.js reads this to tell its own window from a newer one */
+            window._lmShopOpenId = (window._lmShopOpenId || 0) + 1;
+            /* the old window's lazyload scroll/resize handlers on window (see shopscript.js) */
+            if (window._lmShopUnbindLazy) window._lmShopUnbindLazy();
             $('#LMShop').remove();
             $('.modal-backdrop').remove();
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
 				'<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/css/specialeffects.css">' +
-				'<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>' +
+				/* the lazyload plugin stays on jQuery after the window is closed: load it once */
+				(window.jQuery && jQuery.fn.lazyload ? '' : '<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>') +
 				'<style>' +
 				'#LMShop #navbar { position: relative !important; width: 100% !important; height: auto !important; top: auto !important; left: auto !important; right: auto !important; margin: 0 !important; padding: 8px 12px !important; background: #f1f3f5 !important; border-bottom: 1px solid #dee2e6 !important; z-index: 1052 !important; }' +
 				'#LMShop #nav ul { margin: 0 !important; padding: 0 !important; float: none !important; display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 6px !important; }' +
@@ -203,6 +208,7 @@
 			$("#animatedLikeGif").css("padding-right", "100px");
             $("#CloseLMShop").off('click').on('click', function(e) {
                 if (e) e.stopPropagation();
+                if (window._lmShopUnbindLazy) window._lmShopUnbindLazy();
                 $("#LMShop").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");

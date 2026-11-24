@@ -14,6 +14,15 @@
 
 /* Wrapped so it defines no globals: a global init() here replaced LMexpress's init(modVersion) when sniff3 loaded this file. */
 (function () {
+/* Two loaders run this file: LMexpress.sniff3.js (opt-in, page script) and the agar.io/mobile
+ * mode of LMexpress.user.js (inside the userscript sandbox, so window flags are not shared).
+ * Both share the page's DOM, so the checks below use it:
+ * - LMmobile.js (play.html adds its tag on touch-only devices) has the newer touch controls;
+ *   with both, the phone got two sets of buttons.
+ * - run once, whichever loader comes first. */
+if (document.querySelector('script[src*="/LMmobile/LMmobile.js"]')) return;
+if (document.documentElement.hasAttribute('data-lm-neo-gamepad')) return;
+document.documentElement.setAttribute('data-lm-neo-gamepad', '1');
 setTimeout(function() {
 legendmod.autoZoom=true;	
 if ($("#legendhelper")){
@@ -191,7 +200,8 @@ var canvas = document.getElementById('canvas');
     },500)
 var cur = document.createElement('div')
 cur.id="cur"
-cur.innerHTML='<img src="http://cdn.ogario.ovh/static/img/cursors/cursor_02.cur">'
+/* cdn.ogario.ovh no longer exists (and http is blocked on an https page): the same cursor from this site */
+cur.innerHTML='<img src="https://jimboy3100.github.io/cursors/cursor_02.cur">'
 cur.style=''
 document.body.appendChild(cur)
 
@@ -317,16 +327,9 @@ document.getElementById('zoomIn').ontouchstart=wheelZoom.bind(120)
 */
 document.getElementById('zoomOut').addEventListener("touchstart", function(){legendmod.zoomValue=legendmod.zoomValue/1.5}, false)
 document.getElementById('zoomIn').addEventListener("touchstart", function(){legendmod.zoomValue=legendmod.zoomValue*1.5;}, false)
-document.getElementById('fullscrn').addEventListener("touchstart", function(){toggleFullScreen(fullornot);}, false)
-
-
-	
-$("#zoomOut").on("touchstart", function() {
-	legendmod.zoomValue=legendmod.zoomValue/1.5;
-});
-$("#zoomIn").on("touchstart", function() {
-	legendmod.zoomValue=legendmod.zoomValue*1.5;
-});
+/* The #fullscrn button (and toggleFullScreen) are commented out above: its listener threw here
+ * on every start. A second pair of jQuery zoom handlers followed (only that throw kept them from
+ * running): with both, each tap zoomed twice (1.5 x 1.5). */
 
 
 /*
@@ -368,8 +371,9 @@ var t123 = setInterval(function() {
     } else {
         if(!--timeStep) {
             clearInterval(t123);
-            window.master != undefined && alert('Legend mod not responding')
-            window.nipplejs != undefined && alert('nipplejs not responding')
+            /* say what is missing (these tests were inverted: each alert named the part that had loaded) */
+            if (!window.master || !document.getElementById('animation-slider')) alert('Legend mod not responding')
+            if (!window.nipplejs) alert('nipplejs not responding')
         }
     }
 }, 50)

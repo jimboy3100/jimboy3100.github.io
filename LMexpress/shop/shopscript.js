@@ -1,10 +1,34 @@
 //v0.4u
 
+/* Every .lazyload() call binds a "scroll" and a "resize" handler on window and never removes
+ * them (even for an empty selection), so each shop open left 12 more handlers looping over the
+ * removed window's images. Keep the ones this window added; shop.js removes them before the
+ * window is opened again or closed. */
+window._lmShopLazyHandlers = window._lmShopLazyHandlers || [];
+window._lmShopUnbindLazy = function () {
+    var list = window._lmShopLazyHandlers;
+    for (var i = 0; i < list.length; i++) jQuery(window).off(list[i].type, list[i].handler);
+    window._lmShopLazyHandlers = [];
+};
+function _lmShopWindowHandlers() {
+    var events = jQuery._data(window, "events") || {};
+    var found = [];
+    ["scroll", "resize"].forEach(function (type) {
+        (events[type] || []).forEach(function (h) { found.push({ type: type, handler: h.handler }); });
+    });
+    return found;
+}
+/* shop.js counts the opens and this script runs while its own window is being added: keep
+ * that count in a closure (a global would already hold the next open's count) */
+(function (_lmShopThisOpen) {
 //$(document).ready(function() {
 jQuery(function($) {
 
 setTimeout(function() {
-		
+    /* closed, or opened again, during the wait: the elements below belong to no window or to a newer one */
+    if (_lmShopThisOpen !== window._lmShopOpenId || !document.getElementById("LMShop")) return;
+    var _lmBefore = _lmShopWindowHandlers();
+
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
         skip_invisible : true
@@ -29,9 +53,15 @@ setTimeout(function() {
      $("#animatedLikeGif img.lazy").lazyload({
         effect : "fadeIn",
         skip_invisible : true
-    });	
+    });
+    /* the handlers the calls above added */
+    _lmShopWindowHandlers().forEach(function (h) {
+        var known = _lmBefore.some(function (b) { return b.type === h.type && b.handler === h.handler; });
+        if (!known) window._lmShopLazyHandlers.push(h);
+    });
 
-    $("img.lazy").on("click", function(e) {
+    /* this window's skins only (it is the only place that shows lazy skin images) */
+    $("#LMShop img.lazy").on("click", function(e) {
         e.preventDefault();
 		var url = $(this).attr("name");
         $("#skin-url").val(url).select();
@@ -82,6 +112,7 @@ setTimeout(function() {
 	//}, 950);
 	}, 900);
 });
+})(window._lmShopOpenId);
 
 
 function startSpecialEffectSkin(){

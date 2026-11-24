@@ -1685,9 +1685,16 @@ function _lmMbIsPreferredTwin(cell, other, radius) {
     if (theirs === mine) return false; /* same connection: a different cell */
     var otherOwn = theirs ? !!other.isPlayerCellMulti : !!other.isPlayerCell;
     if (!otherOwn && !(theirs < mine)) return false; /* this copy is the one drawn */
-    /* Own cell of another connection: only its own copy matches (same colour, no virus).
-     * A virus or an enemy of about the same size over it is a different cell. */
-    if (otherOwn && (cell.isVirus || other.isVirus || other.color !== cell.color)) return false;
+    /* Every connection gets the same kind, colour and name for one cell, so a copy matches in
+     * all of them. Without this an enemy or a virus of about the same size next to another
+     * enemy was hidden as its "copy" (proximity and size alone).
+     * Own cell of another connection: no virus/ejected copy, same colour (as before). The
+     * name is compared for other cells only: own cells take the player's nick, not the
+     * server's name, and only one side may have a name yet. */
+    if (!!cell.isVirus !== !!other.isVirus || !!cell.isEjected !== !!other.isEjected) return false;
+    if (otherOwn && (cell.isVirus || cell.isEjected)) return false;
+    if (other.color !== cell.color) return false;
+    if (!otherOwn && cell.targetNick && other.targetNick && cell.targetNick !== other.targetNick) return false;
     var r2 = _lmMbCellRadius(other);
     if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) return false;
     var tol = Math.max(1.2 * radius, 60);
@@ -1709,8 +1716,11 @@ function lmMultiboxPositionTwin(cell) {
         _lmMbGridTime = LM.time;
     }
     var gx = Math.floor(cell.x / 256), gy = Math.floor(cell.y / 256);
-    for (var ox = -1; ox <= 1; ox++) {
-        for (var oy = -1; oy <= 1; oy++) {
+    /* as many 256-unit buckets as the match distance in _lmMbIsPreferredTwin reaches: one
+     * bucket each way missed copies of big cells (radius 300: up to 360 apart) */
+    var reach = Math.max(1, Math.ceil(Math.max(1.2 * radius, 60) / 256));
+    for (var ox = -reach; ox <= reach; ox++) {
+        for (var oy = -reach; oy <= reach; oy++) {
             var bucket = _lmMbGrid.get((gx + ox) * 65536 + gy + oy);
             for (var i = 0; bucket && i < bucket.length; i++) {
                 if (_lmMbIsPreferredTwin(cell, bucket[i], radius)) {
@@ -17683,7 +17693,7 @@ function userLeaguesInfoResponse() {
                 entries.push({
                     displayName: players[i].id || players[i].uid || ('Player ' + (entries.length + 1)),
                     uid: players[i].uid || '',
-                    level: players[i].level ? parseInt(players[i].level) || 1 : 1,
+                    level: players[i].level ? parseInt(players[i].level, 10) || 1 : 1,
                     country: (players[i].country || 'us').toLowerCase().replace(/[^a-z]/g, ''),
                     icon: players[i].icon || 'https://jimboy3100.github.io/banners/profilepic_guest.png',
                     socialid: players[i].socialid || '',
@@ -19652,6 +19662,26 @@ var defaultSettings = {
     customBackground: '',
     customCursor: 'https://www.legendmod.ml/cursors/cursor_02.cur'
 }
+/* The shipped theme defaults, frozen before the stored theme is loaded: the schema for
+ * stored and imported theme values (see LM_SETTINGS_DEFAULTS for the gameplay ones). */
+var LM_THEME_DEFAULTS = Object.freeze(Object.assign({}, defaultSettings));
+/* A stored/imported theme value of the setting's type (numeric strings converted, NaN and
+ * Infinity refused), or undefined when it cannot be used. Colours are checked separately. */
+function lmThemeValue(key, value) {
+    if (!Object.prototype.hasOwnProperty.call(LM_THEME_DEFAULTS, key)) return undefined;
+    var def = LM_THEME_DEFAULTS[key];
+    if (typeof def === 'number') {
+        var n = typeof value === 'number' ? value : (typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN);
+        return Number.isFinite(n) ? n : undefined;
+    }
+    if (typeof def === 'boolean') {
+        if (typeof value === 'boolean') return value;
+        if (value === 'true') return true;
+        if (value === 'false') return false;
+        return undefined;
+    }
+    return typeof value === typeof def ? value : undefined;
+}
 
 cimg2 = new Image;
 cimg2.src = defaultSettings.commanderImage2;
@@ -21275,6 +21305,30 @@ var defaultmapsettings = {
     //
     FacebookIDs: ''
 };
+/* The shipped gameplay defaults, frozen before anything loads or changes a setting: the
+ * schema that stored and imported settings are checked against. (Comparing with
+ * defaultmapsettings itself compared with whatever had been loaded into it.) */
+var LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));
+/* A stored/imported value for a gameplay setting, made to fit the setting's type, or
+ * undefined when it cannot be used (the default stays). "true"/"false" and numeric
+ * strings from old saves are converted; NaN/Infinity are refused. Value ranges come
+ * from the sliders (application.addSliderBox clamps when it builds one). */
+function lmSettingValue(key, value) {
+    if (!Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, key)) return undefined;
+    var def = LM_SETTINGS_DEFAULTS[key];
+    if (typeof def === 'boolean') {
+        if (typeof value === 'boolean') return value;
+        if (value === 'true') return true;
+        if (value === 'false') return false;
+        return undefined;
+    }
+    if (typeof def === 'number') {
+        var n = typeof value === 'number' ? value : (typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN);
+        return Number.isFinite(n) ? n : undefined;
+    }
+    if (typeof def === 'string') return typeof value === 'string' ? value : undefined;
+    return typeof value === typeof def ? value : undefined;
+}
 /* ─── §3.3 profiles — Player Profile Storage ─── */
 var profiles = [];
 var ogarcopythelb = {
@@ -22849,7 +22903,9 @@ function thelegendmodproject() {
                     if (storage && Object.prototype.hasOwnProperty.call(storage, setup) &&
                         !(setup !== 'lbTeammateColor' && typeof defaultSettings[setup] === 'string' && colorDefault.test(defaultSettings[setup]) &&
                             !(typeof storage[setup] === 'string' && colorValue.test(storage[setup])))) {
-                        defaultSettings[setup] = storage[setup];
+                        /* and of the setting's type (a NaN size or a "12" string broke the layout maths) */
+                        var _lmThemeLoaded = lmThemeValue(setup, storage[setup]);
+                        if (_lmThemeLoaded !== undefined) defaultSettings[setup] = _lmThemeLoaded;
                     }
                     if (ogario.hasOwnProperty(setup)) {
                         ogario[setup] = defaultSettings[setup];
@@ -25389,7 +25445,9 @@ function thelegendmodproject() {
             for (const option in defaultmapsettings) {
                 if (defaultmapsettings.hasOwnProperty(option)) {
                     if (settings && Object.prototype.hasOwnProperty.call(settings, option)) {
-                        defaultmapsettings[option] = settings[option];
+                        /* a stored "false" was truthy and a stored NaN broke the maths: such a value keeps the default */
+                        var _lmLoaded = lmSettingValue(option, settings[option]);
+                        if (_lmLoaded !== undefined) defaultmapsettings[option] = _lmLoaded;
                     }
                     if (ogario.hasOwnProperty(option)) {
                         ogario[option] = defaultmapsettings[option];
@@ -25405,12 +25463,14 @@ function thelegendmodproject() {
             window.localStorage.setItem(name, JSON.stringify(option));
         },
         exportSettings() {
-            /* Issue #12: if the minimap is enlarged via hotkey, export the original width */
+            /* Issue #12: if the minimap is enlarged via hotkey, export the original width.
+             * The hotkey keeps it on Settings (this is application, which has no such field). */
             var _expTheme = defaultSettings;
-            if (this._lmMiniBigOrig) {
+            var _expMiniOrig = Settings._lmMiniBigOrig;
+            if (_expMiniOrig) {
                 _expTheme = $.extend({}, defaultSettings);
-                _expTheme.miniMapWidth = this._lmMiniBigOrig;
-                _expTheme.miniMapTop = Math.round(20 * this._lmMiniBigOrig / 200);
+                _expTheme.miniMapWidth = _expMiniOrig;
+                _expTheme.miniMapTop = Math.round(20 * _expMiniOrig / 200);
             }
             let options = {
                 ogarioCommands: chatCommand,
@@ -25467,63 +25527,91 @@ function thelegendmodproject() {
                  * Issue #16: clear ogarioHotkeysKnown when importing hotkeys so new commands get default keys. */
                 var importKeys = ['ogarioCommands', 'ogarioHotkeys', 'ogarioPlayerProfiles', 'ogarioSettings', 'ogarioThemeSettings'];
                 /* Issue #2: type-validate ogarioSettings and ogarioThemeSettings */
+                /* Values are checked against the frozen shipped defaults (the schema), not against
+                 * the settings loaded now. A key the version does not know is dropped; a value
+                 * that does not fit its setting is dropped too, so the default applies. Ranges
+                 * are applied by the sliders after the reload. */
                 if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioSettings') && importValue.ogarioSettings && typeof importValue.ogarioSettings === 'object') {
                     var _impS = importValue.ogarioSettings;
                     for (var _impK in _impS) {
                         if (!Object.prototype.hasOwnProperty.call(_impS, _impK)) continue;
-                        if (!Object.prototype.hasOwnProperty.call(defaultmapsettings, _impK)) { delete _impS[_impK]; continue; }
-                        if (typeof _impS[_impK] !== typeof defaultmapsettings[_impK]) { _impS[_impK] = defaultmapsettings[_impK]; }
+                        var _impV = lmSettingValue(_impK, _impS[_impK]);
+                        if (_impV === undefined) delete _impS[_impK];
+                        else _impS[_impK] = _impV;
                     }
                 }
                 if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioThemeSettings') && importValue.ogarioThemeSettings && typeof importValue.ogarioThemeSettings === 'object') {
                     var _impT = importValue.ogarioThemeSettings;
                     for (var _impTK in _impT) {
                         if (!Object.prototype.hasOwnProperty.call(_impT, _impTK)) continue;
-                        if (typeof defaultSettings !== 'undefined' && !Object.prototype.hasOwnProperty.call(defaultSettings, _impTK)) { delete _impT[_impTK]; continue; }
-                        if (typeof defaultSettings !== 'undefined' && typeof _impT[_impTK] !== typeof defaultSettings[_impTK]) { _impT[_impTK] = defaultSettings[_impTK]; }
+                        var _impTV = lmThemeValue(_impTK, _impT[_impTK]);
+                        if (_impTV === undefined) delete _impT[_impTK];
+                        else _impT[_impTK] = _impTV;
                     }
                 }
-                /* Issue #3: snapshot localStorage keys before writing (transactional) */
+                /* Transaction: every storage key the import writes or removes is saved first and
+                 * put back if any step fails. Before, the removal of the hidden profiles
+                 * (ogarioPlayerProfilesExtra) and the hotkey list were outside it: a failed
+                 * import said "all changes rolled back" with the hidden profiles gone. */
                 var _impBackup = {};
-                var _impWrote = [];
-                for (var _bkI = 0; _bkI < importKeys.length; _bkI++) {
-                    _impBackup[importKeys[_bkI]] = window.localStorage.getItem(importKeys[_bkI]);
-                }
-                _impBackup['ogarioHotkeysKnown'] = window.localStorage.getItem('ogarioHotkeysKnown');
-                _impBackup['ogarioPlayerProfilesExtra'] = window.localStorage.getItem('ogarioPlayerProfilesExtra');
-                for (const value in importValue) {
-                    if (Object.prototype.hasOwnProperty.call(importValue, value) && importKeys.indexOf(value) !== -1) {
-                        const checked = $('#import-' + value).prop('checked');
-                        if (!checked) {
-                            continue;
-                        }
-                        try {
-                            window.localStorage.setItem(value, JSON.stringify(importValue[value]));
-                            _impWrote.push(value);
-                        } catch (writeErr) {
-                            /* Rollback everything we wrote so far */
-                            for (var _rbI = 0; _rbI < _impWrote.length; _rbI++) {
-                                var _rbKey = _impWrote[_rbI];
-                                if (_impBackup[_rbKey] === null) window.localStorage.removeItem(_rbKey);
-                                else window.localStorage.setItem(_rbKey, _impBackup[_rbKey]);
-                            }
-                            toastr.error('<b>[SETTINGS]:</b> Import failed: the browser storage is full (' + value + ' not saved). All changes rolled back.');
-                            return;
-                        }
+                var _impTouched = [];
+                var _impKeep = function (key) {
+                    if (Object.prototype.hasOwnProperty.call(_impBackup, key)) return;
+                    _impBackup[key] = window.localStorage.getItem(key);
+                    _impTouched.push(key);
+                };
+                var _impSet = function (key, text) { _impKeep(key); window.localStorage.setItem(key, text); };
+                var _impRemove = function (key) { _impKeep(key); window.localStorage.removeItem(key); };
+                var _impSelected = function (key) {
+                    return Object.prototype.hasOwnProperty.call(importValue, key) && $('#import-' + key).prop('checked');
+                };
+                var _impObject = function (v) { return !!v && typeof v === 'object' && !Array.isArray(v); };
+                var _impStep = '';
+                try {
+                    for (var _impI = 0; _impI < importKeys.length; _impI++) {
+                        var value = importKeys[_impI];
+                        if (!_impSelected(value)) continue;
+                        _impStep = value;
+                        _impSet(value, JSON.stringify(importValue[value]));
                         /* the import holds the hidden profiles too: keeping the old ones duplicated them */
-                        if (value === 'ogarioPlayerProfiles') window.localStorage.removeItem('ogarioPlayerProfilesExtra');
-                        /* Issue #16: when importing hotkeys, clear ogarioHotkeysKnown so new commands get their free default keys */
-                        if (value === 'ogarioHotkeys' && Array.isArray(importValue.ogarioHotkeysKnown)) {
-                            try { window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(importValue.ogarioHotkeysKnown.filter(function (k) { return typeof k === 'string'; }))); } catch (eK) { }
+                        if (value === 'ogarioPlayerProfiles') _impRemove('ogarioPlayerProfilesExtra');
+                        /* the list of commands that existed when these hotkeys were saved: without it
+                         * (an older export) the old list described other hotkeys, so it goes and
+                         * addMissingDefaultHotkeys() starts a new one (binding nothing that time) */
+                        if (value === 'ogarioHotkeys') {
+                            if (Array.isArray(importValue.ogarioHotkeysKnown)) {
+                                _impSet('ogarioHotkeysKnown', JSON.stringify(importValue.ogarioHotkeysKnown.filter(function (k) { return typeof k === 'string'; })));
+                            } else {
+                                _impRemove('ogarioHotkeysKnown');
+                            }
+                        }
+                        /* Performance mode's backup and the preset undo snapshot belong to the
+                         * gameplay settings: only with them, and the old ones go when the import
+                         * has none (they described the settings being replaced) */
+                        if (value === 'ogarioSettings') {
+                            _impStep = 'lmPerfBackup';
+                            if (_impObject(importValue.lmPerfBackup)) _impSet('lmPerfBackup', JSON.stringify(importValue.lmPerfBackup));
+                            else _impRemove('lmPerfBackup');
+                            _impStep = 'lmPresetUndo';
+                            if (_impObject(importValue.lmPresetUndo)) _impSet('lmPresetUndo', JSON.stringify(importValue.lmPresetUndo));
+                            else _impRemove('lmPresetUndo');
                         }
                     }
-                }
-                /* Issue #15: restore Performance Mode backup and preset undo snapshot from import */
-                if (importValue.lmPerfBackup && typeof importValue.lmPerfBackup === 'object') {
-                    try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(importValue.lmPerfBackup)); } catch (e) { }
-                }
-                if (importValue.lmPresetUndo && typeof importValue.lmPresetUndo === 'object') {
-                    try { window.localStorage.setItem('lmPresetUndo', JSON.stringify(importValue.lmPresetUndo)); } catch (e) { }
+                } catch (writeErr) {
+                    /* free what the import wrote first, then put the old values back (the storage
+                     * is full: writing an old value over a new one could fail again) */
+                    var _rbFailed = [];
+                    _impTouched.forEach(function (k) { try { window.localStorage.removeItem(k); } catch (rbErr) { } });
+                    _impTouched.forEach(function (k) {
+                        if (_impBackup[k] === null) return;
+                        try { window.localStorage.setItem(k, _impBackup[k]); } catch (rbErr) { _rbFailed.push(k); }
+                    });
+                    if (_rbFailed.length) {
+                        toastr.error('<b>[SETTINGS]:</b> Import failed and the browser storage is full: ' + $('<div>').text(_rbFailed.join(', ')).html() + ' could not be restored.');
+                        return;
+                    }
+                    toastr.error('<b>[SETTINGS]:</b> Import failed: the browser storage is full (' + $('<div>').text(_impStep).html() + ' not saved). All changes rolled back.');
+                    return;
                 }
                 window._lmSettingsReload = true;
                 window.location.reload();
@@ -25532,6 +25620,12 @@ function thelegendmodproject() {
         restoreSettings() {
             clearTimeout(this._lmSettingsSaveT);
             this._lmSettingsSaveT = null;
+            /* Performance mode's backup and the preset undo snapshot hold values of the settings
+             * being reset: kept, they put pre-reset values back later (mode off / Undo preset) */
+            try {
+                window.localStorage.removeItem('lmPerfBackup');
+                window.localStorage.removeItem('lmPresetUndo');
+            } catch (e) { }
             if (window.localStorage.getItem('ogarioSettings') !== null) {
                 window.localStorage.removeItem('ogarioSettings');
                 window._lmSettingsReload = true;
@@ -25602,13 +25696,14 @@ function thelegendmodproject() {
                                 if (window.RecordedArenasSpecifications) delete window.RecordedArenasSpecifications[_lmRk];
                             }
                         }
-                        /* Issue #13: switched ON: ensure recording infra exists for the current connection */
-                        if (checked && window.RecordedProtocol && window.temporaryRecordedProtocol) {
-                            if (!window.RecordedProtocol[window.temporaryRecordedProtocol]) {
-                                window.RecordedProtocol[window.temporaryRecordedProtocol] = {};
-                                window.catholicCalculator = window.catholicCalculator || 0;
-                                window._lmRecSlotBytes = 0;
-                            }
+                        /* Switched back on during a game: the recording of this connection was freed
+                         * above. A new one starts with the next connection (connect() opens a proper
+                         * slot: array, list entry, details, counters). Resuming here cannot give a
+                         * replay: it would lack the connection's first packets (map border, own cells),
+                         * and the {} slot used before was not listed, never freed and had no length. */
+                        if (checked && window.RecordedProtocol && window.temporaryRecordedProtocol &&
+                            !window.RecordedProtocol[window.temporaryRecordedProtocol] && window.toastr) {
+                            toastr.info('Replays are recorded again from the next server you join.');
                         }
                         break;
                     case 'showMiniMap':
@@ -25683,44 +25778,66 @@ function thelegendmodproject() {
                         this.setBlockPopups();
                         break;
                     case 'glAntialias':
-                        if (window.toastr) toastr.info('Reload the page to apply anti-aliasing.');
+                        /* Performance mode shows one message for all of its changes */
+                        if (window.toastr && !this._lmPerfApplying) toastr.info('Reload the page to apply anti-aliasing.');
                         break;
                     case 'performanceMode':
                         /* On: remember the current values and turn the costly effects off.
-                         * Off: put the remembered values back. Saved below; applied on reload.
-                         * Issue #1 & #4: use 0 for hudBlur (numeric), sync checkboxes. */
+                         * Off: put the remembered values back.
+                         * Each value goes through its own control, as the presets do: a checkbox
+                         * gets a bubbling change (setSettings: side effects such as the High DPI
+                         * canvas resize and the rainbow colour timer, Switchery), a slider gets
+                         * input + change (value label, its callback, save). Setting the checkbox
+                         * with a change that does not bubble skipped setSettings, and the HUD blur
+                         * slider kept showing the old value while the blur was 0. */
                         var _lmPerfKeys = ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor',
                             'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias', 'hudBlur'].filter(function (k) { return Object.prototype.hasOwnProperty.call(defaultmapsettings, k); });
                         var _lmPerfApp = this;
-                        if (checked) {
-                            var _lmPerfBak = {};
-                            _lmPerfKeys.forEach(function (k) {
-                                _lmPerfBak[k] = defaultmapsettings[k];
-                                defaultmapsettings[k] = (k === 'hudBlur') ? 0 : false;
-                                /* sync checkbox/slider to match */
-                                var _perfEl = document.getElementById(k);
-                                if (_perfEl && _perfEl.type === 'checkbox') {
-                                    _perfEl.checked = false;
-                                    try { _perfEl.dispatchEvent(new Event('change', { bubbles: false })); } catch (e) { }
+                        var _lmPerfSet = function (k, v) {
+                            var cb = document.getElementById(k);
+                            if (cb && cb.type === 'checkbox' && $(cb).closest('#og-options').length) {
+                                v = !!v;
+                                if (cb.checked !== v) {
+                                    cb.checked = v;
+                                    try { cb.dispatchEvent(new Event('change', { bubbles: true })); return; } catch (e) { }
                                 }
-                            });
-                            try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(_lmPerfBak)); } catch (e) { }
-                        } else {
-                            var _lmPerfOld = null;
-                            try { _lmPerfOld = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { }
-                            if (_lmPerfOld) {
-                                _lmPerfKeys.forEach(function (k) {
-                                    if (Object.prototype.hasOwnProperty.call(_lmPerfOld, k)) {
-                                        defaultmapsettings[k] = _lmPerfOld[k];
-                                        var _perfEl = document.getElementById(k);
-                                        if (_perfEl && _perfEl.type === 'checkbox') {
-                                            _perfEl.checked = !!_lmPerfOld[k];
-                                            try { _perfEl.dispatchEvent(new Event('change', { bubbles: false })); } catch (e) { }
-                                        }
-                                    }
-                                });
+                                if (defaultmapsettings[k] !== v) _lmPerfApp.setSettings(k, v);
+                                return;
                             }
-                            try { window.localStorage.removeItem('lmPerfBackup'); } catch (e) { }
+                            var sl = $('#' + k + '-slider');
+                            if (sl.length && sl.closest('#og-options').length) {
+                                sl.val(v).trigger('input').trigger('change');
+                                return;
+                            }
+                            defaultmapsettings[k] = v;
+                        };
+                        this._lmPerfApplying = true;
+                        try {
+                            if (checked) {
+                                var _lmPerfBak = {};
+                                _lmPerfKeys.forEach(function (k) { _lmPerfBak[k] = defaultmapsettings[k]; });
+                                try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(_lmPerfBak)); } catch (e) { }
+                                _lmPerfKeys.forEach(function (k) { _lmPerfSet(k, k === 'hudBlur' ? 0 : false); });
+                            } else {
+                                var _lmPerfOld = null;
+                                try { _lmPerfOld = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { }
+                                if (_lmPerfOld && typeof _lmPerfOld === 'object') {
+                                    _lmPerfKeys.forEach(function (k) {
+                                        if (!Object.prototype.hasOwnProperty.call(_lmPerfOld, k)) return;
+                                        var v = _lmPerfOld[k];
+                                        /* the backup can come from an import: only a value of the setting's type */
+                                        if (k === 'hudBlur') {
+                                            v = Number(v);
+                                            if (!Number.isFinite(v)) return;
+                                            v = Math.min(8, Math.max(0, v));
+                                        } else if (typeof v !== 'boolean') return;
+                                        _lmPerfSet(k, v);
+                                    });
+                                }
+                                try { window.localStorage.removeItem('lmPerfBackup'); } catch (e) { }
+                            }
+                        } finally {
+                            this._lmPerfApplying = false;
                         }
                         /* HUD blur (backdrop-filter over the game canvas) is applied at once */
                         if (typeof this.applyHudBlur === 'function') this.applyHudBlur();
@@ -26109,7 +26226,7 @@ function thelegendmodproject() {
             this.selectProfile(newIdx);
         },
         selectProfile(value) {
-            var idx = parseInt(value);
+            var idx = parseInt(value, 10);
             this.ensureMbSlots();
 
             // Case 1: already slot 1 → do nothing
@@ -26210,10 +26327,22 @@ function thelegendmodproject() {
         },
         addSliderBox(id, name, min, max, step, callback) {
             $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\"></span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\"></div>');
+            var app = this;
+            /* The slider's range is the setting's valid range: a stored or imported value outside
+             * it (animation delay -10, gamepad dead zone 4) is brought inside and saved, so the
+             * game and the slider show the same value. */
+            var _lmMin = Number(min), _lmMax = Number(max), _lmCur = defaultmapsettings[name];
+            if (Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, name) && Number.isFinite(_lmMin) && Number.isFinite(_lmMax) && _lmMin <= _lmMax) {
+                var _lmFit = typeof _lmCur === 'number' && Number.isFinite(_lmCur) ? Math.min(_lmMax, Math.max(_lmMin, _lmCur)) : LM_SETTINGS_DEFAULTS[name];
+                if (_lmFit !== _lmCur) {
+                    defaultmapsettings[name] = _lmFit;
+                    if (ogario.hasOwnProperty(name)) ogario[name] = _lmFit;
+                    try { app.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (eFit) { }
+                }
+            }
             /* Values set as text/property: imported settings must not be parsed as HTML. */
             $('#' + name + '-value').text(defaultmapsettings[name]);
             $('#' + name + '-slider').val(defaultmapsettings[name]);
-            var app = this;
             /* dragging wrote all settings to localStorage dozens of times a second: save once
              * the slider rests (400 ms) and right away on release ('change') */
             var saveSoon = function () {
@@ -26619,7 +26748,11 @@ function thelegendmodproject() {
                     undoSnap = null;
                     try { window.localStorage.removeItem(undoKey); } catch (e) { }
                     if (snap) {
-                        Object.keys(snap).forEach(function (k) { if (defaultmapsettings.hasOwnProperty(k)) setOpt(k, snap[k]); });
+                        /* the snapshot can come from an import: only values that fit their setting */
+                        Object.keys(snap).forEach(function (k) {
+                            var v = lmSettingValue(k, snap[k]);
+                            if (v !== undefined && defaultmapsettings.hasOwnProperty(k)) setOpt(k, v);
+                        });
                         application.saveSettings(defaultmapsettings, 'ogarioSettings');
                     }
                     undoBtn.hide();
@@ -30279,7 +30412,7 @@ function thelegendmodproject() {
         setParty() {
             let value = $('#party-token').val();
             var gmVal = $('#gamemode').val();
-            var gmNum = parseInt(gmVal);
+            var gmNum = parseInt(gmVal, 10);
             // Agar2 servers (8001-8008): gameMode already set by async handler, don't overwrite
             if (gmNum >= 8001 && gmNum <= 8008) {
                 // Keep existing gameMode set by Agar2 connection handler
@@ -30494,7 +30627,7 @@ function thelegendmodproject() {
                 const [, region, ip] = serverFormat30072024;
                 const regionIndex = awsRegions.indexOf(region);
                 if (regionIndex >= 0 && regionIndex <= ranges[0]) {
-                    const arr = [regionIndex].concat(ip.split('-').map((n) => parseInt(n)));
+                    const arr = [regionIndex].concat(ip.split('-').map((n) => parseInt(n, 10)));
                     this.serverArena = toLong(arr).toString(36).padStart(7, '0');
                 } else {
                     /* The packed token has room for region indices 0-10 only: a later or
@@ -31673,9 +31806,9 @@ function thelegendmodproject() {
                 //var id = this.checkPlayerID(ids);
                 const id = this.checkPlayerNick(ids);
                 if (id !== null && this.teamPlayers[id]) {
-                    this.teamPlayers[id].lbgpi = parseInt(message.s);
+                    this.teamPlayers[id].lbgpi = parseInt(message.s, 10);
                     //if (this.top5[id]){
-                    //this.top5[id].lbgpi = parseInt(lbgpi); //
+                    //this.top5[id].lbgpi = parseInt(lbgpi, 10); //
                     //}
 
                 }
@@ -32232,9 +32365,9 @@ function thelegendmodproject() {
             if (null != id) {
                 var s = this.getSLGVal(t);
                 var lbgpi = s.slice(0, 1);
-                this.teamPlayers[id].lbgpi = parseInt(lbgpi);
+                this.teamPlayers[id].lbgpi = parseInt(lbgpi, 10);
                 //if (this.top5[id]){
-                //this.top5[id].lbgpi = parseInt(lbgpi); //
+                //this.top5[id].lbgpi = parseInt(lbgpi, 10); //
                 //}
 
             }
@@ -34533,7 +34666,7 @@ function thelegendmodproject() {
             return this.sendProto(100, { claimGiftsRequestField: { giftIds: giftIds } });
         },
         brewPotion(slot) {
-            return this.sendProto(122, { brewPotionForSlotRequestField: { slot: parseInt(slot) } });
+            return this.sendProto(122, { brewPotionForSlotRequestField: { slot: parseInt(slot, 10) } });
         },
         openPotion(slot, isUserAction) {
             /* Read by the 125 not_ready handler. */
@@ -34543,7 +34676,7 @@ function thelegendmodproject() {
             } else {
                 window._userInitiatedPotionOpen = true;
             }
-            return this.sendProto(124, { openPotionForSlotRequestField: { slot: parseInt(slot) } });
+            return this.sendProto(124, { openPotionForSlotRequestField: { slot: parseInt(slot, 10) } });
         },
         activateTimedEvent(eventId) {
             console.log("[LM] Activate Timed Event: " + eventId);
@@ -38093,6 +38226,13 @@ function thelegendmodproject() {
                             this._colorResolved = color2;
                             this._colorFallback = _useFallbackGradient;
                         }
+                        /* No colors: player cells in the renderer's neutral grey (after the cache, so
+                         * switching it off shows the real colours again). Viruses, food and ejected
+                         * mass keep theirs. Same rule in both WebGL paths. */
+                        if (defaultmapsettings.noColors && !this.isVirus && !this.isFood && !this.isEjected) {
+                            color2 = "#808080";
+                            _useFallbackGradient = false;
+                        }
 
                         /*
                          * Build the body path for EVERY cell.
@@ -40149,8 +40289,7 @@ function thelegendmodproject() {
                     application.setAnimatedRainbowColor();
                     if (window.master && window.master.onConnect) window.master.onConnect();
                     self.play = false;
-                    self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
-                    if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
+                    self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"), 10) || 0;
                     self.replayfunctions();
                 })();
                 return;
@@ -40175,8 +40314,7 @@ function thelegendmodproject() {
                 application.setAnimatedRainbowColor();
                 if (window.master && window.master.onConnect) window.master.onConnect();
                 self.play = false;
-                self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
-                if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
+                self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"), 10) || 0;
                 self.replayfunctions();
                 /* Sigmally can require a captcha before play (Delta ProtocolSigmally.captchaFlow2:
                  * GET https://<host>/server/recaptcha/v3 -> {version: none|turnstile|v2|v3}).
@@ -40317,8 +40455,7 @@ function thelegendmodproject() {
                 application.setAnimatedRainbowColor();
                 if (window.master && window.master.onConnect) window.master.onConnect();
                 self.play = false;
-                self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
-                if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
+                self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"), 10) || 0;
                 self.replayfunctions();
                 return;
             }
@@ -40471,11 +40608,9 @@ function thelegendmodproject() {
 
             this.play = false //fix
 
-            this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
-            if (this.totalPlayerMass === "NaN" || !this.totalPlayerMass) this.totalPlayerMass = 0 //fix
+            this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"), 10) || 0;
             if (this.ws.includes("imsolo.pro:2102")) { //4 times bigger 600 users limit
-                this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"));
-                if (this.totalPlayerMassBigFFA === "NaN" || !this.totalPlayerMassBigFFA) this.totalPlayerMassBigFFA = 0 //fix
+                this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"), 10) || 0;
             }
             this.replayfunctions();
         },
@@ -69487,7 +69622,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var sidePad = Math.max(1, Math.ceil(strokeWidth || 0));
             var w = Math.ceil(metrics.width + sidePad * 2);
             var fontSizeMatch = font.match(/(\d+)\s*px/);
-            var fontPx = fontSizeMatch ? parseInt(fontSizeMatch[1]) : 24;
+            var fontPx = fontSizeMatch ? parseInt(fontSizeMatch[1], 10) : 24;
             var h = Math.ceil(fontPx * 1.4);
             if (w < 1 || h < 1) return null;
             /* Clamp to reasonable size to avoid huge textures. Scale the
@@ -72431,6 +72566,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                         .oppColor;
                             }
                         }
+                        /* No colors: neutral grey (as the Canvas2D path) */
+                        if (defaultmapsettings.noColors && !cell.isFood && !cell.isEjected) {
+                            bodyHex = '#808080';
+                        }
 
 
                         strokeHex =
@@ -73708,6 +73847,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             colorHex =
                                 cell.oppColor;
                         }
+                    }
+                    /* No colors: neutral grey (as the Canvas2D path) */
+                    if (defaultmapsettings.noColors && !cell.isFood && !cell.isEjected) {
+                        colorHex = '#808080';
                     }
 
                     strokeHex =
@@ -81696,7 +81839,7 @@ function setGUIEvents() {
         window.captchaOpenedWindow = 1
     }
     else{	
-        window.captchaOpenedWindow = parseInt(captchaSpeed);
+        window.captchaOpenedWindow = parseInt(captchaSpeed, 10);
         $('#captchaSpeed').val(window.captchaOpenedWindow)
     }*/
     window.bots.remoteIP = storedbotsRemoteIP
@@ -82625,6 +82768,13 @@ function openhelper() {
 }
 
 function opennamechars() {
+    /* nicknamechars.js adds the #legendchars window and its Back button only hides it:
+     * show that window again instead of adding another window and iframe on every click */
+    if ($('#legendchars').length) {
+        $('#main-menu, #skins-panel, #quick-menu, #exp-bar').hide();
+        $('#legendchars').show();
+        return;
+    }
     var s = document.createElement("script");
     s.type = "text/javascript";
     s.src = "https://www.legendmod.ml/nicks/nicknamechars.js";
@@ -84252,12 +84402,12 @@ function playReplayLM(temp, startAt) {
         legendmod.connectionIntegrity = _lmRt === 'agario' || _lmRt === 'deltio'
         legendmod.playingReplayRewind = false
         legendmod.playingReplayRewindNow = false
-        //if (parseInt(window.replayTiming) < 0) {
+        //if (parseInt(window.replayTiming, 10) < 0) {
         if (parseFloat(window.replayTiming) < 0) {
             toastr.warning("<b>[SERVER]:</b> When time traveling, wierd things happens...").css("width", "350px");
             legendmod.playingReplayRewind = true
         }
-        //if (parseInt(window.replayTiming)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
+        //if (parseInt(window.replayTiming, 10)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
         //start
         //window.playrecord = 0
         /* Read the range first: the first tick used the previous run's values. */
@@ -84393,8 +84543,8 @@ function intervalPlayingRecord() {
     if ($("#hueRotate").length) {
         window.replayHueRotate = $("#hueRotate").prop("checked") === true
     }
-    var temp1 = parseInt(window.startReplayTime)
-    var temp2 = parseInt(window.endReplayTime)
+    var temp1 = parseInt(window.startReplayTime, 10)
+    var temp2 = parseInt(window.endReplayTime, 10)
     if (temp1 < 0 || temp2 <= 0) {
         toastr.warning("<b>[SERVER]:</b> Start and end time should be non negative").css("width", "350px");
     } else if (legendmod.playingReplayRewind && !legendmod.playingReplayRewindNow) {
@@ -84409,7 +84559,7 @@ function intervalPlayingRecord() {
             $('#pause-hud').hide()
         }
         window.replayTiming2 = Math.abs(parseFloat(window.replayTiming))
-        //window.replayTiming2 = Math.abs(parseInt(window.replayTiming))
+        //window.replayTiming2 = Math.abs(parseInt(window.replayTiming, 10))
 
     } else {
         if (window.replayTiming2 != 0) {
@@ -84432,11 +84582,11 @@ function intervalPlayingRecord() {
              * Packets are still handled in order, each exactly once. */
             if (window.replayTiming2 === 0 && !legendmod.playingReplayRewindNow) {
                 var _lmRecArr = window.RecordedProtocol[tempo];
-                var _lmRecStart = parseInt(window.startReplayTime) || 0;
+                var _lmRecStart = parseInt(window.startReplayTime, 10) || 0;
                 /* skip to Start when before it, to the end only when past End (or for the rewind run);
                  * at Start itself nothing is skipped (it used to run straight to the end: Start and
                  * seeking did not work) */
-                var _lmRecEnd = parseInt(window.endReplayTime);
+                var _lmRecEnd = parseInt(window.endReplayTime, 10);
                 if (!(_lmRecEnd >= 0)) _lmRecEnd = _lmRecArr.length - 2;
                 var _lmRecTarget = legendmod.playingReplayRewind ? _lmRecArr.length - 2
                     : (legendmod.playingReplayRecord < _lmRecStart ? _lmRecStart - 1
@@ -84457,7 +84607,7 @@ function intervalPlayingRecord() {
                 !(replayGoingBack && legendmod.playingReplayRecord <= 0)) {
                 intervalPlayingRecord();
                 if (parseFloat(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
-                    //if (parseInt(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
+                    //if (parseInt(window.replayTiming, 10) >= 0 || !legendmod.playingReplayRewindNow) {
                     legendmod.playingReplayRecord++
                 } else {
                     legendmod.playingReplayRecord--

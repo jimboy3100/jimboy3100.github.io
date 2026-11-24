@@ -51,7 +51,7 @@ function addFullSpectator() {
         x = 0,
         y = 0;
 
-    const times = parseInt(legendmod.mapSize / 471.4);
+    const times = parseInt(legendmod.mapSize / 471.4, 10);
     //for (;stop<30;stop++){
 
     if (legendmod.integrity && times < 80) {

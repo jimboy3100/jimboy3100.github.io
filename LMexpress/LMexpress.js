@@ -444,7 +444,7 @@ function loadericon() {
 
 function PremiumUsersFFAScore() {
     if (window.proLicenceUID && window.proLicenceUID.includes("MegaFFA")) {
-        if (PremiumLimitedDateStart && !isNaN(parseInt(PremiumLimitedDateStart))) {
+        if (PremiumLimitedDateStart && !isNaN(parseInt(PremiumLimitedDateStart, 10))) {
             /* Parse YYYYMMDD start date into a proper Date object */
             var startStr = String(PremiumLimitedDateStart);
             var startDate = new Date(
@@ -4551,7 +4551,7 @@ function StartEditGameNames() {
                                 t.l.leaderboard[n[0]] = n[1];
                                 for (k in t.l.leaderboard) a += t.u.span("leaderboard name #" + k, t.l.leaderboard[k]);
                                 document.getElementById("tcm-leaderboard").innerHTML = a
-                            } else s.match(/^score\:\s([0-9]+)$/i) ? (t.l.score = parseInt(s.split(/score:\s([0-9]+)?/i)[1]), document.getElementById("tcm-score").innerHTML = t.u.span("score", t.l.score)) : !("" !== s && s.length <= 15) || t.l.names.indexOf(s) > -1 || s.match(/(leaderboard|connect|loading|starting\smass|xp\sboost|open\sshop|([0-9]{2})m\s(([0-9]{2})h\s)?([0-9]{2})s)/i) || s.match(/^(free\scoins|\s?([0-9]+)\scoins|\s?with\soffers|collect\sin\:|hourly\scoins|come\sback\sin|to\searn\:|starter\spack|hourly\sbonus|level\s([0-9]+)|([0-9\.]+)|.([0-9\.]+)|([0-9\.]+)\%|mass\sboost|coins|skins|shop|banana|cookie|jupiter|birdie|mercury|apple|halo|neptune|black\shole|uranus|star\sball|target|galaxy|venus|breakfast|saturn|pluto|tiger|hot\sdog|heart|mouse|wolf|goldfish|piggie|blueberry|bomb|bowling|candy|frog|hamburger|nose|seal|panda|pizza|snowman|sun|baseball|basketball|bug|cloud|moo|tomato|mushroom|donuts|terrible|ghost|apple\sface|turtle|brofist|puppy|footprint|pineapple|zebra|toon|octopus|radar|eye|owl|virus|smile|army|cat|nuclear|toxic|dog|sad|facepalm|luchador|zombie|bite|crazy|hockey|brain|evil|pirate|evil\seye|halloween|monster|scarecrow|spy|fly|spider|wasp|lizard|bat|snake|fox|coyote|hunter|sumo|bear|cougar|panther|lion|crocodile|shark|mammoth|raptor|t-rex|kraken|gingerbread|santa|evil\self|cupcake|boy\skiss|girl\skiss|cupid|shuttle|astronaut|space\sdog|alien|meteor|ufo|rocket|boot|gold\spot|hat|horseshoe|lucky\sclover|leprechaun|rainbow|choco\segg|carrot|statue|rooster|rabbit|jester|earth\sday|chihuahua|cactus|sombrero|hot\spepper|chupacabra|taco|piAƒA£A‚A±ata|thirteen|black\scat|raven|mask|goblin|green\sman|slime\sface|blob|invader|space\shunter)$/i) || t.f.add_name(s)
+                            } else s.match(/^score\:\s([0-9]+)$/i) ? (t.l.score = parseInt(s.split(/score:\s([0-9]+)?/i)[1], 10), document.getElementById("tcm-score").innerHTML = t.u.span("score", t.l.score)) : !("" !== s && s.length <= 15) || t.l.names.indexOf(s) > -1 || s.match(/(leaderboard|connect|loading|starting\smass|xp\sboost|open\sshop|([0-9]{2})m\s(([0-9]{2})h\s)?([0-9]{2})s)/i) || s.match(/^(free\scoins|\s?([0-9]+)\scoins|\s?with\soffers|collect\sin\:|hourly\scoins|come\sback\sin|to\searn\:|starter\spack|hourly\sbonus|level\s([0-9]+)|([0-9\.]+)|.([0-9\.]+)|([0-9\.]+)\%|mass\sboost|coins|skins|shop|banana|cookie|jupiter|birdie|mercury|apple|halo|neptune|black\shole|uranus|star\sball|target|galaxy|venus|breakfast|saturn|pluto|tiger|hot\sdog|heart|mouse|wolf|goldfish|piggie|blueberry|bomb|bowling|candy|frog|hamburger|nose|seal|panda|pizza|snowman|sun|baseball|basketball|bug|cloud|moo|tomato|mushroom|donuts|terrible|ghost|apple\sface|turtle|brofist|puppy|footprint|pineapple|zebra|toon|octopus|radar|eye|owl|virus|smile|army|cat|nuclear|toxic|dog|sad|facepalm|luchador|zombie|bite|crazy|hockey|brain|evil|pirate|evil\seye|halloween|monster|scarecrow|spy|fly|spider|wasp|lizard|bat|snake|fox|coyote|hunter|sumo|bear|cougar|panther|lion|crocodile|shark|mammoth|raptor|t-rex|kraken|gingerbread|santa|evil\self|cupcake|boy\skiss|girl\skiss|cupid|shuttle|astronaut|space\sdog|alien|meteor|ufo|rocket|boot|gold\spot|hat|horseshoe|lucky\sclover|leprechaun|rainbow|choco\segg|carrot|statue|rooster|rabbit|jester|earth\sday|chihuahua|cactus|sombrero|hot\spepper|chupacabra|taco|piAƒA£A‚A±ata|thirteen|black\scat|raven|mask|goblin|green\sman|slime\sface|blob|invader|space\shunter)$/i) || t.f.add_name(s)
                         })
                     },
                     add_name: function (s) {
@@ -4875,7 +4875,12 @@ function setdiscwebhook2() {
     }
 }
 
+/* The two easter eggs below have no off switch and stay on until the page reloads. Load each
+ * once: a second BleedingMod wrapped the canvas functions again and started a second looping
+ * sound; a second rotating500images stopped with "sprites has already been declared". */
 function openbleedmod() {
+    if (window._lmBleedModLoaded) return;
+    window._lmBleedModLoaded = true;
     var s = document.createElement("script");
     s.type = "text/javascript";
     s.src = "https://www.legendmod.ml/extras/BleedingMod.js";
@@ -4883,6 +4888,8 @@ function openbleedmod() {
 }
 
 function openrotatingmod() {
+    if (window._lmRotatingModLoaded) return;
+    window._lmRotatingModLoaded = true;
     var s = document.createElement("script");
     s.type = "text/javascript";
     s.src = "https://www.legendmod.ml/extras/rotating500images.js";
@@ -4943,34 +4950,49 @@ function changeModLanguage(fromUser) {
     }
 }
 
-function injector2(url1, url2) {
+/* Adds a language script to <head>. If www.legendmod.ml fails, the same file is tried from
+ * jimboy3100.github.io once; onfail runs when both fail. */
+function _lmAddLanguageScript(src, onload, onfail) {
     var script = document.createElement('script');
-    script.onload = function () {
-        var script2 = document.createElement('script');
-        script2.src = url2;
-        script2.onerror = function () {
-            if (url2.includes("legendmod.ml")) {
-                var fallback2 = document.createElement('script');
-                fallback2.src = url2.replace("https://www.legendmod.ml/", "https://jimboy3100.github.io/");
-                document.getElementsByTagName('head')[0].appendChild(fallback2);
-            }
-        };
-        document.getElementsByTagName('head')[0].appendChild(script2);
-    };
+    script.className = 'lm-language-script';
+    script.onload = onload;
     script.onerror = function () {
-        if (url1.includes("legendmod.ml")) {
-            var fallback1 = document.createElement('script');
-            fallback1.src = url1.replace("https://www.legendmod.ml/", "https://jimboy3100.github.io/");
-            fallback1.onload = script.onload;
-            document.getElementsByTagName('head')[0].appendChild(fallback1);
+        script.remove();
+        if (src.indexOf("https://www.legendmod.ml/") === 0) {
+            _lmAddLanguageScript(src.replace("https://www.legendmod.ml/", "https://jimboy3100.github.io/"), onload, onfail);
+        } else {
+            onfail();
         }
     };
-    script.src = url1;
-    document.getElementsByTagName('head')[0].appendChild(script);
+    script.src = src;
+    document.head.appendChild(script);
 }
 
+/* One language load at a time. Every change of the dropdown used to add two more tags to
+ * <head> (the pack and LanguagePackHandler.js), and two quick changes could run the handler
+ * after the older pack had replaced the newer pack's texts. A change made while a pack is
+ * loading waits for it; only the last such change is loaded. */
+var _lmLanguageLoad = { busy: false, next: null };
+
 function languageinjector(url) {
-    injector2(url, "https://www.legendmod.ml/languages/LanguagePackHandler.js");
+    if (_lmLanguageLoad.busy) {
+        _lmLanguageLoad.next = url;
+        return;
+    }
+    _lmLanguageLoad.busy = true;
+    /* the earlier packs already ran: their tags only piled up (play.html's English pack has no class and stays) */
+    $('script.lm-language-script').remove();
+    var done = function () {
+        _lmLanguageLoad.busy = false;
+        var next = _lmLanguageLoad.next;
+        _lmLanguageLoad.next = null;
+        /* switched away and back while this one loaded: this language is already applied */
+        if (next && next !== url) languageinjector(next);
+    };
+    /* the handler applies the pack's texts, so it runs after the pack (not at all if the pack failed) */
+    _lmAddLanguageScript(url, function () {
+        _lmAddLanguageScript("https://www.legendmod.ml/languages/LanguagePackHandler.js", done, done);
+    }, done);
 }
 function newsubmit() {
     if (legendmod.play == true) {
@@ -8607,7 +8629,11 @@ function BeforeSpecialDeals(tab) {
     document.body.appendChild(SpecialDealsJS);
 }
 function BeforeLegendmodShop() {
+    /* shop.js builds the shop window each time it runs, so it runs on every click:
+     * replace the old tag instead of adding one more per click */
+    $("#lm-shop-script").remove();
     var SpecialDealsJS = document.createElement("script");
+    SpecialDealsJS.id = "lm-shop-script";
     SpecialDealsJS.type = "text/javascript";
     SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/shop/shop.js?v=" + (window.OgVer || "");
     $("body").append(SpecialDealsJS);

@@ -598,17 +598,17 @@
 
         /* slider handlers */
         sp.querySelector('#lm-js').addEventListener('input', function () {
-            prefs.jsSensitivity = parseInt(this.value);
+            prefs.jsSensitivity = parseInt(this.value, 10);
             sp.querySelector('#lm-js-v').textContent = this.value;
             savePrefs();
         });
         sp.querySelector('#lm-op').addEventListener('input', function () {
-            prefs.btnOpacity = parseInt(this.value) / 100;
+            prefs.btnOpacity = parseInt(this.value, 10) / 100;
             sp.querySelector('#lm-op-v').textContent = this.value + '%';
             applyPrefs(); savePrefs();
         });
         sp.querySelector('#lm-bs').addEventListener('input', function () {
-            prefs.btnScale = parseInt(this.value) / 100;
+            prefs.btnScale = parseInt(this.value, 10) / 100;
             sp.querySelector('#lm-bs-v').textContent = this.value + '%';
             applyPrefs(); savePrefs();
         });

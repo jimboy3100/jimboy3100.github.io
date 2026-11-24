@@ -85,6 +85,39 @@ for (const order of ['main first', 'unit first']) {
     run([b, a]);
     check('enemy on both connections: drawn once, main copy', !a.invisible && b.invisible);
 }
+/* 6. Two different enemies of the same size, side by side, on different connections */
+{
+    const a = cell({ spectator: 0, color: '#123456' });
+    const b = cell({ spectator: 1, x: 1015, color: '#654321' });
+    run([b, a]);
+    check('different colours: both drawn', drawn([a, b]) === 2);
+}
+/* 7. A virus next to an enemy of the same size and colour */
+{
+    const enemy = cell({ spectator: 0, color: '#33ff33' });
+    const virus = cell({ spectator: 1, x: 1010, isVirus: true, color: '#33ff33' });
+    run([virus, enemy]);
+    check('virus next to an enemy: both drawn', drawn([enemy, virus]) === 2);
+}
+/* 8. Two enemies with the same colour but different names */
+{
+    const a = cell({ spectator: 0, color: '#123456', targetNick: 'alpha' });
+    const b = cell({ spectator: 1, x: 1015, color: '#123456', targetNick: 'beta' });
+    run([b, a]);
+    check('different names: both drawn', drawn([a, b]) === 2);
+    /* the name is only compared when both copies have one */
+    const c = cell({ spectator: 0, color: '#123456', targetNick: 'alpha' });
+    const d = cell({ spectator: 1, x: 1015, color: '#123456', targetNick: '' });
+    run([d, c]);
+    check('name on one copy only: still one cell', !c.invisible && d.invisible);
+}
+/* 9. Copies of a big cell 300 apart (radius 300 allows 360): two grid buckets away */
+{
+    const a = cell({ spectator: 0, x: 1000, size: 300, targetSize: 300, color: '#123456' });
+    const b = cell({ spectator: 1, x: 1300, size: 300, targetSize: 300, color: '#123456' });
+    run([b, a]);
+    check('big cell copies 300 apart: drawn once', !a.invisible && b.invisible);
+}
 
 if (failed) {
     console.log(failed + ' check(s) failed');
