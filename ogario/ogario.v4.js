@@ -7215,9 +7215,17 @@ function checkVideos2(a, b) {
         // Only reset playback/interval flags.
         window.videoSkinPlayerflag[a] = null
         window.videoSkinPlayerflag2[b] = null
-        window.videoSkinPlayerflag3[a] = null  // was incorrectly keyed by 'b' (nick) instead of 'a' (url)
-        clearInterval(window.timerVideoSkinsInterval[a]);
-        window.timerVideoSkinsInterval[a] = null
+        /* Fix: the timer and flag were registered with key (url+'|'+nick) but
+         * this cleanup branch used url-only, leaving stale entries.
+         * Clear ALL timers whose key starts with this URL. */
+        var _vKeys = Object.keys(window.timerVideoSkinsInterval || {});
+        for (var _vi = 0; _vi < _vKeys.length; _vi++) {
+            if (_vKeys[_vi] === a || _vKeys[_vi].indexOf(a + '|') === 0) {
+                clearInterval(window.timerVideoSkinsInterval[_vKeys[_vi]]);
+                window.timerVideoSkinsInterval[_vKeys[_vi]] = null;
+                window.videoSkinPlayerflag3[_vKeys[_vi]] = null;
+            }
+        }
     }
     //
 }
@@ -81130,12 +81138,28 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                 } catch (_resetError) { }
             } finally {
-                /* Freeze detector: connected and visible, but no world update for >3 s.
-                 * Logs once per freeze with what is needed to find the cause. */
+                /* Freeze detector: connected and visible, but no world update for >1 s.
+                 * Also detects short stalls (200–3000 ms) the old 3 s threshold missed. */
                 try {
                     var _fl = window.legendmod;
                     if (_fl && _fl._lmLastWorldUpdate && !document.hidden && _fl.isSocketOpen && _fl.isSocketOpen()) {
                         var _gap = Date.now() - _fl._lmLastWorldUpdate;
+                        /* Short stall tracker: log stalls 200ms–3s that repeat */
+                        if (_gap > 200 && _gap <= 3000 && !drawRender._lmStallLogged) {
+                            drawRender._lmStallLogged = Date.now();
+                            drawRender._lmStallCount = (drawRender._lmStallCount || 0) + 1;
+                            /* Only log every 3rd short stall to avoid console spam */
+                            if (drawRender._lmStallCount % 3 === 1) {
+                                console.warn('[LM STALL] No world update for ' + _gap + ' ms (#' + drawRender._lmStallCount + ')', {
+                                    pps: _fl.pps, playing: !!_fl.play,
+                                    heapMB: window.performance && performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : '?',
+                                    serverType: _fl.serverType
+                                });
+                            }
+                        } else if (_gap < 100 && drawRender._lmStallLogged) {
+                            drawRender._lmStallLogged = 0;
+                        }
+                        /* Major freeze: >3 s */
                         if (_gap > 3000 && !drawRender._lmFreezeLogged) {
                             drawRender._lmFreezeLogged = Date.now();
                             console.warn('[LM FREEZE] No world update for ' + _gap + ' ms while connected', {
@@ -81143,6 +81167,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 readyState: _fl.socket && _fl.socket.readyState,
                                 bufferedAmount: _fl.socket && _fl.socket.bufferedAmount,
                                 pps: _fl.pps, playing: !!_fl.play,
+                                heapMB: window.performance && performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : '?',
                                 mainPlayerDeadMbActive: !!window.mainPlayerDeadMbActive,
                                 spawnTransitGate: !!_fl._spawnTransitGate,
                                 lastRenderError: drawRender._lastRenderErrorMsg || null
@@ -83118,15 +83143,21 @@ function animateSkinsStop() {
 }
 
 function animateCustomSkin(nick, id) {
-
-    Object.keys(animatedskins).forEach(function (key) {
-        if (animatedskins[key] && animatedskins[key].id === id) {
-            //console.log(key, animatedskins[key]);
-            animatedskins[nick] = animatedskins[key];
-            //animatedskins[key] = null
-            //console.log (animatedskins[key])
+    /* Optimised: build a by-id index on first call so we avoid scanning
+     * every key in animatedskins (O(n)) every 10 seconds.  The index is
+     * invalidated if animatedskins is reassigned. */
+    if (!animateCustomSkin._idx || animateCustomSkin._src !== animatedskins) {
+        animateCustomSkin._src = animatedskins;
+        var idx = {};
+        var keys = Object.keys(animatedskins);
+        for (var i = 0; i < keys.length; i++) {
+            var entry = animatedskins[keys[i]];
+            if (entry && entry.id) idx[entry.id] = entry;
         }
-    });
+        animateCustomSkin._idx = idx;
+    }
+    var match = animateCustomSkin._idx[id];
+    if (match) animatedskins[nick] = match;
 }
 
 function PreLcCelebration() {
@@ -83505,6 +83536,8 @@ function enterChatMessage2() {
 }
 
 function repeatSendingSpecialSkins() {
+    /* Skip entirely if tab is hidden — no one sees the skin anyway */
+    if (document.hidden) return;
     temp = localStorage.getItem("isActualUsingSpecialEffectsSkin")
     //var temp= temp.split(';')
 
