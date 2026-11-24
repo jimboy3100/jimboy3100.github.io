@@ -8981,6 +8981,7 @@ function findUserLang() {
 function startTranslating() {
 
     var targetNode = document.querySelector("#chat-box");
+    if (!targetNode) return; /* #chat-box not in DOM yet — avoid MutationObserver crash */
     var observerOptions = {
         childList: true,
         attributes: false,
