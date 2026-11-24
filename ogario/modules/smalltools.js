@@ -1,13 +1,12 @@
-/* Legend Mod small tools: radial command menu, hotkey conflicts, screenshot mode, skin collections
- * and the bug report window. Everything is off until used: windows and hotkeys without default keys
+/* Legend Mod small tools: radial command menu, hotkey conflicts, screenshot mode and skin
+ * collections. Everything is off until used: windows and hotkeys without default keys
  * (all listed in the Command Centre), and the "Collections" button of the skins panel only with
  * the option skinCollections. Nothing runs per frame while no tool is open.
  * Stored data, each in its own localStorage key, checked when read:
  *   lmRadialMenu      the commands of the radial menu (hotkey ids, up to 8)
  *   lmSkinCollections folders, tags and favourites of skins (the profiles keep their own format)
  *   lmSmallTools      screenshot options
- * The bug report collects the last page errors (window error / unhandledrejection, capped) and is
- * only shown in its window with a Copy button; nothing is sent anywhere.
+ * It also takes private data out of the text of Settings > "Copy debug info" (redactReport).
  */
 (function () {
     'use strict';
@@ -140,9 +139,12 @@
 
     /* Report text without private data: the strings in secrets (nicks, clan tags, skin URLs,
      * ids) wherever they appear, key=value pairs of tokens / passwords / ids, JWTs, long hex or
-     * base64 strings, e-mail and IP addresses, and URLs (except a few known hosts, without query). */
+     * base64 strings, e-mail and IP addresses, and URLs (except a few known hosts, without query).
+     * opts.keepHosts: other URLs keep scheme, host and port (a game server address helps a bug
+     * report) but lose path and query (room tokens, skin file names), and IPs are kept. */
     var KEEP_HOSTS = /^(?:www\.)?(?:legendmod\.ml|jimboy3100\.github\.io|agar\.io|expanding\.land|cdnjs\.cloudflare\.com|code\.jquery\.com)$/i;
-    function redact(text, secrets) {
+    function redact(text, secrets, opts) {
+        var keepHosts = !!(opts && opts.keepHosts);
         var s = String(text == null ? '' : text);
         if (Array.isArray(secrets)) {
             secrets.filter(function (x) { return typeof x === 'string' && x.trim().length >= 3; })
@@ -156,9 +158,10 @@
         s = s.replace(/\b[\w.+-]+@[\w-]+\.[\w.-]+\b/g, '[email]');
         s = s.replace(/\b(wss?|https?):\/\/([^\/\s"'<>?#]+)([^\s"'<>?#]*)(?:[?#][^\s"'<>]*)?/gi, function (all, sch, host, path) {
             var h = host.replace(/:\d+$/, '').replace(/^[^@]*@/, '');
-            return KEEP_HOSTS.test(h) ? sch + '://' + h + path : '[url]';
+            if (KEEP_HOSTS.test(h)) return sch + '://' + h + path;
+            return keepHosts ? sch + '://' + host.replace(/^[^@]*@/, '') + (path && path !== '/' ? '/[path]' : '') : '[url]';
         });
-        s = s.replace(/\b(?:\d{1,3}\.){3}\d{1,3}(?::\d+)?\b/g, '[ip]');
+        if (!keepHosts) s = s.replace(/\b(?:\d{1,3}\.){3}\d{1,3}(?::\d+)?\b/g, '[ip]');
         s = s.replace(/\b[a-f0-9]{24,}\b/gi, '[id]');
         s = s.replace(/[A-Za-z0-9+\/_-]{40,}={0,2}/g, '[token]');
         return s;
@@ -234,33 +237,6 @@
     var api = W.LMSmallTools = { _core: core };
     if (!D || !D.createElement) return;
 
-    /* ═══ Page errors for the bug report (always on: a passive listener, nothing is changed) ═══ */
-
-    var ERR_MAX = 25, errors = [], errCount = 0;
-    /* script URLs carry ?v=version before the line number */
-    function noQuery(u) { return String(u).replace(/\?[^\s:)]*/g, ''); }
-    function noteError(kind, msg, where) {
-        errCount++;
-        msg = cleanText(String(msg == null ? '' : msg), 300);
-        where = cleanText(String(where || ''), 160);
-        var last = errors[errors.length - 1];
-        if (last && last.msg === msg && last.where === where) { last.n++; last.t = Date.now(); return; }
-        errors.push({ t: Date.now(), kind: kind, msg: msg, where: where, n: 1 });
-        if (errors.length > ERR_MAX) errors.shift();
-    }
-    try {
-        W.addEventListener('error', function (e) {
-            if (!e) return;
-            /* failed images / scripts (skins that do not load) are not page errors */
-            if (e.target && e.target !== W && e.target.tagName) return;
-            noteError('error', e.message || (e.error && e.error.message) || 'error', noQuery(e.filename || '') + (e.lineno ? ':' + e.lineno + ':' + (e.colno || 0) : ''));
-        }, true);
-        W.addEventListener('unhandledrejection', function (e) {
-            var r = e && e.reason;
-            noteError('promise', r && (r.message || r.name) ? (r.name ? r.name + ': ' : '') + (r.message || '') : String(r), r && r.stack ? noQuery(String(r.stack).split('\n')[1] || '') : '');
-        });
-    } catch (e) { }
-
     /* ═══ Shared bits ═══ */
 
     var STR = {
@@ -318,12 +294,7 @@
         noSkinsFound: { en: 'No skins match.', el: 'Κανένα skin δεν ταιριάζει.' },
         skinSet: { en: 'Skin set on the current profile', el: 'Το skin ορίστηκε στο τρέχον προφίλ' },
         skinLater: { en: 'The skin can be changed after this game.', el: 'Το skin μπορεί να αλλάξει μετά από αυτό το παιχνίδι.' },
-        skinsHelp: { en: 'Skins of your profiles plus the ones you keep here. Folders, tags and favourites are stored only in this browser; the profiles are not changed until you press Use.', el: 'Τα skins των προφίλ σου και όσα φυλάς εδώ. Φάκελοι, ετικέτες και αγαπημένα αποθηκεύονται μόνο σε αυτόν τον browser· τα προφίλ δεν αλλάζουν μέχρι να πατήσεις Χρήση.' },
-        bugTitle: { en: 'Bug report', el: 'Αναφορά σφάλματος' },
-        bugHelp: { en: 'Diagnostics for a bug report. Private data (nicks, skin URLs, tokens, ids, server addresses) is removed. Nothing is sent: copy it and paste it where you report the bug.', el: 'Διαγνωστικά για αναφορά σφάλματος. Τα προσωπικά δεδομένα (ονόματα, URL skins, tokens, ids, διευθύνσεις διακομιστών) αφαιρούνται. Δεν στέλνεται τίποτα: αντέγραψέ το και επικόλλησέ το εκεί που αναφέρεις το σφάλμα.' },
-        copy: { en: 'Copy', el: 'Αντιγραφή' },
-        refresh: { en: 'Refresh', el: 'Ανανέωση' },
-        copied: { en: 'Copied', el: 'Αντιγράφηκε' }
+        skinsHelp: { en: 'Skins of your profiles plus the ones you keep here. Folders, tags and favourites are stored only in this browser; the profiles are not changed until you press Use.', el: 'Τα skins των προφίλ σου και όσα φυλάς εδώ. Φάκελοι, ετικέτες και αγαπημένα αποθηκεύονται μόνο σε αυτόν τον browser· τα προφίλ δεν αλλάζουν μέχρι να πατήσεις Χρήση.' }
     };
     function lang() {
         try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
@@ -354,7 +325,7 @@
         return { mc: ok(ds.menuMainColor, '#01d9cc'), pc: ok(ds.menuPanelColor, '#00243e'), pc2: ok(ds.menuPanelColor2, '#002f52'), tc: ok(ds.menuTextColor, '#ffffff'), tc2: ok(ds.menuTextColor2, '#8096a7') };
     }
     function settings() { return W.legendmod5 || W.defaultmapsettings || {}; }
-    function noMotion() { var s = settings(); return !!(s.reducedMotion || s.a11yNoFlash); }
+    function noMotion() { return !!settings().reducedMotion; }
     function isTouch() {
         try { return !!(W.matchMedia && W.matchMedia('(pointer: coarse)').matches) || 'ontouchstart' in W; } catch (e) { return false; }
     }
@@ -841,6 +812,7 @@
             });
             mo.observe(D.body, { childList: true });
         } catch (e) { }
+        if (noMotion()) chip.style.transition = 'none';
         var idleT = 0;
         var wake = function () { chip.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(function () { chip.classList.add('idle'); }, 2500); };
         W.addEventListener('mousemove', wake, true);
@@ -1231,7 +1203,7 @@
         if (more && more.parentNode === panel) panel.insertBefore(b, more); else panel.appendChild(b);
     }
 
-    /* ═══ 6. Bug report ═══ */
+    /* ═══ Private data out of Settings > "Copy debug info" ═══ */
 
     function secretsNow() {
         var out = [], add = function (s) { if (typeof s === 'string' && s.trim()) out.push(s.trim()); };
@@ -1243,82 +1215,12 @@
         if (typeof s.FacebookIDs === 'string') s.FacebookIDs.split(/[\s,;]+/).forEach(add);
         return out;
     }
-    function rendererInfo() {
-        var dr = W.drawRender, out = dr && dr.gl ? 'WebGL2' : 'Canvas2D';
-        try {
-            var gl = dr && dr.gl;
-            if (gl) {
-                var ext = gl.getExtension('WEBGL_debug_renderer_info');
-                var r = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
-                if (r) out += ' (' + cleanText(String(r), 80) + ')';
-            }
-        } catch (e) { }
-        return out;
-    }
-    function buildReport() {
-        var s = settings(), def = W.LM_SETTINGS_DEFAULTS || {}, lm = W.legendmod || {}, L = [];
-        L.push('Legend Mod ' + (W.OgVer || '?') + ' diagnostic report, ' + new Date().toISOString());
-        L.push('Browser: ' + (navigator.userAgent || '?'));
-        L.push('Language: ' + (navigator.language || '?') + ', touch: ' + (isTouch() ? 'yes' : 'no') + ', in a frame: ' + (W.top !== W ? 'yes' : 'no'));
-        L.push('Screen: ' + (W.screen ? W.screen.width + 'x' + W.screen.height : '?') + ', window ' + W.innerWidth + 'x' + W.innerHeight + ', devicePixelRatio ' + (W.devicePixelRatio || 1));
-        L.push('Renderer: ' + rendererInfo());
-        L.push('Server type: ' + (lm.serverType || (lm.isLegendWorld ? 'legendworld' : 'unknown')) + ', connected: ' + (lm.isSocketOpen && lm.isSocketOpen() ? 'yes' : 'no') + ', playing: ' + (lm.play ? 'yes' : 'no') +
-            ', cells: ' + (lm.cells ? lm.cells.length : 0));
-        var on = [], changed = [];
-        Object.keys(s).sort().forEach(function (k) {
-            var v = s[k];
-            if (typeof v === 'boolean' && v) on.push(k);
-            else if (typeof v === 'number' && own(def, k) && def[k] !== v) changed.push(k + '=' + v);
-        });
-        L.push('Options on (' + on.length + '): ' + (on.join(', ') || '-'));
-        L.push('Numbers changed (' + changed.length + '): ' + (changed.join(', ') || '-'));
-        /* the lines above hold no player data; the ones below are checked */
-        var fixed = L.length;
-        if (W.LMPerf && typeof W.LMPerf.report === 'function') {
-            try {
-                W.LMPerf.report().split('\n').forEach(function (l) { if (/^(FPS|Frame time|Network|Adaptive)/.test(l)) L.push(l); });
-            } catch (e) { }
-        }
-        L.push('Page errors (' + errCount + ' since load, last ' + errors.length + '):');
-        if (!errors.length) L.push('  none');
-        errors.forEach(function (e) {
-            L.push('  ' + new Date(e.t).toISOString().slice(11, 19) + ' [' + e.kind + '] ' + e.msg + (e.where ? ' @ ' + e.where : '') + (e.n > 1 ? ' (x' + e.n + ')' : ''));
-        });
-        return L.slice(0, fixed).join('\n') + '\n' + redact(L.slice(fixed).join('\n'), secretsNow());
-    }
-    function copyText(text, ta, btn) {
-        var ok = function () {
-            toast('success', t('copied'));
-            /* the toast can sit behind the window's backdrop: the button says it too */
-            if (btn) { btn.textContent = t('copied'); setTimeout(function () { btn.textContent = t('copy'); }, 1500); }
-        };
-        try {
-            if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(ok, function () { legacy(); }); return; }
-        } catch (e) { }
-        legacy();
-        function legacy() {
-            try { ta.focus(); ta.select(); if (D.execCommand('copy')) ok(); } catch (e) { }
-        }
-    }
-    function openBugReport() {
-        var w = openWin('lm-st-bug', t('bugTitle'), 680);
-        w.body.appendChild(el('p', '', t('bugHelp'))).className = 'lm-st-help';
-        var ta = el('textarea', 'width:100%;height:220px;max-height:calc(100vh - 170px);min-height:90px;box-sizing:border-box;font:11px/1.4 monospace;background:rgba(0,0,0,0.3);color:inherit;border:1px solid rgba(255,255,255,0.18);border-radius:4px;padding:6px;resize:vertical;');
-        ta.id = 'lm-st-bug-text';
-        ta.readOnly = true;
-        ta.spellcheck = false;
-        ta.value = buildReport();
-        w.body.appendChild(ta);
-        w.foot.appendChild(button(t('refresh'), false, function () { ta.value = buildReport(); }));
-        var cp = button(t('copy'), true, function () { copyText(ta.value, ta, cp); });
-        w.foot.appendChild(cp);
-        w.foot.appendChild(button(t('close'), false, closeWin));
-    }
+    function redactReport(text) { return redact(text, secretsNow(), { keepHosts: true }); }
 
     /* ═══ Wiring ═══ */
 
-    var WINS = { radial: openRadialEditor, conflicts: openConflicts, screenshot: openShotWindow, skins: openSkins, bugReport: openBugReport };
-    var WIN_IDS = { radial: 'lm-st-radial', conflicts: 'lm-st-conflicts', screenshot: 'lm-st-shot', skins: 'lm-st-skins', bugReport: 'lm-st-bug' };
+    var WINS = { radial: openRadialEditor, conflicts: openConflicts, screenshot: openShotWindow, skins: openSkins };
+    var WIN_IDS = { radial: 'lm-st-radial', conflicts: 'lm-st-conflicts', screenshot: 'lm-st-shot', skins: 'lm-st-skins' };
     api.open = function (name) { if (own(WINS, name)) WINS[name](); };
     api.toggle = function (name) { if (!own(WINS, name)) return; if (isOpen(WIN_IDS[name])) closeWin(); else WINS[name](); };
     api.close = closeWin;
@@ -1334,8 +1236,7 @@
     api.shotActive = function () { return !!shot; };
     api.capture = capture;
     api.compose = function () { return composeShot(shotOpts()); };
-    api.report = buildReport;
-    api.errors = function () { return errors.slice(); };
+    api.redactReport = redactReport;
     api.conflicts = currentConflicts;
     api.sync = function () { syncSkinsButton(); hookHotkeysWindow(); };
 

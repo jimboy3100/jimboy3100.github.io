@@ -18715,10 +18715,7 @@ var displayText = {
         accessibilityGroup: 'Accessibility',
         a11yTextScale: 'Menu text size (1 = normal)',
         a11yHudTextScale: 'HUD text size (1 = normal, on top of the HUD scale)',
-        a11yHighContrast: 'High-contrast HUD (solid backgrounds, outlines)',
         a11yIndicators: 'Size symbols on opponents (▲ bigger, ▼ smaller; two: split range)',
-        a11yNoFlash: 'Reduce flashing (no blinking or animated page elements)',
-        a11yPalette: 'Colour-blind palette for opponent colours and rings',
         skinCollections: 'Skin collections button in the skins panel (folders, tags, favourites)',
         'hk-radialMenu': 'Radial command menu (hold)',
         'hk-radialEditor': 'Radial menu: choose commands',
@@ -18727,11 +18724,6 @@ var displayText = {
         'hk-screenshotCapture': 'Capture screenshot (PNG)',
         'hk-screenshotTool': 'Screenshot window',
         'hk-skinCollections': 'Skin collections',
-        'hk-bugReport': 'Bug report (diagnostics)',
-        a11yPaletteOff: 'Theme colours',
-        a11yPaletteDeut: 'Deuteranopia (green-weak)',
-        a11yPaletteProt: 'Protanopia (red-weak)',
-        a11yPaletteTrit: 'Tritanopia (blue-weak)',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -21492,13 +21484,10 @@ var defaultmapsettings = {
     mouse4Click: 'hk-doubleSplit',
     mouse5Click: 'hk-split16',
     skinCollections: false,       /* "Collections" button in the skins panel (ogario/modules/smalltools.js) */
-    /* accessibility (ogario/modules/accessibility.js); 1 / false / 'off' = unchanged */
+    /* accessibility (ogario/modules/accessibility.js); 1 / false = unchanged */
     a11yTextScale: 1,             /* menu text size */
     a11yHudTextScale: 1,          /* HUD text size, on top of hudScale */
-    a11yHighContrast: false,      /* solid HUD backgrounds and outlines */
     a11yIndicators: false,        /* bigger / smaller symbols on opponent cells */
-    a11yNoFlash: false,           /* no blinking or animated page elements */
-    a11yPalette: 'off',           /* opponent colours: 'off', 'deuteranopia', 'protanopia', 'tritanopia' */
     //
     FacebookIDs: ''
 };
@@ -23034,10 +23023,7 @@ textLanguage['hk-companionResult'] = textLanguage['hk-companionResult'] || 'Resu
 textLanguage['accessibilityGroup'] = textLanguage['accessibilityGroup'] || 'Accessibility';
 textLanguage['a11yTextScale'] = textLanguage['a11yTextScale'] || 'Menu text size (1 = normal)';
 textLanguage['a11yHudTextScale'] = textLanguage['a11yHudTextScale'] || 'HUD text size (1 = normal, on top of the HUD scale)';
-textLanguage['a11yHighContrast'] = textLanguage['a11yHighContrast'] || 'High-contrast HUD (solid backgrounds, outlines)';
 textLanguage['a11yIndicators'] = textLanguage['a11yIndicators'] || 'Size symbols on opponents (▲ bigger, ▼ smaller; two: split range)';
-textLanguage['a11yNoFlash'] = textLanguage['a11yNoFlash'] || 'Reduce flashing (no blinking or animated page elements)';
-textLanguage['a11yPalette'] = textLanguage['a11yPalette'] || 'Colour-blind palette for opponent colours and rings';
 textLanguage['skinCollections'] = textLanguage['skinCollections'] || 'Skin collections button in the skins panel (folders, tags, favourites)';
 textLanguage['hk-radialMenu'] = textLanguage['hk-radialMenu'] || 'Radial command menu (hold)';
 textLanguage['hk-radialEditor'] = textLanguage['hk-radialEditor'] || 'Radial menu: choose commands';
@@ -23046,11 +23032,6 @@ textLanguage['hk-screenshotMode'] = textLanguage['hk-screenshotMode'] || 'Screen
 textLanguage['hk-screenshotCapture'] = textLanguage['hk-screenshotCapture'] || 'Capture screenshot (PNG)';
 textLanguage['hk-screenshotTool'] = textLanguage['hk-screenshotTool'] || 'Screenshot window';
 textLanguage['hk-skinCollections'] = textLanguage['hk-skinCollections'] || 'Skin collections';
-textLanguage['hk-bugReport'] = textLanguage['hk-bugReport'] || 'Bug report (diagnostics)';
-textLanguage['a11yPaletteOff'] = textLanguage['a11yPaletteOff'] || 'Theme colours';
-textLanguage['a11yPaletteDeut'] = textLanguage['a11yPaletteDeut'] || 'Deuteranopia (green-weak)';
-textLanguage['a11yPaletteProt'] = textLanguage['a11yPaletteProt'] || 'Protanopia (red-weak)';
-textLanguage['a11yPaletteTrit'] = textLanguage['a11yPaletteTrit'] || 'Tritanopia (blue-weak)';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -25947,9 +25928,7 @@ function thelegendmodproject() {
                     case 'massLossAlert':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
-                    case 'a11yHighContrast':
                     case 'a11yIndicators':
-                    case 'a11yNoFlash':
                         if (window.LMAccessibility) LMAccessibility.sync();
                         break;
                     case 'skinCollections':
@@ -27212,21 +27191,9 @@ function thelegendmodproject() {
                 '</div>'
             );
             /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
-            this.addOptions(["a11yHighContrast", "a11yIndicators", "a11yNoFlash"], "accessibilityGroup");
+            this.addOptions(["a11yIndicators"], "accessibilityGroup");
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
             this.addSliderBox(".accessibilityGroup", "a11yHudTextScale", 1, 1.6, 0.05);
-            (function (app) {
-                var pal = { off: 'a11yPaletteOff', deuteranopia: 'a11yPaletteDeut', protanopia: 'a11yPaletteProt', tritanopia: 'a11yPaletteTrit' };
-                var box = $('<div class="input-box"><span class="title-box"></span><select id="a11yPalette" class="form-control"></select></div>');
-                box.find('.title-box').text(textLanguage.a11yPalette);
-                Object.keys(pal).forEach(function (k) { box.find('select').append($('<option>').val(k).text(textLanguage[pal[k]] || k)); });
-                $('.accessibilityGroup').append(box);
-                $('#a11yPalette').val(pal.hasOwnProperty(defaultmapsettings.a11yPalette) ? defaultmapsettings.a11yPalette : 'off').on('change', function () {
-                    defaultmapsettings.a11yPalette = pal.hasOwnProperty(this.value) ? this.value : 'off';
-                    app.saveSettings(defaultmapsettings, 'ogarioSettings');
-                    if (window.LMAccessibility) window.LMAccessibility.sync();
-                });
-            })(this);
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
             if (!this.protocolMode) {
@@ -27689,6 +27656,8 @@ function thelegendmodproject() {
                     for (var i = 0; i < errs.length; i++) lines.push('  ' + errs[i]);
                 } catch (e) { lines.push('debug info error: ' + e); }
                 var text = lines.join('\n');
+                /* nicks, clan tags, skin URLs, tokens and room paths out (ogario/modules/smalltools.js) */
+                try { if (window.LMSmallTools && typeof LMSmallTools.redactReport === 'function') text = LMSmallTools.redactReport(text); } catch (e) { }
                 var done = function (ok) { if (window.toastr) ok ? toastr.success('Debug info copied. Paste it into your bug report.') : toastr.warning('Could not copy. Select the text in the console instead.'); if (!ok) console.log(text); };
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
@@ -54514,12 +54483,9 @@ Most cells eaten   : ${mostCellsEaten}
                 /* Pre-compute oppColor thresholds for inline setCellOppColor */
                 var _thr8 = _domRate * 8;
                 var _playerOppColor = (typeof ogarcopythelb !== 'undefined' && ogarcopythelb) ? ogarcopythelb.color : null;
-                /* colour-blind palette of the Accessibility options (null: the theme's colours) */
-                var _lmPalHot = window._lmA11yPal || null, _lmPalSrc = _lmPalHot || defaultSettings;
-                var _cBSTED = _lmPalSrc.enemyBSTEDColor, _cBSTE = _lmPalSrc.enemyBSTEColor;
-                var _cB = _lmPalSrc.enemyBColor, _cS = _lmPalSrc.enemySColor;
-                var _cSSTE = _lmPalSrc.enemySSTEColor, _cSSTED = _lmPalSrc.enemySSTEDColor;
-                var _cEq = _lmPalHot ? _lmPalHot.eqColor : '#FFDC00';
+                var _cBSTED = defaultSettings.enemyBSTEDColor, _cBSTE = defaultSettings.enemyBSTEColor;
+                var _cB = defaultSettings.enemyBColor, _cS = defaultSettings.enemySColor;
+                var _cSSTE = defaultSettings.enemySSTEColor, _cSSTED = defaultSettings.enemySSTEDColor;
                 /* Viewport culling: skip cells outside visible area + ring offset margin */
                 var _cullMinX = window.fullSpectator ? ((LM.mapMinX != null ? LM.mapMinX : -7071) - 800) : (LM.camMinX - 800);
                 var _cullMinY = window.fullSpectator ? ((LM.mapMinY != null ? LM.mapMinY : -7071) - 800) : (LM.camMinY - 800);
@@ -54548,7 +54514,7 @@ Most cells eaten   : ${mostCellsEaten}
                                     fixMass >= _thr4 ? _cBSTED :
                                         fixMass >= _thr2 ? _cBSTE :
                                             fixMass >= _thr1 ? _cB :
-                                                fixMass >= _thrD ? _cEq :
+                                                fixMass >= _thrD ? '#FFDC00' :
                                                     fixMass >= _thrDh ? _cS :
                                                         fixMass >= _thrDq ? _cSSTE : _cSSTED;
                             }
@@ -54616,14 +54582,14 @@ Most cells eaten   : ${mostCellsEaten}
             if (isPlayer) {
                 return ogarcopythelb.color
             } else {
-                if (mass >= defaultmapsettings.dominationRate * 8) return (window._lmA11yPal || defaultSettings).enemyBSTEDColor
-                else if (mass >= defaultmapsettings.dominationRate * 4) return (window._lmA11yPal || defaultSettings).enemyBSTEDColor
-                else if (mass >= defaultmapsettings.dominationRate * 2) return (window._lmA11yPal || defaultSettings).enemyBSTEColor
-                else if (mass >= defaultmapsettings.dominationRate) return (window._lmA11yPal || defaultSettings).enemyBColor
-                else if (mass >= defaultmapsettings.dominatedRate) return window._lmA11yPal ? window._lmA11yPal.eqColor : '#FFDC00'
-                else if (mass >= defaultmapsettings.dominatedRate / 2) return (window._lmA11yPal || defaultSettings).enemySColor
-                else if (mass >= defaultmapsettings.dominatedRate / 4) return (window._lmA11yPal || defaultSettings).enemySSTEColor
-                else return (window._lmA11yPal || defaultSettings).enemySSTEDColor
+                if (mass >= defaultmapsettings.dominationRate * 8) return defaultSettings.enemyBSTEDColor
+                else if (mass >= defaultmapsettings.dominationRate * 4) return defaultSettings.enemyBSTEDColor
+                else if (mass >= defaultmapsettings.dominationRate * 2) return defaultSettings.enemyBSTEColor
+                else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor
+                else if (mass >= defaultmapsettings.dominatedRate) return '#FFDC00'
+                else if (mass >= defaultmapsettings.dominatedRate / 2) return defaultSettings.enemySColor
+                else if (mass >= defaultmapsettings.dominatedRate / 4) return defaultSettings.enemySSTEColor
+                else return defaultSettings.enemySSTEDColor
             }
         },
 
@@ -80025,7 +79991,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawWebGLRingsBatch(
                     biggestCell,
                     760,
-                    (window._lmA11yPal || defaultSettings).enemyBSTEColor,
+                    defaultSettings.enemyBSTEColor,
                     0.8,
                     1.0,
                     8
@@ -80088,7 +80054,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawWebGLRingsBatch(
                     biggestCell,
                     760,
-                    (window._lmA11yPal || defaultSettings).enemyBSTEDColor,
+                    defaultSettings.enemyBSTEDColor,
                     0.8,
                     2.0,
                     8
@@ -80112,7 +80078,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawWebGLDashedRingsBatch(
                     biggestCell,
                     1520,
-                    (window._lmA11yPal || defaultSettings).enemyBSTEDColor,
+                    defaultSettings.enemyBSTEDColor,
                     0.8,
                     1.5,
                     8
@@ -80188,7 +80154,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemyBSTEDColor,
+                defaultSettings.enemyBSTEDColor,
                 true
             );
 
@@ -80198,7 +80164,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemyBSTEColor,
+                defaultSettings.enemyBSTEColor,
                 true
             );
 
@@ -80208,7 +80174,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemyBColor,
+                defaultSettings.enemyBColor,
                 true
             );
 
@@ -80228,7 +80194,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemySColor,
+                defaultSettings.enemySColor,
                 true
             );
 
@@ -80238,7 +80204,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemySSTEColor,
+                defaultSettings.enemySSTEColor,
                 true
             );
 
@@ -80248,7 +80214,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemySSTEDColor,
+                defaultSettings.enemySSTEDColor,
                 true
             );
 
@@ -80293,7 +80259,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemyBSTEDColor,
+                defaultSettings.enemyBSTEDColor,
                 false
             );
 
@@ -80303,7 +80269,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemyBSTEColor,
+                defaultSettings.enemyBSTEColor,
                 false
             );
 
@@ -80313,7 +80279,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemyBColor,
+                defaultSettings.enemyBColor,
                 false
             );
 
@@ -80323,7 +80289,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemySColor,
+                defaultSettings.enemySColor,
                 false
             );
 
@@ -80333,7 +80299,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemySSTEColor,
+                defaultSettings.enemySSTEColor,
                 false
             );
 
@@ -80343,7 +80309,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                (window._lmA11yPal || defaultSettings).enemySSTEDColor,
+                defaultSettings.enemySSTEDColor,
                 false
             );
 
@@ -85931,6 +85897,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     }
     /* Small tools: radial command menu, hotkey conflicts, screenshot mode, skin collections and the
      * bug report (windows and hotkeys without default keys; nothing runs until one is used) */
+    /* Small tools: radial command menu, hotkey conflicts, screenshot mode and skin collections
+     * (windows and hotkeys without default keys; nothing runs until one is used) */
     try {
         var smallToolsScript = document.createElement('script');
         smallToolsScript.type = 'text/javascript';

@@ -1,4 +1,4 @@
-/* Small tools and accessibility: conflict detection, redaction, radial sector choice, skin
+/* Small tools and accessibility: conflict detection, debug info redaction, radial sector choice, skin
  * collection checks and the accessibility helpers (pure parts of ogario/modules/smalltools.js
  * and ogario/modules/accessibility.js, loaded in a vm without a document).
  * node developers/tests/smalltools.js */
@@ -107,6 +107,13 @@ check('redact: nick and clan tag', red.indexOf('MyNickName') < 0 && red.indexOf(
 check('redact: too-short secrets do not mangle text', red.indexOf('Cannot read properties') >= 0 && red.indexOf('player') >= 0);
 check('redact: error text kept', red.indexOf("TypeError: Cannot read properties of undefined (reading 'x')") >= 0);
 check('redact: nothing -> empty string', C.redact(null) === '' && C.redact(undefined, null) === '');
+/* Settings > Copy debug info: server addresses kept, their paths and queries not */
+const dbg = C.redact(['Server: wss://live-arena-12ab.agar.io:443/?token=abc123 (agario)', 'Server: wss://203.0.113.9:2001/el-room/SECRETROOM42 (expandingland)',
+    'Page: www.legendmod.ml, browser: Mozilla/5.0 (Linux; Android 10) Chrome/120.0.0.0 Mobile', 'skin https://i.imgur.com/AbCdEf1.png failed', 'nick MyNickName'].join('\n'), ['MyNickName'], { keepHosts: true });
+check('debug info: game server host and port kept', dbg.indexOf('wss://live-arena-12ab.agar.io:443') >= 0 && dbg.indexOf('wss://203.0.113.9:2001') >= 0);
+check('debug info: room path and token gone', dbg.indexOf('SECRETROOM42') < 0 && dbg.indexOf('abc123') < 0);
+check('debug info: browser version not taken for an IP', dbg.indexOf('Chrome/120.0.0.0') >= 0);
+check('debug info: skin file and nick gone', dbg.indexOf('AbCdEf1') < 0 && dbg.indexOf('MyNickName') < 0);
 
 /* ── skin collections ── */
 let col = C.cleanCollections({
@@ -148,9 +155,6 @@ check('filter: no match', C.filterSkins(skins, col, 'nothing-here', '').length =
 check('screenshot options: only true counts', J(C.cleanShotOpts({ lb: true, map: 'yes' })) === J({ lb: true, map: false }) && J(C.cleanShotOpts(null)) === J({ lb: false, map: false }));
 
 /* ── accessibility ── */
-check('a11y: palette ids checked', A.cleanPalette('protanopia') === 'protanopia' && A.cleanPalette('x') === 'off' && A.cleanPalette(3) === 'off' && A.cleanPalette('hasOwnProperty') === 'off');
-check('a11y: every palette has the 7 opponent colours', Object.keys(A.PALETTES).every(k => ['enemyBSTEDColor', 'enemyBSTEColor', 'enemyBColor', 'eqColor', 'enemySColor', 'enemySSTEColor', 'enemySSTEDColor'].every(c => /^#[0-9a-f]{6}$/i.test(A.PALETTES[k][c]))));
-check('a11y: palette colours distinct', Object.keys(A.PALETTES).every(k => new Set(Object.values(A.PALETTES[k])).size === 7));
 check('a11y: text scale clamped', A.cleanScale(2) === 1.6 && A.cleanScale(0.5) === 1 && A.cleanScale('x') === 1 && A.cleanScale(1.234) === 1.23);
 check('a11y: classes like the opponent colours', A.classify(300, 100, 4 / 3, 3 / 4) === 'B2' && A.classify(140, 100, 4 / 3, 3 / 4) === 'B' && A.classify(100, 100, 4 / 3, 3 / 4) === '' &&
     A.classify(50, 100, 4 / 3, 3 / 4) === 'S' && A.classify(20, 100, 4 / 3, 3 / 4) === 'S2');

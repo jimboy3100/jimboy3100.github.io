@@ -13,26 +13,27 @@
   if (!T || !A || !s) return { fail: fail, info: info };
   var KEYS = ['lmRadialMenu', 'lmSkinCollections', 'lmSmallTools'], stored = {};
   KEYS.forEach(function (k) { try { stored[k] = localStorage.getItem(k); } catch (e) { } });
-  var OPTS = ['skinCollections', 'a11yTextScale', 'a11yHudTextScale', 'a11yHighContrast', 'a11yIndicators', 'a11yNoFlash', 'a11yPalette'], keep = {};
+  var OPTS = ['skinCollections', 'a11yTextScale', 'a11yHudTextScale', 'a11yIndicators'], keep = {};
   OPTS.forEach(function (k) { keep[k] = s[k]; });
   var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };
-  var HK = ['hk-radialMenu', 'hk-radialEditor', 'hk-hotkeyConflicts', 'hk-screenshotMode', 'hk-screenshotCapture', 'hk-screenshotTool', 'hk-skinCollections', 'hk-bugReport'];
+  var HK = ['hk-radialMenu', 'hk-radialEditor', 'hk-hotkeyConflicts', 'hk-screenshotMode', 'hk-screenshotCapture', 'hk-screenshotTool', 'hk-skinCollections'];
   try {
-    need('options off by default', LM_SETTINGS_DEFAULTS.skinCollections === false && LM_SETTINGS_DEFAULTS.a11yHighContrast === false && LM_SETTINGS_DEFAULTS.a11yIndicators === false &&
-      LM_SETTINGS_DEFAULTS.a11yNoFlash === false && LM_SETTINGS_DEFAULTS.a11yPalette === 'off' && LM_SETTINGS_DEFAULTS.a11yTextScale === 1 && LM_SETTINGS_DEFAULTS.a11yHudTextScale === 1);
-    need('menu controls', ['a11yHighContrast', 'a11yIndicators', 'a11yNoFlash', 'a11yTextScale-slider', 'a11yHudTextScale-slider', 'a11yPalette', 'skinCollections'].every(function (id) { return !!document.getElementById(id); }));
+    need('options off by default', LM_SETTINGS_DEFAULTS.skinCollections === false && LM_SETTINGS_DEFAULTS.a11yIndicators === false &&
+      LM_SETTINGS_DEFAULTS.a11yTextScale === 1 && LM_SETTINGS_DEFAULTS.a11yHudTextScale === 1);
+    need('removed duplicates are gone', !('hk-bugReport' in hotkeysCommand) && !('a11yPalette' in LM_SETTINGS_DEFAULTS) && !('a11yHighContrast' in LM_SETTINGS_DEFAULTS) && !('a11yNoFlash' in LM_SETTINGS_DEFAULTS) && !('_lmA11yPal' in window));
+    need('menu controls', ['a11yIndicators', 'a11yTextScale-slider', 'a11yHudTextScale-slider', 'skinCollections'].every(function (id) { return !!document.getElementById(id); }));
     HK.forEach(function (id) { need(id + ' without a default key', hotkeysCommand[id] && hotkeysCommand[id].defaultKey === ''); });
     if (window.LMCommandCentre) {
       var ids = window.LMCommandCentre.items().map(function (it) { return it.id; });
-      need('reachable from the Command Centre', HK.concat([]).every(function (h) { return ids.indexOf('hk:' + h) >= 0; }) && ids.indexOf('opt:a11yHighContrast') >= 0 && ids.indexOf('set:a11yPalette') >= 0 && ids.indexOf('opt:skinCollections') >= 0);
+      need('reachable from the Command Centre', HK.concat([]).every(function (h) { return ids.indexOf('hk:' + h) >= 0; }) && ids.indexOf('opt:a11yIndicators') >= 0 && ids.indexOf('set:a11yTextScale') >= 0 && ids.indexOf('opt:skinCollections') >= 0);
     }
-    var allOff = !s.a11yHighContrast && !s.a11yIndicators && !s.a11yNoFlash && s.a11yPalette === 'off' && s.a11yTextScale === 1 && s.a11yHudTextScale === 1;
-    if (allOff) need('accessibility off: nothing added', !document.getElementById('lm-a11y-style') && !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind') && window._lmA11yPal === null);
+    var allOff = !s.a11yIndicators && s.a11yTextScale === 1 && s.a11yHudTextScale === 1;
+    if (allOff) need('accessibility off: nothing added', !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind'));
     if (!s.skinCollections) need('collections button only with its option', !document.getElementById('lm-skin-collections'));
     need('conflicts button in the hotkeys window', !!document.getElementById('lm-hk-conflicts'));
 
     /* every window opens on screen and closes with its x */
-    var wins = { radial: 'lm-st-radial', conflicts: 'lm-st-conflicts', screenshot: 'lm-st-shot', skins: 'lm-st-skins', bugReport: 'lm-st-bug' };
+    var wins = { radial: 'lm-st-radial', conflicts: 'lm-st-conflicts', screenshot: 'lm-st-shot', skins: 'lm-st-skins' };
     for (var name in wins) {
       T.open(name);
       await sleep(60);
@@ -48,13 +49,14 @@
       info[name] = [Math.round(r.width), Math.round(r.height)];
     }
     /* hotkeys toggle the windows */
-    hotkeysCommand['hk-bugReport'].keyDown();
-    var ta = document.getElementById('lm-st-bug-text');
-    need('bug report text', !!ta && /Legend Mod .* diagnostic report/.test(ta.value) && /Page errors/.test(ta.value));
+    hotkeysCommand['hk-skinCollections'].keyDown();
+    need('skin collections hotkey opens', T.isOpen('skins'));
+    hotkeysCommand['hk-skinCollections'].keyDown();
+    need('skin collections hotkey toggles', !T.isOpen());
+    /* the existing Settings > Copy debug info text goes through the redaction */
     var nick = document.getElementById('nick');
-    if (ta && nick && nick.value && nick.value.trim().length >= 3) need('bug report has no nick', ta.value.indexOf(nick.value.trim()) < 0);
-    hotkeysCommand['hk-bugReport'].keyDown();
-    need('bug report hotkey toggles', !T.isOpen());
+    var dbgText = T.redactReport('Server: wss://x.example:443/el-room/ROOMTOKEN9 nick ' + ((nick && nick.value) || ''));
+    need('debug info redaction', dbgText.indexOf('ROOMTOKEN9') < 0 && dbgText.indexOf('wss://x.example:443') >= 0 && (!nick || nick.value.trim().length < 3 || dbgText.indexOf(nick.value.trim()) < 0));
 
     /* radial menu: a probe command on the ring, point at it, release */
     var ran = 0;
@@ -149,23 +151,14 @@
     need('collections button gone again', !!s.skinCollections === !!document.getElementById('lm-skin-collections'));
 
     /* accessibility options one by one */
-    s.a11yHighContrast = true; A.sync();
-    need('high contrast on', document.body.classList.contains('lm-a11y-hc') && !!document.getElementById('lm-a11y-style'));
-    s.a11yHighContrast = false; s.a11yNoFlash = true; A.sync();
-    need('no flashing on', document.body.classList.contains('lm-a11y-noflash') && !document.body.classList.contains('lm-a11y-hc'));
-    s.a11yNoFlash = false; s.a11yIndicators = true; A.sync();
+    s.a11yIndicators = true; A.sync();
     need('indicator canvas on', !!document.getElementById('lm-a11y-ind'));
     await sleep(100);
-    s.a11yIndicators = false; s.a11yPalette = 'tritanopia'; A.sync();
-    need('palette on', window._lmA11yPal && window._lmA11yPal.enemyBColor === A._core.PALETTES.tritanopia.enemyBColor && document.getElementById('a11yPalette').value === 'tritanopia');
-    s.a11yPalette = 'nonsense'; A.sync();
-    need('unknown palette = theme colours', window._lmA11yPal === null);
-    s.a11yPalette = 'off'; s.a11yTextScale = 1.3; s.a11yHudTextScale = 1.2; A.sync();
+    s.a11yIndicators = false; s.a11yTextScale = 1.3; s.a11yHudTextScale = 1.2; A.sync();
     var ts = document.getElementById('lm-a11y-text');
     need('text scale rules', !!ts && ts.textContent.indexOf('font-size') >= 0);
     s.a11yTextScale = 1; s.a11yHudTextScale = 1; A.sync();
-    need('all accessibility off again: nothing left', !document.getElementById('lm-a11y-style') && !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind') &&
-      !document.body.classList.contains('lm-a11y-hc') && !document.body.classList.contains('lm-a11y-noflash') && window._lmA11yPal === null);
+    need('all accessibility off again: nothing left', !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind'));
   } finally {
     try { T.close(); T.radialClose(); T.shotOff(); } catch (e) { }
     delete hotkeysCommand['hk-zzProbe'];

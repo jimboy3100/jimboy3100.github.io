@@ -724,17 +724,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-bugReport': {
-				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-bugReport']) || 'Bug report (diagnostics)';
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMSmallTools) window.LMSmallTools.toggle('bugReport');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-limitposition': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-limitposition']) || 'Limit Position';

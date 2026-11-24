@@ -1,16 +1,13 @@
 /* Legend Mod accessibility options (Settings > Accessibility, all off by default):
  *   a11yTextScale     larger menu text (1 = unchanged), separate from the HUD scale
  *   a11yHudTextScale  larger HUD text (leaderboard, stats, clock, chat); follows the HUD scale
- *   a11yHighContrast  HUD panels with solid dark backgrounds, outlines and outlined text
  *   a11yIndicators    a symbol on opponent cells in addition to the colours: up triangles for
  *                     bigger ones (two: can split on you), down triangles for smaller ones (two:
  *                     you can split on them)
- *   a11yNoFlash       no blinking or animated page elements (CSS animations and transitions)
- *   a11yPalette       colour-blind palette for opponent colours / rings ('off', 'deuteranopia',
- *                     'protanopia', 'tritanopia'); the theme colours are not changed or saved
- * While everything is off this file adds no style, canvas or loop; it checks the options every
+ * While they are off this file adds no style, canvas or loop; it checks the options every
  * 2 s (they can also change through settings profiles or an import).
- * The renderer reads window._lmA11yPal (null = theme colours).
+ * (Colour-blind colours and a high-contrast HUD: the theme preset "Colour-blind safe"; less
+ * motion and flashing: the reducedMotion option.)
  */
 (function () {
     'use strict';
@@ -21,15 +18,6 @@
 
     /* ═══ Pure helpers (developers/tests/smalltools.js) ═══ */
 
-    /* Seven opponent classes from much bigger to much smaller (eqColor: about your size). Chosen
-     * to stay apart by lightness as well as hue for each kind of colour blindness. */
-    var PALETTES = {
-        deuteranopia: { enemyBSTEDColor: '#cc79a7', enemyBSTEColor: '#d55e00', enemyBColor: '#e69f00', eqColor: '#f0e442', enemySColor: '#56b4e9', enemySSTEColor: '#0072b2', enemySSTEDColor: '#ffffff' },
-        protanopia: { enemyBSTEDColor: '#dc267f', enemyBSTEColor: '#fe6100', enemyBColor: '#ffb000', eqColor: '#ffffff', enemySColor: '#648fff', enemySSTEColor: '#2a3fbf', enemySSTEDColor: '#00e5ff' },
-        tritanopia: { enemyBSTEDColor: '#a50026', enemyBSTEColor: '#f03b20', enemyBColor: '#ff9db5', eqColor: '#ffffff', enemySColor: '#7fdbda', enemySSTEColor: '#1c9e9b', enemySSTEDColor: '#bdbdbd' }
-    };
-    var PALETTE_IDS = ['off', 'deuteranopia', 'protanopia', 'tritanopia'];
-    function cleanPalette(v) { return typeof v === 'string' && PALETTES.hasOwnProperty(v) ? v : 'off'; }
     function cleanScale(v) {
         v = +v;
         return isFinite(v) ? Math.min(1.6, Math.max(1, Math.round(v * 100) / 100)) : 1;
@@ -56,7 +44,7 @@
         return sel + '{font-size:' + (Math.round(ratio * k * 10000) / 100) + '% !important;}';
     }
 
-    var core = { PALETTES: PALETTES, PALETTE_IDS: PALETTE_IDS, cleanPalette: cleanPalette, cleanScale: cleanScale, classify: classify, symbolSize: symbolSize, scaleRule: scaleRule };
+    var core = { cleanScale: cleanScale, classify: classify, symbolSize: symbolSize, scaleRule: scaleRule };
     var api = W.LMAccessibility = { _core: core };
     if (!D || !D.createElement) return;
 
@@ -93,29 +81,6 @@
         if (menuK !== 1) measure(MENU_TEXT, menuK, rules);
         if (hudK !== 1) measure(HUD_TEXT, hudK, rules);
         textStyle.textContent = rules.join('');
-    }
-
-    /* ═══ High contrast HUD + no flashing ═══ */
-
-    var CSS_HC = 'body.lm-a11y-hc .hud,body.lm-a11y-hc .hud-b,body.lm-a11y-hc #leaderboard-hud,body.lm-a11y-hc #top5-hud,body.lm-a11y-hc #stats-hud,' +
-        'body.lm-a11y-hc #time-hud,body.lm-a11y-hc #target-hud,body.lm-a11y-hc #minimap-hud,body.lm-a11y-hc #messages li{' +
-        'background-color:rgba(0,0,0,0.88) !important;color:#fff !important;outline:2px solid rgba(255,255,255,0.8);outline-offset:0;' +
-        'text-shadow:0 0 2px #000,0 0 2px #000,1px 1px 0 #000,-1px -1px 0 #000 !important;}' +
-        'body.lm-a11y-hc #leaderboard-hud *,body.lm-a11y-hc #stats-hud *,body.lm-a11y-hc #top5-hud *{text-shadow:0 0 2px #000,1px 1px 0 #000,-1px -1px 0 #000 !important;}' +
-        'body.lm-a11y-hc #toast-container .toast{opacity:1 !important;outline:2px solid #fff;}';
-    var CSS_NOFLASH = 'body.lm-a11y-noflash *,body.lm-a11y-noflash *::before,body.lm-a11y-noflash *::after{' +
-        'animation-duration:0.001s !important;animation-iteration-count:1 !important;animation-delay:0s !important;transition-duration:0s !important;transition-delay:0s !important;}';
-    var cssEl = null;
-    function applyClasses(hc, nf) {
-        if ((hc || nf) && !cssEl) {
-            cssEl = D.createElement('style');
-            cssEl.id = 'lm-a11y-style';
-            cssEl.textContent = CSS_HC + CSS_NOFLASH;
-            D.head.appendChild(cssEl);
-        }
-        D.body.classList.toggle('lm-a11y-hc', !!hc);
-        D.body.classList.toggle('lm-a11y-noflash', !!nf);
-        if (!hc && !nf && cssEl) { if (cssEl.parentNode) cssEl.parentNode.removeChild(cssEl); cssEl = null; }
     }
 
     /* ═══ Indicator symbols (own canvas above the game, nothing in the renderer) ═══ */
@@ -201,13 +166,8 @@
 
     function sync(force) {
         var s = settings();
-        var pal = cleanPalette(s.a11yPalette);
-        W._lmA11yPal = pal === 'off' ? null : PALETTES[pal];
         applyText(cleanScale(s.a11yTextScale), cleanScale(s.a11yHudTextScale), force === true);
-        if (D.body) applyClasses(s.a11yHighContrast === true, s.a11yNoFlash === true);
         setIndicators(s.a11yIndicators === true);
-        var sel = D.getElementById('a11yPalette');
-        if (sel && sel.value !== pal) sel.value = pal;
     }
     api.sync = sync;
     api.remeasure = function () { sync(true); };
