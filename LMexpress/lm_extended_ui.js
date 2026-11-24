@@ -8282,7 +8282,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             if (secs) {
                 var h = secs('hourlyBonus'), d = secs('dailyQuest');
                 var noQuest = !(window._lmActiveQuests || []).some(function (q) { return q && q.expiresAt > Date.now(); });
-                var dchReady = !!(window._lmDailyChallenges && Array.isArray(window._lmDailyChallenges.challenges) &&
+                var dchReady = !!(window.legendmod && window.legendmod.isLegendWorld && window._lmDailyChallenges && Array.isArray(window._lmDailyChallenges.challenges) &&
                     window._lmDailyChallenges.challenges.some(function (c) { return c && c.completed && !c.claimed; }));
                 if (h === 0 || (noQuest && d === 0) || dchReady) extra = ' \u25CF';
                 else if (h > 0) { var mins = Math.ceil(h / 60); extra = ' \u00B7 ' + (mins >= 60 ? Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm' : mins + 'm'); }
@@ -10582,6 +10582,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     btn.textContent = '\u23F3';
                     var sent = typeof window.claimDailyChallenge === 'function' && window.claimDailyChallenge(c.slot) !== false;
                     if (!sent) { btn.disabled = false; btn.textContent = _lmUR('chClaim', 'Claim'); }
+                    else setTimeout(function () { if (btn.isConnected && btn.disabled) { btn.disabled = false; btn.textContent = _lmUR('chClaim', 'Claim'); } }, 8000);
                 };
                 action.appendChild(btn);
             }

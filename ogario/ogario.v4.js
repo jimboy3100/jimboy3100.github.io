@@ -2423,6 +2423,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             if (window.dailyQuestTimer) { clearTimeout(window.dailyQuestTimer); window.dailyQuestTimer = null; }
             window._lmActiveQuests = []; /* an array, as in displayActiveQuests */
             window._lmDailyChallenges = null; /* Expanding Land daily challenges (102 type 220) */
+            window._lmServerMatchHistory = null; /* server match history of that account (102 type 1081) */
             window._lmActiveBoosts = Object.create(null);
             if (window._lmBoostTicker) { clearInterval(window._lmBoostTicker); window._lmBoostTicker = null; }
             if (window._lmQuestTicker) { clearInterval(window._lmQuestTicker); window._lmQuestTicker = null; }
@@ -4082,6 +4083,7 @@ window.claimDailyChallenge = function (slot) {
     var st = window._lmDailyChallenges;
     slot = Number(slot) || 0;
     if (!st || slot <= 0 || !window.application || typeof window.application.sendProto !== 'function') return false;
+    if (!(window.legendmod && window.legendmod.isLegendWorld)) return false; /* Expanding Land only */
     return window.application.sendProto(221, { lmDailyChallengeRequestField: { slot: slot, day: st.day } });
 };
 window.activateQuest = function () {

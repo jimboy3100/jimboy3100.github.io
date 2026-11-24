@@ -7648,7 +7648,7 @@ function initializeLM(modVersion) {
                 toastr.info('<b>Legend Mod updated (' + String(window.OgVer) + ')</b><br>' +
                     '• Expanding Land: daily challenges, server events with a countdown, match history on your account<br>' +
                     '• Settings presets (with Undo) and NEW badges; settings in 12 languages<br>' +
-                    '• Team pings (Help, Danger, Go here, Virus here), gamepad support, match history<br>' +
+                    '• Team pings (Help, Danger, Go here, Virus here) and gamepad support<br>' +
                     '• Replays: pause, speed, seek and a progress bar; Game Over card extras<br>' +
                     '• New options are off: type a word in the settings search to find them', '', { timeOut: 14000, extendedTimeOut: 4000 });
             }
