@@ -6843,12 +6843,12 @@ function initializeLM(modVersion) {
     $("body").prepend('<div id="backgroundFade" style="width: 100%; height: 100%; position: absolute; background: black; z-index: 100; opacity: 0.6; display: none;"></div>');
 
 
-    $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: rgba(0, 0, 0, 0.2);padding: 3px;border-radius: 4px;width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: #ffffff;">' +
+    $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: var(--lm-pc, #00243e);border: 1px solid var(--lm-pc2, #002f52);padding: 3px;border-radius: 6px;width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: var(--lm-tc, #ffffff);">' +
         '<p style="float: right; margin-right: 10px;"><span id="notesServer">Servers: </span><span id="numServers"></span> (<span id="pps"></span> <span data-toggle="tooltip" data-placement="top" data-original-title="Players per server">PPS</span>)</p>' +
         '<p style="float: right;margin-right: 100px;"><span id="notesPlayers">Players: </span><span id="numPlayers"></span> / <span id="totalPlayers"  data-toggle="tooltip" data-placement="top" data-original-title="Total players online"></span></p></div>' +
         '<div id="searchHud" class="hud" style="width: 65%; height: 60px; z-index: 15; margin: auto; top: 0; right: 0; left: 0; bottom: 0; position: fixed;">' +
         '<div id="" style="margin-top: 10px;">' +
-        '<input id="searchInput" class="form-control" title="" placeholder="Enter friend\'s token, IP, leaderboard, name or clan tag..." style="pointer-events: auto;margin-bottom: 10px;float: left;width: 80% !important;text-align: center;">' +
+        '<input id="searchInput" class="form-control" title="" placeholder="Enter friend\'s token, IP, leaderboard, name or clan tag..." style="pointer-events: auto;background-color: var(--lm-pc2, #002f52);color: var(--lm-tc, #fff);border: 1px solid var(--lm-pc2, #002f52);margin-bottom: 10px;float: left;width: 80% !important;text-align: center;">' +
         '<button id="searchBtn" class="btn btn-copy-token copy-party-token btn-primary" data-toggle="tooltip" data-placement="bottom" data-original-title="Cancel search" style="pointer-events: auto;margin-bottom:10px;width: 15%;"><span id="searchSpan"><i class="fa fa-search"></i></span></button>' +
         '</div></div>'
     );
@@ -6888,14 +6888,14 @@ function initializeLM(modVersion) {
         title: "For more info on how to use video skins visit: https://www.legendmod.ml/developers/ videoskins.html",
         placement: "top"
     });
-    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">Save for later</h5>' +
-        '<input id="note1" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 25%;float:left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-right: 7px; text-align: center;">' +
-        '<input id="note2" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 24%; float: left; border: none; border-bottom: 1px solid; margin-left: 0px; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note3" class="form-control main-color note" style="background: transparent; width: 49%; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note4" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 25%; float: left; border: none; border-bottom: 1px solid; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note5" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 24%; float: left; border: none; border-bottom: 1px solid; margin-left: 0px; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note6" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 49%; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note7" class="form-control main-color note" style="background: transparent; color: lightgrey; border: none; border-bottom: 1px solid; text-align: center; border-color: darkgrey;">' +
+    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 6px;width: 65%;height: 200px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: var(--lm-tc, #fff);padding: 10px;background-color: var(--lm-pc, #00243e);border: 1px solid var(--lm-pc2, #002f52);border-top: 3px solid var(--lm-mc, #01d9cc);box-shadow: 0 8px 32px rgba(0,0,0,.5);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">Save for later</h5>' +
+        '<input id="note1" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 25%;float:left; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7);  margin-right: 7px; text-align: center;">' +
+        '<input id="note2" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 24%; float: left; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-left: 0px; margin-right: 7px; text-align: center; ">' +
+        '<input id="note3" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff); width: 49%; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-left: 10px; text-align: center; ">' +
+        '<input id="note4" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 25%; float: left; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-right: 7px; text-align: center; ">' +
+        '<input id="note5" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 24%; float: left; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-left: 0px; margin-right: 7px; text-align: center; ">' +
+        '<input id="note6" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 49%; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-left: 10px; text-align: center; ">' +
+        '<input id="note7" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); text-align: center; ">' +
         '</div>');
     $("#notes").append('<button id="closeBtn" class="btn btn-danger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
 
@@ -7097,7 +7097,7 @@ function initializeLM(modVersion) {
     // save notes
 
     $("#import-settings-btn").attr('class', 'btn btn-success');
-    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;display: none;background-color: rgba(0, 0, 0, 0.2);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">Results</h5>' +
+    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 6px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: var(--lm-tc, #fff);padding: 10px;display: none;background-color: var(--lm-pc, #00243e);border: 1px solid var(--lm-pc2, #002f52);border-top: 3px solid var(--lm-mc, #01d9cc);box-shadow: 0 8px 32px rgba(0,0,0,.5);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">Results</h5>' +
         '<div id="log" style="font-weight: normal; overflow-x: hidden; overflow-y: auto;height: 90%;">' +
         '</div></div>');
 
@@ -7751,7 +7751,7 @@ function initializeLM(modVersion) {
      * "What's new" toast when the build changes for someone who played before. */
     if (window.OgVer && !$('#menu-footer .lm-ogver').length) {
         $('#menu-footer a[href="https://jimboy3100.github.io"]').first()
-            .append('<small class="lm-ogver" style="opacity:.6;"> · ' + String(window.OgVer) + '</small>');
+            .append('<small class="lm-ogver"> · ' + String(window.OgVer) + '</small>');
         try {
             var _lmSeenVer = localStorage.getItem('lmLastSeenOgVer');
             if (_lmSeenVer && _lmSeenVer !== String(window.OgVer) && window.toastr) {
@@ -8937,7 +8937,7 @@ function BannedUIDS() {
                 '<div class="modal-backdrop fade in"></div>' +
                 '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
                 '<div class="modal-content">' +
-                '<div id="CloseBannedUIDS2" class="modal-header"><button id="CloseBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+                '<div id="CloseBannedUIDS2" class="modal-header"><button id="CloseBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Banned User IDs' + '</h4>' +
                 '</div>' +
                 '<div class="modal-body"><input type="text" class="form-control" id="Bannedagario_uid_input" placeholder="*UID (' + 'to be banned' + ')" style="width: 85%; display: inline-block">' +
@@ -8953,6 +8953,7 @@ function BannedUIDS() {
                 '</div>' +
                 '</div>');
             populateBanListConfig();
+            lmPromoChrome("#BannedUIDSModal");
 
             $("#CloseBannedUIDS").click(function () {
                 $("#BannedUIDSModal").remove();
@@ -9100,6 +9101,35 @@ function changeFrameWork() {
 function changeFrameWorkStart() {
     defaultmapsettings.unlockedFPS = false;
 }
+/* Promo and admin windows (Bootstrap modal markup): themed like the LM windows (Match history,
+ * Private room) with the --lm-* menu colours, the close cross on the right and "?" on the left,
+ * centred and kept on screen, and only this dialog drags (by its title bar). */
+function lmPromoChrome(sel) {
+    if (!document.getElementById('lm-promo-css')) {
+        var st = document.createElement('style');
+        st.id = 'lm-promo-css';
+        st.textContent =
+            '.modal.lm-promo .modal-backdrop{background:#000;opacity:.55}' +
+            '.modal.lm-promo .modal-dialog{max-width:calc(100vw - 16px)}' +
+            '.modal.lm-promo .modal-content{background:var(--lm-pc,#00243e);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;font-family:inherit}' +
+            '.modal.lm-promo .modal-header{position:relative;min-height:0;padding:10px 52px 8px;text-align:center;border-bottom:1px solid var(--lm-pc2,#002f52);background:linear-gradient(180deg,var(--lm-pc2,#002f52) 0%,var(--lm-pc,#00243e) 100%);cursor:move}' +
+            '.modal.lm-promo .modal-title{font-family:inherit!important;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1.4;color:var(--lm-mc,#01d9cc)}' +
+            '.modal.lm-promo .modal-header .close{position:absolute;top:6px;right:10px;float:none;margin:0;padding:0;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,.05);color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none;font-size:18px;font-weight:400;line-height:1;cursor:pointer}' +
+            '.modal.lm-promo .modal-header .close+.close{right:auto;left:10px;font-size:14px;font-weight:700}' +
+            '.modal.lm-promo .modal-header .close:hover{color:var(--lm-tc,#fff);background:rgba(255,255,255,.12)}' +
+            '.modal.lm-promo iframe{display:block;max-width:100%;max-height:calc(100vh - 100px);border:0}' +
+            '.modal.lm-promo .modal-body .form-control{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}';
+        (document.head || document.documentElement).appendChild(st);
+    }
+    /* it stays next to #helloContainer (inside #overlays, under the HUD): the HUD controls
+     * (notifications bell, theme previews) remain usable while a promo is open */
+    var m = $(sel).last().addClass('lm-promo');
+    var d = m.find('.modal-dialog');
+    /* Bootstrap gives the dialog a 30px top margin; centre what is left */
+    var h = d.outerHeight() || 0;
+    d.css('top', Math.max(0, Math.round((window.innerHeight - h) / 2) - 30) + 'px');
+    if (typeof d.draggable === 'function') d.draggable({ handle: '.modal-header', cancel: '.close' });
+}
 function LMnoBotsPromo() {
     if (window.LM_IS_MOBILE) return; // skip promo on mobile
     $('#helloContainer').after(
@@ -9111,7 +9141,7 @@ function LMnoBotsPromo() {
         '<div id="CloseLMPromoNoBots2" class="modal-header">' +
 
         '<button id="CloseLMPromoNoBots" type="button" class="close">' +
-        '<span aria-hidden="true">&times;</span>' +
+        '<span aria-hidden="true">&#10005;</span>' +
         '</button>' +
 
         '<button id="FAQNoBotsPromo" type="button" class="close">' +
@@ -9135,7 +9165,7 @@ function LMnoBotsPromo() {
         '</div>'
     );
 
-    $(".modal-dialog").draggable();
+    lmPromoChrome("#LMPromoNoBots");
 
     $("#CloseLMPromoNoBots").on("click", function () {
         $("#LMPromoNoBots").remove();
@@ -9157,7 +9187,7 @@ function LMLegendFFAPromo() {
         '<div id="CloseLMPromoLegendFFA2" class="modal-header">' +
 
         '<button id="CloseLMPromoLegendFFA" type="button" class="close">' +
-        '<span aria-hidden="true">&times;</span>' +
+        '<span aria-hidden="true">&#10005;</span>' +
         '</button>' +
 
         '<button id="FAQLegendFFAPromo" type="button" class="close">' +
@@ -9181,7 +9211,7 @@ function LMLegendFFAPromo() {
         '</div>'
     );
 
-    $(".modal-dialog").draggable();
+    lmPromoChrome("#LMPromoLegendFFA");
 
     $("#CloseLMPromoLegendFFA").on("click", function () {
         $("#LMPromoLegendFFA").remove();
@@ -9206,7 +9236,7 @@ function LMrewardDay() {
         '<div id="CloseLMPromo2" class="modal-header">' +
 
         '<button id="CloseLMPromo" type="button" class="close">' +
-        '<span aria-hidden="true">&times;</span>' +
+        '<span aria-hidden="true">&#10005;</span>' +
         '</button>' +
 
         '<button id="FAQLMPromo" type="button" class="close">' +
@@ -9228,7 +9258,7 @@ function LMrewardDay() {
         '</div>'
     );
 
-    $(".modal-dialog").draggable();
+    lmPromoChrome("#LMPromo");
 
     $("#CloseLMPromo").on("click", function () {
         $("#LMPromo").remove();
@@ -9244,7 +9274,7 @@ function VideoSkinsPromo() {
         '<div class="modal-backdrop fade in"></div>' +
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 922px;">' +
         '<div class="modal-content">' +
-        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Video Skin Promo' + '</h4>' +
         '</div>' +
         '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/developers/videoskins.html" width="920" height="550" >' +
@@ -9252,7 +9282,7 @@ function VideoSkinsPromo() {
         '</div>' +
         '</div>' +
         '</div>');
-    $(".modal-dialog").draggable()
+    lmPromoChrome("#LMPromo");
     $("#CloseLMPromo").click(function () {
         $("#LMPromo").remove();
     });
@@ -9388,7 +9418,7 @@ function LMadvertisementMegaFFA() {
         '<div class="modal-backdrop fade in"></div>' +
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
         '<div class="modal-content">' +
-        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
         '</div>' +
         '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/extras/2020.html" width="620" height="490" >' +
@@ -9396,7 +9426,7 @@ function LMadvertisementMegaFFA() {
         '</div>' +
         '</div>' +
         '</div>');
-    $(".modal-dialog").draggable()
+    lmPromoChrome("#LMPromo");
     $("#CloseLMPromo").click(function () {
         $("#LMPromo").remove();
     });
