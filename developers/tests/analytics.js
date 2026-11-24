@@ -193,6 +193,45 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     check('same day: kept', !C.ensureDaily(st1, hist, clock));
 }
 
+/* ---------- practice / replay lives and a life cut by a server change or disconnect (audit A16) */
+{
+  ctx.legendmod5.analytics = true;
+  tickFn();
+  ctx.legendmod = { mapSize: 14142, mapOffset: 7071, mapOffsetX: 0, mapOffsetY: 0, playerX: 0, playerY: 0, isLegendWorld: false, ws: 'wss://a.example:443', serverType: 'agario' };
+  const games = () => { const g = store.get('lmAnalyticsGames'); return g ? JSON.parse(g).games : []; };
+  store.clear();
+  ['practice', 'replay'].forEach(cx => {
+    LMEvents.emit('spawn', { time: clock, context: cx });
+    for (let i = 0; i < 20; i++) { clock += 250; LMEvents.emit('massUpdate', { mass: 800, cells: 1, context: cx }); }
+    LMEvents.emit('death', { time: clock, mass: 800, msAlive: 5000, context: cx });
+  });
+  check('practice and replay lives are not stored', games().length === 0);
+  /* a life on server a, then the player joins server b: the unfinished life is dropped */
+  LMEvents.emit('spawn', { time: clock, context: 'live' });
+  for (let i = 0; i < 40; i++) { clock += 250; LMEvents.emit('massUpdate', { mass: 900, cells: 1, context: 'live' }); }
+  ctx.legendmod.ws = 'wss://b.example:443';
+  LMEvents.emit('serverChange', { host: 'b.example', context: 'live' });
+  const tB = clock;
+  LMEvents.emit('spawn', { time: clock, context: 'live' });
+  for (let i = 0; i < 8; i++) { clock += 250; LMEvents.emit('massUpdate', { mass: 300, cells: 1, context: 'live' }); }
+  LMEvents.emit('death', { time: clock, mass: 300, msAlive: clock - tB, context: 'live' });
+  const g1 = games();
+  check('server change: the old unfinished life is not merged into the next', g1.length === 1 && g1[0].srv === 'b.example' && g1[0].peak === 300);
+  /* disconnected mid-life: the next tick drops it, a late death records nothing */
+  store.clear();
+  ctx.legendmod.isSocketOpen = () => true;
+  LMEvents.emit('spawn', { time: clock, context: 'live' });
+  for (let i = 0; i < 8; i++) { clock += 250; LMEvents.emit('massUpdate', { mass: 600, cells: 1, context: 'live' }); }
+  tickFn();
+  ctx.legendmod.isSocketOpen = () => false;
+  tickFn();
+  LMEvents.emit('death', { time: clock, mass: 600, msAlive: 2000, context: 'live' });
+  check('disconnect: the unfinished life is dropped', games().length === 0);
+  ctx.legendmod5.analytics = false;
+  tickFn();
+  store.clear();
+}
+
 /* ---------- a recorded life through the LMEvents hooks */
 {
     ctx.legendmod5.analytics = true;

@@ -124,10 +124,17 @@
         var a = L[name];
         return !!(a && a.length);
     }
+    /* where the event comes from: 'practice' (the practice arena, ogario/modules/practice.js),
+     * 'replay' (a recorded replay playing) or 'live' */
+    function context() {
+        if (window.LMPractice && window.LMPractice.on) return 'practice';
+        return window._lmEvReplayOn ? 'replay' : 'live';
+    }
     function emit(name, data) {
         var a = L[name];
         if (!a || !a.length) return;
         a = a.slice();
+        if (data && typeof data === 'object' && !Object.isFrozen(data) && data.context === undefined) data.context = context();
         freeze(data);
         for (var i = 0; i < a.length; i++) {
             try { a[i].call(null, data); } catch (e) {
@@ -147,6 +154,7 @@
             return o ? { x: Math.round(+o.playerX + (+o.mapOffsetX || 0)) || 0, y: Math.round(+o.playerY + (+o.mapOffsetY || 0)) || 0 } : { x: 0, y: 0 };
         },
         isPlaying: function () { var o = lm(); return !!(o && o.play); },
+        getContext: context,
         getServerType: function () { var o = lm(); return o ? String(o.serverType || '') : ''; },
         /* same path and limits as typing into the chat box; false when it was not sent */
         sendChat: function (text) {

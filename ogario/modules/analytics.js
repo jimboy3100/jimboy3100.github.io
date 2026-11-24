@@ -630,10 +630,12 @@
     }
     /* practice arena lives (ogario/modules/practice.js) are not games */
     function practising() { return !!(window.LMPractice && window.LMPractice.on); }
-    function onSpawn(e) { if (practising()) { life = null; return; } beginLife(+e.time || Date.now()); }
+    /* replays too: LMEvents says where an event comes from (context); older cores: the flags */
+    function notLive(e) { return e && e.context ? e.context !== 'live' : practising() || !!window._lmEvReplayOn; }
+    function onSpawn(e) { if (notLive(e)) { life = null; return; } beginLife(+e.time || Date.now()); }
     function onMass(e) {
         var now = Date.now(), m = +e.mass || 0;
-        if (m <= 0 || practising()) return;
+        if (m <= 0 || notLive(e)) return;
         if (!life) beginLife(now);
         if (m > life.peak) life.peak = m;
         life.end = m;
@@ -661,7 +663,7 @@
     function onDeath(e) {
         var L = life;
         life = null;
-        if (!L || practising()) return;
+        if (!L || notLive(e)) return;
         var now = +e.time || Date.now();
         var ms = Math.max(0, Math.min(+e.msAlive || now - L.start, 6 * 3600000));
         var peak = Math.max(L.peak, +e.mass || 0);
@@ -727,7 +729,18 @@
         listening = on;
         var f = on ? E.on : E.off;
         f('spawn', onSpawn); f('massUpdate', onMass); f('split', onSplit); f('leaderboard', onLeaderboard); f('death', onDeath);
+        f('serverChange', onServerChange);
         if (!on) life = null;
+    }
+    /* the life ends with the connection: joining another server or losing the connection drops
+     * the unfinished life (no death comes for it; the next mass update would continue it) */
+    function onServerChange() { life = null; }
+    function checkSession() {
+        var o = lm();
+        if (!life) return;
+        if (!o || (typeof o.isSocketOpen === 'function' && !o.isSocketOpen())) { life = null; return; }
+        var host = typeof window._lmHostOnly === 'function' ? window._lmHostOnly(o.ws) : '';
+        if (life.srv && host && host !== life.srv) life = null;
     }
     function enabled() { var s = window.legendmod5; return !!(s && s.analytics); }
 
@@ -1164,6 +1177,7 @@
     function tick() {
         var on = enabled();
         try { setListening(on); } catch (e) { }
+        try { if (on) checkSession(); } catch (e) { }
         try { if (typeof document !== 'undefined' && document.getElementById) { ensureButton(); ensureFooterLink(on); } } catch (e) { }
     }
 

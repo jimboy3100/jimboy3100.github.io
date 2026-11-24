@@ -137,6 +137,13 @@
         if (!n) { try { n = document.getElementById('nick').value; } catch (e) { } }
         return String(n || '').slice(0, 30) || 'You';
     }
+    /* alive in the live game: the main player or a multibox unit (main dead, a unit still plays) */
+    function livePlaying(l) {
+        if (l.play) return true;
+        var sp = window.spects;
+        if (sp && sp.length) for (var i = 0; i < sp.length; i++) if (sp[i] && sp[i].active) return true;
+        return false;
+    }
     function isRealWs(ws) {
         return typeof ws === 'string' && /^wss?:\/\//.test(ws) && ws.indexOf('replay') === -1 && ws.indexOf('/el-room/') === -1;
     }
@@ -218,7 +225,7 @@
         /* the window shows (and keeps) the settings of the run */
         cfg = c;
         saveCfg(cfg);
-        if (!ses && l.play && l.socket && !opts.confirm && Date.now() - leaveArmed > 6000) {
+        if (!ses && l.socket && livePlaying(l) && !opts.confirm && Date.now() - leaveArmed > 6000) {
             leaveArmed = Date.now();
             toast('info', T('leave'));
             ui();

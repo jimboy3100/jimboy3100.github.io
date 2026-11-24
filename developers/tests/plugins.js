@@ -203,6 +203,16 @@ const v4 = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
     check('a listener gets frozen data', got && got.key === 'showGrid' && Object.isFrozen(got));
     E.off('settingsChange', f);
     check('_has false again after off', !E._has('settingsChange'));
+    /* every event says where it comes from (audit A16) */
+    const seen = []; const g = d => seen.push(d.context);
+    E.on('spawn', g);
+    E.emit('spawn', { time: 1 });
+    ctx.LMPractice = { on: true }; E.emit('spawn', { time: 2 });
+    ctx.LMPractice = null; ctx._lmEvReplayOn = true; E.emit('spawn', { time: 3 });
+    ctx._lmEvReplayOn = false;
+    E.off('spawn', g);
+    check('events carry their context: live, practice, replay', seen.join() === 'live,practice,replay');
+    check('api.getContext', typeof E.api.getContext === 'function' && E.api.getContext() === 'live');
 })();
 
 /* every emit of the new events sits inside a _has() check of the same event */
