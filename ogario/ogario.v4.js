@@ -19518,8 +19518,8 @@ var defaultmapsettings = {
     blockPopups: false,
     gameOverStats: false,
     massGraph: false,             /* graph of your mass over the life on the Game Over card */
-    personalBests: false,
-    matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */         /* best mass, longest life and games kept in this browser (localStorage) */
+    personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
+    matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     showKiller: false,            /* "Eaten by: nick (mass)" row on the Game Over card */
     streamMode: false,
     hideSkinUrl: false,
