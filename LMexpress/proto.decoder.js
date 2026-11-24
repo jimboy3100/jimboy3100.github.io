@@ -341,6 +341,13 @@ message gameOverField {
   gameSessionStats gameSessionStats = 6;
   potionInfo potionInfo = 7;
   leaderboard leaderboard = 8;
+  lmKiller lmKiller = 40;// Expanding Land only, after our opcode 240 caps bit 0 (not official)
+}
+message lmKiller {
+  string nick = 1;
+  uint32 mass = 2;
+  bool virus = 3;
+  bool bot = 4;
 }
 message productUpdates {
   int32 origin = 1;
