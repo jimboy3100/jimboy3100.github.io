@@ -18047,6 +18047,8 @@ var displayText = {
         matchHistory: 'Historia meczów (ostatnie 50 gier, przycisk pod menu)',
         showKiller: 'Who ate you, on the Game Over card',
         hideEventBanner: 'Hide the server event countdown (Expanding Land)',
+        commandCentreBar: 'Command Centre quick bar in game (the starred items; Ctrl+K opens the Command Centre)',
+        'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
@@ -18634,6 +18636,8 @@ var displayText = {
         matchHistory: 'Match history (last 50 games, button under the menu)',
         showKiller: 'Who ate you, on the Game Over card',
         hideEventBanner: 'Hide the server event countdown (Expanding Land)',
+        commandCentreBar: 'Command Centre quick bar in game (the starred items; Ctrl+K opens the Command Centre)',
+        'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -21323,6 +21327,7 @@ var defaultmapsettings = {
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     showKiller: false,            /* "Eaten by: nick (mass)" row on the Game Over card */
     hideEventBanner: false,       /* hide the Expanding Land event countdown banner (shown only when the server sends events) */
+    commandCentreBar: false,      /* quick bar with the Command Centre favourites in game (ogario/modules/commandcentre.js) */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -21591,7 +21596,8 @@ var _lmLabelI18n = {
         "hk-netGraph":"Εμφάνιση / απόκρυψη γραφήματος δικτύου (FPS, ping)","hk-chatSounds":"Σίγαση / άρση σίγασης ήχων συνομιλίας","scanTrick":"Ενεργοποίηση Scan Trick",
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
-        "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick"
+        "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
+        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -22861,6 +22867,8 @@ textLanguage['hk-scanTrick'] =
  * to displayText['en'] or an empty object so downstream label lookups don't crash. */
 if (!textLanguage) textLanguage = displayText['en'] || {};
 window.textLanguage = textLanguage;
+/* English labels for the Command Centre search (it matches the English text in every language) */
+window._lmEnglishLabels = displayText['en'] || {};
 
 /* Line split: same fallback pattern as Scan Trick. */
 textLanguage.lineSplitGroup = textLanguage.lineSplitGroup || 'Line Split';
@@ -26880,7 +26888,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26994,7 +27002,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Multibox rings: per player on/off, color and size; both off = no rings. */
@@ -85106,5 +85114,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(notifScript);
     } catch (e) {
         console.warn('[LM] Error loading notifications script:', e);
+    }
+    /* Command Centre: Ctrl+K search for commands, settings and windows; its quick bar is off by default */
+    try {
+        var commandCentreScript = document.createElement('script');
+        commandCentreScript.type = 'text/javascript';
+        commandCentreScript.src = 'https://www.legendmod.ml/ogario/modules/commandcentre.js?v=' + (window.OgVer || '');
+        document.body.appendChild(commandCentreScript);
+    } catch (e) {
+        console.warn('[LM] Error loading command centre script:', e);
     }
 })();
