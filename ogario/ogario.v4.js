@@ -5969,6 +5969,9 @@ function checkVideos(a, b) {
 }
 
 function checkVideos2(a, b) {
+    /* the sweeper frees a video not drawn for 60 s but this nick's 500 ms timer keeps
+     * calling: without the video it threw a TypeError every tick (and filled the error log) */
+    if (!window.videoSkinPlayer || !window.videoSkinPlayer[a]) return;
     //console.log(b)
     /* Reset before the loop: a player who left the top 5 must fade out too
      * (the flag was only reset when the nick was still found). */
@@ -36240,11 +36243,14 @@ function thelegendmodproject() {
                         if (defaultmapsettings.videoSkins) {
                             node2 = LM.gameMode != ":party" ? application.customSkinsMap[this.targetNick] : application.customSkinsMap[this.targetNick + this.color];
                             if (node2) {
-                                if (typeof node2._isVideo === "boolean") {
-                                    node2IsVideo = node2._isVideo;
-                                } else {
+                                /* cached per URL (a string cannot carry a property: defineProperty threw
+                                 * for every skinned cell in every frame) */
+                                var _lmVc = window._lmVideoUrlCache || (window._lmVideoUrlCache = new Map());
+                                node2IsVideo = _lmVc.get(node2);
+                                if (node2IsVideo === undefined) {
                                     node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
-                                    try { Object.defineProperty(node2, '_isVideo', { value: node2IsVideo, writable: true }); } catch (e) { }
+                                    if (_lmVc.size > 2000) _lmVc.clear();
+                                    _lmVc.set(node2, node2IsVideo);
                                 }
                             }
                         }
