@@ -255,8 +255,60 @@ function _lmMatchHistoryOpen() {
     head.appendChild(x);
     head.appendChild(clr);
     md.appendChild(head);
+    /* Expanding Land while logged in: "This device | Account (server)" */
+    var view = 'local', tabs = null;
+    if (_lmMhServerAvailable()) {
+        tabs = el('div', 'display:flex;gap:6px;justify-content:center;padding:6px 10px 0;');
+        tabs.id = 'lm-mh-tabs';
+        [['local', _lmMhT('mhThisDevice', 'This device')], ['server', _lmMhT('mhAccount', 'Account (server)')]].forEach(function (t) {
+            var b = el('div', 'cursor:pointer;font-size:11px;padding:3px 10px;border-radius:4px;border:1px solid ' + pc2 + ';', t[1]);
+            b.id = 'lm-mh-tab-' + t[0];
+            b.addEventListener('click', function (e) { e.stopPropagation(); if (view === t[0]) return; view = t[0]; paint(); });
+            tabs.appendChild(b);
+        });
+        md.appendChild(tabs);
+    }
     var body = el('div', 'padding:6px 10px 10px;overflow:auto;-webkit-overflow-scrolling:touch;');
     md.appendChild(body);
+    var fillServer = function () {
+        while (body.firstChild) body.removeChild(body.firstChild);
+        var st = window._lmServerMatchHistory;
+        if (!st || st.state === 'loading') { body.appendChild(el('div', 'padding:16px;text-align:center;color:' + tc2 + ';', _lmMhT('mhLoading', 'Loading…'))); return; }
+        if (st.state === 'noreply') { body.appendChild(el('div', 'padding:16px;text-align:center;color:' + tc2 + ';', _lmMhT('mhNoReply', 'The server did not answer. Try again later.'))); return; }
+        var list = (st.games || []).slice().reverse();
+        if (!list.length) { body.appendChild(el('div', 'padding:16px;text-align:center;color:' + tc2 + ';', _lmMhT('mhEmpty', 'No games recorded yet.'))); return; }
+        var tb = el('table', 'width:100%;border-collapse:collapse;white-space:nowrap;');
+        var tr = el('tr');
+        [_lmMhT('mhDate', 'Date'), _lmMhT('mhMass', 'Mass'), _lmMhT('timeAlive', 'Time Alive'), _lmMhT('eatenBy', 'Eaten by'), _lmMhT('mhTop', 'Best place'), _lmMhT('mhKills', 'Players / viruses')].forEach(function (h) {
+            tr.appendChild(el('th', 'text-align:left;padding:4px 6px;font-size:11px;font-weight:400;color:' + tc2 + ';border-bottom:1px solid ' + pc2 + ';position:sticky;top:0;background:' + pc + ';', h));
+        });
+        tb.appendChild(tr);
+        list.forEach(function (g) {
+            var t = (+g.time || 0) * 1000, d = t > 0 ? new Date(t) : null;
+            var kt = !g.killerKnown ? '—' : g.killerVirus ? 'Virus' : (String(g.killerNick || '') || '?') + (+g.killerMass ? ' (' + Math.round(+g.killerMass).toLocaleString() + ')' : '');
+            var row = el('tr');
+            row.className = 'lm-mh-row lm-mh-srow';
+            [d && !isNaN(d.getTime()) ? d.toLocaleString() : '—', Math.round(+g.highestMass || +g.finalMass || 0).toLocaleString(), fmtTime((+g.aliveSecs || 0) * 1000), kt,
+             +g.topPosition > 0 ? '#' + (+g.topPosition) : '—', (+g.playersEaten || 0) + ' / ' + (+g.virusesEaten || 0)].forEach(function (v, i) {
+                row.appendChild(el('td', 'padding:3px 6px;border-bottom:1px solid rgba(255,255,255,0.05);' + (i === 1 ? 'color:' + mc + ';font-weight:700;' : '') + (i === 3 ? 'max-width:150px;overflow:hidden;text-overflow:ellipsis;' : ''), v));
+            });
+            tb.appendChild(row);
+        });
+        body.appendChild(tb);
+    };
+    var paint = function () {
+        if (tabs) {
+            for (var i = 0; i < tabs.children.length; i++) {
+                var on = tabs.children[i].id === 'lm-mh-tab-' + view;
+                tabs.children[i].style.background = on ? mc : 'rgba(255,255,255,0.05)';
+                tabs.children[i].style.color = on ? pc : tc2;
+                tabs.children[i].style.fontWeight = on ? '700' : '400';
+            }
+        }
+        clr.style.display = view === 'local' ? '' : 'none';
+        if (view === 'server') { _lmMatchHistoryServerRequest(); fillServer(); } else fill();
+    };
+    md._lmServerRefresh = function () { if (view === 'server') fillServer(); };
     var fill = function () {
         while (body.firstChild) body.removeChild(body.firstChild);
         var list = _lmMatchHistory().slice().reverse();
@@ -284,6 +336,7 @@ function _lmMatchHistoryOpen() {
     var onKey = function (e) { if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopPropagation(); close(); } };
     var close = function () { window.removeEventListener('keydown', onKey, true); if (md.parentNode) md.parentNode.removeChild(md); };
     md._lmClose = close;
+    if (tabs) paint();
     x.addEventListener('click', function (e) { e.stopPropagation(); close(); });
     clr.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -295,6 +348,51 @@ function _lmMatchHistoryOpen() {
     document.body.appendChild(md);
 }
 window._lmMatchHistoryOpen = _lmMatchHistoryOpen;
+/* Server match history: Expanding Land only, logged in, on an open connection
+ * (the server answers only after our opcode 240 caps bit 3 and only with this account's games). */
+function _lmMhServerAvailable() {
+    var lm = window.legendmod;
+    return !!(lm && lm.isLegendWorld && window._lwAuth && window._lwAuth.state === 'logged_in' &&
+        typeof lm.isSocketOpen === 'function' && lm.isSocketOpen());
+}
+window._lmMhServerAvailable = _lmMhServerAvailable;
+/* ask at most once per 2 s (the server's limit); no answer in 6 s shows "did not answer" */
+function _lmMatchHistoryServerRequest() {
+    var st = window._lmServerMatchHistory;
+    if (st && Date.now() - (st.askedAt || 0) < 2000) return false;
+    if (!_lmMhServerAvailable() || !window.application || typeof window.application.sendProto !== 'function') return false;
+    var asked = Date.now();
+    window._lmServerMatchHistory = { state: 'loading', askedAt: asked, games: st && st.games || [] };
+    if (!window.application.sendProto(1080, { lmMatchHistoryRequestField: {} })) {
+        window._lmServerMatchHistory.state = 'noreply';
+        return false;
+    }
+    setTimeout(function () {
+        var cur = window._lmServerMatchHistory;
+        if (cur && cur.askedAt === asked && cur.state === 'loading') {
+            cur.state = 'noreply';
+            var m = document.getElementById('lm-mh-modal');
+            if (m && m._lmServerRefresh) m._lmServerRefresh();
+        }
+    }, 6000);
+    return true;
+}
+window._lmMatchHistoryServerRequest = _lmMatchHistoryServerRequest;
+/* type 1081 reply: keep plain numbers and a cut nick only, then refresh an open window */
+function _lmMatchHistoryServerReply(msg) {
+    var games = (msg && Array.isArray(msg.games) ? msg.games : []).slice(-50).map(function (g) {
+        g = g || {};
+        var n = function (v) { v = Number(v); return isFinite(v) && v > 0 ? Math.floor(v) : 0; };
+        return { time: n(g.time), aliveSecs: n(g.aliveSecs), finalMass: n(g.finalMass), highestMass: n(g.highestMass), topPosition: n(g.topPosition),
+            playersEaten: n(g.playersEaten), virusesEaten: n(g.virusesEaten), killerNick: String(g.killerNick || '').slice(0, 44), killerMass: n(g.killerMass),
+            killerVirus: !!g.killerVirus, killerBot: !!g.killerBot, killerKnown: !!g.killerKnown };
+    });
+    var prev = window._lmServerMatchHistory;
+    window._lmServerMatchHistory = { state: 'done', askedAt: prev && prev.askedAt || 0, at: Date.now(), games: games };
+    var m = document.getElementById('lm-mh-modal');
+    if (m && m._lmServerRefresh) m._lmServerRefresh();
+}
+window._lmMatchHistoryServerReply = _lmMatchHistoryServerReply;
 /* Map border colour: the theme colour, or a slowly cycling rainbow with "Rainbow map borders"
  * (returned as #rrggbb so every border path can parse it). */
 /* Background sector label: the custom symbol (max 4 characters) or the usual A1..E5. */
@@ -386,6 +484,12 @@ window.lmT = (function () {
         "mhClearConfirm": {"en":"Clear the match history?","el":"Εκκαθάριση του ιστορικού αγώνων;","es":"¿Borrar el historial de partidas?","bg":"Да се изчисти ли историята на игрите?","fr":"Effacer l’historique des parties ?","ar":"مسح سجل المباريات؟","zh":"清除對戰記錄？","ru":"Очистить историю матчей?","de":"Spielverlauf leeren?","tr":"Maç geçmişi temizlensin mi?","pl":"Wyczyścić historię meczów?","nl":"Speelgeschiedenis wissen?"},
         "mhEmpty": {"en":"No games recorded yet.","el":"Δεν έχουν καταγραφεί παιχνίδια ακόμη.","es":"Aún no hay partidas registradas.","bg":"Все още няма записани игри.","fr":"Aucune partie enregistrée pour l’instant.","ar":"لا توجد مباريات مسجلة بعد.","zh":"尚無記錄的遊戲。","ru":"Пока нет записанных игр.","de":"Noch keine Spiele gespeichert.","tr":"Henüz kayıtlı oyun yok.","pl":"Brak zapisanych gier.","nl":"Nog geen spellen opgeslagen."},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "mhThisDevice": {"en":"This device","el":"Αυτή η συσκευή","es":"Este dispositivo","bg":"Това устройство","fr":"Cet appareil","ar":"هذا الجهاز","zh":"此裝置","ru":"Это устройство","de":"Dieses Gerät","tr":"Bu cihaz","pl":"To urządzenie","nl":"Dit apparaat"},
+        "mhAccount": {"en":"Account (server)","el":"Λογαριασμός (διακομιστής)","es":"Cuenta (servidor)","bg":"Акаунт (сървър)","fr":"Compte (serveur)","ar":"الحساب (الخادم)","zh":"帳號（伺服器）","ru":"Аккаунт (сервер)","de":"Konto (Server)","tr":"Hesap (sunucu)","pl":"Konto (serwer)","nl":"Account (server)"},
+        "mhLoading": {"en":"Loading…","el":"Φόρτωση…","es":"Cargando…","bg":"Зареждане…","fr":"Chargement…","ar":"جارٍ التحميل…","zh":"載入中…","ru":"Загрузка…","de":"Wird geladen…","tr":"Yükleniyor…","pl":"Wczytywanie…","nl":"Laden…"},
+        "mhNoReply": {"en":"The server did not answer. Try again later.","el":"Ο διακομιστής δεν απάντησε. Δοκίμασε ξανά αργότερα.","es":"El servidor no respondió. Inténtalo más tarde.","bg":"Сървърът не отговори. Опитай отново по-късно.","fr":"Le serveur n’a pas répondu. Réessaie plus tard.","ar":"لم يستجب الخادم. حاول لاحقًا.","zh":"伺服器沒有回應，請稍後再試。","ru":"Сервер не ответил. Попробуй позже.","de":"Der Server hat nicht geantwortet. Versuche es später erneut.","tr":"Sunucu yanıt vermedi. Daha sonra tekrar dene.","pl":"Serwer nie odpowiedział. Spróbuj później.","nl":"De server heeft niet geantwoord. Probeer het later opnieuw."},
+        "mhTop": {"en":"Best place","el":"Καλύτερη θέση","es":"Mejor puesto","bg":"Най-добро място","fr":"Meilleure place","ar":"أفضل مركز","zh":"最佳名次","ru":"Лучшее место","de":"Beste Platzierung","tr":"En iyi sıra","pl":"Najlepsze miejsce","nl":"Beste plaats"},
+        "mhKills": {"en":"Players / viruses","el":"Παίκτες / ιοί","es":"Jugadores / virus","bg":"Играчи / вируси","fr":"Joueurs / virus","ar":"لاعبون / فيروسات","zh":"玩家 / 病毒","ru":"Игроки / вирусы","de":"Spieler / Viren","tr":"Oyuncu / virüs","pl":"Gracze / wirusy","nl":"Spelers / virussen"},
         "lmPresets": {"en":"Presets","el":"Προεπιλογές","es":"Preajustes","bg":"Готови настройки","fr":"Préréglages","ar":"إعدادات جاهزة","zh":"預設組合","ru":"Пресеты","de":"Voreinstellungen","tr":"Hazır ayarlar","pl":"Presety","nl":"Voorinstellingen"},
         "lmPresetCompetitive": {"en":"Competitive","el":"Ανταγωνιστικό","es":"Competitivo","bg":"Състезателен","fr":"Compétitif","ar":"تنافسي","zh":"競技","ru":"Соревновательный","de":"Wettkampf","tr":"Rekabetçi","pl":"Rywalizacja","nl":"Competitief"},
         "lmPresetBattery": {"en":"Battery saver","el":"Εξοικονόμηση μπαταρίας","es":"Ahorro de batería","bg":"Пестене на батерия","fr":"Économie de batterie","ar":"توفير البطارية","zh":"省電","ru":"Экономия батареи","de":"Akku sparen","tr":"Pil tasarrufu","pl":"Oszczędzanie baterii","nl":"Batterij sparen"},
@@ -42917,14 +43021,15 @@ function thelegendmodproject() {
                             ':expandingland';
 
                         /* Capability reply [240,'L','M',caps], once per connection and never from a
-                         * replay: bit 0 = understands the killer info (lmKiller) in the game over. */
+                         * replay: bit 0 = understands the killer info (lmKiller) in the game over,
+                         * bit 3 = may ask for its account's server match history (102 type 1080). */
                         if (this.socket && this._lmCapsSocket !== this.socket && String($('#server-token').val() || '').indexOf('replay') === -1) {
                             this._lmCapsSocket = this.socket;
                             var _lmCapsView = this.createView(4);
                             _lmCapsView.setUint8(0, 240);
                             _lmCapsView.setUint8(1, 0x4C);
                             _lmCapsView.setUint8(2, 0x4D);
-                            _lmCapsView.setUint8(3, 1);
+                            _lmCapsView.setUint8(3, 1 | 0x08);
                             this.sendMessage(_lmCapsView);
                         }
 
@@ -44611,6 +44716,16 @@ function thelegendmodproject() {
                         }
                     } catch (pmuErr) {
                         console.warn("[LM] Error parsing party membership update:", pmuErr);
+                    }
+                    break;
+                case 1081:
+                    /* Expanding Land server match history (answer to our type 1080): this
+                     * account's own last games, oldest first. Shown with textContent only. */
+                    try {
+                        var lmh = r.uncompressedData.lmMatchHistoryResponseField;
+                        if (lmh && LM.isLegendWorld) _lmMatchHistoryServerReply(lmh);
+                    } catch (lmhErr) {
+                        console.warn("[LM] Error reading the server match history:", lmhErr);
                     }
                     break;
                 case 147:
