@@ -354,6 +354,54 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-pingHelp': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingHelp']) || 'Team ping: Help';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* typed team ping at the cursor (opcode 45 type 5; Delta shows a plain wave) */
+					application && application.sendTeamPing && application.sendTeamPing(5);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-pingDanger': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingDanger']) || 'Team ping: Danger';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* typed team ping at the cursor (opcode 45 type 6; Delta shows a plain wave) */
+					application && application.sendTeamPing && application.sendTeamPing(6);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-pingGoHere': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingGoHere']) || 'Team ping: Go here';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* typed team ping at the cursor (opcode 45 type 7; Delta shows a plain wave) */
+					application && application.sendTeamPing && application.sendTeamPing(7);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-pingVirus': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingVirus']) || 'Team ping: Virus here';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* typed team ping at the cursor (opcode 45 type 8; Delta shows a plain wave) */
+					application && application.sendTeamPing && application.sendTeamPing(8);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
