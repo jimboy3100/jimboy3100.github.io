@@ -6714,57 +6714,8 @@ function getSNEZServers(ifcalled) {
                 ifcalled == null
             ) {
                 toastr.warning(
-                    "Server / Leaderboard not found. " +
-                    "Do you want the 1-by-1 manual search leaderboards of " +
-                    "<font color=\"yellow\">" +
-                    escapeHtml(
-                        String(
-                            $("#region").val() ||
-                            ""
-                        )
-                    ) +
-                    " / " +
-                    escapeHtml(
-                        String(
-                            $("#gamemode").val() ||
-                            ""
-                        )
-                    ) +
-                    "</font>?" +
-                    '<br><button id="manualsearch" ' +
-                    'class="btn btn-block btn-info" ' +
-                    'style="margin-top:10px;border-color:darkblue;">' +
-                    Premadeletter24 +
-                    "</button>" +
-                    '<br><button class="btn btn-sm btn-warning btn-exit" ' +
-                    'style="width:100%;margin-top:-20px;">' +
-                    Premadeletter25 +
-                    "</button>",
-                    "",
-                    {
-                        timeOut: 20000,
-                        extendedTimeOut: 20000
-                    }
-                ).css("width", "350px");
-
-                $("#manualsearch")
-                    .off("click.snezManual")
-                    .on(
-                        "click.snezManual",
-                        function () {
-                            $("#searchSpan>i")
-                                .removeClass(
-                                    "fa fa-search"
-                                )
-                                .addClass(
-                                    "fa fa-times"
-                                );
-
-                            searchHandler(
-                                $("#searchInput").val()
-                            );
-                        }
-                    );
+                    "Server / Leaderboard not found."
+                );
             }
 
             client.finish(results);
@@ -7351,8 +7302,7 @@ function initializeLM(modVersion) {
         if (!searching) {
             var _lmQ = String($("#searchInput").val() || "").trim();
             var _lmQl = _lmQ.toLowerCase();
-            /* Links, tokens and IPs need no player-name lookup: they had to fail the name match
-             * and wait for an "Accept manual search?" click first. */
+            /* Links, tokens and IPs go straight to searchHandler. */
             var _lmIsLink = _lmQl.indexOf("agar.io/#") >= 0 || _lmQl.indexOf("ws://") === 0 || _lmQl.indexOf("wss://") === 0 ||
                 _lmQl.indexOf("sip=") >= 0 || _lmQl.indexOf("search=") >= 0 || /^[0-9.]+:[0-9]+$/.test(_lmQl);
             if (_lmQ && _lmIsLink) {
