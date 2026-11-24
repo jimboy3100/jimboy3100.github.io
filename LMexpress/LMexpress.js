@@ -468,6 +468,8 @@ function PremiumUsersFFAScore() {
     }
 }
 function PremiumUsers() {
+    /* ProLicenceUsersTableJS.js failed to load: this threw and the ban check after it never ran */
+    if (typeof ProLicenceUsersTable === "undefined" || !ProLicenceUsersTable || !ProLicenceUsersTable.ProLicenceUsers) return;
     if (!window.proLicenceUID || window.proLicenceUID.includes("Give")) {
 
         if (window.agarioUID && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]) {
@@ -856,18 +858,49 @@ function joinToken(token) {
     $("#joinPartyToken").val(token);
     $("#join-party-btn").click();
     $("#joinPartyToken").val("");
-    $("#gamemode").val("");
+    /* "" is not a mode in the list: #gamemode read null and links carried m=null.
+     * Leave the selection as it is. */
     currentToken = token;
     $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
 }
 
 function searchHandler(searchStr) {
     searchStr = searchStr.trim();
-    if (searchIPHandler(searchStr)) { // is an IP      
+    /* a pasted ?sip= server link: join that server like the link does on page load,
+     * instead of a player search that hops servers and ends the current game */
+    if (_lmSearchSipHandler(searchStr)) { // is a ?sip= link
+    } else if (searchIPHandler(searchStr)) { // is an IP      
     } else if (searchTKHandler(searchStr)) { // is a token     
     } else {
         searchPlayer(searchStr);
     }
+}
+
+function _lmSearchSipHandler(searchStr) {
+    var sipLink = searchStr;
+    if (/^sip=/i.test(sipLink)) sipLink = "?" + sipLink;
+    var sipValue = getParameterByName("sip", sipLink);
+    if (!sipValue) return false;
+    var sipR = getParameterByName("r", sipLink);
+    var sipM = getParameterByName("m", sipLink);
+    /* only values the selects have; Private servers swap the mode list (on a region change
+     * event), so leave the selects as they are when either side is Private */
+    if (sipR && sipR !== "Private" && $("#region").val() !== "Private" && _lmSelectHasValue("#region", sipR)) {
+        $("#region").val(sipR);
+        region = sipR;
+        if (sipM && _lmSelectHasValue("#gamemode", sipM)) {
+            $("#gamemode").val(sipM);
+            realmode = sipM;
+            currentIPopened = true;
+            legendmod.gameMode = realmode;
+        }
+    }
+    $("#server-token").val(sipValue.replace("live-arena-", "").replace(".agar.io", ""));
+    $("#server-join").click();
+    $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
+    hideSearchHud();
+    showMenu2();
+    return true;
 }
 
 function searchTKHandler(searchStr) {
@@ -1062,7 +1095,7 @@ function searchPlayer(searchString) {
                     extendedTimeOut: 20000
                 }).css("width", "210px");
                 //		testmessage();
-                $("#gamemode").val("nothing");
+                /* "nothing" is not a mode in the list (#gamemode read null): keep the selection */
             } else {
                 changeServer();
 
@@ -2121,11 +2154,24 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
             timeOut: 20000,
             extendedTimeOut: 20000
         }).css("width", "300px");
+        var _lmYutHasList = /&list=/.test(MSGCOMMANDS);
         _lmToast.find("#acceptYoutubeEmb").click(function () {
-            YoutubeEmbPlayer(MSGCOMMANDS);
+            if (!_lmYutHasList && musicPlayer != undefined && typeof musicPlayer.loadVideoById === "function") {
+                /* player ready: load and play in place */
+                localStorage.setItem("musicUrl", MSGCOMMANDS);
+                musicPlayer.loadVideoById(_lmYutId);
+            } else {
+                /* the iframe reloads, so a play command now was lost: let the new page autoplay */
+                var _lmYutEmb = getEmbedUrl(MSGCOMMANDS);
+                if (_lmYutEmb) {
+                    $("#musicFrame").attr("allow", "autoplay; encrypted-media").attr("src", _lmYutEmb + "&autoplay=1");
+                    localStorage.setItem("musicUrl", MSGCOMMANDS);
+                } else {
+                    YoutubeEmbPlayer(MSGCOMMANDS);
+                }
+            }
             $("#musicUrl").val(MSGCOMMANDS);
             //$("#playerI").click();
-            playYoutube(); //it's different on LME
         });
     } else if (MSGCOMMANDS.includes("[skype]")) {
         MSGCOMMANDS = MSGCOMMANDS.split("[skype]").pop();
@@ -3706,9 +3752,9 @@ function hideBotNameHud() {
 }
 function appendLog(message) {
     //$("#logTitle").text("Leaderboard history");
-    var region = $("#region").val();
+    var region = String($("#region").val() || "");
     $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
+        '<span class="main-color">' + _lmEscHtml(region.substring(0, 2)) + '</span> &nbsp;' +
         '<a href="javascript:void(0);" class="logEntry" data-token="' + _lmEscHtml(currentToken) + '" style="color: lightgrey; font-size: 14px;">' + _lmEscHtml(message) + '</a></p>');
 
     $("#log p").first().show(100);
@@ -3915,12 +3961,14 @@ function connectto1a(message2) {
     }, 1500);
 }
 
+/* region and mode come from other players (relay records): an unknown value left the
+ * select empty (null) and broke the code that reads it */
 function connectto2(message3) {
-    $('#region').val(message3);
+    if (_lmSelectHasValue("#region", message3)) $('#region').val(message3);
 }
 
 function connectto3(message4) {
-    $("#gamemode").val(message4);
+    if (_lmSelectHasValue("#gamemode", message4)) $("#gamemode").val(message4);
 }
 
 function bumpLog() {
@@ -7266,6 +7314,12 @@ function initializeLM(modVersion) {
     });
 
     $("#closeBtn").click(function () {
+        /* closing the window did not stop the search: it kept switching servers */
+        if (searching) {
+            clearInterval(timerId);
+            searching = false;
+            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
+        }
         hideSearchHud();
         showMenu2();
     });
@@ -8501,7 +8555,15 @@ function BeforeLegendmodShop() {
     $("body").append(SpecialDealsJS);
 }
 function BeforeReplay() {
+    /* every click added another #replayModal (and both X buttons closed the first) */
+    if ($("#replayModal").length) {
+        $("#replayModal").show();
+        return;
+    }
+    /* replay.js builds the window when it runs: replace the old tag instead of stacking them */
+    $("#lmReplayJS").remove();
     var ReplayJS = document.createElement("script");
+    ReplayJS.id = "lmReplayJS";
     ReplayJS.type = "text/javascript";
     ReplayJS.src = "https://www.legendmod.ml/LMexpress/replay.js?v=" + (window.OgVer || ""); /* no redirect, no stale cached copy */
     $("body").append(ReplayJS);
