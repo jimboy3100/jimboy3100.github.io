@@ -18051,6 +18051,7 @@ var displayText = {
         massGraph: 'Mass graph on the Game Over card',
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
         matchHistory: 'Historia meczów (ostatnie 50 gier, przycisk pod menu)',
+        analytics: 'Analityka: zapisuj swoje gry (statystyki, mapy cieplne, trener, dzienne cele; tylko w tej przeglądarce)',
         showKiller: 'Who ate you, on the Game Over card',
         deathRecap: 'Death recap on the Game Over card (the last 20 s)',
         killFeed: 'Kill feed (your eats and deaths, next to the leaderboard)',
@@ -18134,6 +18135,7 @@ var displayText = {
         'hk-changeTarget': 'Zmien cel',
         'hk-privateMiniMap': 'Pokaz cel na minimapie',
         'hk-showQuest': 'Pokaz/ukryj zadanie',
+        'hk-analytics': 'Otwórz Analitykę',
         'hk-showSpectator': 'Show/hide Full Spectator (Premium)',
         'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
         'hk-doubleBotSplit': 'Bots double split (Private servers)',
@@ -18650,6 +18652,7 @@ var displayText = {
         massGraph: 'Mass graph on the Game Over card',
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
         matchHistory: 'Match history (last 50 games, button under the menu)',
+        analytics: 'Analytics: record your games (dashboard, heatmaps, coach, daily objectives; kept in this browser)',
         showKiller: 'Who ate you, on the Game Over card',
         deathRecap: 'Death recap on the Game Over card (the last 20 s)',
         killFeed: 'Kill feed (your eats and deaths, next to the leaderboard)',
@@ -18740,6 +18743,7 @@ var displayText = {
         'hk-changeTarget': 'Change target',
         'hk-privateMiniMap': 'Show target on the minimap',
         'hk-showQuest': 'Show/hide quest',
+        'hk-analytics': 'Open Analytics (stats, heatmaps, coach, objectives)',
         'hk-showSpectator': 'Show/hide Full Spectator (Premium)',
         'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
         'hk-doubleBotSplit': 'Bots double split (Private servers)',
@@ -21349,6 +21353,7 @@ var defaultmapsettings = {
     massGraph: false,             /* graph of your mass over the life on the Game Over card */
     personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
+    analytics: false,             /* record games for the Analytics window (ogario/modules/analytics.js; localStorage, capped) */
     showKiller: false,            /* "Eaten by: nick (mass)" row on the Game Over card */
     deathRecap: false,            /* Game Over card: the last 20 s as a few steps + mass sparkline (ogario/modules/deathrecap.js) */
     killFeed: false,              /* small fading list of your eats of player cells and your deaths, left of the leaderboard */
@@ -21549,7 +21554,7 @@ var _lmLabelI18n = {
         "showStatsServerHz":"Hz διακομιστή (Expanding Land)","blockPopups":"Αποκλεισμός αναδυόμενων (διαφημίσεις/κατάστημα/αποστολή)",
         "gameOverStats":"Στατιστικά τέλους παιχνιδιού","massGraph":"Γράφημα μάζας στην κάρτα τέλους παιχνιδιού",
         "personalBests":"Προσωπικά ρεκόρ όλων των εποχών (Νέο ρεκόρ! στην κάρτα τέλους παιχνιδιού)",
-        "matchHistory":"Ιστορικό αγώνων (τελευταία 50 παιχνίδια, κουμπί κάτω από το μενού)","showKiller":"Ποιος σε έφαγε, στην κάρτα τέλους παιχνιδιού",
+        "matchHistory":"Ιστορικό αγώνων (τελευταία 50 παιχνίδια, κουμπί κάτω από το μενού)","analytics":"Αναλυτικά: καταγραφή των παιχνιδιών σου (πίνακας, θερμικοί χάρτες, προπονητής, ημερήσιοι στόχοι· μόνο σε αυτόν τον browser)","showKiller":"Ποιος σε έφαγε, στην κάρτα τέλους παιχνιδιού",
         "hotkeys":"Πλήκτρα συντόμευσης","hk-inst-assign":"Για να ορίσεις πλήκτρο, κάνε κλικ στο πεδίο και πάτησε το πλήκτρο που θέλεις.",
         "hk-inst-delete":"Για να διαγράψεις πλήκτρο, κάνε κλικ στο πεδίο και πάτησε το πλήκτρο DELETE.","hk-inst-keys":"Πιθανοί συνδυασμοί με τα πλήκτρα CTRL και ALT.",
         "hk-bots-split":"Split των bots","hk-bots-feed":"Feed των bots","hk-bots-macrofeed":"Μακρο feed των bots","hk-macroFeed":"Μακρο feed","hk-macroFeedPerm":"Μόνιμο feed",
@@ -21571,7 +21576,7 @@ var _lmLabelI18n = {
         "hk-switchServerMode":"Αλλαγή διακομιστή [δημόσιος/ιδιωτικός]","hk-showTargeting":"Εμφάνιση/απόκρυψη πίνακα στόχευσης","hk-voiceChat":"Φωνή σε κείμενο",
         "hk-GhostCellsInfo":"Εμφάνιση πληροφοριών κυττάρων-φαντασμάτων","hk-Autoplay":"Αυτόματο παιχνίδι","hk-setTargeting":"Έναρξη/διακοπή στόχευσης (ακολούθηση)",
         "hk-cancelTargeting":"Ακύρωση στόχευσης","hk-changeTarget":"Αλλαγή στόχου","hk-privateMiniMap":"Εμφάνιση στόχου στον μικρό χάρτη",
-        "hk-showQuest":"Εμφάνιση/απόκρυψη αποστολής","hk-showSpectator":"Εμφάνιση/απόκρυψη πλήρους θεατή (Premium)",
+        "hk-showQuest":"Εμφάνιση/απόκρυψη αποστολής","hk-analytics":"Άνοιγμα Αναλυτικών (στατιστικά, θερμικοί χάρτες, προπονητής, στόχοι)","hk-showSpectator":"Εμφάνιση/απόκρυψη πλήρους θεατή (Premium)",
         "hk-showIngameSpectator":"Εμφάνιση/απόκρυψη θεατή εντός παιχνιδιού (Premium)","hk-doubleBotSplit":"Διπλό split των bots (ιδιωτικοί διακομιστές)",
         "hk-splitBot16":"Split σε 16 των bots (ιδιωτικοί διακομιστές)","commands":"Εντολές","comm1":"Τάισέ με!","comm2":"Κάνε split πάνω μου!",
         "comm3":"Χρειάζομαι βοήθεια στο %currentSector%!","comm4":"Εχθρός στο %currentSector%!","comm5":"Χρειάζομαι συμπαίκτη!","comm6":"Κράτα τον ιό!","comm7":"Φάε τον ιό!",
@@ -22912,6 +22917,8 @@ textLanguage.lineSplitHold = textLanguage.lineSplitHold || 'Aim lock after last 
 textLanguage.lineSplitStatus = textLanguage.lineSplitStatus || 'Show line split status';
 textLanguage.lineSplitGuide = textLanguage.lineSplitGuide || 'Draw line split aim line';
 textLanguage['hk-lineSplit'] = textLanguage['hk-lineSplit'] || 'Line split';
+textLanguage['hk-analytics'] = textLanguage['hk-analytics'] || 'Open Analytics (stats, heatmaps, coach, objectives)';
+textLanguage.analytics = textLanguage.analytics || 'Analytics: record your games (dashboard, heatmaps, coach, daily objectives; kept in this browser)';
 
 /* Multibox rings: same fallback pattern. */
 textLanguage.mbRingsGroup = textLanguage.mbRingsGroup || 'Multibox rings';
@@ -26933,7 +26940,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27048,7 +27055,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole", "deathRecap", "killFeed", "massLossAlert"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Multibox rings: per player on/off, color and size; both off = no rings. */
             this.addOptions(["mbRingsP1"], "mbRingsGroup");
@@ -42061,6 +42068,8 @@ function thelegendmodproject() {
         },
         sendSplit() {
             this.sendPosition();
+            /* "split" for scripts and the Analytics coach: one event per split sent */
+            if (this.play && window.LMEvents._has('split')) window.LMEvents.emit('split', { time: Date.now(), count: 1 });
             if (this.serverType === 'senpa') {
                 // Senpa split: opcode 22 + unitId(u8) + count(u8)=1
                 var spBuf = new ArrayBuffer(3);
@@ -42075,6 +42084,8 @@ function thelegendmodproject() {
         },
         // Multi-protocol split macros for Imsolo/Agar2/Garix (opcodes 0x1A, 0x1B, 0x1C)
         sendDoubleSplit() {
+            /* the fallback below sends single splits, which emit their own "split" events */
+            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 2 });
             if (this.serverType === 'senpa') {
                 this.sendPosition();
                 var spBuf = new ArrayBuffer(3);
@@ -42091,6 +42102,8 @@ function thelegendmodproject() {
             }
         },
         sendTripleSplit() {
+            /* the fallback below sends single splits, which emit their own "split" events */
+            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 3 });
             if (this.serverType === 'senpa') {
                 this.sendPosition();
                 var spBuf = new ArrayBuffer(3);
@@ -42107,6 +42120,8 @@ function thelegendmodproject() {
             }
         },
         sendQuadSplit() {
+            /* the fallback below sends single splits, which emit their own "split" events */
+            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 4 });
             if (this.serverType === 'senpa') {
                 this.sendPosition();
                 var spBuf = new ArrayBuffer(3);
@@ -85299,5 +85314,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(deathRecapScript);
     } catch (e) {
         console.warn('[LM] Error loading death recap script:', e);
+    }
+    /* Analytics window (stats, heatmaps, coach, objectives); records only while its option is on */
+    try {
+        var analyticsScript = document.createElement('script');
+        analyticsScript.type = 'text/javascript';
+        analyticsScript.src = 'https://www.legendmod.ml/ogario/modules/analytics.js?v=' + (window.OgVer || '');
+        document.body.appendChild(analyticsScript);
+    } catch (e) {
+        console.warn('[LM] Error loading analytics script:', e);
     }
 })();

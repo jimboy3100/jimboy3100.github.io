@@ -6,7 +6,7 @@
   need('LMEvents', !!E && typeof E.on === 'function' && typeof E.off === 'function' && typeof E.once === 'function' && !!E.api);
   if (!E) return { fail: fail, info: info };
   ['getMass', 'getPosition', 'isPlaying', 'getServerType', 'sendChat', 'toast'].forEach(function (f) { need('api.' + f, typeof E.api[f] === 'function'); });
-  need('nobody listens at start', ['spawn', 'death', 'chat', 'serverChange', 'massUpdate', 'leaderboard'].every(function (n) { return !E._has(n); }));
+  need('nobody listens at start', ['spawn', 'death', 'chat', 'serverChange', 'massUpdate', 'leaderboard', 'split'].every(function (n) { return !E._has(n); }));
   var name = '_probe', got = [], ow = console.warn, warns = 0;
   console.warn = function () { warns++; };
   var bad = function (d) { d.v = 99; throw new Error('probe'); };

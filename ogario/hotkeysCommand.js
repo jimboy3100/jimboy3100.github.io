@@ -78,6 +78,21 @@
                 keyUp: null,
                 type: 'normal'
             },
+            /* opens the Analytics window (ogario/modules/analytics.js); no default key */
+            'hk-analytics': {
+                get label() {
+                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-analytics']) || 'Open Analytics';
+                },
+                defaultKey: '',
+                keyDown() {
+                    if (window.LMAnalytics) {
+                        if (window.LMAnalytics.isOpen()) window.LMAnalytics.close();
+                        else window.LMAnalytics.open();
+                    }
+                },
+                keyUp: null,
+                type: 'normal'
+            },
             'hk-tripleSplit': {
                 label: textLanguage['hk-tripleSplit'],
                 defaultKey: '',
