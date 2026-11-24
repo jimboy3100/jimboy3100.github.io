@@ -6864,7 +6864,7 @@ function initializeLM(modVersion) {
     $("body").prepend('<div id="backgroundFade" style="width: 100%; height: 100%; position: absolute; background: black; z-index: 100; opacity: 0.6; display: none;"></div>');
 
 
-    $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: var(--lm-pc, #00243e);border: 1px solid var(--lm-pc2, #002f52);padding: 3px;border-radius: 6px;width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: var(--lm-tc, #ffffff);">' +
+    $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: rgba(0, 0, 0, 0.2);padding: 3px;border-radius: 4px;width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: #ffffff;">' +
         '<p style="float: right; margin-right: 10px;"><span id="notesServer">Servers: </span><span id="numServers"></span> (<span id="pps"></span> <span data-toggle="tooltip" data-placement="top" data-original-title="Players per server">PPS</span>)</p>' +
         '<p style="float: right;margin-right: 100px;"><span id="notesPlayers">Players: </span><span id="numPlayers"></span> / <span id="totalPlayers"  data-toggle="tooltip" data-placement="top" data-original-title="Total players online"></span></p></div>' +
         '<div id="searchHud" class="hud" style="width: 65%; height: 60px; z-index: 15; margin: auto; top: 0; right: 0; left: 0; bottom: 0; position: fixed;">' +
@@ -6909,14 +6909,14 @@ function initializeLM(modVersion) {
         title: "For more info on how to use video skins visit: https://www.legendmod.ml/developers/ videoskins.html",
         placement: "top"
     });
-    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 6px;width: 65%;height: 200px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: var(--lm-tc, #fff);padding: 10px;background-color: var(--lm-pc, #00243e);border: 1px solid var(--lm-pc2, #002f52);border-top: 3px solid var(--lm-mc, #01d9cc);box-shadow: 0 8px 32px rgba(0,0,0,.5);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">Save for later</h5>' +
-        '<input id="note1" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 25%;float:left; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7);  margin-right: 7px; text-align: center;">' +
-        '<input id="note2" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 24%; float: left; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-left: 0px; margin-right: 7px; text-align: center; ">' +
-        '<input id="note3" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff); width: 49%; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-left: 10px; text-align: center; ">' +
-        '<input id="note4" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 25%; float: left; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-right: 7px; text-align: center; ">' +
-        '<input id="note5" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 24%; float: left; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-left: 0px; margin-right: 7px; text-align: center; ">' +
-        '<input id="note6" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  width: 49%; border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); margin-left: 10px; text-align: center; ">' +
-        '<input id="note7" class="form-control main-color note" style="background: transparent;color: var(--lm-tc, #fff);  border: none; border-bottom: 1px solid var(--lm-tc2, #8096a7); text-align: center; ">' +
+    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">Save for later</h5>' +
+        '<input id="note1" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 25%;float:left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-right: 7px; text-align: center;">' +
+        '<input id="note2" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 24%; float: left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 0px; margin-right: 7px; text-align: center; ">' +
+        '<input id="note3" class="form-control main-color note" style="background: transparent;color: lightgrey; width: 49%; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 10px; text-align: center; ">' +
+        '<input id="note4" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 25%; float: left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-right: 7px; text-align: center; ">' +
+        '<input id="note5" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 24%; float: left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 0px; margin-right: 7px; text-align: center; ">' +
+        '<input id="note6" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 49%; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 10px; text-align: center; ">' +
+        '<input id="note7" class="form-control main-color note" style="background: transparent;color: lightgrey;  border: none; border-bottom: 1px solid; border-color: darkgrey; text-align: center; ">' +
         '</div>');
     $("#notes").append('<button id="closeBtn" class="btn btn-danger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
 
@@ -7118,7 +7118,7 @@ function initializeLM(modVersion) {
     // save notes
 
     $("#import-settings-btn").attr('class', 'btn btn-success');
-    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 6px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: var(--lm-tc, #fff);padding: 10px;display: none;background-color: var(--lm-pc, #00243e);border: 1px solid var(--lm-pc2, #002f52);border-top: 3px solid var(--lm-mc, #01d9cc);box-shadow: 0 8px 32px rgba(0,0,0,.5);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">Results</h5>' +
+    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;display: none;background-color: rgba(0, 0, 0, 0.2);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">Results</h5>' +
         '<div id="log" style="font-weight: normal; overflow-x: hidden; overflow-y: auto;height: 90%;">' +
         '</div></div>');
 
