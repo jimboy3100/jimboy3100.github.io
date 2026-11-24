@@ -1,7 +1,9 @@
-/* WebGL text texture and skin canvas checks: the text cache byte budget (lmTextTexBudget,
- * lmTextCacheEvict), the per-cell mass texture redraw rule (lmMassTexDue) and the frame-budgeted
- * skin canvas queue (lmSkinJobPick, lmSkinJobsRun), plus the methods that use them
- * (getOrCreateTextTexture, _lmMassTexture, _lmSkinJobAdd ...) run against stubs.
+/* WebGL text texture and skin canvas checks: the text cache byte budget and trim (lmTextTexBudget,
+ * lmTextCacheEvict), the per-cell mass texture redraw rule and pool (lmMassTexDue, lmMassLag,
+ * lmMassPoolTrim), the frame-budgeted skin canvas queue and its cap (lmSkinJobPick, lmSkinJobsRun,
+ * lmSkinJobDrop), plus the methods that use them (getOrCreateTextTexture, _lmMassTexture,
+ * _lmTextFrameBegin, _lmTextIdle, _lmSkinJobAdd ...) run against stubs, with stress runs of
+ * hundreds of fresh / overdue cells and 500 finished skin downloads, and a tab visibility change.
  * The code is taken from ogario/ogario.v4.js.
  * node developers/tests/textskin.js */
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -27,7 +29,7 @@ function method(name) {
 }
 const ctx = { console };
 vm.createContext(ctx);
-vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmSkinJobPick', 'lmSkinJobsRun'].map(grab).join('\n'), ctx);
+vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinJobDrop'].map(grab).join('\n'), ctx);
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) failed++; };
 const C = ctx;
@@ -49,15 +51,39 @@ check('entries without a frame stamp can be evicted', C.lmTextCacheEvict(mk([['x
 [m, b] = mk(Array.from({ length: 500 }, (_, i) => ['k' + i, 4 * MB, i]));
 const ev = C.lmTextCacheEvict(m, b, 500, 32 * MB, 1000);
 check('500 large textures: trimmed to the byte budget (8 x 4 MB kept)', ev.length === 492 && ev[0] === 'k0' && ev[491] === 'k491');
+check('limit: at most limit keys per call', C.lmTextCacheEvict(m, b, 500, 32 * MB, 1000, 64).length === 64);
 
-/* ---- mass texture redraw rule ---- */
-const e = { txt: '1234', style: 's', at: 1000 };
-check('new cell: drawn', C.lmMassTexDue(null, '1', 's', 0, 99, 2, 100) === true);
-check('same text and style: not drawn again', C.lmMassTexDue(e, '1234', 's', 5000, 0, 2, 100) === false);
-check('new style (font/colour setting): drawn even over the budget', C.lmMassTexDue(e, '1234', 't', 1001, 99, 2, 100) === true);
-check('new value under the frame budget: drawn', C.lmMassTexDue(e, '1235', 's', 1001, 1.5, 2, 100) === true);
-check('new value over the frame budget: waits', C.lmMassTexDue(e, '1235', 's', 1050, 2.5, 2, 100) === false);
-check('...but never longer than maxLag', C.lmMassTexDue(e, '1235', 's', 1100, 50, 2, 100) === true);
+/* ---- mass texture redraw rule: 0 no, 1 in budget, 2 over budget (counted) ---- */
+const e = { txt: '1234', style: 's', at: 1000, due: 1100 };
+check('new cell under the budget: drawn', C.lmMassTexDue(null, '1', 's', 0, 0, 2, 0, 6) === 1);
+check('same text and style: not drawn again', C.lmMassTexDue(e, '1234', 's', 5000, 0, 2, 0, 6) === 0);
+check('new value under the frame budget: drawn', C.lmMassTexDue(e, '1235', 's', 1001, 1.5, 2, 0, 6) === 1);
+check('new value over the budget, before its deadline: waits', C.lmMassTexDue(e, '1235', 's', 1050, 2.5, 2, 0, 6) === 0);
+check('over the budget: past its deadline, a new cell, a new style are urgent', C.lmMassTexDue(e, '1235', 's', 1100, 9, 2, 0, 6) === 2 &&
+    C.lmMassTexDue(null, '1', 's', 0, 9, 2, 5, 6) === 2 && C.lmMassTexDue(e, '1234', 't', 1001, 9, 2, 0, 6) === 2);
+check('busy (some deferred last frame): the budget goes to urgent ones only', C.lmMassTexDue(e, '1235', 's', 1050, 0, 2, 0, 6, true) === 0 && C.lmMassTexDue(e, '1235', 's', 1100, 0, 2, 0, 6, true) === 1);
+check('over the budget: no more than maxForced urgent redraws per frame', C.lmMassTexDue(e, '1235', 's', 5000, 9, 2, 6, 6) === 0 && C.lmMassTexDue(null, '1', 's', 0, 9, 2, 6, 6) === 0);
+check('lag: 100 ms normally; about one round through the waiting cells when busy; at most 2 s', C.lmMassLag(0, 5, 16, 100) === 100 && C.lmMassLag(380, 14, 16, 100) === 380 / 14 * 16 && C.lmMassLag(1e6, 1, 16, 100) === 2000 && C.lmMassLag(50, 0, 16, 100) === 800);
+check('deadline: 100-150 ms after the redraw', C.lmMassDue(1000, 100, 0) === 1100 && C.lmMassDue(1000, 100, 1) === 1150);
+
+/* ---- mass pool trim ---- */
+{
+    const pool = new Map();
+    let bytes = 0;
+    [['old', 1, 10], ['a', 1, 95], ['b', 1, 98], ['cur', 1, 99], ['cur2', 1, 100]].forEach(([k, by, fr]) => { pool.set(k, { bytes: by, frame: fr }); bytes += by; });
+    check('pool trim: only stale ones while under the byte budget', C.lmMassPoolTrim(pool, bytes, 100, 100, 60, 99, 64).join() === 'old');
+    check('pool trim: over the budget, least recently drawn next, never the last two frames', C.lmMassPoolTrim(pool, bytes, 1, 100, 60, 99, 64).join() === 'old,a,b');
+    check('pool trim: limit', C.lmMassPoolTrim(pool, bytes, 1, 100, 60, 99, 2).length === 2 && pool.size === 5);
+}
+
+/* ---- skin job cap ---- */
+{
+    const J = (id, seen) => ({ id, seen });
+    const list = [J('a', 0), J('b', 4500), J('vis', 4900), J('c', 0), J('d', 3000)];
+    check('skin cap: under the cap nothing dropped', C.lmSkinJobDrop(list, 5000, 1000, 5).length === 0);
+    check('skin cap: least recently asked for first (oldest of equal ones), never on screen', C.lmSkinJobDrop(list, 5000, 1000, 2).map((j) => j.id).join() === 'a,c,d');
+    check('skin cap: on-screen jobs are kept even over the cap', C.lmSkinJobDrop([J('v1', 4999), J('v2', 4998)], 5000, 1000, 0).length === 0);
+}
 
 /* ---- skin canvas queue ---- */
 const jobs = (list) => list.map(([id, seen]) => ({ id, seen }));
@@ -93,16 +119,21 @@ C.lmSkinJobsRun(q, 4, 0, () => t2, 0, 1000, (j) => { ran.push(j.id); if (j.id ==
 check('a throwing job does not stop the queue', ran.join() === 'bad,ok' && q.length === 0);
 
 /* ---- the application skin job methods (stubs) ---- */
-{
-    const raf = [];
+const tick = () => new Promise((r) => setImmediate(r));
+async function skinMethods() {
+    const raf = [], timers = [], listeners = {};
+    let dnow = 10000;
     const app = {};
-    const sb = { app, raf, Map, Date, performance: { now: () => 0 }, document: { hidden: false },
-        requestAnimationFrame: (f) => { raf.push(f); return raf.length; }, setTimeout: (f) => { raf.push(f); return 99; },
-        lmSkinJobsRun: C.lmSkinJobsRun, lmSkinJobPick: C.lmSkinJobPick };
+    const sb = { app, Map, Date: { now: () => dnow }, performance: { now: () => 0 },
+        document: { hidden: false, addEventListener: (t, f) => { listeners[t] = f; } },
+        requestAnimationFrame: (f) => { raf.push(f); return raf.length; }, cancelAnimationFrame: (id) => { raf[id - 1] = null; },
+        setTimeout: (f) => { timers.push(f); return 1000 + timers.length; },
+        lmSkinJobsRun: C.lmSkinJobsRun, lmSkinJobPick: C.lmSkinJobPick, lmSkinJobDrop: C.lmSkinJobDrop };
     vm.createContext(sb);
-    vm.runInContext('Object.assign(app, {' + ['_lmSkinJobAdd', '_lmSkinJobsSchedule', '_lmSkinJobRun', '_lmSkinCanvases'].map(method).join(',\n') + '});', sb);
+    vm.runInContext('Object.assign(app, {' + ['_lmSkinJobAdd', '_lmSkinJobDropOne', '_lmSkinDecodeNext', '_lmSkinJobsSchedule', '_lmSkinJobRun', '_lmSkinCanvases'].map(method).join(',\n') + '});', sb);
     const made = [];
     Object.assign(app, {
+        _lmSkinJobMax: 96, _lmSkinDecodeMax: 6,
         customSkinsCache: {}, cacheQueue: [], cacheQueue2: [], cacheQueue3: [], cacheQueue4: [], cacheQueueSkinAnimated: [],
         _pendingSkinLoads: new Set(), touched: [], trims: 0,
         _lmTouchSkin(u) { this.touched.push(u); }, _lmTrimSkinCache() { this.trims++; },
@@ -112,13 +143,14 @@ check('a throwing job does not stop the queue', ran.join() === 'bad,ok' && q.len
         cacheSkin4() { while (this.cacheQueue4.length) made.push('c4:' + this.cacheQueue4.shift()); },
         cacheSkinAnimated() { while (this.cacheQueueSkinAnimated.length) made.push('ca:' + this.cacheQueueSkinAnimated.shift()); },
     });
+    const runRaf = () => { const f = raf.shift(); if (f) f(); };
     const img1 = { id: 1 }, img2 = { id: 2 };
     app._pendingSkinLoads.add('u1');
     app._lmSkinJobAdd(app.customSkinsCache, 'u1', img1, undefined, true);
     app._lmSkinJobAdd(app.customSkinsCache, 'u1', img2, undefined, true);
     check('job: nothing is published or made inside the load callback', !app.customSkinsCache.u1 && made.length === 0 && app._pendingSkinLoads.has('u1'));
     check('job: one rAF scheduled, one job per URL', raf.length === 1 && app._lmSkinJobs.length === 1);
-    raf.shift()();
+    runRaf();
     check('job: published from the frame, first image wins, then stamped and trimmed', app.customSkinsCache.u1 === img1 && app.touched.join() === 'u1' && app.trims === 1);
     check('job: canvases of a plain skin (512 + 64 px) and no longer pending', made.join() === 'c:u1,c2:u1' && !app._pendingSkinLoads.has('u1') && !app._lmSkinJobMap.has('u1'));
     made.length = 0;
@@ -126,30 +158,64 @@ check('a throwing job does not stop the queue', ran.join() === 'bad,ok' && q.len
     app._lmSkinJobAdd(app.customSkinsCache, 'u3', {}, 'fbSkin', false);
     app._lmSkinJobAdd(app.customSkinsCache, 'u4', {}, 'animatedSkins', false);
     check('jobs added in one burst share one rAF', raf.length === 1);
-    raf.shift()();
+    runRaf();
     check('2-frame sheet: both frames + thumbnail; fbSkin; animatedSkins (as before)', made.join() === 'c:u2,c2:u2,c3:u2,c4:u3,ca:u4,c2:u4');
+
     /* image.decode(): queued only after it settles */
     let resolve;
-    const dimg = { decode: () => new Promise((r) => { resolve = r; }) };
-    app._lmSkinJobAdd(app.customSkinsCache, 'u5', dimg, undefined, false);
-    check('decode: not queued before decode() settles', raf.length === 0 && !app._lmSkinJobs.length);
+    app._lmSkinJobAdd(app.customSkinsCache, 'u5', { decode: () => new Promise((r) => { resolve = r; }) }, undefined, false);
+    check('decode: not queued before decode() settles', raf.length === 0 && !app._lmSkinJobs.length && app._lmSkinDecoding === 1);
     resolve();
-    Promise.resolve().then(() => Promise.resolve()).then(() => {
-        check('decode: queued after decode() resolves', raf.length === 1 && app._lmSkinJobs.length === 1);
-        raf.shift()();
-        app._lmSkinJobAdd(app.customSkinsCache, 'u6', { decode: () => Promise.reject(Error('bad')) }, undefined, false);
-        return new Promise((r) => setImmediate(r));
-    }).then(() => {
-        check('decode: a rejected decode() still makes the canvases', raf.length === 1);
-        raf.shift()();
-        check('decode: published', !!app.customSkinsCache.u6);
-        sb.document.hidden = true;
-        app._lmSkinJobAdd(app.customSkinsCache, 'u7', {}, undefined, false);
-        check('hidden tab: a timer instead of an animation frame', app._lmSkinJobRaf === 99);
-        raf.shift()();
-        check('hidden tab: still published', !!app.customSkinsCache.u7);
-        textMethods();
-    });
+    await tick();
+    check('decode: queued after decode() resolves', raf.length === 1 && app._lmSkinJobs.length === 1 && app._lmSkinDecoding === 0);
+    runRaf();
+    app._lmSkinJobAdd(app.customSkinsCache, 'u6', { decode: () => Promise.reject(Error('bad')) }, undefined, false);
+    await tick();
+    check('decode: a rejected decode() still makes the canvases', raf.length === 1);
+    runRaf();
+    check('decode: published', !!app.customSkinsCache.u6);
+
+    /* decode concurrency and the job cap */
+    const res = [];
+    app._lmSkinDecodeMax = 2;
+    app._lmSkinJobMax = 5;
+    for (let i = 0; i < 8; i++) {
+        app._pendingSkinLoads.add('d' + i);
+        app._lmSkinJobAdd(app.customSkinsCache, 'd' + i, { decode: () => new Promise((r) => res.push(r)) }, undefined, i === 6);
+    }
+    check('decodes: at most _lmSkinDecodeMax at once', app._lmSkinDecoding === 2 && res.length === 2);
+    check('cap: waiting jobs beyond the cap dropped, least recently asked for first, on-screen kept',
+        app._lmSkinDecodeWait.length === 5 && app._lmSkinJobMap.size === 7 && app._lmSkinJobMap.has('d6') && !app._lmSkinJobMap.has('d2') && app._lmSkinJobMap.has('d3'));
+    check('cap: a dropped skin is no longer pending (asked for again later: from _skinMemoryCache)', !app._pendingSkinLoads.has('d2') && app._pendingSkinLoads.has('d6'));
+    res.shift()();
+    await tick();
+    check('decodes: the next starts when one settles, on-screen first', app._lmSkinDecoding === 2 && res.length === 2 && !app._lmSkinDecodeWait.some((j) => j.url === 'd6'));
+    while (res.length) { res.shift()(); await tick(); }
+    for (let f = 0; f < 10 && raf.length; f++) runRaf();
+    check('decodes: every kept job is made', ['d0', 'd1', 'd3', 'd4', 'd5', 'd6', 'd7'].every((u) => app.customSkinsCache[u]) && !app._lmSkinJobMap.size && app._lmSkinDecoding === 0);
+    app._lmSkinDecodeMax = 6;
+    app._lmSkinJobMax = 96;
+
+    /* stress: 500 finished downloads in one burst */
+    for (let i = 0; i < 500; i++) app._lmSkinJobAdd(app.customSkinsCache, 's' + i, {}, undefined, i % 50 === 0);
+    check('burst: queued jobs held at the cap (+ on-screen ones)', app._lmSkinJobs.length <= 96 + 10 && app._lmSkinJobMap.size === app._lmSkinJobs.length);
+    check('burst: on-screen ones kept', [0, 50, 100, 450].every((i) => app._lmSkinJobMap.has('s' + i)));
+
+    /* visibility: a frame asked for before the tab hid is swapped for a timer */
+    for (let f = 0; f < 200 && raf.length; f++) runRaf();
+    app._lmSkinJobAdd(app.customSkinsCache, 'v1', {}, undefined, false);
+    check('visible: an animation frame is asked for', raf.length === 1 && app._lmSkinJobRafKind === 'raf');
+    sb.document.hidden = true;
+    listeners.visibilitychange();
+    check('hidden: the frame is cancelled and a timer runs instead', raf[0] === null && app._lmSkinJobRafKind === 'timer' && timers.length === 1);
+    timers.shift()();
+    check('hidden: the skin is made by the timer', !!app.customSkinsCache.v1);
+    app._lmSkinJobAdd(app.customSkinsCache, 'v2', {}, undefined, false);
+    check('hidden: new jobs use a timer too', app._lmSkinJobRafKind === 'timer' && timers.length === 1);
+    sb.document.hidden = false;
+    listeners.visibilitychange();
+    timers.shift()();
+    check('visible again: nothing stuck', !!app.customSkinsCache.v2 && !app._lmSkinJobMap.size);
 }
 
 /* ---- getOrCreateTextTexture / _lmMassTexture with a stub GL ---- */
@@ -159,65 +225,157 @@ function textMethods() {
     const gl = {
         TEXTURE_2D: 1, RGBA: 2, UNSIGNED_BYTE: 3, TEXTURE_MIN_FILTER: 4, TEXTURE_MAG_FILTER: 5, LINEAR: 6, TEXTURE_WRAP_S: 7, TEXTURE_WRAP_T: 8, CLAMP_TO_EDGE: 9,
         createTexture: () => ({ id: ++texId }), deleteTexture: (t) => calls.push('del' + t.id), bindTexture: () => { },
-        texImage2D: () => calls.push('img'), texSubImage2D: () => calls.push('sub'), texParameteri: () => { },
+        texImage2D: () => calls.push('img'), texSubImage2D: () => calls.push('sub'), texParameteri: () => { }, isContextLost: () => false,
     };
     const canvas = { width: 0, height: 0 };
-    const tctx = { font: '', measureText: (t) => ({ width: t.length * 50 }), setTransform() { }, clearRect() { }, scale() { }, strokeText() { }, fillText() { } };
-    let now = 0;
-    const sb = { r: null, Map, Date, Math, parseInt, Infinity, window: { navigator: {} }, performance: { now: () => now } };
+    let now = 0, rasterCost = 0, rnd = 0;
+    const tctx = { font: '', measureText: (t) => { now += rasterCost; return { width: t.length * 50 }; }, setTransform() { }, clearRect() { }, scale() { }, strokeText() { }, fillText() { } };
+    const timers = [];
+    let dnow = 100000;
+    const fakeMath = Object.create(Math);
+    fakeMath.random = () => rnd;
+    const sb = { r: null, Map, Date: { now: () => dnow }, Math: fakeMath, parseInt, Infinity, window: { navigator: {} }, performance: { now: () => now },
+        setTimeout: (f) => { timers.push(f); return timers.length; } };
     vm.createContext(sb);
-    vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue'].map(grab).join('\n'), sb);
-    vm.runInContext('r = {' + ['getOrCreateTextTexture', '_lmRasterText', '_lmMassTexture', '_lmTextFrameBegin'].map(method).join(',\n') + '};', sb);
+    vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim'].map(grab).join('\n'), sb);
+    vm.runInContext('r = {' + ['getOrCreateTextTexture', '_lmRasterText', '_lmMassTexture', '_lmTextFrameBegin', '_lmTextIdle'].map(method).join(',\n') + '};', sb);
     const r = sb.r;
-    Object.assign(r, { gl, glTextProgram: {}, glTextCache: new Map(), glTextCacheMaxSize: 500, _lmTextBytes: 0, _textCanvas: canvas, _textCtx: tctx });
+    const reset = () => Object.assign(r, { gl, glTextProgram: {}, glTextCache: new Map(), glTextCacheMaxSize: 500, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0,
+        _textCanvas: canvas, _textCtx: tctx, _lmTextBudget: 0, _lmTextFrame: 0, _lmTextIdleTimer: 0 });
+    reset();
+    const F = 'bold 100px Ubuntu';
+    const T = 220 * 140 * 4; /* one 4-character text texture */
 
     r._lmTextFrameBegin();
-    const a = r.getOrCreateTextTexture('nick', 'bold 100px Ubuntu', '#fff', '#000', 10);
-    check('text: one texture, bytes counted (w x h x 4)', a && a.w === 220 && a.h === 140 && r._lmTextBytes === 220 * 140 * 4 && calls.join() === 'img');
-    check('text: a hit uploads nothing', r.getOrCreateTextTexture('nick', 'bold 100px Ubuntu', '#fff', '#000', 10) === a && calls.length === 1);
-    r._lmTextBudget = 220 * 140 * 4 * 3;
+    const a = r.getOrCreateTextTexture('nick', F, '#fff', '#000', 10);
+    check('text: one texture, bytes counted (w x h x 4)', a && a.w === 220 && a.h === 140 && r._lmTextBytes === T && calls.join() === 'img');
+    check('text: a hit uploads nothing', r.getOrCreateTextTexture('nick', F, '#fff', '#000', 10) === a && calls.length === 1);
+    r._lmTextBudget = T * 3;
     for (let f = 0; f < 6; f++) {
         r._lmTextFrameBegin();
-        r.getOrCreateTextTexture('n' + f + 'xx', 'bold 100px Ubuntu', '#fff', '#000', 10);
+        r.getOrCreateTextTexture('n' + f + 'xx', F, '#fff', '#000', 10);
     }
-    check('text: byte budget holds (3 textures), oldest deleted, bytes match the cache', r.glTextCache.size === 3 && r._lmTextBytes === 3 * 220 * 140 * 4 && calls.includes('del1'));
+    check('text: byte budget holds (3 textures), oldest deleted, bytes match the cache', r.glTextCache.size === 3 && r._lmTextBytes === 3 * T && calls.includes('del1'));
+    /* burst over the budget (all drawn in one frame), then only hits on two of them */
     r._lmTextFrameBegin();
-    for (let i = 0; i < 6; i++) r.getOrCreateTextTexture('same' + i, 'bold 100px Ubuntu', '#fff', '#000', 10);
-    check('text: textures drawn in this frame are kept over the budget (no thrash)', r.glTextCache.size >= 6);
+    for (let i = 0; i < 10; i++) r.getOrCreateTextTexture('b' + i + 'xx', F, '#fff', '#000', 10);
+    check('text: textures drawn in this frame are kept over the budget (no thrash)', r.glTextCache.size >= 10);
+    let frames = 0;
+    for (; frames < 5 && r._lmTextBytes > r._lmTextBudget; frames++) {
+        r._lmTextFrameBegin();
+        r.getOrCreateTextTexture('b8xx', F, '#fff', '#000', 10);
+        r.getOrCreateTextTexture('b9xx', F, '#fff', '#000', 10);
+    }
+    check('text: after the burst, with hits only, back under the budget within 2 frames', r._lmTextBytes <= r._lmTextBudget && frames <= 2 && r.glTextCache.has('b9xx|' + F + '|#fff|#000|10'));
     let sum = 0;
     r.glTextCache.forEach((v) => { sum += v.bytes; });
     check('text: byte total always equals the cache contents', sum === r._lmTextBytes);
 
     /* mass */
+    reset();
     calls.length = 0;
     const cell = {}, cell2 = {};
     r._lmTextFrameBegin();
-    const m1 = r._lmMassTexture(cell, '1234', 'bold 100px Ubuntu', '#fff', '#000', 10);
-    check('mass: new cell gets its own texture', m1 && calls.join() === 'img' && m1.txt === '1234');
-    const cacheSize = r.glTextCache.size;
+    const m1 = r._lmMassTexture(cell, '1234', F, '#fff', '#000', 10);
+    check('mass: new cell gets its own texture, its bytes counted in _lmMassBytes', m1 && calls.join() === 'img' && m1.txt === '1234' && r._lmMassBytes === T);
     r._lmTextFrameBegin();
-    const m2 = r._lmMassTexture(cell, '1235', 'bold 100px Ubuntu', '#fff', '#000', 10);
+    const m2 = r._lmMassTexture(cell, '1235', F, '#fff', '#000', 10);
     check('mass: new value of the same width rewrites the same texture (no new one)', m2 === m1 && calls.join() === 'img,sub' && m2.txt === '1235' && texId === m1.tex.id);
-    r._lmMassTexture(cell, '12345', 'bold 100px Ubuntu', '#fff', '#000', 10);
-    check('mass: a wider value re-specifies the same texture', calls.join() === 'img,sub,img' && m1.w === 270);
-    check('mass: the text cache is not touched by mass values', r.glTextCache.size === cacheSize);
+    r._lmMassTexture(cell, '12345', F, '#fff', '#000', 10);
+    check('mass: a wider value re-specifies the same texture, bytes follow', calls.join() === 'img,sub,img' && m1.w === 270 && r._lmMassBytes === 270 * 140 * 4);
+    check('mass: the text cache is not touched by mass values', r.glTextCache.size === 0 && r._lmTextBytes === 0);
     r._lmTextFrameBegin();
     r._lmMassSpent = 5;
     now = m1.at + 10;
-    r._lmMassTexture(cell, '12346', 'bold 100px Ubuntu', '#fff', '#000', 10);
+    r._lmMassTexture(cell, '12346', F, '#fff', '#000', 10);
     check('mass: over the frame budget the previous value stays', m1.txt === '12345' && calls.length === 3);
-    now = m1.at + 100;
-    r._lmMassTexture(cell, '12346', 'bold 100px Ubuntu', '#fff', '#000', 10);
-    check('mass: ...until it is 100 ms old', m1.txt === '12346');
-    r._lmMassTexture(cell2, '99', 'bold 100px Ubuntu', '#fff', '#000', 10);
-    check('mass: a new cell is drawn even over the budget', r._lmMassTex.get(cell2).txt === '99');
+    now = m1.due;
+    r._lmMassTexture(cell, '12346', F, '#fff', '#000', 10);
+    check('mass: ...until its deadline', m1.txt === '12346' && r._lmMassForced === 1);
+    r._lmMassTexture(cell2, '99', F, '#fff', '#000', 10);
+    check('mass: a new cell is drawn over the budget while the per-frame cap allows', r._lmMassTex.get(cell2).txt === '99' && r._lmMassForced === 2);
     calls.length = 0;
-    for (let f = 0; f < 130; f++) {
+    for (let f = 0; f < 100; f++) {
         r._lmTextFrameBegin();
-        r._lmMassTexture(cell2, '99', 'bold 100px Ubuntu', '#fff', '#000', 10);
+        r._lmMassTexture(cell2, '99', F, '#fff', '#000', 10);
     }
-    check('mass: textures of cells no longer drawn are deleted, drawn ones kept', !r._lmMassTex.has(cell) && r._lmMassTex.has(cell2) && calls.join() === 'del' + m1.tex.id);
+    check('mass: textures of cells no longer drawn are deleted, drawn ones kept, bytes follow', !r._lmMassTex.has(cell) && r._lmMassTex.has(cell2) && calls.join() === 'del' + m1.tex.id && r._lmMassBytes === 120 * 140 * 4);
 
+    /* stress: 400 fresh cells at once (spawn, zoom out, reconnect), 0.25 ms per raster */
+    reset();
+    rasterCost = 0.25;
+    const cells = Array.from({ length: 400 }, () => ({}));
+    const perFrame = [];
+    let shown = 0;
+    for (let f = 0; f < 60 && shown < 400; f++) {
+        r._lmTextFrameBegin();
+        const n0 = calls.length;
+        shown = 0;
+        for (const c of cells) if (r._lmMassTexture(c, '1000', F, '#fff', '#000', 10)) shown++;
+        perFrame.push(calls.length - n0);
+        now += 16;
+    }
+    const maxPer = Math.max.apply(null, perFrame);
+    /* 2 ms / 0.25 ms = 8 in the budget (the 8th may end just past it) + 6 urgent */
+    check('stress fresh: at most ~14 redraws per frame (was 400 in one frame)', maxPer <= 15);
+    check('stress fresh: every cell has its mass within ' + perFrame.length + ' frames', shown === 400 && perFrame.length <= 30);
+
+    /* stress: 400 cells throttled together, then every value changes every frame */
+    rnd = 0;
+    const sync = [];
+    let dues = new Set();
+    for (let f = 0; f < 40; f++) {
+        r._lmTextFrameBegin();
+        rnd = (f * 0.137) % 1;
+        const n0 = calls.length;
+        cells.forEach((c, i) => r._lmMassTexture(c, String(2000 + f), F, '#fff', '#000', 10));
+        sync.push(calls.length - n0);
+        now += 16;
+    }
+    r._lmMassTex.forEach((e) => dues.add(Math.round(e.due)));
+    check('stress overdue: never more than ~14 redraws per frame', Math.max.apply(null, sync) <= 15);
+    check('stress overdue: deadlines are spread (jitter), not all in one frame', dues.size > 10);
+    const ages = [];
+    r._lmMassTex.forEach((e) => ages.push(now - e.at));
+    check('stress overdue: every cell still updates (oldest shown value ' + Math.round(Math.max.apply(null, ages)) + ' ms old)', Math.max.apply(null, ages) < 800);
+
+    /* mass pool over its own byte budget: cells not drawn in the last two frames go first */
+    reset();
+    rasterCost = 0;
+    r._lmTextBudget = T * 8; /* pool budget: 4 textures */
+    const pc = Array.from({ length: 10 }, () => ({}));
+    r._lmTextFrameBegin();
+    pc.forEach((c) => r._lmMassTexture(c, '1000', F, '#fff', '#000', 10));
+    r._lmTextFrameBegin();
+    r._lmTextFrameBegin();
+    r._lmMassTexture(pc[0], '1000', F, '#fff', '#000', 10);
+    r._lmTextFrameBegin();
+    check('pool budget: trimmed back to it at once, the recently drawn cell kept', r._lmMassBytes <= T * 4 && r._lmMassTex.has(pc[0]));
+
+    /* the WebGL text pass stops (Canvas2D renderer, WebGL off): everything is freed */
+    reset();
+    timers.length = 0;
+    calls.length = 0;
+    r._lmTextFrameBegin();
+    r.getOrCreateTextTexture('nick', F, '#fff', '#000', 10);
+    r._lmMassTexture(cell, '1234', F, '#fff', '#000', 10);
+    r._lmTextFrameBegin();
+    check('idle: a check is scheduled while text textures exist', timers.length === 1);
+    dnow += 1000;
+    r._lmTextFrameBegin();
+    dnow += 1500;
+    timers.shift()();
+    check('idle: still in use (a pass 1.5 s ago): kept, checked again', r.glTextCache.size === 1 && r._lmMassTex.size === 1 && timers.length === 1);
+    dnow += 2500;
+    timers.shift()();
+    check('idle: no pass for 2 s: every text texture deleted', r.glTextCache.size === 0 && r._lmMassTex.size === 0 && r._lmTextBytes === 0 && r._lmMassBytes === 0 && calls.filter((c) => c.startsWith('del')).length === 2);
+    check('idle: no more checks while nothing is held', timers.length === 0);
+    r._lmTextFrameBegin();
+    check('idle: textures come back when the pass runs again', !!r._lmMassTexture(cell, '1234', F, '#fff', '#000', 10));
+}
+
+skinMethods().then(() => {
+    textMethods();
     console.log(failed ? failed + ' check(s) failed' : 'all text/skin canvas checks passed');
     process.exit(failed ? 1 : 0);
-}
+}, (e) => { console.error(e); process.exit(1); });

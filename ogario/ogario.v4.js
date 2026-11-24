@@ -24274,12 +24274,13 @@ function thelegendmodproject() {
     /* cache: Map key -> {bytes, frame}, first key = least recently used. The keys to delete
      * (oldest first) until count <= maxCount and bytes <= maxBytes; never one drawn in keepFrame
      * or later (the current and previous frame: deleting those would only make them again in the
-     * next frame). Does not change the map. */
-    function lmTextCacheEvict(cache, bytes, maxCount, maxBytes, keepFrame) {
+     * next frame), and at most limit keys (default all). Does not change the map. */
+    function lmTextCacheEvict(cache, bytes, maxCount, maxBytes, keepFrame, limit) {
         var out = [], count = cache.size;
         if (count <= maxCount && bytes <= maxBytes) return out;
+        if (!(limit >= 0)) limit = Infinity;
         var it = cache.entries();
-        for (var r = it.next(); !r.done && (count > maxCount || bytes > maxBytes); r = it.next()) {
+        for (var r = it.next(); !r.done && out.length < limit && (count > maxCount || bytes > maxBytes); r = it.next()) {
             if (r.value[1].frame >= keepFrame) break;
             out.push(r.value[0]);
             count--;
@@ -24290,15 +24291,74 @@ function thelegendmodproject() {
     /*
      * WebGL mass text: each cell keeps one texture that is redrawn when its mass changes, instead
      * of a new cached texture for every value (a growing cell made a new texture in nearly every
-     * frame and pushed the nick textures out of the cache). Redraw now? Always for a new cell or
-     * a new font/colour; for a new value while this frame's redraw time (spentMs) is under
-     * budgetMs, or once the shown value is maxLagMs old (busy frames: a cell then shows its
-     * previous mass a few frames longer, never longer than maxLagMs).
+     * frame and pushed the nick textures out of the cache). Redraw now? 0 = no, 1 = yes (this
+     * frame's redraw time spentMs is under budgetMs), 2 = yes over the budget, which counts
+     * against maxForced per frame. Urgent: a new cell, a new font/colour, or a value past its
+     * deadline entry.due (100-150 ms after its last redraw, spread so that cells throttled
+     * together do not all fall due in the same frame). Over the budget only urgent ones may
+     * redraw; while busy (the last frame had to defer some) the budget too goes to urgent ones
+     * only, so the first cells in draw order cannot take it in every frame. The rest show their
+     * previous value (a new cell: no mass) a frame or a few longer.
      */
-    function lmMassTexDue(entry, text, style, now, spentMs, budgetMs, maxLagMs) {
-        if (!entry || entry.style !== style) return true;
-        if (entry.txt === text) return false;
-        return spentMs < budgetMs || now - entry.at >= maxLagMs;
+    function lmMassTexDue(entry, text, style, now, spentMs, budgetMs, forced, maxForced, busy) {
+        if (entry && entry.txt === text && entry.style === style) return 0;
+        var urgent = !entry || entry.style !== style || now >= entry.due;
+        if (spentMs < budgetMs && (urgent || !busy)) return 1;
+        return urgent && forced < maxForced ? 2 : 0;
+    }
+    /* next deadline of a mass texture redrawn at now: lagMs plus up to half of it (rnd 0..1) */
+    function lmMassDue(now, lagMs, rnd) {
+        return now + lagMs * (1 + 0.5 * rnd);
+    }
+    /* lag for that deadline: minLagMs, or while redraws wait (deferred in the last frame, drawn
+     * of them per frame) about one round through all waiting cells, so the cells first in draw
+     * order do not fall due again before the others had their turn; at most 2 s */
+    function lmMassLag(deferred, drawn, frameMs, minLagMs) {
+        return Math.min(2000, Math.max(minLagMs, deferred / Math.max(1, drawn) * frameMs));
+    }
+    /*
+     * Per-cell mass textures to delete: pool Map cell -> {bytes, frame}. First those not drawn for
+     * more than staleFrames, then, while the pool is over maxBytes, the least recently drawn ones
+     * not drawn in keepFrame or later; at most limit. Does not change the pool.
+     */
+    function lmMassPoolTrim(pool, bytes, maxBytes, frame, staleFrames, keepFrame, limit) {
+        var out = [], rest = [];
+        pool.forEach(function (e, k) {
+            if (out.length >= limit) return;
+            if (frame - e.frame > staleFrames) {
+                out.push(k);
+                bytes -= e.bytes || 0;
+            } else if (e.frame < keepFrame) {
+                rest.push([k, e]);
+            }
+        });
+        if (bytes > maxBytes && out.length < limit) {
+            rest.sort(function (a, b) { return a[1].frame - b[1].frame; });
+            for (var i = 0; i < rest.length && bytes > maxBytes && out.length < limit; i++) {
+                out.push(rest[i][0]);
+                bytes -= rest[i][1].bytes || 0;
+            }
+        }
+        return out;
+    }
+    /*
+     * Skin jobs over the cap (max): the ones to drop, least recently asked for first (seen;
+     * equal: the oldest), never one a draw asked for in the last seenMs (on screen). A dropped
+     * skin keeps its image in _skinMemoryCache and is queued again, without a download, when it
+     * is asked for again.
+     */
+    function lmSkinJobDrop(jobs, now, seenMs, max) {
+        var n = jobs.length - max;
+        if (n <= 0) return [];
+        var cand = [];
+        for (var i = 0; i < jobs.length; i++) {
+            var j = jobs[i];
+            if (!(j.seen > 0 && now - j.seen < seenMs)) cand.push([j, i]);
+        }
+        cand.sort(function (a, b) { return (a[0].seen || 0) - (b[0].seen || 0) || a[1] - b[1]; });
+        var out = [];
+        for (var k = 0; k < cand.length && out.length < n; k++) out.push(cand[k][0]);
+        return out;
     }
 
 
@@ -30216,27 +30276,67 @@ function thelegendmodproject() {
         /*
          * A skin image finished loading (or came from _skinMemoryCache): queue it for its
          * canvases (lmSkinJobPick / lmSkinJobsRun). image.decode() first decodes it off the
-         * main thread where the browser can, so the drawImage calls in cacheSkin do not.
-         * One job per URL; the URL stays in _pendingSkinLoads until _lmSkinJobRun.
+         * main thread where the browser can, so the drawImage calls in cacheSkin do not; at most
+         * _lmSkinDecodeMax decodes run at once (on-screen skins start first). One job per URL;
+         * the URL stays in _pendingSkinLoads until _lmSkinJobRun. Past _lmSkinJobMax waiting
+         * jobs the least recently asked-for ones that are not on screen are dropped
+         * (lmSkinJobDrop): their image stays in _skinMemoryCache, so asking again needs no
+         * download.
          */
+        _lmSkinJobMax: 96,
+        _lmSkinDecodeMax: 6,
         _lmSkinJobAdd(img, url, imageObj, animated, isPriority) {
             var map = this._lmSkinJobMap || (this._lmSkinJobMap = new Map());
             if (map.has(url)) return;
             var job = { img: img, url: url, obj: imageObj, animated: animated, seen: isPriority ? Date.now() : 0 };
             map.set(url, job);
-            var self = this, queued = false;
-            var go = function () {
-                if (queued) return;
-                queued = true;
-                (self._lmSkinJobs || (self._lmSkinJobs = [])).push(job);
-                self._lmSkinJobsSchedule();
-            };
-            var p = null;
-            try {
-                if (imageObj && typeof imageObj.decode === 'function') p = imageObj.decode();
-            } catch (e) { p = null; }
-            if (p && typeof p.then === 'function') p.then(go, go);
-            else go();
+            var wait = this._lmSkinDecodeWait || (this._lmSkinDecodeWait = []);
+            var jobs = this._lmSkinJobs || (this._lmSkinJobs = []);
+            if (imageObj && typeof imageObj.decode === 'function') wait.push(job);
+            else jobs.push(job);
+            if (wait.length + jobs.length > this._lmSkinJobMax) {
+                var drop = lmSkinJobDrop(wait.concat(jobs), Date.now(), 1000, this._lmSkinJobMax);
+                for (var i = 0; i < drop.length; i++) this._lmSkinJobDropOne(drop[i]);
+            }
+            this._lmSkinDecodeNext();
+            if (jobs.length) this._lmSkinJobsSchedule();
+        },
+        _lmSkinJobDropOne(job) {
+            var k = this._lmSkinDecodeWait.indexOf(job);
+            if (k >= 0) this._lmSkinDecodeWait.splice(k, 1);
+            k = this._lmSkinJobs.indexOf(job);
+            if (k >= 0) this._lmSkinJobs.splice(k, 1);
+            if (this._lmSkinJobMap.get(job.url) === job) this._lmSkinJobMap.delete(job.url);
+            if (this._pendingSkinLoads) this._pendingSkinLoads.delete(job.url);
+        },
+        _lmSkinDecodeNext() {
+            var wait = this._lmSkinDecodeWait;
+            var self = this;
+            while (wait && wait.length && (this._lmSkinDecoding || 0) < this._lmSkinDecodeMax) {
+                var job = wait.splice(lmSkinJobPick(wait, Date.now(), 1000), 1)[0];
+                var p = null;
+                try {
+                    p = job.obj.decode();
+                } catch (e) { p = null; }
+                if (!p || typeof p.then !== 'function') {
+                    this._lmSkinJobs.push(job);
+                    this._lmSkinJobsSchedule();
+                    continue;
+                }
+                this._lmSkinDecoding = (this._lmSkinDecoding || 0) + 1;
+                (function (j) {
+                    var done = function () {
+                        self._lmSkinDecoding--;
+                        /* still wanted (not dropped meanwhile) */
+                        if (self._lmSkinJobMap.get(j.url) === j) {
+                            self._lmSkinJobs.push(j);
+                            self._lmSkinJobsSchedule();
+                        }
+                        self._lmSkinDecodeNext();
+                    };
+                    p.then(done, done);
+                })(job);
+            }
         },
         /* 4 ms of canvases per frame (the first job of a frame always runs) */
         _lmSkinJobsSchedule() {
@@ -30251,9 +30351,26 @@ function thelegendmodproject() {
                 });
                 if (jobs.length) self._lmSkinJobsSchedule();
             };
-            /* a hidden tab gets no animation frames: skins still finish there (timers) */
+            /* a hidden tab gets no animation frames: skins still finish there (timers). A frame
+             * asked for just before the tab was hidden is swapped for a timer (visibilitychange). */
             var hidden = typeof document !== 'undefined' && document.hidden;
-            this._lmSkinJobRaf = !hidden && typeof requestAnimationFrame === 'function' ? requestAnimationFrame(tick) : setTimeout(tick, 16);
+            if (!this._lmSkinVisHook && typeof document !== 'undefined' && document.addEventListener) {
+                this._lmSkinVisHook = true;
+                document.addEventListener('visibilitychange', function () {
+                    if (document.hidden && self._lmSkinJobRaf && self._lmSkinJobRafKind === 'raf') {
+                        if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(self._lmSkinJobRaf);
+                        self._lmSkinJobRaf = 0;
+                        self._lmSkinJobsSchedule();
+                    }
+                });
+            }
+            if (!hidden && typeof requestAnimationFrame === 'function') {
+                this._lmSkinJobRafKind = 'raf';
+                this._lmSkinJobRaf = requestAnimationFrame(tick);
+            } else {
+                this._lmSkinJobRafKind = 'timer';
+                this._lmSkinJobRaf = setTimeout(tick, 16);
+            }
         },
         /* what processOnLoad did right away before: publish the image, then its canvases */
         _lmSkinJobRun(job) {
@@ -61657,6 +61774,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _self.glTextCache = new Map();
                         _self._lmTextBytes = 0;
                         _self._lmMassTex = null;
+                        _self._lmMassBytes = 0;
                         if (_self.glCanvas) _self.glCanvas.style.display = '';
                         _self.initWebGL();
                         _self.resizeCanvas();
@@ -63031,6 +63149,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* bytes of glTextCache (lmTextCacheEvict) and the per-cell mass textures (_lmMassTexture) */
                 this._lmTextBytes = 0;
                 this._lmMassTex = null;
+                this._lmMassBytes = 0;
 
                 // Offscreen Canvas2D for text rendering → GL texture upload
                 this._textCanvas = document.createElement('canvas');
@@ -70903,8 +71022,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /*
          * Mass text of one cell: its own texture, drawn again in place when the text changes
          * (lmMassTexDue), instead of a new glTextCache texture for every mass value. Same raster
-         * as getOrCreateTextTexture. Textures of cells not drawn for about a second are deleted
-         * by _lmTextFrameBegin.
+         * as getOrCreateTextTexture. Per frame: redraws while they took under 2 ms (only urgent
+         * ones while busy), then at most 6 urgent ones (new cell, new style, value past its
+         * deadline). The pool's bytes
+         * (_lmMassBytes) have their own budget (half the text budget) and are trimmed by
+         * _lmTextFrameBegin; the whole pool is freed when the WebGL text pass stops (_lmTextIdle).
          */
         _lmMassTexture(cell, text, font, fillStyle, strokeStyle, strokeWidth) {
             if (!this.gl || !this.glTextProgram) return null;
@@ -70912,18 +71034,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var style = font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
             var entry = pool.get(cell);
             var frame = this._lmTextFrame || 0;
+            if (entry) entry.frame = frame;
             var clock = typeof performance !== 'undefined' && performance.now ? performance : Date;
             var t0 = clock.now();
-            if (!lmMassTexDue(entry, text, style, t0, this._lmMassSpent || 0, 2, 100)) {
-                if (entry) entry.frame = frame;
+            var due = lmMassTexDue(entry, text, style, t0, this._lmMassSpent || 0, 2, this._lmMassForced || 0, 6, this._lmMassBusy);
+            if (!due) {
+                if (!entry || entry.txt !== text || entry.style !== style) this._lmMassDeferred = (this._lmMassDeferred || 0) + 1;
                 return entry || null;
             }
+            if (due === 2) this._lmMassForced = (this._lmMassForced || 0) + 1;
             var size = this._lmRasterText(text, font, fillStyle, strokeStyle, strokeWidth);
             if (!size) return entry || null;
             var gl = this.gl;
             var fresh = !entry;
             if (fresh) {
-                entry = { tex: gl.createTexture(), w: 0, h: 0, txt: '', style: '', at: 0, frame: frame };
+                entry = { tex: gl.createTexture(), w: 0, h: 0, bytes: 0, txt: '', style: '', at: 0, due: 0, frame: frame };
                 pool.set(cell, entry);
             }
             gl.bindTexture(gl.TEXTURE_2D, entry.tex);
@@ -70940,6 +71065,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             }
             gl.bindTexture(gl.TEXTURE_2D, null);
+            var bytes = size[0] * size[1] * 4;
+            this._lmMassBytes = (this._lmMassBytes || 0) + bytes - entry.bytes;
+            entry.bytes = bytes;
             entry.w = size[0];
             entry.h = size[1];
             entry.txt = text;
@@ -70947,23 +71075,81 @@ function pickPlayerCellBySize(players, selectBiggest) {
             entry.frame = frame;
             var t1 = clock.now();
             entry.at = t1;
+            entry.due = lmMassDue(t1, this._lmMassLag || 100, Math.random());
+            this._lmMassDrawn = (this._lmMassDrawn || 0) + 1;
             this._lmMassSpent = (this._lmMassSpent || 0) + (t1 - t0);
             return entry;
         },
-        /* once per frame before the WebGL nick/mass pass: the mass redraw time starts again, and
-         * every 60 frames the mass textures of cells not drawn in the last 60 frames are deleted */
+        /*
+         * Once per frame before the WebGL nick/mass pass: the mass redraw time and count start
+         * again; every 30 frames (or at once while over its budget) mass textures of cells not
+         * drawn for 60 frames, or over the pool budget the least recently drawn ones, are deleted;
+         * a text cache left over its budget by a burst of new text is trimmed here too (64
+         * textures per frame at most), so it does not stay over while later frames are all hits.
+         */
         _lmTextFrameBegin() {
             var frame = this._lmTextFrame = (this._lmTextFrame || 0) + 1;
             this._lmMassSpent = 0;
-            var pool = this._lmMassTex;
-            if (!pool || frame % 60 || !this.gl) return;
+            this._lmMassForced = 0;
+            this._lmMassBusy = (this._lmMassDeferred || 0) > 0;
+            this._lmMassLag = lmMassLag(this._lmMassDeferred || 0, this._lmMassDrawn || 0, 16, 100);
+            this._lmMassDeferred = 0;
+            this._lmMassDrawn = 0;
+            this._lmTextPassAt = Date.now();
             var gl = this.gl;
-            pool.forEach(function (e, cell) {
-                if (frame - e.frame > 60) {
-                    gl.deleteTexture(e.tex);
-                    pool.delete(cell);
+            if (!gl) return;
+            var budget = this._lmTextBudget || (this._lmTextBudget = lmTextTexBudget(window.navigator && Number(window.navigator.deviceMemory)));
+            var i;
+            var cache = this.glTextCache;
+            if (cache && (cache.size > this.glTextCacheMaxSize || (this._lmTextBytes || 0) > budget)) {
+                var drop = lmTextCacheEvict(cache, this._lmTextBytes || 0, this.glTextCacheMaxSize, budget, frame - 1, 64);
+                for (i = 0; i < drop.length; i++) {
+                    var old = cache.get(drop[i]);
+                    if (!old) continue;
+                    gl.deleteTexture(old.tex);
+                    this._lmTextBytes -= old.bytes || 0;
+                    cache.delete(drop[i]);
                 }
-            });
+            }
+            var pool = this._lmMassTex;
+            if (pool && pool.size && (frame % 30 === 0 || (this._lmMassBytes || 0) > budget / 2)) {
+                var gone = lmMassPoolTrim(pool, this._lmMassBytes || 0, budget / 2, frame, 60, frame - 1, 64);
+                for (i = 0; i < gone.length; i++) {
+                    var e = pool.get(gone[i]);
+                    gl.deleteTexture(e.tex);
+                    this._lmMassBytes -= e.bytes || 0;
+                    pool.delete(gone[i]);
+                }
+            }
+            if (!this._lmTextIdleTimer && ((pool && pool.size) || (cache && cache.size))) {
+                var self = this;
+                this._lmTextIdleTimer = setTimeout(function () { self._lmTextIdle(); }, 2000);
+            }
+        },
+        /* the WebGL text pass has not run for 2 s (Canvas2D renderer, WebGL off, no game):
+         * free every text texture; they are made again when it runs again */
+        _lmTextIdle() {
+            this._lmTextIdleTimer = 0;
+            var pool = this._lmMassTex, cache = this.glTextCache;
+            if (Date.now() - (this._lmTextPassAt || 0) < 2000) {
+                if ((pool && pool.size) || (cache && cache.size)) {
+                    var self = this;
+                    this._lmTextIdleTimer = setTimeout(function () { self._lmTextIdle(); }, 2000);
+                }
+                return;
+            }
+            var gl = this.gl;
+            var live = gl && !(gl.isContextLost && gl.isContextLost());
+            if (pool) {
+                if (live) pool.forEach(function (e) { gl.deleteTexture(e.tex); });
+                pool.clear();
+            }
+            if (cache) {
+                if (live) cache.forEach(function (e) { gl.deleteTexture(e.tex); });
+                cache.clear();
+            }
+            this._lmMassBytes = 0;
+            this._lmTextBytes = 0;
         },
         drawWebGLTextQuad(texEntry, worldX, worldY, offsetY, targetWorldH, z) {
             if (!texEntry || !this.gl || !this.glTextProgram) return;
