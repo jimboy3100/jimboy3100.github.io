@@ -2997,13 +2997,21 @@ function universalchat() {
         };
     };
     // -----  skin toggle  -----
+    /* One interval only: the id is also kept on window so a second copy of this script
+     * replaces the timer instead of adding another one. */
     my.skinToggle_start = function () {
         if (stat.skinToggle_timerid) {
             clearInterval(stat.skinToggle_timerid);
             delete stat.skinToggle_timerid;
         }
-        if (cfg.skin_toggle_auto && cfg.skin_toggle_interval > 0) {
-            stat.skinToggle_timerid = setInterval(my.skinToggle_update, cfg.skin_toggle_interval);
+        if (global._lmSkinToggleTimer) {
+            clearInterval(global._lmSkinToggleTimer);
+            global._lmSkinToggleTimer = 0;
+        }
+        var ms = Number(cfg.skin_toggle_interval);
+        if (cfg.skin_toggle_auto && ms > 0) {
+            /* the field is free text: under 1 s it would toggle skins on nearly every frame */
+            stat.skinToggle_timerid = global._lmSkinToggleTimer = setInterval(my.skinToggle_update, Math.max(1000, ms));
         }
     };
     my.skinToggle_update = function () {
@@ -3014,20 +3022,17 @@ function universalchat() {
             stat.skinToggle_hasBoth = true;
         }
         my.skinToggle_update_sub();
-        if (stat.skinToggle_hasBoth && global.ogario.customSkins && !global.ogario.vanillaSkins) {
+        if (stat.skinToggle_hasBoth && global.ogario && global.ogario.customSkins && !global.ogario.vanillaSkins) {
             //my.log("skinToggle_update retry");
             my.skinToggle_update_sub();
         }
     };
+    /* Calls the skin toggle itself. It used to fake an A key press on document, which ran
+     * every keydown handler (and whatever command the player had bound to A instead). */
     my.skinToggle_update_sub = function () {
-        $(document).trigger(jQuery.Event('keydown', {
-            keyCode: stat.keyCodeA,
-            which: stat.keyCodeA
-        }));
-        $(document).trigger(jQuery.Event('keyup', {
-            keyCode: stat.keyCodeA,
-            which: stat.keyCodeA
-        }));
+        if (global.application && typeof global.application.toggleSkins === 'function') {
+            global.application.toggleSkins();
+        }
     };
     // ====  Agar Tool Communication — Raw WebSocket (Delta binary protocol)  ====
     my.atIsOpen = function () {
