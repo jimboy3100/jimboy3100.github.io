@@ -153,6 +153,73 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     check('camera lock refused while playing', !H.camLocked);
 }
 
+// precision zoom with zoom bookmarks while it is held (audit A6)
+{
+    store['lm-zoom-bookmarks'] = '[3, 0, 0]';
+    ctx.legendmod = { zoomValue: 1, play: true, socket: { id: 1 }, playerCellsMulti: [] };
+    H.precisionZoom(true);
+    check('precision: held zoom 2.5x', near(ctx.legendmod.zoomValue, 2.5));
+    H.zoomRecall(1);
+    H.precisionZoom(false);
+    check('precision: a bookmark recalled while held is the zoom after release (3)', near(ctx.legendmod.zoomValue, 3));
+    ctx.legendmod.zoomValue = 1;
+    H.precisionZoom(true);
+    ctx.legendmod.zoomValue = 5; /* wheel while held: returns to 2 */
+    H.zoomSave(2);
+    check('precision: save while held stores the zoom it returns to after the wheel (2)', near(JSON.parse(store['lm-zoom-bookmarks'])[1], 2));
+    H.precisionZoom(false);
+    check('precision: wheel change kept on release', near(ctx.legendmod.zoomValue, 2));
+    ctx.legendmod.zoomValue = 30;
+    H.precisionZoom(true);
+    ctx.legendmod.zoomValue = 1e6; /* a broken value while held */
+    H.precisionZoom(false);
+    check('precision: release clamped to the bookmark range', ctx.legendmod.zoomValue <= 40 && ctx.legendmod.zoomValue >= 0.01);
+    ctx.legendmod.zoomValue = 1;
+    H.precisionZoom(true);
+    H.zoomSave(3);
+    check('precision: save while held stays in range', JSON.parse(store['lm-zoom-bookmarks'])[2] === 1);
+    /* the connection changes while the key is held: the zoom goes back at once */
+    ctx.legendmod.socket = { id: 2 };
+    H.frame({}, null, ctx.legendmod);
+    check('precision: released on a socket change', near(ctx.legendmod.zoomValue, 1));
+    ctx.legendmod.zoomValue = 1.5;
+    H.precisionZoom(false); /* the key comes up later: nothing more */
+    check('precision: the late key up changes nothing', ctx.legendmod.zoomValue === 1.5);
+    H.precisionZoom(true);
+    ctx.multiboxPlayerEnabled = 2;
+    H.frame({}, null, ctx.legendmod);
+    check('precision: released on a multibox unit switch', near(ctx.legendmod.zoomValue, 1.5));
+    ctx.multiboxPlayerEnabled = null;
+}
+
+// the reference unit is the one you control, as compareCells uses it (audit A15)
+{
+    const s = ctx.legendmod5;
+    s.hudRelativeMass = true; s.massFormat = 0;
+    const unit = { number: 2, playerMaxMass: 100 };
+    ctx.getActiveSpect = n => (n === 2 ? unit : null);
+    /* main: one 1000-mass cell, unit 2 (controlled): one 100-mass cell */
+    const LM = {
+        play: true, playerCells: [{ x: 0, y: 0, size: Math.sqrt(100000), isPlayerCell: true }],
+        playerCellsMulti: [{ x: 50, y: 0, size: 100, spectator: 2, isPlayerCellMulti: true }]
+    };
+    ctx.multiboxPlayerEnabled = 2;
+    H.frame({ scale: 1, camX: 0, camY: 0, canvasWidth: 100, canvasHeight: 100 }, null, LM);
+    check('A15: relative mass against the controlled unit (200 vs 100 = 2.00x)', H.massText(200, {}) === '2.00x');
+    check('A15: reference unit reported', typeof H.refUnit === 'function' && H.refUnit() === 2);
+    ctx.multiboxPlayerEnabled = null;
+    H.frame({ scale: 1, camX: 0, camY: 0, canvasWidth: 100, canvasHeight: 100 }, null, LM);
+    check('A15: main player again without a focused unit (200 vs 1000)', H.massText(200, {}) === '0.20x' && typeof H.refUnit === 'function' && H.refUnit() === 0);
+    /* the focused unit has no cells (just died): the main player */
+    ctx.multiboxPlayerEnabled = 2;
+    LM.playerCellsMulti = [];
+    H.frame({ scale: 1, camX: 0, camY: 0, canvasWidth: 100, canvasHeight: 100 }, null, LM);
+    check('A15: focused unit without cells -> main player', H.massText(200, {}) === '0.20x');
+    ctx.multiboxPlayerEnabled = null;
+    delete ctx.getActiveSpect;
+    s.hudRelativeMass = false;
+}
+
 // all off: frame does nothing
 {
     const s = ctx.legendmod5;

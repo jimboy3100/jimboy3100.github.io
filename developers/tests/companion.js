@@ -73,6 +73,14 @@ const once = C.buildState(full, { streamMode: true, chat: true });
 check('builder is idempotent (the page runs it again)', J(C.buildState(once, { chat: true })) === J(once));
 check('safe defaults for nothing', J(C.buildState(null)) === J(C.buildState({})) && C.buildState(undefined).playing === false);
 
+/* ── only live lives are published (audit A16): LMEvents context, else the practice / replay flags ── */
+check('liveEvent exported', typeof C.liveEvent === 'function');
+if (typeof C.liveEvent === 'function') {
+  check('live context published', C.liveEvent({ context: 'live' }, {}) === true);
+  check('practice and replay contexts not published', C.liveEvent({ context: 'practice' }, {}) === false && C.liveEvent({ context: 'replay' }, {}) === false);
+  check('no context: practice flag', C.liveEvent({}, { LMPractice: { on: true } }) === false && C.liveEvent({}, { _lmEvReplayOn: true }) === false && C.liveEvent({}, {}) === true);
+}
+
 /* ── events ── */
 check('unknown event type dropped', C.buildEvent({ type: 'eval' }) === null && C.buildEvent(null) === null);
 const k = C.buildEvent({ type: 'kill', t: 5, nick: 'v\u0007ictim', mass: 99.6, extra: 'x' });

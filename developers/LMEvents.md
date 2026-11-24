@@ -49,6 +49,10 @@ All three return `LMEvents`, so calls can be chained.
 
 `time` values are `Date.now()` milliseconds.
 
+Every event's data also has `context`: `'live'` (a real game), `'practice'` (the practice arena) or
+`'replay'` (a recorded replay playing). Scripts that keep stats of your games should skip the
+events whose `context` is not `'live'`.
+
 ## Helpers: `LMEvents.api`
 
 | Call | Returns |
@@ -56,6 +60,7 @@ All three return `LMEvents`, so calls can be chained.
 | `getMass()` | your current mass (number) |
 | `getPosition()` | `{ x, y }` of your cells' centre |
 | `isPlaying()` | true while you are alive in a game |
+| `getContext()` | `'live'`, `'practice'` or `'replay'`, as the events' `context` |
 | `getServerType()` | e.g. `'agario'`, `'expandingland'`, `'private'` (empty before the first connection) |
 | `sendChat(text)` | sends a chat line the same way the chat box does, with the same rate limits (and at most one per second from scripts). Returns false when it was not sent (not connected, too soon, empty text) |
 | `toast(text)` | shows a small notification; `text` is shown as plain text |

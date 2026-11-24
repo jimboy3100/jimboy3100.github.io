@@ -383,5 +383,37 @@ S.SPLIT_MODES.forEach(mode => {
     check('ghost: a dead sample shows nothing', S.ghostAt([0, 0, 0, 0, 10, 0, 0, 0], 5) === null);
 }
 
+/* ---------- leaving a live game asks first, also when only a multibox unit plays (audit A16) ---------- */
+{
+    const uiSrc = fs.readFileSync(path.join(root, 'ogario', 'modules', 'practice.js'), 'utf8');
+    const toasts = [];
+    const w = {
+        Math, JSON, Date, ArrayBuffer, Uint8Array, DataView, Map, Set, Object, Array, Number, String, isFinite, escape, unescape, encodeURIComponent, decodeURIComponent, console,
+        localStorage: { getItem: () => null, setItem() {} },
+        document: { getElementById: () => null, createElement: () => ({ style: {}, appendChild() {}, addEventListener() {}, setAttribute() {} }), addEventListener() {}, body: { appendChild() {} } },
+        toastr: { info(t) { toasts.push(t); }, success() {}, warning() {}, error() {} },
+        performance: { now: () => 0 }, setInterval: () => 1, clearInterval() {}, setTimeout: () => 1, clearTimeout() {},
+        addEventListener() {}
+    };
+    w.window = w;
+    vm.createContext(w);
+    vm.runInContext(simSrc, w);
+    vm.runInContext(uiSrc, w);
+    const P = w.LMPractice;
+    /* main player dead (spectating the live server), multibox unit 2 alive there */
+    w.legendmod = { handleMessage() {}, play: false, socket: { readyState: 1 }, ws: 'wss://live.example:443', closeConnection() {}, flushCellsData() {} };
+    w.spects = [{ number: 2, active: true }];
+    let r;
+    try { r = P.start({}); } catch (e) { r = 'threw: ' + e.message; }
+    check('practice: a live multibox unit asks before leaving (' + r + ')', r === false && toasts.length === 1);
+    try { if (P.on) P.stop(); } catch (e) { }
+    toasts.length = 0;
+    w.spects = [{ number: 2, active: false }];
+    w.legendmod.play = false;
+    let r2;
+    try { r2 = P.start({}); } catch (e) { r2 = 'threw'; }
+    check('practice: nobody alive, no question', toasts.length === 0 && r2 !== false);
+}
+
 console.log(fail ? fail + ' check(s) failed' : 'all practice checks passed');
 process.exit(fail ? 1 : 0);

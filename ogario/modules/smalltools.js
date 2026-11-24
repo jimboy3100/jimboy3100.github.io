@@ -349,6 +349,9 @@
     }
     /* press a hotkey command briefly (hold commands get their release, like the Command Centre) */
     function runHotkey(id) {
+        /* the Command Centre's press: never releases a command a key or gamepad button holds */
+        var CC = W.LMCommandCentre;
+        if (CC && typeof CC.tapHotkey === 'function') { CC.tapHotkey(id); return; }
         var hc = W.hotkeysCommand, c = hc && hc[id];
         if (!c || typeof c.keyDown !== 'function') return;
         try { c.keyDown(); } catch (e) { console.warn('[LM tools] ' + id, e); }

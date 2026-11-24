@@ -63,10 +63,25 @@
     mp.querySelector('.lm-me-x').click();
     await sleep(50);
     if (LMMacroEditor.isOpen()) fail.push('macro editor did not close');
-    /* the hotkey path uses application.split / feed */
+    /* the hotkey path uses application.split / feed, only while you play (the probe page is
+     * in the menu: pretend a life for the run) */
     LMMacroEditor.setMacro(3, { steps: [{ a: 'split' }, { a: 'feed' }] });
-    window.lmMacroEditor('run', 3);
-    await sleep(120);
+    var lmo = window.legendmod, playWas = lmo && lmo.play, mbWas = window.multiboxPlayerEnabled;
+    if (lmo && !lmo.play) {
+      window.lmMacroEditor('run', 3);
+      await sleep(120);
+      if (sends) fail.push('custom macro ran while not playing (' + sends + ' actions)');
+    }
+    try {
+      if (lmo) lmo.play = true;
+      window.multiboxPlayerEnabled = null;
+      window.lmMacroEditor('run', 3);
+      await sleep(120);
+    } finally {
+      if (lmo) lmo.play = playWas;
+      window.multiboxPlayerEnabled = mbWas;
+    }
+    info.hidden = !!document.hidden;
     if (sends !== 2) fail.push('custom macro run sent ' + sends + ' actions instead of 2');
   } catch (e) {
     fail.push(String(e && e.message || e));

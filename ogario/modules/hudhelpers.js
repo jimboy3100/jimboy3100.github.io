@@ -166,7 +166,8 @@
             prevCount: 0, beep: false, beepAfter: 0, maxSize: 0, sx: 0, sy: 0, sw: 0, n: 0
         });
     }
-    var refMass = 0;            /* mass of your biggest cell (0 when not playing) */
+    var refMass = 0;            /* mass of the reference unit's biggest cell (0 when not playing) */
+    var refOwner = 0;           /* that unit: 0 the main player, else the multibox unit number */
     var _pA = { x: 0, y: 0 }, _pB = { x: 0, y: 0 }, _edge = { x: 0, y: 0, a: 0 };
     var _fonts = [];
     var _lastBeep = 0;
@@ -208,13 +209,14 @@
             o.maxSize = ms;
             if (sw > 0) { o.sx = sx / sw; o.sy = sy / sw; }
         }
-        /* reference for the relative mass: the main player's biggest cell, else the unit you control */
-        var ref = owners[0].maxSize;
-        if (!(ref > 0)) {
-            var act = window.multiboxPlayerEnabled | 0;
-            if (act > 0 && act < MAX_OWNERS) ref = owners[act].maxSize;
-            if (!(ref > 0)) for (i = 1; i < MAX_OWNERS; i++) if (owners[i].maxSize > ref) ref = owners[i].maxSize;
-        }
+        /* reference for the relative mass, the threat arrows and the cell panel: the unit you
+         * control, as the opponent colours (compareCells) use it: the focused multibox unit, else
+         * the main player; when that one has no cells, the main player or the biggest unit */
+        var act = window.multiboxPlayerEnabled | 0, ro = 0;
+        if (act > 0 && act < MAX_OWNERS && owners[act].n) ro = act;
+        else if (!owners[0].n) for (i = 1; i < MAX_OWNERS; i++) if (owners[i].maxSize > owners[ro].maxSize) ro = i;
+        var ref = owners[ro].maxSize;
+        refOwner = ref > 0 ? ro : 0;
         refMass = ref > 0 ? ref * ref / 100 : 0;
     }
 
@@ -601,12 +603,8 @@
     function updatePanel(LM, now, s) {
         if (now - _panelAt < 250) return;
         _panelAt = now;
-        /* the main player's cells, else the multibox unit you control */
-        var o = owners[0];
-        if (!o.n) {
-            var act = window.multiboxPlayerEnabled | 0;
-            o = act > 0 && act < MAX_OWNERS ? owners[act] : null;
-        }
+        /* the same unit as the relative mass (gatherOwners) */
+        var o = owners[refOwner];
         if (!o || !o.n) { hidePanel(); return; }
         if (!ensurePanel()) return;
         var mode = +s.massFormat || 0, sm = !!s.shortMass, total = 0, i;
@@ -621,7 +619,8 @@
         /* P2 fix #96: use the server's actual max cells if known (Expanding Land can have 32 or 64),
          * otherwise fall back to the standard 16. */
         var maxCells = (window.legendmod && +window.legendmod.maxCells) || 16;
-        var a = 'Cells ' + o.n + '/' + maxCells + ' · Total ' + formatMass(total, mode, sm) + '\n' +
+        /* say which unit it shows when it is not the main player */
+        var a = (refOwner ? 'Unit ' + refOwner + ' · ' : '') + 'Cells ' + o.n + '/' + maxCells + ' · Total ' + formatMass(total, mode, sm) + '\n' +
             'Max ' + formatMass(_masses[0], mode, sm) + ' · Min ' + formatMass(_masses[_masses.length - 1], mode, sm);
         var b = '';
         var shown = small ? Math.min(_masses.length, 8) : _masses.length;
@@ -657,11 +656,12 @@
 
     var _wasOn = false;
     function frame(render, ctx, LM) {
+        if (_precisionSaved !== null) precisionCheck();
         var s = S();
         if (!anyOn(s)) {
             if (_wasOn) {
                 _wasOn = false;
-                refMass = 0;
+                refMass = 0; refOwner = 0;
                 hideEdges();
                 hidePanel();
                 for (var i = 0; i < MAX_OWNERS; i++) { owners[i].dir.has = false; owners[i].prevCount = 0; owners[i].cells.length = 0; }
@@ -688,23 +688,41 @@
         try { if (window.toastr) window.toastr.info(msg, '', { timeOut: 1500 }); } catch (e) { }
     }
 
-    var _precisionSaved = null;
+    /* Precision zoom: while the key is held the zoom is the zoom to return to times
+     * _precisionMultiplier. The zoom to return to is always the current zoom divided by it, so the
+     * wheel while held, a bookmark recalled while held and a bookmark saved while held all agree.
+     * Held for one connection and unit: a reconnect, server switch or unit switch releases it. */
+    var _precisionSaved = null;     /* not null while held (the zoom when it was pressed) */
     var _precisionMultiplier = 1;
+    var _precisionSock = null, _precisionUnit = 0;
+    function clampZoom(z) { return Math.min(40, Math.max(0.01, z > 0 && Number.isFinite(z) ? z : 1)); }
+    function precisionBase(LM) { return clampZoom(LM.zoomValue / _precisionMultiplier); }
     function precisionZoom(down) {
         var LM = window.legendmod;
         if (!LM) return;
         if (down) {
             if (_precisionSaved !== null || !(LM.zoomValue > 0)) return;
-            _precisionSaved = LM.zoomValue;
+            _precisionSaved = clampZoom(LM.zoomValue);
             _precisionMultiplier = Math.min(_precisionSaved * 2.5, 40) / _precisionSaved;
+            _precisionSock = LM.socket || null;
+            _precisionUnit = window.multiboxPlayerEnabled | 0;
             LM.zoomValue = _precisionSaved * _precisionMultiplier;
         } else if (_precisionSaved !== null) {
             /* P1 fix #64: preserve any wheel zoom adjustments made during precision mode.
              * Instead of restoring the absolute saved value, divide by the multiplier
              * so manual wheel changes are kept. */
-            LM.zoomValue = LM.zoomValue / _precisionMultiplier;
+            LM.zoomValue = precisionBase(LM);
             _precisionSaved = null;
             _precisionMultiplier = 1;
+            _precisionSock = null;
+        }
+    }
+    /* every frame while held */
+    function precisionCheck() {
+        var LM = window.legendmod;
+        if (!LM || (LM.socket || null) !== _precisionSock || (window.multiboxPlayerEnabled | 0) !== _precisionUnit) {
+            if (LM) precisionZoom(false);
+            else { _precisionSaved = null; _precisionMultiplier = 1; _precisionSock = null; }
         }
     }
 
@@ -725,7 +743,7 @@
         if (!LM || !(n >= 1 && n <= 3) || !(LM.zoomValue > 0)) return;
         var b = readBookmarks();
         /* a held precision zoom is temporary: keep the zoom it returns to */
-        b[n - 1] = Math.min(40, Math.max(0.01, _precisionSaved !== null ? _precisionSaved : LM.zoomValue));
+        b[n - 1] = _precisionSaved !== null ? precisionBase(LM) : clampZoom(LM.zoomValue);
         writeBookmarks(b);
         toast('Zoom ' + n + ' saved');
     }
@@ -734,8 +752,12 @@
         if (!LM || !(n >= 1 && n <= 3)) return;
         var z = readBookmarks()[n - 1];
         if (!z) { toast('Zoom ' + n + ' is not saved yet'); return; }
-        if (_precisionSaved !== null) _precisionSaved = z;
-        else LM.zoomValue = z;
+        if (_precisionSaved !== null) {
+            /* held: show the bookmark zoomed in, and return to it on release */
+            z = clampZoom(z);
+            _precisionMultiplier = Math.min(z * 2.5, 40) / z;
+            LM.zoomValue = z * _precisionMultiplier;
+        } else LM.zoomValue = z;
     }
 
     function spectating(LM) {
@@ -768,6 +790,8 @@
         frame: frame,
         worldActive: worldActive,
         massText: massText,
+        /* the unit the relative mass, threat arrows and cell panel compare with (0 = main player) */
+        refUnit: function () { return refOwner; },
         mergeLeft: mergeLeft,
         precisionZoom: precisionZoom,
         zoomSave: zoomSave,

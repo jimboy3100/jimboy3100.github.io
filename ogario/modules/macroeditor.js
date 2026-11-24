@@ -154,6 +154,27 @@
         if (n && typeof W.getActiveSpect === 'function') { var sp = W.getActiveSpect(n); if (sp) return sp; }
         return W.legendmod || null;
     }
+    function nowMs() { try { return W.performance.now(); } catch (e) { return Date.now(); } }
+    /* What the macro was started for: the unit you control, its connection (the socket object
+     * itself, so a reconnect or a server switch with the same unit number is noticed), whether it
+     * is alive and which life (the main player's spawn time), and the practice / replay state.
+     * Any change stops the rest of the macro. */
+    function context() {
+        var n = W.multiboxPlayerEnabled || 0, u = activeUnit();
+        var sp = n && u && u !== W.legendmod, app = W.application;
+        return {
+            n: n, u: u, sock: u ? u.socket || null : null,
+            alive: !!(u && (sp ? u.active : u.play)),
+            life: sp ? 0 : (app && app._lmLifeStartAt) || 0,
+            practice: !!(W.LMPractice && W.LMPractice.on),
+            replay: !!W._lmEvReplayOn
+        };
+    }
+    function sameContext(a) {
+        var b = context();
+        return b.alive && b.n === a.n && b.u === a.u && b.sock === a.sock && b.life === a.life && b.practice === a.practice && !b.replay;
+    }
+    function hidden() { try { return !!(D.hidden || D.visibilityState === 'hidden'); } catch (e) { return false; } }
     function exec(a) {
         var app = W.application;
         try {
@@ -162,35 +183,57 @@
             else if (a === 'mouse') { var u = activeUnit(); if (u && typeof u.sendPosition === 'function') u.sendPosition(); }
         } catch (e) { }
     }
+    /* the tab losing focus, a death, a spawn, a server switch or a replay starting / stopping
+     * stop a running macro at once (the checks before each action catch the rest) */
+    var STOP_EVENTS = ['death', 'spawn', 'serverChange', 'replayStart', 'replayStop'];
+    function onStopEvent() { stopRun(); }
+    function onVisibility() { if (hidden()) stopRun(); }
+    function listen(on) {
+        var ev = W.LMEvents, i;
+        try {
+            if (ev && typeof ev.on === 'function') for (i = 0; i < STOP_EVENTS.length; i++) ev[on ? 'on' : 'off'](STOP_EVENTS[i], onStopEvent);
+            if (typeof W.addEventListener === 'function') W[on ? 'addEventListener' : 'removeEventListener']('blur', onStopEvent);
+            if (typeof D.addEventListener === 'function') D[on ? 'addEventListener' : 'removeEventListener']('visibilitychange', onVisibility);
+        } catch (e) { }
+    }
     function stopRun() {
         if (!running) return;
-        running.timers.forEach(clearTimeout);
+        clearTimeout(running.timer);
         running = null;
+        listen(false);
     }
     /* One custom macro at a time: a press while one runs is ignored, so two runs can never
-     * interleave and send faster than the gaps above. */
+     * interleave and send faster than the gaps above. Actions are sent one after another: each
+     * waits its planned distance after the previous action was really sent, so a stalled page
+     * delays the rest instead of sending the overdue actions together. */
     function runSlot(n) {
         n = int(n, 1, LIMITS.slots, 1);
         if (running) return false;
         var m = data.slots[n - 1];
         if (!m || !m.steps.length) { toast('info', t('noSteps', n)); return false; }
-        var plan = compile(m.steps);
-        if (!plan.events.length) return false;
-        var unit = W.multiboxPlayerEnabled;
-        var run = { slot: n, timers: [] };
+        var plan = compile(m.steps), evs = plan.events;
+        if (!evs.length) return false;
+        var ctx = context();
+        /* nothing to control: dead, in the menu, watching a replay or the tab in the background */
+        if (!ctx.u || !ctx.alive || ctx.replay || hidden()) return false;
+        var run = { slot: n, timer: 0, ctx: ctx, start: nowMs(), lastAt: 0, i: 0 };
         running = run;
-        var fire = function (ev) {
+        listen(true);
+        var next = function () {
             if (running !== run) return;
-            /* the unit switched since the macro started: stop, like the split macros do */
-            if (W.multiboxPlayerEnabled !== unit) { stopRun(); return; }
+            if (run.i >= evs.length) { running = null; listen(false); return; }
+            var ev = evs[run.i], now = nowMs();
+            /* the planned distance to the previous action, counted from when it was really sent */
+            var due = (run.i ? run.lastAt : run.start) + ev.t - (run.i ? evs[run.i - 1].t : 0);
+            if (due - now > 0) { run.timer = setTimeout(next, due - now); return; }
+            /* a stall that pushed the macro far past its length: its timing means nothing now */
+            if (now - run.start > LIMITS.maxTotal + 1000 || !sameContext(run.ctx)) { stopRun(); return; }
             exec(ev.a);
+            run.lastAt = nowMs(); run.i++;
+            /* free the slot only after the last action plus the split gap */
+            run.timer = setTimeout(next, run.i < evs.length ? evs[run.i].t - ev.t : LIMITS.gapSplit);
         };
-        plan.events.forEach(function (ev) {
-            if (ev.t <= 0) fire(ev);
-            else run.timers.push(setTimeout(function () { fire(ev); }, ev.t));
-        });
-        /* free the slot only after the last action plus the split gap */
-        run.timers.push(setTimeout(function () { if (running === run) running = null; }, plan.total + LIMITS.gapSplit));
+        next();
         return true;
     }
 

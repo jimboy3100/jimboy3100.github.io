@@ -266,7 +266,7 @@
 
     function tick() {
         var lm = window.legendmod;
-        if (!lm || !lm.play) return;
+        if (!lm || !lm.play || !liveNow()) return;
         /* multibox: when Unit 1 is active, track its cells instead of Unit 0 */
         var pc = lm.playerCells, n = pc ? pc.length : 0;
         if (lm.multiboxPlayerEnabled && lm.playerCellsMulti && lm.playerCellsMulti.length) {
@@ -626,14 +626,19 @@
 
     /* ---------- life cycle ---------- */
 
-    function onSpawn() {
+    /* practice arena and replay lives get no recap (LMEvents context; older cores: the flags) */
+    function liveNow() { return !(window.LMPractice && window.LMPractice.on) && !window._lmEvReplayOn; }
+    function liveEvent(e) { return e && e.context ? e.context === 'live' : liveNow(); }
+    function onSpawn(e) {
         ringClear(R); evClear();
         prevCells = 0; recSlot = null; lastAlive = 0;
         recapEl = null;
+        if (!liveEvent(e)) { stopTimer(); return; }
         start();
     }
-    function onDeath() {
+    function onDeath(e) {
         stopTimer();
+        if (!liveEvent(e)) return;
         if (opts().feed) {
             var k = killerNow();
             feedAdd('died', k && k.exact ? tr('feedDied', [who(k.nick, k.virus)]) : tr('feedDiedNone'));
@@ -644,7 +649,7 @@
     }
     function start() {
         var lm = window.legendmod;
-        if (!timer && lm && lm.play) timer = setInterval(function () { try { tick(); } catch (e) { } }, SAMPLE_MS);
+        if (!timer && lm && lm.play && liveNow()) timer = setInterval(function () { try { tick(); } catch (e) { } }, SAMPLE_MS);
     }
     function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
 

@@ -274,7 +274,15 @@
         return { mode: 'popup', url: COMPANION_URL, reason: inFrame ? 'frame' : 'origin' };
     }
 
+    /* an LMEvents event of a real game: practice arena and replay lives are not published
+     * (cores without the context field: the practice / replay flags) */
+    function liveEvent(e, w) {
+        if (e && e.context) return e.context === 'live';
+        return !(w && ((w.LMPractice && w.LMPractice.on) || w._lmEvReplayOn));
+    }
+
     var core = {
+        liveEvent: liveEvent,
         CHANNEL: CHANNEL, PROTO: PROTO, WIDGETS: WIDGETS, DEFAULT_WIDGETS: DEFAULT_WIDGETS, INTERVAL_MS: INTERVAL_MS, KEEPALIVE_MS: KEEPALIVE_MS,
         clip: clip, safeUrl: safeUrl, safeColor: safeColor, fmtTime: fmtTime, fmtMass: fmtMass,
         buildState: buildState, buildEvent: buildEvent, createPublisher: createPublisher, createRateLimit: createRateLimit,
@@ -430,7 +438,8 @@
     }
 
     /* LMEvents listeners, all only while the option is on (nobody listens otherwise) */
-    function onSpawn() {
+    function onSpawn(d) {
+        if (!liveEvent(d, root)) return;
         life.kills = 0;
         life.bestRank = 0;
         life.trail = [];
@@ -438,15 +447,18 @@
         event({ type: 'spawn' });
     }
     function onDeath(d) {
+        if (!liveEvent(d, root)) return;
         event({ type: 'death', mass: d && d.mass, alive: d && d.msAlive });
         tick(true);
     }
-    function onBest(d) { event({ type: 'best', mass: d.mass, alive: d.msAlive, massRecord: d.massRecord, timeRecord: d.timeRecord }); }
+    function onBest(d) { if (liveEvent(d, root)) event({ type: 'best', mass: d.mass, alive: d.msAlive, massRecord: d.massRecord, timeRecord: d.timeRecord }); }
     function onKill(d) {
+        if (!liveEvent(d, root)) return;
         life.kills++;
         event({ type: 'kill', nick: d.nick, mass: d.mass });
     }
     function onStats(d) {
+        if (!liveEvent(d, root)) return;
         event({ type: 'stats', eaten: d.playersEaten, top: d.topPosition });
     }
     function onChat(d) {

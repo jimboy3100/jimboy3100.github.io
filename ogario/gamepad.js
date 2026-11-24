@@ -715,6 +715,8 @@
         /* lets go of everything held (before the buttons are replaced from outside, e.g. a settings profile) */
         release: function () { setFeed(false); setHolds({}); },
         buttonDown: function (b, i) { return buttonDown(b, i, opt('gamepadTrigger')); },
+        /* true while a button holds this hotkey command (the Command Centre does not release it) */
+        isHeld: function (id) { return !!(hasOwn(holdActive, id) && holdActive[id]) || (id === 'hk-macroFeed' && feedHeld); },
         suggestDeadzone: suggestDeadzone,
         testRumble: function (pad) { return rumble(pad, 250, 0.7, true); },
         canVibrate: canVibrate,

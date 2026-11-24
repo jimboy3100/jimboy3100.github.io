@@ -182,6 +182,23 @@ lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
 const last = D.last().steps[D.last().steps.length - 1];
 check('far and small cells are not "near"', last.nick == null, last);
 
+// --- practice arena / replay lives (LMEvents context) are not recorded (audit A16)
+{
+  const liveRecap = D.last();
+  lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0], enemy];
+  const before = intervals;
+  listeners.spawn[0]({ time: now, context: 'practice' });
+  for (let i = 0; i < 12; i++) { now += 250; D._test.tick(); }
+  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now, context: 'practice' });
+  check('practice life: no recap built, the last live one stays', D.last() === liveRecap);
+  check('practice life: no sampling timer started', intervals === before);
+  listeners.spawn[0]({ time: now, context: 'replay' });
+  lm.play = true; lm.playerCells = [own(0, 1500)];
+  for (let i = 0; i < 12; i++) { now += 250; D._test.tick(); }
+  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now, context: 'replay' });
+  check('replay life: no recap built', D.last() === liveRecap);
+}
+
 // --- off again: everything stops
 ctx.legendmod5.deathRecap = false; ctx.legendmod5.massLossAlert = false; D.sync();
 check('off again: listeners removed, flag off', !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false);
