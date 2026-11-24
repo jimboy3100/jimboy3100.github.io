@@ -79,6 +79,12 @@
   try { window.drawRender.resizeCanvas(); } catch (e) { }
   var w0 = cv ? cv.width : 0, own = JSON.stringify([S.jellyPhisycs, S.videoSkins, S.hudBlur, S.eatPulse]);
   S.adaptivePerf = true; P.configChanged();
+  /* without "may lower the resolution" (the default) level 3 keeps the full resolution */
+  P._setLevel(3);
+  await sleep(100);
+  if (cv && cv.width !== w0) fail.push('level 3 lowered the resolution while the option is off (' + w0 + ' -> ' + cv.width + ')');
+  P._setLevel(0);
+  S.adaptivePerfRes = true; P.configChanged();
   P._setLevel(3);
   await sleep(100);
   var w3 = cv ? cv.width : 0;
@@ -89,6 +95,7 @@
   var saved2 = JSON.parse(localStorage.getItem('ogarioSettings') || '{}');
   if (saved.eatPulse !== undefined && saved2.eatPulse !== saved.eatPulse) fail.push('a lowered value was saved');
   P._setLevel(0);
+  S.adaptivePerfRes = false;
   S.adaptivePerf = false; P.configChanged();
   window.application.saveSettings(S, 'ogarioSettings');
   await sleep(100);
