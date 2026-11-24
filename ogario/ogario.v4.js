@@ -16869,6 +16869,8 @@ var displayText = {
         lbHideBots: 'Zwin powtarzajace sie nicki (boty) w topce',
         lbPassToast: 'Powiadomienie gdy awansujesz w topce',
         lbClickSpectate: 'Wolna obserwacja: klik w mase w topce sledzi gracza',
+        clickSpectate: 'Wolna obserwacja: klik w komorke gracza sledzi go (klik w puste miejsce konczy)',
+        minimapClickSpectate: 'Expanding Land, obserwacja swiata: klik w minimape przenosi tam kamere',
         lmSpecFollowing: 'Obserwujesz',
         noFocusHud: 'Pokaz NO FOCUS gdy okno gry nie jest aktywne',
         //normalLb: 'Naglowek \"Topka\"',
@@ -17411,6 +17413,8 @@ var displayText = {
         lbHideBots: 'Leaderboard: collapse repeated (bot) names',
         lbPassToast: 'Leaderboard: notify when you move up',
         lbClickSpectate: 'Free spectate: click a leaderboard mass to follow that player',
+        clickSpectate: 'Free spectate: click a player cell to follow it (click empty space to stop)',
+        minimapClickSpectate: 'Expanding Land World Spectate: click the minimap to move the camera there',
         lmSpecFollowing: 'Following',
         noFocusHud: 'Show NO FOCUS when the game window is not active',
         //normalLb: '\"Leaderboard\" header',
@@ -19966,6 +19970,8 @@ var defaultmapsettings = {
     lbHideBots: false,
     lbPassToast: false,
     lbClickSpectate: false,       /* free spectate: leaderboard mass click follows that player */
+    clickSpectate: false,         /* free spectate: left click on a player cell follows that player */
+    minimapClickSpectate: false,  /* Expanding Land World Spectate: minimap click moves the camera */
     noFocusHud: false,            /* warn while playing when keys/mouse no longer reach the game (alt-tab, 2nd window) */           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
     showDevConsole: false,
@@ -24220,6 +24226,12 @@ function thelegendmodproject() {
                     ogario[id] = checked;
                 }
                 switch (id) {
+                    case 'clickSpectate':
+                        if (!checked && window.legendmod && legendmod._lmSpecCell) legendmod._lmSpecCellStop();
+                        break;
+                    case 'minimapClickSpectate':
+                        this._lmMmSpecPE();
+                        break;
                     case 'matchHistory':
                         _lmMatchHistoryButton();
                         break;
@@ -25327,7 +25339,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
@@ -26539,6 +26551,7 @@ function thelegendmodproject() {
             this._lmLastDeathAt = 0;
             if (window.legendmod) legendmod._lmKiller = null;
             if (window.legendmod && legendmod._lmSpecLb != null) { legendmod._lmSpecLb = null; legendmod._lmSpecLbHud(); }
+            if (window.legendmod && legendmod._lmSpecCell) legendmod._lmSpecCellStop();
             if (!this._lmLifeStartAt) { this._lmLifeStartAt = Date.now(); this._lmMassHist = []; this._lmMassStride = 1; this._lmMassAcc = 0; this._lmMassAccN = 0; }
 
             /* The Game Over card (screen centre, top z-index) took the mouse and stayed for 12 s
@@ -28401,7 +28414,54 @@ function thelegendmodproject() {
                 this.lastDeath = this.deathLocations.length - 1;
             }
         },
+        /* optional (minimapClickSpectate): in Expanding Land World Spectate a minimap click moves
+         * the camera there. The minimap takes the mouse only while that applies; on phones the touch
+         * stylesheet owns its pointer-events (tap to expand) and it is left alone. */
+        _lmMmSpecPE() {
+            var on = !!(defaultmapsettings.minimapClickSpectate && LM && LM._isWorldSpectating && LM.isLegendWorld && !LM.play);
+            if (!!this._lmMmSpecOn === on) return;
+            var mm = document.getElementById('minimap-hud');
+            if (!mm || mm.style.getPropertyPriority('pointer-events') === 'important') return;
+            this._lmMmSpecOn = on;
+            mm.style.pointerEvents = on ? 'auto' : '';
+            mm.style.cursor = on ? 'crosshair' : '';
+            if (!on) LM._lmMmHover = false;
+            if (on && this._lmMmSpecEl !== mm) {
+                this._lmMmSpecEl = mm;
+                var app = this;
+                mm.addEventListener('click', function (e) { app._lmMmSpecClick(e); });
+                mm.addEventListener('mouseenter', function () { if (app._lmMmSpecOn) LM._lmMmHover = true; });
+                mm.addEventListener('mouseleave', function () { LM._lmMmHover = false; });
+            }
+        },
+        _lmMmSpecClick(e) {
+            if (!this._lmMmSpecOn || !defaultmapsettings.minimapClickSpectate || !(LM._isWorldSpectating && LM.isLegendWorld && !LM.play)) return;
+            if (!this.miniMap || !ogario.mapOffsetFixed || !(LM.mapSize > 0)) return;
+            var rect = this.miniMap.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+            /* inverse of drawMiniMap's projection: px = 9.5 + (x + r) * n, py = miniMapTop + 9.5 + (y + l) * n
+             * (r/l = mapOffsetX/Y on Expanding Land) */
+            var n = (defaultSettings.miniMapWidth - 18) / LM.mapSize;
+            var px = (e.clientX - rect.left) * this.miniMap.width / rect.width;
+            var py = (e.clientY - rect.top) * this.miniMap.height / rect.height;
+            var wx = (px - 9.5) / n - ogario.mapOffsetX;
+            var wy = (py - defaultSettings.miniMapTop - 9.5) / n - ogario.mapOffsetY;
+            if (!Number.isFinite(wx) || !Number.isFinite(wy) || !Number.isFinite(LM.viewX) || !Number.isFinite(LM.viewY)) return;
+            LM._worldSpecPanX = wx - LM.viewX;
+            LM._worldSpecPanY = wy - LM.viewY;
+            /* the same circular clamp as the World Spectate camera */
+            var mnX = Number(LM.mapMinX), mxX = Number(LM.mapMaxX), mnY = Number(LM.mapMinY), mxY = Number(LM.mapMaxY);
+            if (Number.isFinite(mnX) && Number.isFinite(mxX) && mxX > mnX && Number.isFinite(mnY) && Number.isFinite(mxY) && mxY > mnY) {
+                var cx = (mnX + mxX) / 2, cy = (mnY + mxY) / 2, rad = Math.min(mxX - mnX, mxY - mnY) / 2;
+                var dx = wx - cx, dy = wy - cy, dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > rad && dist > 0) {
+                    LM._worldSpecPanX = cx + dx * rad / dist - LM.viewX;
+                    LM._worldSpecPanY = cy + dy * rad / dist - LM.viewY;
+                }
+            }
+        },
         drawMiniMap() {
+            this._lmMmSpecPE();
             /* Expanding Land: circular minimap clipping (reverts on server switch) */
             var _isCircle = !!(LM && LM.isLegendWorld);
             if (this._miniMapCircle !== _isCircle) {
@@ -40050,6 +40110,7 @@ function thelegendmodproject() {
         },
         sendSpectate() {
             if (this._lmSpecLb != null) { this._lmSpecLb = null; this._lmSpecLbHud(); }
+            if (this._lmSpecCell) this._lmSpecCellStop();
             this.isSpectateEnabled = true;
             this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry */
             /* Expanding Land leaves World Spectate on opcode 1 and 18 (client.c on_spectate /
@@ -40074,6 +40135,7 @@ function thelegendmodproject() {
         },
         sendFreeSpectate() {
             if (this._lmSpecLb != null) { this._lmSpecLb = null; this._lmSpecLbHud(); }
+            if (this._lmSpecCell) this._lmSpecCellStop();
             this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry, like sendSpectate */
             this.isFreeSpectate = !this.isFreeSpectate;
             this._isWorldSpectating = false;
@@ -40862,6 +40924,15 @@ function thelegendmodproject() {
                                 cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(_lmSpG.x) : _lmSpG.x;
                                 cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(_lmSpG.y) : _lmSpG.y;
                             } else this._lmSpecLbHud(); /* left free spectate, spawned or index gone: stop */
+                        }
+                        /* free spectate following a clicked player (clickSpectate): the mass-weighted
+                         * centre of its visible cells, local coordinates like the ghost cells above */
+                        else if (this._lmSpecCell) {
+                            var _lmSpC = this._lmSpecCellPos();
+                            if (_lmSpC) {
+                                cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(_lmSpC.x) : _lmSpC.x;
+                                cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(_lmSpC.y) : _lmSpC.y;
+                            }
                         }
                     }
                     //autoplay handling
@@ -49101,6 +49172,7 @@ Most cells eaten   : ${mostCellsEaten}
             /* optional: in free spectate the camera follows that player (a second click stops) */
             if (defaultmapsettings.lbClickSpectate && !legendmod.play && legendmod.isFreeSpectate) {
                 legendmod._lmSpecLb = legendmod._lmSpecLb === o ? null : o;
+                if (legendmod._lmSpecLb != null) legendmod._lmSpecCell = null; /* one follow at a time */
                 legendmod._lmSpecLbHud();
             }
         },
@@ -49126,6 +49198,73 @@ Most cells eaten   : ${mostCellsEaten}
             try { sector = application.calculateMapSector(g.x + this.mapOffsetX, g.y + this.mapOffsetY); } catch (e) { }
             el.textContent = label + ' #' + (i + 1) + ' \u00B7 ' + application.shortMassFormat(g.mass) + (sector ? ' \u00B7 ' + sector : '');
             el.style.display = '';
+        },
+        /* Free spectate following a clicked player (option clickSpectate): _lmSpecCell = {nick, color}
+         * plus the last centre, mass and time it was seen. Clicking empty space stops. */
+        _lmSpecCellPick(x, y) {
+            var cs = this.cells || [], best = null;
+            for (var i = 0; i < cs.length; i++) {
+                var c = cs[i];
+                if (!c || c.removed || c.isFood || c.isVirus || c.isEjected || !(c.size > 0)) continue;
+                var dx = x - c.x, dy = y - c.y;
+                if (dx * dx + dy * dy <= c.size * c.size && (!best || c.size > best.size)) best = c;
+            }
+            if (!best) { this._lmSpecCellStop(); return null; }
+            this._lmSpecLb = null; /* one follow at a time */
+            this._lmSpecCell = { nick: best.nick || '', color: best.color, x: best.x, y: best.y, mass: ~~(best.size * best.size / 100), at: Date.now() };
+            this._lmSpecCellHud();
+            return this._lmSpecCell;
+        },
+        _lmSpecCellPos() {
+            var t = this._lmSpecCell;
+            if (!t) return null;
+            if (this.play || !this.isFreeSpectate) { this._lmSpecCellStop(); return null; }
+            var now = Date.now(), cs = this.cells || [], ws = 0, wx = 0, wy = 0;
+            for (var i = 0; i < cs.length; i++) {
+                var c = cs[i];
+                if (!c || c.removed || c.isFood || c.isVirus || c.isEjected || !(c.size > 0)) continue;
+                if ((c.nick || '') !== t.nick || c.color !== t.color) continue;
+                var w = c.size * c.size;
+                ws += w; wx += c.x * w; wy += c.y * w;
+            }
+            if (ws > 0) {
+                t.x = wx / ws; t.y = wy / ws; t.mass = ~~(ws / 100); t.at = now;
+            } else {
+                /* out of view: the leaderboard ghost with the same nick, else hold the last spot for 2 s */
+                var g = null;
+                if (t.nick && this.leaderboard && this.ghostCells) {
+                    for (var j = 0; j < this.ghostCells.length; j++) {
+                        if (this.leaderboard[j] && this.leaderboard[j].nick === t.nick && this.ghostCells[j]) { g = this.ghostCells[j]; break; }
+                    }
+                }
+                if (g) { t.x = g.x; t.y = g.y; if (g.mass) t.mass = g.mass; t.at = now; }
+                else if (now - t.at > 2000) { this._lmSpecCellStop(); return null; }
+            }
+            this._lmSpecCellHud();
+            return t;
+        },
+        _lmSpecCellStop() {
+            this._lmSpecCell = null;
+            this._lmSpecCellHud();
+        },
+        _lmSpecCellHud() {
+            var el = document.getElementById('lm-spec-follow');
+            var t = this._lmSpecCell;
+            if (!t) {
+                if (el && this._lmSpecLb == null) el.style.display = 'none';
+                return;
+            }
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'lm-spec-follow';
+                el.className = 'hud';
+                el.style.cssText = 'position:fixed;left:50%;top:44px;transform:translateX(-50%);padding:3px 10px;border-radius:4px;font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
+                document.body.appendChild(el);
+            }
+            var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
+            var txt = label + ' ' + (t.nick || '?') + ' \u00B7 ' + application.shortMassFormat(t.mass);
+            if (el.textContent !== txt) el.textContent = txt;
+            if (el.style.display) el.style.display = '';
         },
         flushCellsData(preserveMapGeometry) {
             /*
@@ -72033,6 +72172,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     _wsPanDY = (_wsNY > 0 ? _wsNY - _wsDZ : _wsNY + _wsDZ) / (1 - _wsDZ);
                 }
 
+                /* minimapClickSpectate: no mouse pan while the pointer is on the minimap */
+                if (LM._lmMmHover) { _wsPanDX = 0; _wsPanDY = 0; }
+
                 // Pan speed: ~50 game units per 60 fps frame at full displacement (frame-rate independent)
                 var _wsPanSpeed = 50 * (this._lmFrameF || 1);
                 LM._worldSpecPanX += _wsPanDX * _wsPanSpeed;
@@ -78599,6 +78741,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* HUD icons are <a> links (fullscreen, targeting, rotate...): with mouse split/feed on,
          * clicking them also split or fed */
         if (_lmMT.closest && _lmMT.closest('a, label, .switchery')) return;
+        /* optional (clickSpectate): in free spectate a left click on a player cell follows it and a
+         * click on empty space stops; nothing happens while playing */
+        if (defaultmapsettings.clickSpectate && 1 === event.which && window.legendmod && !LM.play && LM.isFreeSpectate &&
+            _lmMT.tagName === 'CANVAS' && !(_lmMT.closest && _lmMT.closest('.hud, .hud-b, #overlays')) && !$("#overlays").is(":visible")) {
+            LM._lmSpecCellPick(LM.cursorX, LM.cursorY);
+        }
         if (!$("#overlays").is(":visible")) {
             //console.log(event.which)
             if (2 === event.which) {
