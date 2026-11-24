@@ -251,7 +251,8 @@
         exportImport: { en: 'Export / import settings', el: 'Εξαγωγή / εισαγωγή ρυθμίσεων' },
         searchSettings: { en: 'Search settings', el: 'Αναζήτηση ρυθμίσεων' },
         friends: { en: 'Friends', el: 'Φίλοι' },
-        mobileControls: { en: 'Edit touch controls', el: 'Επεξεργασία κουμπιών αφής' }
+        mobileControls: { en: 'Edit touch controls', el: 'Επεξεργασία κουμπιών αφής' },
+        servers: { en: 'Servers (favourites, recent, arenas)', el: 'Διακομιστές (αγαπημένοι, πρόσφατοι, αρένες)' }
     };
     function lang() {
         try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
@@ -412,7 +413,8 @@
         { id: 'searchSettings', en: tEn('searchSettings'), label: function () { return t('searchSettings'); }, avail: function () { return !!D.getElementById('lm-settings-search'); }, run: function () { openTab('og-settings'); setTimeout(function () { var s = D.getElementById('lm-settings-search'); if (s) s.focus(); }, 250); } },
         { id: 'friends', en: tEn('friends'), label: function () { return t('friends'); }, avail: function () { var b = D.getElementById('lm-friends-btn'); return !!(b && !b.disabled); }, run: function () { clickEl('#lm-friends-btn'); } },
         /* phones only: the touch control editor of LMmobile.js */
-        { id: 'mobileControls', en: tEn('mobileControls'), label: function () { return t('mobileControls'); }, avail: function () { return !!(W._lmMobileHost && typeof W._lmMobileHost.openEditor === 'function'); }, run: function () { W._lmMobileHost.openEditor(); } }
+        { id: 'mobileControls', en: tEn('mobileControls'), label: function () { return t('mobileControls'); }, avail: function () { return !!(W._lmMobileHost && typeof W._lmMobileHost.openEditor === 'function'); }, run: function () { W._lmMobileHost.openEditor(); } },
+        { id: 'servers', en: tEn('servers'), label: function () { return t('servers'); }, avail: function () { return !!(W.LMServerManager && typeof W.LMServerManager.open === 'function'); }, run: function () { W.LMServerManager.open(); } }
     ];
 
     /* ═══ Running items ═══ */
