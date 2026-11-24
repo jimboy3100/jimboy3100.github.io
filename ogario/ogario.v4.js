@@ -7072,55 +7072,243 @@ window.socket3NumberTries = 0;
 var customLMID = Math.floor(Math.random() * 100000);
 
 
-window.videoSkinPlayerflag = {};
-window.videoSkinPlayerflag2 = {};
-window.videoSkinPlayerflag3 = {};
-window.timerVideoSkinsInterval = [];
-window.videoSkinPlayer = {};
+/* Video skins (.mp4 .webm .ogv as a custom skin): one <video> element per URL, shared by every
+ * nick that uses that URL. The renderer calls checkVideos(url, nick) for each video cell it draws;
+ * everything else runs on one 500 ms tick that exists only while a video element does:
+ *  - sound: one volume per element, decided once per tick from all the nicks sharing it (each
+ *    URL + nick had its own timer and they fought over element.volume; a nick that left the
+ *    top 5 muted the video of the one still playing it),
+ *  - a video not drawn for 3 s is paused (the next draw resumes it) and after 60 s it is freed
+ *    together with all its state (the timers of a freed video used to run on for the session).
+ * play() is called only for a paused element that has data to play (readyState >= 3), with at
+ * most one call in flight per URL; a rejected play() (no click yet, interrupted by a pause) is
+ * retried after a backoff, sooner when the media becomes ready or on a click, key or touch.
+ * It used to be called for every video cell in every frame until currentTime moved. */
+function lmVideoSkinRegistry(env) {
+    var PAUSE_IDLE = 3000, FREE_IDLE = 60000, TICK = 500, FADE = -1;
+    /* url -> { video, nicks: Map(nick -> last draw), lastDraw, pending, fails, retryAt }
+     * (a Map keyed by URL with the nicks inside: "url|nick" strings could collide) */
+    var urls = new Map();
+    var timer = null;
 
-
-
-/* Videos loop and were never paused when their cell left view. Remember when each URL
-   was last drawn; one sweeper pauses those not drawn for 3 s (the next draw resumes it). */
-window.videoSkinLastDraw = {};
-window.videoSkinSweeper = null;
-function sweepVideoSkins() {
-    var now = Date.now();
-    for (var url in window.videoSkinPlayer) {
-        var v = window.videoSkinPlayer[url];
-        if (!v) continue;
-        var idle = now - (window.videoSkinLastDraw[url] || 0);
-        /* !paused (not .playing): a video stalled while buffering was never paused */
-        if (!v.paused && idle > 3000) {
-            try { v.pause(); } catch (e) { }
+    function normNick(n) {
+        return String(n == null ? '' : n).replace(/\s{2,}/g, ' ');
+    }
+    /* playing = not paused and able to play on; currentTime > 0 is false at the start */
+    function isPlaying(v) {
+        return !!v && !v.paused && !v.ended && v.readyState >= 3;
+    }
+    function backoff(fails) {
+        return Math.min(8000, 250 * Math.pow(2, Math.max(0, fails - 1)));
+    }
+    function shouldTryPlay(st, now) {
+        var v = st && st.video;
+        return !!v && v.paused && v.readyState >= 3 && !st.pending && now >= st.retryAt;
+    }
+    function clamp01(x) {
+        x = +x;
+        return x > 0 ? (x < 1 ? x : 1) : 0;
+    }
+    /* the fade-out step of a player who is in the top 5 but out of view */
+    function fadeStep(vol) {
+        if (vol >= 0.2) vol -= 0.1;
+        if (vol >= 0.02) vol -= 0.02;
+        else vol = 0;
+        return vol;
+    }
+    /* what one nick wants for the video of this URL: a volume, FADE, or null (no say) */
+    function nickVolume(nick, url, ctx) {
+        if (!nick) return null;
+        var s = ctx.settings;
+        if (nick == ctx.own.nick) {
+            return ctx.own.skinURL == url ? clamp01(ctx.mix(s.level)) : 0;
         }
-        /* Not drawn for a minute: free the element and its buffered data (every video
-         * seen stayed in memory for the whole session). checkVideos1 recreates it. */
-        if (idle > 60000) {
-            try { v.removeAttribute('src'); v.load(); } catch (e) { }
-            delete window.videoSkinPlayer[url];
-            window.videoSkinPlayerflag[url] = null;
+        var mass = ctx.top5.get(normNick(nick));
+        if (mass === undefined || !s.music2) return 0;
+        if (!ctx.visible(nick)) return FADE;
+        if (s.proportional && mass) {
+            return clamp01(ctx.mix(mass >= 24000 ? s.level : s.level * Math.pow(mass / 2.4, 1 / 2) * 0.01));
+        }
+        return clamp01(ctx.mix(s.level));
+    }
+    /* one owner per element: the loudest nick decides; a fading one only while nobody is louder */
+    function decideVolume(current, targets) {
+        var best = 0, fade = false;
+        for (var i = 0; i < targets.length; i++) {
+            var t = targets[i];
+            if (t === FADE) fade = true;
+            else if (t != null && t > best) best = t;
+        }
+        if (fade) {
+            var f = fadeStep(current);
+            if (f > best) best = f;
+        }
+        return clamp01(best);
+    }
+    function context() {
+        var top5 = new Map(), list = env.top5() || [];
+        for (var i = 0; i < list.length; i++) {
+            var p = list[i];
+            if (!p || !p.nick) continue;
+            var k = normNick(p.nick), m = p.mass || 0, had = top5.get(k);
+            if (had === undefined || m > had) top5.set(k, m);
+        }
+        var seen = null;
+        return {
+            settings: env.settings(),
+            own: env.own() || {},
+            mix: env.mixVol,
+            top5: top5,
+            /* the nicks in view, collected once per tick and only when a sound needs it
+             * (it scanned every cell for every call, per frame while a video was not playing) */
+            visible: function (nick) {
+                if (!seen) {
+                    seen = new Set();
+                    var cells = env.cells() || [];
+                    for (var j = 0; j < cells.length; j++) {
+                        var c = cells[j];
+                        if (c && c.nick && !c.isPlayerCell) seen.add(c.nick);
+                    }
+                }
+                return seen.has(nick);
+            }
+        };
+    }
+    function setVolume(v, vol) {
+        if (!v) return;
+        if (v.volume !== vol) {
+            try { v.volume = vol; } catch (e) { }
         }
     }
+    function free(url, st) {
+        var v = st.video;
+        if (v) {
+            try { v.pause(); } catch (e) { }
+            try { v.removeAttribute('src'); v.load(); } catch (e) { }
+        }
+        urls.delete(url);
+        if (env.onFree) env.onFree(url, v);
+    }
+    function stop() {
+        if (timer != null) env.clearTimer(timer);
+        timer = null;
+    }
+    function tick() {
+        var now = env.now(), ctx = null;
+        urls.forEach(function (st, url) {
+            var idle = now - st.lastDraw;
+            if (idle > FREE_IDLE) { free(url, st); return; }
+            /* !paused, not "playing": a video stalled while buffering was never paused */
+            if (idle > PAUSE_IDLE && st.video && !st.video.paused) {
+                try { st.video.pause(); } catch (e) { }
+            }
+            if (!ctx) {
+                try { ctx = context(); } catch (e) { return; }
+            }
+            var targets = [];
+            st.nicks.forEach(function (drawn, nick) {
+                var t = nickVolume(nick, url, ctx);
+                /* a player who left the top 5 has no say any more (own nick stays) */
+                if (t === 0 && nick != ctx.own.nick && !ctx.top5.has(normNick(nick))) st.nicks.delete(nick);
+                targets.push(t);
+            });
+            setVolume(st.video, decideVolume(st.video ? +st.video.volume || 0 : 0, targets));
+        });
+        if (!urls.size) stop();
+    }
+    function play(st) {
+        var p = null;
+        st.pending = true;
+        function ok() {
+            st.pending = false;
+            st.fails = 0;
+            st.retryAt = 0;
+        }
+        function fail() {
+            st.pending = false;
+            st.fails++;
+            st.retryAt = env.now() + backoff(st.fails);
+        }
+        try { p = st.video.play(); } catch (e) { fail(); return; }
+        if (p && typeof p.then === 'function') p.then(ok, fail);
+        else ok();
+    }
+    /* per drawn video cell, per frame: cheap unless the element must be created or resumed */
+    function draw(url, nick) {
+        if (!url) return null;
+        var now = env.now(), st = urls.get(url);
+        if (!st) {
+            st = { video: null, nicks: new Map(), lastDraw: now, pending: false, fails: 0, retryAt: 0 };
+            urls.set(url, st);
+            st.video = env.createVideo(url, function () { st.retryAt = 0; });
+            if (timer == null) timer = env.startTimer(tick, TICK);
+        }
+        st.lastDraw = now;
+        if (nick) st.nicks.set(nick, now);
+        if (shouldTryPlay(st, now)) play(st);
+        return st.video;
+    }
+    /* a click, key or touch may allow a play() the browser refused before */
+    function kick() {
+        urls.forEach(function (st) {
+            if (st.fails) st.retryAt = 0;
+        });
+    }
+    return {
+        draw: draw,
+        tick: tick,
+        kick: kick,
+        state: function (url) { return urls.get(url); },
+        size: function () { return urls.size; },
+        running: function () { return timer != null; },
+        isPlaying: isPlaying,
+        backoff: backoff,
+        fadeStep: fadeStep,
+        decideVolume: decideVolume,
+        FADE: FADE
+    };
 }
 
-function checkVideos(a, b) {
-    window.videoSkinLastDraw[a] = Date.now();
-    if (!window.videoSkinSweeper) window.videoSkinSweeper = setInterval(sweepVideoSkins, 2000);
-    checkVideos1(a);
-    //setTimeout(function() {
-    if (window.videoSkinPlayer[a] && window.videoSkinPlayer[a].readyState == 4) {
-        if (!window.videoSkinPlayer[a].playing) {
-            /* play() rejects when paused by the sweeper or before the first click */
-            var _lmVp = window.videoSkinPlayer[a].play();
-            if (_lmVp && _lmVp.catch) _lmVp.catch(function () { });
-            //setTimeout(function() {
-            checkVideos2(a, b);
-            //}, 2000);
+window.videoSkinPlayer = {};
+/* the video skins tick (sound, pause, free); null while there is no video element */
+window.videoSkinSweeper = null;
+var _lmVideoSkins = lmVideoSkinRegistry({
+    now: function () { return Date.now(); },
+    createVideo: function (url, onReady) {
+        var v = window.videoSkinPlayer[url];
+        if (!(v && v.tagName === 'VIDEO')) {
+            console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Video skins activated");
+            v = document.createElement("video");
+            v.crossOrigin = 'anonymous';
+            v.src = url;
+            v.volume = 0;
+            v.loop = true;
+            window.videoSkinPlayer[url] = v;
+        }
+        try { v.addEventListener('canplay', onReady); } catch (e) { }
+        return v;
+    },
+    onFree: function (url) { delete window.videoSkinPlayer[url]; },
+    startTimer: function (fn, ms) { return (window.videoSkinSweeper = setInterval(fn, ms)); },
+    clearTimer: function (id) { clearInterval(id); window.videoSkinSweeper = null; },
+    top5: function () { return application.top5; },
+    cells: function () { return legendmod.cells; },
+    own: function () { return { nick: ogarcopythelb.nick, skinURL: ogarcopythelb.skinURL }; },
+    settings: function () {
+        return {
+            music2: defaultmapsettings.videoSkinsMusic2 == true,
+            proportional: !!defaultmapsettings.videoOthersSkinSoundLevelproportion,
+            level: defaultmapsettings.videoSkinSoundLevel
         };
+    },
+    mixVol: function (v) { return _lmVideoVol(v); }
+});
+['pointerdown', 'keydown', 'touchstart'].forEach(function (type) {
+    try { window.addEventListener(type, function () { _lmVideoSkins.kick(); }, { capture: true, passive: true }); } catch (e) { }
+});
 
-    }
-    //}, 2000);
+function checkVideos(a, b) {
+    _lmVideoSkins.draw(a, b);
     return true;
 }
 
@@ -7132,114 +7320,6 @@ function _lmVideoVol(v) {
     return m && m.videoVolume ? m.videoVolume(v) : v;
 }
 
-function checkVideos2(a, b) {
-    /* the sweeper frees a video not drawn for 60 s but this nick's 500 ms timer keeps
-     * calling: without the video it threw a TypeError every tick (and filled the error log) */
-    if (!window.videoSkinPlayer || !window.videoSkinPlayer[a]) return;
-    //console.log(b)
-    /* Reset before the loop: a player who left the top 5 must fade out too
-     * (the flag was only reset when the nick was still found). */
-    window.videoSkinPlayerflag2[b] = false;
-    for (var i = 0; i < application.top5.length; i++) {
-        //if (i.nick == b) {
-        //application.setTarget(i.id);
-        if (ogarcopythelb.nick != b && application.top5[i].nick.replace(/\s{2,}/g, ' ') == b.replace(/\s{2,}/g, ' ')) {
-            if (legendmod5.videoSkinsMusic2 == true) {
-                window.videoSkinPlayerflag2[b] = false;
-                //if (application.calculateMapSector(application.top5[i].x, application.top5[i].y) == application.currentSector && application.currentSector == "C3") {
-                if (checkIfPlayerIsInView(b, null)) {
-                    //console.log("volume 0, stage 0");						
-                    var temple = null;
-                    //console.log("a",b,a)						
-                    if (defaultmapsettings.videoOthersSkinSoundLevelproportion && application.top5[i].mass) {
-                        //console.log("b",application.top5[i].mass)
-                        if (application.top5[i].mass >= 24000) {
-                            window.videoSkinPlayer[a].volume = _lmVideoVol(defaultmapsettings.videoSkinSoundLevel);
-                        } else if (application.top5[i].mass < 24000) {
-                            window.videoSkinPlayer[a].volume = _lmVideoVol(defaultmapsettings.videoSkinSoundLevel * Math.pow(application.top5[i].mass / 2.4, 1 / 2) * 0.01);
-                        }
-                        temple = true
-                    } else if (!temple) {
-                        window.videoSkinPlayer[a].volume = _lmVideoVol(defaultmapsettings.videoSkinSoundLevel);
-                    }
-                    window.videoSkinPlayerflag2[b] = true;
-                } else {
-                    //console.log("volume 0, stage 1");
-                    //if (window.videoSkinPlayer[a].volume>=0.1) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.1
-                    //else window.videoSkinPlayer[a].volume = 0;
-                    //window.videoSkinPlayer[a].volume = 0;
-                }
-            } else {
-                //console.log("volume 0, stage 2");
-                window.videoSkinPlayer[a].volume = 0;
-            }
-        }
-        //}
-
-    }
-    if (ogarcopythelb.nick != b) {
-        //if ($("#nick").val() != b || application.customSkinsMap[$("#nick").val()] != a ) {
-        checkvideoSkinPlayerflag2(a, b);
-    } else if (ogarcopythelb.nick) {
-        if (ogarcopythelb.skinURL == a && window.videoSkinPlayer[a]) {
-            window.videoSkinPlayer[a].volume = _lmVideoVol(defaultmapsettings.videoSkinSoundLevel);
-        } else {
-            window.videoSkinPlayer[a].volume = 0;
-        }
-    }
-    //
-    if (window.videoSkinPlayer[a]) {
-        /* One interval per URL + nick (two players may share a video URL), and stop it
-         * once that player is gone; it used to run for the rest of the session. */
-        var videoKey = a + '|' + b;
-        if (!window.videoSkinPlayerflag3[videoKey]) {
-            window.videoSkinPlayerflag3[videoKey] = true;
-            window.timerVideoSkinsInterval[videoKey] = setInterval(function () {
-                var nickKey = String(b).replace(/\s{2,}/g, ' ');
-                var stillHere = ogarcopythelb.nick == b || application.top5.some(function (p) {
-                    return p && p.nick && p.nick.replace(/\s{2,}/g, ' ') == nickKey;
-                });
-                if (!stillHere) {
-                    if (window.videoSkinPlayer[a]) window.videoSkinPlayer[a].volume = 0;
-                    clearInterval(window.timerVideoSkinsInterval[videoKey]);
-                    window.timerVideoSkinsInterval[videoKey] = null;
-                    window.videoSkinPlayerflag3[videoKey] = null;
-                    return;
-                }
-                checkVideos2(a, b);
-            }, 500);
-        }
-    } else {
-        // Don't null out videoSkinPlayer[a] — keep the cached video element
-        // to prevent re-creating and re-fetching on next visibility.
-        // Only reset playback/interval flags.
-        window.videoSkinPlayerflag[a] = null
-        window.videoSkinPlayerflag2[b] = null
-        /* Fix: the timer and flag were registered with key (url+'|'+nick) but
-         * this cleanup branch used url-only, leaving stale entries.
-         * Clear ALL timers whose key starts with this URL. */
-        var _vKeys = Object.keys(window.timerVideoSkinsInterval || {});
-        for (var _vi = 0; _vi < _vKeys.length; _vi++) {
-            if (_vKeys[_vi] === a || _vKeys[_vi].indexOf(a + '|') === 0) {
-                clearInterval(window.timerVideoSkinsInterval[_vKeys[_vi]]);
-                window.timerVideoSkinsInterval[_vKeys[_vi]] = null;
-                window.videoSkinPlayerflag3[_vKeys[_vi]] = null;
-            }
-        }
-    }
-    //
-}
-
-function checkvideoSkinPlayerflag2(a, b) {
-    if (!window.videoSkinPlayerflag2[b]) {
-        //console.log("volume 0, stage 3");
-        if (window.videoSkinPlayer[a].volume >= 0.2) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.1
-        if (window.videoSkinPlayer[a].volume >= 0.02) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.02
-        else window.videoSkinPlayer[a].volume = 0;
-        //window.videoSkinPlayer[a].volume = 0;
-    }
-}
-
 function checkIfPlayerIsInView(b, a) {
     for (var i = 0; i < legendmod.cells.length; i++) {
         if (b != "" && legendmod.cells[i].nick == b && !legendmod.cells[i].isPlayerCell && (!a || (a && legendmod.cells[i].spectator))) {
@@ -7248,27 +7328,6 @@ function checkIfPlayerIsInView(b, a) {
     }
     return false
 }
-
-
-function checkVideos1(a) {
-
-    if (!videoSkinPlayerflag[a]) {
-        // Reuse existing video element if it already exists (prevents duplicate network fetches)
-        // .src returns fully resolved URL so use endsWith for comparison
-        if (window.videoSkinPlayer[a] && window.videoSkinPlayer[a].tagName === 'VIDEO') {
-            // Video element already exists for this URL — just re-flag it, don't recreate
-            window.videoSkinPlayerflag[a] = true;
-            return;
-        }
-        console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Video skins activated");
-        window.videoSkinPlayer[a] = document.createElement("video"); // create a video element
-        window.videoSkinPlayer[a].crossOrigin = 'anonymous';
-        window.videoSkinPlayer[a].src = a;
-        window.videoSkinPlayer[a].volume = 0;
-        window.videoSkinPlayer[a].loop = true;
-        window.videoSkinPlayerflag[a] = true;
-    }
-};
 
 function checkVideos3(o) {
     if (o.readyState > 0 && o.src === $("#skin").val()) {
@@ -7327,7 +7386,8 @@ if (window.getLatestID != null && window.getLatestconfigVersion != null && windo
 function pauseVideos() {
     setTimeout(function () {
         Object.getOwnPropertyNames(window.videoSkinPlayer).forEach(function (element) {
-            if (window.videoSkinPlayer[element] && window.videoSkinPlayer[element].playing) {
+            /* !paused: "playing" was false for a video still buffering, which then went on */
+            if (window.videoSkinPlayer[element] && !window.videoSkinPlayer[element].paused) {
                 window.videoSkinPlayer[element].pause();
             }
             //console.log(element);
@@ -28929,7 +28989,7 @@ function thelegendmodproject() {
             if (!/^https?:\/\/[^/]+\.[^/]+/i.test(url)) return;
 
             /* Video URLs (mp4/webm/ogv) cannot be loaded as Image elements.
-             * They are handled by checkVideos1() which creates a <video> element.
+             * They are handled by checkVideos() which creates a <video> element.
              * Attempting to load them here wastes bandwidth and creates a
              * fail→30s-cooldown→retry loop visible in the Network tab. */
             if (/\.(mp4|webm|ogv)(?:[?#]|$)/i.test(url)) return;
