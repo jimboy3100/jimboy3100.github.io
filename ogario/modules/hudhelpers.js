@@ -360,6 +360,10 @@
         if (edgeCv && edgeShown) {
             edgeCtx.setTransform(1, 0, 0, 1, 0, 0);
             edgeCtx.clearRect(0, 0, edgeCv.width, edgeCv.height);
+            /* P1 fix #65: release the VRAM backing buffer when edges are off.
+             * A hidden full-screen canvas still holds width × height × 4 bytes
+             * of GPU memory. Setting dimensions to 0 releases it. */
+            edgeCv.width = 0; edgeCv.height = 0;
             edgeCv.style.display = 'none';
         }
         edgeShown = false;
