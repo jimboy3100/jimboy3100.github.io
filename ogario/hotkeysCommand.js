@@ -336,6 +336,18 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-gamepadWindow': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-gamepadWindow']) || 'Open / close the Gamepad window';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* ogario/gamepad.js (loads the window the first time); the key closes it again */
+					if (window.LMGamepad && typeof window.LMGamepad.openWindow === 'function') window.LMGamepad.openWindow(true);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-copyServerLink': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-copyServerLink']) || 'Copy server link + password (TK&PW)';

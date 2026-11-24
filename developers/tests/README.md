@@ -22,8 +22,8 @@ Output goes to `developers/tests/out/` (ignored by git).
    `www.legendmod.ml` / `jimboy3100.github.io` is served from this checkout; everything
    else (agar.io, game servers) is loaded live.
 3. The probes in `probes/` run in the page: core globals exist, the settings menu is built,
-   every hotkey command is well formed, and a few UI actions (menu tabs, hotkeys window,
-   toggles) run without throwing.
+   every hotkey command is well formed, the Gamepad window opens, fits and closes, and a few UI
+   actions (menu tabs, hotkeys window, toggles) run without throwing.
 
 The run fails on a syntax error, an uncaught page exception, a `console.error`, or a probe failure.
 Network/console log errors are printed as warnings only, because the live servers are not always reachable.

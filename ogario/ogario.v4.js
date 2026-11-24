@@ -18482,6 +18482,7 @@ var displayText = {
         stickyCell: 'Sticky cells (left button, hold right button)',
         gamepadEnabled: 'Gamepad / controller support',
         gamepadDeadzone: 'Gamepad stick dead zone',
+        gamepadWindow: 'Gamepad: buttons, sensitivity, profiles, test',
         //showPartyBots: 'Party bots',
         rotateMap: 'Rotate Map',
         showMiniMap: 'Show minimap',
@@ -18654,6 +18655,7 @@ var displayText = {
         'hk-specNextTop': 'Free spectate: follow next leaderboard player',
         'hk-prevServer': 'Reconnect to the previous server',
         'hk-bigMinimap': 'Enlarge / restore minimap',
+        'hk-gamepadWindow': 'Open / close the Gamepad window',
         'hk-copyServerLink': 'Copy server link + password (TK&PW)',
         'hk-netGraph': 'Show / hide net graph (FPS, ping)',
         'hk-chatSounds': 'Mute / unmute chat sounds',
@@ -21161,6 +21163,15 @@ var defaultmapsettings = {
     stickyCell: false,
     gamepadEnabled: false, /* gamepad / controller support (ogario/gamepad.js) */
     gamepadDeadzone: 0.2, /* stick dead zone (0.05-0.5); 0.2 was the fixed value before */
+    /* Gamepad window (ogario/modules/gamepad-ui.js); the button map and profiles are in localStorage 'lmGamepad' */
+    gamepadMoveRange: 0.45, /* stick at full tilt = this part of the smaller screen side (0.15-1) */
+    gamepadMoveCurve: 1, /* stick response curve (0.5-3), 1 = linear */
+    gamepadZoomSens: 1, /* right stick zoom speed multiplier (0.2-4) */
+    gamepadTrigger: 0.5, /* LT/RT count as pressed from this pull (0.1-0.95) */
+    gamepadInvertX: false, /* left stick left/right inverted */
+    gamepadInvertY: false, /* left stick up/down inverted */
+    gamepadInvertZoom: false, /* right stick zoom direction inverted */
+    gamepadVibrate: false, /* rumble on split and death where the pad supports it */
     //showPartyBots: false,
     showMiniMap: true,
     rotateMap: true,
@@ -21501,7 +21512,7 @@ var _lmLabelI18n = {
         "hk-elPotions":"Expanding Land: Βοήθεια για φίλτρα","hk-elClaimAll":"Expanding Land: Παραλαβή όλων","hk-replayPause":"Επανάληψη: παύση/συνέχεια",
         "hk-replayFaster":"Επανάληψη: πιο γρήγορα","hk-replaySlower":"Επανάληψη: πιο αργά","hk-replayFwd":"Επανάληψη: μπροστά 250 πακέτα",
         "hk-replayBack":"Επανάληψη: πίσω 250 πακέτα","hk-middleMultiView":"Εναλλαγή μεσαίας θέας multibox","hk-mbRings":"Εμφάνιση/απόκρυψη δαχτυλιδιών multibox",
-        "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)",
+        "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-gamepadWindow":"Άνοιγμα / κλείσιμο παραθύρου gamepad","gamepadWindow":"Gamepad: κουμπιά, ευαισθησία, προφίλ, δοκιμή","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)",
         "hk-netGraph":"Εμφάνιση / απόκρυψη γραφήματος δικτύου (FPS, ping)","hk-chatSounds":"Σίγαση / άρση σίγασης ήχων συνομιλίας","scanTrick":"Ενεργοποίηση Scan Trick",
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
@@ -25495,9 +25506,9 @@ function thelegendmodproject() {
             /* Issue #15: include Performance Mode backup and preset undo snapshot so they survive a browser wipe.
              * They hold gameplay settings, so they go with those only (the import reads them only
              * with those too). The phone controls (LMmobile gear panel: joystick sensitivity,
-             * button size and opacity, toggles) go with them as well. */
+             * button size and opacity, toggles) and the gamepad buttons and profiles go with them as well. */
             if (options.ogarioSettings) {
-                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs'].forEach(function (k) {
+                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs', 'lmGamepad'].forEach(function (k) {
                     try {
                         var v = JSON.parse(window.localStorage.getItem(k) || 'null');
                         if (v && typeof v === 'object' && !Array.isArray(v)) options[k] = v;
@@ -25604,6 +25615,9 @@ function thelegendmodproject() {
                              * none and leaves this phone's as they are). LMmobile checks the values. */
                             _impStep = 'lm-mobile-prefs';
                             if (_impObject(importValue['lm-mobile-prefs'])) _impSet('lm-mobile-prefs', JSON.stringify(importValue['lm-mobile-prefs']));
+                            /* gamepad buttons and profiles: the same, ogario/gamepad.js checks them on load */
+                            _impStep = 'lmGamepad';
+                            if (_impObject(importValue.lmGamepad)) _impSet('lmGamepad', JSON.stringify(importValue.lmGamepad));
                         }
                     }
                 } catch (writeErr) {
@@ -26935,6 +26949,16 @@ function thelegendmodproject() {
             this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
             this.addSliderBox(".mouseGroup", "gamepadDeadzone", 0.05, 0.5, 0.01);
+            /* Gamepad window: button map, sensitivity, profiles and a live test (ogario/gamepad.js
+             * loads ogario/modules/gamepad-ui.js the first time it opens) */
+            $('<button type="button" id="lm-gamepad-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
+                .text(textLanguage.gamepadWindow || 'Gamepad: buttons, sensitivity, profiles, test')
+                .appendTo('.mouseGroup')
+                .on('click', function (e) {
+                    e.preventDefault();
+                    if (window.LMGamepad && typeof window.LMGamepad.openWindow === 'function') window.LMGamepad.openWindow();
+                    else if (window.toastr) toastr.info('The gamepad script is still loading. Try again in a moment.');
+                });
             // this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
