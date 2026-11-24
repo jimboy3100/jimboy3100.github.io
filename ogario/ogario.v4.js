@@ -20945,7 +20945,8 @@ function _lmBuildLabels(code) {
     if (!_lmLabelI18n.hasOwnProperty(code)) return null;
     var tr = _lmLabelI18n[code], out = {}, k;
     for (k in displayText.en) if (displayText.en.hasOwnProperty(k)) out[k] = displayText.en[k];
-    for (k in tr) if (tr.hasOwnProperty(k)) out[k] = tr[k];
+    /* quick chat commands (comm0..comm50) are sent to teammates: keep their English defaults */
+    for (k in tr) if (tr.hasOwnProperty(k) && !/^comm\d+$/.test(k)) out[k] = tr[k];
     return out;
 }
 window._lmBuildLabels = _lmBuildLabels;
@@ -20954,9 +20955,9 @@ window._lmBuildLabels = _lmBuildLabels;
     var code = null;
     if (_lmLangPick != null && picks.hasOwnProperty(String(_lmLangPick))) {
         code = picks[String(_lmLangPick)];
-    } else if (_lmLangPick !== '1' && _lmLangPick !== '11' && lang === 'en' && userLanguage) {
-        code = String(userLanguage).split('-')[0].toLowerCase();
     }
+    /* only for a language the player picked: with no pick the rest of the menus stay English, so the
+     * settings stay English too (no mixed languages) */
     var built = code ? _lmBuildLabels(code) : null;
     if (built) {
         textLanguage = built;
