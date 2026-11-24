@@ -17983,6 +17983,8 @@ var displayText = {
         splitRangeColor: 'Zasieg podzialu',
         qdsplitRange: 'Zasieg szybkiego podwojnego podzialu', //Sonia2
         sdsplitRange: 'Zasieg powolnego podwojnego podzialu', //Sonia2
+        splitPrediction: 'Przewidywanie podzialu (przyciemnia linie komorek, ktore sie nie podziela, agar.io)',
+        tripleSplitRange: 'Zasieg potrojnego podzialu',
         enemyBSTEDColor: 'Kolor W2STE wroga', //Sonia2
         enemyBSTEColor: 'Kolor WSTE wroga', //Sonia2
         enemyBColor: 'Kolor wiekszego wroga', //Sonia2
@@ -18253,6 +18255,8 @@ var displayText = {
         splitRange: 'Split range',
         qdsplitRange: 'Quick double split range', //Sonia2
         sdsplitRange: 'Slow double split range', //Sonia2
+        splitPrediction: 'Split prediction (dims the cursor lines of cells that will not split, agar.io)',
+        tripleSplitRange: 'Triple split range',
         virusesRange: 'Viruses range',
         textStroke: 'Names and mass stroke',
         namesStroke: 'Names stroke',
@@ -20903,6 +20907,8 @@ var defaultmapsettings = {
     splitRange: false,
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
+    splitPrediction: false,       /* agar.io: dim cursor lines of own cells that will not split */
+    tripleSplitRange: false,      /* rings at 3*size+760 around enemies that can triple-split onto you */
     virusesRange: false,
     textStroke: false,
     namesStroke: true,
@@ -21094,7 +21100,7 @@ var _lmLabelI18n = {
         "showMiniMapGrid":"Εμφάνιση πλέγματος μικρού χάρτη","showMiniMapGuides":"Εμφάνιση οδηγών μικρού χάρτη","showExtraMiniMapGuides":"Εμφάνιση επιπλέον οδηγών μικρού χάρτη",
         "showMiniMapGhostCells":"Εμφάνιση κυττάρων-φαντασμάτων","showMiniMapTrail":"Εμφάνιση της πορείας μου στον μικρό χάρτη","oneColoredTeammates":"Μονόχρωμοι συμπαίκτες",
         "rainbowFood":"Τροφή ουράνιου τόξου","oppColors":"Χρώματα αντιπάλων","oppRings":"Δαχτυλίδια αντιπάλων","virColors":"Χρώματα ιών","splitRange":"Εμβέλεια split",
-        "qdsplitRange":"Εμβέλεια γρήγορου διπλού split","sdsplitRange":"Εμβέλεια αργού διπλού split","virusesRange":"Εμβέλεια ιών","textStroke":"Περίγραμμα ονομάτων και μάζας",
+        "qdsplitRange":"Εμβέλεια γρήγορου διπλού split","sdsplitRange":"Εμβέλεια αργού διπλού split","splitPrediction":"Πρόβλεψη split (αχνές γραμμές για κύτταρα που δεν θα χωριστούν, agar.io)","tripleSplitRange":"Εμβέλεια τριπλού split","virusesRange":"Εμβέλεια ιών","textStroke":"Περίγραμμα ονομάτων και μάζας",
         "namesStroke":"Περίγραμμα ονομάτων","massStroke":"Περίγραμμα μάζας","bubbleCursorTracker":"Ιχνηλάτης φούσκας (απενεργοποιεί την παρακολούθηση κέρσορα)",
         "bubbleInd":"Δείκτες φούσκας (απενεργοποιεί τα δαχτυλίδια αντιπάλων)","cursorTracking":"Παρακολούθηση κέρσορα","teammatesInd":"Δείκτες συμπαικτών",
         "FBTracking":"Ιχνηλάτης φούσκας Facebook","indicators":"Δείκτης","mouseSplit":"Αριστερό κουμπί ποντικιού","mouseFeed":"Δεξί κουμπί ποντικιού",
@@ -21239,7 +21245,7 @@ var _lmLabelI18n = {
         "showMiniMapGuides":"Mostrar guías del minimapa","showExtraMiniMapGuides":"Mostrar guías extra del minimapa","showMiniMapGhostCells":"Mostrar células fantasma",
         "showMiniMapTrail":"Mostrar mi rastro en el minimapa","oneColoredTeammates":"Compañeros de un solo color","rainbowFood":"Comida arcoíris",
         "oppColors":"Colores de oponentes","oppRings":"Anillos de oponentes","virColors":"Colores de virus","splitRange":"Alcance del split",
-        "qdsplitRange":"Alcance del doble split rápido","sdsplitRange":"Alcance del doble split lento","virusesRange":"Alcance de los virus",
+        "qdsplitRange":"Alcance del doble split rápido","sdsplitRange":"Alcance del doble split lento","splitPrediction":"Predicción del split (atenúa las líneas de las células que no se dividirán, agar.io)","tripleSplitRange":"Alcance del triple split","virusesRange":"Alcance de los virus",
         "textStroke":"Contorno de nombres y masa","namesStroke":"Contorno de nombres","massStroke":"Contorno de masa",
         "bubbleCursorTracker":"Rastreador de burbuja (desactiva el seguimiento del cursor)","bubbleInd":"Indicadores de burbuja (desactiva anillos de oponentes)",
         "cursorTracking":"Seguimiento del cursor","teammatesInd":"Indicadores de compañeros","FBTracking":"Rastreador de burbuja de Facebook","indicators":"Indicador",
@@ -21384,7 +21390,7 @@ var _lmLabelI18n = {
         "showExtraMiniMapGuides":"Покажи допълнителни водачи на миникартата","showMiniMapGhostCells":"Покажи клетките призраци",
         "showMiniMapTrail":"Покажи моята следа на миникартата","oneColoredTeammates":"Едноцветни съотборници","rainbowFood":"Храна в цветовете на дъгата",
         "oppColors":"Цветове на противниците","oppRings":"Пръстени на противниците","virColors":"Цветове на вирусите","splitRange":"Обхват на split",
-        "qdsplitRange":"Обхват на бърз двоен split","sdsplitRange":"Обхват на бавен двоен split","virusesRange":"Обхват на вирусите","textStroke":"Контур на имената и масата",
+        "qdsplitRange":"Обхват на бърз двоен split","sdsplitRange":"Обхват на бавен двоен split","splitPrediction":"Предсказване на split (затъмнява линиите на клетките, които няма да се разделят, agar.io)","tripleSplitRange":"Обхват на троен split","virusesRange":"Обхват на вирусите","textStroke":"Контур на имената и масата",
         "namesStroke":"Контур на имената","massStroke":"Контур на масата","bubbleCursorTracker":"Проследяване с балон (изключва проследяването на курсора)",
         "bubbleInd":"Индикатори с балон (изключва пръстените на противниците)","cursorTracking":"Проследяване на курсора","teammatesInd":"Индикатори на съотборниците",
         "FBTracking":"Проследяване с балон от Facebook","indicators":"Индикатор","mouseSplit":"Ляв бутон на мишката","mouseFeed":"Десен бутон на мишката",
@@ -21528,7 +21534,7 @@ var _lmLabelI18n = {
         "showExtraMiniMapGuides":"Afficher des guides supplémentaires sur la minicarte","showMiniMapGhostCells":"Afficher les cellules fantômes",
         "showMiniMapTrail":"Afficher ma trace sur la minicarte","oneColoredTeammates":"Coéquipiers d'une seule couleur","rainbowFood":"Nourriture arc-en-ciel",
         "oppColors":"Couleurs des adversaires","oppRings":"Anneaux des adversaires","virColors":"Couleurs des virus","splitRange":"Portée du split",
-        "qdsplitRange":"Portée du double split rapide","sdsplitRange":"Portée du double split lent","virusesRange":"Portée des virus",
+        "qdsplitRange":"Portée du double split rapide","sdsplitRange":"Portée du double split lent","splitPrediction":"Prédiction du split (atténue les lignes des cellules qui ne se diviseront pas, agar.io)","tripleSplitRange":"Portée du triple split","virusesRange":"Portée des virus",
         "textStroke":"Contour des noms et de la masse","namesStroke":"Contour des noms","massStroke":"Contour de la masse",
         "bubbleCursorTracker":"Suivi bulle (désactive le suivi du curseur)","bubbleInd":"Indicateurs bulle (désactive les anneaux des adversaires)",
         "cursorTracking":"Suivi du curseur","teammatesInd":"Indicateurs des coéquipiers","FBTracking":"Suivi bulle Facebook","indicators":"Indicateur",
@@ -21668,7 +21674,7 @@ var _lmLabelI18n = {
         "showMiniMapGuides":"إظهار خطوط إرشاد الخريطة المصغرة","showExtraMiniMapGuides":"إظهار خطوط إرشاد إضافية للخريطة المصغرة","showMiniMapGhostCells":"إظهار الخلايا الشبحية",
         "showMiniMapTrail":"إظهار مساري على الخريطة المصغرة","oneColoredTeammates":"زملاء الفريق بلون واحد","rainbowFood":"طعام بألوان قوس قزح","oppColors":"ألوان الخصوم",
         "oppRings":"حلقات الخصوم","virColors":"ألوان الفيروسات","splitRange":"مدى الانقسام","qdsplitRange":"مدى الانقسام المزدوج السريع",
-        "sdsplitRange":"مدى الانقسام المزدوج البطيء","virusesRange":"مدى الفيروسات","textStroke":"إطار الأسماء والكتلة","namesStroke":"إطار الأسماء","massStroke":"إطار الكتلة",
+        "sdsplitRange":"مدى الانقسام المزدوج البطيء","splitPrediction":"توقع الانقسام (يخفف خطوط الخلايا التي لن تنقسم، agar.io)","tripleSplitRange":"مدى الانقسام الثلاثي","virusesRange":"مدى الفيروسات","textStroke":"إطار الأسماء والكتلة","namesStroke":"إطار الأسماء","massStroke":"إطار الكتلة",
         "bubbleCursorTracker":"متتبع الفقاعة (يعطّل تتبع المؤشر)","bubbleInd":"مؤشرات الفقاعة (تعطّل حلقات الخصوم)","cursorTracking":"تتبع المؤشر",
         "teammatesInd":"مؤشرات زملاء الفريق","FBTracking":"متتبع فقاعة Facebook","indicators":"مؤشر","mouseSplit":"زر الفأرة الأيسر","mouseFeed":"زر الفأرة الأيمن",
         "mouseCommand4":"زر الفأرة 4","mouseCommand5":"زر الفأرة 5","mouseWheelClick":"النقر بعجلة الفأرة","mouseInvert":"عكس أزرار الفأرة","disableChat":"تعطيل الدردشة",
@@ -21783,7 +21789,7 @@ var _lmLabelI18n = {
         "showMapBorders":"顯示地圖邊界","showGhostCells":"幽靈細胞（降低 fps）","showGhostCellsInfo":"幽靈細胞資訊（容易混淆）","stickyCell":"黏性細胞（左鍵，按住右鍵）","gamepadEnabled":"遊戲手把 / 控制器支援","gamepadDeadzone":"遊戲手把搖桿死區",
         "rotateMap":"旋轉地圖","showMiniMap":"顯示小地圖","showMiniMapGrid":"顯示小地圖網格","showMiniMapGuides":"顯示小地圖輔助線","showExtraMiniMapGuides":"顯示額外小地圖輔助線","showMiniMapGhostCells":"顯示幽靈細胞",
         "showMiniMapTrail":"在小地圖顯示自己的軌跡","oneColoredTeammates":"隊友單一顏色","rainbowFood":"彩虹食物","oppColors":"對手顏色","oppRings":"對手外圈","virColors":"病毒顏色","splitRange":"分裂範圍",
-        "qdsplitRange":"快速雙重分裂範圍","sdsplitRange":"慢速雙重分裂範圍","virusesRange":"病毒範圍","textStroke":"名稱和質量描邊","namesStroke":"名稱描邊","massStroke":"質量描邊",
+        "qdsplitRange":"快速雙重分裂範圍","sdsplitRange":"慢速雙重分裂範圍","splitPrediction":"分裂預測（淡化不會分裂的細胞的游標線，agar.io）","tripleSplitRange":"三重分裂範圍","virusesRange":"病毒範圍","textStroke":"名稱和質量描邊","namesStroke":"名稱描邊","massStroke":"質量描邊",
         "bubbleCursorTracker":"泡泡追蹤（停用游標追蹤）","bubbleInd":"泡泡指示器（停用對手外圈）","cursorTracking":"游標追蹤","teammatesInd":"隊友指示器","FBTracking":"Facebook 泡泡追蹤","indicators":"指示器",
         "mouseSplit":"滑鼠左鍵","mouseFeed":"滑鼠右鍵","mouseCommand4":"滑鼠按鍵 4","mouseCommand5":"滑鼠按鍵 5","mouseWheelClick":"滑鼠滾輪點擊","mouseInvert":"反轉滑鼠按鍵","disableChat":"停用聊天",
         "coloredNicks":"彩色暱稱","hideChat":"隱藏聊天","chatSounds":"聲音通知","chatEmoticons":"表情符號","showChatImages":"在聊天中顯示圖片","showChatVideos":"在聊天中顯示影片","showChatBox":"使用聊天框而非彈出訊息",
@@ -21881,7 +21887,7 @@ var _lmLabelI18n = {
         "showExtraMiniMapGuides":"Показывать доп. направляющие миникарты","showMiniMapGhostCells":"Показывать клетки-призраки",
         "showMiniMapTrail":"Показывать свой след на миникарте","oneColoredTeammates":"Одноцветные союзники","rainbowFood":"Радужная еда","oppColors":"Цвета противников",
         "oppRings":"Кольца противников","virColors":"Цвета вирусов","splitRange":"Дальность сплита","qdsplitRange":"Дальность быстрого двойного сплита",
-        "sdsplitRange":"Дальность медленного двойного сплита","virusesRange":"Дальность вирусов","textStroke":"Обводка имён и массы","namesStroke":"Обводка имён",
+        "sdsplitRange":"Дальность медленного двойного сплита","splitPrediction":"Предсказание сплита (приглушает линии клеток, которые не разделятся, agar.io)","tripleSplitRange":"Дальность тройного сплита","virusesRange":"Дальность вирусов","textStroke":"Обводка имён и массы","namesStroke":"Обводка имён",
         "massStroke":"Обводка массы","bubbleCursorTracker":"Пузырьковый трекер (отключает отслеживание курсора)",
         "bubbleInd":"Пузырьковые индикаторы (отключают кольца противников)","cursorTracking":"Отслеживание курсора","teammatesInd":"Индикаторы союзников",
         "FBTracking":"Пузырьковый трекер Facebook","indicators":"Индикатор","mouseSplit":"Левая кнопка мыши","mouseFeed":"Правая кнопка мыши","mouseCommand4":"Кнопка мыши 4",
@@ -22016,7 +22022,7 @@ var _lmLabelI18n = {
         "showMiniMapGuides":"Minimap-Hilfslinien anzeigen","showExtraMiniMapGuides":"Zusätzliche Minimap-Hilfslinien anzeigen","showMiniMapGhostCells":"Geisterzellen anzeigen",
         "showMiniMapTrail":"Eigene Spur auf der Minimap anzeigen","oneColoredTeammates":"Einfarbige Teamkollegen","rainbowFood":"Regenbogen-Futter","oppColors":"Gegnerfarben",
         "oppRings":"Gegnerringe","virColors":"Virenfarben","splitRange":"Split-Reichweite","qdsplitRange":"Reichweite schneller Doppelsplit",
-        "sdsplitRange":"Reichweite langsamer Doppelsplit","virusesRange":"Virenreichweite","textStroke":"Kontur für Namen und Masse","namesStroke":"Namenskontur",
+        "sdsplitRange":"Reichweite langsamer Doppelsplit","splitPrediction":"Split-Vorhersage (blendet Linien von Zellen ab, die sich nicht teilen, agar.io)","tripleSplitRange":"Reichweite Dreifachsplit","virusesRange":"Virenreichweite","textStroke":"Kontur für Namen und Masse","namesStroke":"Namenskontur",
         "massStroke":"Massenkontur","bubbleCursorTracker":"Blasen-Tracker (deaktiviert Cursor-Tracking)","bubbleInd":"Blasen-Indikatoren (deaktiviert Gegnerringe)",
         "cursorTracking":"Cursor-Tracking","teammatesInd":"Teamkollegen-Indikatoren","FBTracking":"Facebook-Blasen-Tracker","indicators":"Indikator",
         "mouseSplit":"Linke Maustaste","mouseFeed":"Rechte Maustaste","mouseCommand4":"Maustaste 4","mouseCommand5":"Maustaste 5","mouseWheelClick":"Mausradklick",
@@ -22153,7 +22159,7 @@ var _lmLabelI18n = {
         "showMiniMap":"Mini haritayı göster","showMiniMapGrid":"Mini harita ızgarasını göster","showMiniMapGuides":"Mini harita kılavuzlarını göster",
         "showExtraMiniMapGuides":"Ek mini harita kılavuzlarını göster","showMiniMapGhostCells":"Hayalet hücreleri göster","showMiniMapTrail":"Kendi izimi mini haritada göster",
         "oneColoredTeammates":"Tek renkli takım arkadaşları","rainbowFood":"Gökkuşağı yem","oppColors":"Rakip renkleri","oppRings":"Rakip halkaları","virColors":"Virüs renkleri",
-        "splitRange":"Split menzili","qdsplitRange":"Hızlı çift split menzili","sdsplitRange":"Yavaş çift split menzili","virusesRange":"Virüs menzili",
+        "splitRange":"Split menzili","qdsplitRange":"Hızlı çift split menzili","sdsplitRange":"Yavaş çift split menzili","splitPrediction":"Split tahmini (bölünmeyecek hücrelerin çizgilerini soluk gösterir, agar.io)","tripleSplitRange":"Üçlü split menzili","virusesRange":"Virüs menzili",
         "textStroke":"İsim ve kütle dış çizgisi","namesStroke":"İsim dış çizgisi","massStroke":"Kütle dış çizgisi",
         "bubbleCursorTracker":"Baloncuk takipçisi (imleç takibini kapatır)","bubbleInd":"Baloncuk göstergeleri (rakip halkalarını kapatır)","cursorTracking":"İmleç takibi",
         "teammatesInd":"Takım arkadaşı göstergeleri","FBTracking":"Facebook baloncuk takipçisi","indicators":"Gösterge","mouseSplit":"Sol fare tuşu","mouseFeed":"Sağ fare tuşu",
@@ -22289,7 +22295,7 @@ var _lmLabelI18n = {
         "showMiniMap":"Minikaart tonen","showMiniMapGrid":"Raster op minikaart tonen","showMiniMapGuides":"Hulplijnen op minikaart tonen",
         "showExtraMiniMapGuides":"Extra hulplijnen op minikaart tonen","showMiniMapGhostCells":"Spookcellen tonen","showMiniMapTrail":"Eigen spoor op de minikaart tonen",
         "oneColoredTeammates":"Teamgenoten in één kleur","rainbowFood":"Regenboogvoedsel","oppColors":"Kleuren van tegenstanders","oppRings":"Ringen van tegenstanders",
-        "virColors":"Viruskleuren","splitRange":"Split-bereik","qdsplitRange":"Bereik snelle dubbele split","sdsplitRange":"Bereik langzame dubbele split",
+        "virColors":"Viruskleuren","splitRange":"Split-bereik","qdsplitRange":"Bereik snelle dubbele split","sdsplitRange":"Bereik langzame dubbele split","splitPrediction":"Splitvoorspelling (dimt de lijnen van cellen die niet splitsen, agar.io)","tripleSplitRange":"Bereik drievoudige split",
         "virusesRange":"Virusbereik","textStroke":"Omlijning van namen en massa","namesStroke":"Omlijning van namen","massStroke":"Omlijning van massa",
         "bubbleCursorTracker":"Bubbeltracker (schakelt cursorvolging uit)","bubbleInd":"Bubbelindicatoren (schakelt ringen van tegenstanders uit)",
         "cursorTracking":"Cursorvolging","teammatesInd":"Indicatoren voor teamgenoten","FBTracking":"Facebook-bubbeltracker","mouseSplit":"Linkermuisknop",
@@ -26379,7 +26385,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26456,7 +26462,7 @@ function thelegendmodproject() {
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
             //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
             this.addOptions(
                 [
@@ -39273,6 +39279,7 @@ function thelegendmodproject() {
         leaderboard: [],
         botNicks: [],
         biggerSTEDCellsCache: [], //Sonia
+        biggerTSTECellsCache: [], /* enemies >= 8x dominationRate (triple split range) */
         biggerSTECellsCache: [],
         biggerCellsCache: [],
         smallerCellsCache: [],
@@ -53133,7 +53140,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         recalculatePlayerMass() {
             if (this.playerScore = Math.max(this.playerScore, this.playerMass),
-                defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
+                defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE || defaultmapsettings.tripleSplitRange) {
                 /* Use min/max tracked in calculatePlayerMassAndPosition — eliminates
                  * redundant Array.sort of playerCells (1–16 cells) every frame. */
                 var minS = this._playerMinSize || 0;
@@ -53179,8 +53186,11 @@ Most cells eaten   : ${mostCellsEaten}
         },
         compareCells() {
             var _isPlaying = (this.play && this.playerCells && this.playerCells.length > 0) || (window.multiboxPlayerEnabled && getActiveSpect && getActiveSpect(window.multiboxPlayerEnabled) && LM.playerCellsMulti && LM.playerCellsMulti.length > 0);
-            if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
+            if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange || defaultmapsettings.tripleSplitRange)) {
                 var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
+                /* Triple split range: separate pooled cache of enemies >= 8x (can triple-split onto you) */
+                var _triple = !!defaultmapsettings.tripleSplitRange, _wTSTE = 0;
+                var _tsteArr = this.biggerTSTECellsCache || (this.biggerTSTECellsCache = []);
                 /* Reset cache write cursors instead of .length=0 + push(new obj).
                  * Reuses pooled objects to avoid GC pressure (~200 allocs/frame → 0). */
                 var _wBSTED = 0, _wBSTE = 0, _wB = 0, _wSS = 0, _wS = 0, _wSTE = 0, _wSTED = 0;
@@ -53285,8 +53295,17 @@ Most cells eaten   : ${mostCellsEaten}
                             _obj.targetX = cell.targetX; _obj.targetY = cell.targetY;
                             _obj.size = _cs;
                         }
+                        if (_triple && !cell.isPlayerCell && fixMass >= _thr8) {
+                            if (!_tsteArr._pool) _tsteArr._pool = [];
+                            var _tObj = _tsteArr._pool[_wTSTE] || (_tsteArr._pool[_wTSTE] = { x: 0, y: 0, targetX: 0, targetY: 0, size: 0 });
+                            _tsteArr[_wTSTE++] = _tObj;
+                            _tObj.x = _cx; _tObj.y = _cy;
+                            _tObj.targetX = cell.targetX; _tObj.targetY = cell.targetY;
+                            _tObj.size = _cs;
+                        }
                     }
                 }
+                _tsteArr.length = _wTSTE;
                 /* Truncate arrays to actual count (no splice, just length assignment) */
                 if (_splitOrRings) {
                     this.biggerSTEDCellsCache.length = _wBSTED;
@@ -53298,6 +53317,7 @@ Most cells eaten   : ${mostCellsEaten}
                     this.STEDCellsCache.length = _wSTED;
                 }
             } else {
+                if (this.biggerTSTECellsCache) this.biggerTSTECellsCache.length = 0;
                 if (this.biggerSTEDCellsCache) {
                     this.biggerSTEDCellsCache.length = 0;
                     this.biggerSTECellsCache.length = 0;
@@ -76882,6 +76902,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         }
                     }
                 }
+
+                /* Triple split range: 3 * size + 760 around enemies >= 8x your mass */
+                if (defaultmapsettings.tripleSplitRange && LM.biggerTSTECellsCache && LM.biggerTSTECellsCache.length) {
+                    this.drawWebGLRingsBatch(LM.biggerTSTECellsCache, 760, '#4000ff', 0.8, 3.0, 8);
+                }
             }
         },
 
@@ -76894,6 +76919,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var ctx = fxCtx || this.ctx;
             if (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) {
                 if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
+                    /* Split prediction (agar.io protocol only, as Delta) */
+                    this._lmSplitPred = !!(defaultmapsettings.splitPrediction && LM.integrity && !LM.isLegendWorld);
+                    if (this._lmSplitPred) {
+                        this.markSplitPrediction(LM);
+                        if (typeof spects !== 'undefined' && spects) {
+                            for (var _sps = 0; _sps < spects.length; _sps++) {
+                                if (spects[_sps] && spects[_sps].playerCellIDs) this.markSplitPrediction(spects[_sps]);
+                            }
+                        }
+                    }
                     if (!window.multiboxFollowMouse) {
                         if (!window.multiboxPlayerEnabled) {
                             if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(ctx, LM.playerCells);
@@ -76913,15 +76948,39 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
         },
+        /* Split prediction: own cell IDs in spawn order; at most 16 - count cells
+         * split, and only cells with mass >= 35 (agar.io minimum split mass).
+         * Cells that will not split get _lmNoSplit = true. */
+        markSplitPrediction(owner) {
+            var ids = owner && owner.playerCellIDs;
+            if (!ids) return;
+            var ord = owner._lmSplitOrd || (owner._lmSplitOrd = []);
+            var w = 0, i;
+            for (i = 0; i < ord.length; i++) if (ids.indexOf(ord[i]) !== -1) ord[w++] = ord[i];
+            ord.length = w;
+            for (i = 0; i < ids.length; i++) if (ord.indexOf(ids[i]) === -1) ord.push(ids[i]);
+            var free = 16 - ord.length, used = 0, cells = LM.indexedCells;
+            for (i = 0; i < ord.length; i++) {
+                var c = cells && cells[ord[i]];
+                if (!c) continue;
+                var sz = c.targetSize || c.size;
+                if (used < free && sz * sz >= 3500) {
+                    c._lmNoSplit = false;
+                    used++;
+                } else c._lmNoSplit = true;
+            }
+        },
         drawSplitVectorGuide(ctx, playerCells) {
             if (!playerCells || !playerCells.length || isNaN(LM.cursorX) || isNaN(LM.cursorY)) return;
             ctx.save();
             try {
                 ctx.setLineDash([8, 6]);
                 ctx.lineWidth = 2;
+                var _pred = this._lmSplitPred, _baseAlpha = ctx.globalAlpha;
                 for (var i = 0; i < playerCells.length; i++) {
                     var cell = playerCells[i];
                     if (!cell || !cell.isInView() || isNaN(cell.x) || isNaN(cell.y)) continue;
+                    if (_pred) ctx.globalAlpha = cell._lmNoSplit ? _baseAlpha * 0.3 : _baseAlpha;
 
                     /* Gameplay calculation stays authoritative */
                     var rawCellX = cell.x;
