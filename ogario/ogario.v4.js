@@ -20236,7 +20236,8 @@ var _lmLabelI18n = {
         "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)",
         "hk-netGraph":"Εμφάνιση / απόκρυψη γραφήματος δικτύου (FPS, ping)","hk-chatSounds":"Σίγαση / άρση σίγασης ήχων συνομιλίας","scanTrick":"Ενεργοποίηση Scan Trick",
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
-        "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick"
+        "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
+        "reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -20379,7 +20380,8 @@ var _lmLabelI18n = {
         "hk-copyServerLink":"Copiar enlace del servidor + contraseña (TK&PW)","hk-netGraph":"Mostrar / ocultar gráfica de red (FPS, ping)",
         "hk-chatSounds":"Silenciar / activar sonidos del chat","scanTrick":"Activar Scan Trick","scanTrickRounded":"Ajustar la dirección de movimiento",
         "scanTrickOnlyWhileLMB":"Ajustar solo mientras se mantiene el botón izquierdo","scanTrickDirections":"Direcciones ajustadas",
-        "scanTrickDistance":"Distancia de proyección normal","scanTrickRoundedDistance":"Distancia de proyección ajustada","scanTrickStatus":"Mostrar estado de Scan Trick"
+        "scanTrickDistance":"Distancia de proyección normal","scanTrickRoundedDistance":"Distancia de proyección ajustada","scanTrickStatus":"Mostrar estado de Scan Trick",
+        "reducedMotion":"Movimiento reducido (sin temblor de pantalla ni partículas de muerte)","lmSpecFollowing":"Siguiendo","lbClickSpectate":"Espectador libre: haz clic en una masa de la clasificación para seguir a ese jugador","hk-specNextTop":"Espectador libre: seguir al siguiente jugador de la clasificación","hideEventBanner":"Ocultar la cuenta atrás de eventos del servidor (Expanding Land)","hk-scanTrick":"Mantener Scan Trick"
     },
     "bg": {
         "start":"Начало","settings":"Настройки","restoreSettings":"Възстанови настройките по подразбиране","animationGroup":"Анимация","graphics":"Графика",
@@ -20522,7 +20524,8 @@ var _lmLabelI18n = {
         "hk-copyServerLink":"Копирай връзката към сървъра + паролата (TK&PW)","hk-netGraph":"Покажи / скрий мрежовата графика (FPS, ping)",
         "hk-chatSounds":"Заглуши / включи звуците на чата","scanTrick":"Включи Scan Trick","scanTrickRounded":"Прихващане на посоката на движение",
         "scanTrickOnlyWhileLMB":"Прихващай само докато левият бутон е задържан","scanTrickDirections":"Прихванати посоки","scanTrickDistance":"Нормално разстояние на проекция",
-        "scanTrickRoundedDistance":"Прихванато разстояние на проекция","scanTrickStatus":"Покажи състоянието на Scan Trick"
+        "scanTrickRoundedDistance":"Прихванато разстояние на проекция","scanTrickStatus":"Покажи състоянието на Scan Trick",
+        "reducedMotion":"Намалено движение (без трусене на екрана и частици при смърт)","lmSpecFollowing":"Следиш","lbClickSpectate":"Свободно наблюдение: кликни на маса в класацията, за да следиш играча","hk-specNextTop":"Свободно наблюдение: следи следващия играч от класацията","hideEventBanner":"Скрий обратното броене за събития на сървъра (Expanding Land)","hk-scanTrick":"Задръж за Scan Trick"
     },
     "fr": {
         "start":"Accueil","settings":"Paramètres","restoreSettings":"Restaurer les paramètres par défaut","graphics":"Graphismes",
@@ -20665,7 +20668,8 @@ var _lmLabelI18n = {
         "hk-copyServerLink":"Copier le lien du serveur + mot de passe (TK&PW)","hk-netGraph":"Afficher / masquer le graphique réseau (FPS, ping)",
         "hk-chatSounds":"Couper / rétablir les sons du chat","scanTrick":"Activer le Scan Trick","scanTrickRounded":"Aligner la direction du mouvement",
         "scanTrickOnlyWhileLMB":"Aligner seulement en maintenant le bouton gauche","scanTrickDirections":"Directions alignées",
-        "scanTrickDistance":"Distance de projection normale","scanTrickRoundedDistance":"Distance de projection alignée","scanTrickStatus":"Afficher l'état du Scan Trick"
+        "scanTrickDistance":"Distance de projection normale","scanTrickRoundedDistance":"Distance de projection alignée","scanTrickStatus":"Afficher l'état du Scan Trick",
+        "reducedMotion":"Mouvement réduit (sans tremblement d'écran ni particules de mort)","lmSpecFollowing":"Tu suis","lbClickSpectate":"Spectateur libre : clique sur une masse du classement pour suivre ce joueur","hk-specNextTop":"Spectateur libre : suivre le joueur suivant du classement","hideEventBanner":"Masquer le compte à rebours des événements du serveur (Expanding Land)","hk-scanTrick":"Maintenir le Scan Trick"
     },
     "ar": {
         "start":"الرئيسية","settings":"الإعدادات","restoreSettings":"استعادة الإعدادات الافتراضية","animationGroup":"الحركة","graphics":"الرسوميات",
@@ -20790,7 +20794,8 @@ var _lmLabelI18n = {
         "hk-mbRings":"إظهار/إخفاء حلقات multibox","hk-bigMinimap":"تكبير / استعادة الخريطة المصغرة","hk-copyServerLink":"نسخ رابط الخادم + كلمة المرور (TK&PW)",
         "hk-netGraph":"إظهار / إخفاء رسم الشبكة (FPS، ping)","hk-chatSounds":"كتم / إلغاء كتم أصوات الدردشة","scanTrick":"تفعيل Scan Trick",
         "scanTrickRounded":"تثبيت اتجاه الحركة","scanTrickOnlyWhileLMB":"التثبيت فقط أثناء الضغط على زر الفأرة الأيسر","scanTrickDirections":"الاتجاهات المثبتة",
-        "scanTrickDistance":"مسافة الإسقاط العادية","scanTrickRoundedDistance":"مسافة الإسقاط المثبتة","scanTrickStatus":"إظهار حالة Scan Trick"
+        "scanTrickDistance":"مسافة الإسقاط العادية","scanTrickRoundedDistance":"مسافة الإسقاط المثبتة","scanTrickStatus":"إظهار حالة Scan Trick",
+        "reducedMotion":"تقليل الحركة (بدون اهتزاز الشاشة أو جزيئات الموت)","lmSpecFollowing":"متابعة","lbClickSpectate":"المشاهدة الحرة: انقر على كتلة في لوحة الصدارة لمتابعة ذلك اللاعب","hk-specNextTop":"المشاهدة الحرة: متابعة اللاعب التالي في لوحة الصدارة","hideEventBanner":"إخفاء العد التنازلي لأحداث الخادم (Expanding Land)","hk-scanTrick":"اضغط مع الاستمرار لـ Scan Trick"
     },
     "zh": {
         "start":"首頁","settings":"設定","restoreSettings":"恢復預設設定","animationGroup":"動畫","graphics":"畫質","reverseTrick":"反向技巧（開發中）","onlineStatus":"顯示我在線上（Facebook）",
@@ -20874,7 +20879,8 @@ var _lmLabelI18n = {
         "hk-replayPause":"重播：暫停/繼續","hk-replayFaster":"重播：加快","hk-replaySlower":"重播：減慢","hk-replayFwd":"重播：前進 250 個封包","hk-replayBack":"重播：後退 250 個封包",
         "hk-middleMultiView":"切換 multibox 中間視角","hk-mbRings":"顯示/隱藏 multibox 外圈","hk-bigMinimap":"放大 / 還原小地圖","hk-copyServerLink":"複製伺服器連結 + 密碼 (TK&PW)",
         "hk-netGraph":"顯示 / 隱藏網路圖表（FPS、ping）","hk-chatSounds":"靜音 / 取消靜音聊天音效","scanTrick":"啟用 Scan Trick","scanTrickRounded":"鎖定移動方向","scanTrickOnlyWhileLMB":"只在按住滑鼠左鍵時鎖定",
-        "scanTrickDirections":"鎖定方向數","scanTrickDistance":"一般投射距離","scanTrickRoundedDistance":"鎖定投射距離","scanTrickStatus":"顯示 Scan Trick 狀態"
+        "scanTrickDirections":"鎖定方向數","scanTrickDistance":"一般投射距離","scanTrickRoundedDistance":"鎖定投射距離","scanTrickStatus":"顯示 Scan Trick 狀態",
+        "reducedMotion":"減少動態效果（無畫面震動和死亡粒子）","lmSpecFollowing":"跟隨中","lbClickSpectate":"自由觀戰：點擊排行榜上的質量以跟隨該玩家","hk-specNextTop":"自由觀戰：跟隨排行榜上的下一位玩家","hideEventBanner":"隱藏伺服器活動倒數（Expanding Land）","hk-scanTrick":"按住 Scan Trick"
     },
     "ru": {
         "start":"Главная","settings":"Настройки","restoreSettings":"Сбросить настройки по умолчанию","animationGroup":"Анимация","graphics":"Графика",
@@ -21008,7 +21014,8 @@ var _lmLabelI18n = {
         "hk-mbRings":"Показать/скрыть кольца мультибокса","hk-bigMinimap":"Увеличить / вернуть миникарту","hk-copyServerLink":"Копировать ссылку на сервер + пароль (TK&PW)",
         "hk-netGraph":"Показать / скрыть сетевой график (FPS, ping)","hk-chatSounds":"Выкл. / вкл. звуки чата","scanTrick":"Включить Scan Trick",
         "scanTrickRounded":"Привязка направления движения","scanTrickOnlyWhileLMB":"Привязка только при зажатой левой кнопке","scanTrickDirections":"Направления привязки",
-        "scanTrickDistance":"Обычная дистанция проекции","scanTrickRoundedDistance":"Дистанция проекции с привязкой","scanTrickStatus":"Показывать статус Scan Trick"
+        "scanTrickDistance":"Обычная дистанция проекции","scanTrickRoundedDistance":"Дистанция проекции с привязкой","scanTrickStatus":"Показывать статус Scan Trick",
+        "reducedMotion":"Меньше движения (без тряски экрана и частиц смерти)","lmSpecFollowing":"Наблюдение","lbClickSpectate":"Свободное наблюдение: клик по массе в топе — следить за этим игроком","hk-specNextTop":"Свободное наблюдение: следить за следующим игроком из топа","hideEventBanner":"Скрыть обратный отсчёт событий сервера (Expanding Land)","hk-scanTrick":"Удерживать Scan Trick"
     },
     "de": {
         "start":"Start","settings":"Einstellungen","restoreSettings":"Standardeinstellungen wiederherstellen","graphics":"Grafik","reverseTrick":"Reverse-Trick (in Entwicklung)",
@@ -21143,7 +21150,8 @@ var _lmLabelI18n = {
         "hk-bigMinimap":"Minimap vergrößern / zurücksetzen","hk-copyServerLink":"Server-Link + Passwort kopieren (TK&PW)","hk-netGraph":"Netzgrafik ein-/ausblenden (FPS, Ping)",
         "hk-chatSounds":"Chat-Töne stumm / laut","scanTrickGroup":"Scan-Trick","scanTrick":"Scan-Trick aktivieren","scanTrickRounded":"Bewegungsrichtung einrasten",
         "scanTrickOnlyWhileLMB":"Nur einrasten, solange die linke Maustaste gehalten wird","scanTrickDirections":"Eingerastete Richtungen",
-        "scanTrickDistance":"Normale Projektionsdistanz","scanTrickRoundedDistance":"Eingerastete Projektionsdistanz","scanTrickStatus":"Scan-Trick-Status anzeigen"
+        "scanTrickDistance":"Normale Projektionsdistanz","scanTrickRoundedDistance":"Eingerastete Projektionsdistanz","scanTrickStatus":"Scan-Trick-Status anzeigen",
+        "reducedMotion":"Weniger Bewegung (kein Bildschirmwackeln, keine Todespartikel)","lmSpecFollowing":"Du folgst","lbClickSpectate":"Freier Zuschauermodus: Klick auf eine Masse in der Bestenliste folgt dem Spieler","hk-specNextTop":"Freier Zuschauermodus: nächstem Spieler der Bestenliste folgen","hideEventBanner":"Countdown für Server-Events ausblenden (Expanding Land)","hk-scanTrick":"Scan-Trick halten"
     },
     "tr": {
         "start":"Ana sayfa","settings":"Ayarlar","restoreSettings":"Varsayılan ayarları geri yükle","animationGroup":"Animasyon","graphics":"Grafik",
@@ -21279,7 +21287,8 @@ var _lmLabelI18n = {
         "hk-mbRings":"Multibox halkalarını göster/gizle","hk-bigMinimap":"Mini haritayı büyüt / geri al","hk-copyServerLink":"Sunucu bağlantısı + şifreyi kopyala (TK&PW)",
         "hk-netGraph":"Ağ grafiğini göster / gizle (FPS, ping)","hk-chatSounds":"Sohbet seslerini kapat / aç","scanTrick":"Scan Trick'i etkinleştir",
         "scanTrickRounded":"Hareket yönünü sabitle","scanTrickOnlyWhileLMB":"Sadece sol fare tuşu basılıyken sabitle","scanTrickDirections":"Sabitlenen yönler",
-        "scanTrickDistance":"Normal yansıtma mesafesi","scanTrickRoundedDistance":"Sabitlenmiş yansıtma mesafesi","scanTrickStatus":"Scan Trick durumunu göster"
+        "scanTrickDistance":"Normal yansıtma mesafesi","scanTrickRoundedDistance":"Sabitlenmiş yansıtma mesafesi","scanTrickStatus":"Scan Trick durumunu göster",
+        "reducedMotion":"Azaltılmış hareket (ekran sarsıntısı ve ölüm parçacıkları yok)","lmSpecFollowing":"Takip ediliyor","lbClickSpectate":"Serbest izleme: oyuncuyu takip etmek için sıralamadaki kütleye tıkla","hk-specNextTop":"Serbest izleme: sıralamadaki sonraki oyuncuyu takip et","hideEventBanner":"Sunucu etkinliği geri sayımını gizle (Expanding Land)","hk-scanTrick":"Scan Trick için basılı tut"
     },
     "nl": {
         "start":"Start","settings":"Instellingen","restoreSettings":"Standaardinstellingen herstellen","animationGroup":"Animatie",
@@ -21417,7 +21426,8 @@ var _lmLabelI18n = {
         "hk-netGraph":"Netwerkgrafiek tonen / verbergen (FPS, ping)","hk-chatSounds":"Chatgeluiden dempen / aanzetten","scanTrick":"Scan Trick inschakelen",
         "scanTrickRounded":"Bewegingsrichting vastklikken","scanTrickOnlyWhileLMB":"Alleen vastklikken terwijl de linkermuisknop ingedrukt is",
         "scanTrickDirections":"Vastgeklikte richtingen","scanTrickDistance":"Normale projectieafstand","scanTrickRoundedDistance":"Vastgeklikte projectieafstand",
-        "scanTrickStatus":"Scan Trick-status tonen"
+        "scanTrickStatus":"Scan Trick-status tonen",
+        "reducedMotion":"Minder beweging (geen schermschudden of doodsdeeltjes)","lmSpecFollowing":"Je volgt","lbClickSpectate":"Vrij toekijken: klik op een massa in het klassement om die speler te volgen","hk-specNextTop":"Vrij toekijken: volgende speler uit het klassement volgen","hideEventBanner":"Aftelling van serverevenementen verbergen (Expanding Land)","hk-scanTrick":"Scan Trick ingedrukt houden"
     }
 };
 var _lmLabelLang = null;
