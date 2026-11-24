@@ -8227,12 +8227,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 _waiting.push(_lmUE('itemIn', '{0} in {1}').replace('{0}', _lmUE('nextDaily', 'next daily quest')).replace('{1}', _fmtLeft(_dailySecs)));
             }
         }
-        /* Expanding Land daily challenges met but not claimed (none on other servers). */
+        /* Expanding Land daily challenges met but not claimed (none on other servers). Not listed
+         * as claimed here: the server's reply (type 220) shows its own toast once it is confirmed. */
+        var _dchSent = 0;
         try {
             var _dch = window._lmDailyChallenges;
             if (_dch && Array.isArray(_dch.challenges) && typeof window.claimDailyChallenge === 'function') {
                 _dch.challenges.forEach(function (c) {
-                    if (c && c.completed && !c.claimed && window.claimDailyChallenge(c.slot) !== false) _claimed.push(_lmUE('itemChallenge', 'daily challenge'));
+                    if (c && c.completed && !c.claimed && window.claimDailyChallenge(c.slot) !== false) _dchSent++;
                 });
             }
         } catch (dchErr) { console.warn('[LM] Claim daily challenge error:', dchErr); }
@@ -8255,7 +8257,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         try {
             if (window.toastr) {
                 if (_claimed.length) toastr.success('<b>[CLAIM]:</b> ' + _lmUE('claimed', 'Claimed: {0}').replace('{0}', _claimed.join(', ')) + (_waiting.length ? '. ' + _lmUE('claimWaiting', 'Waiting: {0}').replace('{0}', _waiting.join(', ')) : '') + '.');
-                else toastr.info('<b>[CLAIM]:</b> ' + _lmUE('nothingToClaim', 'Nothing to claim right now') + (_waiting.length ? ': ' + _waiting.join(', ') : '') + '. ' + _lmUE('levelRewardsNote', 'Level rewards are given by the server on level-up.'));
+                else if (!_dchSent) toastr.info('<b>[CLAIM]:</b> ' + _lmUE('nothingToClaim', 'Nothing to claim right now') + (_waiting.length ? ': ' + _waiting.join(', ') : '') + '. ' + _lmUE('levelRewardsNote', 'Level rewards are given by the server on level-up.'));
             }
         } catch (toastErr) { }
 
