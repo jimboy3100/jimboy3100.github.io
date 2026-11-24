@@ -497,7 +497,7 @@
                 if (saved.btnOpacity !== undefined) prefs.btnOpacity = saved.btnOpacity;
                 if (saved.btnScale !== undefined) prefs.btnScale = saved.btnScale;
                 if (saved.hudFade !== undefined) prefs.hudFade = saved.hudFade;
-                if (saved.targetMode !== undefined) prefs.targetMode = saved.targetMode;
+                if (saved.targetMode !== undefined) prefs.targetMode = !!saved.targetMode;
                 if (saved.swipeSplit !== undefined) prefs.swipeSplit = !!saved.swipeSplit;
                 if (saved.muteVibration !== undefined) prefs.muteVibration = !!saved.muteVibration;
                 if (saved.tapHaptic !== undefined) prefs.tapHaptic = !!saved.tapHaptic;
@@ -569,7 +569,8 @@
             '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> Quick chat buttons (commands 1-4)</label>' +
             '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> Multibox button (second player; uses more data)</label>' +
             '<label><input type="checkbox" id="lm-pingbtn"' + (prefs.pingBtn ? ' checked' : '') + '> Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)</label>' +
-            '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> Net graph (FPS and ping of the last 30 seconds)</label>';
+            '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> Net graph (FPS and ping of the last 30 seconds)</label>' +
+            '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> Direction on touch (no joystick): the cell moves toward where your finger touches</label>';
         drawer.appendChild(sp);
 
         /* The panel only shows with class "on", and nothing ever added it, so joystick
@@ -618,6 +619,14 @@
         });
         sp.querySelector('#lm-novib').addEventListener('change', function () { prefs.muteVibration = this.checked; savePrefs(); });
         sp.querySelector('#lm-stoprel').addEventListener('change', function () { prefs.stopOnRelease = this.checked; savePrefs(); });
+        /* Direction on touch (like agar.io): the touch point is the cursor, no joystick
+         * (prefs.targetMode was saved but nothing read it; its drawer toggle stays hidden) */
+        sp.querySelector('#lm-tdir').addEventListener('change', function () {
+            prefs.targetMode = this.checked;
+            bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
+            if (prefs.targetMode) jHide();
+            savePrefs();
+        });
         sp.querySelector('#lm-taphap').addEventListener('change', function () { prefs.tapHaptic = this.checked; savePrefs(); });
         /* Quick chat: chat commands 1-4 (Hotkeys > command texts) with one tap instead of the
          * keyboard; sent like the desktop command hotkeys (Expanding Land 2 s window included) */
@@ -1129,6 +1138,8 @@
             jId = t.identifier;
             jStartTime = Date.now();
             org.x = t.clientX; org.y = t.clientY;
+            /* Direction on touch: the cell goes toward the touch point, no joystick shown */
+            if (prefs.targetMode) { mouseAt(t.clientX, t.clientY); return; }
             /* no mouseAt(thumb position) here: it turned the cell toward wherever the thumb
              * landed (usually bottom-left) on every re-grip; keep the last direction until the
              * thumb moves */
@@ -1168,6 +1179,8 @@
             if (pOn) return;
             var t = tById(e.changedTouches, jId);
             if (!t) return;
+            /* Direction on touch: the finger is the cursor (released = last direction kept) */
+            if (prefs.targetMode) { mouseAt(t.clientX, t.clientY); return; }
 
             // Both modes use virtual joystick scaling
             var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
@@ -1259,7 +1272,7 @@
                     var t = e.targetTouches[0];
                     jId = t.identifier;
                     org.x = t.clientX; org.y = t.clientY;
-                    jShow(org.x, org.y, org.x, org.y);
+                    if (!prefs.targetMode) jShow(org.x, org.y, org.x, org.y);
                 }
                 pOn = false; pDist = 0;
             }
