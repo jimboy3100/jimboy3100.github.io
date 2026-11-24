@@ -115,7 +115,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.559;
+window.OgVer = 3.560;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -19600,6 +19600,24 @@ var _elDeathVisual =
  * Leaderboard box stayed empty: list the teams there, biggest first, own team in the
  * "me" colour. Server team order: red, green, blue. Own team = the dominant channel of
  * the own cell colour (the server paints each player in the team colour). */
+/* X position of the team pie (CSS px). On Expanding Land Teams the Leaderboard box lists the
+ * team shares, so the pie goes left of that box instead of over it; other servers keep the
+ * top-right corner. The box position is read at most twice a second (no layout every frame). */
+var _lmPieBox = { at: 0, left: 0 };
+function _lmPieX(defaultX, pieWidth) {
+    try {
+        if (!window.legendmod || !_lmElTeamsActive(window.legendmod)) return defaultX;
+        var now = Date.now();
+        if (now - _lmPieBox.at > 500) {
+            _lmPieBox.at = now;
+            var hud = document.getElementById('leaderboard-hud');
+            var r = hud ? hud.getBoundingClientRect() : null; /* fixed element: offsetParent is always null */
+            _lmPieBox.left = r && r.width > 0 && r.height > 0 ? r.left : 0;
+        }
+        if (!_lmPieBox.left) return defaultX;
+        return Math.max(10, Math.min(defaultX, _lmPieBox.left - pieWidth - 10));
+    } catch (e) { return defaultX; }
+}
 function _lmElTeamsBoard(client) {
     try {
         var pie = client && client.pieChart;
@@ -19619,7 +19637,7 @@ function _lmElTeamsBoard(client) {
         var html = '';
         for (var k = 0; k < order.length; k++) {
             var ti = order[k];
-            html += '<span' + (ti === mine ? ' class="me"' : '') + '>' + (k + 1) + '. <span style="color:' + cols[ti % 3] + '">\u25CF</span> ' +
+            html += '<span' + (ti === mine ? ' class="me"' : '') + '>' + (k + 1) + '. <i style="font-style:normal;color:' + cols[ti % 3] + '">\u25CF</i> ' + /* <i>: every span in the box is a block */
                 Math.round((+pie[ti] || 0) * 100) + '%</span>';
         }
         application.displayLeaderboard(html);
@@ -76538,7 +76556,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     try {
                         var _pieDpr = this.dpr || 1;
                         this.ctx.setTransform(_pieDpr, 0, 0, _pieDpr, 0, 0);
-                        this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
+                        this.ctx.drawImage(this.pieChart, _lmPieX(this.canvasWidth - this.pieChart.width - 10, this.pieChart.width), 10);
                     } catch (ePieDraw) {
                         this.pieChart._failed = true;
                     } finally {
@@ -76598,7 +76616,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     oCtx.setTransform(this.overlayCanvas.width / oW, 0, 0, this.overlayCanvas.height / oH, 0, 0);
                     if (_lmPieOnOverlay && this.pieChart && !this.pieChart._failed && (this.pieChart.width > 0 || this.pieChart.naturalWidth > 0)) {
                         try {
-                            oCtx.drawImage(this.pieChart, oW - this.pieChart.width - 10, 10);
+                            oCtx.drawImage(this.pieChart, _lmPieX(oW - this.pieChart.width - 10, this.pieChart.width), 10);
                         } catch (ePieDraw) {
                             this.pieChart._failed = true;
                         }
