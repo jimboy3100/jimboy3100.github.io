@@ -43528,6 +43528,8 @@ function thelegendmodproject() {
                         console.warn('[Protocol] Ignoring truncated leaderboard packet:', data.byteLength);
                         break;
                     }
+                    /* when the whole list last arrived: the server list counts players from it */
+                    this._lmLbAt = Date.now();
                     this.handleLeaderboard();
                     break;
                 case 49: //leaderboard for specific private servers
@@ -83248,6 +83250,50 @@ function appendLMhiFbPs() {
         return n + (n === 1 ? ' player' : ' players');
     }
 
+    /* "74 players · 27 bots": bots as the leaderboard footer counts them */
+    function sbPopulationText(players, bots) {
+        return sbPlayers(players) + (bots > 0 ? ' · ' + bots + (bots === 1 ? ' bot' : ' bots') : '');
+    }
+
+    /* Players and bots in a leaderboard (an array of nicks). The footer's rule: a name
+     * that appears more than twice is a group of bots. Everyone else is a player. */
+    function sbSplitBots(nicks) {
+        var seen = Object.create(null);
+        var i;
+        for (i = 0; i < nicks.length; i++) seen[nicks[i]] = (seen[nicks[i]] || 0) + 1;
+        var bots = 0;
+        for (var name in seen) if (seen[name] > 2) bots += seen[name];
+        return { players: nicks.length - bots, bots: bots };
+    }
+
+    /* Opcode 53 (or 54 with a uint16 first): the whole leaderboard, which on agar.io lists
+     * every player in the arena. Records: u8 flags, nick\0 if flags & 2, u32 id if flags & 4.
+     * The nicks, or null when it is not that packet or is cut short. (Opcode 69, the
+     * minimap list, holds at most 20 players: it cannot count a busy arena.) */
+    function sbReadLeaderboardNicks(bytes) {
+        if (!bytes.length || (bytes[0] !== 53 && bytes[0] !== 54)) return null;
+        var o = bytes[0] === 54 ? 3 : 1;
+        if (o > bytes.length) return null;
+        var nicks = [];
+        while (o < bytes.length) {
+            var flags = bytes[o++];
+            var nick = '';
+            if (flags & 2) {
+                var end = o;
+                while (end < bytes.length && bytes[end] !== 0) end++;
+                if (end >= bytes.length) return null;
+                nick = sbReadCString(bytes, o);
+                o = end + 1;
+            }
+            if (flags & 4) {
+                if (o + 4 > bytes.length) return null;
+                o += 4;
+            }
+            nicks.push(nick);
+        }
+        return nicks;
+    }
+
     function sbReadUint32LE(bytes, offset) {
         return (bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)) >>> 0;
     }
@@ -83405,7 +83451,7 @@ function appendLMhiFbPs() {
     var sbScan = { token: 0, running: false, key: '', attempt: 0, error: '', timer: null };
     var sbJoin = null;         /* { host, key, alias, startedAt } */
     var sbNotice = null;       /* { text, at } */
-    var sbCurrent = { host: '', key: '', since: 0, raw: null, rawAt: 0 };
+    var sbCurrent = { host: '', key: '', since: 0, raw: null, rawAt: 0, bots: 0, fromLb: false };
     var sbProbe = { frame: null, queue: [], active: 0, cancels: new Set(), lastCycle: 0 };
     var sbLastSignature = '';
     var sbStarted = false;
@@ -83515,18 +83561,29 @@ function appendLMhiFbPs() {
             var old = oldList && oldList.servers.get(sbCurrent.host);
             if (old && sbCurrent.raw !== null) {
                 old.players = sbCurrent.raw;
+                old.bots = sbCurrent.bots || 0;
                 old.checkedAt = sbCurrent.rawAt;
                 old.status = 'cached';
             }
-            sbCurrent = { host: host, key: ctx.key, since: Date.now(), raw: null, rawAt: 0 };
+            sbCurrent = { host: host, key: ctx.key, since: Date.now(), raw: null, rawAt: 0, bots: 0, fromLb: false };
             if (old && oldList.key === ctx.key) sbQueueProbe(old, true);
         }
         if (!host) return;
 
         var lm = window.legendmod;
-        if (ctx.connected && lm && Array.isArray(lm.ghostCells) && lm.ghostCellsTime >= sbCurrent.since) {
+        /* The leaderboard lists everyone in the arena; the minimap list (ghost cells) stops at
+         * 20, so it is only the fallback before a leaderboard arrived. */
+        if (ctx.connected && lm && Array.isArray(lm.leaderboard) && lm._lmLbAt >= sbCurrent.since) {
+            var split = sbSplitBots(lm.leaderboard.map(function (e) { return e && e.id === 'isPlayer' ? '\u0000own' : String((e && e.nick) || ''); }));
+            sbCurrent.raw = split.players;
+            sbCurrent.bots = split.bots;
+            sbCurrent.rawAt = lm._lmLbAt;
+            sbCurrent.fromLb = true;
+        } else if (ctx.connected && lm && Array.isArray(lm.ghostCells) && lm.ghostCellsTime >= sbCurrent.since) {
             sbCurrent.raw = lm.ghostCells.length;
+            sbCurrent.bots = 0;
             sbCurrent.rawAt = lm.ghostCellsTime;
+            sbCurrent.fromLb = false;
         }
 
         /* The current arena joins this region + mode's list only when master (or this
@@ -83542,6 +83599,7 @@ function appendLMhiFbPs() {
         entry.offline = false;
         if (sbCurrent.raw !== null) {
             entry.players = sbCurrent.raw;
+            entry.bots = sbCurrent.bots || 0;
             entry.checkedAt = sbCurrent.rawAt;
             entry.status = 'live';
         }
@@ -83549,8 +83607,9 @@ function appendLMhiFbPs() {
 
     function sbCurrentCount(ctx) {
         if (!ctx.currentHost || sbCurrent.host !== ctx.currentHost || sbCurrent.raw === null) return null;
-        /* The FFA list leaves out your own player (the Piccolo mod's rule) */
-        return sbCurrent.raw + (ctx.mode === ':ffa' && ctx.mainAlive ? 1 : 0);
+        /* The FFA minimap list leaves out your own player (the Piccolo mod's rule); the
+         * leaderboard already has you */
+        return sbCurrent.raw + (!sbCurrent.fromLb && ctx.mode === ':ffa' && ctx.mainAlive ? 1 : 0);
     }
 
     /* ---------- finding servers ---------- */
@@ -83730,8 +83789,9 @@ function appendLMhiFbPs() {
         sbProbe.active--;
         if (result.ok) {
             entry.players = result.count;
+            entry.bots = result.bots || 0;
             entry.checkedAt = Date.now();
-            entry.status = result.count === 0 ? 'empty' : 'measured';
+            entry.status = result.count + (result.bots || 0) === 0 ? 'empty' : result.capped ? 'minimap list (at most 20)' : 'measured';
             entry.fails = 0;
             entry.offline = false;
         } else if (result.reason !== 'cancelled') {
@@ -83753,7 +83813,9 @@ function appendLMhiFbPs() {
     /*
      * Spectator connection: handshake (254 protocol, 255 client version), wait for
      * the 241 key, answer 242 with spectate (1), reply to pings (226 -> 227) and
-     * finish on the first 69 player list. No login is ever sent.
+     * finish on the first whole leaderboard (53/54: everyone in the arena). The 69
+     * minimap list stops at 20 players, so it is used only when no leaderboard came
+     * within the observation time. No login is ever sent.
      */
     function sbRunProbe(entry, done) {
         var realm = sbProbeRealm();
@@ -83779,6 +83841,7 @@ function appendLMhiFbPs() {
         var stage = 'connecting';
         var healthAfterSpectate = 0;
         var positiveLeaderboard = false;
+        var ghostCount = null;
         var observeTimer = null;
         var socket = null;
 
@@ -83842,6 +83905,10 @@ function appendLMhiFbPs() {
                 spectateSent = true;
                 stage = 'population';
                 observeTimer = setTimeout(function () {
+                    if (ghostCount !== null) {
+                        finish({ ok: true, count: ghostCount, bots: 0, capped: ghostCount >= 20 });
+                        return;
+                    }
                     finish({
                         ok: false,
                         reason: positiveLeaderboard ? 'players-present-count-unavailable'
@@ -83871,8 +83938,14 @@ function appendLMhiFbPs() {
                     }
                 }
             }
+            var nicks = sbReadLeaderboardNicks(plain);
+            if (nicks !== null) {
+                var split = sbSplitBots(nicks);
+                finish({ ok: true, count: split.players, bots: split.bots });
+                return;
+            }
             var count = sbReadPopulation(plain);
-            if (count !== null) finish({ ok: true, count: count });
+            if (count !== null) ghostCount = count;
         }
 
         try {
@@ -84022,7 +84095,7 @@ function appendLMhiFbPs() {
     }
 
     function sbCountText(entry) {
-        if (entry.players !== null) return sbPlayers(entry.players);
+        if (entry.players !== null) return sbPopulationText(entry.players, entry.bots || 0);
         if (entry.active || entry.queued) return 'checking…';
         return '? players';
     }
@@ -84030,6 +84103,7 @@ function appendLMhiFbPs() {
     function sbEntryTitle(entry) {
         var title = entry.alias + ' — ' + sbHostTail(entry.host);
         if (entry.checkedAt) title += '\nCounted at ' + new Date(entry.checkedAt).toLocaleTimeString();
+        if (entry.bots) title += '\nBots: names on the leaderboard 3 or more times';
         if (entry.status && entry.status !== 'live' && entry.status !== 'measured') title += '\nLast check: ' + entry.status;
         return title;
     }
@@ -84046,7 +84120,7 @@ function appendLMhiFbPs() {
                 : current ? current.alias : 'This server';
             items.push({
                 value: ctx.currentHost,
-                text: '★ ' + name + ' · ' + (count !== null ? sbPlayers(count) : ctx.connected ? 'counting…' : 'connecting…') + ' · you’re here',
+                text: '★ ' + name + ' · ' + (count !== null ? sbPopulationText(count, sbCurrent.bots || 0) : ctx.connected ? 'counting…' : 'connecting…') + ' · you’re here',
                 title: (current ? sbEntryTitle(current) : name + ' — ' + sbHostTail(ctx.currentHost)),
                 current: true
             });
