@@ -14,7 +14,7 @@ function grab(name) {
 }
 const ctx = { TextDecoder };
 vm.createContext(ctx);
-vm.runInContext(['sbPlayers', 'sbPopulationText', 'sbSplitBots', 'sbReadCString', 'sbReadLeaderboardNicks', 'sbReadPopulation'].map(grab).join('\n'), ctx);
+vm.runInContext(['sbPlayers', 'sbPopulationText', 'sbSplitBots', 'sbReadCString', 'sbReadLeaderboardNicks', 'sbReadPopulation', 'sbNameSet', 'sbSameArena'].map(grab).join('\n'), ctx);
 const enc = s => Array.from(Buffer.from(s, 'utf8'));
 /* flags 2|4: nick + id */
 const rec = nick => [6].concat(enc(nick), [0], [1, 0, 0, 0]);
@@ -36,5 +36,13 @@ check('empty leaderboard: 0', (ctx.sbReadLeaderboardNicks(Uint8Array.of(53)) || 
 check('cut-short record: null', ctx.sbReadLeaderboardNicks(lb(53, ['abc']).slice(0, 6)) === null);
 check('other opcodes: null', ctx.sbReadLeaderboardNicks(Uint8Array.of(69, 0, 0)) === null);
 check('unnamed record (flags 4 only)', (ctx.sbReadLeaderboardNicks(Uint8Array.of(53, 4, 1, 0, 0, 0)) || []).join() === '');
+/* one arena under two addresses: mostly the same named players at about the same time */
+const boardA = names.slice(0, 40), boardB = names.slice(3, 45);
+const setA = ctx.sbNameSet(boardA), setB = ctx.sbNameSet(boardB);
+check('name set drops bot groups and unnamed cells', ctx.sbNameSet(['', '', '', 'x', 'bot', 'bot', 'bot']).join() === 'x');
+check('same players a minute apart: same arena', ctx.sbSameArena(setA, 1000, setB, 61000));
+check('same players 5 minutes apart: not judged', !ctx.sbSameArena(setA, 1000, setB, 301000));
+check('different players: different arenas', !ctx.sbSameArena(setA, 1000, ctx.sbNameSet(names.slice(40, 74)), 1000));
+check('fewer than 5 names: not judged', !ctx.sbSameArena(['a', 'b', 'c'], 1, ['a', 'b', 'c'], 1));
 console.log(failed ? failed + ' check(s) failed' : 'all server list checks passed');
 process.exit(failed ? 1 : 0);

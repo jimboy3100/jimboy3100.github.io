@@ -51076,7 +51076,9 @@ Most cells eaten   : ${mostCellsEaten}
                         }
                     });
                     if (botcounter === 0) legendmod.botNicks = [];
-                    var totalRealPlayers = ArrayLeaderboardCount.length - howmanytypesofbots;
+                    /* everyone on the board minus the bot groups: counting distinct names made two
+                     * players with the same name one player (the server list counts the same way) */
+                    var totalRealPlayers = legendmod.leaderboard.length - counterNicks;
                     if (counterNicks > 0) {
                         teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
                     }
@@ -83554,6 +83556,27 @@ function appendLMhiFbPs() {
         return { players: nicks.length - bots, bots: bots };
     }
 
+    /* The named players of a leaderboard (no unnamed cells, no bot groups), at most 150:
+     * two list entries with mostly the same names at about the same time are one arena. */
+    function sbNameSet(nicks) {
+        var seen = Object.create(null), out = [], i;
+        for (i = 0; i < nicks.length; i++) seen[nicks[i]] = (seen[nicks[i]] || 0) + 1;
+        for (i = 0; i < nicks.length && out.length < 150; i++) {
+            var n = nicks[i];
+            if (n && seen[n] <= 2 && out.indexOf(n) < 0) out.push(n);
+        }
+        return out;
+    }
+
+    /* Same arena: at least 5 names on both and 60% of the smaller list in the other one,
+     * counted within 2 minutes of each other (boards change as players come and go). */
+    function sbSameArena(a, aAt, b, bAt) {
+        if (!a || !b || a.length < 5 || b.length < 5 || !aAt || !bAt || Math.abs(aAt - bAt) > 120000) return false;
+        var small = a.length <= b.length ? a : b, big = small === a ? b : a, hit = 0;
+        for (var i = 0; i < small.length; i++) if (big.indexOf(small[i]) >= 0) hit++;
+        return hit >= 0.6 * small.length;
+    }
+
     /* Opcode 53 (or 54 with a uint16 first): the whole leaderboard, which on agar.io lists
      * every player in the arena. Records: u8 flags, nick\0 if flags & 2, u32 id if flags & 4.
      * The nicks, or null when it is not that packet or is cut short. (Opcode 69, the
@@ -83862,7 +83885,9 @@ function appendLMhiFbPs() {
         /* The leaderboard lists everyone in the arena; the minimap list (ghost cells) stops at
          * 20, so it is only the fallback before a leaderboard arrived. */
         if (ctx.connected && lm && Array.isArray(lm.leaderboard) && lm._lmLbAt >= sbCurrent.since) {
-            var split = sbSplitBots(lm.leaderboard.map(function (e) { return e && e.id === 'isPlayer' ? '\u0000own' : String((e && e.nick) || ''); }));
+            var curNicks = lm.leaderboard.map(function (e) { return String((e && e.nick) || ''); });
+            var split = sbSplitBots(curNicks);
+            sbCurrent.names = sbNameSet(curNicks);
             sbCurrent.raw = split.players;
             sbCurrent.bots = split.bots;
             sbCurrent.rawAt = lm._lmLbAt;
@@ -83888,6 +83913,7 @@ function appendLMhiFbPs() {
         if (sbCurrent.raw !== null) {
             entry.players = sbCurrent.raw;
             entry.bots = sbCurrent.bots || 0;
+            if (sbCurrent.names) { entry.names = sbCurrent.names; entry.namesAt = sbCurrent.rawAt; }
             entry.checkedAt = sbCurrent.rawAt;
             entry.status = 'live';
         }
@@ -84079,6 +84105,8 @@ function appendLMhiFbPs() {
             entry.players = result.count;
             entry.bots = result.bots || 0;
             entry.checkedAt = Date.now();
+            entry.names = result.names || null;
+            entry.namesAt = result.names ? entry.checkedAt : 0;
             entry.status = result.count + (result.bots || 0) === 0 ? 'empty' : result.capped ? 'minimap list (at most 20)' : 'measured';
             entry.fails = 0;
             entry.offline = false;
@@ -84229,7 +84257,7 @@ function appendLMhiFbPs() {
             var nicks = sbReadLeaderboardNicks(plain);
             if (nicks !== null) {
                 var split = sbSplitBots(nicks);
-                finish({ ok: true, count: split.players, bots: split.bots });
+                finish({ ok: true, count: split.players, bots: split.bots, names: sbNameSet(nicks) });
                 return;
             }
             var count = sbReadPopulation(plain);
@@ -84400,18 +84428,20 @@ function appendLMhiFbPs() {
     function sbBuildItems(ctx) {
         var list = ctx.key ? sbLists.get(ctx.key) : null;
         var items = [];
+        var currentItem = null;
         if (ctx.currentHost) {
             var current = list && list.servers.get(ctx.currentHost);
             var count = sbCurrentCount(ctx);
             var partyToken = window.master && window.master.partyToken;
             var name = ctx.mode === ':party' ? 'Party' + (partyToken ? ' ' + partyToken : ' server')
                 : current ? current.alias : 'This server';
-            items.push({
+            currentItem = {
                 value: ctx.currentHost,
                 text: '★ ' + name + ' · ' + (count !== null ? sbPopulationText(count, sbCurrent.bots || 0) : ctx.connected ? 'counting…' : 'connecting…') + ' · you’re here',
                 title: (current ? sbEntryTitle(current) : name + ' — ' + sbHostTail(ctx.currentHost)),
                 current: true
-            });
+            };
+            items.push(currentItem);
         }
         if (list && ctx.scannable) {
             var others = [];
@@ -84423,14 +84453,27 @@ function appendLMhiFbPs() {
                 var pb = b.players === null ? -1 : b.players;
                 return pb - pa || a.index - b.index;
             });
+            /* One arena can come back from matchmaking under another address: an entry whose
+             * players are mostly the ones of your arena, or of one listed above it, is that
+             * arena again. It is left out and named in the first one's tooltip. */
+            var shown = [];
+            if (currentItem && sbCurrent.names) shown.push({ names: sbCurrent.names, at: sbCurrent.rawAt, item: currentItem });
             others.forEach(function (entry) {
+                for (var d = 0; d < shown.length; d++) {
+                    if (sbSameArena(entry.names, entry.namesAt, shown[d].names, shown[d].at)) {
+                        shown[d].item.title += '\nSame arena as ' + entry.alias + ' (' + sbHostTail(entry.host) + ')';
+                        return;
+                    }
+                }
                 var joining = sbJoin && sbJoin.host === entry.host;
-                items.push({
+                var item = {
                     value: entry.host,
                     text: entry.alias + ' · ' + (joining ? 'joining…' : sbCountText(entry)),
                     title: sbEntryTitle(entry),
                     current: false
-                });
+                };
+                items.push(item);
+                if (entry.names) shown.push({ names: entry.names, at: entry.namesAt, item: item });
             });
         }
         if (!items.length) {
