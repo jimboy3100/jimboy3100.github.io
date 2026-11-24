@@ -313,8 +313,14 @@
 				defaultKey: '',
 				keyDown() {
 					if (!application || typeof defaultmapsettings === 'undefined') return;
-					defaultmapsettings.mbRings = !defaultmapsettings.mbRings;
-					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('mbRings');
+					/* mbRings was split into mbRingsP1 and mbRingsP2: toggle both */
+					var _mbNew = !(defaultmapsettings.mbRingsP1 && defaultmapsettings.mbRingsP2);
+					defaultmapsettings.mbRingsP1 = _mbNew;
+					defaultmapsettings.mbRingsP2 = _mbNew;
+					if (typeof application.syncHotkeyOption === 'function') {
+						application.syncHotkeyOption('mbRingsP1');
+						application.syncHotkeyOption('mbRingsP2');
+					}
 				},
 				keyUp: null,
 				type: 'normal'
@@ -824,7 +830,7 @@
                 type: 'normal'
             },
             'hk-zoom1': {
-                label: textLanguage['hk-zoomLevel'] + ' 1',
+                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 1'; },
                 defaultKey: 'ALT+1',
                 keyDown() {
                     application && application.setZoom(0.5);
@@ -833,7 +839,7 @@
                 type: 'normal'
             },
             'hk-zoom2': {
-                label: textLanguage['hk-zoomLevel'] + ' 2',
+                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 2'; },
                 defaultKey: 'ALT+2',
                 keyDown() {
                     application && application.setZoom(0.25);
@@ -842,7 +848,7 @@
                 type: 'normal'
             },
             'hk-zoom3': {
-                label: textLanguage['hk-zoomLevel'] + ' 3',
+                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 3'; },
                 defaultKey: 'ALT+3',
                 keyDown() {
                     application && application.setZoom(0.125);
@@ -851,7 +857,7 @@
                 type: 'normal'
             },
             'hk-zoom4': {
-                label: textLanguage['hk-zoomLevel'] + ' 4',
+                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 4'; },
                 defaultKey: 'ALT+4',
                 keyDown() {
                     application && application.setZoom(0.075);
@@ -860,7 +866,7 @@
                 type: 'normal'
             },
             'hk-zoom5': {
-                label: textLanguage['hk-zoomLevel'] + ' 5',
+                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 5'; },
                 defaultKey: 'ALT+5',
                 keyDown() {
                     application && application.setZoom(0.05);
@@ -1006,13 +1012,13 @@
                 defaultKey: '',
                 keyDown() {
                     //if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
-					if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) {
+					if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) {
 						application.macrobotFeed(!0);	
 						//application.Botseject();
 					}																
                 },
                 keyUp(){
-					if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.macrobotFeed(!1); 
+					if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.macrobotFeed(!1); 
 				},
                 type: 'normal'
             },				
@@ -1020,8 +1026,8 @@
                 label: textLanguage['hk-bots-feed'],
                 defaultKey: '', // 'L' is already the Copy LB default; a later duplicate overwrote it
                 keyDown() {
-                    if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
-					else if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
+                    if (window.userBots && window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
+					else if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1030,8 +1036,8 @@
                 label: textLanguage['hk-bots-split'],
                 defaultKey: '', // 'M' is already the Show mass default
                 keyDown() {
-                    if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
-					else if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.Botsplit();
+                    if (window.userBots && window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
+					else if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.Botsplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1040,7 +1046,7 @@
                 label: textLanguage['hk-doubleBotSplit'],
                 defaultKey: '',
                 keyDown() {
-                    if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.doubleBotSplit();
+                    if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.doubleBotSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1049,7 +1055,7 @@
                 label: 'Bots Popsplit (Private servers)',
                 defaultKey: '',
                 keyDown() {
-                    if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.popBotSplit();
+                    if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.popBotSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1058,7 +1064,7 @@
                 label: textLanguage['hk-splitBot16'],
                 defaultKey: '',
                 keyDown() {
-                    if (legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.splitBot16();
+                    if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.splitBot16();
                 },
                 keyUp: null,
                 type: 'normal'

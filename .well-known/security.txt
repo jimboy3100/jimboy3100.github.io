@@ -3,7 +3,7 @@
 Contact: https://github.com/jimboy3100
 Expires: 2027-12-31T23:59:00.000Z
 Preferred-Languages: en
-Canonical: https://jimboy3100.github.io/.well-known/security.txt
+Canonical: https://www.legendmod.ml/.well-known/security.txt
 
 # If you find a security vulnerability in Legend Mod, please report it
 # via GitHub Issues or by contacting the developer directly.

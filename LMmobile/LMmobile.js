@@ -70,7 +70,9 @@
         'display:flex;flex-direction:column;align-items:center;gap:10px}' +
 
         /* ── SMALL ROW: 4× + 16× (positioned by JS above minimap) ── */
-        '.lm-menu #lm-mc-r,.lm-menu #lm-mc-sm{display:none!important}' +
+        /* Menu open: the buttons stay visible but take no taps (they sat above the menu and ate its
+         * taps). Hiding them made players think they were gone. */
+        '.lm-menu #lm-mc-r,.lm-menu #lm-mc-r *,.lm-menu #lm-mc-sm,.lm-menu #lm-mc-sm *{pointer-events:none!important}' +
         '#lm-mc-sm{position:fixed;z-index:100000;' +
         'pointer-events:none;user-select:none;-webkit-user-select:none;' +
         'display:flex;flex-direction:row;align-items:center;gap:10px}' + /* was 6px, next to the minimap */

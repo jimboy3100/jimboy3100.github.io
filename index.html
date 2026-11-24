@@ -26,8 +26,8 @@
 
     <!-- ═══ SEO: Canonical URL ═══ -->
     <link rel="canonical" href="https://www.legendmod.ml/">
-    <link rel="alternate" hreflang="en" href="https://jimboy3100.github.io/">
-    <link rel="alternate" hreflang="x-default" href="https://jimboy3100.github.io/">
+    <link rel="alternate" hreflang="en" href="https://www.legendmod.ml/">
+    <link rel="alternate" hreflang="x-default" href="https://www.legendmod.ml/">
     <link rel="search" type="application/opensearchdescription+xml" title="Legend Mod" href="/opensearch.xml">
     <script>if(location.hostname.indexOf('legendmod.ml')!==-1){var m=document.createElement('link');m.rel='manifest';m.href='/manifest.json';document.head.appendChild(m);}</script>
 
@@ -80,12 +80,7 @@
                 "name": "Legend Mod",
                 "description": "The most feature-rich agar.io extension — reduces lag, boosts FPS, and adds 60+ macros, custom skins, and more.",
                 "publisher": { "@id": "https://www.legendmod.ml/#organization" },
-                "inLanguage": "en",
-                "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": "https://www.legendmod.ml/?q={search_term_string}",
-                    "query-input": "required name=search_term_string"
-                }
+                "inLanguage": "en"
             },
             {
                 "@type": "Organization",
@@ -93,7 +88,14 @@
                 "name": "℄ Legend Clan",
                 "alternateName": ["Legend Clan", "LC Clan", "℄ Clan"],
                 "url": "https://www.legendmod.ml/",
-                "logo": "https://jimboy3100.github.io/banners/icon512.png",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://jimboy3100.github.io/banners/icon512.png",
+                    "width": 512,
+                    "height": 512
+                },
+                "foundingDate": "2016-11",
+                "founder": { "@id": "https://www.legendmod.ml/#creator" },
                 "sameAs": [
                     "https://www.facebook.com/Lcclan/",
                     "https://discord.com/invite/JUfpR9k",
@@ -116,6 +118,9 @@
                     "priceCurrency": "USD"
                 },
                 "installUrl": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja",
+                "downloadUrl": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja",
+                "softwareVersion": "1.8.2",
+                "datePublished": "2016-11-01",
                 "screenshot": "https://jimboy3100.github.io/banners/agario1200x630.png",
                 "author": { "@id": "https://www.legendmod.ml/#organization" },
                 "featureList": "60+ Macros, Tricksplit, Doublesplit, Popsplit, Quick Feeding, Custom Skins, Skin Rotator, Video Skins, Anti-Lag, FPS Boost, Chat, Bots, Gamepad Support, Auto Coins, Freeze Cell, Auto Respawn"
@@ -135,6 +140,18 @@
                     "price": "0",
                     "priceCurrency": "USD"
                 }
+            },
+            {
+                "@type": "Person",
+                "@id": "https://www.legendmod.ml/#creator",
+                "name": "Jimboy3100",
+                "alternateName": ["kyriakidisdimitrios", "Jimboy"],
+                "url": "https://github.com/jimboy3100",
+                "sameAs": [
+                    "https://github.com/jimboy3100",
+                    "https://www.facebook.com/Lcclan/"
+                ],
+                "memberOf": { "@id": "https://www.legendmod.ml/#organization" }
             }
         ]
     }
@@ -1378,6 +1395,8 @@
                     <li><b>Gamepad stick dead zone</b> slider (Mouse settings, next to Gamepad support): how far the stick must move before the cell follows it; 0.2 as before.</li>
                     <li><b>Expanding Land Teams</b>: Teams mode (pie, team colours, leaderboard) no longer switches off when you press Play, come back to the tab or the map grows; the pie fits phone screens.</li>
                     <li><b>Expanding Land Teams leaderboard</b>: the Leaderboard box lists the teams with their share of the map, biggest first, your team highlighted.</li>
+                    <li><b>Phones</b>: the Split, Feed, 4x and 16x buttons on the right stay visible again while the menu is open (they only ignore taps there, so the menu still works).</li>
+                    <li><b>Chat translation</b> works again: the translation service it used was shut down; it now uses the translator built into the browser (Chrome 138+, on your device, nothing is sent anywhere). Turn it on in the chat settings.</li>
                     <li><b>Private room fixes</b>: friends in the same room now share team chat and the minimap, Copy in a room copies the room link, older room links open the room window, Reconnect and server search skip <i>Private room</i>, the room window shows when you are in (it closes after Join), no double join while connecting, and a full room right after a drop asks you to try again in a few seconds.</li>
                     <li><b>Expanding Land Teams</b>: new server in the Private list. Three teams (red, green, blue), team mates cannot eat each other, and the leaderboard shows the teams pie. Log in as usual; Teams keeps its own progress, separate from FFA.</li>
                     <li><b>Daily challenges</b> on Expanding Land: two new challenges each day (eat players, survive, reach the top, eat viruses), each met in one life, with progress and a Claim button in Challenges and Claim All.</li>
