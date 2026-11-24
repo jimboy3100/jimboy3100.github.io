@@ -30,7 +30,8 @@
     var allOff = !s.a11yIndicators && s.a11yTextScale === 1 && s.a11yHudTextScale === 1;
     if (allOff) need('accessibility off: nothing added', !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind'));
     if (!s.skinCollections) need('collections button only with its option', !document.getElementById('lm-skin-collections'));
-    need('conflicts button in the hotkeys window', !!document.getElementById('lm-hk-conflicts'));
+    need('no conflicts button in the hotkeys window (checked when a key is set)', !document.getElementById('lm-hk-conflicts'));
+    need('keyCheck refuses browser keys', T.keyCheck && T.keyCheck('CTRL+T') && T.keyCheck('CTRL+T').level === 'block' && !T.keyCheck('Q'));
 
     /* every window opens on screen and closes with its x */
     var wins = { radial: 'lm-st-radial', conflicts: 'lm-st-conflicts', screenshot: 'lm-st-shot', skins: 'lm-st-skins' };
@@ -92,24 +93,7 @@
     /* conflicts list */
     var list = T.conflicts();
     need('conflict check runs', Array.isArray(list));
-    /* the Conflicts button sits with the other hotkeys window buttons, on screen and apart */
-    var hkLink = document.querySelector('.hotkeys-link');
-    if (hkLink) {
-      var hkWasOpen = $('#hotkeys').is(':visible');
-      if (!hkWasOpen) { hkLink.click(); await sleep(700); }
-      var btns = Array.prototype.slice.call(document.querySelectorAll('#hotkeys-menu button')).map(function (b) { return b.getBoundingClientRect(); });
-      var cb = document.getElementById('lm-hk-conflicts').getBoundingClientRect();
-      need('conflicts button on screen', inBox(cb));
-      need('hotkeys window buttons do not overlap', btns.every(function (a, i) { return btns.every(function (b, j) { return i === j || !(a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1); }); }));
-      info.hkMenu = Math.round(document.getElementById('hotkeys-menu').getBoundingClientRect().height);
-      document.getElementById('lm-hk-conflicts').click();
-      await sleep(50);
-      need('conflicts window from the hotkeys window', T.isOpen('conflicts') && $('#lm-st-conflicts').css('z-index') > +($('#hotkeys').css('z-index') || 0));
-      var jl = document.querySelector('#lm-st-conflicts a.lm-st-link');
-      info.jump = !!jl;
-      T.close();
-      if (!hkWasOpen) { $('#close-hotkeys').trigger('click'); await sleep(600); }
-    }
+
     info.conflicts = list.map(function (c) { return c.kind + ':' + c.key + ':' + c.level; }).join(' ');
 
     /* screenshot mode */

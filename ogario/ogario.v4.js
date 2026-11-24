@@ -1445,8 +1445,6 @@ window.lmT = (function () {
         "remindOn": {"en":"You will be reminded when a reward is ready.","el":"Θα ειδοποιηθείς όταν μια ανταμοιβή είναι έτοιμη.","es":"Te avisaremos cuando haya una recompensa lista.","bg":"Ще получиш напомняне, когато има готова награда.","fr":"Vous serez prévenu quand une récompense sera prête.","ar":"سيتم تذكيرك عندما تكون المكافأة جاهزة.","zh":"獎勵可領取時會提醒你。","ru":"Вы получите напоминание, когда награда будет готова.","de":"Du wirst erinnert, wenn eine Belohnung bereit ist.","tr":"Bir ödül hazır olduğunda hatırlatılacaksın.","pl":"Przypomnimy, gdy nagroda będzie gotowa.","nl":"Je krijgt een herinnering als er een beloning klaarstaat."},
         "remindOff": {"en":"Reward reminder off.","el":"Η υπενθύμιση ανταμοιβής απενεργοποιήθηκε.","es":"Recordatorio de recompensas desactivado.","bg":"Напомнянето за награди е изключено.","fr":"Rappel des récompenses désactivé.","ar":"تم إيقاف تذكير المكافآت.","zh":"已關閉獎勵提醒。","ru":"Напоминание о наградах выключено.","de":"Belohnungs-Erinnerung aus.","tr":"Ödül hatırlatıcısı kapalı.","pl":"Przypomnienie o nagrodach wyłączone.","nl":"Beloningsherinnering uit."},
         "sessionLine": {"en":"This session: {0} games · best mass {1} · {2} played","el":"Αυτή η συνεδρία: {0} παιχνίδια · καλύτερη μάζα {1} · {2} παιχνιδιού","es":"Esta sesión: {0} partidas · mejor masa {1} · {2} jugado","bg":"Тази сесия: {0} игри · най-голяма маса {1} · {2} игра","fr":"Cette session : {0} parties · meilleure masse {1} · {2} de jeu","ar":"هذه الجلسة: {0} ألعاب · أعلى كتلة {1} · {2} لعب","zh":"本次：{0} 場 · 最高質量 {1} · 遊玩 {2}","ru":"Эта сессия: {0} игр · лучшая масса {1} · {2} в игре","de":"Diese Sitzung: {0} Spiele · beste Masse {1} · {2} gespielt","tr":"Bu oturum: {0} oyun · en iyi kütle {1} · {2} oynandı","pl":"Ta sesja: {0} gier · najlepsza masa {1} · {2} gry","nl":"Deze sessie: {0} spellen · beste massa {1} · {2} gespeeld"},
-        "boundKeys": {"en":"Bound keys","el":"Πλήκτρα","es":"Teclas asignadas","bg":"Зададени клавиши","fr":"Touches attribuées","ar":"المفاتيح المعيّنة","zh":"已設定按鍵","ru":"Назначенные клавиши","de":"Belegte Tasten","tr":"Atanmış tuşlar","pl":"Przypisane klawisze","nl":"Toegewezen toetsen"},
-        "noBoundKeys": {"en":"No keys are bound.","el":"Δεν υπάρχουν πλήκτρα.","es":"No hay teclas asignadas.","bg":"Няма зададени клавиши.","fr":"Aucune touche attribuée.","ar":"لا توجد مفاتيح معيّنة.","zh":"沒有設定按鍵。","ru":"Клавиши не назначены.","de":"Keine Tasten belegt.","tr":"Atanmış tuş yok.","pl":"Brak przypisanych klawiszy.","nl":"Geen toetsen toegewezen."},
         "searchSettings": {"en":"Search settings...","el":"Αναζήτηση ρυθμίσεων...","es":"Buscar ajustes...","bg":"Търсене в настройките...","fr":"Rechercher un réglage...","ar":"ابحث في الإعدادات...","zh":"搜尋設定...","ru":"Поиск настроек...","de":"Einstellungen suchen...","tr":"Ayarlarda ara...","pl":"Szukaj ustawień...","nl":"Instellingen zoeken..."},
         "itemHourly": {"en":"hourly bonus","el":"ωριαίο μπόνους","es":"bonificación horaria","bg":"бонус на час","fr":"bonus horaire","ar":"مكافأة الساعة","zh":"每小時獎勵","ru":"ежечасный бонус","de":"stündlicher Bonus","tr":"saatlik bonus","pl":"bonus godzinny","nl":"uurbonus"},
         "itemDaily": {"en":"daily quest","el":"ημερήσια αποστολή","es":"misión diaria","bg":"дневна мисия","fr":"quête du jour","ar":"المهمة اليومية","zh":"每日任務","ru":"ежедневное задание","de":"tägliche Quest","tr":"günlük görev","pl":"codzienne zadanie","nl":"dagelijkse missie"},
@@ -82332,7 +82330,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setHotkeysMenu() {
             //var t = this;
             const setup = this;
-            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"lm-hk-sheet\" class=\"btn btn-info\">' + _lmTH('boundKeys', 'Bound keys') + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
+            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
                 if (hotkeysCommand.hasOwnProperty(command)) {
                     var currentCommand = hotkeysCommand[command],
                         text = '';
@@ -82350,33 +82348,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
                     } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
                 }
-            /* Read-only list of the keys that are bound, sorted by key (chat commands show their text) */
-            $(document).off('click.lmHkSheet').on('click.lmHkSheet', '#lm-hk-sheet', function (event) {
-                event.preventDefault();
-                $('#lm-hk-sheet-modal').remove();
-                var esc = function (s) { return $('<div>').text(String(s == null ? '' : s)).html(); };
-                var rows = [];
-                for (var k in hotkeys) {
-                    if (!hotkeys.hasOwnProperty(k) || !k) continue;
-                    var cmd = hotkeys[k];
-                    var hc = hotkeysCommand[cmd];
-                    if (!hc) continue;
-                    var label = hc.label;
-                    if (hc.type === 'command') label = chatCommand[String(cmd).replace('hk-', '')] || label;
-                    rows.push([k, label]);
-                }
-                rows.sort(function (a, b) { return a[0].localeCompare(b[0]); });
-                var body = rows.length ? rows.map(function (r) {
-                    return '<tr><td style="padding:3px 10px 3px 0;white-space:nowrap;"><kbd>' + esc(r[0]) + '</kbd></td><td style="padding:3px 0;">' + esc(r[1]) + '</td></tr>';
-                }).join('') : '<tr><td>' + _lmTH('noBoundKeys', 'No keys are bound.') + '</td></tr>';
-                var m = $('<div id="lm-hk-sheet-modal" class="lm-modal-overlay" style="position:fixed;inset:0;z-index:2000000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);">' +
-                    '<div style="background:#1b1f2a;color:#eee;border-radius:10px;padding:14px 18px;max-width:min(560px,calc(100vw - 32px));max-height:80vh;overflow:auto;font-size:13px;">' +
-                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><b>' + _lmTH('boundKeys', 'Bound keys') + '</b>' +
-                    '<a href="#" class="lm-hk-sheet-close" aria-label="Close" style="color:#aaa;font-size:20px;text-decoration:none;margin-left:16px;">&times;</a></div>' +
-                    '<table>' + body + '</table></div></div>');
-                m.on('click', function (e) { if (e.target === this || $(e.target).hasClass('lm-hk-sheet-close')) { e.preventDefault(); m.remove(); } });
-                $('body').append(m);
-            });
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
                 //hotkeysSetup.resetHotkeys();
@@ -82571,6 +82542,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         setHotkey(key, id) {
             if (id && (this.lastPressedKey !== key || this.lastKeyId !== id)) {
+                /* A key the browser or Legend Mod keeps (Ctrl+W, Ctrl+T, Alt+F4, Esc...) would never reach
+                 * the game: refuse it and keep the old binding. Keys the browser may still act on are
+                 * allowed with a warning. (Another command's key moves that command, as before.) */
+                if (key !== 'DEL') {
+                    var _lmKc = null;
+                    try { _lmKc = window.LMSmallTools && typeof window.LMSmallTools.keyCheck === 'function' ? window.LMSmallTools.keyCheck(key) : null; } catch (eKc) { }
+                    if (!_lmKc && /^(CTRL\+W|CTRL\+T|CTRL\+N|CTRL\+TAB|ALT\+TAB|ALT\+F4|ESC)$/.test(key)) _lmKc = { level: 'block', what: 'is kept by the browser' };
+                    var _lmKe = function (t) { return $('<div>').text(t).html(); };
+                    if (_lmKc && _lmKc.level === 'block') {
+                        var _lmKeep = '';
+                        for (var _lmK in hotkeys) { if (hotkeys.hasOwnProperty(_lmK) && _lmK !== 'spec-messageKey' && hotkeys[_lmK] === id) { _lmKeep = _lmK; break; } }
+                        $('#' + id).val(_lmKeep);
+                        if (window.toastr) toastr.warning('<b>' + _lmKe(key) + '</b> cannot be used: it ' + _lmKe(_lmKc.what) + '.');
+                        return;
+                    }
+                    if (_lmKc && _lmKc.level === 'warn' && window.toastr) toastr.warning('<b>' + _lmKe(key) + '</b> is set, but the browser may still use it: it ' + _lmKe(_lmKc.what) + '.');
+                }
                 var value = $('#' + id).val();
                 /* the key really bound to this command (the field text could differ) */
                 for (var _lmOldKey in hotkeys) {

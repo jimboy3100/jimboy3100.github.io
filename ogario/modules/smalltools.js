@@ -387,8 +387,7 @@
             '.lm-st-skin img{width:48px;height:48px;border-radius:50%;object-fit:cover;background:rgba(0,0,0,0.3);flex:none;}' +
             '.lm-st-star{cursor:pointer;font-size:20px;line-height:30px;width:30px;text-align:center;flex:none;user-select:none;}' +
             '.lm-st-conf{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);line-height:1.45;}' +
-            '.lm-st-lvl{display:inline-block;min-width:44px;margin-right:6px;padding:0 4px;border-radius:3px;font-size:10px;font-weight:700;text-align:center;text-transform:uppercase;}' +
-            '#lm-hk-conflicts.has{background:#c9302c;border-color:#ac2925;}';
+            '.lm-st-lvl{display:inline-block;min-width:44px;margin-right:6px;padding:0 4px;border-radius:3px;font-size:10px;font-weight:700;text-align:center;text-transform:uppercase;}';
         D.head.appendChild(s);
     }
 
@@ -705,45 +704,6 @@
             w.body.appendChild(row);
         });
         w.foot.appendChild(button(t('close'), false, closeWin));
-        refreshConflictBtn();
-    }
-    /* "Conflicts (n)" next to "Bound keys" in the hotkeys window */
-    function refreshConflictBtn() {
-        var b = D.getElementById('lm-hk-conflicts');
-        if (!b) return;
-        /* the count leaves out the notes (info); red only for real problems */
-        var n = 0, bad = 0;
-        try { currentConflicts().forEach(function (c) { if (c.level !== 'info') n++; if (c.level === 'error') bad++; }); } catch (e) { }
-        b.textContent = t('conflicts') + (n ? ' (' + n + ')' : '');
-        b.classList.toggle('has', bad > 0);
-    }
-    var hkTimer = 0;
-    function hookHotkeysWindow() {
-        var menu = D.getElementById('hotkeys-menu');
-        if (!menu) return false;
-        if (D.getElementById('lm-hk-conflicts')) return true;
-        addStyle();
-        var b = el('button', '', t('conflicts'));
-        b.id = 'lm-hk-conflicts';
-        b.className = 'btn btn-warning';
-        b.type = 'button';
-        b.addEventListener('click', function (e) { e.preventDefault(); openConflicts(); });
-        /* before Close, which stays the last button on the right */
-        var closeBtn = D.getElementById('close-hotkeys');
-        if (closeBtn && closeBtn.parentNode === menu) {
-            menu.insertBefore(b, closeBtn);
-            menu.insertBefore(D.createTextNode(' '), closeBtn);
-        } else {
-            menu.appendChild(D.createTextNode(' '));
-            menu.appendChild(b);
-        }
-        /* recount after a key is set or cleared in the window */
-        var soon = function () { clearTimeout(hkTimer); hkTimer = setTimeout(refreshConflictBtn, 120); };
-        var cfg = D.getElementById('hotkeys');
-        if (cfg) { cfg.addEventListener('keyup', soon); cfg.addEventListener('click', soon); }
-        D.addEventListener('click', function (e) { if (e.target && e.target.closest && e.target.closest('.hotkeys-link')) soon(); });
-        refreshConflictBtn();
-        return true;
     }
 
     /* ═══ 3. Screenshot mode + capture ═══ */
@@ -1245,14 +1205,26 @@
     api.compose = function () { return composeShot(shotOpts()); };
     api.redactReport = redactReport;
     api.conflicts = currentConflicts;
-    api.sync = function () { syncSkinsButton(); hookHotkeysWindow(); };
+    /* Checked by the hotkeys window when a key is pressed for a command (ogario.v4.js setHotkey):
+     * null = fine; { level: 'block' } = the browser or Legend Mod keeps that key, so it is refused;
+     * { level: 'warn' } = allowed, but the browser may still act on it. */
+    api.keyCheck = function (key) {
+        key = String(key || '');
+        if (own(BUILTIN_KEYS, key)) return { level: 'block', what: 'is used by ' + BUILTIN_KEYS[key] };
+        if (own(BROWSER_KEYS, key)) {
+            var b = BROWSER_KEYS[key];
+            if (b[0] === 'block') return { level: 'block', what: b[1] };
+            if (b[0] === 'warn') return { level: 'warn', what: b[1] };
+        }
+        return null;
+    };
+    api.sync = function () { syncSkinsButton(); };
 
-    /* the hotkeys window and the skins panel are built after this file may load */
+    /* the skins panel is built after this file may load */
     var tries = 0;
     (function waitUi() {
-        var a = hookHotkeysWindow();
         syncSkinsButton();
-        if ((!a || !D.getElementById('skins-panel')) && ++tries < 60) setTimeout(waitUi, 1000);
+        if (!D.getElementById('skins-panel') && ++tries < 60) setTimeout(waitUi, 1000);
     })();
     /* the option can also change through profiles or an import */
     setInterval(syncSkinsButton, 2000);
