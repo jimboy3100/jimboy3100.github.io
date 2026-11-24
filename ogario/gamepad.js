@@ -154,7 +154,8 @@
                 if (a && a.split16) a.split16(); else hk('hk-split16');
                 break;
             case 'multiboxSwap':
-                if (a && a.multiboxswap) a.multiboxswap();
+                /* only swap between existing units: with none, multiboxswap() would open a new connection */
+                if (a && a.multiboxswap && window.spects && window.spects.length && window.legendmod && window.legendmod.multiBoxPlayerExists) a.multiboxswap();
                 break;
             case 'respawn':
                 respawn();
