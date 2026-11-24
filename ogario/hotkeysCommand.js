@@ -762,6 +762,31 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			/* Small tools (ogario/modules/smalltools.js), no default keys. Radial menu: hold, point, release */
+			'hk-radialMenu': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-radialMenu']) || 'Radial command menu (hold)';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.radialDown();
+				},
+				keyUp() {
+					if (window.LMSmallTools) window.LMSmallTools.radialUp();
+				},
+				type: 'normal'
+			},
+			'hk-radialEditor': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-radialEditor']) || 'Radial menu: choose commands';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.toggle('radial');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			/* result image of the last (or current) life, ogario/modules/companion.js; pressed again it closes */
 			'hk-companionResult': {
 				get label() {
@@ -785,6 +810,61 @@
 				defaultKey: '',
 				keyDown() {
 					if (window.LMHudEditor && typeof window.LMHudEditor.toggle === 'function') window.LMHudEditor.toggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-hotkeyConflicts': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-hotkeyConflicts']) || 'Hotkey conflicts';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.toggle('conflicts');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-screenshotMode': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-screenshotMode']) || 'Screenshot mode (hide the HUD)';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.shotToggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-screenshotCapture': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-screenshotCapture']) || 'Capture screenshot (PNG)';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.capture();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-screenshotTool': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-screenshotTool']) || 'Screenshot window';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.toggle('screenshot');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-skinCollections': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-skinCollections']) || 'Skin collections';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.toggle('skins');
 				},
 				keyUp: null,
 				type: 'normal'

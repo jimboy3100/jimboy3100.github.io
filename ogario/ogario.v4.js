@@ -18098,7 +18098,6 @@ var displayText = {
         hideEventBanner: 'Hide the server event countdown (Expanding Land)',
         commandCentreBar: 'Command Centre quick bar in game (the starred items; Ctrl+K opens the Command Centre)',
         'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
-        'hk-serverManager': 'Servers window (favourites, recent, arenas): open / close',
         'hk-hudEditor': 'Edit HUD (move, resize, lock or hide the HUD boxes; saved layouts)',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
@@ -18718,6 +18717,18 @@ var displayText = {
         companionChat: 'Stream overlay: include chat lines',
         'hk-companionResult': 'Result image (PNG of your last or current life)',
         'hk-hudEditor': 'Edit HUD (move, resize, lock or hide the HUD boxes; saved layouts)',
+        accessibilityGroup: 'Accessibility',
+        a11yTextScale: 'Menu text size (1 = normal)',
+        a11yHudTextScale: 'HUD text size (1 = normal, on top of the HUD scale)',
+        a11yIndicators: 'Size symbols on opponents (▲ bigger, ▼ smaller; two: split range)',
+        skinCollections: 'Skin collections button in the skins panel (folders, tags, favourites)',
+        'hk-radialMenu': 'Radial command menu (hold)',
+        'hk-radialEditor': 'Radial menu: choose commands',
+        'hk-hotkeyConflicts': 'Hotkey conflicts',
+        'hk-screenshotMode': 'Screenshot mode (hide the HUD)',
+        'hk-screenshotCapture': 'Capture screenshot (PNG)',
+        'hk-screenshotTool': 'Screenshot window',
+        'hk-skinCollections': 'Skin collections',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -21478,6 +21489,11 @@ var defaultmapsettings = {
     middleClick: 'hk-multiboxswap',
     mouse4Click: 'hk-doubleSplit',
     mouse5Click: 'hk-split16',
+    skinCollections: false,       /* "Collections" button in the skins panel (ogario/modules/smalltools.js) */
+    /* accessibility (ogario/modules/accessibility.js); 1 / false = unchanged */
+    a11yTextScale: 1,             /* menu text size */
+    a11yHudTextScale: 1,          /* HUD text size, on top of hudScale */
+    a11yIndicators: false,        /* bigger / smaller symbols on opponent cells */
     //
     FacebookIDs: ''
 };
@@ -21703,7 +21719,7 @@ var _lmLabelI18n = {
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
-        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)"
+        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)","accessibilityGroup":"Προσβασιμότητα","a11yTextScale":"Μέγεθος κειμένου μενού (1 = κανονικό)","a11yHudTextScale":"Μέγεθος κειμένου HUD (1 = κανονικό, πάνω από την κλίμακα HUD)","a11yHighContrast":"HUD υψηλής αντίθεσης (συμπαγές φόντο, περιγράμματα)","a11yIndicators":"Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)","a11yNoFlash":"Λιγότερα αναβοσβησίματα (χωρίς κινούμενα στοιχεία σελίδας)","a11yPalette":"Παλέτα αχρωματοψίας για τα χρώματα και τα δαχτυλίδια αντιπάλων","skinCollections":"Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)","hk-radialMenu":"Κυκλικό μενού εντολών (κράτημα)","hk-radialEditor":"Κυκλικό μενού: επιλογή εντολών","hk-hotkeyConflicts":"Συγκρούσεις πλήκτρων","hk-screenshotMode":"Λειτουργία στιγμιότυπου (κρύβει το HUD)","hk-screenshotCapture":"Λήψη στιγμιότυπου (PNG)","hk-screenshotTool":"Παράθυρο στιγμιότυπου","hk-skinCollections":"Συλλογές skins","hk-bugReport":"Αναφορά σφάλματος (διαγνωστικά)","a11yPaletteOff":"Χρώματα θέματος","a11yPaletteDeut":"Δευτερανωπία (αδύναμο πράσινο)","a11yPaletteProt":"Πρωτανωπία (αδύναμο κόκκινο)","a11yPaletteTrit":"Τριτανωπία (αδύναμο μπλε)"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -23016,6 +23032,19 @@ textLanguage['hk-hudEditor'] = textLanguage['hk-hudEditor'] || 'Edit HUD (move, 
 textLanguage.companionLive = textLanguage.companionLive || 'Stream overlay / second screen (companion.html, same browser)';
 textLanguage.companionChat = textLanguage.companionChat || 'Stream overlay: include chat lines';
 textLanguage['hk-companionResult'] = textLanguage['hk-companionResult'] || 'Result image (PNG of your last or current life)';
+/* Small tools and accessibility: same fallback pattern. */
+textLanguage['accessibilityGroup'] = textLanguage['accessibilityGroup'] || 'Accessibility';
+textLanguage['a11yTextScale'] = textLanguage['a11yTextScale'] || 'Menu text size (1 = normal)';
+textLanguage['a11yHudTextScale'] = textLanguage['a11yHudTextScale'] || 'HUD text size (1 = normal, on top of the HUD scale)';
+textLanguage['a11yIndicators'] = textLanguage['a11yIndicators'] || 'Size symbols on opponents (▲ bigger, ▼ smaller; two: split range)';
+textLanguage['skinCollections'] = textLanguage['skinCollections'] || 'Skin collections button in the skins panel (folders, tags, favourites)';
+textLanguage['hk-radialMenu'] = textLanguage['hk-radialMenu'] || 'Radial command menu (hold)';
+textLanguage['hk-radialEditor'] = textLanguage['hk-radialEditor'] || 'Radial menu: choose commands';
+textLanguage['hk-hotkeyConflicts'] = textLanguage['hk-hotkeyConflicts'] || 'Hotkey conflicts';
+textLanguage['hk-screenshotMode'] = textLanguage['hk-screenshotMode'] || 'Screenshot mode (hide the HUD)';
+textLanguage['hk-screenshotCapture'] = textLanguage['hk-screenshotCapture'] || 'Capture screenshot (PNG)';
+textLanguage['hk-screenshotTool'] = textLanguage['hk-screenshotTool'] || 'Screenshot window';
+textLanguage['hk-skinCollections'] = textLanguage['hk-skinCollections'] || 'Skin collections';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -25913,6 +25942,12 @@ function thelegendmodproject() {
                     case 'massLossAlert':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
+                    case 'a11yIndicators':
+                        if (window.LMAccessibility) LMAccessibility.sync();
+                        break;
+                    case 'skinCollections':
+                        if (window.LMSmallTools) LMSmallTools.sync();
+                        break;
                     case 'hideEventBanner':
                         _lmEventBanner();
                         break;
@@ -27091,7 +27126,7 @@ function thelegendmodproject() {
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "potionsDrinker", "hudRelativeMass"], "massGroup");
-            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
+            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion", "skinCollections"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
@@ -27169,6 +27204,10 @@ function thelegendmodproject() {
                 'the splits fire, and the aim stays locked for the time above. Press it again to cancel.' +
                 '</div>'
             );
+            /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
+            this.addOptions(["a11yIndicators"], "accessibilityGroup");
+            this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
+            this.addSliderBox(".accessibilityGroup", "a11yHudTextScale", 1, 1.6, 0.05);
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
             if (!this.protocolMode) {
@@ -27631,6 +27670,8 @@ function thelegendmodproject() {
                     for (var i = 0; i < errs.length; i++) lines.push('  ' + errs[i]);
                 } catch (e) { lines.push('debug info error: ' + e); }
                 var text = lines.join('\n');
+                /* nicks, clan tags, skin URLs, tokens and room paths out (ogario/modules/smalltools.js) */
+                try { if (window.LMSmallTools && typeof LMSmallTools.redactReport === 'function') text = LMSmallTools.redactReport(text); } catch (e) { }
                 var done = function (ok) { if (window.toastr) ok ? toastr.success('Debug info copied. Paste it into your bug report.') : toastr.warning('Could not copy. Select the text in the console instead.'); if (!ok) console.log(text); };
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
@@ -85938,4 +85979,25 @@ Object.defineProperty(Array.prototype, 'stDev', {
             console.warn('[LM] Error loading the practice arena:', e);
         }
     };
+    /* Small tools: radial command menu, hotkey conflicts, screenshot mode, skin collections and the
+     * bug report (windows and hotkeys without default keys; nothing runs until one is used) */
+    /* Small tools: radial command menu, hotkey conflicts, screenshot mode and skin collections
+     * (windows and hotkeys without default keys; nothing runs until one is used) */
+    try {
+        var smallToolsScript = document.createElement('script');
+        smallToolsScript.type = 'text/javascript';
+        smallToolsScript.src = 'https://www.legendmod.ml/ogario/modules/smalltools.js?v=' + (window.OgVer || '');
+        document.body.appendChild(smallToolsScript);
+    } catch (e) {
+        console.warn('[LM] Error loading small tools script:', e);
+    }
+    /* Accessibility options (no style, canvas or loop while they are off) */
+    try {
+        var a11yScript = document.createElement('script');
+        a11yScript.type = 'text/javascript';
+        a11yScript.src = 'https://www.legendmod.ml/ogario/modules/accessibility.js?v=' + (window.OgVer || '');
+        document.body.appendChild(a11yScript);
+    } catch (e) {
+        console.warn('[LM] Error loading accessibility script:', e);
+    }
 })();
