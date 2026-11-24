@@ -410,7 +410,11 @@
     function ensureEntry(id) {
         var e = entryOf(id);
         if (e) return e;
-        var v = vwh(), r = defs[id], nat = natCache[id] || { w: r.w, h: r.h };
+        var v = vwh(), r = defs[id];
+        /* P1 fix #80: guard against missing default rectangle — a control not yet
+         * in the DOM (or measure() not called) would crash on r.w */
+        if (!r || !r.w) r = { x: v.w / 2 - 26, y: v.h / 2 - 26, w: 52, h: 52 };
+        var nat = natCache[id] || { w: r.w, h: r.h };
         e = rectEntry(id, r, v.w, v.h, CTL[id].zone ? null : { s: r.w / nat.w });
         layoutOf(orient).controls[id] = e;
         return e;
@@ -493,6 +497,9 @@
         /* after LMmobile.js has placed its groups for the new size */
         resizeT = setTimeout(function () {
             if (!ov) return;
+            /* P1 fix #79: cancel any active drag — the starting coordinates
+             * (drag.r0) are from the old viewport and would desync. */
+            if (drag) { drag = null; ov.classList.remove('drag'); }
             var v = vwh();
             orient = orientOf(v.w, v.h);
             try { H.reposition(); } catch (e) { }
@@ -811,8 +818,9 @@
                 var p = store.named[n];
                 if (!p) return;
                 work = { landscape: copy(p.landscape), portrait: copy(p.portrait) };
-                store.active = n;
-                save();
+                /* P1 fix #77: do not set store.active here — it desynchronizes with
+                 * store.current if the user cancels without saving. The active layout
+                 * will be recorded when Save/saveNamed is called. */
                 showLayouts();
                 render();
             }));
@@ -846,9 +854,16 @@
             toast('warning', 'At most ' + MAX_NAMED + ' named layouts: delete one first.');
             return null;
         }
+        /* P1 fix #76: save previous state so a failed persist can be rolled back */
+        var prevNamed = own(store.named, n) ? store.named[n] : undefined;
+        var prevActive = store.active;
         store.named[n] = { landscape: cleanLayout(work.landscape), portrait: cleanLayout(work.portrait) };
         store.active = n;
-        if (!save()) return null;
+        if (!save()) {
+            if (prevNamed === undefined) delete store.named[n]; else store.named[n] = prevNamed;
+            store.active = prevActive;
+            return null;
+        }
         toast('success', 'Layout "' + n + '" saved.');
         return n;
     }
