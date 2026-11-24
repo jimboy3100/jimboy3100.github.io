@@ -7646,11 +7646,11 @@ function initializeLM(modVersion) {
             var _lmSeenVer = localStorage.getItem('lmLastSeenOgVer');
             if (_lmSeenVer && _lmSeenVer !== String(window.OgVer) && window.toastr) {
                 toastr.info('<b>Legend Mod updated (' + String(window.OgVer) + ')</b><br>' +
-                    '• Smoother FPS in busy servers (skins no longer slow down every cell)<br>' +
-                    '• Same camera and zoom speed on 60/144/240 Hz screens<br>' +
-                    '• Line lock aims straight, feed macro hits the set speed<br>' +
-                    '• Google sign-in updated on legendmod.ml / Expanding Land<br>' +
-                    '• Faster reconnect, many menu and mobile fixes', '', { timeOut: 12000, extendedTimeOut: 4000 });
+                    '• Replays: pause, speed, seek and a progress bar<br>' +
+                    '• Game Over card: copy stats, mass graph, personal bests, who ate you<br>' +
+                    '• Chat: Up/Down recalls messages, click a nick to answer, word filter<br>' +
+                    '• New sounds, minimap trail, centre-of-mass camera, net graph, many new hotkeys<br>' +
+                    '• New options are off: type a word in the settings search to find them', '', { timeOut: 14000, extendedTimeOut: 4000 });
             }
             localStorage.setItem('lmLastSeenOgVer', String(window.OgVer));
         } catch (e) { }
