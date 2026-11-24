@@ -17857,6 +17857,12 @@ var displayText = {
         performanceMode: 'Tryb wydajnosci (slabsze PC/telefony)',
         fpsLimit: 'Limit FPS (0 = bez limitu)',
         menuFpsCap: '25 FPS gdy menu jest otwarte (oszczedza baterie)',
+        adaptivePerf: 'Adaptacyjna wydajnosc (mniej efektow, gdy FPS spada)',
+        adaptivePerfTarget: 'Adaptacyjna wydajnosc: docelowe FPS',
+        adaptivePerfToasts: 'Adaptacyjna wydajnosc: komunikat przy zmianie',
+        netHistory: 'Historia jakosci sieci (ping, wahania, rozlaczenia)',
+        lmPerfDiag: 'Diagnostyka wydajnosci',
+        'hk-perfDiag': 'Pokaz / ukryj diagnostyke wydajnosci',
         reducedMotion: 'Ograniczony ruch (bez trzesienia ekranu i czasteczek smierci)',
         cellContours: 'Only cells contours',
         noNames: 'Wylacz nazwy',
@@ -18407,6 +18413,12 @@ var displayText = {
         performanceMode: 'Performance mode (weak PCs/phones)',
         fpsLimit: 'FPS limit (0 = no limit; saves battery)',
         menuFpsCap: '25 FPS while the menu is open (saves battery)',
+        adaptivePerf: 'Adaptive performance (fewer effects for now while FPS is low)',
+        adaptivePerfTarget: 'Adaptive performance: target FPS',
+        adaptivePerfToasts: 'Adaptive performance: message when it changes',
+        netHistory: 'Network quality history (ping, jitter, disconnects)',
+        lmPerfDiag: 'Performance diagnostics',
+        'hk-perfDiag': 'Show / hide performance diagnostics',
         reducedMotion: 'Reduced motion (no screen shake or death particles)',
         cellContours: 'Only cells contours',
         noNames: 'No names',
@@ -21074,6 +21086,10 @@ var defaultmapsettings = {
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
     fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
     menuFpsCap: false,            /* like agar.io: 25 fps while the menu is shown and you are not playing */
+    adaptivePerf: false,          /* below the FPS target for a while: effects off for now, back when fast again (runtime only, never saved) */
+    adaptivePerfTarget: 60,       /* Adaptive performance target: 30, 60, 90 or 120 FPS */
+    adaptivePerfToasts: true,     /* a short message when Adaptive performance changes level */
+    netHistory: false,            /* keep a ping / jitter / packet rate / disconnect summary of the last sessions */
     reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
     autoHideNames: true,
     autoHideMass: true,
@@ -21369,6 +21385,12 @@ var _lmLabelI18n = {
         "noSkins":"Χωρίς skins","highDPI":"Απόδοση High DPI (πιο καθαρή, πιο αργή)","recordReplays":"Καταγραφή επαναλήψεων (χρησιμοποιεί μνήμη)",
         "glAntialias":"Εξομάλυνση (πιο ομαλές άκρες, μετά από επαναφόρτωση)","performanceMode":"Λειτουργία επιδόσεων (αδύναμα PC/κινητά)",
         "fpsLimit":"Όριο FPS (0 = χωρίς όριο· εξοικονομεί μπαταρία)","menuFpsCap":"25 FPS όταν το μενού είναι ανοιχτό (εξοικονομεί μπαταρία)",
+        "adaptivePerf":"Προσαρμοστικές επιδόσεις (λιγότερα εφέ προσωρινά όταν πέφτουν τα FPS)","adaptivePerfTarget":"Προσαρμοστικές επιδόσεις: στόχος FPS",
+        "adaptivePerfToasts":"Προσαρμοστικές επιδόσεις: μήνυμα όταν αλλάζει","netHistory":"Ιστορικό ποιότητας δικτύου (ping, διακύμανση, αποσυνδέσεις)",
+        "lmPerfDiag":"Διαγνωστικά επιδόσεων","hk-perfDiag":"Εμφάνιση / απόκρυψη διαγνωστικών επιδόσεων",
+        "lmAdaptiveLevel0":"Προσαρμοστικές επιδόσεις: όλα τα εφέ επανήλθαν","lmAdaptiveLevel1":"Προσαρμοστικές επιδόσεις: επίπεδο 1 (διακοσμητικά εφέ ανενεργά προσωρινά)",
+        "lmAdaptiveLevel2":"Προσαρμοστικές επιδόσεις: επίπεδο 2 (jelly physics και video skins ανενεργά προσωρινά)","lmAdaptiveLevel3":"Προσαρμοστικές επιδόσεις: επίπεδο 3 (χαμηλότερη ανάλυση προσωρινά)",
+        "lmPerfCopy":"Αντιγραφή αναφοράς","lmPerfCopied":"Η αναφορά αντιγράφηκε","lmNetClear":"Διαγραφή ιστορικού","lmNetQuality":"Ποιότητα δικτύου (αυτή η συνεδρία)","lmNetSessions":"Τελευταίες συνεδρίες",
         "cellContours":"Μόνο περιγράμματα κυττάρων","noNames":"Χωρίς ονόματα","noColors":"Χωρίς χρώματα","showMass":"Εμφάνιση μάζας",
         "showChat":"Εμφάνιση συνομιλίας πάνω στα κύτταρα","showChatMyOwn":"Εμφάνιση συνομιλίας πάνω στα δικά μου κύτταρα",
         "oneColoredSpectator":"MultiBox: λιγότερα κύτταρα στην απόδοση","multiBoxShadow":"Παίκτης 1 & 2","multiKeepMoving":"Ο ανενεργός συνεχίζει να κινείται",
@@ -25654,6 +25676,8 @@ function thelegendmodproject() {
                 this._lmLoadOptSounds();
             }
             if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {
+                /* Adaptive performance keeps lowered values for now: the player's change wins */
+                if (window.LMPerf) { try { window.LMPerf.onSetting(id, checked); } catch (e) { } }
                 //switch (defaultmapsettings[id] = checked, ogario.hasOwnProperty(id) && (ogario[id] = checked), id) {
                 defaultmapsettings[id] = checked;
                 if (ogario.hasOwnProperty(id)) {
@@ -25785,6 +25809,10 @@ function thelegendmodproject() {
                         break;
                     case 'blockPopups':
                         this.setBlockPopups();
+                        break;
+                    case 'adaptivePerf':
+                    case 'netHistory':
+                        if (window.LMPerf) window.LMPerf.configChanged();
                         break;
                     case 'glAntialias':
                         /* Performance mode shows one message for all of its changes */
@@ -26769,7 +26797,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'adaptivePerf', 'netHistory'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26919,6 +26947,15 @@ function thelegendmodproject() {
             }
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
+            /* Adaptive performance, network quality history and the diagnostics window
+             * (ogario/modules/perf.js) */
+            this.addOptionTo(".animationGroup", "adaptivePerf");
+            this.addSliderBox(".animationGroup", "adaptivePerfTarget", 30, 120, 30);
+            this.addOptionTo(".animationGroup", "adaptivePerfToasts");
+            this.addOptionTo(".animationGroup", "netHistory");
+            $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block" style="margin:4px 0 2px;"></button>')
+                .text(textLanguage.lmPerfDiag || 'Performance diagnostics').appendTo('.animationGroup')
+                .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
             this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
             this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
             this.addSliderBox(".gridGroup", "rainbowBorderSpeed", 1, 20, 1);
@@ -40631,6 +40668,8 @@ function thelegendmodproject() {
              * This prevents the counter from resetting on flapping connections
              * (open → immediate close → open → immediate close loops). */
             this._connOpenTime = Date.now();
+            /* Network quality history (ogario/modules/perf.js; nothing kept while it is off) */
+            if (window.LMPerf && this === window.legendmod) { try { window.LMPerf.netEvent('open', { ws: this.ws }); } catch (e) { } }
             var self = this;
             if (this._reconnStabilityTimer) clearTimeout(this._reconnStabilityTimer);
             /* delt.io needs 30s stability before resetting reconnect counter;
@@ -41461,6 +41500,9 @@ function thelegendmodproject() {
                 t ? ('code ' + t.code + (t.reason ? ' reason "' + t.reason + '"' : '') + (t.wasClean === false ? ' (not clean)' : '')) : '',
                 this._connOpenTime ? ('after ' + (Date.now() - this._connOpenTime) + ' ms open') : 'before open',
                 this.clientKey ? '(241 key ok)' : '(no 241 key)', LM.loginConfirmed ? '(logged in)' : '(not logged in)');
+            if (window.LMPerf && this === window.legendmod) {
+                try { window.LMPerf.netEvent('close', { code: t && t.code, reason: t && t.reason, wasClean: t && t.wasClean, openMs: this._connOpenTime ? Date.now() - this._connOpenTime : 0 }); } catch (e) { }
+            }
             this.flushCellsData();
             if (typeof celltimerstop === 'function') celltimerstop();
             if (typeof stopMergeTimer === 'function') stopMergeTimer();
@@ -60272,6 +60314,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 qualityScale < 1
             ) {
                 dpr *= qualityScale;
+            }
+
+            /* Adaptive performance level 3 (ogario/modules/perf.js): a lower internal
+             * resolution for now; never saved, 0 while not in use. */
+            var adaptiveScale =
+                window._lmAdaptiveScale;
+
+            if (
+                typeof adaptiveScale === 'number' &&
+                adaptiveScale > 0 &&
+                adaptiveScale < 1
+            ) {
+                dpr *= adaptiveScale;
             }
 
             var prevDpr =
@@ -80386,7 +80441,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * used to stop rendering permanently (frozen game). */
             try {
                 drawRender.countFps();
-                drawRender.renderFrame();
+                /* frame timing for Adaptive performance / Performance diagnostics
+                 * (ogario/modules/perf.js); null while both are off */
+                var _lmPf = window._lmPerfFrame;
+                if (_lmPf) {
+                    var _lmPt0 = performance.now();
+                    drawRender.renderFrame();
+                    _lmPf(_lmPt0, performance.now());
+                } else drawRender.renderFrame();
             } catch (renderError) {
                 if (!drawRender._lastRenderErrorLog || Date.now() - drawRender._lastRenderErrorLog > 5000) {
                     drawRender._lastRenderErrorLog = Date.now();
@@ -84807,6 +84869,16 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(extUiScript);
     } catch (e) {
         console.warn('[LM] Error auto-loading extended UI script:', e);
+    }
+    /* Adaptive performance, performance diagnostics, network quality history
+     * (nothing runs while its options are off and its window is closed) */
+    try {
+        var perfScript = document.createElement('script');
+        perfScript.type = 'text/javascript';
+        perfScript.src = 'https://www.legendmod.ml/ogario/modules/perf.js?v=' + (window.OgVer || '');
+        document.body.appendChild(perfScript);
+    } catch (e) {
+        console.warn('[LM] Error loading perf script:', e);
     }
     /* Gamepad / controller support (does nothing while its option is off) */
     try {
