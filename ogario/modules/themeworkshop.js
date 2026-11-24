@@ -89,6 +89,7 @@
         revert: ['Revert', 'Επαναφορά'],
         kept: ['Theme applied: {0}', 'Εφαρμόστηκε το θέμα: {0}'],
         reverted: ['Preview ended: your theme is back.', 'Η δοκιμή τελείωσε: το θέμα σου επέστρεψε.'],
+        revertedNewer: ['Preview ended before your other change: your theme is back, the new change stays.', 'Η δοκιμή τελείωσε πριν από την άλλη αλλαγή σου: το θέμα σου επέστρεψε, η νέα αλλαγή μένει.'],
         revertedAuto: ['Not kept within 15 s: your theme is back.', 'Δεν το κράτησες μέσα σε 15 δ.: το θέμα σου επέστρεψε.'],
         saveFailed: ['The theme is applied but could not be saved (browser storage full): a reload brings the old one back.', 'Το θέμα εφαρμόστηκε αλλά δεν αποθηκεύτηκε (γεμάτος χώρος): μετά από επαναφόρτωση επιστρέφει το παλιό.'],
         urlsTitle: ['This theme loads files from these addresses. Check them before you continue:', 'Αυτό το θέμα φορτώνει αρχεία από αυτές τις διευθύνσεις. Έλεγξέ τες πριν συνεχίσεις:'],
@@ -653,6 +654,9 @@
         if (St._lmMiniBigOrig) St._lmMiniBigOrig = 0;
         setValues(effectiveTheme(body, T()), false);
         preview.sounds = setSounds(body.sounds);
+        /* what the preview set: a value that differs from it later is a newer change (it is kept) */
+        preview.applied = Object.assign({}, T());
+        preview.appliedS = snapshot().s;
         preview.timer = setInterval(tick, 250);
         showFrame(false);
         renderBar();
@@ -664,8 +668,16 @@
         var el = D.querySelector('#lm-tw-pv .lm-tw-pv-left');
         if (el) el.textContent = tx('revertsIn', Math.max(0, Math.ceil((preview.deadline - Date.now()) / 1000)));
     }
-    /* keep: save the previewed theme; otherwise put the snapshot back exactly */
-    function endPreview(keep, quiet, auto) {
+    /* the theme changed after the preview set it (the player, a theme preset, another tool) */
+    function changedSince(p) {
+        var d = T();
+        for (var k in p.applied) if (own.call(p.applied, k) && !same(d[k], p.applied[k])) return true;
+        return false;
+    }
+    /* Keep: save the previewed theme. Otherwise put the snapshot back exactly, except values that
+     * changed after the preview set them: those are newer than the preview and stay. Nothing
+     * stored is written back either: the preview never saves, so a changed stored theme is newer. */
+    function endPreview(keep, quiet, auto, newer) {
         var p = preview;
         if (!p) return;
         preview = null;
@@ -679,15 +691,15 @@
             if (p.sounds.length) saveSounds();
             if (!quiet) toast(ok ? 'success' : 'warning', esc(ok ? tx('kept', p.name) : tx('saveFailed')));
         } else {
-            setValues(p.snap.t, true);
-            St._lmMiniBigOrig = p.snap.big;
-            if (p.sounds.length) {
-                setSounds(p.snap.s);
-                saveSounds();
+            var d = T(), back = {}, s = S(), sback = {}, k;
+            for (k in p.snap.t) if (own.call(p.snap.t, k) && (!has(p.applied, k) || same(d[k], p.applied[k]))) back[k] = p.snap.t[k];
+            setValues(back, true);
+            if (has(back, 'miniMapWidth')) St._lmMiniBigOrig = p.snap.big;
+            if (p.sounds.length && s) {
+                p.sounds.forEach(function (sk) { if (s[sk] === p.appliedS[sk]) sback[sk] = p.snap.s[sk]; });
+                if (setSounds(sback).length) saveSounds();
             }
-            /* nothing was saved during the preview; if something else wrote the theme, its old text goes back */
-            if (readText('ogarioThemeSettings') !== p.snap.stored) writeText('ogarioThemeSettings', p.snap.stored);
-            if (!quiet) toast('info', esc(tx(auto ? 'revertedAuto' : 'reverted')));
+            if (!quiet) toast('info', esc(tx(newer ? 'revertedNewer' : auto ? 'revertedAuto' : 'reverted')));
         }
         if (!quiet) showFrame(true);
     }
@@ -698,7 +710,14 @@
         if (guarded || typeof orig !== 'function') return;
         guarded = true;
         var w = function () {
-            if (preview) return;
+            if (preview) {
+                /* the preview's own values (the Theme tab saves 600 ms after the preview set its
+                 * controls): not saved */
+                if (!changedSince(preview)) return;
+                /* a newer change during the preview (the player, a theme preset): the preview ends
+                 * first, so its timer can never roll this change back, then the save goes through */
+                endPreview(false, false, false, true);
+            }
             return orig.apply(this, arguments);
         };
         w._lmTw = true;
@@ -1275,6 +1294,10 @@
     api.preview = function (body, name, ms) { return startPreview(cleanBody(body), cleanName(name) || 'Script', ms); };
     api.keep = function () { endPreview(true); };
     api.revert = function () { endPreview(false); };
+    /* Before something else changes the settings (a settings profile, preset, import, restore):
+     * ends a running preview (back to the theme from before it), so its timer never rolls the
+     * newer change back. Returns whether a preview was running. */
+    api.settle = function () { if (!preview) return false; endPreview(false); return true; };
     api.list = function () { return loadStore().themes.map(function (e) { return { id: e.id, name: e.name, src: e.src || '' }; }); };
     api.importText = importText;
     api.exportPackage = function (id) { var e = exportEntry(id ? 'm:' + id : 'cur'); return e ? toPackage(e) : null; };

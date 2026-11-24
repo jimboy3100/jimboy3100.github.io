@@ -726,6 +726,9 @@
         /* a HUD layout only with the HUD editor, and only one that still exists */
         var HE = window.LMHudEditor;
         if (has(data, 'hl') && !(HE && typeof HE.storeText === 'function' && HE.storeText(data.hl) !== null)) delete data.hl;
+        /* a Theme Workshop preview ends first (its theme back): otherwise the preview's theme would
+         * be captured as the current one, and its timer would later roll this profile's theme back */
+        try { if (window.LMThemeWorkshop && typeof window.LMThemeWorkshop.settle === 'function') window.LMThemeWorkshop.settle(); } catch (e) { }
         var cur = captureCurrent();
         var rows = diffBundles(cur, data, label);
         var c = countParts(rows);

@@ -91,17 +91,20 @@
         return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
-    /* The published state. opts: { streamMode, hideSkinUrl, hidecountry, chat }.
+    /* The published state. opts: { streamMode, hideSkinUrl, hidecountry, chat }. A state built in
+     * stream mode says so (stream: true), so building it again keeps it hidden and companion.html
+     * also hides the names in the events it already shows.
      * The output has the same shape as the input, so companion.html runs it again on what it
      * receives (with no hiding options) to clean data from any other page of the origin. */
     function buildState(src, opts) {
         src = src && typeof src === 'object' ? src : {};
         opts = opts || {};
-        var stream = !!opts.streamMode;
+        var stream = !!opts.streamMode || src.stream === true;
         var playing = !!src.playing;
         var country = str(src.country).toLowerCase();
         var st = {
             playing: playing,
+            stream: stream,
             mass: int(src.mass),
             best: int(src.best),
             cells: int(src.cells, 256),
@@ -156,19 +159,21 @@
                 var c = src.chat[i] || {};
                 var text = clip(c.text, MAX_TEXT);
                 if (!text) continue;
-                st.chat.push({ nick: c.own && stream ? '' : clip(c.nick, MAX_NICK), text: stream ? '[redacted]' : text, cmd: !!c.cmd, own: !!c.own });
+                /* stream mode: no sender names at all (they were only hidden for own lines) */
+                st.chat.push({ nick: stream ? '' : clip(c.nick, MAX_NICK), text: stream ? '[redacted]' : text, cmd: !!c.cmd, own: !!c.own });
             }
         }
         return st;
     }
 
-    /* One event for the feed; null for unknown types. Same shape in and out (see buildState). */
-    function buildEvent(e) {
+    /* One event for the feed; null for unknown types. Same shape in and out (see buildState).
+     * opts.streamMode: no name of the eaten player (like the chat names). */
+    function buildEvent(e, opts) {
         if (!e || typeof e !== 'object' || !EVENT_TYPES[e.type]) return null;
         var o = { type: e.type, t: int(e.t, 1e15) };
         if (e.type === 'death' || e.type === 'best') { o.mass = int(e.mass); o.alive = int(e.alive, 24 * 3600 * 1000); }
         if (e.type === 'best') { o.massRecord = !!e.massRecord; o.timeRecord = !!e.timeRecord; }
-        if (e.type === 'kill') { o.nick = clip(e.nick, MAX_NICK); o.mass = int(e.mass); }
+        if (e.type === 'kill') { o.nick = opts && opts.streamMode ? '' : clip(e.nick, MAX_NICK); o.mass = int(e.mass); }
         if (e.type === 'stats') { o.eaten = int(e.eaten, 1e6); o.top = int(e.top, 10000); }
         return o;
     }
@@ -422,18 +427,22 @@
         }
     }
     var publisher = createPublisher(function (state, now) { send({ kind: 'state', t: now, state: state }); });
+    var lastStream = null;
     function tick(force) {
-        var now = Date.now(), LM = root.legendmod;
+        var now = Date.now(), LM = root.legendmod, o = hidingOpts(settings());
+        /* stream mode switched: the chat lines kept so far belong to the other mode */
+        if (lastStream !== null && o.streamMode !== lastStream) { chatLines.length = 0; force = true; }
+        lastStream = o.streamMode;
         if (LM) sampleTrail(LM, now);
         var src = collect(now);
-        publisher.offer(buildState(src, hidingOpts(settings())), now, force);
+        publisher.offer(buildState(src, o), now, force);
     }
     function event(e) {
         if (!on) return;
         var now = Date.now();
         if (!allowEvent(now)) return;
         e.t = now;
-        var ev = buildEvent(e);
+        var ev = buildEvent(e, hidingOpts(settings()));
         if (ev) send({ kind: 'event', t: now, event: ev });
     }
 
@@ -475,10 +484,17 @@
         var d = e.data;
         if (d && d.kind === 'hello' && on) tick(true);
     }
+    /* another server: its chat and the own trail are not about the new one */
+    function onServerChange() {
+        chatLines.length = 0;
+        life.trail.length = 0;
+        life.trailAt = 0;
+        life.bestRank = 0;
+    }
     function onPageHide() { if (on) send({ kind: 'bye' }); }
 
     var EV = root.LMEvents && typeof root.LMEvents.on === 'function' ? root.LMEvents : null;
-    var LISTEN = [['spawn', onSpawn], ['death', onDeath], ['personalBest', onBest], ['kill', onKill], ['gameStats', onStats], ['chat', onChat]];
+    var LISTEN = [['spawn', onSpawn], ['death', onDeath], ['personalBest', onBest], ['kill', onKill], ['gameStats', onStats], ['chat', onChat], ['serverChange', onServerChange]];
     function start() {
         if (on) return;
         on = true;

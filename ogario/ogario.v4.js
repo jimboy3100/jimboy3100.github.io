@@ -1601,7 +1601,11 @@ window.lmT = (function () {
             "tr": "GİRİŞ VE OYUN GEREKLİ",
             "pl": "ZALOGUJ SIĘ I ZAGRAJ",
             "nl": "INLOGGEN & SPELEN NODIG"
-        }
+        },
+        "lmRecClear": {"en":"Clear recordings in memory","el":"Διαγραφή εγγραφών από τη μνήμη"},
+        "lmRecClearNone": {"en":"No replay recordings in memory to clear.","el":"Δεν υπάρχουν εγγραφές επαναλήψεων στη μνήμη για διαγραφή."},
+        "lmRecClearAsk": {"en":"Free {0} replay recording(s) kept in memory? This cannot be undone. Replays saved in the Replay Studio library and .lm files stay.","el":"Διαγραφή {0} εγγραφών επαναλήψεων από τη μνήμη; Δεν αναιρείται. Οι επαναλήψεις στη βιβλιοθήκη του Replay Studio και τα αρχεία .lm μένουν."},
+        "lmRecCleared": {"en":"Freed {0} replay recording(s) from memory.","el":"Διαγράφηκαν {0} εγγραφές επαναλήψεων από τη μνήμη."}
     };
     return function (key) {
         var code = 'en';
@@ -4358,6 +4362,44 @@ window._lmRecBudgetCheck = function () {
         window._lmRecFull = true;
         console.info('[Replays] Memory budget reached: this recording stops here');
     }
+};
+/* Frees kept recordings on request ("Clear recordings in memory" under the option). keep(key, arr)
+ * says which stay. Returns the number freed. Only memory: the Replay Studio library and saved
+ * .lm files are not touched. */
+function lmRecFreeMemory(list, rp, specs, keep) {
+    var n = 0;
+    if (!Array.isArray(list) || !rp) return 0;
+    for (var i = list.length - 1; i >= 0; i--) {
+        var k = list[i];
+        if (keep(k, rp[k])) continue;
+        list.splice(i, 1);
+        delete rp[k];
+        if (specs) delete specs[k];
+        n++;
+    }
+    return n;
+}
+/* what the button frees: everything except a replay that is playing, one being saved to the
+ * library and the one this connection is still recording */
+window._lmRecKeepOnClear = function (k, a) {
+    if (k === (window.legendmod && window.legendmod.playingReplayServer)) return true;
+    if (a && a._lmSaving) return true;
+    return k === window.temporaryRecordedProtocol && typeof defaultmapsettings !== 'undefined' &&
+        defaultmapsettings.recordReplays !== false && !window._lmRecFull;
+};
+window._lmRecClearMemory = function (ask) {
+    var list = window.RecordedProtocolArenas, rp = window.RecordedProtocol, n = 0, i;
+    var T = function (k, en) { var s = window.lmT && window.lmT(k); return (!s || s === k) ? en : s; };
+    if (Array.isArray(list) && rp) for (i = 0; i < list.length; i++) if (!window._lmRecKeepOnClear(list[i], rp[list[i]])) n++;
+    if (!n) {
+        if (window.toastr) toastr.info(T('lmRecClearNone', 'No replay recordings in memory to clear.'));
+        return 0;
+    }
+    if (ask && !window.confirm(T('lmRecClearAsk', 'Free {0} replay recording(s) kept in memory? This cannot be undone. Replays saved in the Replay Studio library and .lm files stay.').replace('{0}', n))) return 0;
+    n = lmRecFreeMemory(list, rp, window.RecordedArenasSpecifications, window._lmRecKeepOnClear);
+    if (n) console.info('[Replays] Cleared ' + n + ' recording(s) from memory');
+    if (window.toastr) toastr.success(T('lmRecCleared', 'Freed {0} replay recording(s) from memory.').replace('{0}', n));
+    return n;
 };
 /* event types: d death (best mass), s spawn, k own cell ate a player cell (its mass),
  * v own cell popped a virus, p split sent (1 split, 2 double...), f feeding */
@@ -23472,6 +23514,8 @@ function thelegendmodproject() {
             try { this.setMiniMapWidth(); } finally { this._lmMiniBigBusy = false; }
         },
         restoreThemeSettings() {
+            /* a Theme Workshop preview ends first */
+            if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
                 window.localStorage.removeItem('ogarioThemeSettings');
                 window._lmSettingsReload = true;
@@ -25425,10 +25469,8 @@ function thelegendmodproject() {
             }
         },
         setVanillaSkins() {
-            if (window.animateSkinsTimer != null) {
-                clearTimeout(window.animateSkinsTimer);
-                window.animateSkinsTimer = null;
-            }
+            /* cancels every pending frame of the animated skins (a new generation) */
+            animateSkinsStop();
 
             if (defaultmapsettings.vanillaSkins) {
                 animateSkincheck();
@@ -26341,6 +26383,8 @@ function thelegendmodproject() {
                  * put back if any step fails. Before, the removal of the hidden profiles
                  * (ogarioPlayerProfilesExtra) and the hotkey list were outside it: a failed
                  * import said "all changes rolled back" with the hidden profiles gone. */
+                /* a Theme Workshop preview ends first: nothing of it may be in what is kept */
+                if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
                 var _impBackup = {};
                 var _impTouched = [];
                 var _impKeep = function (key) {
@@ -26403,6 +26447,8 @@ function thelegendmodproject() {
             }
         },
         restoreSettings() {
+            /* a Theme Workshop preview ends first (its sounds are gameplay settings) */
+            if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
             clearTimeout(this._lmSettingsSaveT);
             this._lmSettingsSaveT = null;
             /* Performance mode's backup and the preset undo snapshot hold values of the settings
@@ -26482,25 +26528,24 @@ function thelegendmodproject() {
                         }
                         break;
                     case 'recordReplays':
-                        /* switched off: free the recordings held in memory, except a replay
-                         * that is playing right now (array edited in place, not replaced) */
-                        if (!checked && window.RecordedProtocol && Array.isArray(window.RecordedProtocolArenas)) {
-                            var _lmKeepRec = window.legendmod && window.legendmod.playingReplayServer;
-                            for (var _lmRi = window.RecordedProtocolArenas.length - 1; _lmRi >= 0; _lmRi--) {
-                                var _lmRk = window.RecordedProtocolArenas[_lmRi];
-                                if (_lmRk === _lmKeepRec) continue;
-                                window.RecordedProtocolArenas.splice(_lmRi, 1);
-                                delete window.RecordedProtocol[_lmRk];
-                                if (window.RecordedArenasSpecifications) delete window.RecordedArenasSpecifications[_lmRk];
-                            }
+                        /* Switched off: only new packets stop. The recordings already in memory stay
+                         * (a profile, preset or auto rule turning this off must not destroy them);
+                         * the button "Clear recordings in memory" frees them on request
+                         * (window._lmRecClearMemory). The recording of this connection ends here
+                         * (_lmRecFull, reset by connect()), so switching back on does not resume it
+                         * with a gap: a new recording starts with the next connection. */
+                        if (!checked && window.RecordedProtocol && window.temporaryRecordedProtocol && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+                            window._lmRecFull = true;
+                            window._lmRecLive = false;
+                            if (window.toastr) toastr.info('Replay recording is off: this connection is not recorded any more. Recordings already in memory are kept (Clear recordings in memory frees them).');
                         }
-                        /* Switched back on during a game: the recording of this connection was freed
-                         * above. A new one starts with the next connection (connect() opens a proper
-                         * slot: array, list entry, details, counters). Resuming here cannot give a
-                         * replay: it would lack the connection's first packets (map border, own cells),
-                         * and the {} slot used before was not listed, never freed and had no length. */
+                        /* Switched back on during a game: this connection's recording stopped (above,
+                         * or it was never started). A new one starts with the next connection
+                         * (connect() opens a proper slot: array, list entry, details, counters).
+                         * Resuming here cannot give a replay: it would lack the packets in between
+                         * or the connection's first packets (map border, own cells). */
                         if (checked && window.RecordedProtocol && window.temporaryRecordedProtocol &&
-                            !window.RecordedProtocol[window.temporaryRecordedProtocol] && window.toastr) {
+                            (!window.RecordedProtocol[window.temporaryRecordedProtocol] || window._lmRecFull) && window.toastr) {
                             toastr.info('Replays are recorded again from the next server you join.');
                         }
                         break;
@@ -27571,6 +27616,8 @@ function thelegendmodproject() {
                         return '- ' + String(textLanguage[k] || k).replace(/<[^>]*>/g, '').trim() + ': ' + (v === true ? 'ON' : v === false ? 'OFF' : v);
                     });
                     if (!window.confirm(_lmTx(p.key, p.en) + '\n' + _lmTx('lmPresetConfirm', 'Apply this preset? These settings change (Undo puts them back):') + '\n\n' + lines.join('\n'))) return false;
+                    /* a Theme Workshop preview ends first: the save below would store its sounds */
+                    if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
                     /* a second preset keeps the values from before the first one */
                     var snap = undoSnap || {};
                     keys.forEach(function (k) { if (!snap.hasOwnProperty(k)) snap[k] = defaultmapsettings[k]; });
@@ -27582,6 +27629,7 @@ function thelegendmodproject() {
                     return false;
                 });
                 undoBtn.on('click', function () {
+                    if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
                     var snap = undoSnap;
                     undoSnap = null;
                     try { window.localStorage.removeItem(undoKey); } catch (e) { }
@@ -27654,6 +27702,10 @@ function thelegendmodproject() {
             })();
             //this.addOptions(["unlockedFPS"], "animationGroup");
             this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode", "menuFpsCap", "reducedMotion"], "animationGroup");
+            /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
+            $('#recordReplays').closest('label').after($('<button type="button" id="lm-rec-clear" class="btn btn-xs btn-danger" style="display:block;margin:2px 0 6px;"></button>')
+                .text((window.lmT && window.lmT('lmRecClear')) || 'Clear recordings in memory')
+                .on('click', function () { window._lmRecClearMemory(true); return false; }));
 
             this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
@@ -35117,7 +35169,7 @@ function thelegendmodproject() {
                 audio.pause();
                 audio.currentTime = 0;
                 /* sound mixer (ogario/modules/notifications.js): channel x master volume, all 1 by
-                 * default; a chat sound may also lower the video skins (option audioDucking) */
+                 * default; a chat sound that plays may also lower the video skins (option audioDucking) */
                 var _lmMix = window.LMNotifications;
                 if (_lmMix && _lmMix.soundVolume) {
                     try {
@@ -35129,7 +35181,12 @@ function thelegendmodproject() {
                 var nopromise = {
                     catch: new Function()
                 };
-                (audio.play() || nopromise).catch(function () { });
+                var _lmPr = audio.play();
+                (_lmPr || nopromise).catch(function () { });
+                /* ducking of the video skins: only once the sound really plays and can be heard */
+                if (_lmMix && _lmMix.duckPlayback) {
+                    try { _lmMix.duckPlayback(audio, this._lmSoundChannel(audio), _lmPr); } catch (eDk) { }
+                }
             }
         },
         /* mixer channel of one of the mod's sounds; any other sound (scripts) counts as a notification */
@@ -41647,6 +41704,8 @@ function thelegendmodproject() {
             this.play = false //fix
 
             this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"), 10) || 0;
+            /* a changed total of the previous connection is stored before it is read back */
+            this.flushMegaFFAscore();
             if (this.ws.includes("imsolo.pro:2102")) { //4 times bigger 600 users limit
                 this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"), 10) || 0;
             }
@@ -42507,6 +42566,7 @@ function thelegendmodproject() {
             if (window.LMPerf && this === window.legendmod) {
                 try { window.LMPerf.netEvent('close', { code: t && t.code, reason: t && t.reason, wasClean: t && t.wasClean, openMs: this._connOpenTime ? Date.now() - this._connOpenTime : 0 }); } catch (e) { }
             }
+            this.flushMegaFFAscore();
             this.flushCellsData();
             if (typeof celltimerstop === 'function') celltimerstop();
             if (typeof stopMergeTimer === 'function') stopMergeTimer();
@@ -52995,9 +53055,24 @@ Most cells eaten   : ${mostCellsEaten}
                             (expiryDay === 3 || expiryDay === 23) ? "rd" : "th";
                     var tempdateNow2 = expiryDay + daySuffix + " of " + expiryMonth;
                     toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b>. Thank you for using our mod!").css("width", "350px");
+                    /* the reset to 0 is stored at once, with the licence */
+                    this._lmBigFFADirty = true;
+                    this.flushMegaFFAscore();
+                    return;
                 }
-                localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
+                /* Was a synchronous localStorage write on every world update (many per second).
+                 * Now the total is marked changed and stored at most every 5 s, and on socket
+                 * close, before a reconnect reads it and on pagehide (flushMegaFFAscore). */
+                if (this.playerMass) this._lmBigFFADirty = true;
+                if (this._lmBigFFADirty && !(Date.now() - (this._lmBigFFASavedAt || 0) < 5000)) this.flushMegaFFAscore();
             }
+        },
+        /* stores the FFA PowerUp mass total when it changed since it was last stored */
+        flushMegaFFAscore() {
+            if (!this._lmBigFFADirty) return;
+            this._lmBigFFADirty = false;
+            this._lmBigFFASavedAt = Date.now();
+            try { localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA); } catch (e) { }
         },
         sendWaves(x1, y1, color1, length, sender, moreAnimation) {
             var wave = {
@@ -56200,6 +56275,8 @@ Most cells eaten   : ${mostCellsEaten}
         }
     };
     window.legendmod = LM; // look at this
+    /* the FFA PowerUp mass total is stored every 5 s (megaFFAscore): also when the page goes away */
+    window.addEventListener('pagehide', function () { try { LM.flushMegaFFAscore(); } catch (e) { } });
     /* Network back while an auto-reconnect is waiting: connect now instead of
      * sitting out the backoff. Never when no retry is pending or a socket is
      * already connecting/open (no second socket). */
@@ -84073,60 +84150,89 @@ function hideContextMenu4(evt) {
     document.getElementById("skin").removeEventListener('click', hideContextMenu4);
 }
 //Animated Skins
-function animateSkincheck() {
-    //for (i = 0; i < 10; i++) {
-    //SpecialEffectPlayers[	
-    let verifiednames;
-    let e, b, d; /* were implicit globals window.e / window.b / window.d */
-    for (let i = 0; i < 1; i++) {
-        for (let animatedi = 0; animatedi < legendmod.leaderboard.length; animatedi++) {
-            for (let animatedkey in animatedskins) {
-                if (animatedkey === legendmod.leaderboard[animatedi].nick) {
-                    if (animatedskins[animatedkey] && animatedskins[animatedkey].frames) {
-                        e = animatedskins[animatedkey].frames.length - 1;
-                        window.anual = 0;
-                        for (let animateda = 0; animateda <= animatedskins[animatedkey].frames.length - 1; animateda++) {
-                            b = animateda;
-                            verifiednames = animatedkey;
-                            window.anual = window.anual + animatedskins[verifiednames].frames[b].delay * 1000;
-                            d = animatedi;
-                            animateSkin(b, verifiednames, d, e, i);
-                            if (window.anualTop < window.anual) window.anualTop = window.anual
-
-                        }
-                    }
-                }
-            }
-        }
-    }
-    //if (window.preSetanimateSkincheck > window.anualTop + 1000 ) window.preSetanimateSkincheck = window.anualTop + 1000
-    window.preSetanimateSkincheck = window.anualTop
-    if (defaultmapsettings.vanillaSkins) {
-        /* anualTop is 0 until an animated skin is seen: that was a ~4 ms loop all
-         * session. Keep one timer (setVanillaSkins clears animateSkinsTimer). */
-        clearTimeout(window.animateSkinsTimer);
-        window.animateSkinsTimer = setTimeout(function () {
-            animateSkincheck()
-        }, Math.max(window.preSetanimateSkincheck || 0, 1000));
-    }
+/* Legacy animated PNG skins (animatedskins: nick -> { color, frames: [{ id, delay in s }] }, from
+ * LMexpress) for the nicks on the leaderboard. One time based scheduler with one pending timer:
+ * a cycle starts every max(longest animation of this cycle, 1 s) and reads the leaderboard again;
+ * each tick shows, for every animated nick, the frame that is due now and skips frames that are
+ * already over (a timer that comes late after a main thread stall loads one frame, not every
+ * missed one). Frame k shows after the sum of the delays of frames 0..k, as before. Every restart
+ * (setVanillaSkins: option switched, connect) and stop starts a new generation: a callback of an
+ * older one does nothing. Was: one timeout per frame per nick, never cancelled, so a restart
+ * doubled the pending frames and switching the option off left them all running. */
+function lmAnimSkinsState() {
+    return window._lmAnimSkins || (window._lmAnimSkins = { gen: 0, timer: null, t0: 0, period: 0, jobs: [] });
 }
-
-function animateSkin(b, verifiednames, d, e, i) {
-    setTimeout(function () {
-        //if (verifiednames===legendmod.leaderboard[d].nick){
-        application.cacheCustomSkin(verifiednames, animatedskins[verifiednames].color, "https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");
-        //if (b === e) {
-        //if (i === 9) {
-        //if (i === 0) {
-        //window.anual = 0;
-        //if (animatedserverchanged === false) {}
-        //}
-        //}
-    }, window.anual);
-}
-
 function animateSkinsStop() {
-    //clearInterval(defaultmapsettings.animateSkinsStart);
+    var A = lmAnimSkinsState();
+    A.gen++;
+    if (A.timer != null) clearTimeout(A.timer);
+    A.timer = null;
+    A.jobs = [];
+    window.animateSkinsTimer = null;
+    window.anualTop = 0;
+}
+function animateSkincheck() {
+    var A = lmAnimSkinsState();
+    animateSkinsStop();
+    lmAnimSkinsCycle(A, A.gen, Date.now());
+}
+/* a new cycle: the animated nicks on the leaderboard now (each once) and their frame times */
+function lmAnimSkinsCycle(A, gen, now) {
+    var jobs = [], seen = {}, top = 0, i, f;
+    var lb = typeof legendmod !== 'undefined' && legendmod ? legendmod.leaderboard : null;
+    var defs = typeof animatedskins !== 'undefined' && animatedskins ? animatedskins : null;
+    for (i = 0; defs && lb && i < lb.length; i++) {
+        var nick = lb[i] && lb[i].nick;
+        if (typeof nick !== 'string' || seen[nick] === 1 || !Object.prototype.hasOwnProperty.call(defs, nick)) continue;
+        var sk = defs[nick];
+        if (!sk || !sk.frames || !sk.frames.length) continue;
+        seen[nick] = 1;
+        var at = [], sum = 0, n = Math.min(sk.frames.length, 500);
+        for (f = 0; f < n; f++) {
+            var d = +(sk.frames[f] && sk.frames[f].delay);
+            sum += d > 0 && d < 60 ? d * 1000 : 0;
+            at.push(sum);
+        }
+        jobs.push({ nick: nick, skin: sk, at: at, shown: -1 });
+        if (sum > top) top = sum;
+    }
+    /* the longest animation of this cycle (was the longest ever seen, never reset) */
+    window.anualTop = top;
+    window.preSetanimateSkincheck = top;
+    A.jobs = jobs;
+    A.t0 = now;
+    A.period = Math.max(top, 1000);
+    lmAnimSkinsTick(A, gen);
+}
+function lmAnimSkinsTick(A, gen) {
+    if (gen !== A.gen) return;
+    A.timer = null;
+    if (typeof defaultmapsettings !== 'undefined' && !defaultmapsettings.vanillaSkins) { animateSkinsStop(); return; }
+    var now = Date.now(), el = now - A.t0, next = A.period;
+    for (var i = 0; i < A.jobs.length; i++) {
+        var j = A.jobs[i], k = j.shown;
+        while (k + 1 < j.at.length && j.at[k + 1] <= el) k++;
+        if (k > j.shown) {
+            j.shown = k;
+            lmAnimSkinsShow(j, k);
+        }
+        if (k + 1 < j.at.length && j.at[k + 1] < next) next = j.at[k + 1];
+    }
+    if (el >= A.period) {
+        lmAnimSkinsCycle(A, gen, now);
+        return;
+    }
+    A.timer = setTimeout(function () { lmAnimSkinsTick(A, gen); }, Math.max(16, next - el));
+    window.animateSkinsTimer = A.timer;
+}
+function lmAnimSkinsShow(j, k) {
+    var fr = j.skin.frames[k];
+    if (!fr || !fr.id) return;
+    /* the definition was replaced (animateCustomSkin): the next cycle uses the new one */
+    if (typeof animatedskins === 'undefined' || !animatedskins || animatedskins[j.nick] !== j.skin) return;
+    /* nothing to see in a hidden tab: no image loads (the next frame after it shows again) */
+    if (typeof document !== 'undefined' && document && document.hidden) return;
+    application.cacheCustomSkin(j.nick, j.skin.color, "https://i.imgur.com/" + fr.id + ".png");
 }
 
 function animateCustomSkin(nick, id) {
