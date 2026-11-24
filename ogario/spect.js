@@ -5,12 +5,20 @@ function loadMultiCellSkin(spect) {
         ? application.mbSlots[spect.number] : application.selectedOldProfile;
     var prof = profiles[profileIdx];
     if (prof && prof.nick && prof.skinURL) {
-        if (typeof application !== 'undefined' && application.cacheCustomSkin) {
-            application.cacheCustomSkin(prof.nick, prof.color || '#000000', prof.skinURL);
-        }
-        if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
-            core.registerSkin(prof.nick, null, prof.skinURL, null);
-        }
+        lmPreloadUnitSkin(prof.skinURL);
+    }
+}
+
+/*
+ * A unit's profile skin is carried by its own cells (cell.skin = the URL), so it is
+ * only loaded here. It used to be stored under the profile's nick, which is often
+ * the main player's nick too: the main player and the unit then kept swapping skins.
+ */
+function lmPreloadUnitSkin(url) {
+    if (!url || typeof application === 'undefined' || !application || !application.loadSkin) return;
+    var clean = application.checkSkinURL ? application.checkSkinURL(url) : url;
+    if (clean && application.customSkinsCache && !application.customSkinsCache.hasOwnProperty(clean)) {
+        application.loadSkin(application.customSkinsCache, clean);
     }
 }
 
@@ -32,21 +40,8 @@ function addSpectator() {
 }
 window.addSpectator = addSpectator;
 
-/* "View on middle of both (when close)": true when the main player and the multibox unit
- * (client-space centre ux/uy) are both alive and the unit's centre lies inside the main
- * player's visible area. The old test looked for a non-own cell with the main nick, but
- * the unit's copies of the main cells are kept out of LM.cells, so it was almost never true. */
-function lmMultiUnitIsClose(ux, uy) {
-    if (!defaultmapsettings.middleMultiViewWhenClose || !legendmod.play) return false;
-    if (!legendmod.playerCells || !legendmod.playerCells.length) return false;
-    var mx = legendmod.viewXTrue, my = legendmod.viewYTrue;
-    if (!Number.isFinite(ux) || !Number.isFinite(uy) || !Number.isFinite(mx) || !Number.isFinite(my)) return false;
-    var sc = legendmod.viewScale > 0 ? legendmod.viewScale : 1;
-    var halfW = (legendmod.canvasWidth || window.innerWidth || 1920) / sc / 2;
-    var halfH = (legendmod.canvasHeight || window.innerHeight || 1080) / sc / 2;
-    return Math.abs(mx - ux) < halfW && Math.abs(my - uy) < halfH;
-}
-window.lmMultiUnitIsClose = lmMultiUnitIsClose;
+/* "View on middle of both (when close)" is decided by drawRender.getMultiboxFrame()
+ * (ogario.v4.js), which replaced lmMultiUnitIsClose(). */
 
 function addFullSpectator() {
     let mtp = 4.95,
@@ -110,7 +105,6 @@ class Spect {
         this.staticPositionController = null;
         this.socketErrorTimer = null;
         this.reconnectTimer = null;
-        this.massPositionTimer = null;
         this.pingInterval = null;
         this.mapOffset = 7071 //7071.067811865476
         this.fixX = 1
@@ -127,13 +121,11 @@ class Spect {
         if (this.staticPositionController) clearInterval(this.staticPositionController);
         if (this.socketErrorTimer) clearTimeout(this.socketErrorTimer);
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
-        if (this.massPositionTimer) clearTimeout(this.massPositionTimer);
         if (this.pingInterval) clearInterval(this.pingInterval);
         this.positionController = null;
         this.staticPositionController = null;
         this.socketErrorTimer = null;
         this.reconnectTimer = null;
-        this.massPositionTimer = null;
         this.pingInterval = null;
     }
 
@@ -175,6 +167,11 @@ class Spect {
         this.playerScore = 0
         this.fix3x = 0
         this.fix3y = 0
+        /* orientation belongs to one connection: a reconnect finds it again */
+        this.fixX = 1
+        this.fixY = 1
+        this._lmOffsetFixedAt = 0
+        this._lmFoodRejects = 0
         this.foodCalibrated = false
         this.foodSamples = []
         this.foodSampleIDs = {}
@@ -975,37 +972,13 @@ class Spect {
 
             case 17:
 
+                /* This connection's own server camera (its server space). The main
+                 * camera follows the unit's drawn cells instead (playerX/Y, see
+                 * drawRender.getMultiboxFrame); these packets used to move it too,
+                 * between frames and to a slightly different point. */
                 this.viewX = view.getFloat32(offset, true);
-                /* viewX is this connection's server space: convert before mixing it into the
-                 * main camera; only the multibox player unit moves the camera. */
-                var _cvX = this.getX(this.viewX);
-                /* only a living player unit decides (spectator sockets used to overwrite the flag) */
-                if (this.player) window.middleMultiViewFlag = !!(this.active && this.playerCellIDs.length && lmMultiUnitIsClose(_cvX, this.getY(view.getFloat32(offset + 4, true))));
-                if (this.player && defaultmapsettings.middleMultiView && legendmod.play) {
-                    legendmod.viewX = (legendmod.viewXTrue + _cvX) / 2;
-                } else if (this.player && window.middleMultiViewFlag) {
-                    legendmod.viewX = (legendmod.viewXTrue + _cvX) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled === this.number && getActiveSpect(window.multiboxPlayerEnabled)) {
-                    legendmod.viewX = _cvX
-                }
-                //var x=this.viewX = view.getFloat32(offset, true);
-                //this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
-                offset += 4;
-                this.viewY = view.getFloat32(offset, true);
-                /* viewY is this connection's server space: convert before mixing it into the
-                 * main camera; only the multibox player unit moves the camera. */
-                var _cvY = this.getY(this.viewY);
-                if (this.player && defaultmapsettings.middleMultiView && legendmod.play) {
-                    legendmod.viewY = (legendmod.viewYTrue + _cvY) / 2;
-                } else if (this.player && window.middleMultiViewFlag) {
-                    legendmod.viewY = (legendmod.viewYTrue + _cvY) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled === this.number && getActiveSpect(window.multiboxPlayerEnabled)) {
-                    legendmod.viewY = _cvY
-                }
-                //var y=this.viewX = view.getFloat32(offset, true);
-                //this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
-                offset += 4;
-                this.scale = view.getFloat32(offset, true);
+                this.viewY = view.getFloat32(offset + 4, true);
+                this.scale = view.getFloat32(offset + 8, true);
                 break;
             case 18:
                 /* No key rotation on 18 (same as the main client since PROTO-3 and Delta). */
@@ -1293,8 +1266,9 @@ class Spect {
                 this.beforecalculation()
                 break;
             case 64: //specific private servers
-                if (!this.openFirst) { //jimboy3100
-                    this.openFirst = true
+                /* setMapOffset keeps the first usable (on agar.io: full-map) border;
+                 * taking only the very first packet could fix a partial one. */
+                if (!this.mapOffsetFixed) {
                     const message = new window.buffer.Buffer(view.buffer);
                     this.viewMinX = message.readDoubleLE(offset);
                     offset += 8;
@@ -1335,12 +1309,7 @@ class Spect {
             this.sendNick(prof.nick);
             this.nick = prof.nick;
             if (prof.skinURL) {
-                if (typeof application !== 'undefined' && application.cacheCustomSkin) {
-                    application.cacheCustomSkin(prof.nick, prof.color || '#000000', prof.skinURL);
-                }
-                if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
-                    core.registerSkin(prof.nick, null, prof.skinURL, null);
-                }
+                lmPreloadUnitSkin(prof.skinURL);
             }
         } else {
             this.sendNick($("#nick").val());
@@ -1348,17 +1317,160 @@ class Spect {
         }
     }
 
+    /* Kept for older callers: orientation now comes from detectOrientation(). */
     GhostFix() {
-        //if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
-        if (!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length !== 0 && Math.abs(application.getghostX()) > 100 && Math.abs(application.getghostY()) > 100) {
-            this.fixX = /*Math.round*/(application.getghostX() / (this.ghostCells[0].x + this.mapOffsetX)) < 0 ? -1 : 1;
-            this.fixY = /*Math.round*/(application.getghostY() / (this.ghostCells[0].y + this.mapOffsetY)) < 0 ? -1 : 1;
-            this.ghostFixed = true
+        this.detectOrientation();
+    }
+
+    /* Offset and orientation known: positions (and the camera) can be trusted. */
+    transformReady() {
+        if (!this.mapOffsetFixed) return false;
+        if (this.ghostFixed || !this.integrity) return true;
+        /* No usable top-player list for 10 s: go on as not mirrored rather than
+         * keep the camera off this unit for good. */
+        if (Date.now() - (this._lmOffsetFixedAt || 0) > 10000) {
+            console.warn('[SPECT] Unit ' + this.number + ': orientation not found from the top players in 10 s; assuming the same as the main connection');
+            this.ghostFixed = true;
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     * Is this connection's map mirrored compared with the main one?
+     *
+     * agar.io can give each connection a mirrored map (per axis). The top
+     * players (opcode 69 "ghost cells") are the same players on both
+     * connections, so their distance from the map centre must match on each
+     * axis, either as is (same orientation) or with the sign flipped
+     * (mirrored). Both lists are compared in RAW server coordinates; the main
+     * client's ghost cells are stored rotated (Rotate Map), so its rawX/rawY
+     * are used. The old test compared one player's sign against the rotated
+     * main position (or the main player's own position), which picked the
+     * wrong side whenever Rotate Map had flipped that axis.
+     *
+     * Private servers don't mirror: nothing to detect there.
+     */
+    detectOrientation() {
+        if (this.ghostFixed || !this.mapOffsetFixed) return;
+        if (!this.integrity) {
+            this.ghostFixed = true;
+            return;
+        }
+        var mainList = legendmod.ghostCells;
+        if (!mainList || !mainList.length || !this.ghostCells || !this.ghostCells.length) return;
+        /* the two lists must be from about the same moment */
+        if (!(Date.now() - (legendmod.ghostCellsTime || 0) < 3000)) return;
+        var used = {};
+        var pairs = 0;
+        var sameX = 0, flipX = 0, sameY = 0, flipY = 0;
+        for (var i = 0; i < mainList.length && pairs < 10; i++) {
+            var m = mainList[i];
+            if (!m || !Number.isFinite(m.rawX) || !Number.isFinite(m.rawY) || !(m.mass > 0)) continue;
+            /* same player on this connection: the closest mass, within 10% */
+            var best = -1, bestDiff = Infinity;
+            for (var j = 0; j < this.ghostCells.length; j++) {
+                var g = this.ghostCells[j];
+                if (used[j] || !g || !(g.mass > 0)) continue;
+                var diff = Math.abs(g.mass - m.mass) / Math.max(g.mass, m.mass);
+                if (diff < bestDiff) {
+                    bestDiff = diff;
+                    best = j;
+                }
+            }
+            if (best < 0 || bestDiff > 0.1) continue;
+            used[best] = true;
+            var s = this.ghostCells[best];
+            /* distance from the map centre on each connection */
+            var mx = m.rawX + legendmod.mapOffsetX, my = m.rawY + legendmod.mapOffsetY;
+            var sx = s.x + this.mapOffsetX, sy = s.y + this.mapOffsetY;
+            sameX += Math.abs(mx - sx);
+            flipX += Math.abs(mx + sx);
+            sameY += Math.abs(my - sy);
+            flipY += Math.abs(my + sy);
+            pairs++;
+        }
+        if (!pairs) return;
+        /* Decide an axis only when one answer fits (players move between the two
+         * packets) and clearly beats the other (a player near the centre line
+         * fits both). Otherwise wait for the next opcode 69. */
+        var decide = function (same, flip) {
+            same /= pairs;
+            flip /= pairs;
+            if (same < 600 && flip - same > 400) return 1;
+            if (flip < 600 && same - flip > 400) return -1;
+            return 0;
+        };
+        var fx = decide(sameX, flipX);
+        var fy = decide(sameY, flipY);
+        if (!fx || !fy) return;
+        this.setOrientation(fx, fy);
+        console.log('[SPECT] Unit ' + this.number + ' orientation vs main (x, y):', fx, fy, '(' + pairs + ' top players compared)');
+    }
+
+    /* Set fixX/fixY and move the cells already placed with the old values. */
+    setOrientation(fixX, fixY) {
+        var changed = fixX !== this.fixX || fixY !== this.fixY;
+        var self = this;
+        var saved = [];
+        if (changed) {
+            /* back to this connection's raw coordinates with the old transform */
+            this._lmForEachUnitCell(function (cell) {
+                saved.push([cell, self._lmRawOf(cell)]);
+            });
+        }
+        this.fixX = fixX;
+        this.fixY = fixY;
+        this.ghostFixed = true;
+        for (var i = 0; i < saved.length; i++) {
+            this._lmPlaceFromRaw(saved[i][0], saved[i][1]);
         }
     }
 
+    /* Every cell of this unit, including those still animating their removal. */
+    _lmForEachUnitCell(fn) {
+        var cells = legendmod.indexedCells;
+        if (cells) {
+            for (var id in cells) {
+                if (!Object.prototype.hasOwnProperty.call(cells, id)) continue;
+                if (cells[id] && cells[id].spectator === this.number) fn(cells[id]);
+            }
+        }
+        var removed = legendmod.removedCells;
+        if (removed) {
+            for (var r = 0; r < removed.length; r++) {
+                if (removed[r] && removed[r].spectator === this.number) fn(removed[r]);
+            }
+        }
+    }
+
+    _lmRawOf(cell) {
+        var raw = {};
+        var keysX = ['x', 'targetX', 'startX', 'oldX'];
+        var keysY = ['y', 'targetY', 'startY', 'oldY'];
+        for (var k = 0; k < 4; k++) {
+            if (Number.isFinite(cell[keysX[k]])) raw[keysX[k]] = this.convertX(cell[keysX[k]]);
+            if (Number.isFinite(cell[keysY[k]])) raw[keysY[k]] = this.convertY(cell[keysY[k]]);
+        }
+        return raw;
+    }
+
+    _lmPlaceFromRaw(cell, raw) {
+        for (var key in raw) {
+            if (!Object.prototype.hasOwnProperty.call(raw, key)) continue;
+            cell[key] = key.charAt(key.length - 1) === 'X' || key === 'x' ? this.getX(raw[key]) : this.getY(raw[key]);
+        }
+    }
+
+    /*
+     * This connection's raw coordinates -> the main client's local (drawn)
+     * coordinates: this connection's offset, its orientation against the main
+     * one, the main offset, the small food-calibrated rest (fix3), then the
+     * main client's Rotate Map flip. Until the orientation is known the unit is
+     * placed as not mirrored; setOrientation() moves it if that was wrong.
+     */
     getX(x) {
-        if ((this.ghostFixed || !this.integrity) && this.mapOffsetFixed) {
+        if (this.mapOffsetFixed) {
             var res = ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x);
             if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][0]) {
                 res = legendmod.mapMaxX - (res - legendmod.mapMinX);
@@ -1369,7 +1481,7 @@ class Spect {
     }
 
     getY(y) {
-        if ((this.ghostFixed || !this.integrity) && this.mapOffsetFixed) {
+        if (this.mapOffsetFixed) {
             var res = ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y);
             if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][1]) {
                 res = legendmod.mapMaxY - (res - legendmod.mapMinY);
@@ -1380,6 +1492,7 @@ class Spect {
     }
 
     convertX(x) { //is used only for SendPosition
+        if (!this.mapOffsetFixed) return x; /* getX is the identity until then too */
         var res = x;
         if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][0]) {
             res = legendmod.mapMaxX - (res - legendmod.mapMinX);
@@ -1388,6 +1501,7 @@ class Spect {
     }
 
     convertY(y) {
+        if (!this.mapOffsetFixed) return y;
         var res = y;
         if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][1]) {
             res = legendmod.mapMaxY - (res - legendmod.mapMinY);
@@ -1395,9 +1509,18 @@ class Spect {
         return ((res + legendmod.mapOffsetY - this.fix3y) * this.fixY - this.mapOffsetY); /* exact inverse of getY */
     }
 
+    /*
+     * Fine-tune the placement with food both connections see (same cell id):
+     * the rest left after the border offsets is a few units at most. A sample
+     * that is far off is a different cell (or a server that numbers cells per
+     * connection), so it's skipped instead of shifting the unit across the map.
+     * Worked out in the main client's RAW space, where fix3 is applied; it was
+     * taken from the rotated positions, which had the wrong sign when Rotate
+     * Map flipped an axis.
+     */
     calibrateWithFood(spectCell, isFood) {
-        if (this.foodCalibrated || !legendmod) return;
-        var rawID = spectCell.id % 1000000000;
+        if (this.foodCalibrated || !legendmod || !this.transformReady()) return;
+        var rawID = lmRawCellId(spectCell.id);
         var mainCell = (legendmod.indexedCells && legendmod.indexedCells[rawID]) ? legendmod.indexedCells[rawID] : null;
         if (!mainCell && legendmod.food) {
             for (var f = 0; f < legendmod.food.length; f++) {
@@ -1407,49 +1530,62 @@ class Spect {
                 }
             }
         }
-        if (mainCell && (mainCell.isFood || mainCell.size < 21 || isFood || spectCell.size < 21)) {
-            var unFixedX = spectCell.x - this.fix3x;
-            var unFixedY = spectCell.y - this.fix3y;
-            var dX = mainCell.x - unFixedX;
-            var dY = mainCell.y - unFixedY;
+        if (!mainCell || mainCell.spectator || !(mainCell.isFood || mainCell.size < 21 || isFood || spectCell.size < 21)) return;
+        var vec = legendmod.vector && legendmod.vector[legendmod.vnr];
+        var flipX = !!(vec && vec[0]), flipY = !!(vec && vec[1]);
+        /* both positions in the main client's raw space; translateX/Y undo Rotate Map */
+        var mainX = flipX ? legendmod.translateX(mainCell.x) : mainCell.x;
+        var mainY = flipY ? legendmod.translateY(mainCell.y) : mainCell.y;
+        var unitX = (flipX ? legendmod.translateX(spectCell.x) : spectCell.x) - this.fix3x;
+        var unitY = (flipY ? legendmod.translateY(spectCell.y) : spectCell.y) - this.fix3y;
+        var dX = mainX - unitX;
+        var dY = mainY - unitY;
 
-            if (!this.foodSampleIDs) this.foodSampleIDs = {};
-            if (!this.foodSampleIDs[rawID]) {
-                this.foodSampleIDs[rawID] = true;
-                this.foodSamples.push({ x: dX, y: dY });
-
-                if (this.foodSamples.length >= 4) {
-                    var sumX = 0, sumY = 0;
-                    for (var i = 0; i < 4; i++) {
-                        sumX += this.foodSamples[i].x;
-                        sumY += this.foodSamples[i].y;
-                    }
-                    var avgX = sumX / 4;
-                    var avgY = sumY / 4;
-                    var adjX = avgX - this.fix3x;
-                    var adjY = avgY - this.fix3y;
-
-                    this.fix3x = avgX;
-                    this.fix3y = avgY;
-                    this.foodCalibrated = true;
-                    if (Math.abs(adjX) > 0.001 || Math.abs(adjY) > 0.001) {
-                        this.moveExistedCells(adjX, adjY);
-                    }
-                    console.log('[SPECT] Intelligent 4-Food Offset Calibrated (fix3x, fix3y):', avgX.toFixed(3), avgY.toFixed(3));
-                }
+        if (!this.foodSampleIDs) this.foodSampleIDs = {};
+        if (this.foodSampleIDs[rawID]) return;
+        this.foodSampleIDs[rawID] = true;
+        if (!(Math.abs(dX) <= 64 && Math.abs(dY) <= 64)) {
+            this._lmFoodRejects = (this._lmFoodRejects || 0) + 1;
+            if (this._lmFoodRejects === 1 || this._lmFoodRejects % 50 === 0) {
+                console.warn('[SPECT] Unit ' + this.number + ': food ' + rawID + ' is ' + Math.round(dX) + ', ' + Math.round(dY) +
+                    ' away from the main client\'s copy; not used for calibration (' + this._lmFoodRejects + ' skipped)');
             }
+            return;
         }
+        this.foodSamples.push({ x: dX, y: dY });
+        if (this.foodSamples.length < 4) return;
+        var sumX = 0, sumY = 0, minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        for (var i = 0; i < this.foodSamples.length; i++) {
+            var p = this.foodSamples[i];
+            sumX += p.x;
+            sumY += p.y;
+            minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+            minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+        }
+        /* food doesn't move: samples that disagree mean mismatched cells */
+        if (maxX - minX > 16 || maxY - minY > 16) {
+            this.foodSamples.shift();
+            return;
+        }
+        var adjX = sumX / this.foodSamples.length;
+        var adjY = sumY / this.foodSamples.length;
+        this.fix3x += adjX;
+        this.fix3y += adjY;
+        this.foodCalibrated = true;
+        /* raw-space shift -> drawn-space shift (Rotate Map flips the sign) */
+        this.moveExistedCells(flipX ? -adjX : adjX, flipY ? -adjY : adjY);
+        console.log('[SPECT] Unit ' + this.number + ' food calibration (fix3x, fix3y):', this.fix3x.toFixed(2), this.fix3y.toFixed(2));
     }
 
     moveExistedCells(deltaX, deltaY) {
         if (!deltaX && !deltaY) return;
-        legendmod.cells.forEach((found) => {
-            if (found && found.spectator === this.number) {
-                found.x += deltaX;
-                found.y += deltaY;
-                found.targetX += deltaX;
-                found.targetY += deltaY;
-            }
+        this._lmForEachUnitCell(function (found) {
+            if (Number.isFinite(found.x)) found.x += deltaX;
+            if (Number.isFinite(found.y)) found.y += deltaY;
+            if (Number.isFinite(found.targetX)) found.targetX += deltaX;
+            if (Number.isFinite(found.targetY)) found.targetY += deltaY;
+            if (Number.isFinite(found.startX)) found.startX += deltaX;
+            if (Number.isFinite(found.startY)) found.startY += deltaY;
         });
     }
 
@@ -1505,37 +1641,77 @@ class Spect {
             y - distance > legendmod.camMaxMultiY)
     }
 
+    /*
+     * This connection's map offset, from its own border packet (opcode 64).
+     *
+     * Every agar.io connection gets its own coordinate offset (and a MultiOgar
+     * server that scrambles coordinates does the same per client), so a unit's
+     * raw coordinates are not the main client's. The offset used to be copied
+     * from the main client whenever the main one was known, which left the unit
+     * thousands of units off, often outside the map, until 4 shared food cells
+     * were seen (never, when the units were far apart).
+     *
+     * agar.io also sends smaller borders during play: as on the main client,
+     * only the full map (over 14000 x 14000) is used there, and the first one
+     * fixes the offset for this connection.
+     */
     setMapOffset(left, top, right, bottom) {
         var pWidth = Math.abs(right - left);
         var pHeight = Math.abs(bottom - top);
-        var temp2 = pWidth > 14000 && pHeight > 14000;
+        if (!Number.isFinite(pWidth) || !Number.isFinite(pHeight) || !pWidth || !pHeight) return;
+        if (this.mapOffsetFixed) return;
+        var fullMap = pWidth > 14000 && pHeight > 14000;
+        var official = this.integrity && !legendmod.isLegendWorld && legendmod.serverType !== 'deltio';
+        if (official && !fullMap) return;
 
-        if (typeof legendmod !== 'undefined' && legendmod.mapOffsetFixed && legendmod.mapOffsetX != null) {
-            this.mapSize = legendmod.mapSize || 14142;
-            this.mapOffset = legendmod.mapOffset || (this.mapSize / 2);
-            this.mapOffsetX = legendmod.mapOffsetX;
-            this.mapOffsetY = legendmod.mapOffsetY;
-            this.mapMinX = legendmod.mapMinX;
-            this.mapMinY = legendmod.mapMinY;
-            this.mapMaxX = legendmod.mapMaxX;
-            this.mapMaxY = legendmod.mapMaxY;
+        if (legendmod.isLegendWorld) {
+            /* Expanding Land: no per-connection offset and its own map convention;
+             * unchanged from before. */
+            if (legendmod.mapOffsetFixed && legendmod.mapOffsetX != null) {
+                this.mapSize = legendmod.mapSize || 14142;
+                this.mapOffset = legendmod.mapOffset || (this.mapSize / 2);
+                this.mapOffsetX = legendmod.mapOffsetX;
+                this.mapOffsetY = legendmod.mapOffsetY;
+                this.mapMinX = legendmod.mapMinX;
+                this.mapMinY = legendmod.mapMinY;
+                this.mapMaxX = legendmod.mapMaxX;
+                this.mapMaxY = legendmod.mapMaxY;
+            } else {
+                this.mapSize = (this.integrity || fullMap) ? 14142 : pWidth;
+                this.mapOffset = this.mapSize / 2;
+                this.mapOffsetX = this.mapOffset - right;
+                this.mapOffsetY = this.mapOffset - bottom;
+                this.mapMinX = -this.mapOffset - this.mapOffsetX;
+                this.mapMinY = -this.mapOffset - this.mapOffsetY;
+                this.mapMaxX = this.mapOffset - this.mapOffsetX;
+                this.mapMaxY = this.mapOffset - this.mapOffsetY;
+            }
         } else {
-            this.mapSize = (this.integrity || temp2) ? 14142 : (pWidth || 14142);
+            this.mapSize = (official || fullMap) ? 14142 : pWidth;
             this.mapOffset = this.mapSize / 2;
-            this.mapOffsetX = this.mapOffset - right;
-            this.mapOffsetY = this.mapOffset - bottom;
-            this.mapMinX = -this.mapOffset - this.mapOffsetX;
-            this.mapMinY = -this.mapOffset - this.mapOffsetY;
-            this.mapMaxX = this.mapOffset - this.mapOffsetX;
-            this.mapMaxY = this.mapOffset - this.mapOffsetY;
+            if (official) {
+                /* Same formula as the main client uses on agar.io, so the two match exactly. */
+                this.mapOffsetX = this.mapOffset - right;
+                this.mapOffsetY = this.mapOffset - bottom;
+            } else {
+                /* Same as the main client on private servers: centre of the border. */
+                this.mapOffsetX = -(left + right) / 2;
+                this.mapOffsetY = -(top + bottom) / 2;
+            }
+            this.mapMinX = left;
+            this.mapMinY = top;
+            this.mapMaxX = right;
+            this.mapMaxY = bottom;
         }
 
-        if (!this.mapOffsetFixed) {
-            this.viewX = (right + left) / 2;
-            this.viewY = (bottom + top) / 2;
-        }
+        this.viewX = (right + left) / 2;
+        this.viewY = (bottom + top) / 2;
         this.mapOffsetFixed = true;
-        console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
+        this._lmOffsetFixedAt = Date.now();
+        console.log('[SPECT] Unit ' + this.number + ' map offset (x, y):', this.mapOffsetX, this.mapOffsetY,
+            '| main:', legendmod.mapOffsetX, legendmod.mapOffsetY);
+        /* Ghost cells may already be here. */
+        this.detectOrientation();
 
         if (!this.integrity) {
             if (this.player) {
@@ -1557,9 +1733,7 @@ class Spect {
         this._lmFocusOnSpawn = false;
         this.playerCellIDs = [];
         if (this.positionController) clearInterval(this.positionController);
-        if (this.massPositionTimer) clearTimeout(this.massPositionTimer);
         this.positionController = null;
-        this.massPositionTimer = null;
 
         // Auto-switch active camera to surviving multibox unit if available
         if (window.multiboxPlayerEnabled === this.number) {
@@ -1642,8 +1816,8 @@ class Spect {
                 }
                 break;
             case 64:
-                if (!this.openFirst) { //jimboy3100
-                    this.openFirst = true
+                /* see the other case 64: the first usable border wins */
+                if (!this.mapOffsetFixed) {
                     this.viewMinX = (message.readDoubleLE(offset));
                     offset += 8;
                     this.viewMinY = (message.readDoubleLE(offset));
@@ -1676,9 +1850,6 @@ class Spect {
             }
             return text;
         };
-        //
-        if (this.time) this.timerDifference = Date.now() - this.time
-        //
         this.time = Date.now();
         this.removePlayerCell = false;
         let eatEventsLength = view.readUInt16LE(offset);
@@ -1700,10 +1871,15 @@ class Spect {
             //console.log('victim isFood',victimID.isFood)
             offset += 8;
             if (eaterCell && victimCell) {
+                /* Same eat animation as the main connection: moveCell() runs from
+                 * start to target over the animation time, counted from updateTime. */
+                victimCell.startX = victimCell.x;
+                victimCell.startY = victimCell.y;
+                victimCell.startSize = victimCell.size;
                 victimCell.targetX = eaterCell.x;
                 victimCell.targetY = eaterCell.y;
                 victimCell.targetSize = victimCell.size;
-                victimCell.time = this.time;
+                victimCell.time = victimCell.updateTime = this.time;
                 victimCell.removeCell();
             }
         }
@@ -1838,18 +2014,7 @@ class Spect {
                 cell = legendmod.indexedCells[id];
                 cell.spectator = this.number;
                 if (cell._renderSuppressed) {
-                    var suppressedRawID = id % 1000000000;
-                    var preferredCopy = legendmod.indexedCells[suppressedRawID];
-                    if (preferredCopy === cell || (preferredCopy && preferredCopy.removed)) preferredCopy = null;
-                    if (!preferredCopy) {
-                        for (var preferredNumber = 1; preferredNumber < this.number; preferredNumber++) {
-                            var lowerCopy = legendmod.indexedCells[suppressedRawID + preferredNumber * 1000000000];
-                            if (lowerCopy && lowerCopy !== cell && !lowerCopy.removed) {
-                                preferredCopy = lowerCopy;
-                                break;
-                            }
-                        }
-                    }
+                    var preferredCopy = lmMultiboxIdMaster(cell);
                     if (!preferredCopy) {
                         cell._renderSuppressed = false;
                         if (legendmod.cells.indexOf(cell) === -1) legendmod.cells.push(cell);
@@ -1880,12 +2045,8 @@ class Spect {
                             }
                             if (_mbProf.skinURL) {
                                 cell.skin = _mbProf.skinURL;
-                                if (typeof application !== 'undefined' && application.cacheCustomSkin) {
-                                    application.cacheCustomSkin(_mbProf.nick, _mbProf.color || '#000000', _mbProf.skinURL);
-                                }
-                                if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
-                                    core.registerSkin(_mbProf.nick, null, _mbProf.skinURL, null);
-                                }
+                                cell._lmProfileSkin = true;
+                                lmPreloadUnitSkin(_mbProf.skinURL);
                             }
                         }
 
@@ -1920,10 +2081,21 @@ class Spect {
                 cell.targetNick = this.nick
                 cell.isPlayerCellMulti = true
             }
+            /*
+             * Interpolate like the main connection (updateCells in ogario.v4.js):
+             * moveCell() goes from where the cell is drawn now to the new position
+             * over the animation time. Unit cells used to set only the target and
+             * snap the size, and never set updateTime, so after their first
+             * 80-120 ms they jumped to each packet (choppy at the server's tick rate,
+             * and so was the camera while following the unit).
+             */
+            cell.startX = cell.x;
+            cell.startY = cell.y;
+            cell.startSize = cell.size;
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
-            cell.size = size;
+            cell.updateTime = this.time;
             cell.isFood = isFood;
             cell.isVirus = isVirus;
             cell.invisible = invisible;
@@ -1937,7 +2109,8 @@ class Spect {
             if (this.player || cell.isPlayerCell || cell.isPlayerCellMulti) {
                 cell.invisible = false;
             }
-            if (skin) {
+            /* the unit's own cells keep its profile skin (see lmPreloadUnitSkin) */
+            if (skin && !cell._lmProfileSkin) {
                 cell.skin = skin;
             }
             if (extendedFlags & 4) {
@@ -2003,7 +2176,8 @@ class Spect {
 
     newID(id) {
         //return id
-        return id + this.number * 1000000000
+        /* see LM_UNIT_ID_STEP in ogario.v4.js: agar.io ids go past 1e9 */
+        return lmUnitCellId(id, this.number)
     }
 
     calculatePlayerMassAndPosition(ownCells) {
@@ -2022,17 +2196,9 @@ class Spect {
             x += n.x / playersLength;
             y += n.y / playersLength;
         }
-        if (this.player) window.middleMultiViewFlag = lmMultiUnitIsClose(x, y);
-        if (defaultmapsettings.middleMultiView && legendmod.play) {
-            legendmod.viewX = (legendmod.viewXTrue + x) / 2;
-            legendmod.viewY = (legendmod.viewYTrue + y) / 2;
-        } else if (window.middleMultiViewFlag) {
-            legendmod.viewX = (legendmod.viewXTrue + x) / 2;
-            legendmod.viewY = (legendmod.viewYTrue + y) / 2;
-        } else if (window.multiboxPlayerEnabled === this.number) {
-            legendmod.viewX = x;
-            legendmod.viewY = y;
-        }
+        /* The camera (which player, both, zoom) is decided in one place,
+         * drawRender.getMultiboxFrame(), from playerX/Y. This used to write the
+         * main view centre too, differently from what the camera showed. */
         this.playerX = x;
         this.playerY = y;
 
@@ -2045,14 +2211,8 @@ class Spect {
         this.playerSize = size;
         this.playerMass = ~~(targetSize / 100);
         this.recalculatePlayerMass();
-
-        if (this.timerDifference > 10 && !this.massPositionTimer) {
-            this.massPositionTimer = setTimeout(() => {
-                this.massPositionTimer = null;
-                this.timerDifference = this.timerDifference - 10
-                if (this.active) this.calculatePlayerMassAndPosition()
-            }, 10);
-        }
+        /* No 10 ms timer chain any more: setView() calls this every frame
+         * (LM.updateMultiboxUnitPositions), also while the main player is dead. */
     }
 
     recalculatePlayerMass() {

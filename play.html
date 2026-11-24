@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Play Agar.io with Legend Mod — WebGL, Macros, Skins & Anti-Lag | LM Express</title>
     <meta name="description" content="Play Expanding Land and agar.io with Legend Mod Express. Smooth WebGL rendering, 60+ macros, custom skins, replays, team chat, touch controls. Free.">
@@ -34,109 +33,107 @@
     <meta name="dcterms.format" content="text/html">
     <meta name="dcterms.language" content="en">
     <link rel="shortcut icon" href="https://jimboy3100.github.io/banners/icon32croped.ico.gif">
-    <script>if(location.hostname.indexOf('legendmod.ml')!==-1){var m=document.createElement('link');m.rel='manifest';m.href='/manifest.json';document.head.appendChild(m);}</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
-    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- The web app manifest only applies on the website itself, not when the loader writes this page over agar.io -->
+    <script>
+        (function () {
+            if (location.hostname.indexOf('legendmod.ml') === -1) return;
+            var manifest = document.createElement('link');
+            manifest.rel = 'manifest';
+            manifest.href = '/manifest.json';
+            document.head.appendChild(manifest);
+        })();
+    </script>
     <!-- No service worker: /lib/sw.js could only control /lib/ (GitHub Pages cannot widen its scope),
          so it never cached play.html's requests and only pre-fetched assets on every version. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Stylesheets: order matters, later files override earlier ones -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
-    <link rel="stylesheet" href="https://www.legendmod.ml/LMexpress/master.css?v=3.555">
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/bootstrap-colorpicker.min.css?v=3.555">
-    </link>
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/toastr.min.css?v=3.555">
-    </link>
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/switchery.min.css?v=3.555">
-    </link>
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/rangeslider.css?v=3.555">
-    </link>
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/perfect-scrollbar.min.css?v=3.555">
-    </link>
+    <link rel="stylesheet" href="https://jimboy3100.github.io/LMexpress/master.css">
+    <link rel="stylesheet" href="https://jimboy3100.github.io/lib/bootstrap-colorpicker.min.css">
+    <link rel="stylesheet" href="https://jimboy3100.github.io/lib/toastr.min.css">
+    <link rel="stylesheet" href="https://jimboy3100.github.io/lib/switchery.min.css">
+    <link rel="stylesheet" href="https://jimboy3100.github.io/lib/rangeslider.css">
+    <link rel="stylesheet" href="https://jimboy3100.github.io/lib/perfect-scrollbar.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    </link>
-    <link rel="stylesheet" href="https://www.legendmod.ml/css/ogario.v3.css?v=3.555">
-    <!--div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/loader/LoaderNew.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div-->
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/context-menu.min.css?v=3.555">
+    <link rel="stylesheet" href="https://jimboy3100.github.io/css/ogario.v3.css">
+    <link rel="stylesheet" href="https://jimboy3100.github.io/lib/context-menu.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css">
+
     <!-- defer: optional P2P helper; a slow delt.io must not block the page (the proxy checks P2PWebSocket at connect time) -->
     <script defer src="https://delt.io/v7/js/runtimechunk~P2PWebSocket.js"></script>
     <script defer src="https://delt.io/v7/js/P2PWebSocket.js"></script>
     <script>
-    /* P2P WebSocket proxy — intercepts hash:// server connections */
-    (function() {
-        var OrigWS = window.WebSocket;
-        var hashPattern = /\/\/([a-z0-9]{20,30})(?:[:/]|$)/;
-        window.WebSocket = new Proxy(OrigWS, {
-            construct: function(target, args, newTarget) {
-                var url = String(args[0]);
-                var protocols = args[1];
-                var hashMatch = url.match(hashPattern);
-                if (hashMatch && !/cloud/.test(url) && typeof P2PWebSocket !== 'undefined') {
-                    console.log('[P2P] Intercepting hash connection:', url);
-                    var socket = new P2PWebSocket('http://' + hashMatch[1], protocols);
+        /* P2P WebSocket proxy: hash:// server addresses go through delt.io's P2PWebSocket */
+        (function () {
+            var OrigWS = window.WebSocket;
+            var hashPattern = /\/\/([a-z0-9]{20,30})(?:[:/]|$)/;
+            window.WebSocket = new Proxy(OrigWS, {
+                construct: function (target, args, newTarget) {
+                    var url = String(args[0]);
+                    var protocols = args[1];
+                    var hashMatch = url.match(hashPattern);
+                    if (hashMatch && !/cloud/.test(url) && typeof P2PWebSocket !== 'undefined') {
+                        console.log('[P2P] Intercepting hash connection:', url);
+                        /* P2PWebSocket's own address format, not a plain-http request */
+                        var socket = new P2PWebSocket('http://' + hashMatch[1], protocols);
 
-                    /*
-                     * Protocol state belongs to this specific socket.
-                     * Never mutate global legendmod.integrity from asynchronous socket events.
-                     */
-                    socket._lwIntegrity = false;
-                    socket._lwTransportType = "p2p";
+                        /*
+                         * Protocol state belongs to this specific socket.
+                         * Never mutate global legendmod.integrity from asynchronous socket events.
+                         */
+                        socket._lwIntegrity = false;
+                        socket._lwTransportType = "p2p";
 
-                    return socket;
+                        return socket;
+                    }
+                    return Reflect.construct(target, args, newTarget);
                 }
-                return Reflect.construct(target, args, newTarget);
-            },
-            get: function(target, prop, receiver) { return Reflect.get(target, prop, receiver); },
-            set: function(target, prop, value, receiver) { return Reflect.set(target, prop, value, receiver); }
-        });
-    })();
+            });
+        })();
     </script>
-    <!--script src="https://deltav4.gitlab.io/standby-server.js"></script-->
-    <script src="https://www.legendmod.ml/LMexpress/standby-server.js?v=3.555"></script>
-    <script>delete localStorage['s/s']</script>
+    <script src="https://jimboy3100.github.io/LMexpress/standby-server.js"></script>
+    <script>
+        try {
+            delete localStorage['s/s'];
+        } catch (e) {
+            console.log('[Legend] localStorage is not available', e);
+        }
+    </script>
 
-    <!-- jQuery 3.7.1 (was 3.2.1: CVE-2019-11358, CVE-2020-11022/11023) -->
-    <script src="https://www.legendmod.ml/lib/jquery-3.7.1.min.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/lib/protobuf.min.js?v=3.555"></script>
-    <script i="hope" u="gamer">
-    </script>
+    <script src="https://jimboy3100.github.io/lib/jquery.min.js"></script>
+    <script src="https://jimboy3100.github.io/lib/protobuf.min.js"></script>
     <div id="captchaWindow"
         style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
         <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
     </div>
-
-
     <div id="captchaWindowV3" style="display:none;"></div>
-    <!-- jQuery UI 1.13.3, Draggable only (was the full 520 KB jquery-ui.js 1.12.1; only .draggable() is used) -->
-    <script src="https://www.legendmod.ml/lib/jquery-ui-1.13.3-draggable.js?v=3.555"></script>
-    <!-- Bootstrap 3.4.1 JS (was 3.3.7: CVE-2018-14040/14041/14042, CVE-2019-8331) -->
-    <script src="https://www.legendmod.ml/lib/bootstrap-3.4.1.min.js?v=3.555"></script>
-    <script>
-        /* 3.4.1 sanitizes popover HTML: allow the <video> of the video-skin preview popover */
-        if ($.fn.popover && $.fn.popover.Constructor && $.fn.popover.Constructor.DEFAULTS && $.fn.popover.Constructor.DEFAULTS.whiteList) {
-            $.fn.popover.Constructor.DEFAULTS.whiteList.video = ['src', 'width', 'height', 'autoplay', 'loop', 'muted'];
-        }
-    </script>
-    <script src="https://www.legendmod.ml/lib/bootstrap-colorpicker.min.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/lib/toastr.min.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/lib/switchery.min.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/lib/rangeslider.min.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/lib/perfect-scrollbar.jquery.min.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/lib/Youtubeiframe_api.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/extras/key-event.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/extras/foggy.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/languages/LanguagePackEnglish.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff2.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/LMexpress/i18n.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/LMexpress/proto.decoder.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/ogario/ogario.v4.master.regionobj.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/ogario/ogario.v4.master.js?v=3.555"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@17.0.3/dist/twemoji.min.js" integrity="sha384-Y5xukbGJwykbHHkTbLJykYLcBPFxrwipTbEh0puxhkz9CZ90raTPGe2Ks4vCxsYU" crossorigin="anonymous"></script>
-    <script src="https://www.legendmod.ml/nicks/emoji/DisMojiPicker[1].js?v=3.555"></script>
-    <!--script type="text/javascript" id="cookieinfo" src="//cookieinfoscript.com/js/cookieinfo.min.js" data-bg="#645862" data-fg="#FFFFFF" data-link="#F1D600" data-height= "50" data-cookie="CookieInfoScript" data-text-align="left" data-close-text="Got it!" data-message="We use cookies to enhance your experience. By continuing using our scripts, you agree to our use of cookies."></script-->
-    <script src="https://www.legendmod.ml/lib/TweenMax.min.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/lib/context-menu.min.js?v=3.555"></script>
+    <!-- Libraries and the mod's early scripts. These ran inside <body> before as well (the captcha
+         divs above used to sit in <head>, which made the browser start <body> at that point). -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://jimboy3100.github.io/lib/bootstrap.min.js"></script>
+    <script src="https://jimboy3100.github.io/lib/bootstrap-colorpicker.min.js"></script>
+    <script src="https://jimboy3100.github.io/lib/toastr.min.js"></script>
+    <script src="https://jimboy3100.github.io/lib/switchery.min.js"></script>
+    <script src="https://jimboy3100.github.io/lib/rangeslider.min.js"></script>
+    <script src="https://jimboy3100.github.io/lib/perfect-scrollbar.jquery.min.js"></script>
+    <script src="https://jimboy3100.github.io/lib/Youtubeiframe_api.js"></script>
+    <script src="https://jimboy3100.github.io/extras/key-event.js"></script>
+    <script src="https://jimboy3100.github.io/extras/foggy.js"></script>
+    <script src="https://jimboy3100.github.io/languages/LanguagePackEnglish.js"></script>
+    <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff2.js"></script>
+    <script src="https://jimboy3100.github.io/LMexpress/i18n.js"></script>
+    <script src="https://jimboy3100.github.io/LMexpress/proto.decoder.js"></script>
+    <script src="https://jimboy3100.github.io/ogario/ogario.v4.master.regionobj.js"></script>
+    <script src="https://jimboy3100.github.io/ogario/ogario.v4.master.js"></script>
+    <!-- Pinned version with an integrity hash (was @latest, which could change under the mod at any time) -->
+    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@17.0.3/dist/twemoji.min.js"
+        integrity="sha384-Y5xukbGJwykbHHkTbLJykYLcBPFxrwipTbEh0puxhkz9CZ90raTPGe2Ks4vCxsYU"
+        crossorigin="anonymous"></script>
+    <script src="https://jimboy3100.github.io/nicks/emoji/DisMojiPicker[1].js"></script>
+    <script src="https://jimboy3100.github.io/lib/TweenMax.min.js"></script>
+    <script src="https://jimboy3100.github.io/lib/context-menu.min.js"></script>
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -144,7 +141,7 @@
             {
                 "@type": "Organization",
                 "@id": "https://www.legendmod.ml/#organization",
-                "name": "℄ Legend Clan",
+                "name": "\u2104 Legend Clan",
                 "url": "https://www.legendmod.ml/",
                 "logo": "https://jimboy3100.github.io/banners/icon512.png"
             },
@@ -179,34 +176,21 @@
 </head>
 
 <body>
+    <!-- reCAPTCHA containers (captcha.js renders into these) -->
+
+    <!-- Facebook login (master.facebookLogin) -->
     <div id="fb-root"></div>
     <script>
-                /*
-                var CutNameConflictwithMessage=false;
-                (function(){
-                    var _privateLog = console.log;
-                    console.log = function (message) {
-                        if (CutNameConflictwithMessage==false){
-                        if (~message.indexOf("OGARio by szymy")){
-                        //console.log = _privateLog;
-                        }
-                        else{
-                            _privateLog.apply(console, arguments);
-                        }
-                        }
-                    };
-                })();
-                */
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
     </script>
-    <script>
-            (function (d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) return;
-                js = d.createElement(s); js.id = id;
-                js.src = "//connect.facebook.net/en_US/sdk.js";
-                fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk')); 
-    </script>
+
     <div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
         <div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0"
             data-results-state="0" data-gamemode="">
@@ -227,8 +211,7 @@
                             style="position: relative; top: 10px; width: 100%; display: none;">
                             <div id="close-stats" style="float: right;">X</div>
                             <br />
-                            <div id="stats-content"
-                                style="float: right; width: 50%; font-size: 12px;"></div>
+                            <div id="stats-content" style="float: right; width: 50%; font-size: 12px;"></div>
                             <div id="user-info" style="font-size: 12px;"></div>
                             <div style="font-size: 12px;">
                                 <div id="UserProfileName">Name: <div id="UserProfileName1" class="user-name"
@@ -254,8 +237,7 @@
                     </div>
                     <br clear="both" />
                     <div style="display: none; width: 100%;">
-                        <select id="s-boost" class="form-control" onchange="" required=""
-                            style="float: left; width: 60%;">
+                        <select id="s-boost" class="form-control" required="" style="float: left; width: 60%;">
                             <option selected="" value="" data-itr="--Select boost--"></option>
                             <option value="mass_boost_3x_24h" data-itr="mass_boost_3x_24h(990):"></option>
                             <option value="mass_boost_3x_1h" data-itr="mass_boost_3x_1h(490):"></option>
@@ -382,40 +364,48 @@
         </div>
     </div>
     <canvas id="canvas"></canvas>
-    <script src="https://www.legendmod.ml/extras/buffer.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/ogario/quadtree.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/wasm_cells.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/wasm_quadtree.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/ogario.v4.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/hotkeysCommand.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/captcha.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/spect.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/lz4.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/autoplay.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/mergetimer.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/anti.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/ogario.v4.static.js?v=3.555" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/AjaxData/ProLicenceUsersTableJS.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/LMexpress/LMexpress.js?v=3.555"></script>
-    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff3.js?v=3.555"></script>
+    <!-- Game client and mod. Order matters: each file uses globals from the ones before it. -->
+    <script src="https://jimboy3100.github.io/extras/buffer.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff.js"></script>
+    <script src="https://jimboy3100.github.io/ogario/quadtree.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/wasm_cells.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/wasm_quadtree.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/ogario.v4.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/hotkeysCommand.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/captcha.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/spect.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/lz4.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/autoplay.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/mergetimer.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/anti.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/ogario.v4.static.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/AjaxData/ProLicenceUsersTableJS.js"></script>
+    <script src="https://jimboy3100.github.io/LMexpress/LMexpress.js"></script>
+    <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff3.js"></script>
+
     <script>
-        /* Bug #32 fix: Single reCAPTCHA load with combined callback.
-         * Defined BEFORE the async api.js tag, so it exists whenever reCAPTCHA finishes loading. */
+        /* Bug #32 fix: single reCAPTCHA load with a combined callback.
+         * Defined before api.js so the callback always exists when reCAPTCHA calls it. */
         function onloadRecaptcha() {
             if (typeof onloadCallback === 'function') onloadCallback();
             if (typeof onloadCallbackV3 === 'function') onloadCallbackV3();
         }
     </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadRecaptcha&render=explicit" async defer></script>
-    <script src="//apis.google.com/js/client:platform.js?onload=gapiAsyncInit" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadRecaptcha&amp;render=explicit"></script>
+    <!-- Google login (ogario.v4.master.js defines gapiAsyncInit) -->
+    <script src="https://apis.google.com/js/client:platform.js?onload=gapiAsyncInit" async defer></script>
+
+    <!-- Makes the browser load the Ubuntu font before the canvas draws text with it -->
     <div style="font-family:'Ubuntu'">&nbsp;</div>
-    <!-- Universal Analytics (UA-92655864-6) removed: Google shut UA down on 2023-07-01.
-         No-op ga() stub: banner snippets and old links still call ga('send', ...). -->
-    <script>window.ga = window.ga || function () { };</script>
-    <!--script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script-->
+
+    <script>
+        /* Google Analytics (Universal Analytics) was removed: Google stopped recording UA data in 2023,
+         * so it only sent requests. LMexpress.js still calls ga() from a link's onclick; keep a no-op. */
+        window.ga = window.ga || function () { };
+    </script>
     <a href="https://expanding.land/privacy.html"
         style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;">Privacy Policy</a>
+
     <script>
         /* A touch-only device, not any device with a touchscreen (touch laptops have a mouse). */
         if (window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) {
