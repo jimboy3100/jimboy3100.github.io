@@ -1343,6 +1343,9 @@
             mm.addEventListener('touchstart', function (e) {
                 e.stopPropagation();
                 expanded = !expanded;
+                /* a minimap moved by a HUD layout: 2x of its layout size, kept on screen */
+                var he = window.LMHudEditor;
+                if (he && he.owns && he.owns('minimap')) { he.boost('minimap', expanded ? 2 : 0); return; }
                 // collapse back to the base scale (0.5, or the tablet value set by tabletAware)
                 mm.style.setProperty('transform', expanded ? 'scale(1)' : 'scale(' + (mm.dataset.lmBaseScale || '0.5') + ')', 'important');
             }, { passive: true });
@@ -1553,6 +1556,10 @@
             var GAP = 8;
 
             var r = mm ? mm.getBoundingClientRect() : null;
+            /* a HUD layout moved the minimap away from the bottom right: the buttons keep their
+             * own corner instead of following it (they would end up off screen) */
+            var he = window.LMHudEditor;
+            if (r && he && he.owns && he.owns('minimap') && (r.left + r.width / 2 < vw / 2 || r.top + r.height / 2 < vh / 2)) r = null;
             /* A 0-sized or off-screen rect is a hidden minimap (option off, HUD hidden): the
              * fallback, as without one. Returning kept the buttons around the old minimap spot.
              * This runs every 2.5 s and on resize/rotation, so they move back once it shows. */
@@ -1764,10 +1771,11 @@
                 if (kbHeight > 100) {
                     // Keyboard is open — shift chat bar above keyboard
                     cBar.style.bottom = kbHeight + 'px';
-                    if (mb) mb.style.setProperty('bottom', (kbHeight + 8) + 'px', 'important');
+                    if (mb) { mb.style.setProperty('bottom', (kbHeight + 8) + 'px', 'important'); mb.style.setProperty('top', 'auto', 'important'); }
                 } else {
                     cBar.style.bottom = '';
-                    if (mb) mb.style.removeProperty('bottom');
+                    /* top: a HUD layout may place the chat input from the top */
+                    if (mb) { mb.style.removeProperty('bottom'); mb.style.removeProperty('top'); }
                 }
             });
         }
