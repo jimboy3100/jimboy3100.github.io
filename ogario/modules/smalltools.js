@@ -728,8 +728,15 @@
         b.className = 'btn btn-warning';
         b.type = 'button';
         b.addEventListener('click', function (e) { e.preventDefault(); openConflicts(); });
-        menu.appendChild(D.createTextNode(' '));
-        menu.appendChild(b);
+        /* before Close, which stays the last button on the right */
+        var closeBtn = D.getElementById('close-hotkeys');
+        if (closeBtn && closeBtn.parentNode === menu) {
+            menu.insertBefore(b, closeBtn);
+            menu.insertBefore(D.createTextNode(' '), closeBtn);
+        } else {
+            menu.appendChild(D.createTextNode(' '));
+            menu.appendChild(b);
+        }
         /* recount after a key is set or cleared in the window */
         var soon = function () { clearTimeout(hkTimer); hkTimer = setTimeout(refreshConflictBtn, 120); };
         var cfg = D.getElementById('hotkeys');
