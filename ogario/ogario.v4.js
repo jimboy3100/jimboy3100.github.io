@@ -202,10 +202,13 @@ function _lmEventBanner(data) {
             var start = +e.start || 0, end = +e.end || 0, name = String(e.name || '').slice(0, 40);
             if (!name) return;
             if (start <= now && now < end) {
-                if (lines.length < 3) lines.push(tr('eventLeft', '{0}: {1} left').replace('{0}', '\u0000').replace('{1}', fmt(end - now)).replace('\u0000', name));
+                if (lines.length < 3) lines.push(tr('eventLeft', '{0}: {1} left').replace('{0}', '\u0000').replace('{1}', fmt(end - now)).replace('\u0000', function () { return name; }));
             } else if (start > now && (!next || start < +next.start)) next = e;
         });
-        if (!lines.length && next && +next.start - now <= 86400) lines.push(tr('itemIn', '{0} in {1}').replace('{0}', '\u0000').replace('{1}', fmt(+next.start - now)).replace('\u0000', String(next.name || '').slice(0, 40)));
+        if (!lines.length && next && +next.start - now <= 86400) {
+            var nextName = String(next.name || '').slice(0, 40);
+            lines.push(tr('itemIn', '{0} in {1}').replace('{0}', '\u0000').replace('{1}', fmt(+next.start - now)).replace('\u0000', function () { return nextName; }));
+        }
     }
     var el = document.getElementById('lm-event-banner');
     if (!lines.length) { if (el) el.style.display = 'none'; return; }
