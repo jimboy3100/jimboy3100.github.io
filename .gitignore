@@ -9,3 +9,6 @@ concat_mod.js
 _all_skin_images.json
 _missing_lowres.json
 _missing_vanilla.json
+
+# Test output (developers/tests/run.js)
+developers/tests/out/
