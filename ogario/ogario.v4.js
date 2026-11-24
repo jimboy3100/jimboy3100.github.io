@@ -115,7 +115,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.553;
+window.OgVer = 3.554;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -42397,13 +42397,19 @@ function thelegendmodproject() {
                 case 50:
                     window.testobjectsOpcode50 = data;
                     this.pieChart = [];
+                    if (data.byteLength < s + 4) break; /* too short for the team count */
                     var a = data.getUint32(s, true);
                     s += 4; //5,12,19
                     //for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 4;
                     /* agar.io (protocol 21+) sends float32 + u24 colour per team (7 bytes); MultiOgar,
                      * Imsolo/Agar2 and Expanding Land (protocol 6) send float32 only. */
                     var _pieStride = a > 0 && (data.byteLength - s) >= a * 7 ? 7 : 4;
-                    for (var n = 0; n < a && s + 4 <= data.byteLength; n++) this.pieChart.push(data.getFloat32(s, true)), s += _pieStride;
+                    for (var n = 0; n < a && s + 4 <= data.byteLength; n++) {
+                        var _pieV = data.getFloat32(s, true);
+                        /* a bad share counts as 0, so the following slices keep their place and colour */
+                        this.pieChart.push(isFinite(_pieV) && _pieV > 0 ? _pieV : 0);
+                        s += _pieStride;
+                    }
                     drawRender.drawPieChart();
                     break;
                 case 53:
@@ -44047,7 +44053,13 @@ function thelegendmodproject() {
 
                     /* Expanding Land gameType (see _lmElTeamsActive); other servers are not affected */
                     var _lmElWasTeams = _lmElTeamsActive(this);
-                    this._lmElTeamsSocket = (data.byteLength >= 37 && data.getUint32(33, true) === 1) ? this.socket : null;
+                    /* Only a SetBorder that states the game type (0 FFA, 1 Teams; the handshake one) changes
+                     * it: after Play the server sends gameType 0xFFFFFFFF, and the tab-return resync and
+                     * map tier changes send no game type at all, which used to switch Teams off. */
+                    if (data.byteLength >= 37) {
+                        var _lmElGt = data.getUint32(33, true);
+                        if (_lmElGt === 0 || _lmElGt === 1) this._lmElTeamsSocket = _lmElGt === 1 ? this.socket : null;
+                    }
                     if (_lmElTeamsActive(this)) this.gameMode = ':teams';
                     else if (_lmElWasTeams) this.gameMode = ':expandingland';
 
@@ -78078,13 +78090,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
         drawPieChart() {
             this.pieChart || (this.pieChart = document.createElement('canvas'));
             var ctx = this.pieChart.getContext('2d'),
-                mincanvasWidth = Math.min(200, 0.3 * this.canvasWidth) / 200;
+                /* also at most 40% of the height: a phone in landscape had the pie over the zoom buttons */
+                mincanvasWidth = Math.min(200, 0.3 * this.canvasWidth, 0.4 * (this.canvasHeight || 600)) / 200;
             this.pieChart.width = 200 * mincanvasWidth;
             this.pieChart.height = 240 * mincanvasWidth;
             ctx.scale(mincanvasWidth, mincanvasWidth);
             for (var colors = ['#333333', '#FF3333', '#33FF33', '#3333FF'], time = 0, length = 0; length < LM.pieChart.length; length++) {
                 var currentPie = time + LM.pieChart[length] * this.pi2;
-                ctx.fillStyle = colors[length + 1];
+                ctx.fillStyle = colors[(length % 3) + 1]; /* red, green, blue (repeated past 3 teams) */
                 ctx.beginPath();
                 ctx.moveTo(100, 140);
                 ctx.arc(100, 140, 80, time, currentPie, false);
