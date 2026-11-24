@@ -7430,7 +7430,15 @@ var _lmVideoSkins = lmVideoSkinRegistry({
         return v;
     },
     onFree: function (url) { delete window.videoSkinPlayer[url]; },
-    startTimer: function (fn, ms) { return (window.videoSkinSweeper = setInterval(fn, ms)); },
+    /* the tick is timed by the Performance diagnostics freeze breakdown while it records */
+    startTimer: function (fn, ms) {
+        return (window.videoSkinSweeper = setInterval(function () {
+            var S = window._lmScope;
+            if (!S) return fn();
+            var d = S.b('video skins');
+            try { fn(); } finally { S.e(d); }
+        }, ms));
+    },
     clearTimer: function (id) { clearInterval(id); window.videoSkinSweeper = null; },
     top5: function () { return application.top5; },
     cells: function () { return legendmod.cells; },
@@ -21776,7 +21784,7 @@ var _lmLabelI18n = {
         "lmAdaptiveLevel2":"Προσαρμοστικές επιδόσεις: επίπεδο 2 (jelly physics και video skins ανενεργά προσωρινά)","lmAdaptiveLevel3":"Προσαρμοστικές επιδόσεις: επίπεδο 3 (χαμηλότερη ανάλυση προσωρινά)",
         "lmPerfCopy":"Αντιγραφή αναφοράς","lmPerfCopied":"Η αναφορά αντιγράφηκε","lmNetClear":"Διαγραφή ιστορικού","lmNetQuality":"Ποιότητα δικτύου (αυτή η συνεδρία)","lmNetSessions":"Τελευταίες συνεδρίες",
         "lmPerfEvents":"Συμβάντα (τα νεότερα πρώτα)","lmPerfFreezes":"Παγώματα","lmPerfWorst":"χειρότερο","lmPerfLast":"τελευταίο",
-        "lmPerfKeepRec":"Συνέχιση καταγραφής όταν κλείνει","lmPerfNoEvents":"Κανένα πάγωμα ή άλλο συμβάν ακόμα.",
+        "lmPerfKeepRec":"Συνέχιση καταγραφής όταν κλείνει","lmPerfNoEvents":"Κανένα πάγωμα ή άλλο συμβάν ακόμα.","lmPerfAttr":"Ανάλυση παγωμάτων",
         "cellContours":"Μόνο περιγράμματα κυττάρων","noNames":"Χωρίς ονόματα","noColors":"Χωρίς χρώματα","showMass":"Εμφάνιση μάζας",
         "showChat":"Εμφάνιση συνομιλίας πάνω στα κύτταρα","showChatMyOwn":"Εμφάνιση συνομιλίας πάνω στα δικά μου κύτταρα",
         "oneColoredSpectator":"MultiBox: λιγότερα κύτταρα στην απόδοση","multiBoxShadow":"Παίκτης 1 & 2","multiKeepMoving":"Ο ανενεργός συνεχίζει να κινείται",
@@ -77188,6 +77196,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             try {
                 var _tGrid = performance.now();
+                /* Performance diagnostics freeze breakdown (ogario/modules/perf.js; null while off) */
+                var _lmScGrid = window._lmScope ? window._lmScope.b('grid') : -1;
 
                 /*
                  * ============================================================
@@ -77454,6 +77464,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     );
                 }
                 if (window.clientProfiler) window.clientProfiler.recordGrid(performance.now() - _tGrid);
+                if (_lmScGrid >= 0 && window._lmScope) window._lmScope.e(_lmScGrid);
                 /* ── Expanding Land: Draw warning/danger zone overlay ── */
                 /* Zone overlay disabled — too distracting
                 if (
@@ -77919,6 +77930,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      */
                     var _tPhys =
                         performance.now();
+                    var _lmScPhys = window._lmScope ? window._lmScope.b('jelly physics') : -1;
 
                     for (
                         var jellyMoveIndex = 0;
@@ -77969,6 +77981,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 _tPhys
                             );
                     }
+                    if (_lmScPhys >= 0 && window._lmScope) window._lmScope.e(_lmScPhys);
                 }
                 else {
                     /*
@@ -78331,6 +78344,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         ) {
                             var unifiedWebGLTextStarted =
                                 performance.now();
+                            var _lmScText = window._lmScope ? window._lmScope.b('text pass') : -1;
                             this._lmTextFrameBegin();
 
 
@@ -78492,6 +78506,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                         unifiedWebGLTextStarted
                                     );
                             }
+                            if (_lmScText >= 0 && window._lmScope) window._lmScope.e(_lmScText);
                         }
 
 
@@ -78679,6 +78694,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 var _tMini =
                     performance.now();
+                var _lmScRings = window._lmScope ? window._lmScope.b('rings/HUD pass') : -1;
 
                 this.drawMiscRings();
 
@@ -78714,6 +78730,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawRMB();
 
                 if (LM._lmPings && LM._lmPings.length) this.drawLmPings(_lmFxCtx);
+                if (_lmScRings >= 0 && window._lmScope) window._lmScope.e(_lmScRings);
 
 
                 if (

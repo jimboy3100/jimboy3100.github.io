@@ -272,7 +272,7 @@ let evs = pr.ctx.LMPerf.events(), rep = pr.ctx.LMPerf.report();
 check('1500 ms foreground stall is a freeze event with its time', evs.length === 1 && evs[0].type === 'freeze' && evs[0].dur === 1500 && evs[0].w > 0);
 check('report: freeze counted with its duration', /Freezes \(≥250 ms, foreground\): 1, worst 1500 ms/.test(rep) && /stalls ≥100ms: 1/.test(rep));
 check('report: the freeze is in the frame times (mean FPS) and long frames', /FPS: 3\d\.\d/.test(rep) && /1 recent, 1 measured in total/.test(rep) && /p99: |p50\/p95\/p99/.test(rep));
-check('report lists the event', /\n  \d\d:\d\d:\d\d\.\d{3} freeze 1500 ms/.test(rep));
+check('report lists the freeze with its attribution line', /\n  1500 ms freeze \d\d:\d\d:\d\d\.\d{3} · /.test(rep));
 /* adaptive performance's own seconds still leave the gap out */
 pr = rec();
 pr.ctx.legendmod5.adaptivePerf = true; pr.ctx.LMPerf.configChanged();
@@ -378,6 +378,156 @@ evs = pr.ctx.LMPerf.events();
 check('long tasks: all counted, from 100 ms listed', evs.length === 1 && evs[0].type === 'long task' && evs[0].dur === 180 && /Long tasks \(≥50 ms\): 2, worst 180 ms/.test(pr.ctx.LMPerf.report()));
 pr.ctx.LMPerf.keepRecording(false);
 check('long tasks: observer stopped with recording', !observers[0].on && pr.ctx._lmPerfFrame == null);
+
+/* ---- freeze attribution: timing scopes ---- */
+let clk = 0;
+const S1 = P.createScopes(() => clk, ['a', 'b', 'c']);
+let d0 = S1.b('a'); clk += 10; let d1 = S1.b('b'); clk += 30; S1.e(d1); clk += 5; S1.e(d0);
+check('scopes: self time (a part inside another counts for itself)', S1.acc[0] === 15 && S1.acc[1] === 30 && S1.cnt[0] === 1 && S1.cnt[1] === 1 && S1.depth() === 0);
+d0 = S1.b('a'); S1.b('b'); S1.b('c'); clk += 7; S1.e(d0);
+check('scopes: closing an outer part closes parts left open inside it', S1.depth() === 0 && S1.acc[2] === 7 && S1.cnt[2] === 1);
+check('scopes: unknown name is ignored', S1.b('nope') === -1 && S1.depth() === 0);
+S1.reset();
+check('scopes: reset every frame', S1.total() === 0 && S1.cnt[0] === 0);
+let calls = 0;
+const wf = S1.wrap(function (x) { calls++; clk += 20; if (x === 'throw') throw new Error('x'); return this.k + x; }, 'c');
+check('wrapper while off: just the call, nothing timed', wf.call({ k: 1 }, 2) === 3 && S1.total() === 0 && calls === 1);
+S1.on = true;
+check('wrapper while on: same result, time counted', wf.call({ k: 1 }, 2) === 3 && S1.acc[2] === 20 && S1.cnt[2] === 1);
+try { wf('throw'); } catch (e) { }
+check('wrapper: a throw still closes the part', S1.depth() === 0 && S1.acc[2] === 40 && S1.cnt[2] === 2);
+const sr = P.createScopeRing(4, 3, 2);
+for (let i = 0; i < 6; i++) sr.push(new Float64Array([i, 1, 0]), new Uint32Array([1, 1, 0]), new Float64Array([i, 100]));
+const srt = sr.totals();
+check('slow frame ring keeps the last 4 in place', sr.size() === 4 && srt.frames === 4 && srt.ms[0] === 2 + 3 + 4 + 5 && srt.gap === 400);
+check('topScopes sorts and drops tiny parts', JSON.stringify(P.topScopes([1, 50, 0.2], [1, 2, 3], ['x', 'y', 'z'], 0.5).map(s => s.n)) === '["y","x"]');
+
+/* ---- script addresses and long animation frames, cleaned ---- */
+check('script file: name only, no query or token', JSON.stringify(P.scriptFile('https://www.legendmod.ml/ogario/ogario.v4.js?v=3.589&token=abc#x')) === '{"file":"ogario.v4.js","kind":"legendmod"}');
+check('script owners: agar.io, extension, page, other', P.scriptFile('https://agar.io/mc/agario.core.js?x=1').kind === 'agar.io' &&
+    P.scriptFile('chrome-extension://abcdef/content.js').kind === 'extension' && P.scriptFile('https://expanding.land/a.js', 'expanding.land').kind === 'page' &&
+    P.scriptFile('https://cdn.example.com/lib/x.js;jsessionid=SECRET').file === 'x.js' && P.scriptFile('blob:https://x/123').file === 'blob:' && P.scriptFile('').file === '');
+check('invoker addresses reduced to the file name', P.cleanInvoker('https://www.legendmod.ml/a/b.js?key=SECRET') === 'b.js' && P.cleanInvoker('TimerHandler:setInterval') === 'TimerHandler:setInterval');
+const loafEntry = {
+    startTime: 1000, duration: 280, blockingDuration: 230, renderStart: 1250, styleAndLayoutStart: 1262,
+    scripts: [
+        { invoker: 'FrameRequestCallback', invokerType: 'user-callback', sourceFunctionName: 'render', sourceURL: 'https://www.legendmod.ml/ogario/ogario.v4.js?v=1&token=SECRET', sourceCharPosition: 3456789, duration: 20, forcedStyleAndLayoutDuration: 0, startTime: 1250 },
+        { invoker: 'https://www.legendmod.ml/x.js?token=SECRET', invokerType: 'user-callback', sourceFunctionName: 'uploadSkinTexture', sourceURL: 'https://www.legendmod.ml/ogario/ogario.v4.js?token=SECRET', sourceCharPosition: 12345678, duration: 241, forcedStyleAndLayoutDuration: 3, startTime: 1002 }
+    ]
+};
+const lf = P.parseLoaf(loafEntry, 'www.legendmod.ml');
+check('LoAF parsed: offsets, longest script first', lf.dur === 280 && lf.block === 230 && lf.render === 250 && lf.style === 262 && lf.scriptMs === 261 && lf.scripts[0].fn === 'uploadSkinTexture' && lf.scripts[0].pos === 12345678 && lf.scripts[0].file === 'ogario.v4.js');
+check('LoAF sanitized: no token anywhere', JSON.stringify(lf).indexOf('SECRET') < 0 && JSON.stringify(lf).indexOf('token') < 0);
+check('LoAF keeps at most 5 scripts', P.parseLoaf({ startTime: 0, duration: 200, scripts: new Array(9).fill(loafEntry.scripts[0]) }).scripts.length === 5);
+
+/* ---- function names from character positions (anonymous callbacks) ---- */
+const srcText = 'var app = window.app = {\n    init() {\n        setInterval(function () {\n            tick();\n        }, 10000);\n    },\n    draw(a) {\n        if (a) { x(); }\n        return 1;\n    }\n};\nfunction lone() { return 2; }\n';
+check('position of an anonymous setInterval callback', P.enclosingName(srcText, srcText.indexOf('function ()')) === 'setInterval callback in window.app.init');
+check('position of a method', P.enclosingName(srcText, srcText.indexOf('draw(a)')) === 'window.app.draw');
+check('position inside a method body', P.enclosingName(srcText, srcText.indexOf('x();')) === 'window.app.draw');
+check('position of a plain function', P.enclosingName(srcText, srcText.indexOf('function lone')) === 'lone' && P.enclosingName(srcText, -1) === '');
+
+/* ---- freeze classification ---- */
+const fzBase = { t: 10000, w: Date.now(), dur: 287 };
+let cf = P.classifyFreeze(Object.assign({}, fzBase, { bd: { r: 'WebGL2', s: [{ n: 'skin texture upload', ms: 241 }, { n: 'cells update', ms: 21 }, { n: 'render', ms: 17 }], q: '' } }), [], [], { loaf: true });
+check('dominant part is the probable contributor', cf.probable === 'skin texture upload' && /^287 ms freeze \d\d:\d\d:\d\d\.\d{3} · WebGL2 · skin texture upload 241 ms, cells update 21 ms, render 17 ms · LoAF: none · network normal · probable contributor: skin texture upload$/.test(cf.line));
+cf = P.classifyFreeze(Object.assign({}, fzBase, { bd: { r: 'WebGL2', s: [{ n: 'render', ms: 40 }, { n: 'packets', ms: 30 }], q: '' } }), [], [], { loaf: true });
+check('no dominant part: unattributed', cf.probable === '' && /unattributed \(GC\/GPU\/browser\?\)$/.test(cf.line));
+const lfAt = Object.assign({}, lf, { t: 10000 - 287 + 2 });
+cf = P.classifyFreeze(Object.assign({}, fzBase, { bd: { r: 'WebGL2', s: [{ n: 'render', ms: 30 }], q: '' } }), [lfAt], [], { loaf: true });
+check('LoAF overlapping the freeze names the script; it dominates', /LoAF 280 ms: uploadSkinTexture \(ogario\.v4\.js:12345678\) 241 ms/.test(cf.line) && cf.probable === 'script uploadSkinTexture (ogario.v4.js)');
+cf = P.classifyFreeze(Object.assign({}, fzBase), [Object.assign({}, lfAt, { t: 50000 })], [], { loaf: true });
+check('a LoAF elsewhere is not this freeze', /LoAF: none/.test(cf.line));
+const agarLoaf = P.parseLoaf({ startTime: 9720, duration: 290, scripts: [{ invoker: 'WebSocket.onmessage', invokerType: 'event-listener', sourceFunctionName: 'Ab', sourceURL: 'https://agar.io/agario.core.js?123', sourceCharPosition: 77, duration: 260 }] });
+cf = P.classifyFreeze(Object.assign({}, fzBase, { bd: { r: 'WebGL', s: [], q: '' } }), [agarLoaf], [], { loaf: true });
+check('a third-party script is named as such', cf.probable === 'script Ab (agario.core.js, agar.io)' && /\[agar\.io\]/.test(cf.line));
+cf = P.classifyFreeze(fzBase, [], [{ type: 'packet gap', t: 10050, dur: 900 }, { type: 'visibility', t: 9800, info: 'visible' }], { loaf: false });
+check('packet gap that began before the freeze: network or server; tab change listed', /packet gap 900 ms, began before the freeze/.test(cf.line) && /tab visible nearby/.test(cf.line));
+cf = P.classifyFreeze(fzBase, [], [{ type: 'packet gap', t: 10010, dur: 300 }, { type: 'long task', t: 9720, dur: 280 }], { loaf: false });
+check('packet gap inside the freeze: updates only waited; long task listed without LoAF', /world updates only waited for the freeze/.test(cf.line) && /long task 280 ms/.test(cf.line));
+
+/* ---- in a page: a synthetic stall in a wrapped part is attributed ---- */
+const observers2 = [];
+function FakePO2(cb) { this.cb = cb; this.on = false; this.opts = null; observers2.push(this); }
+FakePO2.prototype.observe = function (o) { this.on = true; this.opts = o; };
+FakePO2.prototype.disconnect = function () { this.on = false; };
+FakePO2.supportedEntryTypes = ['longtask', 'long-animation-frame'];
+const stubs = () => {
+    const dr = { dpr: 1, resizeCanvas() { }, _lmTextBytes: 3 * 1048576, _lmSkinReady: [1, 2] };
+    dr.renderFrame = function () { return 'drawn'; };
+    dr._lmUploadSkinJob = function (ms) { stubs.ctx._now += ms; };
+    dr.uploadSkinTexture = function () { return 7; };
+    const lm = { cells: new Array(412), pps: 0, ping: 0, isSocketOpen: () => false };
+    lm.handleMessage = function (ms) { stubs.ctx._now += ms; };
+    lm.updateCells = function () { };
+    const ap = { setAnimatedRainbowColor() { }, applyHudBlur() { }, saveSettings() { }, _lmSkinJobs: [1, 2, 3] };
+    ap.displayTop5 = function () { };
+    return { drawRender: dr, legendmod: lm, application: ap, PerformanceObserver: FakePO2, repeatSendingSpecialSkins: function () { stubs.ctx._now += 1; } };
+};
+const ex = stubs();
+const origUpload = ex.drawRender._lmUploadSkinJob, origHandle = ex.legendmod.handleMessage, origRepeat = ex.repeatSendingSpecialSkins, origRF = ex.drawRender.renderFrame;
+pr = rec(ex);
+stubs.ctx = pr.ctx;
+check('attribution off: nothing wrapped, no _lmScope, no LoAF observer', pr.ctx.drawRender._lmUploadSkinJob === origUpload && pr.ctx.legendmod.handleMessage === origHandle &&
+    pr.ctx._lmScope == null && observers2.length === 0 && pr.ctx.LMPerf._scopes.on === false);
+pr.ctx.legendmod5.adaptivePerf = true; pr.ctx.LMPerf.configChanged();
+const loafObs2 = () => observers2.filter(o => o.opts && o.opts.type === 'long-animation-frame');
+check('Adaptive performance alone: no attribution', pr.ctx._lmScope == null && pr.ctx.drawRender._lmUploadSkinJob === origUpload && loafObs2().length === 0);
+pr.ctx.legendmod5.adaptivePerf = false; pr.ctx.LMPerf.configChanged();
+pr.ctx.LMPerf.keepRecording(true);
+check('recording: parts wrapped (also global functions), _lmScope set, LoAF observed (not buffered)', pr.ctx.drawRender._lmUploadSkinJob !== origUpload && pr.ctx.repeatSendingSpecialSkins !== origRepeat &&
+    pr.ctx._lmScope === pr.ctx.LMPerf._scopes && loafObs2().length === 1 && loafObs2()[0].on && loafObs2()[0].opts.buffered === false);
+check('a wrapped method gives the same result', pr.ctx.drawRender.renderFrame() === 'drawn' && pr.ctx.drawRender.uploadSkinTexture() === 7);
+for (let i = 0; i < 30; i++) pr.frame(16.7, 2);
+/* during the next gap: one skin upload takes 240 ms, a packet 20 ms */
+pr.ctx.drawRender._lmUploadSkinJob(240);
+pr.ctx.legendmod.handleMessage(20);
+pr.frame(300, 2);
+for (let i = 0; i < 5; i++) pr.frame(16.7, 2);
+let fzs = pr.ctx.LMPerf.freezes();
+check('synthetic stall: one freeze with its breakdown', fzs.length === 1 && fzs[0].dur === 300 && fzs[0].bd && fzs[0].bd.s[0].n === 'skin texture upload' && fzs[0].bd.s[0].ms === 240 && fzs[0].bd.s[1].n === 'packets');
+check('synthetic stall attributed to the skin upload', fzs[0].probable === 'skin texture upload' && /skin texture upload 240 ms, packets 20 ms/.test(fzs[0].line) && /probable contributor: skin texture upload/.test(fzs[0].line));
+check('breakdown carries queue sizes', /412 cells, skin jobs 3, skin uploads 2, text textures 3\.0 MB/.test(fzs[0].line));
+rep = pr.ctx.LMPerf.report();
+check('report: breakdown state, probable contributors and slow frames', /Freeze breakdown: on, long animation frames: observed/.test(rep) && /Probable contributors: skin texture upload x1/.test(rep) &&
+    /Slow frames \(≥50 ms, last 1\): average 300 ms, timed parts in total: skin texture upload 240 ms \(1x\), packets 20 ms \(1x\)/.test(rep));
+/* a stall with nothing timed is not attributed; a LoAF arrives for it afterwards */
+pr.ctx._now += 0;
+pr.frame(400, 2);
+const tEnd = pr.t;
+loafObs2()[0].cb({ getEntries: () => [{ startTime: tEnd - 395, duration: 390, blockingDuration: 340, renderStart: 0, styleAndLayoutStart: 0, scripts: [{ invoker: 'TimerHandler:setInterval', invokerType: 'user-callback', sourceFunctionName: '', sourceURL: 'https://www.legendmod.ml/ogario/ogario.v4.js?v=1&token=SECRET', sourceCharPosition: 4242, duration: 30 }] }, { startTime: 1, duration: 60 }] });
+fzs = pr.ctx.LMPerf.freezes();
+check('stall with nothing timed: unattributed, the LoAF is listed with it', fzs.length === 2 && fzs[1].probable === '' && /no timed part over 1 ms/.test(fzs[1].line) &&
+    /LoAF 390 ms: TimerHandler:setInterval \(ogario\.v4\.js:4242\) 30 ms/.test(fzs[1].line) && /unattributed/.test(fzs[1].line));
+rep = pr.ctx.LMPerf.report();
+check('LoAFs under 100 ms are not kept; report lists LoAFs without the token', pr.ctx.LMPerf.loafs().length === 1 && /Long animation frames \(≥100 ms, 1 kept/.test(rep) && rep.indexOf('SECRET') < 0 && rep.indexOf('token') < 0);
+check('report has the time origin for trace correlation and freeze times', /time origin /.test(rep) && /@\d+/.test(rep));
+/* the window list shows the attribution lines too */
+check('every counted freeze attributed once', pr.ctx.LMPerf.freezes().every(f => /^\d+ ms freeze /.test(f.line)));
+pr.ctx.LMPerf.keepRecording(false);
+check('recording off: originals back, _lmScope null, LoAF observer stopped', pr.ctx.drawRender._lmUploadSkinJob === origUpload && pr.ctx.legendmod.handleMessage === origHandle &&
+    pr.ctx.repeatSendingSpecialSkins === origRepeat && pr.ctx.drawRender.renderFrame === origRF && pr.ctx._lmScope === null && !loafObs2()[0].on && pr.ctx.LMPerf._scopes.on === false);
+/* off: per-frame work is the same as before (no accumulators touched, no ring copies) */
+const accBefore = Array.from(pr.ctx.LMPerf._scopes.acc).join();
+pr.ctx.drawRender._lmUploadSkinJob(5);
+check('off: a call is not timed', Array.from(pr.ctx.LMPerf._scopes.acc).join() === accBefore);
+/* replaced by someone else while recording: left in place, it only checks the flag */
+pr.ctx.LMPerf.keepRecording(true);
+const theirs = function () { return 'theirs'; };
+pr.ctx.application.displayTop5 = theirs;
+pr.ctx.LMPerf.keepRecording(false);
+check('a method replaced meanwhile is not put back over the new one', pr.ctx.application.displayTop5 === theirs);
+
+/* ---- ogario.v4.js: the inline markers and wrapped methods exist ---- */
+const marks = v4.match(/window\._lmScope\.b\('([^']+)'\)|S\.b\('([^']+)'\)/g) || [];
+const markNames = marks.map(m => /'([^']+)'/.exec(m)[1]);
+check('inline markers use known part names', markNames.length >= 5 && markNames.every(n => P.SCOPES.indexOf(n) >= 0));
+check('every inline marker is closed', (v4.match(/window\._lmScope\.e\(_lmSc\w+\)/g) || []).length === (v4.match(/var _lmSc\w+ = window\._lmScope \? window\._lmScope\.b\(/g) || []).length);
+const perfSrc = src.replace(/\r\n/g, '\n');
+const patches = [...perfSrc.matchAll(/\['(legendmod|drawRender|application|window|Storage\.prototype)', '([\w$]+)', '([^']+)'\]/g)];
+const methodIn = (name) => new RegExp('\\n {8}' + name.replace(/\$/g, '\\$') + '\\([^)]*\\) \\{|\\nfunction ' + name + '\\(|window\\.' + name + ' = function').test(v4);
+const missing = patches.filter(p => p[1] !== 'Storage.prototype' && !methodIn(p[2])).map(p => p[2]);
+check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')', patches.length >= 20 && missing.length === 0 && patches.every(p => P.SCOPES.indexOf(p[3]) >= 0) || (console.log('  missing:', missing), false));
 
 console.log(fail ? fail + ' failed' : 'all perf checks passed');
 process.exit(fail ? 1 : 0);

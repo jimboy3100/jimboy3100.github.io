@@ -42,3 +42,36 @@ A probe in `probes/` is one expression that resolves to `{ fail: [...], info: {.
 any entry in `fail` (or a thrown error) fails the run.
 
 `crlf.js <repoDir>` restores each modified file's original line endings (CRLF or LF) after editing.
+
+## Freeze trace (on your own PC)
+
+When the game stops for a moment every few seconds, this finds out what ran during the stop:
+
+```
+node developers/tests/trace.js --secs 120
+```
+
+1. A normal Chrome window opens on `https://www.legendmod.ml/play.html` with a temporary
+   profile (no extensions, nothing from your own profile).
+2. Play normally (pick a server, spawn, play as usual). Do not close the window.
+3. It stops by itself after 120 s, or as soon as Legend Mod's Performance diagnostics have
+   counted 3 freezes (each one is printed when it happens). Ctrl+C stops earlier.
+4. The summary is printed and saved next to the trace in `developers/tests/out/`
+   (ignored by git, nothing is uploaded):
+   `trace-<time>.json` (open it in Chrome DevTools > Performance > Load profile) and
+   `trace-<time>-summary.txt` (the summary plus Legend Mod's own performance report).
+
+For every task of 100 ms or more on the page's main thread the summary shows the JavaScript
+functions that took its time (self time, labelled `legendmod`, `agar.io`, `extension` or
+`other`), the garbage collection and the GPU process work during it, a verdict (JavaScript of
+whom, garbage collection, a GPU stall, browser work) and Legend Mod's own freeze line for it.
+Freezes without a long task are listed separately (GPU or browser).
+
+Options: `--url <address>` (another page, e.g. `--url https://agar.io` for a baseline without
+Legend Mod), `--secs N`, `--until-freezes N` (0: only the time limit), `--no-gpu` (smaller trace),
+`--out <dir>`, `--keep-profile`. Without any option it only prints its usage.
+`trace-summary.js` tests the summary with a small synthetic trace.
+
+The same freeze breakdown is in the game: Performance diagnostics (button in Animation, or its
+hotkey), then "Keep recording when closed" and Copy report. Each freeze line there looks like
+`287 ms freeze 22:41:10.384 · WebGL2 · skin texture upload 241 ms, cells update 21 ms, render 17 ms · LoAF ... · network normal · probable contributor: ...`.
