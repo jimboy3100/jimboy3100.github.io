@@ -298,10 +298,10 @@ function SpecialDeals(defaultTab) {
         var styleEl = document.createElement('style');
         styleEl.id = 'skinShopStyles';
         styleEl.textContent = [
-            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 10px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; resize: both; overflow: hidden; min-width: 340px; min-height: 300px; }',
-            '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; padding: 12px 15px; position: relative; }',
-            '#CloseSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: ' + tc + ' !important; font-size: 22px; line-height: 1; margin-left: 12px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
-            '#CloseSpecialDeals:hover { opacity: 1; color: ' + b4 + ' !important; transform: scale(1.15); }',
+            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid ' + pc2 + ' !important; border-top: 3px solid ' + mc + ' !important; border-radius: 6px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; resize: both; overflow: hidden; min-width: 340px; min-height: 300px; }',
+            '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; padding: 10px 15px 8px; position: relative; background: linear-gradient(180deg, ' + pc2 + ' 0%, ' + pc + ' 100%); }',
+            '#CloseSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 1; color: ' + tc2 + ' !important; font-size: 18px; line-height: 1; margin-left: 12px; cursor: pointer; padding: 0; border: none; background: rgba(255,255,255,.05); transition: all 0.2s; outline: none; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 400; }',
+            '#CloseSpecialDeals:hover { color: ' + tc + ' !important; background: rgba(255,255,255,.12); }',
             '#FAQSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: ' + mc + ' !important; font-size: 18px; line-height: 1; margin-right: 6px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
             '#FAQSpecialDeals:hover { opacity: 1; color: ' + mc + ' !important; transform: scale(1.15); filter: brightness(1.3); }',
             '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid ' + pc2 + '; margin: 0 -15px; padding: 0 15px; background: rgba(0,0,0,0.2); }',
@@ -405,7 +405,7 @@ function SpecialDeals(defaultTab) {
         '<div id="CloseSpecialDeals2" class="modal-header">' +
         '<button id="CloseSpecialDeals" type="button" class="close" title="Close" onclick="window.closeSpecialShopModal(); return false;"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
         '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true"><b>?</b></span><span class="sr-only">Help</span></button>' +
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: ' + mc + ';">' + initialTabTitle + '</h4>' +
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: ' + mc + '; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">' + initialTabTitle + '</h4>' +
         '</div>' +
 
         // Tab bar

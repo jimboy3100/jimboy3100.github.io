@@ -236,43 +236,49 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 width: 620px;
                 max-width: 94vw;
                 max-height: 85vh;
-                border-radius: 12px;
-                box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px rgba(1, 217, 204, 0.2);
-                border: 1px solid rgba(255,255,255,0.12);
+                border-radius: 6px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+                border: 1px solid var(--lm-pc2, rgba(255,255,255,0.12));
+                border-top: 3px solid var(--lm-mc, #01d9cc);
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
                 font-family: 'Ubuntu', 'Inter', sans-serif;
             }
             .lm-modal-header {
-                padding: 16px 20px;
+                padding: 10px 20px 8px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
+                border-bottom: 1px solid var(--lm-pc2, rgba(255,255,255,0.1));
+                background: linear-gradient(180deg, var(--lm-pc2, #002f52) 0%, var(--lm-pc, #00243e) 100%);
             }
             .lm-modal-title {
-                font-size: 20px;
+                font-size: 16px;
                 font-weight: 700;
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                letter-spacing: 0.5px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: var(--lm-mc, #01d9cc);
             }
             .lm-modal-close {
-                background: rgba(255,255,255,0.08);
+                background: rgba(255,255,255,0.05);
                 border: none;
-                color: #fff;
-                width: 32px; height: 32px;
-                border-radius: 50%;
+                color: var(--lm-tc2, #8096a7);
+                width: 28px; height: 28px;
+                border-radius: 4px;
                 font-size: 18px;
                 cursor: pointer;
                 transition: all 0.2s;
                 display: flex; align-items: center; justify-content: center;
+                font-weight: 400;
+                line-height: 1;
             }
             .lm-modal-close:hover {
-                background: rgba(255,50,80,0.4);
-                transform: rotate(90deg);
+                background: rgba(255,255,255,0.12);
+                color: var(--lm-tc, #fff);
             }
             .lm-modal-body {
                 padding: 20px;
@@ -5343,23 +5349,23 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         };
 
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 660px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
-                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
-                    <div style="font-size: 24px; font-weight: 900; color: #444; letter-spacing: 0.5px;">${(window.lmT ? window.lmT('shop') : 'Shop').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+            <div class="lm-modal-container" style="background: ${t.pc}; border-radius: 12px; width: 660px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid ${t.pc2}; border-top: 3px solid ${t.mc};">
+                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid ${t.pc2}; background: linear-gradient(180deg, ${t.pc2} 0%, ${t.pc} 100%);">
+                    <div style="font-size: 20px; font-weight: 900; color: ${t.mc}; letter-spacing: 1px; text-transform: uppercase;">${(window.lmT ? window.lmT('shop') : 'Shop').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
+                        <div style="background: rgba(0,0,0,0.3); border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #8bc34a; display: flex; align-items: center; gap: 6px;">
                             <span>🧬 ${dnaBalance.toLocaleString()}</span>
                             <span role="button" title="Get more" onclick="var m=document.getElementById('lm-main-shop-modal'); if (m) m.remove(); if (window.openShop) window.openShop('dna');" style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
                         </div>
-                        <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
+                        <div style="background: rgba(0,0,0,0.3); border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #fbc02d; display: flex; align-items: center; gap: 6px;">
                             <span>💰 ${coinsBalance.toLocaleString()}</span>
                             <span role="button" title="Get more" onclick="var m=document.getElementById('lm-main-shop-modal'); if (m) m.remove(); if (window.openShop) window.openShop('coins');" style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
                         </div>
-                        <button onclick="document.getElementById('lm-main-shop-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
+                        <button onclick="document.getElementById('lm-main-shop-modal').remove();" style="background: rgba(255,255,255,0.05); border: none; font-size: 22px; color: ${t.tc2}; cursor: pointer; font-weight: 400; margin-left: 8px; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;">&times;</button>
                     </div>
                 </div>
 
-                <div style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; background: #f7f9fa;">
+                <div style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; background: rgba(0,0,0,0.15);">
                     ${gridHtml}
                 </div>
             </div>
@@ -5381,6 +5387,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
     window.showPotionDetailModal = function (potionType) {
         injectStyles();
+        var t = getTheme();
 
         var info = typeof window.getAgarPremiumPotionInfo === 'function'
             ? window.getAgarPremiumPotionInfo(potionType) : null;
@@ -5422,24 +5429,24 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         modal.addEventListener('click', function (e) { if (e.target === modal) modal.remove(); });
 
         var specialHtml = specialPiecesText
-            ? '<div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:12px;border:1px solid rgba(0,0,0,.06);text-align:center;">' +
-                '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">At least</div>' +
+            ? '<div style="background:' + t.pc2 + ';border-radius:12px;padding:10px 16px;margin-bottom:12px;border:1px solid rgba(255,255,255,.1);text-align:center;">' +
+                '<div style="font-size:11px;font-weight:700;color:' + t.tc2 + ';text-transform:uppercase;margin-bottom:4px;">At least</div>' +
                 '<div style="font-size:16px;font-weight:900;color:#f57f17;display:flex;align-items:center;justify-content:center;gap:8px;">' +
-                    '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:3px solid #ffb300;background:#fff8e1;"></span>' +
+                    '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:3px solid #ffb300;background:rgba(255,179,0,0.15);"></span>' +
                     '<span>' + specialPiecesText + '</span></div></div>' : '';
 
         modal.innerHTML =
-            '<div class="lm-modal-container" style="background:#fff;border-radius:16px;width:440px;padding:24px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.5);text-align:center;">' +
-                '<button type="button" onclick="document.getElementById(\'lm-potion-detail-modal\').remove();" style="position:absolute;right:16px;top:16px;background:none;border:none;font-size:22px;color:#aaa;cursor:pointer;font-weight:900;">&times;</button>' +
-                '<div style="font-size:22px;font-weight:900;color:#333;margin-bottom:16px;">' + name + '</div>' +
-                '<div style="background:#f0f3f6;border-radius:14px;padding:20px;margin-bottom:18px;">' +
+            '<div class="lm-modal-container" style="background:' + t.pc + ';border-radius:12px;width:440px;padding:24px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.5);text-align:center;border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';">' +
+                '<button type="button" onclick="document.getElementById(\'lm-potion-detail-modal\').remove();" style="position:absolute;right:16px;top:16px;background:rgba(255,255,255,.05);border:none;font-size:22px;color:' + t.tc2 + ';cursor:pointer;font-weight:400;width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;">&times;</button>' +
+                '<div style="font-size:22px;font-weight:900;color:' + t.mc + ';margin-bottom:16px;">' + name + '</div>' +
+                '<div style="background:' + t.pc2 + ';border-radius:14px;padding:20px;margin-bottom:18px;">' +
                     '<div style="width:90px;height:90px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:42px;background:radial-gradient(circle,' + potionColor + '22,' + potionColor + '44);border:3px solid ' + potionColor + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' +
                     '<div style="display:flex;justify-content:center;gap:20px;margin-bottom:12px;">' +
-                        '<div style="text-align:center;"><div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;">Coins</div><div style="font-size:16px;font-weight:900;color:#333;">' + coinText + '</div></div>' +
-                        '<div style="text-align:center;"><div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;">Skin Pieces</div><div style="font-size:16px;font-weight:900;color:#333;">' + skinPiecesText + '</div></div>' +
+                        '<div style="text-align:center;"><div style="font-size:11px;font-weight:700;color:' + t.tc2 + ';text-transform:uppercase;">Coins</div><div style="font-size:16px;font-weight:900;color:' + t.tc + ';">' + coinText + '</div></div>' +
+                        '<div style="text-align:center;"><div style="font-size:11px;font-weight:700;color:' + t.tc2 + ';text-transform:uppercase;">Skin Pieces</div><div style="font-size:16px;font-weight:900;color:' + t.tc + ';">' + skinPiecesText + '</div></div>' +
                     '</div>' + specialHtml +
                 '</div>' +
-                '<div style="font-size:13px;font-weight:700;color:#888;margin-bottom:8px;">Price: ' + priceText + '</div>' +
+                '<div style="font-size:13px;font-weight:700;color:' + t.tc2 + ';margin-bottom:8px;">Price: ' + priceText + '</div>' +
             '</div>';
 
         document.body.appendChild(modal);
@@ -5463,10 +5470,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         var coinsBalance = Number(appUser.coins) || 0;
 
         var tierColors = {
-            potion_superior:  { bg: '#e8f5e9', border: '#4caf50', gradient: 'linear-gradient(180deg,#66bb6a,#388e3c)' },
-            potion_epic:      { bg: '#e0f7fa', border: '#00bcd4', gradient: 'linear-gradient(180deg,#26c6da,#00838f)' },
-            potion_legendary: { bg: '#fce4ec', border: '#e91e63', gradient: 'linear-gradient(180deg,#ec407a,#c2185b)' },
-            potion_mythical:  { bg: '#fff8e1', border: '#ffb300', gradient: 'linear-gradient(180deg,#ffca28,#ff8f00)' }
+            potion_superior:  { bg: 'rgba(76,175,80,0.12)', border: '#4caf50', gradient: 'linear-gradient(180deg,#66bb6a,#388e3c)' },
+            potion_epic:      { bg: 'rgba(0,188,212,0.12)', border: '#00bcd4', gradient: 'linear-gradient(180deg,#26c6da,#00838f)' },
+            potion_legendary: { bg: 'rgba(233,30,99,0.12)', border: '#e91e63', gradient: 'linear-gradient(180deg,#ec407a,#c2185b)' },
+            potion_mythical:  { bg: 'rgba(255,179,0,0.12)', border: '#ffb300', gradient: 'linear-gradient(180deg,#ffca28,#ff8f00)' }
         };
 
         var modal = document.createElement('div');
@@ -5498,7 +5505,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         } else {
             catalog.forEach(function (info) {
                 var pid = info.productId;
-                var colors = tierColors[pid] || { bg: '#f5f5f5', border: '#999', gradient: 'linear-gradient(180deg,#bbb,#888)' };
+                var colors = tierColors[pid] || { bg: 'rgba(150,150,150,0.1)', border: '#999', gradient: 'linear-gradient(180deg,#bbb,#888)' };
 
                 var priceText = (info.price !== null && info.price !== undefined)
                     ? (typeof window.formatAgarCurrency === 'function'
@@ -5522,14 +5529,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     '<div style="position:relative;flex:1;min-width:140px;max-width:180px;border-radius:14px;padding:16px 12px;border:2px solid ' + colors.border + ';background:' + colors.bg + ';display:flex;flex-direction:column;align-items:center;text-align:center;">' +
                         '<button class="lm-premium-potion-info" data-product-id="' + window._lmEconomyEscape(pid) + '" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="Potion Info">?</button>' +
                         '<div style="width:80px;height:80px;border-radius:50%;margin:8px 0 10px;display:flex;align-items:center;justify-content:center;font-size:38px;background:radial-gradient(circle,' + colors.border + '22,' + colors.border + '44);border:3px solid ' + colors.border + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' +
-                        '<div style="font-size:15px;font-weight:900;color:#333;margin-bottom:4px;">' + window._lmEconomyEscape(baseName) + '</div>' +
+                        '<div style="font-size:15px;font-weight:900;color:' + t.tc + ';margin-bottom:4px;">' + window._lmEconomyEscape(baseName) + '</div>' +
                         '<button class="btn lm-buy-premium-potion" data-product-id="' + window._lmEconomyEscape(pid) + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;' + (buyDisabled ? 'opacity:.45;cursor:not-allowed;filter:grayscale(40%);' : 'cursor:pointer;') + 'width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
                     '</div>';
             });
         }
 
         modal.innerHTML =
-            '<div class="lm-modal-container" style="background:' + t.bg + ';border-radius:16px;width:720px;max-width:94vw;padding:0;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.6);">' +
+            '<div class="lm-modal-container" style="background:' + t.bg + ';border-radius:6px;width:720px;max-width:94vw;padding:0;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);border:1px solid ' + t.border + ';border-top:3px solid ' + t.mc + ';">' +
                 headerHtml + infoBarHtml +
                 '<div style="padding:20px;display:flex;gap:14px;background:' + t.bg + ';flex-wrap:wrap;justify-content:center;">' +
                     cardsHtml +
