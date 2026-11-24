@@ -6437,6 +6437,14 @@ function getSNEZServers(ifcalled) {
 
                     client.isOpen = true;
 
+                    /* lm-server (api.legendmod.ml/lm-ws, which replaced the SNEZ service) sends the
+                     * player list only as the answer to a search: the old SNEZ server pushed it by
+                     * itself, so the client never asked and the search found nothing. Ask now. */
+                    client.send({
+                        type: "search",
+                        data: String($("#searchInput").val() || "")
+                    });
+
                     if (
                         typeof client.onOpenCallback ===
                         "function"
@@ -6652,9 +6660,11 @@ function getSNEZServers(ifcalled) {
                         player.server || ""
                     );
 
+                /* names match without case: "j" finds "Jimbo" too */
                 var matchesNickname =
-                    nickname.indexOf(
-                        searchValue
+                    searchValue.length > 0 &&
+                    nickname.toLowerCase().indexOf(
+                        searchValue.toLowerCase()
                     ) !== -1;
 
                 var matchesServer =
