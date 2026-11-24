@@ -456,6 +456,18 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-prevServer': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-prevServer']) || 'Reconnect to the previous server';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* the last different server that opened (no replays or private room tickets), joined like the Join button */
+					if (typeof window._lmJoinPrevServer === 'function') window._lmJoinPrevServer();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';

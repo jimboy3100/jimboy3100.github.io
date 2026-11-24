@@ -455,6 +455,33 @@ var _lmRoomState = { code: '', pass: '', url: '', mode: '', name: '', lost: fals
 window._lmRoomState = _lmRoomState;
 function _lmIsRoomUrl(u) { return typeof u === 'string' && u.indexOf('/el-room/') !== -1; }
 window._lmIsRoomUrl = _lmIsRoomUrl;
+/* Server history for the previous server hotkey: the last 10 game servers that opened (newest first,
+ * localStorage 'lmServerHistory'). Replays and private room tickets (single use) are never stored. */
+window._lmSrvHistRead = function () { try { var a = JSON.parse(localStorage.getItem('lmServerHistory') || '[]'); return Array.isArray(a) ? a.filter(function (h) { return h && typeof h.ws === 'string' && h.ws; }) : []; } catch (e) { return window._lmSrvHistMem || []; } };
+window._lmSrvHistAdd = function (ws) {
+    ws = String(ws || '');
+    if (!/^wss?:\/\//.test(ws) || ws.length > 600 || ws.indexOf('replay') !== -1 || _lmIsRoomUrl(ws)) return;
+    var gm = '', rg = '';
+    try { gm = String($('#gamemode').val() || ''); rg = String($('#region').val() || ''); } catch (e) { }
+    var a = window._lmSrvHistRead().filter(function (h) { return h.ws !== ws; });
+    a.unshift({ ws: ws, gm: gm, rg: rg, at: Date.now() });
+    window._lmSrvHistMem = a = a.slice(0, 10);
+    try { localStorage.setItem('lmServerHistory', JSON.stringify(a)); } catch (e) { }
+};
+/* the newest stored server that is not the current one */
+window._lmPrevServer = function () {
+    var cur = window.legendmod && window.legendmod.ws, a = window._lmSrvHistRead();
+    for (var i = 0; i < a.length; i++) if (a[i].ws !== cur) return a[i];
+    return null;
+};
+/* joins through the Join button path (gameServerJoin), so Expanding Land and private servers keep working */
+window._lmJoinPrevServer = function () {
+    var h = window._lmPrevServer();
+    if (!h) { if (window.toastr) toastr.info(_lmTH('noPrevServer', 'No previous server')); return false; }
+    try { if (h.gm && $('#gamemode option').filter(function () { return this.value === h.gm; }).length) $('#gamemode').val(h.gm); } catch (e) { }
+    if (window.application && application.gameServerJoin) application.gameServerJoin(h.ws);
+    return true;
+};
 /* on a private room connection (rooms run --ephemeral: no shop, claims or saves) */
 window._lmInPrivateRoom = function () { var lm = window.legendmod; return !!(lm && _lmIsRoomUrl(lm.ws)); };
 /* shop entry points: in a room, a short notice instead of a request nobody answers */
@@ -1131,6 +1158,8 @@ window.lmT = (function () {
         "eventLeft": {"en":"{0}: {1} left","el":"{0}: απομένουν {1}","es":"{0}: quedan {1}","bg":"{0}: остават {1}","fr":"{0} : encore {1}","ar":"{0}: متبقٍ {1}","zh":"{0}：剩餘 {1}","ru":"{0}: осталось {1}","de":"{0}: noch {1}","tr":"{0}: {1} kaldı","pl":"{0}: zostało {1}","nl":"{0}: nog {1}"},
         "lmPresetReducedMotion": {"en":"Reduced motion","el":"Μειωμένη κίνηση","es":"Movimiento reducido","bg":"Намалено движение","fr":"Mouvement réduit","ar":"تقليل الحركة","zh":"減少動態效果","ru":"Меньше движения","de":"Weniger Bewegung","tr":"Azaltılmış hareket","pl":"Ograniczony ruch","nl":"Minder beweging"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "shareStats": {"en":"Share","el":"Κοινοποίηση","es":"Compartir","bg":"Сподели","fr":"Partager","ar":"مشاركة","zh":"分享","ru":"Поделиться","de":"Teilen","tr":"Paylaş","pl":"Udostępnij","nl":"Delen"},
+        "noPrevServer": {"en":"No previous server","el":"Δεν υπάρχει προηγούμενος διακομιστής","es":"No hay servidor anterior","bg":"Няма предишен сървър","fr":"Aucun serveur précédent","ar":"لا يوجد خادم سابق","zh":"沒有上一個伺服器","ru":"Нет предыдущего сервера","de":"Kein vorheriger Server","tr":"Önceki sunucu yok","pl":"Brak poprzedniego serwera","nl":"Geen vorige server"},
         "watchKiller": {"en":"Watch killer","el":"Παρακολούθησε τον δολοφόνο","es":"Ver al asesino","bg":"Гледай убиеца","fr":"Regarder le tueur","ar":"شاهد القاتل","zh":"觀看擊殺者","ru":"Смотреть убийцу","de":"Mörder beobachten","tr":"Katili izle","pl":"Obserwuj zabójcę","nl":"Kijk naar je moordenaar"},
         "watchKillerGone": {"en":"Your killer is no longer in view","el":"Ο δολοφόνος σου δεν φαίνεται πια","es":"Tu asesino ya no está a la vista","bg":"Убиецът ти вече не се вижда","fr":"Ton tueur n'est plus visible","ar":"قاتلك لم يعد ظاهرًا","zh":"擊殺者已不在視野內","ru":"Твой убийца больше не виден","de":"Dein Mörder ist nicht mehr zu sehen","tr":"Katilin artık görünmüyor","pl":"Twój zabójca nie jest już widoczny","nl":"Je moordenaar is niet meer in beeld"},
         "leaguesResetsIn": {"en":"Resets in {t}","el":"Επαναφορά σε {t}","es":"Se reinicia en {t}","bg":"Нулиране след {t}","fr":"Réinitialisation dans {t}","ar":"إعادة التعيين خلال {t}","zh":"{t} 後重置","ru":"Сброс через {t}","de":"Zurücksetzung in {t}","tr":"{t} sonra sıfırlanır","pl":"Reset za {t}","nl":"Reset over {t}"},
@@ -17796,6 +17825,7 @@ var displayText = {
         showStatsAlive: 'Statystyki: czas zycia',
         mergeRings: 'Pierscienie laczenia (postep)',
         mentionNotify: 'Powiadomienie, gdy ktos wspomni Twoj nick (karta w tle)',
+        chatShowId: 'Pokaz id gracza (#id) przed nickiem w czacie',
         chatHideWords: 'Ukryj wiadomosci zawierajace (slowa po przecinku)',
         rainbowMapBorders: 'Teczowe granice mapy',
         rainbowBorderSpeed: 'Szybkosc teczowych granic',
@@ -17873,6 +17903,7 @@ var displayText = {
         'hk-pingGoHere': 'Ping druzyny: Idz tutaj',
         'hk-pingVirus': 'Ping druzyny: Tu jest wirus',
         'hk-specNextTop': 'Wolna obserwacja: sledz nastepnego gracza z topki',
+        'hk-prevServer': 'Polacz ponownie z poprzednim serwerem',
         'hk-bigMinimap': 'Powieksz / przywroc minimape',
         'hk-copyServerLink': 'Kopiuj link do serwera + haslo (TK&PW)',
         'hk-netGraph': 'Pokaz / ukryj wykres sieci (FPS, ping)',
@@ -18346,6 +18377,7 @@ var displayText = {
         showStatsAlive: 'Time alive (this life)',
         mergeRings: 'Merge progress rings on own cells',
         mentionNotify: 'Desktop notification when someone mentions your nick (tab in background)',
+        chatShowId: 'Show the player id (#id) before chat nicks',
         chatHideWords: 'Hide chat messages containing (comma-separated words)',
         rainbowMapBorders: 'Rainbow map borders',
         rainbowBorderSpeed: 'Rainbow border speed',
@@ -18425,6 +18457,7 @@ var displayText = {
         'hk-pingGoHere': 'Team ping: Go here',
         'hk-pingVirus': 'Team ping: Virus here',
         'hk-specNextTop': 'Free spectate: follow next leaderboard player',
+        'hk-prevServer': 'Reconnect to the previous server',
         'hk-bigMinimap': 'Enlarge / restore minimap',
         'hk-copyServerLink': 'Copy server link + password (TK&PW)',
         'hk-netGraph': 'Show / hide net graph (FPS, ping)',
@@ -20991,6 +21024,7 @@ var defaultmapsettings = {
     showStatsAlive: false,        /* stats HUD: time alive in this life */
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
     mentionNotify: false,         /* desktop notification for chat mentions while the tab is hidden */
+    chatShowId: false,            /* chat: dim #id before the nick (relay player id) */
     chatHideWords: '',            /* chat lines (nick or text) containing one of these words are not shown; empty = off */
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
     rainbowBorderSpeed: 5,        /* 5 = the original speed */
@@ -21232,7 +21266,7 @@ var _lmLabelI18n = {
         "hk-netGraph":"Εμφάνιση / απόκρυψη γραφήματος δικτύου (FPS, ping)","hk-chatSounds":"Σίγαση / άρση σίγασης ήχων συνομιλίας","scanTrick":"Ενεργοποίηση Scan Trick",
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
-        "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick"
+        "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -21376,7 +21410,7 @@ var _lmLabelI18n = {
         "hk-chatSounds":"Silenciar / activar sonidos del chat","scanTrick":"Activar Scan Trick","scanTrickRounded":"Ajustar la dirección de movimiento",
         "scanTrickOnlyWhileLMB":"Ajustar solo mientras se mantiene el botón izquierdo","scanTrickDirections":"Direcciones ajustadas",
         "scanTrickDistance":"Distancia de proyección normal","scanTrickRoundedDistance":"Distancia de proyección ajustada","scanTrickStatus":"Mostrar estado de Scan Trick",
-        "clickSpectate":"Espectador libre: haz clic en una célula de un jugador para seguirlo (clic en un espacio vacío para parar)","minimapClickSpectate":"Expanding Land, espectador del mundo: haz clic en el minimapa para mover la cámara allí","reducedMotion":"Movimiento reducido (sin temblor de pantalla ni partículas de muerte)","lmSpecFollowing":"Siguiendo","lbClickSpectate":"Espectador libre: haz clic en una masa de la clasificación para seguir a ese jugador","hk-specNextTop":"Espectador libre: seguir al siguiente jugador de la clasificación","hideEventBanner":"Ocultar la cuenta atrás de eventos del servidor (Expanding Land)","hk-scanTrick":"Mantener Scan Trick"
+        "clickSpectate":"Espectador libre: haz clic en una célula de un jugador para seguirlo (clic en un espacio vacío para parar)","minimapClickSpectate":"Expanding Land, espectador del mundo: haz clic en el minimapa para mover la cámara allí","reducedMotion":"Movimiento reducido (sin temblor de pantalla ni partículas de muerte)","lmSpecFollowing":"Siguiendo","lbClickSpectate":"Espectador libre: haz clic en una masa de la clasificación para seguir a ese jugador","hk-specNextTop":"Espectador libre: seguir al siguiente jugador de la clasificación","hk-prevServer":"Reconectar al servidor anterior","chatShowId":"Mostrar el id del jugador (#id) antes de los nicks del chat","hideEventBanner":"Ocultar la cuenta atrás de eventos del servidor (Expanding Land)","hk-scanTrick":"Mantener Scan Trick"
     },
     "bg": {
         "start":"Начало","settings":"Настройки","restoreSettings":"Възстанови настройките по подразбиране","animationGroup":"Анимация","graphics":"Графика",
@@ -21520,7 +21554,7 @@ var _lmLabelI18n = {
         "hk-chatSounds":"Заглуши / включи звуците на чата","scanTrick":"Включи Scan Trick","scanTrickRounded":"Прихващане на посоката на движение",
         "scanTrickOnlyWhileLMB":"Прихващай само докато левият бутон е задържан","scanTrickDirections":"Прихванати посоки","scanTrickDistance":"Нормално разстояние на проекция",
         "scanTrickRoundedDistance":"Прихванато разстояние на проекция","scanTrickStatus":"Покажи състоянието на Scan Trick",
-        "clickSpectate":"Свободно наблюдение: щракни върху клетка на играч, за да го следваш (щракни на празно място, за да спреш)","minimapClickSpectate":"Expanding Land, наблюдение на света: щракни върху миникартата, за да преместиш камерата там","reducedMotion":"Намалено движение (без трусене на екрана и частици при смърт)","lmSpecFollowing":"Следиш","lbClickSpectate":"Свободно наблюдение: кликни на маса в класацията, за да следиш играча","hk-specNextTop":"Свободно наблюдение: следи следващия играч от класацията","hideEventBanner":"Скрий обратното броене за събития на сървъра (Expanding Land)","hk-scanTrick":"Задръж за Scan Trick"
+        "clickSpectate":"Свободно наблюдение: щракни върху клетка на играч, за да го следваш (щракни на празно място, за да спреш)","minimapClickSpectate":"Expanding Land, наблюдение на света: щракни върху миникартата, за да преместиш камерата там","reducedMotion":"Намалено движение (без трусене на екрана и частици при смърт)","lmSpecFollowing":"Следиш","lbClickSpectate":"Свободно наблюдение: кликни на маса в класацията, за да следиш играча","hk-specNextTop":"Свободно наблюдение: следи следващия играч от класацията","hk-prevServer":"Свържи се отново с предишния сървър","chatShowId":"Показвай id на играча (#id) пред имената в чата","hideEventBanner":"Скрий обратното броене за събития на сървъра (Expanding Land)","hk-scanTrick":"Задръж за Scan Trick"
     },
     "fr": {
         "start":"Accueil","settings":"Paramètres","restoreSettings":"Restaurer les paramètres par défaut","graphics":"Graphismes",
@@ -21664,7 +21698,7 @@ var _lmLabelI18n = {
         "hk-chatSounds":"Couper / rétablir les sons du chat","scanTrick":"Activer le Scan Trick","scanTrickRounded":"Aligner la direction du mouvement",
         "scanTrickOnlyWhileLMB":"Aligner seulement en maintenant le bouton gauche","scanTrickDirections":"Directions alignées",
         "scanTrickDistance":"Distance de projection normale","scanTrickRoundedDistance":"Distance de projection alignée","scanTrickStatus":"Afficher l'état du Scan Trick",
-        "clickSpectate":"Spectateur libre : clique sur une cellule d'un joueur pour le suivre (clic dans le vide pour arrêter)","minimapClickSpectate":"Expanding Land, spectateur du monde : clique sur la minicarte pour y déplacer la caméra","reducedMotion":"Mouvement réduit (sans tremblement d'écran ni particules de mort)","lmSpecFollowing":"Tu suis","lbClickSpectate":"Spectateur libre : clique sur une masse du classement pour suivre ce joueur","hk-specNextTop":"Spectateur libre : suivre le joueur suivant du classement","hideEventBanner":"Masquer le compte à rebours des événements du serveur (Expanding Land)","hk-scanTrick":"Maintenir le Scan Trick"
+        "clickSpectate":"Spectateur libre : clique sur une cellule d'un joueur pour le suivre (clic dans le vide pour arrêter)","minimapClickSpectate":"Expanding Land, spectateur du monde : clique sur la minicarte pour y déplacer la caméra","reducedMotion":"Mouvement réduit (sans tremblement d'écran ni particules de mort)","lmSpecFollowing":"Tu suis","lbClickSpectate":"Spectateur libre : clique sur une masse du classement pour suivre ce joueur","hk-specNextTop":"Spectateur libre : suivre le joueur suivant du classement","hk-prevServer":"Se reconnecter au serveur précédent","chatShowId":"Afficher l'id du joueur (#id) avant les pseudos du chat","hideEventBanner":"Masquer le compte à rebours des événements du serveur (Expanding Land)","hk-scanTrick":"Maintenir le Scan Trick"
     },
     "ar": {
         "start":"الرئيسية","settings":"الإعدادات","restoreSettings":"استعادة الإعدادات الافتراضية","animationGroup":"الحركة","graphics":"الرسوميات",
@@ -21790,7 +21824,7 @@ var _lmLabelI18n = {
         "hk-netGraph":"إظهار / إخفاء رسم الشبكة (FPS، ping)","hk-chatSounds":"كتم / إلغاء كتم أصوات الدردشة","scanTrick":"تفعيل Scan Trick",
         "scanTrickRounded":"تثبيت اتجاه الحركة","scanTrickOnlyWhileLMB":"التثبيت فقط أثناء الضغط على زر الفأرة الأيسر","scanTrickDirections":"الاتجاهات المثبتة",
         "scanTrickDistance":"مسافة الإسقاط العادية","scanTrickRoundedDistance":"مسافة الإسقاط المثبتة","scanTrickStatus":"إظهار حالة Scan Trick",
-        "clickSpectate":"المشاهدة الحرة: انقر على خلية لاعب لمتابعته (انقر على مكان فارغ للإيقاف)","minimapClickSpectate":"Expanding Land، مشاهدة العالم: انقر على الخريطة المصغرة لنقل الكاميرا إلى هناك","reducedMotion":"تقليل الحركة (بدون اهتزاز الشاشة أو جزيئات الموت)","lmSpecFollowing":"متابعة","lbClickSpectate":"المشاهدة الحرة: انقر على كتلة في لوحة الصدارة لمتابعة ذلك اللاعب","hk-specNextTop":"المشاهدة الحرة: متابعة اللاعب التالي في لوحة الصدارة","hideEventBanner":"إخفاء العد التنازلي لأحداث الخادم (Expanding Land)","hk-scanTrick":"اضغط مع الاستمرار لـ Scan Trick"
+        "clickSpectate":"المشاهدة الحرة: انقر على خلية لاعب لمتابعته (انقر على مكان فارغ للإيقاف)","minimapClickSpectate":"Expanding Land، مشاهدة العالم: انقر على الخريطة المصغرة لنقل الكاميرا إلى هناك","reducedMotion":"تقليل الحركة (بدون اهتزاز الشاشة أو جزيئات الموت)","lmSpecFollowing":"متابعة","lbClickSpectate":"المشاهدة الحرة: انقر على كتلة في لوحة الصدارة لمتابعة ذلك اللاعب","hk-specNextTop":"المشاهدة الحرة: متابعة اللاعب التالي في لوحة الصدارة","hk-prevServer":"إعادة الاتصال بالخادم السابق","chatShowId":"إظهار معرّف اللاعب (#id) قبل الأسماء في الدردشة","hideEventBanner":"إخفاء العد التنازلي لأحداث الخادم (Expanding Land)","hk-scanTrick":"اضغط مع الاستمرار لـ Scan Trick"
     },
     "zh": {
         "start":"首頁","settings":"設定","restoreSettings":"恢復預設設定","animationGroup":"動畫","graphics":"畫質","reverseTrick":"反向技巧（開發中）","onlineStatus":"顯示我在線上（Facebook）",
@@ -21875,7 +21909,7 @@ var _lmLabelI18n = {
         "hk-middleMultiView":"切換 multibox 中間視角","hk-mbRings":"顯示/隱藏 multibox 外圈","hk-bigMinimap":"放大 / 還原小地圖","hk-copyServerLink":"複製伺服器連結 + 密碼 (TK&PW)",
         "hk-netGraph":"顯示 / 隱藏網路圖表（FPS、ping）","hk-chatSounds":"靜音 / 取消靜音聊天音效","scanTrick":"啟用 Scan Trick","scanTrickRounded":"鎖定移動方向","scanTrickOnlyWhileLMB":"只在按住滑鼠左鍵時鎖定",
         "scanTrickDirections":"鎖定方向數","scanTrickDistance":"一般投射距離","scanTrickRoundedDistance":"鎖定投射距離","scanTrickStatus":"顯示 Scan Trick 狀態",
-        "clickSpectate":"自由觀戰：點擊玩家的細胞即可跟隨（點擊空白處停止）","minimapClickSpectate":"Expanding Land 世界觀戰：點擊小地圖即可把鏡頭移到該處","reducedMotion":"減少動態效果（無畫面震動和死亡粒子）","lmSpecFollowing":"跟隨中","lbClickSpectate":"自由觀戰：點擊排行榜上的質量以跟隨該玩家","hk-specNextTop":"自由觀戰：跟隨排行榜上的下一位玩家","hideEventBanner":"隱藏伺服器活動倒數（Expanding Land）","hk-scanTrick":"按住 Scan Trick"
+        "clickSpectate":"自由觀戰：點擊玩家的細胞即可跟隨（點擊空白處停止）","minimapClickSpectate":"Expanding Land 世界觀戰：點擊小地圖即可把鏡頭移到該處","reducedMotion":"減少動態效果（無畫面震動和死亡粒子）","lmSpecFollowing":"跟隨中","lbClickSpectate":"自由觀戰：點擊排行榜上的質量以跟隨該玩家","hk-specNextTop":"自由觀戰：跟隨排行榜上的下一位玩家","hk-prevServer":"重新連線到上一個伺服器","chatShowId":"在聊天暱稱前顯示玩家 id（#id）","hideEventBanner":"隱藏伺服器活動倒數（Expanding Land）","hk-scanTrick":"按住 Scan Trick"
     },
     "ru": {
         "start":"Главная","settings":"Настройки","restoreSettings":"Сбросить настройки по умолчанию","animationGroup":"Анимация","graphics":"Графика",
@@ -22010,7 +22044,7 @@ var _lmLabelI18n = {
         "hk-netGraph":"Показать / скрыть сетевой график (FPS, ping)","hk-chatSounds":"Выкл. / вкл. звуки чата","scanTrick":"Включить Scan Trick",
         "scanTrickRounded":"Привязка направления движения","scanTrickOnlyWhileLMB":"Привязка только при зажатой левой кнопке","scanTrickDirections":"Направления привязки",
         "scanTrickDistance":"Обычная дистанция проекции","scanTrickRoundedDistance":"Дистанция проекции с привязкой","scanTrickStatus":"Показывать статус Scan Trick",
-        "clickSpectate":"Свободное наблюдение: нажми на клетку игрока, чтобы следить за ним (нажми на пустое место, чтобы остановиться)","minimapClickSpectate":"Expanding Land, наблюдение за миром: нажми на миникарту, чтобы переместить туда камеру","reducedMotion":"Меньше движения (без тряски экрана и частиц смерти)","lmSpecFollowing":"Наблюдение","lbClickSpectate":"Свободное наблюдение: клик по массе в топе — следить за этим игроком","hk-specNextTop":"Свободное наблюдение: следить за следующим игроком из топа","hideEventBanner":"Скрыть обратный отсчёт событий сервера (Expanding Land)","hk-scanTrick":"Удерживать Scan Trick"
+        "clickSpectate":"Свободное наблюдение: нажми на клетку игрока, чтобы следить за ним (нажми на пустое место, чтобы остановиться)","minimapClickSpectate":"Expanding Land, наблюдение за миром: нажми на миникарту, чтобы переместить туда камеру","reducedMotion":"Меньше движения (без тряски экрана и частиц смерти)","lmSpecFollowing":"Наблюдение","lbClickSpectate":"Свободное наблюдение: клик по массе в топе — следить за этим игроком","hk-specNextTop":"Свободное наблюдение: следить за следующим игроком из топа","hk-prevServer":"Переподключиться к предыдущему серверу","chatShowId":"Показывать id игрока (#id) перед никами в чате","hideEventBanner":"Скрыть обратный отсчёт событий сервера (Expanding Land)","hk-scanTrick":"Удерживать Scan Trick"
     },
     "de": {
         "start":"Start","settings":"Einstellungen","restoreSettings":"Standardeinstellungen wiederherstellen","graphics":"Grafik","reverseTrick":"Reverse-Trick (in Entwicklung)",
@@ -22146,7 +22180,7 @@ var _lmLabelI18n = {
         "hk-chatSounds":"Chat-Töne stumm / laut","scanTrickGroup":"Scan-Trick","scanTrick":"Scan-Trick aktivieren","scanTrickRounded":"Bewegungsrichtung einrasten",
         "scanTrickOnlyWhileLMB":"Nur einrasten, solange die linke Maustaste gehalten wird","scanTrickDirections":"Eingerastete Richtungen",
         "scanTrickDistance":"Normale Projektionsdistanz","scanTrickRoundedDistance":"Eingerastete Projektionsdistanz","scanTrickStatus":"Scan-Trick-Status anzeigen",
-        "clickSpectate":"Freies Zuschauen: Klick auf eine Spielerzelle folgt ihr (Klick auf eine leere Stelle beendet es)","minimapClickSpectate":"Expanding Land, Weltzuschauen: Klick auf die Minimap bewegt die Kamera dorthin","reducedMotion":"Weniger Bewegung (kein Bildschirmwackeln, keine Todespartikel)","lmSpecFollowing":"Du folgst","lbClickSpectate":"Freier Zuschauermodus: Klick auf eine Masse in der Bestenliste folgt dem Spieler","hk-specNextTop":"Freier Zuschauermodus: nächstem Spieler der Bestenliste folgen","hideEventBanner":"Countdown für Server-Events ausblenden (Expanding Land)","hk-scanTrick":"Scan-Trick halten"
+        "clickSpectate":"Freies Zuschauen: Klick auf eine Spielerzelle folgt ihr (Klick auf eine leere Stelle beendet es)","minimapClickSpectate":"Expanding Land, Weltzuschauen: Klick auf die Minimap bewegt die Kamera dorthin","reducedMotion":"Weniger Bewegung (kein Bildschirmwackeln, keine Todespartikel)","lmSpecFollowing":"Du folgst","lbClickSpectate":"Freier Zuschauermodus: Klick auf eine Masse in der Bestenliste folgt dem Spieler","hk-specNextTop":"Freier Zuschauermodus: nächstem Spieler der Bestenliste folgen","hk-prevServer":"Erneut mit dem vorherigen Server verbinden","chatShowId":"Spieler-ID (#id) vor den Chat-Nicks anzeigen","hideEventBanner":"Countdown für Server-Events ausblenden (Expanding Land)","hk-scanTrick":"Scan-Trick halten"
     },
     "tr": {
         "start":"Ana sayfa","settings":"Ayarlar","restoreSettings":"Varsayılan ayarları geri yükle","animationGroup":"Animasyon","graphics":"Grafik",
@@ -22283,7 +22317,7 @@ var _lmLabelI18n = {
         "hk-netGraph":"Ağ grafiğini göster / gizle (FPS, ping)","hk-chatSounds":"Sohbet seslerini kapat / aç","scanTrick":"Scan Trick'i etkinleştir",
         "scanTrickRounded":"Hareket yönünü sabitle","scanTrickOnlyWhileLMB":"Sadece sol fare tuşu basılıyken sabitle","scanTrickDirections":"Sabitlenen yönler",
         "scanTrickDistance":"Normal yansıtma mesafesi","scanTrickRoundedDistance":"Sabitlenmiş yansıtma mesafesi","scanTrickStatus":"Scan Trick durumunu göster",
-        "clickSpectate":"Serbest izleme: takip etmek için bir oyuncunun hücresine tıkla (durdurmak için boş bir yere tıkla)","minimapClickSpectate":"Expanding Land dünya izleme: kamerayı oraya taşımak için mini haritaya tıkla","reducedMotion":"Azaltılmış hareket (ekran sarsıntısı ve ölüm parçacıkları yok)","lmSpecFollowing":"Takip ediliyor","lbClickSpectate":"Serbest izleme: oyuncuyu takip etmek için sıralamadaki kütleye tıkla","hk-specNextTop":"Serbest izleme: sıralamadaki sonraki oyuncuyu takip et","hideEventBanner":"Sunucu etkinliği geri sayımını gizle (Expanding Land)","hk-scanTrick":"Scan Trick için basılı tut"
+        "clickSpectate":"Serbest izleme: takip etmek için bir oyuncunun hücresine tıkla (durdurmak için boş bir yere tıkla)","minimapClickSpectate":"Expanding Land dünya izleme: kamerayı oraya taşımak için mini haritaya tıkla","reducedMotion":"Azaltılmış hareket (ekran sarsıntısı ve ölüm parçacıkları yok)","lmSpecFollowing":"Takip ediliyor","lbClickSpectate":"Serbest izleme: oyuncuyu takip etmek için sıralamadaki kütleye tıkla","hk-specNextTop":"Serbest izleme: sıralamadaki sonraki oyuncuyu takip et","hk-prevServer":"Önceki sunucuya yeniden bağlan","chatShowId":"Sohbette isimlerin önünde oyuncu id’sini (#id) göster","hideEventBanner":"Sunucu etkinliği geri sayımını gizle (Expanding Land)","hk-scanTrick":"Scan Trick için basılı tut"
     },
     "nl": {
         "start":"Start","settings":"Instellingen","restoreSettings":"Standaardinstellingen herstellen","animationGroup":"Animatie",
@@ -22422,7 +22456,7 @@ var _lmLabelI18n = {
         "scanTrickRounded":"Bewegingsrichting vastklikken","scanTrickOnlyWhileLMB":"Alleen vastklikken terwijl de linkermuisknop ingedrukt is",
         "scanTrickDirections":"Vastgeklikte richtingen","scanTrickDistance":"Normale projectieafstand","scanTrickRoundedDistance":"Vastgeklikte projectieafstand",
         "scanTrickStatus":"Scan Trick-status tonen",
-        "clickSpectate":"Vrij toekijken: klik op een cel van een speler om die te volgen (klik op een lege plek om te stoppen)","minimapClickSpectate":"Expanding Land, wereld toekijken: klik op de minikaart om de camera daarheen te verplaatsen","reducedMotion":"Minder beweging (geen schermschudden of doodsdeeltjes)","lmSpecFollowing":"Je volgt","lbClickSpectate":"Vrij toekijken: klik op een massa in het klassement om die speler te volgen","hk-specNextTop":"Vrij toekijken: volgende speler uit het klassement volgen","hideEventBanner":"Aftelling van serverevenementen verbergen (Expanding Land)","hk-scanTrick":"Scan Trick ingedrukt houden"
+        "clickSpectate":"Vrij toekijken: klik op een cel van een speler om die te volgen (klik op een lege plek om te stoppen)","minimapClickSpectate":"Expanding Land, wereld toekijken: klik op de minikaart om de camera daarheen te verplaatsen","reducedMotion":"Minder beweging (geen schermschudden of doodsdeeltjes)","lmSpecFollowing":"Je volgt","lbClickSpectate":"Vrij toekijken: klik op een massa in het klassement om die speler te volgen","hk-specNextTop":"Vrij toekijken: volgende speler uit het klassement volgen","hk-prevServer":"Opnieuw verbinden met de vorige server","chatShowId":"Speler-id (#id) voor chatnamen tonen","hideEventBanner":"Aftelling van serverevenementen verbergen (Expanding Land)","hk-scanTrick":"Scan Trick ingedrukt houden"
     }
 };
 var _lmLabelLang = null;
@@ -26408,7 +26442,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26475,7 +26509,7 @@ function thelegendmodproject() {
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
             this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow", "rainbowMapBorders"], "gridGroup");
-            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat", "mentionNotify"], "chatGroup");
+            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat", "mentionNotify", "chatShowId"], "chatGroup");
             /* The Agar Tool universal chat is not started in this version (universalchat() is not called), so the switch would do nothing.
                Keep the stored value, but show the option as unavailable instead of a dead switch. */
             if (!window.ao2t) {
@@ -33554,6 +33588,8 @@ function thelegendmodproject() {
                         window.LMEvents.emit('chat', { nick: String(rawNick).slice(0, 60), text: String(rawText).slice(0, 500), type: 102 === caseof ? 'command' : 'chat', own: plId == this.playerID });
                     }
                     var r = '';
+                    /* optional dim #id before the nick: relay player ids only (not 0 / server lines, whose ids are made up per nick from 0x40000001) */
+                    var _lmIdTag = defaultmapsettings.chatShowId && +plId > 0 && +plId < 0x40000000 ? '<span class="lm-chat-id" style="opacity:.5;font-size:85%;font-weight:normal;">#' + (+plId) + '</span> ' : '';
                     if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 === caseof) {
 
                         /* pushed first: the chat-box path returns early, so bubbles never appeared */
@@ -33584,7 +33620,7 @@ function thelegendmodproject() {
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
                         var _lmBoxEl = document.getElementById('chat-box');
                         var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"><span class=\"message-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
@@ -33593,7 +33629,7 @@ function thelegendmodproject() {
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 200) : 0),
                             void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.messageSound)); /* own messages: no sound */ /* hidden chat box: silent, like the popups */
-                        defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
+                        defaultmapsettings.hideChat || (toastr.success(_lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
                         window._lmTrimChatToasts && window._lmTrimChatToasts();
@@ -33609,7 +33645,7 @@ function thelegendmodproject() {
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
                         var _lmBoxEl = document.getElementById('chat-box');
                         var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
@@ -33618,7 +33654,7 @@ function thelegendmodproject() {
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 200) : 0),
                             void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.commandSound));
-                        defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
+                        defaultmapsettings.hideChat || (toastr.warning(_lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.commandSound));
                         window._lmTrimChatToasts && window._lmTrimChatToasts();
                     } else {
@@ -40181,6 +40217,7 @@ function thelegendmodproject() {
                 if (url.indexOf('/el-room/') !== -1 && typeof window._lmRoomOnOpen === 'function') {
                     try { window._lmRoomOnOpen(url); } catch (e) { }
                 }
+                try { window._lmSrvHistAdd && window._lmSrvHistAdd(url); } catch (e) { }
             };
             this.socket.onmessage = function (t) {
                 app.onMessage(t);
@@ -47462,6 +47499,11 @@ function thelegendmodproject() {
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:4px;background:rgba(255,255,255,0.05);">📋</div>' +
+                '<div id="lm-go-share" title="' + _lmTH('shareStats', 'Share') + '" style="' +
+                'position:absolute;top:8px;left:40px;cursor:pointer;' +
+                'font-size:13px;color:' + tc2 + ';line-height:1;' +
+                'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
+                'border-radius:4px;background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
                 '☠️ ' + _lmTH('gameOver', 'Game Over') + '</div>' +
                 '</div>' +
@@ -47563,6 +47605,20 @@ function thelegendmodproject() {
                     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
                     else done(false);
                 } catch (err) { done(false); }
+            });
+            /* Share: the phone/browser share sheet, else a tweet in a new tab (cancelling the sheet is no error) */
+            var shareBtn = document.getElementById('lm-go-share');
+            if (shareBtn) shareBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var where = '';
+                try { where = [$('#region').val() === 'Private' ? '' : $('#region option:selected').text(), $('#gamemode option:selected').text()].map(function (v) { return String(v || '').trim(); }).filter(Boolean).join(' '); } catch (err) { }
+                var text = 'I reached ' + fmtMass(u.highestMass || u.finalMass) + ' mass and survived ' + fmtTime(u.timeTotal || u.longestTimeAlive || 0) + (where ? ' on ' + where.slice(0, 60) : '') + ' - Legend Mod';
+                var url = 'https://www.legendmod.ml/';
+                var tweet = function () { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener'); };
+                try {
+                    if (navigator.share) navigator.share({ title: 'Legend Mod', text: text, url: url }).catch(function (err) { if (!err || err.name !== 'AbortError') tweet(); });
+                    else tweet();
+                } catch (err) { tweet(); }
             });
 
             /* Auto-dismiss after 12 seconds. Cancel the previous modal's timer so it
