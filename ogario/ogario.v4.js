@@ -172,6 +172,57 @@ function _lmSessionStats(update) {
     el.textContent = line.replace('{0}', s.g).replace('{1}', Math.round(s.b).toLocaleString()).replace('{2}', played);
 }
 window._lmSessionStats = _lmSessionStats;
+/* Expanding Land scheduled events (opcode 102 type 196, sent only after our opcode 240 caps bit 0x04):
+ * a small countdown banner near the top of the screen ("Double XP in 12:34" / "Double XP: 05:10 left").
+ * Shown only while the server has sent events for this connection; option hideEventBanner hides it.
+ * Event names come from the server and are only ever set as textContent. */
+function _lmEventBanner(data) {
+    if (data !== undefined) {
+        var list = data && Array.isArray(data.events) ? data.events.slice(0, 8) : [];
+        var srvNow = +(data && data.serverTime) || 0;
+        window._lmEventState = list.length ? { off: srvNow ? Date.now() / 1000 - srvNow : 0, events: list, socket: data.socket || null } : null;
+        if (window._lmEventState && !window._lmEventTimer) window._lmEventTimer = setInterval(function () { _lmEventBanner(); }, 1000);
+    }
+    var st = window._lmEventState;
+    var lm = window.legendmod;
+    if (st && (!lm || !lm.isLegendWorld || (st.socket && lm.socket !== st.socket))) st = window._lmEventState = null;
+    if (!st && window._lmEventTimer) { clearInterval(window._lmEventTimer); window._lmEventTimer = null; }
+    var lines = [];
+    var dms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : window.legendmod5;
+    if (st && !(dms && dms.hideEventBanner)) {
+        var tr = function (key, en) { var s = window.lmT && window.lmT(key); return (!s || s === key) ? en : s; };
+        var fmt = function (secs) {
+            secs = Math.max(0, Math.ceil(secs));
+            var h = Math.floor(secs / 3600), m = Math.floor(secs % 3600 / 60), s = secs % 60;
+            return (h ? h + ':' + (m < 10 ? '0' : '') : (m < 10 ? '0' : '')) + m + ':' + (s < 10 ? '0' : '') + s;
+        };
+        var now = Date.now() / 1000 - st.off, next = null;
+        st.events.forEach(function (e) {
+            if (!e) return;
+            var start = +e.start || 0, end = +e.end || 0, name = String(e.name || '').slice(0, 40);
+            if (!name) return;
+            if (start <= now && now < end) {
+                if (lines.length < 3) lines.push(tr('eventLeft', '{0}: {1} left').replace('{0}', '\u0000').replace('{1}', fmt(end - now)).replace('\u0000', function () { return name; }));
+            } else if (start > now && (!next || start < +next.start)) next = e;
+        });
+        if (!lines.length && next && +next.start - now <= 86400) {
+            var nextName = String(next.name || '').slice(0, 40);
+            lines.push(tr('itemIn', '{0} in {1}').replace('{0}', '\u0000').replace('{1}', fmt(+next.start - now)).replace('\u0000', function () { return nextName; }));
+        }
+    }
+    var el = document.getElementById('lm-event-banner');
+    if (!lines.length) { if (el) el.style.display = 'none'; return; }
+    if (!el) {
+        if (!document.body) return;
+        el = document.createElement('div');
+        el.id = 'lm-event-banner';
+        el.style.cssText = 'position:fixed;top:28px;left:50%;transform:translateX(-50%);z-index:150;pointer-events:none;max-width:calc(100% - 32px);box-sizing:border-box;padding:3px 12px;border-radius:12px;background:rgba(0,0,0,.55);color:#ffd54a;font:bold 13px Ubuntu,Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px #000;';
+        document.body.appendChild(el);
+    }
+    el.textContent = lines.join('  \u00b7  ');
+    el.style.display = '';
+}
+window._lmEventBanner = _lmEventBanner;
 /* All-time personal bests (option "personalBests"): kept in this browser only.
  * Returns which records this life broke (never on the very first recorded game). */
 function _lmPersonalBests(update) {
@@ -483,6 +534,7 @@ window.lmT = (function () {
         "mhClear": {"en":"Clear","el":"Εκκαθάριση","es":"Borrar","bg":"Изчисти","fr":"Effacer","ar":"مسح","zh":"清除","ru":"Очистить","de":"Leeren","tr":"Temizle","pl":"Wyczyść","nl":"Wissen"},
         "mhClearConfirm": {"en":"Clear the match history?","el":"Εκκαθάριση του ιστορικού αγώνων;","es":"¿Borrar el historial de partidas?","bg":"Да се изчисти ли историята на игрите?","fr":"Effacer l’historique des parties ?","ar":"مسح سجل المباريات؟","zh":"清除對戰記錄？","ru":"Очистить историю матчей?","de":"Spielverlauf leeren?","tr":"Maç geçmişi temizlensin mi?","pl":"Wyczyścić historię meczów?","nl":"Speelgeschiedenis wissen?"},
         "mhEmpty": {"en":"No games recorded yet.","el":"Δεν έχουν καταγραφεί παιχνίδια ακόμη.","es":"Aún no hay partidas registradas.","bg":"Все още няма записани игри.","fr":"Aucune partie enregistrée pour l’instant.","ar":"لا توجد مباريات مسجلة بعد.","zh":"尚無記錄的遊戲。","ru":"Пока нет записанных игр.","de":"Noch keine Spiele gespeichert.","tr":"Henüz kayıtlı oyun yok.","pl":"Brak zapisanych gier.","nl":"Nog geen spellen opgeslagen."},
+        "eventLeft": {"en":"{0}: {1} left","el":"{0}: απομένουν {1}","es":"{0}: quedan {1}","bg":"{0}: остават {1}","fr":"{0} : encore {1}","ar":"{0}: متبقٍ {1}","zh":"{0}：剩餘 {1}","ru":"{0}: осталось {1}","de":"{0}: noch {1}","tr":"{0}: {1} kaldı","pl":"{0}: zostało {1}","nl":"{0}: nog {1}"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
         "mhThisDevice": {"en":"This device","el":"Αυτή η συσκευή","es":"Este dispositivo","bg":"Това устройство","fr":"Cet appareil","ar":"هذا الجهاز","zh":"此裝置","ru":"Это устройство","de":"Dieses Gerät","tr":"Bu cihaz","pl":"To urządzenie","nl":"Dit apparaat"},
         "mhAccount": {"en":"Account (server)","el":"Λογαριασμός (διακομιστής)","es":"Cuenta (servidor)","bg":"Акаунт (сървър)","fr":"Compte (serveur)","ar":"الحساب (الخادم)","zh":"帳號（伺服器）","ru":"Аккаунт (сервер)","de":"Konto (Server)","tr":"Hesap (sunucu)","pl":"Konto (serwer)","nl":"Account (server)"},
@@ -16849,6 +16901,7 @@ var displayText = {
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
         matchHistory: 'Historia meczów (ostatnie 50 gier, przycisk pod menu)',
         showKiller: 'Who ate you, on the Game Over card',
+        hideEventBanner: 'Hide the server event countdown (Expanding Land)',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
@@ -17384,6 +17437,7 @@ var displayText = {
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
         matchHistory: 'Match history (last 50 games, button under the menu)',
         showKiller: 'Who ate you, on the Game Over card',
+        hideEventBanner: 'Hide the server event countdown (Expanding Land)',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -19825,6 +19879,7 @@ var defaultmapsettings = {
     personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     showKiller: false,            /* "Eaten by: nick (mass)" row on the Game Over card */
+    hideEventBanner: false,       /* hide the Expanding Land event countdown banner (shown only when the server sends events) */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -24041,6 +24096,9 @@ function thelegendmodproject() {
                     case 'matchHistory':
                         _lmMatchHistoryButton();
                         break;
+                    case 'hideEventBanner':
+                        _lmEventBanner();
+                        break;
                     case 'autoResp':
                         this.setAutoResp();
                         break;
@@ -25036,7 +25094,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -25142,7 +25200,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
@@ -43123,6 +43181,7 @@ function thelegendmodproject() {
 
                         /* Capability reply [240,'L','M',caps], once per connection and never from a
                          * replay: bit 0 = understands the killer info (lmKiller) in the game over,
+                         * bit 2 (0x04) = understands the scheduled events (102 type 196, countdown banner),
                          * bit 1 = understands the daily challenges (102 type 220),
                          * bit 3 = may ask for its account's server match history (102 type 1080). */
                         if (this.socket && this._lmCapsSocket !== this.socket && String($('#server-token').val() || '').indexOf('replay') === -1) {
@@ -43131,7 +43190,7 @@ function thelegendmodproject() {
                             _lmCapsView.setUint8(0, 240);
                             _lmCapsView.setUint8(1, 0x4C);
                             _lmCapsView.setUint8(2, 0x4D);
-                            _lmCapsView.setUint8(3, 1 | 2 | 0x08);
+                            _lmCapsView.setUint8(3, 1 | 2 | 0x04 | 0x08);
                             this.sendMessage(_lmCapsView);
                         }
 
@@ -44837,6 +44896,15 @@ function thelegendmodproject() {
                         if (dch && typeof window._lmApplyDailyChallenges === 'function') window._lmApplyDailyChallenges(dch);
                     } catch (dchErr) {
                         console.warn("[LM] Error parsing daily challenges:", dchErr);
+                    }
+                    break;
+                case 196:
+                    /* Expanding Land scheduled events (sent only after our opcode 240 caps bit 0x04) */
+                    try {
+                        var lmEv = r.uncompressedData.lmServerEventsField;
+                        _lmEventBanner({ serverTime: lmEv ? lmEv.serverTime : 0, events: lmEv && Array.isArray(lmEv.events) ? lmEv.events : [], socket: this.socket || null });
+                    } catch (lmEvErr) {
+                        console.warn("[LM] Error parsing server events:", lmEvErr);
                     }
                     break;
                 case 147:

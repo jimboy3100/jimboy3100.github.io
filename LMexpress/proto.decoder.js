@@ -206,6 +206,7 @@ message uncompressedData {
                 lmDailyChallengesField lmDailyChallengesField = 220;// Expanding Land only, after our opcode 240 caps bit 1 (not official)
 
                 lmDailyChallengeRequestField lmDailyChallengeRequestField = 221;// Expanding Land only (not official)
+                lmServerEventsField lmServerEventsField = 196;// Expanding Land only, after our opcode 240 caps bit 0x04 (not official)
 }
 message lmMatchHistoryRequestField {
 }
@@ -397,6 +398,18 @@ message lmDailyChallenge {
 message lmDailyChallengeRequestField {
   uint32 slot = 1;// 0 = send the list, 1..n = claim that slot
   uint32 day = 2;// day of the claimed list (a changed day is refused)
+}
+message lmServerEventsField {// Expanding Land scheduled events (events.tsv)
+  uint32 serverTime = 1;// unix seconds
+  repeated lmServerEvent events = 2;// active ones first, then the next one
+}
+message lmServerEvent {
+  string name = 1;
+  string kind = 2;// xp, potion, food, virus
+  uint32 start = 3;// unix seconds
+  uint32 end = 4;
+  bool active = 5;
+  uint32 multiplier = 6;// x100
 }
 message productUpdates {
   int32 origin = 1;
