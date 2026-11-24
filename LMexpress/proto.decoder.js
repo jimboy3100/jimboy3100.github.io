@@ -199,6 +199,30 @@ message uncompressedData {
                 genericVideoAdRewardTokenRequestField genericVideoAdRewardTokenRequestField = 185;
 
                 genericVideoAdRewardTokenResponseField genericVideoAdRewardTokenResponseField = 186;
+
+                lmMatchHistoryRequestField lmMatchHistoryRequestField = 1080;// Expanding Land only, after our opcode 240 caps bit 3 (not official)
+
+                lmMatchHistoryResponseField lmMatchHistoryResponseField = 1081;// Expanding Land only (not official)
+}
+message lmMatchHistoryRequestField {
+}
+message lmMatchHistoryResponseField {
+  repeated lmMatchRecord games = 1;// oldest first, at most 50, this account's own games
+  uint32 serverTime = 2;
+}
+message lmMatchRecord {
+  uint32 time = 1;// unix seconds
+  uint32 aliveSecs = 2;
+  uint32 finalMass = 3;
+  uint32 highestMass = 4;
+  uint32 topPosition = 5;// 0 = never on the leaderboard
+  uint32 playersEaten = 6;
+  uint32 virusesEaten = 7;
+  string killerNick = 8;
+  uint32 killerMass = 9;
+  bool killerVirus = 10;
+  bool killerBot = 11;
+  bool killerKnown = 12;
 }
 message loginRequestField{
   int32 realm = 1;
