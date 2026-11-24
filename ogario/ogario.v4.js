@@ -28159,7 +28159,12 @@ function thelegendmodproject() {
 
             /* Chat socket skins (nick-based) take priority over vanilla skins.
              * This lets legendmod skins override agar.io server skins. */
-            var skinUrl =
+            /* Party: several players can share a nick, so the nick+colour entry comes first,
+             * as in the WebGL renderer (the canvas renderer showed the last cached nick's skin
+             * for both and could switch skin whenever a frame changed renderer). */
+            var partyUrl = (nick && color && typeof LM !== 'undefined' && LM && LM.gameMode === ':party') ?
+                (this.customSkinsMap[nick + color] || this.customSkinsMap[nick + hexColor]) : null;
+            var skinUrl = partyUrl ||
                 (nick ? (
                     this.customSkinsMap[nick] ||
                     this.customSkinsMap[nick + hexColor] ||
