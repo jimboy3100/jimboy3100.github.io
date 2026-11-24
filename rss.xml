@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Legend Mod — Changelog</title>
+    <link>https://www.legendmod.ml/changelog.html</link>
+    <description>Latest updates and new features for Legend Mod, the best agar.io extension.</description>
+    <language>en</language>
+    <lastBuildDate>Sun, 24 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.legendmod.ml/rss.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://jimboy3100.github.io/banners/icon128.png</url>
+      <title>Legend Mod</title>
+      <link>https://www.legendmod.ml/</link>
+    </image>
+
+    <item>
+      <title>v3.569 — Death Recap, Kill Feed &amp; Mass-Loss Alert</title>
+      <link>https://www.legendmod.ml/changelog.html#v3569</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3569</guid>
+      <pubDate>Sat, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Death recap on the Game Over card shows the last 20 seconds as 3-6 steps: mass, splits, viruses, merges, quick mass losses, and who ate you. Kill feed displays your eats and deaths live. Mass-loss alert with configurable threshold.</description>
+    </item>
+
+    <item>
+      <title>v3.568 — Adaptive Performance &amp; Network Diagnostics</title>
+      <link>https://www.legendmod.ml/changelog.html#v3568</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3568</guid>
+      <pubDate>Thu, 20 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Adaptive performance auto-optimizes when FPS drops below target. Performance diagnostics window with frame time graph, p50/p95/p99 stats. Network quality history tracks ping, jitter and disconnects across sessions.</description>
+    </item>
+
+    <item>
+      <title>v3.567 — Command Centre, Notifications &amp; Sound Mixer</title>
+      <link>https://www.legendmod.ml/changelog.html#v3567</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3567</guid>
+      <pubDate>Tue, 18 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Ctrl+K Command Centre to search all 220+ settings, hotkeys and commands. Notification centre keeps last 200 toasts with filters. Sound mixer with per-channel volumes and audio ducking.</description>
+    </item>
+
+    <item>
+      <title>v3.566 — HUD Helpers, Settings Profiles &amp; Analytics</title>
+      <link>https://www.legendmod.ml/changelog.html#v3566</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3566</guid>
+      <pubDate>Sun, 16 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Movement direction arrow, merge countdown, enemy mass ratio, screen-edge arrows to teammates and threats. Named settings profiles with auto-switching per server type. Analytics dashboard with heatmaps and coaching.</description>
+    </item>
+
+    <item>
+      <title>v3.565 — Gamepad Customization &amp; Badges</title>
+      <link>https://www.legendmod.ml/changelog.html#v3565</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3565</guid>
+      <pubDate>Thu, 13 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Full gamepad button mapping — any pad button can run any hotkey command. Movement range and curve tuning. 18 achievement badges with tiers from your account stats.</description>
+    </item>
+
+    <item>
+      <title>v3.564 — Mobile Touch Direction &amp; Game Over Share</title>
+      <link>https://www.legendmod.ml/changelog.html#v3564</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3564</guid>
+      <pubDate>Mon, 10 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Direction on touch option: the cell moves toward where your finger touches. Game Over Share button with mass and time alive. Hotkey to reconnect to the previous server.</description>
+    </item>
+
+  </channel>
+</rss>

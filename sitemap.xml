@@ -168,6 +168,13 @@
     <priority>0.5</priority>
   </url>
 
+  <!-- Changelog -->
+  <url>
+    <loc>https://www.legendmod.ml/changelog.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Legal -->
   <url>
     <loc>https://www.legendmod.ml/privacy.html</loc>

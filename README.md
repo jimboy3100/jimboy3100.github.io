@@ -1,107 +1,160 @@
-# Legend Mod
+<p align="center">
+  <img src="https://jimboy3100.github.io/banners/icon512.png" alt="Legend Mod" width="128" height="128">
+</p>
 
-Mod for Agar.io multiplayer action browser game.
+<h1 align="center">Legend Mod — The Best Agar.io Extension</h1>
 
-![alt tag](https://jimboy3100.github.io/banners/iconmod3.png)
+<p align="center">
+  <strong>60+ macros · Custom skins · Anti-lag FPS boost · Team chat · Replays · Gamepad · Mobile</strong>
+</p>
 
-Author: jimboy3100@hotmail.com
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja"><img src="https://img.shields.io/badge/Chrome_Web_Store-Install_Free-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Chrome Web Store"></a>
+  <a href="https://www.legendmod.ml/"><img src="https://img.shields.io/badge/Website-legendmod.ml-7c3aed?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website"></a>
+  <a href="https://discord.com/invite/JUfpR9k"><img src="https://img.shields.io/badge/Discord-Join_Us-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
+</p>
 
-Website: [www.jimboy3100.github.io](https://jimboy3100.github.io/)
+<p align="center">
+  <a href="https://github.com/jimboy3100/jimboy3100.github.io/stargazers"><img src="https://img.shields.io/github/stars/jimboy3100/jimboy3100.github.io?style=flat-square&color=yellow" alt="Stars"></a>
+  <a href="https://github.com/jimboy3100/jimboy3100.github.io/network/members"><img src="https://img.shields.io/github/forks/jimboy3100/jimboy3100.github.io?style=flat-square&color=blue" alt="Forks"></a>
+  <a href="https://github.com/jimboy3100/jimboy3100.github.io/blob/master/MITlicence.txt"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License"></a>
+  <img src="https://img.shields.io/badge/version-3.569-purple?style=flat-square" alt="Version">
+</p>
 
+---
 
-###### [Legend mod GitHub Library](https://github.com/jimboy3100/jimboy3100.github.io)
+## ⚡ Quick Install
 
-### Feature Highlights
+**Option 1 — Chrome Extension (recommended):**
 
-* 10% extra zoom-out (see enemies from further)
-* Fast feed shortcut (hit viruses and feed team mates faster)
-* Double split shortcut
-* Triple split shortcut (for tricksplits)
-* Minimap (find your team mates, avoid getting cornered etc)
-* 15 configurable shortcut keys to send messages to your team quickly
+[![Install from Chrome Web Store](https://img.shields.io/badge/Install_Legend_Express-Chrome_Web_Store-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja)
 
-### Other Features
+**Option 2 — Userscript:**
+1. Install [Tampermonkey](https://www.tampermonkey.net/) for your browser
+2. Click **[Install Legend Express Script](https://jimboy3100.github.io/LMexpress/LMexpress.user.js)**
 
-* Updates automatically
-* Unlimited FPS unlocked (quicker than Vanilla)
-* Old Skins
-* Animated Skins
-* UserScripts Manager (URL or pasted)
-* Language Packs
-* Direct PARTY / FFA / EXP / TEAM server by using tokens/sips or connector
-* Search engine for player name / clan / tag / leaderboard / ip / token
-* Integrated Chat, minimap and teamboard. Chat rooms per server/per team password(or public)
-* New Template / skins / animations / zoom / respawn / helpers / hud controls and many extras
-* Themes for quite all textures and map (Basic / Menu / Hud / chat / minimap / graphics and cursor)
-* Banners for many clans (Email me your symbol and weblink for updates)
-* 60++ Macros / Events / Hotkeys (Script does many calculations)
-* Tools for quests / youtubers / timers / coin auto digger/youtube video player
-* Send message pictures, videos and also various message commands directly to teammate's script
-* Change various textures, add photos on huds and clan's pictures and url links
-* Dying Light Expansion
-* Discord webhook handler's for sending IP, and many more...
-* Replays with pause, speed and seek (click the progress bar)
-* Team pings (Help / Danger / Go here / Virus here) on the map and minimap
-* Gamepad / controller support (optional, in Mouse control)
-* Settings search, presets (Competitive, Battery saver, Streamer, Clean HUD) and labels in 12 languages
-* Game Over card with copy stats, plus optional mass graph, personal bests, who ate you and match history
-* Mobile touch controls with optional ping button, replay controls and Stop on release
-* LMEvents API for user scripts ([how to use it](developers/LMEvents.md))
+**Option 3 — Play directly (no install):**
 
-### Legend Mod libraries
-[Github](https://github.com/jimboy3100/jimboy3100.github.io/),
-[Greasyfiork](https://greasyfork.org/en/users/128990-iamlegend),
-[Agarioscripts Chrome Extension](https://chrome.google.com/webstore/detail/agarioscripts/mdplfilkfjaooppknpadacedpeggland)
+👉 **[Play now at legendmod.ml](https://www.legendmod.ml/play.html)**
 
-### Installation 
-1. Install Tampermonkey browser extension on [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) , [Opera](https://addons.opera.com/en/extensions/details/tampermonkey-beta)
-2. Install Legend Express script [here](http://jimboy3100.github.io/LMexpress/LMexpress.user.js)  
+---
 
-### Screenshots
+## 🎮 Features
 
-#### Welcome Screen - Copy Token, Leaderboard, IP
+### Macros & Hotkeys (60+)
+| Macro | Key | Description |
+|---|---|---|
+| Tricksplit | `T` | 3 rapid splits — the signature competitive move |
+| Doublesplit | `D` | 2 precise splits |
+| Popsplit | `P` | Split + feed to pop enemies |
+| Quick Feed | `E` (hold) | Machine-gun mass ejection |
+| Quad Split | `Q` | 4 splits in one keypress |
+| Freeze Cell | `S` | Stop movement instantly |
+| Linesplit | `A` | Line + split combo |
+| *+ 50 more* | *Fully customizable* | *All keys remappable* |
 
-![alt tag](https://jimboy3100.github.io/banners/dyinglightback12.jpg)
+### Custom Skins & Themes
+- 🎨 Upload any image as your skin
+- 🎬 Animated & video skins
+- 🔄 Skin rotator — auto-switch while playing
+- 🖌️ Full theme customization (colors, HUD, minimap, backgrounds)
+- 📦 Import/export themes — [browse free themes](https://www.legendmod.ml/themes/)
 
-#### Searching
+### Performance & Anti-Lag
+- ⚡ Smooth WebGL rendering engine
+- 🚀 Unlimited FPS unlock
+- 📊 Adaptive performance — auto-optimizes for your hardware
+- 🔧 Performance diagnostics with frame time graphs
+- 💡 One-click Performance Mode for low-end PCs
 
-![alt tag](https://jimboy3100.github.io/banners/legendmodsearch.jpg)
+### Team & Social
+- 💬 In-game team chat (per server or password rooms)
+- 📍 Team pings — Help, Danger, Go here, Virus here
+- 🗺️ Minimap with teammate positions
+- 📋 Enhanced leaderboard
 
-#### Youtube
-![alt tag](https://jimboy3100.github.io/banners/legendmod1.jpg)
+### Competitive Tools
+- 🔄 Replays with pause, speed & seek
+- ☠️ Death recap — what happened in your last 20 seconds
+- 📈 Analytics dashboard — mass/min, top-10 rate, heatmaps
+- 🏅 18 achievement badges from your stats
+- 🎯 Daily objectives & coaching tips
+- 🔔 Notification centre for achievements & personal bests
 
-#### Features
-![alt tag](https://jimboy3100.github.io/banners/dyinglightad6.jpg)
-
-#### Big Names (visible to legend/ogario users only)
-![alt tag](https://jimboy3100.github.io/banners/dyinglightback11.jpg)
-
-#### Banners and website anchors for many clans
-![alt tag](https://jimboy3100.github.io/banners/pic6.png)
-
-#### Old Skins
-![alt tag](https://jimboy3100.github.io/banners/dyinglightad4.jpg)
-
-###### Legend mod is based on many scripts ([ogario](http://ogario.ovh/), [kitty](https://kittymod.github.io/), [turtle clan scripts](https://www.youtube.com/channel/UCQ-V2VrQawc8Xi6b_mH8Law) and others that can be found on [greasyfork](https://greasyfork.org/tr/scripts/by-site/agar.io) website).
+### More
+- 🎮 Full gamepad/controller support (PS, Xbox, generic)
+- 📱 Mobile touch controls
+- ⌨️ Command Centre (Ctrl+K) — search 220+ settings
+- 👤 Settings profiles — auto-switch per server/game mode
+- 🌐 12 language packs
+- 📊 Network quality history
 
 ---
 
 ## 🌍 Expanding Land — The World's Largest IO Game
 
-**[Expanding Land](https://expanding.land/)** is a free multiplayer IO game built from scratch in **pure C** — capable of handling **720 real players** per arena with **zero bots**.
+**[Expanding Land](https://expanding.land/)** is a free agar.io alternative built from scratch in **pure C** — supporting **1024 real players** per arena with zero bots.
 
 | Feature | Details |
 |---|---|
-| 👥 Players | 720 real players per server — no bots |
-| ⚡ Performance | ~5ms tick time (8× faster than Node.js) |
-| 🗺️ Map | Resizable from 0.25× to 8× based on player count |
-| 🛡️ Security | Encrypted WSS/TLS + coordinate scramble anti-cheat |
+| 👥 Players | 1024 real players — no bots |
+| ⚡ Performance | ~5ms tick time (8× faster than agar.io) |
+| 🗺️ Map | Dynamic sizing from 0.25× to 8× based on player count |
+| 🛡️ Security | Encrypted WSS + coordinate scramble anti-cheat |
 | 🎨 Mods | Full Legend Mod & Delta compatibility |
 | 💰 Price | 100% Free — no pay-to-win |
 
-### Links
+🎮 [Play now](https://expanding.land/) · 📖 [Help & Guide](https://help.expanding.land/) · 💬 [Discord](https://discord.com/invite/JUfpR9k)
 
-- 🎮 **Play:** [expanding.land](https://expanding.land/)
-- 📖 **Help & Guide:** [help.expanding.land](https://help.expanding.land/)
-- 💬 **Discord:** [discord.com/invite/JUfpR9k](https://discord.com/invite/JUfpR9k)
-- 📋 **Changelog:** [help.expanding.land/changelog.html](https://help.expanding.land/changelog.html)
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="https://jimboy3100.github.io/banners/dyinglightback12.jpg" alt="Welcome Screen" width="600">
+  <br><em>Welcome screen with token, leaderboard & server info</em>
+</p>
+
+<p align="center">
+  <img src="https://jimboy3100.github.io/banners/dyinglightad6.jpg" alt="Features" width="600">
+  <br><em>Feature-rich HUD with minimap, mass display & team tools</em>
+</p>
+
+---
+
+## 🔗 Links
+
+| Platform | Link |
+|---|---|
+| 🌐 **Website** | [www.legendmod.ml](https://www.legendmod.ml/) |
+| 🛒 **Chrome Extension** | [Chrome Web Store](https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja) |
+| 💬 **Discord** | [discord.com/invite/JUfpR9k](https://discord.com/invite/JUfpR9k) |
+| 📺 **YouTube** | [Legend Mod Playlist](https://www.youtube.com/watch?v=CN5-RFGsqcY&list=PL5ieCNyP97uduCS_zVmr9BWiwm48zxg0Y) |
+| 🐛 **Bug Reports** | [GitHub Issues](https://github.com/jimboy3100/jimboy3100.github.io/issues) |
+| 👨‍💻 **Developer API** | [LMEvents Documentation](developers/LMEvents.md) |
+| 📄 **Changelog** | [changelog.html](https://www.legendmod.ml/changelog.html) |
+
+---
+
+## 🛠️ For Developers
+
+Legend Mod is open source. Want to build your own agar.io mod?
+
+- 📖 [Developer Guide](https://www.legendmod.ml/developers/) — Build your own OGario mod
+- 🎬 [Video Skins Guide](https://www.legendmod.ml/developers/videoskins.html) — Create animated skins
+- 🔌 [LMEvents API](developers/LMEvents.md) — React to game events (spawn, death, chat, mass, leaderboard)
+- 🧩 Based on [OGario](http://ogario.ovh/), with contributions from the community
+
+---
+
+## 📜 Credits
+
+Legend Mod is built on [OGario](http://ogario.ovh/) and [Kitty](https://kittymod.github.io/), with community contributions from [Greasy Fork](https://greasyfork.org/en/users/128990-iamlegend) modders.
+
+**Made with ❤️ by [Jimboy3100](https://github.com/jimboy3100) and the [℄ Legend Clan](https://www.legendmod.ml/Lc/Lc.html) since 2016.**
+
+---
+
+<p align="center">
+  <a href="https://www.legendmod.ml/play.html"><img src="https://img.shields.io/badge/🎮_Play_Now-legendmod.ml-7c3aed?style=for-the-badge" alt="Play Now"></a>
+</p>

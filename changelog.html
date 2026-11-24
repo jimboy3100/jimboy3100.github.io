@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: https://ogp.me/ns#" vocab="https://schema.org/" typeof="WebPage">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Changelog — Legend Mod Update History | All Versions &amp; New Features</title>
+    <meta name="description"
+        content="Full changelog for Legend Mod — every version, new feature, bug fix and improvement. Death recap, adaptive performance, Command Centre, gamepad mapping, analytics and more.">
+    <meta name="keywords"
+        content="legend mod changelog, legend mod updates, agario mod changelog, legend mod new features, agario extension updates, legend mod version history">
+    <meta name="author" content="Jimboy3100 — ℄ Legend Clan">
+    <meta name="robots" content="index, follow, max-snippet:-1">
+    <meta name="theme-color" content="#7c3aed">
+    <link rel="canonical" href="https://www.legendmod.ml/changelog.html">
+    <link rel="alternate" hreflang="en" href="https://www.legendmod.ml/changelog.html">
+    <link rel="alternate" hreflang="x-default" href="https://www.legendmod.ml/changelog.html">
+    <link rel="alternate" type="application/rss+xml" title="Legend Mod Changelog" href="https://www.legendmod.ml/rss.xml">
+    <link rel="shortcut icon" href="https://jimboy3100.github.io/banners/icon32croped.ico.gif">
+    <meta property="og:site_name" content="Legend Mod">
+    <meta property="og:title" content="Changelog — Legend Mod Update History">
+    <meta property="og:description" content="Every version, new feature and improvement for Legend Mod — the best agar.io extension.">
+    <meta property="og:url" content="https://www.legendmod.ml/changelog.html">
+    <meta property="og:image" content="https://jimboy3100.github.io/banners/agario1200x630.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Changelog — Legend Mod Update History">
+    <meta name="twitter:description" content="Every version, new feature and improvement for Legend Mod.">
+    <meta name="twitter:image" content="https://jimboy3100.github.io/banners/agario1200x630.png">
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.title" content="Changelog — Legend Mod Update History">
+    <meta name="dcterms.creator" content="Jimboy3100">
+    <meta name="dcterms.description" content="Full changelog for Legend Mod — every version, new feature and improvement.">
+    <meta name="dcterms.publisher" content="℄ Legend Clan">
+    <meta name="dcterms.type" content="Text">
+    <meta name="dcterms.format" content="text/html">
+    <meta name="dcterms.language" content="en">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebPage",
+                "@id": "https://www.legendmod.ml/changelog.html",
+                "url": "https://www.legendmod.ml/changelog.html",
+                "name": "Legend Mod Changelog",
+                "description": "Full changelog for Legend Mod — every version, new feature, bug fix and improvement.",
+                "isPartOf": {"@id": "https://www.legendmod.ml/#website"},
+                "inLanguage": "en"
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    { "@type": "ListItem", "position": 1, "name": "Legend Mod", "item": "https://www.legendmod.ml/" },
+                    { "@type": "ListItem", "position": 2, "name": "Changelog", "item": "https://www.legendmod.ml/changelog.html" }
+                ]
+            }
+        ]
+    }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            line-height: 1.7;
+        }
+        .container { max-width: 860px; margin: 0 auto; padding: 40px 20px; }
+        h1 { font-size: 2.2rem; color: #a78bfa; margin-bottom: 8px; }
+        .subtitle { color: #888; margin-bottom: 40px; font-size: 1.1rem; }
+        .subtitle a { color: #7c3aed; text-decoration: none; }
+        .subtitle a:hover { text-decoration: underline; }
+        .version {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            transition: border-color 0.2s;
+        }
+        .version:hover { border-color: #7c3aed; }
+        .version-header {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .version-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #a78bfa;
+        }
+        .version-title {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+        .version-date {
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: auto;
+        }
+        .version ul {
+            list-style: none;
+            padding: 0;
+        }
+        .version li {
+            padding: 6px 0 6px 24px;
+            position: relative;
+            color: #bbb;
+        }
+        .version li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #7c3aed;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 6px;
+            vertical-align: middle;
+            text-transform: uppercase;
+        }
+        .tag-new { background: #22c55e22; color: #22c55e; border: 1px solid #22c55e44; }
+        .tag-fix { background: #3b82f622; color: #3b82f6; border: 1px solid #3b82f644; }
+        .tag-perf { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b44; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #7c3aed;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .rss-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #f59e0b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-left: 16px;
+        }
+        .rss-link:hover { text-decoration: underline; }
+        @media (max-width: 600px) {
+            .version-header { flex-direction: column; gap: 4px; }
+            .version-date { margin-left: 0; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <a href="/" class="back-link">← Back to Legend Mod</a>
+
+    <h1>📋 Changelog</h1>
+    <p class="subtitle">
+        All Legend Mod updates — latest on top.
+        <a href="/rss.xml" class="rss-link">📡 RSS Feed</a>
+    </p>
+
+    <div class="version" id="v3569">
+        <div class="version-header">
+            <span class="version-number">v3.569</span>
+            <span class="version-title">Death Recap, Kill Feed &amp; Mass-Loss Alert</span>
+            <span class="version-date">November 2026</span>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> <strong>Death recap</strong> on the Game Over card — the last 20 seconds as 3-6 steps: mass &amp; cells, splits, viruses, merges, quick mass losses, who ate you — with a mass sparkline</li>
+            <li><span class="tag tag-new">New</span> <strong>Kill feed</strong> — live log of your eats and deaths, left of the leaderboard</li>
+            <li><span class="tag tag-new">New</span> <strong>Mass-loss alert</strong> with configurable threshold slider</li>
+            <li><span class="tag tag-new">New</span> Steps link to that moment in the replay when the life was recorded</li>
+            <li><span class="tag tag-new">New</span> Exact names from eat events and the Expanding Land killer info</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3568">
+        <div class="version-header">
+            <span class="version-number">v3.568</span>
+            <span class="version-title">Adaptive Performance &amp; Network Diagnostics</span>
+            <span class="version-date">November 2026</span>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> <strong>Adaptive performance</strong> — auto-optimizes when FPS drops: effects → jelly physics → resolution, restores when stable</li>
+            <li><span class="tag tag-new">New</span> <strong>Performance diagnostics window</strong> — frame time graph, p50/p95/p99, long frames, render vs other time, copy report</li>
+            <li><span class="tag tag-new">New</span> <strong>Network quality history</strong> — ping, jitter, packets/s and disconnects across sessions</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3567">
+        <div class="version-header">
+            <span class="version-number">v3.567</span>
+            <span class="version-title">Command Centre, Notifications &amp; Sound Mixer</span>
+            <span class="version-date">November 2026</span>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> <strong>Command Centre (Ctrl+K)</strong> — search every hotkey, switch, slider, theme setting and menu window; recent &amp; starred items</li>
+            <li><span class="tag tag-new">New</span> <strong>Quick bar</strong> — starred commands shown in-game (optional)</li>
+            <li><span class="tag tag-new">New</span> <strong>Notification centre</strong> — last 200 toasts with filters, mark read, clear and per-category toast control</li>
+            <li><span class="tag tag-new">New</span> <strong>Sound mixer</strong> — master + per-channel volumes (chat, commands, gameplay, video skins) with audio ducking</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3566">
+        <div class="version-header">
+            <span class="version-number">v3.566</span>
+            <span class="version-title">HUD Helpers &amp; Settings Profiles</span>
+            <span class="version-date">November 2026</span>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> <strong>Movement direction arrow</strong> from how your cells really move (also multibox)</li>
+            <li><span class="tag tag-new">New</span> <strong>Merge countdown</strong> in seconds on your cells with optional sound</li>
+            <li><span class="tag tag-new">New</span> <strong>Enemy mass ratio</strong> relative to your biggest cell</li>
+            <li><span class="tag tag-new">New</span> <strong>Screen-edge arrows</strong> to teammates and threats that left the screen</li>
+            <li><span class="tag tag-new">New</span> <strong>Cell panel</strong> — masses, count/16, largest, smallest, total</li>
+            <li><span class="tag tag-new">New</span> <strong>Settings profiles</strong> — named sets with templates (FFA, Teams, Multibox, Streaming, Mobile, Competitive), auto-switching per server type</li>
+            <li><span class="tag tag-new">New</span> <strong>Analytics dashboard</strong> — games, peak mass, top-10 rate, mass/min, heatmaps, coaching report with scores and suggestions</li>
+            <li><span class="tag tag-new">New</span> <strong>Daily objectives</strong> from your history with progress bars and completion toasts</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3565">
+        <div class="version-header">
+            <span class="version-number">v3.565</span>
+            <span class="version-title">Gamepad Customization &amp; Badges</span>
+            <span class="version-date">November 2026</span>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> <strong>Gamepad button mapping</strong> — any pad button can run any hotkey command; hold commands stay held</li>
+            <li><span class="tag tag-new">New</span> Movement range, curve tuning, LT/RT threshold, inverted axes, vibration on split/death</li>
+            <li><span class="tag tag-new">New</span> Named gamepad profiles with live stick test and drift measurement</li>
+            <li><span class="tag tag-new">New</span> <strong>18 achievement badges</strong> with tiers from your account stats</li>
+            <li><span class="tag tag-new">New</span> <strong>Share button</strong> on Game Over card</li>
+            <li><span class="tag tag-new">New</span> Hotkey to reconnect to previous server (last 10 remembered)</li>
+            <li><span class="tag tag-new">New</span> <strong>Direction on touch</strong> — cell moves toward your finger instead of joystick</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3564">
+        <div class="version-header">
+            <span class="version-number">v3.564</span>
+            <span class="version-title">Protocol Hardening &amp; Bug Fixes</span>
+            <span class="version-date">November 2026</span>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Truncated packets dropped with a warning instead of uncaught RangeError</li>
+            <li><span class="tag tag-fix">Fix</span> Friend list, leaderboard, and private leaderboard bounds checking</li>
+            <li><span class="tag tag-fix">Fix</span> Settings export: Performance mode backup and preset undo scoped correctly</li>
+            <li><span class="tag tag-fix">Fix</span> Phone controls now included in settings export/import</li>
+            <li><span class="tag tag-fix">Fix</span> <code>parseInt</code> radix parameter, style-in-body, lang/charset corrections</li>
+            <li><span class="tag tag-fix">Fix</span> Gamepad focus handling, dead-zone reset, disconnected pad cleanup</li>
+            <li><span class="tag tag-fix">Fix</span> <code>drawTextAlongArc</code> uses passed ctx parameter correctly</li>
+            <li><span class="tag tag-fix">Fix</span> 182 duplicate HTML element IDs renamed</li>
+        </ul>
+    </div>
+
+    <p style="text-align:center; margin-top:40px; color:#666;">
+        <a href="/" style="color:#7c3aed;">← Back to Legend Mod</a> ·
+        <a href="/rss.xml" style="color:#f59e0b;">📡 RSS</a> ·
+        <a href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank" rel="noopener" style="color:#888;">GitHub</a>
+    </p>
+</div>
+</body>
+</html>
