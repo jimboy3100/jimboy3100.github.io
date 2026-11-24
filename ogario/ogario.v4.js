@@ -19269,6 +19269,35 @@ var _elDeathVisual =
  * doubles (0 = FFA, 1 = Teams). On Teams the connection uses LM's ':teams' display
  * (pie, team colours); every Expanding Land check still goes through serverType and
  * isLegendWorld, which stay set. Bound to the socket, so a new connection starts clean. */
+/* Expanding Land Teams sends no player leaderboard (only the 0x32 team shares), so the
+ * Leaderboard box stayed empty: list the teams there, biggest first, own team in the
+ * "me" colour. Server team order: red, green, blue. Own team = the dominant channel of
+ * the own cell colour (the server paints each player in the team colour). */
+function _lmElTeamsBoard(client) {
+    try {
+        var pie = client && client.pieChart;
+        if (!pie || !pie.length || !window.application || typeof application.displayLeaderboard !== 'function') return;
+        var cols = ['#df0000', '#00df00', '#0000df'];
+        var mine = -1, pc = client.play && client.playerCells && client.playerCells[0];
+        var hx = pc && /^#?([0-9a-f]{6})$/i.exec(String(pc.color || ''));
+        if (hx) {
+            var v = parseInt(hx[1], 16), ch = [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+            var hi = ch[0] >= ch[1] && ch[0] >= ch[2] ? 0 : ch[1] >= ch[2] ? 1 : 2;
+            var rest = Math.max(ch[(hi + 1) % 3], ch[(hi + 2) % 3]);
+            if (ch[hi] - rest >= 60 && hi < pie.length) mine = hi;
+        }
+        var order = [];
+        for (var i = 0; i < pie.length; i++) order.push(i);
+        order.sort(function (a, b) { return pie[b] - pie[a]; });
+        var html = '';
+        for (var k = 0; k < order.length; k++) {
+            var ti = order[k];
+            html += '<span' + (ti === mine ? ' class="me"' : '') + '>' + (k + 1) + '. <span style="color:' + cols[ti % 3] + '">\u25CF</span> ' +
+                Math.round((+pie[ti] || 0) * 100) + '%</span>';
+        }
+        application.displayLeaderboard(html);
+    } catch (e) { }
+}
 function _lmElTeamsActive(client) {
     return !!(client && client.socket && client._lmElTeamsSocket === client.socket &&
         (client.serverType === 'expandingland' || client.isLegendWorld === true));
@@ -42411,6 +42440,7 @@ function thelegendmodproject() {
                         s += _pieStride;
                     }
                     drawRender.drawPieChart();
+                    if (_lmElTeamsActive(this)) _lmElTeamsBoard(this);
                     break;
                 case 53:
                     window.testobjectsOpcode53 = data;
