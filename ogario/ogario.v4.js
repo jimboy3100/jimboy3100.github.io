@@ -20663,6 +20663,7 @@ var defaultmapsettings = {
     universalChat: true,
     customSkins: true,
     noSkins: false,
+    noColors: false,              /* Issue #9: added so the checkbox persists via setSettings/loadSettings */
     videoSkins: true,
     videoDestorted: false,
     videoSkinsMusic2: true,
@@ -22416,7 +22417,7 @@ function thelegendmodproject() {
             var colorValue = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|[a-z]+)$/i;
             for (const setup in defaultSettings) {
                 if (defaultSettings.hasOwnProperty(setup)) {
-                    if (storage && storage.hasOwnProperty(setup) &&
+                    if (storage && Object.prototype.hasOwnProperty.call(storage, setup) &&
                         !(setup !== 'lbTeammateColor' && typeof defaultSettings[setup] === 'string' && colorDefault.test(defaultSettings[setup]) &&
                             !(typeof storage[setup] === 'string' && colorValue.test(storage[setup])))) {
                         defaultSettings[setup] = storage[setup];
@@ -23126,6 +23127,12 @@ function thelegendmodproject() {
             });
         },
         setHudScale() {
+            /* Issue #8: clamp hudScale to the slider max so saved values from bigger screens don't overflow */
+            var _hudLim = 1.5;
+            if (window.screen.height <= 800) _hudLim = 0.9;
+            else if (window.screen.height <= 992) _hudLim = 1;
+            else if (window.screen.height <= 1080) _hudLim = 1.1;
+            if (defaultSettings.hudScale > _hudLim) defaultSettings.hudScale = _hudLim;
             var t = Math.round(20 * defaultSettings.hudScale);
             var e = Math.round(200 * defaultSettings.hudScale);
             var i = Math.floor(55 * defaultSettings.hudScale);
@@ -23669,15 +23676,21 @@ function thelegendmodproject() {
         },
         /* ─── §4.3 UI Toggle Methods ─── */
         toggleSkins() {
-            if (ogario.vanillaSkins && ogario.customSkins) {
-                ogario.vanillaSkins = false;
-            } else if (!ogario.vanillaSkins && ogario.customSkins) {
-                ogario.vanillaSkins = true;
-                ogario.customSkins = false;
+            /* Issue #5: modify defaultmapsettings (the renderer reads these), not just ogario */
+            if (defaultmapsettings.vanillaSkins && defaultmapsettings.customSkins) {
+                defaultmapsettings.vanillaSkins = false;
+                defaultmapsettings.customSkins = true;
+            } else if (!defaultmapsettings.vanillaSkins && defaultmapsettings.customSkins) {
+                defaultmapsettings.vanillaSkins = true;
+                defaultmapsettings.customSkins = false;
             } else {
-                ogario.vanillaSkins = true;
-                ogario.customSkins = true;
+                defaultmapsettings.vanillaSkins = true;
+                defaultmapsettings.customSkins = true;
             }
+            ogario.vanillaSkins = defaultmapsettings.vanillaSkins;
+            ogario.customSkins = defaultmapsettings.customSkins;
+            this.syncHotkeyOption('vanillaSkins');
+            this.syncHotkeyOption('customSkins');
         },
         toggleCells() {
             this.selectBiggestCell = !this.selectBiggestCell;
@@ -23744,7 +23757,9 @@ function thelegendmodproject() {
                 defaultmapsettings.showGhostCellsInfo = false;
                 defaultmapsettings.showGhostCells = false;
             }
-
+            /* Issue #6: sync checkboxes and persist */
+            this.syncHotkeyOption('showGhostCellsInfo');
+            this.syncHotkeyOption('showGhostCells');
         },
         setAutoPlay() {
             if (legendmod.pause) {
@@ -23766,6 +23781,9 @@ function thelegendmodproject() {
             defaultmapsettings.oppRings = this.showSplitInd;
             ogario.splitRange = defaultmapsettings.splitRange;
             ogario.oppRings = defaultmapsettings.oppRings;
+            /* Issue #7: sync checkboxes and persist */
+            this.syncHotkeyOption('splitRange');
+            this.syncHotkeyOption('oppRings');
         },
         setShowTeammatesInd() {
             defaultmapsettings.teammatesInd = !defaultmapsettings.teammatesInd;
@@ -23884,7 +23902,10 @@ function thelegendmodproject() {
             }
         },
         toggleAutoZoom() {
-            ogario.autoZoom = !ogario.autoZoom;
+            /* Issue #11: also update defaultmapsettings, sync checkbox, and persist */
+            defaultmapsettings.autoZoom = !defaultmapsettings.autoZoom;
+            ogario.autoZoom = defaultmapsettings.autoZoom;
+            this.syncHotkeyOption('autoZoom');
             this.displayChatInfo(ogario.autoZoom, 'autoZoomMsg');
         },
         resetZoom(on) {
@@ -24938,7 +24959,7 @@ function thelegendmodproject() {
             }
             for (const option in defaultmapsettings) {
                 if (defaultmapsettings.hasOwnProperty(option)) {
-                    if (settings && settings.hasOwnProperty(option)) {
+                    if (settings && Object.prototype.hasOwnProperty.call(settings, option)) {
                         defaultmapsettings[option] = settings[option];
                     }
                     if (ogario.hasOwnProperty(option)) {
@@ -24947,7 +24968,7 @@ function thelegendmodproject() {
                 }
             }
             /* "Multibox unit stroke rings" (mbRings) became "Ring around player 2" */
-            if (settings && settings.mbRings === false && !settings.hasOwnProperty('mbRingsP2')) {
+            if (settings && settings.mbRings === false && !Object.prototype.hasOwnProperty.call(settings, 'mbRingsP2')) {
                 defaultmapsettings.mbRingsP2 = false;
             }
         },
@@ -24955,13 +24976,20 @@ function thelegendmodproject() {
             window.localStorage.setItem(name, JSON.stringify(option));
         },
         exportSettings() {
+            /* Issue #12: if the minimap is enlarged via hotkey, export the original width */
+            var _expTheme = defaultSettings;
+            if (this._lmMiniBigOrig) {
+                _expTheme = $.extend({}, defaultSettings);
+                _expTheme.miniMapWidth = this._lmMiniBigOrig;
+                _expTheme.miniMapTop = Math.round(20 * this._lmMiniBigOrig / 200);
+            }
             let options = {
                 ogarioCommands: chatCommand,
                 ogarioHotkeys: hotkeys,
                 /* profiles hidden by a lower profile count were left out (lost on a new browser) */
                 ogarioPlayerProfiles: profiles.concat((function () { var x = readLocalStorageJSON('ogarioPlayerProfilesExtra', []); return Array.isArray(x) ? x : []; })()),
                 ogarioSettings: defaultmapsettings,
-                ogarioThemeSettings: defaultSettings
+                ogarioThemeSettings: _expTheme
 
             };
             for (const option in options) {
@@ -24973,6 +25001,15 @@ function thelegendmodproject() {
                 }
             }
             if (options.ogarioHotkeys) options.ogarioHotkeysKnown = Object.keys(hotkeysCommand);
+            /* Issue #15: include Performance Mode backup and preset undo snapshot so they survive a browser wipe */
+            try {
+                var _expPerfBak = window.localStorage.getItem('lmPerfBackup');
+                if (_expPerfBak) options.lmPerfBackup = JSON.parse(_expPerfBak);
+            } catch (e) { }
+            try {
+                var _expPresetUndo = window.localStorage.getItem('lmPresetUndo');
+                if (_expPresetUndo) options.lmPresetUndo = JSON.parse(_expPresetUndo);
+            } catch (e) { }
             options = JSON.stringify(options);
             $('#export-settings').val(options);
             $('#import-settings').val('');
@@ -24995,28 +25032,69 @@ function thelegendmodproject() {
                     toastr.error('<b>[SETTINGS]:</b> Import failed: unexpected settings format.');
                     return;
                 }
-                /* Only the exported keys: other keys of the pasted JSON (e.g. legendSettings, or a
-                 * name that is not a valid selector, which threw) are not settings of this menu. */
+                /* Issue #2: validate imported setting values match expected types.
+                 * Issue #3: snapshot all keys first; restore on failure (transactional import).
+                 * Issue #14: use Object.prototype.hasOwnProperty.call to avoid prototype pollution.
+                 * Issue #16: clear ogarioHotkeysKnown when importing hotkeys so new commands get default keys. */
                 var importKeys = ['ogarioCommands', 'ogarioHotkeys', 'ogarioPlayerProfiles', 'ogarioSettings', 'ogarioThemeSettings'];
+                /* Issue #2: type-validate ogarioSettings and ogarioThemeSettings */
+                if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioSettings') && importValue.ogarioSettings && typeof importValue.ogarioSettings === 'object') {
+                    var _impS = importValue.ogarioSettings;
+                    for (var _impK in _impS) {
+                        if (!Object.prototype.hasOwnProperty.call(_impS, _impK)) continue;
+                        if (!Object.prototype.hasOwnProperty.call(defaultmapsettings, _impK)) { delete _impS[_impK]; continue; }
+                        if (typeof _impS[_impK] !== typeof defaultmapsettings[_impK]) { _impS[_impK] = defaultmapsettings[_impK]; }
+                    }
+                }
+                if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioThemeSettings') && importValue.ogarioThemeSettings && typeof importValue.ogarioThemeSettings === 'object') {
+                    var _impT = importValue.ogarioThemeSettings;
+                    for (var _impTK in _impT) {
+                        if (!Object.prototype.hasOwnProperty.call(_impT, _impTK)) continue;
+                        if (typeof defaultSettings !== 'undefined' && !Object.prototype.hasOwnProperty.call(defaultSettings, _impTK)) { delete _impT[_impTK]; continue; }
+                        if (typeof defaultSettings !== 'undefined' && typeof _impT[_impTK] !== typeof defaultSettings[_impTK]) { _impT[_impTK] = defaultSettings[_impTK]; }
+                    }
+                }
+                /* Issue #3: snapshot localStorage keys before writing (transactional) */
+                var _impBackup = {};
+                var _impWrote = [];
+                for (var _bkI = 0; _bkI < importKeys.length; _bkI++) {
+                    _impBackup[importKeys[_bkI]] = window.localStorage.getItem(importKeys[_bkI]);
+                }
+                _impBackup['ogarioHotkeysKnown'] = window.localStorage.getItem('ogarioHotkeysKnown');
+                _impBackup['ogarioPlayerProfilesExtra'] = window.localStorage.getItem('ogarioPlayerProfilesExtra');
                 for (const value in importValue) {
-                    if (importValue.hasOwnProperty(value) && importKeys.indexOf(value) !== -1) {
+                    if (Object.prototype.hasOwnProperty.call(importValue, value) && importKeys.indexOf(value) !== -1) {
                         const checked = $('#import-' + value).prop('checked');
                         if (!checked) {
                             continue;
                         }
                         try {
                             window.localStorage.setItem(value, JSON.stringify(importValue[value]));
+                            _impWrote.push(value);
                         } catch (writeErr) {
-                            toastr.error('<b>[SETTINGS]:</b> Import stopped: the browser storage is full (' + value + ' not saved).');
+                            /* Rollback everything we wrote so far */
+                            for (var _rbI = 0; _rbI < _impWrote.length; _rbI++) {
+                                var _rbKey = _impWrote[_rbI];
+                                if (_impBackup[_rbKey] === null) window.localStorage.removeItem(_rbKey);
+                                else window.localStorage.setItem(_rbKey, _impBackup[_rbKey]);
+                            }
+                            toastr.error('<b>[SETTINGS]:</b> Import failed: the browser storage is full (' + value + ' not saved). All changes rolled back.');
                             return;
                         }
                         /* the import holds the hidden profiles too: keeping the old ones duplicated them */
                         if (value === 'ogarioPlayerProfiles') window.localStorage.removeItem('ogarioPlayerProfilesExtra');
-                        /* 2. which commands existed when the file was saved: newer ones get their free default keys */
+                        /* Issue #16: when importing hotkeys, clear ogarioHotkeysKnown so new commands get their free default keys */
                         if (value === 'ogarioHotkeys' && Array.isArray(importValue.ogarioHotkeysKnown)) {
                             try { window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(importValue.ogarioHotkeysKnown.filter(function (k) { return typeof k === 'string'; }))); } catch (eK) { }
                         }
                     }
+                }
+                /* Issue #15: restore Performance Mode backup and preset undo snapshot from import */
+                if (importValue.lmPerfBackup && typeof importValue.lmPerfBackup === 'object') {
+                    try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(importValue.lmPerfBackup)); } catch (e) { }
+                }
+                if (importValue.lmPresetUndo && typeof importValue.lmPresetUndo === 'object') {
+                    try { window.localStorage.setItem('lmPresetUndo', JSON.stringify(importValue.lmPresetUndo)); } catch (e) { }
                 }
                 window._lmSettingsReload = true;
                 window.location.reload();
@@ -25095,12 +25173,24 @@ function thelegendmodproject() {
                                 if (window.RecordedArenasSpecifications) delete window.RecordedArenasSpecifications[_lmRk];
                             }
                         }
+                        /* Issue #13: switched ON: ensure recording infra exists for the current connection */
+                        if (checked && window.RecordedProtocol && window.temporaryRecordedProtocol) {
+                            if (!window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+                                window.RecordedProtocol[window.temporaryRecordedProtocol] = {};
+                                window.catholicCalculator = window.catholicCalculator || 0;
+                                window._lmRecSlotBytes = 0;
+                            }
+                        }
                         break;
                     case 'showMiniMap':
                         this.setMiniMap();
                         break;
                     case 'showMiniMapGrid':
                         this.resetMiniMapSectors();
+                        break;
+                    /* Issue #19: clear trail data when the minimap trail is turned off */
+                    case 'showMiniMapTrail':
+                        if (!checked && this._lmTrail) this._lmTrail.length = 0;
                         break;
                     case 'disableChat':
                         this.setDisableChat();
@@ -25168,18 +25258,38 @@ function thelegendmodproject() {
                         break;
                     case 'performanceMode':
                         /* On: remember the current values and turn the costly effects off.
-                         * Off: put the remembered values back. Saved below; applied on reload. */
+                         * Off: put the remembered values back. Saved below; applied on reload.
+                         * Issue #1 & #4: use 0 for hudBlur (numeric), sync checkboxes. */
                         var _lmPerfKeys = ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor',
-                            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias', 'hudBlur'].filter(function (k) { return defaultmapsettings.hasOwnProperty(k); });
+                            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias', 'hudBlur'].filter(function (k) { return Object.prototype.hasOwnProperty.call(defaultmapsettings, k); });
+                        var _lmPerfApp = this;
                         if (checked) {
                             var _lmPerfBak = {};
-                            _lmPerfKeys.forEach(function (k) { _lmPerfBak[k] = defaultmapsettings[k]; defaultmapsettings[k] = false; });
+                            _lmPerfKeys.forEach(function (k) {
+                                _lmPerfBak[k] = defaultmapsettings[k];
+                                defaultmapsettings[k] = (k === 'hudBlur') ? 0 : false;
+                                /* sync checkbox/slider to match */
+                                var _perfEl = document.getElementById(k);
+                                if (_perfEl && _perfEl.type === 'checkbox') {
+                                    _perfEl.checked = false;
+                                    try { _perfEl.dispatchEvent(new Event('change', { bubbles: false })); } catch (e) { }
+                                }
+                            });
                             try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(_lmPerfBak)); } catch (e) { }
                         } else {
                             var _lmPerfOld = null;
                             try { _lmPerfOld = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { }
                             if (_lmPerfOld) {
-                                _lmPerfKeys.forEach(function (k) { if (_lmPerfOld.hasOwnProperty(k)) defaultmapsettings[k] = _lmPerfOld[k]; });
+                                _lmPerfKeys.forEach(function (k) {
+                                    if (Object.prototype.hasOwnProperty.call(_lmPerfOld, k)) {
+                                        defaultmapsettings[k] = _lmPerfOld[k];
+                                        var _perfEl = document.getElementById(k);
+                                        if (_perfEl && _perfEl.type === 'checkbox') {
+                                            _perfEl.checked = !!_lmPerfOld[k];
+                                            try { _perfEl.dispatchEvent(new Event('change', { bubbles: false })); } catch (e) { }
+                                        }
+                                    }
+                                });
                             }
                             try { window.localStorage.removeItem('lmPerfBackup'); } catch (e) { }
                         }

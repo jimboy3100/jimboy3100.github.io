@@ -313,8 +313,14 @@
 				defaultKey: '',
 				keyDown() {
 					if (!application || typeof defaultmapsettings === 'undefined') return;
-					defaultmapsettings.mbRings = !defaultmapsettings.mbRings;
-					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('mbRings');
+					/* mbRings was split into mbRingsP1 and mbRingsP2: toggle both */
+					var _mbNew = !(defaultmapsettings.mbRingsP1 && defaultmapsettings.mbRingsP2);
+					defaultmapsettings.mbRingsP1 = _mbNew;
+					defaultmapsettings.mbRingsP2 = _mbNew;
+					if (typeof application.syncHotkeyOption === 'function') {
+						application.syncHotkeyOption('mbRingsP1');
+						application.syncHotkeyOption('mbRingsP2');
+					}
 				},
 				keyUp: null,
 				type: 'normal'
