@@ -16,6 +16,93 @@
         })(_methods[i]);
     }
 })();
+/* LMEvents: hooks for user scripts (developers/LMEvents.md). Listeners get frozen plain
+ * data, a throwing listener is logged once and never stops the game or the next listener.
+ * Emit sites check _has(name) first, so nothing is built while nobody listens. */
+(function () {
+    if (window.LMEvents && window.LMEvents._lm === 1) return;
+    var L = Object.create(null), failed = typeof WeakSet === 'function' ? new WeakSet() : null;
+    function freeze(o) {
+        if (o && typeof o === 'object' && !Object.isFrozen(o)) {
+            Object.freeze(o);
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) freeze(o[k]);
+        }
+        return o;
+    }
+    function on(name, fn) {
+        if (typeof name !== 'string' || typeof fn !== 'function') return ev;
+        (L[name] || (L[name] = [])).push(fn);
+        return ev;
+    }
+    function off(name, fn) {
+        var a = L[name];
+        if (!a) return ev;
+        L[name] = a.filter(function (l) { return l !== fn && l._lmOrig !== fn; });
+        return ev;
+    }
+    function once(name, fn) {
+        if (typeof fn !== 'function') return ev;
+        var w = function (d) { off(name, w); return fn.call(this, d); };
+        w._lmOrig = fn;
+        return on(name, w);
+    }
+    function _has(name) {
+        var a = L[name];
+        return !!(a && a.length);
+    }
+    function emit(name, data) {
+        var a = L[name];
+        if (!a || !a.length) return;
+        a = a.slice();
+        freeze(data);
+        for (var i = 0; i < a.length; i++) {
+            try { a[i].call(null, data); } catch (e) {
+                var f = a[i]._lmOrig || a[i];
+                if (failed && failed.has(f)) continue;
+                if (failed) failed.add(f);
+                try { console.warn('[LMEvents] a "' + name + '" listener failed:', e); } catch (e2) { }
+            }
+        }
+    }
+    function lm() { return window.legendmod || null; }
+    var _lmEvChatAt = 0;
+    var api = {
+        getMass: function () { var o = lm(); return o ? Math.round(+o.playerMass || 0) : 0; },
+        getPosition: function () {
+            var o = lm();
+            return o ? { x: Math.round(+o.playerX + (+o.mapOffsetX || 0)) || 0, y: Math.round(+o.playerY + (+o.mapOffsetY || 0)) || 0 } : { x: 0, y: 0 };
+        },
+        isPlaying: function () { var o = lm(); return !!(o && o.play); },
+        getServerType: function () { var o = lm(); return o ? String(o.serverType || '') : ''; },
+        /* same path and limits as typing into the chat box; false when it was not sent */
+        sendChat: function (text) {
+            var app = window.application, o = lm();
+            text = String(text == null ? '' : text).replace(/[\r\n\t]+/g, ' ').trim().slice(0, 200);
+            if (!text || !app || !o || typeof o.isSocketOpen !== 'function' || !o.isSocketOpen()) return false;
+            if (Date.now() - _lmEvChatAt < 1000 || Date.now() - app.lastMessageSentTime < 500) return false;
+            if (typeof app.lmLegendChatTooSoon === 'function' && app.lmLegendChatTooSoon()) return false;
+            _lmEvChatAt = Date.now();
+            var sent99 = false;
+            try {
+                if (!o.integrity && $('#clantag').val() === '' && !(o.isLegendWorld && ogarcopythelb.clanTag)) {
+                    o.sendMessage(app.buildChat99View(text));
+                    sent99 = true;
+                    if (o.isLegendWorld) app._lmLegendChatLast = Date.now();
+                }
+                return !!app.sendChatMessage(101, text) || sent99;
+            } catch (e) { return sent99; }
+        },
+        toast: function (text) {
+            text = String(text == null ? '' : text).slice(0, 300);
+            if (!text || typeof toastr === 'undefined') return;
+            var s = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            toastr.info(s);
+        }
+    };
+    var ev = { _lm: 1, on: on, off: off, once: once, emit: emit, _has: _has, api: Object.freeze(api) };
+    Object.freeze(ev);
+    try { Object.defineProperty(window, 'LMEvents', { value: ev, writable: false, enumerable: true, configurable: false }); } catch (e) { window.LMEvents = ev; }
+})();
 window.spects = window.spects || [];
 var spects = window.spects;
 /* Look up a multibox unit by its .number property.
@@ -24823,6 +24910,10 @@ function thelegendmodproject() {
                 }, 100);
                 return;
             }
+            if (window.LMEvents._has('spawn') && this._lmEvSpawnLife !== this._lmLifeStartAt) {
+                this._lmEvSpawnLife = this._lmLifeStartAt;
+                window.LMEvents.emit('spawn', { time: Date.now() });
+            }
             LegendModSpawn();
 
 
@@ -24916,6 +25007,13 @@ function thelegendmodproject() {
                     });
                     _lmMatchHistoryButton();
                 } catch (e) { }
+            }
+            if (window.LMEvents._has('death')) {
+                window.LMEvents.emit('death', {
+                    time: _lmNow,
+                    mass: Math.round(+ogario.playerScore || 0),
+                    msAlive: this._lmLifeStartAt ? Math.max(0, _lmNow - this._lmLifeStartAt) : 0
+                });
             }
             this._lmLifeStartAt = 0;
             ogario.play = false;
@@ -27124,6 +27222,7 @@ function thelegendmodproject() {
                     this.serverToken = text;
                     /* death markers belong to the previous server (and its coordinate frame) */
                     this.deathLocations = []; this.lastDeath = -1;
+                    if (window.LMEvents._has('serverChange')) window.LMEvents.emit('serverChange', { host: _lmHostOnly(this.ws) });
                     this.flushData();
                     this.flushCells();
                 }
@@ -30352,6 +30451,9 @@ function thelegendmodproject() {
                     var rawText = msg.replace(a + ': ', '');
                     /* optional word filter (never your own lines) */
                     if (plId != this.playerID && this._lmChatHidden(rawNick + ' ' + rawText)) return;
+                    if ((101 === caseof || 102 === caseof) && window.LMEvents._has('chat')) {
+                        window.LMEvents.emit('chat', { nick: String(rawNick).slice(0, 60), text: String(rawText).slice(0, 500), type: 102 === caseof ? 'command' : 'chat', own: plId == this.playerID });
+                    }
                     var r = '';
                     if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 === caseof) {
 
@@ -46863,6 +46965,11 @@ Most cells eaten   : ${mostCellsEaten}
         },
         handleLeaderboard() {
             var _tLb = performance.now();
+            if (window.LMEvents._has('leaderboard')) {
+                var _lmEvLb = [];
+                for (var _lmEvI = 0; _lmEvI < this.leaderboard.length && _lmEvI < 100; _lmEvI++) _lmEvLb.push({ nick: String(this.leaderboard[_lmEvI].nick || '').slice(0, 60), pos: _lmEvI + 1 });
+                window.LMEvents.emit('leaderboard', { position: ~~this.playerPosition, entries: _lmEvLb });
+            }
             /*                for (var t = '', e = '', i = 0; i < this.leaderboard.length && defaultmapsettings.leaderboardlimit != i; i++) {
                                 var s = '<span>';
                                 'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this.leaderboard[i].nick.indexOf(ogarcopythelb.clanTag) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + application.escapeHTML(this.leaderboard[i].nick) + '</span>';
@@ -49628,6 +49735,13 @@ Most cells eaten   : ${mostCellsEaten}
             this._playerMinSize = minSize;
             this._playerMaxSize = maxSize;
             this.recalculatePlayerMass();
+            if (this.play && window.LMEvents._has('massUpdate')) {
+                var _lmEvNow = Date.now();
+                if (_lmEvNow - (this._lmEvMassAt || 0) >= 250) {
+                    this._lmEvMassAt = _lmEvNow;
+                    window.LMEvents.emit('massUpdate', { mass: Math.round(+this.playerMass || 0), cells: this.playerCells ? this.playerCells.length : 0 });
+                }
+            }
 
             if (this.multiBoxPlayerExists && typeof spects !== "undefined" && spects) {
                 for (var s = 0; s < spects.length; s++) {
