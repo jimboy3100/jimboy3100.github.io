@@ -630,7 +630,17 @@
         if (P.pos < REC.n && REC.t[P.pos] - vt > 3000) { P.baseT = vt = REC.t[P.pos] - 40; P.baseWall = now; }
         while (P.pos < REC.n && REC.t[P.pos] <= vt && k < 300) { handle(P.pos); setPos(P.pos + 1); k++; }
         if (k >= 300) { P.baseT = tAt(P.pos); P.baseWall = now; } /* the page cannot keep up: slow down instead of freezing */
-        if (P.pos >= REC.n) { P.playing = false; ui(); return; }
+        if (P.pos >= REC.n) {
+            /* P1 fix #43: when playing a live recording, the playhead can reach the end
+             * of currently available packets while recording is still ongoing. Instead of
+             * stopping permanently, wait 200ms and try again (refreshRec will pick up
+             * newly recorded packets). Only stop if the recording is not live. */
+            if (liveKey() === REC.key) {
+                P.timer = setTimeout(tick, 200);
+                return;
+            }
+            P.playing = false; ui(); return;
+        }
         var d = (REC.t[P.pos] - vt) / P.speed;
         P.timer = setTimeout(tick, Math.max(0, Math.min(250, d)));
     }
@@ -666,8 +676,12 @@
         P.playing = false;
         if (target < P.pos) {
             var c = checkpointBefore(REC.cps, target - 1);
-            if (c <= 0 || target === 0) { if (window.lmReplayResetWorld) window.lmReplayResetWorld(); setPos(0); }
-            else setPos(c);
+            /* P1 fix #39: always reset the world when seeking backward, even when
+             * jumping to a checkpoint > 0. Without this, cells from the abandoned
+             * position persist as ghosts because the replay engine only adds/updates
+             * cells going forward — it never removes ones from future packets. */
+            if (window.lmReplayResetWorld) window.lmReplayResetWorld();
+            setPos(c > 0 && target > 0 ? c : 0);
         }
         var job = P.ff = { target: target, resume: wasPlaying, timer: 0, from: P.pos };
         var step = function () {
@@ -678,7 +692,10 @@
             while (P.pos < job.target) {
                 handle(P.pos);
                 setPos(P.pos + 1);
-                if ((P.pos & 15) === 0 && performance.now() - t0 > 25) break;
+                /* P1 fix #41: check the 25ms budget every 4 packets instead of every 16.
+                 * Heavy world-update packets can take 15-20ms each, so 16 of them
+                 * could lock the UI for 240-320ms before yielding. */
+                if ((P.pos & 3) === 0 && performance.now() - t0 > 25) break;
             }
             if (P.pos < job.target) { job.timer = setTimeout(step, 0); ui(); return; }
             P.ff = null;
@@ -1314,7 +1331,9 @@
             $('#instantReplaySecs-slider').val(d.instantReplaySecs); $('#instantReplaySecs-value').text(d.instantReplaySecs);
         });
         r2.appendChild(W.secs);
-        W.backB = btn(T('backGame'), '', function () { pause(); if (window._lmJoinPrevServer) window._lmJoinPrevServer(); });
+        /* P1 fix #46: stopDriving() clears P.driving and restores skins before
+         * leaving the replay server. pause() alone left P.driving = true. */
+        W.backB = btn(T('backGame'), '', function () { stopDriving(); if (window._lmJoinPrevServer) window._lmJoinPrevServer(); });
         r2.appendChild(W.backB);
         pv.appendChild(r2);
         /* overlay toggles + bookmark chips */

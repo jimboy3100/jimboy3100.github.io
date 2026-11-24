@@ -476,6 +476,7 @@
         var feedWanted = false;
         var holdWanted = {};
         var moved = false;
+        var zoomed = false;
         var present = {};
         for (var p = 0; p < list.length; p++) {
             var pad = list[p];
@@ -519,11 +520,16 @@
                         mouseAt(px, py);
                     }
                 }
-                var z = Number(axes[AXIS_ZOOM]) || 0;
-                var now = Date.now();
-                if (Math.abs(z) > dz && now - lastZoomAt >= ZOOM_INTERVAL) {
-                    lastZoomAt = now;
-                    wheel((opt('gamepadInvertZoom') ? -z : z) * ZOOM_STRENGTH * opt('gamepadZoomSens'));
+                /* P1 fix #72: guard zoom with a flag like movement, so a second
+                 * controller's zoom axis doesn't conflict with the first. */
+                if (!zoomed) {
+                    var z = Number(axes[AXIS_ZOOM]) || 0;
+                    var now = Date.now();
+                    if (Math.abs(z) > dz && now - lastZoomAt >= ZOOM_INTERVAL) {
+                        lastZoomAt = now;
+                        zoomed = true;
+                        wheel((opt('gamepadInvertZoom') ? -z : z) * ZOOM_STRENGTH * opt('gamepadZoomSens'));
+                    }
                 }
             }
         }
@@ -546,6 +552,11 @@
         setFeed(false);
         setHolds({});
         lastMove = null;
+        /* P1 fix #74: clear prevPressed so that buttons physically held while the page
+         * was unfocused can fire their edge trigger when focus returns. Without this,
+         * prevPressed retains the 'true' state and the edge-trigger at line 501
+         * skips the button until it is released and pressed again. */
+        prevPressed = {};
     }
     window.addEventListener('blur', leave);
     document.addEventListener('visibilitychange', function () {
