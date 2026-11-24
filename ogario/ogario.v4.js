@@ -20678,8 +20678,9 @@ var defaultmapsettings = {
     showGhostCells: false,
     showGhostCellsInfo: false,
     showCellShadows: false,
-    deathParticles: true,
-    eatPulse: true,
+    /* deathParticles and eatPulse live in defaultmapsettings (the gameplay
+     * settings object); removed here to avoid confusion – the theme copy
+     * was never read by game logic and could diverge from the actual value. */
     /*
      * ═══════════════════════════════════════════════════════════════════════
      * SCAN TRICK SETTINGS
@@ -29228,8 +29229,6 @@ function thelegendmodproject() {
             /* the cell's own URL wins, even while it loads (no flash of another skin) */
             var ownUrl = (skinKey && typeof skinKey === 'string' && (skinKey.startsWith('http://') || skinKey.startsWith('https://')))
                 ? this.checkSkinURL(skinKey) : '';
-            _RE_CLAN_TAG.lastIndex = 0;
-            var cleanNick = nick ? nick.replace(_RE_CLAN_TAG, '').trim() : '';
             /* Cache lowered color to avoid per-call string allocation */
             var hexColor;
             if (color && typeof color === 'string') {
@@ -73695,7 +73694,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _lmViewDt = this._lmViewT ? Math.min(100, Math.max(0, _lmViewNow - this._lmViewT)) : 16.667;
             this._lmViewT = _lmViewNow;
             this._lmFrameF = _lmViewDt / 16.667;
-            this.setScale(LM.playerSize);
+            /* setScale moved below: it is called once at line ~73794 with the
+             * multibox frame data so the zoom is not double-smoothed. */
 
             if (LM.playerCells && LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition(); /* includes the units */
@@ -73836,10 +73836,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             return LM.scale * this.getZoom();
         },
-        /* fit (0..1): zoom out to keep both multibox players on screen (getMultiboxFrame) */
+        /* fit (0..1): zoom out to keep both multibox players on screen (getMultiboxFrame).
+         * Frame-rate-independent: was (9*old + new)/10 per frame → converges as 0.9^n,
+         * which made 144 Hz zoom 2.4× faster than 60 Hz.  Now uses the same pow()
+         * approach as the camera lerp so the zoom speed is the same at every refresh rate. */
         setScale(size, fit, unitPlaying) {
             if (!(fit > 0 && fit < 1)) fit = 1;
-            this.scale = (9 * this.scale + this.getTargetScale(size, unitPlaying) * fit) / 10;
+            var target = this.getTargetScale(size, unitPlaying) * fit;
+            var k = 1 - Math.pow(9 / 10, this._lmFrameF || 1);
+            this.scale += (target - this.scale) * k;
             LM.viewScale = this.scale;
         },
         /*
