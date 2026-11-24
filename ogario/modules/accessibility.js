@@ -44,7 +44,31 @@
         return sel + '{font-size:' + (Math.round(ratio * k * 10000) / 100) + '% !important;}';
     }
 
-    var core = { cleanScale: cleanScale, classify: classify, symbolSize: symbolSize, scaleRule: scaleRule };
+    /* The mass the symbols compare with: the unit you control, the way the opponent colours
+     * (compareCells) pick it: the focused multibox unit, else the main player while alive; its
+     * biggest or smallest cell as the game's "biggest cell" choice says. The game keeps those
+     * masses only while an opponent colour / range option is on: otherwise from the unit's cells.
+     * 0 (no symbols) while dead, in the menu or watching a replay (its cells are not yours). */
+    function refMass(lm, w) {
+        if (!lm || !w || w._lmEvReplayOn) return 0;
+        var n = w.multiboxPlayerEnabled, big = !!lm.selectBiggestCell;
+        var sp = n && typeof w.getActiveSpect === 'function' ? w.getActiveSpect(n) : null;
+        var u = sp || (lm.play ? lm : null);
+        if (!u) return 0;
+        var m = big ? u.playerMaxMass : u.playerMinMass;
+        if (m > 0) return m;
+        var cells = sp ? lm.playerCellsMulti : lm.playerCells, best = 0;
+        if (!cells) return 0;
+        for (var i = 0; i < cells.length; i++) {
+            var c = cells[i];
+            if (!c || c.removed || (sp && c.spectator !== n)) continue;
+            var cm = ~~(c.size * c.size * 0.01);
+            if (cm > 0 && (!best || (big ? cm > best : cm < best))) best = cm;
+        }
+        return best;
+    }
+
+    var core = { cleanScale: cleanScale, classify: classify, symbolSize: symbolSize, scaleRule: scaleRule, refMass: refMass };
     var api = W.LMAccessibility = { _core: core };
     if (!D || !D.createElement) return;
 
@@ -111,8 +135,8 @@
             ind.drawn = true;
         }
         if (ind.drawn) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ind.drawn = false; }
-        if (!lm || !dr || !lm.play || !lm.cells || !dr.canvas) return;
-        var my = lm.selectBiggestCell ? lm.playerMaxMass : lm.playerMinMass;
+        if (!lm || !dr || !lm.cells || !dr.canvas) return;
+        var my = refMass(lm, W);
         if (!(my > 0)) return;
         var base = dr.canvas.getBoundingClientRect();
         var cw = dr.canvasWidth || base.width, ch = dr.canvasHeight || base.height;
