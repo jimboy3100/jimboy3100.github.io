@@ -1554,6 +1554,7 @@ class Spect {
 
     terminate() {
         this.active = false;
+        this._lmFocusOnSpawn = false;
         this.playerCellIDs = [];
         if (this.positionController) clearInterval(this.positionController);
         if (this.massPositionTimer) clearTimeout(this.massPositionTimer);

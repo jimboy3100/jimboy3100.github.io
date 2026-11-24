@@ -21064,7 +21064,7 @@ function thelegendmodproject() {
         setShowFullSpectator() {
             if (window.fullSpectator) {
                 window.fullSpectator = false;
-                LM.flushSpecsData();
+                LM.flushSpectatorsOnly();
             } else if (!window.fullSpectator) {
                 window.fullSpectator = true;
                 LM.addSpect();
@@ -21073,7 +21073,7 @@ function thelegendmodproject() {
         setShowIngameSpectator() {
             if (window.ingameSpectator) {
                 window.ingameSpectator = false;
-                LM.flushSpecsData();
+                LM.flushSpectatorsOnly();
             } else if (!window.fullSpectator) {
                 window.ingameSpectator = true;
                 LM.addSpect();
@@ -30211,7 +30211,7 @@ function thelegendmodproject() {
         setFullSpectator() {
             if (window.fullSpectator) {
                 window.fullSpectator = false
-                LM.flushSpecsData()
+                LM.flushSpectatorsOnly()
             } else {
                 window.fullSpectator = true
                 LM.addSpect()
@@ -30220,7 +30220,7 @@ function thelegendmodproject() {
         setIngameSpectator() {
             if (window.ingameSpectator) {
                 window.ingameSpectator = false
-                LM.flushSpecsData()
+                LM.flushSpectatorsOnly()
             } else {
                 window.ingameSpectator = true
                 LM.addSpect()
@@ -37555,6 +37555,17 @@ function thelegendmodproject() {
             //console.log('a'+$("#server-token").val())		
             //window.temporaryRecordedProtocol2 = window.temporaryRecordedProtocol
             if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
+                /* every connect attempt opened a new slot: 5 failed reconnects pushed every real
+                 * recording out of the list of 5. A slot that got almost nothing (10 packets or
+                 * fewer, hidden in the replay list anyway) is dropped first. */
+                var _lmPrevArena = window.temporaryRecordedProtocol;
+                if (_lmPrevArena && window.RecordedProtocol[_lmPrevArena] && window.RecordedProtocol[_lmPrevArena].length <= 10 &&
+                    _lmPrevArena !== legendmod.playingReplayServer) {
+                    var _lmPrevIdx = window.RecordedProtocolArenas.indexOf(_lmPrevArena);
+                    if (_lmPrevIdx !== -1) window.RecordedProtocolArenas.splice(_lmPrevIdx, 1);
+                    delete window.RecordedProtocol[_lmPrevArena];
+                    delete window.RecordedArenasSpecifications[_lmPrevArena];
+                }
                 if (window.RecordedArenasSpecifications[$("#server-token").val()]) {
                     /* Fallback when all 9 numbered slots are taken, so an older recording is never overwritten. */
                     window.temporaryRecordedProtocol = $("#server-token").val() + '(' + Date.now() + ')'
@@ -37577,6 +37588,10 @@ function thelegendmodproject() {
                 while (window.RecordedProtocolArenas.length > 5) {
                     var _lmOldIdx = -1;
                     for (var _lmJ = 0; _lmJ < window.RecordedProtocolArenas.length - 1; _lmJ++) {
+                        var _lmJa = window.RecordedProtocolArenas[_lmJ];
+                        if (_lmJa !== legendmod.playingReplayServer && (!window.RecordedProtocol[_lmJa] || window.RecordedProtocol[_lmJa].length <= 10)) { _lmOldIdx = _lmJ; break; }
+                    }
+                    for (var _lmJ = 0; _lmOldIdx < 0 && _lmJ < window.RecordedProtocolArenas.length - 1; _lmJ++) {
                         if (window.RecordedProtocolArenas[_lmJ] !== legendmod.playingReplayServer) { _lmOldIdx = _lmJ; break; }
                     }
                     if (_lmOldIdx < 0) break;
@@ -46785,6 +46800,16 @@ Most cells eaten   : ${mostCellsEaten}
             if (_connectionLevelFlush) {
                 this.flushSpecsData();
             }
+        },
+        /* Spectator toggles: close only the spectators. With a multibox unit open, flushSpecsData
+         * also closed the unit (its socket dropped mid-fight). Without one: as before. */
+        flushSpectatorsOnly() {
+            var sp = window.spects || [];
+            var keep = [];
+            for (var i = 0; i < sp.length; i++) if (sp[i] && sp[i].player) keep.push(sp[i]);
+            if (!keep.length) return this.flushSpecsData();
+            for (var j = 0; j < sp.length; j++) if (sp[j] && !sp[j].player) sp[j].closeConnection();
+            window.spects = keep;
         },
         flushSpecsData() {
             this.isSpectateEnabled = false;
