@@ -402,6 +402,30 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-specNextTop': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-specNextTop']) || 'Free spectate: follow next leaderboard player';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* works in free spectate whether or not lbClickSpectate is on (binding the key is the opt-in):
+					 * steps the followed player through the leaderboard ghost cells, wrapping around */
+					var lm = window.legendmod;
+					if (!lm || lm.play) return;
+					if (!lm.isFreeSpectate) {
+						if (window.toastr) toastr.info('Free spectate first');
+						return;
+					}
+					var n = lm.ghostCells ? lm.ghostCells.length : 0;
+					if (!n) return;
+					lm._lmSpecLb = lm._lmSpecLb == null ? 0 : (lm._lmSpecLb + 1) % n;
+					lm._lmSpecLbHud && lm._lmSpecLbHud();
+					var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
+					if (window.toastr) toastr.info(label + ' #' + (lm._lmSpecLb + 1));
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
