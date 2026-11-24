@@ -4198,6 +4198,36 @@ window.RecordedProtocol = []
 window.RecordedProtocolArenas = []
 window.RecordedArenasSpecifications = []
 window.catholicCalculator = 0;
+/* Replay Studio data recorded next to the packets (ogario/modules/replaystudio.js reads it):
+ * the time of every packet (ms since the recording started) and a few cheap samples: mass,
+ * cells and leaderboard place (4/s, while playing), the cursor (at most 10/s, while playing),
+ * own deaths, spawns, kills, virus pops and splits. It lives on the recording's packet array
+ * as ._lm, so it is freed together with it. Nothing is kept while recordReplays is off, during a
+ * replay or on connections that are not recorded (_lmRecLive is set per connection). */
+window._lmRecLive = false;
+window._lmRecM = function () {
+    if (!window._lmRecLive || typeof defaultmapsettings === 'undefined' || defaultmapsettings.recordReplays === false) return null;
+    var a = window.RecordedProtocol[window.temporaryRecordedProtocol];
+    return a && a._lm && window.catholicCalculator < 90000 ? a._lm : null;
+};
+/* event types: d death (best mass), s spawn, k own cell ate a player cell (its mass),
+ * v own cell popped a virus, p split sent (1 split, 2 double...), f feeding */
+window._lmRecEv = function (type, v) {
+    var m = window._lmRecM();
+    if (m && m.e.length < 60000) m.e.push(Date.now() - m.t0, type, Math.round(+v || 0));
+};
+window._lmRecCur = function (x, y) {
+    var m = window._lmRecM(), n = Date.now();
+    if (!m || n - m.ct < 100 || m.c.length > 120000 || !isFinite(x) || !isFinite(y)) return;
+    m.ct = n;
+    m.c.push(n - m.t0, Math.round(x), Math.round(y));
+};
+window._lmRecSample = function (lm) {
+    var m = window._lmRecM(), n = Date.now();
+    if (!m || n - m.st < 250 || m.s.length > 80000) return;
+    m.st = n;
+    m.s.push(n - m.t0, Math.round(+lm.playerMass || 0), lm.playerCells ? lm.playerCells.length : 0, ~~lm.playerPosition);
+};
 window.replayTiming = 20
 window.replayTimeOuts = []
 window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
@@ -18434,6 +18464,7 @@ var displayText = {
         noSkins: 'No skins',
         highDPI: 'High DPI rendering (sharper, slower)',
         recordReplays: 'Record replays (uses memory)',
+        instantReplaySecs: 'Instant replay length (seconds)',
         glAntialias: 'Anti-aliasing (smoother edges, after reload)',
         performanceMode: 'Performance mode (weak PCs/phones)',
         fpsLimit: 'FPS limit (0 = no limit; saves battery)',
@@ -18724,6 +18755,8 @@ var displayText = {
         'hk-pingVirus': 'Team ping: Virus here',
         'hk-specNextTop': 'Free spectate: follow next leaderboard player',
         'hk-prevServer': 'Reconnect to the previous server',
+        'hk-replayStudio': 'Open Replay Studio',
+        'hk-instantReplay': 'Instant replay (last seconds; opens after you die)',
         'hk-bigMinimap': 'Enlarge / restore minimap',
         'hk-gamepadWindow': 'Open / close the Gamepad window',
         'hk-lmProfilesWindow': 'Settings profiles: open / close window',
@@ -21147,6 +21180,7 @@ var defaultmapsettings = {
     unlockedFPS: false,
     highDPI: false,
     recordReplays: true,          /* off = no packets kept for replays (saves memory) */
+    instantReplaySecs: 30,        /* Replay Studio: the instant replay hotkey plays the last 15-60 s */
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
     fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
@@ -21631,7 +21665,7 @@ var _lmLabelI18n = {
         "hk-elPotions":"Expanding Land: Βοήθεια για φίλτρα","hk-elClaimAll":"Expanding Land: Παραλαβή όλων","hk-replayPause":"Επανάληψη: παύση/συνέχεια",
         "hk-replayFaster":"Επανάληψη: πιο γρήγορα","hk-replaySlower":"Επανάληψη: πιο αργά","hk-replayFwd":"Επανάληψη: μπροστά 250 πακέτα",
         "hk-replayBack":"Επανάληψη: πίσω 250 πακέτα","hk-middleMultiView":"Εναλλαγή μεσαίας θέας multibox","hk-mbRings":"Εμφάνιση/απόκρυψη δαχτυλιδιών multibox",
-        "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-gamepadWindow":"Άνοιγμα / κλείσιμο παραθύρου gamepad","gamepadWindow":"Gamepad: κουμπιά, ευαισθησία, προφίλ, δοκιμή","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)","hk-lmProfilesWindow":"Προφίλ ρυθμίσεων: άνοιγμα / κλείσιμο","hk-lmProfileNext":"Προφίλ ρυθμίσεων: εφαρμογή του επόμενου","hk-lmProfilePrev":"Προφίλ ρυθμίσεων: εφαρμογή του προηγούμενου","hk-lmProfileUndo":"Προφίλ ρυθμίσεων: αναίρεση της τελευταίας αλλαγής",
+        "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-gamepadWindow":"Άνοιγμα / κλείσιμο παραθύρου gamepad","gamepadWindow":"Gamepad: κουμπιά, ευαισθησία, προφίλ, δοκιμή","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)","hk-lmProfilesWindow":"Προφίλ ρυθμίσεων: άνοιγμα / κλείσιμο","hk-lmProfileNext":"Προφίλ ρυθμίσεων: εφαρμογή του επόμενου","hk-lmProfilePrev":"Προφίλ ρυθμίσεων: εφαρμογή του προηγούμενου","hk-lmProfileUndo":"Προφίλ ρυθμίσεων: αναίρεση της τελευταίας αλλαγής","hk-replayStudio":"Άνοιγμα Replay Studio","hk-instantReplay":"Άμεση επανάληψη (τελευταία δευτερόλεπτα· ανοίγει όταν πεθάνεις)","instantReplaySecs":"Διάρκεια άμεσης επανάληψης (δευτερόλεπτα)",
         "hk-netGraph":"Εμφάνιση / απόκρυψη γραφήματος δικτύου (FPS, ping)","hk-chatSounds":"Σίγαση / άρση σίγασης ήχων συνομιλίας","scanTrick":"Ενεργοποίηση Scan Trick",
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
@@ -26940,7 +26974,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27108,6 +27142,7 @@ function thelegendmodproject() {
             $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block" style="margin:4px 0 2px;"></button>')
                 .text(textLanguage.lmPerfDiag || 'Performance diagnostics').appendTo('.animationGroup')
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
+            this.addSliderBox(".animationGroup", "instantReplaySecs", 15, 60, 15);
             this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
             this.addSliderBox(".massGroup", "massFormat", 0, 3, 1);
             this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
@@ -28441,6 +28476,10 @@ function thelegendmodproject() {
                 this._lmEvSpawnLife = this._lmLifeStartAt;
                 window.LMEvents.emit('spawn', { time: Date.now() });
             }
+            if (window._lmRecLive && this._lmRecSpawnLife !== this._lmLifeStartAt) {
+                this._lmRecSpawnLife = this._lmLifeStartAt;
+                window._lmRecEv('s', 0);
+            }
             LegendModSpawn();
 
 
@@ -28535,6 +28574,7 @@ function thelegendmodproject() {
                     _lmMatchHistoryButton();
                 } catch (e) { }
             }
+            if (window._lmRecLive) window._lmRecEv('d', +ogario.playerScore || 0);
             if (window.LMEvents._has('death')) {
                 window.LMEvents.emit('death', {
                     time: _lmNow,
@@ -41850,6 +41890,11 @@ function thelegendmodproject() {
                 window.catholicCalculator = 0
                 window._lmRecSlotBytes = 0
                 window.RecordedProtocol[window.temporaryRecordedProtocol] = []
+                /* Replay Studio times and samples (see window._lmRecM), only while recording */
+                window._lmRecLive = defaultmapsettings.recordReplays !== false;
+                if (window._lmRecLive) {
+                    window.RecordedProtocol[window.temporaryRecordedProtocol]._lm = { v: 1, t0: Date.now(), ct: 0, st: 0, t: [], s: [], e: [], c: [] };
+                }
                 window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
                 window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
                 /* Keep only the newest recordings in memory (each holds every packet of a session). */
@@ -41867,6 +41912,9 @@ function thelegendmodproject() {
                     delete window.RecordedProtocol[_lmOldArena];
                     delete window.RecordedArenasSpecifications[_lmOldArena];
                 }
+            } else {
+                /* a replay or an unrecorded connection: no Studio samples */
+                window._lmRecLive = false;
             }
 
 
@@ -41972,6 +42020,12 @@ function thelegendmodproject() {
 
             if (!this.isSocketOpen()) {
                 return;
+            }
+            /* Replay Studio: split moments (17 split; 28/26/27 double/triple/quad on private servers)
+             * and feeding (21, at most 4/s: mass lost by feeding is not a "big mass loss" bookmark) */
+            if (window._lmRecLive && this === window.legendmod) {
+                if (action === 17 || (action >= 26 && action <= 28)) window._lmRecEv('p', action === 17 ? 1 : action === 28 ? 2 : action === 26 ? 3 : 4);
+                else if (action === 21 && !(Date.now() - (this._lmRecFeedAt || 0) < 250)) { this._lmRecFeedAt = Date.now(); window._lmRecEv('f', 0); }
             }
             // Sigmally: encode opcode through shuffle table
             if (this.serverType === 'sigmally' && this.sigOpcodeMap) {
@@ -42718,6 +42772,8 @@ function thelegendmodproject() {
         },
         sendPosition(cell, target2, specialcommand, periodic) {
             var cursorX, cursorY;
+            /* Replay Studio cursor overlay: the mouse target in world space (at most 10/s) */
+            if (window._lmRecLive && this.play && this === window.legendmod) window._lmRecCur(this.cursorX, this.cursorY);
             if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
                 if (window.multiboxPlayerEnabled && !window.multiboxFollowMouse && !window.autoPlay) {
                     /* Server-space view centre (viewXTrue is client space; mirrored maps differ). */
@@ -43542,7 +43598,10 @@ function thelegendmodproject() {
             /* recordReplays off: keep no packets (an undefined setting counts as on) */
             /* also stop at 100 MB per recording (5 are kept): busy servers send big packets */
             if (defaultmapsettings.recordReplays !== false && window.catholicCalculator < 90000 && (window._lmRecSlotBytes || 0) < 104857600 && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
-                window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
+                var _lmRecArr = window.RecordedProtocol[window.temporaryRecordedProtocol];
+                _lmRecArr[window.catholicCalculator] = data
+                /* its time for Replay Studio (accurate playback speed and seeking) */
+                if (_lmRecArr._lm) _lmRecArr._lm.t[window.catholicCalculator] = Date.now() - _lmRecArr._lm.t0;
                 window._lmRecSlotBytes = (window._lmRecSlotBytes || 0) + ((data && data.byteLength) || 0)
 
                 //window.RecordedProtocolArenas[legendmod.ws][]
@@ -52664,6 +52723,12 @@ Most cells eaten   : ${mostCellsEaten}
                         try { window.LMDeathRecap.eat(eaterID, victimID, _lmDrMine, _victimWasPlayer, _victimStartSize); } catch (e) { }
                     }
                 }
+                /* Replay Studio bookmarks (recording only): an own cell ate another player's cell or popped a virus */
+                if (window._lmRecLive && eaterID && this === window.legendmod && !_victimWasPlayer && !victimID.isFood && !victimID.isEjected &&
+                    (eaterID.isPlayerCell || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)))) {
+                    if (victimID.isVirus) window._lmRecEv('v', 1);
+                    else if (!victimID.isPlayerCellMulti && victimID.size * victimID.size >= 2500) window._lmRecEv('k', victimID.size * victimID.size / 100);
+                }
                 /*
                  * ========================================================
                  * EXPANDING LAND CINEMATIC EAT EFFECTS
@@ -53889,6 +53954,8 @@ Most cells eaten   : ${mostCellsEaten}
                     window.LMEvents.emit('massUpdate', { mass: Math.round(+this.playerMass || 0), cells: this.playerCells ? this.playerCells.length : 0 });
                 }
             }
+            /* Replay Studio samples (4/s): mass, cells and leaderboard place */
+            if (this.play && window._lmRecLive && this === window.legendmod) window._lmRecSample(this);
 
             this.updateMultiboxUnitPositions();
         },
@@ -84825,6 +84892,21 @@ function LMadvertisement2020() {
 
 
 
+/* An empty world before a replay starts (also used by Replay Studio to seek back). */
+function lmReplayResetWorld() {
+    application.flushData()
+    legendmod.indexedCells = {}
+    legendmod.cells = []
+    legendmod.removedCells = []
+    legendmod.food = []
+    legendmod.viruses = []
+    legendmod.cellcolors = []
+    legendmod.playerCells = []
+    legendmod.playerCellIDs = []
+    if (legendmod._playerCellIDSet) legendmod._playerCellIDSet.clear();
+    legendmod.playerCellsMulti = []
+}
+window.lmReplayResetWorld = lmReplayResetWorld;
 function playReplayLM(temp, startAt) {
     if (temp && window.RecordedProtocol[temp]) {
         window._lmReplayPaused = false;
@@ -84835,18 +84917,8 @@ function playReplayLM(temp, startAt) {
             window.replayTimeOuts=[]
         }*/
         clearTimeout(window.replayTimeOuts)
-        application.flushData()
+        lmReplayResetWorld()
         $('#pause-hud').text(textLanguage.pause);
-        legendmod.indexedCells = {}
-        legendmod.cells = []
-        legendmod.removedCells = []
-        legendmod.food = []
-        legendmod.viruses = []
-        legendmod.cellcolors = []
-        legendmod.playerCells = []
-        legendmod.playerCellIDs = []
-        if (legendmod._playerCellIDSet) legendmod._playerCellIDSet.clear();
-        legendmod.playerCellsMulti = []
 
         legendmod.playingReplayRecord = 0
 
@@ -84869,6 +84941,8 @@ function playReplayLM(temp, startAt) {
         legendmod.connectionIntegrity = _lmRt === 'agario' || _lmRt === 'deltio'
         legendmod.playingReplayRewind = false
         legendmod.playingReplayRewindNow = false
+        /* Replay Studio drives the playback it started itself (real packet times, stepping, seeking) */
+        if (window.LMReplayStudio && typeof window.LMReplayStudio.takeOver === 'function' && window.LMReplayStudio.takeOver(temp, startAt)) return;
         //if (parseInt(window.replayTiming, 10) < 0) {
         if (parseFloat(window.replayTiming) < 0) {
             toastr.warning("<b>[SERVER]:</b> When time traveling, wierd things happens...").css("width", "350px");
@@ -84918,7 +84992,13 @@ function lmReplayNeedActive() {
     if (window.toastr) toastr.info('Replay only: watch a replay first.');
     return false;
 }
+/* a replay played by Replay Studio takes these commands itself (true = handled) */
+function lmReplayStudioCmd(cmd, arg) {
+    var rs = window.LMReplayStudio;
+    return !!(rs && typeof rs.isDriving === 'function' && rs.isDriving() && rs.command(cmd, arg) !== false);
+}
 function lmReplayTogglePause() {
+    if (lmReplayStudioCmd('pause')) return;
     if (!lmReplayNeedActive()) return;
     if (window._lmReplayPaused) {
         window._lmReplayPaused = false;
@@ -84932,6 +85012,7 @@ function lmReplayTogglePause() {
     }
 }
 function lmReplaySpeed(f) {
+    if (lmReplayStudioCmd('speed', f)) return;
     if (!lmReplayNeedActive()) return;
     var v = parseFloat(window.replayTiming) || 20, s = v < 0 ? -1 : 1;
     v = Math.min(200, Math.max(1, Math.round(Math.abs(v) * f))) * s;
@@ -84940,6 +85021,7 @@ function lmReplaySpeed(f) {
     if (window.toastr) toastr.info('Replay delay: ' + Math.abs(v) + ' ms per packet');
 }
 function lmReplaySeek(delta) {
+    if (lmReplayStudioCmd('seek', delta)) return;
     if (!lmReplayNeedActive()) return;
     if (parseFloat(window.replayTiming) < 0) { if (window.toastr) toastr.info('Seeking is not available while playing backwards.'); return; }
     var srv = window.legendmod.playingReplayServer;
@@ -85324,4 +85406,31 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading analytics script:', e);
     }
+    /* Replay Studio (timeline, bookmarks, replay library): loaded the first time it is opened.
+     * lmReplayStudio('open') opens the window, ('instant') runs the instant replay hotkey. */
+    var _lmRsQueue = null;
+    window.lmReplayStudio = function (action, arg) {
+        if (window.LMReplayStudio && typeof window.LMReplayStudio.run === 'function') return window.LMReplayStudio.run(action, arg);
+        if (_lmRsQueue) { _lmRsQueue.push([action, arg]); return; }
+        _lmRsQueue = [[action, arg]];
+        try {
+            var rsScript = document.createElement('script');
+            rsScript.type = 'text/javascript';
+            rsScript.src = 'https://www.legendmod.ml/ogario/modules/replaystudio.js?v=' + (window.OgVer || '');
+            rsScript.onload = function () {
+                var q = _lmRsQueue || [];
+                _lmRsQueue = null;
+                if (window.LMReplayStudio && typeof window.LMReplayStudio.run === 'function') q.forEach(function (a) { window.LMReplayStudio.run(a[0], a[1]); });
+            };
+            rsScript.onerror = function () {
+                _lmRsQueue = null;
+                rsScript.remove();
+                if (window.toastr) toastr.error('Replay Studio could not be loaded.');
+            };
+            document.body.appendChild(rsScript);
+        } catch (e) {
+            _lmRsQueue = null;
+            console.warn('[LM] Error loading Replay Studio:', e);
+        }
+    };
 })();

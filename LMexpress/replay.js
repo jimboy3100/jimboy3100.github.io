@@ -10,6 +10,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<select id="savedArenas" class="form-control" required="" style="display:inline; margin-bottom: 10px; width: 70%"></select>' +	
 	'<button id="watchReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal">Watch</button>' +
 	'<button onclick="saveTextAsFile()" style="display:inline;">Save</button>' +
+	'<button id="openReplayStudiobtn" style="display:inline;" type="button" title="Timeline, bookmarks, instant replay and replay library">Studio</button>' +
     '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block" disabled>' +
     '<br>' +
     '<br>' +
@@ -112,6 +113,9 @@ $("#watchReplaybtn").click(function() {
 	window.replayHueRotate = document.getElementById("hueRotate").checked
     $("#server-token").val("replay^" + $("#savedArenas").val())
     $("#server-join").click()
+});
+$("#openReplayStudiobtn").click(function() {
+	if (typeof window.lmReplayStudio === 'function') window.lmReplayStudio('open', $("#savedArenas").val());
 });
 $("#stopReplaybtn").click(function() {
 	clearTimeout(window.replayTimeOuts)

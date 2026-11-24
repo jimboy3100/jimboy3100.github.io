@@ -308,6 +308,29 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-replayStudio': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayStudio']) || 'Open Replay Studio';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof window.lmReplayStudio === 'function') window.lmReplayStudio('toggle');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-instantReplay': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-instantReplay']) || 'Instant replay (last seconds; opens after you die)';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* plays the end of the current recording; while alive it waits for the death (a replay leaves the server) */
+					if (typeof window.lmReplayStudio === 'function') window.lmReplayStudio('instant');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-middleMultiView': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-middleMultiView']) || 'Toggle multibox middle view';
