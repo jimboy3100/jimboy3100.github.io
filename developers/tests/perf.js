@@ -123,14 +123,14 @@ check('history that is not a list is empty', P.validateHistory({ a: 1 }).length 
 
 /* ---- in a page (vm): off costs nothing, levels apply runtime only, survive a reload ---- */
 const src = fs.readFileSync(file, 'utf8');
-function page(settings, stored) {
-    const timers = [], toasts = [], store = Object.assign({}, stored || {}), calls = [];
+function page(settings, stored, extra) {
+    const timers = [], toasts = [], store = Object.assign({}, stored || {}), calls = [], listeners = {};
     const overlays = { style: { display: 'none' }, isConnected: true };
     const ctx = {
-        performance: { now: () => 0 }, Date, Math, JSON, Object, Array, String, Number, Float32Array, isFinite, console,
+        performance: { now: () => ctx._now || 0 }, Date, Math, JSON, Object, Array, String, Number, Float32Array, isFinite, console,
         setInterval: (f) => { timers.push(f); return timers.length; }, clearInterval: (i) => { timers[i - 1] = null; },
         /* addEventListener: perf.js watches visibilitychange (stall detector) */
-        document: { hidden: false, addEventListener() { }, removeEventListener() { }, getElementById: (id) => id === 'overlays' ? overlays : null, createElement: () => ({ style: {} }), body: { appendChild() { } } },
+        document: { hidden: false, addEventListener(t, f) { listeners[t] = f; }, removeEventListener() { }, getElementById: (id) => id === 'overlays' ? overlays : null, createElement: () => ({ style: {} }), body: { appendChild() { } } },
         localStorage: { getItem: (k) => store.hasOwnProperty(k) ? store[k] : null, setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } },
         toastr: { info: (t) => toasts.push(t) },
         application: { setAnimatedRainbowColor() { calls.push('rainbow'); }, applyHudBlur() { calls.push('blur'); }, saveSettings(o, n) { store[n] = JSON.stringify(o); } },
@@ -140,9 +140,10 @@ function page(settings, stored) {
     };
     ctx.window = ctx;
     ctx.legendmod5 = settings;
+    if (extra) Object.assign(ctx, extra);
     vm.createContext(ctx);
     vm.runInContext(src, ctx);
-    return { ctx, timers, toasts, store, calls, overlays };
+    return { ctx, timers, toasts, store, calls, overlays, listeners };
 }
 /* frames: n frames of dt ms with r ms of drawing */
 const frames = (pg, n, dt, r) => { for (let i = 0; i < n; i++) { pg.t = (pg.t || 1) + dt; pg.ctx._lmPerfFrame(pg.t, pg.t + r); } };
@@ -230,6 +231,153 @@ check('host only (no token) is kept', h[0].hosts.length === 1 && h[0].hosts[0] =
 check('report text is built', /FPS:/.test(nt.ctx.LMPerf.report()) && /disconnects 1/.test(nt.ctx.LMPerf.report()));
 nt.ctx.legendmod5.netHistory = false; nt.ctx.LMPerf.configChanged();
 check('network history off: timer stopped', nt.timers.filter(Boolean).length === 0);
+
+/* ---- stalls, freezes and the event list (diagnostics only) ---- */
+check('gap kinds', P.classifyGap(16.7, false, -1) === '' && P.classifyGap(150, false, -1) === 'stall' && P.classifyGap(1500, false, -1) === 'freeze' &&
+    P.classifyGap(1500, true, -1) === 'background' && P.classifyGap(20000, false, -1) === 'pause' && P.classifyGap(1500, false, 200) === 'return' &&
+    P.classifyGap(1500, false, 5000) === 'freeze' && P.classifyGap(0, false, -1) === '');
+check('host only: path, query and user:password dropped', P.hostOf('wss://user:pw@srv.example.com:443/ws?token=secret') === 'srv.example.com' &&
+    P.hostOf('ws://1.2.3.4:8080/?key=abc') === '1.2.3.4' && P.hostOf('wss://[::1]:443/x') === '[::1]' && P.hostOf('token=abc') === '' && P.hostOf(null) === '');
+const ring = P.createEventRing(200);
+for (let i = 0; i < 260; i++) ring.push({ t: i * 10000, w: 0, type: 'freeze', dur: i, info: '' });
+check('event list bounded at 200, the oldest dropped', ring.size() === 200 && ring.list()[0].dur === 60 && ring.list()[199].dur === 259);
+ring.clear();
+ring.push({ t: 0, type: 'render error', dur: 3, info: 'x is null' }, true);
+ring.push({ t: 16, type: 'render error', dur: 5, info: 'x is null' }, true);
+ring.push({ t: 32, type: 'render error', dur: 4, info: 'other' }, true);
+check('the same error every frame is one entry with a count', ring.size() === 2 && ring.list()[0].n === 2 && ring.list()[0].dur === 5);
+check('event line', /^\d\d:\d\d:\d\d\.\d{3} freeze 1532 ms render 1490 ms$/.test(P.eventLine({ w: Date.now(), type: 'freeze', dur: 1532, info: 'render 1490 ms', n: 1 })));
+
+/* frame callbacks (raf) and drawn frames as drawRender.render calls them */
+const rec = (opts) => {
+    const pg = page(user(), null, opts);
+    pg.t = 1000;
+    pg.raf = (dt) => { pg.t += dt; pg.ctx._now = pg.t; pg.ctx._lmPerfFrame.raf(pg.t); };
+    pg.draw = (r, err) => { pg.ctx._lmPerfFrame(pg.t, pg.t + r, err); pg.ctx._now = pg.t + r; };
+    pg.frame = (dt, r, err) => { pg.raf(dt); pg.draw(r || 2, err); };
+    return pg;
+};
+let pr = page(user());
+pr.ctx.LMPerf.event('packet gap', 900, 'x');
+check('off: nothing hooked, events not kept', pr.ctx._lmPerfFrame == null && pr.ctx.LMPerf.events().length === 0);
+pr.listeners.visibilitychange();
+check('off: tab hidden / shown keeps nothing', pr.ctx.LMPerf.events().length === 0);
+pr = rec();
+pr.ctx.LMPerf.keepRecording(true);
+check('recording on: frame and callback hooks set', typeof pr.ctx._lmPerfFrame === 'function' && typeof pr.ctx._lmPerfFrame.raf === 'function');
+for (let i = 0; i < 120; i++) pr.frame(16.7, 2);
+pr.frame(1500, 3);
+for (let i = 0; i < 10; i++) pr.frame(16.7, 2);
+let evs = pr.ctx.LMPerf.events(), rep = pr.ctx.LMPerf.report();
+check('1500 ms foreground stall is a freeze event with its time', evs.length === 1 && evs[0].type === 'freeze' && evs[0].dur === 1500 && evs[0].w > 0);
+check('report: freeze counted with its duration', /Freezes \(≥250 ms, foreground\): 1, worst 1500 ms/.test(rep) && /stalls ≥100ms: 1/.test(rep));
+check('report: the freeze is in the frame times (mean FPS) and long frames', /FPS: 3\d\.\d/.test(rep) && /1 recent, 1 measured in total/.test(rep) && /p99: |p50\/p95\/p99/.test(rep));
+check('report lists the event', /\n  \d\d:\d\d:\d\d\.\d{3} freeze 1500 ms/.test(rep));
+/* adaptive performance's own seconds still leave the gap out */
+pr = rec();
+pr.ctx.legendmod5.adaptivePerf = true; pr.ctx.LMPerf.configChanged();
+for (let i = 0; i < 200; i++) { pr.frame(16.7, 2); if (i % 50 === 0) pr.frame(1500, 2); }
+check('adaptive performance ignores the freezes (no level for 60 FPS with gaps)', pr.ctx.LMPerf.level() === 0 && pr.ctx.LMPerf.events().filter(e => e.type === 'freeze').length === 4);
+/* a frame that throws: its time and the error are kept */
+pr = rec(); pr.ctx.LMPerf.keepRecording(true);
+for (let i = 0; i < 5; i++) pr.frame(16.7, 2);
+pr.frame(16.7, 40, new Error('boom'));
+pr.frame(16.7, 41, new Error('boom'));
+evs = pr.ctx.LMPerf.events(); rep = pr.ctx.LMPerf.report();
+check('render throw: timing and error recorded (repeats merged)', evs.length === 1 && evs[0].type === 'render error' && evs[0].info === 'boom' && evs[0].n === 2 && evs[0].dur === 41 && /Frames that failed to draw: 2/.test(rep));
+check('render throw: the frame is in the frame times', /last 6 frames/.test(rep));
+/* the tab hidden for 5 s and shown: not a freeze, not a frame time */
+pr = rec(); pr.ctx.LMPerf.keepRecording(true);
+for (let i = 0; i < 30; i++) pr.frame(16.7, 2);
+pr.ctx.document.hidden = true; pr.ctx._now = pr.t + 5; pr.listeners.visibilitychange();
+pr.t += 5000; pr.ctx._now = pr.t; pr.ctx.document.hidden = false; pr.listeners.visibilitychange();
+pr.frame(16.7, 2);
+for (let i = 0; i < 30; i++) pr.frame(16.7, 2);
+evs = pr.ctx.LMPerf.events(); rep = pr.ctx.LMPerf.report();
+check('visibility transition: listed, not a freeze or stall', evs.map(e => e.type + ':' + e.info).join() === 'visibility:hidden,visibility:visible' && /Freezes \(≥250 ms, foreground\): 0/.test(rep) && !/stalls ≥100ms/.test(rep));
+check('visibility transition: not a frame time', /0 recent, 0 measured in total/.test(rep) && /last 59 frames/.test(rep));
+/* a slow frame right after coming back: listed, not counted */
+pr.ctx.document.hidden = true; pr.listeners.visibilitychange(); pr.ctx.document.hidden = false; pr.listeners.visibilitychange();
+pr.frame(16.7, 2); pr.frame(400, 2);
+check('a freeze right after the tab came back is listed as such, not counted', /came back/.test(pr.ctx.LMPerf.events().pop().info) && /Freezes \(≥250 ms, foreground\): 0/.test(pr.ctx.LMPerf.report()));
+/* sleep / suspend over 10 s */
+pr.t += 20000; pr.frame(16.7, 2);
+check('a 20 s gap is a pause, not a freeze', pr.ctx.LMPerf.events().pop().type === 'pause' && /Freezes \(≥250 ms, foreground\): 0/.test(pr.ctx.LMPerf.report()));
+
+/* ---- the real render loop of ogario.v4.js: callback times before the FPS limit, timing in a finally ---- */
+const v4 = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+const rStart = v4.indexOf('\n        render() {\n            /* Performance diagnostics');
+const rEnd = v4.indexOf('\n        init() {\n            this.setCanvas();', rStart);
+const resetSrc = /\n        (_lmResetFreezeDetector\(\) \{[\s\S]*?\n        \}),\n/.exec(v4);
+check('render() and the freeze detector reset found in ogario.v4.js', rStart > 0 && rEnd > rStart && !!resetSrc);
+const loop = (settings, frameFn, extra) => {
+    const pg = page(Object.assign(user(), settings), null, extra);
+    const warns = [];
+    const dr = { countFps() { }, renderFrame: frameFn || (() => { }), ctx: null };
+    Object.assign(pg.ctx, {
+        defaultmapsettings: pg.ctx.legendmod5, LM: { play: true }, drawRender: dr, requestAnimationFrame() { },
+        console: { log() { }, error() { }, warn(...a) { warns.push(a); } }
+    });
+    vm.runInContext('drawRender.render = (' + '{' + v4.slice(rStart, rEnd) + '\n}).render;', pg.ctx);
+    pg.t = 1000;
+    pg.tick = (dt) => { pg.t += dt; pg.ctx._now = pg.t; dr.render(); };
+    pg.warns = warns; pg.dr = dr;
+    return pg;
+};
+let lp = loop({ fpsLimit: 10 });
+lp.ctx.LMPerf.keepRecording(true);
+let drawn = 0; lp.dr.renderFrame = () => { drawn++; lp.ctx._now += 3; };
+for (let i = 0; i < 180; i++) lp.tick(16.7);
+rep = lp.ctx.LMPerf.report();
+check('FPS limit 10: frames skipped on purpose (about 1 in 6 drawn)', drawn >= 25 && drawn <= 35);
+check('FPS limit gaps: no stall, freeze or long frame, counted as FPS-limit frames', !/stalls ≥100ms/.test(rep) && /Freezes \(≥250 ms, foreground\): 0/.test(rep) && /0 recent, 0 measured in total, \d+ only long by the FPS limit/.test(rep));
+lp.tick(700);
+for (let i = 0; i < 30; i++) lp.tick(16.7);
+check('FPS limit on: a real 700 ms stall is still a freeze', lp.ctx.LMPerf.events().some(e => e.type === 'freeze' && e.dur === 700));
+lp = loop({ fpsLimit: 0 });
+lp.ctx.LMPerf.keepRecording(true);
+let n = 0; lp.dr.renderFrame = () => { lp.ctx._now += 30; if (++n === 5) throw new Error('bad cell'); };
+for (let i = 0; i < 10; i++) lp.tick(16.7);
+evs = lp.ctx.LMPerf.events();
+check('render loop: a frame that throws keeps its 30 ms and the error, drawing goes on', evs.length === 1 && evs[0].type === 'render error' && evs[0].dur === 30 && evs[0].info === 'bad cell' && n === 10);
+check('render loop: the error still reaches the frame error handler', /bad cell/.test(lp.dr._lastRenderErrorMsg || ''));
+lp = loop({ fpsLimit: 0 });
+let offDrawn = 0; lp.dr.renderFrame = () => { offDrawn++; };
+for (let i = 0; i < 5; i++) lp.tick(16.7);
+check('render loop with everything off: draws, no hook, nothing kept', offDrawn === 5 && lp.ctx._lmPerfFrame == null && lp.ctx.LMPerf.events().length === 0);
+/* freeze detector: host only, a packet gap event, latches reset on a new connection */
+lp = loop({ fpsLimit: 0 });
+lp.ctx.LMPerf.keepRecording(true);
+const conn = { ws: 'wss://srv.example.com:443/?token=secret', serverType: 'x', pps: 0, play: true, isSocketOpen: () => true, _lmLastWorldUpdate: Date.now() - 3500 };
+vm.runInContext('legendmod._lmResetFreezeDetector = ({' + resetSrc[1] + '})._lmResetFreezeDetector;', Object.assign(lp.ctx, { legendmod: Object.assign(lp.ctx.legendmod, conn) }));
+lp.tick(16.7);
+const fz = lp.warns.find(w => /LM FREEZE\] No world update/.test(w[0]));
+check('freeze log has the host only, no token', !!fz && fz[1].server === 'srv.example.com' && JSON.stringify(lp.warns).indexOf('secret') < 0);
+lp.ctx.legendmod._lmLastWorldUpdate = Date.now();
+lp.tick(16.7);
+check('packet gap listed when world updates come back', lp.ctx.LMPerf.events().some(e => e.type === 'packet gap' && e.dur >= 3500));
+lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 2000; lp.tick(16.7);
+lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 3500; lp.tick(16.7);
+check('latched again by a new stall', !!lp.dr._lmFreezeLogged && !!lp.dr._lmStallLogged && lp.dr._lmStallMax >= 3500);
+lp.ctx.legendmod._lmResetFreezeDetector();
+check('reset on connect / close: latches and the last update time cleared', !lp.dr._lmFreezeLogged && !lp.dr._lmStallLogged && !lp.dr._lmStallMax && lp.ctx.legendmod._lmLastWorldUpdate === 0);
+check('ogario calls the reset on open and on close', (v4.match(/if \(this === window\.legendmod\) this\._lmResetFreezeDetector\(\);/g) || []).length === 2);
+
+/* long tasks: only observed while recording, where supported */
+const observers = [];
+function FakePO(cb) { this.cb = cb; this.on = false; observers.push(this); }
+FakePO.prototype.observe = function () { this.on = true; };
+FakePO.prototype.disconnect = function () { this.on = false; };
+FakePO.supportedEntryTypes = ['longtask'];
+pr = rec({ PerformanceObserver: FakePO });
+check('long tasks: no observer while off', observers.length === 0);
+pr.ctx.LMPerf.keepRecording(true);
+check('long tasks: observed while recording', observers.length === 1 && observers[0].on);
+observers[0].cb({ getEntries: () => [{ duration: 60, startTime: 900 }, { duration: 180, startTime: 950 }] });
+evs = pr.ctx.LMPerf.events();
+check('long tasks: all counted, from 100 ms listed', evs.length === 1 && evs[0].type === 'long task' && evs[0].dur === 180 && /Long tasks \(≥50 ms\): 2, worst 180 ms/.test(pr.ctx.LMPerf.report()));
+pr.ctx.LMPerf.keepRecording(false);
+check('long tasks: observer stopped with recording', !observers[0].on && pr.ctx._lmPerfFrame == null);
 
 console.log(fail ? fail + ' failed' : 'all perf checks passed');
 process.exit(fail ? 1 : 0);

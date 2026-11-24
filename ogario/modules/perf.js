@@ -9,7 +9,11 @@
  * a preset or Performance mode never sees (or keeps) a lowered value.
  *
  * Diagnostics window (hotkey without a default key, or the button in Animation): frame time
- * graph, percentiles, long frames, render time, renderer and the adaptive level.
+ * graph, percentiles, long frames, render time, renderer and the adaptive level, and a list of
+ * the last 200 timestamped events (freezes of 250 ms - 10 s in the foreground, long tasks,
+ * frames that failed, packet gaps, renderer changes, tab hidden / shown, disconnects).
+ * Freezes are measured between frame callbacks, before the FPS limit, so its own gaps and a
+ * tab in the background are not stalls. All of this is kept only while measuring.
  * Network quality history (option, off by default): ping, jitter, packet rate and
  * disconnects of this session, with a short summary of the last sessions.
  *
@@ -283,7 +287,67 @@
         return out.slice(-HISTORY_MAX);
     }
 
+    /* host of a server address: the path and query may hold a token, user:password@ too */
+    function hostOf(ws) {
+        try {
+            var m = /^[a-z][a-z0-9+.\-]*:\/\/(?:[^\/?#@]*@)?(\[[^\]\/?#]*\]|[^\/?#:]+)/i.exec(String(ws || ''));
+            return m ? m[1].slice(0, 80) : '';
+        } catch (e) { return ''; }
+    }
+
+    /* ---- stalls and freezes (diagnostics only: Adaptive performance has its own filter) ---- */
+    var STALL_MS = 100, FREEZE_MS = 250, PAUSE_MS = 10000, RETURN_GRACE = 500;
+
+    /* One gap between two frame callbacks (or two drawn frames when the callback times are
+     * unknown), in ms. background: the tab was hidden, or was hidden / shown during the gap
+     * (the browser stops frames there: not a stall). sinceVisible: ms from the tab being shown
+     * again to the end of the gap (-1: not known). Returns '' (normal), 'background',
+     * 'pause' (over 10 s: sleep or suspend), 'return' (a slow frame right after the tab came
+     * back: listed, not counted), 'stall' (100-250 ms) or 'freeze' (250 ms - 10 s). */
+    function classifyGap(g, background, sinceVisible) {
+        if (!(g > 0)) return '';
+        if (background) return 'background';
+        if (g > PAUSE_MS) return 'pause';
+        if (g < STALL_MS) return '';
+        if (sinceVisible >= 0 && sinceVisible <= RETURN_GRACE) return 'return';
+        return g >= FREEZE_MS ? 'freeze' : 'stall';
+    }
+
+    /* The last `max` timestamped events (freezes, long tasks, errors...). An event marked
+     * `merge` that repeats the previous one within 5 s only counts up (an error every frame). */
+    function createEventRing(max) {
+        var list = [];
+        return {
+            max: max,
+            list: function () { return list.slice().sort(function (a, b) { return a.t - b.t; }); },
+            size: function () { return list.length; },
+            clear: function () { list.length = 0; },
+            push: function (ev, merge) {
+                var last = list[list.length - 1];
+                if (merge && last && last.type === ev.type && last.info === ev.info && ev.t - last.tl < 5000) {
+                    last.n++; last.tl = ev.t;
+                    if (ev.dur > last.dur) last.dur = ev.dur;
+                    return last;
+                }
+                ev.n = 1; ev.tl = ev.t;
+                list.push(ev);
+                if (list.length > max) list.splice(0, list.length - max);
+                return ev;
+            }
+        };
+    }
+
+    function pad(n, l) { n = String(n); while (n.length < (l || 2)) n = '0' + n; return n; }
+    /* "21:23:05.120 freeze 1532 ms render 1490 ms" (local time) */
+    function eventLine(ev) {
+        var d = new Date(ev.w);
+        return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + pad(d.getMilliseconds(), 3) +
+            ' ' + ev.type + (ev.dur ? ' ' + Math.round(ev.dur) + ' ms' : '') + (ev.info ? ' ' + ev.info : '') + (ev.n > 1 ? ' x' + ev.n : '');
+    }
+
     var pure = {
+        hostOf: hostOf, classifyGap: classifyGap, createEventRing: createEventRing, eventLine: eventLine,
+        STALL_MS: STALL_MS, FREEZE_MS: FREEZE_MS, PAUSE_MS: PAUSE_MS,
         TARGETS: TARGETS, LEVEL_KEYS: LEVEL_KEYS, MAX_LEVEL: MAX_LEVEL, CTL: CTL,
         snapTarget: snapTarget, percentile: percentile, sortedCopy: sortedCopy, snapRefresh: snapRefresh,
         effectiveTarget: effectiveTarget, displayBound: displayBound, newController: newController, controllerStep: controllerStep,
@@ -305,6 +369,7 @@
 
     var RING = 600; /* frames kept for the diagnostics window */
     var LONG_FRAME = 50; /* ms */
+    var EVENTS_MAX = 200;
     var HISTORY_KEY = 'lmNetHistory';
 
     var dms = function () { return window.legendmod5 || null; };
@@ -317,13 +382,25 @@
 
     /* ---------- frame measuring ---------- */
 
+    /* iv: time between drawn frames; rt: drawing time; sg: the longest wait for a frame
+     * callback inside iv (iv without the frames the FPS limit skipped on purpose) */
     var fr = {
-        iv: new Float32Array(RING), rt: new Float32Array(RING), at: 0, n: 0,
+        iv: new Float32Array(RING), rt: new Float32Array(RING), sg: new Float32Array(RING), at: 0, n: 0,
         prev: 0, longTotal: 0, frames: 0,
         secStart: 0, secFrames: 0, secTime: 0, secRender: [], secAll: [], secGame: [],
-        refreshHz: 0, lastFps: 0, menu: false, overlays: null
+        refreshHz: 0, lastFps: 0, menu: false, overlays: null,
+        /* frame callbacks (drawRender.render calls _lmPerfFrame.raf before the FPS limit) */
+        rafPrev: 0, rafMax: 0, rafSeen: false, lastT1: 0, lastRt: 0,
+        /* the last time the tab was hidden or shown, and shown */
+        visAt: 0, visibleAt: 0,
+        stallCount: 0, stallMax: 0, stallLast: 0,
+        frzN: 0, frzMax: 0, frzTotal: 0, frzLast: 0,
+        capped: 0, bgGaps: 0, renderErrors: 0, ltN: 0, ltMax: 0, renderer: ''
     };
-    var adaptiveOn = false, diagOpen = false;
+    var events = createEventRing(EVENTS_MAX);
+    var LONGTASK_LOG = 100; /* long tasks from this long are listed (all are counted) */
+    var lto = null; /* PerformanceObserver('longtask') while measuring, where supported */
+    var adaptiveOn = false, diagOpen = false, keepRec = false;
     var ctl = newController();
     var overrides = null;
     var scaleApplied = 0;
@@ -338,9 +415,68 @@
         fr.secStart = t; fr.secFrames = 0; fr.secTime = 0; fr.secRender.length = 0; fr.secAll.length = 0; fr.secGame.length = 0;
     }
 
-    /* called by drawRender.render() around renderFrame() while measuring */
-    function onFrame(t0, t1) {
-        var dt = fr.prev ? t0 - fr.prev : 0;
+    /* Events are kept only while measuring: with diagnostics and Adaptive performance off
+     * this returns at once. t: performance.now() time of the event (default: now). */
+    function pushEvent(type, dur, info, merge, t) {
+        if (window._lmPerfFrame !== onFrame) return null;
+        var n = now();
+        if (t == null) t = n;
+        return events.push({ t: t, w: Date.now() - (n - t), type: type, dur: dur > 0 ? Math.round(dur) : 0, info: cleanText(info, 120) }, merge);
+    }
+
+    function freezeInfo(t, g) {
+        var lm = window.legendmod, out = [];
+        /* the frame drawn at the start of the gap took this long */
+        if (fr.lastT1 >= t - g && fr.lastRt >= 1) out.push('render ' + Math.round(fr.lastRt) + ' ms');
+        if (fr.menu) out.push('menu');
+        else if (lm && lm.play) out.push('playing');
+        if (lm && lm.cells) out.push(lm.cells.length + ' cells');
+        try { if (window.performance && performance.memory) out.push(Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB heap'); } catch (e) { }
+        return out.join(', ');
+    }
+
+    /* the tab was hidden, or hidden / shown, during the gap ending at t */
+    function inBackground(t, g) { return !!document.hidden || (fr.visAt > 0 && fr.visAt >= t - g); }
+
+    /* a gap between two frame callbacks ending at t: counts stalls and freezes */
+    function noteGap(t, g) {
+        var kind = classifyGap(g, inBackground(t, g), fr.visibleAt ? t - fr.visibleAt : -1);
+        if (!kind) return kind;
+        if (kind === 'background') { fr.bgGaps++; return kind; }
+        if (kind === 'stall' || kind === 'freeze') {
+            fr.stallCount++;
+            fr.stallLast = g;
+            if (g > fr.stallMax) fr.stallMax = g;
+        }
+        if (kind === 'freeze') {
+            fr.frzN++; fr.frzTotal += g; fr.frzLast = Date.now();
+            if (g > fr.frzMax) fr.frzMax = g;
+            pushEvent('freeze', g, freezeInfo(t, g));
+        } else if (kind === 'pause') {
+            pushEvent('pause', g, 'over ' + PAUSE_MS / 1000 + ' s, sleep or suspend (not counted)');
+        } else if (kind === 'return' && g >= FREEZE_MS) {
+            pushEvent('freeze', g, 'right after the tab came back (not counted)');
+        }
+        return kind;
+    }
+
+    /* called by drawRender.render() at the start of every frame callback, also of those the
+     * FPS limit skips: the callback gaps show the stalls, the FPS limit's own gaps are not */
+    function onRaf(t) {
+        if (fr.rafPrev) {
+            var g = t - fr.rafPrev;
+            if (g > fr.rafMax && !inBackground(t, g)) fr.rafMax = g;
+            noteGap(t, g);
+        }
+        fr.rafPrev = t;
+        fr.rafSeen = true;
+    }
+
+    /* called by drawRender.render() around renderFrame() while measuring, also when it threw
+     * (err: what it threw) */
+    function onFrame(t0, t1, err) {
+        var prev = fr.prev;
+        var dt = prev ? t0 - prev : 0;
         fr.prev = t0;
         var hidden = document.hidden;
         var menu = menuOpen();
@@ -349,35 +485,45 @@
             if (adaptiveOn) applyLevel(false);
         }
         if (!fr.secStart) resetSecond(t0);
-        /* a gap (tab in the background, a stall) is not a frame time */
-        if (!hidden && dt > 0 && dt < 1000) {
-            fr.secAll.push(dt);
-            var rt = t1 - t0;
-            fr.iv[fr.at] = dt; fr.rt[fr.at] = rt;
+        var rt = t1 - t0;
+        /* the longest wait for the browser in this frame; without callback times (an older
+         * caller) the frame gap itself, with the menu left out as before (its FPS cap) */
+        var sg = dt;
+        if (fr.rafSeen) sg = fr.rafMax;
+        else if (!menu) noteGap(t0, dt);
+        fr.rafSeen = false; fr.rafMax = 0;
+        /* Diagnostics: every frame in the foreground, long ones too (they are the freezes);
+         * a gap in which the tab was hidden or the device slept is not a frame time */
+        if (!hidden && dt > 0 && dt <= PAUSE_MS && !(prev && fr.visAt >= prev)) {
+            fr.iv[fr.at] = dt; fr.rt[fr.at] = rt; fr.sg[fr.at] = sg;
             fr.at = (fr.at + 1) % RING;
             if (fr.n < RING) fr.n++;
             fr.frames++;
-            if (dt > LONG_FRAME) fr.longTotal++;
+            if (sg > LONG_FRAME) fr.longTotal++;
+            else if (dt > LONG_FRAME) fr.capped++; /* long only because of the FPS limit */
+        }
+        /* Adaptive performance: a gap (tab in the background, a stall) is not a frame time */
+        if (!hidden && dt > 0 && dt < 1000) {
+            fr.secAll.push(dt);
             if (!menu) { fr.secFrames++; fr.secTime += dt; fr.secRender.push(rt); fr.secGame.push(dt); }
         }
-        /* Track stalls (100ms–10s) that the normal frame window ignores.
-         * Skip when the tab was recently hidden (the first rAF after a background tab
-         * returns has document.hidden already false, but the gap is from the tab being
-         * in the background — not a real stall). Also cap at 10s: laptop sleep or
-         * hibernation is not a game stall. Skip when the menu is open: the menuFpsCap
-         * deliberately throttles frames, producing 100ms+ gaps that are not stalls. */
-        if (!hidden && !menu && dt >= 100 && dt <= 10000 && (!fr._hiddenUntil || t0 - fr._hiddenUntil > 500)) {
-            fr.stallCount = (fr.stallCount || 0) + 1;
-            fr.stallLast = dt;
-            if (!fr.stallMax || dt > fr.stallMax) fr.stallMax = dt;
+        fr.lastT1 = t1; fr.lastRt = rt;
+        if (err) {
+            fr.renderErrors++;
+            pushEvent('render error', rt, String((err && err.message) || err).slice(0, 100), true);
         }
         if (t1 - fr.secStart >= 1000) {
             endSecond();
             resetSecond(t1);
         }
     }
+    onFrame.raf = onRaf;
 
     function endSecond() {
+        /* the renderer changed (WebGL lost, turned off...) */
+        var rn = rendererName();
+        if (fr.renderer && rn !== fr.renderer) pushEvent('renderer', 0, fr.renderer + ' -> ' + rn);
+        fr.renderer = rn;
         /* refresh rate: the fastest regular frames seen (menu frames count: they are cheap) */
         if (fr.secAll.length >= 20) {
             var p10 = percentile(sortedCopy(fr.secAll), 10);
@@ -399,16 +545,43 @@
         if (change) applyLevel(true);
     }
 
+    /* long tasks of the page (Chrome / Android), only while measuring */
+    function longTasks(on) {
+        if (on && !lto) {
+            try {
+                var PO = window.PerformanceObserver;
+                if (!PO || !PO.supportedEntryTypes || PO.supportedEntryTypes.indexOf('longtask') < 0) return;
+                lto = new PO(function (list) {
+                    var es = list.getEntries();
+                    for (var i = 0; i < es.length; i++) {
+                        var d = +es[i].duration || 0;
+                        fr.ltN++;
+                        if (d > fr.ltMax) fr.ltMax = d;
+                        if (d >= LONGTASK_LOG) pushEvent('long task', d, '', false, +es[i].startTime || null);
+                    }
+                });
+                lto.observe({ entryTypes: ['longtask'] });
+            } catch (e) { lto = null; }
+        } else if (!on && lto) {
+            try { lto.disconnect(); } catch (e) { }
+            lto = null;
+        }
+    }
+
     function measuring(on) {
         if (on) {
             if (window._lmPerfFrame !== onFrame) {
                 fr.prev = 0; fr.secStart = 0;
+                fr.rafPrev = 0; fr.rafMax = 0; fr.rafSeen = false; fr.renderer = '';
                 window._lmPerfFrame = onFrame;
             }
         } else if (window._lmPerfFrame) {
             window._lmPerfFrame = null;
         }
+        longTasks(on);
     }
+    /* the diagnostics window, Adaptive performance or "keep recording" need the frame times */
+    function wantMeasuring() { measuring(adaptiveOn || diagOpen || keepRec); }
 
     /* ---------- applying a level ---------- */
 
@@ -493,7 +666,7 @@
             ctl = newController();
             fr.menu = menuOpen();
         }
-        measuring(adaptiveOn || diagOpen);
+        wantMeasuring();
     }
 
     /* ---------- network quality ---------- */
@@ -542,14 +715,10 @@
         if (diagOpen && net.ticks % 2 === 0) drawNetGraph();
     }
 
-    function hostOf(ws) {
-        try {
-            var m = /^[a-z]+:\/\/([^\/?#:]+)/i.exec(String(ws || ''));
-            return m ? m[1].slice(0, 80) : '';
-        } catch (e) { return ''; }
-    }
-
     function netEvent(type, info) {
+        /* in the event list too, to line disconnects up with freezes */
+        if (type === 'close') pushEvent('disconnect', 0, 'code ' + Math.round(num(info && info.code)) + (info && info.wasClean === false ? ' (not clean)' : ''));
+        else if (type === 'open') pushEvent('connect', 0, hostOf(info && info.ws));
         if (!net.active) return;
         if (type === 'close') {
             var e = info || {};
@@ -602,10 +771,13 @@
     }
 
     window.addEventListener('pagehide', function () { if (net.active) saveSession(); });
-    /* Track when the tab returns from background so the stall detector can ignore the
-     * first rAF gap (document.hidden is already false by the time the first frame fires). */
+    /* When the tab is hidden or shown: a frame gap around it is the browser pausing frames,
+     * not a stall (document.hidden is already false by the time the first frame fires). */
     document.addEventListener('visibilitychange', function () {
-        if (!document.hidden) fr._hiddenUntil = performance.now();
+        var t = now();
+        fr.visAt = t;
+        if (!document.hidden) fr.visibleAt = t;
+        pushEvent('visibility', 0, document.hidden ? 'hidden' : 'visible');
     });
 
     /* ---------- diagnostics window ---------- */
@@ -627,7 +799,7 @@
             var j = (fr.at - n + i + RING) % RING;
             iv.push(fr.iv[j]); rt.push(fr.rt[j]);
             si += fr.iv[j]; sr += fr.rt[j];
-            if (fr.iv[j] > LONG_FRAME) longN++;
+            if (fr.sg[j] > LONG_FRAME) longN++;
         }
         var s = sortedCopy(iv);
         return {
@@ -650,7 +822,11 @@
         lines.push('FPS: ' + f1(st.fps) + ' (last ' + st.n + ' frames)');
         lines.push('Frame time p50/p95/p99: ' + f1(st.p50) + ' / ' + f1(st.p95) + ' / ' + f1(st.p99) + ' ms');
         lines.push('Long frames (>' + LONG_FRAME + ' ms): ' + st.longN + ' recent, ' + st.longTotal + ' measured in total' +
-            (fr.stallCount ? ', stalls ≥100ms: ' + fr.stallCount + ' (worst ' + Math.round(fr.stallMax || 0) + ' ms)' : ''));
+            (fr.stallCount ? ', stalls ≥100ms: ' + fr.stallCount + ' (worst ' + Math.round(fr.stallMax || 0) + ' ms)' : '') +
+            (fr.capped ? ', ' + fr.capped + ' only long by the FPS limit (not counted)' : ''));
+        lines.push(freezeLine(true));
+        if (fr.ltN || lto) lines.push('Long tasks (≥50 ms): ' + fr.ltN + (fr.ltN ? ', worst ' + Math.round(fr.ltMax) + ' ms' : '') + ' (listed from ' + LONGTASK_LOG + ' ms)');
+        if (fr.renderErrors) lines.push('Frames that failed to draw: ' + fr.renderErrors);
         lines.push('Render ' + f1(st.render) + ' ms, other ' + f1(st.other) + ' ms per frame');
         lines.push('Cells: ' + cells + ', renderer: ' + rendererName());
         lines.push('devicePixelRatio: ' + (window.devicePixelRatio || 1) + ', render scale: ' + (dr && dr.dpr ? f1(dr.dpr) : '-') +
@@ -664,12 +840,24 @@
         net.closes.slice(-5).forEach(function (c) {
             lines.push('  closed ' + new Date(c.t).toLocaleTimeString() + ': code ' + c.code + (c.reason ? ' "' + c.reason + '"' : '') + (c.clean ? '' : ' (not clean)') + (c.openMs ? ', open ' + Math.round(c.openMs / 1000) + ' s' : ''));
         });
+        var ev = events.list();
+        lines.push('Events (' + ev.length + ', last ' + EVENTS_MAX + ' kept' + (keepRec ? ', recording also with the window closed' : '') + '):');
+        ev.forEach(function (e) { lines.push('  ' + eventLine(e)); });
         var hist = readHistory();
         if (hist.length) {
             lines.push('Last sessions:');
             hist.slice(-5).forEach(function (h) { lines.push('  ' + sessionLine(h)); });
         }
         return lines;
+    }
+
+    /* freezes: foreground frame callback gaps from 250 ms to 10 s */
+    function freezeLine(long) {
+        var t = fr.frzLast ? new Date(fr.frzLast) : null;
+        return (long ? 'Freezes (≥' + FREEZE_MS + ' ms, foreground): ' : T('lmPerfFreezes', 'Freezes') + ' (≥' + FREEZE_MS + ' ms): ') + fr.frzN +
+            (fr.frzN ? ', ' + T('lmPerfWorst', 'worst') + ' ' + Math.round(fr.frzMax) + ' ms, ' + T('lmPerfTotal', 'total') + ' ' + Math.round(fr.frzTotal) + ' ms' +
+                (t ? ', ' + T('lmPerfLast', 'last') + ' ' + pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds()) : '') : '') +
+            (long && fr.bgGaps ? ' (' + fr.bgGaps + ' background gaps not counted)' : '');
     }
 
     function fmtDur(ms) {
@@ -737,6 +925,9 @@
         body.appendChild(cv);
         var stats = el('pre', 'margin:4px 0 6px;white-space:pre-wrap;font:11px/1.35 monospace;color:' + tc + ';');
         body.appendChild(stats);
+        body.appendChild(el('div', 'font-weight:700;color:' + mc + ';margin-top:2px;', T('lmPerfEvents', 'Events (newest first)')));
+        var evs = el('pre', 'margin:2px 0 6px;white-space:pre-wrap;font:10px/1.35 monospace;color:' + tc2 + ';max-height:84px;overflow:auto;');
+        body.appendChild(evs);
         body.appendChild(el('div', 'font-weight:700;color:' + mc + ';margin-top:2px;', T('lmNetQuality', 'Network quality (this session)')));
         var nv = el('canvas', 'display:block;width:100%;height:56px;background:rgba(0,0,0,0.35);border-radius:3px;margin-top:2px;');
         nv.width = 360; nv.height = 56;
@@ -759,19 +950,31 @@
             try { window.localStorage.removeItem(HISTORY_KEY); } catch (e) { }
             updateDiag();
         });
+        /* this session only: frame times and events go on with the window closed (it covers
+         * part of a phone screen), so a freeze while playing is in the report afterwards */
+        btn('lm-perf-keep', keepText(), function () {
+            keepRec = !keepRec;
+            var b = document.getElementById('lm-perf-keep');
+            if (b) b.textContent = keepText();
+            wantMeasuring();
+        });
         body.appendChild(row);
         /* keys and wheel stay in the window (Space would split), clicks do not reach the game */
         ['mousedown', 'mouseup', 'wheel', 'touchstart', 'touchmove', 'keydown', 'keyup'].forEach(function (t) {
             md.addEventListener(t, function (e) { e.stopPropagation(); }, { passive: true });
         });
         document.body.appendChild(md);
-        diag = { md: md, cv: cv, stats: stats, nv: nv, nstats: nstats, hist: hist, timer: 0 };
+        diag = { md: md, cv: cv, stats: stats, evs: evs, nv: nv, nstats: nstats, hist: hist, timer: 0 };
         diagOpen = true;
-        measuring(true);
+        wantMeasuring();
         setNet(true);
         diag.timer = setInterval(function () { try { updateDiag(); } catch (e) { } }, 500);
         updateDiag();
         drawNetGraph();
+    }
+
+    function keepText() {
+        return T('lmPerfKeepRec', 'Keep recording when closed') + ': ' + (keepRec ? T('lmOn', 'on') : T('lmOff', 'off'));
     }
 
     function closeDiag() {
@@ -780,7 +983,7 @@
         if (diag.md.parentNode) diag.md.parentNode.removeChild(diag.md);
         diag = null;
         diagOpen = false;
-        measuring(adaptiveOn);
+        wantMeasuring();
         var s = dms();
         setNet(!!(s && s.netHistory));
     }
@@ -854,10 +1057,13 @@
             'FPS ' + f1(st.fps) + (fr.refreshHz ? '   refresh ~' + fr.refreshHz + ' Hz' : '') + '\n' +
             'p50 ' + f1(st.p50) + '  p95 ' + f1(st.p95) + '  p99 ' + f1(st.p99) + ' ms\n' +
             T('lmPerfLong', 'Long frames') + ' (>' + LONG_FRAME + ' ms): ' + st.longN + ' / ' + st.n + '   ' + T('lmPerfTotal', 'total') + ' ' + st.longTotal + '\n' +
+            freezeLine(false) + '\n' +
             T('lmPerfRender', 'Render') + ' ' + f1(st.render) + ' ms   ' + T('lmPerfOther', 'other') + ' ' + f1(st.other) + ' ms\n' +
             T('lmPerfCells', 'Cells') + ' ' + (lm && lm.cells ? lm.cells.length : 0) + '   ' + rendererName() + '\n' +
             'devicePixelRatio ' + (window.devicePixelRatio || 1) + '   ' + T('lmPerfScale', 'render scale') + ' ' + (dr && dr.dpr ? f1(dr.dpr) : '-') + '\n' +
             T('lmAdaptiveShort', 'Adaptive performance') + ': ' + (adaptiveOn ? ctl.level + '/' + MAX_LEVEL + ' (' + Math.round(target) + ' FPS)' : T('lmOff', 'off'));
+        var ev = events.list();
+        diag.evs.textContent = ev.length ? ev.slice(-30).reverse().map(eventLine).join('\n') : T('lmPerfNoEvents', 'No freezes or other events yet.');
         var sum = sessionSummary(), pn = pingNow();
         diag.nstats.textContent =
             'ping ' + (pn.v || '-') + ' ms   avg ' + sum.pingAvg + '   p95 ' + sum.pingP95 + '   jitter ' + sum.jitter + ' ms\n' +
@@ -904,6 +1110,12 @@
         userValue: function (k) { var s = dms(); return overrides ? overrides.userValue(k) : (s ? s[k] : undefined); },
         level: function () { return adaptiveOn ? ctl.level : 0; },
         report: function () { return reportLines().join('\n'); },
+        /* an event for the diagnostics list (packet gaps from the freeze detector); nothing
+         * is kept while measuring is off */
+        event: function (type, dur, info) { pushEvent(cleanText(type, 30), +dur || 0, info); },
+        events: function () { return events.list(); },
+        hostOf: hostOf,
+        keepRecording: function (on) { keepRec = !!on; wantMeasuring(); },
         history: readHistory,
         /* for tests: force a level as if measured */
         _setLevel: function (l) {
