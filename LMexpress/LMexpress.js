@@ -7755,7 +7755,8 @@ function initializeLM(modVersion) {
                     '• Settings presets (with Undo) and NEW badges; settings in 12 languages<br>' +
                     '• Team pings (Help, Danger, Go here, Virus here) and gamepad support<br>' +
                     '• Replays: pause, speed, seek and a progress bar; Game Over card extras<br>' +
-                    '• New options are off: type a word in the settings search to find them', '', { timeOut: 14000, extendedTimeOut: 4000 });
+                    '• New options are off: type a word in the settings search to find them<br>' +
+                    '<a href="#" class="lm-dc-toast-link" style="text-decoration:underline;">Discover features</a>', '', { timeOut: 14000, extendedTimeOut: 4000 });
             }
             localStorage.setItem('lmLastSeenOgVer', String(window.OgVer));
         } catch (e) { }

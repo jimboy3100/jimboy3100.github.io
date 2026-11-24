@@ -86146,4 +86146,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
     window.lmSkinEditor = _lmLazyModule('skineditor.js', 'LMSkinEditor', 'The skin editor');
     window.lmMacroEditor = _lmLazyModule('macroeditor.js', 'LMMacroEditor', 'The macro editor');
     try { if (localStorage.getItem('lmCustomMacros')) window.lmMacroEditor('load'); } catch (e) { }
+    /* Discover features guide and "What works on this server" (Command Centre; opens by itself once
+     * after an update, only for players who had it before) */
+    try {
+        var discoveryScript = document.createElement('script');
+        discoveryScript.type = 'text/javascript';
+        discoveryScript.src = 'https://www.legendmod.ml/ogario/modules/discovery.js?v=' + (window.OgVer || '');
+        document.body.appendChild(discoveryScript);
+    } catch (e) {
+        console.warn('[LM] Error loading discovery script:', e);
+    }
 })();
