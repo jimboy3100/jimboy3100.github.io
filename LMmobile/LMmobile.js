@@ -24,6 +24,8 @@
     /* loaded twice: two sets of buttons, every tap split twice */
     if (window.LM_IS_MOBILE) return;
     window.LM_IS_MOBILE = true;
+    /* where this file came from: the control editor (LMmobile-editor.js) loads from the same place */
+    var _lmmSrc = (document.currentScript && document.currentScript.src) || '';
 
     /* ═══════════════════════════════════════════════════════════
      *  CSS
@@ -127,6 +129,8 @@
         '#lm-sp label span{color:#01d9cc;font-weight:700}' +
         '#lm-sp input[type=range]{-webkit-appearance:none;width:100%;height:4px;' +
         'background:rgba(1,217,204,.25);border-radius:2px;outline:none;margin-top:4px}' +
+        '#lm-sp #lm-ed-open{min-height:40px;border-radius:8px;border:1.5px solid rgba(1,217,204,.55);' +
+        'background:rgba(1,217,204,.16);color:#fff;font:700 12px/1 Ubuntu,Roboto,sans-serif;cursor:pointer}' +
         '#lm-sp input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;' +
         'width:18px;height:18px;border-radius:50%;background:#01d9cc;cursor:pointer;' +
         'box-shadow:0 0 6px rgba(1,217,204,.4)}' +
@@ -576,7 +580,9 @@
             '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> Multibox button (second player; uses more data)</label>' +
             '<label><input type="checkbox" id="lm-pingbtn"' + (prefs.pingBtn ? ' checked' : '') + '> Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)</label>' +
             '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> Net graph (FPS and ping of the last 30 seconds)</label>' +
-            '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> Direction on touch (no joystick): the cell moves toward where your finger touches</label>';
+            '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> Direction on touch (no joystick): the cell moves toward where your finger touches</label>' +
+            /* move, resize, fade or hide each touch control (LMmobile-editor.js, loaded on the first tap) */
+            '<button type="button" id="lm-ed-open">Edit controls</button>';
         drawer.appendChild(sp);
 
         /* The panel only shows with class "on", and nothing ever added it, so joystick
@@ -600,6 +606,7 @@
             rootR.style.transformOrigin = 'bottom right';
             smallR.style.transform = 'scale(' + prefs.btnScale + ')';
             smallR.style.transformOrigin = 'bottom right';
+            layoutRefresh();
         }
 
         /* slider handlers */
@@ -613,6 +620,7 @@
             sp.querySelector('#lm-op-v').textContent = this.value + '%';
             applyPrefs(); savePrefs();
         });
+        sp.querySelector('#lm-ed-open').addEventListener('click', function () { openEditor(); });
         sp.querySelector('#lm-bs').addEventListener('input', function () {
             prefs.btnScale = parseInt(this.value, 10) / 100;
             sp.querySelector('#lm-bs-v').textContent = this.value + '%';
@@ -657,8 +665,8 @@
             }
         }
         buildQuickCmds();
-        sp.querySelector('#lm-qcmd').addEventListener('change', function () { prefs.quickCmds = this.checked; savePrefs(); buildQuickCmds(); });
-        sp.querySelector('#lm-mbbtn').addEventListener('change', function () { prefs.mbButton = this.checked; savePrefs(); buildMbButton(); if (typeof repositionButtons === 'function') repositionButtons(); });
+        sp.querySelector('#lm-qcmd').addEventListener('change', function () { prefs.quickCmds = this.checked; savePrefs(); buildQuickCmds(); layoutRefresh(); });
+        sp.querySelector('#lm-mbbtn').addEventListener('change', function () { prefs.mbButton = this.checked; savePrefs(); buildMbButton(); if (typeof repositionButtons === 'function') repositionButtons(); layoutRefresh(); });
         sp.querySelector('#lm-pingbtn').addEventListener('change', function () { prefs.pingBtn = this.checked; savePrefs(); buildPingButton(); });
         sp.querySelector('#lm-netgraph').addEventListener('change', function () { prefs.netGraph = this.checked; savePrefs(); syncNetGraph(); });
 
@@ -1141,6 +1149,8 @@
         canvas.addEventListener('touchstart', function (e) {
             if (chatOn || e.targetTouches.length !== 1) return;
             var t = e.changedTouches[0];
+            /* a joystick zone from the control editor: the joystick starts only inside it */
+            if (!inJoyZone(t.clientX, t.clientY)) return;
             jId = t.identifier;
             jStartTime = Date.now();
             org.x = t.clientX; org.y = t.clientY;
@@ -1274,7 +1284,7 @@
         canvas.addEventListener('touchend', function (e) {
             if (e.targetTouches.length < 2) {
                 /* pinch over with one finger still down: that finger steers again */
-                if (pOn && e.targetTouches.length === 1 && jId === null && !chatOn) {
+                if (pOn && e.targetTouches.length === 1 && jId === null && !chatOn && inJoyZone(e.targetTouches[0].clientX, e.targetTouches[0].clientY)) {
                     var t = e.targetTouches[0];
                     jId = t.identifier;
                     org.x = t.clientX; org.y = t.clientY;
@@ -1565,7 +1575,77 @@
                 smallR.style.left = 'auto';
                 smallR.style.bottom = '160px';
             }
+            /* controls placed in the control editor are not in these groups: they only get
+             * clamped to the (maybe rotated or resized) screen */
+            layoutRefresh();
         }
+
+        /* ═══════════════════════════════════════════════════════
+         *  CONTROL EDITOR HOOKS (LMmobile-editor.js)
+         *  Without a saved layout ('lm-mobile-layouts') the editor file is not even loaded
+         *  and nothing here changes how the controls behave.
+         * ═══════════════════════════════════════════════════════ */
+        var layoutHook = null; /* set by the editor while a custom layout is in use */
+        var joyZone = null;    /* {l, t, r, b} in px: the joystick starts only inside (null = anywhere) */
+        function inJoyZone(x, y) {
+            return !joyZone || (x >= joyZone.l && x <= joyZone.r && y >= joyZone.t && y <= joyZone.b);
+        }
+        function layoutRefresh() {
+            if (layoutHook) { try { layoutHook(); } catch (e) { } }
+        }
+        /* a control's place when the layout does not move it */
+        function ctlHome(id, el) {
+            if (!el) return;
+            if (id === 'split') rootR.insertBefore(el, rootR.firstChild);
+            else if (id === 'feed') rootR.appendChild(el);
+            else if (id === 'x4') smallR.insertBefore(el, smallR.firstChild);
+            else if (id === 'x16') smallR.appendChild(el);
+            else if (id === 'menu') rootL.insertBefore(el, rootL.firstChild);
+            else drawer.insertBefore(el, bCfg);
+        }
+        var edLoading = false, edQueue = [];
+        function loadEditor(cb) {
+            if (window.LMMobileEditor && window.LMMobileEditor.ready) { if (cb) cb(); return; }
+            if (cb) edQueue.push(cb);
+            if (edLoading) return;
+            edLoading = true;
+            var s = mk('script');
+            s.src = /\/LMmobile\.js(\?|$)/.test(_lmmSrc) ? _lmmSrc.replace(/\/LMmobile\.js/, '/LMmobile-editor.js')
+                : 'https://www.legendmod.ml/LMmobile/LMmobile-editor.js?v=' + (window.OgVer || '');
+            s.onload = function () {
+                edLoading = false;
+                var q = edQueue; edQueue = [];
+                q.forEach(function (f) { try { f(); } catch (e) { } });
+            };
+            s.onerror = function () { edLoading = false; edQueue = []; };
+            document.head.appendChild(s);
+        }
+        function openEditor() {
+            sp.classList.remove('on');
+            rootL.style.opacity = prefs.btnOpacity;
+            loadEditor(function () { if (window.LMMobileEditor && window.LMMobileEditor.open) window.LMMobileEditor.open(); });
+        }
+        window._lmMobileHost = {
+            prefs: prefs,
+            root: { left: rootL, right: rootR, small: smallR, drawer: drawer },
+            controls: function () {
+                return { split: bSplit, feed: bFeed, x4: bDbl, x16: b16, multibox: bMb,
+                    q1: quickBtns[0] || null, q2: quickBtns[1] || null, q3: quickBtns[2] || null, q4: quickBtns[3] || null, menu: bMenu };
+            },
+            home: ctlHome,
+            setJoyZone: function (z) { joyZone = z || null; },
+            setHook: function (fn) { layoutHook = typeof fn === 'function' ? fn : null; },
+            reposition: function () { repositionButtons(); },
+            /* the editor covers the screen: no held feed, no joystick, the cell stops */
+            pauseInput: function () {
+                feedStop();
+                jId = null; jHide(); pOn = false; swStart = null;
+                mouseAt(window.innerWidth / 2, window.innerHeight / 2);
+            },
+            openEditor: openEditor
+        };
+        try { if (localStorage.getItem('lm-mobile-layouts')) loadEditor(); } catch (e) { }
+
         repositionButtons();
         setInterval(function () { if (!document.hidden) repositionButtons(); }, 2500);
         window.addEventListener('resize', repositionButtons);

@@ -21,7 +21,7 @@ const only = argVal('--only', '');
 
 const FILES = ['ogario/ogario.v4.js', 'ogario/hotkeysCommand.js', 'ogario/spect.js', 'ogario/gamepad.js', 'ogario/modules/deathrecap.js',
   'LMexpress/LMexpress.js', 'LMexpress/lm_extended_ui.js', 'LMexpress/skinsAndDeals.js', 'LMexpress/replay.js',
-  'LMmobile/LMmobile.js'];
+  'LMmobile/LMmobile.js', 'LMmobile/LMmobile-editor.js'];
 const OPTIONAL = new Set(['ogario/gamepad.js']);
 /* feature modules (ogario/modules/*.js), whichever exist */
 try { fs.readdirSync(path.join(repo, 'ogario', 'modules')).filter(f => f.endsWith('.js')).sort().forEach(f => FILES.push('ogario/modules/' + f)); } catch (e) { }
