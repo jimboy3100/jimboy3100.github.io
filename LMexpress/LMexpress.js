@@ -1256,9 +1256,19 @@ function ReportFakesSkin() {
         Temporaryletter1 = "Teamboard";
     }
 
-    $("#menu-footer").after('<div id="SkinChanger" style="display: none; background-image: url(' + _lmCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + '; border: 1px solid black; height: 540px; width: 500px; ";>' +
-        '<div id="SkinChangerhud" style="display:block; margin-left: 10px; margin-right: 10px;">' + //margin-left: 10px"
-        '<div id="SkinChangertoolshud1" align="middle"><h5 class="main-color"><b>' + Premadeletter119 + '</b></h5>' +
+    $('body').append(
+        '<div class="modal fade in" id="SkinChanger" aria-hidden="false" style="display:none;">' +
+        '<div class="modal-backdrop fade in"></div>' +
+        '<div class="modal-dialog" style="width:522px;">' +
+        '<div class="modal-content">' +
+
+        '<div class="modal-header">' +
+        '<button type="button" class="close" onclick="exitSkinChanger(); return false;"><span aria-hidden="true">&#10005;</span></button>' +
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Premadeletter119 + '</h4>' +
+        '</div>' +
+
+        '<div id="SkinChangerhud" style="display:block; padding: 10px;">' +
+        '<div id="SkinChangertoolshud1" align="middle">' +
         '<p style="color:white; font-size:12px; margin-bottom: -4px;" align="middle">' + Premadeletter120 +
         //'<br><br><font id= "Leadboardlet1" style="color:white; size:12px; margin-right: 70px;">' + Temporaryletter2 + '</font><font id= "Teamboardlet1" style="color:white; size:12px; margin-left: 70px;">' + Temporaryletter1 + '</font></p><br>' +
         '<br><br><font id= "Leadboardlet1" style="color:white; size:12px; ">' + Temporaryletter2 + '</p><br>' +
@@ -1283,7 +1293,8 @@ function ReportFakesSkin() {
         '<input id="LeaderboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         //' <input id="TeamboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         '</div><p style="color:white; font-size:12px";" align="middle">' + Premadeletter121 + '<br>' + Premadeletter122 + '</u></p>' +
-        '</div></div>');
+        '</div>' +
+        '</div></div></div></div>');
     $('#LeaderboardInput1').css('width', '60%');
     $('#LeaderboardInput2').css('width', '60%');
     $('#LeaderboardInput3').css('width', '60%');
@@ -1316,7 +1327,7 @@ function ReportFakesSkin() {
     $('#TeamboardInput9').copyCSS('#server-token').css('width', '30%');
     $('#TeamboardInput10').copyCSS('#server-token').css('width', '30%');
     */
-    $("#SkinChangerhud").after('<button id="SkinBacktomenu" onclick="exitSkinChanger(); return false" class="btn btn-danger"  style="margin-left: 10px;" data-original-title="" title="">' + Premadeletter113 + '</button>');
+    if (typeof lmPromoChrome === 'function') lmPromoChrome('#SkinChanger');
     OthersSkinChanger();
     SkinBtnsPut();
     OpenSkinChanger();
@@ -1419,7 +1430,7 @@ function OpenSkinChanger() {
     $("#skins-panel").hide();
     $("#quick-menu").hide();
     $("#exp-bar").hide();
-    $("#SkinChanger").show();
+    $("#SkinChanger").show().addClass('in').attr('aria-hidden', 'false');
 }
 
 //function LeaderboardController(){core.registerSkin(otherMsg, null, 'https://www.legendmod.ml/banners/iconfake1.png', 1, null);}
