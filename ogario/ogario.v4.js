@@ -35656,17 +35656,16 @@ function thelegendmodproject() {
             if (mass <= 40) {
                 return false;
             }
+            /* create the text canvases and draw in the same frame (like setNick): after a
+             * WebGL -> Canvas switch the mass of newer cells was missing for 1-2 frames */
             if (!this.massCanvas) {
                 this.massCanvas = new irenderfromagario();
-                return false;
             }
             if (!window.legendmod5.optimizedMass && window.ExternalScripts && !this.mergeCanvas) {
                 this.mergeCanvas = new irenderfromagario();
-                return false;
             }
             if (!this.chatCanvas) {
                 this.chatCanvas = new irenderfromagario();
-                return false;
             }
 
             this.mass = ~~(mass * mass / 100);
@@ -35715,8 +35714,9 @@ function thelegendmodproject() {
                 return false;
             }
             if (!this.nickCanvas) {
+                /* draw it in this frame too: cells shown by the WebGL renderer have no
+                 * nick canvas yet, so names blinked out for a frame on the switch to Canvas */
                 this.nickCanvas = new irenderfromagario();
-                return false;
             }
             return true;
         };
@@ -57927,17 +57927,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 dyinglight1load ===
                     'yes' ||
                 defaultmapsettings
-                    .spawnSpecialEffects ||
-                defaultmapsettings
-                    .teammatesInd
+                    .spawnSpecialEffects
             ) {
                 return false;
             }
 
 
+            /* Teammate indicators and the Facebook friend marker are Canvas-only:
+             * fall back only when a visible cell needs one (checked per cell
+             * below), not on every frame just because the option is on. */
+            var _glTeamNicks =
+                (defaultmapsettings.teammatesInd && window.teammatenicks)
+                    ? (window._lmTeammateNickSet || null) : null;
+            var _glTeamList =
+                (defaultmapsettings.teammatesInd && window.teammatenicks && !_glTeamNicks)
+                    ? window.teammatenicks : null;
+            var _glFbSkins =
+                defaultmapsettings.FBTracking && typeof application !== 'undefined' && application && application.customSkinsMap
+                    ? application.customSkinsMap : null;
+
+
+            /* The Facebook friend arrow is stroked on the main Canvas2D (below the
+             * GL cell layer), starting inside the own cell. */
             if (
-                defaultmapsettings
-                    .FBTracking
+                defaultmapsettings.FBTracking &&
+                LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible &&
+                (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length))
             ) {
                 return false;
             }
@@ -58037,6 +58052,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (_glChat && _glChat.message && LM.time - _glChat.time >= 0 && LM.time - _glChat.time < 15000) {
                         return false;
                     }
+                }
+                /* Same rule as the teammate indicator in cell.draw() */
+                if (
+                    (_glTeamNicks || _glTeamList) &&
+                    cell.targetNick &&
+                    !cell.isPlayerCell &&
+                    cell.size <= 800 &&
+                    (_glTeamNicks ? _glTeamNicks.has(cell.targetNick) : _glTeamList.includes(cell.targetNick))
+                ) {
+                    return false;
+                }
+                if (
+                    _glFbSkins &&
+                    cell.targetNick &&
+                    _glFbSkins[cell.targetNick + "facebookskin"]
+                ) {
+                    return false;
                 }
 
 
@@ -58429,7 +58461,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }, false);
                 }
                 /* antialias follows the "Anti-aliasing" setting (MSAA is costly on integrated GPUs) */
-                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: defaultmapsettings.glAntialias !== false, depth: true });
+                /* premultipliedAlpha + blendFuncSeparate(SRC_ALPHA, ONE_MINUS_SRC_ALPHA, ONE, ONE_MINUS_SRC_ALPHA):
+                 * translucent pixels (virus body, edges, text) were faded twice by the page compositor */
+                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: defaultmapsettings.glAntialias !== false, depth: true });
                 if (!gl) return;
                 this.gl = gl;
 
@@ -60881,7 +60915,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
 
                 gl.enable(gl.BLEND);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
                 var self = this;
                 /*
@@ -65288,8 +65322,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 gl.BLEND
             );
 
-            gl.blendFunc(
+            gl.blendFuncSeparate(
                 gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA,
+                gl.ONE,
                 gl.ONE_MINUS_SRC_ALPHA
             );
 
@@ -70811,8 +70847,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 );
 
 
-                gl.blendFunc(
+                gl.blendFuncSeparate(
                     gl.SRC_ALPHA,
+                    gl.ONE_MINUS_SRC_ALPHA,
+                    gl.ONE,
                     gl.ONE_MINUS_SRC_ALPHA
                 );
 
@@ -72356,7 +72394,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* Enable blending once for the entire frame so rings, food, and
                  * other overlays drawn before the cell batch are alpha-correct. */
                 this.gl.enable(this.gl.BLEND);
-                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+                this.gl.blendFuncSeparate(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
             }
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
@@ -74162,8 +74200,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     );
 
 
-                    worldGl.blendFunc(
+                    worldGl.blendFuncSeparate(
                         worldGl.SRC_ALPHA,
+                        worldGl.ONE_MINUS_SRC_ALPHA,
+                        worldGl.ONE,
                         worldGl.ONE_MINUS_SRC_ALPHA
                     );
 
