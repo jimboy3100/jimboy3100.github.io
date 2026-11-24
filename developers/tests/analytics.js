@@ -76,7 +76,8 @@ check('sanitize rejects junk', C.sanitizeGame(null) === null && C.sanitizeGame([
     const g = C.sanitizeGame({ t: clock, ms: -5, peak: 1e12, end: 5e9, splLoss: 4, spl: 2, splBad: 9, srv: 'x'.repeat(200), first: 1e9 });
     check('sanitize clamps', g.v === 1 && g.ms === 0 && g.peak === 1e9 && g.end === 1e9 && g.splLoss === 1 && g.splBad === 2 && g.srv.length === 80 && g.first === 0);
 }
-check('store with another schema reads empty', C.parseStore(JSON.stringify({ v: 2, games: [{ t: clock }] }), 'games', C.sanitizeGame, 10).length === 0);
+/* stores of another schema version are read too (migration), but every entry still goes through sanitizeGame */
+check('store with another schema: valid entries kept, junk dropped', C.parseStore(JSON.stringify({ v: 2, games: [{ t: clock, ms: 1000, peak: 50 }, { t: 'x' }, null] }), 'games', C.sanitizeGame, 10).length === 1);
 check('broken JSON reads empty', C.parseStore('{oops', 'games', C.sanitizeGame, 10).length === 0);
 check('store is capped and sorted', (() => {
     const r = C.parseStore(JSON.stringify({ v: 1, games: [{ t: 30 }, { t: 10 }, { t: 20 }, 5, { t: 40 }] }), 'games', C.sanitizeGame, 3);
