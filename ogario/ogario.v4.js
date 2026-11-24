@@ -18098,6 +18098,8 @@ var displayText = {
         hideEventBanner: 'Hide the server event countdown (Expanding Land)',
         commandCentreBar: 'Command Centre quick bar in game (the starred items; Ctrl+K opens the Command Centre)',
         'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
+        'hk-serverManager': 'Servers window (favourites, recent, arenas): open / close',
+        'hk-hudEditor': 'Edit HUD (move, resize, lock or hide the HUD boxes; saved layouts)',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
@@ -18715,6 +18717,7 @@ var displayText = {
         companionLive: 'Stream overlay / second screen (companion.html, same browser)',
         companionChat: 'Stream overlay: include chat lines',
         'hk-companionResult': 'Result image (PNG of your last or current life)',
+        'hk-hudEditor': 'Edit HUD (move, resize, lock or hide the HUD boxes; saved layouts)',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -21699,7 +21702,7 @@ var _lmLabelI18n = {
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
-        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)"
+        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -23004,6 +23007,8 @@ textLanguage.volVideo = textLanguage.volVideo || 'Video skins volume';
 textLanguage.volNotifications = textLanguage.volNotifications || 'Notification sounds volume';
 textLanguage.audioDucking = textLanguage.audioDucking || 'Audio ducking (lower video skins while a chat sound plays)';
 textLanguage['hk-notifCentre'] = textLanguage['hk-notifCentre'] || 'Open the notification centre';
+/* HUD editor hotkey: same fallback pattern */
+textLanguage['hk-hudEditor'] = textLanguage['hk-hudEditor'] || 'Edit HUD (move, resize, lock or hide the HUD boxes; saved layouts)';
 
 /* Stream overlay / result image: same fallback pattern. */
 textLanguage.companionLive = textLanguage.companionLive || 'Stream overlay / second screen (companion.html, same browser)';
@@ -23848,6 +23853,8 @@ function thelegendmodproject() {
             $('#time-hud').css('top', a + 'px');
             $('#pause-hud').css('top', n + 'px');
             $('#target-hud').css('padding-top', r + 'px');
+            /* a HUD layout keeps the resized boxes on screen */
+            if (window.LMHudEditor) window.LMHudEditor.refresh();
         },
         setChat() {
             this.setChatColors();
@@ -23882,6 +23889,7 @@ function thelegendmodproject() {
             $('.user-list').css('padding-left', userList + 'px');
             var css = '#toast-container{width:' + toastContainer + 'px;font-size:' + message + 'px}';
             this.addCustomCSS('chatScaleCSS', css);
+            if (window.LMHudEditor) window.LMHudEditor.refresh();
         },
         setMiniMap() {
             this.setMiniMapFont();
@@ -23911,6 +23919,8 @@ function thelegendmodproject() {
                 'width': defaultSettings.miniMapWidth,
                 'height': defaultSettings.miniMapWidth + defaultSettings.miniMapTop
             });
+            /* a moved minimap (HUD layout) is kept on screen when it grows (enlarge hotkey, slider) */
+            if (window.LMHudEditor) window.LMHudEditor.refresh();
 
             if (application) {
                 application.resetMiniMapSectors();
@@ -85874,5 +85884,15 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(directorScript);
     } catch (e) {
         console.warn('[LM] Error loading spectator director script:', e);
+    }
+    /* HUD editor: saved HUD layouts (applied only when one is active); the editor itself loads
+     * when it is first opened (Theme > HUD, a hotkey with no default key, the Command Centre) */
+    try {
+        var hudEditorScript = document.createElement('script');
+        hudEditorScript.type = 'text/javascript';
+        hudEditorScript.src = 'https://www.legendmod.ml/ogario/modules/hudeditor.js?v=' + (window.OgVer || '');
+        document.body.appendChild(hudEditorScript);
+    } catch (e) {
+        console.warn('[LM] Error loading HUD editor script:', e);
     }
 })();

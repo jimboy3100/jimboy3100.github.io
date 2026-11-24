@@ -712,7 +712,10 @@
     }
     function applyProfile(p, opts) {
         opts = opts || {};
-        return applyBundle(p.data, { name: p.name, reason: 'profile', id: p.id, auto: opts.auto, quiet: opts.quiet });
+        var rows = applyBundle(p.data, { name: p.name, reason: 'profile', id: p.id, auto: opts.auto, quiet: opts.quiet });
+        /* a HUD layout linked to this profile in the HUD editor (ogario/modules/hudeditor.js) */
+        if (rows) { try { if (window.LMHudEditor && typeof window.LMHudEditor.onProfileApplied === 'function') window.LMHudEditor.onProfileApplied(p.id); } catch (e) { } }
+        return rows;
     }
     function loadUndo() {
         if (undoMem) return undoMem;

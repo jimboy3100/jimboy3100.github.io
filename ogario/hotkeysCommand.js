@@ -765,6 +765,18 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			/* HUD editor (ogario/modules/hudeditor.js): opens / closes the frames over the HUD boxes */
+			'hk-hudEditor': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-hudEditor']) || 'Edit HUD';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMHudEditor && typeof window.LMHudEditor.toggle === 'function') window.LMHudEditor.toggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-limitposition': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-limitposition']) || 'Limit Position';
