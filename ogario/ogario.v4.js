@@ -48021,7 +48021,11 @@ Most cells eaten   : ${mostCellsEaten}
 
 
                 /* optional: remember who ate my cell (Game Over card "Eaten by") */
-                if (defaultmapsettings.showKiller && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1) {
+                /* not when the eater is one of mine: own cell (ownership set of this packet) or my
+                 * multibox unit (its copy is stored under id + unit number * 1e9 with isPlayerCellMulti) */
+                if (defaultmapsettings.showKiller && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
+                    !(this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)) &&
+                    !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[eaterRawID + s.number * 1000000000]; return !!(c && c.isPlayerCellMulti); })) {
                     this._lmKiller = { nick: String(eaterID.targetNick || ''), mass: ~~(eaterID.size * eaterID.size / 100), virus: !!eaterID.isVirus, at: Date.now() };
                 }
                 /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces (all servers) */
@@ -77348,6 +77352,8 @@ window.lmToggleNetGraph = function () {
     cv.style.cssText = 'position:fixed;left:10px;top:45%;z-index:150;pointer-events:none;background:rgba(0,0,0,0.45);border-radius:4px;';
     document.body.appendChild(cv);
     g = window._lmNetGraph = { cv: cv, fps: [], ping: [], timer: 0 };
+    /* FPS counting was paused with the FPS stat off: start a fresh second */
+    try { if (window.drawRender && !defaultmapsettings.showStatsFPS) { drawRender.fpsLastRequest = 0; drawRender.renderedFrames = 0; } } catch (e) { }
     g.timer = setInterval(function () {
         try {
             var dr = window.drawRender || (typeof drawRender !== 'undefined' ? drawRender : null);
