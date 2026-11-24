@@ -602,7 +602,10 @@
         if (!p) return;
         life.lastSample = now;
         var c = encodeCell(p.x, p.y);
-        if (!life.spawn) life.spawn = c;
+        /* P1 fix #51: when analytics is enabled mid-match, the first position
+         * sample is the current position, not the actual spawn. Flag it so the
+         * analytics display can show "approximate" rather than a misleading pin. */
+        if (!life.spawn) { life.spawn = c; if (life.start && Date.now() - life.start > 3000) life.spawnApprox = true; }
         life.map = p.map;
         life.shape = p.shape;
         life.pos.push(c);
