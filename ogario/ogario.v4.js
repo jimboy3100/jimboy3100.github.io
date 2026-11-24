@@ -77327,6 +77327,21 @@ window.lmToggleNetGraph = function () {
         } catch (e) { }
     }, 250);
 };
+/* Chat box: click a nick to put it into the message box (to answer someone). A click that
+ * selects text is left alone. */
+$(document).on('click', '#chat-box .message-nick, #chat-box .command-nick', function () {
+    try {
+        var sel = window.getSelection && String(window.getSelection());
+        if (sel) return;
+        var nick = String($(this).text() || '').replace(/:\s*$/, '').trim();
+        if (!nick) return;
+        var box = $('#message-box'), msg = $('#message');
+        if (!box.length || !msg.length) return;
+        if (!box.is(':visible') && window.application && typeof application.enterChatMessage === 'function') application.enterChatMessage();
+        var v = String(msg.val() || '');
+        msg.val((v && !/\s$/.test(v) ? v + ' ' : v) + nick + ' ').focus();
+    } catch (e) { }
+});
 function Socket3enabler(srv) {
     if (!window.socket3Opened && window.noOgarioSocket) {
         $("#message").keydown(function (event) {
