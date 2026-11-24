@@ -129,7 +129,8 @@ function page(settings, stored) {
     const ctx = {
         performance: { now: () => 0 }, Date, Math, JSON, Object, Array, String, Number, Float32Array, isFinite, console,
         setInterval: (f) => { timers.push(f); return timers.length; }, clearInterval: (i) => { timers[i - 1] = null; },
-        document: { hidden: false, getElementById: (id) => id === 'overlays' ? overlays : null, createElement: () => ({ style: {} }), body: { appendChild() { } } },
+        /* addEventListener: perf.js watches visibilitychange (stall detector) */
+        document: { hidden: false, addEventListener() { }, removeEventListener() { }, getElementById: (id) => id === 'overlays' ? overlays : null, createElement: () => ({ style: {} }), body: { appendChild() { } } },
         localStorage: { getItem: (k) => store.hasOwnProperty(k) ? store[k] : null, setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } },
         toastr: { info: (t) => toasts.push(t) },
         application: { setAnimatedRainbowColor() { calls.push('rainbow'); }, applyHudBlur() { calls.push('blur'); }, saveSettings(o, n) { store[n] = JSON.stringify(o); } },
