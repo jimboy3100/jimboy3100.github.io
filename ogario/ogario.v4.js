@@ -82263,7 +82263,8 @@ function appendLMhiFbPs() {
         probeObservationMs: 12000, /* after spectating, wait this long for the player list */
         probeRefreshMs: 20000,
         probeRetryAfterMs: 5000,
-        offlineAfterFails: 3,     /* failed connects before a server leaves the list */
+        offlineAfterFails: 3,     /* failed counts in a row before a server leaves the list */
+        staleAfterScans: 2,       /* scans without a hidden or failing server before it is forgotten */
         joinTimeoutMs: 15000,
         noticeMs: 15000,
         tickMs: 1000
@@ -82545,7 +82546,7 @@ function appendLMhiFbPs() {
     function sbGetList(key, region, mode) {
         var list = sbLists.get(key);
         if (!list) {
-            list = { key: key, region: region, mode: mode, servers: new Map(), nextAlias: 1, autoScanned: false };
+            list = { key: key, region: region, mode: mode, servers: new Map(), nextAlias: 1, autoScanned: false, scans: 0, aliasByHost: new Map() };
             sbLists.set(key, list);
         }
         return list;
@@ -82556,12 +82557,18 @@ function appendLMhiFbPs() {
         if (!host || host === '0.0.0.0:0') return null;
         var entry = list.servers.get(host);
         if (!entry) {
+            /* A forgotten server that comes back keeps its old number */
+            var index = list.aliasByHost.get(host);
+            if (!index) {
+                index = list.nextAlias++;
+                list.aliasByHost.set(host, index);
+            }
             entry = {
                 host: host,
                 endpoint: String(endpoint).trim(),
                 listKey: list.key,
-                index: list.nextAlias,
-                alias: sbRegionLabel(list.region) + ' ' + list.nextAlias,
+                index: index,
+                alias: sbRegionLabel(list.region) + ' ' + index,
                 players: null,
                 checkedAt: 0,
                 status: '',
@@ -82569,15 +82576,13 @@ function appendLMhiFbPs() {
                 active: false,
                 lastAttempt: 0,
                 fails: 0,
-                offline: false
+                offline: false,
+                seenScan: list.scans
             };
-            list.nextAlias++;
             list.servers.set(host, entry);
         }
-        if (entry.offline) {
-            entry.offline = false;
-            entry.fails = 0;
-        }
+        /* A hidden (offline) server stays hidden until a count succeeds: matchmaking
+         * keeps handing out arenas that already refuse players. */
         return entry;
     }
 
@@ -82674,6 +82679,7 @@ function appendLMhiFbPs() {
             sbScan.timer = null;
             sbScan.running = false;
             sbScan.error = error || '';
+            if (!error && seen.size) sbForgetStale(list, seen);
             console.log('[Servers] ' + sbRegionLabel(list.region) + ' ' + SB_MODE_LABELS[list.mode] + ': ' +
                 seen.size + ' server(s) answered, ' + list.servers.size + ' known' + (error ? ' (' + error + ')' : ''));
             sbRender();
@@ -82708,7 +82714,8 @@ function appendLMhiFbPs() {
                 if (entry) {
                     duplicates = seen.has(entry.host) ? duplicates + 1 : 0;
                     seen.add(entry.host);
-                    sbQueueProbe(entry, false);
+                    /* Matchmaking repeats the same few arenas: count each one once per refresh period */
+                    if (!entry.lastAttempt || Date.now() - entry.lastAttempt >= SB.probeRefreshMs) sbQueueProbe(entry, false);
                 } else {
                     duplicates++;
                 }
@@ -82725,6 +82732,20 @@ function appendLMhiFbPs() {
 
         step();
         return true;
+    }
+
+    /* After a scan: forget servers that matchmaking stopped returning and that are hidden or fail their counts. */
+    function sbForgetStale(list, seen) {
+        list.scans++;
+        list.servers.forEach(function (entry) {
+            if (seen.has(entry.host)) {
+                entry.seenScan = list.scans;
+            } else if ((entry.offline || entry.fails > 0) && entry.host !== sbCurrent.host &&
+                list.scans - entry.seenScan >= SB.staleAfterScans && !entry.active) {
+                list.servers.delete(entry.host);
+                console.log('[Servers] Forgot ' + entry.alias + ' (' + (entry.status || 'not found again') + ')');
+            }
+        });
     }
 
     /* ---------- player count probes ---------- */
@@ -82755,7 +82776,7 @@ function appendLMhiFbPs() {
 
     function sbProbeAllowed(ctx, entry) {
         return !!entry && ctx.scannable && !ctx.alive && !document.hidden && !sbJoin &&
-            entry.listKey === ctx.key && entry.host !== ctx.currentHost && !entry.offline;
+            entry.listKey === ctx.key && entry.host !== ctx.currentHost;
     }
 
     function sbQueueProbe(entry, force) {
@@ -82771,7 +82792,8 @@ function appendLMhiFbPs() {
         var list = sbLists.get(sbActiveKey);
         if (!list) return;
         list.servers.forEach(function (entry) {
-            sbQueueProbe(entry, force);
+            /* hidden servers are checked again only when a scan returns them */
+            if (!entry.offline) sbQueueProbe(entry, force);
         });
     }
 
@@ -82796,10 +82818,12 @@ function appendLMhiFbPs() {
             entry.checkedAt = Date.now();
             entry.status = result.count === 0 ? 'empty' : 'measured';
             entry.fails = 0;
+            entry.offline = false;
         } else if (result.reason !== 'cancelled') {
             entry.status = result.reason;
-            /* Only "could not even connect" counts towards dropping the server */
-            if (/^(socket-error|closed|timeout)-connecting$|^socket-create-failed$/.test(result.reason)) {
+            /* Every failed count (closed, unreachable, never answers) counts towards dropping
+             * the server, except the ones caused by this page itself */
+            if (result.reason !== 'probe-realm-unavailable' && result.reason !== 'versions-unknown') {
                 entry.fails++;
                 if (entry.fails >= SB.offlineAfterFails && entry.host !== sbCurrent.host) {
                     entry.offline = true;
@@ -82970,7 +82994,8 @@ function appendLMhiFbPs() {
 
     function sbRefreshCounts() {
         sbProbe.lastCycle = Date.now();
-        sbQueueAll(true);
+        /* not forced: opening the list twice in a row does not count every server twice */
+        sbQueueAll(false);
     }
 
     /* ---------- joining ---------- */
