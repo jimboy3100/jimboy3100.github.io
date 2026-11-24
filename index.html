@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns#" vocab="https://schema.org/" typeof="WebPage">
 
 <head>
     <meta charset="UTF-8">
@@ -7,6 +7,19 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="alternate" type="application/rss+xml" title="Expanding Land Updates" href="https://help.expanding.land/rss.xml">
+
+    <!-- ═══ Dublin Core Metadata ═══ -->
+    <link rel="schema.dcterms" href="https://purl.org/dc/terms/">
+    <meta name="dcterms.title" content="Legend Mod – The Best Agar.io Extension">
+    <meta name="dcterms.creator" content="Jimboy3100">
+    <meta name="dcterms.subject" content="agar.io; browser extension; gaming mod; io games">
+    <meta name="dcterms.description" content="Legend Mod is the most feature-rich agar.io extension with 60+ macros, custom skins, and performance optimizations.">
+    <meta name="dcterms.publisher" content="℄ Legend Clan">
+    <meta name="dcterms.type" content="Software">
+    <meta name="dcterms.format" content="text/html">
+    <meta name="dcterms.language" content="en">
+    <meta name="dcterms.rights" content="Free to use">
+    <meta name="dcterms.identifier" content="https://www.legendmod.ml/">
 
     <!-- ═══ SEO: Title ═══ -->
     <title>Legend Mod – The Best Agar.io Extension | 60+ Macros, Skins, Anti-Lag | ℄ Clan</title>
@@ -64,7 +77,12 @@
                 "name": "Legend Mod",
                 "description": "The most feature-rich agar.io extension — reduces lag, boosts FPS, and adds 60+ macros, custom skins, and more.",
                 "publisher": { "@id": "https://www.legendmod.ml/#organization" },
-                "inLanguage": "en"
+                "inLanguage": "en",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://www.legendmod.ml/?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                }
             },
             {
                 "@type": "Organization",
