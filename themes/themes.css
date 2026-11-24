@@ -60,9 +60,13 @@ hr {
   opacity: 0.6;
 }
   .my-img a {
-    display:inline-block;
-    margin: 10px;
-
+    display:block;
+    width:100%;
+    margin: 10px auto;
+}
+  .my-img a img {
+    width:100%;
+    height:auto;
 }
 .modal-lg {
     width: 70%;

@@ -9153,20 +9153,22 @@ function lmPromoChrome(sel) {
     /* Ensure the user's actual theme colors are set as CSS custom properties
      * on the document root so every var(--lm-*) reference resolves to the
      * user-chosen color instead of falling through to the hardcoded fallback. */
-    var _td = lmThemeData();
-    var _r = document.documentElement.style;
-    _r.setProperty('--lm-pc',  _td.pc);
-    _r.setProperty('--lm-pc2', _td.pc2);
-    _r.setProperty('--lm-mc',  _td.mc);
-    _r.setProperty('--lm-tc',  _td.tc);
-    _r.setProperty('--lm-tc2', _td.tc2);
-    _r.setProperty('--lm-op',  _td.op);
-    _r.setProperty('--lm-btc', _td.btc);
-    _r.setProperty('--lm-b1',  _td.b1);
-    _r.setProperty('--lm-b2',  _td.b2);
-    _r.setProperty('--lm-b3',  _td.b3);
-    _r.setProperty('--lm-b4',  _td.b4);
-    if (_td.bg) _r.setProperty('--lm-bg', _td.bg);
+    try {
+        var _td = lmThemeData();
+        var _r = document.documentElement.style;
+        _r.setProperty('--lm-pc',  _td.pc);
+        _r.setProperty('--lm-pc2', _td.pc2);
+        _r.setProperty('--lm-mc',  _td.mc);
+        _r.setProperty('--lm-tc',  _td.tc);
+        _r.setProperty('--lm-tc2', _td.tc2);
+        _r.setProperty('--lm-op',  _td.op);
+        _r.setProperty('--lm-btc', _td.btc);
+        _r.setProperty('--lm-b1',  _td.b1);
+        _r.setProperty('--lm-b2',  _td.b2);
+        _r.setProperty('--lm-b3',  _td.b3);
+        _r.setProperty('--lm-b4',  _td.b4);
+        if (_td.bg) _r.setProperty('--lm-bg', _td.bg);
+    } catch (e) {}
     if (!document.getElementById('lm-promo-css')) {
         var st = document.createElement('style');
         st.id = 'lm-promo-css';
