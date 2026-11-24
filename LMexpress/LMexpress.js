@@ -8978,10 +8978,16 @@ function findUserLang() {
     }
 }
 
-function startTranslating() {
+function startTranslating(_lmTry) {
 
     var targetNode = document.querySelector("#chat-box");
-    if (!targetNode) return; /* #chat-box not in DOM yet — avoid MutationObserver crash */
+    /* #chat-box is built by the game UI after this file runs: wait for it (1 s steps, 2 min) */
+    if (!targetNode) {
+        if ((_lmTry | 0) < 120) setTimeout(function () { startTranslating((_lmTry | 0) + 1); }, 1000);
+        return;
+    }
+    if (targetNode._lmTrObserved) return;
+    targetNode._lmTrObserved = true;
     var observerOptions = {
         childList: true,
         attributes: false,
@@ -9013,33 +9019,43 @@ function startTranslating() {
     observerMut.observe(targetNode, observerOptions);
 
 }
-function doMainTranslation(targetNode, bb, msgNode) {
-    //if(targetNode.lastChild.classList.contains('message')) {
-    var trText = document.createElement('span');
-    var GrText
-    trText.style.color = 'deepskyblue';
-    trText.style.textShadow = '1px 1px 1px white';
-
-    var ajax = new XMLHttpRequest();
-    ajax.open("Get", 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20190413T133234Z.e2bf8f61db805d26.1dc331b33d156e43679a19357d15d9ee664502de&text=' + encodeURIComponent(bb) + '&lang=' + window.userLanguage + '&format=plain&options=1', true);
-    ajax.onreadystatechange = function () {
-        if (ajax.readyState == 4) {
-            if (ajax.status == 200) {
-                var text = ajax.responseText;
-                text = JSON.parse(text);
-                text = text.text[0];
-                trText.textContent = '[' + text + ']';
-                GrText = '[' + text + ']';
-                //console.log(GrText)
-            }
-        }
+/* Chat translation (setting "showChatTranslation", off by default) with the browser's built-in
+ * Translator + LanguageDetector (Chrome 138+): runs on the device, no key, nothing is sent to a
+ * translation server. The Yandex v1.5 API used before was shut down (HTTP 410). Browsers without
+ * the built-in translator show no translation. */
+var _lmTrCache = {};
+function _lmTrGet(src, dst) {
+    var k = src + '>' + dst;
+    if (!_lmTrCache[k]) {
+        _lmTrCache[k] = self.Translator.create({ sourceLanguage: src, targetLanguage: dst }).catch(function () { delete _lmTrCache[k]; return null; });
     }
-    ajax.send();
-
-    var trHost = msgNode ? msgNode.lastChild : (targetNode.lastChild && targetNode.lastChild.lastChild);
-    if (trHost) trHost.appendChild(trText);
-    //window.cc = targetNode.children[0].children[1].text
-    //}
+    return _lmTrCache[k];
+}
+var _lmDetector = null;
+function doMainTranslation(targetNode, bb, msgNode) {
+    var dst = String(window.userLanguage || '').split('-')[0];
+    if (!dst || !bb || typeof self === 'undefined' || !self.Translator || !self.LanguageDetector) return;
+    if (!_lmDetector) _lmDetector = self.LanguageDetector.create().catch(function () { _lmDetector = null; return null; });
+    _lmDetector.then(function (det) {
+        if (!det) return null;
+        return det.detect(bb).then(function (res) {
+            var best = res && res[0];
+            var src = best && best.confidence >= 0.5 ? String(best.detectedLanguage || '').split('-')[0] : '';
+            if (!src || src === 'und' || src === dst) return null;
+            return _lmTrGet(src, dst);
+        });
+    }).then(function (tr) {
+        return tr ? tr.translate(bb) : null;
+    }).then(function (text) {
+        if (!text || text === bb) return;
+        var trHost = msgNode ? msgNode.lastChild : (targetNode.lastChild && targetNode.lastChild.lastChild);
+        if (!trHost) return;
+        var trText = document.createElement('span');
+        trText.style.color = 'deepskyblue';
+        trText.style.textShadow = '1px 1px 1px white';
+        trText.textContent = ' [' + text + ']';
+        trHost.appendChild(trText);
+    }).catch(function () { });
 }
 function changeFrameWork() {
     defaultmapsettings.unlockedFPS = false;
