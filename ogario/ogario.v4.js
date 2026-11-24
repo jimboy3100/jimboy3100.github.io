@@ -24163,6 +24163,74 @@ function thelegendmodproject() {
         }
         return dropped;
     }
+    /*
+     * Decoded skins waiting for their canvases (cacheSkin, cacheSkin2 ...). Each canvas used to be
+     * made inside the image's load callback, so a burst of finished downloads made dozens of
+     * 512 px canvases (with a synchronous image decode each) before the next frame. They are made
+     * from requestAnimationFrame now, a few per frame. Next job: the oldest one a draw asked for
+     * in the last seenMs (on screen), else the oldest one; -1 when there is none.
+     */
+    function lmSkinJobPick(jobs, now, seenMs) {
+        for (var i = 0; i < jobs.length; i++) {
+            if (jobs[i] && jobs[i].seen > 0 && now - jobs[i].seen < seenMs) return i;
+        }
+        return jobs.length ? 0 : -1;
+    }
+    /* runs jobs until budgetMs of this frame is used: the first always runs, each next one only
+     * when it is expected to fit (running average of the last ones, as _lmScheduleSkinUploads).
+     * clock() gives ms. Returns the new average. */
+    function lmSkinJobsRun(jobs, budgetMs, avg, clock, now, seenMs, run) {
+        var t0 = clock(), n = 0;
+        while (jobs.length) {
+            var ts = clock();
+            if (n++ && ts - t0 + avg > budgetMs) break;
+            var job = jobs.splice(lmSkinJobPick(jobs, now, seenMs), 1)[0];
+            try {
+                run(job);
+            } catch (e) { }
+            var d = clock() - ts;
+            avg = avg ? avg * 0.8 + d * 0.2 : d;
+        }
+        return avg;
+    }
+    /*
+     * WebGL text textures (nick/mass quads). The cache was limited to 500 textures whatever their
+     * size (up to 2048 x 512 RGBA = 4 MB each). Now also by bytes: from navigator.deviceMemory
+     * (GB) when the browser tells it, else 32 MB.
+     */
+    function lmTextTexBudget(deviceMemory) {
+        var mb = deviceMemory > 0 ? Math.max(16, Math.min(64, deviceMemory * 8)) : 32;
+        return mb * 1048576;
+    }
+    /* cache: Map key -> {bytes, frame}, first key = least recently used. The keys to delete
+     * (oldest first) until count <= maxCount and bytes <= maxBytes; never one drawn in keepFrame
+     * or later (the current and previous frame: deleting those would only make them again in the
+     * next frame). Does not change the map. */
+    function lmTextCacheEvict(cache, bytes, maxCount, maxBytes, keepFrame) {
+        var out = [], count = cache.size;
+        if (count <= maxCount && bytes <= maxBytes) return out;
+        var it = cache.entries();
+        for (var r = it.next(); !r.done && (count > maxCount || bytes > maxBytes); r = it.next()) {
+            if (r.value[1].frame >= keepFrame) break;
+            out.push(r.value[0]);
+            count--;
+            bytes -= r.value[1].bytes || 0;
+        }
+        return out;
+    }
+    /*
+     * WebGL mass text: each cell keeps one texture that is redrawn when its mass changes, instead
+     * of a new cached texture for every value (a growing cell made a new texture in nearly every
+     * frame and pushed the nick textures out of the cache). Redraw now? Always for a new cell or
+     * a new font/colour; for a new value while this frame's redraw time (spentMs) is under
+     * budgetMs, or once the shown value is maxLagMs old (busy frames: a cell then shows its
+     * previous mass a few frames longer, never longer than maxLagMs).
+     */
+    function lmMassTexDue(entry, text, style, now, spentMs, budgetMs, maxLagMs) {
+        if (!entry || entry.style !== style) return true;
+        if (entry.txt === text) return false;
+        return spentMs < budgetMs || now - entry.at >= maxLagMs;
+    }
 
 
     /* ═══════════════════════════════════════════════════════════════════════════
@@ -29112,6 +29180,11 @@ function thelegendmodproject() {
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
 
             if (app._pendingSkinLoads.has(url)) {
+                /* loaded, waiting for its canvases: a draw asking for it makes it go first */
+                if (isPriority && app._lmSkinJobMap) {
+                    var waitJob = app._lmSkinJobMap.get(url);
+                    if (waitJob) waitJob.seen = Date.now();
+                }
                 return;
             }
 
@@ -29151,31 +29224,20 @@ function thelegendmodproject() {
             if (window._skinMemoryCache.has(url)) {
                 var memImg = window._skinMemoryCache.get(url);
                 if (memImg && img && !img[url]) {
+                    if (memImg.complete && memImg.width > 0 && memImg.height > 0) {
+                        if (memImg.width >= memImg.height * 1.5) animated = true;
+                        /* published together with its canvases from the frame budget, as a
+                         * finished download (_lmSkinJobAdd); pending until then */
+                        app._pendingSkinLoads.add(url);
+                        app._lmSkinJobAdd(img, url, memImg, animated, isPriority);
+                        return;
+                    }
                     img[url] = memImg;
                     if (img === app.customSkinsCache) {
                         app._lmTouchSkin(url);
                         app._lmTrimSkinCache();
                     }
                     if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
-                    if (memImg.complete && memImg.width > 0 && memImg.height > 0) {
-                        if (memImg.width >= memImg.height * 1.5) animated = true;
-                        if (animated === "animatedSkins") {
-                            app.cacheQueueSkinAnimated.push(url);
-                            if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated);
-                            app.cacheQueue2.push(url);
-                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
-                        } else if (animated !== "fbSkin") {
-                            app.cacheQueue.push(url);
-                            if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated);
-                            app.cacheQueue2.push(url);
-                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
-                            if (animated === true) app.cacheQueue3.push(url);
-                            if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache);
-                        } else if (animated === "fbSkin") {
-                            app.cacheQueue4.push(url);
-                            if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache);
-                        }
-                    }
                     return;
                 }
             }
@@ -29251,17 +29313,11 @@ function thelegendmodproject() {
                 }
 
                 /*
-                 * A valid candidate completes the URL request.
-                 *
-                 * Clear request-level pending state and any stale failure
-                 * timestamp before publishing the successful image.
+                 * A valid candidate completes the URL request: clear any stale failure
+                 * timestamp. The image is published (img[url]) together with its canvases
+                 * by _lmSkinJobRun, from the frame budget; the URL stays pending until then
+                 * so draws keep treating it as loading (no half-made skin is drawn).
                  */
-                if (app._pendingSkinLoads) {
-                    app._pendingSkinLoads.delete(
-                        url
-                    );
-                }
-
                 if (
                     app._failedSkinURLs &&
                     app._failedSkinURLs[url]
@@ -29272,19 +29328,6 @@ function thelegendmodproject() {
                 }
                 if (app._failedSkinRetries) {
                     delete app._failedSkinRetries[url];
-                }
-
-                /*
-                 * Publish the decoded image only after dimension validation.
-                 * Canvas and WebGL cache workers read the image through the
-                 * same img/url map.
-                 */
-                if (img) {
-                    img[url] = imageObj;
-                    if (img === app.customSkinsCache) {
-                        app._lmTouchSkin(url);
-                        app._lmTrimSkinCache();
-                    }
                 }
 
                 if (window._skinMemoryCache.has(url)) {
@@ -29320,62 +29363,7 @@ function thelegendmodproject() {
                     animated = true;
                 }
 
-                if (animated === "animatedSkins") {
-                    app.cacheQueueSkinAnimated.push(url);
-
-                    if (
-                        app.cacheQueueSkinAnimated.length ===
-                        1
-                    ) {
-                        app.cacheSkinAnimated(
-                            app.customSkinsCache,
-                            animated
-                        );
-                    }
-
-                    app.cacheQueue2.push(url);
-
-                    if (app.cacheQueue2.length === 1) {
-                        app.cacheSkin2(
-                            app.customSkinsCache
-                        );
-                    }
-                } else if (animated !== "fbSkin") {
-                    app.cacheQueue.push(url);
-
-                    if (app.cacheQueue.length === 1) {
-                        app.cacheSkin(
-                            app.customSkinsCache,
-                            animated
-                        );
-                    }
-
-                    app.cacheQueue2.push(url);
-
-                    if (app.cacheQueue2.length === 1) {
-                        app.cacheSkin2(
-                            app.customSkinsCache
-                        );
-                    }
-
-                    if (animated === true) {
-                        app.cacheQueue3.push(url);
-                    }
-
-                    if (app.cacheQueue3.length === 1) {
-                        app.cacheSkin3(
-                            app.customSkinsCache
-                        );
-                    }
-                } else {
-                    app.cacheQueue4.push(url);
-
-                    if (app.cacheQueue4.length === 1) {
-                        app.cacheSkin4(
-                            app.customSkinsCache
-                        );
-                    }
-                }
+                app._lmSkinJobAdd(img, url, imageObj, animated, isPriority);
 
                 return true;
             };
@@ -30154,6 +30142,80 @@ function thelegendmodproject() {
                 application.graphics = 4
             } else if (defaultSettings.graphics === "very_low") {
                 application.graphics = 8
+            }
+        },
+        /*
+         * A skin image finished loading (or came from _skinMemoryCache): queue it for its
+         * canvases (lmSkinJobPick / lmSkinJobsRun). image.decode() first decodes it off the
+         * main thread where the browser can, so the drawImage calls in cacheSkin do not.
+         * One job per URL; the URL stays in _pendingSkinLoads until _lmSkinJobRun.
+         */
+        _lmSkinJobAdd(img, url, imageObj, animated, isPriority) {
+            var map = this._lmSkinJobMap || (this._lmSkinJobMap = new Map());
+            if (map.has(url)) return;
+            var job = { img: img, url: url, obj: imageObj, animated: animated, seen: isPriority ? Date.now() : 0 };
+            map.set(url, job);
+            var self = this, queued = false;
+            var go = function () {
+                if (queued) return;
+                queued = true;
+                (self._lmSkinJobs || (self._lmSkinJobs = [])).push(job);
+                self._lmSkinJobsSchedule();
+            };
+            var p = null;
+            try {
+                if (imageObj && typeof imageObj.decode === 'function') p = imageObj.decode();
+            } catch (e) { p = null; }
+            if (p && typeof p.then === 'function') p.then(go, go);
+            else go();
+        },
+        /* 4 ms of canvases per frame (the first job of a frame always runs) */
+        _lmSkinJobsSchedule() {
+            if (this._lmSkinJobRaf) return;
+            var self = this;
+            var tick = function () {
+                self._lmSkinJobRaf = 0;
+                var jobs = self._lmSkinJobs || [];
+                var clock = typeof performance !== 'undefined' && performance.now ? function () { return performance.now(); } : Date.now;
+                self._lmSkinJobMs = lmSkinJobsRun(jobs, 4, self._lmSkinJobMs || 0, clock, Date.now(), 1000, function (job) {
+                    self._lmSkinJobRun(job);
+                });
+                if (jobs.length) self._lmSkinJobsSchedule();
+            };
+            /* a hidden tab gets no animation frames: skins still finish there (timers) */
+            var hidden = typeof document !== 'undefined' && document.hidden;
+            this._lmSkinJobRaf = !hidden && typeof requestAnimationFrame === 'function' ? requestAnimationFrame(tick) : setTimeout(tick, 16);
+        },
+        /* what processOnLoad did right away before: publish the image, then its canvases */
+        _lmSkinJobRun(job) {
+            var url = job.url, img = job.img;
+            if (this._lmSkinJobMap && this._lmSkinJobMap.get(url) === job) this._lmSkinJobMap.delete(url);
+            if (this._pendingSkinLoads) this._pendingSkinLoads.delete(url);
+            if (img) {
+                img[url] = job.obj;
+                if (img === this.customSkinsCache) {
+                    this._lmTouchSkin(url);
+                    this._lmTrimSkinCache();
+                }
+            }
+            this._lmSkinCanvases(url, job.animated);
+        },
+        _lmSkinCanvases(url, animated) {
+            if (animated === "animatedSkins") {
+                this.cacheQueueSkinAnimated.push(url);
+                if (this.cacheQueueSkinAnimated.length === 1) this.cacheSkinAnimated(this.customSkinsCache, animated);
+                this.cacheQueue2.push(url);
+                if (this.cacheQueue2.length === 1) this.cacheSkin2(this.customSkinsCache);
+            } else if (animated !== "fbSkin") {
+                this.cacheQueue.push(url);
+                if (this.cacheQueue.length === 1) this.cacheSkin(this.customSkinsCache, animated);
+                this.cacheQueue2.push(url);
+                if (this.cacheQueue2.length === 1) this.cacheSkin2(this.customSkinsCache);
+                if (animated === true) this.cacheQueue3.push(url);
+                if (this.cacheQueue3.length === 1) this.cacheSkin3(this.customSkinsCache);
+            } else {
+                this.cacheQueue4.push(url);
+                if (this.cacheQueue4.length === 1) this.cacheSkin4(this.customSkinsCache);
             }
         },
         cacheSkin(skinCache, animated) {
@@ -61515,6 +61577,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _self.glSkinMap = {};
                         _self._glSkinLayers = null;
                         _self.glTextCache = new Map();
+                        _self._lmTextBytes = 0;
+                        _self._lmMassTex = null;
                         if (_self.glCanvas) _self.glCanvas.style.display = '';
                         _self.initWebGL();
                         _self.resizeCanvas();
@@ -62886,6 +62950,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 // Text texture cache: Map<cacheKey, {tex, w, h, lastUsed}>
                 this.glTextCache = new Map();
                 this.glTextCacheMaxSize = 500;
+                /* bytes of glTextCache (lmTextCacheEvict) and the per-cell mass textures (_lmMassTexture) */
+                this._lmTextBytes = 0;
+                this._lmMassTex = null;
 
                 // Offscreen Canvas2D for text rendering → GL texture upload
                 this._textCanvas = document.createElement('canvas');
@@ -70667,8 +70734,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
             var cached = this.glTextCache.get(cacheKey);
             var now = Date.now();
+            var frame = this._lmTextFrame || 0;
             if (cached) {
                 cached.lastUsed = now;
+                cached.frame = frame;
                 /* Map keeps insertion order: re-insert on hit so the first
                  * key is always the least recently used (O(1) eviction). */
                 this.glTextCache.delete(cacheKey);
@@ -70676,6 +70745,40 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return cached;
             }
 
+            var size = this._lmRasterText(text, font, fillStyle, strokeStyle, strokeWidth);
+            if (!size) return null;
+            var w = size[0], h = size[1];
+
+            var gl = this.gl;
+            var tex = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+
+            var entry = { tex: tex, w: w, h: h, lastUsed: now, bytes: w * h * 4, frame: frame };
+            this.glTextCache.set(cacheKey, entry);
+            this._lmTextBytes = (this._lmTextBytes || 0) + entry.bytes;
+
+            /* Evict the least recently used entries until the cache is back within its count
+             * and byte limits (lmTextCacheEvict), keeping those drawn in this or the last frame */
+            var budget = this._lmTextBudget || (this._lmTextBudget = lmTextTexBudget(window.navigator && Number(window.navigator.deviceMemory)));
+            var drop = lmTextCacheEvict(this.glTextCache, this._lmTextBytes, this.glTextCacheMaxSize, budget, this._lmTextFrame ? frame - 1 : Infinity);
+            for (var i = 0; i < drop.length; i++) {
+                var old = this.glTextCache.get(drop[i]);
+                if (!old || drop[i] === cacheKey) continue;
+                gl.deleteTexture(old.tex);
+                this._lmTextBytes -= old.bytes || 0;
+                this.glTextCache.delete(drop[i]);
+            }
+            return entry;
+        },
+        /* Draws text on this._textCanvas (resized to fit) the way every WebGL text texture is
+         * made; returns [w, h] or null */
+        _lmRasterText(text, font, fillStyle, strokeStyle, strokeWidth) {
             var tc = this._textCanvas;
             var tctx = this._textCtx;
             tctx.font = font;
@@ -70717,30 +70820,72 @@ function pickPlayerCellBySize(players, selectBiggest) {
             tctx.fillStyle = fillStyle;
             tctx.fillText(text, fullW / 2, fullH / 2);
             tctx.setTransform(1, 0, 0, 1, 0, 0);
-
-            var gl = this.gl;
-            var tex = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, tex);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tc);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-
-            var entry = { tex: tex, w: w, h: h, lastUsed: now };
-            this.glTextCache.set(cacheKey, entry);
-
-            /* Evict oldest entries until cache is back within limits */
-            while (this.glTextCache.size > this.glTextCacheMaxSize) {
-                var oldestKey = this.glTextCache.keys().next().value;
-                var oldest = oldestKey !== undefined ? this.glTextCache.get(oldestKey) : null;
-                if (oldest && oldestKey !== cacheKey) {
-                    gl.deleteTexture(oldest.tex);
-                    this.glTextCache.delete(oldestKey);
-                } else break;
+            return [w, h];
+        },
+        /*
+         * Mass text of one cell: its own texture, drawn again in place when the text changes
+         * (lmMassTexDue), instead of a new glTextCache texture for every mass value. Same raster
+         * as getOrCreateTextTexture. Textures of cells not drawn for about a second are deleted
+         * by _lmTextFrameBegin.
+         */
+        _lmMassTexture(cell, text, font, fillStyle, strokeStyle, strokeWidth) {
+            if (!this.gl || !this.glTextProgram) return null;
+            var pool = this._lmMassTex || (this._lmMassTex = new Map());
+            var style = font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
+            var entry = pool.get(cell);
+            var frame = this._lmTextFrame || 0;
+            var clock = typeof performance !== 'undefined' && performance.now ? performance : Date;
+            var t0 = clock.now();
+            if (!lmMassTexDue(entry, text, style, t0, this._lmMassSpent || 0, 2, 100)) {
+                if (entry) entry.frame = frame;
+                return entry || null;
             }
+            var size = this._lmRasterText(text, font, fillStyle, strokeStyle, strokeWidth);
+            if (!size) return entry || null;
+            var gl = this.gl;
+            var fresh = !entry;
+            if (fresh) {
+                entry = { tex: gl.createTexture(), w: 0, h: 0, txt: '', style: '', at: 0, frame: frame };
+                pool.set(cell, entry);
+            }
+            gl.bindTexture(gl.TEXTURE_2D, entry.tex);
+            if (!fresh && entry.w === size[0] && entry.h === size[1]) {
+                /* same size (digits are usually equally wide): rewrite the pixels only */
+                gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
+            } else {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
+            }
+            if (fresh) {
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            }
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            entry.w = size[0];
+            entry.h = size[1];
+            entry.txt = text;
+            entry.style = style;
+            entry.frame = frame;
+            var t1 = clock.now();
+            entry.at = t1;
+            this._lmMassSpent = (this._lmMassSpent || 0) + (t1 - t0);
             return entry;
+        },
+        /* once per frame before the WebGL nick/mass pass: the mass redraw time starts again, and
+         * every 60 frames the mass textures of cells not drawn in the last 60 frames are deleted */
+        _lmTextFrameBegin() {
+            var frame = this._lmTextFrame = (this._lmTextFrame || 0) + 1;
+            this._lmMassSpent = 0;
+            var pool = this._lmMassTex;
+            if (!pool || frame % 60 || !this.gl) return;
+            var gl = this.gl;
+            pool.forEach(function (e, cell) {
+                if (frame - e.frame > 60) {
+                    gl.deleteTexture(e.tex);
+                    pool.delete(cell);
+                }
+            });
         },
         drawWebGLTextQuad(texEntry, worldX, worldY, offsetY, targetWorldH, z) {
             if (!texEntry || !this.gl || !this.glTextProgram) return;
@@ -71103,8 +71248,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     massStr = window.LMHudHelpers.massText(massVal, cell);
                 }
 
+                /* one texture per cell, redrawn when the text changes (_lmMassTexture) */
                 var massEntry =
-                    this.getOrCreateTextTexture(
+                    this._lmMassTexture(
+                        cell,
                         massStr,
                         massFont,
                         massColor,
@@ -77776,6 +77923,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         ) {
                             var unifiedWebGLTextStarted =
                                 performance.now();
+                            this._lmTextFrameBegin();
 
 
                             worldGl.enable(
