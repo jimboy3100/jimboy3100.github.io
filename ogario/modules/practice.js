@@ -236,6 +236,12 @@
             };
             /* leave the live server (or a replay) like a replay start does */
             if (window.replayTimeOuts) { clearTimeout(window.replayTimeOuts); window.replayTimeOuts = null; }
+            /* a pending automatic reconnect or delayed join of the old connection would replace the
+             * session mid-run: cancel them as connect() does for a new server */
+            if (l._reconnTimer) { clearTimeout(l._reconnTimer); l._reconnTimer = null; }
+            l._reconnAttempts = 0; l._reconnStartTime = 0; l._lmReconnWs = null;
+            if (l._accountDomainSwitchTimer) { clearTimeout(l._accountDomainSwitchTimer); l._accountDomainSwitchTimer = null; }
+            l._connectSeq = (l._connectSeq || 0) + 1;
             try { l.closeConnection(); } catch (e) { }
             if (tok) tok.value = '';
         }
