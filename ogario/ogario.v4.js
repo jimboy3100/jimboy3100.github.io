@@ -18099,6 +18099,7 @@ var displayText = {
         commandCentreBar: 'Command Centre quick bar in game (the starred items; Ctrl+K opens the Command Centre)',
         'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
         'hk-hudEditor': 'Edit HUD (move, resize, lock or hide the HUD boxes; saved layouts)',
+        'hk-lmThemeWorkshop': 'Theme workshop: open / close window',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
@@ -18732,6 +18733,7 @@ var displayText = {
         'hk-screenshotCapture': 'Capture screenshot (PNG)',
         'hk-screenshotTool': 'Screenshot window',
         'hk-skinCollections': 'Skin collections',
+        'hk-lmThemeWorkshop': 'Theme workshop: open / close window',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
@@ -21726,7 +21728,7 @@ var _lmLabelI18n = {
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
         "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)","accessibilityGroup":"Προσβασιμότητα","a11yTextScale":"Μέγεθος κειμένου μενού (1 = κανονικό)","a11yHudTextScale":"Μέγεθος κειμένου HUD (1 = κανονικό, πάνω από την κλίμακα HUD)","a11yHighContrast":"HUD υψηλής αντίθεσης (συμπαγές φόντο, περιγράμματα)","a11yIndicators":"Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)","a11yNoFlash":"Λιγότερα αναβοσβησίματα (χωρίς κινούμενα στοιχεία σελίδας)","a11yPalette":"Παλέτα αχρωματοψίας για τα χρώματα και τα δαχτυλίδια αντιπάλων","skinCollections":"Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)","hk-radialMenu":"Κυκλικό μενού εντολών (κράτημα)","hk-radialEditor":"Κυκλικό μενού: επιλογή εντολών","hk-hotkeyConflicts":"Συγκρούσεις πλήκτρων","hk-screenshotMode":"Λειτουργία στιγμιότυπου (κρύβει το HUD)","hk-screenshotCapture":"Λήψη στιγμιότυπου (PNG)","hk-screenshotTool":"Παράθυρο στιγμιότυπου","hk-skinCollections":"Συλλογές skins","hk-bugReport":"Αναφορά σφάλματος (διαγνωστικά)","a11yPaletteOff":"Χρώματα θέματος","a11yPaletteDeut":"Δευτερανωπία (αδύναμο πράσινο)","a11yPaletteProt":"Πρωτανωπία (αδύναμο κόκκινο)","a11yPaletteTrit":"Τριτανωπία (αδύναμο μπλε)",
-        "lmLabGroup":"Lab (πειραματικά)","hk-lmPlugins":"Άνοιγμα User Scripts (plugins, κατάλογος)","hk-lmLab":"Άνοιγμα του Lab (πειραματικές λειτουργίες)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο","skinEditor":"Επεξεργασία skin (περικοπή, ζουμ, περιστροφή, προεπισκόπηση, PNG)","macroEditor":"Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)","hk-customMacro1":"Custom macro 1 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro2":"Custom macro 2 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro3":"Custom macro 3 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)"
+        "lmLabGroup":"Lab (πειραματικά)","hk-lmPlugins":"Άνοιγμα User Scripts (plugins, κατάλογος)","hk-lmLab":"Άνοιγμα του Lab (πειραματικές λειτουργίες)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο","skinEditor":"Επεξεργασία skin (περικοπή, ζουμ, περιστροφή, προεπισκόπηση, PNG)","macroEditor":"Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)","hk-customMacro1":"Custom macro 1 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro2":"Custom macro 2 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro3":"Custom macro 3 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-lmThemeWorkshop":"Εργαστήριο θεμάτων: άνοιγμα / κλείσιμο"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -86155,5 +86157,15 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(discoveryScript);
     } catch (e) {
         console.warn('[LM] Error loading discovery script:', e);
+    }
+    /* Theme workshop window (Theme tab button, hotkey without a default key, Command Centre);
+     * nothing runs until it is opened */
+    try {
+        var themeWorkshopScript = document.createElement('script');
+        themeWorkshopScript.type = 'text/javascript';
+        themeWorkshopScript.src = 'https://www.legendmod.ml/ogario/modules/themeworkshop.js?v=' + (window.OgVer || '');
+        document.body.appendChild(themeWorkshopScript);
+    } catch (e) {
+        console.warn('[LM] Error loading theme workshop script:', e);
     }
 })();

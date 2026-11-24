@@ -262,7 +262,8 @@
         skinEditor: { en: 'Skin editor (crop, zoom, rotate, preview, PNG)', el: 'Επεξεργασία skin (περικοπή, ζουμ, περιστροφή, προεπισκόπηση, PNG)' },
         macroEditor: { en: 'Custom macros (split, feed, wait, move to mouse)', el: 'Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)' },
         discover: { en: 'Discover features (what is new, turn on, open)', el: 'Ανακάλυψε λειτουργίες (νέα, ενεργοποίηση, άνοιγμα)' },
-        serverCaps: { en: 'What works on this server', el: 'Τι λειτουργεί σε αυτόν τον διακομιστή' }
+        serverCaps: { en: 'What works on this server', el: 'Τι λειτουργεί σε αυτόν τον διακομιστή' },
+        themeWorkshop: { en: 'Theme workshop', el: 'Εργαστήριο θεμάτων' }
     };
     function lang() {
         try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
@@ -436,7 +437,8 @@
         { id: 'skinEditor', en: tEn('skinEditor'), label: function () { return t('skinEditor'); }, avail: function () { return typeof W.lmSkinEditor === 'function'; }, run: function () { W.lmSkinEditor('open'); } },
         { id: 'macroEditor', en: tEn('macroEditor'), label: function () { return t('macroEditor'); }, avail: function () { return typeof W.lmMacroEditor === 'function'; }, run: function () { W.lmMacroEditor('open'); } },
         { id: 'discover', en: tEn('discover'), label: function () { return t('discover'); }, avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.open); }, run: function () { W.LMDiscovery.open(); } },
-        { id: 'serverCaps', en: tEn('serverCaps'), label: function () { return t('serverCaps'); }, avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.openServer); }, run: function () { W.LMDiscovery.openServer(); } }
+        { id: 'serverCaps', en: tEn('serverCaps'), label: function () { return t('serverCaps'); }, avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.openServer); }, run: function () { W.LMDiscovery.openServer(); } },
+        { id: 'themeWorkshop', en: tEn('themeWorkshop'), label: function () { return t('themeWorkshop'); }, avail: function () { return !!(W.LMThemeWorkshop && typeof W.LMThemeWorkshop.open === 'function'); }, run: function () { W.LMThemeWorkshop.open(); } }
     ];
 
     /* ═══ Running items ═══ */

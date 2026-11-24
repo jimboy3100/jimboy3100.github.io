@@ -478,6 +478,18 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			/* Theme workshop window (ogario/modules/themeworkshop.js): no default key */
+			'hk-lmThemeWorkshop': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmThemeWorkshop']) || 'Theme workshop: open / close window';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMThemeWorkshop && typeof window.LMThemeWorkshop.toggle === 'function') window.LMThemeWorkshop.toggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-copyServerLink': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-copyServerLink']) || 'Copy server link + password (TK&PW)';
