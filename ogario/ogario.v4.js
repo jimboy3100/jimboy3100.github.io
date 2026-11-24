@@ -474,6 +474,52 @@ function _lmRoomUrlOk(u) { return typeof u === 'string' && u.length < 600 && /^w
 function _lmRoomUrlCode(u) { var m = /\/el-room\/([A-HJ-NP-Z2-9]{6})\?/.exec(String(u || '')); return m ? m[1] : ''; }
 function _lmRoomShareLink(code) { return 'https://www.legendmod.ml/play.html?room=' + code; }
 window._lmRoomShareLink = _lmRoomShareLink;
+/* Close room: the create reply holds an owner key, the only way to close the room. It is kept in
+ * memory and per room code in localStorage 'lmRoomOwnerKeys' ({CODE: {k, t}}, dropped after 6 h,
+ * the longest a room lives), so the owner can still close the room after a reload. Never shown or logged. */
+var _lmRoomKeyTtl = 6 * 3600 * 1000;
+function _lmRoomKeyOk(k) { return typeof k === 'string' && /^[A-Za-z0-9_-]{16,64}$/.test(k); }
+function _lmRoomKeys() {
+    var o = null, out = {}, now = Date.now(), dropped = false;
+    try { o = JSON.parse(localStorage.getItem('lmRoomOwnerKeys') || 'null'); } catch (e) { }
+    if (!o || typeof o !== 'object') return out;
+    Object.keys(o).forEach(function (c) {
+        var e = o[c], t = e && +e.t;
+        if (_lmRoomCode(c) === c && e && _lmRoomKeyOk(e.k) && t > 0 && now - t < _lmRoomKeyTtl && t - now < 60000) out[c] = { k: e.k, t: t };
+        else dropped = true;
+    });
+    if (dropped) _lmRoomKeysSave(out);
+    return out;
+}
+function _lmRoomKeysSave(o) {
+    try { if (Object.keys(o).length) localStorage.setItem('lmRoomOwnerKeys', JSON.stringify(o)); else localStorage.removeItem('lmRoomOwnerKeys'); } catch (e) { }
+}
+function _lmRoomKeepKey(code, key) {
+    if (!code || !_lmRoomKeyOk(key)) return;
+    _lmRoomState.ownerCode = code;
+    _lmRoomState.ownerKey = key;
+    var o = _lmRoomKeys();
+    o[code] = { k: key, t: Date.now() };
+    _lmRoomKeysSave(o);
+}
+function _lmRoomOwnerKey(code) {
+    if (!code) return '';
+    var o = _lmRoomKeys();
+    if (o[code]) return o[code].k;
+    return _lmRoomState.ownerCode === code ? _lmRoomState.ownerKey || '' : '';
+}
+function _lmRoomDropKey(code) {
+    if (_lmRoomState.ownerCode === code) { _lmRoomState.ownerCode = ''; _lmRoomState.ownerKey = ''; }
+    var o = _lmRoomKeys();
+    if (o[code]) { delete o[code]; _lmRoomKeysSave(o); }
+}
+/* the current room, or after a reload the last room, when this device created it */
+function _lmRoomOwnedCode() {
+    var c = _lmRoomState.code;
+    if (!c) { try { c = _lmRoomCode(localStorage.getItem('lmLastRoom')); } catch (e) { c = ''; } }
+    return c && _lmRoomOwnerKey(c) ? c : '';
+}
+try { _lmRoomKeys(); } catch (e) { }
 function _lmRoomConnected() {
     var lm = window.legendmod;
     /* the room connect still waits (500 ms logout coming from agar.io): no Rejoin, no second ticket */
@@ -545,12 +591,25 @@ window._lmRoomOnOpen = function (ws) {
 /* called by the connection's onClose for a room URL: no auto-reconnect, offer Rejoin */
 window._lmRoomOnClose = function (ws) {
     if (!ws || ws !== _lmRoomState.url) return;
+    if (_lmRoomState.closing) { _lmRoomState.closeLost = ws; return; }
     _lmRoomState.lost = true;
     _lmRoomButton();
     var m = document.getElementById('lm-room-modal');
     if (m && m._lmPaint) m._lmPaint(_lmMhT('roomLost', 'Disconnected from the private room.'), true);
     else _lmRoomOpen('rejoin');
 };
+/* the room was closed: forget it and end the connection (the room callbacks no longer match it,
+ * so there is no Rejoin and no reconnect) */
+function _lmRoomLeave(code) {
+    var s = _lmRoomState, lm = window.legendmod;
+    try { if (localStorage.getItem('lmLastRoom') === code) localStorage.removeItem('lmLastRoom'); } catch (e) { }
+    if (!code || s.code !== code) return;
+    var url = s.url;
+    if (s.pendingTimer && lm && lm._accountDomainSwitchTimer === s.pendingTimer) { clearTimeout(s.pendingTimer); lm._accountDomainSwitchTimer = null; }
+    s.code = ''; s.pass = ''; s.url = ''; s.mode = ''; s.name = ''; s.lost = false; s.idleMin = 0; s.pendingTimer = null; s.closeLost = '';
+    _lmRoomButton();
+    if (url && lm && lm.ws === url && lm.socket && lm.socket.readyState <= 1) { try { lm.socket.close(); } catch (e) { } }
+}
 /* "🔒 Private room CODE" under the menu footer, only after a room was joined in this tab */
 function _lmRoomButton() {
     var b = document.getElementById('lm-room-btn');
@@ -639,6 +698,31 @@ function _lmRoomOpen(tab, code) {
     cur.appendChild(curInfo);
     cur.appendChild(bRejoin);
     scroll.appendChild(cur);
+    /* owner only: Close room (with a confirm step) */
+    var own = el('div', 'display:none;text-align:center;padding:6px 8px;margin-bottom:8px;border:1px solid rgba(255,90,90,0.35);border-radius:6px;background:rgba(0,0,0,0.15);');
+    own.id = 'lm-room-own';
+    var ownName = el('div', 'font-size:12px;color:' + tc2 + ';margin-bottom:4px;');
+    ownName.id = 'lm-room-ownname';
+    var bCloseRoom = el('button', btn2Css + 'border-color:rgba(255,90,90,0.6);color:#ff8080;', T('roomCloseBtn', 'Close room'));
+    bCloseRoom.id = 'lm-room-closeroom';
+    bCloseRoom.type = 'button';
+    var ask = el('div', 'display:none;');
+    ask.id = 'lm-room-closeask';
+    ask.appendChild(el('div', 'font-size:13px;font-weight:700;margin-bottom:6px;', T('roomCloseAsk', 'Close the room for everyone?')));
+    var askBtns = el('div', 'display:flex;gap:6px;justify-content:center;flex-wrap:wrap;');
+    var bCloseYes = el('button', btnCss + 'background:#d9534f;color:#fff;', T('roomCloseYes', 'Yes, close it'));
+    bCloseYes.id = 'lm-room-closeyes';
+    bCloseYes.type = 'button';
+    var bCloseNo = el('button', btn2Css, T('roomCancel', 'Cancel'));
+    bCloseNo.id = 'lm-room-closeno';
+    bCloseNo.type = 'button';
+    askBtns.appendChild(bCloseYes);
+    askBtns.appendChild(bCloseNo);
+    ask.appendChild(askBtns);
+    own.appendChild(ownName);
+    own.appendChild(bCloseRoom);
+    own.appendChild(ask);
+    scroll.appendChild(own);
     var msg = el('div', 'display:none;padding:6px 8px;margin-bottom:8px;border-radius:4px;font-size:12px;background:rgba(0,0,0,0.2);');
     msg.id = 'lm-room-msg';
     msg.setAttribute('role', 'alert');
@@ -730,7 +814,7 @@ function _lmRoomOpen(tab, code) {
     list.id = 'lm-room-list';
     pl.appendChild(list);
     var listLoaded = false, busy = false;
-    var actions = [bCreate, bJoin, bRefresh, bRejoin];
+    var actions = [bCreate, bJoin, bRefresh, bRejoin, bCloseRoom, bCloseYes];
     var setBusy = function (on) {
         busy = on;
         actions.forEach(function (b) { b.disabled = on; b.style.opacity = on ? '0.5' : ''; });
@@ -761,6 +845,12 @@ function _lmRoomOpen(tab, code) {
                 (s.idleMin > 0 ? ' ' + T('roomIdle', 'The room closes after {n} minutes without players.').replace('{n}', String(s.idleMin)) : '');
             bRejoin.style.display = s.lost || !_lmRoomConnected() ? '' : 'none';
         }
+        var oc = _lmRoomOwnedCode();
+        own.style.display = oc ? '' : 'none';
+        if (!oc) ask.style.display = 'none';
+        bCloseRoom.style.display = ask.style.display === 'none' ? '' : 'none';
+        ownName.style.display = oc && oc !== s.code ? '' : 'none';
+        ownName.textContent = oc ? T('roomYours', 'Your room') + ' ' + oc : '';
         if (note !== undefined) say(note, isErr);
     };
     md._lmPaint = paint;
@@ -847,6 +937,7 @@ function _lmRoomOpen(tab, code) {
             if (res.status === 200 && c && _lmRoomUrlOk(d.url)) {
                 _lmRoomState.idleMin = Math.max(0, +d.expiresIdleMin | 0);
                 _lmRoomGo(d.url, c, pass, { mode: d.mode, name: name });
+                _lmRoomKeepKey(c, d.ownerKey);
                 connected('create');
             } else say(_lmRoomErr(res.status === 200 ? 500 : res.status, true), true);
         });
@@ -879,6 +970,35 @@ function _lmRoomOpen(tab, code) {
             /* the broker counts players from a status read every 15 s: the dropped player may still count */
             if (err) say(st === 409 ? T('roomErrFullRetry', 'The room is full right now. Try again in a few seconds.') : err, true);
             else connected('join');
+        });
+    });
+    /* close room: 204 room closed (leave it), 404 already gone (leave it), 403 key refused; the key is dropped on all three */
+    bCloseRoom.addEventListener('click', function (e) { e.stopPropagation(); if (busy) return; ask.style.display = ''; paint(); });
+    bCloseNo.addEventListener('click', function (e) { e.stopPropagation(); ask.style.display = 'none'; paint(); });
+    bCloseYes.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var c = _lmRoomOwnedCode(), k = c && _lmRoomOwnerKey(c);
+        ask.style.display = 'none';
+        if (busy || !k) { paint(); return; }
+        var s = _lmRoomState, isCur = s.code === c;
+        if (isCur) { s.closing = true; s.closeLost = ''; }
+        setBusy(true);
+        paint(T('roomClosing', 'Closing the room…'), false);
+        _lmRoomFetch('close', { code: c, ownerKey: k }).then(function (res) {
+            setBusy(false);
+            var lostWs = isCur && s.closing ? s.closeLost : '';
+            if (isCur) { s.closing = false; s.closeLost = ''; }
+            if (res.status === 204 || res.status === 404) {
+                _lmRoomDropKey(c);
+                after = '';
+                _lmRoomLeave(c);
+                paint(res.status === 204 ? T('roomClosed', 'Room closed.') : T('roomCloseGone', 'The room is already closed.'), res.status !== 204);
+                return;
+            }
+            if (res.status === 403) _lmRoomDropKey(c);
+            /* the room connection ended meanwhile: the usual Rejoin */
+            if (lostWs && typeof window._lmRoomOnClose === 'function') window._lmRoomOnClose(lostWs);
+            paint(res.status === 403 ? T('roomCloseDenied', 'This room cannot be closed from this device.') : _lmRoomErr(res.status, false), true);
         });
     });
     bCopy.addEventListener('click', function (e) { e.stopPropagation(); _lmRoomCopy(_lmRoomState.code, bCopy, T('roomCopy', 'Copy code')); });
@@ -1038,6 +1158,15 @@ window.lmT = (function () {
         "roomErrServer": {"en":"The room server could not do this (error {n}). Try again later.","el":"Ο διακομιστής δωματίων δεν μπόρεσε να το κάνει (σφάλμα {n}). Δοκιμάστε αργότερα.","es":"El servidor de salas no pudo hacerlo (error {n}). Inténtalo más tarde.","bg":"Сървърът за стаи не успя (грешка {n}). Опитай по-късно.","fr":"Le serveur des salons n'a pas pu le faire (erreur {n}). Réessayez plus tard.","ar":"لم يتمكن خادم الغرف من تنفيذ ذلك (خطأ {n}). حاول لاحقاً.","zh":"房間伺服器無法完成此操作（錯誤 {n}）。請稍後再試。","ru":"Сервер комнат не смог выполнить запрос (ошибка {n}). Попробуйте позже.","de":"Der Raumserver konnte das nicht ausführen (Fehler {n}). Versuche es später.","tr":"Oda sunucusu bunu yapamadı (hata {n}). Daha sonra tekrar deneyin.","pl":"Serwer pokoi nie mógł tego wykonać (błąd {n}). Spróbuj później.","nl":"De kamerserver kon dit niet uitvoeren (fout {n}). Probeer het later opnieuw."},
         "roomProtected": {"en":"Password protected","el":"Με κωδικό πρόσβασης","es":"Con contraseña","bg":"С парола","fr":"Protégé par mot de passe","ar":"محمية بكلمة مرور","zh":"需要密碼","ru":"С паролем","de":"Passwortgeschützt","tr":"Şifre korumalı","pl":"Chronione hasłem","nl":"Met wachtwoord"},
         "roomShopOff": {"en":"Shop is off in private rooms; nothing is saved.","el":"Το κατάστημα είναι κλειστό στα ιδιωτικά δωμάτια· τίποτα δεν αποθηκεύεται.","es":"La tienda está desactivada en las salas privadas; no se guarda nada.","bg":"Магазинът е изключен в частните стаи; нищо не се запазва.","fr":"La boutique est désactivée dans les salons privés ; rien n'est enregistré.","ar":"المتجر متوقف في الغرف الخاصة؛ لا يتم حفظ أي شيء.","zh":"私人房間中商店已關閉；不會儲存任何進度。","ru":"В приватных комнатах магазин отключён; ничего не сохраняется.","de":"Der Shop ist in privaten Räumen aus; nichts wird gespeichert.","tr":"Özel odalarda mağaza kapalı; hiçbir şey kaydedilmez.","pl":"Sklep jest wyłączony w prywatnych pokojach; nic nie jest zapisywane.","nl":"De winkel staat uit in privékamers; er wordt niets opgeslagen."},
+        "roomCloseBtn": {"en":"Close room","el":"Κλείσιμο δωματίου","es":"Cerrar sala","bg":"Затвори стаята","fr":"Fermer le salon","ar":"إغلاق الغرفة","zh":"關閉房間","ru":"Закрыть комнату","de":"Raum schließen","tr":"Odayı kapat","pl":"Zamknij pokój","nl":"Kamer sluiten"},
+        "roomCloseAsk": {"en":"Close the room for everyone?","el":"Κλείσιμο του δωματίου για όλους;","es":"¿Cerrar la sala para todos?","bg":"Да се затвори ли стаята за всички?","fr":"Fermer le salon pour tout le monde ?","ar":"إغلاق الغرفة للجميع؟","zh":"要為所有人關閉房間嗎？","ru":"Закрыть комнату для всех?","de":"Den Raum für alle schließen?","tr":"Oda herkes için kapatılsın mı?","pl":"Zamknąć pokój dla wszystkich?","nl":"De kamer voor iedereen sluiten?"},
+        "roomCloseYes": {"en":"Yes, close it","el":"Ναι, κλείσιμο","es":"Sí, cerrarla","bg":"Да, затвори я","fr":"Oui, le fermer","ar":"نعم، أغلقها","zh":"是，關閉","ru":"Да, закрыть","de":"Ja, schließen","tr":"Evet, kapat","pl":"Tak, zamknij","nl":"Ja, sluiten"},
+        "roomCancel": {"en":"Cancel","el":"Άκυρο","es":"Cancelar","bg":"Отказ","fr":"Annuler","ar":"إلغاء","zh":"取消","ru":"Отмена","de":"Abbrechen","tr":"İptal","pl":"Anuluj","nl":"Annuleren"},
+        "roomClosing": {"en":"Closing the room…","el":"Κλείσιμο δωματίου…","es":"Cerrando la sala…","bg":"Затваряне на стаята…","fr":"Fermeture du salon…","ar":"جارٍ إغلاق الغرفة…","zh":"正在關閉房間…","ru":"Закрываем комнату…","de":"Raum wird geschlossen…","tr":"Oda kapatılıyor…","pl":"Zamykanie pokoju…","nl":"Kamer wordt gesloten…"},
+        "roomClosed": {"en":"Room closed.","el":"Το δωμάτιο έκλεισε.","es":"Sala cerrada.","bg":"Стаята е затворена.","fr":"Salon fermé.","ar":"تم إغلاق الغرفة.","zh":"房間已關閉。","ru":"Комната закрыта.","de":"Raum geschlossen.","tr":"Oda kapatıldı.","pl":"Pokój zamknięty.","nl":"Kamer gesloten."},
+        "roomCloseGone": {"en":"The room is already closed.","el":"Το δωμάτιο έχει ήδη κλείσει.","es":"La sala ya está cerrada.","bg":"Стаята вече е затворена.","fr":"Le salon est déjà fermé.","ar":"الغرفة مغلقة بالفعل.","zh":"房間已經關閉。","ru":"Комната уже закрыта.","de":"Der Raum ist bereits geschlossen.","tr":"Oda zaten kapalı.","pl":"Pokój jest już zamknięty.","nl":"De kamer is al gesloten."},
+        "roomCloseDenied": {"en":"This room cannot be closed from this device.","el":"Αυτό το δωμάτιο δεν μπορεί να κλείσει από αυτή τη συσκευή.","es":"Esta sala no se puede cerrar desde este dispositivo.","bg":"Тази стая не може да бъде затворена от това устройство.","fr":"Ce salon ne peut pas être fermé depuis cet appareil.","ar":"لا يمكن إغلاق هذه الغرفة من هذا الجهاز.","zh":"無法從此裝置關閉這個房間。","ru":"Эту комнату нельзя закрыть с этого устройства.","de":"Dieser Raum kann von diesem Gerät nicht geschlossen werden.","tr":"Bu oda bu cihazdan kapatılamaz.","pl":"Tego pokoju nie można zamknąć z tego urządzenia.","nl":"Deze kamer kan niet vanaf dit apparaat worden gesloten."},
+        "roomYours": {"en":"Your room","el":"Το δωμάτιό σας","es":"Tu sala","bg":"Твоята стая","fr":"Votre salon","ar":"غرفتك","zh":"你的房間","ru":"Ваша комната","de":"Dein Raum","tr":"Odan","pl":"Twój pokój","nl":"Jouw kamer"},
         "mhThisDevice": {"en":"This device","el":"Αυτή η συσκευή","es":"Este dispositivo","bg":"Това устройство","fr":"Cet appareil","ar":"هذا الجهاز","zh":"此裝置","ru":"Это устройство","de":"Dieses Gerät","tr":"Bu cihaz","pl":"To urządzenie","nl":"Dit apparaat"},
         "mhAccount": {"en":"Account (server)","el":"Λογαριασμός (διακομιστής)","es":"Cuenta (servidor)","bg":"Акаунт (сървър)","fr":"Compte (serveur)","ar":"الحساب (الخادم)","zh":"帳號（伺服器）","ru":"Аккаунт (сервер)","de":"Konto (Server)","tr":"Hesap (sunucu)","pl":"Konto (serwer)","nl":"Account (server)"},
         "mhLoading": {"en":"Loading…","el":"Φόρτωση…","es":"Cargando…","bg":"Зареждане…","fr":"Chargement…","ar":"جارٍ التحميل…","zh":"載入中…","ru":"Загрузка…","de":"Wird geladen…","tr":"Yükleniyor…","pl":"Wczytywanie…","nl":"Laden…"},
