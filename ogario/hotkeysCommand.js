@@ -487,6 +487,18 @@
 				},
 				type: 'normal'
 			},
+			/* Command Centre search box (ogario/modules/commandcentre.js); Ctrl+K opens it too */
+			'hk-commandCentre': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-commandCentre']) || 'Command Centre';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMCommandCentre && typeof window.LMCommandCentre.toggle === 'function') window.LMCommandCentre.toggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-limitposition': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-limitposition']) || 'Limit Position';
