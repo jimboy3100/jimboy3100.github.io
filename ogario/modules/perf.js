@@ -358,6 +358,12 @@
             if (dt > LONG_FRAME) fr.longTotal++;
             if (!menu) { fr.secFrames++; fr.secTime += dt; fr.secRender.push(rt); fr.secGame.push(dt); }
         }
+        /* Track stalls (100ms–10s) that the normal frame window ignores */
+        if (!hidden && dt >= 100) {
+            fr.stallCount = (fr.stallCount || 0) + 1;
+            fr.stallLast = dt;
+            if (!fr.stallMax || dt > fr.stallMax) fr.stallMax = dt;
+        }
         if (t1 - fr.secStart >= 1000) {
             endSecond();
             resetSecond(t1);
@@ -612,7 +618,8 @@
         lines.push('Legend Mod ' + (window.OgVer || '') + ' performance report, ' + new Date().toISOString());
         lines.push('FPS: ' + f1(st.fps) + ' (last ' + st.n + ' frames)');
         lines.push('Frame time p50/p95/p99: ' + f1(st.p50) + ' / ' + f1(st.p95) + ' / ' + f1(st.p99) + ' ms');
-        lines.push('Long frames (>' + LONG_FRAME + ' ms): ' + st.longN + ' recent, ' + st.longTotal + ' measured in total');
+        lines.push('Long frames (>' + LONG_FRAME + ' ms): ' + st.longN + ' recent, ' + st.longTotal + ' measured in total' +
+            (fr.stallCount ? ', stalls ≥100ms: ' + fr.stallCount + ' (worst ' + Math.round(fr.stallMax || 0) + ' ms)' : ''));
         lines.push('Render ' + f1(st.render) + ' ms, other ' + f1(st.other) + ' ms per frame');
         lines.push('Cells: ' + cells + ', renderer: ' + rendererName());
         lines.push('devicePixelRatio: ' + (window.devicePixelRatio || 1) + ', render scale: ' + (dr && dr.dpr ? f1(dr.dpr) : '-') +
