@@ -898,6 +898,81 @@
                 keyUp: null,
                 type: 'normal'
             },
+            /* HUD helpers (ogario/modules/hudhelpers.js); no default keys */
+            'hk-precisionZoom': {
+                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-precisionZoom']) || 'Hold: precision zoom (zooms in, release to go back)'; },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.precisionZoom(true);
+                },
+                keyUp() {
+                    window.LMHudHelpers && window.LMHudHelpers.precisionZoom(false);
+                },
+                type: 'normal'
+            },
+            'hk-zoomSave1': {
+                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomSave1']) || 'Save zoom bookmark 1'; },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.zoomSave(1);
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-zoomSave2': {
+                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomSave2']) || 'Save zoom bookmark 2'; },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.zoomSave(2);
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-zoomSave3': {
+                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomSave3']) || 'Save zoom bookmark 3'; },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.zoomSave(3);
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-zoomRecall1': {
+                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomRecall1']) || 'Go to zoom bookmark 1'; },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.zoomRecall(1);
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-zoomRecall2': {
+                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomRecall2']) || 'Go to zoom bookmark 2'; },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.zoomRecall(2);
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-zoomRecall3': {
+                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomRecall3']) || 'Go to zoom bookmark 3'; },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.zoomRecall(3);
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-cameraLock': {
+                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-cameraLock']) || 'Spectate: lock / unlock the camera'; },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.toggleCamLock();
+                },
+                keyUp: null,
+                type: 'normal'
+            },
             'hk-voiceChat': {
                 label: textLanguage['hk-voiceChat'],
                 defaultKey: '=',
