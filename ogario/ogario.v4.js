@@ -84,7 +84,7 @@
             _lmEvChatAt = Date.now();
             var sent99 = false;
             try {
-                if (!o.integrity && $('#clantag').val() === '' && !(o.isLegendWorld && ogarcopythelb.clanTag)) {
+                if (!o.integrity && o.serverType !== 'sigmally' && o.serverType !== 'senpa' && $('#clantag').val() === '' && !(o.isLegendWorld && ogarcopythelb.clanTag)) {
                     o.sendMessage(app.buildChat99View(text));
                     sent99 = true;
                     if (o.isLegendWorld) app._lmLegendChatLast = Date.now();
@@ -23984,7 +23984,7 @@ function thelegendmodproject() {
                     var sent99 = false;
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
-                    if (!LM.integrity && $("#clantag").val() === "" && !(LM.isLegendWorld && ogarcopythelb.clanTag)) { /* EL with a stored tag goes through team chat 202 (sendChatMessage) */
+                    if (!LM.integrity && LM.serverType !== 'sigmally' && LM.serverType !== 'senpa' && $("#clantag").val() === "" && !(LM.isLegendWorld && ogarcopythelb.clanTag)) { /* EL with a stored tag goes through team chat 202 (sendChatMessage); Sigmally/Senpa have no chat 99 */
                         var view = application.buildChat99View(value);
                         legendmod.sendMessage(view);
                         sent99 = true;
@@ -32176,7 +32176,7 @@ function thelegendmodproject() {
 
             //		
             //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
-            if (!LM.integrity && $("#clantag").val() === "" && !(LM.isLegendWorld && ogarcopythelb.clanTag)) { /* EL with a stored tag goes through team chat 202 (sendChatMessage) */
+            if (!LM.integrity && LM.serverType !== 'sigmally' && LM.serverType !== 'senpa' && $("#clantag").val() === "" && !(LM.isLegendWorld && ogarcopythelb.clanTag)) { /* EL with a stored tag goes through team chat 202 (sendChatMessage); Sigmally/Senpa have no chat 99 */
 
                 var view = application.buildChat99View(prepareCommand);
                 legendmod.sendMessage(view);
@@ -39301,6 +39301,12 @@ function thelegendmodproject() {
                         ogario.mapMaxY = maxY;
                         ogario.mapSizeW = this.mapSizeW;
                         ogario.mapSizeH = this.mapSizeH;
+                        /* minimap and sectors read mapSize/mapOffset: without these they kept the
+                         * previous server's values after a switch (wrong dot, ghosts and sectors) */
+                        this.mapSize = Math.max(this.mapSizeW, this.mapSizeH);
+                        this.mapOffset = this.mapSize / 2;
+                        ogario.mapSize = this.mapSize;
+                        ogario.mapOffset = this.mapOffset;
                         console.log('%c[Sigmally]%c Map bounds: ' + minX + ',' + minY + ' → ' + maxX + ',' + maxY, 'color:#3af', 'color:inherit');
                         break;
                     }
