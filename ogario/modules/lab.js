@@ -178,7 +178,7 @@
         rb.type = 'button';
         rb.id = 'lm-lab-reset';
         acts.appendChild(rb);
-        var pb = el('button', 'btn btn-xs', tx('plugins'));
+        var pb = el('button', 'btn btn-xs btn-primary', tx('plugins'));
         pb.type = 'button';
         pb.id = 'lm-lab-plugins';
         acts.appendChild(pb);

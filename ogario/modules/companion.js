@@ -539,7 +539,7 @@
             [['open', open]].forEach(function (b) {
                 var el = D.createElement('button');
                 el.type = 'button';
-                el.className = 'btn btn-xs lm-companion-' + b[0];
+                el.className = 'btn btn-xs btn-primary lm-companion-' + b[0];
                 el.style.cssText = 'min-height:26px;';
                 el.textContent = t(b[0]);
                 el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); b[1](); });

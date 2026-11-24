@@ -27647,7 +27647,7 @@ function thelegendmodproject() {
             this.addSliderBox(".animationGroup", "adaptivePerfTarget", 30, 120, 30);
             this.addOptionTo(".animationGroup", "adaptivePerfToasts");
             this.addOptionTo(".animationGroup", "netHistory");
-            $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block" style="margin:4px 0 2px;"></button>')
+            $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block btn-primary" style="margin:4px 0 2px;"></button>')
                 .text(textLanguage.lmPerfDiag || 'Performance diagnostics').appendTo('.animationGroup')
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
             this.addSliderBox(".animationGroup", "instantReplaySecs", 15, 60, 15);
