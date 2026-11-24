@@ -160,7 +160,7 @@
                 var c = src.chat[i] || {};
                 var text = clip(c.text, MAX_TEXT);
                 if (!text) continue;
-                st.chat.push({ nick: c.own && stream ? '' : clip(c.nick, MAX_NICK), text: text, cmd: !!c.cmd, own: !!c.own });
+                st.chat.push({ nick: c.own && stream ? '' : clip(c.nick, MAX_NICK), text: stream ? '[redacted]' : text, cmd: !!c.cmd, own: !!c.own });
             }
         }
         return st;

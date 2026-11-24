@@ -165,13 +165,17 @@
             s: validCells(r.s, 2) ? r.s : '', d: validCells(r.d, 2) ? r.d : ''
         };
     }
-    /* { v: 1, games: [...] }; anything else (other version, broken JSON) reads as empty */
+    /* { v: 1, games: [...] }; anything else (other version, broken JSON) reads as empty.
+     * P0 fix: a schema version bump used to wipe all history. Now migrate old data
+     * by re-validating each entry through the clean function instead of discarding. */
     function parseStore(raw, field, clean, cap) {
         var out = [];
         try {
             var o = typeof raw === 'string' ? JSON.parse(raw) : raw;
-            if (o && o.v === SCHEMA && Array.isArray(o[field])) {
-                for (var i = 0; i < o[field].length; i++) { var c = clean(o[field][i]); if (c) out.push(c); }
+            if (o && typeof o === 'object') {
+                /* Accept current schema or attempt migration from any older version */
+                var arr = Array.isArray(o[field]) ? o[field] : [];
+                for (var i = 0; i < arr.length; i++) { var c = clean(arr[i]); if (c) out.push(c); }
             }
         } catch (e) { out = []; }
         out.sort(function (a, b) { return a.t - b.t; });

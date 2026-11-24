@@ -225,6 +225,11 @@
             if (c) { out[p] = c; any = true; }
         }
         if (out.h) { var k = cleanKnown(b.k); if (k) out.k = k; }
+        /* P0 fix: pass through mobile layouts (ml) and gamepad config (gp) without
+         * a validator — they are opaque blobs validated by their own modules on load.
+         * cleanBundle used to silently strip them because PART_FNS only knew s/t/h/m. */
+        if (isObj(b.ml)) { out.ml = b.ml; any = true; }
+        if (isObj(b.gp)) { out.gp = b.gp; any = true; }
         return any ? out : null;
     }
     function cleanName(n) {
@@ -492,7 +497,19 @@
     /* the current settings (in memory); parts { t, h, m } false leave a part out */
     function captureCurrent(parts) {
         parts = parts || {};
-        var data = { s: S() };
+        /* P0 fix: when adaptive performance has lowered settings, use the player's
+         * original values instead of the temporarily reduced ones. perf.js exposes
+         * overrides.userView() for this, but profiles.js reads properties directly
+         * from the live object. Use the toJSON() that perf.js installs, or fall
+         * back to a plain copy if adaptive perf is not active. */
+        var liveS = S();
+        var sData;
+        if (liveS && typeof liveS.toJSON === 'function') {
+            sData = liveS.toJSON();
+        } else {
+            sData = liveS;
+        }
+        var data = { s: sData };
         if (parts.t !== false && T()) {
             var t = Object.assign({}, T());
             /* the enlarged minimap (hotkey) is temporary: its normal width, as the export does */
@@ -505,6 +522,8 @@
             if (isObj(window.hotkeysCommand)) data.k = Object.keys(window.hotkeysCommand);
         }
         if (parts.m !== false) data.m = readJSON('lm-mobile-prefs');
+        if (parts.m !== false) data.ml = readJSON('lm-mobile-layouts');
+        if (parts.m !== false) data.gp = readJSON('lmGamepad');
         return cleanBundle(data);
     }
     /* the saved settings (what a reload would load): the state before a change that is being saved */
@@ -514,7 +533,9 @@
             t: readJSON('ogarioThemeSettings') || window.LM_THEME_DEFAULTS,
             h: readJSON('ogarioHotkeys'),
             k: readJSON('ogarioHotkeysKnown'),
-            m: readJSON('lm-mobile-prefs')
+            m: readJSON('lm-mobile-prefs'),
+            ml: readJSON('lm-mobile-layouts'),
+            gp: readJSON('lmGamepad')
         });
     }
     function label(part, key) {
@@ -640,6 +661,9 @@
         if (c.t) entries.push({ key: 'ogarioThemeSettings', text: JSON.stringify(Object.assign({}, cur.t, data.t)) });
         if (c.h) entries.push({ key: 'ogarioHotkeys', text: JSON.stringify(data.h) });
         if (c.m) entries.push({ key: 'lm-mobile-prefs', text: JSON.stringify(Object.assign({}, cur.m || {}, data.m)) });
+        /* P0 fix: write mobile layouts and gamepad config when present in the profile */
+        if (data.ml) entries.push({ key: 'lm-mobile-layouts', text: JSON.stringify(data.ml) });
+        if (data.gp) entries.push({ key: 'lmGamepad', text: JSON.stringify(data.gp) });
         /* 2. a backup of the current state, and the Undo */
         addBackup(opts.reason === 'undo' ? 'undo' : opts.reason === 'restore' ? 'restore' : 'profile', cur, name);
         var undoEntry = opts.reason !== 'undo' ? { t: Date.now(), name: name, data: cur } : null;
@@ -662,7 +686,15 @@
                 if (pi > 0) { keys.splice(pi, 1); keys.unshift('performanceMode'); }
                 keys.forEach(function (k) {
                     var v = data.s[k];
-                    if (!has(s, k) || same(s[k], v)) return;
+                    /* P0 fix: when adaptive perf has lowered s[k] to the same value the
+                     * profile wants, same() returns true and setOpt is skipped. Then when
+                     * perf.js recovers, it restores the original, clobbering the profile.
+                     * Notify perf.js via onSetting so it drops its saved override. */
+                    if (!has(s, k)) return;
+                    if (same(s[k], v)) {
+                        if (window.LMPerf && typeof window.LMPerf.onSetting === 'function') window.LMPerf.onSetting(k);
+                        return;
+                    }
                     if (RELOAD_KEYS[k]) reload = true;
                     try {
                         /* one message for the whole profile, not one per option */
@@ -812,9 +844,13 @@
         /* the same rule again (another server of the same type): already applied, and any change
          * the player made since then stays */
         if (key === lastAutoKey) return;
-        lastAutoKey = key;
         var p = findProfile(pick.id);
-        if (p) applyProfile(p, { auto: ruleName(pick), quiet: true });
+        if (p) {
+            var result = applyProfile(p, { auto: ruleName(pick), quiet: true });
+            /* P0 fix: update lastAutoKey only after successful application,
+             * so a failed apply can be retried on the next evaluation */
+            if (result !== null) lastAutoKey = key;
+        }
     }
     var evalT = null;
     function evaluateSoon(ms) {

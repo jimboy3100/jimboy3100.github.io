@@ -267,9 +267,14 @@
     function tick() {
         var lm = window.legendmod;
         if (!lm || !lm.play) return;
+        /* multibox: when Unit 1 is active, track its cells instead of Unit 0 */
         var pc = lm.playerCells, n = pc ? pc.length : 0;
+        if (lm.multiboxPlayerEnabled && lm.playerCellsMulti && lm.playerCellsMulti.length) {
+            pc = lm.playerCellsMulti;
+            n = pc.length;
+        }
         if (!n) return;
-        var now = Date.now(), mass = +lm.playerMass || 0, i, j;
+        var now = Date.now(), mass = (lm.multiboxPlayerEnabled && lm.playerCellsMulti && lm.playerCellsMulti.length) ? (+lm.playerMassMulti || 0) : (+lm.playerMass || 0), i, j;
         lastAlive = now;
         /* biggest visible enemy cell near me that could eat at least my smallest cell */
         var minOwn = Infinity;
@@ -358,8 +363,15 @@
         var lm = window.legendmod, k = lm && lm._lmKiller, now = Date.now();
         /* Expanding Land: the server's own report */
         if (k && k.server && now - (k.at || 0) < 15000) return { nick: String(k.nick || ''), virus: !!k.virus, exact: true };
-        var e = evFind('eaten', lastAlive - 2000);
-        if (e) return { nick: e.nick, virus: e.v, exact: true };
+        /* find the eaten event with the LARGEST mass in the 2-second death window,
+           not just the most recent one (which could be a tiny pellet eaten after the lethal blow) */
+        var since = lastAlive - 2000, bestEat = null, bestA = 0;
+        for (var ki = 0; ki < evLen; ki++) {
+            var ev = EV[(evHead - 1 - ki + EV_CAP * 2) % EV_CAP];
+            if (ev.t2 < since) break;
+            if (ev.type === 'eaten' && ev.a > bestA) { bestA = ev.a; bestEat = ev; }
+        }
+        if (bestEat) return { nick: bestEat.nick, virus: bestEat.v, exact: true };
         if (k && now - (k.at || 0) < 15000) return { nick: String(k.nick || ''), virus: !!k.virus, exact: true };
         if (R.len) {
             var last = R.nn[R.head ? R.head - 1 : R.cap - 1];

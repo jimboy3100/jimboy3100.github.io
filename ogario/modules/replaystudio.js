@@ -788,17 +788,40 @@
         openInstant(key);
     }
     /* listens for the death only while armed */
+    var deathTimer = 0;
     function onDeath() {
         if (!armed || inReplay()) return;
         var key = liveKey();
+        var deathSocket = window.legendmod && window.legendmod.socket;
+        /* cancel any previous pending timer (multi-cell sequential consumption) */
+        if (deathTimer) { clearTimeout(deathTimer); deathTimer = 0; }
         /* a moment for the last packets (the eat) to arrive */
-        setTimeout(function () { if (armed && key && !inReplay()) openInstant(key); }, 900);
+        deathTimer = setTimeout(function () {
+            deathTimer = 0;
+            if (!armed || inReplay()) return;
+            /* P0 fix: verify freshness — liveKey() must still match the death's key */
+            if (liveKey() !== key) return;
+            /* abort if the player has already respawned or is spawning */
+            var l = LM();
+            if (l && (l.play || l.isSpawning)) return;
+            /* P0 fix: compare actual socket objects, not URL strings */
+            if (!window.legendmod || window.legendmod.socket !== deathSocket) return;
+            openInstant(key);
+        }, 900);
+    }
+    function cancelDeathTimer() {
+        if (deathTimer) { clearTimeout(deathTimer); deathTimer = 0; }
     }
     function setArmed(on) {
         armed = !!on;
+        cancelDeathTimer();
         if (!window.LMEvents) return;
         LMEvents.off('death', onDeath);
-        if (armed) LMEvents.on('death', onDeath);
+        LMEvents.off('spawn', cancelDeathTimer);
+        if (armed) {
+            LMEvents.on('death', onDeath);
+            LMEvents.on('spawn', cancelDeathTimer);
+        }
     }
     function openInstant(key) {
         setArmed(false);
@@ -1171,6 +1194,16 @@
         ['keydown', 'keyup', 'keypress'].forEach(function (t) {
             W.addEventListener(t, function (e) { if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) e.stopPropagation(); });
         });
+        /* P0 fix: block game-action keys (split, feed, spawn, spectate) from reaching
+         * the game engine while Replay Studio is driving playback. This prevents macros
+         * from firing, the player from accidentally spawning, and camera desyncs. */
+        var BLOCK_KEYS = { ' ': 1, w: 1, W: 1, e: 1, E: 1, r: 1, R: 1, t: 1, T: 1, Enter: 1, Escape: 1 };
+        document.addEventListener('keydown', function (e) {
+            if (P.driving && BLOCK_KEYS[e.key]) { e.stopImmediatePropagation(); e.preventDefault(); }
+        }, true);
+        document.addEventListener('keyup', function (e) {
+            if (P.driving && BLOCK_KEYS[e.key]) { e.stopImmediatePropagation(); e.preventDefault(); }
+        }, true);
         /* header */
         var head = el('div', 'display:flex;align-items:center;padding:4px 4px 2px 10px;gap:4px;');
         head.appendChild(el('b', 'margin-right:6px;color:' + accent() + ';white-space:nowrap;', T('title')));
@@ -1333,6 +1366,11 @@
     function close() {
         if (W) W.style.display = 'none';
         if (uiTimer) { clearInterval(uiTimer); uiTimer = 0; }
+        /* P0 fix: stop playback, driving and overlay — not just hide the dialog */
+        if (P.playing) { P.playing = false; clearTimeout(P.timer); P.timer = 0; }
+        if (P.driving) stopDriving();
+        cancelDeathTimer();
+        try { if (typeof overlayClear === 'function') overlayClear(); } catch (e) { }
     }
     function isOpen() { return !!(W && W.style.display !== 'none'); }
     function ui() {

@@ -605,7 +605,7 @@
         try {
             var s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://www.legendmod.ml/ogario/modules/gamepad-ui.js?v=' + (window.OgVer || '');
+            s.src = '/ogario/modules/gamepad-ui.js?v=' + (window.OgVer || '');
             s.onload = function () {
                 uiLoading = false;
                 if (window.LMGamepadUI && typeof window.LMGamepadUI.open === 'function') window.LMGamepadUI.open();
