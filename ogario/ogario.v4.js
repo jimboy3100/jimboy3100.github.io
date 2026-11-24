@@ -17327,6 +17327,7 @@ var displayText = {
         showGhostCellsInfo: 'Ghost cells info (confusing)',
         stickyCell: 'Sticky cells (left button, hold right button)',
         gamepadEnabled: 'Obsługa gamepada / kontrolera',
+        gamepadDeadzone: 'Martwa strefa drążka gamepada',
         //showPartyBots: 'Party bots',
         rotateMap: 'Rotate Map',
         showMiniMap: 'Pokaz minimape',
@@ -17873,6 +17874,7 @@ var displayText = {
         showGhostCellsInfo: 'Ghost cells info (confusing)',
         stickyCell: 'Sticky cells (left button, hold right button)',
         gamepadEnabled: 'Gamepad / controller support',
+        gamepadDeadzone: 'Gamepad stick dead zone',
         //showPartyBots: 'Party bots',
         rotateMap: 'Rotate Map',
         showMiniMap: 'Show minimap',
@@ -20456,6 +20458,7 @@ var defaultmapsettings = {
 
     stickyCell: false,
     gamepadEnabled: false, /* gamepad / controller support (ogario/gamepad.js) */
+    gamepadDeadzone: 0.2, /* stick dead zone (0.05-0.5); 0.2 was the fixed value before */
     //showPartyBots: false,
     showMiniMap: true,
     rotateMap: true,
@@ -20660,7 +20663,7 @@ var _lmLabelI18n = {
         "transparentCells":"Διάφανα κύτταρα","transparentViruses":"Διάφανοι ιοί","transparentSkins":"Διάφανα skins","showGrid":"Εμφάνιση πλέγματος",
         "showBgSectors":"Εμφάνιση τομέων φόντου","showMapBorders":"Εμφάνιση ορίων χάρτη","showGhostCells":"Κύτταρα-φαντάσματα (πτώση fps)",
         "showGhostCellsInfo":"Πληροφορίες κυττάρων-φαντασμάτων (μπερδεύει)","stickyCell":"Κολλώδη κύτταρα (αριστερό κουμπί, κράτα το δεξί κουμπί)",
-        "gamepadEnabled":"Υποστήριξη gamepad / χειριστηρίου","rotateMap":"Περιστροφή χάρτη","showMiniMap":"Εμφάνιση μικρού χάρτη",
+        "gamepadEnabled":"Υποστήριξη gamepad / χειριστηρίου","gamepadDeadzone":"Νεκρή ζώνη μοχλού gamepad","rotateMap":"Περιστροφή χάρτη","showMiniMap":"Εμφάνιση μικρού χάρτη",
         "showMiniMapGrid":"Εμφάνιση πλέγματος μικρού χάρτη","showMiniMapGuides":"Εμφάνιση οδηγών μικρού χάρτη","showExtraMiniMapGuides":"Εμφάνιση επιπλέον οδηγών μικρού χάρτη",
         "showMiniMapGhostCells":"Εμφάνιση κυττάρων-φαντασμάτων","showMiniMapTrail":"Εμφάνιση της πορείας μου στον μικρό χάρτη","oneColoredTeammates":"Μονόχρωμοι συμπαίκτες",
         "rainbowFood":"Τροφή ουράνιου τόξου","oppColors":"Χρώματα αντιπάλων","oppRings":"Δαχτυλίδια αντιπάλων","virColors":"Χρώματα ιών","splitRange":"Εμβέλεια split",
@@ -20805,7 +20808,7 @@ var _lmLabelI18n = {
         "transparentCells":"Células transparentes","transparentViruses":"Virus transparentes","transparentSkins":"Skins transparentes","showGrid":"Mostrar cuadrícula",
         "showBgSectors":"Mostrar sectores de fondo","showMapBorders":"Mostrar bordes del mapa","showGhostCells":"Células fantasma (baja los FPS)",
         "showGhostCellsInfo":"Info de células fantasma (confusa)","stickyCell":"Células pegajosas (botón izquierdo, mantener botón derecho)",
-        "gamepadEnabled":"Soporte para gamepad / mando","rotateMap":"Rotar mapa","showMiniMap":"Mostrar minimapa","showMiniMapGrid":"Mostrar cuadrícula del minimapa",
+        "gamepadEnabled":"Soporte para gamepad / mando","gamepadDeadzone":"Zona muerta del stick del mando","rotateMap":"Rotar mapa","showMiniMap":"Mostrar minimapa","showMiniMapGrid":"Mostrar cuadrícula del minimapa",
         "showMiniMapGuides":"Mostrar guías del minimapa","showExtraMiniMapGuides":"Mostrar guías extra del minimapa","showMiniMapGhostCells":"Mostrar células fantasma",
         "showMiniMapTrail":"Mostrar mi rastro en el minimapa","oneColoredTeammates":"Compañeros de un solo color","rainbowFood":"Comida arcoíris",
         "oppColors":"Colores de oponentes","oppRings":"Anillos de oponentes","virColors":"Colores de virus","splitRange":"Alcance del split",
@@ -20949,7 +20952,7 @@ var _lmLabelI18n = {
         "myTransparentSkin":"Моят прозрачен скин","myCustomColor":"Моят персонален цвят","transparentCells":"Прозрачни клетки","transparentViruses":"Прозрачни вируси",
         "transparentSkins":"Прозрачни скинове","showGrid":"Покажи мрежата","showBgSectors":"Покажи секторите на фона","showMapBorders":"Покажи границите на картата",
         "showGhostCells":"Клетки призраци (спад на fps)","showGhostCellsInfo":"Информация за клетките призраци (объркващо)",
-        "stickyCell":"Лепкави клетки (ляв бутон, задръж десния бутон)","gamepadEnabled":"Поддръжка на геймпад / контролер","rotateMap":"Завъртане на картата",
+        "stickyCell":"Лепкави клетки (ляв бутон, задръж десния бутон)","gamepadEnabled":"Поддръжка на геймпад / контролер","gamepadDeadzone":"Мъртва зона на стика на геймпада","rotateMap":"Завъртане на картата",
         "showMiniMap":"Покажи миникартата","showMiniMapGrid":"Покажи мрежата на миникартата","showMiniMapGuides":"Покажи водачите на миникартата",
         "showExtraMiniMapGuides":"Покажи допълнителни водачи на миникартата","showMiniMapGhostCells":"Покажи клетките призраци",
         "showMiniMapTrail":"Покажи моята следа на миникартата","oneColoredTeammates":"Едноцветни съотборници","rainbowFood":"Храна в цветовете на дъгата",
@@ -21093,7 +21096,7 @@ var _lmLabelI18n = {
         "myCustomColor":"Ma couleur personnalisée","transparentCells":"Cellules transparentes","transparentViruses":"Virus transparents","transparentSkins":"Skins transparents",
         "showGrid":"Afficher la grille","showBgSectors":"Afficher les secteurs du fond","showMapBorders":"Afficher les bordures de la carte",
         "showGhostCells":"Cellules fantômes (baisse de FPS)","showGhostCellsInfo":"Infos des cellules fantômes (déroutant)",
-        "stickyCell":"Cellules collantes (bouton gauche, maintenir le bouton droit)","gamepadEnabled":"Prise en charge manette","rotateMap":"Pivoter la carte",
+        "stickyCell":"Cellules collantes (bouton gauche, maintenir le bouton droit)","gamepadEnabled":"Prise en charge manette","gamepadDeadzone":"Zone morte du stick de la manette","rotateMap":"Pivoter la carte",
         "showMiniMap":"Afficher la minicarte","showMiniMapGrid":"Afficher la grille de la minicarte","showMiniMapGuides":"Afficher les guides de la minicarte",
         "showExtraMiniMapGuides":"Afficher des guides supplémentaires sur la minicarte","showMiniMapGhostCells":"Afficher les cellules fantômes",
         "showMiniMapTrail":"Afficher ma trace sur la minicarte","oneColoredTeammates":"Coéquipiers d'une seule couleur","rainbowFood":"Nourriture arc-en-ciel",
@@ -21234,7 +21237,7 @@ var _lmLabelI18n = {
         "myCustomColor":"لوني المخصص","transparentCells":"خلايا شفافة","transparentViruses":"فيروسات شفافة","transparentSkins":"سكنات شفافة","showGrid":"إظهار الشبكة",
         "showBgSectors":"إظهار قطاعات الخلفية","showMapBorders":"إظهار حدود الخريطة","showGhostCells":"الخلايا الشبحية (انخفاض fps)",
         "showGhostCellsInfo":"معلومات الخلايا الشبحية (مربكة)","stickyCell":"خلايا لاصقة (الزر الأيسر، مع الضغط المستمر على الأيمن)",
-        "gamepadEnabled":"دعم ذراع التحكم / وحدة التحكم","rotateMap":"تدوير الخريطة","showMiniMap":"إظهار الخريطة المصغرة","showMiniMapGrid":"إظهار شبكة الخريطة المصغرة",
+        "gamepadEnabled":"دعم ذراع التحكم / وحدة التحكم","gamepadDeadzone":"المنطقة الميتة لعصا ذراع التحكم","rotateMap":"تدوير الخريطة","showMiniMap":"إظهار الخريطة المصغرة","showMiniMapGrid":"إظهار شبكة الخريطة المصغرة",
         "showMiniMapGuides":"إظهار خطوط إرشاد الخريطة المصغرة","showExtraMiniMapGuides":"إظهار خطوط إرشاد إضافية للخريطة المصغرة","showMiniMapGhostCells":"إظهار الخلايا الشبحية",
         "showMiniMapTrail":"إظهار مساري على الخريطة المصغرة","oneColoredTeammates":"زملاء الفريق بلون واحد","rainbowFood":"طعام بألوان قوس قزح","oppColors":"ألوان الخصوم",
         "oppRings":"حلقات الخصوم","virColors":"ألوان الفيروسات","splitRange":"مدى الانقسام","qdsplitRange":"مدى الانقسام المزدوج السريع",
@@ -21350,7 +21353,7 @@ var _lmLabelI18n = {
         "hideEnemiesMass":"隱藏敵人質量","vanillaSkins":"原版造型","ownVanillaSkin":"沒有自訂時使用自己的原版造型","universalChat":"通用聊天","customSkins":"自訂造型","videoSkins":"影片造型（.mp4 .webm .ogv）",
         "videoDestorted":"影片拉伸以符合細胞","videoSkinsMusic2":"可見時播放他人影片造型的聲音","videoOthersSkinSoundLevelproportion":"他人 VS 音量與其質量成正比","myTransparentSkin":"我的透明造型",
         "myCustomColor":"我的自訂顏色","transparentCells":"透明細胞","transparentViruses":"透明病毒","transparentSkins":"透明造型","showGrid":"顯示網格","showBgSectors":"顯示背景區域",
-        "showMapBorders":"顯示地圖邊界","showGhostCells":"幽靈細胞（降低 fps）","showGhostCellsInfo":"幽靈細胞資訊（容易混淆）","stickyCell":"黏性細胞（左鍵，按住右鍵）","gamepadEnabled":"遊戲手把 / 控制器支援",
+        "showMapBorders":"顯示地圖邊界","showGhostCells":"幽靈細胞（降低 fps）","showGhostCellsInfo":"幽靈細胞資訊（容易混淆）","stickyCell":"黏性細胞（左鍵，按住右鍵）","gamepadEnabled":"遊戲手把 / 控制器支援","gamepadDeadzone":"遊戲手把搖桿死區",
         "rotateMap":"旋轉地圖","showMiniMap":"顯示小地圖","showMiniMapGrid":"顯示小地圖網格","showMiniMapGuides":"顯示小地圖輔助線","showExtraMiniMapGuides":"顯示額外小地圖輔助線","showMiniMapGhostCells":"顯示幽靈細胞",
         "showMiniMapTrail":"在小地圖顯示自己的軌跡","oneColoredTeammates":"隊友單一顏色","rainbowFood":"彩虹食物","oppColors":"對手顏色","oppRings":"對手外圈","virColors":"病毒顏色","splitRange":"分裂範圍",
         "qdsplitRange":"快速雙重分裂範圍","sdsplitRange":"慢速雙重分裂範圍","virusesRange":"病毒範圍","textStroke":"名稱和質量描邊","namesStroke":"名稱描邊","massStroke":"質量描邊",
@@ -21446,7 +21449,7 @@ var _lmLabelI18n = {
         "myTransparentSkin":"Мой прозрачный скин","myCustomColor":"Мой цвет","transparentCells":"Прозрачные клетки","transparentViruses":"Прозрачные вирусы",
         "transparentSkins":"Прозрачные скины","showGrid":"Показывать сетку","showBgSectors":"Показывать секторы на фоне","showMapBorders":"Показывать границы карты",
         "showGhostCells":"Клетки-призраки (падение fps)","showGhostCellsInfo":"Информация о клетках-призраках (путает)",
-        "stickyCell":"Липкие клетки (левая кнопка, удерживать правую)","gamepadEnabled":"Поддержка геймпада / контроллера","rotateMap":"Поворот карты",
+        "stickyCell":"Липкие клетки (левая кнопка, удерживать правую)","gamepadEnabled":"Поддержка геймпада / контроллера","gamepadDeadzone":"Мёртвая зона стика геймпада","rotateMap":"Поворот карты",
         "showMiniMap":"Показывать миникарту","showMiniMapGrid":"Показывать сетку миникарты","showMiniMapGuides":"Показывать направляющие миникарты",
         "showExtraMiniMapGuides":"Показывать доп. направляющие миникарты","showMiniMapGhostCells":"Показывать клетки-призраки",
         "showMiniMapTrail":"Показывать свой след на миникарте","oneColoredTeammates":"Одноцветные союзники","rainbowFood":"Радужная еда","oppColors":"Цвета противников",
@@ -21582,7 +21585,7 @@ var _lmLabelI18n = {
         "myCustomColor":"Meine eigene Farbe","transparentCells":"Transparente Zellen","transparentViruses":"Transparente Viren","transparentSkins":"Transparente Skins",
         "showGrid":"Raster anzeigen","showBgSectors":"Hintergrundsektoren anzeigen","showMapBorders":"Kartenränder anzeigen","showGhostCells":"Geisterzellen (FPS-Einbruch)",
         "showGhostCellsInfo":"Geisterzellen-Info (verwirrend)","stickyCell":"Klebende Zellen (linke Taste, rechte Taste halten)",
-        "gamepadEnabled":"Gamepad-/Controller-Unterstützung","rotateMap":"Karte drehen","showMiniMap":"Minimap anzeigen","showMiniMapGrid":"Minimap-Raster anzeigen",
+        "gamepadEnabled":"Gamepad-/Controller-Unterstützung","gamepadDeadzone":"Stick-Totzone des Gamepads","rotateMap":"Karte drehen","showMiniMap":"Minimap anzeigen","showMiniMapGrid":"Minimap-Raster anzeigen",
         "showMiniMapGuides":"Minimap-Hilfslinien anzeigen","showExtraMiniMapGuides":"Zusätzliche Minimap-Hilfslinien anzeigen","showMiniMapGhostCells":"Geisterzellen anzeigen",
         "showMiniMapTrail":"Eigene Spur auf der Minimap anzeigen","oneColoredTeammates":"Einfarbige Teamkollegen","rainbowFood":"Regenbogen-Futter","oppColors":"Gegnerfarben",
         "oppRings":"Gegnerringe","virColors":"Virenfarben","splitRange":"Split-Reichweite","qdsplitRange":"Reichweite schneller Doppelsplit",
@@ -21719,7 +21722,7 @@ var _lmLabelI18n = {
         "myTransparentSkin":"Saydam skinim","myCustomColor":"Özel rengim","transparentCells":"Saydam hücreler","transparentViruses":"Saydam virüsler",
         "transparentSkins":"Saydam skinler","showGrid":"Izgarayı göster","showBgSectors":"Arka plan sektörlerini göster","showMapBorders":"Harita sınırlarını göster",
         "showGhostCells":"Hayalet hücreler (fps düşer)","showGhostCellsInfo":"Hayalet hücre bilgisi (kafa karıştırıcı)",
-        "stickyCell":"Yapışkan hücreler (sol tuş, sağ tuşu basılı tut)","gamepadEnabled":"Gamepad / kontrolcü desteği","rotateMap":"Haritayı döndür",
+        "stickyCell":"Yapışkan hücreler (sol tuş, sağ tuşu basılı tut)","gamepadEnabled":"Gamepad / kontrolcü desteği","gamepadDeadzone":"Gamepad çubuğu ölü bölgesi","rotateMap":"Haritayı döndür",
         "showMiniMap":"Mini haritayı göster","showMiniMapGrid":"Mini harita ızgarasını göster","showMiniMapGuides":"Mini harita kılavuzlarını göster",
         "showExtraMiniMapGuides":"Ek mini harita kılavuzlarını göster","showMiniMapGhostCells":"Hayalet hücreleri göster","showMiniMapTrail":"Kendi izimi mini haritada göster",
         "oneColoredTeammates":"Tek renkli takım arkadaşları","rainbowFood":"Gökkuşağı yem","oppColors":"Rakip renkleri","oppRings":"Rakip halkaları","virColors":"Virüs renkleri",
@@ -21855,7 +21858,7 @@ var _lmLabelI18n = {
         "myTransparentSkin":"Mijn transparante skin","myCustomColor":"Mijn eigen kleur","transparentCells":"Transparante cellen","transparentViruses":"Transparante virussen",
         "transparentSkins":"Transparante skins","showGrid":"Raster tonen","showBgSectors":"Achtergrondsectoren tonen","showMapBorders":"Kaartranden tonen",
         "showGhostCells":"Spookcellen (fps-daling)","showGhostCellsInfo":"Info spookcellen (verwarrend)",
-        "stickyCell":"Plakkende cellen (linkerknop, rechterknop ingedrukt houden)","gamepadEnabled":"Gamepad- / controllerondersteuning","rotateMap":"Kaart draaien",
+        "stickyCell":"Plakkende cellen (linkerknop, rechterknop ingedrukt houden)","gamepadEnabled":"Gamepad- / controllerondersteuning","gamepadDeadzone":"Dode zone van de gamepad-stick","rotateMap":"Kaart draaien",
         "showMiniMap":"Minikaart tonen","showMiniMapGrid":"Raster op minikaart tonen","showMiniMapGuides":"Hulplijnen op minikaart tonen",
         "showExtraMiniMapGuides":"Extra hulplijnen op minikaart tonen","showMiniMapGhostCells":"Spookcellen tonen","showMiniMapTrail":"Eigen spoor op de minikaart tonen",
         "oneColoredTeammates":"Teamgenoten in één kleur","rainbowFood":"Regenboogvoedsel","oppColors":"Kleuren van tegenstanders","oppRings":"Ringen van tegenstanders",
@@ -22036,6 +22039,10 @@ textLanguage['hk-scanTrick'] =
     textLanguage['hk-scanTrick'] ||
     /* same name as in the Scan Trick usage note (it said "Hold Scan Trick", the row said "Macro Scan trick") */
     'Hold Scan Trick';
+
+/* Expose textLanguage globally so hotkeysCommand.js (loaded as a separate <script>)
+ * can read localised labels — textLanguage is var-scoped to the IIFE. */
+window.textLanguage = textLanguage;
 
 defineChatCommand();
 function defineChatCommand() {
@@ -25787,7 +25794,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -25932,6 +25939,7 @@ function thelegendmodproject() {
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
             this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
+            this.addSliderBox(".mouseGroup", "gamepadDeadzone", 0.05, 0.5, 0.01);
             // this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");

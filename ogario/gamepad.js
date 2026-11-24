@@ -33,6 +33,13 @@
     var lastZoomAt = 0;
     var announced = {};
 
+    /* stick dead zone from the settings slider (0.05-0.5), else the default */
+    function deadZone() {
+        var s = window.legendmod5;
+        var v = s ? Number(s.gamepadDeadzone) : NaN;
+        return v >= 0.02 && v <= 0.6 ? v : DEAD_ZONE;
+    }
+
     function enabled() {
         var s = window.legendmod5;
         return !!(s && s.gamepadEnabled);
@@ -203,13 +210,14 @@
                 if (blockGame && !MENU_ACTIONS[action]) continue;
                 run(action);
             }
+            var dz = deadZone();
             var axes = pad.axes || [];
             if (!blockGame && !moved) {
                 var x = Number(axes[AXIS_MOVE_X]) || 0, y = Number(axes[AXIS_MOVE_Y]) || 0;
                 var m = Math.sqrt(x * x + y * y);
-                if (m > DEAD_ZONE) {
+                if (m > dz) {
                     /* released stick: no event, the cell keeps the last direction (like mobile) */
-                    var k = Math.min(1, (m - DEAD_ZONE) / (1 - DEAD_ZONE)) / m;
+                    var k = Math.min(1, (m - dz) / (1 - dz)) / m;
                     var r = Math.min(window.innerWidth, window.innerHeight) * 0.45;
                     var px = window.innerWidth / 2 + x * k * r, py = window.innerHeight / 2 + y * k * r;
                     moved = true;
@@ -220,7 +228,7 @@
                 }
                 var z = Number(axes[AXIS_ZOOM]) || 0;
                 var now = Date.now();
-                if (Math.abs(z) > DEAD_ZONE && now - lastZoomAt >= ZOOM_INTERVAL) {
+                if (Math.abs(z) > dz && now - lastZoomAt >= ZOOM_INTERVAL) {
                     lastZoomAt = now;
                     wheel(z * ZOOM_STRENGTH);
                 }

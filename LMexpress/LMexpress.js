@@ -5572,9 +5572,12 @@ function emphasischat() {
                 my.hist_add(mutation.addedNodes);
             });
         });
-        stat.obs_hist.observe($("#chat-box").get(0), {
-            "childList": true
-        });
+        var _chatBoxNode = $("#chat-box").get(0);
+        if (_chatBoxNode) {
+            stat.obs_hist.observe(_chatBoxNode, {
+                "childList": true
+            });
+        }
         stat.obs_inpt = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.attributeName !== 'style') {
@@ -5589,9 +5592,12 @@ function emphasischat() {
                 }
             });
         });
-        stat.obs_inpt.observe($("#message-box").get(0), {
-            "attributes": true
-        });
+        var _msgBoxNode = $("#message-box").get(0);
+        if (_msgBoxNode) {
+            stat.obs_inpt.observe(_msgBoxNode, {
+                "attributes": true
+            });
+        }
     }
 
     my.hist_add = function (nodes) {
