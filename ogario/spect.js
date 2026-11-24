@@ -1008,7 +1008,7 @@ class Spect {
                 this.leaderboard = [];
                 const count = view.getUint32(offset, true);
                 offset += 4;
-                for (i = 0; i < count; ++i) {
+                for (let i = 0; i < count; ++i) {
                     let isMe = !!view.getUint32(offset, true);
                     offset += 4;
                     if (isMe) {

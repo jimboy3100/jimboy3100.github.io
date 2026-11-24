@@ -1029,11 +1029,7 @@
             chatEnterFn = null;
             if (inp && inp.value.length > 0) {
                 // Send the message by dispatching Enter on the input
-                var ev = document.createEvent('Event');
-                ev.initEvent('keydown', true, true);
-                ev.keyCode = 13;
-                ev.which = 13;
-                ev.key = 'Enter';
+                var ev = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter', keyCode: 13, which: 13 });
                 inp.dispatchEvent(ev);
             }
             if (inp) inp.blur();
