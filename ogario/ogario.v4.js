@@ -16333,6 +16333,7 @@ var displayText = {
         showGhostCells: 'Duchy kulek (fps drop)',
         showGhostCellsInfo: 'Ghost cells info (confusing)',
         stickyCell: 'Sticky cells (left button, hold right button)',
+        gamepadEnabled: 'Obsługa gamepada / kontrolera',
         //showPartyBots: 'Party bots',
         rotateMap: 'Rotate Map',
         showMiniMap: 'Pokaz minimape',
@@ -16862,6 +16863,7 @@ var displayText = {
         showGhostCells: 'Ghost cells (fps drop)',
         showGhostCellsInfo: 'Ghost cells info (confusing)',
         stickyCell: 'Sticky cells (left button, hold right button)',
+        gamepadEnabled: 'Gamepad / controller support',
         //showPartyBots: 'Party bots',
         rotateMap: 'Rotate Map',
         showMiniMap: 'Show minimap',
@@ -19308,6 +19310,7 @@ var defaultmapsettings = {
     scanTrickStatus: true,
 
     stickyCell: false,
+    gamepadEnabled: false, /* gamepad / controller support (ogario/gamepad.js) */
     //showPartyBots: false,
     showMiniMap: true,
     rotateMap: true,
@@ -23206,7 +23209,8 @@ function thelegendmodproject() {
                     'mouseFeed',
                     'mouseWheelClick',
                     'mouseCommand4',
-                    'mouseCommand5'
+                    'mouseCommand5',
+                    'gamepadEnabled'
                 ],
                 'mouseGroup'
             );
@@ -78508,5 +78512,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(extUiScript);
     } catch (e) {
         console.warn('[LM] Error auto-loading extended UI script:', e);
+    }
+    /* Gamepad / controller support (does nothing while its option is off) */
+    try {
+        var gamepadScript = document.createElement('script');
+        gamepadScript.type = 'text/javascript';
+        gamepadScript.src = 'https://www.legendmod.ml/ogario/gamepad.js?v=' + (window.OgVer || '');
+        document.body.appendChild(gamepadScript);
+    } catch (e) {
+        console.warn('[LM] Error loading gamepad script:', e);
     }
 })();
