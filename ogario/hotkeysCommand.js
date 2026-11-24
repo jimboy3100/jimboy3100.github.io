@@ -787,6 +787,29 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			/* User Scripts panel with its plugin views (ogario/modules/plugins.js) and the Lab (lab.js) */
+			'hk-lmPlugins': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmPlugins']) || 'Open User Scripts (plugins, catalogue)';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMPlugins && typeof window.LMPlugins.toggle === 'function') window.LMPlugins.toggle('plugins');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-lmLab': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmLab']) || 'Open the Lab (experimental features)';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMLab && typeof window.LMLab.open === 'function') window.LMLab.open();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			/* result image of the last (or current) life, ogario/modules/companion.js; pressed again it closes */
 			'hk-companionResult': {
 				get label() {

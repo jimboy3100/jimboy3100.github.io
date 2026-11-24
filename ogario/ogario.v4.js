@@ -18442,7 +18442,10 @@ var displayText = {
         page_play_as_guest: 'Graj jako gosc',
         page_shop: 'Sklep',
         page_spectate: 'Obserwuj',
-        page_stats: 'Statystyki'
+        page_stats: 'Statystyki',
+        lmLabGroup: 'Laboratorium (eksperymentalne)',
+        'hk-lmPlugins': 'Otworz User Scripts (wtyczki)',
+        'hk-lmLab': 'Otworz Laboratorium (eksperymentalne)'
     },
     en: {
         start: 'Home',
@@ -19057,7 +19060,10 @@ var displayText = {
         page_menu_main_free_coins: 'Free Coins',
         page_menu_main_gifts: 'Gifts',
         page_menu_main_dailyquests: 'Daily Quest',
-        page_shop: 'Shop'
+        page_shop: 'Shop',
+        lmLabGroup: 'Lab (experimental)',
+        'hk-lmPlugins': 'Open User Scripts (plugins, catalogue)',
+        'hk-lmLab': 'Open the Lab (experimental features)'
     }
 }
 var chatPositions = {
@@ -21719,7 +21725,8 @@ var _lmLabelI18n = {
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
-        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)","accessibilityGroup":"Προσβασιμότητα","a11yTextScale":"Μέγεθος κειμένου μενού (1 = κανονικό)","a11yHudTextScale":"Μέγεθος κειμένου HUD (1 = κανονικό, πάνω από την κλίμακα HUD)","a11yHighContrast":"HUD υψηλής αντίθεσης (συμπαγές φόντο, περιγράμματα)","a11yIndicators":"Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)","a11yNoFlash":"Λιγότερα αναβοσβησίματα (χωρίς κινούμενα στοιχεία σελίδας)","a11yPalette":"Παλέτα αχρωματοψίας για τα χρώματα και τα δαχτυλίδια αντιπάλων","skinCollections":"Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)","hk-radialMenu":"Κυκλικό μενού εντολών (κράτημα)","hk-radialEditor":"Κυκλικό μενού: επιλογή εντολών","hk-hotkeyConflicts":"Συγκρούσεις πλήκτρων","hk-screenshotMode":"Λειτουργία στιγμιότυπου (κρύβει το HUD)","hk-screenshotCapture":"Λήψη στιγμιότυπου (PNG)","hk-screenshotTool":"Παράθυρο στιγμιότυπου","hk-skinCollections":"Συλλογές skins","hk-bugReport":"Αναφορά σφάλματος (διαγνωστικά)","a11yPaletteOff":"Χρώματα θέματος","a11yPaletteDeut":"Δευτερανωπία (αδύναμο πράσινο)","a11yPaletteProt":"Πρωτανωπία (αδύναμο κόκκινο)","a11yPaletteTrit":"Τριτανωπία (αδύναμο μπλε)"
+        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)","accessibilityGroup":"Προσβασιμότητα","a11yTextScale":"Μέγεθος κειμένου μενού (1 = κανονικό)","a11yHudTextScale":"Μέγεθος κειμένου HUD (1 = κανονικό, πάνω από την κλίμακα HUD)","a11yHighContrast":"HUD υψηλής αντίθεσης (συμπαγές φόντο, περιγράμματα)","a11yIndicators":"Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)","a11yNoFlash":"Λιγότερα αναβοσβησίματα (χωρίς κινούμενα στοιχεία σελίδας)","a11yPalette":"Παλέτα αχρωματοψίας για τα χρώματα και τα δαχτυλίδια αντιπάλων","skinCollections":"Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)","hk-radialMenu":"Κυκλικό μενού εντολών (κράτημα)","hk-radialEditor":"Κυκλικό μενού: επιλογή εντολών","hk-hotkeyConflicts":"Συγκρούσεις πλήκτρων","hk-screenshotMode":"Λειτουργία στιγμιότυπου (κρύβει το HUD)","hk-screenshotCapture":"Λήψη στιγμιότυπου (PNG)","hk-screenshotTool":"Παράθυρο στιγμιότυπου","hk-skinCollections":"Συλλογές skins","hk-bugReport":"Αναφορά σφάλματος (διαγνωστικά)","a11yPaletteOff":"Χρώματα θέματος","a11yPaletteDeut":"Δευτερανωπία (αδύναμο πράσινο)","a11yPaletteProt":"Πρωτανωπία (αδύναμο κόκκινο)","a11yPaletteTrit":"Τριτανωπία (αδύναμο μπλε)",
+        "lmLabGroup":"Lab (πειραματικά)","hk-lmPlugins":"Άνοιγμα User Scripts (plugins, κατάλογος)","hk-lmLab":"Άνοιγμα του Lab (πειραματικές λειτουργίες)"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -24776,6 +24783,7 @@ function thelegendmodproject() {
         },
         multiboxchange() {
             this.hideMenu();
+            var _lmEvMbPrev = window.multiboxPlayerEnabled || 0;
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
                 window.fullSpectator = false;
                 LM.flushSpecsData();
@@ -24786,6 +24794,7 @@ function thelegendmodproject() {
                 if (!legendmod.play) {
                     play();
                 }
+                this._lmEvMbSwap(_lmEvMbPrev);
                 return;
             }
 
@@ -24825,9 +24834,11 @@ function thelegendmodproject() {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
+            this._lmEvMbSwap(_lmEvMbPrev);
         },
         multiboxback() {
             this.hideMenu();
+            var _lmEvMbPrev = window.multiboxPlayerEnabled || 0;
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
                 window.fullSpectator = false;
                 LM.flushSpecsData();
@@ -24838,6 +24849,7 @@ function thelegendmodproject() {
                 if (!legendmod.play) {
                     play();
                 }
+                this._lmEvMbSwap(_lmEvMbPrev);
                 return;
             }
 
@@ -24876,6 +24888,14 @@ function thelegendmodproject() {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
+            this._lmEvMbSwap(_lmEvMbPrev);
+        },
+        /* LMEvents 'multiboxSwap': the unit you control changed (0 = the main player);
+         * nothing is built while nobody listens */
+        _lmEvMbSwap(prev) {
+            if (!window.LMEvents._has('multiboxSwap')) return;
+            var unit = window.multiboxPlayerEnabled || 0;
+            if (unit !== prev) window.LMEvents.emit('multiboxSwap', { unit: +unit || 0, previous: +prev || 0 });
         },
         multiboxFollowMouse() {
             if (!window.multiboxFollowMouse) {
@@ -25135,6 +25155,8 @@ function thelegendmodproject() {
                 }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
+                    /* Lab experiment "Frame time in the FPS counter" (ogario/modules/lab.js) */
+                    if (window._lmLabFrameTime && drawRender.fps > 0) t += ' (' + (1000 / drawRender.fps).toFixed(1) + ' ms)';
                     var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && getActiveSpect(window.multiboxPlayerEnabled)) ? getActiveSpect(window.multiboxPlayerEnabled) : null;
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
                     if (currentPing) t += ' | PING: ' + currentPing;
@@ -26143,6 +26165,13 @@ function thelegendmodproject() {
                         break;
                 }
                 this.saveSettings(defaultmapsettings, 'ogarioSettings');
+                /* LMEvents 'settingsChange' for scripts (nothing is built while nobody listens) */
+                if (window.LMEvents._has('settingsChange')) {
+                    var _lmEvVal = defaultmapsettings[id];
+                    if (typeof _lmEvVal === 'boolean' || typeof _lmEvVal === 'number' || typeof _lmEvVal === 'string') {
+                        window.LMEvents.emit('settingsChange', { key: String(id), value: typeof _lmEvVal === 'string' ? _lmEvVal.slice(0, 500) : _lmEvVal });
+                    }
+                }
             }
         },
         profiling() {
@@ -27225,6 +27254,9 @@ function thelegendmodproject() {
                 $("#options").remove();
                 $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper");
             }
+            /* Lab: experimental features (ogario/modules/lab.js fills the section) */
+            this.addOptions([], "lmLabGroup");
+            if (window.LMLab) window.LMLab._mount();
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
             /* Adaptive performance, network quality history and the diagnostics window
@@ -28722,6 +28754,7 @@ function thelegendmodproject() {
                         /* multiboxPlayerEnabled is the unit number, not index + 1 (units can be spliced) */
                         window.multiboxPlayerEnabled = spects[_i].number || (_i + 1);
                         console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
+                        if (typeof this._lmEvMbSwap === 'function') this._lmEvMbSwap(0);
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
                         legendmod.playerCells = [];
@@ -41962,6 +41995,7 @@ function thelegendmodproject() {
                     clearTimeout(window.replayTimeOuts);
                     window.replayTimeOuts = null;
                 }
+                if (window._lmEvReplayOn && typeof _lmEvReplay === 'function') _lmEvReplay(false, 'left');
                 if ($('#pause-hud').text() === "Loading..." || window._lmReplayPaused) {
                     window._lmReplayPaused = false;
                     $('#pause-hud').text(textLanguage.pause);
@@ -42232,8 +42266,9 @@ function thelegendmodproject() {
         },
         sendSplit() {
             this.sendPosition();
-            /* "split" for scripts and the Analytics coach: one event per split sent */
-            if (this.play && window.LMEvents._has('split')) window.LMEvents.emit('split', { time: Date.now(), count: 1 });
+            /* "split" for scripts and the Analytics coach: one event per split sent; before = own
+             * cell count when it was sent */
+            if (this.play && window.LMEvents._has('split')) window.LMEvents.emit('split', { time: Date.now(), count: 1, before: this.playerCells ? this.playerCells.length : 0 });
             if (this.serverType === 'senpa') {
                 // Senpa split: opcode 22 + unitId(u8) + count(u8)=1
                 var spBuf = new ArrayBuffer(3);
@@ -42249,7 +42284,7 @@ function thelegendmodproject() {
         // Multi-protocol split macros for Imsolo/Agar2/Garix (opcodes 0x1A, 0x1B, 0x1C)
         sendDoubleSplit() {
             /* the fallback below sends single splits, which emit their own "split" events */
-            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 2 });
+            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 2, before: this.playerCells ? this.playerCells.length : 0 });
             if (this.serverType === 'senpa') {
                 this.sendPosition();
                 var spBuf = new ArrayBuffer(3);
@@ -42267,7 +42302,7 @@ function thelegendmodproject() {
         },
         sendTripleSplit() {
             /* the fallback below sends single splits, which emit their own "split" events */
-            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 3 });
+            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 3, before: this.playerCells ? this.playerCells.length : 0 });
             if (this.serverType === 'senpa') {
                 this.sendPosition();
                 var spBuf = new ArrayBuffer(3);
@@ -42285,7 +42320,7 @@ function thelegendmodproject() {
         },
         sendQuadSplit() {
             /* the fallback below sends single splits, which emit their own "split" events */
-            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 4 });
+            if (this.play && window.LMEvents._has('split') && /^(senpa|imsolo|agar2|garix|private)$/.test(this.serverType)) window.LMEvents.emit('split', { time: Date.now(), count: 4, before: this.playerCells ? this.playerCells.length : 0 });
             if (this.serverType === 'senpa') {
                 this.sendPosition();
                 var spBuf = new ArrayBuffer(3);
@@ -53148,6 +53183,12 @@ Most cells eaten   : ${mostCellsEaten}
                     !victimID.isFood && !victimID.isEjected && !victimID.isVirus && !victimID.isPlayerCellMulti) {
                     window.LMEvents.emit('kill', { time: Date.now(), nick: String(victimID.targetNick || '').slice(0, 60), mass: ~~(victimID.size * victimID.size / 100) });
                 }
+                /* LMEvents 'merge': one of my cells ate another of mine (counted only while a script
+                 * listens; reported by calculatePlayerMassAndPosition) */
+                if (_victimWasPlayer && eaterID && window.LMEvents._has('merge') && (eaterID.isPlayerCell ||
+                    this.playerCells.indexOf(eaterID) !== -1 || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)))) {
+                    this._lmEvMergeN = (this._lmEvMergeN || 0) + 1;
+                }
                 /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces (all servers) */
                 if (eaterID && victimID.isVirus && (eaterID.isPlayerCell || eaterID.isPlayerCellMulti) && window.application &&
                     (defaultmapsettings.virusPopSound || defaultmapsettings.virusEatSound)) {
@@ -54362,6 +54403,12 @@ Most cells eaten   : ${mostCellsEaten}
                 else if (defaultmapsettings.non16Sound && _lmPrev16 >= 16 && playersLength < 16 && playersLength > 0) application.playSound(application._lmOptSound('non16'));
             }
             this._lmPrevCells = playersLength;
+            /* LMEvents 'merge': own merges counted in updateCells(), reported here once per frame */
+            if (this._lmEvMergeN) {
+                var _lmEvMn = this._lmEvMergeN;
+                this._lmEvMergeN = 0;
+                if (window.LMEvents._has('merge')) window.LMEvents.emit('merge', { merged: _lmEvMn, cells: playersLength });
+            }
             var _lmWS = 0, _lmWX = 0, _lmWY = 0;
             for (let length = 0; length < playersLength; length++) {
                 var n = this.playerCells[length];
@@ -75332,6 +75379,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* setScale moved below: it is called once at line ~73794 with the
              * multibox frame data so the zoom is not double-smoothed. */
 
+            /* LMEvents 'gameModeChange': the game mode is set in many places, so it is compared
+             * once per frame, and only while a script listens (the first frame only notes it) */
+            if (window.LMEvents._has('gameModeChange')) {
+                var _lmEvGm = String(LM.gameMode || '').replace(/^:/, '');
+                if (LM._lmEvGm != null && _lmEvGm !== LM._lmEvGm) window.LMEvents.emit('gameModeChange', { mode: _lmEvGm, previous: LM._lmEvGm });
+                LM._lmEvGm = _lmEvGm;
+            } else if (LM._lmEvGm != null) LM._lmEvGm = null;
+
             if (LM.playerCells && LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition(); /* includes the units */
             } else {
@@ -85391,6 +85446,19 @@ function lmReplayResetWorld() {
     legendmod.playerCellsMulti = []
 }
 window.lmReplayResetWorld = lmReplayResetWorld;
+/* LMEvents 'replayStart' / 'replayStop': once per replay (seeking restarts the playback
+ * without a new event); the data is built only while a script listens */
+function _lmEvReplay(on, reason) {
+    if (!!window._lmEvReplayOn === on) return;
+    window._lmEvReplayOn = on;
+    var name = on ? 'replayStart' : 'replayStop';
+    if (!window.LMEvents._has(name)) return;
+    if (on) {
+        var rec = window.RecordedProtocol && window.legendmod && window.RecordedProtocol[window.legendmod.playingReplayServer];
+        window.LMEvents.emit(name, { packets: rec && rec.length ? Math.max(0, rec.length - 2) : 0, start: parseInt(window.startReplayTime, 10) || 0 });
+    } else window.LMEvents.emit(name, { reason: String(reason || 'stopped') });
+}
+window._lmEvReplay = _lmEvReplay;
 function playReplayLM(temp, startAt) {
     if (temp && window.RecordedProtocol[temp]) {
         window._lmReplayPaused = false;
@@ -85441,6 +85509,7 @@ function playReplayLM(temp, startAt) {
          * whole replay then ran in "Loading..." skip mode) */
         window.endReplayTime = $("#endReplayTime").val() || (window.RecordedProtocol[temp].length - 2)
         intervalPlayingRecord()
+        _lmEvReplay(true);
 
         $("#stopReplaybtn").prop('disabled', false);
         if ($("#savedArenas").val() && window.RecordedArenasSpecifications[$("#savedArenas").val()] && window.RecordedArenasSpecifications[$("#savedArenas").val()][4]) {
@@ -85675,6 +85744,7 @@ function intervalPlayingRecord() {
             } else {
                 /* Finished (end reached, or rewound to the start). */
                 $("#stopReplaybtn").prop('disabled', true);
+                _lmEvReplay(false, 'end');
                 $('#pause-hud').text(textLanguage.pause);
                 $('#pause-hud').hide()
             }
@@ -85999,5 +86069,19 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(a11yScript);
     } catch (e) {
         console.warn('[LM] Error loading accessibility script:', e);
+    }
+    /* Plugin manager (runs only the plugins the player turned on) and the Lab (every
+     * experiment off until turned on) */
+    try {
+        var pluginsScript = document.createElement('script');
+        pluginsScript.type = 'text/javascript';
+        pluginsScript.src = 'https://www.legendmod.ml/ogario/modules/plugins.js?v=' + (window.OgVer || '');
+        document.body.appendChild(pluginsScript);
+        var labScript = document.createElement('script');
+        labScript.type = 'text/javascript';
+        labScript.src = 'https://www.legendmod.ml/ogario/modules/lab.js?v=' + (window.OgVer || '');
+        document.body.appendChild(labScript);
+    } catch (e) {
+        console.warn('[LM] Error loading plugins / lab script:', e);
     }
 })();
