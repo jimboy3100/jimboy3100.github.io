@@ -531,6 +531,8 @@
         if (parts.m !== false) data.m = readJSON('lm-mobile-prefs');
         if (parts.m !== false) data.ml = readJSON('lm-mobile-layouts');
         if (parts.m !== false) data.gp = readJSON('lmGamepad');
+        /* P2 fix #97: include zoom bookmarks in the profile snapshot */
+        data.zb = readJSON('lm-zoom-bookmarks');
         return cleanBundle(data);
     }
     /* the saved settings (what a reload would load): the state before a change that is being saved */
@@ -542,7 +544,9 @@
             k: readJSON('ogarioHotkeysKnown'),
             m: readJSON('lm-mobile-prefs'),
             ml: readJSON('lm-mobile-layouts'),
-            gp: readJSON('lmGamepad')
+            gp: readJSON('lmGamepad'),
+            /* P2 fix #97: include zoom bookmarks in storage snapshot */
+            zb: readJSON('lm-zoom-bookmarks')
         });
     }
     function label(part, key) {
@@ -676,6 +680,8 @@
         /* P0 fix: write mobile layouts and gamepad config when present in the profile */
         if (data.ml) entries.push({ key: 'lm-mobile-layouts', text: JSON.stringify(data.ml) });
         if (data.gp) entries.push({ key: 'lmGamepad', text: JSON.stringify(data.gp) });
+        /* P2 fix #97: restore zoom bookmarks when present in the profile */
+        if (data.zb) entries.push({ key: 'lm-zoom-bookmarks', text: JSON.stringify(data.zb) });
         /* 2. a backup of the current state, and the Undo.
          * P1 fix: backup is written as part of the transaction so a failed write
          * does not leave an orphaned backup in storage. */
@@ -894,6 +900,9 @@
     function listen(on) {
         if (on === listening) return;
         listening = on;
+        /* P2 fix #84: cancel any pending evaluateSoon timer when auto-switch
+         * is turned off, so a queued evaluation does not fire after disabling. */
+        if (!on) { clearTimeout(evalT); evalT = null; }
         var E = window.LMEvents;
         if (E && typeof E.on === 'function') { if (on) E.on('serverChange', onServerChange); else E.off('serverChange', onServerChange); }
         var f = on ? 'addEventListener' : 'removeEventListener';

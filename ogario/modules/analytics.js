@@ -395,6 +395,10 @@
         }
         var avgPeak = Math.round(avg(peaks));
         if (avgPeak > 0) cand.push(mk('beatAvg', avgPeak));
+        /* P2 fix #92: when fewer than 2 candidates exist, the rotation loop
+         * could produce fewer than 3 daily objectives. Guard against empty cand
+         * and pad with the survive objective if needed. */
+        if (!cand.length) cand.push(mk('survive', Math.max(1, Math.floor(quantile(mins, 0.5)))));
         var rot = hashStr(key) % cand.length, out = [mk('games', gamesT)];
         for (var i = 0; i < cand.length && out.length < 3; i++) out.push(cand[(rot + i) % cand.length]);
         return out;

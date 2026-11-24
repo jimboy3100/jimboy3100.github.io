@@ -717,13 +717,16 @@
         } catch (e) { }
         return out;
     }
+    function writeBookmarks(b) {
+        try { localStorage.setItem(BOOKMARK_KEY, JSON.stringify(b)); } catch (e) { }
+    }
     function zoomSave(n) {
         var LM = window.legendmod;
         if (!LM || !(n >= 1 && n <= 3) || !(LM.zoomValue > 0)) return;
         var b = readBookmarks();
         /* a held precision zoom is temporary: keep the zoom it returns to */
         b[n - 1] = Math.min(40, Math.max(0.01, _precisionSaved !== null ? _precisionSaved : LM.zoomValue));
-        try { localStorage.setItem(BOOKMARK_KEY, JSON.stringify(b)); } catch (e) { }
+        writeBookmarks(b);
         toast('Zoom ' + n + ' saved');
     }
     function zoomRecall(n) {

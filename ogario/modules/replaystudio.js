@@ -1078,6 +1078,9 @@
     function saveMemory(key) {
         var arr = recArr(key);
         if (!arr || arr.length <= 10) return;
+        /* P2 fix #90: prevent duplicate saves by flagging while in progress */
+        if (arr._lmSaving) return;
+        arr._lmSaving = true;
         var spec = (window.RecordedArenasSpecifications || {})[key] || [];
         var side;
         if (arr._lm) side = makeSidecar(arr._lm, arr.length);
@@ -1085,12 +1088,13 @@
         else side = { lmrs: 1, s: [], e: [], c: [] };
         var entry = buildEntry({ packets: arr.slice(0, arr.length), spec: spec, side: side, key: key, name: defaultName(key, spec) });
         return libPut(entry.meta, entry.data).then(function (m) {
+            arr._lmSaving = false;
             /* a recording still in progress can be saved again later (it keeps growing) */
             if (key !== liveKey()) arr._lmLib = m.id;
             toast('success', T('saved') + ': ' + m.name);
             refreshLibrary();
             ui();
-        }, libError);
+        }, function (e) { arr._lmSaving = false; libError(e); });
     }
     /* a library entry as an in-memory recording (the replay engine plays RecordedProtocol keys) */
     function materialize(meta, data) {
@@ -1491,7 +1495,9 @@
         if (String(P.speed) !== W.spd.value) W.spd.value = String(P.speed);
         if (String(instantSecs()) !== W.secs.value) W.secs.value = String(instantSecs());
         W.backB.style.display = inReplay() ? '' : 'none';
-        W.saveB.disabled = !!REC.arr._lmLib;
+        /* P2 fix #90: also disable save when the recording has no _lmLib yet but
+         * a save is already in progress (prevents duplicate saves from rapid clicks) */
+        W.saveB.disabled = !!REC.arr._lmLib || !!REC.arr._lmSaving;
         /* markers (rebuilt only when they change) */
         var msig = REC.key + ':' + REC.marks.length + ':' + Math.round(total / 1000);
         if (W.marksSig !== msig) {
