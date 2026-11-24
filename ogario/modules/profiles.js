@@ -97,7 +97,7 @@
         colPart: ['Part', 'Μέρος'],
         colSetting: ['Setting', 'Ρύθμιση'],
         autoEnable: ['Switch profiles automatically', 'Αυτόματη αλλαγή προφίλ'],
-        autoNote: ['Off by default. When you join a server or connect a gamepad, the profile of the first matching rule is applied (server type, then game mode, then input device). Only settings change: the game keeps running. Each switch shows what changed, with Undo.', 'Ανενεργό από προεπιλογή. Όταν μπαίνεις σε διακομιστή ή συνδέεις χειριστήριο, εφαρμόζεται το προφίλ του πρώτου κανόνα που ταιριάζει (τύπος διακομιστή, μετά λειτουργία παιχνιδιού, μετά συσκευή). Αλλάζουν μόνο ρυθμίσεις: το παιχνίδι συνεχίζει. Κάθε αλλαγή δείχνει τι άλλαξε, με Αναίρεση.'],
+        autoNote: ['Off by default. When you join a server or connect a gamepad, the profile of the first matching rule is applied (server type, then game mode, then input device). Only settings change: the game keeps running. While you are playing, the switch waits until that life ends (or Apply now). Each switch shows what changed, with Undo.', 'Ανενεργό από προεπιλογή. Όταν μπαίνεις σε διακομιστή ή συνδέεις χειριστήριο, εφαρμόζεται το προφίλ του πρώτου κανόνα που ταιριάζει (τύπος διακομιστή, μετά λειτουργία παιχνιδιού, μετά συσκευή). Αλλάζουν μόνο ρυθμίσεις: το παιχνίδι συνεχίζει. Όσο παίζεις, η αλλαγή περιμένει να τελειώσει η ζωή (ή Εφαρμογή τώρα). Κάθε αλλαγή δείχνει τι άλλαξε, με Αναίρεση.'],
         autoServer: ['Server type', 'Τύπος διακομιστή'],
         autoMode: ['Game mode', 'Λειτουργία παιχνιδιού'],
         autoDevice: ['Input device', 'Συσκευή εισόδου'],
@@ -134,7 +134,19 @@
         m_mbButton: ['Multibox button', 'Κουμπί multibox'],
         m_stopOnRelease: ['Stop on release', 'Στάση όταν αφήνεις'],
         m_pingBtn: ['Ping button', 'Κουμπί ping'],
-        m_netGraph: ['Net graph', 'Γράφημα δικτύου']
+        m_netGraph: ['Net graph', 'Γράφημα δικτύου'],
+        partHL: ['HUD layout', 'Διάταξη HUD'],
+        partZB: ['Zoom bookmarks', 'Σελιδοδείκτες ζουμ'],
+        partML: ['Phone control layout', 'Διάταξη χειριστηρίων κινητού'],
+        partGP: ['Gamepad buttons', 'Κουμπιά χειριστηρίου'],
+        defaultHud: ['Default HUD', 'Προεπιλεγμένο HUD'],
+        cntHL: ['HUD layout {0}', 'διάταξη HUD {0}'],
+        cntZB: ['zoom bookmarks', 'σελιδοδείκτες ζουμ'],
+        cntML: ['phone control layout', 'διάταξη χειριστηρίων κινητού'],
+        cntGP: ['gamepad buttons', 'κουμπιά χειριστηρίου'],
+        autoLater: ['Auto ({0}): "{1}" is applied when this life ends.', 'Αυτόματα ({0}): το "{1}" εφαρμόζεται όταν τελειώσει αυτή η ζωή.'],
+        applyNow: ['Apply now', 'Εφαρμογή τώρα'],
+        perfBackupFail: ['The browser storage is full: Performance mode could not keep the effect settings of this profile.', 'Ο χώρος αποθήκευσης είναι γεμάτος: η Λειτουργία απόδοσης δεν κράτησε τις ρυθμίσεις εφέ αυτού του προφίλ.']
     };
     function lang() {
         var l = null;
@@ -212,6 +224,23 @@
     function cleanTheme(o) { return cleanMap(o, themeValue); }
     function cleanHotkeys(o) { return cleanMap(o, hotkeyValue, 600); }
     function cleanMobile(o) { return cleanMap(o, mobileValue); }
+    /* the zoom bookmarks of hudhelpers.js: 3 zoom levels, 0 = not saved (its own range check);
+     * anything else and the part is dropped as a whole */
+    function cleanZoomMarks(a) {
+        if (!Array.isArray(a) || a.length !== 3) return null;
+        var out = [], any = false;
+        for (var i = 0; i < 3; i++) {
+            var v = a[i];
+            if (typeof v !== 'number' || !isFinite(v) || (v !== 0 && (v < 0.01 || v > 40))) return null;
+            if (v) any = true;
+            out.push(v);
+        }
+        return any ? out : null;
+    }
+    /* the name of a HUD layout (hudeditor.js), '' for the normal HUD */
+    function cleanLayoutName(v) {
+        return typeof v === 'string' && v.length <= 30 && !/[\u0000-\u001f\u007f<>]/.test(v) ? v : undefined;
+    }
     function cleanKnown(a) {
         if (!Array.isArray(a)) return null;
         var out = a.filter(function (x) { return typeof x === 'string' && x.length <= 60; }).slice(0, 2000);
@@ -234,6 +263,13 @@
          * cleanBundle used to silently strip them because PART_FNS only knew s/t/h/m. */
         if (isObj(b.ml)) { out.ml = b.ml; any = true; }
         if (isObj(b.gp)) { out.gp = b.gp; any = true; }
+        var zb = cleanZoomMarks(b.zb);
+        if (zb) { out.zb = zb; any = true; }
+        /* hl: the active HUD layout; pb: Performance mode's copy of the effect settings it
+         * turned off (only with gameplay settings that have the mode on) */
+        var hl = cleanLayoutName(b.hl);
+        if (hl !== undefined) { out.hl = hl; any = true; }
+        if (out.s) { var pb = cleanMap(b.pb, settingValue, 40); if (pb) out.pb = pb; }
         return any ? out : null;
     }
     function cleanName(n) {
@@ -354,8 +390,16 @@
             part.sort(function (x, y) { return String(x.label).localeCompare(String(y.label)); });
             rows = rows.concat(part);
         }
+        /* the parts applied as a whole (their own modules check them): compared when the set
+         * being applied has one, also when the other side has none yet */
+        EXTRA_PARTS.forEach(function (p) {
+            if (!has(b, p)) return;
+            var ha = has(a, p);
+            if (!ha || JSON.stringify(a[p]) !== JSON.stringify(b[p])) rows.push({ part: p, key: p, label: labelFn(p, p), a: ha ? a[p] : null, b: b[p] });
+        });
         return rows;
     }
+    var EXTRA_PARTS = ['hl', 'zb', 'ml', 'gp'];
     /* a set as it is applied: hotkey commands newer than the set get their default key */
     function effective(b, commands) {
         if (!b || !isObj(b.h)) return b;
@@ -364,8 +408,8 @@
         return out;
     }
     function countParts(rows) {
-        var c = { s: 0, t: 0, h: 0, m: 0 };
-        rows.forEach(function (r) { c[r.part]++; });
+        var c = { s: 0, t: 0, h: 0, m: 0, hl: 0, zb: 0, ml: 0, gp: 0 };
+        rows.forEach(function (r) { c[r.part] = (c[r.part] || 0) + 1; });
         return c;
     }
 
@@ -533,6 +577,12 @@
         if (parts.m !== false) data.gp = readJSON('lmGamepad');
         /* P2 fix #97: include zoom bookmarks in the profile snapshot */
         data.zb = readJSON('lm-zoom-bookmarks');
+        /* the active HUD layout (backups and Undo; a profile brings one only through its link) */
+        if (parts.hl !== false) {
+            var HE = window.LMHudEditor;
+            try { if (HE && typeof HE.active === 'function') data.hl = HE.active() || ''; } catch (e) { }
+        }
+        if (sData && sData.performanceMode === true) data.pb = readJSON('lmPerfBackup');
         return cleanBundle(data);
     }
     /* the saved settings (what a reload would load): the state before a change that is being saved */
@@ -543,6 +593,7 @@
         if (!s || !Object.keys(s).length) s = window.LM_SETTINGS_DEFAULTS;
         var t = readJSON('ogarioThemeSettings');
         if (!t || !Object.keys(t).length) t = window.LM_THEME_DEFAULTS;
+        var hud = readJSON('lmHudLayouts');
         return cleanBundle({
             s: s,
             t: t,
@@ -552,10 +603,13 @@
             ml: readJSON('lm-mobile-layouts'),
             gp: readJSON('lmGamepad'),
             /* P2 fix #97: include zoom bookmarks in storage snapshot */
-            zb: readJSON('lm-zoom-bookmarks')
+            zb: readJSON('lm-zoom-bookmarks'),
+            hl: window.LMHudEditor ? (isObj(hud) && typeof hud.active === 'string' ? hud.active : '') : undefined,
+            pb: s && s.performanceMode === true ? readJSON('lmPerfBackup') : null
         });
     }
     function label(part, key) {
+        if (EXTRA_PARTS.indexOf(part) >= 0) return tx(PART_NAMES[part]);
         var tl = window.textLanguage || {};
         if (part === 's' || part === 't') return stripTags(tl[key]) || key;
         if (part === 'm') return TEXT['m_' + key] ? tx('m_' + key) : key;
@@ -572,7 +626,9 @@
         if (v === true) return tx('on');
         if (v === false) return tx('off');
         if (part === 'h' && v === '') return tx('unbound');
-        var s = String(v);
+        if (part === 'hl') return v ? String(v) : tx('defaultHud');
+        if (v == null) return tx('none');
+        var s = Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : String(v);
         return s.length > 60 ? s.slice(0, 57) + '...' : s;
     }
     function toast(kind, html) {
@@ -590,6 +646,11 @@
         if (c.t) parts.push(tx('cntT', c.t));
         if (c.h) parts.push(tx('cntH', c.h));
         if (c.m) parts.push(tx('cntM', c.m));
+        var hl = (rows || []).filter(function (r) { return r.part === 'hl'; })[0];
+        if (hl) parts.push(tx('cntHL', fmt(hl.b, 'hl')));
+        if (c.zb) parts.push(tx('cntZB'));
+        if (c.ml) parts.push(tx('cntML'));
+        if (c.gp) parts.push(tx('cntGP'));
         return parts.join(', ');
     }
 
@@ -662,6 +723,9 @@
         if (!ready()) { toast('info', esc(tx('loading'))); return null; }
         var data = effective(cleanBundle(raw));
         if (!data) return null;
+        /* a HUD layout only with the HUD editor, and only one that still exists */
+        var HE = window.LMHudEditor;
+        if (has(data, 'hl') && !(HE && typeof HE.storeText === 'function' && HE.storeText(data.hl) !== null)) delete data.hl;
         var cur = captureCurrent();
         var rows = diffBundles(cur, data, label);
         var c = countParts(rows);
@@ -684,10 +748,19 @@
         if (c.h) entries.push({ key: 'ogarioHotkeys', text: JSON.stringify(data.h) });
         if (c.m) entries.push({ key: 'lm-mobile-prefs', text: JSON.stringify(isRestore ? Object.assign({}, data.m) : Object.assign({}, cur.m || {}, data.m)) });
         /* P0 fix: write mobile layouts and gamepad config when present in the profile */
-        if (data.ml) entries.push({ key: 'lm-mobile-layouts', text: JSON.stringify(data.ml) });
-        if (data.gp) entries.push({ key: 'lmGamepad', text: JSON.stringify(data.gp) });
+        if (c.ml) entries.push({ key: 'lm-mobile-layouts', text: JSON.stringify(data.ml) });
+        if (c.gp) entries.push({ key: 'lmGamepad', text: JSON.stringify(data.gp) });
         /* P2 fix #97: restore zoom bookmarks when present in the profile */
-        if (data.zb) entries.push({ key: 'lm-zoom-bookmarks', text: JSON.stringify(data.zb) });
+        if (c.zb) entries.push({ key: 'lm-zoom-bookmarks', text: JSON.stringify(data.zb) });
+        /* the HUD layout is part of the same transaction (and so of the backup and the Undo) */
+        if (c.hl) entries.push({ key: 'lmHudLayouts', text: HE.storeText(data.hl) });
+        /* Performance mode keeps a copy of the effect settings it turned off: a set with the mode
+         * on brings its own copy, and without one the copy of the replaced settings goes, so
+         * turning the mode off later never puts another profile's values back */
+        var curPm = !!(S() && S().performanceMode === true);
+        var pbEntry = data.s && has(data.s, 'performanceMode') && data.s.performanceMode === true ?
+            { key: 'lmPerfBackup', text: data.pb ? JSON.stringify(data.pb) : null } : null;
+        if (pbEntry) entries.push(pbEntry);
         /* 2. a backup of the current state, and the Undo.
          * P1 fix: backup is written as part of the transaction so a failed write
          * does not leave an orphaned backup in storage. */
@@ -707,6 +780,8 @@
             return null;
         }
         if (undoEntry) undoMem = undoEntry;
+        /* the copy Performance mode keeps in memory when the storage is full is the replaced one */
+        if (pbEntry) window._lmPerfBackupMem = null;
         /* 3. live, through the controls (they save again, to the same values) */
         applying = true;
         var reload = false;
@@ -756,6 +831,27 @@
                 try { if (St && St.saveThemeSettings) St.saveThemeSettings(); } catch (e) { }
             }
             if (c.h) applyHotkeysLive(data.h);
+            /* gamepad buttons: what is held goes up first, then the new buttons are read */
+            if (c.gp && window.LMGamepad) {
+                var G = window.LMGamepad;
+                try { if (typeof G.release === 'function') G.release(); if (typeof G._reload === 'function') G._reload(); else reload = true; } catch (e) { reload = true; }
+            }
+            /* phone control layout: placed again by the control editor; without it loaded (no
+             * layout before) it is used from the next load */
+            if (c.ml) {
+                var ME = window.LMMobileEditor;
+                if (ME && typeof ME.reload === 'function') { try { ME.reload(); } catch (e) { reload = true; } }
+                else if (window._lmMobileHost) reload = true;
+            }
+            if (c.hl) { try { if (!HE.applyLayout(data.hl, true)) reload = true; } catch (e) { reload = true; } }
+            /* the mode was off: switching it on just made a copy of the replaced settings */
+            if (pbEntry && !curPm) {
+                var pbOk = true;
+                if (pbEntry.text === null) removeKey(pbEntry.key);
+                else pbOk = writeText(pbEntry.key, pbEntry.text);
+                window._lmPerfBackupMem = pbOk ? null : data.pb || null;
+                if (!pbOk) toast('error', esc(tx('perfBackupFail')));
+            }
         } finally {
             applying = false;
             /* P1 fix #18: slider input events re-arm app._lmSettingsSaveT during the
@@ -780,12 +876,18 @@
         for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
         return null;
     }
+    /* a profile as it is applied: the HUD layout linked to it in the HUD editor
+     * (ogario/modules/hudeditor.js) comes with it; without a link the HUD stays as it is */
+    function profileData(p) {
+        var d = clone(p.data) || {};
+        delete d.hl;
+        var HE = window.LMHudEditor;
+        try { var n = HE && typeof HE.profileLayout === 'function' ? HE.profileLayout(p.id) : ''; if (n) d.hl = n; } catch (e) { }
+        return d;
+    }
     function applyProfile(p, opts) {
         opts = opts || {};
-        var rows = applyBundle(p.data, { name: p.name, reason: 'profile', id: p.id, auto: opts.auto, quiet: opts.quiet });
-        /* a HUD layout linked to this profile in the HUD editor (ogario/modules/hudeditor.js) */
-        if (rows) { try { if (window.LMHudEditor && typeof window.LMHudEditor.onProfileApplied === 'function') window.LMHudEditor.onProfileApplied(p.id); } catch (e) { } }
-        return rows;
+        return applyBundle(profileData(p), { name: p.name, reason: 'profile', id: p.id, auto: opts.auto, quiet: opts.quiet });
     }
     function loadUndo() {
         if (undoMem) return undoMem;
@@ -849,6 +951,8 @@
         wrap(app, 'importSettings', function () { if ($ && $('#import-settings').val()) backupNow('import'); });
         wrap(app, 'restoreSettings', function () { backupNow('reset'); });
         wrap(St, 'restoreThemeSettings', function () { backupNow('reset'); });
+        /* a switch that waits for the end of a life: the menu counts too */
+        wrap(app, 'showMenu', function () { if (deferredKey) evaluateSoon(300); });
     }
 
     /* ── Automatic switching ── */
@@ -868,21 +972,42 @@
         for (var i = 0; i < list.length; i++) if (list[i][0] === pick.value) return pick.group === 'device' ? tx(list[i][1]) : list[i][1];
         return pick.value;
     }
-    function evaluateRules() {
+    /* alive in a game (the main player or a multibox unit) */
+    function playingNow() {
+        var L = window.legendmod;
+        return !!(L && (L.play || (L.playerCellsMulti && L.playerCellsMulti.length)));
+    }
+    /* a switch found while playing waits for the end of that life (death, or the menu), unless
+     * the player taps Apply now */
+    var deferredKey = null;
+    function defer(on) {
+        var E = window.LMEvents;
+        if (E && typeof E.on === 'function') { E.off('death', onLifeEnd); if (on) E.on('death', onLifeEnd); }
+        if (!on) deferredKey = null;
+    }
+    function onLifeEnd() { evaluateSoon(300); }
+    function evaluateRules(now) {
         if (!ready()) return;
         var rules = loadRules();
-        if (!rules.enabled) { lastAutoKey = null; return; }
+        if (!rules.enabled) { lastAutoKey = null; defer(false); return; }
         var L = window.legendmod || {};
         var ctx = deviceCtx();
         ctx.serverType = String(L.serverType || '');
         ctx.gameMode = String(L.gameMode || '');
         var pick = pickRule(rules, ctx);
-        if (!pick) { lastAutoKey = null; return; }
+        if (!pick) { lastAutoKey = null; defer(false); return; }
         var key = pick.id + '|' + pick.group + '|' + pick.value;
         /* the same rule again (another server of the same type): already applied, and any change
          * the player made since then stays */
-        if (key === lastAutoKey) return;
+        if (key === lastAutoKey) { defer(false); return; }
         var p = findProfile(pick.id);
+        if (p && now !== true && playingNow()) {
+            if (deferredKey !== key) toast('info', esc(tx('autoLater', ruleName(pick), p.name)) + ' <button type="button" class="btn btn-xs lm-sp-auto-now" style="margin-left:4px;padding:0 6px;color:#000">' + esc(tx('applyNow')) + '</button>');
+            defer(true);
+            deferredKey = key;
+            return;
+        }
+        defer(false);
         if (p) {
             var result = applyProfile(p, { auto: ruleName(pick), quiet: true });
             /* P0 fix: update lastAutoKey only after successful application,
@@ -903,14 +1028,19 @@
      * 700-1500ms. At 600ms the rules evaluated before the info was available. */
     function onServerChange() { evaluateSoon(1500); }
     function onPad() { evaluateSoon(400); }
+    /* the mode can change on the same server (it is compared once per frame while listened to) */
+    function onModeChange() { evaluateSoon(800); }
     function listen(on) {
         if (on === listening) return;
         listening = on;
         /* P2 fix #84: cancel any pending evaluateSoon timer when auto-switch
          * is turned off, so a queued evaluation does not fire after disabling. */
-        if (!on) { clearTimeout(evalT); evalT = null; }
+        if (!on) { clearTimeout(evalT); evalT = null; defer(false); }
         var E = window.LMEvents;
-        if (E && typeof E.on === 'function') { if (on) E.on('serverChange', onServerChange); else E.off('serverChange', onServerChange); }
+        if (E && typeof E.on === 'function') {
+            if (on) { E.on('serverChange', onServerChange); E.on('gameModeChange', onModeChange); }
+            else { E.off('serverChange', onServerChange); E.off('gameModeChange', onModeChange); }
+        }
         var f = on ? 'addEventListener' : 'removeEventListener';
         window[f]('gamepadconnected', onPad);
         window[f]('gamepaddisconnected', onPad);
@@ -1076,7 +1206,7 @@
         var b = loadBackups().filter(function (x) { return String(x.t) === m[2]; })[0];
         return b ? { name: tx('backupOf', when(b.t)), data: b.data } : null;
     }
-    var PART_NAMES = { s: 'partS', t: 'partT', h: 'partH', m: 'partM' };
+    var PART_NAMES = { s: 'partS', t: 'partT', h: 'partH', m: 'partM', hl: 'partHL', zb: 'partZB', ml: 'partML', gp: 'partGP' };
     function renderCompare(body) {
         var $ = jq();
         var r = $('<div class="lm-sp-row"></div>').appendTo(body);
@@ -1186,7 +1316,7 @@
             var name = cleanName($('#lm-sp-name').val());
             if (!name) { toast('info', esc(tx('needName'))); $('#lm-sp-name').focus(); return; }
             var inc = includes();
-            var data = captureCurrent({ t: inc.t, h: inc.h, m: inc.m });
+            var data = captureCurrent({ t: inc.t, h: inc.h, m: inc.m, hl: false });
             if (!data) return;
             var np = { id: newId(), name: uniqueName(name, list), created: now, updated: now, data: data };
             list.push(np);
@@ -1195,7 +1325,7 @@
             var tid = $('#lm-sp-tpl').val();
             if (!has(TEMPLATES, tid)) return;
             var inc2 = includes();
-            var cur = captureCurrent({ t: inc2.t, h: inc2.h, m: inc2.m });
+            var cur = captureCurrent({ t: inc2.t, h: inc2.h, m: inc2.m, hl: false });
             var res = applyTemplate(cur, tid);
             if (!res.data) return;
             var changed = diffBundles(cur, res.data).length;
@@ -1203,13 +1333,13 @@
             list.push(tp);
             if (saveProfiles(list)) toast('success', esc(tx('created', tp.name, changed)));
         } else if (a === 'apply' && p) {
-            var rows = diffBundles(captureCurrent(), effective(p.data), label);
+            var rows = diffBundles(captureCurrent(), effective(cleanBundle(profileData(p))), label);
             if (!rows.length) { toast('info', esc(tx('same', p.name))); return; }
             if (!window.confirm(tx('confirmApply', p.name, rows.length))) return;
             applyProfile(p);
         } else if (a === 'update' && p) {
             if (!window.confirm(tx('confirmUpdate', p.name))) return;
-            p.data = captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!p.data.m }) || p.data;
+            p.data = captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!p.data.m, hl: false }) || p.data;
             p.updated = now;
             if (saveProfiles(list)) toast('success', esc(tx('saved', p.name)));
         } else if (a === 'rename' && p) {
@@ -1258,6 +1388,7 @@
         installHooks();
         var $ = jq();
         $(document).on('click', '.lm-sp-undo-btn', function (e) { e.preventDefault(); e.stopPropagation(); undo(); });
+        $(document).on('click', '.lm-sp-auto-now', function (e) { e.preventDefault(); e.stopPropagation(); if (deferredKey) evaluateRules(true); });
         if (loadRules().enabled) {
             listen(true);
             /* device rules on start (the server rules wait for the first server) */
@@ -1286,7 +1417,8 @@
             cleanBundle: cleanBundle, cleanProfiles: cleanProfiles, cleanBackups: cleanBackups, cleanRules: cleanRules,
             diffBundles: diffBundles, effective: effective, applyTemplate: applyTemplate, pushBackup: pushBackup, saveBackups: saveBackups,
             writeTransaction: writeTransaction, fillNewDefaults: fillNewDefaults, pickRule: pickRule,
-            captureCurrent: captureCurrent, TEMPLATES: TEMPLATES, MAX_BACKUPS: MAX_BACKUPS, KEY_BACKUPS: KEY_BACKUPS
+            captureCurrent: captureCurrent, TEMPLATES: TEMPLATES, MAX_BACKUPS: MAX_BACKUPS, KEY_BACKUPS: KEY_BACKUPS,
+            listen: listen, evaluateRules: evaluateRules
         }
     };
 })();

@@ -268,5 +268,27 @@ const J = o => JSON.parse(JSON.stringify(o));
   })());
 }
 
+/* ── storage blocked after layouts were saved: nothing changes unless it is saved ── */
+{
+  const storage = makeStorage();
+  const b = boot({ storage, boxes: { '#leaderboard-hud': { w: 200, h: 300 } } });
+  const api = b.api;
+  api.saveLayout('A', { leaderboard: { h: 'l', x: 11, v: 't', y: 10, s: 1 } });
+  api.saveLayout('B', { leaderboard: { h: 'l', x: 22, v: 't', y: 10, s: 1 } });
+  api.applyLayout('A', true);
+  api.linkProfile('p1', 'A');
+  const disk = storage.getItem('lmHudLayouts');
+  const setItem = storage.setItem;
+  storage.setItem = () => { const e = new Error('blocked'); e.name = 'SecurityError'; throw e; };
+  check('blocked: apply refused, the active layout stays', api.applyLayout('B', true) === false && api.active() === 'A' && (b.css() || '').includes('left:11px'));
+  check('blocked: delete refused, list, active and links unchanged', api.deleteLayout('A') === false && api.list().join('|') === 'A|B' && api.active() === 'A' && api.profileLayout('p1') === 'A');
+  check('blocked: link refused, links unchanged', api.linkProfile('p2', 'B') === false && !('p2' in api.links()) && api.linkProfile('p1', '') === false && api.profileLayout('p1') === 'A');
+  check('blocked: the saved layouts are as before', storage.getItem('lmHudLayouts') === disk);
+  storage.setItem = setItem;
+  check('storage back: apply works again', api.applyLayout('B', true) === true && api.active() === 'B');
+  const txt = typeof api.storeText === 'function' ? api.storeText('a') : undefined;
+  check('storeText: the stored layouts with another active one, nothing changed', typeof txt === 'string' && JSON.parse(txt).active === 'A' && api.active() === 'B' && api.storeText('Nope') === null && JSON.parse(api.storeText('')).active === '');
+}
+
 console.log(fail ? fail + ' FAILED' : 'all ok');
 process.exit(fail ? 1 : 0);
