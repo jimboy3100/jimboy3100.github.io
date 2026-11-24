@@ -7646,10 +7646,10 @@ function initializeLM(modVersion) {
             var _lmSeenVer = localStorage.getItem('lmLastSeenOgVer');
             if (_lmSeenVer && _lmSeenVer !== String(window.OgVer) && window.toastr) {
                 toastr.info('<b>Legend Mod updated (' + String(window.OgVer) + ')</b><br>' +
-                    '• Replays: pause, speed, seek and a progress bar<br>' +
-                    '• Game Over card: copy stats, mass graph, personal bests, who ate you<br>' +
-                    '• Chat: Up/Down recalls messages, click a nick to answer, word filter<br>' +
-                    '• New sounds, minimap trail, centre-of-mass camera, net graph, many new hotkeys<br>' +
+                    '• Expanding Land: daily challenges, server events with a countdown, match history on your account<br>' +
+                    '• Settings presets (with Undo) and NEW badges; settings in 12 languages<br>' +
+                    '• Team pings (Help, Danger, Go here, Virus here), gamepad support, match history<br>' +
+                    '• Replays: pause, speed, seek and a progress bar; Game Over card extras<br>' +
                     '• New options are off: type a word in the settings search to find them', '', { timeOut: 14000, extendedTimeOut: 4000 });
             }
             localStorage.setItem('lmLastSeenOgVer', String(window.OgVer));
