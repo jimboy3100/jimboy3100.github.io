@@ -53,6 +53,28 @@ var Userscripttexture4;
 var Userscripttexture5;
 /* code each slot last ran (Load or URL), so an unchanged textarea is not taken as an edit */
 var _lmUsRan = {};
+/* Plugins (ogario/modules/plugins.js): a script with a ==LMPlugin== header runs only on a
+ * Legend Mod version it supports, and its declared permissions (or a URL from another site) are
+ * confirmed when the user loads it. A run at start waits for that module (at most 8 s); a slot
+ * whose new URL was declined is turned off again. Scripts without a header run as before. */
+var _lmUsAsk = {};
+function _lmUsGateRun(n, e, run){
+	var trig = !!(e && e.isTrigger);
+	if (typeof window._lmUsGate === 'function'){
+		var ask = !trig || !!_lmUsAsk[n], fromUrl = !!_lmUsAsk[n];
+		_lmUsAsk[n] = false;
+		var ok = false;
+		try { ok = window._lmUsGate(n, $("#Userscripttexture"+n).val(), ask); } catch (err) { ok = true; }
+		if (ok) run(); else if (fromUrl) _lmUserscriptSetEnabled(n, false);
+		return;
+	}
+	if (!trig || (e && e._lmWaited)) { run(); return; }
+	var t0 = Date.now();
+	(function wait(){
+		if (typeof window._lmUsGate === 'function' || Date.now() - t0 > 8000) { _lmUsGateRun(n, { isTrigger: true, _lmWaited: true }, run); return; }
+		setTimeout(wait, 200);
+	})();
+}
 /* A slot runs at start only after the user ran it (Load button, or a URL entered
  * in the field): code pasted just to read it, or written by a settings import,
  * ran on every later start. Installs from before this flag keep running. */
@@ -208,7 +230,7 @@ $("#userscripts").hide();
 
 
 $('#UserscriptA').blur(function(e){
-if (!e.isTrigger && $("#UserscriptA").val()!="" && $("#UserscriptA").val()!==Userscript1){_lmUserscriptSetEnabled(1, true);}
+if (!e.isTrigger && $("#UserscriptA").val()!="" && $("#UserscriptA").val()!==Userscript1){_lmUserscriptSetEnabled(1, true); _lmUsAsk[1] = true;}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptA").val()=="" && Userscript1){Userscript1="";localStorage.setItem("Userscript1", "");}
@@ -218,7 +240,7 @@ Userscript1=$("#UserscriptA").val();localStorage.setItem("Userscript1", Userscri
  * and did not change the value of a textarea the user had already edited */
 $.get(Userscript1, null, function(code) { $("#Userscripttexture1").val(code); $("#userscriptBtn1").click(); }, "text"); }return false;});
 $('#UserscriptB').blur(function(e){
-if (!e.isTrigger && $("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){_lmUserscriptSetEnabled(2, true);}
+if (!e.isTrigger && $("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){_lmUserscriptSetEnabled(2, true); _lmUsAsk[2] = true;}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptB").val()=="" && Userscript2){Userscript2="";localStorage.setItem("Userscript2", "");}
@@ -226,7 +248,7 @@ else if ($("#UserscriptB").val()!="" && $("#UserscriptB").val()!==Userscript2){
 Userscript2=$("#UserscriptB").val();localStorage.setItem("Userscript2", Userscript2);
 $.get(Userscript2, null, function(code) { $("#Userscripttexture2").val(code); $("#userscriptBtn2").click(); }, "text"); }return false;});
 $('#UserscriptC').blur(function(e){
-if (!e.isTrigger && $("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){_lmUserscriptSetEnabled(3, true);}
+if (!e.isTrigger && $("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){_lmUserscriptSetEnabled(3, true); _lmUsAsk[3] = true;}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptC").val()=="" && Userscript3){Userscript3="";localStorage.setItem("Userscript3", "");}
@@ -234,7 +256,7 @@ else if ($("#UserscriptC").val()!="" && $("#UserscriptC").val()!==Userscript3){
 Userscript3=$("#UserscriptC").val();localStorage.setItem("Userscript3", Userscript3);
 $.get(Userscript3, null, function(code) { $("#Userscripttexture3").val(code); $("#userscriptBtn3").click(); }, "text"); }return false;});
 $('#UserscriptD').blur(function(e){
-if (!e.isTrigger && $("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){_lmUserscriptSetEnabled(4, true);}
+if (!e.isTrigger && $("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){_lmUserscriptSetEnabled(4, true); _lmUsAsk[4] = true;}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptD").val()=="" && Userscript4){Userscript4="";localStorage.setItem("Userscript4", "");}
@@ -242,7 +264,7 @@ else if ($("#UserscriptD").val()!="" && $("#UserscriptD").val()!==Userscript4){
 Userscript4=$("#UserscriptD").val();localStorage.setItem("Userscript4", Userscript4);
 $.get(Userscript4, null, function(code) { $("#Userscripttexture4").val(code); $("#userscriptBtn4").click(); }, "text"); }return false;});
 $('#UserscriptE').blur(function(e){
-if (!e.isTrigger && $("#UserscriptE").val()!="" && $("#UserscriptE").val()!==Userscript5){_lmUserscriptSetEnabled(5, true);}
+if (!e.isTrigger && $("#UserscriptE").val()!="" && $("#UserscriptE").val()!==Userscript5){_lmUserscriptSetEnabled(5, true); _lmUsAsk[5] = true;}
 /* reload only when the URL changed (re-injected the script on every blur) */
 /* emptied field: forget the URL so it is not loaded again on the next start */
 if ($("#UserscriptE").val()=="" && Userscript5){Userscript5="";localStorage.setItem("Userscript5", "");}
@@ -265,26 +287,26 @@ if ($("#Userscripttexture5").val()!=""){if ($("#Userscripttexture5").val()!==loc
 
 
 
-$("#userscriptBtn1").click(function(e) {
+$("#userscriptBtn1").click(function(e) { _lmUsGateRun(1, e, function () {
 	_lmUsRan[1] = $("#Userscripttexture1").val();
 	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture1", $("#Userscripttexture1").val()); _lmUserscriptSetEnabled(1, true); }
-	var sUser1 = document.createElement("script");sUser1.type = "text/javascript"; sUser1.text=$("#Userscripttexture1").val(); $("head").append(sUser1);});
-$("#userscriptBtn2").click(function(e) {
+	var sUser1 = document.createElement("script");sUser1.type = "text/javascript"; sUser1.text=$("#Userscripttexture1").val(); $("head").append(sUser1);}); });
+$("#userscriptBtn2").click(function(e) { _lmUsGateRun(2, e, function () {
 	_lmUsRan[2] = $("#Userscripttexture2").val();
 	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture2", $("#Userscripttexture2").val()); _lmUserscriptSetEnabled(2, true); }
-	var sUser2 = document.createElement("script");sUser2.type = "text/javascript"; sUser2.text=$("#Userscripttexture2").val(); $("head").append(sUser2);});
-$("#userscriptBtn3").click(function(e) {
+	var sUser2 = document.createElement("script");sUser2.type = "text/javascript"; sUser2.text=$("#Userscripttexture2").val(); $("head").append(sUser2);}); });
+$("#userscriptBtn3").click(function(e) { _lmUsGateRun(3, e, function () {
 	_lmUsRan[3] = $("#Userscripttexture3").val();
 	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture3", $("#Userscripttexture3").val()); _lmUserscriptSetEnabled(3, true); }
-	var sUser3 = document.createElement("script");sUser3.type = "text/javascript"; sUser3.text=$("#Userscripttexture3").val(); $("head").append(sUser3);});
-$("#userscriptBtn4").click(function(e) {
+	var sUser3 = document.createElement("script");sUser3.type = "text/javascript"; sUser3.text=$("#Userscripttexture3").val(); $("head").append(sUser3);}); });
+$("#userscriptBtn4").click(function(e) { _lmUsGateRun(4, e, function () {
 	_lmUsRan[4] = $("#Userscripttexture4").val();
 	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture4", $("#Userscripttexture4").val()); _lmUserscriptSetEnabled(4, true); }
-	var sUser4 = document.createElement("script");sUser4.type = "text/javascript"; sUser4.text=$("#Userscripttexture4").val(); $("head").append(sUser4);});
-$("#userscriptBtn5").click(function(e) {
+	var sUser4 = document.createElement("script");sUser4.type = "text/javascript"; sUser4.text=$("#Userscripttexture4").val(); $("head").append(sUser4);}); });
+$("#userscriptBtn5").click(function(e) { _lmUsGateRun(5, e, function () {
 	_lmUsRan[5] = $("#Userscripttexture5").val();
 	if (e && !e.isTrigger) { localStorage.setItem("Userscripttexture5", $("#Userscripttexture5").val()); _lmUserscriptSetEnabled(5, true); }
-	var sUser5 = document.createElement("script");sUser5.type = "text/javascript"; sUser5.text=$("#Userscripttexture5").val(); $("head").append(sUser5);});
+	var sUser5 = document.createElement("script");sUser5.type = "text/javascript"; sUser5.text=$("#Userscripttexture5").val(); $("head").append(sUser5);}); });
 
 
 	document.getElementById("UserscripttextA").value =localStorage.getItem("Userscripttext11");

@@ -119,6 +119,7 @@ $("#openReplayStudiobtn").click(function() {
 });
 $("#stopReplaybtn").click(function() {
 	clearTimeout(window.replayTimeOuts)
+	if (typeof window._lmEvReplay === 'function') window._lmEvReplay(false, 'stopped');
 	window._lmReplayPaused = false;
 	$('#pause-hud').text(textLanguage.pause);
 	$('#pause-hud').hide()

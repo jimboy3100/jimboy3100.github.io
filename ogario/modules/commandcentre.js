@@ -256,7 +256,9 @@
         resultImage: { en: 'Result image', el: 'Εικόνα αποτελέσματος' },
         director: { en: 'Spectator director', el: 'Σκηνοθέτης θέασης' },
         hudEditor: { en: 'Edit HUD (move and resize the HUD boxes, layouts)', el: 'Επεξεργασία HUD (μετακίνηση και μέγεθος πλαισίων, διατάξεις)' },
-        practice: { en: 'Practice arena (offline drills, bots, ghost)', el: 'Αρένα εξάσκησης (εκτός σύνδεσης, bots, φάντασμα)' }
+        practice: { en: 'Practice arena (offline drills, bots, ghost)', el: 'Αρένα εξάσκησης (εκτός σύνδεσης, bots, φάντασμα)' },
+        plugins: { en: 'User Scripts (plugins, catalogue)', el: 'User Scripts (plugins, κατάλογος)' },
+        lab: { en: 'Lab (experimental)', el: 'Lab (πειραματικά)' }
     };
     function lang() {
         try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
@@ -423,7 +425,9 @@
         { id: 'director', en: tEn('director'), label: function () { return t('director'); }, avail: function () { return !!(W.LMDirector && typeof W.LMDirector.open === 'function'); }, run: function () { W.LMDirector.open(); } },
         { id: 'hudEditor', en: tEn('hudEditor'), label: function () { return t('hudEditor'); }, avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } },
         /* ogario/modules/practice.js (loaded on first use by lmPractice in ogario.v4.js) */
-        { id: 'practice', en: tEn('practice'), label: function () { return t('practice'); }, avail: function () { return typeof W.lmPractice === 'function'; }, run: function () { W.lmPractice('open'); } }
+        { id: 'practice', en: tEn('practice'), label: function () { return t('practice'); }, avail: function () { return typeof W.lmPractice === 'function'; }, run: function () { W.lmPractice('open'); } },
+        { id: 'plugins', en: tEn('plugins'), label: function () { return t('plugins'); }, avail: function () { return !!(W.LMPlugins && typeof W.LMPlugins.open === 'function'); }, run: function () { W.LMPlugins.open('plugins'); } },
+        { id: 'lab', en: tEn('lab'), label: function () { return t('lab'); }, avail: function () { return !!(W.LMLab && typeof W.LMLab.open === 'function'); }, run: function () { W.LMLab.open(); } }
     ];
 
     /* ═══ Running items ═══ */
