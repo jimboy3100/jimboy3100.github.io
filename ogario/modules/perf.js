@@ -898,6 +898,63 @@
         return e;
     }
 
+    /* Window position: kept on screen (pure, tested) */
+    function clampPos(x, y, w, h, vw, vh) {
+        var nx = Math.min(Math.max(0, x), Math.max(0, vw - w));
+        var ny = Math.min(Math.max(0, y), Math.max(0, vh - h));
+        return { x: Math.round(nx), y: Math.round(ny) };
+    }
+    var POS_KEY = 'lmPerfDiagPos';
+    function loadPos() {
+        try {
+            var p = JSON.parse(window.localStorage.getItem(POS_KEY) || 'null');
+            if (p && typeof p.x === 'number' && typeof p.y === 'number' && isFinite(p.x) && isFinite(p.y)) return p;
+        } catch (e) { }
+        return null;
+    }
+    /* Drag the window by its title bar (mouse or touch); the close cross is not a handle.
+     * The place is remembered and kept on screen. Moves never reach the game. */
+    function makeDraggable(md, handle, skip) {
+        handle.style.cursor = 'move';
+        handle.style.touchAction = 'none';
+        handle.style.userSelect = 'none';
+        var place = function (x, y) {
+            var r = md.getBoundingClientRect();
+            var p = clampPos(x, y, r.width || 380, r.height || 200, window.innerWidth, window.innerHeight);
+            md.style.left = p.x + 'px';
+            md.style.top = p.y + 'px';
+            return p;
+        };
+        var saved = loadPos();
+        if (saved) setTimeout(function () { if (md.parentNode) place(saved.x, saved.y); }, 0);
+        var drag = null;
+        handle.addEventListener('pointerdown', function (e) {
+            if (skip && (e.target === skip || skip.contains(e.target))) return;
+            if (e.button !== undefined && e.button > 0) return;
+            var r = md.getBoundingClientRect();
+            drag = { id: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top };
+            try { handle.setPointerCapture(e.pointerId); } catch (er) { }
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        handle.addEventListener('pointermove', function (e) {
+            if (!drag || e.pointerId !== drag.id) return;
+            place(e.clientX - drag.dx, e.clientY - drag.dy);
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        var end = function (e) {
+            if (!drag || e.pointerId !== drag.id) return;
+            drag = null;
+            try { handle.releasePointerCapture(e.pointerId); } catch (er) { }
+            var r = md.getBoundingClientRect();
+            try { window.localStorage.setItem(POS_KEY, JSON.stringify({ x: Math.round(r.left), y: Math.round(r.top) })); } catch (er) { }
+            e.stopPropagation();
+        };
+        handle.addEventListener('pointerup', end);
+        handle.addEventListener('pointercancel', end);
+    }
+
     function openDiag() {
         if (diag) { closeDiag(); return; }
         var ds = window.defaultSettings || {};
@@ -918,6 +975,7 @@
         x.addEventListener('touchend', function (e) { stop(e); closeDiag(); });
         head.appendChild(x);
         md.appendChild(head);
+        makeDraggable(md, head, x);
         var body = el('div', 'padding:6px 10px 8px;overflow:auto;-webkit-overflow-scrolling:touch;');
         md.appendChild(body);
         var cv = el('canvas', 'display:block;width:100%;height:64px;background:rgba(0,0,0,0.35);border-radius:3px;');
