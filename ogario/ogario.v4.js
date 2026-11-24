@@ -7094,6 +7094,14 @@ function checkVideos(a, b) {
     return true;
 }
 
+/* video skin volume through the sound mixer (ogario/modules/notifications.js): video channel x
+ * master volume, lowered for a moment by a chat sound when "audioDucking" is on; unchanged
+ * while the mixer is at its defaults or not loaded */
+function _lmVideoVol(v) {
+    var m = window.LMNotifications;
+    return m && m.videoVolume ? m.videoVolume(v) : v;
+}
+
 function checkVideos2(a, b) {
     /* the sweeper frees a video not drawn for 60 s but this nick's 500 ms timer keeps
      * calling: without the video it threw a TypeError every tick (and filled the error log) */
@@ -7116,13 +7124,13 @@ function checkVideos2(a, b) {
                     if (defaultmapsettings.videoOthersSkinSoundLevelproportion && application.top5[i].mass) {
                         //console.log("b",application.top5[i].mass)
                         if (application.top5[i].mass >= 24000) {
-                            window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
+                            window.videoSkinPlayer[a].volume = _lmVideoVol(defaultmapsettings.videoSkinSoundLevel);
                         } else if (application.top5[i].mass < 24000) {
-                            window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel * Math.pow(application.top5[i].mass / 2.4, 1 / 2) * 0.01;
+                            window.videoSkinPlayer[a].volume = _lmVideoVol(defaultmapsettings.videoSkinSoundLevel * Math.pow(application.top5[i].mass / 2.4, 1 / 2) * 0.01);
                         }
                         temple = true
                     } else if (!temple) {
-                        window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
+                        window.videoSkinPlayer[a].volume = _lmVideoVol(defaultmapsettings.videoSkinSoundLevel);
                     }
                     window.videoSkinPlayerflag2[b] = true;
                 } else {
@@ -7144,7 +7152,7 @@ function checkVideos2(a, b) {
         checkvideoSkinPlayerflag2(a, b);
     } else if (ogarcopythelb.nick) {
         if (ogarcopythelb.skinURL == a && window.videoSkinPlayer[a]) {
-            window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
+            window.videoSkinPlayer[a].volume = _lmVideoVol(defaultmapsettings.videoSkinSoundLevel);
         } else {
             window.videoSkinPlayer[a].volume = 0;
         }
@@ -18561,6 +18569,16 @@ var displayText = {
         virusPopSound: 'Sound when you pop a virus',
         virusEatSound: 'Sound when you eat a virus at 16 pieces',
         virusSound: 'Virus shot sound',
+        notificationCentre: 'Notification centre (bell with the last 200 notifications)',
+        soundsGroup: 'Sounds',
+        volMaster: 'Master volume',
+        volChat: 'Chat message volume',
+        volCommands: 'Command volume',
+        volGameplay: 'Gameplay effects volume (virus, 16 pieces)',
+        volVideo: 'Video skins volume',
+        volNotifications: 'Notification sounds volume',
+        audioDucking: 'Audio ducking (lower video skins while a chat sound plays)',
+        'hk-notifCentre': 'Open the notification centre',
         potionsDrinker: 'Randomly drink Potions',
         //massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
@@ -21343,6 +21361,15 @@ var defaultmapsettings = {
     non16Sound: false,            /* sound when they merge back below 16 */
     virusPopSound: false,         /* sound when an own cell pops a virus */
     virusEatSound: false,         /* sound when an own cell eats a virus at 16 pieces */
+    notificationCentre: false,    /* bell + list of the last toasts (ogario/modules/notifications.js) */
+    /* sound mixer, 0..1: channel x master; 1 = unchanged */
+    volMaster: 1,
+    volChat: 1,                   /* chat message sound */
+    volCommands: 1,               /* command sound */
+    volGameplay: 1,               /* virus shot, 16 pieces, virus pop / eat */
+    volVideo: 1,                  /* video skins (on top of videoSkinSoundLevel) */
+    volNotifications: 1,          /* any other sound (scripts: application.playSound, LMNotifications.play) */
+    audioDucking: false,          /* chat / alert sound lowers the video skins for a moment */
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
     //
     leftClick: 'hk-macroFeed',
@@ -21454,6 +21481,17 @@ var _lmLabelI18n = {
         "showChatBox":"Πλαίσιο συνομιλίας αντί για αναδυόμενα","showChatTranslation":"Μετάφραση πλαισίου συνομιλίας (σφάλμα κύλισης)","hidecountry":"Απόκρυψη της χώρας μου",
         "messageSound":"Ήχος ειδοποίησης μηνύματος","commandSound":"Ήχος ειδοποίησης εντολής","virusSoundurl":"Ήχος βολής στον ιό","x16Sound":"Ήχος όταν χωρίζεσαι σε 16 κομμάτια",
         "non16Sound":"Ήχος όταν πέφτεις ξανά κάτω από 16 κομμάτια","virusPopSound":"Ήχος όταν σκας έναν ιό","virusEatSound":"Ήχος όταν τρως ιό με 16 κομμάτια",
+        "soundsGroup":"Ήχοι","notificationCentre":"Κέντρο ειδοποιήσεων (καμπανάκι με τις τελευταίες 200 ειδοποιήσεις)","volMaster":"Γενική ένταση",
+        "volChat":"Ένταση μηνυμάτων συνομιλίας","volCommands":"Ένταση εντολών","volGameplay":"Ένταση εφέ παιχνιδιού (ιός, 16 κομμάτια)",
+        "volVideo":"Ένταση video skins","volNotifications":"Ένταση ήχων ειδοποιήσεων",
+        "audioDucking":"Χαμήλωμα ήχου (χαμηλώνει τα video skins όσο παίζει ήχος συνομιλίας)","hk-notifCentre":"Άνοιγμα κέντρου ειδοποιήσεων",
+        "lmNotifTitle":"Ειδοποιήσεις","lmNotifMarkRead":"Όλα αναγνωσμένα","lmNotifClear":"Καθαρισμός","lmNotifAllCats":"Όλες οι κατηγορίες",
+        "lmNotifAllTypes":"Όλοι οι τύποι","lmNotifCategory":"Κατηγορία","lmNotifType":"Τύπος","lmNotifMutesBtn":"Αναδυόμενα…",
+        "lmNotifMutesTitle":"Να μην εμφανίζονται τα αναδυόμενα μιας κατηγορίας (καταγράφονται εδώ κανονικά)","lmNotifEmpty":"Καμία ειδοποίηση",
+        "lmNotifOffNote":"Η καταγραφή είναι ανενεργή: ενεργοποίησε το «Κέντρο ειδοποιήσεων» στις Ρυθμίσεις.",
+        "lmNotifCatAchievements":"Επιτεύγματα / σήματα","lmNotifCatBests":"Προσωπικά ρεκόρ","lmNotifCatParty":"Προσκλήσεις party / ομάδας",
+        "lmNotifCatReplay":"Επανάληψη","lmNotifCatConnection":"Σύνδεση","lmNotifCatSettings":"Ρυθμίσεις","lmNotifCatChat":"Αναδυόμενα συνομιλίας",
+        "lmNotifCatOther":"Άλλα","lmNotifTypeSuccess":"Επιτυχία","lmNotifTypeInfo":"Πληροφορία","lmNotifTypeWarning":"Προειδοποίηση","lmNotifTypeError":"Σφάλμα",
         "virusSound":"Ήχος βολής στον ιό","potionsDrinker":"Τυχαία κατανάλωση φίλτρων","jellyPhisycs":"Φυσική ζελέ","showTop5":"Εμφάνιση πίνακα ομάδας",
         "showTargeting":"Εμφάνιση στόχευσης","showTime":"Εμφάνιση τρέχουσας ώρας","showDevConsole":"Εμφάνιση κονσόλας προγραμματιστή",
         "showLbData":"Εμφάνιση μάζας στον πίνακα κατάταξης","lbHideBots":"Πίνακας κατάταξης: σύμπτυξη επαναλαμβανόμενων ονομάτων (bots)",
@@ -22842,6 +22880,18 @@ textLanguage.mbRingColorP2 = textLanguage.mbRingColorP2 || 'Player 2 ring color'
 textLanguage.mbRingSizeP1 = textLanguage.mbRingSizeP1 || 'Player 1 ring size (% of the cell)';
 textLanguage.mbRingSizeP2 = textLanguage.mbRingSizeP2 || 'Player 2 ring size (% of the cell)';
 textLanguage.mbRingsActiveOnly = textLanguage.mbRingsActiveOnly || 'Only on the player you control';
+
+/* Notification centre and sound mixer: same fallback pattern (the Polish set has no labels for them). */
+textLanguage.soundsGroup = textLanguage.soundsGroup || 'Sounds';
+textLanguage.notificationCentre = textLanguage.notificationCentre || 'Notification centre (bell with the last 200 notifications)';
+textLanguage.volMaster = textLanguage.volMaster || 'Master volume';
+textLanguage.volChat = textLanguage.volChat || 'Chat message volume';
+textLanguage.volCommands = textLanguage.volCommands || 'Command volume';
+textLanguage.volGameplay = textLanguage.volGameplay || 'Gameplay effects volume (virus, 16 pieces)';
+textLanguage.volVideo = textLanguage.volVideo || 'Video skins volume';
+textLanguage.volNotifications = textLanguage.volNotifications || 'Notification sounds volume';
+textLanguage.audioDucking = textLanguage.audioDucking || 'Audio ducking (lower video skins while a chat sound plays)';
+textLanguage['hk-notifCentre'] = textLanguage['hk-notifCentre'] || 'Open the notification centre';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -25786,6 +25836,10 @@ function thelegendmodproject() {
                             toastr.warning('Notifications are blocked in this browser for this site.');
                         }
                         break;
+                    case 'notificationCentre':
+                        /* show / remove the bell now (the module also checks every 2 s) */
+                        if (window.LMNotifications) window.LMNotifications.refresh();
+                        break;
                     case 'chatSounds':
                         this.setChatSoundsBtn();
                         break;
@@ -26826,7 +26880,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26900,6 +26954,15 @@ function thelegendmodproject() {
                 $('#universalChat').prop('disabled', true).before('<small>(unavailable) </small>').closest('label').attr('title', 'Agar Tool universal chat is not available in this version').css('opacity', 0.6);
             }
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
+            /* Sound mixer: volume per channel times the master volume, applied where each sound
+             * plays (playSound, the video skin volume timer); all 1 = unchanged. */
+            this.addOptions(["audioDucking"], "soundsGroup");
+            this.addSliderBox(".soundsGroup", "volMaster", 0, 1, 0.01);
+            this.addSliderBox(".soundsGroup", "volChat", 0, 1, 0.01);
+            this.addSliderBox(".soundsGroup", "volCommands", 0, 1, 0.01);
+            this.addSliderBox(".soundsGroup", "volGameplay", 0, 1, 0.01);
+            this.addSliderBox(".soundsGroup", "volVideo", 0, 1, 0.01);
+            this.addSliderBox(".soundsGroup", "volNotifications", 0, 1, 0.01);
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
@@ -26931,7 +26994,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Multibox rings: per player on/off, color and size; both off = no rings. */
@@ -34189,12 +34252,30 @@ function thelegendmodproject() {
             if (audio && audio.play) {
                 audio.pause();
                 audio.currentTime = 0;
+                /* sound mixer (ogario/modules/notifications.js): channel x master volume, all 1 by
+                 * default; a chat sound may also lower the video skins (option audioDucking) */
+                var _lmMix = window.LMNotifications;
+                if (_lmMix && _lmMix.soundVolume) {
+                    try {
+                        var _lmVol = _lmMix.soundVolume(this._lmSoundChannel(audio));
+                        if (audio.volume !== _lmVol) audio.volume = _lmVol;
+                    } catch (eVol) { }
+                }
                 //audio.play();
                 var nopromise = {
                     catch: new Function()
                 };
                 (audio.play() || nopromise).catch(function () { });
             }
+        },
+        /* mixer channel of one of the mod's sounds; any other sound (scripts) counts as a notification */
+        _lmSoundChannel(audio) {
+            if (audio === this.messageSound) return 'chat';
+            if (audio === this.commandSound) return 'commands';
+            if (audio === this.virusSoundurl) return 'gameplay';
+            var c = this._lmOptSoundCache;
+            if (c) for (var k in c) if (c.hasOwnProperty(k) && c[k] === audio) return 'gameplay';
+            return 'notifications';
         },
         /* ─── §4.20 Targeting & Spectator ─── */
         setFBIDs() {
@@ -85016,5 +85097,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(profilesScript);
     } catch (e) {
         console.warn('[LM] Error loading settings profiles script:', e);
+    }
+    /* Notification centre + sound mixer (the bell and recording only while its option is on) */
+    try {
+        var notifScript = document.createElement('script');
+        notifScript.type = 'text/javascript';
+        notifScript.src = 'https://www.legendmod.ml/ogario/modules/notifications.js?v=' + (window.OgVer || '');
+        document.body.appendChild(notifScript);
+    } catch (e) {
+        console.warn('[LM] Error loading notifications script:', e);
     }
 })();
