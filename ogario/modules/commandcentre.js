@@ -258,7 +258,9 @@
         hudEditor: { en: 'Edit HUD (move and resize the HUD boxes, layouts)', el: 'Επεξεργασία HUD (μετακίνηση και μέγεθος πλαισίων, διατάξεις)' },
         practice: { en: 'Practice arena (offline drills, bots, ghost)', el: 'Αρένα εξάσκησης (εκτός σύνδεσης, bots, φάντασμα)' },
         plugins: { en: 'User Scripts (plugins, catalogue)', el: 'User Scripts (plugins, κατάλογος)' },
-        lab: { en: 'Lab (experimental)', el: 'Lab (πειραματικά)' }
+        lab: { en: 'Lab (experimental)', el: 'Lab (πειραματικά)' },
+        skinEditor: { en: 'Skin editor (crop, zoom, rotate, preview, PNG)', el: 'Επεξεργασία skin (περικοπή, ζουμ, περιστροφή, προεπισκόπηση, PNG)' },
+        macroEditor: { en: 'Custom macros (split, feed, wait, move to mouse)', el: 'Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)' }
     };
     function lang() {
         try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
@@ -427,7 +429,10 @@
         /* ogario/modules/practice.js (loaded on first use by lmPractice in ogario.v4.js) */
         { id: 'practice', en: tEn('practice'), label: function () { return t('practice'); }, avail: function () { return typeof W.lmPractice === 'function'; }, run: function () { W.lmPractice('open'); } },
         { id: 'plugins', en: tEn('plugins'), label: function () { return t('plugins'); }, avail: function () { return !!(W.LMPlugins && typeof W.LMPlugins.open === 'function'); }, run: function () { W.LMPlugins.open('plugins'); } },
-        { id: 'lab', en: tEn('lab'), label: function () { return t('lab'); }, avail: function () { return !!(W.LMLab && typeof W.LMLab.open === 'function'); }, run: function () { W.LMLab.open(); } }
+        { id: 'lab', en: tEn('lab'), label: function () { return t('lab'); }, avail: function () { return !!(W.LMLab && typeof W.LMLab.open === 'function'); }, run: function () { W.LMLab.open(); } },
+        /* both load on first use (ogario/modules/skineditor.js, macroeditor.js) */
+        { id: 'skinEditor', en: tEn('skinEditor'), label: function () { return t('skinEditor'); }, avail: function () { return typeof W.lmSkinEditor === 'function'; }, run: function () { W.lmSkinEditor('open'); } },
+        { id: 'macroEditor', en: tEn('macroEditor'), label: function () { return t('macroEditor'); }, avail: function () { return typeof W.lmMacroEditor === 'function'; }, run: function () { W.lmMacroEditor('open'); } }
     ];
 
     /* ═══ Running items ═══ */

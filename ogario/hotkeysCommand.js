@@ -144,6 +144,41 @@
                 },
                 keyUp: null,
                 type: 'normal'
+            },
+            /* custom macro slot 1 (ogario/modules/macroeditor.js, loaded on the first press;
+             * made in Settings > Macro > Custom macros); no default key */
+            'hk-customMacro1': {
+                get label() {
+                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-customMacro1']) || 'Custom macro 1 (Settings > Macro > Custom macros)';
+                },
+                defaultKey: '',
+                keyDown() {
+                    if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('run', 1);
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-customMacro2': {
+                get label() {
+                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-customMacro2']) || 'Custom macro 2 (Settings > Macro > Custom macros)';
+                },
+                defaultKey: '',
+                keyDown() {
+                    if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('run', 2);
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-customMacro3': {
+                get label() {
+                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-customMacro3']) || 'Custom macro 3 (Settings > Macro > Custom macros)';
+                },
+                defaultKey: '',
+                keyDown() {
+                    if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('run', 3);
+                },
+                keyUp: null,
+                type: 'normal'
             },		
             'hk-pause': {
                 label: textLanguage['hk-pause'],
