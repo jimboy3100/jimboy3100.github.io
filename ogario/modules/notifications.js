@@ -9,8 +9,9 @@
  *
  * Mixer: volume per channel (chat, commands, gameplay effects, video skins, notifications)
  * times the master volume, all 1 by default (unchanged), and "audioDucking" (off by default):
- * a chat or alert sound lowers the video skins for a moment. ogario.v4.js asks
- * LMNotifications.soundVolume / videoVolume where it plays a sound.
+ * a chat or alert sound that is really heard lowers the video skins while it plays. ogario.v4.js
+ * asks LMNotifications.soundVolume / videoVolume where it plays a sound and reports the started
+ * playback with duckPlayback (LMNotifications.play does both).
  */
 (function (root) {
     'use strict';
@@ -24,7 +25,8 @@
     var MAX_ITEMS = 200;
     var MAX_TEXT = 300;          /* characters kept per notification */
     var MAX_BYTES = 120000;      /* stored JSON is cut (oldest first) to stay under this */
-    var DUCK_MS = 1500;          /* how long the video skins stay lowered */
+    var DUCK_MS = 1500;          /* how long the video skins stay lowered when the sound's length is unknown */
+    var DUCK_MAX_MS = 10000;     /* at most, for a long sound */
     var DUCK_LEVEL = 0.3;        /* their volume meanwhile, as a fraction */
     /* channels whose sound lowers the video skins while "audioDucking" is on */
     var DUCK_CHANNELS = { chat: 1, commands: 1, notifications: 1 };
@@ -306,13 +308,23 @@
         return mixVolume(base, s.volVideo, s.volMaster, duckFactor());
     }
 
-    /* a chat / alert sound starts: lower the playing video skins now; their 500 ms volume
-     * tick (lmVideoSkinRegistry in ogario.v4.js) keeps them low until the time is up and then brings them back */
-    function duck(channel) {
-        if (!settings().audioDucking || !DUCK_CHANNELS[channel]) return;
+    /* Ducks of the sounds playing now, { a: audio element, until: ms }: the video skins stay low until
+     * the latest deadline. Their 500 ms volume tick (lmVideoSkinRegistry in ogario.v4.js) keeps them
+     * low until then and brings them back afterwards. */
+    var ducks = [];
+    function duckRecompute() {
+        var t = now(), max = 0;
+        ducks = ducks.filter(function (d) { return d.until > t; });
+        ducks.forEach(function (d) { if (d.until > max) max = d.until; });
+        duckUntil = max;
+    }
+    function duck(until, audio) {
         var wasDucked = now() < duckUntil;
-        duckUntil = now() + DUCK_MS;
-        if (wasDucked) return;
+        /* the same element played again: its new playback replaces the old one */
+        ducks = ducks.filter(function (d) { return !audio || d.a !== audio; });
+        ducks.push({ a: audio || null, until: until });
+        duckRecompute();
+        if (wasDucked || !(now() < duckUntil)) return;
         var players = root.videoSkinPlayer;
         if (!players) return;
         for (var k in players) {
@@ -321,10 +333,37 @@
             try { v.volume = mixVolume(v.volume, 1, 1, DUCK_LEVEL); } catch (e) { }
         }
     }
+    /* a sound ended or failed: its duck ends (others keep theirs) */
+    function release(audio) {
+        ducks = ducks.filter(function (d) { return d.a !== audio; });
+        duckRecompute();
+    }
+    function listenEnd(audio) {
+        if (audio._lmDuckL || typeof audio.addEventListener !== 'function') return;
+        try { audio._lmDuckL = true; } catch (e) { return; }
+        ['ended', 'error'].forEach(function (n) { audio.addEventListener(n, function () { release(audio); }); });
+    }
+    /* A chat / alert sound was started with audio.play() (p: its promise). Ducks only when it is
+     * heard: volume above 0, not muted, and play() succeeded (a muted channel or a refused play,
+     * e.g. no user gesture yet, must not lower the video). Lasts as long as the sound still plays
+     * (DUCK_MS when its length is unknown, at most DUCK_MAX_MS), less when it ends or fails. */
+    function duckPlayback(audio, channel, p) {
+        if (!audio || !settings().audioDucking || !DUCK_CHANNELS[channel]) return;
+        if (audio.muted || !(+audio.volume > 0)) return;
+        var go = function () {
+            if (!settings().audioDucking || audio.muted || !(+audio.volume > 0) || audio.paused === true || audio.ended === true) return;
+            var d = +audio.duration, left = isFinite(d) && d > 0 ? (d - (+audio.currentTime || 0)) * 1000 : DUCK_MS;
+            if (!(left > 0)) return;
+            duck(now() + Math.min(left, DUCK_MAX_MS), audio);
+            listenEnd(audio);
+        };
+        if (p && typeof p.then === 'function') p.then(go, function () { });
+        /* old browsers: play() gives no promise, the element says whether it plays */
+        else if (audio.paused === false) go();
+    }
 
-    /* volume for a sound of this channel, and ducking for chat / alerts */
+    /* volume for a sound of this channel (ducking: duckPlayback once it plays) */
     function soundVolume(channel) {
-        duck(channel);
         return channelVolume(channel);
     }
 
@@ -332,11 +371,12 @@
     function play(audio, channel) {
         if (!audio || typeof audio.play !== 'function') return;
         try {
-            var v = soundVolume(channel || 'notifications');
+            var ch = channel || 'notifications', v = soundVolume(ch);
             if (audio.volume !== v) audio.volume = v;
             audio.currentTime = 0;
             var p = audio.play();
             if (p && p.catch) p.catch(function () { });
+            duckPlayback(audio, ch, p);
         } catch (e) { }
     }
 
@@ -735,6 +775,7 @@
             saveNow();
         },
         soundVolume: soundVolume,
+        duckPlayback: duckPlayback,
         channelVolume: channelVolume,
         videoVolume: videoVolume,
         play: play,
@@ -746,7 +787,7 @@
             sanitizeItems: sanitizeItems, parseStore: parseStore, serializeStore: serializeStore, parsePrefs: parsePrefs,
             unreadCount: unreadCount, filterItems: filterItems, mixVolume: mixVolume, vol: vol, candidateSpots: candidateSpots,
             wrapToastr: wrapToastr, saveNow: saveNow, MAX_ITEMS: MAX_ITEMS, MAX_TEXT: MAX_TEXT, MAX_BYTES: MAX_BYTES,
-            DUCK_LEVEL: DUCK_LEVEL, DUCK_MS: DUCK_MS
+            DUCK_LEVEL: DUCK_LEVEL, DUCK_MS: DUCK_MS, DUCK_MAX_MS: DUCK_MAX_MS
         }
     };
     root.LMNotifications = api;

@@ -81,6 +81,52 @@ const b = C.buildEvent({ type: 'best', mass: 10, alive: 20, massRecord: 1, timeR
 check('personal best event', b.massRecord === true && b.timeRecord === false && b.mass === 10 && b.alive === 20);
 check('event builder idempotent', J(C.buildEvent(k)) === J(k));
 
+/* ── stream mode: names in kill events and chat ── */
+const ks = C.buildEvent({ type: 'kill', t: 5, nick: 'Victim', mass: 50 }, { streamMode: true });
+check('stream mode: no eaten player name in kill events', ks.nick === '' && ks.mass === 50 && J(C.buildEvent(ks)) === J(ks));
+st = C.buildState(full, { streamMode: true, chat: true });
+check('stream mode: no chat sender names (not only own lines)', st.chat.length === 2 && st.chat.every(c => c.nick === '' && c.text === '[redacted]') && J(st).indexOf('Other') < 0);
+check('stream mode: the state says so, building again keeps it hidden', st.stream === true && C.buildState(Object.assign({}, full, { stream: true }), { chat: true }).nick === '' &&
+  C.buildState(full, { chat: true }).stream === false);
+
+/* ── in the game: stream mode switched, server changed (module with stub DOM / events) ── */
+{
+  const msgs = [], L = {}, timers = [];
+  const g = {
+    URL, Date, Math, Number, JSON, String, Array, Object, isFinite,
+    document: { createElement: () => ({ style: {}, addEventListener() { }, appendChild() { } }), getElementById: () => null },
+    BroadcastChannel: function () { this.postMessage = m => msgs.push(JSON.parse(JSON.stringify(m))); this.close = () => { }; },
+    LMEvents: { on: (n, f) => { (L[n] = L[n] || []).push(f); }, off: (n, f) => { L[n] = (L[n] || []).filter(x => x !== f); } },
+    legendmod5: { companionLive: true, companionChat: true, streamMode: false },
+    legendmod: { play: true, playerMass: 100, leaderboard: [] },
+    localStorage: { getItem: () => null },
+    location: { hostname: 'www.legendmod.ml' },
+    setTimeout: f => { timers.push(f); return timers.length; }, clearTimeout() { }, setInterval: () => 1, clearInterval() { },
+    addEventListener() { }, removeEventListener() { }
+  };
+  g.window = g;
+  vm.createContext(g);
+  vm.runInContext(src, g);
+  timers.shift()();
+  const emit = (n, d) => (L[n] || []).forEach(f => f(d));
+  const lastState = () => { g.LMCompanion.publishNow(); const s = msgs.filter(m => m.kind === 'state'); return s[s.length - 1].state; };
+  check('game part runs with the option on', g.LMCompanion.isOn());
+  emit('chat', { nick: 'Other', text: 'hi', type: 'message' });
+  check('normal mode: chat sender shown', lastState().chat[0].nick === 'Other');
+  g.legendmod5.streamMode = true;
+  check('stream mode switched on: chat kept so far is dropped', lastState().chat.length === 0);
+  emit('chat', { nick: 'Other', text: 'hi again', type: 'message' });
+  check('stream mode: new chat line without sender', lastState().chat[0].nick === '' && J(lastState()).indexOf('Other') < 0);
+  emit('kill', { nick: 'Victim', mass: 120 });
+  const ev = msgs.filter(m => m.kind === 'event').pop();
+  check('stream mode: kill event published without the name', ev && ev.event.type === 'kill' && ev.event.nick === '' && J(msgs).indexOf('Victim') < 0);
+  g.legendmod5.streamMode = false;
+  check('stream mode switched off: lines from stream mode dropped', lastState().chat.length === 0);
+  emit('chat', { nick: 'Old server', text: 'x', type: 'message' });
+  emit('serverChange', { host: 'b.example' });
+  check('server change: chat of the old server dropped', lastState().chat.length === 0);
+}
+
 /* ── throttling ── */
 const posted = [];
 const pub = C.createPublisher((s, now) => posted.push([s.n, now]), { interval: 250, keepalive: 2000 });

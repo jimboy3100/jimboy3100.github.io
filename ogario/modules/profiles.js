@@ -662,6 +662,9 @@
         if (!ready()) { toast('info', esc(tx('loading'))); return null; }
         var data = effective(cleanBundle(raw));
         if (!data) return null;
+        /* a Theme Workshop preview ends first (its theme back): otherwise the preview's theme would
+         * be captured as the current one, and its timer would later roll this profile's theme back */
+        try { if (window.LMThemeWorkshop && typeof window.LMThemeWorkshop.settle === 'function') window.LMThemeWorkshop.settle(); } catch (e) { }
         var cur = captureCurrent();
         var rows = diffBundles(cur, data, label);
         var c = countParts(rows);

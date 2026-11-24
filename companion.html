@@ -245,6 +245,7 @@ canvas.map { display: block; width: 14em; height: 14em; }
     }
     function addEvent(e) {
         if (e.type === 'death') { sess.games++; if (e.mass > sess.best) sess.best = e.mass; }
+        if (state && state.stream && e.nick) e.nick = '';
         events.push(e);
         if (events.length > 20) events.shift();
         if (W.events) setList(W.events, events.slice(-cfg.feed).reverse().map(eventLine));
@@ -308,6 +309,11 @@ canvas.map { display: block; width: 14em; height: 14em; }
         }
         if (d.kind === 'state') {
             state = C.buildState(d.state, { chat: true });
+            /* stream mode on: the names in the events already shown go too */
+            if (state.stream && events.some(function (x) { return x.nick; })) {
+                events.forEach(function (x) { if (x.nick) x.nick = ''; });
+                if (W.events) setList(W.events, events.slice(-cfg.feed).reverse().map(eventLine));
+            }
             lastAt = Date.now();
             statusEl.className = 'live';
             render();
