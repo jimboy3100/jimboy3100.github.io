@@ -1824,6 +1824,39 @@
       setInterval(fetchStatus, 60000);
     })();
     </script>
+    <!-- ═══ Referral System ═══ -->
+    <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var ref = params.get('ref');
+        if (ref && /^[A-Za-z0-9_\-]{1,40}$/.test(ref)) {
+          localStorage.setItem('lm_referrer', ref);
+          localStorage.setItem('lm_ref_time', Date.now());
+          /* Show a brief welcome banner */
+          var banner = document.createElement('div');
+          banner.id = 'lm-ref-banner';
+          banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;' +
+            'background:linear-gradient(135deg,#01d9cc,#7c3aed);color:#fff;text-align:center;' +
+            'padding:10px 20px;font-family:"Segoe UI",Arial,sans-serif;font-size:14px;font-weight:600;' +
+            'animation:lmRefSlide 0.4s ease;cursor:pointer;';
+          banner.innerHTML = '🎮 Invited by <strong>' + ref.replace(/[<>"'&]/g, '') + '</strong> — Welcome to Legend Mod!';
+          banner.title = 'Click to dismiss';
+          banner.onclick = function() { banner.remove(); };
+          document.body.appendChild(banner);
+          /* Auto-hide after 8 seconds */
+          setTimeout(function() { if (banner.parentNode) banner.style.opacity = '0'; banner.style.transition = 'opacity 0.5s'; setTimeout(function() { if (banner.parentNode) banner.remove(); }, 600); }, 8000);
+          /* Inject animation keyframe */
+          if (!document.getElementById('lm-ref-kf')) {
+            var s = document.createElement('style');
+            s.id = 'lm-ref-kf';
+            s.textContent = '@keyframes lmRefSlide{from{transform:translateY(-100%)}to{transform:translateY(0)}}';
+            document.head.appendChild(s);
+          }
+        }
+      } catch(e) {}
+    })();
+    </script>
 </body>
 
 
