@@ -338,6 +338,22 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-chatSounds': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-chatSounds']) || 'Mute / unmute chat sounds';
+				},
+				defaultKey: '',
+				keyDown() {
+					/* same as the speaker button in the chat box */
+					if (!application || typeof defaultmapsettings === 'undefined') return;
+					defaultmapsettings.chatSounds = !defaultmapsettings.chatSounds;
+					if (typeof application.setChatSoundsBtn === 'function') application.setChatSoundsBtn();
+					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('chatSounds');
+					if (window.toastr) toastr.info('Chat sounds ' + (defaultmapsettings.chatSounds ? 'on' : 'off'));
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-scanTrick': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
