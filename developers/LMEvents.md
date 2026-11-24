@@ -35,6 +35,7 @@ All three return `LMEvents`, so calls can be chained.
 | `serverChange` | `{ host }` | you join another server; `host` is the host name only (no tokens) |
 | `massUpdate` | `{ mass, cells }` | while playing, at most 4 times per second |
 | `leaderboard` | `{ position, entries: [{ nick, pos }] }` | the leaderboard updates; `position` is your place (0 = not listed) |
+| `split` | `{ time, count }` | you split while alive (keys, mouse, phone button, macros). `count` is the number of splits sent at once; macros that send single splits give one event per split, a few ms apart |
 
 `time` values are `Date.now()` milliseconds.
 
