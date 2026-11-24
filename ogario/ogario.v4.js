@@ -25776,7 +25776,7 @@ function thelegendmodproject() {
              * button size and opacity, toggles), the phone control layouts (LMmobile-editor.js) and the
              * gamepad buttons and profiles go with them as well. */
             if (options.ogarioSettings) {
-                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs', 'lmGamepad', 'lm-mobile-layouts'].forEach(function (k) {
+                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs', 'lmGamepad', 'lm-mobile-layouts', 'lmServerFavs', 'lmSettingsProfiles', 'lmSettingsProfilesRules'].forEach(function (k) {
                     try {
                         var v = JSON.parse(window.localStorage.getItem(k) || 'null');
                         if (v && typeof v === 'object' && !Array.isArray(v)) options[k] = v;
@@ -25889,6 +25889,14 @@ function thelegendmodproject() {
                             /* phone control layouts: the same, LMmobile-editor.js checks them on load */
                             _impStep = 'lm-mobile-layouts';
                             if (_impObject(importValue['lm-mobile-layouts'])) _impSet('lm-mobile-layouts', JSON.stringify(importValue['lm-mobile-layouts']));
+                            /* favourite servers: the same, ogario/modules/servermanager.js checks them on read */
+                            _impStep = 'lmServerFavs';
+                            if (_impObject(importValue.lmServerFavs)) _impSet('lmServerFavs', JSON.stringify(importValue.lmServerFavs));
+                            /* settings profiles and auto-switching rules: validated by profiles.js on load */
+                            _impStep = 'lmSettingsProfiles';
+                            if (Array.isArray(importValue.lmSettingsProfiles)) _impSet('lmSettingsProfiles', JSON.stringify(importValue.lmSettingsProfiles));
+                            _impStep = 'lmSettingsProfilesRules';
+                            if (_impObject(importValue.lmSettingsProfilesRules)) _impSet('lmSettingsProfilesRules', JSON.stringify(importValue.lmSettingsProfilesRules));
                         }
                     }
                 } catch (writeErr) {

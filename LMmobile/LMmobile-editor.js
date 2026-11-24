@@ -761,7 +761,16 @@
             /* second finger up: the first one drags on from here */
             var a = touchById(e.touches, drag.tid);
             drag.pinch = null;
-            if (a) { drag.sx = a.clientX; drag.sy = a.clientY; drag.r0 = rectFor(drag.id); }
+            /* P0 fix: if both fingers lifted simultaneously, a is null —
+             * clear drag entirely instead of leaving it stuck */
+            if (!a) {
+                e.preventDefault();
+                drag = null;
+                ov.classList.remove('drag');
+                render();
+                return;
+            }
+            drag.sx = a.clientX; drag.sy = a.clientY; drag.r0 = rectFor(drag.id);
             return;
         }
         if (!touchById(e.changedTouches, drag.tid)) return;
@@ -800,7 +809,7 @@
                 delete store.named[n];
                 if (store.active === n) store.active = null;
                 save();
-                showLayouts(); showLayouts();
+                showLayouts();
             }));
             layDlg.appendChild(it);
         });
@@ -814,7 +823,7 @@
         row.appendChild(inp);
         row.appendChild(btn('Save as', 'Keep the layout being edited under this name', function () {
             var n = saveNamed(inp.value);
-            if (n) { showLayouts(); showLayouts(); }
+            if (n) { showLayouts(); }
         }));
         layDlg.appendChild(row);
         ov.appendChild(layDlg);
