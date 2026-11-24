@@ -14,6 +14,12 @@
  * frames that failed, packet gaps, renderer changes, tab hidden / shown, disconnects).
  * Freezes are measured between frame callbacks, before the FPS limit, so its own gaps and a
  * tab in the background are not stalls. All of this is kept only while measuring.
+ * Freeze breakdown (with the window open or "Keep recording", not for Adaptive performance
+ * alone): the time of the main parts of the game (packets, cell update / sort, render phases,
+ * skin and text textures, HUD timers, storage writes) is added up between two frame
+ * callbacks, and the long animation frames of the browser (Chrome 123+) say which script
+ * callback ran; each freeze gets a line with its biggest parts and a probable contributor
+ * when one part took over half of it. Wrapped methods are put back when recording stops.
  * Network quality history (option, off by default): ping, jitter, packet rate and
  * disconnects of this session, with a short summary of the last sessions.
  *
@@ -338,14 +344,293 @@
     }
 
     function pad(n, l) { n = String(n); while (n.length < (l || 2)) n = '0' + n; return n; }
+    /* "21:23:05.120" (local time of a Date.now() value) */
+    function timeText(w) {
+        var d = new Date(w);
+        return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + pad(d.getMilliseconds(), 3);
+    }
     /* "21:23:05.120 freeze 1532 ms render 1490 ms" (local time) */
     function eventLine(ev) {
-        var d = new Date(ev.w);
-        return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + pad(d.getMilliseconds(), 3) +
-            ' ' + ev.type + (ev.dur ? ' ' + Math.round(ev.dur) + ' ms' : '') + (ev.info ? ' ' + ev.info : '') + (ev.n > 1 ? ' x' + ev.n : '');
+        return timeText(ev.w) + ' ' + ev.type + (ev.dur ? ' ' + Math.round(ev.dur) + ' ms' : '') + (ev.info ? ' ' + ev.info : '') + (ev.n > 1 ? ' x' + ev.n : '');
+    }
+
+    /* ---- freeze attribution (diagnostics only): timing scopes and long animation frames ---- */
+
+    /* The parts of the game that are timed while diagnostics record. Methods are wrapped by
+     * name (see PATCHES in the page part), a few render phases have inline markers in
+     * ogario.v4.js (window._lmScope.b('grid') ... e(depth)). */
+    var SCOPES = ['packets', 'decompress', 'cells update', 'leaderboard', 'cell sort', 'cell compare', 'send position',
+        'render', 'WebGL cells', 'WebGL batch', 'grid', 'jelly physics', 'text pass', 'text raster', 'rings/HUD pass',
+        'skin texture upload', 'uploadSkinTexture', 'skin canvas job', 'teamboard', 'minimap', 'team players', 'stats HUD',
+        'settings save', 'special skins sync', 'video skins', 'replay bar', 'replay budget', 'storage write'];
+    var SCOPE_DEPTH = 32;
+
+    /* Self time of named parts of the code between two frame callbacks (a part called inside
+     * another counts only for itself), in fixed typed arrays: nothing is allocated per call.
+     * b(id or name) returns the depth to give to e(); e() also closes parts left open inside it
+     * (an exception thrown past an inline marker). clock: performance.now. */
+    function createScopes(clock, names) {
+        names = names || SCOPES;
+        var n = names.length, ids = {}, i;
+        for (i = 0; i < n; i++) ids[names[i]] = i;
+        var acc = new Float64Array(n), cnt = new Uint32Array(n);
+        var sid = new Int32Array(SCOPE_DEPTH), st = new Float64Array(SCOPE_DEPTH), ch = new Float64Array(SCOPE_DEPTH);
+        var depth = 0;
+        var S = {
+            on: false, n: n, names: names, ids: ids, acc: acc, cnt: cnt, lost: 0,
+            depth: function () { return depth; },
+            b: function (id) {
+                if (typeof id !== 'number') { id = ids[id]; if (id === undefined) return -1; }
+                if (depth >= SCOPE_DEPTH) { S.lost++; return -1; }
+                sid[depth] = id; ch[depth] = 0; st[depth] = clock();
+                return depth++;
+            },
+            e: function (d) {
+                if (!(d >= 0) || d >= depth) return;
+                var t = clock();
+                while (depth > d) {
+                    var k = --depth, incl = t - st[k], self = incl - ch[k];
+                    acc[sid[k]] += self > 0 ? self : 0;
+                    cnt[sid[k]]++;
+                    if (k > 0) ch[k - 1] += incl;
+                }
+            },
+            /* a new frame: the totals start again (a part still open keeps its start) */
+            reset: function () { acc.fill(0); cnt.fill(0); },
+            /* also forget parts left open (recording turned off and on again) */
+            clear: function () { acc.fill(0); cnt.fill(0); depth = 0; },
+            total: function () { var s = 0; for (var j = 0; j < n; j++) s += acc[j]; return s; },
+            /* fn timed as scope id while S.on; otherwise one check and the call */
+            wrap: function (fn, id) {
+                if (typeof id !== 'number') id = ids[id];
+                var w = function () {
+                    if (!S.on) return fn.apply(this, arguments);
+                    var d = S.b(id);
+                    try { return fn.apply(this, arguments); } finally { S.e(d); }
+                };
+                w._lmScopeOf = fn;
+                return w;
+            }
+        };
+        return S;
+    }
+
+    /* The last `slots` frame breakdowns (scope ms, counts and a few numbers each), in
+     * preallocated typed arrays: a long frame is copied in without allocating. */
+    function createScopeRing(slots, n, metaN) {
+        var ms = new Float32Array(slots * n), cn = new Uint16Array(slots * n), meta = new Float64Array(slots * metaN), seq = 0;
+        return {
+            slots: slots,
+            size: function () { return Math.min(seq, slots); },
+            seq: function () { return seq; },
+            clear: function () { seq = 0; },
+            push: function (acc, cnt, m) {
+                var s = seq % slots, o = s * n, j;
+                for (j = 0; j < n; j++) { ms[o + j] = acc[j]; cn[o + j] = cnt[j] > 65535 ? 65535 : cnt[j]; }
+                o = s * metaN;
+                for (j = 0; j < metaN; j++) meta[o + j] = m ? m[j] : 0;
+                seq++;
+                return s;
+            },
+            /* the kept slots added up (for the report): { ms: [], cnt: [], frames, meta0 } */
+            totals: function () {
+                var k = Math.min(seq, slots), out = { ms: [], cnt: [], frames: k, gap: 0 }, j, s;
+                for (j = 0; j < n; j++) { out.ms.push(0); out.cnt.push(0); }
+                for (s = 0; s < k; s++) {
+                    for (j = 0; j < n; j++) { out.ms[j] += ms[s * n + j]; out.cnt[j] += cn[s * n + j]; }
+                    out.gap += meta[s * metaN + 1];
+                }
+                return out;
+            },
+            metaAt: function (s, j) { return meta[s * metaN + j]; },
+            msAt: function (s, j) { return ms[s * n + j]; }
+        };
+    }
+
+    /* the biggest parts of a breakdown: [{ n: name, ms, c: calls }], largest first */
+    function topScopes(ms, cnt, names, minMs, max) {
+        var out = [];
+        for (var i = 0; i < names.length; i++) if (ms[i] >= (minMs || 0) && ms[i] > 0) out.push({ n: names[i], ms: Math.round(ms[i] * 10) / 10, c: cnt ? +cnt[i] || 0 : 0 });
+        out.sort(function (a, b) { return b.ms - a.ms; });
+        return max ? out.slice(0, max) : out;
+    }
+
+    /* A script address reduced to its file name (no path, query, hash or user), and whose it
+     * is: 'legendmod', 'agar.io', 'extension', 'page' (the page's own host) or 'other'. */
+    function scriptFile(url, pageHost) {
+        url = String(url == null ? '' : url);
+        if (!url) return { file: '', kind: '' };
+        var m = /^([a-z][a-z0-9+.\-]*):\/\/(?:[^\/?#@]*@)?(\[[^\]\/?#]*\]|[^\/?#:]*)(?::\d+)?([^?#]*)/i.exec(url);
+        if (!m) {
+            var sch = /^([a-z][a-z0-9+.\-]*):/i.exec(url);
+            return { file: sch ? sch[1].toLowerCase() + ':' : cleanText(url.split(/[?#;]/)[0].split('/').pop(), 60), kind: 'other' };
+        }
+        var scheme = m[1].toLowerCase(), host = m[2].toLowerCase();
+        var file = m[3].split(';')[0].replace(/\/+$/, '').split('/').pop() || host;
+        var kind = /-extension$/.test(scheme) ? 'extension' :
+            /(^|\.)(legendmod\.ml|jimboy3100\.github\.io)$/.test(host) ? 'legendmod' :
+                /(^|\.)(agar\.io|miniclippt\.com|miniclip\.com)$/.test(host) ? 'agar.io' :
+                    pageHost && host === String(pageHost).toLowerCase().split(':')[0] ? 'page' : 'other';
+        return { file: cleanText(file, 60), kind: kind };
+    }
+    /* invokers can hold an address ("https://x/y.js?k=..."): only its file name is kept */
+    function cleanInvoker(s) {
+        return cleanText(String(s == null ? '' : s).replace(/[a-z][a-z0-9+.\-]*:\/\/[^\s'"()<>]*/gi, function (u) {
+            var f = scriptFile(u);
+            return f.file || f.kind;
+        }), 80);
+    }
+
+    var LOAF_MIN = 100; /* long animation frames from this long are kept */
+    /* A PerformanceLongAnimationFrameTiming entry as plain, cleaned data: offsets from its
+     * start, and its 5 longest scripts. */
+    function parseLoaf(e, pageHost) {
+        var t = num(e && e.startTime), d = num(e && e.duration);
+        var out = {
+            t: t, dur: Math.round(d), block: Math.round(num(e && e.blockingDuration)),
+            render: e && e.renderStart > 0 ? Math.round(e.renderStart - t) : -1,
+            style: e && e.styleAndLayoutStart > 0 ? Math.round(e.styleAndLayoutStart - t) : -1,
+            scriptMs: 0, nScripts: 0, scripts: []
+        };
+        var sc = (e && e.scripts) || [], list = [], i;
+        for (i = 0; i < sc.length; i++) if (sc[i]) { list.push(sc[i]); out.scriptMs += num(sc[i].duration); }
+        out.scriptMs = Math.round(out.scriptMs);
+        out.nScripts = list.length;
+        list.sort(function (a, b) { return num(b.duration) - num(a.duration); });
+        for (i = 0; i < list.length && i < 5; i++) {
+            var s = list[i], f = scriptFile(s.sourceURL, pageHost);
+            out.scripts.push({
+                inv: cleanInvoker(s.invoker), type: cleanText(s.invokerType, 30), fn: cleanText(s.sourceFunctionName, 60),
+                file: f.file, kind: f.kind, pos: s.sourceCharPosition >= 0 ? Math.round(num(s.sourceCharPosition)) : -1,
+                dur: Math.round(num(s.duration)), fsl: Math.round(num(s.forcedStyleAndLayoutDuration)),
+                at: s.startTime > 0 ? Math.round(s.startTime - t) : -1
+            });
+        }
+        return out;
+    }
+    /* "uploadSkinTexture (ogario.v4.js:12345678) 241 ms" */
+    function scriptText(s) {
+        return (s.fn || s.inv || s.type || 'script') + ' (' + (s.file || '?') + (s.pos >= 0 ? ':' + s.pos : '') + ')' +
+            (s.kind && s.kind !== 'legendmod' ? ' [' + s.kind + ']' : '') + ' ' + s.dur + ' ms' +
+            (s.fsl >= 5 ? ', forced layout ' + s.fsl + ' ms' : '') + (s.fn && s.inv && s.inv.indexOf(s.fn) < 0 ? ' via ' + s.inv : '');
+    }
+    function loafLine(l) {
+        return Math.round(l.dur) + ' ms (blocking ' + l.block + ' ms, scripts ' + l.scriptMs + ' ms' +
+            (l.style >= 0 ? ', style/layout ' + Math.max(0, l.dur - l.style) + ' ms' : '') + ')' +
+            (l.scripts.length ? ': ' + l.scripts.map(scriptText).join('; ') : ': no script');
+    }
+
+    /* The name of the function at, or around, a character position of a script's text: a
+     * heuristic (braces in strings or comments can mislead it) for anonymous callbacks, e.g.
+     * "setInterval callback in window.application.init". */
+    var BLOCK_WORDS = /^(if|for|while|switch|catch|with|function|return|typeof|else|do|try|finally|in|of|new|await|yield)$/;
+    function nameBefore(text, i) {
+        var s = text.slice(Math.max(0, i - 300), i), m, a, c;
+        if ((m = /(?:^|[^\w$.])function\s*\*?\s*([A-Za-z_$][\w$]*)?\s*\([^()]*\)\s*$/.exec(s))) {
+            if (m[1]) return { name: m[1] };
+            var pre = s.slice(0, m.index + 1);
+            if ((a = /([A-Za-z_$][\w$.]*)\s*[:=]\s*(?:async\s+)?$/.exec(pre))) return { name: a[1] };
+            c = /([A-Za-z_$][\w$.]*)\s*\(\s*(?:[^(),]*,\s*)*$/.exec(pre);
+            return { name: '', via: c ? c[1] : '' };
+        }
+        if ((m = /(?:\(([^()]*)\)|([A-Za-z_$][\w$]*))\s*=>\s*$/.exec(s))) {
+            var pre2 = s.slice(0, m.index);
+            if ((a = /([A-Za-z_$][\w$.]*)\s*[:=]\s*(?:async\s+)?$/.exec(pre2))) return { name: a[1] };
+            c = /([A-Za-z_$][\w$.]*)\s*\(\s*(?:[^(),]*,\s*)*$/.exec(pre2);
+            return { name: '', via: c ? c[1] : '' };
+        }
+        if ((m = /(?:^|[^\w$.])(?:async\s+|get\s+|set\s+|static\s+)?([A-Za-z_$][\w$]*)\s*\([^()]*\)\s*$/.exec(s))) {
+            return BLOCK_WORDS.test(m[1]) ? null : { name: m[1] };
+        }
+        if ((m = /\bclass\s+([A-Za-z_$][\w$]*)[^{};]*$/.exec(s))) return { name: m[1], top: true };
+        if ((m = /([A-Za-z_$][\w$.]*)\s*=\s*$/.exec(s))) return { name: m[1], top: true };
+        if ((m = /([A-Za-z_$][\w$]*)\s*:\s*$/.exec(s))) return { name: m[1] };
+        return null;
+    }
+    function enclosingName(text, pos, maxBack) {
+        text = String(text == null ? '' : text);
+        pos = Math.floor(+pos);
+        if (!(pos >= 0) || pos > text.length) return '';
+        /* the function that starts at pos (long animation frames give the callback's start) */
+        var own = '', via = '';
+        var hm = /^\s*(?:async\s+)?function\b\s*\*?\s*([A-Za-z_$][\w$]*)?\s*\([^()]*\)\s*\{/.exec(text.slice(pos, pos + 300)) ||
+            /^\s*(?:async\s+)?([A-Za-z_$][\w$]*)\s*\([^()]*\)\s*\{/.exec(text.slice(pos, pos + 300));
+        var start = pos;
+        if (hm) {
+            var brace = text.indexOf('{', pos + hm[0].length - 1);
+            var nb = nameBefore(text, brace);
+            if (nb) { own = nb.name || ''; via = nb.via || ''; }
+            start = pos - 1;
+        }
+        var chain = [], depth = 0, lim = Math.max(0, pos - (maxBack || 400000));
+        for (var i = start; i >= lim && chain.length < 3; i--) {
+            var ch = text.charCodeAt(i);
+            if (ch === 125) depth++;
+            else if (ch === 123) {
+                if (depth > 0) { depth--; continue; }
+                var e = nameBefore(text, i);
+                if (!e) continue;
+                if (e.name) chain.push(e.name);
+                else if (!chain.length && !own && !via && e.via) via = e.via;
+                if (e.top) break;
+            }
+        }
+        chain.reverse();
+        if (own) return chain.concat([own]).join('.');
+        if (!via && chain.length) return chain.join('.');
+        return (via ? via + ' callback' : 'anonymous function') + (chain.length ? ' in ' + chain.join('.') : '');
+    }
+
+    function overlapMs(a0, a1, b0, b1) { return Math.max(0, Math.min(a1, b1) - Math.max(a0, b0)); }
+    /* One freeze event (its .bd: the timed parts of the frame gap) put together with the long
+     * animation frames and the other events around it. A "probable contributor" only when one
+     * part took over half of the freeze; otherwise it is not attributed. Returns { line, probable }. */
+    function classifyFreeze(fz, loafs, evs, opts) {
+        opts = opts || {};
+        var dur = +fz.dur || 0, end = +fz.t || 0, start = end - dur, bd = fz.bd || null, probable = '', i;
+        var parts = [Math.round(dur) + ' ms freeze ' + timeText(fz.w)];
+        if (bd && bd.r) parts.push(bd.r);
+        if (bd) {
+            var top = [];
+            for (i = 0; i < bd.s.length && top.length < 3; i++) if (bd.s[i].ms >= 1) top.push(bd.s[i].n + ' ' + Math.round(bd.s[i].ms) + ' ms');
+            parts.push(top.length ? top.join(', ') : 'no timed part over 1 ms');
+            if (bd.s.length && bd.s[0].ms > dur * 0.5) probable = bd.s[0].n;
+        } else if (opts.scopes !== false) parts.push('no breakdown');
+        var best = null, bestOv = 0;
+        for (i = 0; loafs && i < loafs.length; i++) {
+            var ov = overlapMs(start, end, loafs[i].t, loafs[i].t + loafs[i].dur);
+            if (ov > bestOv) { bestOv = ov; best = loafs[i]; }
+        }
+        if (best) {
+            var sc = best.scripts[0];
+            parts.push('LoAF ' + best.dur + ' ms: ' + (sc ? scriptText(sc) : 'no script') +
+                (best.style >= 0 && best.dur - best.style >= 20 ? ', style/layout ' + (best.dur - best.style) + ' ms' : ''));
+            if (!probable && sc && sc.dur > dur * 0.5) probable = 'script ' + (sc.fn || sc.inv || '?') + ' (' + (sc.file || '?') + (sc.kind && sc.kind !== 'legendmod' ? ', ' + sc.kind : '') + ')';
+            if (!probable && best.style >= 0 && best.dur - best.style > dur * 0.5) probable = 'style and layout (browser)';
+        } else if (opts.loaf) parts.push('LoAF: none');
+        else {
+            for (i = 0; evs && i < evs.length; i++) if (evs[i].type === 'long task' && overlapMs(start, end, evs[i].t, evs[i].t + evs[i].dur) > 0) { parts.push('long task ' + evs[i].dur + ' ms'); break; }
+        }
+        var net = 'network normal';
+        for (i = 0; evs && i < evs.length; i++) {
+            var ev = evs[i];
+            if (ev.type === 'packet gap' && overlapMs(start, end, ev.t - ev.dur, ev.t) > 0) {
+                net = ev.t - ev.dur < start - 250 ? 'packet gap ' + ev.dur + ' ms, began before the freeze (network or server)' : 'world updates only waited for the freeze';
+            } else if (ev.type === 'disconnect' && ev.t >= start - 1000 && ev.t <= end + 1000) net = 'disconnect';
+        }
+        parts.push(net);
+        for (i = 0; evs && i < evs.length; i++) {
+            if (evs[i].type === 'visibility' && evs[i].t >= start - 1000 && evs[i].t <= end + 500) { parts.push('tab ' + evs[i].info + ' nearby'); break; }
+        }
+        if (bd && bd.q) parts.push(bd.q);
+        parts.push(probable ? 'probable contributor: ' + probable : 'unattributed (GC/GPU/browser?)');
+        return { line: parts.join(' · '), probable: probable };
     }
 
     var pure = {
+        timeText: timeText, SCOPES: SCOPES, createScopes: createScopes, createScopeRing: createScopeRing, topScopes: topScopes,
+        scriptFile: scriptFile, cleanInvoker: cleanInvoker, parseLoaf: parseLoaf, scriptText: scriptText, loafLine: loafLine,
+        enclosingName: enclosingName, classifyFreeze: classifyFreeze, LOAF_MIN: LOAF_MIN,
         hostOf: hostOf, classifyGap: classifyGap, createEventRing: createEventRing, eventLine: eventLine,
         STALL_MS: STALL_MS, FREEZE_MS: FREEZE_MS, PAUSE_MS: PAUSE_MS,
         TARGETS: TARGETS, LEVEL_KEYS: LEVEL_KEYS, MAX_LEVEL: MAX_LEVEL, CTL: CTL,
@@ -401,6 +686,128 @@
     var LONGTASK_LOG = 100; /* long tasks from this long are listed (all are counted) */
     var lto = null; /* PerformanceObserver('longtask') while measuring, where supported */
     var adaptiveOn = false, diagOpen = false, keepRec = false;
+
+    /* ---------- freeze attribution (diagnostics window or "keep recording" only) ----------
+     * The time of the parts below is added up between two frame callbacks; a frame gap of
+     * 50 ms or more is copied into a ring of the last 32 (no allocation), a freeze keeps its
+     * own breakdown. Long animation frames (Chrome 123+) tell which script callback ran. */
+    var LOAF_MAX = 60, SLOW_SLOTS = 32, META_N = 8;
+    var sc = createScopes(now);
+    var slowRing = createScopeRing(SLOW_SLOTS, sc.n, META_N);
+    var slowMeta = new Float64Array(META_N); /* t, gap, cells, skin jobs, skin uploads, text bytes, heap MB, timed ms */
+    var loafs = createEventRing(LOAF_MAX);
+    var loafObs = null, attrOn = false, patched = [];
+    /* [object, method, part]: wrapped only while attribution is on, put back when it stops */
+    var PATCHES = [
+        ['legendmod', 'handleMessage', 'packets'], ['legendmod', 'decompressMessage', 'decompress'],
+        ['legendmod', 'updateCells', 'cells update'], ['legendmod', 'handleLeaderboard', 'leaderboard'],
+        ['legendmod', 'sortCells', 'cell sort'], ['legendmod', 'compareCells', 'cell compare'], ['legendmod', 'sendPosition', 'send position'],
+        ['drawRender', 'renderFrame', 'render'], ['drawRender', 'drawWebGLCellBatch', 'WebGL cells'], ['drawRender', 'drawWebGLBatch', 'WebGL batch'],
+        ['drawRender', '_lmRasterText', 'text raster'], ['drawRender', '_lmUploadSkinJob', 'skin texture upload'],
+        ['drawRender', 'uploadSkinTexture', 'uploadSkinTexture'],
+        ['application', '_lmSkinJobRun', 'skin canvas job'], ['application', 'displayTop5', 'teamboard'],
+        ['application', 'drawMiniMap', 'minimap'], ['application', 'updateTeamPlayers', 'team players'],
+        ['application', 'displayStats', 'stats HUD'], ['application', 'saveSettings', 'settings save'],
+        ['window', 'repeatSendingSpecialSkins', 'special skins sync'], ['window', 'checkVideos', 'video skins'],
+        ['window', 'lmReplayBarTick', 'replay bar'], ['window', '_lmRecBudgetCheck', 'replay budget'],
+        ['Storage.prototype', 'setItem', 'storage write']
+    ];
+
+    function patchTarget(k) {
+        if (k === 'window') return window;
+        if (k === 'Storage.prototype') return window.Storage ? window.Storage.prototype : null;
+        return window[k] || null;
+    }
+    function installPatches() {
+        for (var i = 0; i < PATCHES.length; i++) {
+            var p = PATCHES[i], o = patchTarget(p[0]);
+            try {
+                if (!o || typeof o[p[1]] !== 'function' || o[p[1]]._lmScopeOf) continue;
+                var orig = o[p[1]], own = hasOwn(o, p[1]), w = sc.wrap(orig, p[2]);
+                o[p[1]] = w;
+                if (o[p[1]] === w) patched.push([o, p[1], orig, w, own]);
+            } catch (e) { }
+        }
+    }
+    function removePatches() {
+        for (var i = 0; i < patched.length; i++) {
+            var p = patched[i];
+            /* replaced by someone else meanwhile: left there (it only checks sc.on) */
+            try {
+                if (p[0][p[1]] !== p[3]) continue;
+                if (p[4]) p[0][p[1]] = p[2];
+                else delete p[0][p[1]];
+            } catch (e) { }
+        }
+        patched.length = 0;
+    }
+
+    function observeLoaf(on) {
+        if (on && !loafObs) {
+            try {
+                var PO = window.PerformanceObserver;
+                if (!PO || !PO.supportedEntryTypes || PO.supportedEntryTypes.indexOf('long-animation-frame') < 0) return;
+                var host = (window.location && window.location.host) || '';
+                loafObs = new PO(function (list) {
+                    var es = list.getEntries(), n = now(), w = Date.now();
+                    for (var i = 0; i < es.length; i++) {
+                        if (!(+es[i].duration >= LOAF_MIN)) continue;
+                        var l = parseLoaf(es[i], host);
+                        l.w = w - (n - l.t);
+                        loafs.push(l);
+                    }
+                });
+                loafObs.observe({ type: 'long-animation-frame', buffered: false });
+            } catch (e) { loafObs = null; }
+        } else if (!on && loafObs) {
+            try { loafObs.disconnect(); } catch (e) { }
+            loafObs = null;
+        }
+    }
+
+    function attribution(on) {
+        if (on === attrOn) return;
+        attrOn = on;
+        if (on) {
+            installPatches();
+            sc.clear();
+            sc.on = true;
+            window._lmScope = sc;
+        } else {
+            sc.on = false;
+            window._lmScope = null;
+            removePatches();
+        }
+        observeLoaf(on);
+    }
+
+    /* queue sizes and totals for a breakdown (into m, no allocation) */
+    function fillMeta(m, t, g) {
+        var lm = window.legendmod, dr = window.drawRender, a = app();
+        m[0] = t; m[1] = g;
+        m[2] = lm && lm.cells ? lm.cells.length : 0;
+        m[3] = a && a._lmSkinJobs ? a._lmSkinJobs.length : 0;
+        m[4] = dr && dr._lmSkinReady ? dr._lmSkinReady.length : 0;
+        m[5] = dr ? (+dr._lmTextBytes || 0) + (+dr._lmMassBytes || 0) : 0;
+        m[6] = 0;
+        try { if (window.performance && performance.memory) m[6] = Math.round(performance.memory.usedJSHeapSize / 1048576); } catch (e) { }
+        m[7] = sc.total();
+    }
+    function metaText(m) {
+        var q = [];
+        if (m[2]) q.push(m[2] + ' cells');
+        if (m[3]) q.push('skin jobs ' + m[3]);
+        if (m[4]) q.push('skin uploads ' + m[4]);
+        if (m[5]) q.push('text textures ' + f1(m[5] / 1048576) + ' MB');
+        return q.join(', ');
+    }
+    /* the timed parts of the frame gap that ends now (a freeze: rare, so a small object) */
+    function breakdown(t, g) {
+        fillMeta(slowMeta, t, g);
+        var r = rendererName();
+        try { if (r === 'WebGL' && window.WebGL2RenderingContext && window.drawRender.gl instanceof window.WebGL2RenderingContext) r = 'WebGL2'; } catch (e) { }
+        return { r: r, s: topScopes(sc.acc, sc.cnt, sc.names, 0.5, 8), tot: Math.round(slowMeta[7]), q: metaText(slowMeta) };
+    }
     var ctl = newController();
     var overrides = null;
     var scaleApplied = 0;
@@ -451,7 +858,9 @@
         if (kind === 'freeze') {
             fr.frzN++; fr.frzTotal += g; fr.frzLast = Date.now();
             if (g > fr.frzMax) fr.frzMax = g;
-            pushEvent('freeze', g, freezeInfo(t, g));
+            var fev = pushEvent('freeze', g, freezeInfo(t, g), false, t);
+            /* what ran during the gap (attribution on) */
+            if (fev && sc.on) fev.bd = breakdown(t, g);
         } else if (kind === 'pause') {
             pushEvent('pause', g, 'over ' + PAUSE_MS / 1000 + ' s, sleep or suspend (not counted)');
         } else if (kind === 'return' && g >= FREEZE_MS) {
@@ -466,8 +875,14 @@
         if (fr.rafPrev) {
             var g = t - fr.rafPrev;
             if (g > fr.rafMax && !inBackground(t, g)) fr.rafMax = g;
+            /* attribution: the parts timed since the last callback belong to this gap */
+            if (sc.on && g >= LONG_FRAME && g <= PAUSE_MS && !inBackground(t, g)) {
+                fillMeta(slowMeta, t, g);
+                slowRing.push(sc.acc, sc.cnt, slowMeta);
+            }
             noteGap(t, g);
         }
+        if (sc.on) sc.reset();
         fr.rafPrev = t;
         fr.rafSeen = true;
     }
@@ -581,7 +996,11 @@
         longTasks(on);
     }
     /* the diagnostics window, Adaptive performance or "keep recording" need the frame times */
-    function wantMeasuring() { measuring(adaptiveOn || diagOpen || keepRec); }
+    function wantMeasuring() {
+        measuring(adaptiveOn || diagOpen || keepRec);
+        /* attribution is for diagnostics only, not for Adaptive performance alone */
+        attribution(diagOpen || keepRec);
+    }
 
     /* ---------- applying a level ---------- */
 
@@ -826,6 +1245,16 @@
             (fr.capped ? ', ' + fr.capped + ' only long by the FPS limit (not counted)' : ''));
         lines.push(freezeLine(true));
         if (fr.ltN || lto) lines.push('Long tasks (≥50 ms): ' + fr.ltN + (fr.ltN ? ', worst ' + Math.round(fr.ltMax) + ' ms' : '') + ' (listed from ' + LONGTASK_LOG + ' ms)');
+        lines.push('Freeze breakdown: ' + (attrOn ? 'on' : 'off (open this window or keep recording)') + ', long animation frames: ' +
+            (loafObs ? 'observed' : attrOn ? 'not supported by this browser' : 'off') +
+            ', time origin ' + (window.performance && performance.timeOrigin ? Math.round(performance.timeOrigin) : '-') + ', performance.now ' + Math.round(now()));
+        var att = attributed();
+        if (att.length) {
+            var by = {}, order = [];
+            att.forEach(function (a) { var k = a.probable || 'unattributed'; if (!by[k]) { by[k] = 0; order.push(k); } by[k]++; });
+            order.sort(function (a, b) { return by[b] - by[a]; });
+            lines.push('Probable contributors: ' + order.map(function (k) { return k + ' x' + by[k]; }).join(', '));
+        }
         if (fr.renderErrors) lines.push('Frames that failed to draw: ' + fr.renderErrors);
         lines.push('Render ' + f1(st.render) + ' ms, other ' + f1(st.other) + ' ms per frame');
         lines.push('Cells: ' + cells + ', renderer: ' + rendererName());
@@ -840,15 +1269,39 @@
         net.closes.slice(-5).forEach(function (c) {
             lines.push('  closed ' + new Date(c.t).toLocaleTimeString() + ': code ' + c.code + (c.reason ? ' "' + c.reason + '"' : '') + (c.clean ? '' : ' (not clean)') + (c.openMs ? ', open ' + Math.round(c.openMs / 1000) + ' s' : ''));
         });
-        var ev = events.list();
+        var ev = events.list(), ll = loafs.list(), lopt = loafOpts();
         lines.push('Events (' + ev.length + ', last ' + EVENTS_MAX + ' kept' + (keepRec ? ', recording also with the window closed' : '') + '):');
-        ev.forEach(function (e) { lines.push('  ' + eventLine(e)); });
+        ev.forEach(function (e) {
+            lines.push('  ' + (e.type === 'freeze' ? classifyFreeze(e, ll, ev, lopt).line + (e.info ? ' (' + e.info + ')' : '') + ' @' + Math.round(e.t) : eventLine(e)));
+        });
+        var tot = slowRing.totals();
+        if (tot.frames) {
+            var parts = topScopes(tot.ms, tot.cnt, sc.names, 1, 8);
+            lines.push('Slow frames (≥' + LONG_FRAME + ' ms, last ' + tot.frames + '): average ' + Math.round(tot.gap / tot.frames) + ' ms, timed parts in total: ' +
+                (parts.length ? parts.map(function (p) { return p.n + ' ' + Math.round(p.ms) + ' ms (' + p.c + 'x)'; }).join(', ') : 'none over 1 ms'));
+        }
+        if (ll.length) {
+            lines.push('Long animation frames (≥' + LOAF_MIN + ' ms, ' + ll.length + ' kept, last 20):');
+            ll.slice(-20).forEach(function (l) { lines.push('  ' + timeText(l.w) + ' ' + loafLine(l) + ' @' + Math.round(l.t)); });
+        }
         var hist = readHistory();
         if (hist.length) {
             lines.push('Last sessions:');
             hist.slice(-5).forEach(function (h) { lines.push('  ' + sessionLine(h)); });
         }
         return lines;
+    }
+
+    function loafOpts() { return { loaf: !!loafObs || loafs.size() > 0, scopes: attrOn }; }
+    /* every counted freeze with its attribution line */
+    function attributed() {
+        var ev = events.list(), ll = loafs.list(), lopt = loafOpts(), out = [];
+        for (var i = 0; i < ev.length; i++) {
+            if (ev[i].type !== 'freeze' || /not counted/.test(ev[i].info)) continue;
+            var c = classifyFreeze(ev[i], ll, ev, lopt);
+            out.push({ t: ev[i].t, w: ev[i].w, dur: ev[i].dur, info: ev[i].info, bd: ev[i].bd || null, line: c.line, probable: c.probable });
+        }
+        return out;
     }
 
     /* freezes: foreground frame callback gaps from 250 ms to 10 s */
@@ -1119,9 +1572,12 @@
             T('lmPerfRender', 'Render') + ' ' + f1(st.render) + ' ms   ' + T('lmPerfOther', 'other') + ' ' + f1(st.other) + ' ms\n' +
             T('lmPerfCells', 'Cells') + ' ' + (lm && lm.cells ? lm.cells.length : 0) + '   ' + rendererName() + '\n' +
             'devicePixelRatio ' + (window.devicePixelRatio || 1) + '   ' + T('lmPerfScale', 'render scale') + ' ' + (dr && dr.dpr ? f1(dr.dpr) : '-') + '\n' +
-            T('lmAdaptiveShort', 'Adaptive performance') + ': ' + (adaptiveOn ? ctl.level + '/' + MAX_LEVEL + ' (' + Math.round(target) + ' FPS)' : T('lmOff', 'off'));
-        var ev = events.list();
-        diag.evs.textContent = ev.length ? ev.slice(-30).reverse().map(eventLine).join('\n') : T('lmPerfNoEvents', 'No freezes or other events yet.');
+            T('lmAdaptiveShort', 'Adaptive performance') + ': ' + (adaptiveOn ? ctl.level + '/' + MAX_LEVEL + ' (' + Math.round(target) + ' FPS)' : T('lmOff', 'off')) + '\n' +
+            T('lmPerfAttr', 'Freeze breakdown') + ': ' + (attrOn ? T('lmOn', 'on') : T('lmOff', 'off')) + '   LoAF ' + (loafObs ? T('lmOn', 'on') : '-');
+        var ev = events.list(), ll = loafs.list(), lopt = loafOpts();
+        diag.evs.textContent = ev.length ? ev.slice(-30).reverse().map(function (e) {
+            return e.type === 'freeze' ? classifyFreeze(e, ll, ev, lopt).line : eventLine(e);
+        }).join('\n') : T('lmPerfNoEvents', 'No freezes or other events yet.');
         var sum = sessionSummary(), pn = pingNow();
         diag.nstats.textContent =
             'ping ' + (pn.v || '-') + ' ms   avg ' + sum.pingAvg + '   p95 ' + sum.pingP95 + '   jitter ' + sum.jitter + ' ms\n' +
@@ -1172,6 +1628,11 @@
          * is kept while measuring is off */
         event: function (type, dur, info) { pushEvent(cleanText(type, 30), +dur || 0, info); },
         events: function () { return events.list(); },
+        /* freezes with their breakdown and attribution line; long animation frames (cleaned) */
+        freezes: attributed,
+        loafs: function () { return loafs.list(); },
+        /* for tests: the timing scopes (window._lmScope while attribution is on) */
+        _scopes: sc,
         hostOf: hostOf,
         keepRecording: function (on) { keepRec = !!on; wantMeasuring(); },
         history: readHistory,

@@ -29,10 +29,38 @@
     if (!/Freezes \(/.test(P.report()) || !/Events \(/.test(P.report())) fail.push('report has no freezes / events lines');
     if (!window._lmPerfFrame || typeof window._lmPerfFrame.raf !== 'function') fail.push('no frame callback hook');
     if (!document.getElementById('lm-perf-keep')) fail.push('keep recording button missing');
+    /* freeze breakdown: the parts are wrapped while the window is open, also global functions */
+    var wrapped = [[window.legendmod, 'handleMessage'], [window.legendmod, 'updateCells'], [window.drawRender, 'renderFrame'],
+      [window.drawRender, '_lmUploadSkinJob'], [window.application, '_lmSkinJobRun'], [window.application, 'displayTop5'],
+      [window, 'repeatSendingSpecialSkins'], [window, 'lmReplayBarTick'], [window.Storage && Storage.prototype, 'setItem']];
+    var notWrapped = wrapped.filter(function (w) { return !(w[0] && w[0][w[1]] && w[0][w[1]]._lmScopeOf); }).map(function (w) { return w[1]; });
+    if (notWrapped.length) fail.push('freeze breakdown: not wrapped: ' + notWrapped.join(', '));
+    if (!window._lmScope || window._lmScope !== P._scopes || !P._scopes.on) fail.push('freeze breakdown: window._lmScope not set while open');
+    if (!/Freeze breakdown: on/.test(P.report())) fail.push('report has no freeze breakdown line');
+    info.loaf = /long animation frames: observed/.test(P.report()) ? 'observed' : 'not supported';
+    info.scopeLost = P._scopes.lost;
+    if (P._scopes.depth() > 2) fail.push('freeze breakdown: parts left open (depth ' + P._scopes.depth() + ')');
+    /* a real 400 ms stall inside a wrapped part (the 10 s special skins timer) is attributed */
+    var rs = window.repeatSendingSpecialSkins, inner = rs && rs._lmScopeOf;
+    if (inner) {
+      var n0 = P.freezes().length;
+      var stallFn = function () { var t = performance.now(); while (performance.now() - t < 400) { } };
+      /* the wrapper calls what it wrapped: swap that for the stall for one call */
+      window.repeatSendingSpecialSkins = P._scopes.wrap(stallFn, 'special skins sync');
+      setTimeout(function () { window.repeatSendingSpecialSkins(); }, 50);
+      await sleep(900);
+      window.repeatSendingSpecialSkins = rs;
+      var fz = P.freezes().slice(n0);
+      info.stall = fz.length ? fz[fz.length - 1].line : 'no freeze';
+      if (!fz.some(function (f) { return f.probable === 'special skins sync'; })) fail.push('a 400 ms stall in a timed part was not attributed: ' + info.stall);
+    }
     document.getElementById('lm-perf-diag-close').click();
     await sleep(100);
     if (document.getElementById('lm-perf-diag')) fail.push('diagnostics window did not close');
     if (window._lmPerfFrame) fail.push('frame hook left after closing');
+    var still = wrapped.filter(function (w) { return w[0] && w[0][w[1]] && w[0][w[1]]._lmScopeOf; }).map(function (w) { return w[1]; });
+    if (still.length) fail.push('freeze breakdown: still wrapped after closing: ' + still.join(', '));
+    if (window._lmScope) fail.push('freeze breakdown: window._lmScope left after closing');
     /* keep recording: measuring goes on with the window closed, until turned off */
     P.openDiag();
     await sleep(100);
