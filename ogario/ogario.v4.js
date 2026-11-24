@@ -80094,18 +80094,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
         drawTextAlongArc(ctx, str, centerX, centerY, radius, angle, stroke) {
             var len = str.length;
             if (!len) return;
-            this.ctx.save();
-            this.ctx.translate(centerX, centerY);
+            ctx.save();
+            ctx.translate(centerX, centerY);
             var step = angle / len;
-            this.ctx.rotate(-0.5 * (angle + step));
+            ctx.rotate(-0.5 * (angle + step));
             for (var n = 0; n < len; n++) {
-                this.ctx.rotate(step);
-                this.ctx.translate(0, -radius);
-                if (stroke) this.ctx.strokeText(str[n], 0, 0);
-                this.ctx.fillText(str[n], 0, 0);
-                this.ctx.translate(0, radius);
+                ctx.rotate(step);
+                ctx.translate(0, -radius);
+                if (stroke) ctx.strokeText(str[n], 0, 0);
+                ctx.fillText(str[n], 0, 0);
+                ctx.translate(0, radius);
             }
-            this.ctx.restore();
+            ctx.restore();
         },
         drawGhostCells() {
             if (defaultmapsettings.showGhostCells) {
