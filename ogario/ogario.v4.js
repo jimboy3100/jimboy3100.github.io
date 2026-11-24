@@ -1435,6 +1435,7 @@ window.lmT = (function () {
         "lmPresetStreamer": {"en":"Streamer","el":"Streamer","es":"Streamer","bg":"Стриймър","fr":"Streamer","ar":"البث المباشر","zh":"直播","ru":"Стример","de":"Streamer","tr":"Yayıncı","pl":"Streamer","nl":"Streamer"},
         "lmPresetCleanHud": {"en":"Clean HUD","el":"Καθαρό HUD","es":"HUD limpio","bg":"Изчистен HUD","fr":"HUD épuré","ar":"واجهة نظيفة","zh":"簡潔 HUD","ru":"Чистый HUD","de":"Aufgeräumtes HUD","tr":"Sade HUD","pl":"Czysty HUD","nl":"Schone HUD"},
         "lmPresetUndo": {"en":"Undo preset","el":"Αναίρεση προεπιλογής","es":"Deshacer preajuste","bg":"Отмяна","fr":"Annuler le préréglage","ar":"تراجع عن الإعداد","zh":"復原預設","ru":"Отменить пресет","de":"Voreinstellung rückgängig","tr":"Hazır ayarı geri al","pl":"Cofnij preset","nl":"Voorinstelling ongedaan maken"},
+        "lmSettingsProfiles": {"en":"Settings profiles","el":"Προφίλ ρυθμίσεων","es":"Perfiles de ajustes","bg":"Профили с настройки","fr":"Profils de réglages","ar":"ملفات الإعدادات","zh":"設定檔","ru":"Профили настроек","de":"Einstellungsprofile","tr":"Ayar profilleri","pl":"Profile ustawień","nl":"Instellingsprofielen"},
         "lmPresetConfirm": {"en":"Apply this preset? These settings change (Undo puts them back):","el":"Εφαρμογή αυτής της προεπιλογής; Αλλάζουν αυτές οι ρυθμίσεις (η Αναίρεση τις επαναφέρει):","es":"¿Aplicar este preajuste? Cambian estos ajustes (Deshacer los restaura):","bg":"Да се приложи ли? Тези настройки ще се променят (Отмяна ги връща):","fr":"Appliquer ce préréglage ? Ces réglages changent (Annuler les rétablit) :","ar":"تطبيق هذا الإعداد؟ ستتغير هذه الإعدادات (التراجع يعيدها):","zh":"套用此預設？以下設定會改變（復原可還原）：","ru":"Применить пресет? Изменятся эти настройки (Отмена вернёт их):","de":"Diese Voreinstellung anwenden? Diese Einstellungen ändern sich (Rückgängig stellt sie wieder her):","tr":"Bu hazır ayar uygulansın mı? Şu ayarlar değişir (Geri al eski hâline getirir):","pl":"Zastosować ten preset? Zmienią się te ustawienia (Cofnij je przywraca):","nl":"Deze voorinstelling toepassen? Deze instellingen veranderen (Ongedaan maken zet ze terug):"},
         "lmShowNewOptions": {"en":"Show new options","el":"Εμφάνιση νέων επιλογών","es":"Mostrar opciones nuevas","bg":"Покажи новите опции","fr":"Afficher les nouvelles options","ar":"عرض الخيارات الجديدة","zh":"顯示新選項","ru":"Показать новые опции","de":"Neue Optionen zeigen","tr":"Yeni seçenekleri göster","pl":"Pokaż nowe opcje","nl":"Nieuwe opties tonen"},
         "lmNewBadge": {"en":"NEW","el":"ΝΕΟ","es":"NUEVO","bg":"НОВО","fr":"NOUVEAU","ar":"جديد","zh":"新","ru":"НОВОЕ","de":"NEU","tr":"YENİ","pl":"NOWE","nl":"NIEUW"},
@@ -18654,6 +18655,10 @@ var displayText = {
         'hk-specNextTop': 'Free spectate: follow next leaderboard player',
         'hk-prevServer': 'Reconnect to the previous server',
         'hk-bigMinimap': 'Enlarge / restore minimap',
+        'hk-lmProfilesWindow': 'Settings profiles: open / close window',
+        'hk-lmProfileNext': 'Settings profiles: apply the next profile',
+        'hk-lmProfilePrev': 'Settings profiles: apply the previous profile',
+        'hk-lmProfileUndo': 'Settings profiles: undo the last profile change',
         'hk-copyServerLink': 'Copy server link + password (TK&PW)',
         'hk-netGraph': 'Show / hide net graph (FPS, ping)',
         'hk-chatSounds': 'Mute / unmute chat sounds',
@@ -21501,7 +21506,7 @@ var _lmLabelI18n = {
         "hk-elPotions":"Expanding Land: Βοήθεια για φίλτρα","hk-elClaimAll":"Expanding Land: Παραλαβή όλων","hk-replayPause":"Επανάληψη: παύση/συνέχεια",
         "hk-replayFaster":"Επανάληψη: πιο γρήγορα","hk-replaySlower":"Επανάληψη: πιο αργά","hk-replayFwd":"Επανάληψη: μπροστά 250 πακέτα",
         "hk-replayBack":"Επανάληψη: πίσω 250 πακέτα","hk-middleMultiView":"Εναλλαγή μεσαίας θέας multibox","hk-mbRings":"Εμφάνιση/απόκρυψη δαχτυλιδιών multibox",
-        "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)",
+        "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-lmProfilesWindow":"Προφίλ ρυθμίσεων: άνοιγμα / κλείσιμο","hk-lmProfileNext":"Προφίλ ρυθμίσεων: εφαρμογή του επόμενου","hk-lmProfilePrev":"Προφίλ ρυθμίσεων: εφαρμογή του προηγούμενου","hk-lmProfileUndo":"Προφίλ ρυθμίσεων: αναίρεση της τελευταίας αλλαγής","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)",
         "hk-netGraph":"Εμφάνιση / απόκρυψη γραφήματος δικτύου (FPS, ping)","hk-chatSounds":"Σίγαση / άρση σίγασης ήχων συνομιλίας","scanTrick":"Ενεργοποίηση Scan Trick",
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
@@ -26731,6 +26736,12 @@ function thelegendmodproject() {
                 });
                 var undoBtn = $('<button type="button" class="btn btn-xs lm-preset-undo"></button>').text(_lmTx('lmPresetUndo', 'Undo preset')).appendTo(row);
                 var newBtn = $('<button type="button" class="btn btn-xs lm-new-toggle"></button>').text(_lmTx('lmShowNewOptions', 'Show new options')).appendTo(row);
+                /* named sets of all settings, theme and hotkeys (ogario/modules/profiles.js) */
+                $('<button type="button" class="btn btn-xs lm-profiles-open"></button>').text(_lmTx('lmSettingsProfiles', 'Settings profiles')).appendTo(row).on('click', function () {
+                    if (window.LMProfiles) window.LMProfiles.open();
+                    else if (window.toastr) toastr.info('Settings profiles are loading, try again in a moment.');
+                    return false;
+                });
                 undoBtn.toggle(!!undoSnap);
                 box.append(row);
                 row.on('click', '.lm-preset-btn', function () {
@@ -84816,5 +84827,15 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(gamepadScript);
     } catch (e) {
         console.warn('[LM] Error loading gamepad script:', e);
+    }
+    /* Settings profiles window (Settings > Settings profiles, hotkeys without default keys);
+     * its automatic switching is off until turned on there */
+    try {
+        var profilesScript = document.createElement('script');
+        profilesScript.type = 'text/javascript';
+        profilesScript.src = 'https://www.legendmod.ml/ogario/modules/profiles.js?v=' + (window.OgVer || '');
+        document.body.appendChild(profilesScript);
+    } catch (e) {
+        console.warn('[LM] Error loading settings profiles script:', e);
     }
 })();
