@@ -14,7 +14,7 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSplash.png"></div>'	
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PanicAtDisco" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPanicAtDisco.png"></div>'			
 	}		
-	if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){		
+	if (typeof ProLicenceUsersTable !== "undefined" && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){		
 		//localStorage.setItem("ProLicenceUsersreason", ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason);
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Moderator"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsModerator.png"></div>'
@@ -70,12 +70,12 @@
 		Object.keys(animatedskins).forEach(function(key) {	
 			if (animatedskins[key] && animatedskins[key].id && animatedskins[key].frames[0] && animatedskins[key].frames[0].id){
 				if (animatedskins[key].id=="Only_For_Shiro" || animatedskins[key].id=="Only_For_Shiro_1" || animatedskins[key].id=="Only_For_Shiro_2"){
-					if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
+					if (typeof ProLicenceUsersTable !== "undefined" && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
 						window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'	
 					}					 
 				}	
 				else if (animatedskins[key].id=="Just_Watch_Pro"){
-					if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
+					if (typeof ProLicenceUsersTable !== "undefined" && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
 						window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'
 					}					
 				}				
