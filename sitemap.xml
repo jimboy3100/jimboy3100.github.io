@@ -186,4 +186,16 @@
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
+
+  <!-- Extras -->
+  <url>
+    <loc>https://www.legendmod.ml/extras/website/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.legendmod.ml/Lc/Afewthings.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
 </urlset>

@@ -1,9 +1,12 @@
 //v1.3j
         keyBlind = {};
         hotkeys = {};
-        /* Guard: textLanguage is exposed from ogario.v4.js; fall back to empty object
-         * so label lookups return undefined (the UI shows the key name) instead of crashing. */
-        if (typeof textLanguage === 'undefined') textLanguage = {};
+        /* Guard: textLanguage is exposed from ogario.v4.js via window.textLanguage;
+         * fall back to empty object so label lookups return undefined (the UI shows
+         * the key name) instead of crashing with "Cannot read properties of undefined". */
+        if (typeof textLanguage === 'undefined' || textLanguage === null || textLanguage === undefined) {
+            textLanguage = window.textLanguage || {};
+        }
         if (typeof chatCommand === 'undefined') chatCommand = {};
         /* Expanding Land panel hotkeys (no default keys): only on Expanding Land and when the
          * panel buttons are enabled (logged in, same check as the buttons); the key closes the

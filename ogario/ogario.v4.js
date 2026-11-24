@@ -22041,7 +22041,10 @@ textLanguage['hk-scanTrick'] =
     'Hold Scan Trick';
 
 /* Expose textLanguage globally so hotkeysCommand.js (loaded as a separate <script>)
- * can read localised labels — textLanguage is var-scoped to the IIFE. */
+ * can read localised labels — textLanguage is var-scoped to the IIFE.
+ * Guard: if displayText[lang] resolved to undefined (unknown language), fall back
+ * to displayText['en'] or an empty object so downstream label lookups don't crash. */
+if (!textLanguage) textLanguage = displayText['en'] || {};
 window.textLanguage = textLanguage;
 
 defineChatCommand();
