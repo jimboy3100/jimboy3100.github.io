@@ -24065,6 +24065,105 @@ function thelegendmodproject() {
     //window.legendmod4 = languagetexts;
     window.legendmod5 = defaultmapsettings;
 
+    /*
+     * Skin cache bookkeeping, kept as plain functions so developers/tests/skincache.js can
+     * check them without a browser.
+     *
+     * GPU layers: the WebGL skin TEXTURE_2D_ARRAY has a fixed number of layers. They are
+     * handed out in order (0, 1, 2 ...) as before. Once all are taken, the layer drawn least
+     * recently is reused, but never one drawn in this or the previous frame (two frames, so
+     * the two frames of an animated skin and skins drawn in every frame never push each other
+     * out). Only that layer's own keys are forgotten: the skin keeps its canvas in
+     * customSkinsCache and is uploaded again when it is next drawn. Before, the whole
+     * 128 MB array was deleted and rebuilt (every skin uploaded again, the frame drawn by
+     * Canvas2D during a 5 s cooldown), a repeating stall with more than 128 skins in a session.
+     */
+    function lmSkinLayersNew(max) {
+        var used = [], owner = [];
+        for (var i = 0; i < max; i++) {
+            used.push(-1);
+            owner.push(null);
+        }
+        return { max: max, next: 0, used: used, owner: owner };
+    }
+    /* the layer the next upload may write (nothing changes until lmSkinLayerTake), or -1 */
+    function lmSkinLayerPick(st, frame) {
+        if (st.next < st.max) return st.next;
+        var best = -1, bestUse = frame - 1;
+        for (var i = 0; i < st.max; i++) {
+            if (st.used[i] < bestUse) {
+                bestUse = st.used[i];
+                best = i;
+            }
+        }
+        return best;
+    }
+    /* after a successful upload: returns the previous owner, whose keys must be forgotten */
+    function lmSkinLayerTake(st, layer, owner, frame) {
+        var old = st.owner[layer];
+        st.owner[layer] = owner;
+        st.used[layer] = frame;
+        if (layer >= st.next) st.next = layer + 1;
+        return old;
+    }
+    function lmSkinLayerTouch(st, layer, frame) {
+        if (st && layer >= 0 && layer < st.max && st.used[layer] < frame) st.used[layer] = frame;
+    }
+    /*
+     * CPU skin cache: which URLs to drop. entries = [url, lastUse, bytes] for the URLs that
+     * hold an image or canvas. Least recently used first, never one used within minIdle ms
+     * (on screen), until the count and the byte estimate are both under 90% of their limits
+     * (so the next few loads do not trim again). Nothing is dropped while both limits hold.
+     */
+    function lmSkinCachePickEvict(entries, now, maxCount, maxBytes, minIdle) {
+        var count = entries.length, bytes = 0, i;
+        for (i = 0; i < count; i++) bytes += entries[i][2];
+        if (count <= maxCount && bytes <= maxBytes) return [];
+        var keepCount = Math.floor(maxCount * 0.9), keepBytes = maxBytes * 0.9;
+        var order = entries.slice().sort(function (a, b) { return a[1] - b[1]; });
+        var out = [];
+        for (i = 0; i < order.length; i++) {
+            if (count <= keepCount && bytes <= keepBytes) break;
+            if (now - order[i][1] < minIdle) break;
+            out.push(order[i][0]);
+            count--;
+            bytes -= order[i][2];
+        }
+        return out;
+    }
+    /* decoded size of the images/canvases of one URL (an object stored under two keys counts once) */
+    function lmSkinBytes(objs) {
+        var seen = [], bytes = 0;
+        for (var i = 0; i < objs.length; i++) {
+            var o = objs[i];
+            if (!o || seen.indexOf(o) >= 0) continue;
+            seen.push(o);
+            var w = o.naturalWidth || o.videoWidth || o.width || 0;
+            var h = o.naturalHeight || o.videoHeight || o.height || 0;
+            if (w > 0 && h > 0) bytes += w * h * 4;
+        }
+        return bytes;
+    }
+    /* byte budget for decoded skins: from navigator.deviceMemory (GB) when the browser tells
+     * it, else 384 MB (iOS Safari caps all canvases together at about that) */
+    function lmSkinByteBudget(deviceMemory) {
+        var mb = deviceMemory > 0 ? Math.max(256, Math.min(768, deviceMemory * 96)) : 384;
+        return mb * 1048576;
+    }
+    /* skin download queue: tasks waiting to start beyond max are dropped, oldest normal ones
+     * first (priority tasks are kept); returns the dropped tasks so they can be cancelled */
+    function lmSkinQueueTrim(queue, max) {
+        var dropped = [];
+        for (var i = 0; queue.length > max && i < queue.length;) {
+            if (queue[i] && queue[i].prio) {
+                i++;
+                continue;
+            }
+            dropped.push(queue.splice(i, 1)[0]);
+        }
+        return dropped;
+    }
+
 
     /* ═══════════════════════════════════════════════════════════════════════════
      * §4  APPLICATION OBJECT
@@ -29053,7 +29152,10 @@ function thelegendmodproject() {
                 var memImg = window._skinMemoryCache.get(url);
                 if (memImg && img && !img[url]) {
                     img[url] = memImg;
-                    if (img === app.customSkinsCache) app._lmTouchSkin(url);
+                    if (img === app.customSkinsCache) {
+                        app._lmTouchSkin(url);
+                        app._lmTrimSkinCache();
+                    }
                     if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                     if (memImg.complete && memImg.width > 0 && memImg.height > 0) {
                         if (memImg.width >= memImg.height * 1.5) animated = true;
@@ -29293,17 +29395,33 @@ function thelegendmodproject() {
                             ) || 8
                         )
                     ),
-                    push: function (task, priority) {
+                    /* Waiting tasks beyond this are dropped (oldest first): a crowded server
+                     * queued hundreds of downloads for cells long gone. */
+                    maxQueued: 200,
+                    push: function (task, priority, cancel) {
+                        var entry = { run: task, prio: !!priority, cancel: cancel };
                         if (priority) {
-                            this.queue.unshift(task);
+                            this.queue.unshift(entry);
                         } else {
-                            this.queue.push(task);
+                            this.queue.push(entry);
                         }
+                        if (this.queue.length > this.maxQueued) this.cancelAll(lmSkinQueueTrim(this.queue, this.maxQueued));
                         this.process();
+                    },
+                    /* server change: downloads that have not started belong to the old server's cells */
+                    dropQueued: function () {
+                        this.cancelAll(lmSkinQueueTrim(this.queue, 0));
+                    },
+                    cancelAll: function (list) {
+                        for (var i = 0; i < list.length; i++) {
+                            try {
+                                if (list[i].cancel) list[i].cancel();
+                            } catch (e) { }
+                        }
                     },
                     process: function () {
                         while (this.activeCount < this.maxConcurrent && this.queue.length > 0) {
-                            var task = this.queue.shift();
+                            var task = this.queue.shift().run;
                             this.activeCount++;
                             task(function () {
                                 window._skinLoadQueue.activeCount--;
@@ -30016,8 +30134,16 @@ function thelegendmodproject() {
                 }
             };
 
+            /* Dropped from the queue before it started (see _skinLoadQueue): the URL is no
+             * longer pending, so the next draw that needs it asks again. */
+            var cancelQueued = function () {
+                if (isResolved) return;
+                isResolved = true;
+                if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+            };
+
             /* Push network task to 24-concurrency queue */
-            window._skinLoadQueue.push(fetchFromNetwork, isPriority);
+            window._skinLoadQueue.push(fetchFromNetwork, isPriority, cancelQueued);
         },
         checkgraphics() {
             if (defaultSettings.graphics === "high") {
@@ -30209,10 +30335,13 @@ function thelegendmodproject() {
          * customSkinsCache keeps the image plus up to four 512 px canvases per URL and
          * nothing removed them, so long sessions grew without bound (_skinMemoryCache's
          * 2000 cap freed nothing: the same objects stayed referenced here). Every use
-         * (getCachedSkin, the WebGL skin paths, a finished load) stamps the URL; past
-         * _lmSkinCacheMax URLs the least recently used ones idle for over a minute are
-         * dropped with their canvases and reload on their next use. WebGL layers are a
-         * fixed 128-layer array and are not affected.
+         * (getCachedSkin, the WebGL skin paths, a finished load) stamps the URL. After each
+         * load, past _lmSkinCacheMax URLs that hold an image or canvas, or past the decoded
+         * byte budget (lmSkinByteBudget), the least recently used ones not drawn in the last
+         * second are dropped with their canvases and reload on their next use (see
+         * lmSkinCachePickEvict). Stamps of URLs that hold nothing (failed or not loaded yet)
+         * are not counted and are forgotten after a minute. WebGL layers are managed
+         * separately (lmSkinLayerPick): a dropped skin's layer is reused when needed.
          */
         _lmSkinCacheMax: 400,
         _lmTouchSkin(url) {
@@ -30264,21 +30393,30 @@ function thelegendmodproject() {
         },
         _lmTrimSkinCache() {
             var use = this._lmSkinUse;
-            if (!use || use.size <= this._lmSkinCacheMax) return;
-            var now = Date.now();
-            if (this._lmSkinTrimAt && now - this._lmSkinTrimAt < 5000) return;
-            this._lmSkinTrimAt = now;
-            var idle = [];
-            use.forEach(function (t, u) { if (now - t > 60000) idle.push([t, u]); });
-            if (!idle.length) return;
-            idle.sort(function (a, b) { return a[0] - b[0]; });
             var cache = this.customSkinsCache;
-            var excess = use.size - this._lmSkinCacheMax;
+            if (!use || !cache) return;
+            var now = Date.now();
+            /* one pass (a few hundred lookups) at most every second during a burst of loads,
+             * at once when the URL count runs well past the limit */
+            if (use.size <= this._lmSkinCacheMax + 50 && this._lmSkinTrimAt && now - this._lmSkinTrimAt < 1000) return;
+            this._lmSkinTrimAt = now;
             var suffixes = ['', '_cached', '_cached2', '_cached3', '_cached4'];
-            for (var i = 0; i < idle.length && i < excess; i++) {
-                var u = idle[i][1];
+            var held = [];
+            use.forEach(function (t, u) {
+                var objs = [];
+                for (var s = 0; s < suffixes.length; s++) {
+                    var o = cache[u + suffixes[s]];
+                    if (o) objs.push(o);
+                }
+                if (objs.length) held.push([u, t, lmSkinBytes(objs)]);
+                else if (now - t > 60000) use.delete(u);
+            });
+            var budget = this._lmSkinBudget || (this._lmSkinBudget = lmSkinByteBudget(window.navigator && Number(window.navigator.deviceMemory)));
+            var drop = lmSkinCachePickEvict(held, now, this._lmSkinCacheMax, budget, 1000);
+            for (var i = 0; i < drop.length; i++) {
+                var u = drop[i];
                 use.delete(u);
-                if (cache) for (var s = 0; s < suffixes.length; s++) delete cache[u + suffixes[s]];
+                for (var s = 0; s < suffixes.length; s++) delete cache[u + suffixes[s]];
                 if (window._skinMemoryCache) window._skinMemoryCache.delete(u);
             }
         },
@@ -31132,6 +31270,8 @@ function thelegendmodproject() {
                     this.serverToken = text;
                     /* death markers belong to the previous server (and its coordinate frame) */
                     this.deathLocations = []; this.lastDeath = -1;
+                    /* skin downloads still waiting were for the previous server's players */
+                    if (window._skinLoadQueue && window._skinLoadQueue.dropQueued) window._skinLoadQueue.dropQueued();
                     if (window.LMEvents._has('serverChange')) window.LMEvents.emit('serverChange', { host: _lmHostOnly(this.ws) });
                     this.flushData();
                     this.flushCells();
@@ -60433,48 +60573,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             );
         },
 
-        _resetWebGLSkinTextureArray() {
-            if (!this.gl) return false;
-
-            var gl = this.gl;
-
-            try {
-                if (this.glSkinArray) {
-                    gl.deleteTexture(this.glSkinArray);
-                }
-
-                this.glSkinArray = gl.createTexture();
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
-
-                gl.texStorage3D(
-                    gl.TEXTURE_2D_ARRAY,
-                    1,
-                    gl.RGBA8,
-                    this.glSkinTexSize,
-                    this.glSkinTexSize,
-                    this.glSkinMaxLayers
-                );
-
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-
-                this.glSkinMap = {};
-                this.glSkinNodeMap = new WeakMap();
-                this.glSkinNextLayer = 0;
-
-                return true;
-            } catch (error) {
-                try {
-                    gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-                } catch (unbindError) { }
-
-                return false;
-            }
-        },
-
         _getWebGLSkinAlphaMode(node) {
             if (!node) return 'none';
 
@@ -60609,6 +60707,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         canUseWebGLScene(
             cellsArray
         ) {
+            /* once per rendered frame: skin layers drawn in this frame are never reused in it */
+            this._glSkinFrame = (this._glSkinFrame || 0) + 1;
+
             /*
              * ================================================================
              * UNIFIED WEBGL WORLD ELIGIBILITY
@@ -61091,27 +61192,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * Texture-array exhaustion may invalidate every layer number.
-             *
-             * Reset before the authoritative renderer starts writing this frame.
+             * More than 128 distinct skins no longer rebuild the texture array
+             * or switch the frame to Canvas2D: the least recently drawn layer
+             * is reused (lmSkinLayerPick), see uploadSkinTexture().
              */
-            /*
-             * Texture-array exhaustion (>128 distinct skins). Rebuilding the
-             * 128 MB array is allowed at most every few seconds; otherwise this
-             * frame uses Canvas2D. Rebuilding every frame stalled rendering.
-             */
-            if (
-                this.glSkinNextLayer >=
-                    this.glSkinMaxLayers &&
-                (
-                    !this._skinArrayResetAllowed() ||
-                    !this._resetWebGLSkinTextureArray()
-                )
-            ) {
-                return false;
-            }
-
-
             this._webglBackgroundActive =
                 false;
 
@@ -61429,7 +61513,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         console.log('[LegendMod WebGL] Context restored — re-initializing');
                         _self.gl = null;
                         _self.glSkinMap = {};
-                        _self.glSkinNextLayer = 0;
+                        _self._glSkinLayers = null;
                         _self.glTextCache = new Map();
                         if (_self.glCanvas) _self.glCanvas.style.display = '';
                         _self.initWebGL();
@@ -62728,7 +62812,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.glSkinMap = {};
                 this.glSkinNodeMap = new WeakMap();
                 this.glSkinAlphaMode = new WeakMap();
-                this.glSkinNextLayer = 0;
+                /* which skin owns each layer and when it was last drawn (lmSkinLayerPick) */
+                this._glSkinLayers = lmSkinLayersNew(this.glSkinMaxLayers);
 
                 /*
                  * Delta-style dynamic jelly polygons use the SAME raw WebGL2
@@ -63943,6 +64028,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (typeof existingLayer === 'number') {
                 if (typeof sourceNode === 'string' && this.glSkinMap) {
                     this.glSkinMap[sourceNode] = existingLayer;
+                    this._lmSkinLayerKey(existingLayer, sourceNode);
                 }
                 return existingLayer;
             }
@@ -63960,12 +64046,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
 
-            if (this.glSkinNextLayer >= this.glSkinMaxLayers) {
-                /* Never rebuild mid-frame more than every few seconds (see canUseWebGLScene). */
-                if (!this._skinArrayResetAllowed() || !this._resetWebGLSkinTextureArray()) {
-                    return -1;
-                }
-            }
+            /* every layer was drawn in this or the previous frame (over 128 skins on screen):
+             * this one stays body-only, nothing is queued or decoded for it */
+            var layer = this._lmSkinLayerFree();
+            if (layer < 0) return -1;
 
             /* Decoded skin images go the async way: a canvas as texSubImage3D source is read
              * back from the GPU synchronously (15-65 ms main-thread stall per new skin). */
@@ -63973,7 +64057,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return -1;
             }
 
-            var layer = this.glSkinNextLayer;
             var gl = this.gl;
             var size = this.glSkinTexSize || 512;
 
@@ -64011,7 +64094,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 );
 
                 gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-                this.glSkinNextLayer++;
+                /* first: forgets the keys of the skin that had this layer before */
+                this._lmSkinLayerStore(layer, node, typeof sourceNode === 'string' ? [sourceNode] : []);
                 this.glSkinNodeMap.set(node, layer);
                 if (typeof sourceNode === 'string' && this.glSkinMap) {
                     this.glSkinMap[sourceNode] = layer;
@@ -64089,11 +64173,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 self._lmSkinRaf = 0;
                 var q = self._lmSkinReady || [];
                 var t0 = performance.now();
+                /* 4 ms per frame: the next upload starts only when it is expected to fit
+                 * (running average of the last ones); the first one always runs */
+                var avg = self._lmSkinJobMs || 0;
+                var n = 0;
                 while (q.length) {
+                    var ts = performance.now();
+                    if (n++ && ts - t0 + avg > 4) break;
                     var it = q.shift();
                     self._lmUploadSkinJob(it[0], it[1]);
-                    if (performance.now() - t0 > 4) break;
+                    var d = performance.now() - ts;
+                    avg = avg ? avg * 0.8 + d * 0.2 : d;
                 }
+                self._lmSkinJobMs = avg;
                 if (q.length) self._lmScheduleSkinUploads();
             });
         },
@@ -64108,10 +64200,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (!this.glSkinNodeMap) this.glSkinNodeMap = new WeakMap();
                 var known = this.glSkinNodeMap.get(node);
                 if (typeof known !== 'number') {
-                    if (this.glSkinNextLayer >= this.glSkinMaxLayers) {
-                        /* dropped: the next draw asks again (cheap -1 while a rebuild is not allowed) */
-                        if (!this._skinArrayResetAllowed() || !this._resetWebGLSkinTextureArray()) return;
-                    }
+                    /* every layer was drawn in this or the previous frame: dropped, the next
+                     * draw asks again */
+                    var layer = this._lmSkinLayerFree();
+                    if (layer < 0) return;
                     var size = this.glSkinTexSize || 512;
                     var cv = this._lmSkinCpuScratch;
                     if (!cv) {
@@ -64132,7 +64224,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                     ctx.drawImage(bmp, 0, 0, size, size);
                     ctx.restore();
-                    var layer = this.glSkinNextLayer;
                     try {
                         gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
                         gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, cv);
@@ -64146,13 +64237,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         }
                         return;
                     }
-                    this.glSkinNextLayer++;
+                    this._lmSkinLayerStore(layer, node, keys);
                     this.glSkinNodeMap.set(node, layer);
                     known = layer;
                 }
                 if (this.glSkinMap) {
                     for (i = 0; i < keys.length; i++) {
-                        if (this.glSkinMap[keys[i]] === undefined) this.glSkinMap[keys[i]] = known;
+                        if (this.glSkinMap[keys[i]] === undefined) {
+                            this.glSkinMap[keys[i]] = known;
+                            this._lmSkinLayerKey(known, keys[i]);
+                        }
                     }
                 }
             } catch (err) {
@@ -64162,38 +64256,39 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
 
-        _skinArrayResetAllowed() {
-            return !this._lastSkinArrayReset || Date.now() - this._lastSkinArrayReset > 5000;
+        /* Skin layer bookkeeping around lmSkinLayersNew / lmSkinLayerPick / lmSkinLayerTake.
+         * Created again with the texture array in initWebGL (also after a context restore). */
+        _lmSkinLayers() {
+            return this._glSkinLayers || (this._glSkinLayers = lmSkinLayersNew(this.glSkinMaxLayers || 128));
         },
-        _resetWebGLSkinTextureArray() {
-            if (!this.gl) return false;
-            var gl = this.gl;
-            try {
-                if (this.glSkinArray) {
-                    gl.deleteTexture(this.glSkinArray);
-                    this.glSkinArray = null;
+        /* the layer the next upload may write, or -1 */
+        _lmSkinLayerFree() {
+            return lmSkinLayerPick(this._lmSkinLayers(), this._glSkinFrame || 0);
+        },
+        /* a layer is drawn in this frame: it is not reused before the frame after next */
+        _lmSkinLayerUsed(layer) {
+            lmSkinLayerTouch(this._glSkinLayers, layer, this._glSkinFrame || 0);
+        },
+        /* after an upload: the layer now holds node (looked up by keys); the skin that held it
+         * before loses only its own mappings and is uploaded again when next drawn */
+        _lmSkinLayerStore(layer, node, keys) {
+            var owner = { node: typeof WeakRef === 'function' ? new WeakRef(node) : node, keys: keys.slice() };
+            var old = lmSkinLayerTake(this._lmSkinLayers(), layer, owner, this._glSkinFrame || 0);
+            if (!old) return;
+            var map = this.glSkinMap;
+            if (map) {
+                for (var i = 0; i < old.keys.length; i++) {
+                    if (map[old.keys[i]] === layer) delete map[old.keys[i]];
                 }
-                this.glSkinArray = gl.createTexture();
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
-                this.glSkinTexSize = 512;
-                this.glSkinMaxLayers = 128;
-                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 128);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-
-                this.glSkinMap = {};
-                this.glSkinNodeMap = new WeakMap();
-                /* glSkinAlphaMode describes the images, not the array: keep it. */
-                this._lastSkinArrayReset = Date.now();
-                this.glSkinNextLayer = 0;
-                return true;
-            } catch (err) {
-                console.warn('[WebGL2 Instanced Renderer] Skin texture array reset failed:', err);
-                return false;
             }
+            var oldNode = typeof WeakRef === 'function' && old.node instanceof WeakRef ? old.node.deref() : old.node;
+            if (oldNode && this.glSkinNodeMap && this.glSkinNodeMap.get(oldNode) === layer) this.glSkinNodeMap.delete(oldNode);
+        },
+        /* another key (e.g. the same canvas under a second URL) now maps to layer */
+        _lmSkinLayerKey(layer, key) {
+            var st = this._glSkinLayers;
+            var owner = st && layer >= 0 ? st.owner[layer] : null;
+            if (owner && owner.keys.indexOf(key) < 0) owner.keys.push(key);
         },
         parseWebGLOverlayColor(colorHex, fallbackHex) {
             var hexStr = colorHex;
@@ -72751,9 +72846,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * uploadSkinTexture() can recreate the complete texture array after
-             * exhausting all layers. If that happened halfway through a frame,
-             * previously resolved layer indices are stale.
+             * The texture array is only created again by initWebGL (context
+             * restore). If that happened halfway through a frame, previously
+             * resolved layer indices are stale.
              */
             result.arrayChanged =
                 this.glSkinArray !==
@@ -72768,6 +72863,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             ) {
                 result.layer =
                     layer;
+                this._lmSkinLayerUsed(layer);
             }
 
 
@@ -73235,8 +73331,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /*
                  * Keep the identity of the texture array for this WHOLE frame.
                  *
-                 * If uploadSkinTexture() has to rebuild the array mid-frame,
-                 * old layer numbers immediately become invalid.
+                 * The array is only replaced by initWebGL (context restore);
+                 * old layer numbers would then be invalid.
                  */
                 var skinArrayAtStart =
                     this.glSkinArray;
@@ -74400,8 +74496,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return false;
             };
 
-            /* uploadSkinTexture() may rebuild the whole skin array mid-frame;
-             * layers already written for earlier cells would then be stale. */
+            /* the array is only replaced by initWebGL (context restore); layers
+             * already written for earlier cells would then be stale. */
             var skinArrayAtStart = this.glSkinArray;
 
             // Viewport culling bounds
@@ -75092,7 +75188,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         /* Pick the node from the key: the "url" key must get the
                          * first frame, "url_cached3" the second (animated skins),
                          * and the second-frame key is uploaded lazily after any
-                         * skin-array reset or context restore. */
+                         * layer reuse (lmSkinLayerPick) or context restore. */
                         application._lmTouchSkin(skinUrl);
                         var _skinCache3 = application.customSkinsCache[skinUrl + "_cached3"];
                         var activeKey = (this._skinHalf && _skinCache3) ? (skinUrl + "_cached3") : skinUrl;
@@ -75121,6 +75217,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         ) {
                             skinLayer =
                                 mappedLayer;
+                            /* drawn in this frame: not reused by a later upload in it */
+                            this._lmSkinLayerUsed(mappedLayer);
 
                             /*
                              * Fade only the skin overlay.
