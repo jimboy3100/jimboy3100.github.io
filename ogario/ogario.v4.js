@@ -75266,6 +75266,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
 
 
+                /* read by the net graph (renderer label) */
+                this._lmFrameGL = unifiedWebGLWorldOK;
                 /*
                  * ═══════════════════════════════════════════════════════════
                  * CELL DRAW PASS
@@ -80828,6 +80830,13 @@ window.lmToggleNetGraph = function () {
             x.font = '10px sans-serif'; x.textBaseline = 'top';
             x.fillStyle = '#5fe35f'; x.fillText('FPS ' + f, 4, 2);
             x.fillStyle = '#ffb84d'; x.fillText('PING ' + (p || '-'), 70, 2);
+            /* renderer of the last frame: WebGL, or Canvas (WebGL off in settings, GPU reset
+             * cooldown, or a frame WebGL cannot draw such as a selected cell or a video skin) */
+            if (dr) {
+                var rl = dr._lmFrameGL ? 'WebGL' : defaultmapsettings.webgl2Acceleration === false ? 'Canvas off' :
+                    (dr._webglDisabledUntil && Date.now() < dr._webglDisabledUntil) ? 'Canvas reset' : 'Canvas';
+                x.fillStyle = 'rgba(255,255,255,0.75)'; x.textAlign = 'right'; x.fillText(rl, w - 4, 2); x.textAlign = 'left';
+            }
         } catch (e) { }
     }, 250);
 };
