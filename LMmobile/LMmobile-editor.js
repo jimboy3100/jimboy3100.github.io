@@ -85,7 +85,8 @@
     function cleanName(n) {
         if (typeof n !== 'string') return null;
         n = n.replace(/[\u0000-\u001f\u007f<>]/g, '').replace(/\s+/g, ' ').trim();
-        if (!n || n.length > NAME_MAX || n === '__proto__') return null;
+        /* P2 fix #103: also block 'constructor' and 'prototype' to prevent prototype pollution */
+        if (!n || n.length > NAME_MAX || n === '__proto__' || n === 'constructor' || n === 'prototype') return null;
         return n;
     }
     function cleanPair(p) {

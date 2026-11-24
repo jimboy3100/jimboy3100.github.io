@@ -779,6 +779,9 @@
         P.speed = v;
         OPT.speed = v;
         saveOpt();
+        /* P2 fix #88: reschedule the active tick timer so the new speed takes
+         * effect immediately, rather than waiting for the old-speed timer to fire. */
+        if (P.playing && P.timer) { clearTimeout(P.timer); P.timer = setTimeout(tick, 0); }
         ui();
     }
     /* skins saved with the recording: plain nick -> http(s) URL pairs (as playReplayLM).
@@ -1124,7 +1127,8 @@
     function download(parts, name) {
         var blob = new Blob(parts, { type: 'text/plain' }), url = URL.createObjectURL(blob);
         var a = document.createElement('a');
-        a.download = String(name || 'replay').replace(/[\\\/:*?"<>|]+/g, '_').slice(0, 100) + '.lm';
+        /* P2 fix #85: strip existing .lm extension before adding one, preventing double .lm.lm */
+        a.download = String(name || 'replay').replace(/[\\\/:*?"<>|]+/g, '_').replace(/\.lm$/i, '').slice(0, 100) + '.lm';
         a.href = url;
         a.style.display = 'none';
         document.body.appendChild(a);

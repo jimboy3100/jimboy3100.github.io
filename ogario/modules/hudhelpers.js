@@ -618,7 +618,10 @@
         }
         _masses.sort(byDesc);
         var small = window.innerHeight < 500;
-        var a = 'Cells ' + o.n + '/16 · Total ' + formatMass(total, mode, sm) + '\n' +
+        /* P2 fix #96: use the server's actual max cells if known (Expanding Land can have 32 or 64),
+         * otherwise fall back to the standard 16. */
+        var maxCells = (window.legendmod && +window.legendmod.maxCells) || 16;
+        var a = 'Cells ' + o.n + '/' + maxCells + ' · Total ' + formatMass(total, mode, sm) + '\n' +
             'Max ' + formatMass(_masses[0], mode, sm) + ' · Min ' + formatMass(_masses[_masses.length - 1], mode, sm);
         var b = '';
         var shown = small ? Math.min(_masses.length, 8) : _masses.length;
