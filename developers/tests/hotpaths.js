@@ -1,0 +1,187 @@
+/* Per-frame and per-second hot paths in ogario.v4.js:
+ * - LM.sortCells: budgeted insertion sort with the native sort as fallback must give exactly
+ *   the order of the old full insertion sort (size, then id), and be fast on bad input.
+ * - lmTop5TempTeammates: a temporary (socket 3) teammate expires 6 s after its last update,
+ *   is not added twice, and fresh ones stay listed.
+ * - application._lmTop5Write: teamboard DOM writes only when something changed.
+ * - LMexpress skin auto toggle calls the toggle instead of faking an A key press.
+ * Usage: node developers/tests/hotpaths.js */
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+
+const root = path.join(__dirname, '..', '..');
+const src = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+let failed = 0;
+function check(name, ok) {
+    console.log((ok ? 'ok   ' : 'FAIL ') + name);
+    if (!ok) failed++;
+}
+function slice(from, to) {
+    const a = src.indexOf(from);
+    const b = src.indexOf(to, a + 1);
+    if (a < 0 || b < 0) throw new Error('not found in ogario.v4.js: ' + from);
+    return src.slice(a, b);
+}
+
+/* ---- sortCells ---- */
+const LM = vm.runInNewContext('({\n' + slice('        sortCells() {', '        calculatePlayerMassAndPosition() {') + '})');
+
+/* the insertion sort as it was before the budget */
+function oldSort(a) {
+    for (var i = 1, len = a.length; i < len; i++) {
+        var tmp = a[i];
+        if (!tmp) continue;
+        var tSize = tmp.size, tId = tmp.id;
+        var j = i - 1;
+        while (j >= 0 && a[j] && (a[j].size > tSize || (a[j].size === tSize && a[j].id > tId))) {
+            a[j + 1] = a[j]; j--;
+        }
+        a[j + 1] = tmp;
+    }
+}
+function newSort(a) { LM.cells = a; LM.sortCells(); }
+
+let seed = 12345;
+function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+const N = 2500;
+function cell(i, size, id) { return { size: size, id: id, tag: i }; }
+const cases = {
+    reversed: () => Array.from({ length: N }, (_, i) => cell(i, N - i, N - i)),
+    random: () => Array.from({ length: N }, (_, i) => cell(i, Math.floor(rnd() * 3000) + 10, Math.floor(rnd() * 1e6))),
+    nearlySorted: () => {
+        const a = Array.from({ length: N }, (_, i) => cell(i, 10 + i * 0.5 + (rnd() - 0.5) * 2, i));
+        for (let k = 0; k < 40; k++) { const i = Math.floor(rnd() * (N - 1)); const t = a[i]; a[i] = a[i + 1]; a[i + 1] = t; }
+        return a;
+    },
+    equalSizes: () => Array.from({ length: N }, (_, i) => cell(i, 50, N - i)),
+    equalSizesAndDuplicateIds: () => Array.from({ length: N }, (_, i) => cell(i, 50 + (i % 3), (N - i) % 97)),
+    reversedWithHoles: () => { const a = cases.reversed(); for (let i = 7; i < N; i += 131) a[i] = null; return a; },
+    appendedBatch: () => {
+        const a = Array.from({ length: 1500 }, (_, i) => cell(i, 10 + i, i));
+        for (let i = 0; i < 1000; i++) a.push(cell(1500 + i, 5 + rnd() * 2000, 5000 + i));
+        return a;
+    },
+    empty: () => [],
+    one: () => [cell(0, 3, 3)]
+};
+const tagsOf = (a) => a.map((c) => (c ? c.tag : 'x')).join(',');
+function time(fn, make, reps) {
+    let best = Infinity;
+    for (let r = 0; r < reps; r++) {
+        const a = make();
+        const t0 = process.hrtime.bigint();
+        fn(a);
+        best = Math.min(best, Number(process.hrtime.bigint() - t0) / 1e6);
+    }
+    return best;
+}
+const timings = {};
+for (const name of Object.keys(cases)) {
+    seed = 777;
+    const base = cases[name]();
+    const a = base.slice(), b = base.slice();
+    oldSort(a);
+    newSort(b);
+    check('sortCells ' + name + ': same draw order as the full insertion sort', tagsOf(a) === tagsOf(b));
+    const again = b.slice();
+    newSort(again);
+    check('sortCells ' + name + ': sorting a sorted list changes nothing', tagsOf(again) === tagsOf(b));
+    if (base.length > 1) {
+        seed = 777;
+        timings[name] = { old: time(oldSort, cases[name], 3), now: time(newSort, cases[name], 3) };
+    }
+}
+for (const name of Object.keys(timings)) {
+    console.log('     ' + name.padEnd(26) + ' old ' + timings[name].old.toFixed(2).padStart(8) + ' ms   new ' + timings[name].now.toFixed(2).padStart(8) + ' ms');
+}
+check('2500 reversed cells: at least 5x faster than before', timings.reversed.now * 5 < timings.reversed.old);
+check('2500 reversed cells: under 20 ms', timings.reversed.now < 20);
+check('appended batch of 1000: faster than before', timings.appendedBatch.now < timings.appendedBatch.old);
+check('nearly sorted: not slower than before (2x + 0.5 ms margin)', timings.nearlySorted.now <= timings.nearlySorted.old * 2 + 0.5);
+
+/* ---- temporary teammates on the skin teamboard ---- */
+const tempCode = slice('var LM_TEMP_TEAMMATE_TIMEOUT', 'function Socket3updateTeamPlayer(');
+const T = vm.runInNewContext(tempCode + '; ({ run: lmTop5TempTeammates, timeout: LM_TEMP_TEAMMATE_TIMEOUT })');
+check('temp teammate timeout is 6 s', T.timeout === 6000);
+const now = 1000000;
+function temp(id, age, extra) { return Object.assign({ id: id, nick: id, lbgpi: -2, mass: 500, alive: true, temp: true, lastUpdatedTime: now - age }, extra || {}); }
+{
+    const players = [temp('fresh', 500), temp('stale', 6500), temp('edge', 6000), { id: 'normal', lbgpi: 3, mass: 900, alive: true }];
+    const top5 = [];
+    T.run(players, top5, now);
+    check('fresh temp teammate stays alive with its mass', players[0].alive === true && players[0].mass === 500);
+    check('temp teammate silent for over 6 s is marked dead (mass 1)', players[1].alive === false && players[1].mass === 1);
+    check('exactly 6 s is not yet stale', players[2].alive === true);
+    check('normal teammates are left alone', players[3].alive === true && players[3].mass === 900);
+    check('fresh ones missing from the list are added once', top5.length === 2 && top5[0] === players[0] && top5[1] === players[2]);
+    T.run(players, top5, now);
+    check('a second refresh (row limit click) adds no duplicate', top5.length === 2);
+}
+{
+    const p = temp('copy', 100);
+    const top5 = [{ id: 'copy', nick: 'copy', mass: 500, lbgpi: -2 }];
+    T.run([p], top5, now);
+    check('teammate already listed as a copy by updateTeamPlayers is not added again', top5.length === 1);
+}
+{
+    const players = [temp('dead', 100, { alive: false }), temp('nomass', 100, { mass: 1 }), temp('notime', 0, { lastUpdatedTime: 0 })];
+    const top5 = [];
+    T.run(players, top5, now);
+    check('dead or massless temp teammates are not listed; one without a time is', top5.length === 1 && top5[0] === players[2]);
+}
+check('old reversed test would kill a 0.5 s old update (the bug)', (now - 500) - now < 6000);
+
+/* ---- teamboard DOM writes ---- */
+const writeCode = slice('        _lmTop5Write(html, mass, players) {', '\n        },\n') + '\n        }';
+const W = vm.runInNewContext('({ shortMassFormat(v) { return v < 1000 ? v : Math.round(v / 100) / 10 + "k"; },\n' + writeCode + '})');
+function el() {
+    const e = { writes: 0, _v: '' };
+    ['innerHTML', 'textContent'].forEach((k) => Object.defineProperty(e, k, { get() { return e._v; }, set(v) { e._v = String(v); e.writes++; } }));
+    return e;
+}
+W.top5pos = el(); W.top5totalMass = el(); W.top5totalPlayers = el();
+W._lmTop5Write('<li>a</li>', 1500, 2);
+check('first write fills list and totals', W.top5pos.innerHTML === '<li>a</li>' && W.top5totalMass.textContent === '1.5k' && W.top5totalPlayers.textContent === '2');
+W._lmTop5Write('<li>a</li>', 1500, 2);
+check('unchanged teamboard writes nothing', W.top5pos.writes === 1 && W.top5totalMass.writes === 1 && W.top5totalPlayers.writes === 1);
+W.top5totalPlayers.textContent = 40; // the server packet writes the player count too
+W._lmTop5Write('<li>a</li>', 1500, 2);
+check('player count overwritten elsewhere is written back', W.top5totalPlayers.textContent === '2');
+W._lmTop5Write('', 0, 0);
+check('an empty team clears the list', W.top5pos.innerHTML === '' && W.top5totalMass.textContent === '0');
+
+/* ---- displayTop5 source checks ---- */
+const top5Src = slice('        displayTop5() {\n            if (defaultmapsettings.top5skins', '        _lmTop5Write(');
+check('skin rows no longer look up #hudMainColor per row', (top5Src.match(/\$\('#hudMainColor'\)/g) || []).length === 1 && /if \(totalMass === undefined\)/.test(top5Src));
+check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(top5Src));
+
+/* ---- LMexpress skin auto toggle ---- */
+const lmx = fs.readFileSync(path.join(root, 'LMexpress', 'LMexpress.js'), 'utf8').replace(/\r\n/g, '\n');
+const toggleSrc = lmx.slice(lmx.indexOf('    my.skinToggle_start = function'), lmx.indexOf('    // ====  Agar Tool Communication'));
+check('skin auto toggle no longer fakes key presses', toggleSrc.length > 0 && !/trigger\(/.test(toggleSrc) && /application\.toggleSkins\(\)/.test(toggleSrc));
+{
+    const timers = [];
+    const ctx = {
+        setInterval(fn, ms) { timers.push({ fn: fn, ms: ms, on: true }); return timers.length; },
+        clearInterval(id) { if (timers[id - 1]) timers[id - 1].on = false; },
+        calls: 0
+    };
+    ctx.global = ctx;
+    ctx.application = { toggleSkins() { ctx.calls++; } };
+    const run = (cfg) => vm.runInNewContext('var my = {}, stat = {}, cfg = ' + JSON.stringify(cfg) + ';\n' + toggleSrc + '\nmy.skinToggle_start(); my.skinToggle_start(); my;', ctx);
+    run({ skin_toggle_auto: false, skin_toggle_interval: 10000 });
+    check('skin auto toggle off: no interval', timers.filter((t) => t.on).length === 0);
+    const my = run({ skin_toggle_auto: true, skin_toggle_interval: '10000' });
+    run({ skin_toggle_auto: true, skin_toggle_interval: 10000 }); // a second copy of the script
+    const live = timers.filter((t) => t.on);
+    check('skin auto toggle on: exactly one 10 s interval, even when started again', live.length === 1 && live[0].ms === 10000);
+    live[0].fn();
+    check('each tick calls application.toggleSkins', ctx.calls === 1);
+    run({ skin_toggle_auto: true, skin_toggle_interval: 5 });
+    check('tiny interval is raised to 1 s', timers.filter((t) => t.on)[0].ms === 1000);
+    check('started without application: tick does nothing and does not throw', (() => { delete ctx.application; try { my.skinToggle_update(); return true; } catch (e) { return false; } })());
+}
+
+console.log(failed ? 'FAILED: ' + failed : 'all hotpaths checks passed');
+process.exit(failed ? 1 : 0);

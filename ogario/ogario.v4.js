@@ -25404,37 +25404,23 @@ function thelegendmodproject() {
                     }
                     /* After the loop: inside it, s++ ran past the last entry (TypeError on
                      * top5[s]) and an empty team never cleared the list. */
-                    this._lastTop5Html = null;
-                    this.top5pos.innerHTML = t;
                     if (ogario.play && ogario.playerMass) {
                         e += ogario.playerMass;
                         s++;
                     }
-                    this.top5totalMass.textContent = this.shortMassFormat(e);
-                    this.top5totalPlayers.textContent = s;
+                    this._lmTop5Write(t, e, s);
                 }
             }
             else {
                 if (defaultmapsettings.showTop5) {
                     //temp
-                    var tempTime = new Date().getTime();
-                    Object.getOwnPropertyNames(application.teamPlayers).forEach(function (element) {
-                        if (application.teamPlayers && application.teamPlayers[element] && application.teamPlayers[element].lbgpi === -2 && application.teamPlayers[element].mass > 1) {
-                            //console.log(application.teamPlayers[element].lastUpdatedTime, tempTime);
-                            if (application.teamPlayers[element].lastUpdatedTime && ((application.teamPlayers[element].lastUpdatedTime) - tempTime < 6000)) {
-                                application.teamPlayers[element].mass = 1;
-                                application.teamPlayers[element].alive = false;
-                            } else {
-
-                                application.top5.push(application.teamPlayers[element]);
-                            }
-                        }
-                    });
+                    lmTop5TempTeammates(application.teamPlayers, application.top5, new Date().getTime());
                     //
                     var t = "";
                     var e = 0;
                     var s = this.top5.length;
                     var o = 0;
+                    var totalMass, barColor;
                     for (; o < s; o++) {
                         e = e + this.top5[o].mass;
                         if (!(o >= defaultmapsettings.teamboardlimit && this.top5[o].mass > 1)) {
@@ -25500,35 +25486,46 @@ function thelegendmodproject() {
                             if (!window.externalScriptMassBar[o]) window.externalScriptMassBar[o] = ""
                             // t = t + ('<span class="top5-mass-color">[' + this.shortMassFormat(this.top5[o].mass) + "]</span> " + this.escapeHTML(this.top5[o].nick) + "</div></li>" + window.externalScriptMassBar[o]);
 
-                            let shortMassFormat = this.shortMassFormat(this.top5[o].mass)
                             let playersNickName = this.escapeHTML(this.top5[o].nick)
 
-                            let totalMass = this.top5.map(top5 => top5.mass).reduce((accumulator, playerMass) => accumulator + playerMass)
+                            /* the team total and the bar colour are the same for every row:
+                             * worked out on the first row instead of once per row */
+                            if (totalMass === undefined) {
+                                totalMass = this.top5.map(top5 => top5.mass).reduce((accumulator, playerMass) => accumulator + playerMass);
+                                barColor = $('#hudMainColor')[0].value;
+                            }
 
                             t += (`<span class="top5-mass-color">
                                         [` + this.shortMassFormat(this.top5[o].mass) + `]
                                         <div style="color: ` + defaultSettings.hudTextColor + `; display: inline-block">` + playersNickName + `</div>
                                         <div class="top5-mass-bar-container">
-                                            <div class="top5-mass-bar" style="width: ` + this.top5[o].mass / totalMass * 100 + `%; background-color:` + $('#hudMainColor')[0].value + `"></div>
+                                            <div class="top5-mass-bar" style="width: ` + this.top5[o].mass / totalMass * 100 + `%; background-color:` + barColor + `"></div>
                                         </div>
                                         </span>
                                     </div>`);
                         }
                     }
-                    /* Only update DOM when content actually changed — prevents img elements
-                     * from being destroyed/recreated every frame, which causes skin blinking */
-                    if (this._lastTop5Html !== t) {
-                        this._lastTop5Html = t;
-                        this.top5pos.innerHTML = t;
-                    }
                     if (ogario.play && ogario.playerMass) {
                         e = e + ogario.playerMass;
                         s++;
                     }
-                    this.top5totalMass.textContent = this.shortMassFormat(e);
-                    this.top5totalPlayers.textContent = s;
+                    this._lmTop5Write(t, e, s);
                 }
             }
+        },
+        /* Teamboard DOM writes, skipped when nothing changed: rebuilding the list destroys and
+         * recreates the skin images (blinking) and costs a layout each second. The totals are
+         * compared with what the element shows because the server packet also writes the
+         * player count. */
+        _lmTop5Write(html, mass, players) {
+            if (this._lastTop5Html !== html) {
+                this._lastTop5Html = html;
+                this.top5pos.innerHTML = html;
+            }
+            var m = String(this.shortMassFormat(mass));
+            if (this.top5totalMass.textContent !== m) this.top5totalMass.textContent = m;
+            var n = String(players);
+            if (this.top5totalPlayers.textContent !== n) this.top5totalPlayers.textContent = n;
         },
         /*
                     setTop5limit(t) {
@@ -54446,9 +54443,16 @@ Most cells eaten   : ${mostCellsEaten}
         },
         sortCells() {
             /* Insertion sort: O(N) on nearly-sorted data (cells barely move between frames).
-             * Avoids Array.sort callback overhead (~2000 function-pointer calls). */
+             * Avoids Array.sort callback overhead (~2000 function-pointer calls).
+             * It is O(N^2) when many cells arrive out of order at once (bulk spawn, reconnect,
+             * world spectate: 2500 reversed cells are 3 million shifts in one frame), so the
+             * shifts are budgeted and past the budget the native stable sort finishes with the
+             * same order (size, then id). Insertion sort never moves a cell past an equal one,
+             * so the result is exactly what the full insertion sort gives. */
             var a = this.cells;
-            for (var i = 1, len = a.length; i < len; i++) {
+            var len = a.length;
+            var budget = len * 8 + 1024;
+            for (var i = 1; i < len; i++) {
                 var tmp = a[i];
                 if (!tmp) continue;
                 var tSize = tmp.size, tId = tmp.id;
@@ -54457,7 +54461,22 @@ Most cells eaten   : ${mostCellsEaten}
                     a[j + 1] = a[j]; j--;
                 }
                 a[j + 1] = tmp;
+                budget -= i - 1 - j;
+                if (budget < 0) {
+                    /* empty slots stop the insertion sort's scan; the native sort cannot copy
+                     * that, so a list with holes keeps the insertion sort */
+                    var holes = false;
+                    for (var k = 0; k < len; k++) if (!a[k]) { holes = true; break; }
+                    if (!holes) { a.sort(this._lmCellOrder); return; }
+                    budget = Infinity;
+                }
             }
+        },
+        /* draw order of sortCells: smaller first, equal sizes by id */
+        _lmCellOrder(p, q) {
+            if (p.size > q.size || (p.size === q.size && p.id > q.id)) return 1;
+            if (q.size > p.size || (q.size === p.size && q.id > p.id)) return -1;
+            return 0;
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -83651,6 +83670,33 @@ function Socket3updateTeamPlayerSpfc(Socket3data) {
     if (h && message) {
         SpecialEffectPlayers[h] = message;
         animateCustomSkin(h, message)
+    }
+}
+
+/* Temporary (socket 3) teammates on the teamboard with skins. They carry no updateTime, so
+ * updateTeamPlayers never expires them; one whose last update is over 6 s old has left.
+ * The test used to be lastUpdatedTime - now < 6000, true for every past update, so each
+ * teammate was marked dead on the first teamboard refresh after its update (it flickered).
+ * updateTeamPlayers already lists live teammates as copies, so only a missing one is added
+ * (displayTop5 also runs on its own when the row limit changes). */
+var LM_TEMP_TEAMMATE_TIMEOUT = 6000;
+function lmTop5TempTeammates(teamPlayers, top5, now) {
+    if (!teamPlayers || !top5) return;
+    var keys = Object.getOwnPropertyNames(teamPlayers);
+    for (var k = 0; k < keys.length; k++) {
+        var p = teamPlayers[keys[k]];
+        if (!p || p.lbgpi !== -2 || !(p.mass > 1)) continue;
+        if (p.lastUpdatedTime && now - p.lastUpdatedTime > LM_TEMP_TEAMMATE_TIMEOUT) {
+            p.mass = 1;
+            p.alive = false;
+            continue;
+        }
+        if (p.alive === false) continue;
+        var listed = false;
+        for (var j = 0; j < top5.length; j++) {
+            if (top5[j] === p || (top5[j] && top5[j].id === p.id)) { listed = true; break; }
+        }
+        if (!listed) top5.push(p);
     }
 }
 
