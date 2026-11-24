@@ -33,12 +33,17 @@ function boot(src, opts) {
     localStorage: opts.storage || makeStorage(),
     toastr: { info() {}, warning() {}, success() {}, error() {} },
     application: { split() { sent.push(['split', now]); }, feed() { sent.push(['feed', now]); } },
-    legendmod: { sendPosition() { sent.push(['mouse', now]); } },
+    legendmod: { play: true, socket: {}, sendPosition() { sent.push(['mouse', now]); } },
     multiboxPlayerEnabled: 0,
     performance: { now: () => now }
   };
+  const lis = { win: {}, doc: {} };
+  const add = m => (n, f) => { (m[n] = m[n] || []).push(f); };
+  const rem = m => (n, f) => { m[n] = (m[n] || []).filter(x => x !== f); };
+  win.addEventListener = add(lis.win); win.removeEventListener = rem(lis.win);
+  const doc = { hidden: false, createElement: () => ({}), addEventListener: add(lis.doc), removeEventListener: rem(lis.doc) };
   const ctx = {
-    window: win, document: { createElement: () => ({}), addEventListener() {} },
+    window: win, document: doc,
     setTimeout: (f, ms) => { timers.push({ f, at: now + (ms || 0), id: timers.length + 1 }); return timers.length; },
     clearTimeout: id => { const t = timers.find(x => x.id === id); if (t) t.f = null; },
     console, Math, JSON, Date, Number, String, Array, Object, isFinite, RegExp, Error
@@ -50,12 +55,15 @@ function boot(src, opts) {
     for (;;) {
       const due = timers.filter(t => t.f && t.at <= end).sort((a, b) => a.at - b.at || a.id - b.id)[0];
       if (!due) break;
-      now = due.at;
+      if (due.at > now) now = due.at; /* a late timer runs at the real (later) time */
       const f = due.f; due.f = null; f();
     }
-    now = end;
+    if (end > now) now = end;
   };
-  return { win, sent, advance, timers };
+  /* the page is busy for ms: time passes, no timer runs */
+  const stall = ms => { now += ms; };
+  const fire = m => n => (m[n] || []).slice().forEach(f => f({ type: n }));
+  return { win, doc, sent, advance, stall, timers, fireWin: fire(lis.win), fireDoc: fire(lis.doc) };
 }
 
 /* ═══ Custom macros ═══ */
@@ -135,6 +143,104 @@ function boot(src, opts) {
   /* clearing every slot removes the key */
   ME.setMacro(1, null); ME.setMacro(2, null);
   check('macro: no macros -> storage key removed', win.localStorage.getItem(c.KEY) === null);
+}
+
+/* ═══ A running macro belongs to one unit, connection and life (audit A5) ═══ */
+{
+  const three = { steps: [{ a: 'split' }, { a: 'wait', ms: 100 }, { a: 'split' }, { a: 'wait', ms: 100 }, { a: 'split' }] };
+  const fresh = () => {
+    const b = boot(macroSrc);
+    b.win.legendmod.play = true;
+    b.win.legendmod.socket = { id: 1 };
+    b.win.LMMacroEditor.setMacro(1, three);
+    return b;
+  };
+  let b = fresh();
+  b.win.LMMacroEditor.runSlot(1); b.advance(50);
+  b.win.legendmod.socket = { id: 2 }; /* reconnect / server switch, same unit number */
+  b.advance(1000);
+  check('macro: a socket change stops the rest (same unit number)', b.sent.length === 1 && !b.win.LMMacroEditor.isRunning());
+
+  b = fresh();
+  b.win.application._lmLifeStartAt = 1000;
+  b.win.LMMacroEditor.runSlot(1); b.advance(50);
+  /* died and spawned again between two actions (what ogario.v4.js does to legendmod.play and
+   * application._lmLifeStartAt) */
+  b.win.legendmod.play = false; b.win.application._lmLifeStartAt = 0; b.advance(30);
+  b.win.legendmod.play = true; b.win.application._lmLifeStartAt = 1080;
+  b.advance(1000);
+  check('macro: a death stops the rest', b.sent.length === 1);
+
+  b = fresh();
+  b.win.legendmod.play = false;
+  check('macro: does not start while dead / in the menu', b.win.LMMacroEditor.runSlot(1) === false && b.sent.length === 0);
+
+  b = fresh();
+  b.win.LMMacroEditor.runSlot(1); b.advance(50);
+  b.win.LMPractice = { on: true };
+  b.advance(1000);
+  check('macro: entering practice stops the rest', b.sent.length === 1);
+
+  b = fresh();
+  b.win._lmEvReplayOn = true;
+  check('macro: does not start during a replay', b.win.LMMacroEditor.runSlot(1) === false);
+  b.win._lmEvReplayOn = false;
+  b.win.LMMacroEditor.runSlot(1); b.advance(50); b.win._lmEvReplayOn = true; b.advance(1000);
+  check('macro: a replay starting stops the rest', b.sent.length === 1);
+
+  b = fresh();
+  b.doc.hidden = true;
+  check('macro: does not start in a hidden tab', b.win.LMMacroEditor.runSlot(1) === false);
+  b.doc.hidden = false;
+  b.win.LMMacroEditor.runSlot(1); b.advance(50);
+  b.doc.hidden = true; b.fireDoc('visibilitychange');
+  b.advance(1000);
+  check('macro: the tab going to the background stops the rest', b.sent.length === 1 && !b.win.LMMacroEditor.isRunning());
+  b.doc.hidden = false;
+  b.win.LMMacroEditor.runSlot(1); b.advance(50); b.fireWin('blur'); b.advance(1000);
+  check('macro: the window losing focus stops the rest', b.sent.length === 2);
+
+  /* multibox: the unit's own socket and life */
+  b = fresh();
+  const unit = { number: 2, active: true, socket: { id: 9 }, sendPosition() {} };
+  b.win.multiboxPlayerEnabled = 2;
+  b.win.getActiveSpect = n => (n === 2 ? unit : null);
+  b.win.LMMacroEditor.runSlot(1); b.advance(50);
+  unit.socket = { id: 10 };
+  b.advance(1000);
+  check('macro: the multibox unit reconnecting stops the rest', b.sent.length === 1);
+  unit.socket = { id: 11 };
+  b.sent.length = 0;
+  b.win.legendmod.play = false; /* main dead, the unit keeps playing */
+  b.win.LMMacroEditor.runSlot(1); b.advance(1000);
+  check('macro: runs for a living unit while the main player is dead', b.sent.length === 3);
+  b.sent.length = 0;
+  b.win.LMMacroEditor.runSlot(1); b.advance(50); unit.active = false; b.advance(1000);
+  check('macro: the controlled unit dying stops the rest', b.sent.length === 1);
+
+  /* a main-thread stall: overdue actions keep their gaps instead of firing together */
+  b = fresh();
+  b.win.LMMacroEditor.setMacro(2, { steps: [{ a: 'split' }, { a: 'split' }, { a: 'split' }] });
+  b.win.LMMacroEditor.runSlot(2);
+  b.stall(300); /* every timer becomes due at once, 300 ms late */
+  b.advance(1000);
+  const ts = b.sent.map(s => s[1]);
+  let gapsOk = ts.length === 3;
+  for (let i = 1; i < ts.length; i++) if (ts[i] - ts[i - 1] < 20) gapsOk = false;
+  check('macro: after a stall the overdue splits stay 20 ms apart (' + JSON.stringify(ts) + ')', gapsOk);
+  check('macro: one timer pending at a time (sequential)', (() => {
+    const c2 = fresh(); c2.win.LMMacroEditor.runSlot(1);
+    return c2.timers.filter(x => x.f).length === 1;
+  })());
+
+  /* LMEvents death / server change stop it at once */
+  b = fresh();
+  const L = {};
+  b.win.LMEvents = { on(n, f) { (L[n] = L[n] || []).push(f); }, off(n, f) { L[n] = (L[n] || []).filter(x => x !== f); } };
+  b.win.LMMacroEditor.runSlot(1); b.advance(50);
+  (L.serverChange || []).slice().forEach(f => f({ host: 'x' }));
+  b.advance(1000);
+  check('macro: LMEvents serverChange stops the rest', b.sent.length === 1 && !(L.serverChange || []).length);
 }
 
 console.log(fail ? fail + ' FAILED' : 'all custom macro checks passed');
