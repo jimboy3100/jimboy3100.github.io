@@ -51,7 +51,7 @@ hr {
 }
 
 #link1 {
-      height: 200px;width: 370px;-webkit-transition: all 0.5s ease-in-out;-moz-transition: all 0.5s ease-in-out;-o-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;
+      -webkit-transition: all 0.5s ease-in-out;-moz-transition: all 0.5s ease-in-out;-o-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;
 }
 #link1:hover {
   opacity: 0.6;
