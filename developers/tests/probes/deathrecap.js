@@ -1,0 +1,65 @@
+// Death recap (ogario/modules/deathrecap.js): off by default with no listeners; the recap panel and the
+// kill feed fit the screen (915x412 phone too) and stay off the card and the leaderboard; state restored.
+(async () => {
+  var fail = [], info = {};
+  function need(name, ok) { if (!ok) fail.push(name); }
+  var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  for (var i = 0; i < 40 && !window.LMDeathRecap; i++) await sleep(250);
+  var D = window.LMDeathRecap, s = window.legendmod5, lm = window.legendmod;
+  need('module loaded', !!D);
+  if (!D || !s || !lm) return { fail: fail, info: info };
+  need('options off by default', s.deathRecap === false && s.killFeed === false && s.massLossAlert === false);
+  need('nothing runs while off', window._lmDROn === false && !window.LMEvents._has('death') && !window.LMEvents._has('spawn'));
+  need('menu switches', ['deathRecap', 'killFeed', 'massLossAlert'].every(function (k) { return !!document.getElementById(k); }) && !!document.getElementById('massLossPct-slider'));
+  var keep = { deathRecap: s.deathRecap, killFeed: s.killFeed, massLossAlert: s.massLossAlert }, hintKey = null;
+  try { hintKey = localStorage.getItem('lmDeathRecapHint'); } catch (e) { }
+  var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };
+  var overlap = function (a, b) { return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom; };
+  var u = { finalMass: 9000, highestMass: 24500, topPosition: 2, finalPosition: 5, timeTotal: 95, timeInLeaderboard: 60, massConsumed: 30000, foodEaten: 100, playersEaten: 3, normalCellsEaten: 5, virusesEaten: 1 };
+  try {
+    s.deathRecap = true; s.killFeed = true; D.sync();
+    need('on: listeners and flag', window._lmDROn === true && window.LMEvents._has('death'));
+    var T = D._test, t0 = Date.now() - 25000;
+    T.reset();
+    for (var t = t0; t <= t0 + 25000; t += 250) T.sample(t, t < t0 + 18000 ? 24500 : 9000, t < t0 + 13000 ? 4 : 8, 'Probe<b>X</b>');
+    T.event('split', t0 + 13000);
+    T.event('eaten', t0 + 18000, 15500, 'Probe<b>X</b>');
+    T.event('loss', t0 + 18000, 15500, null, 24500);
+    T.event('eaten', t0 + 25000, 9000, 'Probe<b>X</b>');
+    lm.showSessionStats(u);
+    await sleep(500);
+    var modal = document.getElementById('lm-gameover-modal'), panel = document.getElementById('lm-go-recap');
+    need('recap panel on the card', !!modal && !!panel);
+    if (panel) {
+      var rows = panel.querySelectorAll('div'), txt = panel.textContent;
+      info.recap = txt.slice(0, 160);
+      need('3-6 steps', rows.length >= 4 && rows.length <= 7);
+      need('nick shown as text, not HTML', txt.indexOf('Probe<b>X</b>') !== -1 && !panel.querySelector('b'));
+      need('recap on screen', inBox(panel.getBoundingClientRect()));
+      var card = modal.querySelector('.lm-go-card');
+      if (card && panel.parentNode === modal) need('recap beside the card, not over it', !overlap(card.getBoundingClientRect(), panel.getBoundingClientRect()));
+      info.wide = panel.parentNode === modal;
+    }
+    T.feed('ate', 'You ate Someone (1,200)', 'Someone');
+    var feed = document.getElementById('lm-killfeed'), lb = document.getElementById('leaderboard-hud');
+    need('kill feed shown', !!feed && feed.childNodes.length === 1);
+    if (feed) {
+      var fr = feed.firstChild.getBoundingClientRect();
+      need('kill feed on screen', inBox(fr));
+      if (lb && lb.getBoundingClientRect().width) need('kill feed off the leaderboard', !overlap(fr, lb.getBoundingClientRect()));
+      var lbd = document.getElementById('leaderboard-data'), lbd1 = lbd && lbd.firstElementChild;
+      if (lbd1 && lbd1.getBoundingClientRect().width) need('kill feed off the leaderboard mass column', !overlap(fr, lbd1.getBoundingClientRect()));
+      info.feed = [Math.round(fr.left), Math.round(fr.top), Math.round(fr.right), Math.round(fr.bottom)];
+      if (lb) { var lr = lb.getBoundingClientRect(); info.lb = [Math.round(lr.left), Math.round(lr.top), Math.round(lr.right), Math.round(lr.bottom)]; }
+    }
+  } finally {
+    var m = document.getElementById('lm-gameover-modal');
+    if (m && m.parentNode) m.parentNode.removeChild(m);
+    if (lm._gameOverDismissTimer) { clearTimeout(lm._gameOverDismissTimer); lm._gameOverDismissTimer = null; }
+    s.deathRecap = keep.deathRecap; s.killFeed = keep.killFeed; s.massLossAlert = keep.massLossAlert;
+    D._test.reset(); D.sync();
+    try { if (hintKey == null) localStorage.removeItem('lmDeathRecapHint'); } catch (e) { }
+  }
+  need('off again: nothing listens, feed removed', window._lmDROn === false && !window.LMEvents._has('death') && !document.getElementById('lm-killfeed'));
+  return { fail: fail, info: info };
+})()
