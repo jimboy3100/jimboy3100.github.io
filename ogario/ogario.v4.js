@@ -85895,4 +85895,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading HUD editor script:', e);
     }
+    /* Discover features guide and "What works on this server" (Command Centre; opens by itself once
+     * after an update, only for players who had it before) */
+    try {
+        var discoveryScript = document.createElement('script');
+        discoveryScript.type = 'text/javascript';
+        discoveryScript.src = 'https://www.legendmod.ml/ogario/modules/discovery.js?v=' + (window.OgVer || '');
+        document.body.appendChild(discoveryScript);
+    } catch (e) {
+        console.warn('[LM] Error loading discovery script:', e);
+    }
 })();

@@ -255,7 +255,9 @@
         companion: { en: 'Open companion (stream overlay)', el: 'Άνοιγμα companion (επικάλυψη stream)' },
         resultImage: { en: 'Result image', el: 'Εικόνα αποτελέσματος' },
         director: { en: 'Spectator director', el: 'Σκηνοθέτης θέασης' },
-        hudEditor: { en: 'Edit HUD (move and resize the HUD boxes, layouts)', el: 'Επεξεργασία HUD (μετακίνηση και μέγεθος πλαισίων, διατάξεις)' }
+        hudEditor: { en: 'Edit HUD (move and resize the HUD boxes, layouts)', el: 'Επεξεργασία HUD (μετακίνηση και μέγεθος πλαισίων, διατάξεις)' },
+        discover: { en: 'Discover features (what is new, turn on, open)', el: 'Ανακάλυψε λειτουργίες (νέα, ενεργοποίηση, άνοιγμα)' },
+        serverCaps: { en: 'What works on this server', el: 'Τι λειτουργεί σε αυτόν τον διακομιστή' }
     };
     function lang() {
         try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
@@ -420,7 +422,9 @@
         { id: 'companion', en: tEn('companion'), label: function () { return t('companion'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.open); }, run: function () { W.LMCompanion.open(); } },
         { id: 'resultImage', en: tEn('resultImage'), label: function () { return t('resultImage'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.resultImage); }, run: function () { W.LMCompanion.resultImage(); } },
         { id: 'director', en: tEn('director'), label: function () { return t('director'); }, avail: function () { return !!(W.LMDirector && typeof W.LMDirector.open === 'function'); }, run: function () { W.LMDirector.open(); } },
-        { id: 'hudEditor', en: tEn('hudEditor'), label: function () { return t('hudEditor'); }, avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } }
+        { id: 'hudEditor', en: tEn('hudEditor'), label: function () { return t('hudEditor'); }, avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } },
+        { id: 'discover', en: tEn('discover'), label: function () { return t('discover'); }, avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.open); }, run: function () { W.LMDiscovery.open(); } },
+        { id: 'serverCaps', en: tEn('serverCaps'), label: function () { return t('serverCaps'); }, avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.openServer); }, run: function () { W.LMDiscovery.openServer(); } }
     ];
 
     /* ═══ Running items ═══ */
@@ -1003,4 +1007,12 @@
     api.run = function (id) { var it = find(id); return it ? (run(it, true), true) : false; };
     api.favourites = function () { return state.fav.slice(); };
     api.syncBar = function () { syncBar(true); };
+    /* open the menu at a setting (an option key or element id) and make it blink; for other windows (Discover features) */
+    api.reveal = function (key) {
+        if (typeof key !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(key)) return false;
+        var el = D.getElementById(key + '-slider') || D.getElementById(key);
+        if (!el || !closest(el, '#og-options, #theme')) return false;
+        reveal(el);
+        return true;
+    };
 })();
