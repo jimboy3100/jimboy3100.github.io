@@ -299,6 +299,15 @@ window.lmT = (function () {
         "mhClearConfirm": {"en":"Clear the match history?","el":"Εκκαθάριση του ιστορικού αγώνων;","es":"¿Borrar el historial de partidas?","bg":"Да се изчисти ли историята на игрите?","fr":"Effacer l’historique des parties ?","ar":"مسح سجل المباريات؟","zh":"清除對戰記錄？","ru":"Очистить историю матчей?","de":"Spielverlauf leeren?","tr":"Maç geçmişi temizlensin mi?","pl":"Wyczyścić historię meczów?","nl":"Speelgeschiedenis wissen?"},
         "mhEmpty": {"en":"No games recorded yet.","el":"Δεν έχουν καταγραφεί παιχνίδια ακόμη.","es":"Aún no hay partidas registradas.","bg":"Все още няма записани игри.","fr":"Aucune partie enregistrée pour l’instant.","ar":"لا توجد مباريات مسجلة بعد.","zh":"尚無記錄的遊戲。","ru":"Пока нет записанных игр.","de":"Noch keine Spiele gespeichert.","tr":"Henüz kayıtlı oyun yok.","pl":"Brak zapisanych gier.","nl":"Nog geen spellen opgeslagen."},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "lmPresets": {"en":"Presets","el":"Προεπιλογές","es":"Preajustes","bg":"Готови настройки","fr":"Préréglages","ar":"إعدادات جاهزة","zh":"預設組合","ru":"Пресеты","de":"Voreinstellungen","tr":"Hazır ayarlar","pl":"Presety","nl":"Voorinstellingen"},
+        "lmPresetCompetitive": {"en":"Competitive","el":"Ανταγωνιστικό","es":"Competitivo","bg":"Състезателен","fr":"Compétitif","ar":"تنافسي","zh":"競技","ru":"Соревновательный","de":"Wettkampf","tr":"Rekabetçi","pl":"Rywalizacja","nl":"Competitief"},
+        "lmPresetBattery": {"en":"Battery saver","el":"Εξοικονόμηση μπαταρίας","es":"Ahorro de batería","bg":"Пестене на батерия","fr":"Économie de batterie","ar":"توفير البطارية","zh":"省電","ru":"Экономия батареи","de":"Akku sparen","tr":"Pil tasarrufu","pl":"Oszczędzanie baterii","nl":"Batterij sparen"},
+        "lmPresetStreamer": {"en":"Streamer","el":"Streamer","es":"Streamer","bg":"Стриймър","fr":"Streamer","ar":"البث المباشر","zh":"直播","ru":"Стример","de":"Streamer","tr":"Yayıncı","pl":"Streamer","nl":"Streamer"},
+        "lmPresetCleanHud": {"en":"Clean HUD","el":"Καθαρό HUD","es":"HUD limpio","bg":"Изчистен HUD","fr":"HUD épuré","ar":"واجهة نظيفة","zh":"簡潔 HUD","ru":"Чистый HUD","de":"Aufgeräumtes HUD","tr":"Sade HUD","pl":"Czysty HUD","nl":"Schone HUD"},
+        "lmPresetUndo": {"en":"Undo preset","el":"Αναίρεση προεπιλογής","es":"Deshacer preajuste","bg":"Отмяна","fr":"Annuler le préréglage","ar":"تراجع عن الإعداد","zh":"復原預設","ru":"Отменить пресет","de":"Voreinstellung rückgängig","tr":"Hazır ayarı geri al","pl":"Cofnij preset","nl":"Voorinstelling ongedaan maken"},
+        "lmPresetConfirm": {"en":"Apply this preset? These settings change (Undo puts them back):","el":"Εφαρμογή αυτής της προεπιλογής; Αλλάζουν αυτές οι ρυθμίσεις (η Αναίρεση τις επαναφέρει):","es":"¿Aplicar este preajuste? Cambian estos ajustes (Deshacer los restaura):","bg":"Да се приложи ли? Тези настройки ще се променят (Отмяна ги връща):","fr":"Appliquer ce préréglage ? Ces réglages changent (Annuler les rétablit) :","ar":"تطبيق هذا الإعداد؟ ستتغير هذه الإعدادات (التراجع يعيدها):","zh":"套用此預設？以下設定會改變（復原可還原）：","ru":"Применить пресет? Изменятся эти настройки (Отмена вернёт их):","de":"Diese Voreinstellung anwenden? Diese Einstellungen ändern sich (Rückgängig stellt sie wieder her):","tr":"Bu hazır ayar uygulansın mı? Şu ayarlar değişir (Geri al eski hâline getirir):","pl":"Zastosować ten preset? Zmienią się te ustawienia (Cofnij je przywraca):","nl":"Deze voorinstelling toepassen? Deze instellingen veranderen (Ongedaan maken zet ze terug):"},
+        "lmShowNewOptions": {"en":"Show new options","el":"Εμφάνιση νέων επιλογών","es":"Mostrar opciones nuevas","bg":"Покажи новите опции","fr":"Afficher les nouvelles options","ar":"عرض الخيارات الجديدة","zh":"顯示新選項","ru":"Показать новые опции","de":"Neue Optionen zeigen","tr":"Yeni seçenekleri göster","pl":"Pokaż nowe opcje","nl":"Nieuwe opties tonen"},
+        "lmNewBadge": {"en":"NEW","el":"ΝΕΟ","es":"NUEVO","bg":"НОВО","fr":"NOUVEAU","ar":"جديد","zh":"新","ru":"НОВОЕ","de":"NEU","tr":"YENİ","pl":"NOWE","nl":"NIEUW"},
         "eatenBy": {"en":"Eaten by","el":"Σε έφαγε","es":"Comido por","bg":"Изяден от","fr":"Mangé par","ar":"أكلك","zh":"被吃掉","ru":"Съеден","de":"Gefressen von","tr":"Seni yiyen","pl":"Zjedzony przez","nl":"Opgegeten door"},
         "copyStats": {"en":"Copy stats","el":"Αντιγραφή στατιστικών","es":"Copiar estadísticas","bg":"Копирай статистиката","fr":"Copier les stats","ar":"نسخ الإحصائيات","zh":"複製統計","ru":"Копировать статистику","de":"Statistik kopieren","tr":"İstatistikleri kopyala","pl":"Kopiuj statystyki","nl":"Statistieken kopiëren"},
         "rewardReady": {"en":"A reward is ready to claim.","el":"Μια ανταμοιβή είναι έτοιμη.","es":"Hay una recompensa lista.","bg":"Има готова награда.","fr":"Une récompense est prête.","ar":"هناك مكافأة جاهزة للاستلام.","zh":"有獎勵可以領取。","ru":"Награда готова.","de":"Eine Belohnung ist bereit.","tr":"Alınacak bir ödül var.","pl":"Nagroda gotowa do odebrania.","nl":"Er staat een beloning klaar."},
@@ -23273,6 +23282,7 @@ function thelegendmodproject() {
                 box.append(inp);
                 $('#og-options').before(box);
                 var timer = null;
+                var newOnly = false; /* "Show new options" toggle (below) */
                 var norm = function (s) {
                     s = String(s || '');
                     try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) { }
@@ -23283,17 +23293,18 @@ function thelegendmodproject() {
                     $('#og-options > .options-box').each(function () {
                         var sec = $(this);
                         var items = sec.children().not('h5');
-                        if (!q) { items.removeClass('lm-ss-hide'); sec.removeClass('lm-ss-hide'); return; }
-                        var headHit = norm(sec.children('h5').text()).indexOf(q) >= 0;
+                        if (!q && !newOnly) { items.removeClass('lm-ss-hide'); sec.removeClass('lm-ss-hide'); return; }
+                        var headHit = !!q && norm(sec.children('h5').text()).indexOf(q) >= 0;
                         var any = false;
                         items.each(function () {
                             /* the option's own text only: a dropdown's choices (e.g. every hotkey command) matched everything */
-                            var own = $(this).clone(); own.find('select, option, script, style').remove();
+                            var own = $(this).clone(); own.find('select, option, script, style, .lm-new-badge').remove();
                             var hit = headHit || norm(own.text()).indexOf(q) >= 0;
+                            if (newOnly && !$(this).hasClass('lm-new-opt')) hit = false;
                             $(this).toggleClass('lm-ss-hide', !hit);
                             if (hit) any = true;
                         });
-                        sec.toggleClass('lm-ss-hide', !any && !headHit);
+                        sec.toggleClass('lm-ss-hide', !any && (newOnly || !headHit));
                     });
                 };
                 inp.on('input', function () { clearTimeout(timer); timer = setTimeout(apply, 120); });
@@ -23303,6 +23314,131 @@ function thelegendmodproject() {
                     st.id = 'lm-ss-style';
                     st.textContent = '#og-options .lm-ss-hide{display:none!important}';
                     document.head.appendChild(st);
+                }
+                /* Presets and "New" badges, next to the search box. A preset changes only its own
+                 * keys, after confirm(), through the same paths as the switches and sliders (so
+                 * their side effects run); the old values are kept for Undo. Nothing changes
+                 * without a click. */
+                var _lmTx = function (k, en) { var s = window.lmT && window.lmT(k); return (!s || s === k) ? en : s; };
+                var presets = {
+                    competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStatsFPS: true, showStatsPPS: true } },
+                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0 } },
+                    streamer: { key: 'lmPresetStreamer', en: 'Streamer', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false } },
+                    cleanHud: { key: 'lmPresetCleanHud', en: 'Clean HUD', set: { showTop5: false, showTargeting: false, showTime: false, showLbData: false, top5skins: false, showStatsN16: false, showStatsWorldSize: false, showStatsDecayInfo: false, showStatsServerHz: false, showMiniMapGuides: false, showExtraMiniMapGuides: false } }
+                };
+                var setOpt = function (k, v) {
+                    var cb = document.getElementById(k);
+                    if (cb && cb.type === 'checkbox' && $(cb).closest('#og-options').length) {
+                        v = !!v;
+                        if (cb.checked !== v) {
+                            cb.checked = v;
+                            /* the bubbling change runs setSettings (side effects, save) and moves the Switchery */
+                            try { cb.dispatchEvent(new Event('change', { bubbles: true })); return; } catch (e) { }
+                        }
+                        if (defaultmapsettings[k] !== v) application.setSettings(k, v);
+                        return;
+                    }
+                    var sl = $('#' + k + '-slider');
+                    if (sl.length && sl.closest('#og-options').length) { sl.val(v).trigger('input').trigger('change'); return; }
+                    defaultmapsettings[k] = v;
+                };
+                var undoKey = 'lmPresetUndo';
+                var undoSnap = null;
+                try { undoSnap = JSON.parse(window.localStorage.getItem(undoKey) || 'null'); } catch (e) { }
+                if (!undoSnap || typeof undoSnap !== 'object') undoSnap = null;
+                var row = $('<div class="lm-presets-row"></div>');
+                row.append($('<span class="lm-presets-title"></span>').text(_lmTx('lmPresets', 'Presets') + ':'));
+                Object.keys(presets).forEach(function (id) {
+                    $('<button type="button" class="btn btn-xs lm-preset-btn"></button>').attr('data-preset', id).text(_lmTx(presets[id].key, presets[id].en)).appendTo(row);
+                });
+                var undoBtn = $('<button type="button" class="btn btn-xs lm-preset-undo"></button>').text(_lmTx('lmPresetUndo', 'Undo preset')).appendTo(row);
+                var newBtn = $('<button type="button" class="btn btn-xs lm-new-toggle"></button>').text(_lmTx('lmShowNewOptions', 'Show new options')).appendTo(row);
+                undoBtn.toggle(!!undoSnap);
+                box.append(row);
+                row.on('click', '.lm-preset-btn', function () {
+                    var p = presets[$(this).attr('data-preset')];
+                    if (!p) return false;
+                    var keys = Object.keys(p.set).filter(function (k) { return defaultmapsettings.hasOwnProperty(k); });
+                    var lines = keys.map(function (k) {
+                        var v = p.set[k];
+                        return '- ' + String(textLanguage[k] || k).replace(/<[^>]*>/g, '').trim() + ': ' + (v === true ? 'ON' : v === false ? 'OFF' : v);
+                    });
+                    if (!window.confirm(_lmTx(p.key, p.en) + '\n' + _lmTx('lmPresetConfirm', 'Apply this preset? These settings change (Undo puts them back):') + '\n\n' + lines.join('\n'))) return false;
+                    /* a second preset keeps the values from before the first one */
+                    var snap = undoSnap || {};
+                    keys.forEach(function (k) { if (!snap.hasOwnProperty(k)) snap[k] = defaultmapsettings[k]; });
+                    undoSnap = snap;
+                    try { window.localStorage.setItem(undoKey, JSON.stringify(snap)); } catch (e) { }
+                    keys.forEach(function (k) { setOpt(k, p.set[k]); });
+                    application.saveSettings(defaultmapsettings, 'ogarioSettings');
+                    undoBtn.show();
+                    return false;
+                });
+                undoBtn.on('click', function () {
+                    var snap = undoSnap;
+                    undoSnap = null;
+                    try { window.localStorage.removeItem(undoKey); } catch (e) { }
+                    if (snap) {
+                        Object.keys(snap).forEach(function (k) { if (defaultmapsettings.hasOwnProperty(k)) setOpt(k, snap[k]); });
+                        application.saveSettings(defaultmapsettings, 'ogarioSettings');
+                    }
+                    undoBtn.hide();
+                    return false;
+                });
+                /* Recently added options: a NEW badge for one build (until the settings were
+                 * opened with the badges shown), and a toggle that lists only them. */
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol'];
+                newBtn.on('click', function () {
+                    newOnly = !newOnly;
+                    newBtn.toggleClass('active', newOnly);
+                    apply();
+                    return false;
+                });
+                /* called at the end of setMenu, when the options (and the theme menu) exist */
+                application._lmNewBadges = function () {
+                    var seenKey = 'lmNewBadgesSeen';
+                    var seen = null;
+                    try { seen = window.localStorage.getItem(seenKey); } catch (e) { }
+                    var show = seen !== String(window.OgVer);
+                    var count = 0;
+                    NEW_KEYS.forEach(function (k) {
+                        if (!defaultmapsettings.hasOwnProperty(k) && !(typeof defaultSettings !== 'undefined' && defaultSettings.hasOwnProperty(k))) return;
+                        var el = document.getElementById(k + '-slider') || document.getElementById(k);
+                        if (!el) return;
+                        var item = $(el).closest('.slider-box, .input-box, label');
+                        if (!item.length || item.hasClass('lm-new-opt')) return;
+                        item.addClass('lm-new-opt');
+                        count++;
+                        if (!show) return;
+                        var b = $('<span class="lm-new-badge"></span>').text(_lmTx('lmNewBadge', 'NEW'));
+                        var title = item.find('.value-label, .title-box').first();
+                        if (title.length) title.append(' ', b); else $(el).before(b, ' ');
+                    });
+                    if (!show || !count) return;
+                    var mark = function () { try { window.localStorage.setItem(seenKey, String(window.OgVer)); } catch (e) { } };
+                    var target = document.getElementById('og-options');
+                    if (window.IntersectionObserver && target) {
+                        var io = new IntersectionObserver(function (en) {
+                            for (var i = 0; i < en.length; i++) {
+                                if (en[i].isIntersecting) { mark(); io.disconnect(); return; }
+                            }
+                        });
+                        io.observe(target);
+                    } else {
+                        $(document).one('click', 'a[href="#og-settings"]', mark);
+                    }
+                };
+                if (!document.getElementById('lm-presets-style')) {
+                    var st2 = document.createElement('style');
+                    st2.id = 'lm-presets-style';
+                    st2.textContent = '.lm-presets-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:5px}' +
+                        '.lm-presets-row .lm-presets-title{font-size:11px;opacity:.8;margin-right:2px}' +
+                        '.lm-presets-row .btn{padding:1px 6px;font-size:11px;line-height:1.5;background:rgba(127,127,127,.15);color:inherit;border:1px solid rgba(127,127,127,.35);border-radius:3px}' +
+                        '.lm-presets-row .btn:hover{background:rgba(127,127,127,.3)}' +
+                        '.lm-presets-row .lm-preset-undo{border-color:#e6a23c}' +
+                        '.lm-presets-row .lm-new-toggle.active{background:#e74c3c;border-color:#e74c3c;color:#fff}' +
+                        '.lm-new-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:3px;vertical-align:middle;letter-spacing:.3px}';
+                    document.head.appendChild(st2);
                 }
             })();
             //this.addOptions(["unlockedFPS"], "animationGroup");
@@ -23484,6 +23620,7 @@ function thelegendmodproject() {
             $("#exp-imp-settings").append('<textarea id="import-settings" class="form-control" rows="14" cols="100" spellcheck="false"></textarea><button id="import-settings-btn" class="btn btn-block btn-success">' +
                 textLanguage.importSettings + "</button>");
             if (Settings) Settings.setThemeMenu();
+            if (typeof this._lmNewBadges === 'function') this._lmNewBadges();
             /** @type {number} */
             var e = 0;
             for (; e < profiles.length; e++) {
