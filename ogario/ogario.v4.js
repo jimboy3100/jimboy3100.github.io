@@ -18803,6 +18803,7 @@ var displayText = {
         'hk-privateMiniMap': 'Show target on the minimap',
         'hk-showQuest': 'Show/hide quest',
         'hk-analytics': 'Open Analytics (stats, heatmaps, coach, objectives)',
+        'hk-practice': 'Open the practice arena (offline drills, bots, personal ghost)',
         'hk-showSpectator': 'Show/hide Full Spectator (Premium)',
         'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
         'hk-doubleBotSplit': 'Bots double split (Private servers)',
@@ -21697,7 +21698,7 @@ var _lmLabelI18n = {
         "hk-elPotions":"Expanding Land: Βοήθεια για φίλτρα","hk-elClaimAll":"Expanding Land: Παραλαβή όλων","hk-replayPause":"Επανάληψη: παύση/συνέχεια",
         "hk-replayFaster":"Επανάληψη: πιο γρήγορα","hk-replaySlower":"Επανάληψη: πιο αργά","hk-replayFwd":"Επανάληψη: μπροστά 250 πακέτα",
         "hk-replayBack":"Επανάληψη: πίσω 250 πακέτα","hk-middleMultiView":"Εναλλαγή μεσαίας θέας multibox","hk-mbRings":"Εμφάνιση/απόκρυψη δαχτυλιδιών multibox",
-        "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-gamepadWindow":"Άνοιγμα / κλείσιμο παραθύρου gamepad","gamepadWindow":"Gamepad: κουμπιά, ευαισθησία, προφίλ, δοκιμή","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)","hk-lmProfilesWindow":"Προφίλ ρυθμίσεων: άνοιγμα / κλείσιμο","hk-lmProfileNext":"Προφίλ ρυθμίσεων: εφαρμογή του επόμενου","hk-lmProfilePrev":"Προφίλ ρυθμίσεων: εφαρμογή του προηγούμενου","hk-lmProfileUndo":"Προφίλ ρυθμίσεων: αναίρεση της τελευταίας αλλαγής","hk-replayStudio":"Άνοιγμα Replay Studio","hk-instantReplay":"Άμεση επανάληψη (τελευταία δευτερόλεπτα· ανοίγει όταν πεθάνεις)","instantReplaySecs":"Διάρκεια άμεσης επανάληψης (δευτερόλεπτα)",
+        "hk-bigMinimap":"Μεγέθυνση / επαναφορά μικρού χάρτη","hk-gamepadWindow":"Άνοιγμα / κλείσιμο παραθύρου gamepad","gamepadWindow":"Gamepad: κουμπιά, ευαισθησία, προφίλ, δοκιμή","hk-copyServerLink":"Αντιγραφή συνδέσμου διακομιστή + κωδικού (TK&PW)","hk-lmProfilesWindow":"Προφίλ ρυθμίσεων: άνοιγμα / κλείσιμο","hk-lmProfileNext":"Προφίλ ρυθμίσεων: εφαρμογή του επόμενου","hk-lmProfilePrev":"Προφίλ ρυθμίσεων: εφαρμογή του προηγούμενου","hk-lmProfileUndo":"Προφίλ ρυθμίσεων: αναίρεση της τελευταίας αλλαγής","hk-replayStudio":"Άνοιγμα Replay Studio","hk-practice":"Άνοιγμα αρένας εξάσκησης (εκτός σύνδεσης, bots, φάντασμα ρεκόρ)","hk-instantReplay":"Άμεση επανάληψη (τελευταία δευτερόλεπτα· ανοίγει όταν πεθάνεις)","instantReplaySecs":"Διάρκεια άμεσης επανάληψης (δευτερόλεπτα)",
         "hk-netGraph":"Εμφάνιση / απόκρυψη γραφήματος δικτύου (FPS, ping)","hk-chatSounds":"Σίγαση / άρση σίγασης ήχων συνομιλίας","scanTrick":"Ενεργοποίηση Scan Trick",
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
@@ -22984,6 +22985,7 @@ textLanguage.lineSplitStatus = textLanguage.lineSplitStatus || 'Show line split 
 textLanguage.lineSplitGuide = textLanguage.lineSplitGuide || 'Draw line split aim line';
 textLanguage['hk-lineSplit'] = textLanguage['hk-lineSplit'] || 'Line split';
 textLanguage['hk-analytics'] = textLanguage['hk-analytics'] || 'Open Analytics (stats, heatmaps, coach, objectives)';
+textLanguage['hk-practice'] = textLanguage['hk-practice'] || 'Open the practice arena (offline drills, bots, personal ghost)';
 textLanguage.analytics = textLanguage.analytics || 'Analytics: record your games (dashboard, heatmaps, coach, daily objectives; kept in this browser)';
 
 /* Multibox rings: same fallback pattern. */
@@ -28603,9 +28605,12 @@ function thelegendmodproject() {
             this._lmLastDeathAt = _lmNow;
             //
             pauseVideos();
+            /* a practice arena life (ogario/modules/practice.js) is not a game: no session stats,
+             * personal bests or match history for it */
+            var _lmPracticeLife = !!(window.LMPractice && window.LMPractice.on);
             /* session summary: this life's best mass and time alive */
-            try { _lmSessionStats({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 }); } catch (e) { }
-            if (defaultmapsettings.personalBests) {
+            if (!_lmPracticeLife) try { _lmSessionStats({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 }); } catch (e) { }
+            if (defaultmapsettings.personalBests && !_lmPracticeLife) {
                 try {
                     this._lmNewBest = _lmPersonalBests({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 });
                     this._lmNewBest.at = Date.now();
@@ -28619,7 +28624,7 @@ function thelegendmodproject() {
                 } catch (e) { }
             }
             /* optional match history: one record per life (server host only, no tokens) */
-            if (defaultmapsettings.matchHistory) {
+            if (defaultmapsettings.matchHistory && !_lmPracticeLife) {
                 try {
                     var _lmMhK = window.legendmod && legendmod._lmKiller;
                     _lmMatchHistory({
@@ -32148,6 +32153,8 @@ function thelegendmodproject() {
         },
         /* ─── §4.16 Player State Sync ─── */
         sendPlayerState(state) {
+            /* Practice arena (ogario/modules/practice.js): its spawns and deaths are not the team's business */
+            if (window.LMPractice && window.LMPractice.on) return;
             if (this.isSocketOpen()) {
                 var view = this.createView(1);
                 view.setUint8(0, state);
@@ -32304,6 +32311,7 @@ function thelegendmodproject() {
             //
         },
         sendPlayerUpdate() {
+            if (window.LMPractice && window.LMPractice.on) return; /* practice arena: nothing for the team relay */
             if (
                 !(
                     this.isSocketOpen() ||
@@ -32416,6 +32424,8 @@ function thelegendmodproject() {
             }
         },
         sendPlayerPosition() {
+            /* a practice arena position is not on any server: teammates must not see it */
+            if (window.LMPractice && window.LMPractice.on) return;
             if (this.isSocketOpen() && (ogario.play || LM.playerCellsMulti.length) && this.playerID) {
                 const view = this.createView(17);
                 view.setUint8(0, 30);
@@ -85895,4 +85905,37 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading HUD editor script:', e);
     }
+    /* Practice arena (offline drills against bots, personal bests and ghosts): loaded the first
+     * time it is opened. lmPractice('open' | 'close' | 'toggle'); the simulation loads first. */
+    var _lmPrQueue = null;
+    window.lmPractice = function (action, arg) {
+        if (window.LMPractice && typeof window.LMPractice.run === 'function') return window.LMPractice.run(action, arg);
+        if (_lmPrQueue) { _lmPrQueue.push([action, arg]); return; }
+        _lmPrQueue = [[action, arg]];
+        var prFail = function (s) {
+            _lmPrQueue = null;
+            if (s) s.remove();
+            if (window.toastr) toastr.error('Practice arena could not be loaded.');
+        };
+        var prLoad = function (name, next) {
+            var s = document.createElement('script');
+            s.type = 'text/javascript';
+            s.src = 'https://www.legendmod.ml/ogario/modules/' + name + '.js?v=' + (window.OgVer || '');
+            s.onload = next;
+            s.onerror = function () { prFail(s); };
+            document.body.appendChild(s);
+        };
+        try {
+            prLoad('practice-sim', function () {
+                prLoad('practice', function () {
+                    var q = _lmPrQueue || [];
+                    _lmPrQueue = null;
+                    if (window.LMPractice && typeof window.LMPractice.run === 'function') q.forEach(function (a) { window.LMPractice.run(a[0], a[1]); });
+                });
+            });
+        } catch (e) {
+            _lmPrQueue = null;
+            console.warn('[LM] Error loading the practice arena:', e);
+        }
+    };
 })();
