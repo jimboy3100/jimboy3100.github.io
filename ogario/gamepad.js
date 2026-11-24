@@ -183,16 +183,26 @@
         return !!(b && (b.pressed || (typeof b.value === 'number' && b.value > 0.5)));
     }
 
+    /* the page has no focus (another app or tab): the pad acts on nothing. Its buttons are still
+     * read below, so one held while away does not fire when the focus comes back. */
+    function away() {
+        if (document.hidden) return true;
+        try { return document.hasFocus ? !document.hasFocus() : false; } catch (e) { return false; }
+    }
+
     function frame() {
         if (!enabled()) { running = false; release(); return; }
         var list = pads();
         if (!list.length) { running = false; release(); return; }
-        var blockAll = typing() && !menuOpen();
-        var blockGame = typing() || menuOpen();
+        var off = away();
+        var blockAll = off || (typing() && !menuOpen());
+        var blockGame = off || typing() || menuOpen();
         var feedWanted = false;
         var moved = false;
+        var present = {};
         for (var p = 0; p < list.length; p++) {
             var pad = list[p];
+            present[pad.index] = true;
             announce(pad);
             var buttons = pad.buttons || [];
             for (var key in BUTTON_MAP) {
@@ -234,9 +244,28 @@
                 }
             }
         }
+        /* stick back in the dead zone (or blocked): forget the last position, so pushing it to
+         * the same place again moves the cell (the mouse may have moved it meanwhile) */
+        if (!moved) lastMove = null;
+        /* a pad that is gone: its button states would hide the first press of the pad that
+         * next takes its index */
+        for (var id2 in prevPressed) {
+            if (!present[id2.split(':')[0]]) delete prevPressed[id2];
+        }
         setFeed(feedWanted);
         requestAnimationFrame(frame);
     }
+
+    /* Focus lost while Feed is held: the frames stop with the tab hidden, so release here
+     * (the keyboard and mouse have the same on blur) */
+    function leave() {
+        setFeed(false);
+        lastMove = null;
+    }
+    window.addEventListener('blur', leave);
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) leave();
+    });
 
     function start() {
         if (running || !enabled() || !pads().length) return;
@@ -250,7 +279,10 @@
         start();
     });
     window.addEventListener('gamepaddisconnected', function (e) {
-        if (e && e.gamepad) delete announced[e.gamepad.index + ':' + e.gamepad.id];
+        if (!e || !e.gamepad) return;
+        delete announced[e.gamepad.index + ':' + e.gamepad.id];
+        var pre = e.gamepad.index + ':';
+        for (var k in prevPressed) if (k.indexOf(pre) === 0) delete prevPressed[k];
     });
     /* option turned on later, or a pad that was already connected */
     setInterval(function () {

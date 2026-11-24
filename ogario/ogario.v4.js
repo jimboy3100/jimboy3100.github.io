@@ -24261,7 +24261,9 @@ function thelegendmodproject() {
             }
         },
         setShowSplitInd() {
-            this.showSplitInd = !this.showSplitInd;
+            /* from the settings themselves (the menu can change them): both on -> both off,
+             * otherwise both on. A flag of its own got out of step and the first press did nothing. */
+            this.showSplitInd = !(defaultmapsettings.splitRange && defaultmapsettings.oppRings);
             defaultmapsettings.splitRange = this.showSplitInd;
             defaultmapsettings.oppRings = this.showSplitInd;
             ogario.splitRange = defaultmapsettings.splitRange;

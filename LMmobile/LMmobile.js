@@ -1536,11 +1536,11 @@
             var vh = window.innerHeight;
             var GAP = 8;
 
-            if (mm) {
-                var r = mm.getBoundingClientRect();
-                // Sanity: skip if rect is clearly stale (0-sized or off-screen)
-                if (r.width < 10 || r.height < 10 || r.right < 0 || r.bottom < 0) return;
-
+            var r = mm ? mm.getBoundingClientRect() : null;
+            /* A 0-sized or off-screen rect is a hidden minimap (option off, HUD hidden): the
+             * fallback, as without one. Returning kept the buttons around the old minimap spot.
+             * This runs every 2.5 s and on resize/rotation, so they move back once it shows. */
+            if (r && !(r.width < 10 || r.height < 10 || r.right < 0 || r.bottom < 0)) {
                 // SPLIT/FEED: column to LEFT of minimap, bottom-aligned at 4px
                 var rRight = vw - r.left + GAP;
                 rootR.style.right = rRight + 'px';
@@ -1552,7 +1552,7 @@
                 smallR.style.left = 'auto';
                 smallR.style.bottom = smBottom + 'px';
             } else {
-                // Fallback: minimap not found
+                // Fallback: no minimap, or a hidden one
                 rootR.style.right = '14px';
                 rootR.style.bottom = '4px';
                 smallR.style.right = '14px';
