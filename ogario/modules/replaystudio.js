@@ -562,7 +562,18 @@
         r.n = n;
         for (var i = r.cpsScan; i < n; i++) {
             var d = r.arr[i];
-            if (d && d.byteLength && d.getUint8(0) === 18) r.cps.push(i);
+            if (!d || !d.byteLength) continue;
+            var op = d.getUint8(0);
+            /* P1 fix #40: LZ4-compressed packets (opcode 255) must be decompressed
+             * before the opcode can be checked. Without this, cps stays [0] for
+             * compressed recordings and all backward seeks replay from packet 0. */
+            if (op === 255) {
+                var l = LM();
+                if (l && typeof l.decompressMessage === 'function') {
+                    try { var m = l.decompressMessage(d); if (m && m.length) op = m.readUInt8(0); } catch (e) { }
+                }
+            }
+            if (op === 18) r.cps.push(i);
         }
         r.cpsScan = n;
         r.endT = n ? r.t[n - 1] : 0;

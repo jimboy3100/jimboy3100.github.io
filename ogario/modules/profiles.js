@@ -664,10 +664,15 @@
         var app = window.application;
         /* 1. the target state in storage, all or nothing (a full storage changes nothing) */
         var entries = [];
-        if (c.s) entries.push({ key: 'ogarioSettings', text: JSON.stringify(Object.assign({}, cur.s, data.s)) });
-        if (c.t) entries.push({ key: 'ogarioThemeSettings', text: JSON.stringify(Object.assign({}, cur.t, data.t)) });
+        /* P1 fix #26: for restore/undo operations, do not merge current settings
+         * underneath the backup. Settings added after the backup was taken should
+         * revert to their built-in defaults, not persist from the current state.
+         * Profile-apply still merges, so switching profiles preserves new settings. */
+        var isRestore = opts.reason === 'restore' || opts.reason === 'undo';
+        if (c.s) entries.push({ key: 'ogarioSettings', text: JSON.stringify(isRestore ? Object.assign({}, data.s) : Object.assign({}, cur.s, data.s)) });
+        if (c.t) entries.push({ key: 'ogarioThemeSettings', text: JSON.stringify(isRestore ? Object.assign({}, data.t) : Object.assign({}, cur.t, data.t)) });
         if (c.h) entries.push({ key: 'ogarioHotkeys', text: JSON.stringify(data.h) });
-        if (c.m) entries.push({ key: 'lm-mobile-prefs', text: JSON.stringify(Object.assign({}, cur.m || {}, data.m)) });
+        if (c.m) entries.push({ key: 'lm-mobile-prefs', text: JSON.stringify(isRestore ? Object.assign({}, data.m) : Object.assign({}, cur.m || {}, data.m)) });
         /* P0 fix: write mobile layouts and gamepad config when present in the profile */
         if (data.ml) entries.push({ key: 'lm-mobile-layouts', text: JSON.stringify(data.ml) });
         if (data.gp) entries.push({ key: 'lmGamepad', text: JSON.stringify(data.gp) });

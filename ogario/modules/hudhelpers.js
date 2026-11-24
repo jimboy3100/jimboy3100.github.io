@@ -79,6 +79,10 @@
                 c._lmHHDur = mergeDuration(m);
                 c._lmHHEnd = now + c._lmHHDur * 1000;
                 owner.beep = true;
+                /* P1 fix #62: record the earliest time the new cells' merge countdowns
+                 * will expire, so we only beep for the NEW split, not for cells from an
+                 * older split that are already ready. */
+                owner.beepAfter = now + (c._lmHHDur || 0) * 1000;
             } else if (c._lmHHPm === undefined || c._lmHHEnd === undefined) {
                 c._lmHHEnd = -1;
             }
@@ -159,7 +163,7 @@
     for (var _oi = 0; _oi < MAX_OWNERS; _oi++) {
         owners.push({
             cells: [], dir: { has: false, x: 0, y: 0, t: 0, n: 0, vx: 0, vy: 0 },
-            prevCount: 0, beep: false, maxSize: 0, sx: 0, sy: 0, sw: 0, n: 0
+            prevCount: 0, beep: false, beepAfter: 0, maxSize: 0, sx: 0, sy: 0, sw: 0, n: 0
         });
     }
     var refMass = 0;            /* mass of your biggest cell (0 when not playing) */
@@ -288,7 +292,7 @@
                 var o = owners[i];
                 var ready = trackMerge(o, o.cells, o.n, now);
                 if (!known) continue;
-                if (o.beep && ready >= 2) { o.beep = false; beepNow = true; }
+                if (o.beep && ready >= 2 && (!o.beepAfter || now >= o.beepAfter)) { o.beep = false; o.beepAfter = 0; beepNow = true; }
                 if (!draw || o.n < 2) continue;
                 for (var j = 0; j < o.n; j++) {
                     var c = o.cells[j];
@@ -678,16 +682,22 @@
     }
 
     var _precisionSaved = null;
+    var _precisionMultiplier = 1;
     function precisionZoom(down) {
         var LM = window.legendmod;
         if (!LM) return;
         if (down) {
             if (_precisionSaved !== null || !(LM.zoomValue > 0)) return;
             _precisionSaved = LM.zoomValue;
-            LM.zoomValue = Math.min(_precisionSaved * 2.5, 40);
+            _precisionMultiplier = Math.min(_precisionSaved * 2.5, 40) / _precisionSaved;
+            LM.zoomValue = _precisionSaved * _precisionMultiplier;
         } else if (_precisionSaved !== null) {
-            LM.zoomValue = _precisionSaved;
+            /* P1 fix #64: preserve any wheel zoom adjustments made during precision mode.
+             * Instead of restoring the absolute saved value, divide by the multiplier
+             * so manual wheel changes are kept. */
+            LM.zoomValue = LM.zoomValue / _precisionMultiplier;
             _precisionSaved = null;
+            _precisionMultiplier = 1;
         }
     }
 

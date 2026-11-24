@@ -461,8 +461,19 @@
     function close(keep) {
         if (!editing) return;
         if (keep && work) {
-            ORIENTS.forEach(function (o) { store.current[o] = cleanLayout(work[o]); });
-            if (save()) toast('success', 'Control layout saved (' + orient + ').');
+            /* P1 fix #75: clone the work layouts into a temporary object first;
+             * only commit them to store.current after save() succeeds, so a
+             * failed write (storage full) does not leave corrupted state. */
+            var pending = {};
+            ORIENTS.forEach(function (o) { pending[o] = cleanLayout(work[o]); });
+            var prev = { landscape: store.current.landscape, portrait: store.current.portrait };
+            ORIENTS.forEach(function (o) { store.current[o] = pending[o]; });
+            if (save()) {
+                toast('success', 'Control layout saved (' + orient + ').');
+            } else {
+                store.current.landscape = prev.landscape;
+                store.current.portrait = prev.portrait;
+            }
         }
         W.removeEventListener('resize', onResize);
         if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
