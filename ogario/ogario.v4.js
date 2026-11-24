@@ -24065,9 +24065,12 @@ function thelegendmodproject() {
         setMenuBg() {
             $('#menuBg').val(defaultSettings.menuBg);
             if (defaultSettings.menuBg) {
-                $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'url(' + defaultSettings.menuBg + ')');
+                var bgUrl = 'url(' + defaultSettings.menuBg + ')';
+                $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', bgUrl);
+                this.addCustomCSS('menuBgCSS', '.menu-panel,.agario-side-panel,#hotkeys,#exp-imp{background-image:' + bgUrl + '!important;background-size:cover!important;background-position:center!important}');
             } else {
                 $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'none');
+                this.addCustomCSS('menuBgCSS', '');
             }
         },
         setHud() {
