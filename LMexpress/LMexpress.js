@@ -9122,6 +9122,55 @@ function changeFrameWork() {
 function changeFrameWorkStart() {
     defaultmapsettings.unlockedFPS = false;
 }
+/* ── Legend Mod Theme Bridge (mod-side helpers) ──
+ * lmThemeData()  → returns {pc, pc2, mc, tc, tc2, bg, op, btc, b1, b2, b3, b4}
+ * lmThemeQuery() → returns "?lm=<base64 JSON>" to append to any URL
+ * lmThemeSend(iframe) → sends theme via postMessage to an iframe element */
+function lmThemeData() {
+    var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
+    return {
+        pc:  ds.menuPanelColor   || $('#menuPanelColor').val()  || '#00243e',
+        pc2: ds.menuPanelColor2  || $('#menuPanelColor2').val() || '#002f52',
+        mc:  ds.menuMainColor    || $('#hudMainColor').val()    || '#01d9cc',
+        tc:  ds.menuTextColor    || '#ffffff',
+        tc2: ds.menuTextColor2   || '#8096a7',
+        bg:  ds.menuBg           || $('#menuBg').val()          || '',
+        op:  String(ds.menuOpacity != null ? ds.menuOpacity : '0.96'),
+        btc: ds.menuBtnTextColor || '#ffffff',
+        b1:  ds.btn1Color        || '#018cf6',
+        b2:  ds.btn2Color        || '#00b9e8',
+        b3:  ds.btn3Color        || '#8d5fe6',
+        b4:  ds.btn4Color        || '#bf00aa'
+    };
+}
+function lmThemeQuery() {
+    try { return '?lm=' + btoa(JSON.stringify(lmThemeData())); }
+    catch (e) { return ''; }
+}
+function lmThemeHash() {
+    try { return '#lm=' + btoa(JSON.stringify(lmThemeData())); }
+    catch (e) { return ''; }
+}
+function lmThemeSend(iframeEl) {
+    if (!iframeEl || !iframeEl.contentWindow) return;
+    try {
+        iframeEl.contentWindow.postMessage({
+            type: 'lm-theme', theme: lmThemeData()
+        }, '*');
+    } catch (e) {}
+}
+/* After any lm-promo modal is built, send theme to its iframes */
+function lmThemeSendToModalIframes(sel) {
+    setTimeout(function () {
+        $(sel).find('iframe').each(function () {
+            lmThemeSend(this);
+            /* Also send after iframe loads (in case it wasn't ready) */
+            var el = this;
+            $(this).on('load', function () { lmThemeSend(el); });
+        });
+    }, 200);
+}
+
 /* Promo and admin windows (Bootstrap modal markup): themed like the LM windows (Match history,
  * Private room) with the --lm-* menu colours, the close cross on the right and "?" on the left,
  * centred and kept on screen, and only this dialog drags (by its title bar). */
@@ -9150,6 +9199,8 @@ function lmPromoChrome(sel) {
     var h = d.outerHeight() || 0;
     d.css('top', Math.max(0, Math.round((window.innerHeight - h) / 2) - 30) + 'px');
     if (typeof d.draggable === 'function') d.draggable({ handle: '.modal-header', cancel: '.close' });
+    /* Send theme to any iframes inside this modal */
+    lmThemeSendToModalIframes(sel);
 }
 function LMnoBotsPromo() {
     if (window.LM_IS_MOBILE) return; // skip promo on mobile
