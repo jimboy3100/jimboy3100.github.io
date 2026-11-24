@@ -3199,6 +3199,9 @@ function deleteGamemode(temp, restoreLast) {
             text: '👑 Expanding Land FFA',
             value: 5001
         }, {
+            text: '👑 Expanding Land Teams',
+            value: 5002
+        }, {
             text: 'Arctida',
             value: 6
         }, {
@@ -3420,6 +3423,10 @@ function deleteGamemode(temp, restoreLast) {
         // Expanding Land FFA - only active private server
         if ($('#gamemode').val() == 5001) {
             core.connect('wss://ffa.legendmod.ml:8080');
+        }
+        // Expanding Land Teams (same server, separate accounts and progress)
+        else if ($('#gamemode').val() == 5002) {
+            core.connect('wss://api.legendmod.ml/el-teams');
         }
         // Imsolo & Agar2 private server connections (multi-protocol support)
         // Arctida & Dagestan: use ImSolo load balancer API with fallback to hardcoded URLs
@@ -18744,6 +18751,15 @@ var _elDeathVisual =
     null;
 
 
+/* Expanding Land Teams: SetBorder (opcode 64) carries a u32 gameType after the four
+ * doubles (0 = FFA, 1 = Teams). On Teams the connection uses LM's ':teams' display
+ * (pie, team colours); every Expanding Land check still goes through serverType and
+ * isLegendWorld, which stay set. Bound to the socket, so a new connection starts clean. */
+function _lmElTeamsActive(client) {
+    return !!(client && client.socket && client._lmElTeamsSocket === client.socket &&
+        (client.serverType === 'expandingland' || client.isLegendWorld === true));
+}
+
 function _isExpandingLandClient(
     client
 ) {
@@ -28875,6 +28891,7 @@ function thelegendmodproject() {
                 // Keep existing gameMode set by Agar2 connection handler
             } else {
                 this.gameMode = ogario.gameMode = gmVal;
+                if (_lmElTeamsActive(ogario)) this.gameMode = ogario.gameMode = ':teams';
             }
             this.setQuest();
             if (this.gameMode !== ':party' || !value) {
@@ -43470,6 +43487,12 @@ function thelegendmodproject() {
                     s += 8;
                     this.viewMaxY = message.readDoubleLE(s);
 
+                    /* Expanding Land gameType (see _lmElTeamsActive); other servers are not affected */
+                    var _lmElWasTeams = _lmElTeamsActive(this);
+                    this._lmElTeamsSocket = (data.byteLength >= 37 && data.getUint32(33, true) === 1) ? this.socket : null;
+                    if (_lmElTeamsActive(this)) this.gameMode = ':teams';
+                    else if (_lmElWasTeams) this.gameMode = ':expandingland';
+
                     this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
                     if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
@@ -43535,6 +43558,7 @@ function thelegendmodproject() {
 
                         this.gameMode =
                             ':expandingland';
+                        if (_lmElTeamsActive(this)) this.gameMode = ':teams';
 
                         /* Capability reply [240,'L','M',caps], once per connection and never from a
                          * replay: bit 0 = understands the killer info (lmKiller) in the game over,
