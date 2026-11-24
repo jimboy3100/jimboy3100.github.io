@@ -16973,6 +16973,10 @@ var displayText = {
         'hk-pingGoHere': 'Ping druzyny: Idz tutaj',
         'hk-pingVirus': 'Ping druzyny: Tu jest wirus',
         'hk-specNextTop': 'Wolna obserwacja: sledz nastepnego gracza z topki',
+        'hk-bigMinimap': 'Powieksz / przywroc minimape',
+        'hk-copyServerLink': 'Kopiuj link do serwera + haslo (TK&PW)',
+        'hk-netGraph': 'Pokaz / ukryj wykres sieci (FPS, ping)',
+        'hk-chatSounds': 'Wycisz / wlacz dzwieki czatu',
         'hk-switchServerMode': 'Przelacz serwer [publiczny/prywatny]',
         'hk-showTargeting': 'Pokaz/ukryj panel namierzania',
         'hk-voiceChat': 'Glos do tekstu',
@@ -17517,6 +17521,10 @@ var displayText = {
         'hk-pingGoHere': 'Team ping: Go here',
         'hk-pingVirus': 'Team ping: Virus here',
         'hk-specNextTop': 'Free spectate: follow next leaderboard player',
+        'hk-bigMinimap': 'Enlarge / restore minimap',
+        'hk-copyServerLink': 'Copy server link + password (TK&PW)',
+        'hk-netGraph': 'Show / hide net graph (FPS, ping)',
+        'hk-chatSounds': 'Mute / unmute chat sounds',
         'hk-switchServerMode': 'Switch server [public/private]',
         'hk-showTargeting': 'Show/hide targeting panel',
         'hk-voiceChat': 'Voice to text',
@@ -24239,6 +24247,9 @@ function thelegendmodproject() {
                     case 'clickSpectate':
                         if (!checked && window.legendmod && legendmod._lmSpecCell) legendmod._lmSpecCellStop();
                         break;
+                    case 'lbClickSpectate':
+                        if (!checked && window.legendmod && legendmod._lmSpecLb != null) { legendmod._lmSpecLb = null; legendmod._lmSpecLbHud(); }
+                        break;
                     case 'minimapClickSpectate':
                         this._lmMmSpecPE();
                         break;
@@ -25162,13 +25173,17 @@ function thelegendmodproject() {
                         });
                         sec.toggleClass('lm-ss-hide', !any && (newOnly || !headHit));
                     });
+                    /* the new theme options are in Theme > basic: "Show new options" lists only them there too */
+                    $('#theme-main').children().each(function () {
+                        $(this).toggleClass('lm-ss-hide', newOnly && !$(this).hasClass('lm-new-opt'));
+                    });
                 };
                 inp.on('input', function () { clearTimeout(timer); timer = setTimeout(apply, 120); });
                 /* keys typed here are text, not hotkeys (the hotkey handler skips inputs) */
                 if (!document.getElementById('lm-ss-style')) {
                     var st = document.createElement('style');
                     st.id = 'lm-ss-style';
-                    st.textContent = '#og-options .lm-ss-hide{display:none!important}';
+                    st.textContent = '#og-options .lm-ss-hide,#theme-main > .lm-ss-hide{display:none!important}';
                     document.head.appendChild(st);
                 }
                 /* Presets and "New" badges, next to the search box. A preset changes only its own
@@ -25244,7 +25259,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -40927,7 +40942,9 @@ function thelegendmodproject() {
                         }
                         cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
                         cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
-                        if (!this.play && this.targeting || this.pause) {
+                        /* a free spectate follow (leaderboard / clicked player) wins over teammate targeting */
+                        var _lmSpFol = !this.play && this.isFreeSpectate && (this._lmSpecLb != null || !!this._lmSpecCell);
+                        if (!this.play && this.targeting && !_lmSpFol || this.pause) {
                             /* targetX/Y are local (rotated) coordinates: translate like the cursor. */
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.targetX) : this.targetX;
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.targetY) : this.targetY;
@@ -49206,14 +49223,15 @@ Most cells eaten   : ${mostCellsEaten}
                 el = document.createElement('div');
                 el.id = 'lm-spec-follow';
                 el.className = 'hud';
-                el.style.cssText = 'position:fixed;left:50%;top:44px;transform:translateX(-50%);padding:3px 10px;border-radius:4px;font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
+                el.style.cssText = 'position:fixed;left:50%;top:56px;transform:translateX(-50%);padding:3px 10px;border-radius:4px;font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
                 document.body.appendChild(el);
             }
+            this._lmSpecFollowTop(el);
             var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
             var sector = '';
             try { sector = application.calculateMapSector(g.x + this.mapOffsetX, g.y + this.mapOffsetY); } catch (e) { }
             el.textContent = label + ' #' + (i + 1) + ' \u00B7 ' + application.shortMassFormat(g.mass) + (sector ? ' \u00B7 ' + sector : '');
-            el.style.display = '';
+            el.style.display = 'block'; /* .hud is display:none in the stylesheet: '' kept the label hidden */
         },
         /* Free spectate following a clicked player (option clickSpectate): _lmSpecCell = {nick, color}
          * plus the last centre, mass and time it was seen. Clicking empty space stops. */
@@ -49225,7 +49243,11 @@ Most cells eaten   : ${mostCellsEaten}
                 var dx = x - c.x, dy = y - c.y;
                 if (dx * dx + dy * dy <= c.size * c.size && (!best || c.size > best.size)) best = c;
             }
-            if (!best) { this._lmSpecCellStop(); return null; }
+            if (!best) {
+                if (this._lmSpecLb != null) { this._lmSpecLb = null; this._lmSpecLbHud(); }
+                this._lmSpecCellStop();
+                return null;
+            }
             this._lmSpecLb = null; /* one follow at a time */
             this._lmSpecCell = { nick: best.nick || '', color: best.color, x: best.x, y: best.y, mass: ~~(best.size * best.size / 100), at: Date.now() };
             this._lmSpecCellHud();
@@ -49259,6 +49281,16 @@ Most cells eaten   : ${mostCellsEaten}
             this._lmSpecCellHud();
             return t;
         },
+        /* the follow label sits below the Expanding Land event banner (top 28px); on phones the
+         * net graph is at the top middle too, so it goes below that when it is open */
+        _lmSpecFollowTop(el) {
+            var top = 56, ng = document.getElementById('lm-net-graph');
+            if (ng) {
+                var r = ng.getBoundingClientRect(), mid = (window.innerWidth || 0) / 2;
+                if (r.height && r.top < 200 && r.left < mid && r.right > mid) top = Math.max(top, Math.ceil(r.bottom) + 6);
+            }
+            if (el.style.top !== top + 'px') el.style.top = top + 'px';
+        },
         _lmSpecCellStop() {
             this._lmSpecCell = null;
             this._lmSpecCellHud();
@@ -49274,13 +49306,14 @@ Most cells eaten   : ${mostCellsEaten}
                 el = document.createElement('div');
                 el.id = 'lm-spec-follow';
                 el.className = 'hud';
-                el.style.cssText = 'position:fixed;left:50%;top:44px;transform:translateX(-50%);padding:3px 10px;border-radius:4px;font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
+                el.style.cssText = 'position:fixed;left:50%;top:56px;transform:translateX(-50%);padding:3px 10px;border-radius:4px;font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
                 document.body.appendChild(el);
             }
+            this._lmSpecFollowTop(el);
             var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
             var txt = label + ' ' + (t.nick || '?') + ' \u00B7 ' + application.shortMassFormat(t.mass);
             if (el.textContent !== txt) el.textContent = txt;
-            if (el.style.display) el.style.display = '';
+            if (el.style.display !== 'block') el.style.display = 'block';
         },
         flushCellsData(preserveMapGeometry) {
             /*
@@ -52355,6 +52388,17 @@ Most cells eaten   : ${mostCellsEaten}
              * Calculate the ordinary cursor every time so key release can
              * return to normal movement immediately.
              */
+            /* "Camera on the centre of mass": the screen centre is the weighted centre (the
+             * point the camera follows), so the world point under the mouse is what goes out.
+             * Same test as the camera; multibox views that take the camera over keep viewX. */
+            if (defaultmapsettings.centerWeightCamera && this.play && this.playerCells && this.playerCells.length &&
+                Number.isFinite(this._lmWeightX) && Number.isFinite(this._lmWeightY) &&
+                !defaultmapsettings.middleMultiView &&
+                !(window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && getActiveSpect(window.multiboxPlayerEnabled))) {
+                viewX = this._lmWeightX;
+                viewY = this._lmWeightY;
+            }
+
             var normalCursorX =
                 screenDX /
                 viewScale +

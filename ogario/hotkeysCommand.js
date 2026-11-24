@@ -419,6 +419,7 @@
 					var n = lm.ghostCells ? lm.ghostCells.length : 0;
 					if (!n) return;
 					lm._lmSpecLb = lm._lmSpecLb == null ? 0 : (lm._lmSpecLb + 1) % n;
+					lm._lmSpecCell = null; /* one follow at a time */
 					lm._lmSpecLbHud && lm._lmSpecLbHud();
 					var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
 					if (window.toastr) toastr.info(label + ' #' + (lm._lmSpecLb + 1));
