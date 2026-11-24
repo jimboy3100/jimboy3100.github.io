@@ -603,6 +603,7 @@
         stopTimers();
         P.driving = false;
         P.playing = false;
+        restoreSkins();
         ui();
     }
     function handle(i) {
@@ -751,20 +752,36 @@
         saveOpt();
         ui();
     }
-    /* skins saved with the recording: plain nick -> http(s) URL pairs (as playReplayLM) */
+    /* skins saved with the recording: plain nick -> http(s) URL pairs (as playReplayLM).
+     * P1 fix: save a backup of overwritten entries so they can be restored after replay. */
+    var skinBackup = null;
     function applySkins(spec) {
         var app = window.application;
         if (!app || !app.customSkinsMap || typeof spec[4] !== 'string') return;
         try {
             var o = JSON.parse(spec[4]);
             if (!o || typeof o !== 'object') return;
+            skinBackup = skinBackup || {};
             Object.keys(o).forEach(function (k) {
                 var u = o[k];
                 if (k === '__proto__' || k === 'constructor' || k === 'prototype') return;
                 if (typeof u !== 'string' || !/^https?:\/\/[^\s"'<>`]+$/i.test(u)) return;
+                /* only save the original the first time (subsequent replays shouldn't clobber it) */
+                if (!Object.prototype.hasOwnProperty.call(skinBackup, k)) skinBackup[k] = app.customSkinsMap[k];
                 app.customSkinsMap[k] = u;
             });
         } catch (e) { }
+    }
+    function restoreSkins() {
+        if (!skinBackup) return;
+        var app = window.application;
+        if (app && app.customSkinsMap) {
+            Object.keys(skinBackup).forEach(function (k) {
+                if (skinBackup[k] === undefined) delete app.customSkinsMap[k];
+                else app.customSkinsMap[k] = skinBackup[k];
+            });
+        }
+        skinBackup = null;
     }
 
     /* instant replay: the last N seconds of the current recording. A replay needs the game
@@ -1053,6 +1070,17 @@
         var rp = window.RecordedProtocol, specs = window.RecordedArenasSpecifications, list = window.RecordedProtocolArenas;
         if (!rp || !specs || !list) return null;
         for (var i = 0; i < list.length; i++) { var a0 = rp[list[i]]; if (libId && a0 && a0._lmLib === libId) return list[i]; }
+        /* P1 fix: cap the number of in-memory recordings to prevent unbounded growth
+         * when importing many replays. Keep at most 10; evict the oldest non-live one. */
+        while (list.length >= 10) {
+            var evictIdx = -1, lk = liveKey();
+            for (var j = 0; j < list.length; j++) {
+                if (list[j] !== lk && list[j] !== (window.legendmod || {}).playingReplayServer) { evictIdx = j; break; }
+            }
+            if (evictIdx < 0) break;
+            var evicted = list.splice(evictIdx, 1)[0];
+            delete rp[evicted]; delete specs[evicted];
+        }
         baseKey = String(baseKey || 'replay').replace(/\^/g, '');
         var ext = /\.lm$/i.test(baseKey) ? '.lm' : '', root = baseKey.replace(/\.lm$/i, '').replace(/\(\d+\)$/, ''), key = root + ext;
         for (i = 1; (rp[key] || specs[key]) && i < 100; i++) key = root + '(' + i + ')' + ext;

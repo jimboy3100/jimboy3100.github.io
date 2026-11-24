@@ -506,17 +506,20 @@
 
     /* ------------------------------------------------------------------ storage */
     function lsGet(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
-    /* full or blocked storage: the oldest half of the list goes and the write is tried once more */
+    /* full or blocked storage: repeatedly halve the list until the write succeeds or list is empty.
+     * P1 fix #52: original code only tried twice; a very large list may need several halvings. */
     function lsSetList(k, field, list) {
-        for (var tries = 0; tries < 2; tries++) {
+        while (true) {
             try {
                 var o = { v: SCHEMA };
                 o[field] = list;
                 window.localStorage.setItem(k, JSON.stringify(o));
                 return true;
-            } catch (e) { list = list.slice(Math.floor(list.length / 2)); }
+            } catch (e) {
+                if (list.length <= 1) return false;
+                list = list.slice(Math.floor(list.length / 2));
+            }
         }
-        return false;
     }
     function loadGames() { return parseStore(lsGet(KEY_GAMES), 'games', sanitizeGame, MAX_GAMES); }
     function loadTracks() { return parseStore(lsGet(KEY_TRACKS), 'tracks', sanitizeTrack, MAX_TRACKS); }
@@ -543,6 +546,10 @@
     function ensureDaily(s, games, now) {
         var key = dayKey(now);
         if (s.day === key && s.daily.length) return false;
+        /* P1 fix #53: backward clock skew (e.g. NTP correction) could make
+         * dayKey() return an earlier date, wiping today's objectives. Only
+         * regenerate when the new key is strictly later or the first ever. */
+        if (s.day && key < s.day) return false;
         s.daily.forEach(function (g) { delete s.done[g.id]; });
         s.day = key;
         var start = dayStart(now);
@@ -648,6 +655,9 @@
         var now = +e.time || Date.now();
         var ms = Math.max(0, Math.min(+e.msAlive || now - L.start, 6 * 3600000));
         var peak = Math.max(L.peak, +e.mass || 0);
+        /* P1 fix #49: If the death event reports 0 mass (fully consumed), update L.end
+         * so retention reflects the wipeout instead of showing 100%. */
+        if (+e.mass === 0 || e.mass === undefined) L.end = 0;
         if (peak <= 0 && ms < 1000) return;
         if (L.prevPos === 1 && L.lbAt) L.first += Math.min(now - L.lbAt, 5000);
         settleSplits(L, now, true);

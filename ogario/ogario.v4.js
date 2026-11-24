@@ -31288,8 +31288,6 @@ function thelegendmodproject() {
         SLGconnect2(srv) { },
         closeConnection() {
             if (this.socket) {
-                /* Detach every handler: closing a still-connecting socket fires
-                 * onerror, which used to set window.noOgarioSocket permanently. */
                 this.socket.onmessage = null;
                 this.socket.onerror = null;
                 this.socket.onclose = null;
@@ -42090,6 +42088,10 @@ function thelegendmodproject() {
             //}				
         },
         closeConnection() {
+            /* P1 fix: clear _lmRecLive on disconnect so the Replay Studio's Live
+             * indicator goes away. Without this, _lmRecLive stays true after a
+             * disconnect and liveKey() returns a stale key. */
+            window._lmRecLive = false;
             // Clear Imsolo/Agar2 heartbeat interval on disconnect
             if (this.imsoloHeartbeatInterval) {
                 clearInterval(this.imsoloHeartbeatInterval);
