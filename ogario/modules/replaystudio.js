@@ -890,7 +890,16 @@
         if (ovRaf || !(OPT.cur || OPT.spl) || !P.driving) return;
         ovRaf = requestAnimationFrame(drawOverlay);
     }
-    function overlayClear() { if (ov) ov.getContext('2d').clearRect(0, 0, ov.width, ov.height); }
+    function overlayClear() {
+        if (ovRaf) { cancelAnimationFrame(ovRaf); ovRaf = 0; }
+        /* P2 fix #87: remove the overlay canvas from the DOM when clearing,
+         * preventing an orphaned canvas when the game canvas is replaced */
+        if (ov) {
+            try { ov.getContext('2d').clearRect(0, 0, ov.width, ov.height); } catch (e) { }
+            if (ov.parentNode) ov.parentNode.removeChild(ov);
+            ov = null;
+        }
+    }
     function lastIdx(a, stride, t) {
         var lo = 0, hi = Math.floor(a.length / stride) - 1, best = -1;
         while (lo <= hi) {

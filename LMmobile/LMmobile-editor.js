@@ -723,6 +723,24 @@
             }
             return;
         }
+        /* P2 fix #104: when two fingers touch down simultaneously (no existing drag),
+         * check if both fingers hit the same control. The first becomes drag, the
+         * second immediately starts a pinch. */
+        if (!drag && e.touches.length >= 2) {
+            var t0 = e.touches[0], t1 = e.touches[1];
+            var hit0 = target({ target: document.elementFromPoint(t0.clientX, t0.clientY) || e.target });
+            var hit1 = target({ target: document.elementFromPoint(t1.clientX, t1.clientY) || e.target });
+            if (hit0 && hit1 && hit0.getAttribute('data-ed') === hit1.getAttribute('data-ed')) {
+                var id = hit0.getAttribute('data-ed');
+                sel = id;
+                drag = { id: id, act: hit0.getAttribute('data-ed-act'), tid: t0.identifier, sx: t0.clientX, sy: t0.clientY, r0: rectFor(id), pinch: null, moved: false };
+                var en2 = ensureEntry(id);
+                drag.pinch = { tid2: t1.identifier, d0: Math.max(10, tDist(t0, t1)), s0: en2.s, r0: rectFor(id) };
+                ov.classList.add('drag');
+                render();
+                return;
+            }
+        }
         if (drag) return;
         var hit = target(e);
         if (!hit) { select(null); return; }

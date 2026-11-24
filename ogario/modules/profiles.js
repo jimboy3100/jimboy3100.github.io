@@ -537,9 +537,15 @@
     }
     /* the saved settings (what a reload would load): the state before a change that is being saved */
     function snapshotFromStorage() {
+        /* P2 fix #82: guard against empty {} in storage bypassing defaults.
+         * readJSON can return {} which is truthy but has no keys. */
+        var s = readJSON('ogarioSettings');
+        if (!s || !Object.keys(s).length) s = window.LM_SETTINGS_DEFAULTS;
+        var t = readJSON('ogarioThemeSettings');
+        if (!t || !Object.keys(t).length) t = window.LM_THEME_DEFAULTS;
         return cleanBundle({
-            s: readJSON('ogarioSettings') || window.LM_SETTINGS_DEFAULTS,
-            t: readJSON('ogarioThemeSettings') || window.LM_THEME_DEFAULTS,
+            s: s,
+            t: t,
             h: readJSON('ogarioHotkeys'),
             k: readJSON('ogarioHotkeysKnown'),
             m: readJSON('lm-mobile-prefs'),
