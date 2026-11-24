@@ -18638,6 +18638,18 @@ var displayText = {
         volNotifications: 'Notification sounds volume',
         audioDucking: 'Audio ducking (lower video skins while a chat sound plays)',
         'hk-notifCentre': 'Open the notification centre',
+        'hk-director': 'Spectator director: open / close the panel',
+        'hk-dirAuto': 'Spectator director: auto camera on / off',
+        'hk-dirBroadcast': 'Spectator director: broadcast HUD on / off',
+        'hk-dirWatchNext': 'Spectator director: next watched player',
+        'hk-dirWatchPrev': 'Spectator director: previous watched player',
+        'hk-dirWatchAdd': 'Spectator director: watch the player under the mouse',
+        'hk-dirMarkSave': 'Spectator director: save a camera bookmark',
+        'hk-dirMark1': 'Spectator director: go to camera bookmark 1',
+        'hk-dirMark2': 'Spectator director: go to camera bookmark 2',
+        'hk-dirMark3': 'Spectator director: go to camera bookmark 3',
+        'hk-dirMark4': 'Spectator director: go to camera bookmark 4',
+        'hk-dirMark5': 'Spectator director: go to camera bookmark 5',
         potionsDrinker: 'Randomly drink Potions',
         //massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
@@ -21583,6 +21595,10 @@ var _lmLabelI18n = {
         "lmNotifCatAchievements":"Επιτεύγματα / σήματα","lmNotifCatBests":"Προσωπικά ρεκόρ","lmNotifCatParty":"Προσκλήσεις party / ομάδας",
         "lmNotifCatReplay":"Επανάληψη","lmNotifCatConnection":"Σύνδεση","lmNotifCatSettings":"Ρυθμίσεις","lmNotifCatChat":"Αναδυόμενα συνομιλίας",
         "lmNotifCatOther":"Άλλα","lmNotifTypeSuccess":"Επιτυχία","lmNotifTypeInfo":"Πληροφορία","lmNotifTypeWarning":"Προειδοποίηση","lmNotifTypeError":"Σφάλμα",
+        "hk-director":"Σκηνοθέτης θέασης: άνοιγμα / κλείσιμο παραθύρου","hk-dirAuto":"Σκηνοθέτης θέασης: αυτόματη κάμερα ναι / όχι","hk-dirBroadcast":"Σκηνοθέτης θέασης: HUD μετάδοσης ναι / όχι",
+        "hk-dirWatchNext":"Σκηνοθέτης θέασης: επόμενος παίκτης της λίστας","hk-dirWatchPrev":"Σκηνοθέτης θέασης: προηγούμενος παίκτης της λίστας","hk-dirWatchAdd":"Σκηνοθέτης θέασης: παρακολούθηση του παίκτη κάτω από το ποντίκι",
+        "hk-dirMarkSave":"Σκηνοθέτης θέασης: αποθήκευση σελιδοδείκτη κάμερας","hk-dirMark1":"Σκηνοθέτης θέασης: μετάβαση στον σελιδοδείκτη κάμερας 1","hk-dirMark2":"Σκηνοθέτης θέασης: μετάβαση στον σελιδοδείκτη κάμερας 2",
+        "hk-dirMark3":"Σκηνοθέτης θέασης: μετάβαση στον σελιδοδείκτη κάμερας 3","hk-dirMark4":"Σκηνοθέτης θέασης: μετάβαση στον σελιδοδείκτη κάμερας 4","hk-dirMark5":"Σκηνοθέτης θέασης: μετάβαση στον σελιδοδείκτη κάμερας 5",
         "virusSound":"Ήχος βολής στον ιό","potionsDrinker":"Τυχαία κατανάλωση φίλτρων","jellyPhisycs":"Φυσική ζελέ","showTop5":"Εμφάνιση πίνακα ομάδας",
         "showTargeting":"Εμφάνιση στόχευσης","showTime":"Εμφάνιση τρέχουσας ώρας","showDevConsole":"Εμφάνιση κονσόλας προγραμματιστή",
         "showLbData":"Εμφάνιση μάζας στον πίνακα κατάταξης","lbHideBots":"Πίνακας κατάταξης: σύμπτυξη επαναλαμβανόμενων ονομάτων (bots)",
@@ -42895,7 +42911,15 @@ function thelegendmodproject() {
                         cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                         /* a free spectate follow (leaderboard / clicked player) wins over teammate targeting */
                         var _lmSpFol = !this.play && this.isFreeSpectate && (this._lmSpecLb != null || !!this._lmSpecCell);
-                        if (!this.play && this.targeting && !_lmSpFol || this.pause) {
+                        /* Spectator director (ogario/modules/director.js): the point its camera looks at, local
+                         * coordinates like the follows below; null while it leaves the camera alone (always while
+                         * playing, and while one of the follows below runs) */
+                        var _lmDirP = !this.play && this.isFreeSpectate && this === window.legendmod && window.LMDirector && window.LMDirector.enabled ? window.LMDirector.camPoint(this) : null;
+                        if (_lmDirP) {
+                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(_lmDirP.x) : _lmDirP.x;
+                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(_lmDirP.y) : _lmDirP.y;
+                        }
+                        else if (!this.play && this.targeting && !_lmSpFol || this.pause) {
                             /* targetX/Y are local (rotated) coordinates: translate like the cursor. */
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.targetX) : this.targetX;
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.targetY) : this.targetY;
@@ -75320,6 +75344,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 targetCamX += LM._worldSpecPanX;
                 targetCamY += LM._worldSpecPanY;
             }
+            /* Spectator director (ogario/modules/director.js) in World Spectate: its camera replaces the
+             * mouse pan; the pan follows it, so handing the camera back does not jump */
+            var _lmDirWS = null;
+            if (LM._isWorldSpectating && LM.isLegendWorld && !LM.play && window.LMDirector && window.LMDirector.enabled &&
+                Number.isFinite(LM.viewX) && Number.isFinite(LM.viewY)) {
+                _lmDirWS = window.LMDirector.camPoint(LM);
+                if (_lmDirWS) {
+                    LM._worldSpecPanX = _lmDirWS.x - LM.viewX;
+                    LM._worldSpecPanY = _lmDirWS.y - LM.viewY;
+                    targetCamX = _lmDirWS.x;
+                    targetCamY = _lmDirWS.y;
+                }
+            }
 
 
             /*
@@ -75370,6 +75407,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.camX += (targetCamX - this.camX) * _lmKCam;
                     this.camY += (targetCamY - this.camY) * _lmKCam;
                 }
+            } else if (_lmDirWS) {
+                /* the director eases its own moves (transition time / easing in its panel) */
+                this.camX = targetCamX;
+                this.camY = targetCamY;
             } else {
                 /* was (29*camX + target)/30 per frame: same at 60 fps */
                 var _lmKSpec = 1 - Math.pow(29 / 30, this._lmFrameF || 1);
@@ -85823,5 +85864,15 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(companionScript);
     } catch (e) {
         console.warn('[LM] Error loading companion script:', e);
+    }
+    /* Spectator director (auto camera, watchlist, camera bookmarks, broadcast HUD, leaderboard history):
+     * does nothing until its panel is opened or one of its hotkeys (no default keys) is used */
+    try {
+        var directorScript = document.createElement('script');
+        directorScript.type = 'text/javascript';
+        directorScript.src = 'https://www.legendmod.ml/ogario/modules/director.js?v=' + (window.OgVer || '');
+        document.body.appendChild(directorScript);
+    } catch (e) {
+        console.warn('[LM] Error loading spectator director script:', e);
     }
 })();

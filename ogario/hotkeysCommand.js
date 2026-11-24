@@ -574,6 +574,139 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			/* Spectator director (ogario/modules/director.js): only while spectating, never while playing */
+			'hk-director': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-director']) || 'Spectator director: open / close the panel';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.toggle) d.toggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirAuto': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirAuto']) || 'Spectator director: auto camera on / off';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.toggleAuto) d.toggleAuto();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirBroadcast': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirBroadcast']) || 'Spectator director: broadcast HUD on / off';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.toggleBroadcast) d.toggleBroadcast();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirWatchNext': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirWatchNext']) || 'Spectator director: next watched player';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.watchNext) d.watchNext();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirWatchPrev': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirWatchPrev']) || 'Spectator director: previous watched player';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.watchPrev) d.watchPrev();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirWatchAdd': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirWatchAdd']) || 'Spectator director: watch the player under the mouse';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.watchAddUnderCursor) d.watchAddUnderCursor();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirMarkSave': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMarkSave']) || 'Spectator director: save a camera bookmark';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.saveView) d.saveView('');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirMark1': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark1']) || 'Spectator director: go to camera bookmark 1';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(0);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirMark2': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark2']) || 'Spectator director: go to camera bookmark 2';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(1);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirMark3': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark3']) || 'Spectator director: go to camera bookmark 3';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(2);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirMark4': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark4']) || 'Spectator director: go to camera bookmark 4';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(3);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-dirMark5': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark5']) || 'Spectator director: go to camera bookmark 5';
+				},
+				defaultKey: '',
+				keyDown() {
+					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(4);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-prevServer': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-prevServer']) || 'Reconnect to the previous server';
