@@ -171,17 +171,19 @@
                 if (!hasOwn(saved, k)) return false;
                 var v = saved[k];
                 drop(k);
-                if (settings[k] === loweredValue(k)) set(k, v, changed);
+                if (settings[k] == loweredValue(k)) set(k, v, changed);
                 else locked[k] = true;
                 return true;
             },
             restoreAll: function (changed) {
-                for (var k in saved) if (hasOwn(saved, k)) o.restore(k, changed);
+                var keys = Object.keys(saved);
+                for (var i = 0; i < keys.length; i++) if (hasOwn(saved, keys[i])) o.restore(keys[i], changed);
             },
             /* values changed by someone else since they were lowered */
             check: function () {
-                var found = false;
-                for (var k in saved) {
+                var found = false, keys = Object.keys(saved);
+                for (var i = 0; i < keys.length; i++) {
+                    var k = keys[i];
                     if (hasOwn(saved, k) && settings[k] !== loweredValue(k)) { drop(k); locked[k] = true; found = true; }
                 }
                 return found;
@@ -358,8 +360,13 @@
             if (dt > LONG_FRAME) fr.longTotal++;
             if (!menu) { fr.secFrames++; fr.secTime += dt; fr.secRender.push(rt); fr.secGame.push(dt); }
         }
-        /* Track stalls (100ms–10s) that the normal frame window ignores */
-        if (!hidden && dt >= 100) {
+        /* Track stalls (100ms–10s) that the normal frame window ignores.
+         * Skip when the tab was recently hidden (the first rAF after a background tab
+         * returns has document.hidden already false, but the gap is from the tab being
+         * in the background — not a real stall). Also cap at 10s: laptop sleep or
+         * hibernation is not a game stall. Skip when the menu is open: the menuFpsCap
+         * deliberately throttles frames, producing 100ms+ gaps that are not stalls. */
+        if (!hidden && !menu && dt >= 100 && dt <= 10000 && (!fr._hiddenUntil || t0 - fr._hiddenUntil > 500)) {
             fr.stallCount = (fr.stallCount || 0) + 1;
             fr.stallLast = dt;
             if (!fr.stallMax || dt > fr.stallMax) fr.stallMax = dt;
@@ -413,7 +420,13 @@
             /* saving and exporting serialize the settings: they get the player's own values */
             try {
                 Object.defineProperty(s, 'toJSON', {
-                    value: function () { return overrides && overrides.size() ? overrides.userView(this) : this; },
+                    value: function () {
+                        if (overrides && overrides.size()) return overrides.userView(this);
+                        /* return a shallow copy even when nothing is lowered: consumers could
+                           mutate a live reference (the JSON serializer is safe, but profiles.js
+                           reads individual keys and would see changes made by later code). */
+                        var copy = {}, kk; for (kk in this) if (hasOwn(this, kk)) copy[kk] = this[kk]; return copy;
+                    },
                     enumerable: false, configurable: true, writable: true
                 });
             } catch (e) { }
@@ -576,6 +589,11 @@
     }
 
     window.addEventListener('pagehide', function () { if (net.active) saveSession(); });
+    /* Track when the tab returns from background so the stall detector can ignore the
+     * first rAF gap (document.hidden is already false by the time the first frame fires). */
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) fr._hiddenUntil = performance.now();
+    });
 
     /* ---------- diagnostics window ---------- */
 

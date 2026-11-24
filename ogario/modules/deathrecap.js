@@ -301,7 +301,11 @@
             }
         }
         prevCells = n;
-        /* quick mass loss (one episode until 2.5 s without a further drop) */
+        /* quick mass loss (one episode until 2.5 s without a further drop).
+         * P1 fix: check for W-macro ejection — if we have recent 'ate' events by us
+         * (eject mass is tracked as small eats on the other side) or no 'eaten' events
+         * exist in the loss window, attribute() will return null and we fall back to
+         * the nearest visible enemy (which is an inexact attribution, not a confident one). */
         var apct = alertPct();
         var L = evFind('loss', now - 2500);
         if (L) {
@@ -312,9 +316,14 @@
             if (drop) {
                 L = evAdd('loss', now);
                 L.peak = peak; L.low = mass; L.a = drop;
-                /* the biggest threat now, else the one there when the drop began */
-                L.near = R.nn[(R.head - 1 + R.cap) % R.cap];
-                if (L.near == null) { var ni = sampleAt(R, now - LOSS_WIN); if (ni >= 0) L.near = R.nn[ni]; }
+                /* Use attribute() to find who actually ate our cells during this loss.
+                 * Only fall back to nearest visible enemy when no eat events confirm the killer. */
+                var attrib = attribute(evList(), now - LOSS_WIN - 500, now + 500);
+                if (attrib) { L.near = attrib.nick; L.v = attrib.virus; }
+                else {
+                    L.near = R.nn[(R.head - 1 + R.cap) % R.cap];
+                    if (L.near == null) { var ni = sampleAt(R, now - LOSS_WIN); if (ni >= 0) L.near = R.nn[ni]; }
+                }
             }
         }
         if (L && apct && !L.alerted && L.a * 100 >= apct * L.peak) {
@@ -643,13 +652,25 @@
     function sync() {
         var o = opts(), on = o.recap || o.feed || o.alert, E = window.LMEvents;
         window._lmDROn = on;
-        if (on && !listening && E) { E.on('spawn', onSpawn); E.on('death', onDeath); listening = true; start(); }
+        if (on && !listening && E) {
+            E.on('spawn', onSpawn); E.on('death', onDeath);
+            /* P1 fix: listen for server changes to flush stale buffers and prevent
+             * cross-server killer attribution bleed */
+            E.on('serverChange', onServerChange);
+            listening = true; start();
+        }
         else if (!on && listening) {
-            if (E) { E.off('spawn', onSpawn); E.off('death', onDeath); }
+            if (E) { E.off('spawn', onSpawn); E.off('death', onDeath); E.off('serverChange', onServerChange); }
             listening = false;
             stopTimer(); ringClear(R); evClear(); recapEl = null; recap = null;
         }
         if (!o.feed && !o.alert) feedRemove();
+    }
+    function onServerChange() {
+        stopTimer(); ringClear(R); evClear();
+        prevCells = 0; recSlot = null; lastAlive = 0;
+        recapEl = null; recap = null;
+        feedRemove();
     }
 
     window.LMDeathRecap = {

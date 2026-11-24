@@ -330,8 +330,11 @@
             if (!isObj(a[p]) || !isObj(b[p])) return;
             var part = [];
             for (var k in b[p]) {
-                if (!own.call(b[p], k) || !own.call(a[p], k)) continue;
-                if (!same(a[p][k], b[p][k])) part.push({ part: p, key: k, label: labelFn(p, k), a: a[p][k], b: b[p][k] });
+                if (!own.call(b[p], k)) continue;
+                /* P1 fix: include keys that exist in the profile but not in current settings —
+                 * new profile options should be applied, not silently skipped */
+                var av = own.call(a[p], k) ? a[p][k] : undefined;
+                if (!same(av, b[p][k])) part.push({ part: p, key: k, label: labelFn(p, k), a: av, b: b[p][k] });
             }
             part.sort(function (x, y) { return String(x.label).localeCompare(String(y.label)); });
             rows = rows.concat(part);
@@ -664,8 +667,18 @@
         /* P0 fix: write mobile layouts and gamepad config when present in the profile */
         if (data.ml) entries.push({ key: 'lm-mobile-layouts', text: JSON.stringify(data.ml) });
         if (data.gp) entries.push({ key: 'lmGamepad', text: JSON.stringify(data.gp) });
-        /* 2. a backup of the current state, and the Undo */
-        addBackup(opts.reason === 'undo' ? 'undo' : opts.reason === 'restore' ? 'restore' : 'profile', cur, name);
+        /* 2. a backup of the current state, and the Undo.
+         * P1 fix: backup is written as part of the transaction so a failed write
+         * does not leave an orphaned backup in storage. */
+        var backupData = cleanBundle(cur);
+        if (backupData) {
+            var backupList = loadBackups();
+            var backupReason = opts.reason === 'undo' ? 'undo' : opts.reason === 'restore' ? 'restore' : 'profile';
+            var backupEntry = { t: Date.now(), reason: has(REASONS, backupReason) ? backupReason : 'change', data: backupData };
+            if (name) backupEntry.label = cleanName(name);
+            var newBackupList = pushBackup(backupList, backupEntry, MAX_BACKUPS, MAX_BACKUPS_CHARS);
+            entries.push({ key: KEY_BACKUPS, text: JSON.stringify(newBackupList) });
+        }
         var undoEntry = opts.reason !== 'undo' ? { t: Date.now(), name: name, data: cur } : null;
         if (undoEntry) entries.push({ key: KEY_UNDO, text: JSON.stringify(undoEntry) });
         if (!writeTransaction(entries)) {

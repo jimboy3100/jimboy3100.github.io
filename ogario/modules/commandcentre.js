@@ -999,7 +999,7 @@
     var ticks = 0;
     setInterval(function () {
         ticks++;
-        if (!D.getElementById('lm-cc-open') && ticks < 600) addMenuButton();
+        if (!D.getElementById('lm-cc-open')) addMenuButton();
         /* option off: only this check, once a second */
         if (barWanted() || bar && bar.parentNode) {
             try { syncBar(false); } catch (e) { }
