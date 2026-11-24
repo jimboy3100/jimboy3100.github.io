@@ -442,8 +442,175 @@ function _lmMatchHistoryServerReply(msg) {
     window._lmServerMatchHistory = { state: 'done', askedAt: prev && prev.askedAt || 0, at: Date.now(), games: games };
     var m = document.getElementById('lm-mh-modal');
     if (m && m._lmServerRefresh) m._lmServerRefresh();
+    /* Champion / Hunter badges read these games */
+    _lmBadgesSchedule();
 }
 window._lmMatchHistoryServerReply = _lmMatchHistoryServerReply;
+/* Badges (client only): computed from the account numbers the server already sends: userStats of the
+ * login and game over replies, the account level and, on Expanding Land, the server match history
+ * (type 1081, the last 50 games). On Expanding Land longestTimeAlive is the total time alive
+ * (proto102.c), on agar.io the longest single life, so each one has its own badge. A badge whose
+ * number is missing is hidden. localStorage 'lmBadges' keeps per account (key: a hash of the account
+ * id, nothing else of the account) the earned badge ids and which numbers were seen: the first stats
+ * of an account and a number seen for the first time never toast; later, one toast per update. */
+var _lmBadgeDefs = (function () {
+    var fams = [
+        ['games', 'bdgGames', 'Player', 'bdgReqGames', 'Play {n} games', '🎮', [10, 100, 1000]],
+        ['mass', 'bdgMass', 'Heavyweight', 'bdgReqMass', 'Reach {n} mass', '👑', [1000, 10000, 50000]],
+        ['eat', 'bdgEat', 'Glutton', 'bdgReqEat', 'Consume {n} mass in total', '🍽️', [100000, 1000000, 10000000]],
+        ['life', 'bdgLife', 'Survivor', 'bdgReqLife', 'Stay alive {n} in one life', '⏱️', [600, 1800, 3600]],
+        ['alive', 'bdgAlive', 'Veteran', 'bdgReqAlive', 'Stay alive {n} in total', '⌛', [3600, 36000, 360000]],
+        ['level', 'bdgLevel', 'Experienced', 'bdgReqLevel', 'Reach level {n}', '🎖️', [10, 50, 100]],
+        ['top', 'bdgTop', 'Champion', 'bdgReqTop', 'Reach #1 on the leaderboard in one of your last 50 games', '🏆', [1]],
+        ['hunt', 'bdgHunt', 'Hunter', 'bdgReqHunt', 'Eat {n} players in one of your last 50 games', '⚔️', [5, 20]]
+    ];
+    var out = [];
+    fams.forEach(function (f) {
+        f[6].forEach(function (n, i) {
+            out.push({ id: f[0] + (i + 1), m: f[0], nameKey: f[1], name: f[2], reqKey: f[3], req: f[4], icon: f[5], n: n,
+                tier: f[6].length > 1 ? ['I', 'II', 'III'][i] : '', col: f[6].length > 1 ? ['#cd7f32', '#c0c8d0', '#ffd700'][i] : '#ffd700' });
+        });
+    });
+    return out;
+})();
+function _lmBdgT(key, en) { var s = window.lmT && window.lmT(key); return !s || s === key ? en : String(s); }
+function _lmBdgEsc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function _lmBdgNum(v) {
+    if (v === undefined || v === null || v === '') return null;
+    if (typeof v === 'object' && typeof v.toNumber === 'function') v = v.toNumber();
+    v = Number(v);
+    return isFinite(v) && v >= 0 ? v : null;
+}
+function _lmBdgName(d) { return _lmBdgT(d.nameKey, d.name) + (d.tier ? ' ' + d.tier : ''); }
+function _lmBdgTip(d) {
+    var n = d.m === 'life' || d.m === 'alive' ? (d.n >= 3600 ? d.n / 3600 + ' h' : d.n / 60 + ' min') : d.n.toLocaleString();
+    return _lmBdgName(d) + ': ' + _lmBdgT(d.reqKey, d.req).replace('{n}', n);
+}
+/* FNV-1a of the account id: the store never holds the id itself */
+function _lmBdgAcct(user, el) {
+    var id = user && (user.userId || (user.info && user.info.userId));
+    if (!id) return '';
+    id = String(id);
+    var h = 0x811c9dc5;
+    for (var i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return (el ? 'el' : 'ag') + h.toString(36);
+}
+function _lmBdgLoad() { try { var o = JSON.parse(localStorage.getItem('lmBadges') || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
+function _lmBdgSave(o) {
+    try {
+        var keys = Object.keys(o).sort(function (a, b) { return (o[b].t || 0) - (o[a].t || 0); });
+        keys.slice(10).forEach(function (k) { delete o[k]; });
+        localStorage.setItem('lmBadges', JSON.stringify(o));
+    } catch (e) { }
+}
+var _lmBadgeTimer = 0, _lmBadgeStats = null, _lmBadgeStatsUser = null;
+/* displayStats(stats, user) and the 1081 reply call this; one evaluation per burst */
+function _lmBadgesSchedule(stats, user) {
+    if (stats) { _lmBadgeStats = stats; _lmBadgeStatsUser = user || null; }
+    if (_lmBadgeTimer) return;
+    _lmBadgeTimer = setTimeout(function () {
+        _lmBadgeTimer = 0;
+        try { _lmBadgesUpdate(); } catch (e) { console.warn('[LM] badges:', e); }
+    }, 0);
+}
+window._lmBadgesSchedule = _lmBadgesSchedule;
+function _lmBadgesMetrics(user) {
+    var el = !!(window.legendmod && window.legendmod.isLegendWorld);
+    var s = (user && user.stats) || (_lmBadgeStatsUser === user ? _lmBadgeStats : null) || {};
+    var t = _lmBdgNum(s.longestTimeAlive), lv = user ? _lmBdgNum(user.level) : null;
+    var m = { games: _lmBdgNum(s.gamesPlayed), mass: _lmBdgNum(s.highestMass), eat: _lmBdgNum(s.massConsumed),
+        life: el ? null : t, alive: el ? t : null, level: lv > 0 ? lv : null, top: null, hunt: null };
+    var h = window._lmServerMatchHistory;
+    if (el && h && h.at && Array.isArray(h.games)) {
+        m.top = 0; m.hunt = 0;
+        h.games.forEach(function (g) {
+            if (+g.topPosition === 1) m.top++;
+            if (+g.playersEaten > m.hunt) m.hunt = +g.playersEaten;
+        });
+    }
+    return { el: el, m: m };
+}
+function _lmBadgesUpdate() {
+    /* the login / game over handler and displayStats(s) live on legendmod (this.user) */
+    var user = (window.legendmod && window.legendmod.user) || _lmBadgeStatsUser;
+    var r = _lmBadgesMetrics(user), m = r.m;
+    var acct = _lmBdgAcct(user, r.el), store = _lmBdgLoad(), rec = acct ? store[acct] : null, first = !rec;
+    if (!rec) rec = { e: [], f: [] };
+    var fresh = [];
+    _lmBadgeDefs.forEach(function (d) {
+        if (m[d.m] !== null && m[d.m] >= d.n && rec.e.indexOf(d.id) === -1) fresh.push(d);
+    });
+    /* toast only for numbers already seen in an earlier update of this account */
+    var toast = first ? [] : fresh.filter(function (d) { return rec.f.indexOf(d.m) !== -1; });
+    if (acct) {
+        fresh.forEach(function (d) { rec.e.push(d.id); });
+        Object.keys(m).forEach(function (k) { if (m[k] !== null && rec.f.indexOf(k) === -1) rec.f.push(k); });
+        rec.t = Date.now();
+        store[acct] = rec;
+        _lmBdgSave(store);
+    }
+    _lmBadgesRender(m, acct ? rec.e : fresh.map(function (d) { return d.id; }));
+    if (toast.length && window.toastr) {
+        var last = toast[toast.length - 1];
+        toastr.success('<b>' + last.icon + '</b> ' + _lmBdgEsc(_lmBdgT('badgeUnlocked', 'Badge unlocked: {name}').replace('{name}', _lmBdgName(last))) + (toast.length > 1 ? ' (+' + (toast.length - 1) + ')' : ''));
+    }
+    window._lmBadgesLast = { earned: acct ? rec.e.slice() : fresh.map(function (d) { return d.id; }), toasted: toast.map(function (d) { return d.id; }) };
+}
+/* compact grid at the end of #user-stats (the profile stats); earned ones coloured, others dimmed */
+function _lmBadgesRender(m, earned) {
+    var host = document.getElementById('user-stats');
+    if (!host) return;
+    var box = document.getElementById('lm-badges');
+    if (!box) {
+        box = document.createElement('div');
+        box.id = 'lm-badges';
+        box.style.cssText = 'clear:both;padding-top:6px;font-size:11px;';
+        /* tap shows the tooltip text (phones have no hover) */
+        box.addEventListener('click', function (e) {
+            var b = e.target && e.target.closest ? e.target.closest('.lm-badge') : null;
+            if (b && window.toastr) toastr.info(_lmBdgEsc(b.title));
+        });
+        host.appendChild(box);
+    }
+    while (box.firstChild) box.removeChild(box.firstChild);
+    var shown = _lmBadgeDefs.filter(function (d) { return m[d.m] !== null || earned.indexOf(d.id) !== -1; });
+    box.style.display = shown.length ? '' : 'none';
+    if (!shown.length) return;
+    var got = shown.filter(function (d) { return earned.indexOf(d.id) !== -1; }).length;
+    var head = document.createElement('div');
+    head.style.cssText = 'margin-bottom:3px;opacity:0.8;';
+    head.textContent = _lmBdgT('badges', 'Badges') + ' ' + got + '/' + shown.length;
+    box.appendChild(head);
+    var grid = document.createElement('div');
+    grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
+    shown.forEach(function (d) {
+        var on = earned.indexOf(d.id) !== -1;
+        var b = document.createElement('span');
+        b.className = 'lm-badge' + (on ? ' lm-badge-on' : '');
+        b.setAttribute('data-badge', d.id);
+        b.title = _lmBdgTip(d);
+        b.style.cssText = 'position:relative;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;font-size:15px;line-height:1;border-radius:6px;cursor:help;box-sizing:border-box;' +
+            (on ? 'border:2px solid ' + d.col + ';background:rgba(255,255,255,0.08);' : 'border:2px solid rgba(255,255,255,0.15);opacity:0.35;filter:grayscale(100%);');
+        b.textContent = d.icon;
+        if (d.tier) {
+            var t = document.createElement('span');
+            t.style.cssText = 'position:absolute;right:1px;bottom:0;font-size:8px;font-weight:700;color:' + (on ? d.col : '#fff') + ';text-shadow:0 0 2px #000;';
+            t.textContent = d.tier;
+            b.appendChild(t);
+        }
+        grid.appendChild(b);
+    });
+    box.appendChild(grid);
+}
+/* opening the profile on Expanding Land asks the server for the match history (Champion / Hunter)
+ * at most once per 5 minutes; the reply re-evaluates the badges */
+document.addEventListener('click', function (e) {
+    var p = e.target && e.target.closest ? e.target.closest('.agario-profile-picture') : null;
+    if (!p || !_lmMhServerAvailable()) return;
+    var h = window._lmServerMatchHistory;
+    if (h && Date.now() - (h.at || h.askedAt || 0) < 300000) return;
+    _lmMatchHistoryServerRequest();
+}, true);
 /* Expanding Land private rooms (Private server list option 5003). The room broker creates,
  * lists and joins rooms; every create/join answers with a wss URL holding a single-use ticket
  * valid for 60 s, so that URL is connected to at once and never reconnected to as is: when the
@@ -1160,6 +1327,24 @@ window.lmT = (function () {
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
         "shareStats": {"en":"Share","el":"Κοινοποίηση","es":"Compartir","bg":"Сподели","fr":"Partager","ar":"مشاركة","zh":"分享","ru":"Поделиться","de":"Teilen","tr":"Paylaş","pl":"Udostępnij","nl":"Delen"},
         "noPrevServer": {"en":"No previous server","el":"Δεν υπάρχει προηγούμενος διακομιστής","es":"No hay servidor anterior","bg":"Няма предишен сървър","fr":"Aucun serveur précédent","ar":"لا يوجد خادم سابق","zh":"沒有上一個伺服器","ru":"Нет предыдущего сервера","de":"Kein vorheriger Server","tr":"Önceki sunucu yok","pl":"Brak poprzedniego serwera","nl":"Geen vorige server"},
+        "badges": {"en":"Badges","el":"Διακρίσεις","es":"Insignias","bg":"Значки","fr":"Badges","ar":"الشارات","zh":"徽章","ru":"Значки","de":"Abzeichen","tr":"Rozetler","pl":"Odznaki","nl":"Badges"},
+        "badgeUnlocked": {"en":"Badge unlocked: {name}","el":"Νέα διάκριση: {name}","es":"Insignia desbloqueada: {name}","bg":"Отключена значка: {name}","fr":"Badge débloqué : {name}","ar":"تم فتح شارة: {name}","zh":"已解鎖徽章：{name}","ru":"Значок получен: {name}","de":"Abzeichen freigeschaltet: {name}","tr":"Rozet açıldı: {name}","pl":"Odblokowano odznakę: {name}","nl":"Badge ontgrendeld: {name}"},
+        "bdgGames": {"en":"Player","el":"Παίκτης","es":"Jugador","bg":"Играч","fr":"Joueur","ar":"لاعب","zh":"玩家","ru":"Игрок","de":"Spieler","tr":"Oyuncu","pl":"Gracz","nl":"Speler"},
+        "bdgReqGames": {"en":"Play {n} games","el":"Παίξε {n} παιχνίδια","es":"Juega {n} partidas","bg":"Изиграй {n} игри","fr":"Jouer {n} parties","ar":"العب {n} لعبة","zh":"遊玩 {n} 場","ru":"Сыграй {n} игр","de":"Spiele {n} Runden","tr":"{n} oyun oyna","pl":"Zagraj {n} gier","nl":"Speel {n} potjes"},
+        "bdgMass": {"en":"Heavyweight","el":"Βαρέων βαρών","es":"Peso pesado","bg":"Тежка категория","fr":"Poids lourd","ar":"الوزن الثقيل","zh":"重量級","ru":"Тяжеловес","de":"Schwergewicht","tr":"Ağır siklet","pl":"Waga ciężka","nl":"Zwaargewicht"},
+        "bdgReqMass": {"en":"Reach {n} mass","el":"Φτάσε {n} μάζα","es":"Alcanza {n} de masa","bg":"Достигни {n} маса","fr":"Atteindre {n} de masse","ar":"اصل إلى كتلة {n}","zh":"達到 {n} 質量","ru":"Набери массу {n}","de":"Erreiche {n} Masse","tr":"{n} kütleye ulaş","pl":"Osiągnij masę {n}","nl":"Bereik {n} massa"},
+        "bdgEat": {"en":"Glutton","el":"Λαίμαργος","es":"Glotón","bg":"Лакомник","fr":"Glouton","ar":"الشره","zh":"大胃王","ru":"Обжора","de":"Vielfraß","tr":"Obur","pl":"Żarłok","nl":"Veelvraat"},
+        "bdgReqEat": {"en":"Consume {n} mass in total","el":"Φάε συνολικά {n} μάζα","es":"Consume {n} de masa en total","bg":"Изяж общо {n} маса","fr":"Consommer {n} de masse au total","ar":"التهم {n} كتلة إجمالًا","zh":"累計吞噬 {n} 質量","ru":"Съешь всего {n} массы","de":"Verschlinge insgesamt {n} Masse","tr":"Toplam {n} kütle tüket","pl":"Zjedz łącznie {n} masy","nl":"Eet in totaal {n} massa"},
+        "bdgLife": {"en":"Survivor","el":"Επιζών","es":"Superviviente","bg":"Оцелял","fr":"Survivant","ar":"الناجي","zh":"倖存者","ru":"Выживший","de":"Überlebender","tr":"Hayatta kalan","pl":"Ocalały","nl":"Overlever"},
+        "bdgReqLife": {"en":"Stay alive {n} in one life","el":"Μείνε ζωντανός {n} σε μία ζωή","es":"Sobrevive {n} en una vida","bg":"Оцелей {n} в един живот","fr":"Survivre {n} en une vie","ar":"ابقَ حيًا {n} في حياة واحدة","zh":"單局存活 {n}","ru":"Проживи {n} за одну жизнь","de":"Überlebe {n} in einem Leben","tr":"Tek canda {n} hayatta kal","pl":"Przeżyj {n} w jednym życiu","nl":"Overleef {n} in één leven"},
+        "bdgAlive": {"en":"Veteran","el":"Βετεράνος","es":"Veterano","bg":"Ветеран","fr":"Vétéran","ar":"المحارب القديم","zh":"老手","ru":"Ветеран","de":"Veteran","tr":"Kıdemli","pl":"Weteran","nl":"Veteraan"},
+        "bdgReqAlive": {"en":"Stay alive {n} in total","el":"Μείνε ζωντανός {n} συνολικά","es":"Sobrevive {n} en total","bg":"Оцелей общо {n}","fr":"Survivre {n} au total","ar":"ابقَ حيًا {n} إجمالًا","zh":"累計存活 {n}","ru":"Проживи всего {n}","de":"Überlebe insgesamt {n}","tr":"Toplam {n} hayatta kal","pl":"Przeżyj łącznie {n}","nl":"Overleef in totaal {n}"},
+        "bdgLevel": {"en":"Experienced","el":"Έμπειρος","es":"Experimentado","bg":"Опитен","fr":"Expérimenté","ar":"الخبير","zh":"資深","ru":"Опытный","de":"Erfahren","tr":"Tecrübeli","pl":"Doświadczony","nl":"Ervaren"},
+        "bdgReqLevel": {"en":"Reach level {n}","el":"Φτάσε στο επίπεδο {n}","es":"Alcanza el nivel {n}","bg":"Достигни ниво {n}","fr":"Atteindre le niveau {n}","ar":"اصل إلى المستوى {n}","zh":"達到等級 {n}","ru":"Достигни уровня {n}","de":"Erreiche Level {n}","tr":"{n}. seviyeye ulaş","pl":"Osiągnij poziom {n}","nl":"Bereik level {n}"},
+        "bdgTop": {"en":"Champion","el":"Πρωταθλητής","es":"Campeón","bg":"Шампион","fr":"Champion","ar":"البطل","zh":"冠軍","ru":"Чемпион","de":"Champion","tr":"Şampiyon","pl":"Mistrz","nl":"Kampioen"},
+        "bdgReqTop": {"en":"Reach #1 on the leaderboard in one of your last 50 games","el":"Φτάσε #1 στον πίνακα σε ένα από τα τελευταία 50 παιχνίδια σου","es":"Llega al #1 de la clasificación en una de tus últimas 50 partidas","bg":"Стигни #1 в класацията в една от последните си 50 игри","fr":"Atteindre #1 au classement dans une de tes 50 dernières parties","ar":"اصل إلى #1 في الترتيب في إحدى آخر 50 لعبة","zh":"在最近 50 場中登上排行榜第 1 名","ru":"Стань #1 в таблице лидеров в одной из последних 50 игр","de":"Erreiche #1 der Rangliste in einem deiner letzten 50 Spiele","tr":"Son 50 oyunundan birinde sıralamada #1 ol","pl":"Zdobądź #1 w rankingu w jednej z ostatnich 50 gier","nl":"Bereik #1 op het scorebord in een van je laatste 50 potjes"},
+        "bdgHunt": {"en":"Hunter","el":"Κυνηγός","es":"Cazador","bg":"Ловец","fr":"Chasseur","ar":"الصياد","zh":"獵人","ru":"Охотник","de":"Jäger","tr":"Avcı","pl":"Łowca","nl":"Jager"},
+        "bdgReqHunt": {"en":"Eat {n} players in one of your last 50 games","el":"Φάε {n} παίκτες σε ένα από τα τελευταία 50 παιχνίδια σου","es":"Come {n} jugadores en una de tus últimas 50 partidas","bg":"Изяж {n} играчи в една от последните си 50 игри","fr":"Manger {n} joueurs dans une de tes 50 dernières parties","ar":"التهم {n} لاعبين في إحدى آخر 50 لعبة","zh":"在最近 50 場中的一場吞噬 {n} 名玩家","ru":"Съешь {n} игроков в одной из последних 50 игр","de":"Friss {n} Spieler in einem deiner letzten 50 Spiele","tr":"Son 50 oyunundan birinde {n} oyuncu ye","pl":"Zjedz {n} graczy w jednej z ostatnich 50 gier","nl":"Eet {n} spelers in een van je laatste 50 potjes"},
         "watchKiller": {"en":"Watch killer","el":"Παρακολούθησε τον δολοφόνο","es":"Ver al asesino","bg":"Гледай убиеца","fr":"Regarder le tueur","ar":"شاهد القاتل","zh":"觀看擊殺者","ru":"Смотреть убийцу","de":"Mörder beobachten","tr":"Katili izle","pl":"Obserwuj zabójcę","nl":"Kijk naar je moordenaar"},
         "watchKillerGone": {"en":"Your killer is no longer in view","el":"Ο δολοφόνος σου δεν φαίνεται πια","es":"Tu asesino ya no está a la vista","bg":"Убиецът ти вече не се вижда","fr":"Ton tueur n'est plus visible","ar":"قاتلك لم يعد ظاهرًا","zh":"擊殺者已不在視野內","ru":"Твой убийца больше не виден","de":"Dein Mörder ist nicht mehr zu sehen","tr":"Katilin artık görünmüyor","pl":"Twój zabójca nie jest już widoczny","nl":"Je moordenaar is niet meer in beeld"},
         "leaguesResetsIn": {"en":"Resets in {t}","el":"Επαναφορά σε {t}","es":"Se reinicia en {t}","bg":"Нулиране след {t}","fr":"Réinitialisation dans {t}","ar":"إعادة التعيين خلال {t}","zh":"{t} 後重置","ru":"Сброс через {t}","de":"Zurücksetzung in {t}","tr":"{t} sonra sıfırlanır","pl":"Reset za {t}","nl":"Reset over {t}"},
@@ -50054,6 +50239,8 @@ Longest time alive : ${_lmLtaText}<br/>
 Mass consumed     : ${massConsumed}<br/>
 Most cells eaten   : ${mostCellsEaten}
       `)
+            /* badges grid in the profile and at most one "Badge unlocked" toast (computed after this update) */
+            try { if (typeof window._lmBadgesSchedule === 'function') window._lmBadgesSchedule(s, this.user); } catch (e) { }
         },
         updateUserInfo(i) {
             if (!i) i = {}; /* guard: protobuf may not decode userInfo */
