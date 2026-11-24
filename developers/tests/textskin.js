@@ -83,6 +83,17 @@ check('deadline: 100-150 ms after the redraw', C.lmMassDue(1000, 100, 0) === 110
     check('skin cap: under the cap nothing dropped', C.lmSkinJobDrop(list, 5000, 1000, 5).length === 0);
     check('skin cap: least recently asked for first (oldest of equal ones), never on screen', C.lmSkinJobDrop(list, 5000, 1000, 2).map((j) => j.id).join() === 'a,c,d');
     check('skin cap: on-screen jobs are kept even over the cap', C.lmSkinJobDrop([J('v1', 4999), J('v2', 4998)], 5000, 1000, 0).length === 0);
+    /* hard ceiling: 2 x the soft cap, then recent ones go too (least recently asked for first),
+     * except those asked for in this frame (last 50 ms) */
+    const recent = (n, now) => Array.from({ length: n }, (_, i) => J('r' + i, now - 100 - (i % 800)));
+    let rj = recent(200, 5000);
+    let rd = C.lmSkinJobDrop(rj, 5000, 1000, 96, 192, 50);
+    check('hard cap: 200 recent jobs, soft 96 / hard 192: 8 dropped, the least recently asked for', rd.length === 8 && rd.every((j) => j.seen <= 5000 - 100 - 192));
+    rj = recent(500, 5000).concat(Array.from({ length: 20 }, (_, i) => J('now' + i, 4990)));
+    rd = C.lmSkinJobDrop(rj, 5000, 1000, 96, 192, 50);
+    check('hard cap: 500 recent + 20 drawn this frame: back to 192, the 20 kept', rj.length - rd.length === 192 && !rd.some((j) => j.id.startsWith('now')));
+    check('hard cap: only jobs drawn this frame over it: kept', C.lmSkinJobDrop(Array.from({ length: 300 }, (_, i) => J('f' + i, 4999)), 5000, 1000, 96, 192, 50).length === 0);
+    check('hard cap: old jobs still go first', C.lmSkinJobDrop([J('o', 0)].concat(recent(200, 5000)), 5000, 1000, 96, 192, 50)[0].id === 'o');
 }
 
 /* ---- skin canvas queue ---- */
@@ -130,7 +141,7 @@ async function skinMethods() {
         setTimeout: (f) => { timers.push(f); return 1000 + timers.length; },
         lmSkinJobsRun: C.lmSkinJobsRun, lmSkinJobPick: C.lmSkinJobPick, lmSkinJobDrop: C.lmSkinJobDrop };
     vm.createContext(sb);
-    vm.runInContext('Object.assign(app, {' + ['_lmSkinJobAdd', '_lmSkinJobDropOne', '_lmSkinDecodeNext', '_lmSkinJobsSchedule', '_lmSkinJobRun', '_lmSkinCanvases'].map(method).join(',\n') + '});', sb);
+    vm.runInContext('Object.assign(app, {' + ['_lmSkinJobAdd', '_lmSkinJobTrim', '_lmSkinJobDropOne', '_lmSkinDecodeNext', '_lmSkinJobsSchedule', '_lmSkinJobRun', '_lmSkinCanvases'].map(method).join(',\n') + '});', sb);
     const made = [];
     Object.assign(app, {
         _lmSkinJobMax: 96, _lmSkinDecodeMax: 6,
@@ -192,7 +203,10 @@ async function skinMethods() {
     check('decodes: the next starts when one settles, on-screen first', app._lmSkinDecoding === 2 && res.length === 2 && !app._lmSkinDecodeWait.some((j) => j.url === 'd6'));
     while (res.length) { res.shift()(); await tick(); }
     for (let f = 0; f < 10 && raf.length; f++) runRaf();
-    check('decodes: every kept job is made', ['d0', 'd1', 'd3', 'd4', 'd5', 'd6', 'd7'].every((u) => app.customSkinsCache[u]) && !app._lmSkinJobMap.size && app._lmSkinDecoding === 0);
+    /* 7 decoded jobs reach the queue frame together: it trims them to the cap (5) first,
+     * dropping the least recently asked-for ones, never the on-screen d6 */
+    const madeD = ['d0', 'd1', 'd3', 'd4', 'd5', 'd6', 'd7'].filter((u) => app.customSkinsCache[u]);
+    check('decodes: the queue frame trims to the cap, then every kept job is made', madeD.length === 5 && madeD.includes('d6') && !app._lmSkinJobMap.size && app._lmSkinDecoding === 0);
     app._lmSkinDecodeMax = 6;
     app._lmSkinJobMax = 96;
 
@@ -200,6 +214,18 @@ async function skinMethods() {
     for (let i = 0; i < 500; i++) app._lmSkinJobAdd(app.customSkinsCache, 's' + i, {}, undefined, i % 50 === 0);
     check('burst: queued jobs held at the cap (+ on-screen ones)', app._lmSkinJobs.length <= 96 + 10 && app._lmSkinJobMap.size === app._lmSkinJobs.length);
     check('burst: on-screen ones kept', [0, 50, 100, 450].every((i) => app._lmSkinJobMap.has('s' + i)));
+    for (let f = 0; f < 200 && raf.length; f++) runRaf();
+    /* 300 jobs all asked for by draws (recent: the soft cap keeps them), added in one go */
+    const asked = [];
+    for (let i = 0; i < 300; i++) { app._lmSkinJobAdd(app.customSkinsCache, 'h' + i, {}, undefined, true); asked.push('h' + i); dnow += 1; }
+    check('hard cap: 300 recent jobs held at 2 x 96 while they arrive', app._lmSkinJobs.length === 192);
+    /* they age in the queue without new arrivals: the next queue frame trims again */
+    dnow += 2000;
+    raf.length = 0;
+    app._lmSkinJobRaf = 0;
+    app._lmSkinJobsSchedule();
+    runRaf();
+    check('aged jobs: trimmed back to the soft cap on the next queue frame (no new job needed)', asked.filter((u) => app.customSkinsCache[u]).length === 96 && !app._lmSkinJobMap.size);
 
     /* visibility: a frame asked for before the tab hid is swapped for a timer */
     for (let f = 0; f < 200 && raf.length; f++) runRaf();
@@ -235,7 +261,7 @@ function textMethods() {
     const fakeMath = Object.create(Math);
     fakeMath.random = () => rnd;
     const sb = { r: null, Map, Date: { now: () => dnow }, Math: fakeMath, parseInt, Infinity, window: { navigator: {} }, performance: { now: () => now },
-        setTimeout: (f) => { timers.push(f); return timers.length; } };
+        setTimeout: (f) => { const t = () => { if (!t.dead) f(); }; timers.push(t); return t; }, clearTimeout: (t) => { if (t) t.dead = true; } };
     vm.createContext(sb);
     vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim'].map(grab).join('\n'), sb);
     vm.runInContext('r = {' + ['getOrCreateTextTexture', '_lmRasterText', '_lmMassTexture', '_lmTextFrameBegin', '_lmTextIdle'].map(method).join(',\n') + '};', sb);
@@ -372,6 +398,61 @@ function textMethods() {
     check('idle: no more checks while nothing is held', timers.length === 0);
     r._lmTextFrameBegin();
     check('idle: textures come back when the pass runs again', !!r._lmMassTexture(cell, '1234', F, '#fff', '#000', 10));
+
+    /* idle freeing is incremental (64 per tick) and stops when the pass comes back */
+    reset();
+    timers.length = 0;
+    calls.length = 0;
+    r._lmTextFrameBegin();
+    for (let i = 0; i < 100; i++) r.getOrCreateTextTexture('t' + i, F, '#fff', '#000', 10);
+    const ic = Array.from({ length: 50 }, () => ({}));
+    ic.forEach((c) => r._lmMassTexture(c, '1000', F, '#fff', '#000', 10));
+    r._lmTextFrameBegin();
+    dnow += 2500;
+    timers.shift()();
+    const dels = () => calls.filter((c) => c.startsWith('del')).length;
+    check('idle: at most 64 textures deleted per tick, then the next tick is scheduled', dels() === 64 && r._lmMassTex.size === 0 && r.glTextCache.size === 86 && timers.length === 1 && r._lmTextIdleDraining);
+    timers.shift()();
+    timers.shift()();
+    check('idle: ...until none is left; bytes back to 0', dels() === 150 && !r.glTextCache.size && r._lmTextBytes === 0 && r._lmMassBytes === 0 && timers.length === 0 && !r._lmTextIdleDraining);
+    reset();
+    timers.length = 0;
+    calls.length = 0;
+    r._lmTextFrameBegin();
+    for (let i = 0; i < 150; i++) r.getOrCreateTextTexture('t' + i, F, '#fff', '#000', 10);
+    r._lmTextFrameBegin();
+    dnow += 2500;
+    timers.shift()();
+    check('idle: freeing started', dels() === 64 && r._lmTextIdleDraining);
+    const pending = timers[0];
+    r._lmTextFrameBegin();
+    pending();
+    check('idle: the pass runs again: freeing stops, the rest is kept, a normal 2 s check follows', dels() === 64 && r.glTextCache.size === 86 && !r._lmTextIdleDraining && pending.dead && timers.length === 2);
+
+    /* trim backoff: everything over the budget is drawn in every frame -> no scan in every frame */
+    class CountMap extends Map {
+        constructor() { super(); this.scans = 0; }
+        forEach(f, t) { this.scans++; return super.forEach(f, t); }
+        entries() { this.scans++; return super.entries(); }
+    }
+    reset();
+    r._lmTextBudget = T * 8; /* text cache 8 textures, mass pool 4 */
+    r.glTextCache = new CountMap();
+    r._lmMassTex = new CountMap();
+    const vc = Array.from({ length: 10 }, () => ({}));
+    for (let f = 0; f < 61; f++) {
+        r._lmTextFrameBegin();
+        for (let i = 0; i < 12; i++) r.getOrCreateTextTexture('v' + i + 'xx', F, '#fff', '#000', 10);
+        vc.forEach((c) => r._lmMassTexture(c, '1000', F, '#fff', '#000', 10));
+    }
+    check('backoff: over budget but all on screen: nothing evicted', r.glTextCache.size === 12 && r._lmMassTex.size === 10);
+    check('backoff: text cache scanned ' + r.glTextCache.scans + 'x in 61 frames (once per 30 at most after the first)', r.glTextCache.scans <= 13 + 3);
+    check('backoff: mass pool scanned ' + r._lmMassTex.scans + 'x in 61 frames', r._lmMassTex.scans <= 5);
+    r.glTextCache.scans = 0;
+    r._lmTextFrameBegin();
+    r.getOrCreateTextTexture('new1', F, '#fff', '#000', 10);
+    r._lmTextFrameBegin();
+    check('backoff: a new texture (the set changed) is trimmed at once', r.glTextCache.scans >= 1);
 }
 
 skinMethods().then(() => {
