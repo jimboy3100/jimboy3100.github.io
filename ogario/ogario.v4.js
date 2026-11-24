@@ -21702,7 +21702,9 @@ var _lmLabelI18n = {
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
-        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)"
+        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)",
+        "skinEditor":"Επεξεργασία skin (περικοπή, ζουμ, περιστροφή, προεπισκόπηση, PNG)","macroEditor":"Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)",
+        "hk-customMacro1":"Custom macro 1 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro2":"Custom macro 2 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro3":"Custom macro 3 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -23014,6 +23016,12 @@ textLanguage['hk-hudEditor'] = textLanguage['hk-hudEditor'] || 'Edit HUD (move, 
 textLanguage.companionLive = textLanguage.companionLive || 'Stream overlay / second screen (companion.html, same browser)';
 textLanguage.companionChat = textLanguage.companionChat || 'Stream overlay: include chat lines';
 textLanguage['hk-companionResult'] = textLanguage['hk-companionResult'] || 'Result image (PNG of your last or current life)';
+/* Skin editor and custom macros: same fallback pattern. */
+textLanguage.skinEditor = textLanguage.skinEditor || 'Skin editor (crop, zoom, rotate, preview, PNG)';
+textLanguage.macroEditor = textLanguage.macroEditor || 'Custom macros (split, feed, wait, move to mouse)';
+textLanguage['hk-customMacro1'] = textLanguage['hk-customMacro1'] || 'Custom macro 1 (Settings > Macro > Custom macros)';
+textLanguage['hk-customMacro2'] = textLanguage['hk-customMacro2'] || 'Custom macro 2 (Settings > Macro > Custom macros)';
+textLanguage['hk-customMacro3'] = textLanguage['hk-customMacro3'] || 'Custom macro 3 (Settings > Macro > Custom macros)';
 
 defineChatCommand();
 function defineChatCommand() {
@@ -26864,6 +26872,12 @@ function thelegendmodproject() {
             $(".agario-party h4, #cancel-party-btn").remove();
             $(".agario-party .btn").addClass("btn-sm");
             $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://www.legendmod.ml/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
+            /* Skin editor (ogario/modules/skineditor.js, loaded on the first click): crop, zoom, rotate and
+             * preview an image; PNG download or a local list. Nothing is uploaded. */
+            $('<button type="button" id="lm-skin-editor-btn" class="btn btn-block btn-primary" style="margin-top:4px;white-space:normal;"></button>')
+                .text(textLanguage.skinEditor || 'Skin editor (crop, zoom, rotate, preview, PNG)')
+                .appendTo('#skins-panel')
+                .on('click', function (e) { e.preventDefault(); if (typeof window.lmSkinEditor === 'function') window.lmSkinEditor('open'); });
             $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove();
             /* ── Persistent Agario Ad Suppression ──
              * One-time hide is not enough — agario's code re-shows ads dynamically.
@@ -27212,6 +27226,12 @@ function thelegendmodproject() {
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
             this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
+            /* Custom macros window (ogario/modules/macroeditor.js, loaded on the first click or
+             * "Custom macro" hotkey): sequences of split / feed / wait / move to mouse */
+            $('<button type="button" id="lm-macro-editor-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
+                .text(textLanguage.macroEditor || 'Custom macros (split, feed, wait, move to mouse)')
+                .appendTo('.macroGroup')
+                .on('click', function (e) { e.preventDefault(); if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('open'); });
             this.addSliderBox(".mouseGroup", "gamepadDeadzone", 0.05, 0.5, 0.01);
             /* Gamepad window: button map, sensitivity, profiles and a live test (ogario/gamepad.js
              * loads ogario/modules/gamepad-ui.js the first time it opens) */
@@ -85895,4 +85915,40 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading HUD editor script:', e);
     }
+    /* Skin editor and custom macros: each module loads the first time it is used.
+     * lmSkinEditor('open'[, url]); lmMacroEditor('open'[, slot]) and ('run', slot) for the
+     * "Custom macro 1-3" hotkeys (no default keys). Saved macros load it at start, so the first
+     * key press is not delayed; a press made while it loads runs only if it is still recent. */
+    var _lmLazyModule = function (file, globalName, what) {
+        var queue = null;
+        return function (action, arg) {
+            var M = window[globalName];
+            if (M && typeof M.run === 'function') return M.run(action, arg);
+            if (queue) { queue.push([action, arg, Date.now()]); return; }
+            queue = [[action, arg, Date.now()]];
+            try {
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = 'https://www.legendmod.ml/ogario/modules/' + file + '?v=' + (window.OgVer || '');
+                script.onload = function () {
+                    var q = queue || [], X = window[globalName];
+                    queue = null;
+                    if (!X || typeof X.run !== 'function') return;
+                    q.forEach(function (a) { if (a[0] !== 'run' || Date.now() - a[2] < 1500) X.run(a[0], a[1]); });
+                };
+                script.onerror = function () {
+                    queue = null;
+                    script.remove();
+                    if (window.toastr) toastr.error(what + ' could not be loaded.');
+                };
+                document.body.appendChild(script);
+            } catch (e) {
+                queue = null;
+                console.warn('[LM] Error loading ' + what + ':', e);
+            }
+        };
+    };
+    window.lmSkinEditor = _lmLazyModule('skineditor.js', 'LMSkinEditor', 'The skin editor');
+    window.lmMacroEditor = _lmLazyModule('macroeditor.js', 'LMMacroEditor', 'The macro editor');
+    try { if (localStorage.getItem('lmCustomMacros')) window.lmMacroEditor('load'); } catch (e) { }
 })();

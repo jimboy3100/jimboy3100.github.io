@@ -255,7 +255,9 @@
         companion: { en: 'Open companion (stream overlay)', el: 'Άνοιγμα companion (επικάλυψη stream)' },
         resultImage: { en: 'Result image', el: 'Εικόνα αποτελέσματος' },
         director: { en: 'Spectator director', el: 'Σκηνοθέτης θέασης' },
-        hudEditor: { en: 'Edit HUD (move and resize the HUD boxes, layouts)', el: 'Επεξεργασία HUD (μετακίνηση και μέγεθος πλαισίων, διατάξεις)' }
+        hudEditor: { en: 'Edit HUD (move and resize the HUD boxes, layouts)', el: 'Επεξεργασία HUD (μετακίνηση και μέγεθος πλαισίων, διατάξεις)' },
+        skinEditor: { en: 'Skin editor (crop, zoom, rotate, preview, PNG)', el: 'Επεξεργασία skin (περικοπή, ζουμ, περιστροφή, προεπισκόπηση, PNG)' },
+        macroEditor: { en: 'Custom macros (split, feed, wait, move to mouse)', el: 'Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)' }
     };
     function lang() {
         try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
@@ -420,7 +422,10 @@
         { id: 'companion', en: tEn('companion'), label: function () { return t('companion'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.open); }, run: function () { W.LMCompanion.open(); } },
         { id: 'resultImage', en: tEn('resultImage'), label: function () { return t('resultImage'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.resultImage); }, run: function () { W.LMCompanion.resultImage(); } },
         { id: 'director', en: tEn('director'), label: function () { return t('director'); }, avail: function () { return !!(W.LMDirector && typeof W.LMDirector.open === 'function'); }, run: function () { W.LMDirector.open(); } },
-        { id: 'hudEditor', en: tEn('hudEditor'), label: function () { return t('hudEditor'); }, avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } }
+        { id: 'hudEditor', en: tEn('hudEditor'), label: function () { return t('hudEditor'); }, avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } },
+        /* both load on first use (ogario/modules/skineditor.js, macroeditor.js) */
+        { id: 'skinEditor', en: tEn('skinEditor'), label: function () { return t('skinEditor'); }, avail: function () { return typeof W.lmSkinEditor === 'function'; }, run: function () { W.lmSkinEditor('open'); } },
+        { id: 'macroEditor', en: tEn('macroEditor'), label: function () { return t('macroEditor'); }, avail: function () { return typeof W.lmMacroEditor === 'function'; }, run: function () { W.lmMacroEditor('open'); } }
     ];
 
     /* ═══ Running items ═══ */
