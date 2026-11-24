@@ -18229,6 +18229,14 @@ var displayText = {
         sdsplitRange: 'Zasieg powolnego podwojnego podzialu', //Sonia2
         splitPrediction: 'Przewidywanie podzialu (przyciemnia linie komorek, ktore sie nie podziela, agar.io)',
         tripleSplitRange: 'Zasieg potrojnego podzialu',
+        hudMoveDir: 'Strzalka kierunku ruchu (z ruchu komorek, nie z kursora)',
+        hudMergeCountdown: 'Odliczanie laczenia w sekundach na komorkach (szacunek, agar.io)',
+        hudMergeSound: 'Dzwiek, gdy komorki moga sie polaczyc (agar.io)',
+        hudRelativeMass: 'Masa przeciwnikow jako stosunek do twojej najwiekszej komorki (1.75x, =)',
+        hudEdgeTeammates: 'Strzalki do graczy teamu na krawedzi ekranu',
+        hudEdgeThreats: 'Strzalki do duzych zagrozen, ktore wlasnie znikly z ekranu',
+        hudCellPanel: 'Panel komorek (masy, liczba/16, najwieksza, najmniejsza, suma)',
+        massFormat: 'Format masy (0 jak Skrocona masa, 1 dokladna, 2 12.3k, 3 auto)',
         enemyBSTEDColor: 'Kolor W2STE wroga', //Sonia2
         enemyBSTEColor: 'Kolor WSTE wroga', //Sonia2
         enemyBColor: 'Kolor wiekszego wroga', //Sonia2
@@ -18501,6 +18509,22 @@ var displayText = {
         sdsplitRange: 'Slow double split range', //Sonia2
         splitPrediction: 'Split prediction (dims the cursor lines of cells that will not split, agar.io)',
         tripleSplitRange: 'Triple split range',
+        hudMoveDir: 'Movement direction arrow (from how your cells move, not the cursor)',
+        hudMergeCountdown: 'Merge countdown in seconds on your cells (estimate, agar.io)',
+        hudMergeSound: 'Sound when your cells can merge (agar.io)',
+        hudRelativeMass: 'Enemy mass as a ratio to your biggest cell (1.75x, =)',
+        hudEdgeTeammates: 'Arrows to teammates at the screen edges',
+        hudEdgeThreats: 'Arrows to big threats that just left the screen',
+        hudCellPanel: 'Cell panel (masses, count/16, largest, smallest, total)',
+        massFormat: 'Mass format (0 as Short mass, 1 exact, 2 12.3k, 3 auto)',
+        'hk-precisionZoom': 'Hold: precision zoom (zooms in, release to go back)',
+        'hk-zoomSave1': 'Save zoom bookmark 1',
+        'hk-zoomSave2': 'Save zoom bookmark 2',
+        'hk-zoomSave3': 'Save zoom bookmark 3',
+        'hk-zoomRecall1': 'Go to zoom bookmark 1',
+        'hk-zoomRecall2': 'Go to zoom bookmark 2',
+        'hk-zoomRecall3': 'Go to zoom bookmark 3',
+        'hk-cameraLock': 'Spectate: lock / unlock the camera',
         virusesRange: 'Viruses range',
         textStroke: 'Names and mass stroke',
         namesStroke: 'Names stroke',
@@ -21180,6 +21204,14 @@ var defaultmapsettings = {
     sdsplitRange: false, //Sonia2
     splitPrediction: false,       /* agar.io: dim cursor lines of own cells that will not split */
     tripleSplitRange: false,      /* rings at 3*size+760 around enemies that can triple-split onto you */
+    hudMoveDir: false,            /* HUD helpers (ogario/modules/hudhelpers.js): arrow toward the real movement */
+    hudMergeCountdown: false,     /* seconds until each own cell can merge (agar.io estimate) */
+    hudMergeSound: false,         /* short sound when two own cells can merge (agar.io) */
+    hudRelativeMass: false,       /* other players' mass as a ratio to your biggest cell */
+    hudEdgeTeammates: false,      /* screen-edge arrows toward teammates */
+    hudEdgeThreats: false,        /* screen-edge arrows toward big cells that just left the screen */
+    hudCellPanel: false,          /* panel with the own cell masses */
+    massFormat: 0,                /* mass text: 0 as before (Short mass), 1 exact, 2 12.3k, 3 auto */
     virusesRange: false,
     textStroke: false,
     namesStroke: true,
@@ -21396,7 +21428,7 @@ var _lmLabelI18n = {
         "showMiniMapGrid":"Εμφάνιση πλέγματος μικρού χάρτη","showMiniMapGuides":"Εμφάνιση οδηγών μικρού χάρτη","showExtraMiniMapGuides":"Εμφάνιση επιπλέον οδηγών μικρού χάρτη",
         "showMiniMapGhostCells":"Εμφάνιση κυττάρων-φαντασμάτων","showMiniMapTrail":"Εμφάνιση της πορείας μου στον μικρό χάρτη","oneColoredTeammates":"Μονόχρωμοι συμπαίκτες",
         "rainbowFood":"Τροφή ουράνιου τόξου","oppColors":"Χρώματα αντιπάλων","oppRings":"Δαχτυλίδια αντιπάλων","virColors":"Χρώματα ιών","splitRange":"Εμβέλεια split",
-        "qdsplitRange":"Εμβέλεια γρήγορου διπλού split","sdsplitRange":"Εμβέλεια αργού διπλού split","splitPrediction":"Πρόβλεψη split (αχνές γραμμές για κύτταρα που δεν θα χωριστούν, agar.io)","tripleSplitRange":"Εμβέλεια τριπλού split","virusesRange":"Εμβέλεια ιών","textStroke":"Περίγραμμα ονομάτων και μάζας",
+        "qdsplitRange":"Εμβέλεια γρήγορου διπλού split","sdsplitRange":"Εμβέλεια αργού διπλού split","splitPrediction":"Πρόβλεψη split (αχνές γραμμές για κύτταρα που δεν θα χωριστούν, agar.io)","tripleSplitRange":"Εμβέλεια τριπλού split","hudMoveDir":"Βέλος κατεύθυνσης κίνησης (από την κίνηση των κυττάρων, όχι από τον κέρσορα)","hudMergeCountdown":"Αντίστροφη μέτρηση ένωσης σε δευτερόλεπτα στα κύτταρά σου (εκτίμηση, agar.io)","hudMergeSound":"Ήχος όταν τα κύτταρά σου μπορούν να ενωθούν (agar.io)","hudRelativeMass":"Μάζα αντιπάλων ως λόγος προς το μεγαλύτερο κύτταρό σου (1.75x, =)","hudEdgeTeammates":"Βέλη προς τους συμπαίκτες στις άκρες της οθόνης","hudEdgeThreats":"Βέλη προς μεγάλες απειλές που μόλις βγήκαν από την οθόνη","hudCellPanel":"Πίνακας κυττάρων (μάζες, πλήθος/16, μεγαλύτερο, μικρότερο, σύνολο)","massFormat":"Μορφή μάζας (0 όπως η σύντομη μάζα, 1 ακριβής, 2 12.3k, 3 αυτόματη)","hk-precisionZoom":"Κράτα πατημένο: ζουμ ακριβείας (άφησέ το για επιστροφή)","hk-zoomSave1":"Αποθήκευση σελιδοδείκτη ζουμ 1","hk-zoomSave2":"Αποθήκευση σελιδοδείκτη ζουμ 2","hk-zoomSave3":"Αποθήκευση σελιδοδείκτη ζουμ 3","hk-zoomRecall1":"Μετάβαση στον σελιδοδείκτη ζουμ 1","hk-zoomRecall2":"Μετάβαση στον σελιδοδείκτη ζουμ 2","hk-zoomRecall3":"Μετάβαση στον σελιδοδείκτη ζουμ 3","hk-cameraLock":"Παρακολούθηση: κλείδωμα / ξεκλείδωμα κάμερας","virusesRange":"Εμβέλεια ιών","textStroke":"Περίγραμμα ονομάτων και μάζας",
         "namesStroke":"Περίγραμμα ονομάτων","massStroke":"Περίγραμμα μάζας","bubbleCursorTracker":"Ιχνηλάτης φούσκας (απενεργοποιεί την παρακολούθηση κέρσορα)",
         "bubbleInd":"Δείκτες φούσκας (απενεργοποιεί τα δαχτυλίδια αντιπάλων)","cursorTracking":"Παρακολούθηση κέρσορα","teammatesInd":"Δείκτες συμπαικτών",
         "FBTracking":"Ιχνηλάτης φούσκας Facebook","indicators":"Δείκτης","mouseSplit":"Αριστερό κουμπί ποντικιού","mouseFeed":"Δεξί κουμπί ποντικιού",
@@ -25649,7 +25681,7 @@ function thelegendmodproject() {
                 if (!_lmStBound) toastr.info('<b>[SCAN TRICK]:</b> Set a key for “Hold Scan Trick” in the Hotkeys menu, then hold it in game.');
                 else toastr.info('<b>[SCAN TRICK]:</b> Hold <b>' + $('<div>').text(_lmStBound).html() + '</b> in game to use it.');
             }
-            if (checked === true && (id === 'x16Sound' || id === 'non16Sound' || id === 'virusPopSound' || id === 'virusEatSound')) {
+            if (checked === true && (id === 'x16Sound' || id === 'non16Sound' || id === 'virusPopSound' || id === 'virusEatSound' || id === 'hudMergeSound')) {
                 defaultmapsettings[id] = true;
                 this._lmLoadOptSounds();
             }
@@ -26769,7 +26801,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26830,7 +26862,7 @@ function thelegendmodproject() {
             this.addOptions([], "boardGroup");
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "potionsDrinker"], "massGroup");
+            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "potionsDrinker", "hudRelativeMass"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
@@ -26846,7 +26878,7 @@ function thelegendmodproject() {
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "hudMoveDir", "hudMergeCountdown", "hudMergeSound", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
             //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
             this.addOptions(
                 [
@@ -26874,7 +26906,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Multibox rings: per player on/off, color and size; both off = no rings. */
@@ -26920,6 +26952,7 @@ function thelegendmodproject() {
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
             this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
+            this.addSliderBox(".massGroup", "massFormat", 0, 3, 1);
             this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
             this.addSliderBox(".gridGroup", "rainbowBorderSpeed", 1, 20, 1);
             this.applyHudBlur();
@@ -34020,7 +34053,8 @@ function thelegendmodproject() {
             x16: 'https://www.legendmod.ml/sounds/notification_02.mp3',
             non16: 'https://www.legendmod.ml/sounds/notification-close.mp3',
             virusPop: 'https://www.legendmod.ml/sounds/notification-open.mp3',
-            virusEat: 'https://www.legendmod.ml/sounds/notification_01.mp3'
+            virusEat: 'https://www.legendmod.ml/sounds/notification_01.mp3',
+            mergeReady: 'https://www.legendmod.ml/sounds/notification_01.mp3'
         },
         _lmOptSound(k) {
             var c = this._lmOptSoundCache || (this._lmOptSoundCache = {});
@@ -34032,6 +34066,7 @@ function thelegendmodproject() {
             if (defaultmapsettings.non16Sound) this._lmOptSound('non16');
             if (defaultmapsettings.virusPopSound) this._lmOptSound('virusPop');
             if (defaultmapsettings.virusEatSound) this._lmOptSound('virusEat');
+            if (defaultmapsettings.hudMergeSound) this._lmOptSound('mergeReady');
         },
         setChatSoundsBtn() {
             if (defaultmapsettings.chatSounds) {
@@ -37284,6 +37319,20 @@ function thelegendmodproject() {
             }
             this.massTxt = this.mass.toString();
 
+            /* HUD helpers: Mass format and relative enemy mass (ogario/modules/hudhelpers.js);
+             * the ratio changes with your own mass, so redraw whenever the text changes */
+            if (!this.isVirus && (defaultmapsettings.massFormat || defaultmapsettings.hudRelativeMass) && window.LMHudHelpers) {
+                var _lmHHTxt = window.LMHudHelpers.massText(this.mass, this);
+                if (this.optimizedMass) this.redrawMass = _lmHHTxt !== this._lmHHLastTxt || this.rescale;
+                this._lmHHLastTxt = _lmHHTxt;
+                this.massTxt = _lmHHTxt;
+                return true;
+            }
+            if (this._lmHHLastTxt !== undefined) {
+                /* those options were just turned off: redraw the plain mass once */
+                this._lmHHLastTxt = undefined;
+                this.lastMass = 0;
+            }
             if (this.shortMass && this.mass >= 1000) {
                 this.kMass = Math.round(this.mass / 100) / 10;
                 this.massTxt = this.kMass + 'k';
@@ -37538,7 +37587,7 @@ function thelegendmodproject() {
                         if (hMass.length > 10) hMass.pop();
                     }
                     //if (this.mergeTime && this.mergeTime > 0) {
-                    if (window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) {
+                    if (!defaultmapsettings.hudMergeCountdown && window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) { /* the HUD countdown shows it instead */
                         var customTxt = Math.round(window.playerCellsId[this.id].mergeTime);
 
                         if (this.redrawMerge) {
@@ -70080,6 +70129,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         '' +
                         massVal;
                 }
+                /* HUD helpers: Mass format and relative enemy mass (same text as the Canvas path) */
+                if (!cell.isVirus && (defaultmapsettings.massFormat || defaultmapsettings.hudRelativeMass) && window.LMHudHelpers) {
+                    massStr = window.LMHudHelpers.massText(massVal, cell);
+                }
 
                 var massEntry =
                     this.getOrCreateTextTexture(
@@ -74646,6 +74699,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _lmCamUnit = window.multiboxPlayerEnabled || 0;
             var _lmCamSwitched = this._lmCamUnit !== undefined && this._lmCamUnit !== _lmCamUnit;
             this._lmCamUnit = _lmCamUnit;
+            /* Camera lock hotkey (spectate only): the camera stays where it was locked */
+            if (window.LMHudHelpers && window.LMHudHelpers.camLocked && !activeHasCells) {
+                var _lmLockPt = this._lmCamLockPt || (this._lmCamLockPt = { x: 0, y: 0 });
+                if (window.LMHudHelpers.camLockTarget(LM, _lmLockPt)) {
+                    targetCamX = _lmLockPt.x;
+                    targetCamY = _lmLockPt.y;
+                }
+            }
             if (activeHasCells) {
                 if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500 || (_lmCamSwitched && !defaultmapsettings.cameraSmoothLerp)) {
                     this.camX = targetCamX;
@@ -77002,7 +77063,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     typeof this.ctx.getTransform === 'function' &&
                     !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active) &&
                     (((LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) && defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) ||
-                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length))) {
+                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length) ||
+                        (window.LMHudHelpers && window.LMHudHelpers.worldActive(LM)))) {
                     _lmFxCtx = this.overlayCtx;
                     _lmFxCtx.setTransform(1, 0, 0, 1, 0, 0);
                     _lmFxCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
@@ -77015,6 +77077,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this._lmOverlayFxShown = false;
                 }
                 this.drawPostCellOverlays(_lmFxCtx);
+                /* HUD helpers (ogario/modules/hudhelpers.js): world marks on the same context, edge
+                 * arrows and the cell panel on their own layers; returns at once while all are off */
+                if (window.LMHudHelpers) window.LMHudHelpers.frame(this, _lmFxCtx, LM);
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
                     this.drawSpawnEffect(_lmFxCtx);
@@ -77551,6 +77616,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (_lmMd && _lmMd._mergeState === 'counting' && Number.isFinite(_lmMd._mergeDeadline) && _lmMd._mergeDurationSec > 0) {
                         duration = _lmMd._mergeDurationSec;
                         remaining = Math.max(0, (_lmMd._mergeDeadline - performance.now()) / 1000);
+                        elapsed = duration - remaining;
+                        progress = Math.min(1, elapsed / duration);
+                    } else if (defaultmapsettings.hudMergeCountdown && cell._lmHHEnd > 0 && cell._lmHHDur > 0) {
+                        /* Merge countdown on: the ring follows its estimate (re-armed on every split) */
+                        duration = cell._lmHHDur;
+                        remaining = Math.max(0, (cell._lmHHEnd - performance.now()) / 1000);
                         elapsed = duration - remaining;
                         progress = Math.min(1, elapsed / duration);
                     } else {
@@ -84807,6 +84878,16 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(extUiScript);
     } catch (e) {
         console.warn('[LM] Error auto-loading extended UI script:', e);
+    }
+    /* HUD helpers: movement arrow, merge countdown, relative mass, edge arrows, cell panel,
+     * mass format, zoom hotkeys (each its own option or hotkey; nothing runs while they are off) */
+    try {
+        var hudHelpersScript = document.createElement('script');
+        hudHelpersScript.type = 'text/javascript';
+        hudHelpersScript.src = 'https://www.legendmod.ml/ogario/modules/hudhelpers.js?v=' + (window.OgVer || '');
+        document.body.appendChild(hudHelpersScript);
+    } catch (e) {
+        console.warn('[LM] Error loading HUD helpers script:', e);
     }
     /* Gamepad / controller support (does nothing while its option is off) */
     try {
