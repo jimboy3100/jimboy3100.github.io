@@ -424,6 +424,17 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-perfDiag': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-perfDiag']) || 'Show / hide performance diagnostics';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMPerf && typeof window.LMPerf.toggleDiag === 'function') window.LMPerf.toggleDiag();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-chatSounds': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-chatSounds']) || 'Mute / unmute chat sounds';
