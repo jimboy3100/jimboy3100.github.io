@@ -607,10 +607,12 @@
             return false;
         });
     }
-    function onSpawn(e) { beginLife(+e.time || Date.now()); }
+    /* practice arena lives (ogario/modules/practice.js) are not games */
+    function practising() { return !!(window.LMPractice && window.LMPractice.on); }
+    function onSpawn(e) { if (practising()) { life = null; return; } beginLife(+e.time || Date.now()); }
     function onMass(e) {
         var now = Date.now(), m = +e.mass || 0;
-        if (m <= 0) return;
+        if (m <= 0 || practising()) return;
         if (!life) beginLife(now);
         if (m > life.peak) life.peak = m;
         life.end = m;
@@ -638,7 +640,7 @@
     function onDeath(e) {
         var L = life;
         life = null;
-        if (!L) return;
+        if (!L || practising()) return;
         var now = +e.time || Date.now();
         var ms = Math.max(0, Math.min(+e.msAlive || now - L.start, 6 * 3600000));
         var peak = Math.max(L.peak, +e.mass || 0);

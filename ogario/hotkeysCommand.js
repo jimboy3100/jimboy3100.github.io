@@ -331,6 +331,18 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			/* opens the practice arena window (ogario/modules/practice.js); no default key */
+			'hk-practice': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-practice']) || 'Open the practice arena';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof window.lmPractice === 'function') window.lmPractice('toggle');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-middleMultiView': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-middleMultiView']) || 'Toggle multibox middle view';
