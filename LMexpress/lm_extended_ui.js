@@ -5188,6 +5188,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
     };
 
     window.showShopModal = function() {
+        if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
         injectStyles();
         var t = getTheme();
 
@@ -5429,6 +5430,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
 
     window.showPremiumPotionsModal = function () {
+        if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
         injectStyles();
         var t = getTheme();
 
@@ -5627,6 +5629,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
     window.showConfiguredBoostModal =
         function (boostType) {
+            if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
             boostType = String(boostType || '').toLowerCase();
 
             if (boostType !== 'xp' && boostType !== 'mass') {
@@ -6228,6 +6231,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
 
     window.openShop = function (cat) {
+        if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
         cat = String(cat || '').trim().toLowerCase();
 
         if (cat === 'potions' || cat === 'flasks') {

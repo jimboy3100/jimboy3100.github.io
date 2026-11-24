@@ -157,6 +157,7 @@ SpecialDeals(window._pendingShopTab || 'skins');
 AgarVersionDestinations();
 
 function SpecialDeals(defaultTab) {
+    if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
     if (
         !defaultTab &&
         window._pendingShopTab
@@ -2817,6 +2818,7 @@ function updateUploadBalance() {
  * Response comes back on opcode 111 — ogario.v4.js case 111 calls refreshDealsTab().
  */
 function claimFreeCoins() {
+    if (window._lmRoomShopOff && window._lmRoomShopOff()) return;
     if (!window.loggedIn) {
         toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
         return;

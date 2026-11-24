@@ -444,6 +444,441 @@ function _lmMatchHistoryServerReply(msg) {
     if (m && m._lmServerRefresh) m._lmServerRefresh();
 }
 window._lmMatchHistoryServerReply = _lmMatchHistoryServerReply;
+/* Expanding Land private rooms (Private server list option 5003). The room broker creates,
+ * lists and joins rooms; every create/join answers with a wss URL holding a single-use ticket
+ * valid for 60 s, so that URL is connected to at once and never reconnected to as is: when the
+ * room connection ends, the room window offers "Rejoin", which asks the broker for a new ticket.
+ * Only the last room code is stored (localStorage 'lmLastRoom'); the password stays in memory.
+ * Server strings (room names) are shown with textContent only. */
+var _lmRoomApi = 'https://api.legendmod.ml/el-rooms/';
+var _lmRoomState = { code: '', pass: '', url: '', mode: '', name: '', lost: false, idleMin: 0 };
+window._lmRoomState = _lmRoomState;
+function _lmIsRoomUrl(u) { return typeof u === 'string' && u.indexOf('/el-room/') !== -1; }
+window._lmIsRoomUrl = _lmIsRoomUrl;
+/* on a private room connection (rooms run --ephemeral: no shop, claims or saves) */
+window._lmInPrivateRoom = function () { var lm = window.legendmod; return !!(lm && _lmIsRoomUrl(lm.ws)); };
+/* shop entry points: in a room, a short notice instead of a request nobody answers */
+var _lmRoomShopNoteAt = 0;
+window._lmRoomShopOff = function () {
+    if (!window._lmInPrivateRoom()) return false;
+    if (Date.now() - _lmRoomShopNoteAt > 1500 && window.toastr) {
+        _lmRoomShopNoteAt = Date.now();
+        toastr.info(_lmTH('roomShopOff', 'Shop is off in private rooms; nothing is saved.'));
+    }
+    return true;
+};
+/* 6 characters, no I, O, 0 or 1; typed codes are case-insensitive */
+function _lmRoomCode(c) { c = String(c || '').toUpperCase().replace(/\s+/g, ''); return /^[A-HJ-NP-Z2-9]{6}$/.test(c) ? c : ''; }
+window._lmRoomCode = _lmRoomCode;
+function _lmRoomUrlOk(u) { return typeof u === 'string' && u.length < 600 && /^wss:\/\/api\.legendmod\.ml\/el-room\/[A-HJ-NP-Z2-9]{6}\?t=[A-Za-z0-9._~%:+\/=-]+$/.test(u); }
+function _lmRoomUrlCode(u) { var m = /\/el-room\/([A-HJ-NP-Z2-9]{6})\?/.exec(String(u || '')); return m ? m[1] : ''; }
+function _lmRoomShareLink(code) { return 'https://www.legendmod.ml/play.html?room=' + code; }
+function _lmRoomConnected() {
+    var lm = window.legendmod;
+    return !!(_lmRoomState.url && lm && lm.ws === _lmRoomState.url && lm.socket && lm.socket.readyState <= 1);
+}
+/* resolves { status, data }; status 0 = network error or no answer in 10 s */
+function _lmRoomFetch(path, body) {
+    var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+    var tm = ctl ? setTimeout(function () { ctl.abort(); }, 10000) : null;
+    var opt = { method: body ? 'POST' : 'GET', cache: 'no-store', credentials: 'omit' };
+    if (body) { opt.headers = { 'Content-Type': 'application/json' }; opt.body = JSON.stringify(body); }
+    if (ctl) opt.signal = ctl.signal;
+    var p;
+    try {
+        p = fetch(_lmRoomApi + path, opt).then(function (r) {
+            return r.text().then(function (t) { var j = null; try { j = JSON.parse(t); } catch (e) { } return { status: r.status, data: j }; });
+        });
+    } catch (e) { p = Promise.reject(e); }
+    return p.catch(function () { return { status: 0, data: null }; }).then(function (res) { if (tm) clearTimeout(tm); return res; });
+}
+function _lmRoomErr(status, create) {
+    var T = _lmMhT;
+    if (status === 0 || status === 502 || status === 504) return T('roomErrNetwork', 'Could not reach the room server. Check your connection and try again.');
+    if (status === 403) return T('roomErrPassword', 'Wrong password.');
+    if (status === 404 && !create) return T('roomErrNotFound', 'Room not found. Check the code (a room closes after 10 minutes without players).');
+    if (status === 409) return create ? T('roomErrOwn', 'You already have an open room.') : T('roomErrFull', 'The room is full.');
+    if (status === 429) return T('roomErrRate', 'Too many requests. Please wait a while and try again.');
+    if (status === 503) return T('roomErrBusy', 'All private rooms are in use. Try again later.');
+    return T('roomErrServer', 'The room server could not do this (error {n}). Try again later.').replace('{n}', String(status));
+}
+window._lmRoomErr = _lmRoomErr;
+/* connect to a fresh ticket URL right away (it is single use and expires in 60 s) */
+function _lmRoomGo(url, code, pass, data) {
+    _lmRoomState.code = code;
+    _lmRoomState.pass = pass || '';
+    _lmRoomState.url = url;
+    _lmRoomState.mode = data && data.mode === 'teams' ? 'teams' : 'ffa';
+    _lmRoomState.name = data && typeof data.name === 'string' ? data.name.slice(0, 24) : '';
+    _lmRoomState.lost = false;
+    try { localStorage.setItem('lmLastRoom', code); } catch (e) { }
+    /* drop load-balancer replies of an earlier pick; show the room in the list without a change event */
+    window._lmGamemodeSeq = (window._lmGamemodeSeq || 0) + 1;
+    if (typeof $ === 'function' && $('#region').val() === 'Private' && $('#gamemode option[value="5003"]').length) $('#gamemode').val('5003');
+    if (window.legendmod) window.legendmod.gameMode = ':ffa';
+    if (window.core && typeof window.core.connect === 'function') window.core.connect(url);
+    _lmRoomButton();
+}
+/* POST join with { code } or { id }; done(errorText | null) */
+function _lmRoomJoin(body, pass, done) {
+    if (pass) body.password = pass;
+    _lmRoomFetch('join', body).then(function (res) {
+        var d = res.data;
+        if (res.status === 200 && d && _lmRoomUrlOk(d.url)) {
+            _lmRoomGo(d.url, _lmRoomUrlCode(d.url), pass, d);
+            done(null);
+        } else done(_lmRoomErr(res.status === 200 ? 500 : res.status, false));
+    });
+}
+/* called by the connection's onClose for a room URL: no auto-reconnect, offer Rejoin */
+window._lmRoomOnClose = function (ws) {
+    if (!ws || ws !== _lmRoomState.url) return;
+    _lmRoomState.lost = true;
+    _lmRoomButton();
+    var m = document.getElementById('lm-room-modal');
+    if (m && m._lmPaint) m._lmPaint(_lmMhT('roomLost', 'Disconnected from the private room.'), true);
+    else _lmRoomOpen('rejoin');
+};
+/* "🔒 Private room CODE" under the menu footer, only after a room was joined in this tab */
+function _lmRoomButton() {
+    var b = document.getElementById('lm-room-btn');
+    if (!_lmRoomState.code) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }
+    if (!b) {
+        var foot = document.getElementById('menu-footer');
+        if (!foot || !foot.parentNode) return;
+        var ref = document.getElementById('lm-mh-btn') || document.getElementById('lm-session-stats');
+        if (!ref || ref.parentNode !== foot.parentNode) ref = foot;
+        b = document.createElement('div');
+        b.id = 'lm-room-btn';
+        b.className = 'menu-main-color';
+        b.style.cssText = 'font-size:11px;text-align:center;margin-top:2px;cursor:pointer;text-decoration:underline;opacity:.85;';
+        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); _lmRoomOpen(); });
+        ref.parentNode.insertBefore(b, ref.nextSibling);
+    }
+    b.textContent = '🔒 ' + _lmMhT('room', 'Private room') + ' ' + _lmRoomState.code;
+}
+function _lmRoomCopy(text, btn, label) {
+    var ok = function () { if (btn) { btn.textContent = _lmMhT('roomCopied', 'Copied'); setTimeout(function () { btn.textContent = label; }, 1500); } };
+    var fallback = function () {
+        var i = document.createElement('textarea');
+        i.value = text;
+        i.style.cssText = 'position:fixed;left:-9999px;top:0;';
+        document.body.appendChild(i);
+        i.select();
+        try { document.execCommand('copy'); ok(); } catch (e) { }
+        document.body.removeChild(i);
+    };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(ok, fallback); return; } } catch (e) { }
+    fallback();
+}
+/* the room window: tab 'create' | 'join' | 'list' | 'rejoin' (join tab, room box first); code prefills Join */
+function _lmRoomOpen(tab, code) {
+    var old = document.getElementById('lm-room-modal');
+    if (old && old._lmClose) old._lmClose(true);
+    var T = _lmMhT;
+    var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
+    var mc = ds.menuMainColor || '#01d9cc', pc = ds.menuPanelColor || '#00243e', pc2 = ds.menuPanelColor2 || '#002f52';
+    var tc = ds.menuTextColor || '#ffffff', tc2 = ds.menuTextColor2 || '#8096a7';
+    var el = function (tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text !== undefined) e.textContent = text; return e; };
+    var inCss = 'box-sizing:border-box;width:100%;min-height:34px;padding:6px 8px;font-size:15px;color:' + tc + ';background:rgba(0,0,0,0.25);border:1px solid ' + pc2 + ';border-radius:4px;outline:none;font-family:inherit;';
+    var btnCss = 'min-height:36px;padding:6px 14px;border:none;border-radius:4px;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:' + mc + ';color:' + pc + ';';
+    var btn2Css = 'min-height:32px;padding:4px 10px;border:1px solid ' + pc2 + ';border-radius:4px;cursor:pointer;font-size:12px;font-family:inherit;background:rgba(255,255,255,0.05);color:' + tc + ';';
+    var md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:460px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
+        'display:flex;flex-direction:column;z-index:2147483647;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
+        'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:13px;overflow:hidden;box-sizing:border-box;');
+    md.id = 'lm-room-modal';
+    var head = el('div', 'flex:none;padding:10px 52px 8px 52px;text-align:center;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
+    head.appendChild(el('div', 'font-size:16px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', '🔒 ' + T('room', 'Private room')));
+    var x = el('div', 'position:absolute;top:6px;right:10px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.05);', '✕');
+    x.id = 'lm-room-close';
+    x.title = T('close', 'Close');
+    head.appendChild(x);
+    md.appendChild(head);
+    var scroll = el('div', 'flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 12px 12px;');
+    md.appendChild(scroll);
+    /* current room: code, share link, Rejoin */
+    var cur = el('div', 'display:none;text-align:center;padding:8px;margin-bottom:8px;border:1px solid ' + pc2 + ';border-radius:6px;background:rgba(0,0,0,0.15);');
+    cur.id = 'lm-room-cur';
+    var curName = el('div', 'font-size:12px;color:' + tc2 + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;');
+    curName.id = 'lm-room-curname';
+    var curCode = el('div', 'font-size:34px;font-weight:700;letter-spacing:6px;color:' + mc + ';font-family:monospace;line-height:1.2;user-select:all;');
+    curCode.id = 'lm-room-curcode';
+    var cbtns = el('div', 'display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:4px 0;');
+    var bCopy = el('button', btn2Css, T('roomCopy', 'Copy code'));
+    bCopy.id = 'lm-room-copy';
+    bCopy.type = 'button';
+    var bCopyLink = el('button', btn2Css, T('roomCopyLink', 'Copy link'));
+    bCopyLink.id = 'lm-room-copylink';
+    bCopyLink.type = 'button';
+    cbtns.appendChild(bCopy);
+    cbtns.appendChild(bCopyLink);
+    var link = el('input', inCss + 'font-size:12px;text-align:center;min-height:28px;padding:3px 6px;');
+    link.id = 'lm-room-link';
+    link.readOnly = true;
+    var curInfo = el('div', 'font-size:11px;color:' + tc2 + ';margin-top:4px;');
+    curInfo.id = 'lm-room-curinfo';
+    var bRejoin = el('button', btnCss + 'margin-top:6px;display:none;', T('roomRejoin', 'Rejoin'));
+    bRejoin.id = 'lm-room-rejoin';
+    bRejoin.type = 'button';
+    cur.appendChild(curName);
+    cur.appendChild(curCode);
+    cur.appendChild(cbtns);
+    cur.appendChild(link);
+    cur.appendChild(curInfo);
+    cur.appendChild(bRejoin);
+    scroll.appendChild(cur);
+    var msg = el('div', 'display:none;padding:6px 8px;margin-bottom:8px;border-radius:4px;font-size:12px;background:rgba(0,0,0,0.2);');
+    msg.id = 'lm-room-msg';
+    msg.setAttribute('role', 'alert');
+    scroll.appendChild(msg);
+    var tabs = el('div', 'display:flex;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;');
+    tabs.id = 'lm-room-tabs';
+    scroll.appendChild(tabs);
+    var panes = {};
+    var view = tab === 'join' || tab === 'list' || tab === 'create' ? tab : (tab === 'rejoin' || code ? 'join' : 'create');
+    [['create', T('roomCreate', 'Create')], ['join', T('roomJoin', 'Join')], ['list', T('roomPublic', 'Public rooms')]].forEach(function (t) {
+        var b = el('div', 'cursor:pointer;font-size:12px;padding:6px 12px;border-radius:4px;border:1px solid ' + pc2 + ';', t[1]);
+        b.id = 'lm-room-tab-' + t[0];
+        b.addEventListener('click', function (e) { e.stopPropagation(); view = t[0]; paint(); if (view === 'list' && !listLoaded) loadList(); });
+        tabs.appendChild(b);
+        panes[t[0]] = el('div');
+        panes[t[0]].id = 'lm-room-pane-' + t[0];
+        scroll.appendChild(panes[t[0]]);
+    });
+    var row = function (pane, label, ctl, valEl) {
+        var r = el('div', 'display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;');
+        var l = el('label', 'flex:0 0 120px;font-size:12px;color:' + tc2 + ';', label);
+        if (ctl.id) l.htmlFor = ctl.id;
+        r.appendChild(l);
+        var w = el('div', 'flex:1 1 160px;display:flex;align-items:center;gap:8px;min-width:0;');
+        w.appendChild(ctl);
+        if (valEl) w.appendChild(valEl);
+        r.appendChild(w);
+        pane.appendChild(r);
+    };
+    var range = function (id, min, max, val) {
+        var r = el('input', 'flex:1 1 auto;min-width:0;accent-color:' + mc + ';');
+        r.type = 'range'; r.min = min; r.max = max; r.step = 1; r.value = val; r.id = id;
+        var v = el('span', 'flex:0 0 30px;text-align:right;font-weight:700;color:' + mc + ';', String(val));
+        v.id = id + '-val';
+        r.addEventListener('input', function () { v.textContent = r.value; });
+        return [r, v];
+    };
+    var text = function (id, max, ph, type) {
+        var i = el('input', inCss);
+        i.type = type || 'text'; i.id = id; i.maxLength = max; i.autocomplete = type === 'password' ? 'new-password' : 'off';
+        i.spellcheck = false;
+        if (ph) i.placeholder = ph;
+        return i;
+    };
+    /* Create */
+    var pc_ = panes.create;
+    var selMode = el('select', inCss);
+    selMode.id = 'lm-room-mode';
+    [['ffa', 'FFA'], ['teams', T('roomTeams', 'Teams')]].forEach(function (o) { var op = el('option', 'color:#000;', o[1]); op.value = o[0]; selMode.appendChild(op); });
+    row(pc_, T('roomMode', 'Mode'), selMode);
+    var rb = range('lm-room-bots', 0, 100, 0); row(pc_, T('roomBots', 'Bots'), rb[0], rb[1]);
+    var rt = range('lm-room-tier', 1, 5, 2); row(pc_, T('roomMapSize', 'Map size'), rt[0], rt[1]);
+    var rm = range('lm-room-max', 2, 50, 10); row(pc_, T('roomMaxPlayers', 'Max players'), rm[0], rm[1]);
+    var cName = text('lm-room-name', 24, '', 'text'); row(pc_, T('roomNameOpt', 'Room name (optional)'), cName);
+    var cPass = text('lm-room-cpass', 32, '', 'password'); row(pc_, T('roomPassOpt', 'Password (optional)'), cPass);
+    var pubWrap = el('label', 'display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer;font-size:12px;');
+    var cPub = el('input', 'width:18px;height:18px;accent-color:' + mc + ';margin:0;');
+    cPub.type = 'checkbox'; cPub.id = 'lm-room-public';
+    pubWrap.appendChild(cPub);
+    pubWrap.appendChild(el('span', '', T('roomListed', 'Show in public rooms')));
+    pc_.appendChild(pubWrap);
+    var bCreate = el('button', btnCss + 'width:100%;', T('roomCreateBtn', 'Create room'));
+    bCreate.id = 'lm-room-create'; bCreate.type = 'button';
+    pc_.appendChild(bCreate);
+    /* Join */
+    var pj = panes.join;
+    var jCode = text('lm-room-code', 6, 'ABC234', 'text');
+    jCode.style.textTransform = 'uppercase';
+    jCode.style.letterSpacing = '3px';
+    jCode.style.fontFamily = 'monospace';
+    jCode.style.fontSize = '18px';
+    jCode.setAttribute('autocapitalize', 'characters');
+    var last = '';
+    try { last = _lmRoomCode(localStorage.getItem('lmLastRoom')); } catch (e) { }
+    jCode.value = _lmRoomCode(code) || _lmRoomState.code || last;
+    jCode.addEventListener('input', function () { var v = jCode.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); if (v !== jCode.value) jCode.value = v; });
+    row(pj, T('roomCode', 'Room code'), jCode);
+    var jPass = text('lm-room-jpass', 32, '', 'password'); jPass.autocomplete = 'off';
+    row(pj, T('roomPassOpt', 'Password (optional)'), jPass);
+    var bJoin = el('button', btnCss + 'width:100%;', T('roomJoinBtn', 'Join room'));
+    bJoin.id = 'lm-room-join'; bJoin.type = 'button';
+    pj.appendChild(bJoin);
+    /* Public rooms */
+    var pl = panes.list;
+    var bRefresh = el('button', btn2Css + 'margin-bottom:8px;', '⟳ ' + T('roomRefresh', 'Refresh'));
+    bRefresh.id = 'lm-room-refresh'; bRefresh.type = 'button';
+    pl.appendChild(bRefresh);
+    var list = el('div');
+    list.id = 'lm-room-list';
+    pl.appendChild(list);
+    var listLoaded = false, busy = false;
+    var actions = [bCreate, bJoin, bRefresh, bRejoin];
+    var setBusy = function (on) {
+        busy = on;
+        actions.forEach(function (b) { b.disabled = on; b.style.opacity = on ? '0.5' : ''; });
+        var lj = list.querySelectorAll('button');
+        for (var i = 0; i < lj.length; i++) { lj[i].disabled = on; lj[i].style.opacity = on ? '0.5' : ''; }
+    };
+    var say = function (t, isErr) {
+        msg.style.display = t ? '' : 'none';
+        msg.textContent = t || '';
+        msg.style.color = isErr ? '#ff8080' : tc;
+        msg.style.border = '1px solid ' + (isErr ? 'rgba(255,90,90,0.5)' : pc2);
+    };
+    var paint = function (note, isErr) {
+        for (var i = 0; i < tabs.children.length; i++) {
+            var on = tabs.children[i].id === 'lm-room-tab-' + view;
+            tabs.children[i].style.background = on ? mc : 'rgba(255,255,255,0.05)';
+            tabs.children[i].style.color = on ? pc : tc2;
+            tabs.children[i].style.fontWeight = on ? '700' : '400';
+        }
+        Object.keys(panes).forEach(function (k) { panes[k].style.display = k === view ? '' : 'none'; });
+        var s = _lmRoomState;
+        cur.style.display = s.code ? '' : 'none';
+        if (s.code) {
+            curCode.textContent = s.code;
+            curName.textContent = (s.name ? s.name + ' · ' : '') + (s.mode === 'teams' ? T('roomTeams', 'Teams') : 'FFA');
+            link.value = _lmRoomShareLink(s.code);
+            curInfo.textContent = T('roomShare', 'Share the code or link with your friends.') +
+                (s.idleMin > 0 ? ' ' + T('roomIdle', 'The room closes after {n} minutes without players.').replace('{n}', String(s.idleMin)) : '');
+            bRejoin.style.display = s.lost || !_lmRoomConnected() ? '' : 'none';
+        }
+        if (note !== undefined) say(note, isErr);
+    };
+    md._lmPaint = paint;
+    var connected = function () { say(T('roomConnecting', 'Connecting…'), false); paint(); };
+    /* list */
+    var loadList = function () {
+        if (busy) return;
+        listLoaded = true;
+        setBusy(true);
+        while (list.firstChild) list.removeChild(list.firstChild);
+        list.appendChild(el('div', 'padding:12px;text-align:center;color:' + tc2 + ';', T('roomLoading', 'Loading…')));
+        _lmRoomFetch('list').then(function (res) {
+            setBusy(false);
+            while (list.firstChild) list.removeChild(list.firstChild);
+            var rooms = res.status === 200 && res.data && Array.isArray(res.data.rooms) ? res.data.rooms : null;
+            if (!rooms) { list.appendChild(el('div', 'padding:12px;text-align:center;color:#ff8080;', _lmRoomErr(res.status === 200 ? 500 : res.status, false))); return; }
+            rooms = rooms.filter(function (r) { return r && typeof r === 'object' && (typeof r.id === 'string' || typeof r.id === 'number'); }).slice(0, 100);
+            if (!rooms.length) { list.appendChild(el('div', 'padding:12px;text-align:center;color:' + tc2 + ';', T('roomNone', 'No public rooms right now.'))); return; }
+            rooms.forEach(function (r) {
+                var id = String(r.id).slice(0, 32);
+                var item = el('div', 'padding:6px 4px;border-bottom:1px solid rgba(255,255,255,0.06);');
+                item.className = 'lm-room-item';
+                var line = el('div', 'display:flex;align-items:center;gap:8px;');
+                var nm = el('div', 'flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;', (r.hasPassword ? '🔒 ' : '') + (String(r.name || '').slice(0, 24) || '—'));
+                nm.className = 'lm-room-iname';
+                if (r.hasPassword) nm.title = T('roomProtected', 'Password protected');
+                var meta = el('div', 'flex:none;font-size:11px;color:' + tc2 + ';', (r.mode === 'teams' ? T('roomTeams', 'Teams') : 'FFA') + ' · ' + Math.max(0, +r.players | 0) + '/' + Math.max(0, +r.maxPlayers | 0));
+                var bj = el('button', btn2Css, T('roomJoin', 'Join'));
+                bj.className = 'lm-room-ljoin';
+                bj.type = 'button';
+                line.appendChild(nm);
+                line.appendChild(meta);
+                line.appendChild(bj);
+                item.appendChild(line);
+                var go = function (pw) {
+                    if (busy) return;
+                    setBusy(true);
+                    say(T('roomConnecting', 'Connecting…'), false);
+                    _lmRoomJoin({ id: id }, pw, function (err) { setBusy(false); if (err) say(err, true); else connected(); });
+                };
+                if (r.hasPassword) {
+                    var pwRow = el('div', 'display:none;gap:6px;margin-top:6px;');
+                    var pw = text('', 32, T('roomPass', 'Password'), 'password');
+                    pw.className = 'lm-room-lpass';
+                    pw.autocomplete = 'off';
+                    var ok = el('button', btnCss, T('roomJoin', 'Join'));
+                    ok.className = 'lm-room-lpassok';
+                    ok.type = 'button';
+                    pwRow.appendChild(pw);
+                    pwRow.appendChild(ok);
+                    item.appendChild(pwRow);
+                    bj.addEventListener('click', function (e) { e.stopPropagation(); pwRow.style.display = 'flex'; pw.focus(); });
+                    ok.addEventListener('click', function (e) { e.stopPropagation(); go(pw.value); });
+                    pw.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); go(pw.value); } });
+                } else bj.addEventListener('click', function (e) { e.stopPropagation(); go(''); });
+                list.appendChild(item);
+            });
+        });
+    };
+    bRefresh.addEventListener('click', function (e) { e.stopPropagation(); loadList(); });
+    /* create */
+    bCreate.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (busy) return;
+        var name = String(cName.value || '').trim();
+        if (name.length > 24 || /[<>\u0000-\u001f\u007f]/.test(name)) { say(T('roomErrName', 'Room name: up to 24 characters, no < or >.'), true); return; }
+        var body = { mode: selMode.value === 'teams' ? 'teams' : 'ffa', bots: +rb[0].value | 0, tier: +rt[0].value | 0, maxPlayers: +rm[0].value | 0, public: !!cPub.checked };
+        var pass = String(cPass.value || '').slice(0, 32);
+        if (pass) body.password = pass;
+        if (name) body.name = name;
+        setBusy(true);
+        say(T('roomConnecting', 'Connecting…'), false);
+        _lmRoomFetch('create', body).then(function (res) {
+            setBusy(false);
+            var d = res.data, c = d && _lmRoomCode(d.code);
+            if (res.status === 200 && c && _lmRoomUrlOk(d.url)) {
+                _lmRoomState.idleMin = Math.max(0, +d.expiresIdleMin | 0);
+                _lmRoomGo(d.url, c, pass, { mode: d.mode, name: name });
+                connected();
+            } else say(_lmRoomErr(res.status === 200 ? 500 : res.status, true), true);
+        });
+    });
+    /* join by code */
+    var joinCode = function () {
+        if (busy) return;
+        var c = _lmRoomCode(jCode.value);
+        if (!c) { say(T('roomErrCode', 'Enter the 6-character room code.'), true); return; }
+        setBusy(true);
+        say(T('roomConnecting', 'Connecting…'), false);
+        var pw = String(jPass.value || '').slice(0, 32);
+        _lmRoomJoin({ code: c }, pw, function (err) {
+            setBusy(false);
+            if (err) { say(err, true); return; }
+            if (_lmRoomState.code !== c) _lmRoomState.idleMin = 0;
+            connected();
+        });
+    };
+    bJoin.addEventListener('click', function (e) { e.stopPropagation(); joinCode(); });
+    [jCode, jPass].forEach(function (i) { i.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); joinCode(); } }); });
+    /* rejoin: a new ticket for the remembered code (and password) */
+    bRejoin.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (busy || !_lmRoomState.code) return;
+        setBusy(true);
+        say(T('roomConnecting', 'Connecting…'), false);
+        _lmRoomJoin({ code: _lmRoomState.code }, _lmRoomState.pass, function (err) { setBusy(false); if (err) say(err, true); else connected(); });
+    });
+    bCopy.addEventListener('click', function (e) { e.stopPropagation(); _lmRoomCopy(_lmRoomState.code, bCopy, T('roomCopy', 'Copy code')); });
+    bCopyLink.addEventListener('click', function (e) { e.stopPropagation(); _lmRoomCopy(_lmRoomShareLink(_lmRoomState.code), bCopyLink, T('roomCopyLink', 'Copy link')); });
+    /* typing here never reaches the game hotkeys */
+    ['keydown', 'keyup', 'keypress'].forEach(function (t) { md.addEventListener(t, function (e) { if (e.key !== 'Escape' && e.keyCode !== 27) e.stopPropagation(); }); });
+    var onKey = function (e) { if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopPropagation(); close(); } };
+    /* closed without joining: the server list shows the server the player is still on */
+    var close = function (replaced) {
+        window.removeEventListener('keydown', onKey, true);
+        if (md.parentNode) md.parentNode.removeChild(md);
+        if (replaced === true || typeof $ !== 'function') return;
+        var prev = window._lmPrivGmPrev;
+        if ($('#gamemode').val() === '5003' && !_lmIsRoomUrl(window.legendmod && window.legendmod.ws) && prev && prev !== '5003' &&
+            $('#gamemode option[value="' + prev + '"]').length) $('#gamemode').val(prev);
+    };
+    md._lmClose = close;
+    x.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+    window.addEventListener('keydown', onKey, true);
+    document.body.appendChild(md);
+    paint(tab === 'rejoin' && _lmRoomState.lost ? T('roomLost', 'Disconnected from the private room.') : undefined, tab === 'rejoin');
+    if (view === 'list') loadList();
+    return md;
+}
+window._lmRoomOpen = _lmRoomOpen;
 /* Map border colour: the theme colour, or a slowly cycling rainbow with "Rainbow map borders"
  * (returned as #rrggbb so every border path can parse it). */
 /* Background sector label: the custom symbol (max 4 characters) or the usual A1..E5. */
@@ -537,6 +972,45 @@ window.lmT = (function () {
         "eventLeft": {"en":"{0}: {1} left","el":"{0}: απομένουν {1}","es":"{0}: quedan {1}","bg":"{0}: остават {1}","fr":"{0} : encore {1}","ar":"{0}: متبقٍ {1}","zh":"{0}：剩餘 {1}","ru":"{0}: осталось {1}","de":"{0}: noch {1}","tr":"{0}: {1} kaldı","pl":"{0}: zostało {1}","nl":"{0}: nog {1}"},
         "lmPresetReducedMotion": {"en":"Reduced motion","el":"Μειωμένη κίνηση","es":"Movimiento reducido","bg":"Намалено движение","fr":"Mouvement réduit","ar":"تقليل الحركة","zh":"減少動態效果","ru":"Меньше движения","de":"Weniger Bewegung","tr":"Azaltılmış hareket","pl":"Ograniczony ruch","nl":"Minder beweging"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "room": {"en":"Private room","el":"Ιδιωτικό δωμάτιο","es":"Sala privada","bg":"Частна стая","fr":"Salon privé","ar":"غرفة خاصة","zh":"私人房間","ru":"Приватная комната","de":"Privater Raum","tr":"Özel oda","pl":"Prywatny pokój","nl":"Privékamer"},
+        "roomCreate": {"en":"Create","el":"Δημιουργία","es":"Crear","bg":"Създай","fr":"Créer","ar":"إنشاء","zh":"建立","ru":"Создать","de":"Erstellen","tr":"Oluştur","pl":"Utwórz","nl":"Maken"},
+        "roomJoin": {"en":"Join","el":"Είσοδος","es":"Unirse","bg":"Влез","fr":"Rejoindre","ar":"انضمام","zh":"加入","ru":"Войти","de":"Beitreten","tr":"Katıl","pl":"Dołącz","nl":"Deelnemen"},
+        "roomPublic": {"en":"Public rooms","el":"Δημόσια δωμάτια","es":"Salas públicas","bg":"Публични стаи","fr":"Salons publics","ar":"الغرف العامة","zh":"公開房間","ru":"Открытые комнаты","de":"Öffentliche Räume","tr":"Herkese açık odalar","pl":"Publiczne pokoje","nl":"Openbare kamers"},
+        "roomMode": {"en":"Mode","el":"Λειτουργία","es":"Modo","bg":"Режим","fr":"Mode","ar":"الوضع","zh":"模式","ru":"Режим","de":"Modus","tr":"Mod","pl":"Tryb","nl":"Modus"},
+        "roomTeams": {"en":"Teams","el":"Ομάδες","es":"Equipos","bg":"Отбори","fr":"Équipes","ar":"فرق","zh":"團隊","ru":"Команды","de":"Teams","tr":"Takımlar","pl":"Drużyny","nl":"Teams"},
+        "roomBots": {"en":"Bots","el":"Bots","es":"Bots","bg":"Ботове","fr":"Bots","ar":"روبوتات","zh":"機器人","ru":"Боты","de":"Bots","tr":"Botlar","pl":"Boty","nl":"Bots"},
+        "roomMapSize": {"en":"Map size","el":"Μέγεθος χάρτη","es":"Tamaño del mapa","bg":"Размер на картата","fr":"Taille de la carte","ar":"حجم الخريطة","zh":"地圖大小","ru":"Размер карты","de":"Kartengröße","tr":"Harita boyutu","pl":"Rozmiar mapy","nl":"Kaartgrootte"},
+        "roomMaxPlayers": {"en":"Max players","el":"Μέγιστοι παίκτες","es":"Máx. jugadores","bg":"Макс. играчи","fr":"Joueurs max.","ar":"الحد الأقصى للاعبين","zh":"玩家上限","ru":"Макс. игроков","de":"Max. Spieler","tr":"Maks. oyuncu","pl":"Maks. graczy","nl":"Max. spelers"},
+        "roomPassOpt": {"en":"Password (optional)","el":"Κωδικός πρόσβασης (προαιρετικό)","es":"Contraseña (opcional)","bg":"Парола (по избор)","fr":"Mot de passe (facultatif)","ar":"كلمة المرور (اختياري)","zh":"密碼（選填）","ru":"Пароль (необязательно)","de":"Passwort (optional)","tr":"Şifre (isteğe bağlı)","pl":"Hasło (opcjonalnie)","nl":"Wachtwoord (optioneel)"},
+        "roomPass": {"en":"Password","el":"Κωδικός πρόσβασης","es":"Contraseña","bg":"Парола","fr":"Mot de passe","ar":"كلمة المرور","zh":"密碼","ru":"Пароль","de":"Passwort","tr":"Şifre","pl":"Hasło","nl":"Wachtwoord"},
+        "roomListed": {"en":"Show in public rooms","el":"Εμφάνιση στα δημόσια δωμάτια","es":"Mostrar en salas públicas","bg":"Покажи в публичните стаи","fr":"Afficher dans les salons publics","ar":"إظهار في الغرف العامة","zh":"顯示在公開房間","ru":"Показывать в открытых комнатах","de":"In öffentlichen Räumen anzeigen","tr":"Herkese açık odalarda göster","pl":"Pokaż w publicznych pokojach","nl":"Tonen bij openbare kamers"},
+        "roomNameOpt": {"en":"Room name (optional)","el":"Όνομα δωματίου (προαιρετικό)","es":"Nombre de la sala (opcional)","bg":"Име на стаята (по избор)","fr":"Nom du salon (facultatif)","ar":"اسم الغرفة (اختياري)","zh":"房間名稱（選填）","ru":"Название комнаты (необязательно)","de":"Raumname (optional)","tr":"Oda adı (isteğe bağlı)","pl":"Nazwa pokoju (opcjonalnie)","nl":"Kamernaam (optioneel)"},
+        "roomCreateBtn": {"en":"Create room","el":"Δημιουργία δωματίου","es":"Crear sala","bg":"Създай стая","fr":"Créer le salon","ar":"إنشاء غرفة","zh":"建立房間","ru":"Создать комнату","de":"Raum erstellen","tr":"Oda oluştur","pl":"Utwórz pokój","nl":"Kamer maken"},
+        "roomCode": {"en":"Room code","el":"Κωδικός δωματίου","es":"Código de la sala","bg":"Код на стаята","fr":"Code du salon","ar":"رمز الغرفة","zh":"房間代碼","ru":"Код комнаты","de":"Raumcode","tr":"Oda kodu","pl":"Kod pokoju","nl":"Kamercode"},
+        "roomJoinBtn": {"en":"Join room","el":"Είσοδος στο δωμάτιο","es":"Unirse a la sala","bg":"Влез в стаята","fr":"Rejoindre le salon","ar":"انضم إلى الغرفة","zh":"加入房間","ru":"Войти в комнату","de":"Raum beitreten","tr":"Odaya katıl","pl":"Dołącz do pokoju","nl":"Kamer betreden"},
+        "roomRefresh": {"en":"Refresh","el":"Ανανέωση","es":"Actualizar","bg":"Обнови","fr":"Actualiser","ar":"تحديث","zh":"重新整理","ru":"Обновить","de":"Aktualisieren","tr":"Yenile","pl":"Odśwież","nl":"Vernieuwen"},
+        "roomNone": {"en":"No public rooms right now.","el":"Δεν υπάρχουν δημόσια δωμάτια αυτή τη στιγμή.","es":"No hay salas públicas ahora.","bg":"В момента няма публични стаи.","fr":"Aucun salon public pour le moment.","ar":"لا توجد غرف عامة حالياً.","zh":"目前沒有公開房間。","ru":"Сейчас нет открытых комнат.","de":"Gerade keine öffentlichen Räume.","tr":"Şu anda herkese açık oda yok.","pl":"Brak publicznych pokoi.","nl":"Er zijn nu geen openbare kamers."},
+        "roomLoading": {"en":"Loading…","el":"Φόρτωση…","es":"Cargando…","bg":"Зареждане…","fr":"Chargement…","ar":"جارٍ التحميل…","zh":"載入中…","ru":"Загрузка…","de":"Wird geladen…","tr":"Yükleniyor…","pl":"Ładowanie…","nl":"Laden…"},
+        "roomCopy": {"en":"Copy code","el":"Αντιγραφή κωδικού","es":"Copiar código","bg":"Копирай кода","fr":"Copier le code","ar":"نسخ الرمز","zh":"複製代碼","ru":"Копировать код","de":"Code kopieren","tr":"Kodu kopyala","pl":"Kopiuj kod","nl":"Code kopiëren"},
+        "roomCopyLink": {"en":"Copy link","el":"Αντιγραφή συνδέσμου","es":"Copiar enlace","bg":"Копирай връзката","fr":"Copier le lien","ar":"نسخ الرابط","zh":"複製連結","ru":"Копировать ссылку","de":"Link kopieren","tr":"Bağlantıyı kopyala","pl":"Kopiuj link","nl":"Link kopiëren"},
+        "roomCopied": {"en":"Copied","el":"Αντιγράφηκε","es":"Copiado","bg":"Копирано","fr":"Copié","ar":"تم النسخ","zh":"已複製","ru":"Скопировано","de":"Kopiert","tr":"Kopyalandı","pl":"Skopiowano","nl":"Gekopieerd"},
+        "roomShare": {"en":"Share the code or link with your friends.","el":"Μοιραστείτε τον κωδικό ή τον σύνδεσμο με τους φίλους σας.","es":"Comparte el código o el enlace con tus amigos.","bg":"Сподели кода или връзката с приятелите си.","fr":"Partagez le code ou le lien avec vos amis.","ar":"شارك الرمز أو الرابط مع أصدقائك.","zh":"把代碼或連結分享給朋友。","ru":"Поделитесь кодом или ссылкой с друзьями.","de":"Teile den Code oder Link mit deinen Freunden.","tr":"Kodu veya bağlantıyı arkadaşlarınla paylaş.","pl":"Udostępnij kod lub link znajomym.","nl":"Deel de code of link met je vrienden."},
+        "roomIdle": {"en":"The room closes after {n} minutes without players.","el":"Το δωμάτιο κλείνει μετά από {n} λεπτά χωρίς παίκτες.","es":"La sala se cierra tras {n} minutos sin jugadores.","bg":"Стаята се затваря след {n} минути без играчи.","fr":"Le salon ferme après {n} minutes sans joueurs.","ar":"تُغلق الغرفة بعد {n} دقائق بدون لاعبين.","zh":"房間在沒有玩家 {n} 分鐘後關閉。","ru":"Комната закрывается через {n} мин. без игроков.","de":"Der Raum schließt nach {n} Minuten ohne Spieler.","tr":"Oda {n} dakika oyuncusuz kalınca kapanır.","pl":"Pokój zamyka się po {n} min bez graczy.","nl":"De kamer sluit na {n} minuten zonder spelers."},
+        "roomRejoin": {"en":"Rejoin","el":"Επανασύνδεση","es":"Volver a entrar","bg":"Влез отново","fr":"Revenir","ar":"إعادة الانضمام","zh":"重新加入","ru":"Вернуться","de":"Erneut beitreten","tr":"Yeniden katıl","pl":"Dołącz ponownie","nl":"Opnieuw deelnemen"},
+        "roomLost": {"en":"Disconnected from the private room.","el":"Αποσυνδεθήκατε από το ιδιωτικό δωμάτιο.","es":"Desconectado de la sala privada.","bg":"Връзката с частната стая прекъсна.","fr":"Déconnecté du salon privé.","ar":"انقطع الاتصال بالغرفة الخاصة.","zh":"已與私人房間斷線。","ru":"Соединение с приватной комнатой потеряно.","de":"Verbindung zum privaten Raum getrennt.","tr":"Özel oda bağlantısı kesildi.","pl":"Rozłączono z prywatnym pokojem.","nl":"Verbinding met de privékamer verbroken."},
+        "roomConnecting": {"en":"Connecting…","el":"Σύνδεση…","es":"Conectando…","bg":"Свързване…","fr":"Connexion…","ar":"جارٍ الاتصال…","zh":"連線中…","ru":"Подключение…","de":"Verbinde…","tr":"Bağlanıyor…","pl":"Łączenie…","nl":"Verbinden…"},
+        "roomErrCode": {"en":"Enter the 6-character room code.","el":"Εισάγετε τον κωδικό δωματίου των 6 χαρακτήρων.","es":"Introduce el código de sala de 6 caracteres.","bg":"Въведи 6-символния код на стаята.","fr":"Saisissez le code du salon à 6 caractères.","ar":"أدخل رمز الغرفة المكوّن من 6 أحرف.","zh":"請輸入 6 個字元的房間代碼。","ru":"Введите 6-символьный код комнаты.","de":"Gib den 6-stelligen Raumcode ein.","tr":"6 karakterlik oda kodunu girin.","pl":"Wpisz 6-znakowy kod pokoju.","nl":"Voer de kamercode van 6 tekens in."},
+        "roomErrName": {"en":"Room name: up to 24 characters, no < or >.","el":"Όνομα δωματίου: έως 24 χαρακτήρες, χωρίς < ή >.","es":"Nombre de la sala: hasta 24 caracteres, sin < ni >.","bg":"Име на стаята: до 24 знака, без < или >.","fr":"Nom du salon : 24 caractères max., sans < ni >.","ar":"اسم الغرفة: حتى 24 حرفاً، بدون < أو >.","zh":"房間名稱：最多 24 個字元，不可含 < 或 >。","ru":"Название комнаты: до 24 символов, без < и >.","de":"Raumname: bis zu 24 Zeichen, ohne < oder >.","tr":"Oda adı: en fazla 24 karakter, < veya > olmadan.","pl":"Nazwa pokoju: do 24 znaków, bez < i >.","nl":"Kamernaam: maximaal 24 tekens, geen < of >."},
+        "roomErrNotFound": {"en":"Room not found. Check the code (a room closes after 10 minutes without players).","el":"Το δωμάτιο δεν βρέθηκε. Ελέγξτε τον κωδικό (ένα δωμάτιο κλείνει μετά από 10 λεπτά χωρίς παίκτες).","es":"Sala no encontrada. Revisa el código (una sala se cierra tras 10 minutos sin jugadores).","bg":"Стаята не е намерена. Провери кода (стая се затваря след 10 минути без играчи).","fr":"Salon introuvable. Vérifiez le code (un salon ferme après 10 minutes sans joueurs).","ar":"لم يتم العثور على الغرفة. تحقق من الرمز (تُغلق الغرفة بعد 10 دقائق بدون لاعبين).","zh":"找不到房間。請檢查代碼（房間在沒有玩家 10 分鐘後關閉）。","ru":"Комната не найдена. Проверьте код (комната закрывается через 10 мин. без игроков).","de":"Raum nicht gefunden. Prüfe den Code (ein Raum schließt nach 10 Minuten ohne Spieler).","tr":"Oda bulunamadı. Kodu kontrol edin (oda 10 dakika oyuncusuz kalınca kapanır).","pl":"Nie znaleziono pokoju. Sprawdź kod (pokój zamyka się po 10 min bez graczy).","nl":"Kamer niet gevonden. Controleer de code (een kamer sluit na 10 minuten zonder spelers)."},
+        "roomErrPassword": {"en":"Wrong password.","el":"Λάθος κωδικός πρόσβασης.","es":"Contraseña incorrecta.","bg":"Грешна парола.","fr":"Mot de passe incorrect.","ar":"كلمة المرور غير صحيحة.","zh":"密碼錯誤。","ru":"Неверный пароль.","de":"Falsches Passwort.","tr":"Yanlış şifre.","pl":"Błędne hasło.","nl":"Onjuist wachtwoord."},
+        "roomErrFull": {"en":"The room is full.","el":"Το δωμάτιο είναι γεμάτο.","es":"La sala está llena.","bg":"Стаята е пълна.","fr":"Le salon est plein.","ar":"الغرفة ممتلئة.","zh":"房間已滿。","ru":"Комната заполнена.","de":"Der Raum ist voll.","tr":"Oda dolu.","pl":"Pokój jest pełny.","nl":"De kamer is vol."},
+        "roomErrRate": {"en":"Too many requests. Please wait a while and try again.","el":"Πάρα πολλά αιτήματα. Περιμένετε λίγο και δοκιμάστε ξανά.","es":"Demasiadas solicitudes. Espera un poco y vuelve a intentarlo.","bg":"Твърде много заявки. Изчакай малко и опитай отново.","fr":"Trop de demandes. Patientez un peu et réessayez.","ar":"طلبات كثيرة جداً. انتظر قليلاً وحاول مرة أخرى.","zh":"請求太多。請稍候再試。","ru":"Слишком много запросов. Подождите немного и попробуйте снова.","de":"Zu viele Anfragen. Warte etwas und versuche es erneut.","tr":"Çok fazla istek. Biraz bekleyip tekrar deneyin.","pl":"Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.","nl":"Te veel verzoeken. Wacht even en probeer het opnieuw."},
+        "roomErrOwn": {"en":"You already have an open room.","el":"Έχετε ήδη ανοιχτό δωμάτιο.","es":"Ya tienes una sala abierta.","bg":"Вече имаш отворена стая.","fr":"Vous avez déjà un salon ouvert.","ar":"لديك غرفة مفتوحة بالفعل.","zh":"你已經有一個開啟的房間。","ru":"У вас уже есть открытая комната.","de":"Du hast schon einen offenen Raum.","tr":"Zaten açık bir odanız var.","pl":"Masz już otwarty pokój.","nl":"Je hebt al een open kamer."},
+        "roomErrBusy": {"en":"All private rooms are in use. Try again later.","el":"Όλα τα ιδιωτικά δωμάτια χρησιμοποιούνται. Δοκιμάστε αργότερα.","es":"Todas las salas privadas están en uso. Inténtalo más tarde.","bg":"Всички частни стаи са заети. Опитай по-късно.","fr":"Tous les salons privés sont occupés. Réessayez plus tard.","ar":"جميع الغرف الخاصة مشغولة. حاول لاحقاً.","zh":"所有私人房間都在使用中。請稍後再試。","ru":"Все приватные комнаты заняты. Попробуйте позже.","de":"Alle privaten Räume sind belegt. Versuche es später.","tr":"Tüm özel odalar kullanımda. Daha sonra tekrar deneyin.","pl":"Wszystkie prywatne pokoje są zajęte. Spróbuj później.","nl":"Alle privékamers zijn in gebruik. Probeer het later opnieuw."},
+        "roomErrNetwork": {"en":"Could not reach the room server. Check your connection and try again.","el":"Δεν ήταν δυνατή η σύνδεση με τον διακομιστή δωματίων. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.","es":"No se pudo contactar con el servidor de salas. Revisa tu conexión e inténtalo de nuevo.","bg":"Сървърът за стаи не е достъпен. Провери връзката си и опитай отново.","fr":"Impossible de joindre le serveur des salons. Vérifiez votre connexion et réessayez.","ar":"تعذّر الوصول إلى خادم الغرف. تحقق من اتصالك وحاول مرة أخرى.","zh":"無法連線到房間伺服器。請檢查網路後再試。","ru":"Сервер комнат недоступен. Проверьте подключение и попробуйте снова.","de":"Der Raumserver ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.","tr":"Oda sunucusuna ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.","pl":"Nie można połączyć się z serwerem pokoi. Sprawdź połączenie i spróbuj ponownie.","nl":"De kamerserver is niet bereikbaar. Controleer je verbinding en probeer het opnieuw."},
+        "roomErrServer": {"en":"The room server could not do this (error {n}). Try again later.","el":"Ο διακομιστής δωματίων δεν μπόρεσε να το κάνει (σφάλμα {n}). Δοκιμάστε αργότερα.","es":"El servidor de salas no pudo hacerlo (error {n}). Inténtalo más tarde.","bg":"Сървърът за стаи не успя (грешка {n}). Опитай по-късно.","fr":"Le serveur des salons n'a pas pu le faire (erreur {n}). Réessayez plus tard.","ar":"لم يتمكن خادم الغرف من تنفيذ ذلك (خطأ {n}). حاول لاحقاً.","zh":"房間伺服器無法完成此操作（錯誤 {n}）。請稍後再試。","ru":"Сервер комнат не смог выполнить запрос (ошибка {n}). Попробуйте позже.","de":"Der Raumserver konnte das nicht ausführen (Fehler {n}). Versuche es später.","tr":"Oda sunucusu bunu yapamadı (hata {n}). Daha sonra tekrar deneyin.","pl":"Serwer pokoi nie mógł tego wykonać (błąd {n}). Spróbuj później.","nl":"De kamerserver kon dit niet uitvoeren (fout {n}). Probeer het later opnieuw."},
+        "roomProtected": {"en":"Password protected","el":"Με κωδικό πρόσβασης","es":"Con contraseña","bg":"С парола","fr":"Protégé par mot de passe","ar":"محمية بكلمة مرور","zh":"需要密碼","ru":"С паролем","de":"Passwortgeschützt","tr":"Şifre korumalı","pl":"Chronione hasłem","nl":"Met wachtwoord"},
+        "roomShopOff": {"en":"Shop is off in private rooms; nothing is saved.","el":"Το κατάστημα είναι κλειστό στα ιδιωτικά δωμάτια· τίποτα δεν αποθηκεύεται.","es":"La tienda está desactivada en las salas privadas; no se guarda nada.","bg":"Магазинът е изключен в частните стаи; нищо не се запазва.","fr":"La boutique est désactivée dans les salons privés ; rien n'est enregistré.","ar":"المتجر متوقف في الغرف الخاصة؛ لا يتم حفظ أي شيء.","zh":"私人房間中商店已關閉；不會儲存任何進度。","ru":"В приватных комнатах магазин отключён; ничего не сохраняется.","de":"Der Shop ist in privaten Räumen aus; nichts wird gespeichert.","tr":"Özel odalarda mağaza kapalı; hiçbir şey kaydedilmez.","pl":"Sklep jest wyłączony w prywatnych pokojach; nic nie jest zapisywane.","nl":"De winkel staat uit in privékamers; er wordt niets opgeslagen."},
         "mhThisDevice": {"en":"This device","el":"Αυτή η συσκευή","es":"Este dispositivo","bg":"Това устройство","fr":"Cet appareil","ar":"هذا الجهاز","zh":"此裝置","ru":"Это устройство","de":"Dieses Gerät","tr":"Bu cihaz","pl":"To urządzenie","nl":"Dit apparaat"},
         "mhAccount": {"en":"Account (server)","el":"Λογαριασμός (διακομιστής)","es":"Cuenta (servidor)","bg":"Акаунт (сървър)","fr":"Compte (serveur)","ar":"الحساب (الخادم)","zh":"帳號（伺服器）","ru":"Аккаунт (сервер)","de":"Konto (Server)","tr":"Hesap (sunucu)","pl":"Konto (serwer)","nl":"Account (server)"},
         "mhLoading": {"en":"Loading…","el":"Φόρτωση…","es":"Cargando…","bg":"Зареждане…","fr":"Chargement…","ar":"جارٍ التحميل…","zh":"載入中…","ru":"Загрузка…","de":"Wird geladen…","tr":"Yükleniyor…","pl":"Wczytywanie…","nl":"Laden…"},
@@ -3202,6 +3676,9 @@ function deleteGamemode(temp, restoreLast) {
             text: '👑 Expanding Land Teams',
             value: 5002
         }, {
+            text: '🔒 Private room',
+            value: 5003
+        }, {
             text: 'Arctida',
             value: 6
         }, {
@@ -3397,6 +3874,14 @@ function deleteGamemode(temp, restoreLast) {
         var _lmGmStale = function (val) {
             return _lmGmSeq !== window._lmGamemodeSeq || parseInt($('#gamemode').val()) !== val || $('#region').val() !== "Private";
         };
+        /* Private room (5003): no server of its own, it opens the room window (create / join /
+         * public rooms) and is not remembered as the last private server */
+        if ($('#region').val() == "Private" && $('#gamemode').val() == 5003) {
+            if (typeof window._lmRoomOpen === 'function') window._lmRoomOpen();
+            return;
+        }
+        /* the room window puts this back when it closes without joining */
+        window._lmPrivGmPrev = String($('#gamemode').val() || '');
         if ($('#region').val() == "Private") {
             /* remember only the player's own pick, not the automatic 5001 selection */
             if (!(_lmGmEv && _lmGmEv.isTrigger)) {
@@ -25631,6 +26116,8 @@ function thelegendmodproject() {
             }
             $(document).on("change", "#gamemode", function () {
                 var dummy = this.value;
+                /* Private room (5003) only opens the room window: mode, party and quest stay */
+                if (dummy === '5003') return;
                 if (":party" !== dummy) {
                     app.leaveParty();
                 }
@@ -26389,6 +26876,11 @@ function thelegendmodproject() {
                         gameSocket.readyState ===
                         WebSocket.CLOSED
                     ) {
+                        if (window._lmIsRoomUrl && window._lmIsRoomUrl(gameUrl)) {
+                            legendmod._worldSpectatePending = false;
+                            legendmod._worldSpectatePendingUrl = null;
+                            if (typeof window._lmRoomOpen === 'function') window._lmRoomOpen('rejoin');
+                        } else
                         core.connect(
                             gameUrl
                         );
@@ -29184,6 +29676,11 @@ function thelegendmodproject() {
                 return;
             }*/
             //if ()
+            /* private room: the used ticket cannot reconnect, the room window asks for a new one */
+            if (window._lmIsRoomUrl && window._lmIsRoomUrl(legendmod.ws) && typeof window._lmRoomOpen === 'function') {
+                window._lmRoomOpen('rejoin');
+                return;
+            }
             if (!legendmod.integrity) {
                 if ($('#gamemode option:selected').next().length > 0) {
                     $('#gamemode option:selected').next().prop('selected', 'selected').change();
@@ -33141,11 +33638,13 @@ function thelegendmodproject() {
         },
         activateQuest(productId) {
             console.log("[LM] Activate Quest: " + productId);
+            if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
             toastr.info('<b>[SERVER]:</b> ' + _lmTH('activatingQuest', 'Activating quest...'));
             return this.sendProto(114, { activateQuestRequestField: { productId: productId } });
         },
         activateBoost(productId) {
             console.log("[LM] Activate Boost: " + productId);
+            if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
             toastr.info('<b>[SERVER]:</b> ' + _lmTH('activatingBoost', 'Activating boost...'));
             return this.sendProto(112, { activateBoostRequestField: { productId: productId } });
         },
@@ -33262,6 +33761,12 @@ function thelegendmodproject() {
             }
         },
         sendProto(type, payload) {
+            /* Private rooms keep no economy: timed events (hourly bonus, daily quest, potion
+             * skip-brew), boosts, quests and user rewards are not sent there (the room ignores them). */
+            if ((type === 110 || type === 112 || type === 114 || type === 117) && window._lmInPrivateRoom && window._lmInPrivateRoom()) {
+                console.log("[LM] Account request " + type + " not sent: private room (nothing is saved).");
+                return false;
+            }
             /* Account request on an official connection before the login was
              * confirmed: the server can drop the session (packet not authorized). */
             if (!window.lmAccountReady()) {
@@ -39916,10 +40421,16 @@ function thelegendmodproject() {
                 lastWs.indexOf('mi.com') !== -1 ||
                 lastWs.indexOf('delt.io') !== -1) &&
                 /* the replay URL never connects: reconnecting to it only wiped the replayed cells */
-                lastWs.indexOf('imsolo.pro.replay') === -1;
+                lastWs.indexOf('imsolo.pro.replay') === -1 &&
+                /* a private room URL holds a used single-use ticket: the room window offers Rejoin (new ticket) */
+                lastWs.indexOf('/el-room/') === -1;
+            var _lmRoomWs = !!(lastWs && lastWs.indexOf('/el-room/') !== -1);
+            if (_lmRoomWs && typeof window._lmRoomOnClose === 'function') {
+                try { window._lmRoomOnClose(lastWs); } catch (e) { }
+            }
 
             /* Master reconnect — only for official agar.io, NOT private servers */
-            if (this.integrity && window.master && window.master.onDisconnect && !_isPrivateServer) {
+            if (this.integrity && window.master && window.master.onDisconnect && !_isPrivateServer && !_lmRoomWs) {
                 window.master.onDisconnect();
             }
 
@@ -42546,7 +43057,7 @@ function thelegendmodproject() {
                         if (!application.isChatUserMuted(_lmTeamChatId)) application.displayChatMessage(time, 101, _lmTeamChatId, message);
                     }
                     /* ── Auto-reconnect on server restart chat ── */
-                    if (server && message.toLowerCase().includes('restarting')) {
+                    if (server && message.toLowerCase().includes('restarting') && !(window._lmIsRoomUrl && window._lmIsRoomUrl(this.ws))) {
                         var reconnWs = this.ws;
                         console.log(consoleMsgLM + ' Server restart detected, reconnecting in 5s to ' + reconnWs);
                         this._reconnAttempts = 0;

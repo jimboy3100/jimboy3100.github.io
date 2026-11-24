@@ -708,6 +708,12 @@ function adres(info, thismode, thisregion) {
             String($("#server-token").val() || "").trim();
 
         _lmAdresCancelWait = whenServerTokenReady(function (readyToken) {
+            /* private room: the token holds a used single-use ticket, the address bar gets the share link */
+            var _lmRoomM = /\/el-room\/([A-HJ-NP-Z2-9]{6})(?:\?|$)/.exec(String(readyToken || ""));
+            if (_lmRoomM) {
+                history.replaceState(stateObj, "page 2", (_lmOnLegendWebsite() ? "/play" : "") + "?room=" + _lmRoomM[1]);
+                return;
+            }
             currentIP =
                 "live-arena-" +
                 readyToken +
@@ -781,6 +787,7 @@ function LMserverbox() {
         joinSIPonstart();
         joinPLAYERonstart();
         joinreplayURLonstart();
+        joinROOMonstart();
 
     })(window, window.jQuery);
 }
@@ -788,6 +795,12 @@ function LMserverbox() {
 function urlIpWhenOpened() {
     /* React to server-token being set instead of waiting 6 seconds */
     whenServerTokenReady(function (readyToken) {
+        /* private room: the token holds a used single-use ticket, the address bar gets the share link */
+        var _lmRoomM = /\/el-room\/([A-HJ-NP-Z2-9]{6})(?:\?|$)/.exec(String(readyToken || ""));
+        if (_lmRoomM) {
+            history.replaceState(stateObj, "page 2", (_lmOnLegendWebsite() ? "/play" : "") + "?room=" + _lmRoomM[1]);
+            return;
+        }
         currentIP =
             "live-arena-" +
             readyToken +
@@ -7476,7 +7489,8 @@ function initializeLM(modVersion) {
 
 
     $('*[data-itr="page_play"]').click(function () {
-        localStorage.setItem("lastIP", $('#server-token').val());
+        /* a private room token is a used single-use ticket: not kept as the last IP */
+        if (String($('#server-token').val() || '').indexOf('/el-room/') === -1) localStorage.setItem("lastIP", $('#server-token').val());
         /*
         if (userData.responseJSON.query != undefined) {
             userip = userData.responseJSON.query;
@@ -8031,6 +8045,15 @@ function joinPLAYERonstart() {
         window.autoPlay = true;
     }
 }
+/* ?room=CODE (private room share link): open the room window on Join with the code filled in.
+ * Read from this page's own address only (the stored launch link may be an older visit's). */
+function joinROOMonstart() {
+    var code = String(getParameterByName("room", location.href) || "").toUpperCase().replace(/\s+/g, "");
+    if (!/^[A-HJ-NP-Z2-9]{6}$/.test(code)) return;
+    setTimeout(function () {
+        if (typeof window._lmRoomOpen === "function") window._lmRoomOpen("join", code);
+    }, 1500);
+}
 function joinreplayURLonstart() {
     setTimeout(function () {
         if (replayURL) {
@@ -8339,6 +8362,7 @@ function ytFrame() {
 
 
 function BeforeSpecialDeals(tab) {
+    if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
     if (typeof window.checkUserUID === 'function' && !window.checkUserUID()) {
         if (window.toastr) {
             toastr.error('<b>[SHOP]:</b> You must be logged in and have a valid Agar.io UID to access Skins & Deals.');
