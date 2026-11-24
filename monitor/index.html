@@ -543,7 +543,7 @@ function updateUI() {
                 <td>${p.tag ? '<span class="tag-badge">' + esc(p.tag) + '</span>' : ''}</td>
                 <td class="name-text">${esc(name)}</td>
                 <td><span style="font-size:11px; font-family:monospace; color:#636e72; max-width:120px; overflow:hidden; text-overflow:ellipsis; display:inline-block;">${esc(uid)}</span></td>
-                <td>${hasServer ? '<a href="https://agar.io/?ip=' + encodeURI(p.server) + '" target="_blank" style="font-size:11px; color:#0984e3; background:#f0f4ff; padding:2px 6px; border-radius:3px; text-decoration:none; font-family:monospace;" title="Click to join server">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
+                <td>${hasServer ? '<a href="https://agar.io/?ip=' + encodeURI(p.server) + '" target="_blank" style="font-size:11px; color:#0984e3; background:#f0f4ff; padding:2px 6px; border-radius:3px; text-decoration:none; font-family:monospace;" title="Click to join server" rel="noopener">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
                 <td class="server-text">${hasServer ? esc(srv.region) : ''}</td>
                 <td>${hasServer ? '<span style="display:inline-block; background:' + modeColor + '15; color:' + modeColor + '; font-weight:600; padding:2px 8px; border-radius:4px; font-size:11px;">' + esc(srv.mode.toUpperCase()) + '</span>' : ''}</td>
                 <td>${level > 0 ? '<span class="level-badge">⭐ ' + level + '</span>' : ''}</td>
