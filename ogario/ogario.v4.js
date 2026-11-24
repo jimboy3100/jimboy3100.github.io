@@ -490,6 +490,20 @@ window.lmT = (function () {
         "mhNoReply": {"en":"The server did not answer. Try again later.","el":"Ο διακομιστής δεν απάντησε. Δοκίμασε ξανά αργότερα.","es":"El servidor no respondió. Inténtalo más tarde.","bg":"Сървърът не отговори. Опитай отново по-късно.","fr":"Le serveur n’a pas répondu. Réessaie plus tard.","ar":"لم يستجب الخادم. حاول لاحقًا.","zh":"伺服器沒有回應，請稍後再試。","ru":"Сервер не ответил. Попробуй позже.","de":"Der Server hat nicht geantwortet. Versuche es später erneut.","tr":"Sunucu yanıt vermedi. Daha sonra tekrar dene.","pl":"Serwer nie odpowiedział. Spróbuj później.","nl":"De server heeft niet geantwoord. Probeer het later opnieuw."},
         "mhTop": {"en":"Best place","el":"Καλύτερη θέση","es":"Mejor puesto","bg":"Най-добро място","fr":"Meilleure place","ar":"أفضل مركز","zh":"最佳名次","ru":"Лучшее место","de":"Beste Platzierung","tr":"En iyi sıra","pl":"Najlepsze miejsce","nl":"Beste plaats"},
         "mhKills": {"en":"Players / viruses","el":"Παίκτες / ιοί","es":"Jugadores / virus","bg":"Играчи / вируси","fr":"Joueurs / virus","ar":"لاعبون / فيروسات","zh":"玩家 / 病毒","ru":"Игроки / вирусы","de":"Spieler / Viren","tr":"Oyuncu / virüs","pl":"Gracze / wirusy","nl":"Spelers / virussen"},
+        "dailyChallenges": {"en":"Daily Challenges","el":"Ημερήσιες προκλήσεις","es":"Desafíos diarios","bg":"Дневни предизвикателства","fr":"Défis du jour","ar":"التحديات اليومية","zh":"每日挑戰","ru":"Ежедневные испытания","de":"Tägliche Herausforderungen","tr":"Günlük meydan okumalar","pl":"Codzienne wyzwania","nl":"Dagelijkse uitdagingen"},
+        "chPlayersEaten": {"en":"Eat {0} player cells in one life","el":"Φάε {0} κύτταρα παικτών σε μία ζωή","es":"Come {0} células de jugadores en una vida","bg":"Изяж {0} клетки на играчи в един живот","fr":"Mange {0} cellules de joueurs en une vie","ar":"التهم {0} خلايا لاعبين في حياة واحدة","zh":"在一條命內吃掉 {0} 個玩家細胞","ru":"Съешь {0} клеток игроков за одну жизнь","de":"Friss {0} Spielerzellen in einem Leben","tr":"Tek canda {0} oyuncu hücresi ye","pl":"Zjedz {0} komórek graczy w jednym życiu","nl":"Eet {0} spelercellen in één leven"},
+        "chTimeAlive": {"en":"Survive {0} minutes in one life","el":"Επίζησε {0} λεπτά σε μία ζωή","es":"Sobrevive {0} minutos en una vida","bg":"Оцелей {0} минути в един живот","fr":"Survis {0} minutes en une vie","ar":"انجُ لمدة {0} دقائق في حياة واحدة","zh":"在一條命內存活 {0} 分鐘","ru":"Продержись {0} минут за одну жизнь","de":"Überlebe {0} Minuten in einem Leben","tr":"Tek canda {0} dakika hayatta kal","pl":"Przetrwaj {0} minut w jednym życiu","nl":"Overleef {0} minuten in één leven"},
+        "chTopPosition": {"en":"Reach the top {0} of the leaderboard","el":"Φτάσε στο top {0} του πίνακα κατάταξης","es":"Llega al top {0} de la clasificación","bg":"Влез в топ {0} на класацията","fr":"Atteins le top {0} du classement","ar":"اصعد إلى أفضل {0} في لوحة الصدارة","zh":"進入排行榜前 {0} 名","ru":"Войди в топ-{0} таблицы лидеров","de":"Erreiche die Top {0} der Rangliste","tr":"Liderlik tablosunda ilk {0} içine gir","pl":"Wejdź do top {0} rankingu","nl":"Haal de top {0} van het klassement"},
+        "chVirusesEaten": {"en":"Eat {0} viruses in one life","el":"Φάε {0} ιούς σε μία ζωή","es":"Come {0} virus en una vida","bg":"Изяж {0} вируса в един живот","fr":"Mange {0} virus en une vie","ar":"التهم {0} فيروسات في حياة واحدة","zh":"在一條命內吃掉 {0} 個病毒","ru":"Съешь {0} вирусов за одну жизнь","de":"Friss {0} Viren in einem Leben","tr":"Tek canda {0} virüs ye","pl":"Zjedz {0} wirusów w jednym życiu","nl":"Eet {0} virussen in één leven"},
+        "chClaim": {"en":"Claim","el":"Παραλαβή","es":"Reclamar","bg":"Вземи","fr":"Récupérer","ar":"استلام","zh":"領取","ru":"Забрать","de":"Abholen","tr":"Al","pl":"Odbierz","nl":"Ophalen"},
+        "chClaimed": {"en":"Claimed","el":"Παραλήφθηκε","es":"Reclamado","bg":"Взето","fr":"Récupéré","ar":"تم الاستلام","zh":"已領取","ru":"Получено","de":"Abgeholt","tr":"Alındı","pl":"Odebrano","nl":"Opgehaald"},
+        "chReward": {"en":"+{0} coins, +{1} DNA","el":"+{0} νομίσματα, +{1} DNA","es":"+{0} monedas, +{1} ADN","bg":"+{0} монети, +{1} ДНК","fr":"+{0} pièces, +{1} ADN","ar":"+{0} عملة، +{1} DNA","zh":"+{0} 金幣，+{1} DNA","ru":"+{0} монет, +{1} ДНК","de":"+{0} Münzen, +{1} DNA","tr":"+{0} altın, +{1} DNA","pl":"+{0} monet, +{1} DNA","nl":"+{0} munten, +{1} DNA"},
+        "chNewIn": {"en":"New challenges in {0}","el":"Νέες προκλήσεις σε {0}","es":"Nuevos desafíos en {0}","bg":"Нови предизвикателства след {0}","fr":"Nouveaux défis dans {0}","ar":"تحديات جديدة خلال {0}","zh":"{0} 後有新挑戰","ru":"Новые испытания через {0}","de":"Neue Herausforderungen in {0}","tr":"Yeni meydan okumalara kalan: {0}","pl":"Nowe wyzwania za {0}","nl":"Nieuwe uitdagingen over {0}"},
+        "chCompleted": {"en":"Daily challenge complete: {0}. Claim it in Challenges.","el":"Η ημερήσια πρόκληση ολοκληρώθηκε: {0}. Πάρε την ανταμοιβή στις Προκλήσεις.","es":"Desafío diario completado: {0}. Reclámalo en Desafíos.","bg":"Дневното предизвикателство е изпълнено: {0}. Вземи наградата в Предизвикателства.","fr":"Défi du jour réussi : {0}. Récupère-le dans Défis.","ar":"اكتمل التحدي اليومي: {0}. استلمه من التحديات.","zh":"每日挑戰完成：{0}。到「挑戰」領取。","ru":"Ежедневное испытание выполнено: {0}. Забери награду в Испытаниях.","de":"Tägliche Herausforderung geschafft: {0}. Hol die Belohnung unter Herausforderungen ab.","tr":"Günlük meydan okuma tamamlandı: {0}. Ödülü Meydan Okumalar bölümünden al.","pl":"Codzienne wyzwanie ukończone: {0}. Odbierz nagrodę w Wyzwaniach.","nl":"Dagelijkse uitdaging voltooid: {0}. Haal de beloning op bij Uitdagingen."},
+        "chClaimedToast": {"en":"Challenge reward claimed: {0}","el":"Πήρες την ανταμοιβή της πρόκλησης: {0}","es":"Recompensa del desafío reclamada: {0}","bg":"Наградата за предизвикателството е взета: {0}","fr":"Récompense du défi récupérée : {0}","ar":"تم استلام مكافأة التحدي: {0}","zh":"已領取挑戰獎勵：{0}","ru":"Награда за испытание получена: {0}","de":"Belohnung abgeholt: {0}","tr":"Meydan okuma ödülü alındı: {0}","pl":"Odebrano nagrodę za wyzwanie: {0}","nl":"Beloning opgehaald: {0}"},
+        "chClaimFailed": {"en":"The challenge could not be claimed.","el":"Η ανταμοιβή της πρόκλησης δεν μπόρεσε να παραληφθεί.","es":"No se pudo reclamar el desafío.","bg":"Наградата не можа да бъде взета.","fr":"Le défi n'a pas pu être récupéré.","ar":"تعذر استلام التحدي.","zh":"無法領取此挑戰。","ru":"Не удалось забрать награду за испытание.","de":"Die Herausforderung konnte nicht abgeholt werden.","tr":"Meydan okuma ödülü alınamadı.","pl":"Nie udało się odebrać wyzwania.","nl":"De uitdaging kon niet worden opgehaald."},
+        "chFooter": {"en":"Daily challenges change at 00:00 UTC. Each one is met in a single life.","el":"Οι ημερήσιες προκλήσεις αλλάζουν στις 00:00 UTC. Κάθε μία ολοκληρώνεται σε μία ζωή.","es":"Los desafíos diarios cambian a las 00:00 UTC. Cada uno se cumple en una sola vida.","bg":"Дневните предизвикателства се сменят в 00:00 UTC. Всяко се изпълнява в един живот.","fr":"Les défis du jour changent à 00:00 UTC. Chacun se réussit en une seule vie.","ar":"تتغير التحديات اليومية في 00:00 UTC. يُنجز كل تحدٍّ في حياة واحدة.","zh":"每日挑戰於 UTC 00:00 更換。每項都需在一條命內完成。","ru":"Ежедневные испытания меняются в 00:00 UTC. Каждое выполняется за одну жизнь.","de":"Die täglichen Herausforderungen wechseln um 00:00 UTC. Jede wird in einem einzigen Leben erfüllt.","tr":"Günlük meydan okumalar 00:00 UTC'de değişir. Her biri tek canda tamamlanır.","pl":"Codzienne wyzwania zmieniają się o 00:00 UTC. Każde wykonuje się w jednym życiu.","nl":"Dagelijkse uitdagingen wisselen om 00:00 UTC. Elke uitdaging haal je in één leven."},
+        "itemChallenge": {"en":"daily challenge","el":"ημερήσια πρόκληση","es":"desafío diario","bg":"дневно предизвикателство","fr":"défi du jour","ar":"تحدٍّ يومي","zh":"每日挑戰","ru":"ежедневное испытание","de":"tägliche Herausforderung","tr":"günlük meydan okuma","pl":"codzienne wyzwanie","nl":"dagelijkse uitdaging"},
         "lmPresets": {"en":"Presets","el":"Προεπιλογές","es":"Preajustes","bg":"Готови настройки","fr":"Préréglages","ar":"إعدادات جاهزة","zh":"預設組合","ru":"Пресеты","de":"Voreinstellungen","tr":"Hazır ayarlar","pl":"Presety","nl":"Voorinstellingen"},
         "lmPresetCompetitive": {"en":"Competitive","el":"Ανταγωνιστικό","es":"Competitivo","bg":"Състезателен","fr":"Compétitif","ar":"تنافسي","zh":"競技","ru":"Соревновательный","de":"Wettkampf","tr":"Rekabetçi","pl":"Rywalizacja","nl":"Competitief"},
         "lmPresetBattery": {"en":"Battery saver","el":"Εξοικονόμηση μπαταρίας","es":"Ahorro de batería","bg":"Пестене на батерия","fr":"Économie de batterie","ar":"توفير البطارية","zh":"省電","ru":"Экономия батареи","de":"Akku sparen","tr":"Pil tasarrufu","pl":"Oszczędzanie baterii","nl":"Batterij sparen"},
@@ -2356,6 +2370,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             if (window.coinsTimer) { clearTimeout(window.coinsTimer); window.coinsTimer = null; }
             if (window.dailyQuestTimer) { clearTimeout(window.dailyQuestTimer); window.dailyQuestTimer = null; }
             window._lmActiveQuests = []; /* an array, as in displayActiveQuests */
+            window._lmDailyChallenges = null; /* Expanding Land daily challenges (102 type 220) */
             window._lmActiveBoosts = Object.create(null);
             if (window._lmBoostTicker) { clearInterval(window._lmBoostTicker); window._lmBoostTicker = null; }
             if (window._lmQuestTicker) { clearInterval(window._lmQuestTicker); window._lmQuestTicker = null; }
@@ -3931,6 +3946,92 @@ window.questActivationReq = function () {
     var bytes = [8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116];
     window.core.proxyMobileData(bytes);
 }
+/*
+ * Expanding Land daily challenges: 102 type 220 (lmDailyChallengesField) arrives only after our
+ * opcode 240 caps bit 1, claims go out as type 221 only for a list the server sent. Other servers
+ * never set _lmDailyChallenges, so nothing here shows or sends anything there.
+ */
+window._lmDailyChallenges = null;
+window._lmDailyChallengeText = function (c) {
+    var type = String((c && c.type) || '');
+    var goal = Number(c && c.goal) || 0;
+    var keys = { players_eaten: 'chPlayersEaten', time_alive: 'chTimeAlive', top_position: 'chTopPosition', viruses_eaten: 'chVirusesEaten' };
+    var en = { players_eaten: 'Eat {0} player cells in one life', time_alive: 'Survive {0} minutes in one life', top_position: 'Reach the top {0} of the leaderboard', viruses_eaten: 'Eat {0} viruses in one life' };
+    /* time_alive goal and progress are seconds */
+    var shown = type === 'time_alive' ? Math.round(goal / 6) / 10 : goal;
+    if (!keys[type]) return type.replace(/_/g, ' ') + ': ' + shown;
+    var s = (window.lmT && window.lmT(keys[type])) || en[type];
+    if (!s || s === keys[type]) s = en[type];
+    return String(s).replace('{0}', String(shown));
+};
+window._lmDailyChallengeProgress = function (c) {
+    var p = Math.max(0, Number(c && c.progress) || 0), goal = Math.max(0, Number(c && c.goal) || 0);
+    var ratio, text;
+    if (c && c.lowerIsBetter) {
+        ratio = p > 0 && goal > 0 ? Math.min(1, goal / p) : 0;
+        text = (p > 0 ? '#' + p : '\u2014') + ' / #' + goal;
+    } else if (c && c.type === 'time_alive') {
+        var mmss = function (s) { s = Math.floor(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+        ratio = goal > 0 ? Math.min(1, p / goal) : 0;
+        text = mmss(Math.min(p, goal)) + ' / ' + mmss(goal);
+    } else {
+        ratio = goal > 0 ? Math.min(1, p / goal) : 0;
+        text = Math.min(p, goal) + ' / ' + goal;
+    }
+    if (c && c.completed) ratio = 1;
+    return { ratio: ratio, text: text };
+};
+window._lmDailyChallengeRewardText = function (c) {
+    var s = (window.lmT && window.lmT('chReward')) || '+{0} coins, +{1} DNA';
+    if (s === 'chReward') s = '+{0} coins, +{1} DNA';
+    return String(s).replace('{0}', String(Number(c && c.rewardCoins) || 0)).replace('{1}', String(Number(c && c.rewardDna) || 0));
+};
+window._lmApplyDailyChallenges = function (msg) {
+    if (!msg) return;
+    var prev = window._lmDailyChallenges;
+    var list = [];
+    (Array.isArray(msg.challenges) ? msg.challenges : []).forEach(function (c) {
+        if (!c) return;
+        list.push({
+            slot: Number(c.slot) || 0, type: String(c.type || ''), goal: Number(c.goal) || 0,
+            progress: Number(c.progress) || 0, lowerIsBetter: !!c.lowerIsBetter,
+            rewardCoins: Number(c.rewardCoins) || 0, rewardDna: Number(c.rewardDna) || 0,
+            completed: !!c.completed, claimed: !!c.claimed
+        });
+    });
+    var now = Date.now(), left = Math.max(0, Number(msg.secondsLeft) || 0);
+    var state = { day: Number(msg.day) || 0, secondsLeft: left, receivedAt: now, resetAt: now + left * 1000, challenges: list };
+    window._lmDailyChallenges = state;
+    var findSlot = function (arr, slot) { for (var i = 0; arr && i < arr.length; i++) if (arr[i].slot === slot) return arr[i]; return null; };
+    try {
+        if (window.toastr) {
+            var claimSlot = Number(msg.claimSlot) || 0;
+            if (claimSlot > 0) {
+                var res = Number(msg.claimResult) || 0, cc = findSlot(list, claimSlot);
+                if (res === 0 && cc) toastr.success('<b>[SERVER]:</b> ' + _lmTH('chClaimedToast', 'Challenge reward claimed: {0}').replace('{0}', _lmTH('chReward', '+{0} coins, +{1} DNA').replace('{0}', String(cc.rewardCoins)).replace('{1}', String(cc.rewardDna))));
+                else toastr.warning('<b>[SERVER]:</b> ' + _lmTH('chClaimFailed', 'The challenge could not be claimed.'));
+            } else if (prev && prev.day === state.day) {
+                list.forEach(function (c) {
+                    var was = findSlot(prev.challenges, c.slot);
+                    if (c.completed && !c.claimed && was && !was.completed) {
+                        var text = String(window._lmDailyChallengeText(c)).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; });
+                        toastr.success('<b>\uD83C\uDFC5</b> ' + _lmTH('chCompleted', 'Daily challenge complete: {0}. Claim it in Challenges.').replace('{0}', text), '', {
+                            onclick: function () { if (typeof window.showChallengesModal === 'function') window.showChallengesModal(); }
+                        });
+                    }
+                });
+            }
+        }
+    } catch (dchToastErr) { }
+    try { document.dispatchEvent(new CustomEvent('lm-daily-challenges-updated', { detail: state })); } catch (dchEvtErr) { }
+};
+/* Claim one slot of the list the server sent; false when nothing was sent. */
+window.claimDailyChallenge = function (slot) {
+    var st = window._lmDailyChallenges;
+    slot = Number(slot) || 0;
+    if (!st || slot <= 0 || !window.application || typeof window.application.sendProto !== 'function') return false;
+    return window.application.sendProto(221, { lmDailyChallengeRequestField: { slot: slot, day: st.day } });
+};
 window.activateQuest = function () {
     if (window.application && typeof window.application.activateQuest === 'function') {
         return window.application.activateQuest("quest_activation_24h");
@@ -43022,6 +43123,7 @@ function thelegendmodproject() {
 
                         /* Capability reply [240,'L','M',caps], once per connection and never from a
                          * replay: bit 0 = understands the killer info (lmKiller) in the game over,
+                         * bit 1 = understands the daily challenges (102 type 220),
                          * bit 3 = may ask for its account's server match history (102 type 1080). */
                         if (this.socket && this._lmCapsSocket !== this.socket && String($('#server-token').val() || '').indexOf('replay') === -1) {
                             this._lmCapsSocket = this.socket;
@@ -43029,7 +43131,7 @@ function thelegendmodproject() {
                             _lmCapsView.setUint8(0, 240);
                             _lmCapsView.setUint8(1, 0x4C);
                             _lmCapsView.setUint8(2, 0x4D);
-                            _lmCapsView.setUint8(3, 1 | 0x08);
+                            _lmCapsView.setUint8(3, 1 | 2 | 0x08);
                             this.sendMessage(_lmCapsView);
                         }
 
@@ -44726,6 +44828,15 @@ function thelegendmodproject() {
                         if (lmh && LM.isLegendWorld) _lmMatchHistoryServerReply(lmh);
                     } catch (lmhErr) {
                         console.warn("[LM] Error reading the server match history:", lmhErr);
+                    }
+                    break;
+                case 220:
+                    /* Expanding Land daily challenges (not official; only after our opcode 240 caps bit 1) */
+                    try {
+                        var dch = r.uncompressedData.lmDailyChallengesField;
+                        if (dch && typeof window._lmApplyDailyChallenges === 'function') window._lmApplyDailyChallenges(dch);
+                    } catch (dchErr) {
+                        console.warn("[LM] Error parsing daily challenges:", dchErr);
                     }
                     break;
                 case 147:

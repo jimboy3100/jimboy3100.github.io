@@ -8227,6 +8227,17 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 _waiting.push(_lmUE('itemIn', '{0} in {1}').replace('{0}', _lmUE('nextDaily', 'next daily quest')).replace('{1}', _fmtLeft(_dailySecs)));
             }
         }
+        /* Expanding Land daily challenges met but not claimed (none on other servers). Not listed
+         * as claimed here: the server's reply (type 220) shows its own toast once it is confirmed. */
+        var _dchSent = 0;
+        try {
+            var _dch = window._lmDailyChallenges;
+            if (_dch && Array.isArray(_dch.challenges) && typeof window.claimDailyChallenge === 'function') {
+                _dch.challenges.forEach(function (c) {
+                    if (c && c.completed && !c.claimed && window.claimDailyChallenge(c.slot) !== false) _dchSent++;
+                });
+            }
+        } catch (dchErr) { console.warn('[LM] Claim daily challenge error:', dchErr); }
         try {
             var _fake = {};
             var _fakeCfg = typeof window.getAgarConfigSection === 'function'
@@ -8246,7 +8257,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         try {
             if (window.toastr) {
                 if (_claimed.length) toastr.success('<b>[CLAIM]:</b> ' + _lmUE('claimed', 'Claimed: {0}').replace('{0}', _claimed.join(', ')) + (_waiting.length ? '. ' + _lmUE('claimWaiting', 'Waiting: {0}').replace('{0}', _waiting.join(', ')) : '') + '.');
-                else toastr.info('<b>[CLAIM]:</b> ' + _lmUE('nothingToClaim', 'Nothing to claim right now') + (_waiting.length ? ': ' + _waiting.join(', ') : '') + '. ' + _lmUE('levelRewardsNote', 'Level rewards are given by the server on level-up.'));
+                else if (!_dchSent) toastr.info('<b>[CLAIM]:</b> ' + _lmUE('nothingToClaim', 'Nothing to claim right now') + (_waiting.length ? ': ' + _waiting.join(', ') : '') + '. ' + _lmUE('levelRewardsNote', 'Level rewards are given by the server on level-up.'));
             }
         } catch (toastErr) { }
 
@@ -8271,7 +8282,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             if (secs) {
                 var h = secs('hourlyBonus'), d = secs('dailyQuest');
                 var noQuest = !(window._lmActiveQuests || []).some(function (q) { return q && q.expiresAt > Date.now(); });
-                if (h === 0 || (noQuest && d === 0)) extra = ' \u25CF';
+                var dchReady = !!(window._lmDailyChallenges && Array.isArray(window._lmDailyChallenges.challenges) &&
+                    window._lmDailyChallenges.challenges.some(function (c) { return c && c.completed && !c.claimed; }));
+                if (h === 0 || (noQuest && d === 0) || dchReady) extra = ' \u25CF';
                 else if (h > 0) { var mins = Math.ceil(h / 60); extra = ' \u00B7 ' + (mins >= 60 ? Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm' : mins + 'm'); }
             }
         } catch (e) { }
@@ -10493,9 +10506,100 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
     };
 
 
+    /* Expanding Land daily challenges (102 type 220, see _lmApplyDailyChallenges in ogario.v4.js).
+     * null when the server sent none: the Challenges window is then exactly as before. */
+    window._lmBuildDailyChallengesSection = function (t) {
+        var st = window._lmDailyChallenges;
+        if (!st || !Array.isArray(st.challenges) || !st.challenges.length) return null;
+        if (!(window.legendmod && window.legendmod.isLegendWorld)) return null;
+        var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+
+        var section = document.createElement('div');
+        section.id = 'lm-daily-challenges';
+        section.style.cssText = 'margin-bottom:18px;border:1px solid rgba(255,215,0,.25);border-radius:10px;overflow:hidden;';
+
+        var head = document.createElement('div');
+        head.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,215,0,.08);border-bottom:1px solid rgba(255,255,255,.06);';
+        var leftSecs = Math.max(0, Math.floor(((Number(st.resetAt) || 0) - Date.now()) / 1000));
+        var mins = Math.ceil(leftSecs / 60), h = Math.floor(mins / 60), m = mins % 60;
+        var leftText = h ? (h + 'h ' + m + 'm') : (m + 'm');
+        head.innerHTML = '<span style="font-size:22px;">\uD83D\uDCC5</span>' +
+            '<div style="flex:1;"><div style="font-weight:800;font-size:14px;color:' + t.tc + ';">' + _lmUE('dailyChallenges', 'Daily Challenges') + '</div>' +
+            '<div style="font-size:11px;color:' + t.tc2 + ';margin-top:1px;">' + _lmUE('chNewIn', 'New challenges in {0}').replace('{0}', esc(leftText)) + '</div></div>';
+        section.appendChild(head);
+
+        st.challenges.forEach(function (c) {
+            var pr = typeof window._lmDailyChallengeProgress === 'function' ? window._lmDailyChallengeProgress(c) : { ratio: 0, text: '' };
+            var done = !!c.completed, claimed = !!c.claimed;
+            var row = document.createElement('div');
+            row.className = 'lm-daily-challenge';
+            row.setAttribute('data-slot', String(c.slot));
+            row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);flex-wrap:wrap;' + (done ? 'background:rgba(76,175,80,.08);' : '');
+
+            var icon = document.createElement('div');
+            icon.style.cssText = 'width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;';
+            if (done) {
+                icon.style.background = 'linear-gradient(135deg,#4caf50,#66bb6a)';
+                icon.style.color = '#fff';
+                icon.style.fontWeight = '900';
+                icon.textContent = '\u2713';
+            } else {
+                icon.style.background = 'rgba(255,255,255,.08)';
+                icon.style.border = '2px solid rgba(255,255,255,.15)';
+            }
+
+            var text = document.createElement('div');
+            text.style.cssText = 'flex:1;min-width:140px;font-size:13px;color:' + (done ? '#4caf50' : t.tc) + ';font-weight:' + (done ? '700' : '500') + ';';
+            text.textContent = typeof window._lmDailyChallengeText === 'function' ? window._lmDailyChallengeText(c) : String(c.type);
+            var reward = document.createElement('div');
+            reward.style.cssText = 'font-size:10px;font-weight:600;color:' + t.tc2 + ';margin-top:2px;';
+            reward.textContent = typeof window._lmDailyChallengeRewardText === 'function' ? window._lmDailyChallengeRewardText(c) : '';
+            text.appendChild(reward);
+
+            var bar = document.createElement('div');
+            bar.style.cssText = 'width:80px;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;flex-shrink:0;';
+            var fill = document.createElement('div');
+            fill.style.cssText = 'height:100%;border-radius:3px;width:' + Math.round(pr.ratio * 100) + '%;background:' +
+                (done ? 'linear-gradient(90deg,#4caf50,#66bb6a)' : 'linear-gradient(90deg,' + t.b1 + ',' + t.b2 + ')') + ';';
+            bar.appendChild(fill);
+
+            var prog = document.createElement('div');
+            prog.className = 'lm-daily-challenge-progress';
+            prog.style.cssText = 'min-width:64px;text-align:right;font-size:11px;font-weight:700;color:' + (done ? '#4caf50' : t.tc2) + ';flex-shrink:0;';
+            prog.textContent = pr.text;
+
+            var action = document.createElement('div');
+            action.style.cssText = 'min-width:74px;text-align:right;flex-shrink:0;';
+            if (claimed) {
+                action.innerHTML = '<span style="font-size:11px;font-weight:700;color:#4caf50;">' + _lmUE('chClaimed', 'Claimed') + '</span>';
+            } else if (done) {
+                var btn = document.createElement('button');
+                btn.className = 'btn lm-daily-claim';
+                btn.style.cssText = 'background:' + t.b1 + ';color:' + t.btc + ';font-weight:800;font-size:11px;padding:4px 12px;border-radius:6px;border:none;cursor:pointer;';
+                btn.textContent = _lmUR('chClaim', 'Claim');
+                btn.onclick = function () {
+                    btn.disabled = true;
+                    btn.textContent = '\u23F3';
+                    var sent = typeof window.claimDailyChallenge === 'function' && window.claimDailyChallenge(c.slot) !== false;
+                    if (!sent) { btn.disabled = false; btn.textContent = _lmUR('chClaim', 'Claim'); }
+                };
+                action.appendChild(btn);
+            }
+
+            row.appendChild(icon);
+            row.appendChild(text);
+            row.appendChild(bar);
+            row.appendChild(prog);
+            row.appendChild(action);
+            section.appendChild(row);
+        });
+        return section;
+    };
+
     window.showChallengesModal = function () {
         injectStyles();
         var t = getTheme();
+        var dailySection = typeof window._lmBuildDailyChallengesSection === 'function' ? window._lmBuildDailyChallengesSection(t) : null;
 
         var old = document.getElementById('lm-challenges-modal');
         if (old) old.remove();
@@ -10588,7 +10692,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         body.style.cssText = 'padding:16px 20px;max-height:60vh;overflow-y:auto;';
 
         if (challengeTypes.length === 0) {
-            body.innerHTML = '<div style="text-align:center;padding:30px 0;color:' + t.tc2 + ';font-size:14px;">No Challenges configured.<br><span style="font-size:11px;opacity:.6;">Waiting for GameConfiguration\u2026</span></div>';
+            /* with daily challenges shown there is nothing to wait for */
+            if (!dailySection) body.innerHTML = '<div style="text-align:center;padding:30px 0;color:' + t.tc2 + ';font-size:14px;">No Challenges configured.<br><span style="font-size:11px;opacity:.6;">Waiting for GameConfiguration\u2026</span></div>';
         } else {
             /* Show a banner when config exists but no game data yet */
             if (!hasGameData) {
@@ -10706,18 +10811,26 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             }
         }
 
+        if (dailySection) body.insertBefore(dailySection, body.firstChild);
         shell.appendChild(body);
 
         /* ─── FOOTER ─── */
         var footer = document.createElement('div');
         footer.style.cssText = 'padding:10px 20px;border-top:1px solid rgba(255,255,255,.08);text-align:center;';
         footer.innerHTML = '<span style="font-size:10px;color:' + t.tc2 + ';opacity:.5;">Progress shown is from your last completed game. Thresholds from GameConfiguration.</span>';
+        if (dailySection && challengeTypes.length === 0) footer.innerHTML = '<span style="font-size:10px;color:' + t.tc2 + ';opacity:.5;">' + _lmUE('chFooter', 'Daily challenges change at 00:00 UTC. Each one is met in a single life.') + '</span>';
         shell.appendChild(footer);
 
         modal.appendChild(shell);
         document.body.appendChild(modal);
     };
 
+
+    /* A new daily challenge list (game over, claim) redraws an open Challenges window. */
+    document.addEventListener('lm-daily-challenges-updated', function () {
+        if (document.getElementById('lm-challenges-modal') && typeof window.showChallengesModal === 'function') window.showChallengesModal();
+        if (typeof window._lmUpdateClaimLabel === 'function') window._lmUpdateClaimLabel(false);
+    });
 
     /* Listen for challenge evaluation and optionally auto-show toast */
     /* Challenges were removed (owner decision): agar.io web has no achievements; the window
