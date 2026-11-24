@@ -16417,6 +16417,7 @@ var displayText = {
         showStatsAlive: 'Statystyki: czas zycia',
         mergeRings: 'Pierscienie laczenia (postep)',
         mentionNotify: 'Powiadomienie, gdy ktos wspomni Twoj nick (karta w tle)',
+        chatHideWords: 'Ukryj wiadomosci zawierajace (slowa po przecinku)',
         rainbowMapBorders: 'Teczowe granice mapy',
         rainbowBorderSpeed: 'Szybkosc teczowych granic',
         hudBlur: 'Rozmycie tla HUD (0 = wylaczone)',
@@ -16945,6 +16946,7 @@ var displayText = {
         showStatsAlive: 'Time alive (this life)',
         mergeRings: 'Merge progress rings on own cells',
         mentionNotify: 'Desktop notification when someone mentions your nick (tab in background)',
+        chatHideWords: 'Hide chat messages containing (comma-separated words)',
         rainbowMapBorders: 'Rainbow map borders',
         rainbowBorderSpeed: 'Rainbow border speed',
         hudBlur: 'HUD background blur (0 = off)',
@@ -19379,6 +19381,7 @@ var defaultmapsettings = {
     showStatsAlive: false,        /* stats HUD: time alive in this life */
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
     mentionNotify: false,         /* desktop notification for chat mentions while the tab is hidden */
+    chatHideWords: '',            /* chat lines (nick or text) containing one of these words are not shown; empty = off */
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
     rainbowBorderSpeed: 5,        /* 5 = the original speed */
     hudBlur: 0,                   /* frosted-glass blur behind HUD panels, px (0 = off) */
@@ -23272,6 +23275,7 @@ function thelegendmodproject() {
             $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + textLanguage.sounds + "</h5></div>");
             $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
             /*$('#music').append('<div class="agario-panel facebook-panel"><h5 class="menu-main-color">' + 'Facebook' + '</h5></div>'),*/
+            this.addInputBox(".chatGroup", "chatHideWords", "e.g. spam, discord.gg", "setChatHideWords");
             this.addInputBox(".sounds-panel", "messageSound", "Sound URL", "setMessageSound");
             this.addInputBox(".sounds-panel", "commandSound", "Sound URL", "setCommandSound");
             this.addInputBox(".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound");
@@ -29948,6 +29952,19 @@ function thelegendmodproject() {
             });
 
         },
+        setChatHideWords() { this._lmHideWordsSrc = null; },
+        /* chat word filter: the list is parsed again only when the setting text changes */
+        _lmChatHidden(text) {
+            var src = String(defaultmapsettings.chatHideWords || '');
+            if (!src.trim()) return false;
+            if (this._lmHideWordsSrc !== src) {
+                this._lmHideWordsSrc = src;
+                this._lmHideWords = src.split(',').map(function (w) { return w.trim().toLowerCase(); }).filter(function (w) { return w.length >= 2; });
+            }
+            var s = String(text || '').toLowerCase();
+            for (var i = 0; i < this._lmHideWords.length; i++) if (s.indexOf(this._lmHideWords[i]) !== -1) return true;
+            return false;
+        },
         displayChatMessage(time, caseof, plId, msg) {
             var mcolor = ""
 
@@ -29986,6 +30003,8 @@ function thelegendmodproject() {
                      * nickHtml/messageHtml are the escaped versions for HTML insertion. */
                     var rawNick = a;
                     var rawText = msg.replace(a + ': ', '');
+                    /* optional word filter (never your own lines) */
+                    if (plId != this.playerID && this._lmChatHidden(rawNick + ' ' + rawText)) return;
                     var r = '';
                     if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 === caseof) {
 
