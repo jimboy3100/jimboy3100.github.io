@@ -252,7 +252,6 @@
         searchSettings: { en: 'Search settings', el: 'Αναζήτηση ρυθμίσεων' },
         friends: { en: 'Friends', el: 'Φίλοι' },
         mobileControls: { en: 'Edit touch controls', el: 'Επεξεργασία κουμπιών αφής' },
-        servers: { en: 'Servers (favourites, recent, arenas)', el: 'Διακομιστές (αγαπημένοι, πρόσφατοι, αρένες)' },
         companion: { en: 'Open companion (stream overlay)', el: 'Άνοιγμα companion (επικάλυψη stream)' },
         resultImage: { en: 'Result image', el: 'Εικόνα αποτελέσματος' }
     };
@@ -416,7 +415,6 @@
         { id: 'friends', en: tEn('friends'), label: function () { return t('friends'); }, avail: function () { var b = D.getElementById('lm-friends-btn'); return !!(b && !b.disabled); }, run: function () { clickEl('#lm-friends-btn'); } },
         /* phones only: the touch control editor of LMmobile.js */
         { id: 'mobileControls', en: tEn('mobileControls'), label: function () { return t('mobileControls'); }, avail: function () { return !!(W._lmMobileHost && typeof W._lmMobileHost.openEditor === 'function'); }, run: function () { W._lmMobileHost.openEditor(); } },
-        { id: 'servers', en: tEn('servers'), label: function () { return t('servers'); }, avail: function () { return !!(W.LMServerManager && typeof W.LMServerManager.open === 'function'); }, run: function () { W.LMServerManager.open(); } },
         { id: 'companion', en: tEn('companion'), label: function () { return t('companion'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.open); }, run: function () { W.LMCompanion.open(); } },
         { id: 'resultImage', en: tEn('resultImage'), label: function () { return t('resultImage'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.resultImage); }, run: function () { W.LMCompanion.resultImage(); } }
     ];

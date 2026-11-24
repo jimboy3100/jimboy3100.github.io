@@ -4322,9 +4322,13 @@ function changeregion() {
     }
 }
 
-/* The private server list (region Private). The Servers window (ogario/modules/servermanager.js)
- * reads it too, so it shows the same servers under the same names. */
-function _lmPrivateModOptions() {
+/* restoreLast: only from the region picker (changeregion). ?sip= links (joinSIPonstart)
+ * and replays keep 5001 exactly as before. */
+function deleteGamemode(temp, restoreLast) {
+    var _lmSavedPs = '';
+    if (restoreLast === true) {
+        try { _lmSavedPs = String(window.localStorage.getItem('lmLastPrivateServer') || '').replace(/[^0-9]/g, ''); } catch (e) { }
+    }
     var privateModOptions
 
     privateModOptions = [
@@ -4501,25 +4505,14 @@ function _lmPrivateModOptions() {
         })
     }
     */
+    if (!window.gamemodeBackup) {
+        window.gamemodeBackup = $("#gamemode").html();
+    }
     /* Agar2, Sigmally and Senpa servers do not work: hidden from the list (their code and
      * ?sip= links stay, so they can be re-enabled by removing this filter). */
     privateModOptions = privateModOptions.filter(function (el) {
         return !/^(Agar2|Sigmally|Senpa|Garix)\b/i.test(String(el && el.text || ''));
     });
-    return privateModOptions;
-}
-window._lmPrivateModOptions = _lmPrivateModOptions;
-/* restoreLast: only from the region picker (changeregion). ?sip= links (joinSIPonstart)
- * and replays keep 5001 exactly as before. */
-function deleteGamemode(temp, restoreLast) {
-    var _lmSavedPs = '';
-    if (restoreLast === true) {
-        try { _lmSavedPs = String(window.localStorage.getItem('lmLastPrivateServer') || '').replace(/[^0-9]/g, ''); } catch (e) { }
-    }
-    var privateModOptions = _lmPrivateModOptions();
-    if (!window.gamemodeBackup) {
-        window.gamemodeBackup = $("#gamemode").html();
-    }
     $('#gamemode').empty();
     $.each(privateModOptions, function (i, el) {
         var opt = new Option(el.text, el.value);
@@ -18097,7 +18090,6 @@ var displayText = {
         hideEventBanner: 'Hide the server event countdown (Expanding Land)',
         commandCentreBar: 'Command Centre quick bar in game (the starred items; Ctrl+K opens the Command Centre)',
         'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
-        'hk-serverManager': 'Servers window (favourites, recent, arenas): open / close',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
@@ -18700,7 +18692,6 @@ var displayText = {
         hideEventBanner: 'Hide the server event countdown (Expanding Land)',
         commandCentreBar: 'Command Centre quick bar in game (the starred items; Ctrl+K opens the Command Centre)',
         'hk-commandCentre': 'Command Centre (search commands, settings and windows)',
-        'hk-serverManager': 'Servers window (favourites, recent, arenas): open / close',
         companionLive: 'Stream overlay / second screen (companion.html, same browser)',
         companionChat: 'Stream overlay: include chat lines',
         'hk-companionResult': 'Result image (PNG of your last or current life)',
@@ -21684,7 +21675,7 @@ var _lmLabelI18n = {
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
-        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","hk-serverManager":"Παράθυρο διακομιστών (αγαπημένοι, πρόσφατοι, αρένες): άνοιγμα / κλείσιμο","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)"
+        "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-companionResult":"Εικόνα αποτελέσματος (PNG της τελευταίας ή της τρέχουσας ζωής)"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -25696,10 +25687,9 @@ function thelegendmodproject() {
              * They hold gameplay settings, so they go with those only (the import reads them only
              * with those too). The phone controls (LMmobile gear panel: joystick sensitivity,
              * button size and opacity, toggles), the phone control layouts (LMmobile-editor.js) and the
-             * gamepad buttons and profiles go with them as well,
-             * and so do the favourite servers of the Servers window (lmServerFavs). */
+             * gamepad buttons and profiles go with them as well. */
             if (options.ogarioSettings) {
-                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs', 'lmGamepad', 'lm-mobile-layouts', 'lmServerFavs'].forEach(function (k) {
+                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs', 'lmGamepad', 'lm-mobile-layouts'].forEach(function (k) {
                     try {
                         var v = JSON.parse(window.localStorage.getItem(k) || 'null');
                         if (v && typeof v === 'object' && !Array.isArray(v)) options[k] = v;
@@ -25812,9 +25802,6 @@ function thelegendmodproject() {
                             /* phone control layouts: the same, LMmobile-editor.js checks them on load */
                             _impStep = 'lm-mobile-layouts';
                             if (_impObject(importValue['lm-mobile-layouts'])) _impSet('lm-mobile-layouts', JSON.stringify(importValue['lm-mobile-layouts']));
-                            /* favourite servers: the same, ogario/modules/servermanager.js checks them on read */
-                            _impStep = 'lmServerFavs';
-                            if (_impObject(importValue.lmServerFavs)) _impSet('lmServerFavs', JSON.stringify(importValue.lmServerFavs));
                         }
                     }
                 } catch (writeErr) {
@@ -84708,7 +84695,6 @@ function appendLMhiFbPs() {
             if (count !== null) ghostCount = count;
         }
 
-        var connectStart = Date.now();
         try {
             socket = new ProbeWebSocket(url);
             socket.binaryType = 'arraybuffer';
@@ -84718,9 +84704,6 @@ function appendLMhiFbPs() {
         }
         socket.onopen = function () {
             stage = 'handshake';
-            /* the time the WebSocket took to open: the latency shown in the Servers window */
-            entry.connectMs = Date.now() - connectStart;
-            entry.connectAt = Date.now();
             try {
                 socket.send(uint32Packet(254, protocolVersion));
                 socket.send(uint32Packet(255, clientVersion));
@@ -85089,9 +85072,7 @@ function appendLMhiFbPs() {
             expand: sbExpand,
             readPopulation: sbReadPopulation,
             context: sbContext,
-            tick: sbTick,
-            /* the about:blank iframe whose WebSocket the page's wrappers never see (Servers window) */
-            probeRealm: sbProbeRealm
+            tick: sbTick
         }
     };
 
@@ -85801,16 +85782,6 @@ Object.defineProperty(Array.prototype, 'stDev', {
             console.warn('[LM] Error loading Replay Studio:', e);
         }
     };
-    /* Servers window: favourites, recent, agar.io arenas, private servers, Expanding Land
-     * (button next to the server token box; its favourite notifications are off by default) */
-    try {
-        var serverManagerScript = document.createElement('script');
-        serverManagerScript.type = 'text/javascript';
-        serverManagerScript.src = 'https://www.legendmod.ml/ogario/modules/servermanager.js?v=' + (window.OgVer || '');
-        document.body.appendChild(serverManagerScript);
-    } catch (e) {
-        console.warn('[LM] Error loading server manager script:', e);
-    }
     /* Stream overlay / second screen (publishes only while its option is on) + result image */
     try {
         var companionScript = document.createElement('script');

@@ -617,18 +617,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			/* Servers window (ogario/modules/servermanager.js) */
-			'hk-serverManager': {
-				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-serverManager']) || 'Servers window (favourites, recent, arenas): open / close';
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMServerManager && typeof window.LMServerManager.toggle === 'function') window.LMServerManager.toggle();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			/* result image of the last (or current) life, ogario/modules/companion.js; pressed again it closes */
 			'hk-companionResult': {
 				get label() {
