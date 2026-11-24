@@ -376,6 +376,7 @@ message lmKiller {
   uint32 mass = 2;
   bool virus = 3;
   bool bot = 4;
+  uint32 cellId = 5;// Expanding Land: the eating cell's id (Watch killer), newer servers only
 }
 message lmDailyChallengesField {
   uint32 day = 1;// UTC day number (unix / 86400)

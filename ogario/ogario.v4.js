@@ -84,7 +84,7 @@
             _lmEvChatAt = Date.now();
             var sent99 = false;
             try {
-                if (!o.integrity && o.serverType !== 'sigmally' && o.serverType !== 'senpa' && $('#clantag').val() === '' && !(o.isLegendWorld && ogarcopythelb.clanTag)) {
+                if (!o.integrity && o.serverType !== 'sigmally' && o.serverType !== 'senpa' && $('#clantag').val() === '' && !_lmElTeamChat(o)) {
                     o.sendMessage(app.buildChat99View(text));
                     sent99 = true;
                     if (o.isLegendWorld) app._lmLegendChatLast = Date.now();
@@ -1131,6 +1131,8 @@ window.lmT = (function () {
         "eventLeft": {"en":"{0}: {1} left","el":"{0}: απομένουν {1}","es":"{0}: quedan {1}","bg":"{0}: остават {1}","fr":"{0} : encore {1}","ar":"{0}: متبقٍ {1}","zh":"{0}：剩餘 {1}","ru":"{0}: осталось {1}","de":"{0}: noch {1}","tr":"{0}: {1} kaldı","pl":"{0}: zostało {1}","nl":"{0}: nog {1}"},
         "lmPresetReducedMotion": {"en":"Reduced motion","el":"Μειωμένη κίνηση","es":"Movimiento reducido","bg":"Намалено движение","fr":"Mouvement réduit","ar":"تقليل الحركة","zh":"減少動態效果","ru":"Меньше движения","de":"Weniger Bewegung","tr":"Azaltılmış hareket","pl":"Ograniczony ruch","nl":"Minder beweging"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
+        "watchKiller": {"en":"Watch killer","el":"Παρακολούθησε τον δολοφόνο","es":"Ver al asesino","bg":"Гледай убиеца","fr":"Regarder le tueur","ar":"شاهد القاتل","zh":"觀看擊殺者","ru":"Смотреть убийцу","de":"Mörder beobachten","tr":"Katili izle","pl":"Obserwuj zabójcę","nl":"Kijk naar je moordenaar"},
+        "watchKillerGone": {"en":"Your killer is no longer in view","el":"Ο δολοφόνος σου δεν φαίνεται πια","es":"Tu asesino ya no está a la vista","bg":"Убиецът ти вече не се вижда","fr":"Ton tueur n'est plus visible","ar":"قاتلك لم يعد ظاهرًا","zh":"擊殺者已不在視野內","ru":"Твой убийца больше не виден","de":"Dein Mörder ist nicht mehr zu sehen","tr":"Katilin artık görünmüyor","pl":"Twój zabójca nie jest już widoczny","nl":"Je moordenaar is niet meer in beeld"},
         "room": {"en":"Private room","el":"Ιδιωτικό δωμάτιο","es":"Sala privada","bg":"Частна стая","fr":"Salon privé","ar":"غرفة خاصة","zh":"私人房間","ru":"Приватная комната","de":"Privater Raum","tr":"Özel oda","pl":"Prywatny pokój","nl":"Privékamer"},
         "roomCreate": {"en":"Create","el":"Δημιουργία","es":"Crear","bg":"Създай","fr":"Créer","ar":"إنشاء","zh":"建立","ru":"Создать","de":"Erstellen","tr":"Oluştur","pl":"Utwórz","nl":"Maken"},
         "roomJoin": {"en":"Join","el":"Είσοδος","es":"Unirse","bg":"Влез","fr":"Rejoindre","ar":"انضمام","zh":"加入","ru":"Войти","de":"Beitreten","tr":"Katıl","pl":"Dołącz","nl":"Deelnemen"},
@@ -19681,6 +19683,11 @@ function _lmElTeamsActive(client) {
     return !!(client && client.socket && client._lmElTeamsSocket === client.socket &&
         (client.serverType === 'expandingland' || client.isLegendWorld === true));
 }
+/* Expanding Land team chat (opcode 202, no public chat 99): with a clan tag (same-tag players),
+ * or in Teams mode without one (the server sends it to your own team) */
+function _lmElTeamChat(client) {
+    return !!(client && client.isLegendWorld && ((ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0) || _lmElTeamsActive(client)));
+}
 
 function _isExpandingLandClient(
     client
@@ -24996,7 +25003,7 @@ function thelegendmodproject() {
                     var sent99 = false;
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
-                    if (!LM.integrity && LM.serverType !== 'sigmally' && LM.serverType !== 'senpa' && $("#clantag").val() === "" && !(LM.isLegendWorld && ogarcopythelb.clanTag)) { /* EL with a stored tag goes through team chat 202 (sendChatMessage); Sigmally/Senpa have no chat 99 */
+                    if (!LM.integrity && LM.serverType !== 'sigmally' && LM.serverType !== 'senpa' && $("#clantag").val() === "" && !_lmElTeamChat(LM)) { /* EL with a stored tag (or in Teams) goes through team chat 202 (sendChatMessage); Sigmally/Senpa have no chat 99 */
                         var view = application.buildChat99View(value);
                         legendmod.sendMessage(view);
                         sent99 = true;
@@ -33312,8 +33319,9 @@ function thelegendmodproject() {
                 var currentNick = activeNick;
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
+                 * Teams mode without a tag: the server sends it to your own team.
                  * Format: [202][u8 type][UTF-16LE message] */
-                if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
+                if (_lmElTeamChat(LM) && legendmod.isSocketOpen()) {
                     if (this.lmLegendChatTooSoon()) {
                         toastr.warning('<b>[CHAT]:</b> Slow down: one message every 2 seconds.');
                         return;
@@ -33374,7 +33382,7 @@ function thelegendmodproject() {
 
             //		
             //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
-            if (!LM.integrity && LM.serverType !== 'sigmally' && LM.serverType !== 'senpa' && $("#clantag").val() === "" && !(LM.isLegendWorld && ogarcopythelb.clanTag)) { /* EL with a stored tag goes through team chat 202 (sendChatMessage); Sigmally/Senpa have no chat 99 */
+            if (!LM.integrity && LM.serverType !== 'sigmally' && LM.serverType !== 'senpa' && $("#clantag").val() === "" && !_lmElTeamChat(LM)) { /* EL with a stored tag (or in Teams) goes through team chat 202 (sendChatMessage); Sigmally/Senpa have no chat 99 */
 
                 var view = application.buildChat99View(prepareCommand);
                 legendmod.sendMessage(view);
@@ -43739,7 +43747,10 @@ function thelegendmodproject() {
                      * [SERVER]/[ADMIN]/[MOD] messages (restart warnings, notices) are shown too. */
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && ($("#clantag").val() === "" || server || admin || mod)) {
                         var _lmSrvChatId = application.serverChatUserId(name);
-                        if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
+                        /* Expanding Land Teams without a tag: a team mate's team chat (202) comes back as plain
+                         * 99 whose text already starts with "nick: " (shown like tagged team chat) */
+                        var _lmTeamNoTag = this.isLegendWorld && !(flag & 0xE0) && _lmElTeamsActive(this) && message.indexOf(name + ': ') === 0;
+                        if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, _lmTeamNoTag ? message : name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
                     /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
                      * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */
@@ -45286,6 +45297,8 @@ function thelegendmodproject() {
                      * unit ate my cell just before (the server sees that unit as another player). */
                     if (u.lmKiller && (defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000)) {
                         this._lmKiller = { nick: String(u.lmKiller.nick || ''), mass: Number(u.lmKiller.mass) || 0, virus: !!u.lmKiller.virus, bot: !!u.lmKiller.bot, server: true, at: Date.now() };
+                        /* field 5 (newer servers): the eating cell's id, for "Watch killer" */
+                        if (u.lmKiller.cellId) this._lmKiller.cellId = Number(u.lmKiller.cellId) >>> 0;
                     }
 
 
@@ -47366,6 +47379,8 @@ function thelegendmodproject() {
                 var _lmKName = _lmK.virus ? 'Virus' : (_lmK.nick ? application.escapeHTML(_lmK.nick) : 'An unnamed cell');
                 stats.unshift({ icon: '\ud83d\udde1\ufe0f', label: _lmTH('eatenBy', 'Eaten by'), value: _lmKName + (_lmK.virus ? '' : ' (' + fmtMass(_lmK.mass) + ')'), accent: true });
             }
+            /* "Watch killer": only when the server sent the eating cell's id (lmKiller field 5) */
+            var _lmKWatch = defaultmapsettings.showKiller && _lmK && Date.now() - _lmK.at < 15000 && _lmK.cellId && !_lmK.virus;
             /* optional mass graph of the life that just ended */
             var _lmGraph = defaultmapsettings.massGraph && window.application && application._lmMassHist && application._lmMassHist.length >= 3 ? application._lmMassHist.slice() : null;
             /* Build HTML */
@@ -47418,6 +47433,7 @@ function thelegendmodproject() {
 
                 /* Stats */
                 '<div style="padding:8px 12px 12px;">' + rows + '</div>' +
+                (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:#fff;border:0;border-radius:4px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f ' + _lmTH('watchKiller', 'Watch killer') + '</button></div>' : '') +
                 (_lmGraph ? '<div style="padding:0 12px 12px;"><canvas id="lm-go-graph" width="276" height="60" style="width:276px;height:60px;display:block;border-radius:4px;background:rgba(0,0,0,0.2);"></canvas></div>' : '') +
 
                 '</div></div>';
@@ -47495,6 +47511,8 @@ function thelegendmodproject() {
             /* Attach close button click */
             var closeBtn = document.getElementById('lm-go-close');
             if (closeBtn) closeBtn.addEventListener('click', function(e) { e.stopPropagation(); dismissGameOver(); });
+            var watchBtn = document.getElementById('lm-go-watch'), _lmGoWatchSelf = this;
+            if (watchBtn) watchBtn.addEventListener('click', function (e) { e.stopPropagation(); if (_lmGoWatchSelf._lmWatchKiller()) dismissGameOver(); });
             var copyBtn = document.getElementById('lm-go-copy');
             if (copyBtn) copyBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
@@ -50497,10 +50515,17 @@ Most cells eaten   : ${mostCellsEaten}
             if (!t) return null;
             if (this.play || !this.isFreeSpectate) { this._lmSpecCellStop(); return null; }
             var now = Date.now(), cs = this.cells || [], ws = 0, wx = 0, wy = 0;
+            /* Watch killer: the killer's cell id until it is seen, then its nick + colour like a click */
+            if (t.id) {
+                var ic = this.indexedCells && this.indexedCells[t.id];
+                if (ic && !ic.removed && !ic.isFood && !ic.isVirus && !ic.isEjected && ic.size > 0) {
+                    t.nick = ic.nick || ''; t.color = ic.color; t.id = 0; t.anyColor = false; t.wait = 0;
+                }
+            }
             for (var i = 0; i < cs.length; i++) {
                 var c = cs[i];
                 if (!c || c.removed || c.isFood || c.isVirus || c.isEjected || !(c.size > 0)) continue;
-                if ((c.nick || '') !== t.nick || c.color !== t.color) continue;
+                if ((c.nick || '') !== t.nick || (t.anyColor ? !t.nick : c.color !== t.color)) continue;
                 var w = c.size * c.size;
                 ws += w; wx += c.x * w; wy += c.y * w;
             }
@@ -50515,7 +50540,10 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
                 if (g) { t.x = g.x; t.y = g.y; if (g.mass) t.mass = g.mass; t.at = now; }
-                else if (now - t.at > 2000) { this._lmSpecCellStop(); return null; }
+                else if (now - t.at > (t.wait || 2000)) {
+                    if (t.id && window.toastr) toastr.info(_lmTH('watchKillerGone', 'Your killer is no longer in view'));
+                    this._lmSpecCellStop(); return null;
+                }
             }
             this._lmSpecCellHud();
             return t;
@@ -50533,6 +50561,27 @@ Most cells eaten   : ${mostCellsEaten}
         _lmSpecCellStop() {
             this._lmSpecCell = null;
             this._lmSpecCellHud();
+        },
+        /* "Watch killer" (Game Over card, lmKiller.cellId): free spectate following the cell that ate
+         * me; when it is gone, the killer's biggest visible cell (or leaderboard entry) by nick. */
+        _lmWatchKiller() {
+            var k = this._lmKiller;
+            if (!k || !k.cellId || k.virus || this.play) return false;
+            var live = function (c) { return !!(c && !c.removed && !c.isFood && !c.isVirus && !c.isEjected && c.size > 0); };
+            var cs = this.cells || [], ic = this.indexedCells && this.indexedCells[k.cellId], best = live(ic) ? ic : null;
+            if (!best && k.nick) {
+                for (var i = 0; i < cs.length; i++) if (live(cs[i]) && cs[i].nick === k.nick && (!best || cs[i].size > best.size)) best = cs[i];
+            }
+            if (window.application && typeof application.onSpectate === 'function' && $('#overlays').is(':visible')) application.onSpectate();
+            if (!this.isSpectateEnabled && !this.isFreeSpectate) this.sendSpectate();
+            if (!this.isFreeSpectate) this.sendFreeSpectate(); /* both stop a previous follow */
+            this._lmSpecLb = null; /* one follow at a time */
+            var vx = Number.isFinite(this.viewXTrue) ? this.viewXTrue : (this.playerX || 0), vy = Number.isFinite(this.viewYTrue) ? this.viewYTrue : (this.playerY || 0);
+            this._lmSpecCell = best ? { nick: best.nick || '', color: best.color, x: best.x, y: best.y, mass: ~~(best.size * best.size / 100), at: Date.now() } :
+                /* not in view yet: wait up to 4 s for that id (or a cell / leaderboard entry with the nick) */
+                { id: k.cellId, nick: k.nick || '', anyColor: true, x: vx, y: vy, mass: ~~k.mass, at: Date.now(), wait: 4000 };
+            this._lmSpecCellHud();
+            return true;
         },
         _lmSpecCellHud() {
             var el = document.getElementById('lm-spec-follow');
