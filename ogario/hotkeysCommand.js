@@ -348,6 +348,51 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			/* Settings profiles (ogario/modules/profiles.js): no default keys */
+			'hk-lmProfilesWindow': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmProfilesWindow']) || 'Settings profiles: open / close window';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMProfiles) window.LMProfiles.toggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-lmProfileNext': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmProfileNext']) || 'Settings profiles: apply the next profile';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMProfiles) window.LMProfiles.applyNext(1);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-lmProfilePrev': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmProfilePrev']) || 'Settings profiles: apply the previous profile';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMProfiles) window.LMProfiles.applyNext(-1);
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-lmProfileUndo': {
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmProfileUndo']) || 'Settings profiles: undo the last profile change';
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMProfiles) window.LMProfiles.undo();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-copyServerLink': {
 				get label() {
 					return (typeof textLanguage !== 'undefined' && textLanguage['hk-copyServerLink']) || 'Copy server link + password (TK&PW)';
