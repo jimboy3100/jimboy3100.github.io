@@ -1,3 +1,77 @@
+/* Library guard. On agar.io the extension writes play.html with document.write, and Chrome may
+ * refuse such cross-site parser-blocking scripts on a slow connection ("A parser-blocking, cross
+ * site script ... invoked via document.write"). A missing plugin then stopped the whole start
+ * ($(...).perfectScrollbar is not a function). Missing plugins get a stand-in that remembers its
+ * calls, the real file is loaded with a normal (non-blocking) script tag, and the remembered calls
+ * are replayed on it once it is there. With every library present this does nothing. */
+(function () {
+    var $ = window.jQuery;
+    var base = 'https://www.legendmod.ml/lib/';
+    var ver = window.OgVer ? '?v=' + window.OgVer : '';
+    var loading = {};
+    function load(file, done) {
+        if (loading[file]) { loading[file].push(done); return; }
+        loading[file] = [done];
+        var s = document.createElement('script');
+        s.src = base + file + ver;
+        s.charset = 'utf-8';
+        s.async = false;
+        s.onload = s.onerror = function (e) {
+            var list = loading[file] || [];
+            if (e && e.type === 'error') console.warn('[LM] Could not load ' + file);
+            list.forEach(function (f) { try { f(e && e.type === 'load'); } catch (er) { console.warn('[LM] ' + file + ':', er); } });
+        };
+        (document.head || document.documentElement).appendChild(s);
+    }
+    window._lmLibGuardLoad = load;
+    if (!$ || !$.fn) return;
+    /* jQuery plugins used while the mod starts: name -> file */
+    var plugins = { perfectScrollbar: 'perfect-scrollbar.jquery.min.js', colorpicker: 'bootstrap-colorpicker.min.js', rangeslider: 'rangeslider.min.js', tooltip: 'bootstrap-3.4.1.min.js', popover: 'bootstrap-3.4.1.min.js', modal: 'bootstrap-3.4.1.min.js' };
+    Object.keys(plugins).forEach(function (name) {
+        if (typeof $.fn[name] === 'function') return;
+        var calls = [];
+        var stand = function () { calls.push([this, Array.prototype.slice.call(arguments)]); return this; };
+        stand._lmStandIn = true;
+        $.fn[name] = stand;
+        console.warn('[LM] ' + name + ' was not loaded by the page: loading it again');
+        load(plugins[name], function (ok) {
+            var real = $.fn[name];
+            if (!ok || typeof real !== 'function' || real._lmStandIn) return;
+            calls.forEach(function (c) { try { real.apply(c[0], c[1]); } catch (er) { } });
+            calls.length = 0;
+        });
+    });
+    /* globals the mod uses at start */
+    if (typeof window.toastr === 'undefined') {
+        var queued = [];
+        var t = {};
+        ['info', 'success', 'warning', 'error'].forEach(function (m) { t[m] = function () { queued.push([m, Array.prototype.slice.call(arguments)]); return $(); }; });
+        t.clear = t.remove = function () { };
+        t.options = {};
+        t._lmStandIn = true;
+        window.toastr = t;
+        console.warn('[LM] toastr was not loaded by the page: loading it again');
+        load('toastr.min.js', function (ok) {
+            var real = window.toastr;
+            if (!ok || !real || real._lmStandIn) return;
+            try { real.options = Object.assign(real.options || {}, t.options); } catch (er) { }
+            queued.forEach(function (q) { try { real[q[0]].apply(real, q[1]); } catch (er) { } });
+        });
+    }
+    if (typeof window.Switchery === 'undefined') {
+        var made = [];
+        var S = function (el, opts) { made.push([el, opts]); this.element = el; };
+        S.prototype.setPosition = S.prototype.handleOnchange = S.prototype.disable = S.prototype.enable = function () { };
+        S._lmStandIn = true;
+        window.Switchery = S;
+        console.warn('[LM] Switchery was not loaded by the page: loading it again');
+        load('switchery.min.js', function (ok) {
+            var real = window.Switchery;
+            if (!ok || !real || real._lmStandIn) return;
+            made.forEach(function (m) { try { if (m[0] && m[0].parentNode) new real(m[0], m[1]); } catch (er) { } });
+        });
+    }
+})();
 /* Suppress noisy ad-SDK console spam from agar.io's AdinPlay/prebid scripts */
 (function() {
     var _adFilter = /adinplay|prebid|properlib|ads\s*by|adserver|googletag|gpt\.js/i;
@@ -61524,6 +61598,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
 
         resizeCanvas() {
+            /* not set up yet (start not finished, or stopped by an error): nothing to size; the
+             * window resize / phone hooks call this early (Cannot set properties of null) */
+            if (!this.canvas) return;
             var dpr =
                 (
                     defaultmapsettings.highDPI ||
@@ -86596,6 +86673,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var hudHelpersScript = document.createElement('script');
         hudHelpersScript.type = 'text/javascript';
         hudHelpersScript.src = 'https://www.legendmod.ml/ogario/modules/hudhelpers.js?v=' + (window.OgVer || '');
+        hudHelpersScript.charset = 'utf-8';
         document.body.appendChild(hudHelpersScript);
     } catch (e) {
         console.warn('[LM] Error loading HUD helpers script:', e);
@@ -86606,6 +86684,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var perfScript = document.createElement('script');
         perfScript.type = 'text/javascript';
         perfScript.src = 'https://www.legendmod.ml/ogario/modules/perf.js?v=' + (window.OgVer || '');
+        perfScript.charset = 'utf-8';
         document.body.appendChild(perfScript);
     } catch (e) {
         console.warn('[LM] Error loading perf script:', e);
@@ -86615,6 +86694,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var gamepadScript = document.createElement('script');
         gamepadScript.type = 'text/javascript';
         gamepadScript.src = 'https://www.legendmod.ml/ogario/gamepad.js?v=' + (window.OgVer || '');
+        gamepadScript.charset = 'utf-8';
         document.body.appendChild(gamepadScript);
     } catch (e) {
         console.warn('[LM] Error loading gamepad script:', e);
@@ -86625,6 +86705,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var profilesScript = document.createElement('script');
         profilesScript.type = 'text/javascript';
         profilesScript.src = 'https://www.legendmod.ml/ogario/modules/profiles.js?v=' + (window.OgVer || '');
+        profilesScript.charset = 'utf-8';
         document.body.appendChild(profilesScript);
     } catch (e) {
         console.warn('[LM] Error loading settings profiles script:', e);
@@ -86634,6 +86715,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var notifScript = document.createElement('script');
         notifScript.type = 'text/javascript';
         notifScript.src = 'https://www.legendmod.ml/ogario/modules/notifications.js?v=' + (window.OgVer || '');
+        notifScript.charset = 'utf-8';
         document.body.appendChild(notifScript);
     } catch (e) {
         console.warn('[LM] Error loading notifications script:', e);
@@ -86643,6 +86725,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var commandCentreScript = document.createElement('script');
         commandCentreScript.type = 'text/javascript';
         commandCentreScript.src = 'https://www.legendmod.ml/ogario/modules/commandcentre.js?v=' + (window.OgVer || '');
+        commandCentreScript.charset = 'utf-8';
         document.body.appendChild(commandCentreScript);
     } catch (e) {
         console.warn('[LM] Error loading command centre script:', e);
@@ -86652,6 +86735,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var deathRecapScript = document.createElement('script');
         deathRecapScript.type = 'text/javascript';
         deathRecapScript.src = 'https://www.legendmod.ml/ogario/modules/deathrecap.js?v=' + (window.OgVer || '');
+        deathRecapScript.charset = 'utf-8';
         document.body.appendChild(deathRecapScript);
     } catch (e) {
         console.warn('[LM] Error loading death recap script:', e);
@@ -86661,6 +86745,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var analyticsScript = document.createElement('script');
         analyticsScript.type = 'text/javascript';
         analyticsScript.src = 'https://www.legendmod.ml/ogario/modules/analytics.js?v=' + (window.OgVer || '');
+        analyticsScript.charset = 'utf-8';
         document.body.appendChild(analyticsScript);
     } catch (e) {
         console.warn('[LM] Error loading analytics script:', e);
@@ -86676,6 +86761,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
             var rsScript = document.createElement('script');
             rsScript.type = 'text/javascript';
             rsScript.src = 'https://www.legendmod.ml/ogario/modules/replaystudio.js?v=' + (window.OgVer || '');
+            rsScript.charset = 'utf-8';
             rsScript.onload = function () {
                 var q = _lmRsQueue || [];
                 _lmRsQueue = null;
@@ -86697,6 +86783,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var companionScript = document.createElement('script');
         companionScript.type = 'text/javascript';
         companionScript.src = 'https://www.legendmod.ml/ogario/modules/companion.js?v=' + (window.OgVer || '');
+        companionScript.charset = 'utf-8';
         document.body.appendChild(companionScript);
     } catch (e) {
         console.warn('[LM] Error loading companion script:', e);
@@ -86707,6 +86794,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var directorScript = document.createElement('script');
         directorScript.type = 'text/javascript';
         directorScript.src = 'https://www.legendmod.ml/ogario/modules/director.js?v=' + (window.OgVer || '');
+        directorScript.charset = 'utf-8';
         document.body.appendChild(directorScript);
     } catch (e) {
         console.warn('[LM] Error loading spectator director script:', e);
@@ -86717,6 +86805,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var hudEditorScript = document.createElement('script');
         hudEditorScript.type = 'text/javascript';
         hudEditorScript.src = 'https://www.legendmod.ml/ogario/modules/hudeditor.js?v=' + (window.OgVer || '');
+        hudEditorScript.charset = 'utf-8';
         document.body.appendChild(hudEditorScript);
     } catch (e) {
         console.warn('[LM] Error loading HUD editor script:', e);
@@ -86737,6 +86826,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
             var s = document.createElement('script');
             s.type = 'text/javascript';
             s.src = 'https://www.legendmod.ml/ogario/modules/' + name + '.js?v=' + (window.OgVer || '');
+            s.charset = 'utf-8';
             s.onload = next;
             s.onerror = function () { prFail(s); };
             document.body.appendChild(s);
@@ -86762,6 +86852,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var smallToolsScript = document.createElement('script');
         smallToolsScript.type = 'text/javascript';
         smallToolsScript.src = 'https://www.legendmod.ml/ogario/modules/smalltools.js?v=' + (window.OgVer || '');
+        smallToolsScript.charset = 'utf-8';
         document.body.appendChild(smallToolsScript);
     } catch (e) {
         console.warn('[LM] Error loading small tools script:', e);
@@ -86771,6 +86862,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var a11yScript = document.createElement('script');
         a11yScript.type = 'text/javascript';
         a11yScript.src = 'https://www.legendmod.ml/ogario/modules/accessibility.js?v=' + (window.OgVer || '');
+        a11yScript.charset = 'utf-8';
         document.body.appendChild(a11yScript);
     } catch (e) {
         console.warn('[LM] Error loading accessibility script:', e);
@@ -86781,10 +86873,12 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var pluginsScript = document.createElement('script');
         pluginsScript.type = 'text/javascript';
         pluginsScript.src = 'https://www.legendmod.ml/ogario/modules/plugins.js?v=' + (window.OgVer || '');
+        pluginsScript.charset = 'utf-8';
         document.body.appendChild(pluginsScript);
         var labScript = document.createElement('script');
         labScript.type = 'text/javascript';
         labScript.src = 'https://www.legendmod.ml/ogario/modules/lab.js?v=' + (window.OgVer || '');
+        labScript.charset = 'utf-8';
         document.body.appendChild(labScript);
     } catch (e) {
         console.warn('[LM] Error loading plugins / lab script:', e);
@@ -86804,6 +86898,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
                 script.src = 'https://www.legendmod.ml/ogario/modules/' + file + '?v=' + (window.OgVer || '');
+                script.charset = 'utf-8';
                 script.onload = function () {
                     var q = queue || [], X = window[globalName];
                     queue = null;
@@ -86831,6 +86926,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var discoveryScript = document.createElement('script');
         discoveryScript.type = 'text/javascript';
         discoveryScript.src = 'https://www.legendmod.ml/ogario/modules/discovery.js?v=' + (window.OgVer || '');
+        discoveryScript.charset = 'utf-8';
         document.body.appendChild(discoveryScript);
     } catch (e) {
         console.warn('[LM] Error loading discovery script:', e);
@@ -86841,6 +86937,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var themeWorkshopScript = document.createElement('script');
         themeWorkshopScript.type = 'text/javascript';
         themeWorkshopScript.src = 'https://www.legendmod.ml/ogario/modules/themeworkshop.js?v=' + (window.OgVer || '');
+        themeWorkshopScript.charset = 'utf-8';
         document.body.appendChild(themeWorkshopScript);
     } catch (e) {
         console.warn('[LM] Error loading theme workshop script:', e);

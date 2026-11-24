@@ -1633,6 +1633,7 @@
             var s = mk('script');
             s.src = /\/LMmobile\.js(\?|$)/.test(_lmmSrc) ? _lmmSrc.replace(/\/LMmobile\.js/, '/LMmobile-editor.js')
                 : 'https://www.legendmod.ml/LMmobile/LMmobile-editor.js?v=' + (window.OgVer || '');
+            s.charset = 'utf-8';
             s.onload = function () {
                 edLoading = false;
                 var q = edQueue; edQueue = [];

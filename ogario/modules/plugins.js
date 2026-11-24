@@ -84,7 +84,7 @@
     /* "Chat word highlighter!" -> "chat-word-highlighter" */
     function slug(s) {
         s = cleanText(s, 80).toLowerCase();
-        try { s = s.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch (e) { }
+        try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) { }
         s = s.replace(/[^a-z0-9._-]+/g, '-').replace(/^[-._]+|[-._]+$/g, '').replace(/-{2,}/g, '-').slice(0, 48).replace(/[-._]+$/, '');
         return ID_RE.test(s) ? s : '';
     }

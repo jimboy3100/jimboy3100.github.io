@@ -495,6 +495,7 @@
         var s = D.createElement('script');
         s.type = 'text/javascript';
         s.src = 'https://www.legendmod.ml/ogario/modules/hudeditor-ui.js?v=' + (W.OgVer || '');
+        s.charset = 'utf-8';
         s.onload = function () {
             uiLoading = false;
             var q = uiQueue.splice(0);

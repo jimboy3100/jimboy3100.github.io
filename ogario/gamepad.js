@@ -616,7 +616,9 @@
         try {
             var s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = '/ogario/modules/gamepad-ui.js?v=' + (window.OgVer || '');
+            /* absolute: on agar.io (the extension writes play.html there) a "/ogario/..." path pointed at agar.io */
+            s.src = 'https://www.legendmod.ml/ogario/modules/gamepad-ui.js?v=' + (window.OgVer || '');
+            s.charset = 'utf-8';
             s.onload = function () {
                 uiLoading = false;
                 if (window.LMGamepadUI && typeof window.LMGamepadUI.open === 'function') window.LMGamepadUI.open();
