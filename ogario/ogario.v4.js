@@ -115,7 +115,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.561;
+window.OgVer = 3.562;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -683,6 +683,14 @@ function _lmRoomOpen(tab, code) {
     bCopyLink.type = 'button';
     cbtns.appendChild(bCopy);
     cbtns.appendChild(bCopyLink);
+    /* phones: the system share sheet (WhatsApp, Discord, ...); only where the browser has it */
+    var bShare = null;
+    if (navigator.share) {
+        bShare = el('button', btn2Css, T('roomShareBtn', 'Share'));
+        bShare.id = 'lm-room-share';
+        bShare.type = 'button';
+        cbtns.appendChild(bShare);
+    }
     var link = el('input', inCss + 'font-size:12px;text-align:center;min-height:28px;padding:3px 6px;');
     link.id = 'lm-room-link';
     link.readOnly = true;
@@ -1003,6 +1011,12 @@ function _lmRoomOpen(tab, code) {
     });
     bCopy.addEventListener('click', function (e) { e.stopPropagation(); _lmRoomCopy(_lmRoomState.code, bCopy, T('roomCopy', 'Copy code')); });
     bCopyLink.addEventListener('click', function (e) { e.stopPropagation(); _lmRoomCopy(_lmRoomShareLink(_lmRoomState.code), bCopyLink, T('roomCopyLink', 'Copy link')); });
+    if (bShare) bShare.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!_lmRoomState.code) return;
+        /* cancelling the share sheet rejects the promise: nothing to report */
+        try { navigator.share({ title: 'Expanding Land', text: T('roomShareInvite', 'Join my Expanding Land room') + ' (' + _lmRoomState.code + ')', url: _lmRoomShareLink(_lmRoomState.code) }).catch(function () { }); } catch (err) { }
+    });
     /* typing here never reaches the game hotkeys */
     ['keydown', 'keyup', 'keypress'].forEach(function (t) { md.addEventListener(t, function (e) { if (e.key !== 'Escape' && e.keyCode !== 27) e.stopPropagation(); }); });
     var onKey = function (e) { if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopPropagation(); close(); } };
@@ -1137,6 +1151,8 @@ window.lmT = (function () {
         "roomNone": {"en":"No public rooms right now.","el":"Δεν υπάρχουν δημόσια δωμάτια αυτή τη στιγμή.","es":"No hay salas públicas ahora.","bg":"В момента няма публични стаи.","fr":"Aucun salon public pour le moment.","ar":"لا توجد غرف عامة حالياً.","zh":"目前沒有公開房間。","ru":"Сейчас нет открытых комнат.","de":"Gerade keine öffentlichen Räume.","tr":"Şu anda herkese açık oda yok.","pl":"Brak publicznych pokoi.","nl":"Er zijn nu geen openbare kamers."},
         "roomLoading": {"en":"Loading…","el":"Φόρτωση…","es":"Cargando…","bg":"Зареждане…","fr":"Chargement…","ar":"جارٍ التحميل…","zh":"載入中…","ru":"Загрузка…","de":"Wird geladen…","tr":"Yükleniyor…","pl":"Ładowanie…","nl":"Laden…"},
         "roomCopy": {"en":"Copy code","el":"Αντιγραφή κωδικού","es":"Copiar código","bg":"Копирай кода","fr":"Copier le code","ar":"نسخ الرمز","zh":"複製代碼","ru":"Копировать код","de":"Code kopieren","tr":"Kodu kopyala","pl":"Kopiuj kod","nl":"Code kopiëren"},
+        "roomShareBtn": {"en":"Share","el":"Κοινοποίηση","es":"Compartir","bg":"Сподели","fr":"Partager","ar":"مشاركة","zh":"分享","ru":"Поделиться","de":"Teilen","tr":"Paylaş","pl":"Udostępnij","nl":"Delen"},
+        "roomShareInvite": {"en":"Join my Expanding Land room","el":"Έλα στο δωμάτιό μου στο Expanding Land","es":"Únete a mi sala de Expanding Land","bg":"Влез в моята стая в Expanding Land","fr":"Rejoins ma salle Expanding Land","ar":"انضم إلى غرفتي في Expanding Land","zh":"加入我的 Expanding Land 房間","ru":"Заходи в мою комнату Expanding Land","de":"Komm in meinen Expanding-Land-Raum","tr":"Expanding Land odama katıl","pl":"Dołącz do mojego pokoju Expanding Land","nl":"Kom in mijn Expanding Land-kamer"},
         "roomCopyLink": {"en":"Copy link","el":"Αντιγραφή συνδέσμου","es":"Copiar enlace","bg":"Копирай връзката","fr":"Copier le lien","ar":"نسخ الرابط","zh":"複製連結","ru":"Копировать ссылку","de":"Link kopieren","tr":"Bağlantıyı kopyala","pl":"Kopiuj link","nl":"Link kopiëren"},
         "roomCopied": {"en":"Copied","el":"Αντιγράφηκε","es":"Copiado","bg":"Копирано","fr":"Copié","ar":"تم النسخ","zh":"已複製","ru":"Скопировано","de":"Kopiert","tr":"Kopyalandı","pl":"Skopiowano","nl":"Gekopieerd"},
         "roomShare": {"en":"Share the code or link with your friends.","el":"Μοιραστείτε τον κωδικό ή τον σύνδεσμο με τους φίλους σας.","es":"Comparte el código o el enlace con tus amigos.","bg":"Сподели кода или връзката с приятелите си.","fr":"Partagez le code ou le lien avec vos amis.","ar":"شارك الرمز أو الرابط مع أصدقائك.","zh":"把代碼或連結分享給朋友。","ru":"Поделитесь кодом или ссылкой с друзьями.","de":"Teile den Code oder Link mit deinen Freunden.","tr":"Kodu veya bağlantıyı arkadaşlarınla paylaş.","pl":"Udostępnij kod lub link znajomym.","nl":"Deel de code of link met je vrienden."},
