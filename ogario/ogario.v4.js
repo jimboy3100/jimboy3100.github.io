@@ -41457,6 +41457,18 @@ function thelegendmodproject() {
                         this.gameMode =
                             ':expandingland';
 
+                        /* Capability reply [240,'L','M',caps], once per connection and never from a
+                         * replay: bit 0 = understands the killer info (lmKiller) in the game over. */
+                        if (this.socket && this._lmCapsSocket !== this.socket && String($('#server-token').val() || '').indexOf('replay') === -1) {
+                            this._lmCapsSocket = this.socket;
+                            var _lmCapsView = this.createView(4);
+                            _lmCapsView.setUint8(0, 240);
+                            _lmCapsView.setUint8(1, 0x4C);
+                            _lmCapsView.setUint8(2, 0x4D);
+                            _lmCapsView.setUint8(3, 1);
+                            this.sendMessage(_lmCapsView);
+                        }
+
                         /*
                          * The server currently queues SetBorder before this LW
                          * beacon. Reapply the already received border now that
@@ -41953,6 +41965,13 @@ function thelegendmodproject() {
                         );
 
                         break;
+                    }
+
+                    /* Expanding Land killer info (lmKiller, sent only after our opcode 240 caps):
+                     * the server's "Eaten by" for the Game Over card. Skipped when my own multibox
+                     * unit ate my cell just before (the server sees that unit as another player). */
+                    if (u.lmKiller && (defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000)) {
+                        this._lmKiller = { nick: String(u.lmKiller.nick || ''), mass: Number(u.lmKiller.mass) || 0, virus: !!u.lmKiller.virus, bot: !!u.lmKiller.bot, server: true, at: Date.now() };
                     }
 
 
@@ -48370,10 +48389,17 @@ Most cells eaten   : ${mostCellsEaten}
                 /* optional: remember who ate my cell (Game Over card "Eaten by") */
                 /* not when the eater is one of mine: own cell (ownership set of this packet) or my
                  * multibox unit (its copy is stored under id + unit number * 1e9 with isPlayerCellMulti) */
+                /* (a server report from this death, lmKiller, is kept: the last remove packet can come after it) */
                 if ((defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
                     !(this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)) &&
-                    !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[eaterRawID + s.number * 1000000000]; return !!(c && c.isPlayerCellMulti); })) {
+                    !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[eaterRawID + s.number * 1000000000]; return !!(c && c.isPlayerCellMulti); }) &&
+                    !(this._lmKiller && this._lmKiller.server && Date.now() - this._lmKiller.at < 3000)) {
                     this._lmKiller = { nick: String(eaterID.targetNick || ''), mass: ~~(eaterID.size * eaterID.size / 100), virus: !!eaterID.isVirus, at: Date.now() };
+                }
+                /* my multibox unit ate my cell: a server lmKiller report right after would name that unit */
+                if ((defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && (eaterID.isPlayerCellMulti ||
+                    (window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[eaterRawID + s.number * 1000000000]; return !!(c && c.isPlayerCellMulti); }))) {
+                    this._lmKillerMultiAt = Date.now();
                 }
                 /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces (all servers) */
                 if (eaterID && victimID.isVirus && (eaterID.isPlayerCell || eaterID.isPlayerCellMulti) && window.application &&
