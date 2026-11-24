@@ -21856,7 +21856,7 @@ var _lmLabelI18n = {
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
         "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)","accessibilityGroup":"Προσβασιμότητα","a11yTextScale":"Μέγεθος κειμένου μενού (1 = κανονικό)","a11yHudTextScale":"Μέγεθος κειμένου HUD (1 = κανονικό, πάνω από την κλίμακα HUD)","a11yHighContrast":"HUD υψηλής αντίθεσης (συμπαγές φόντο, περιγράμματα)","a11yIndicators":"Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)","a11yNoFlash":"Λιγότερα αναβοσβησίματα (χωρίς κινούμενα στοιχεία σελίδας)","a11yPalette":"Παλέτα αχρωματοψίας για τα χρώματα και τα δαχτυλίδια αντιπάλων","skinCollections":"Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)","hk-radialMenu":"Κυκλικό μενού εντολών (κράτημα)","hk-radialEditor":"Κυκλικό μενού: επιλογή εντολών","hk-hotkeyConflicts":"Συγκρούσεις πλήκτρων","hk-screenshotMode":"Λειτουργία στιγμιότυπου (κρύβει το HUD)","hk-screenshotCapture":"Λήψη στιγμιότυπου (PNG)","hk-screenshotTool":"Παράθυρο στιγμιότυπου","hk-skinCollections":"Συλλογές skins","hk-bugReport":"Αναφορά σφάλματος (διαγνωστικά)","a11yPaletteOff":"Χρώματα θέματος","a11yPaletteDeut":"Δευτερανωπία (αδύναμο πράσινο)","a11yPaletteProt":"Πρωτανωπία (αδύναμο κόκκινο)","a11yPaletteTrit":"Τριτανωπία (αδύναμο μπλε)",
-        "lmLabGroup":"Lab (πειραματικά)","hk-lmPlugins":"Άνοιγμα User Scripts (plugins, κατάλογος)","hk-lmLab":"Άνοιγμα του Lab (πειραματικές λειτουργίες)","skinEditor":"Επεξεργασία skin (περικοπή, ζουμ, περιστροφή, προεπισκόπηση, PNG)","macroEditor":"Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)","hk-customMacro1":"Custom macro 1 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro2":"Custom macro 2 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro3":"Custom macro 3 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-lmThemeWorkshop":"Εργαστήριο θεμάτων: άνοιγμα / κλείσιμο"
+        "lmLabGroup":"Lab (πειραματικά)","hk-lmPlugins":"Άνοιγμα User Scripts (plugins, κατάλογος)","hk-lmLab":"Άνοιγμα του Lab (πειραματικές λειτουργίες)","macroEditor":"Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)","hk-customMacro1":"Custom macro 1 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro2":"Custom macro 2 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro3":"Custom macro 3 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-lmThemeWorkshop":"Εργαστήριο θεμάτων: άνοιγμα / κλείσιμο"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -23181,8 +23181,7 @@ textLanguage['hk-screenshotMode'] = textLanguage['hk-screenshotMode'] || 'Screen
 textLanguage['hk-screenshotCapture'] = textLanguage['hk-screenshotCapture'] || 'Capture screenshot (PNG)';
 textLanguage['hk-screenshotTool'] = textLanguage['hk-screenshotTool'] || 'Screenshot window';
 textLanguage['hk-skinCollections'] = textLanguage['hk-skinCollections'] || 'Skin collections';
-/* Skin editor and custom macros: same fallback pattern. */
-textLanguage.skinEditor = textLanguage.skinEditor || 'Skin editor (crop, zoom, rotate, preview, PNG)';
+/* Custom macros fallback pattern (skin editor removed). */
 textLanguage.macroEditor = textLanguage.macroEditor || 'Custom macros (split, feed, wait, move to mouse)';
 textLanguage['hk-customMacro1'] = textLanguage['hk-customMacro1'] || 'Custom macro 1 (Settings > Macro > Custom macros)';
 textLanguage['hk-customMacro2'] = textLanguage['hk-customMacro2'] || 'Custom macro 2 (Settings > Macro > Custom macros)';
@@ -27304,12 +27303,7 @@ function thelegendmodproject() {
             $(".agario-party h4, #cancel-party-btn").remove();
             $(".agario-party .btn").addClass("btn-sm");
             $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://www.legendmod.ml/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
-            /* Skin editor (ogario/modules/skineditor.js, loaded on the first click): crop, zoom, rotate and
-             * preview an image; PNG download or a local list. Nothing is uploaded. */
-            $('<button type="button" id="lm-skin-editor-btn" class="btn btn-block btn-primary" style="margin-top:4px;white-space:normal;"></button>')
-                .text(textLanguage.skinEditor || 'Skin editor (crop, zoom, rotate, preview, PNG)')
-                .appendTo('#skins-panel')
-                .on('click', function (e) { e.preventDefault(); if (typeof window.lmSkinEditor === 'function') window.lmSkinEditor('open'); });
+            /* Skin editor removed — use the standalone Skin Checker & Editor at legendmod.ml/skins/skinchecker.html */
             $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove();
             /* ── Persistent Agario Ad Suppression ──
              * One-time hide is not enough — agario's code re-shows ads dynamically.
@@ -27341,7 +27335,12 @@ function thelegendmodproject() {
             var _adStyle = document.createElement('style');
             _adStyle.textContent = '#advertisement,#adbg,#a320x250,#g320x250,#s320x250,#adsBottom,#adContainer,#preroll-container,.agario-promo-container,.agario-promo{display:none!important;visibility:hidden!important;width:0!important;height:0!important;overflow:hidden!important;pointer-events:none!important}';
             document.head.appendChild(_adStyle);
-            $("#noNames, #showMass").remove();
+            /* Remove agar.io's native settings checkboxes that Legend Mod replaces with its own in #og-options.
+             * Remove the whole label to avoid orphaned text. */
+            $("#noNames, #noSkins, #noColors, #showMass").each(function () {
+                var $el = $(this), $lbl = $el.closest('label');
+                if ($lbl.length) $lbl.remove(); else $el.remove();
+            });
             $("#og-settings .submenu-panel").append('<div id="og-options"></div>');
             /* Settings search: ~300 options in many sections. Typing hides the options (and
              * sections) whose text does not match; clearing the box shows everything again.
@@ -27690,7 +27689,7 @@ function thelegendmodproject() {
             /* Bug reports: copy versions, browser, GPU, server and the last errors to the
              * clipboard. Nothing is sent anywhere; the player pastes it into Discord. */
             $("#og-settings").append('<div class="restore-settings"><a href="#" id="lm-copy-debug">Copy debug info</a></div>');
-            $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + textLanguage.thanks + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + textLanguage.playlist + "</a></span></div>");
+            $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + textLanguage.thanks + ')</h5><audio controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + textLanguage.playlist + "</a></span></div>");
             $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + textLanguage.sounds + "</h5></div>");
             $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
             /*$('#music').append('<div class="agario-panel facebook-panel"><h5 class="menu-main-color">' + 'Facebook' + '</h5></div>'),*/
@@ -86790,8 +86789,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading plugins / lab script:', e);
     }
-    /* Skin editor and custom macros: each module loads the first time it is used.
-     * lmSkinEditor('open'[, url]); lmMacroEditor('open'[, slot]) and ('run', slot) for the
+    /* Custom macros: each module loads the first time it is used.
+     * lmMacroEditor('open'[, slot]) and ('run', slot) for the
      * "Custom macro 1-3" hotkeys (no default keys). Saved macros load it at start, so the first
      * key press is not delayed; a press made while it loads runs only if it is still recent. */
     var _lmLazyModule = function (file, globalName, what) {
@@ -86823,7 +86822,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
             }
         };
     };
-    window.lmSkinEditor = _lmLazyModule('skineditor.js', 'LMSkinEditor', 'The skin editor');
+    /* Skin editor removed — use the standalone Skin Checker & Editor at legendmod.ml/skins/skinchecker.html */
     window.lmMacroEditor = _lmLazyModule('macroeditor.js', 'LMMacroEditor', 'The macro editor');
     try { if (localStorage.getItem('lmCustomMacros')) window.lmMacroEditor('load'); } catch (e) { }
     /* Discover features guide and "What works on this server" (Command Centre; opens by itself once
