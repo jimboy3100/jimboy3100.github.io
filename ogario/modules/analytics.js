@@ -746,9 +746,13 @@
 
     /* ------------------------------------------------------------------ window */
     var md = null, tab = 'dash', coachIdx = -1, heat = { layer: 'move', n: 25, map: 0 };
-    function theme() {
+    /* theme() gives CSS (var(--lm-x, current) so an open window follows a theme change);
+     * theme(true) gives the resolved colours for SVG attributes and canvas */
+    function theme(raw) {
         var ds = window.defaultSettings || {};
-        return { mc: ds.menuMainColor || '#01d9cc', pc: ds.menuPanelColor || '#00243e', pc2: ds.menuPanelColor2 || '#002f52', tc: ds.menuTextColor || '#ffffff', tc2: ds.menuTextColor2 || '#8096a7' };
+        var r = { mc: ds.menuMainColor || '#01d9cc', pc: ds.menuPanelColor || '#00243e', pc2: ds.menuPanelColor2 || '#002f52', tc: ds.menuTextColor || '#ffffff', tc2: ds.menuTextColor2 || '#8096a7' };
+        if (raw) return r;
+        return { mc: 'var(--lm-mc,' + r.mc + ')', pc: 'var(--lm-pc,' + r.pc + ')', pc2: 'var(--lm-pc2,' + r.pc2 + ')', tc: 'var(--lm-tc,' + r.tc + ')', tc2: 'var(--lm-tc2,' + r.tc2 + ')' };
     }
     /* marks on the dark panel: one blue for magnitudes (bars, score bars, movement heat),
      * orange for the deaths layer so the two heat layers never look alike */
@@ -762,7 +766,7 @@
         return e;
     }
     function btn(label, css, on) {
-        var b = el('button', 'cursor:pointer;font:inherit;font-size:12px;min-height:28px;padding:3px 10px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:inherit;touch-action:manipulation;' + (css || ''), label);
+        var b = el('button', 'cursor:pointer;font:inherit;font-size:12px;min-height:28px;padding:3px 10px;border-radius:4px;border:1px solid var(--lm-pc2,rgba(255,255,255,0.15));background:rgba(255,255,255,0.06);color:inherit;touch-action:manipulation;' + (css || ''), label);
         b.type = 'button';
         b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); on(e); });
         return b;
@@ -791,7 +795,7 @@
         md.id = 'lm-analytics';
         md.setAttribute('role', 'dialog');
         md.setAttribute('aria-label', T('title'));
-        var head = el('div', 'display:flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-bottom:1px solid ' + t.pc2 + ';flex:0 0 auto;');
+        var head = el('div', 'display:flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-bottom:1px solid ' + t.pc2 + ';background:linear-gradient(180deg,' + t.pc2 + ' 0%,' + t.pc + ' 100%);flex:0 0 auto;');
         head.appendChild(el('div', 'font-size:14px;font-weight:700;color:' + t.mc + ';letter-spacing:1px;text-transform:uppercase;white-space:nowrap;', T('title')));
         var tabs = el('div', 'display:flex;gap:4px;flex:1 1 auto;overflow-x:auto;-webkit-overflow-scrolling:touch;');
         tabs.id = 'lm-analytics-tabs';
@@ -803,7 +807,7 @@
         });
         head.appendChild(tabs);
         /* 36 px close target for touch */
-        var x = btn('✕', 'flex:0 0 auto;width:36px;height:36px;padding:0;font-size:16px;line-height:1;', close);
+        var x = btn('✕', 'flex:0 0 auto;width:36px;height:36px;padding:0;font-size:16px;line-height:1;color:' + t.tc2 + ';background:rgba(255,255,255,0.05);', close);
         x.id = 'lm-analytics-close';
         x.title = T('close');
         x.setAttribute('aria-label', T('close'));
@@ -903,7 +907,7 @@
     /* single-series bar chart in inline SVG: values on the bars, week dates under them, a <title>
      * per bar for hover; text uses the theme's text colours, the bars one fixed blue */
     function weekChart(weeks) {
-        var t = theme(), NS = 'http://www.w3.org/2000/svg', W = 600, H = 170, top = 18, bottom = 22, gap = 12;
+        var t = theme(true), NS = 'http://www.w3.org/2000/svg', W = 600, H = 170, top = 18, bottom = 22, gap = 12;
         var max = Math.max(1, maxOf(weeks.map(function (w) { return w.avgPeak; })));
         var svg = document.createElementNS(NS, 'svg');
         svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -961,7 +965,7 @@
         });
         side.appendChild(lrow);
         var sel = function (label, opts, val, on) {
-            var r = el('label', 'display:flex;gap:6px;align-items:center;'), s = el('select', 'font:inherit;font-size:12px;min-height:28px;max-width:180px;color:#000;');
+            var r = el('label', 'display:flex;gap:6px;align-items:center;'), s = el('select', 'font:inherit;font-size:12px;min-height:28px;max-width:180px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:4px;');
             r.appendChild(el('span', 'color:' + t.tc2 + ';', label));
             opts.forEach(function (o) { var op = el('option', null, o[1]); op.value = String(o[0]); if (o[0] === val) op.selected = true; s.appendChild(op); });
             s.addEventListener('change', function () { on(+s.value); paint(); });
@@ -1009,7 +1013,7 @@
             ctx.fillRect((k % h.res) * cs, Math.floor(k / h.res) * cs, Math.ceil(cs), Math.ceil(cs));
         }
         ctx.restore();
-        ctx.strokeStyle = t.tc2;
+        ctx.strokeStyle = theme(true).tc2;
         ctx.globalAlpha = 0.6;
         ctx.lineWidth = dpr;
         ctx.beginPath();
@@ -1117,12 +1121,12 @@
         });
         body.appendChild(custom);
         var form = el('div', 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;');
-        var type = el('select', 'font:inherit;font-size:12px;min-height:28px;color:#000;');
+        var type = el('select', 'font:inherit;font-size:12px;min-height:28px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:4px;');
         type.id = 'lm-analytics-goal-type';
         [['mass', 'tMass'], ['survive', 'tSurvive'], ['top', 'tTop'], ['games', 'tGames'], ['beatAvg', 'tBeatAvg']].forEach(function (o) {
             var op = el('option', null, T(o[1])); op.value = o[0]; type.appendChild(op);
         });
-        var inp = el('input', 'font:inherit;font-size:12px;min-height:28px;width:90px;color:#000;box-sizing:border-box;');
+        var inp = el('input', 'font:inherit;font-size:12px;min-height:28px;width:90px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:0 6px;box-sizing:border-box;');
         inp.id = 'lm-analytics-goal-target';
         inp.type = 'number';
         inp.min = '1';

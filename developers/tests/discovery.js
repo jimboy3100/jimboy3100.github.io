@@ -148,5 +148,48 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
   }
 }
 
+/* new cards and versioned "seen" */
+{
+  const card = id => C.CARDS.find(c => c.id === id);
+  ['practice', 'macroEditor', 'themeWorkshop', 'accessibility', 'plugins', 'lab'].forEach(id => check('new card ' + id, !!card(id)));
+  let arg = null;
+  ctx.lmPractice = a => { arg = a; };
+  card('practice').win.run();
+  check('Practice opened through lmPractice("open")', arg === 'open');
+  arg = null;
+  ctx.lmMacroEditor = a => { arg = a; };
+  card('macroEditor').win.run();
+  check('Custom macros opened through lmMacroEditor("open")', arg === 'open');
+  let tw = 0;
+  ctx.LMThemeWorkshop = { open: () => { tw++; } };
+  card('themeWorkshop').win.run();
+  check('Theme workshop opened', tw === 1);
+  arg = null;
+  ctx.LMPlugins = { open: a => { arg = a; } };
+  card('plugins').win.run();
+  check('User Scripts opened on the plugins view', arg === 'plugins');
+  let lab = 0;
+  ctx.LMLab = { open: () => { lab++; } };
+  card('lab').win.run();
+  check('Lab opened', lab === 1);
+  check('Accessibility switches', card('accessibility').opts.join() === 'a11yIndicators,reducedMotion');
+
+  /* seen keys: unchanged cards keep their id (old stores still count), a changed card is NEW again */
+  check('seenKey: plain id without cv', C.seenKey({ id: 'analytics' }) === 'analytics' && C.seenKey({ id: 'analytics', cv: 1 }) === 'analytics');
+  check('seenKey: version suffix, valid stored id', C.seenKey({ id: 'analytics', cv: 2 }) === 'analytics-v2' && C.parseStore(JSON.stringify({ seen: ['analytics-v2'] })).seen[0] === 'analytics-v2');
+  const old = C.parseStore(JSON.stringify({ v: '3.580', seen: ['commandCentre', 'analytics', 'companion'] }));
+  const cards = [{ id: 'commandCentre' }, { id: 'analytics', cv: 2 }, { id: 'companion' }, { id: 'practice' }];
+  const unseen = C.unseenIds(old, cards.map(C.seenKey));
+  check('changed and new cards only are NEW', unseen.join() === 'analytics-v2,practice');
+  check('auto open for them after an update', C.shouldAutoOpen(old, '3.590', cards.map(C.seenKey)));
+  C.markSeen(old, cards);
+  check('markSeen: old version replaced, nothing else lost', old.seen.indexOf('analytics') < 0 && ['commandCentre', 'analytics-v2', 'companion', 'practice'].every(k => old.seen.includes(k)) && old.seen.length === 4);
+  check('after marking: nothing NEW', C.unseenIds(old, cards.map(C.seenKey)).length === 0);
+  check('markSeen keeps ids of other cards with a common prefix', C.markSeen({ seen: ['labX', 'lab'] }, [{ id: 'lab', cv: 2 }]).seen.join() === 'labX,lab-v2');
+  const rt = C.parseStore(C.serializeStore(old));
+  check('versioned keys survive a round trip', rt.seen.includes('analytics-v2'));
+
+}
+
 console.log(fail ? fail + ' FAILED' : 'all ok');
 process.exit(fail ? 1 : 0);

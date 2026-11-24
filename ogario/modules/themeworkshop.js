@@ -49,7 +49,7 @@
     /* ── Texts (English, Greek; other languages show English) ── */
     var TEXT = {
         title: ['Theme workshop', 'Εργαστήριο θεμάτων'],
-        openBtn: ['Theme workshop: my themes, gallery, import / export', 'Εργαστήριο θεμάτων: τα θέματά μου, συλλογή, εισαγωγή / εξαγωγή'],
+        openBtn: ['Theme workshop', 'Εργαστήριο θεμάτων'],
         tabMine: ['My themes', 'Τα θέματά μου'],
         tabGallery: ['Gallery', 'Συλλογή'],
         tabIo: ['Import / export', 'Εισαγωγή / εξαγωγή'],
@@ -98,6 +98,12 @@
         galleryNote: ['Themes shipped with Legend Mod. Preview one or install it into My themes.', 'Θέματα που έρχονται με το Legend Mod. Δοκίμασε ένα ή εγκατάστησέ το στα θέματά σου.'],
         publishNote: ['Publish your own: export it to a file (Import / export) and share the file, e.g. on Discord. There is no upload service: nothing is sent anywhere.', 'Δημοσίευσε το δικό σου: κάνε εξαγωγή σε αρχείο (Εισαγωγή / εξαγωγή) και μοιράσου το αρχείο, π.χ. στο Discord. Δεν υπάρχει υπηρεσία ανεβάσματος: τίποτα δεν στέλνεται πουθενά.'],
         galleryLoading: ['Loading the gallery...', 'Φόρτωση της συλλογής...'],
+        builtinTitle: ['Built-in presets', 'Ενσωματωμένα θέματα'],
+        builtinNote: ['A game preset sets the game colours, fonts and sizes, a menu preset the menu colours; everything else stays as it is. Apply keeps it at once, Preview shows it for 15 s.', 'Ένα θέμα παιχνιδιού ορίζει χρώματα, γραμματοσειρές και μεγέθη του παιχνιδιού, ένα θέμα μενού τα χρώματα του μενού. Τα υπόλοιπα μένουν ως έχουν. Η Εφαρμογή το κρατά αμέσως, η Δοκιμή το δείχνει για 15 δευτ.'],
+        kindGame: ['game', 'παιχνίδι'],
+        kindMenu: ['menu', 'μενού'],
+        apply: ['Apply', 'Εφαρμογή'],
+        galleryTitle: ['Gallery themes', 'Θέματα συλλογής'],
         galleryFail: ['The gallery could not be loaded.', 'Η συλλογή δεν φορτώθηκε.'],
         retry: ['Retry', 'Ξανά'],
         install: ['Install', 'Εγκατάσταση'],
@@ -540,7 +546,45 @@
         return out;
     }
 
+    /* ═══ Built-in presets ═══
+     * The "Theme preset" (themePresets) and "Menu theme" (themeMenus) lists that were in the Theme
+     * tab. A preset only names some settings and is put over the current theme, so everything it
+     * does not name stays as it is, as the lists did; it also records its name (preset /
+     * menuPreset). Values go through the same checks as an imported theme. */
+    var BUILTIN_SETS = [['game', 'themePresets', 'preset'], ['menu', 'themeMenus', 'menuPreset']];
+    function builtins() {
+        var out = [];
+        BUILTIN_SETS.forEach(function (set) {
+            var src = W[set[1]];
+            if (!isObj(src)) return;
+            Object.keys(src).forEach(function (key) {
+                if (!isObj(src[key]) || !/^[a-z0-9]+$/i.test(key)) return;
+                out.push({ bid: set[0] + '-' + key.toLowerCase(), kind: set[0], key: key, name: cleanText(src[key].name, NAME_MAX) || key });
+            });
+        });
+        return out;
+    }
+    /* the checked values one preset sets */
+    function presetMap(b) {
+        var set = BUILTIN_SETS.filter(function (x) { return x[0] === b.kind; })[0];
+        var src = set && W[set[1]], p = isObj(src) && own.call(src, b.key) ? src[b.key] : null;
+        if (!isObj(p)) return null;
+        var defs = schema() || {}, raw = {};
+        Object.keys(p).forEach(function (k) { if (k !== 'name' && own.call(defs, k)) raw[k] = p[k]; });
+        raw[set[2]] = b.key;
+        return cleanThemeMap(raw) || null;
+    }
+    /* the preset over a theme body (shown in the gallery and in Compare) */
+    function builtinBody(b, base) {
+        var m = presetMap(b);
+        if (!m || !base) return null;
+        var body = clone(base);
+        body.theme = Object.assign({}, body.theme || {}, m);
+        return body;
+    }
+
     var core = {
+        builtins: builtins, presetMap: presetMap, builtinBody: builtinBody,
         parsePackage: parsePackage, themeValue: themeValue, soundValue: soundValue, cleanUrl: cleanUrl, cleanText: cleanText,
         cleanBody: cleanBody, cleanStore: cleanStore, fitStore: fitStore, toPackage: toPackage, sparseTheme: sparseTheme,
         effectiveTheme: effectiveTheme, diffBodies: diffBodies, pushHistory: pushHistory, restoreVersion: restoreVersion,
@@ -576,6 +620,28 @@
         });
         if (n) body.sounds = snd;
         return body;
+    }
+    /* the current theme with one preset put over it: only the keys the preset names change
+     * (the enlarged minimap counts with its normal width, as in captureBody) */
+    function builtinTarget(b) {
+        var m = presetMap(b), d = T();
+        if (!m || !d) return null;
+        var t = Object.assign({}, d), orig = W.Settings && W.Settings._lmMiniBigOrig;
+        if (orig) { t.miniMapWidth = orig; t.miniMapTop = Math.round(20 * orig / 200); }
+        return Object.assign(t, m);
+    }
+    function findBuiltin(bid) { return builtins().filter(function (x) { return x.bid === bid; })[0] || null; }
+    /* a preset applied and saved at once, as the old lists did */
+    function applyBuiltin(b) {
+        var target = b && builtinTarget(b), St = W.Settings;
+        if (!ready() || !target) return false;
+        if (preview) endPreview(false, true);
+        if (St._lmMiniBigOrig) St._lmMiniBigOrig = 0;
+        setValues(target, false);
+        var ok = true;
+        try { St.saveThemeSettings(); } catch (e) { ok = false; }
+        toast(ok ? 'success' : 'warning', esc(ok ? tx('kept', b.name) : tx('saveFailed')));
+        return true;
     }
     var SELECT_IDS = { preset: 'themePreset', chatPos: 'chatPosition' };
     /* one theme value through its control, as a theme preset sets it (Settings.changePreset) */
@@ -643,7 +709,7 @@
         return { t: Object.assign({}, T()), s: snd, big: (W.Settings && W.Settings._lmMiniBigOrig) || 0, stored: readText('ogarioThemeSettings') };
     }
     /* Shows a body for ms (default 15 s); Keep saves it, Revert or the timer put the theme back. */
-    function startPreview(body, name, ms) {
+    function startPreview(body, name, ms, target) {
         if (!ready() || !body) return false;
         if (preview) endPreview(false, true);
         guardSave();
@@ -652,7 +718,7 @@
         preview = { snap: snap, name: name || '', deadline: Date.now() + (ms > 0 ? ms : PREVIEW_MS), timer: null, sounds: [] };
         /* the theme sets the minimap width: the enlarged minimap (hotkey) ends */
         if (St._lmMiniBigOrig) St._lmMiniBigOrig = 0;
-        setValues(effectiveTheme(body, T()), false);
+        setValues(target || effectiveTheme(body, T()), false);
         preview.sounds = setSounds(body.sounds);
         /* what the preview set: a value that differs from it later is a newer change (it is kept) */
         preview.applied = Object.assign({}, T());
@@ -736,23 +802,23 @@
         st.id = 'lm-tw-style';
         st.textContent =
             '#lm-tw{position:fixed;z-index:2000000;display:flex;align-items:center;justify-content:center;pointer-events:none;font-family:inherit}' +
-            '#lm-tw .lm-tw-win{pointer-events:auto;background:#1b1f2a;color:#eee;border-radius:8px;width:760px;max-width:100%;max-height:100%;display:flex;flex-direction:column;font-size:12px;box-shadow:0 6px 30px rgba(0,0,0,.6)}' +
-            '#lm-tw .lm-tw-head{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 2px 12px;border-bottom:1px solid rgba(255,255,255,.1)}' +
-            '#lm-tw .lm-tw-head b{font-size:14px}' +
-            '#lm-tw .lm-tw-x{background:none;border:0;color:#bbb;font-size:24px;line-height:1;min-width:44px;min-height:36px;cursor:pointer}' +
+            '#lm-tw .lm-tw-win{pointer-events:auto;background:var(--lm-pc,#1b1f2a);color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,transparent);border-top:3px solid var(--lm-mc,transparent);border-radius:6px;width:760px;max-width:100%;max-height:100%;display:flex;flex-direction:column;font-size:12px;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden}' +
+            '#lm-tw .lm-tw-head{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 2px 12px;border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.1));background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%)}' +
+            '#lm-tw .lm-tw-head b{font-size:14px;color:var(--lm-mc,inherit);text-transform:uppercase;letter-spacing:1px}' +
+            '#lm-tw .lm-tw-x{background:rgba(255,255,255,.05);border:0;border-radius:4px;color:var(--lm-tc2,#bbb);font-size:24px;line-height:1;min-width:44px;min-height:36px;cursor:pointer}' +
             '#lm-tw .lm-tw-tabs{display:flex;gap:2px;padding:4px 8px 0;flex-wrap:wrap}' +
-            '#lm-tw .lm-tw-tabs button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-bottom:0;color:#ccc;padding:4px 10px;border-radius:4px 4px 0 0;min-height:30px;cursor:pointer}' +
-            '#lm-tw .lm-tw-tabs button.active{background:rgba(255,255,255,.16);color:#fff}' +
-            '#lm-tw .lm-tw-body{overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 10px 10px;flex:1;min-height:0;touch-action:pan-y;overscroll-behavior:contain;border-top:1px solid rgba(255,255,255,.12)}' +
+            '#lm-tw .lm-tw-tabs button{background:rgba(255,255,255,.06);border:1px solid var(--lm-pc2,rgba(255,255,255,.12));border-bottom:0;color:var(--lm-tc2,#ccc);font-family:inherit;padding:4px 10px;border-radius:4px 4px 0 0;min-height:30px;cursor:pointer}' +
+            '#lm-tw .lm-tw-tabs button.active{background:var(--lm-pc2,rgba(255,255,255,.16));color:var(--lm-mc,#fff)}' +
+            '#lm-tw .lm-tw-body{overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 10px 10px;flex:1;min-height:0;touch-action:pan-y;overscroll-behavior:contain;border-top:1px solid var(--lm-pc2,rgba(255,255,255,.12))}' +
             '#lm-tw .lm-tw-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-bottom:6px}' +
-            '#lm-tw .lm-tw-btn,#lm-tw-pv .lm-tw-btn{background:rgba(127,127,127,.2);color:#eee;border:1px solid rgba(127,127,127,.45);border-radius:3px;padding:3px 8px;min-height:28px;font-size:12px;cursor:pointer}' +
-            '#lm-tw .lm-tw-btn:hover,#lm-tw-pv .lm-tw-btn:hover{background:rgba(127,127,127,.35)}' +
+            '#lm-tw .lm-tw-btn,#lm-tw-pv .lm-tw-btn{background:rgba(255,255,255,.05);color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,rgba(127,127,127,.45));border-radius:4px;padding:3px 8px;min-height:28px;font-size:12px;font-family:inherit;cursor:pointer}' +
+            '#lm-tw .lm-tw-btn:hover,#lm-tw-pv .lm-tw-btn:hover{background:rgba(255,255,255,.14)}' +
             '#lm-tw .lm-tw-go,#lm-tw-pv .lm-tw-go{border-color:#3c9e5a;background:rgba(60,158,90,.35)}' +
             '#lm-tw .lm-tw-warn{border-color:#c0504d}' +
-            '#lm-tw input[type=text],#lm-tw select,#lm-tw textarea{background:#11141c;color:#eee;border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:3px 6px;min-height:28px;font-size:12px;max-width:100%}' +
+            '#lm-tw input[type=text],#lm-tw select,#lm-tw textarea{background:var(--lm-pc2,#11141c);color:var(--lm-tc,#eee);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:3px 6px;min-height:28px;font-size:12px;max-width:100%}' +
             '#lm-tw textarea{width:100%;height:90px;font-family:monospace;resize:vertical}' +
             '#lm-tw .lm-tw-note{opacity:.7;font-size:11px;margin:2px 0 6px}' +
-            '#lm-tw .lm-tw-item{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 0;border-top:1px solid rgba(255,255,255,.08)}' +
+            '#lm-tw .lm-tw-item{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 0;border-top:1px solid var(--lm-pc2,rgba(255,255,255,.08))}' +
             '#lm-tw .lm-tw-name{min-width:140px;flex:1;word-break:break-word}' +
             '#lm-tw .lm-tw-name small{opacity:.65;margin-left:4px}' +
             '#lm-tw .lm-tw-desc{opacity:.75;font-size:11px}' +
@@ -768,11 +834,11 @@
             '#lm-tw .lm-tw-urls{border:1px solid #e6a23c;border-radius:4px;padding:6px 8px;margin-bottom:8px;background:rgba(230,162,60,.1)}' +
             '#lm-tw .lm-tw-urls code{word-break:break-all;color:#ffd58a;background:none}' +
             '#lm-tw table{width:100%;border-collapse:collapse}' +
-            '#lm-tw td,#lm-tw th{padding:3px 4px;border-top:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top;word-break:break-word}' +
+            '#lm-tw td,#lm-tw th{padding:3px 4px;border-top:1px solid var(--lm-pc2,rgba(255,255,255,.08));text-align:left;vertical-align:top;word-break:break-word}' +
             '#lm-tw th{opacity:.75;font-weight:600}' +
             '#lm-tw .lm-tw-chip{display:inline-block;width:12px;height:12px;border-radius:2px;border:1px solid rgba(255,255,255,.4);vertical-align:-2px;margin-right:4px}' +
             '#lm-tw h6{margin:8px 0 4px;font-size:12px;opacity:.85}' +
-            '#lm-tw-pv{position:fixed;z-index:2000001;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;background:rgba(20,24,34,.94);color:#eee;border:1px solid rgba(255,255,255,.25);border-radius:6px;font-size:12px;box-shadow:0 4px 18px rgba(0,0,0,.5)}' +
+            '#lm-tw-pv{position:fixed;z-index:2000001;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;background:var(--lm-pc,rgba(20,24,34,.94));color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,rgba(255,255,255,.25));border-top:3px solid var(--lm-mc,rgba(255,255,255,.25));border-radius:6px;font-family:inherit;font-size:12px;box-shadow:0 4px 18px rgba(0,0,0,.5)}' +
             '#lm-tw-pv .lm-tw-pv-name{font-weight:600;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
             '#lm-tw-pv .lm-tw-pv-left{opacity:.75}' +
             '@media (pointer:coarse){#lm-tw .lm-tw-btn,#lm-tw-pv .lm-tw-btn{min-height:36px;padding:3px 10px}#lm-tw .lm-tw-tabs button{min-height:36px}}' +
@@ -967,8 +1033,29 @@
             }
         });
     }
+    function renderBuiltins(body) {
+        var $ = jq(), list = builtins(), base = captureBody();
+        if (!list.length) return;
+        $('<h6></h6>').text(tx('builtinTitle')).appendTo(body);
+        $('<div class="lm-tw-note"></div>').text(tx('builtinNote')).appendTo(body);
+        list.forEach(function (b) {
+            var bb = builtinBody(b, base);
+            if (!bb) return;
+            var it = $('<div class="lm-tw-item lm-tw-bitem"></div>').attr('data-bid', b.bid).appendTo(body);
+            previewPic(bb).appendTo(it);
+            var nm = $('<div class="lm-tw-name"></div>').appendTo(it);
+            $('<span></span>').text(b.name).appendTo(nm);
+            $('<small></small>').text(tx(b.kind === 'menu' ? 'kindMenu' : 'kindGame')).appendTo(nm);
+            var acts = $('<div class="lm-tw-acts"></div>').appendTo(it);
+            btn(tx('preview'), 'bpv', b.bid, 'lm-tw-go').appendTo(acts);
+            btn(tx('apply'), 'bapply', b.bid).appendTo(acts);
+            btn(tx('compare'), 'cmp', 'b:' + b.bid).appendTo(acts);
+        });
+        $('<h6></h6>').text(tx('galleryTitle')).appendTo(body);
+    }
     function renderGallery(body) {
         var $ = jq();
+        renderBuiltins(body);
         $('<div class="lm-tw-note"></div>').text(tx('galleryNote')).appendTo(body);
         $('<div class="lm-tw-note"></div>').text(tx('publishNote')).appendTo(body);
         if (!gallery) {
@@ -1019,14 +1106,19 @@
             out.push({ v: 'm:' + e.id, name: e.name });
             e.history.forEach(function (h, i) { out.push({ v: 'h:' + e.id + ':' + i, name: tx('versionOf', e.name, when(h.t)) }); });
         });
+        builtins().forEach(function (b) { out.push({ v: 'b:' + b.bid, name: tx('builtinTitle') + ': ' + b.name + ' (' + tx(b.kind === 'menu' ? 'kindMenu' : 'kindGame') + ')' }); });
         (gallery || []).forEach(function (g) { out.push({ v: 'g:' + g.gid, name: tx('tabGallery') + ': ' + g.pkg.name }); });
         return out;
     }
     /* a source id ('cur', 'm:id', 'h:id:i', 'g:gid') as { name, body } */
     function resolve(v) {
         if (v === 'cur') return { name: tx('currentTheme'), body: captureBody() };
-        var m = /^(m|h|g):([a-z0-9-]+)(?::(\d+))?$/.exec(v || '');
+        var m = /^(m|h|g|b):([a-z0-9-]+)(?::(\d+))?$/.exec(v || '');
         if (!m) return null;
+        if (m[1] === 'b') {
+            var bi = findBuiltin(m[2]), bb = bi && builtinBody(bi, captureBody());
+            return bb ? { name: bi.name, body: bb } : null;
+        }
         if (m[1] === 'g') {
             var g = (gallery || []).filter(function (x) { return x.gid === m[2]; })[0];
             return g ? { name: g.pkg.name, body: g.pkg.body } : null;
@@ -1228,6 +1320,12 @@
         } else if (a === 'gretry') {
             gallery = null;
             galleryState = '';
+        } else if (a === 'bpv' || a === 'bapply') {
+            /* shipped presets: their addresses (the menu pattern) need no review */
+            var bi = findBuiltin(id);
+            if (!bi) return;
+            if (a === 'bpv') { var bt = builtinTarget(bi); if (bt) startPreview(builtinBody(bi, captureBody()), bi.name, 0, bt); return; }
+            applyBuiltin(bi);
         } else if (a === 'gpv' || a === 'ginstall') {
             var g = (gallery || []).filter(function (x) { return x.gid === id; })[0];
             if (!g) return;

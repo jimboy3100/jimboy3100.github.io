@@ -9130,11 +9130,10 @@ function lmThemeSendToModalIframes(sel) {
         try {
             var _td = lmThemeData();
             var _r = document.documentElement.style;
-            _r.setProperty('--lm-pc',  _td.pc);
-            _r.setProperty('--lm-pc2', _td.pc2);
-            _r.setProperty('--lm-mc',  _td.mc);
-            _r.setProperty('--lm-tc',  _td.tc);
-            _r.setProperty('--lm-tc2', _td.tc2);
+            /* --lm-pc, --lm-pc2, --lm-mc, --lm-tc and --lm-tc2 come from the theme setters of ogario.v4.js
+             * (a stylesheet that follows every theme change); inline values here would win over it
+             * and keep the old colours after a change, so any set before are removed */
+            ['--lm-pc', '--lm-pc2', '--lm-mc', '--lm-tc', '--lm-tc2'].forEach(function (k) { _r.removeProperty(k); });
             _r.setProperty('--lm-op',  _td.op);
             _r.setProperty('--lm-btc', _td.btc);
             _r.setProperty('--lm-b1',  _td.b1);
@@ -9156,11 +9155,10 @@ function lmPromoChrome(sel) {
     try {
         var _td = lmThemeData();
         var _r = document.documentElement.style;
-        _r.setProperty('--lm-pc',  _td.pc);
-        _r.setProperty('--lm-pc2', _td.pc2);
-        _r.setProperty('--lm-mc',  _td.mc);
-        _r.setProperty('--lm-tc',  _td.tc);
-        _r.setProperty('--lm-tc2', _td.tc2);
+        /* --lm-pc, --lm-pc2, --lm-mc, --lm-tc and --lm-tc2 come from the theme setters of ogario.v4.js
+         * (a stylesheet that follows every theme change); inline values here would win over it
+         * and keep the old colours after a change, so any set before are removed */
+        ['--lm-pc', '--lm-pc2', '--lm-mc', '--lm-tc', '--lm-tc2'].forEach(function (k) { _r.removeProperty(k); });
         _r.setProperty('--lm-op',  _td.op);
         _r.setProperty('--lm-btc', _td.btc);
         _r.setProperty('--lm-b1',  _td.b1);

@@ -91,7 +91,8 @@
         return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
-    /* The published state. opts: { streamMode, hideSkinUrl, hidecountry, chat }. A state built in
+    /* The published state. opts: { streamMode, hideSkinUrl, hidecountry, chat, hideTeam, map }
+     * (map: 'live' | 'delay' | 'hide'; the delay itself is applied by the game part). A state built in
      * stream mode says so (stream: true), so building it again keeps it hidden and companion.html
      * also hides the names in the events it already shows.
      * The output has the same shape as the input, so companion.html runs it again on what it
@@ -127,10 +128,10 @@
             var me = !!e.me;
             st.lb.push({ nick: me && stream ? '' : clip(e.nick, MAX_NICK), me: me });
         }
-        var m = src.map;
+        var m = opts.map === 'hide' ? null : src.map;
         if (m && typeof m === 'object') {
             var map = { own: playing ? point(m.own) : null, team: [], ghosts: [], trail: [] };
-            var team = Array.isArray(m.team) ? m.team : [];
+            var team = Array.isArray(m.team) && !opts.hideTeam ? m.team : [];
             for (i = 0; i < team.length && map.team.length < MAX_TEAM; i++) {
                 var p = point(team[i]);
                 if (!p) continue;
@@ -195,6 +196,37 @@
                 return true;
             },
             reset: function () { lastAt = -Infinity; lastJson = ''; }
+        };
+    }
+
+    /* the stored privacy switches (localStorage 'lmCompanionPrivacy'), checked on read */
+    var MAP_MODES = ['live', 'delay', 'hide'];
+    function parsePrivacy(raw) {
+        var o = null;
+        if (typeof raw === 'string' && raw.length < 2000) { try { o = JSON.parse(raw); } catch (e) { o = null; } }
+        if (!o || typeof o !== 'object') o = {};
+        return { hideTeam: o.hideTeam === true, map: MAP_MODES.indexOf(o.map) >= 0 ? o.map : 'live' };
+    }
+    /* values shown `ms` late: push(now, v) keeps them, get(now) gives the newest one that is at
+     * least `ms` old (null before that); at most one value per `step` ms is kept */
+    function createDelay(ms, step) {
+        var q = [], lastAt = -Infinity;
+        step = step || 500;
+        return {
+            push: function (now, v) {
+                if (now - lastAt < step) return;
+                lastAt = now;
+                q.push({ t: now, v: v });
+            },
+            get: function (now) {
+                var i = -1;
+                for (var k = 0; k < q.length && now - q[k].t >= ms; k++) i = k;
+                if (i < 0) return null;
+                if (i > 0) q.splice(0, i);
+                return q[0].v;
+            },
+            clear: function () { q.length = 0; lastAt = -Infinity; },
+            size: function () { return q.length; }
         };
     }
 
@@ -291,7 +323,7 @@
         CHANNEL: CHANNEL, PROTO: PROTO, WIDGETS: WIDGETS, DEFAULT_WIDGETS: DEFAULT_WIDGETS, INTERVAL_MS: INTERVAL_MS, KEEPALIVE_MS: KEEPALIVE_MS,
         clip: clip, safeUrl: safeUrl, safeColor: safeColor, fmtTime: fmtTime, fmtMass: fmtMass,
         buildState: buildState, buildEvent: buildEvent, createPublisher: createPublisher, createRateLimit: createRateLimit,
-        parseParams: parseParams, buildQuery: buildQuery, openPlan: openPlan
+        parseParams: parseParams, buildQuery: buildQuery, openPlan: openPlan, parsePrivacy: parsePrivacy, createDelay: createDelay
     };
     var api = root.LMCompanion = { core: core };
 
@@ -302,6 +334,12 @@
 
     var STR = {
         open: { en: 'Open companion', el: 'Άνοιγμα companion' },
+        hideTeam: { en: 'Overlay: hide teammates', el: 'Επικάλυψη: απόκρυψη συμπαικτών' },
+        mapLabel: { en: 'Overlay minimap and own position:', el: 'Χάρτης και θέση στην επικάλυψη:' },
+        mapLive: { en: 'live', el: 'ζωντανά' },
+        mapDelay: { en: '30 s late', el: 'με 30 δ. καθυστέρηση' },
+        mapHide: { en: 'hidden', el: 'κρυφά' },
+        privTip: { en: 'Against stream sniping. Kept in this browser.', el: 'Κατά του stream sniping. Μένει σε αυτόν τον browser.' },
         turnedOn: { en: 'Stream overlay turned on.', el: 'Η επικάλυψη stream ενεργοποιήθηκε.' },
         popup: {
             en: 'The game runs on {0}, where companion.html does not exist (or inside a frame), so the companion opens on www.legendmod.ml and only that window gets the data. Another tab or an OBS source can only listen when the game runs on www.legendmod.ml or jimboy3100.github.io in the same browser.',
@@ -321,8 +359,22 @@
         if (typeof root._lmHostOnly === 'function') { try { return root._lmHostOnly(u); } catch (e) { } }
         return '';
     }
+    /* privacy switches against stream sniping (localStorage 'lmCompanionPrivacy'): hide the
+     * teammates, the minimap and own position live, 30 s late or hidden */
+    var PRIV_KEY = 'lmCompanionPrivacy', MAP_DELAY_MS = 30000;
+    var privacy = parsePrivacy(null);
+    try { privacy = parsePrivacy(root.localStorage.getItem(PRIV_KEY)); } catch (e) { }
+    function setPrivacy(ch) {
+        privacy = parsePrivacy(JSON.stringify({ hideTeam: own(ch, 'hideTeam') ? ch.hideTeam : privacy.hideTeam, map: own(ch, 'map') ? ch.map : privacy.map }));
+        try { root.localStorage.setItem(PRIV_KEY, JSON.stringify(privacy)); } catch (e) { }
+        /* positions kept under the old switches are not shown later */
+        mapDelay.clear();
+        if (on) tick(true);
+    }
+    function own(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
     function hidingOpts(s) {
-        return { streamMode: !!s.streamMode, hideSkinUrl: !!s.hideSkinUrl, hidecountry: !!s.hidecountry, chat: !!s.companionChat };
+        return { streamMode: !!s.streamMode, hideSkinUrl: !!s.hideSkinUrl, hidecountry: !!s.hidecountry, chat: !!s.companionChat,
+            hideTeam: privacy.hideTeam, map: privacy.map };
     }
     function inFrame() { try { return root.top !== root.self; } catch (e) { return true; } }
 
@@ -427,6 +479,7 @@
         }
     }
     var publisher = createPublisher(function (state, now) { send({ kind: 'state', t: now, state: state }); });
+    var mapDelay = createDelay(MAP_DELAY_MS, TRAIL_MS);
     var lastStream = null;
     function tick(force) {
         var now = Date.now(), LM = root.legendmod, o = hidingOpts(settings());
@@ -434,8 +487,13 @@
         if (lastStream !== null && o.streamMode !== lastStream) { chatLines.length = 0; force = true; }
         lastStream = o.streamMode;
         if (LM) sampleTrail(LM, now);
-        var src = collect(now);
-        publisher.offer(buildState(src, o), now, force);
+        var st = buildState(collect(now), o);
+        /* 30 s late: the map published is the one from 30 s ago (nothing before that) */
+        if (o.map === 'delay') {
+            mapDelay.push(now, st.map);
+            st.map = mapDelay.get(now);
+        }
+        publisher.offer(st, now, force);
     }
     function event(e) {
         if (!on) return;
@@ -487,6 +545,7 @@
     /* another server: its chat and the own trail are not about the new one */
     function onServerChange() {
         chatLines.length = 0;
+        mapDelay.clear();
         life.trail.length = 0;
         life.trailAt = 0;
         life.bestRank = 0;
@@ -573,9 +632,45 @@
                 el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); b[1](); });
                 row.appendChild(el);
             });
+            privacyControls(row);
         }
         if (row.previousSibling !== label) label.parentNode.insertBefore(row, label.nextSibling);
         return true;
+    }
+
+    /* the privacy switches next to the button */
+    function privacyControls(row) {
+        var wrap = D.createElement('span');
+        wrap.className = 'lm-companion-priv';
+        wrap.title = t('privTip');
+        wrap.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;';
+        var lab = D.createElement('label');
+        lab.style.cssText = 'display:flex;align-items:center;gap:4px;margin:0;font-weight:400;cursor:pointer;';
+        var cb = D.createElement('input');
+        cb.type = 'checkbox';
+        cb.id = 'lm-companion-hideteam';
+        cb.checked = privacy.hideTeam;
+        cb.addEventListener('change', function () { setPrivacy({ hideTeam: cb.checked }); });
+        lab.appendChild(cb);
+        lab.appendChild(D.createTextNode(t('hideTeam')));
+        wrap.appendChild(lab);
+        var lab2 = D.createElement('label');
+        lab2.style.cssText = 'display:flex;align-items:center;gap:4px;margin:0;font-weight:400;';
+        lab2.appendChild(D.createTextNode(t('mapLabel')));
+        var sel = D.createElement('select');
+        sel.id = 'lm-companion-map';
+        sel.style.cssText = 'min-height:24px;';
+        [['live', 'mapLive'], ['delay', 'mapDelay'], ['hide', 'mapHide']].forEach(function (m) {
+            var o = D.createElement('option');
+            o.value = m[0];
+            o.textContent = t(m[1]);
+            sel.appendChild(o);
+        });
+        sel.value = privacy.map;
+        sel.addEventListener('change', function () { setPrivacy({ map: sel.value }); });
+        lab2.appendChild(sel);
+        wrap.appendChild(lab2);
+        row.appendChild(wrap);
     }
 
     /* publishing follows the saved option at once; the Settings buttons wait for the menu */
@@ -589,6 +684,8 @@
     api.refresh = refresh;
     api.open = open;
     api.isOn = function () { return on; };
+    api.privacy = function () { return { hideTeam: privacy.hideTeam, map: privacy.map }; };
+    api.setPrivacy = function (ch) { if (ch && typeof ch === 'object') setPrivacy(ch); return api.privacy(); };
     /* for the smoke test: one state now, built like the published ones */
     api.publishNow = function () { if (on) tick(true); return on; };
 })(typeof window !== 'undefined' ? window : this);

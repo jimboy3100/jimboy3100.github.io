@@ -370,8 +370,10 @@ function _lmMatchHistoryOpen() {
     var old = document.getElementById('lm-mh-modal');
     if (old && old._lmClose) old._lmClose();
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
-    var mc = ds.menuMainColor || '#01d9cc', pc = ds.menuPanelColor || '#00243e', pc2 = ds.menuPanelColor2 || '#002f52';
-    var tc = ds.menuTextColor || '#ffffff', tc2 = ds.menuTextColor2 || '#8096a7';
+    /* var(--lm-*) so the open window follows a theme change; the saved value is the fallback */
+    var V = function (n, v, d) { return 'var(--lm-' + n + ',' + (v || d) + ')'; };
+    var mc = V('mc', ds.menuMainColor, '#01d9cc'), pc = V('pc', ds.menuPanelColor, '#00243e'), pc2 = V('pc2', ds.menuPanelColor2, '#002f52');
+    var tc = V('tc', ds.menuTextColor, '#ffffff'), tc2 = V('tc2', ds.menuTextColor2, '#8096a7');
     var el = function (tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text !== undefined) e.textContent = text; return e; };
     var fmtTime = function (ms) { var s = Math.max(0, Math.round((+ms || 0) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); s = s % 60; return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s; };
     var md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:620px;max-width:calc(100vw - 32px);max-height:80vh;' +
@@ -924,8 +926,10 @@ function _lmRoomOpen(tab, code) {
     if (old && old._lmClose) old._lmClose(true);
     var T = _lmMhT;
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
-    var mc = ds.menuMainColor || '#01d9cc', pc = ds.menuPanelColor || '#00243e', pc2 = ds.menuPanelColor2 || '#002f52';
-    var tc = ds.menuTextColor || '#ffffff', tc2 = ds.menuTextColor2 || '#8096a7';
+    /* var(--lm-*) so the open window follows a theme change; the saved value is the fallback */
+    var V = function (n, v, d) { return 'var(--lm-' + n + ',' + (v || d) + ')'; };
+    var mc = V('mc', ds.menuMainColor, '#01d9cc'), pc = V('pc', ds.menuPanelColor, '#00243e'), pc2 = V('pc2', ds.menuPanelColor2, '#002f52');
+    var tc = V('tc', ds.menuTextColor, '#ffffff'), tc2 = V('tc2', ds.menuTextColor2, '#8096a7');
     var el = function (tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text !== undefined) e.textContent = text; return e; };
     var inCss = 'box-sizing:border-box;width:100%;min-height:34px;padding:6px 8px;font-size:15px;color:' + tc + ';background:rgba(0,0,0,0.25);border:1px solid ' + pc2 + ';border-radius:4px;outline:none;font-family:inherit;';
     var btnCss = 'min-height:36px;padding:6px 14px;border:none;border-radius:4px;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:' + mc + ';color:' + pc + ';';
@@ -1845,6 +1849,61 @@ function lmMultiboxRingPlayer(cell) {
 function lmMultiboxControlledPlayer() {
     return window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled) ? 2 : 1;
 }
+/* C4: the player the mouse and keys move now, as window.core.split picks it (the selected
+ * multibox unit when it exists, else the main player):
+ * { index: 0 main | 1 unit, number: unit number (0 for the main player), playing: it has cells,
+ *   cells: its own cells, mass: its total mass, minMass / maxMass: its smallest / biggest cell,
+ *   refMass: the one opponents are compared with (maxMass with "biggest cell" selected, else
+ *   minMass, as compareCells) }. min / max are measured from the cells here (the cached
+ *   playerMin/MaxMass are only kept up while a colouring option is on). null when there is no
+ *   client, or no unit is selected and the main player is not in a game. */
+function lmActiveUnit() {
+    var LM = window.legendmod;
+    if (!LM) return null;
+    var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null, src, cells = [], i;
+    if (sp) src = typeof sp.getOwnPlayerCells === 'function' ? sp.getOwnPlayerCells() : [];
+    else src = LM.playerCells || [];
+    for (i = 0; i < src.length; i++) if (src[i] && !src[i].removed) cells.push(src[i]);
+    if (!sp && !LM.play && !cells.length) return null;
+    var minS = Infinity, maxS = 0;
+    for (i = 0; i < cells.length; i++) {
+        var s = +cells[i].size || 0;
+        if (s < minS) minS = s;
+        if (s > maxS) maxS = s;
+    }
+    var minMass = cells.length ? ~~(minS * minS / 100) : 0, maxMass = cells.length ? ~~(maxS * maxS / 100) : 0;
+    return {
+        index: sp ? 1 : 0, number: sp ? n : 0,
+        playing: cells.length > 0 && (sp ? true : !!LM.play),
+        cells: cells,
+        mass: (sp ? +sp.playerMass : +LM.playerMass) || 0,
+        minMass: minMass, maxMass: maxMass,
+        refMass: LM.selectBiggestCell ? maxMass : minMass
+    };
+}
+window.lmActiveUnit = lmActiveUnit;
+/* C2: what the page shows now: 'practice' (practice arena), 'replay' (a replay plays),
+ * 'live' (a real online game with the player you control alive: never a replay or practice),
+ * 'worldSpectate' (Expanding Land World Spectate), 'spectate' (spectate / free spectate),
+ * 'menu' (anything else: not in a game, dead, connecting). The menu open over a game that
+ * goes on is still 'live'. */
+function lmSessionType() {
+    if (window.LMPractice && window.LMPractice.on) return 'practice';
+    var LM = window.legendmod;
+    if (window._lmEvReplayOn) return 'replay';
+    try {
+        var rs = window.LMReplayStudio;
+        if (rs && typeof rs.isDriving === 'function' && rs.isDriving()) return 'replay';
+    } catch (e) { }
+    if (LM && LM.playingReplayServer && typeof lmReplayActive === 'function' && lmReplayActive()) return 'replay';
+    if (!LM) return 'menu';
+    var u = lmActiveUnit();
+    if (u && u.playing) return 'live';
+    if (LM._isWorldSpectating) return 'worldSpectate';
+    if (LM.isSpectateEnabled || LM.isFreeSpectate) return 'spectate';
+    return 'menu';
+}
+window.lmSessionType = lmSessionType;
 /* Settings can be imported or typed: only a #rgb/#rrggbb color is used. */
 function lmMultiboxRingColor(value, fallback) {
     return typeof value === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value) ? value : fallback;
@@ -18985,6 +19044,20 @@ var displayText = {
         a11yTextScale: 'Menu text size (1 = normal)',
         a11yHudTextScale: 'HUD text size (1 = normal, on top of the HUD scale)',
         a11yIndicators: 'Size symbols on opponents (▲ bigger, ▼ smaller; two: split range)',
+        /* settings menu sections and notes */
+        perfGroup: 'Performance and network',
+        replayGroup: 'Replays and history',
+        mergeGroup: 'Merging',
+        mergeNote: 'Countdown and sound use the agar.io merge times (agar.io only). Rings work on every server; outside agar.io they are an estimate from the mass.',
+        controlsGroup: 'Controls (mouse, keyboard, gamepad)',
+        lmOpenHotkeys: 'Keyboard: hotkeys',
+        spectateGroup: 'Spectating and streaming',
+        lmDirectorBtn: 'Spectator director (camera while spectating)',
+        configGroup: 'Configuration (profiles, presets, backup)',
+        configNote: 'Presets and Settings profiles: the buttons above the search box. Export / import and Restore default settings: the buttons below the settings.',
+        lmDepNeeds: 'Needs',
+        lmDepServer: 'Not available on this server',
+        showCellShadows: 'Cell shadows (drop shadow under cells, slower)',
         skinCollections: 'Skin collections button in the skins panel (folders, tags, favourites)',
         'hk-radialMenu': 'Radial command menu (hold)',
         'hk-radialEditor': 'Radial menu: choose commands',
@@ -19923,6 +19996,17 @@ var escapeChar = {
 /* ═══════════════════════════════════════════════════════════════════════════════
  * §3  DEFAULT SETTINGS
  * ═══════════════════════════════════════════════════════════════════════════════ */
+/* Theme values as CSS custom properties (--lm-mc, --lm-pc, ...): windows and modules use
+ * var(--lm-x, fallback) so they follow the menu theme and update live when it changes.
+ * Values come from imported settings, so only colour characters pass. */
+function _lmCssVal(v, d) {
+    var s = String(v == null ? '' : v).replace(/[^#a-zA-Z0-9(),.%\s+-]/g, '').trim();
+    return s || d;
+}
+function _lmCssUrl(u) {
+    var s = String(u == null ? '' : u).replace(/["'\\()\s<>]/g, '');
+    return s ? 'url("' + s + '")' : 'none';
+}
 var defaultSettings = {
     checkonetimeLc2: false,
     chatPos: 'bottomleft',
@@ -21470,7 +21554,9 @@ var defaultmapsettings = {
     /* WebGL2 is enabled by default, but every frame is preflighted.
      * Unsupported or visually ambiguous scenes fall back atomically to Canvas2D. */
     webgl2Acceleration: true,
-    isAlphaChanged: false,
+    /* cameraSpeed, commanderDelay, limLB, limTP, soundSplit and isAlphaChanged were removed:
+     * nothing read them and no menu showed them. Old saves and imports that still have them
+     * are fine: loadSettings and importSettings skip keys that are not listed here. */
     jellyPhisycs: true,
     virusSound: false,
     onlineStatus: true,
@@ -21719,14 +21805,10 @@ var defaultmapsettings = {
     dominatedRate: 3 / 4,
     profileNumber: 15,
     ////
-    cameraSpeed: 7,
-    commanderDelay: 1E3,
     suckAnimation: false,
     virusSpikes: false,
     virusGlow: false,
     borderGlow: false,
-    limLB: 10,
-    limTP: 5,
     ////
     //'zoomSpeedValue: .87,
     zoomSpeedValue2: -0.13,
@@ -21751,7 +21833,6 @@ var defaultmapsettings = {
     volVideo: 1,                  /* video skins (on top of videoSkinSoundLevel) */
     volNotifications: 1,          /* any other sound (scripts: application.playSound, LMNotifications.play) */
     audioDucking: false,          /* chat / alert sound lowers the video skins for a moment */
-    soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
     //
     leftClick: 'hk-macroFeed',
     rightClick: 'hk-split',
@@ -21810,7 +21891,8 @@ var LM_EXPORT_KEYS = [
     { key: 'lm-director', type: 'o' },
     { key: 'lm-director-bookmarks', type: 'a' },
     { key: 'lmPracticeCfg', type: 'o' },
-    { key: 'lmAnalyticsGoals', type: 'o' }
+    { key: 'lmAnalyticsGoals', type: 'o' },
+    { key: 'lmCompanionPrivacy', type: 'o' }
 ];
 function lmExportFits(e, v) {
     return e.type === 'a' ? Array.isArray(v) : !!v && typeof v === 'object' && !Array.isArray(v);
@@ -22037,6 +22119,14 @@ var _lmLabelI18n = {
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
         "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick",
         "commandCentreBar":"Γρήγορη μπάρα του Κέντρου εντολών στο παιχνίδι (τα αγαπημένα με αστέρι· το Ctrl+K ανοίγει το Κέντρο εντολών)","hk-commandCentre":"Κέντρο εντολών (αναζήτηση εντολών, ρυθμίσεων και παραθύρων)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","companionLive":"Επικάλυψη stream / δεύτερη οθόνη (companion.html, ίδιος browser)","companionChat":"Επικάλυψη stream: και οι γραμμές συνομιλίας","hk-hudEditor":"Επεξεργασία HUD (μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη πλαισίων· αποθηκευμένες διατάξεις)","accessibilityGroup":"Προσβασιμότητα","a11yTextScale":"Μέγεθος κειμένου μενού (1 = κανονικό)","a11yHudTextScale":"Μέγεθος κειμένου HUD (1 = κανονικό, πάνω από την κλίμακα HUD)","a11yHighContrast":"HUD υψηλής αντίθεσης (συμπαγές φόντο, περιγράμματα)","a11yIndicators":"Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)","a11yNoFlash":"Λιγότερα αναβοσβησίματα (χωρίς κινούμενα στοιχεία σελίδας)","a11yPalette":"Παλέτα αχρωματοψίας για τα χρώματα και τα δαχτυλίδια αντιπάλων","skinCollections":"Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)","hk-radialMenu":"Κυκλικό μενού εντολών (κράτημα)","hk-radialEditor":"Κυκλικό μενού: επιλογή εντολών","hk-hotkeyConflicts":"Συγκρούσεις πλήκτρων","hk-screenshotMode":"Λειτουργία στιγμιότυπου (κρύβει το HUD)","hk-screenshotCapture":"Λήψη στιγμιότυπου (PNG)","hk-screenshotTool":"Παράθυρο στιγμιότυπου","hk-skinCollections":"Συλλογές skins","hk-bugReport":"Αναφορά σφάλματος (διαγνωστικά)","a11yPaletteOff":"Χρώματα θέματος","a11yPaletteDeut":"Δευτερανωπία (αδύναμο πράσινο)","a11yPaletteProt":"Πρωτανωπία (αδύναμο κόκκινο)","a11yPaletteTrit":"Τριτανωπία (αδύναμο μπλε)",
+        "perfGroup":"Επιδόσεις και δίκτυο","replayGroup":"Επαναλήψεις και ιστορικό","mergeGroup":"Συγχώνευση",
+        "mergeNote":"Η αντίστροφη μέτρηση και ο ήχος χρησιμοποιούν τους χρόνους συγχώνευσης του agar.io (μόνο agar.io). Τα δαχτυλίδια λειτουργούν σε κάθε διακομιστή· εκτός agar.io είναι εκτίμηση από τη μάζα.",
+        "controlsGroup":"Χειρισμός (ποντίκι, πληκτρολόγιο, gamepad)","lmOpenHotkeys":"Πληκτρολόγιο: πλήκτρα συντόμευσης",
+        "spectateGroup":"Θέαση και μετάδοση","lmDirectorBtn":"Σκηνοθέτης θέασης (κάμερα κατά τη θέαση)",
+        "configGroup":"Διαμόρφωση (προφίλ, προεπιλογές, αντίγραφα)",
+        "configNote":"Προεπιλογές και προφίλ ρυθμίσεων: τα κουμπιά πάνω από την αναζήτηση. Εξαγωγή / εισαγωγή και επαναφορά προεπιλεγμένων ρυθμίσεων: τα κουμπιά κάτω από τις ρυθμίσεις.",
+        "lmDepNeeds":"Χρειάζεται","lmDepServer":"Δεν είναι διαθέσιμο σε αυτόν τον διακομιστή",
+        "showCellShadows":"Σκιές κυττάρων (σκιά κάτω από τα κύτταρα, πιο αργό)",
         "lmLabGroup":"Lab (πειραματικά)","hk-lmPlugins":"Άνοιγμα User Scripts (plugins, κατάλογος)","hk-lmLab":"Άνοιγμα του Lab (πειραματικές λειτουργίες)","macroEditor":"Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)","hk-customMacro1":"Custom macro 1 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro2":"Custom macro 2 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-customMacro3":"Custom macro 3 (Ρυθμίσεις > Macro > Προσαρμοσμένα macro)","hk-lmThemeWorkshop":"Εργαστήριο θεμάτων: άνοιγμα / κλείσιμο"
     },
     "es": {
@@ -23868,7 +23958,7 @@ function thelegendmodproject() {
                 '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + textLanguage.miniMapTheming +
                 '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"' + textLanguage.imagesTheming +
                 '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>');
-            this.addPresetBox('#theme-main', 'themePreset', themePresets, 'preset', 'changeThemePreset');
+            /* the Theme preset and Menu theme lists are in the Theme workshop (Gallery: Built-in presets) */
             this.addColorBox('#theme-main', 'bgColor', 'setBgColor');
             this.addColorBox('#theme-main', 'bordersColor');
             this.addColorBox('#theme-main', 'borderGlowColor');
@@ -23923,7 +24013,6 @@ function thelegendmodproject() {
             this.addSliderBox('#theme-main', 'textAlpha', 0.1, 1, 0.01);
             this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 1, 0.01);
             this.addPresetBox('#theme-main', 'indicators', indicatorMenus, 'indicators', 'changeIndicators');
-            this.addPresetBox('#theme-menu', 'menuPreset', themeMenus, 'menuPreset', 'changeMenuPreset');
             this.addSliderBox('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity');
             this.addColorBox('#theme-menu', 'menuMainColor', 'setMenuMainColor');
             this.addColorBox('#theme-menu', 'menuBtnTextColor', 'setMenuButtons');
@@ -24142,34 +24231,55 @@ function thelegendmodproject() {
 
         },
         setMenuOpacity() {
-            $('#helloContainer, #hotkeys, #exp-imp').css('opacity', defaultSettings.menuOpacity);
+            /* the menu fades; Hotkeys and Export/Import open over it, so they stay opaque
+             * (a dim backdrop behind them, see lmWinCSS) instead of showing the menu through */
+            $('#helloContainer').css('opacity', defaultSettings.menuOpacity);
+            this.addCustomCSS('lmWinCSS',
+                /* in the stylesheet, not inline: #hotkeys is built after the theme is applied */
+                '#hotkeys,#exp-imp{opacity:1;border-top-width:3px;border-radius:6px;box-shadow:0 0 0 100vmax rgba(0,0,0,.55),0 8px 32px rgba(0,0,0,.5)}' +
+                /* an unbound key slot is a quiet field; the button colour marks bound keys only */
+                '#hotkeys-cfg .custom-key-in:placeholder-shown{background-color:var(--lm-pc2,#002f52);border-color:var(--lm-tc2,#8096a7)}' +
+                /* window title like the other LM windows; narrow screens need the row for the buttons */
+                '#lm-hk-title{position:absolute;top:0;left:0;padding:26px 16px;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1;z-index:1002;pointer-events:none}' +
+                '@media (max-width:1100px){#lm-hk-title{display:none}}');
         },
         setMenuMainColor() {
-            var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
+            var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
+            css += ':root{--lm-mc:' + _lmCssVal(defaultSettings.menuMainColor, '#01d9cc') + '}';
             this.addCustomCSS('menuMainColorCSS', css);
         },
         setMenuPanelColor() {
             var css = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + defaultSettings.menuPanelColor + '}label:hover,.emoji-selectables,.agario-panel input,#UserProfileID2a, .agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + defaultSettings.menuPanelColor2 + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + defaultSettings.menuPanelColor2 + '}.quick:hover,#skins a,#profiles{color:' + defaultSettings.menuPanelColor2 + '}input.stream-mode,input.hide-url{color:' + defaultSettings.menuPanelColor2 + '!important}';
+            css += ':root{--lm-pc:' + _lmCssVal(defaultSettings.menuPanelColor, '#00243e') + ';--lm-pc2:' + _lmCssVal(defaultSettings.menuPanelColor2, '#002f52') + '}';
             this.addCustomCSS('menuPanelColorCSS', css);
         },
         setMenuTextColor() {
             var css = '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,#UserProfileID2a, .agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:' + defaultSettings.menuTextColor + '}#skins a.default:hover{border-color:' + defaultSettings.menuTextColor + '}::-webkit-input-placeholder{color:' + defaultSettings.menuTextColor2 + '!important}::-moz-placeholder{color:' + defaultSettings.menuTextColor2 + '!important}#user-id-tag,#UserProfileID2a, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + defaultSettings.menuTextColor2 + '}#hotkeys-cfg .command-in,#theme .color-box{border-color:' + defaultSettings.menuTextColor2 + '}';
+            css += ':root{--lm-tc:' + _lmCssVal(defaultSettings.menuTextColor, '#ffffff') + ';--lm-tc2:' + _lmCssVal(defaultSettings.menuTextColor2, '#8096a7') + '}';
             this.addCustomCSS('menuTextColorCSS', css);
         },
         setMenuButtons() {
             var css = 'a,a:hover{color:' + defaultSettings.btn1Color + '}.btn,#hotkeys-cfg .custom-key-in{color:' + defaultSettings.menuBtnTextColor + '}.btn-primary{background-color:' + defaultSettings.btn1Color + '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:' + defaultSettings.btn1Color2 + '!important}.btn-success{background-color:' + defaultSettings.btn2Color + '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:' + defaultSettings.btn2Color2 + '!important}.btn-warning{background-color:' + defaultSettings.btn3Color + '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:' + defaultSettings.btn3Color2 + '!important}.btn-danger{background-color:' + defaultSettings.btn4Color + '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:' + defaultSettings.btn4Color2 + '!important}#hotkeys-cfg .custom-key-in{background-color:' + defaultSettings.btn4Color2 + ';border-color:' + defaultSettings.btn4Color2 + '}';
+            var cv = function (k, d) { return _lmCssVal(defaultSettings[k], d); };
+            css += ':root{--lm-btn-tc:' + cv('menuBtnTextColor', '#ffffff') +
+                ';--lm-btn1:' + cv('btn1Color', '#018cf6') + ';--lm-btn1b:' + cv('btn1Color2', '#0176ce') +
+                ';--lm-btn2:' + cv('btn2Color', '#00b9e8') + ';--lm-btn2b:' + cv('btn2Color2', '#0099c0') +
+                ';--lm-btn3:' + cv('btn3Color', '#8d5fe6') + ';--lm-btn3b:' + cv('btn3Color2', '#814ee3') +
+                ';--lm-btn4:' + cv('btn4Color', '#bf00aa') + ';--lm-btn4b:' + cv('btn4Color2', '#a80096') + '}';
             this.addCustomCSS('menuButtonsCSS', css);
         },
         setMenuBg() {
             $('#menuBg').val(defaultSettings.menuBg);
             if (defaultSettings.menuBg) {
-                var bgUrl = 'url(' + defaultSettings.menuBg + ')';
+                /* the URL comes from (importable) settings: quotes, brackets and spaces cannot close the url() */
+                var bgUrl = _lmCssUrl(defaultSettings.menuBg);
                 $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', bgUrl);
                 this.addCustomCSS('menuBgCSS', '.menu-panel,.agario-side-panel,#hotkeys,#exp-imp{background-image:' + bgUrl + '!important;background-size:cover!important;background-position:center!important}');
             } else {
                 $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'none');
                 this.addCustomCSS('menuBgCSS', '');
             }
+            this.addCustomCSS('menuBgVarCSS', ':root{--lm-menu-bg:' + _lmCssUrl(defaultSettings.menuBg) + '}');
         },
         setHud() {
             this.setHudColors();
@@ -24180,6 +24290,8 @@ function thelegendmodproject() {
             var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,' +
                 '.hud-b,#.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
             $('.top5-mass-bar').css('background-color', $('#hudMainColor')[0].value)
+            /* in-game panels (HUD helpers, death recap, ...) read these */
+            css += ':root{--lm-hud-mc:' + _lmCssVal(defaultSettings.hudMainColor, '#01d9cc') + ';--lm-hud-bg:' + _lmCssVal(defaultSettings.hudColor, 'rgba(0,0,0,0.4)') + ';--lm-hud-tc:' + _lmCssVal(defaultSettings.hudTextColor, '#ffffff') + '}';
             this.addCustomCSS('hudCSS', css);
         },
         setHudFont() {
@@ -24858,54 +24970,79 @@ function thelegendmodproject() {
             if (window.core && window.core.Botsmacroeject) window.core.Botsmacroeject();
         },*/
 
+        /* Who a split macro acts for, as window.core.split picks it (the selected multibox unit
+         * when it exists, else the main player), the same as the custom macros
+         * (ogario/modules/macroeditor.js identity): unit number and object, its socket and
+         * connection number, the main socket, its life and the session type. */
+        _lmMacroId() {
+            var lm = window.legendmod || null, n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null;
+            return {
+                n: n, unit: sp || lm,
+                sock: sp ? sp.socket : (lm ? lm.socket : null),
+                gen: sp ? sp.connectionGeneration : (lm ? lm._connectSeq : 0),
+                main: lm ? lm.socket : null,
+                life: sp ? sp.playerCellIDs : this._lmLifeStartAt,
+                session: typeof window.lmSessionType === 'function' ? window.lmSessionType() : ''
+            };
+        },
+        _lmMacroSame(a, b) {
+            return a.n === b.n && a.unit === b.unit && a.sock === b.sock && a.gen === b.gen && a.main === b.main &&
+                a.life === b.life && a.session === b.session;
+        },
+        /* The splits of a split macro, one after the other. gaps[k]: ms from the first split to
+         * split k (gaps[0] = 0). Split k is due at its time from the start, as when all timers
+         * were set at once (same timing when nothing stalls), but never closer than half its gap
+         * to the split really sent before it. A split more than 150 ms late (a stalled tab) ends
+         * the macro instead of sending the rest at once; with guard, so does another unit,
+         * socket, connection, life or session (a reconnect, server switch, death or replay).
+         * done() runs once at the end, also when the macro is ended early. */
+        _lmSplitRun(gaps, send, guard, done) {
+            var app = this, id = guard ? this._lmMacroId() : null;
+            var now = function () { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); };
+            var t0 = now(), last = t0, k = 1, ended = false;
+            var end = function () { if (ended) return; ended = true; if (done) done(); };
+            var dueOf = function (i) { return Math.max(t0 + gaps[i], last + (gaps[i] - gaps[i - 1]) / 2); };
+            var step = function () {
+                if (id && !app._lmMacroSame(id, app._lmMacroId())) { end(); return; }
+                var tn = now(), due = dueOf(k);
+                if (tn < due) { setTimeout(step, Math.max(1, Math.ceil(due - tn))); return; }
+                if (tn - due > 150) { end(); return; }
+                send();
+                last = tn;
+                if (++k >= gaps.length) { end(); return; }
+                setTimeout(step, Math.max(0, dueOf(k) - now()));
+            };
+            send();
+            if (gaps.length < 2) { end(); return; }
+            setTimeout(step, gaps[1]);
+        },
         doubleBotSplit() {
             var app = this;
-            app.Botsplit();
-            setTimeout(function () {
-                app.Botsplit();
-            }, window._lmSplitDelay(1));
+            this._lmSplitRun([0, window._lmSplitDelay(1)], function () { app.Botsplit(); }, false);
         },
         popBotSplit() {
             var app = this;
-            app.Botsplit();
-            setTimeout(function () {
-                app.Botsplit();
-            }, window._lmPopSplitDelay());
+            this._lmSplitRun([0, window._lmPopSplitDelay()], function () { app.Botsplit(); }, false);
         },
         splitBot16() {
             var app = this;
-            app.Botsplit();
-            setTimeout(function () {
-                app.Botsplit();
-            }, window._lmSplitDelay(1));
-            setTimeout(function () {
-                app.Botsplit();
-            }, window._lmSplitDelay(2));
-            setTimeout(function () {
-                app.Botsplit();
-            }, window._lmSplitDelay(3));
+            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2), window._lmSplitDelay(3)], function () { app.Botsplit(); }, false);
         },
         split() {
             if (window.core && window.core.split) window.core.split();
         },
         doubleSplit() {
             var app = this;
-            var _lmSplitUnit = window.multiboxPlayerEnabled;
             // Imsolo/Agar2: use dedicated server-side atomic double split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 if (window.core && window.core.doubleSplit) window.core.doubleSplit();
                 return;
             }
-            app.split();
-            setTimeout(function () {
-                /* the unit switched since the macro started: do not split the other one */
-                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
-                app.split();
-            }, window._lmSplitDelay(1));
+            /* another unit, socket or life since the macro started: the rest is not sent */
+            this._lmSplitRun([0, window._lmSplitDelay(1)], function () { app.split(); }, true);
         },
         crazyDoubleSplit() {
             var app = this;
-            var _lmSplitUnit = window.multiboxPlayerEnabled;
             // Imsolo/Agar2: use dedicated server-side atomic double split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 window.lockPosition = true;
@@ -24914,70 +25051,29 @@ function thelegendmodproject() {
                 return;
             }
             window.lockPosition = true
-            app.split();
-            setTimeout(function () {
-                /* the unit switched since the macro started: do not split the other one */
-                if (window.multiboxPlayerEnabled !== _lmSplitUnit) { window.lockPosition = false; return; }
-                app.split();
-                window.lockPosition = false
-            }, window._lmSplitDelay(1));
+            this._lmSplitRun([0, window._lmSplitDelay(1)], function () { app.split(); }, true, function () { window.lockPosition = false; });
         },
         popSplit() {
             var app = this;
-            var _lmSplitUnit = window.multiboxPlayerEnabled;
-            app.split();
-            setTimeout(function () {
-                /* the unit switched since the macro started: do not split the other one */
-                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
-                app.split();
-            }, window._lmPopSplitDelay());
+            this._lmSplitRun([0, window._lmPopSplitDelay()], function () { app.split(); }, true);
         },
         tripleSplit() {
             var app = this;
-            var _lmSplitUnit = window.multiboxPlayerEnabled;
             // Imsolo/Agar2: use dedicated server-side atomic triple split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 if (window.core && window.core.tripleSplit) window.core.tripleSplit();
                 return;
             }
-            //window.lockPosition = true
-            app.split();
-            setTimeout(function () {
-                /* the unit switched since the macro started: do not split the other one */
-                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
-                app.split();
-            }, window._lmSplitDelay(1));
-            setTimeout(function () {
-                /* the unit switched since the macro started: do not split the other one */
-                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
-                app.split();
-                //window.lockPosition = false
-            }, window._lmSplitDelay(2));
+            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2)], function () { app.split(); }, true);
         },
         split16() {
             var app = this;
-            var _lmSplitUnit = window.multiboxPlayerEnabled;
             // Imsolo/Agar2: use dedicated server-side atomic quad split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 if (window.core && window.core.quadSplit) window.core.quadSplit();
                 return;
             }
-            app.split();
-            setTimeout(function () {
-                /* the unit switched since the macro started: do not split the other one */
-                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
-                app.split();
-            }, window._lmSplitDelay(1));
-            setTimeout(function () {
-                /* the unit switched since the macro started: do not split the other one */
-                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
-                app.split();
-            }, window._lmSplitDelay(2));
-            setTimeout(function () {
-                /* the unit switched since the macro started: do not split the other one */
-                if (window.multiboxPlayerEnabled !== _lmSplitUnit) return;
-                app.split();
-            }, window._lmSplitDelay(3));
+            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2), window._lmSplitDelay(3)], function () { app.split(); }, true);
         },
         /* ─── §4.3 UI Toggle Methods ─── */
         toggleSkins() {
@@ -27138,13 +27234,19 @@ function thelegendmodproject() {
             $(id).append('<label><input type=\"checkbox\" id=\"' + name + '\" class=\"js-switch\"> ' + text + '</label>');
             $('#' + name).prop('checked', checked);
         },
-        addOptions(options, section) {
+        /* A label, or its English text when the language has none (Polish showed "undefined"). */
+        _lmMenuText(key) {
+            return textLanguage[key] || (typeof displayText !== 'undefined' && displayText.en && displayText.en[key]) || key;
+        },
+        /* head: optional text key for the heading. The box keeps 'section' as its class, which
+         * Command Centre, the probes and the modules use to find it. */
+        addOptions(options, section, head) {
             if (options) {
-                $('#og-options').append('<div class=\"options-box ' + section + '\"><h5 class=\"menu-main-color\">' + textLanguage[section] + '</h5></div>');
+                $('#og-options').append('<div class=\"options-box ' + section + '\"><h5 class=\"menu-main-color\">' + this._lmMenuText(head || section) + '</h5></div>');
                 for (var i = 0; i < options.length; i++) {
                     var option = options[i];
                     if (defaultmapsettings.hasOwnProperty(option)) {
-                        $('.' + section).append('<label>' + textLanguage[option] + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
+                        $('.' + section).append('<label>' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
                         $('#' + option).prop('checked', defaultmapsettings[option]);
                     }
                 }
@@ -27153,7 +27255,7 @@ function thelegendmodproject() {
         /* One more switch in an options box made by addOptions (same markup). */
         addOptionTo(section, option) {
             if (!defaultmapsettings.hasOwnProperty(option)) return;
-            $(section).append('<label>' + textLanguage[option] + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
+            $(section).append('<label>' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
             $('#' + option).prop('checked', defaultmapsettings[option]);
         },
         /*
@@ -27701,21 +27803,24 @@ function thelegendmodproject() {
                 }
             })();
             //this.addOptions(["unlockedFPS"], "animationGroup");
-            this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode", "menuFpsCap", "reducedMotion"], "animationGroup");
-            /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
-            $('#recordReplays').closest('label').after($('<button type="button" id="lm-rec-clear" class="btn btn-xs btn-danger" style="display:block;margin:2px 0 6px;"></button>')
-                .text((window.lmT && window.lmT('lmRecClear')) || 'Clear recordings in memory')
-                .on('click', function () { window._lmRecClearMemory(true); return false; }));
+            /* Settings menu layout: one place per option. Ids and stored keys did not change when
+             * options moved (recordReplays to Replays, performanceMode to Performance, reducedMotion
+             * to Accessibility, the gameplay sounds to Sounds, merge options to Merging, click
+             * spectate and the stream overlay to Spectating). */
+            this.addOptions(["highDPI", "glAntialias", "menuFpsCap"], "animationGroup");
+            /* Performance and network: Adaptive performance, the network history and the
+             * diagnostics button are added below with the sliders. */
+            this.addOptions(["performanceMode"], "perfGroup");
 
             this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "potionsDrinker", "hudRelativeMass"], "massGroup");
+            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion", "skinCollections"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
-            this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
+            this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "showCellShadows", "animatedRainbowColor"], "transparencyGroup");
             this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow", "rainbowMapBorders"], "gridGroup");
             this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat", "mentionNotify", "chatShowId"], "chatGroup");
             /* The Agar Tool universal chat is not started in this version (universalchat() is not called), so the switch would do nothing.
@@ -27725,8 +27830,9 @@ function thelegendmodproject() {
             }
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
             /* Sound mixer: volume per channel times the master volume, applied where each sound
-             * plays (playSound, the video skin volume timer); all 1 = unchanged. */
-            this.addOptions(["audioDucking"], "soundsGroup");
+             * plays (playSound, the video skin volume timer); all 1 = unchanged. The gameplay
+             * sound switches (virus, 16 pieces) are here too, next to their volume. */
+            this.addOptions(["virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "audioDucking"], "soundsGroup");
             this.addSliderBox(".soundsGroup", "volMaster", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volChat", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volCommands", 0, 1, 0.01);
@@ -27736,7 +27842,10 @@ function thelegendmodproject() {
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "hudMoveDir", "hudMergeCountdown", "hudMergeSound", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
+            /* Merging: countdown, sound and rings together, with what each needs from the server */
+            this.addOptions(["hudMergeCountdown", "hudMergeSound", "mergeRings"], "mergeGroup");
+            $('<div class="lm-group-note"></div>').text(this._lmMenuText('mergeNote')).appendTo('.mergeGroup');
             //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
             this.addOptions(
                 [
@@ -27748,7 +27857,8 @@ function thelegendmodproject() {
                     'mouseCommand5',
                     'gamepadEnabled'
                 ],
-                'mouseGroup'
+                'mouseGroup',
+                'controlsGroup'
             );
 
             //	
@@ -27764,8 +27874,24 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar", "companionLive", "companionChat"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar"], "hudGroup");
+            /* Spectating and streaming: click to follow, the stream overlay and the spectator director */
+            this.addOptions(["lbClickSpectate", "clickSpectate", "minimapClickSpectate", "companionLive", "companionChat"], "spectateGroup");
+            $('<button type="button" id="lm-director-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
+                .text(this._lmMenuText('lmDirectorBtn'))
+                .appendTo('.spectateGroup')
+                .on('click', function (e) {
+                    e.preventDefault();
+                    if (window.LMDirector && typeof window.LMDirector.toggle === 'function') window.LMDirector.toggle();
+                    else if (window.toastr) toastr.info('The spectator director is still loading. Try again in a moment.');
+                });
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "massGraph", "showKiller", "hideEventBanner", "showTime", "showDevConsole", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
+            /* Replays and history: the instant replay length slider is added below */
+            this.addOptions(["recordReplays", "matchHistory", "personalBests"], "replayGroup");
+            /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
+            $('#recordReplays').closest('label').after($('<button type="button" id="lm-rec-clear" class="btn btn-xs btn-danger" style="display:block;margin:2px 0 6px;"></button>')
+                .text((window.lmT && window.lmT('lmRecClear')) || 'Clear recordings in memory')
+                .on('click', function () { window._lmRecClearMemory(true); return false; }));
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Multibox rings: per player on/off, color and size; both off = no rings. */
             this.addOptions(["mbRingsP1"], "mbRingsGroup");
@@ -27785,17 +27911,18 @@ function thelegendmodproject() {
             this.addSliderBox(".lineSplitGroup", "lineSplitHold", 0, 3000, 100);
             $(".lineSplitGroup").append(
                 '<div class="line-split-help" style="margin-top:8px;padding:8px 10px;font-size:11px;line-height:1.45;opacity:.82;border-left:3px solid #ff2fd6;background:rgba(0,0,0,.18);">' +
-                '<strong>Usage:</strong> assign "Line split" in Hotkeys, or to a mouse button under Mouse control. ' +
+                '<strong>Usage:</strong> assign "Line split" in Hotkeys, or to a mouse button under Controls. ' +
                 'Point the cursor where the line should go and press it once: the aim locks on that line, ' +
                 'the splits fire, and the aim stays locked for the time above. Press it again to cancel.' +
                 '</div>'
             );
             /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
-            this.addOptions(["a11yIndicators"], "accessibilityGroup");
+            this.addOptions(["reducedMotion", "a11yIndicators"], "accessibilityGroup");
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
             this.addSliderBox(".accessibilityGroup", "a11yHudTextScale", 1, 1.6, 0.05);
             this.addOptions([], "macroGroup");
-            this.addOptions([], "profiles");
+            /* Configuration: keeps the 'profiles' class (Command Centre section id) */
+            this.addOptions([], "profiles", "configGroup");
             if (!this.protocolMode) {
                 this.addOptions(["blockPopups"], "extrasGroup");
             } else {
@@ -27818,15 +27945,15 @@ function thelegendmodproject() {
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
             /* Adaptive performance, network quality history and the diagnostics window
              * (ogario/modules/perf.js) */
-            this.addOptionTo(".animationGroup", "adaptivePerf");
-            this.addSliderBox(".animationGroup", "adaptivePerfTarget", 30, 120, 30);
-            this.addOptionTo(".animationGroup", "adaptivePerfToasts");
-            this.addOptionTo(".animationGroup", "adaptivePerfRes");
-            this.addOptionTo(".animationGroup", "netHistory");
+            this.addOptionTo(".perfGroup", "adaptivePerf");
+            this.addSliderBox(".perfGroup", "adaptivePerfTarget", 30, 120, 30);
+            this.addOptionTo(".perfGroup", "adaptivePerfToasts");
+            this.addOptionTo(".perfGroup", "adaptivePerfRes");
+            this.addOptionTo(".perfGroup", "netHistory");
             $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block btn-primary" style="margin:4px 0 2px;"></button>')
-                .text(textLanguage.lmPerfDiag || 'Performance diagnostics').appendTo('.animationGroup')
+                .text(textLanguage.lmPerfDiag || 'Performance diagnostics').appendTo('.perfGroup')
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
-            this.addSliderBox(".animationGroup", "instantReplaySecs", 15, 60, 15);
+            this.addSliderBox(".replayGroup", "instantReplaySecs", 15, 60, 15);
             this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
             this.addSliderBox(".massGroup", "massFormat", 0, 3, 1);
             this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
@@ -27840,6 +27967,7 @@ function thelegendmodproject() {
             this.addSliderBox(".boardGroup", "teamboardlimit", 5, 40, 5);
 
             this.addSliderBox(".profiles", "profileNumber", 10, 54, 1);
+            $('<div class="lm-group-note"></div>').text(this._lmMenuText('configNote')).appendTo('.profiles');
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
             this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
@@ -27860,7 +27988,105 @@ function thelegendmodproject() {
                     if (window.LMGamepad && typeof window.LMGamepad.openWindow === 'function') window.LMGamepad.openWindow();
                     else if (window.toastr) toastr.info('The gamepad script is still loading. Try again in a moment.');
                 });
+            /* Keyboard: the Hotkeys window, so all controls start from this section */
+            $('<button type="button" id="lm-open-hotkeys-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
+                .text(this._lmMenuText('lmOpenHotkeys'))
+                .appendTo('.mouseGroup')
+                .on('click', function (e) {
+                    e.preventDefault();
+                    $('.menu-tabs .hotkeys-link').first().trigger('click');
+                });
             this.addSliderBox(".statsGroup", "massLossPct", 10, 90, 5);
+            /* Options that do something only while another option is on, or only on some servers.
+             * They stay saved and can still be changed; while they have no effect they are dimmed
+             * and say why. Nothing here changes a setting. */
+            (function (app) {
+                var DEPS = {
+                    showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsJitter', 'showStatsAlive'],
+                    showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
+                    showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass', 'massFormat'],
+                    gamepadEnabled: ['gamepadDeadzone'],
+                    adaptivePerf: ['adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes'],
+                    companionLive: ['companionChat'],
+                    recordReplays: ['instantReplaySecs'],
+                    videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
+                    massLossAlert: ['massLossPct']
+                };
+                /* option -> row of the Discovery support table (ogario/modules/discovery.js) */
+                var SRV = { hudMergeCountdown: 'mergeCountdown', hudMergeSound: 'mergeCountdown', splitPrediction: 'splitPrediction', recordReplays: 'replays', instantReplaySecs: 'replays' };
+                var parentOf = {}, keys = [];
+                Object.keys(DEPS).forEach(function (p) {
+                    DEPS[p].forEach(function (c) { parentOf[c] = p; if (keys.indexOf(c) < 0) keys.push(c); });
+                });
+                Object.keys(SRV).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
+                var plain = function (s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, '').trim(); };
+                var itemOf = function (k) {
+                    var el = document.getElementById(k + '-slider') || document.getElementById(k);
+                    if (!el || !$(el).closest('#og-options').length) return null;
+                    var it = $(el).closest('.slider-box, .input-box, label');
+                    return it.length ? it : null;
+                };
+                /* the connected server's type and whether a support row says it does not work there */
+                var core = function () { var D = window.LMDiscovery; return D && D.core && Array.isArray(D.core.CAPS) ? D.core : null; };
+                var srvNote = function (capId) {
+                    var c = core();
+                    if (!c) return '';
+                    var type = '';
+                    try { type = c.serverTypeOf(window.legendmod); } catch (e) { type = ''; }
+                    if (!type) return '';
+                    for (var i = 0; i < c.CAPS.length; i++) {
+                        if (!c.CAPS[i] || c.CAPS[i].id !== capId) continue;
+                        if (c.capValue(c.CAPS[i], type) !== 'n') return '';
+                        var name = type;
+                        (c.SERVER_TYPES || []).forEach(function (s) { if (s && s.id === type) name = s.en; });
+                        return app._lmMenuText('lmDepServer') + ' (' + name + ')';
+                    }
+                    return '';
+                };
+                var mark = function (it, why) {
+                    var was = it.hasClass('lm-dep-off');
+                    if (!why) {
+                        if (!was) return;
+                        var t0 = it.attr('data-lm-title');
+                        it.removeClass('lm-dep-off').removeAttr('data-lm-why').removeAttr('data-lm-title');
+                        if (t0) it.attr('title', t0); else it.removeAttr('title');
+                        return;
+                    }
+                    if (it.attr('data-lm-why') === why) return;
+                    if (!was && it.attr('title')) it.attr('data-lm-title', it.attr('title'));
+                    it.addClass('lm-dep-off').attr('data-lm-why', why).attr('title', why);
+                };
+                var refresh = function () {
+                    keys.forEach(function (k) {
+                        var it = itemOf(k);
+                        if (!it) return;
+                        var p = parentOf[k], why = '';
+                        if (p && defaultmapsettings.hasOwnProperty(p) && !defaultmapsettings[p]) why = app._lmMenuText('lmDepNeeds') + ': ' + plain(app._lmMenuText(p));
+                        else if (SRV[k]) why = srvNote(SRV[k]);
+                        mark(it, why);
+                    });
+                };
+                if (!document.getElementById('lm-dep-style')) {
+                    var st = document.createElement('style');
+                    st.id = 'lm-dep-style';
+                    st.textContent = '#og-options .lm-dep-off{opacity:.5}#og-options .lm-dep-off:hover{opacity:.8}' +
+                        '#og-options .lm-dep-off[data-lm-why]::after{content:attr(data-lm-why);display:block;font-size:10px;font-style:italic;line-height:1.3;padding-top:2px}' +
+                        '#og-options .lm-group-note{font-size:11px;line-height:1.4;opacity:.8;padding:4px 12px 6px}';
+                    document.head.appendChild(st);
+                }
+                /* the change handler that saves the setting may run after this one */
+                $(document).on('change', '#og-options input[type="checkbox"]', function () { setTimeout(refresh, 0); });
+                /* hotkeys, profiles and the server change it without a change event: check again on view */
+                $('#og-settings').on('mouseenter', refresh);
+                $(document).on('click', 'a[href="#og-settings"]', function () { setTimeout(refresh, 0); });
+                try {
+                    /* connectionReady (once per connection, the server type is known then); not serverChange:
+                     * the common game events have no listener unless a feature is switched on */
+                    if (window.LMEvents && typeof window.LMEvents.on === 'function') window.LMEvents.on('connectionReady', function () { setTimeout(refresh, 0); });
+                } catch (e) { }
+                app._lmDepRefresh = refresh;
+                refresh();
+            })(this);
             // this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
@@ -39206,7 +39432,21 @@ function thelegendmodproject() {
                     var _wasWebGL = this._webglRendered;
                     if (_wasWebGL) {
                         this._webglRendered = false;
-                        /* Body+skin already on GPU, skip to effects-only section */
+                        /* Body+skin already on GPU, skip to effects-only section.
+                         * Opponent colours: the GPU body keeps the player's own colour (a split
+                         * player showed two colours, one per cell size), the class is a ring as on
+                         * Canvas2D; the body is already drawn, so the ring is a band just outside it. */
+                        if ((LM.play || LM.playerCellsMulti.length) && !this.isPlayerCell && !this.isPlayerCellMulti &&
+                            LM.play && defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams" && this.oppColor) {
+                            style.save();
+                            style.beginPath();
+                            style.arc(this.x, this.y, y + 5, 0, this.pi2, false);
+                            style.lineWidth = 10;
+                            style.strokeStyle = this.oppColor;
+                            style.globalAlpha *= 0.45;
+                            style.stroke();
+                            style.restore();
+                        }
                     } else {
 
 
@@ -39225,7 +39465,8 @@ function thelegendmodproject() {
                             node = application.getCustomSkin(this.targetNick, this.color, this.skin);
                         }
                         var node2, node2IsVideo = false;
-                        if (defaultmapsettings.videoSkins) {
+                        /* no name, no video skin either (a skin mapped to '' would show on every unnamed cell) */
+                        if (defaultmapsettings.videoSkins && this.targetNick && String(this.targetNick).trim()) {
                             node2 = LM.gameMode != ":party" ? application.customSkinsMap[this.targetNick] : application.customSkinsMap[this.targetNick + this.color];
                             if (node2) {
                                 /* cached per URL (a string cannot carry a property: defineProperty threw
@@ -52657,6 +52898,21 @@ Most cells eaten   : ${mostCellsEaten}
             window.multiboxPlayerEnabledSaved = null;
         },
         setMapOffset(left, top, right, bottom) {
+            /* LMEvents 'connectionReady': once per connection, at its first map border (it comes
+             * right after the handshake on every server type), sent after this packet is read:
+             * { server: host, mode: game mode, session: lmSessionType() } */
+            if (this === window.legendmod && this._lmReadySeq !== this._connectSeq) {
+                this._lmReadySeq = this._connectSeq;
+                var _lmRdy = this, _lmRdySeq = this._connectSeq;
+                setTimeout(function () {
+                    if (_lmRdy._connectSeq !== _lmRdySeq || !window.LMEvents._has('connectionReady')) return;
+                    window.LMEvents.emit('connectionReady', {
+                        server: typeof _lmHostOnly === 'function' ? _lmHostOnly(_lmRdy.ws) : '',
+                        mode: String(_lmRdy.gameMode || '').replace(/^:/, ''),
+                        session: typeof window.lmSessionType === 'function' ? window.lmSessionType() : ''
+                    });
+                }, 0);
+            }
             var temp, temp2;
             if ($("#server-token").val().includes("replay^")) {
                 temp = $("#server-token").val().replace('replay^', '').split('(')[0].split('.lm')[0];
@@ -73287,10 +73543,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !cell ||
                 cell.isVirus ||
                 cell.isEjected ||
-                (
-                    !cell.targetNick &&
-                    !cell.skin
-                )
+                /* a cell without a name shows no skin, as in getCustomSkin and Cell.draw (a
+                 * server skin id alone drew one here but not on Canvas2D: the skin blinked
+                 * whenever the renderer changed, e.g. on zooming in and out) */
+                !cell.targetNick ||
+                !String(cell.targetNick).trim()
             ) {
                 return result;
             }
@@ -74302,24 +74559,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             }
 
 
-                            /*
-                             * Opponent classification color.
-                             */
-                            else if (
-                                defaultmapsettings
-                                    .oppColors &&
-                                !defaultmapsettings
-                                    .oppRings &&
-                                !defaultmapsettings
-                                    .cellContours &&
-                                LM.gameMode !==
-                                    ':teams' &&
-                                cell.oppColor
-                            ) {
-                                bodyHex =
-                                    cell
-                                        .oppColor;
-                            }
+                            /* Opponent colours do not replace the body colour (one colour per
+                             * player, as on Canvas2D); Cell.draw adds them as a ring. */
                         }
                         /* No colors: neutral grey (as the Canvas2D path) */
                         if (defaultmapsettings.noColors && !cell.isFood && !cell.isEjected) {
@@ -75588,20 +75829,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 ogarcopythelb
                                     .color;
                         }
-                        else if (
-                            defaultmapsettings
-                                .oppColors &&
-                            !defaultmapsettings
-                                .oppRings &&
-                            !defaultmapsettings
-                                .cellContours &&
-                            LM.gameMode !==
-                                ':teams' &&
-                            cell.oppColor
-                        ) {
-                            colorHex =
-                                cell.oppColor;
-                        }
+                        /* Opponent colours do not replace the body colour (one colour per
+                         * player, as on Canvas2D); Cell.draw adds them as a ring. */
                     }
                     /* No colors: neutral grey (as the Canvas2D path) */
                     if (defaultmapsettings.noColors && !cell.isFood && !cell.isEjected) {
@@ -75826,10 +76055,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     _showSkins &&
                     !cell.isVirus &&
                     !cell.isEjected &&
-                    (
-                        cell.targetNick ||
-                        cell.skin
-                    )
+                    /* no name, no skin: the same rule as getCustomSkin / Cell.draw */
+                    cell.targetNick &&
+                    String(cell.targetNick).trim()
                 ) {
                     /* Chat socket skins (nick-based) take priority over vanilla skins */
                     var skinUrl = null;
@@ -82545,7 +82773,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setHotkeysMenu() {
             //var t = this;
             const setup = this;
-            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
+            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\">' + String(textLanguage.hotkeys || 'Hotkeys').replace(/[&<>"']/g, function (c) { return escapeChar[c]; }) + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
                 if (hotkeysCommand.hasOwnProperty(command)) {
                     var currentCommand = hotkeysCommand[command],
                         text = '';
@@ -82560,8 +82788,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         var replaceHk = command.replace('hk-', '');
                         /* chat command texts are user/imported text: escape them for the value attribute (a quote cut the text off) */
                         var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
-                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
-                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
+                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
                 }
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
@@ -86374,7 +86602,7 @@ function LMadvertisement2020() {
         '<div class="modal-backdrop fade in"></div>' +
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
         '<div class="modal-content">' +
-        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
         '</div>' +
         '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/extras/banneranimatedLegendmod2020.html" width="620" height="490" >' +
@@ -86382,7 +86610,9 @@ function LMadvertisement2020() {
         '</div>' +
         '</div>' +
         '</div>');
-    $(".modal-dialog").draggable()
+    /* themed and centred by LMexpress (only this dialog drags) */
+    if (typeof lmPromoChrome === 'function') lmPromoChrome("#LMPromo");
+    else $("#LMPromo .modal-dialog").draggable();
     $("#CloseLMPromo").click(function () {
         $("#LMPromo").remove();
     });
@@ -86595,7 +86825,7 @@ function lmReplayBarTick() {
         bar.title = 'Replay: click to seek';
         bar.style.cssText = 'position:fixed;left:30%;width:40%;bottom:14px;height:10px;z-index:200;cursor:pointer;' +
             'background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.25);border-radius:5px;overflow:hidden;pointer-events:auto;';
-        bar.innerHTML = '<div class="lm-rb-fill" style="height:100%;width:0;background:' + ((window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc') + ';"></div>' +
+        bar.innerHTML = '<div class="lm-rb-fill" style="height:100%;width:0;background:var(--lm-mc,' + ((window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc') + ');"></div>' +
             '<span class="lm-rb-txt" style="position:absolute;right:6px;top:-16px;font-size:10px;color:#fff;text-shadow:0 0 3px #000;pointer-events:none;"></span>';
         bar.addEventListener('mousedown', function (e) {
             e.preventDefault();

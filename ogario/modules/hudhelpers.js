@@ -539,8 +539,8 @@
         panel = document.createElement('div');
         panel.id = 'lm-hh-cells';
         panel.style.cssText = 'position:fixed;left:8px;top:40%;z-index:100;pointer-events:none;display:none;' +
-            'max-width:240px;padding:5px 8px;border-radius:6px;background:rgba(0,0,0,.42);color:#fff;' +
-            'font:600 12px/1.35 Ubuntu,Arial,sans-serif;text-shadow:0 1px 2px rgba(0,0,0,.7);' +
+            'max-width:240px;padding:5px 8px;border-radius:6px;background:var(--lm-hud-bg,rgba(0,0,0,.42));color:var(--lm-hud-tc,#fff);' +
+            'font-weight:600;font-size:12px;line-height:1.35;font-family:inherit;text-shadow:0 1px 2px rgba(0,0,0,.7);' +
             'user-select:none;-webkit-user-select:none;white-space:normal;word-spacing:2px';
         panelHead = document.createElement('div');
         panelHead.style.whiteSpace = 'pre-line';

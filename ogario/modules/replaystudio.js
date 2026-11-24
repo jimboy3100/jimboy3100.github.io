@@ -1229,22 +1229,25 @@
         return b;
     }
     function accent() { return (window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc'; }
+    /* window chrome follows the menu theme live (CSS variables set by the theme); canvas keeps accent() */
+    function cssMc() { return 'var(--lm-mc,' + accent() + ')'; }
     function build() {
         if (W) return W;
         /* above the phone controls (LMmobile z-index 100000-100004) so its buttons take the taps */
         var st = el('style');
         st.textContent =
             '#lm-rs{position:fixed;left:50%;transform:translateX(-50%);bottom:30px;width:min(760px,calc(100vw - 12px));max-height:calc(100vh - 40px);' +
-            'z-index:100005;display:flex;flex-direction:column;background:rgba(14,17,23,.95);color:#e8e8e8;font:12px/1.3 Ubuntu,Arial,sans-serif;' +
-            'border:1px solid rgba(255,255,255,.15);border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.5);touch-action:manipulation;user-select:none;-webkit-user-select:none;}' +
+            'z-index:100005;display:flex;flex-direction:column;background:var(--lm-pc,rgba(14,17,23,.95));color:var(--lm-tc,#e8e8e8);font-size:12px;line-height:1.3;font-family:inherit;overflow:hidden;' +
+            'border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid ' + cssMc() + ';border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);touch-action:manipulation;user-select:none;-webkit-user-select:none;}' +
             '#lm-rs *{box-sizing:border-box;}' +
-            '#lm-rs .lm-rs-b{min-height:30px;min-width:30px;padding:2px 8px;margin:0 3px 0 0;border:1px solid rgba(255,255,255,.18);border-radius:5px;background:rgba(255,255,255,.07);color:#eee;font:inherit;cursor:pointer;white-space:nowrap;flex:0 0 auto;}' +
+            '#lm-rs .lm-rs-hd{border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.15));background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%);}' +
+            '#lm-rs .lm-rs-b{min-height:30px;min-width:30px;padding:2px 8px;margin:0 3px 0 0;border:1px solid var(--lm-pc2,rgba(255,255,255,.18));border-radius:5px;background:rgba(255,255,255,.05);color:var(--lm-tc,#eee);font:inherit;cursor:pointer;white-space:nowrap;flex:0 0 auto;}' +
             '#lm-rs .lm-rs-b:hover{background:rgba(255,255,255,.16);}' +
-            '#lm-rs .lm-rs-b.on{border-color:' + accent() + ';color:' + accent() + ';}' +
+            '#lm-rs .lm-rs-b.on{border-color:' + cssMc() + ';color:' + cssMc() + ';}' +
             '#lm-rs .lm-rs-b:disabled{opacity:.4;cursor:default;}' +
             '#lm-rs .lm-rs-row{display:flex;align-items:center;padding:3px 8px;gap:2px;}' +
             '#lm-rs .lm-rs-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}' +
-            '#lm-rs select,#lm-rs input[type=text],#lm-rs input[type=search]{min-height:30px;background:#1d222b;color:#eee;border:1px solid rgba(255,255,255,.2);border-radius:5px;font:inherit;padding:2px 6px;}' +
+            '#lm-rs select,#lm-rs input[type=text],#lm-rs input[type=search]{min-height:30px;background:var(--lm-pc2,#1d222b);color:var(--lm-tc,#eee);border:1px solid rgba(255,255,255,.2);border-radius:5px;font:inherit;padding:2px 6px;}' +
             '#lm-rs label{display:inline-flex;align-items:center;gap:3px;margin-right:8px;white-space:nowrap;cursor:pointer;}' +
             '#lm-rs .lm-rs-track{position:relative;height:26px;margin:2px 8px;background:rgba(255,255,255,.08);border-radius:5px;cursor:pointer;touch-action:none;}' +
             '#lm-rs .lm-rs-fill{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,.12);border-radius:5px 0 0 5px;pointer-events:none;}' +
@@ -1253,7 +1256,7 @@
             '#lm-rs .lm-rs-mk{position:absolute;top:0;bottom:0;width:14px;margin-left:-7px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;}' +
             '#lm-rs .lm-rs-mk i{display:block;width:4px;height:16px;border-radius:2px;pointer-events:none;}' +
             '#lm-rs .lm-rs-chip{display:inline-flex;align-items:center;gap:4px;min-height:26px;padding:1px 8px;margin-right:4px;border-radius:13px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);cursor:pointer;white-space:nowrap;flex:0 0 auto;}' +
-            '#lm-rs .lm-rs-item{padding:5px 8px;border-top:1px solid rgba(255,255,255,.08);}' +
+            '#lm-rs .lm-rs-item{padding:5px 8px;border-top:1px solid var(--lm-pc2,rgba(255,255,255,.08));}' +
             '#lm-rs .lm-rs-tag{display:inline-block;padding:0 6px;margin:0 3px 0 0;border-radius:8px;background:rgba(255,255,255,.1);font-size:11px;}' +
             '#lm-rs .lm-rs-dim{opacity:.7;}' +
             '#lm-rs.min .lm-rs-full{display:none!important;}' +
@@ -1279,8 +1282,8 @@
             if (P.driving && BLOCK_KEYS[e.key]) { e.stopImmediatePropagation(); e.preventDefault(); }
         }, true);
         /* header */
-        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 2px 10px;gap:4px;');
-        head.appendChild(el('b', 'margin-right:6px;color:' + accent() + ';white-space:nowrap;', T('title')));
+        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 4px 10px;gap:4px;', null, { 'class': 'lm-rs-hd' });
+        head.appendChild(el('b', 'margin-right:6px;color:' + cssMc() + ';white-space:nowrap;text-transform:uppercase;letter-spacing:1px;', T('title')));
         W.tabP = btn(T('player'), '', function () { setTab('player'); });
         W.tabL = btn(T('library'), '', function () { setTab('library'); });
         W.tabP.classList.add('lm-rs-full'); W.tabL.classList.add('lm-rs-full');
@@ -1288,7 +1291,7 @@
         head.appendChild(el('span', 'flex:1 1 auto;'));
         W.minB = btn('▁', T('minimize'), function () { W.classList.toggle('min'); });
         head.appendChild(W.minB);
-        head.appendChild(btn('✕', T('close'), close, 'min-width:38px;font-size:15px;'));
+        head.appendChild(btn('✕', T('close'), close, 'min-width:38px;font-size:15px;color:var(--lm-tc2,#eee);'));
         W.appendChild(head);
         /* player */
         var pv = W.pv = el('div', 'display:flex;flex-direction:column;min-height:0;');

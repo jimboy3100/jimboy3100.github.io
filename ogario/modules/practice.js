@@ -471,25 +471,28 @@
         styled = true;
         var st = el('style');
         st.textContent =
-            '#lm-pr,#lm-pr-hud{color:#e8e8e8;font:12px/1.35 Ubuntu,Arial,sans-serif;touch-action:manipulation;user-select:none;-webkit-user-select:none;}' +
+            '#lm-pr,#lm-pr-hud{font-size:12px;line-height:1.35;font-family:inherit;touch-action:manipulation;user-select:none;-webkit-user-select:none;}' +
+            '#lm-pr{color:var(--lm-tc,#e8e8e8);}#lm-pr-hud{color:var(--lm-hud-tc,#e8e8e8);}' +
             '#lm-pr *,#lm-pr-hud *{box-sizing:border-box;}' +
             /* above the phone controls (LMmobile z-index 100000-100004) so its buttons take the taps */
             '#lm-pr{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(660px,calc(100vw - 12px));max-height:calc(100vh - 12px);z-index:100005;display:flex;flex-direction:column;' +
-            'background:rgba(14,17,23,.96);border:1px solid rgba(255,255,255,.15);border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.5);}' +
+            'background:var(--lm-pc,rgba(14,17,23,.96));border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid var(--lm-pr-a,#01d9cc);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;}' +
+            '#lm-pr .lm-pr-head{border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.15));background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%);}' +
             '#lm-pr .lm-pr-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 10px 8px;display:flex;flex-wrap:wrap;gap:8px 14px;}' +
             '#lm-pr .lm-pr-col{flex:1 1 280px;min-width:0;}' +
-            '.lm-pr-b{min-height:30px;min-width:30px;padding:2px 9px;margin:0 4px 4px 0;border:1px solid rgba(255,255,255,.18);border-radius:5px;background:rgba(255,255,255,.07);color:#eee;font:inherit;cursor:pointer;white-space:nowrap;}' +
+            '.lm-pr-b{min-height:30px;min-width:30px;padding:2px 9px;margin:0 4px 4px 0;border:1px solid rgba(255,255,255,.18);border-radius:5px;background:rgba(255,255,255,.07);color:inherit;font:inherit;cursor:pointer;white-space:nowrap;}' +
+            '#lm-pr .lm-pr-b{border-color:var(--lm-pc2,rgba(255,255,255,.18));background:rgba(255,255,255,.05);}' +
             '.lm-pr-b:hover{background:rgba(255,255,255,.16);}' +
             '.lm-pr-b:disabled{opacity:.4;cursor:default;}' +
             '.lm-pr-b.main{border-color:var(--lm-pr-a);color:var(--lm-pr-a);font-weight:bold;}' +
-            '#lm-pr select,#lm-pr input{min-height:28px;width:100%;background:#1d222b;color:#eee;border:1px solid rgba(255,255,255,.2);border-radius:5px;font:inherit;padding:2px 6px;}' +
+            '#lm-pr select,#lm-pr input{min-height:28px;width:100%;background:var(--lm-pc2,#1d222b);color:var(--lm-tc,#eee);border:1px solid rgba(255,255,255,.2);border-radius:5px;font:inherit;padding:2px 6px;}' +
             '#lm-pr .lm-pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:4px 8px;margin:6px 0;}' +
             '#lm-pr .lm-pr-grid label{display:flex;flex-direction:column;gap:1px;font-size:11px;opacity:.9;}' +
             '#lm-pr .lm-pr-dim{opacity:.7;font-size:11px;}' +
             '#lm-pr .lm-pr-res div{display:flex;justify-content:space-between;gap:8px;padding:1px 0;border-bottom:1px solid rgba(255,255,255,.06);}' +
             '#lm-pr h4{margin:6px 0 3px;font-size:12px;color:var(--lm-pr-a);}' +
             '#lm-pr-hud{position:fixed;top:4px;left:50%;transform:translateX(-50%);z-index:100003;display:flex;align-items:center;gap:6px;padding:3px 4px 3px 8px;' +
-            'background:rgba(14,17,23,.72);border:1px solid rgba(255,255,255,.12);border-radius:7px;pointer-events:none;max-width:calc(100vw - 8px);}' +
+            'background:var(--lm-hud-bg,rgba(14,17,23,.72));border:1px solid rgba(255,255,255,.12);border-radius:7px;pointer-events:none;max-width:calc(100vw - 8px);}' +
             '#lm-pr-hud .lm-pr-b{pointer-events:auto;margin:0;min-height:28px;}' +
             '#lm-pr-hud .lm-pr-t{display:flex;flex-direction:column;min-width:0;white-space:nowrap;overflow:hidden;}' +
             '@media (max-height:460px){#lm-pr{font-size:11px;}#lm-pr .lm-pr-b{min-height:28px;}#lm-pr-hud canvas{display:none;}}';
@@ -504,10 +507,10 @@
         css();
         if (!H) {
             H = el('div', '', null, { id: 'lm-pr-hud' });
-            H.style.setProperty('--lm-pr-a', accent());
+            H.style.setProperty('--lm-pr-a', 'var(--lm-hud-mc,' + accent() + ')');
             shield(H);
             var t = H.txt = el('div', '', null, { 'class': 'lm-pr-t' });
-            H.l1 = el('b', 'color:' + accent() + ';overflow:hidden;text-overflow:ellipsis;');
+            H.l1 = el('b', 'color:var(--lm-pr-a);overflow:hidden;text-overflow:ellipsis;');
             H.l2 = el('span', 'font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;');
             t.appendChild(H.l1); t.appendChild(H.l2);
             H.appendChild(t);
@@ -611,13 +614,13 @@
         if (Wn) return Wn;
         css();
         Wn = el('div', '', null, { id: 'lm-pr', role: 'dialog', 'aria-label': T('title') });
-        Wn.style.setProperty('--lm-pr-a', accent());
+        Wn.style.setProperty('--lm-pr-a', 'var(--lm-mc,' + accent() + ')');
         shield(Wn);
-        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 2px 10px;gap:6px;flex:0 0 auto;');
-        head.appendChild(el('b', 'color:' + accent() + ';white-space:nowrap;flex:1 1 auto;', T('title')));
+        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 4px 10px;gap:6px;flex:0 0 auto;', null, { 'class': 'lm-pr-head' });
+        head.appendChild(el('b', 'color:var(--lm-pr-a);white-space:nowrap;flex:1 1 auto;text-transform:uppercase;letter-spacing:1px;', T('title')));
         Wn.status = el('span', '', '', { 'class': 'lm-pr-dim' });
         head.appendChild(Wn.status);
-        head.appendChild(btn('✕', T('close'), close, 'min-width:38px;font-size:15px;margin:0;'));
+        head.appendChild(btn('✕', T('close'), close, 'min-width:38px;font-size:15px;margin:0;color:var(--lm-tc2,#eee);'));
         Wn.appendChild(head);
         var body = el('div', '', null, { 'class': 'lm-pr-body' });
         var left = el('div', '', null, { 'class': 'lm-pr-col' }), right = el('div', '', null, { 'class': 'lm-pr-col' });

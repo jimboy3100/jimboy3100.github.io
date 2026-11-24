@@ -322,7 +322,10 @@
     function colors() {
         var ds = W.defaultSettings || {};
         var ok = function (v, d) { return typeof v === 'string' && /^#[0-9a-f]{3,8}$|^rgba?\([\d\s.,%]+\)$/i.test(v) ? v : d; };
-        return { mc: ok(ds.menuMainColor, '#01d9cc'), pc: ok(ds.menuPanelColor, '#00243e'), pc2: ok(ds.menuPanelColor2, '#002f52'), tc: ok(ds.menuTextColor, '#ffffff'), tc2: ok(ds.menuTextColor2, '#8096a7') };
+        var r = { mc: ok(ds.menuMainColor, '#01d9cc'), pc: ok(ds.menuPanelColor, '#00243e'), pc2: ok(ds.menuPanelColor2, '#002f52'), tc: ok(ds.menuTextColor, '#ffffff'), tc2: ok(ds.menuTextColor2, '#8096a7') };
+        /* CSS variables set by the menu theme, so open windows follow a theme change; the
+         * current value is the fallback (all consumers are DOM styles, none draws on a canvas) */
+        return { mc: 'var(--lm-mc,' + r.mc + ')', pc: 'var(--lm-pc,' + r.pc + ')', pc2: 'var(--lm-pc2,' + r.pc2 + ')', tc: 'var(--lm-tc,' + r.tc + ')', tc2: 'var(--lm-tc2,' + r.tc2 + ')' };
     }
     function settings() { return W.legendmod5 || W.defaultmapsettings || {}; }
     function noMotion() { return !!settings().reducedMotion; }
@@ -369,7 +372,7 @@
             '.lm-st-win select,.lm-st-win input[type=text],.lm-st-win input[type=search]{background:' + c.pc2 + ';color:' + c.tc + ';border:1px solid rgba(255,255,255,0.18);border-radius:4px;height:30px;font-size:12px;padding:0 6px;min-width:0;box-sizing:border-box;}' +
             '.lm-st-win input[type=checkbox]{width:18px;height:18px;margin:0 8px 0 0;flex:none;}' +
             '.lm-st-win label{font-weight:400;margin:0;display:flex;align-items:center;min-height:30px;cursor:pointer;}' +
-            '.lm-st-win .lm-st-btn{flex:none;cursor:pointer;min-height:30px;padding:0 12px;border-radius:4px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);color:inherit;font-size:12px;}' +
+            '.lm-st-win .lm-st-btn{flex:none;cursor:pointer;min-height:30px;padding:0 12px;border-radius:4px;border:1px solid ' + c.pc2 + ';background:rgba(255,255,255,0.05);color:inherit;font-size:12px;font-family:inherit;}' +
             '.lm-st-win .lm-st-btn.main{background:' + c.mc + ';color:' + c.pc + ';border-color:' + c.mc + ';font-weight:700;}' +
             '.lm-st-win .lm-st-help{opacity:.8;font-size:11px;line-height:1.45;margin:0 0 8px;}' +
             '.lm-st-win a.lm-st-link{color:' + c.mc + ';cursor:pointer;text-decoration:underline;white-space:nowrap;}' +
@@ -414,7 +417,7 @@
         closeWin();
         addStyle();
         var c = colors();
-        var backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483400;background:rgba(0,0,0,0.35);');
+        var backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483400;background:rgba(0,0,0,0.55);');
         backdrop.id = id + '-backdrop';
         backdrop.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); closeWin(); });
         var root = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:' + (width || 560) + 'px;max-width:calc(100vw - 16px);' +
@@ -423,7 +426,7 @@
             'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
         root.id = id;
         root.className = 'lm-st-win';
-        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:4px 6px 4px 12px;border-bottom:1px solid ' + c.pc2 + ';');
+        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:4px 6px 4px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
         head.appendChild(el('div', 'flex:1;min-width:0;font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', title));
         var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.06);', '✕');
         x.className = 'lm-st-close';

@@ -421,7 +421,7 @@
             el = document.createElement('div');
             el.id = 'lm-killfeed';
             el.style.cssText = 'position:fixed;top:8px;right:8px;z-index:120;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;' +
-                'max-width:min(220px,40vw);font:600 12px/1.35 Ubuntu,Roboto,Arial,sans-serif;';
+                'max-width:min(220px,40vw);font-weight:600;font-size:12px;line-height:1.35;font-family:inherit;';
             document.body.appendChild(el);
         }
         /* left of the leaderboard (top right), never over it; the minimap and chat are at the bottom */
@@ -453,7 +453,7 @@
             row = document.createElement('div');
             row._lmKind = kind; row._lmKey = key;
             var col = kind === 'ate' ? '#7dff8a' : (kind === 'alert' ? '#ffb347' : '#ff6b6b');
-            row.style.cssText = 'margin-top:2px;padding:1px 8px;border-radius:4px;background:rgba(0,0,0,.55);color:' + col +
+            row.style.cssText = 'margin-top:2px;padding:1px 8px;border-radius:4px;background:var(--lm-hud-bg,rgba(0,0,0,.55));color:' + col +
                 ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-shadow:0 1px 2px #000;transition:opacity .6s;';
             row.textContent = text;
             box.appendChild(row);
@@ -496,7 +496,10 @@
 
     function themeOf(th) {
         th = th || {};
-        return { mc: th.mc || '#01d9cc', pc: th.pc || '#00243e', pc2: th.pc2 || '#002f52', tc: th.tc || '#ffffff', tc2: th.tc2 || '#8096a7' };
+        var r = { mc: th.mc || '#01d9cc', pc: th.pc || '#00243e', pc2: th.pc2 || '#002f52', tc: th.tc || '#ffffff', tc2: th.tc2 || '#8096a7' };
+        /* r.* for the canvas (no CSS variables there); r.v.* for the page, following a theme change */
+        r.v = { mc: 'var(--lm-mc,' + r.mc + ')', pc: 'var(--lm-pc,' + r.pc + ')', pc2: 'var(--lm-pc2,' + r.pc2 + ')', tc: 'var(--lm-tc,' + r.tc + ')', tc2: 'var(--lm-tc2,' + r.tc2 + ')' };
+        return r;
     }
     function drawSpark(cv, rc, th) {
         var g = cv.getContext && cv.getContext('2d');
@@ -522,7 +525,7 @@
         var th = cardTheme, code = lang();
         while (recapEl.firstChild) recapEl.removeChild(recapEl.firstChild);
         var title = document.createElement('div');
-        title.style.cssText = 'font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:' + th.mc + ';margin-bottom:4px;';
+        title.style.cssText = 'font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:' + th.v.mc + ';margin-bottom:4px;';
         title.textContent = '⏱ ' + tr('title', null, code);
         recapEl.appendChild(title);
         if (!rc) return;
@@ -536,10 +539,10 @@
             var st = rc.steps[i], row = document.createElement('div');
             row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:2px 2px;font-size:11px;line-height:1.3;';
             var lb = document.createElement('span');
-            lb.style.cssText = 'flex:0 0 34px;text-align:right;color:' + th.tc2 + ';font-variant-numeric:tabular-nums;';
+            lb.style.cssText = 'flex:0 0 34px;text-align:right;color:' + th.v.tc2 + ';font-variant-numeric:tabular-nums;';
             lb.textContent = stepLabel(st);
             var tx = document.createElement('span');
-            tx.style.cssText = 'flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:' + (st.kind === 'death' || (st.kind === 'loss' && st.exact) ? th.mc : th.tc) + ';' + (st.kind === 'death' ? 'font-weight:700;' : '');
+            tx.style.cssText = 'flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:' + (st.kind === 'death' || (st.kind === 'loss' && st.exact) ? th.v.mc : th.v.tc) + ';' + (st.kind === 'death' ? 'font-weight:700;' : '');
             tx.textContent = stepText(st, code);
             tx.title = tx.textContent;
             row.appendChild(lb); row.appendChild(tx);
@@ -548,7 +551,7 @@
                 a.textContent = '▶';
                 a.title = tr('watch', null, code);
                 a.setAttribute('role', 'button');
-                a.style.cssText = 'flex:0 0 auto;cursor:pointer;color:' + th.mc + ';padding:0 4px;min-width:18px;text-align:center;border-radius:3px;background:rgba(255,255,255,0.06);';
+                a.style.cssText = 'flex:0 0 auto;cursor:pointer;color:' + th.v.mc + ';padding:0 4px;min-width:18px;text-align:center;border-radius:3px;background:rgba(255,255,255,0.06);';
                 (function (slot, pkt) {
                     a.addEventListener('click', function (ev) {
                         ev.stopPropagation();
@@ -574,7 +577,7 @@
         if (wide) {
             /* beside the card (a 915x412 phone has room for both; the card alone is already tall) */
             el.style.cssText = 'position:absolute;left:calc(100% + 8px);top:0;width:252px;box-sizing:border-box;max-height:calc(100vh - 8px);overflow-y:auto;' +
-                'background:' + th.pc + ';border:1px solid ' + th.pc2 + ';border-top:3px solid ' + th.mc + ';border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);padding:8px 10px;';
+                'background:' + th.v.pc + ';border:1px solid ' + th.v.pc2 + ';border-top:3px solid ' + th.v.mc + ';border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);padding:8px 10px;color:' + th.v.tc + ';';
             modal.style.marginLeft = '-130px';
             modal.appendChild(el);
             try {
@@ -583,7 +586,7 @@
             } catch (e) { }
         } else {
             var c = modal.querySelector('.lm-go-card') || modal;
-            el.style.cssText = 'padding:6px 12px 10px;border-top:1px solid ' + th.pc2 + ';';
+            el.style.cssText = 'padding:6px 12px 10px;border-top:1px solid ' + th.v.pc2 + ';';
             c.appendChild(el);
         }
         recapEl = el;
@@ -595,13 +598,13 @@
         if (!c) return;
         var th = cardTheme, row = document.createElement('div');
         row.id = 'lm-go-recap-hint';
-        row.style.cssText = 'padding:0 12px 10px;font-size:11px;text-align:center;color:' + th.tc2 + ';';
+        row.style.cssText = 'padding:0 12px 10px;font-size:11px;text-align:center;color:' + th.v.tc2 + ';';
         var t = document.createElement('span');
         t.textContent = tr('hint') + ' ';
         var b = document.createElement('button');
         b.type = 'button';
         b.textContent = tr('turnOn');
-        b.style.cssText = 'background:' + th.mc + ';color:#fff;border:0;border-radius:4px;padding:3px 10px;margin-top:4px;font-size:11px;font-weight:700;cursor:pointer;min-height:26px;';
+        b.style.cssText = 'background:' + th.v.mc + ';color:' + th.v.pc + ';border:0;font-family:inherit;border-radius:4px;padding:3px 10px;margin-top:4px;font-size:11px;font-weight:700;cursor:pointer;min-height:26px;';
         b.addEventListener('click', function (ev) {
             ev.stopPropagation();
             setOption('deathRecap', true);

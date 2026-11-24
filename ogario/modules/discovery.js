@@ -8,7 +8,7 @@
  *
  * After an update it opens once by itself, only for a returning player (one who had the guide or saw
  * the settings NEW badges of an older version; never on the first visit) and only while it has cards
- * that player has not seen; it waits until the menu is shown
+ * that player has not seen (a card changed since gets cv: 2, 3... and is NEW again); it waits until the menu is shown
  * and nobody is playing. "Show after updates" turns that off. The card ids seen, the last version and
  * that switch are in localStorage 'lmDiscover' (validated on read). Reachable from the Command Centre
  * and the link in the "What's new" toast.
@@ -135,6 +135,22 @@
     function unseenIds(st, ids) {
         return ids.filter(function (id) { return st.seen.indexOf(id) < 0; });
     }
+    /* what is kept in 'seen' for a card: its id, plus '-v2'... once the card was changed (cv), so
+     * a changed card is NEW again by itself; the stored format stays a list of ids */
+    function seenKey(card) {
+        var v = card && +card.cv;
+        return v > 1 ? card.id + '-v' + Math.floor(v) : card.id;
+    }
+    /* marks the cards seen, dropping older versions of the same cards */
+    function markSeen(st, cards) {
+        cards.forEach(function (c) {
+            var k = seenKey(c), re = new RegExp('^' + c.id + '(-v[0-9]+)?$');
+            st.seen = st.seen.filter(function (s) { return s === k || !re.test(s); });
+            if (st.seen.indexOf(k) < 0) st.seen.push(k);
+        });
+        if (st.seen.length > MAX_SEEN) st.seen = st.seen.slice(st.seen.length - MAX_SEEN);
+        return st;
+    }
     /* open by itself: a player who had the guide before, a new version, cards not seen yet */
     function shouldAutoOpen(st, ver, ids) {
         return !!(st.had && !st.off && ver && st.v !== String(ver) && unseenIds(st, ids).length);
@@ -203,7 +219,25 @@
             opts: ['companionLive', 'companionChat'], win: opener('LMCompanion.open') },
         { id: 'touchEditor', en: 'Touch control editor', el: 'Επεξεργασία κουμπιών αφής',
             d: { en: 'Phones: move and resize the touch buttons and the joystick.', el: 'Κινητά: μετακίνηση και μέγεθος κουμπιών αφής και joystick.' },
-            opts: [], win: opener('_lmMobileHost.openEditor'), phoneOnly: true }
+            opts: [], win: opener('_lmMobileHost.openEditor'), phoneOnly: true },
+        { id: 'practice', en: 'Practice arena', el: 'Αρένα εξάσκησης',
+            d: { en: 'Offline drills against bots, with personal bests and a ghost of your best run. No server involved.', el: 'Ασκήσεις εκτός σύνδεσης με bots, προσωπικά ρεκόρ και φάντασμα της καλύτερης προσπάθειας.' },
+            opts: [], win: opener('lmPractice', 'open') },
+        { id: 'macroEditor', en: 'Custom macros', el: 'Προσαρμοσμένα macro',
+            d: { en: 'Build your own key macros from steps: split, feed, wait, move to the mouse.', el: 'Φτιάξε δικά σου macro πλήκτρων από βήματα: split, feed, αναμονή, κίνηση στο ποντίκι.' },
+            opts: [], win: opener('lmMacroEditor', 'open') },
+        { id: 'themeWorkshop', en: 'Theme workshop', el: 'Εργαστήριο θεμάτων',
+            d: { en: 'Edit the colours of the menu, HUD and game with a live preview, and save or share themes.', el: 'Αλλαγή χρωμάτων μενού, HUD και παιχνιδιού με ζωντανή προεπισκόπηση, αποθήκευση και κοινή χρήση θεμάτων.' },
+            opts: [], win: opener('LMThemeWorkshop.open') },
+        { id: 'accessibility', en: 'Accessibility', el: 'Προσβασιμότητα',
+            d: { en: 'Larger menu and HUD text, size symbols on opponents, less motion. Colour-blind colours: the theme preset.', el: 'Μεγαλύτερο κείμενο μενού και HUD, σύμβολα μεγέθους στους αντιπάλους, λιγότερη κίνηση. Χρώματα αχρωματοψίας: το έτοιμο θέμα.' },
+            opts: ['a11yIndicators', 'reducedMotion'] },
+        { id: 'plugins', en: 'User Scripts', el: 'User Scripts',
+            d: { en: 'Add plugins from the catalogue or your own scripts, each in a slot you can turn on and off.', el: 'Πρόσθεσε plugins από τον κατάλογο ή δικά σου scripts, το καθένα σε θέση που ανοίγει και κλείνει.' },
+            opts: [], win: opener('LMPlugins.open', 'plugins') },
+        { id: 'lab', en: 'Lab (experimental)', el: 'Lab (πειραματικά)',
+            d: { en: 'Experiments you can try one by one; all are off until you turn them on.', el: 'Πειράματα που δοκιμάζεις ένα ένα· όλα κλειστά μέχρι να τα ανοίξεις.' },
+            opts: [], win: opener('LMLab.open') }
     ];
     var CARD_IDS = CARDS.map(function (c) { return c.id; });
 
@@ -226,7 +260,8 @@
         toggleBox: toggleBox,
         SERVER_TYPES: SERVER_TYPES, CAPS: CAPS, CARDS: CARDS, KEY: KEY, MAX_SEEN: MAX_SEEN,
         serverTypeOf: serverTypeOf, capValue: capValue, capNote: capNote, capsFor: capsFor,
-        parseStore: parseStore, serializeStore: serializeStore, unseenIds: unseenIds, shouldAutoOpen: shouldAutoOpen, firstState: firstState
+        parseStore: parseStore, serializeStore: serializeStore, unseenIds: unseenIds, shouldAutoOpen: shouldAutoOpen, firstState: firstState,
+        seenKey: seenKey, markSeen: markSeen
     };
     var api = W.LMDiscovery = { core: core };
 
@@ -284,7 +319,9 @@
     function visibleCards() { return CARDS.filter(function (c) { return !c.phoneOnly || isPhone(); }); }
     function mainColor() {
         var ds = W.defaultSettings;
-        return ds && typeof ds.menuMainColor === 'string' && /^#[0-9a-f]{3,8}$|^rgba?\([\d\s.,%]+\)$/i.test(ds.menuMainColor) ? ds.menuMainColor : '#01d9cc';
+        var c = ds && typeof ds.menuMainColor === 'string' && /^#[0-9a-f]{3,8}$|^rgba?\([\d\s.,%]+\)$/i.test(ds.menuMainColor) ? ds.menuMainColor : '#01d9cc';
+        /* the theme variable first, so a theme change shows at once */
+        return 'var(--lm-mc,' + c + ')';
     }
 
     /* ═══ Window ═══ */
@@ -302,41 +339,41 @@
         st.id = 'lm-dc-style';
         st.textContent =
             '#lm-dc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;' +
-            'background:rgba(0,0,0,.45);padding:8px;box-sizing:border-box;font-family:Ubuntu,Roboto,Arial,sans-serif}' +
+            'background:rgba(0,0,0,.55);padding:8px;box-sizing:border-box;font-family:inherit}' +
             '#lm-dc *{box-sizing:border-box}' +
-            '#lm-dc .lm-dc-panel{width:760px;max-width:100%;max-height:100%;display:flex;flex-direction:column;background:#1b1d22;color:#e8e8e8;' +
-            'border:1px solid #333;border-top:3px solid var(--dc-mc);border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.6);overflow:hidden}' +
-            '#lm-dc .lm-dc-head{display:flex;align-items:center;gap:6px;padding:6px 6px 6px 12px;border-bottom:1px solid #333;flex:0 0 auto}' +
-            '#lm-dc .lm-dc-title{flex:1 1 auto;min-width:0;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
-            '#lm-dc .lm-dc-tab{flex:0 0 auto;height:34px;padding:0 10px;border:1px solid #444;border-radius:5px;background:transparent;color:#ccc;font-size:12px;cursor:pointer}' +
+            '#lm-dc .lm-dc-panel{width:760px;max-width:100%;max-height:100%;display:flex;flex-direction:column;background:var(--lm-pc,#1b1d22);color:var(--lm-tc,#e8e8e8);' +
+            'border:1px solid var(--lm-pc2,#333);border-top:3px solid var(--dc-mc);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden}' +
+            '#lm-dc .lm-dc-head{display:flex;align-items:center;gap:6px;padding:6px 6px 6px 12px;border-bottom:1px solid var(--lm-pc2,#333);background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%);flex:0 0 auto}' +
+            '#lm-dc .lm-dc-title{flex:1 1 auto;min-width:0;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dc-mc,inherit);text-transform:uppercase;letter-spacing:1px}' +
+            '#lm-dc .lm-dc-tab{flex:0 0 auto;height:34px;padding:0 10px;border:1px solid var(--lm-pc2,#444);border-radius:4px;background:rgba(255,255,255,.05);color:var(--lm-tc2,#ccc);font-size:12px;cursor:pointer}' +
             '#lm-dc .lm-dc-tab.on{border-color:var(--dc-mc);color:var(--dc-mc)}' +
-            '#lm-dc .lm-dc-x{flex:0 0 auto;width:40px;height:40px;border:0;border-radius:5px;background:#2a2d33;color:#eee;font-size:22px;line-height:1;cursor:pointer}' +
+            '#lm-dc .lm-dc-x{flex:0 0 auto;width:40px;height:40px;border:0;border-radius:4px;background:rgba(255,255,255,.05);color:var(--lm-tc2,#eee);font-size:18px;line-height:1;cursor:pointer}' +
             '#lm-dc .lm-dc-body{flex:1 1 auto;overflow-y:auto;padding:8px 10px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}' +
-            '#lm-dc .lm-dc-intro{font-size:11px;color:#aaa;margin:0 0 6px}' +
+            '#lm-dc .lm-dc-intro{font-size:11px;color:var(--lm-tc2,#aaa);margin:0 0 6px}' +
             '#lm-dc .lm-dc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}' +
-            '#lm-dc .lm-dc-card{border:1px solid #333;border-radius:6px;padding:7px 8px;background:#22252b;display:flex;flex-direction:column;gap:5px}' +
+            '#lm-dc .lm-dc-card{border:1px solid var(--lm-pc2,#333);border-radius:6px;padding:7px 8px;background:var(--lm-pc2,#22252b);display:flex;flex-direction:column;gap:5px}' +
             '#lm-dc .lm-dc-name{font-size:13px;font-weight:700}' +
-            '#lm-dc .lm-dc-desc{font-size:11px;color:#bbb;line-height:1.35}' +
+            '#lm-dc .lm-dc-desc{font-size:11px;color:var(--lm-tc2,#bbb);line-height:1.35}' +
             '#lm-dc .lm-dc-sw{display:flex;flex-wrap:wrap;gap:4px}' +
-            '#lm-dc .lm-dc-chip{min-height:30px;max-width:100%;padding:2px 8px;border:1px solid #555;border-radius:15px;background:transparent;color:#ddd;font-size:11px;' +
+            '#lm-dc .lm-dc-chip{min-height:30px;max-width:100%;padding:2px 8px;border:1px solid var(--lm-tc2,#555);border-radius:15px;background:transparent;color:var(--lm-tc,#ddd);font-size:11px;' +
             'cursor:pointer;text-align:left;white-space:normal;touch-action:manipulation}' +
-            '#lm-dc .lm-dc-chip b{font-size:9px;margin-right:4px;padding:1px 4px;border-radius:7px;background:#444;color:#ddd}' +
-            '#lm-dc .lm-dc-chip.on{border-color:var(--dc-mc)}#lm-dc .lm-dc-chip.on b{background:var(--dc-mc);color:#000}' +
+            '#lm-dc .lm-dc-chip b{font-size:9px;margin-right:4px;padding:1px 4px;border-radius:7px;background:rgba(0,0,0,.25);color:var(--lm-tc,#ddd)}' +
+            '#lm-dc .lm-dc-chip.on{border-color:var(--dc-mc)}#lm-dc .lm-dc-chip.on b{background:var(--dc-mc);color:var(--lm-pc,#000)}' +
             '#lm-dc .lm-dc-chip:disabled{opacity:.45;cursor:default}' +
             '#lm-dc .lm-dc-acts{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}' +
-            '#lm-dc .lm-dc-btn{min-height:30px;padding:2px 10px;border:1px solid #555;border-radius:4px;background:#2c3037;color:#eee;font-size:11px;cursor:pointer;touch-action:manipulation}' +
+            '#lm-dc .lm-dc-btn{min-height:30px;padding:2px 10px;border:1px solid var(--lm-pc2,#555);border-radius:4px;background:rgba(255,255,255,.05);color:var(--lm-tc,#eee);font-size:11px;cursor:pointer;touch-action:manipulation}' +
             '#lm-dc .lm-dc-btn.pri{border-color:var(--dc-mc);color:var(--dc-mc)}' +
             '#lm-dc .lm-dc-msg{font-size:11px;color:var(--dc-mc);min-height:0}' +
             '#lm-dc .lm-new-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:3px;vertical-align:middle;margin-left:5px}' +
-            '#lm-dc .lm-dc-foot{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:4px 10px;border-top:1px solid #333;font-size:11px;color:#aaa}' +
+            '#lm-dc .lm-dc-foot{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:4px 10px;border-top:1px solid var(--lm-pc2,#333);font-size:11px;color:var(--lm-tc2,#aaa)}' +
             '#lm-dc .lm-dc-foot label{display:flex;align-items:center;gap:5px;margin:0;cursor:pointer;min-height:30px;font-weight:400}' +
             '#lm-dc .lm-dc-srv{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:6px;font-size:12px}' +
-            '#lm-dc .lm-dc-srv select{height:32px;background:#2a2d33;color:#eee;border:1px solid #555;border-radius:4px;font-size:12px}' +
+            '#lm-dc .lm-dc-srv select{height:32px;background:var(--lm-pc2,#2a2d33);color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,#555);border-radius:4px;font-size:12px}' +
             '#lm-dc .lm-dc-caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px 10px;list-style:none;margin:0;padding:0}' +
-            '#lm-dc .lm-dc-caps li{display:flex;align-items:baseline;gap:6px;font-size:12px;padding:3px 0;border-bottom:1px solid #2a2d33}' +
+            '#lm-dc .lm-dc-caps li{display:flex;align-items:baseline;gap:6px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--lm-pc2,#2a2d33)}' +
             '#lm-dc .lm-dc-v{flex:0 0 auto;width:86px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}' +
             '#lm-dc .lm-dc-v.y{color:#5fd35f}#lm-dc .lm-dc-v.p{color:#e6c23c}#lm-dc .lm-dc-v.u{color:#9aa}#lm-dc .lm-dc-v.n{color:#e26a6a}' +
-            '#lm-dc .lm-dc-note{color:#999;font-size:11px}' +
+            '#lm-dc .lm-dc-note{color:var(--lm-tc2,#999);font-size:11px}' +
             '.lm-dc-flash{outline:3px solid var(--lm-dc-mc,#01d9cc)!important;outline-offset:3px;animation:lmdcflash .6s ease-in-out 5}' +
             '@keyframes lmdcflash{50%{outline-color:transparent}}' +
             '@media (max-height:500px){#lm-dc{padding:4px}#lm-dc .lm-dc-head{padding:3px 3px 3px 10px}#lm-dc .lm-dc-body{padding:6px 8px}}' +
@@ -454,7 +491,7 @@
             var card = mk('div', 'lm-dc-card');
             card.setAttribute('data-card', c.id);
             var name = mk('div', 'lm-dc-name', tr(c) || c.en);
-            if (st.seen.indexOf(c.id) < 0) {
+            if (st.seen.indexOf(seenKey(c)) < 0) {
                 var cls = W.textLanguage && W.textLanguage.lmNewBadge;
                 name.appendChild(mk('span', 'lm-new-badge', plain(cls) || 'NEW'));
             }
@@ -565,8 +602,7 @@
     function close() {
         if (!isOpen()) return;
         root.parentNode.removeChild(root);
-        var st = load();
-        visibleCards().forEach(function (c) { if (st.seen.indexOf(c.id) < 0) st.seen.push(c.id); });
+        var st = markSeen(load(), visibleCards());
         st.v = ver();
         save(st);
         try { if (lastFocus && lastFocus.focus && D.body.contains(lastFocus)) lastFocus.focus(); } catch (e) { }
@@ -590,7 +626,7 @@
             if (v) { st.v = v; save(st); }
             return;
         }
-        if (!shouldAutoOpen(st, v, visibleCards().map(function (c) { return c.id; }))) return;
+        if (!shouldAutoOpen(st, v, visibleCards().map(seenKey))) return;
         var tries = 0, calm = 0;
         var timer = setInterval(function () {
             tries++;

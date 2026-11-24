@@ -189,5 +189,25 @@ check('gallery: fonts consistent with their family / weight', cat.themes.every(t
 check('gallery: a catalogue of another format is refused', C.cleanCatalogue({ format: 'x', themes: [] }) === null && C.cleanCatalogue({ format: 'lm-theme-catalogue', themes: [{ format: 'lm-theme', version: 1, theme: { bgColor: 'javascript:x' } }] }).length === 0);
 check('catalogue file is small', catalogue.length < 256 * 1024);
 
+// ── built-in presets (the Theme preset / Menu theme lists that moved from the Theme tab)
+const B = C.builtins();
+const nGame = Object.keys(ctx.themePresets).length, nMenu = Object.keys(ctx.themeMenus).length;
+check('built-in: every game and menu preset listed', B.filter(b => b.kind === 'game').length === nGame && B.filter(b => b.kind === 'menu').length === nMenu && nGame >= 8 && nMenu >= 3);
+check('built-in: distinct ids', new Set(B.map(b => b.bid)).size === B.length && B.every(b => /^[a-z0-9-]+$/.test(b.bid)));
+B.forEach(b => {
+  const src = (b.kind === 'menu' ? ctx.themeMenus : ctx.themePresets)[b.key];
+  const m = C.presetMap(b) || {};
+  /* the old list set every key of the preset that is a setting (Settings.changePreset); except
+   * lbTeammateColor: not drawn, only a marker LMexpress reads, and never part of a theme */
+  const keys = Object.keys(src).filter(k => k !== 'name' && k !== 'lbTeammateColor' && Object.prototype.hasOwnProperty.call(TD, k));
+  const lost = keys.filter(k => !(k in m) || J(m[k]) !== J(C.themeValue(k, src[k])));
+  check('built-in "' + b.name + '" (' + b.kind + '): every value kept' + (lost.length ? ' (lost: ' + lost.join(', ') + ')' : ''), lost.length === 0 && m[b.kind === 'menu' ? 'menuPreset' : 'preset'] === b.key);
+});
+const base = { theme: { bgColor: '#123456', hudScale: 1.2 } };
+const lv1 = B.filter(b => b.kind === 'menu' && b.key === 'legendv1')[0];
+const ob = lv1 && C.builtinBody(lv1, base);
+check('built-in over a theme: other settings stay, the preset wins', !!ob && ob.theme.bgColor === '#123456' && ob.theme.hudScale === 1.2 && ob.theme.menuMainColor === ctx.themeMenus.legendv1.menuMainColor && base.theme.menuMainColor === undefined);
+check('built-in: unknown preset gives nothing', C.presetMap({ kind: 'game', key: 'nope' }) === null && C.presetMap({ kind: 'x', key: 'legendv2' }) === null);
+
 console.log(fail ? fail + ' FAILED' : 'all passed');
 process.exit(fail ? 1 : 0);

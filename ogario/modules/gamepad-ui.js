@@ -150,12 +150,16 @@
         return window.LMGamepad || null;
     }
 
-    function colors() {
+    /* colors() gives CSS (var(--lm-x, current) so the open window follows a theme change);
+     * colors(true) gives the resolved colours for the stick canvas */
+    function colors(raw) {
         var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
-        return {
+        var r = {
             mc: ds.menuMainColor || '#01d9cc', pc: ds.menuPanelColor || '#00243e', pc2: ds.menuPanelColor2 || '#002f52',
             tc: ds.menuTextColor || '#ffffff', tc2: ds.menuTextColor2 || '#8096a7'
         };
+        if (raw) return r;
+        return { mc: 'var(--lm-mc,' + r.mc + ')', pc: 'var(--lm-pc,' + r.pc + ')', pc2: 'var(--lm-pc2,' + r.pc2 + ')', tc: 'var(--lm-tc,' + r.tc + ')', tc2: 'var(--lm-tc2,' + r.tc2 + ')' };
     }
 
     function el(tag, css, text) {
@@ -570,8 +574,9 @@
             var a = pad && pad.axes ? pad.axes : [];
             var ax = function (i) { var v = Number(a[i]); return isFinite(v) ? v : 0; };
             var dz = g.getOpts().gamepadDeadzone;
-            drawStick(live.ls, ax(0), ax(1), dz, c);
-            drawStick(live.rs, ax(2), ax(3), dz, c);
+            var cr = colors(true);
+            drawStick(live.ls, ax(0), ax(1), dz, cr);
+            drawStick(live.rs, ax(2), ax(3), dz, cr);
             /* LT / RT pull on their chips */
             [6, 7].forEach(function (i) {
                 var b = pad && pad.buttons && pad.buttons[i];
@@ -641,7 +646,7 @@
         addStyle(c);
         g.setSuspended(true);
         /* a tap outside the window closes it */
-        backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483646;background:rgba(0,0,0,0.35);');
+        backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483646;background:rgba(0,0,0,0.55);');
         backdrop.id = 'lm-gp-backdrop';
         backdrop.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); close(); });
         modal = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:720px;max-width:calc(100vw - 16px);' +
@@ -649,7 +654,7 @@
             'background:' + c.pc + ';border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:6px;' +
             'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
         modal.id = 'lm-gp-modal';
-        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid ' + c.pc2 + ';');
+        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
         head.appendChild(el('div', 'font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;flex:none;', '🎮 ' + t('title')));
         tabsEl = el('div', 'flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;');
         [['buttons', t('tabButtons')], ['tuning', t('tabTuning')], ['profiles', t('tabProfiles')], ['test', t('tabTest')]].forEach(function (d) {

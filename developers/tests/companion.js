@@ -201,5 +201,24 @@ const v4 = fs.readFileSync(path.join(repo, 'ogario', 'ogario.v4.js'), 'utf8');
 check('option off by default', /companionLive: false,/.test(v4) && /companionChat: false,/.test(v4));
 check('loader entry', v4.indexOf("ogario/modules/companion.js?v=") >= 0);
 
+/* ── privacy switches: hidden team / map, delayed map ── */
+{
+  let st;
+  st = C.buildState(full, { hideTeam: true });
+  check('hide teammates: no team points, own kept', st.map.team.length === 0 && st.map.own && st.map.own.x === 0.5);
+  st = C.buildState(full, { map: 'hide' });
+  check('map hidden: no map at all (own, trail, team)', st.map === null && st.mass === 1235);
+  check('privacy store: defaults and validation', J(C.parsePrivacy(null)) === J({ hideTeam: false, map: 'live' }) &&
+    J(C.parsePrivacy('{"hideTeam":true,"map":"delay"}')) === J({ hideTeam: true, map: 'delay' }) &&
+    J(C.parsePrivacy('{"hideTeam":"yes","map":"evil"}')) === J({ hideTeam: false, map: 'live' }) && C.parsePrivacy('{oops').map === 'live');
+  const d = C.createDelay(30000, 500);
+  d.push(0, 'a'); d.push(100, 'skip'); d.push(600, 'b'); d.push(20000, 'c');
+  check('delay: nothing before the delay', d.get(29999) === null);
+  check('delay: the value 30 s old', d.get(30000) === 'a' && d.get(30700) === 'b' && d.get(50000) === 'c');
+  check('delay: older values dropped', d.size() === 1);
+  d.clear();
+  check('delay: clear', d.get(1e9) === null && d.size() === 0);
+}
+
 console.log(fail ? fail + ' FAILED' : 'all passed');
 process.exit(fail ? 1 : 0);
