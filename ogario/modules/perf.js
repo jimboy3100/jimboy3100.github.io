@@ -503,7 +503,7 @@
         active: false, timer: 0, start: Date.now(), ticks: 0,
         t: [], ping: [], pps: [], open: [],
         pongs: [], ppsLive: [], closes: [], reconnects: 0, hadClose: false, hosts: [],
-        lastVal: 0, lastStamp: 0, sampledStamp: 0
+        lastVal: 0, lastStamp: 0, sampledStamp: 0, lastPeriodicSample: 0
     };
 
     function pingNow() {
@@ -524,11 +524,16 @@
         if (net.t.length > NET_SAMPLES) { net.t.shift(); net.ping.shift(); net.pps.shift(); net.open.shift(); }
         if (open) {
             /* a new answer: the value changed, or a ping was sent long enough ago to be answered */
-            if (p.v > 0 && (p.v !== net.lastVal || (p.s && p.s !== net.sampledStamp && wall - p.s >= 1500))) {
+            /* P1 fix #32: also sample at a fixed interval (every 5s) so steady-state pings
+             * are represented in the average, not just transitions/spikes. */
+            var changed = p.v > 0 && (p.v !== net.lastVal || (p.s && p.s !== net.sampledStamp && wall - p.s >= 1500));
+            var periodic = p.v > 0 && (!net.lastPeriodicSample || wall - net.lastPeriodicSample >= 5000);
+            if (changed || periodic) {
                 net.pongs.push(p.v);
                 if (net.pongs.length > 5000) net.pongs.shift();
                 net.lastVal = p.v;
                 net.sampledStamp = p.s;
+                if (periodic) net.lastPeriodicSample = wall;
             }
             net.ppsLive.push(pps);
             if (net.ppsLive.length > NET_SAMPLES) net.ppsLive.shift();
@@ -578,6 +583,9 @@
         if (on === net.active) return;
         net.active = on;
         if (on) {
+            /* P1 fix #31: reset net.start when tracking is enabled, so the session
+             * duration measures actual tracking time, not time since page load. */
+            net.start = Date.now();
             net.timer = setInterval(function () { try { netTick(); } catch (e) { } }, 1000);
             /* already connected: count this server */
             var lm = window.legendmod;

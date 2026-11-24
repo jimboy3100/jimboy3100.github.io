@@ -197,9 +197,13 @@
         var out = {}, n = 0;
         for (var k in obj) {
             if (!own.call(obj, k)) continue;
-            var v = fn(k, obj[k]);
-            if (v === undefined) continue;
-            out[k] = v;
+            /* P1 fix #22: a malformed value could throw in the validator (e.g. unexpected
+             * type in a nested property). Skip the entry instead of crashing profile loading. */
+            try {
+                var v = fn(k, obj[k]);
+                if (v === undefined) continue;
+                out[k] = v;
+            } catch (e) { continue; }
             if (++n >= (max || 5000)) break;
         }
         return n ? out : null;
@@ -247,7 +251,7 @@
     }
     function cleanProfiles(raw) {
         if (!Array.isArray(raw)) return [];
-        var seen = {}, out = [];
+        var seen = Object.create(null), out = [];
         for (var i = 0; i < raw.length && out.length < MAX_PROFILES; i++) {
             var p = cleanProfile(raw[i]);
             if (!p || seen[p.id]) continue;
@@ -340,7 +344,7 @@
             rows = rows.concat(part);
         });
         if (isObj(a.h) && isObj(b.h)) {
-            var ha = hotkeysByCommand(a.h), hb = hotkeysByCommand(b.h), seen = {}, part = [];
+            var ha = hotkeysByCommand(a.h), hb = hotkeysByCommand(b.h), seen = Object.create(null), part = [];
             Object.keys(ha).concat(Object.keys(hb)).forEach(function (c) {
                 if (seen[c]) return;
                 seen[c] = true;
@@ -737,6 +741,10 @@
             if (c.h) applyHotkeysLive(data.h);
         } finally {
             applying = false;
+            /* P1 fix #18: slider input events re-arm app._lmSettingsSaveT during the
+             * apply loop. The deferred saveSettings() fires after applying = false,
+             * so noteChange() creates a false 'change' backup. Cancel it again here. */
+            if (app && app._lmSettingsSaveT) { clearTimeout(app._lmSettingsSaveT); app._lmSettingsSaveT = null; }
         }
         if (opts.id) writeText(KEY_LAST, opts.id);
         else if (opts.reason !== 'profile') removeKey(KEY_LAST);
