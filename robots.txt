@@ -4,13 +4,9 @@ Allow: /
 
 # Sitemap
 Sitemap: https://www.legendmod.ml/sitemap.xml
-Sitemap: https://jimboy3100.github.io/sitemap.xml
 
 # Disallow internal/utility paths
-Disallow: /.well-known/
-Disallow: /.claude/
 Disallow: /server-side/
 Disallow: /ogario/captcha.html
 Disallow: /Lc/auth/
 Disallow: /LMexpress/extension/
-Disallow: /AjaxData/
