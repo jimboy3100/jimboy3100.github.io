@@ -27899,7 +27899,10 @@ function thelegendmodproject() {
                     try {
                         i._lmCircle = true; /* already cut to a circle: no clip needed when drawn */
                         this.customSkinsCache[e + "_cached"] = i;
-                        if (window.drawRender && window.drawRender.uploadSkinTexture) {
+                        /* Upload to the GPU skin array right away only while the WebGL cell scene is
+                         * in use (it uploads any missing skin itself on first draw). Otherwise every
+                         * loaded skin cost a 512 px resize + texture upload (50-60 ms long tasks). */
+                        if (window.drawRender && window.drawRender.uploadSkinTexture && Date.now() - (window.drawRender._lmGlSceneAt || 0) < 5000) {
                             window.drawRender.uploadSkinTexture(e, i);
                         }
                     } catch (eErr) {
@@ -27967,7 +27970,7 @@ function thelegendmodproject() {
                     try {
                         i._lmCircle = true;
                         this.customSkinsCache[e + "_cached3"] = i;
-                        if (window.drawRender && window.drawRender.uploadSkinTexture) {
+                        if (window.drawRender && window.drawRender.uploadSkinTexture && Date.now() - (window.drawRender._lmGlSceneAt || 0) < 5000) {
                             window.drawRender.uploadSkinTexture(e + "_cached3", i);
                         }
                     } catch (eErr) {
@@ -28048,7 +28051,49 @@ function thelegendmodproject() {
         _lmTouchSkin(url) {
             if (!url) return;
             if (!this._lmSkinUse) this._lmSkinUse = new Map();
-            this._lmSkinUse.set(url, Date.now());
+            /* frame start time while a frame is drawn (set/cleared around renderFrame):
+             * one Date.now() per frame instead of one per skinned cell */
+            this._lmSkinUse.set(url, this._lmTouchNow || Date.now());
+        },
+        /*
+         * Map key strings for a nick (clean nick, nick/clean nick + colour, + "#000000")
+         * and for a skin URL ('_cached3', '_cached'), built once instead of for every
+         * skinned cell in every frame. Only the strings are kept, never what they look
+         * up, so newly cached or mapped skins show as before. Bounded: cleared at 2000.
+         */
+        _lmSkinKeys(nick, color, hexColor) {
+            var m = this._lmSkinKeyMemo || (this._lmSkinKeyMemo = new Map());
+            var e = m.get(nick);
+            if (e === undefined) {
+                if (m.size >= 2000) m.clear();
+                _RE_CLAN_TAG.lastIndex = 0;
+                var cn = nick.replace(_RE_CLAN_TAG, '').trim();
+                e = { cn: cn, n0: nick + "#000000", c0: cn + "#000000", hx: null, nh: '', ch: '', col: null, nc: '' };
+                m.set(nick, e);
+            }
+            if (e.hx !== hexColor) {
+                e.hx = hexColor;
+                e.nh = nick + hexColor;
+                e.ch = e.cn + hexColor;
+            }
+            if (color && e.col !== color) {
+                e.col = color;
+                e.nc = nick + color;
+            }
+            return e;
+        },
+        _lmUrlKeys(url) {
+            var m = this._lmUrlKeyMemo || (this._lmUrlKeyMemo = new Map());
+            var e = m.get(url);
+            if (e === undefined) {
+                e = { c3: url + '_cached3', c: url + '_cached' };
+                /* long data: URLs are not kept (their key copies would be large) */
+                if (typeof url === 'string' && url.length <= 2048) {
+                    if (m.size >= 2000) m.clear();
+                    m.set(url, e);
+                }
+            }
+            return e;
         },
         _lmTrimSkinCache() {
             var use = this._lmSkinUse;
@@ -28073,15 +28118,16 @@ function thelegendmodproject() {
         getCachedSkin(skinCache, skinMap) {
             if (!skinMap) return null;
             if (skinCache === this.customSkinsCache) this._lmTouchSkin(skinMap);
-            if (skinCache[skinMap + '_cached3']) {
+            var _uk = this._lmUrlKeys(skinMap);
+            if (skinCache[_uk.c3]) {
                 /* Use per-frame _skinHalf (set in renderFrame) instead of new Date() per cell */
                 if (drawRender._skinHalf) {
-                    if (_isValidSkin(skinCache[skinMap + '_cached3'])) return skinCache[skinMap + '_cached3'];
+                    if (_isValidSkin(skinCache[_uk.c3])) return skinCache[_uk.c3];
                 } else {
-                    if (_isValidSkin(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
+                    if (_isValidSkin(skinCache[_uk.c])) return skinCache[_uk.c];
                 }
             }
-            if (_isValidSkin(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
+            if (_isValidSkin(skinCache[_uk.c])) return skinCache[_uk.c];
             if (_isValidSkin(skinCache[skinMap])) return skinCache[skinMap];
             return null;
         },
@@ -28124,36 +28170,37 @@ function thelegendmodproject() {
         },
         checkSkinsMap(nick, color) {
             if (!nick) return false;
-            _RE_CLAN_TAG.lastIndex = 0;
-            var cleanNick = nick.replace(_RE_CLAN_TAG, '').trim();
             /* Cache lowered color to avoid per-call string allocation */
             var hexColor;
             if (color && typeof color === 'string') {
                 if (color === this._lastColor) { hexColor = this._lastColorLower; }
                 else { hexColor = this._lastColorLower = (this._lastColor = color).toLowerCase(); }
             } else { hexColor = '#000000'; }
+            var _k = this._lmSkinKeys(nick, color, hexColor);
+            var cleanNick = _k.cn;
             return !!(
                 this.customSkinsMap.hasOwnProperty(nick) ||
-                this.customSkinsMap.hasOwnProperty(nick + hexColor) ||
-                this.customSkinsMap.hasOwnProperty(nick + "#000000") ||
+                this.customSkinsMap.hasOwnProperty(_k.nh) ||
+                this.customSkinsMap.hasOwnProperty(_k.n0) ||
                 (cleanNick && (
                     this.customSkinsMap.hasOwnProperty(cleanNick) ||
-                    this.customSkinsMap.hasOwnProperty(cleanNick + "#000000") ||
-                    this.customSkinsMap.hasOwnProperty(cleanNick + hexColor)
+                    this.customSkinsMap.hasOwnProperty(_k.c0) ||
+                    this.customSkinsMap.hasOwnProperty(_k.ch)
                 ))
             );
         },
         getCustomSkin(nick, color, skinKey) {
             /* A player without a name shows no skin at all (custom, vanilla or server skin). */
             if (!nick || !String(nick).trim()) return null;
-            _RE_CLAN_TAG.lastIndex = 0;
-            var cleanNick = nick ? nick.replace(_RE_CLAN_TAG, '').trim() : '';
             /* Cache lowered color to avoid per-call string allocation */
             var hexColor;
             if (color && typeof color === 'string') {
                 if (color === this._lastColor) { hexColor = this._lastColorLower; }
                 else { hexColor = this._lastColorLower = (this._lastColor = color).toLowerCase(); }
             } else { hexColor = '#000000'; }
+            /* clean nick and nick/colour keys built once per nick (see _lmSkinKeys) */
+            var _k = this._lmSkinKeys(nick, color, hexColor);
+            var cleanNick = _k.cn;
 
             var vanillaLookup = (skinKey && window.VanillaSkinUrlMap) ? (window.VanillaSkinUrlMap[skinKey] || window.VanillaSkinUrlMap['%' + skinKey] || window.VanillaSkinUrlMap[skinKey.toLowerCase()]) : null;
 
@@ -28163,16 +28210,16 @@ function thelegendmodproject() {
              * as in the WebGL renderer (the canvas renderer showed the last cached nick's skin
              * for both and could switch skin whenever a frame changed renderer). */
             var partyUrl = (nick && color && typeof LM !== 'undefined' && LM && LM.gameMode === ':party') ?
-                (this.customSkinsMap[nick + color] || this.customSkinsMap[nick + hexColor]) : null;
+                (this.customSkinsMap[_k.nc] || this.customSkinsMap[_k.nh]) : null;
             var skinUrl = partyUrl ||
                 (nick ? (
                     this.customSkinsMap[nick] ||
-                    this.customSkinsMap[nick + hexColor] ||
-                    this.customSkinsMap[nick + "#000000"] ||
+                    this.customSkinsMap[_k.nh] ||
+                    this.customSkinsMap[_k.n0] ||
                     (cleanNick ? (
                         this.customSkinsMap[cleanNick] ||
-                        this.customSkinsMap[cleanNick + "#000000"] ||
-                        this.customSkinsMap[cleanNick + hexColor]
+                        this.customSkinsMap[_k.c0] ||
+                        this.customSkinsMap[_k.ch]
                     ) : null)
                 ) : null) ||
                 (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null);
@@ -34753,6 +34800,52 @@ function thelegendmodproject() {
                 );
             };
 
+            /*
+             * Broad phase: one query over the bounding box of all this cell's
+             * points, widened past the +-5 per-point probe so it contains every
+             * per-point probe (also after float32 rounding in the WASM tree).
+             * If it holds no point of another cell, no per-point query below can
+             * find one and they are skipped (affected stays false). A hit, a
+             * non-finite point, or a WASM query that may have stopped at its
+             * 4096-result limit runs the per-point loop unchanged. A cell that was
+             * touching another one last frame goes straight to the per-point loop
+             * (the broad query would only hit again).
+             */
+            var skipCollisionQueries = false;
+            var anyAffected = false;
+            if (
+                LM.quadtree &&
+                !this._lmJellyTouching
+            ) {
+                var broadMinX = Infinity, broadMinY = Infinity, broadMaxX = -Infinity, broadMaxY = -Infinity;
+                var broadOk = true;
+                for (var broadIndex = 0; broadIndex < len; broadIndex++) {
+                    var broadP = points[broadIndex];
+                    var broadX = broadP.x, broadY = broadP.y;
+                    if (!isFinite(broadX) || !isFinite(broadY)) { broadOk = false; break; }
+                    if (broadX < broadMinX) broadMinX = broadX;
+                    if (broadX > broadMaxX) broadMaxX = broadX;
+                    if (broadY < broadMinY) broadMinY = broadY;
+                    if (broadY > broadMaxY) broadMaxY = broadY;
+                }
+                if (broadOk) {
+                    var broadCalls = 0;
+                    var broadTest = function (item) {
+                        broadCalls++;
+                        return !!item && item.parent !== self;
+                    };
+                    collisionProbe.x = broadMinX - 6;
+                    collisionProbe.y = broadMinY - 6;
+                    collisionProbe.w = broadMaxX - broadMinX + 12;
+                    collisionProbe.h = broadMaxY - broadMinY + 12;
+                    skipCollisionQueries =
+                        !LM.quadtree.some(collisionProbe, broadTest) &&
+                        broadCalls < 4096;
+                    collisionProbe.w = 10;
+                    collisionProbe.h = 10;
+                }
+            }
+
             for (
                 var pointIndex = 0;
                 pointIndex < len;
@@ -34794,7 +34887,8 @@ function thelegendmodproject() {
                     false;
 
                 if (
-                    LM.quadtree
+                    LM.quadtree &&
+                    !skipCollisionQueries
                 ) {
                     // Reuse one probe rect and predicate (no per-point allocations).
                     collisionProbe.x = curP.x - 5;
@@ -34812,6 +34906,7 @@ function thelegendmodproject() {
                 if (
                     affected
                 ) {
+                    anyAffected = true;
                     /*
                      * Push the perimeter inward where another cell is touching.
                      */
@@ -34945,6 +35040,9 @@ function thelegendmodproject() {
                     _lmTrig.s[pointIndex] *
                     renderRadius;
             }
+
+            this._lmJellyTouching =
+                anyAffected;
         };
 
         this.update = function (x, y, mass, isVirus, isPlayer, nick) {
@@ -71898,6 +71996,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             //this.ctx.start2D();
             this.renderStarted = performance.now()
             var _now = Date.now();
+            /* skin LRU stamps use the frame time (cleared again after the frame in render()) */
+            if (typeof application !== 'undefined' && application) application._lmTouchNow = _now;
             /* Per-frame caches — avoids per-cell string scans and Date allocations */
             LM._isReplay = !!(LM.ws && LM.ws.includes("replay"));
             this._frameSeconds = ~~(_now / 1000) % 60; /* Date.getSeconds() equivalent */
@@ -73680,6 +73780,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (
                     unifiedWebGLAllowed
                 ) {
+                    /* cacheSkin() uploads new skins eagerly only while this is recent */
+                    this._lmGlSceneAt = Date.now();
                     var worldGl =
                         this.gl;
 
@@ -77434,6 +77536,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         }
                     }
                 } catch (_freezeCheckError) { }
+                if (typeof application !== 'undefined' && application) application._lmTouchNow = 0;
                 window.requestAnimationFrame(drawRender.render);
             }
         },

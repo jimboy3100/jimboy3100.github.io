@@ -1493,11 +1493,9 @@
                 else if (typeof LM !== 'undefined' && LM.playerCells)
                     cells = LM.playerCells.length;
 
-                if (mass > 0) {
-                    massSpan.textContent = mass + ' \u00b7 ' + cells + '/' + maxCells;
-                } else {
-                    massSpan.textContent = '';
-                }
+                /* write only on change (500 ms timer; an unchanged write still relayouts) */
+                var massText = mass > 0 ? mass + ' \u00b7 ' + cells + '/' + maxCells : '';
+                if (massSpan.textContent !== massText) massSpan.textContent = massText;
 
                 // Ping
                 var ping = -1;
@@ -1505,12 +1503,12 @@
                 else if (typeof ogario !== 'undefined' && ogario.ping) ping = ogario.ping;
                 else if (typeof connection !== 'undefined' && connection.ping) ping = connection.ping;
 
+                var dotText = '';
                 if (ping >= 0) {
                     var icon = ping <= 80 ? '\ud83d\udfe2' : ping <= 200 ? '\ud83d\udfe1' : '\ud83d\udd34';
-                    dot.textContent = icon + ' ' + Math.round(ping) + 'ms';
-                } else {
-                    dot.textContent = '';
+                    dotText = icon + ' ' + Math.round(ping) + 'ms';
                 }
+                if (dot.textContent !== dotText) dot.textContent = dotText;
             }, 500);
         })();
 
