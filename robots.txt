@@ -1,12 +1,16 @@
-# Legend Mod - https://www.legendmod.ml/
-# Allow all crawlers full access
-
+# Legend Mod — robots.txt
 User-agent: *
 Allow: /
 
-# Sitemap location
+# Sitemap
 Sitemap: https://www.legendmod.ml/sitemap.xml
+Sitemap: https://jimboy3100.github.io/sitemap.xml
 
-# Disallow internal/dev paths
+# Disallow internal/utility paths
+Disallow: /.well-known/
+Disallow: /.claude/
 Disallow: /server-side/
-Disallow: /.git/
+Disallow: /ogario/captcha.html
+Disallow: /Lc/auth/
+Disallow: /LMexpress/extension/
+Disallow: /AjaxData/
