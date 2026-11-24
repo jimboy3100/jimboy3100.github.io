@@ -37581,6 +37581,7 @@ function thelegendmodproject() {
                     window.temporaryRecordedProtocol = $("#server-token").val()
                 }
                 window.catholicCalculator = 0
+                window._lmRecSlotBytes = 0
                 window.RecordedProtocol[window.temporaryRecordedProtocol] = []
                 window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
                 window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
@@ -39221,8 +39222,10 @@ function thelegendmodproject() {
             /* One #server-token lookup per packet instead of two. */
             var _recServerToken;
             /* recordReplays off: keep no packets (an undefined setting counts as on) */
-            if (defaultmapsettings.recordReplays !== false && window.catholicCalculator < 90000 && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+            /* also stop at 100 MB per recording (5 are kept): busy servers send big packets */
+            if (defaultmapsettings.recordReplays !== false && window.catholicCalculator < 90000 && (window._lmRecSlotBytes || 0) < 104857600 && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
+                window._lmRecSlotBytes = (window._lmRecSlotBytes || 0) + ((data && data.byteLength) || 0)
 
                 //window.RecordedProtocolArenas[legendmod.ws][]
                 //window.RecordedProtocolArenas[window.specificRecordedProtocol[legendmod.ws]] = window.RecordedProtocol[window.catholicCalculator] 
