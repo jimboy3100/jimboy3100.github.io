@@ -199,6 +199,10 @@ message uncompressedData {
                 genericVideoAdRewardTokenRequestField genericVideoAdRewardTokenRequestField = 185;
 
                 genericVideoAdRewardTokenResponseField genericVideoAdRewardTokenResponseField = 186;
+
+                lmDailyChallengesField lmDailyChallengesField = 220;// Expanding Land only, after our opcode 240 caps bit 1 (not official)
+
+                lmDailyChallengeRequestField lmDailyChallengeRequestField = 221;// Expanding Land only (not official)
 }
 message loginRequestField{
   int32 realm = 1;
@@ -348,6 +352,28 @@ message lmKiller {
   uint32 mass = 2;
   bool virus = 3;
   bool bot = 4;
+}
+message lmDailyChallengesField {
+  uint32 day = 1;// UTC day number (unix / 86400)
+  uint32 secondsLeft = 2;// until the next rotation
+  repeated lmDailyChallenge challenges = 3;
+  uint32 claimSlot = 4;// only in the reply to a claim
+  int32 claimResult = 5;// 0 ok, 1 not complete, 2 already claimed, 3 invalid (slot or day)
+}
+message lmDailyChallenge {
+  uint32 slot = 1;
+  string type = 2;// players_eaten, time_alive (seconds), top_position, viruses_eaten
+  uint32 goal = 3;
+  uint32 progress = 4;// best of the day (top_position: best place, 0 = none)
+  bool lowerIsBetter = 5;
+  uint32 rewardCoins = 6;
+  uint32 rewardDna = 7;
+  bool completed = 8;
+  bool claimed = 9;
+}
+message lmDailyChallengeRequestField {
+  uint32 slot = 1;// 0 = send the list, 1..n = claim that slot
+  uint32 day = 2;// day of the claimed list (a changed day is refused)
 }
 message productUpdates {
   int32 origin = 1;
