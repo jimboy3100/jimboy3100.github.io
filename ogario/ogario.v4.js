@@ -27527,6 +27527,7 @@ function thelegendmodproject() {
                                     cachedData
                                 );
 
+                            cachedImg._lmBlob = cachedData; /* lets the WebGL skin upload decode off the main thread */
                             cachedImg.src = objUrl;
                         } else if (
                             typeof cachedData ===
@@ -27980,6 +27981,7 @@ function thelegendmodproject() {
                             }
                         };
 
+                        loadedImg._lmBlob = blob; /* lets the WebGL skin upload decode off the main thread */
                         loadedImg.src = blobUrl;
                     }).catch(function (fetchError) {
                         if (networkFetchTimer) {
@@ -28051,10 +28053,13 @@ function thelegendmodproject() {
                         if (imgObj) {
                             if (!animated) {
                                 sCtx.drawImage(imgObj, 0, 0, depth, depth);
+                                i._lmSrc = imgObj; /* source for the WebGL skin upload (uploadSkinTexture) */
                             } else {
                                 var w = imgObj.width || depth;
                                 var h = imgObj.height || depth;
                                 sCtx.drawImage(imgObj, 0, 0, w / 2, h, 0, 0, depth, depth);
+                                i._lmSrc = imgObj;
+                                i._lmSrcRect = [0, 0, w / 2, h];
                             }
                         }
                     } catch (error) { }
@@ -28127,6 +28132,8 @@ function thelegendmodproject() {
                             var w3 = img3.width || depth;
                             var h3 = img3.height || depth;
                             sCtx.drawImage(img3, w3 / 2, 0, w3 / 2, h3, 0, 0, depth, depth);
+                            i._lmSrc = img3;
+                            i._lmSrcRect = [w3 / 2, 0, w3 / 2, h3];
                         }
                     } catch (error) { }
                     try {
@@ -60968,11 +60975,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return existingLayer;
             }
 
+            /* already being decoded for the GPU (see _lmQueueSkinUpload): body only until then */
+            var pend = this._lmSkinPend;
+            if (pend) {
+                var pendJob = pend.nodes.get(node) || (typeof sourceNode === 'string' ? pend.keys[sourceNode] : null);
+                if (pendJob) {
+                    if (typeof sourceNode === 'string' && !pend.keys[sourceNode]) {
+                        pend.keys[sourceNode] = pendJob;
+                        pendJob.keys.push(sourceNode);
+                    }
+                    return -1;
+                }
+            }
+
             if (this.glSkinNextLayer >= this.glSkinMaxLayers) {
                 /* Never rebuild mid-frame more than every few seconds (see canUseWebGLScene). */
                 if (!this._skinArrayResetAllowed() || !this._resetWebGLSkinTextureArray()) {
                     return -1;
                 }
+            }
+
+            /* Decoded skin images go the async way: a canvas as texSubImage3D source is read
+             * back from the GPU synchronously (15-65 ms main-thread stall per new skin). */
+            if (this._lmQueueSkinUpload(node, typeof sourceNode === 'string' ? sourceNode : null)) {
+                return -1;
             }
 
             var layer = this.glSkinNextLayer;
@@ -61030,6 +61056,137 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
 
                 return -1;
+            }
+        },
+
+        /* Off-main-thread skin upload: createImageBitmap decodes and resizes the source image
+         * in the background (from the skin's Blob when loadSkin kept it: decoding from an
+         * image element still costs ~4 ms on the main thread), then the bitmap is cut to the same circle as cacheSkin into a
+         * CPU-backed canvas and uploaded from there (about 1.5 ms instead of 15-65 ms).
+         * Uploads run from requestAnimationFrame with a small time budget per frame. The cell
+         * is drawn body-only (as while its skin loads) until its layer is ready. Returns false
+         * when the node cannot use this path (the synchronous upload is used then). */
+        _lmQueueSkinUpload(node, key) {
+            if (typeof createImageBitmap !== 'function' || !node || node._lmBmpFail) return false;
+            var src = node._lmSrc || node;
+            if (typeof HTMLImageElement === 'undefined' || !(src instanceof HTMLImageElement) ||
+                !src.complete || !(src.naturalWidth > 0) || src._failed) {
+                return false;
+            }
+            var size = this.glSkinTexSize || 512;
+            /* same intermediate size as before: the cacheSkin canvas (512 / graphics) */
+            var w = node !== src && node.width > 0 ? node.width : size;
+            var h = node !== src && node.height > 0 ? node.height : size;
+            var pend = this._lmSkinPend || (this._lmSkinPend = { nodes: new WeakMap(), keys: {} });
+            var job = { node: node, keys: key ? [key] : [], clip: !!node._lmCircle && node !== src };
+            pend.nodes.set(node, job);
+            if (key) pend.keys[key] = job;
+            var self = this;
+            var opts = { resizeWidth: w, resizeHeight: h, resizeQuality: 'high' };
+            var r = node !== src && node._lmSrcRect;
+            var make = function (from) {
+                try {
+                    return r ? createImageBitmap(from, r[0], r[1], r[2], r[3], opts) : createImageBitmap(from, opts);
+                } catch (e) {
+                    return Promise.reject(e);
+                }
+            };
+            var p = src._lmBlob ? make(src._lmBlob).catch(function () { return make(src); }) : make(src);
+            p.then(function (bmp) {
+                (self._lmSkinReady || (self._lmSkinReady = [])).push([job, bmp]);
+                self._lmScheduleSkinUploads();
+            }, function () {
+                /* undecodable here: the next draw uses the synchronous upload */
+                node._lmBmpFail = true;
+                self._lmDropSkinJob(job);
+            });
+            return true;
+        },
+        _lmDropSkinJob(job) {
+            var pend = this._lmSkinPend;
+            if (!pend) return;
+            if (pend.nodes.get(job.node) === job) pend.nodes.delete(job.node);
+            for (var i = 0; i < job.keys.length; i++) {
+                if (pend.keys[job.keys[i]] === job) delete pend.keys[job.keys[i]];
+            }
+        },
+        _lmScheduleSkinUploads() {
+            if (this._lmSkinRaf) return;
+            var self = this;
+            this._lmSkinRaf = requestAnimationFrame(function () {
+                self._lmSkinRaf = 0;
+                var q = self._lmSkinReady || [];
+                var t0 = performance.now();
+                while (q.length) {
+                    var it = q.shift();
+                    self._lmUploadSkinJob(it[0], it[1]);
+                    if (performance.now() - t0 > 4) break;
+                }
+                if (q.length) self._lmScheduleSkinUploads();
+            });
+        },
+        _lmUploadSkinJob(job, bmp) {
+            this._lmDropSkinJob(job);
+            var gl = this.gl;
+            var node = job.node;
+            var keys = job.keys;
+            var i;
+            try {
+                if (!gl || gl.isContextLost() || !this.glSkinArray) return;
+                if (!this.glSkinNodeMap) this.glSkinNodeMap = new WeakMap();
+                var known = this.glSkinNodeMap.get(node);
+                if (typeof known !== 'number') {
+                    if (this.glSkinNextLayer >= this.glSkinMaxLayers) {
+                        /* dropped: the next draw asks again (cheap -1 while a rebuild is not allowed) */
+                        if (!this._skinArrayResetAllowed() || !this._resetWebGLSkinTextureArray()) return;
+                    }
+                    var size = this.glSkinTexSize || 512;
+                    var cv = this._lmSkinCpuScratch;
+                    if (!cv) {
+                        cv = this._lmSkinCpuScratch = document.createElement('canvas');
+                        cv._lmCtx = cv.getContext('2d', { willReadFrequently: true });
+                    }
+                    if (cv.width !== size || cv.height !== size) {
+                        cv.width = size;
+                        cv.height = size;
+                    }
+                    var ctx = cv._lmCtx;
+                    ctx.save();
+                    ctx.clearRect(0, 0, size, size);
+                    if (job.clip) {
+                        ctx.beginPath();
+                        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI, false);
+                        ctx.clip();
+                    }
+                    ctx.drawImage(bmp, 0, 0, size, size);
+                    ctx.restore();
+                    var layer = this.glSkinNextLayer;
+                    try {
+                        gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+                        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+                        gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+                    } catch (upErr) {
+                        /* as the synchronous path: a tainted canvas stays tainted, start a fresh one */
+                        this._lmSkinCpuScratch = null;
+                        try { gl.bindTexture(gl.TEXTURE_2D_ARRAY, null); } catch (unbindError) { }
+                        if (this.glSkinMap) {
+                            for (i = 0; i < keys.length; i++) this.glSkinMap[keys[i]] = -1;
+                        }
+                        return;
+                    }
+                    this.glSkinNextLayer++;
+                    this.glSkinNodeMap.set(node, layer);
+                    known = layer;
+                }
+                if (this.glSkinMap) {
+                    for (i = 0; i < keys.length; i++) {
+                        if (this.glSkinMap[keys[i]] === undefined) this.glSkinMap[keys[i]] = known;
+                    }
+                }
+            } catch (err) {
+                this._lmSkinCpuScratch = null;
+            } finally {
+                try { bmp.close(); } catch (closeErr) { }
             }
         },
 
@@ -69495,6 +69652,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         node
                     );
             }
+            if (!(layer >= 0) && activeKey !== skinUrl && this.glSkinMap[skinUrl] >= 0) {
+                layer = this.glSkinMap[skinUrl];
+            }
 
 
             /*
@@ -71871,6 +72031,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             if (this.glSkinArray !== skinArrayAtStart) {
                                 return abortCellBatch();
                             }
+                        }
+                        if (!(mappedLayer >= 0) && activeKey !== skinUrl && this.glSkinMap[skinUrl] >= 0) {
+                            mappedLayer = this.glSkinMap[skinUrl];
                         }
 
                         if (
