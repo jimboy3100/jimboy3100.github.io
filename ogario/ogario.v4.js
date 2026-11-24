@@ -18037,6 +18037,10 @@ var displayText = {
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
         matchHistory: 'Historia meczów (ostatnie 50 gier, przycisk pod menu)',
         showKiller: 'Who ate you, on the Game Over card',
+        deathRecap: 'Death recap on the Game Over card (the last 20 s)',
+        killFeed: 'Kill feed (your eats and deaths, next to the leaderboard)',
+        massLossAlert: 'Alert when you lose mass quickly',
+        massLossPct: 'Mass-loss alert: lost within 2 s (%)',
         hideEventBanner: 'Hide the server event countdown (Expanding Land)',
         hotkeys: 'Skroty klawiszowe',
         'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
@@ -18589,6 +18593,10 @@ var displayText = {
         personalBests: 'All-time personal bests (New best! on the Game Over card)',
         matchHistory: 'Match history (last 50 games, button under the menu)',
         showKiller: 'Who ate you, on the Game Over card',
+        deathRecap: 'Death recap on the Game Over card (the last 20 s)',
+        killFeed: 'Kill feed (your eats and deaths, next to the leaderboard)',
+        massLossAlert: 'Alert when you lose mass quickly',
+        massLossPct: 'Mass-loss alert: lost within 2 s (%)',
         hideEventBanner: 'Hide the server event countdown (Expanding Land)',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
@@ -21256,6 +21264,10 @@ var defaultmapsettings = {
     personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     showKiller: false,            /* "Eaten by: nick (mass)" row on the Game Over card */
+    deathRecap: false,            /* Game Over card: the last 20 s as a few steps + mass sparkline (ogario/modules/deathrecap.js) */
+    killFeed: false,              /* small fading list of your eats of player cells and your deaths, left of the leaderboard */
+    massLossAlert: false,         /* a kill feed line when you lose massLossPct % of your mass within 2 s */
+    massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
     hideEventBanner: false,       /* hide the Expanding Land event countdown banner (shown only when the server sends events) */
     streamMode: false,
     hideSkinUrl: false,
@@ -21505,7 +21517,7 @@ var _lmLabelI18n = {
         "hk-netGraph":"Εμφάνιση / απόκρυψη γραφήματος δικτύου (FPS, ping)","hk-chatSounds":"Σίγαση / άρση σίγασης ήχων συνομιλίας","scanTrick":"Ενεργοποίηση Scan Trick",
         "scanTrickRounded":"Κούμπωμα κατεύθυνσης κίνησης","scanTrickOnlyWhileLMB":"Κούμπωμα μόνο όσο κρατάς το αριστερό κουμπί","scanTrickDirections":"Κουμπωμένες κατευθύνσεις",
         "scanTrickDistance":"Κανονική απόσταση προβολής","scanTrickRoundedDistance":"Κουμπωμένη απόσταση προβολής","scanTrickStatus":"Εμφάνιση κατάστασης Scan Trick",
-        "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","hk-scanTrick":"Κράτα πατημένο για Scan Trick"
+        "clickSpectate":"Ελεύθερη παρακολούθηση: κλικ σε κύτταρο παίκτη για να τον ακολουθείς (κλικ σε κενό σημείο για διακοπή)","minimapClickSpectate":"Expanding Land, παρακολούθηση κόσμου: κλικ στον μικρό χάρτη μετακινεί την κάμερα εκεί","reducedMotion":"Μειωμένη κίνηση (χωρίς κούνημα οθόνης ή σωματίδια θανάτου)","lmSpecFollowing":"Ακολουθείς","lbClickSpectate":"Ελεύθερη θέαση: κλικ σε μάζα στον πίνακα κατάταξης για να ακολουθείς τον παίκτη","hk-specNextTop":"Ελεύθερη θέαση: ακολούθησε τον επόμενο παίκτη του πίνακα κατάταξης","hk-prevServer":"Επανασύνδεση στον προηγούμενο διακομιστή","chatShowId":"Εμφάνιση του id παίκτη (#id) πριν από τα ονόματα στη συνομιλία","hideEventBanner":"Απόκρυψη αντίστροφης μέτρησης εκδηλώσεων διακομιστή (Expanding Land)","deathRecap":"Ανασκόπηση θανάτου στην κάρτα τέλους παιχνιδιού (τα τελευταία 20 δ.)","killFeed":"Λίστα φαγωμάτων (τι έφαγες και ποιος σε έφαγε, δίπλα στον πίνακα κατάταξης)","massLossAlert":"Ειδοποίηση όταν χάνεις μάζα γρήγορα","massLossPct":"Ειδοποίηση απώλειας μάζας: χαμένη μέσα σε 2 δ. (%)","hk-scanTrick":"Κράτα πατημένο για Scan Trick"
     },
     "es": {
         "start":"Inicio","settings":"Ajustes","restoreSettings":"Restaurar ajustes predeterminados","animationGroup":"Animación","graphics":"Gráficos",
@@ -25672,6 +25684,11 @@ function thelegendmodproject() {
                     case 'matchHistory':
                         _lmMatchHistoryButton();
                         break;
+                    case 'deathRecap':
+                    case 'killFeed':
+                    case 'massLossAlert':
+                        if (window.LMDeathRecap) LMDeathRecap.sync();
+                        break;
                     case 'hideEventBanner':
                         _lmEventBanner();
                         break;
@@ -26769,7 +26786,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26875,7 +26892,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "clickSpectate", "minimapClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "deathRecap", "killFeed", "massLossAlert", "hideEventBanner", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Multibox rings: per player on/off, color and size; both off = no rings. */
             this.addOptions(["mbRingsP1"], "mbRingsGroup");
@@ -26935,6 +26952,7 @@ function thelegendmodproject() {
             this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
             this.addSliderBox(".mouseGroup", "gamepadDeadzone", 0.05, 0.5, 0.01);
+            this.addSliderBox(".statsGroup", "massLossPct", 10, 90, 5);
             // this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
@@ -30561,7 +30579,10 @@ function thelegendmodproject() {
                     $('#server-token').val(window.replayToken)
                     window.replayToken = null
                     //console.log("replay")
-                    playReplayLM(specialReplay)
+                    /* lmReplayWatchAt (Death recap links) asks for a start packet */
+                    var _lmRepAt = window._lmReplayStartAt;
+                    window._lmReplayStartAt = null;
+                    playReplayLM(specialReplay, _lmRepAt != null ? _lmRepAt : undefined)
 
                 }, 500);
                 //return null
@@ -45723,7 +45744,7 @@ function thelegendmodproject() {
                     /* Expanding Land killer info (lmKiller, sent only after our opcode 240 caps):
                      * the server's "Eaten by" for the Game Over card. Skipped when my own multibox
                      * unit ate my cell just before (the server sees that unit as another player). */
-                    if (u.lmKiller && (defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000)) {
+                    if (u.lmKiller && (defaultmapsettings.showKiller || defaultmapsettings.matchHistory || defaultmapsettings.deathRecap || defaultmapsettings.killFeed) && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000)) {
                         this._lmKiller = { nick: String(u.lmKiller.nick || ''), mass: Number(u.lmKiller.mass) || 0, virus: !!u.lmKiller.virus, bot: !!u.lmKiller.bot, server: true, at: Date.now() };
                         /* field 5 (newer servers): the eating cell's id, for "Watch killer" */
                         if (u.lmKiller.cellId) this._lmKiller.cellId = Number(u.lmKiller.cellId) >>> 0;
@@ -47912,6 +47933,8 @@ function thelegendmodproject() {
             container.innerHTML = html;
             var modal = container.firstChild;
             document.body.appendChild(modal);
+            /* Death recap (option, ogario/modules/deathrecap.js): the last 20 s beside the card, or a one-time hint */
+            try { if (window.LMDeathRecap) LMDeathRecap.card(modal, { mc: mc, pc: pc, pc2: pc2, tc: tc, tc2: tc2 }); } catch (e) { }
 
             if (_lmGraph) {
                 try {
@@ -52397,6 +52420,14 @@ Most cells eaten   : ${mostCellsEaten}
                     if ((_lmVirFull ? defaultmapsettings.virusEatSound : defaultmapsettings.virusPopSound) && Date.now() - (this._lmVirSndAt || 0) > 300) {
                         this._lmVirSndAt = Date.now();
                         application.playSound(application._lmOptSound(_lmVirFull ? 'virusEat' : 'virusPop'));
+                    }
+                }
+                /* Death recap / kill feed (ogario/modules/deathrecap.js): exact eats by and of my cells
+                 * (merges, viruses, kills, who ate my pieces); one flag check while its options are off */
+                if (window._lmDROn && eaterID) {
+                    var _lmDrMine = !!(eaterID.isPlayerCell || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)));
+                    if (_lmDrMine || _victimWasPlayer) {
+                        try { window.LMDeathRecap.eat(eaterID, victimID, _lmDrMine, _victimWasPlayer, _victimStartSize); } catch (e) { }
                     }
                 }
                 /*
@@ -84542,6 +84573,27 @@ function lmReplaySeek(delta) {
 window.lmReplayTogglePause = lmReplayTogglePause;
 window.lmReplaySpeed = lmReplaySpeed;
 window.lmReplaySeek = lmReplaySeek;
+/* Watch a recording from one packet on (Death recap step links). Seeks when that recording is
+ * already playing; else joins it like the replay window's Watch button, without adding the
+ * replay to the recent servers list. False when the recording is gone. */
+function lmReplayWatchAt(slot, packet) {
+    if (!slot || !window.RecordedProtocol || !window.RecordedProtocol[slot] || window.RecordedProtocol[slot].length < 12) return false;
+    var last = window.RecordedProtocol[slot].length - 2;
+    packet = Math.max(0, Math.min(last, packet | 0));
+    if (lmReplayActive() && window.legendmod.playingReplayServer === slot) {
+        lmReplaySeek(packet - (window.legendmod.playingReplayRecord || 0));
+        return true;
+    }
+    if (!window.application || typeof application.gameServerJoin !== 'function') return false;
+    window._lmReplayStartAt = packet;
+    /* the replay window's range may belong to another recording */
+    $('#startReplayTime').val(packet);
+    $('#endReplayTime').val(last);
+    $('#server-token').val('replay^' + slot);
+    application.gameServerJoin('replay^' + slot);
+    return true;
+}
+window.lmReplayWatchAt = lmReplayWatchAt;
 /* Replay progress bar: shown only while a replay plays; click to seek there. */
 function lmReplayBarTick() {
     var bar = document.getElementById('lm-replay-bar');
@@ -84816,5 +84868,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(gamepadScript);
     } catch (e) {
         console.warn('[LM] Error loading gamepad script:', e);
+    }
+    /* Death recap, kill feed and mass-loss alerts (no listeners or timers while its options are off) */
+    try {
+        var deathRecapScript = document.createElement('script');
+        deathRecapScript.type = 'text/javascript';
+        deathRecapScript.src = 'https://www.legendmod.ml/ogario/modules/deathrecap.js?v=' + (window.OgVer || '');
+        document.body.appendChild(deathRecapScript);
+    } catch (e) {
+        console.warn('[LM] Error loading death recap script:', e);
     }
 })();
