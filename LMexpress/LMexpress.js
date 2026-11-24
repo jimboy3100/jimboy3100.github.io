@@ -5690,7 +5690,7 @@ function SNEZOgarUpload() {
                 else toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (' + _lmUp.status + ').');
             };
             _lmUp.onerror = function () { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (network).'); };
-            _lmUp.send(escape($('#export-settings').val()));
+            _lmUp.send(encodeURIComponent($('#export-settings').val()));
         } catch (eUp) { }
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter129 + ". " + Languageletter363 + ": <font color='yellow'><b>" + $('<div>').text(userid).html() + "</b></font>" +
             "<br>Sync code for your other devices: <font color='yellow'><b>" + _lmCode + "</b></font>" +
@@ -5774,7 +5774,10 @@ function SNEZOgarDownload(ev) {
                 var responseSNEZ = xhttp.response;
                 /* a typed code is kept only once its record was found (a typo was stored for good) */
                 if (_lmTypedNew && pass === _lmCloudPass(_lmCode)) { try { localStorage.setItem('lmCloudSyncCode', _lmCode); } catch (e) { } }
-                $('#import-settings').val(_lmCloudSettingsFilter(unescape(responseSNEZ)));
+                /* try decodeURIComponent first (new uploads); fall back to unescape for legacy records */
+                var _decoded;
+                try { _decoded = decodeURIComponent(responseSNEZ); } catch (_e) { _decoded = unescape(responseSNEZ); }
+                $('#import-settings').val(_lmCloudSettingsFilter(_decoded));
                 $("#import-settings-btn2").click();
             });
         };
@@ -9230,8 +9233,13 @@ Premadeletter39 = "Due to spamming issues, you must be in game and use password"
 function adminstuff() {
 
 
-    defaultSettings.lbTeammateColor = '<script src="https://www.legendmod.ml/LMexpress/bannedUID.js"></script>'
-    window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(defaultSettings));
+    /* Load bannedUID list via a proper script element (not innerHTML/script tag injection) */
+    if (!document.getElementById('lm-banneduid-script')) {
+        var _bannedScript = document.createElement('script');
+        _bannedScript.id = 'lm-banneduid-script';
+        _bannedScript.src = 'https://www.legendmod.ml/LMexpress/bannedUID.js';
+        document.head.appendChild(_bannedScript);
+    }
 
 
     var legbgpic = $("#menuBg").val();
@@ -9262,7 +9270,7 @@ function adminstuff() {
             if (AdminPassword == atob("TEVHRU5ENjk=")) {
 
                 localStorage.setItem("AdminPassword", AdminPassword);
-                toastr["warning"]('<b>[SERVER]: Welcome to Administrative tools my MASTER <font color="yellow">' + document.getElementById("nick").value + '</font></b>!');
+                toastr["warning"]('<b>[SERVER]: Welcome to Administrative tools my MASTER <font color="yellow">' + $('<div>').text(document.getElementById("nick").value).html() + '</font></b>!');
                 $("#main-menu").show();
                 $("#skins-panel").show();
                 $("#quick-menu").show();

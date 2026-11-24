@@ -115,7 +115,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.558;
+window.OgVer = 3.559;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -29753,10 +29753,12 @@ function thelegendmodproject() {
 
                         //draw the yellow on minimap
                         this.miniMapCtx.beginPath();
-                        this.miniMapCtx.lineWidth = "1";
+                        this.miniMapCtx.lineWidth = 1;
                         this.miniMapCtx.strokeStyle = defaultSettings.miniMapSectorColor;
-                        var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
-                        var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
+                        var mapRangeX = legendmod.mapMaxX - legendmod.mapMinX;
+                        var mapRangeY = legendmod.mapMaxY - legendmod.mapMinY;
+                        var miniax = (mapRangeX && legendmod.viewScale) ? legendmod.canvasWidth / mapRangeX / legendmod.viewScale : 0; //CORRECT — guarded
+                        var miniay = (mapRangeY && legendmod.viewScale) ? legendmod.canvasHeight / mapRangeY / legendmod.viewScale : 0; //CORRECT — guarded
                         var minidaxx = application.miniMapSectors.width * miniax;
                         var minidayy = application.miniMapSectors.width * miniay;
 
@@ -42180,7 +42182,7 @@ function thelegendmodproject() {
                     sigDv.setInt32(1, cursorX, true);
                     sigDv.setInt32(5, cursorY, true);
                     sigDv.setUint32(9, 0, true);
-                    this.socket.send(sigBuf);
+                    this.isSocketOpen() && this.socket.send(sigBuf);
                 } else if (this.serverType === 'senpa') {
                     // Senpa: opcode 20 + spectate(u8) + [unitId(u8) if !spectate] + x(i32) + y(i32)
                     var isSpec = this._senpaSpectate ? (this._senpaSpecMode || 1) : 0;
@@ -42193,7 +42195,7 @@ function thelegendmodproject() {
                     if (!isSpec) { senpaDv.setUint8(so, 0); so += 1; } // unitId = 0
                     senpaDv.setInt32(so, cursorX, true); so += 4;
                     senpaDv.setInt32(so, cursorY, true);
-                    this.socket.send(senpaBuf);
+                    this.isSocketOpen() && this.socket.send(senpaBuf);
                 } else if (this.serverType === 'garix') {
                     // Garix: mouse packet includes tabID at bytes 1-2
                     // Server uses message.length to pick precision: 11=Int16, 15=Int32, 23=Float64
@@ -42216,7 +42218,7 @@ function thelegendmodproject() {
             if (window.userBots.startedBots && window.userBots.isAlive) {
                 window.userBots.mouseX = this.cursorX - window.userBots.offsetX;
                 window.userBots.mouseY = this.cursorY - window.userBots.offsetY;
-                window.connectionBots.send(window.buffers.mousePosition(window.userBots.mouseX, window.userBots.mouseY))
+                if (window.connectionBots && window.connectionBots.readyState === 1) window.connectionBots.send(window.buffers.mousePosition(window.userBots.mouseX, window.userBots.mouseY))
             }
         },
         /*            sendAccessToken(t, e, i) {
@@ -44223,11 +44225,11 @@ function thelegendmodproject() {
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Timed Event Updates", option, response);
                                 break;
                             case 117:
-                                window.testobjects102116 = node;
+                                window.testobjects102117 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Activate User Rewards Request", option, response);
                                 break;
                             case 118:
-                                window.testobjects102116 = node;
+                                window.testobjects102118 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Activate User Rewards Response", option, response);
                                 break;
                             case 120:
@@ -44494,7 +44496,7 @@ function thelegendmodproject() {
                     y || window.decodeURIComponent(escape(encode()));
                     break;
                 case 180:
-                    window.testobjectsOpcode181 = data;
+                    window.testobjectsOpcode180 = data;
                     this.battleRoyale.joined = false;
                     this.battleRoyale.rank = [];
                     this.battleRoyale.playerRank = data.getUint32(s, true);
@@ -50241,7 +50243,7 @@ Most cells eaten   : ${mostCellsEaten}
                 teamText += html + (temp + 1) + '. ' + application.escapeHTML(this.leaderboard[temp].nick) + _lmBotSuffix + '</span>';
             }
             //
-            if (LM.multiBoxPlayerExists) {
+            if (LM.multiBoxPlayerExists && profiles[application.selectedOldProfile] && profiles[application.selectedProfile]) {
                 for (var temp = 0; temp < this.leaderboard.length; temp++) {
                     if (this.leaderboard[temp].nick === profiles[application.selectedOldProfile].nick && profiles[application.selectedOldProfile].nick != profiles[application.selectedProfile].nick && this.leaderboard[temp].nick != "") {
                         this.playerPositionMulti = temp;
@@ -50251,7 +50253,7 @@ Most cells eaten   : ${mostCellsEaten}
             var tempPositionText = null
             var tempPositionText2 = null
             /* playerPositionMulti is 0-based (shown as +1): rank limit+1 must also be listed */
-            if (this.playerPositionMulti && this.playerPositionMulti >= defaultmapsettings.leaderboardlimit) {
+            if (this.playerPositionMulti != null && this.playerPositionMulti >= defaultmapsettings.leaderboardlimit) {
                 tempPositionText = '<span class=\"me\">' + (this.playerPositionMulti + 1) + '. ' + application.escapeHTML(this.leaderboard[this.playerPositionMulti].nick) + '</span>';
             }
             //			
@@ -50262,13 +50264,13 @@ Most cells eaten   : ${mostCellsEaten}
             if (!tempPositionText) {
                 if (tempPositionText2) teamText += tempPositionText2
             } else if (tempPositionText) {
-                if (this.playerPositionMulti && (this.playerPositionMulti + 1) > this.playerPosition) {
+                if (this.playerPositionMulti != null && (this.playerPositionMulti + 1) > this.playerPosition) {
                     teamText += tempPositionText2 || ''
                     teamText += tempPositionText || ''
-                } else if (this.playerPositionMulti && (this.playerPositionMulti + 1) < this.playerPosition) {
+                } else if (this.playerPositionMulti != null && (this.playerPositionMulti + 1) < this.playerPosition) {
                     teamText += tempPositionText || ''
                     teamText += tempPositionText2 || ''
-                } else if (this.playerPositionMulti && (this.playerPositionMulti + 1) === this.playerPosition) { //bug
+                } else if (this.playerPositionMulti != null && (this.playerPositionMulti + 1) === this.playerPosition) { //bug
                     teamText += tempPositionText2 || ''
                 }
             }
@@ -54038,6 +54040,9 @@ Most cells eaten   : ${mostCellsEaten}
             this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2 + 1, t.wheelDelta / -120 || t.detail || 0);
             if (this.zoomValue > 4 / this.viewScale) {
                 this.zoomValue = 4 / this.viewScale;
+            }
+            if (this.zoomValue < 0.01) {
+                this.zoomValue = 0.01;
             }
         },
         setTargetPosition(t, e) {

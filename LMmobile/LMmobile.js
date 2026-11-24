@@ -1029,11 +1029,9 @@
             chatEnterFn = null;
             if (inp && inp.value.length > 0) {
                 // Send the message by dispatching Enter on the input
-                var ev = document.createEvent('Event');
-                ev.initEvent('keydown', true, true);
-                ev.keyCode = 13;
-                ev.which = 13;
-                ev.key = 'Enter';
+                var ev = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter', keyCode: 13, which: 13 });
+                /* Firefox ignores keyCode/which in the constructor (0): the chat listeners check keyCode 13 */
+                if (ev.keyCode !== 13) { try { Object.defineProperty(ev, 'keyCode', { get: function () { return 13; } }); Object.defineProperty(ev, 'which', { get: function () { return 13; } }); } catch (e) { } }
                 inp.dispatchEvent(ev);
             }
             if (inp) inp.blur();
