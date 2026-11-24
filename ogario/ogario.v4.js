@@ -535,6 +535,7 @@ window.lmT = (function () {
         "mhClearConfirm": {"en":"Clear the match history?","el":"Εκκαθάριση του ιστορικού αγώνων;","es":"¿Borrar el historial de partidas?","bg":"Да се изчисти ли историята на игрите?","fr":"Effacer l’historique des parties ?","ar":"مسح سجل المباريات؟","zh":"清除對戰記錄？","ru":"Очистить историю матчей?","de":"Spielverlauf leeren?","tr":"Maç geçmişi temizlensin mi?","pl":"Wyczyścić historię meczów?","nl":"Speelgeschiedenis wissen?"},
         "mhEmpty": {"en":"No games recorded yet.","el":"Δεν έχουν καταγραφεί παιχνίδια ακόμη.","es":"Aún no hay partidas registradas.","bg":"Все още няма записани игри.","fr":"Aucune partie enregistrée pour l’instant.","ar":"لا توجد مباريات مسجلة بعد.","zh":"尚無記錄的遊戲。","ru":"Пока нет записанных игр.","de":"Noch keine Spiele gespeichert.","tr":"Henüz kayıtlı oyun yok.","pl":"Brak zapisanych gier.","nl":"Nog geen spellen opgeslagen."},
         "eventLeft": {"en":"{0}: {1} left","el":"{0}: απομένουν {1}","es":"{0}: quedan {1}","bg":"{0}: остават {1}","fr":"{0} : encore {1}","ar":"{0}: متبقٍ {1}","zh":"{0}：剩餘 {1}","ru":"{0}: осталось {1}","de":"{0}: noch {1}","tr":"{0}: {1} kaldı","pl":"{0}: zostało {1}","nl":"{0}: nog {1}"},
+        "lmPresetReducedMotion": {"en":"Reduced motion","el":"Μειωμένη κίνηση","es":"Movimiento reducido","bg":"Намалено движение","fr":"Mouvement réduit","ar":"تقليل الحركة","zh":"減少動態效果","ru":"Меньше движения","de":"Weniger Bewegung","tr":"Azaltılmış hareket","pl":"Ograniczony ruch","nl":"Minder beweging"},
         "shop": {"en":"Shop","el":"Κατάστημα","es":"Tienda","bg":"Магазин","fr":"Boutique","ar":"المتجر","zh":"商店","ru":"Магазин","de":"Shop","tr":"Mağaza","pl":"Sklep","nl":"Winkel"},
         "mhThisDevice": {"en":"This device","el":"Αυτή η συσκευή","es":"Este dispositivo","bg":"Това устройство","fr":"Cet appareil","ar":"هذا الجهاز","zh":"此裝置","ru":"Это устройство","de":"Dieses Gerät","tr":"Bu cihaz","pl":"To urządzenie","nl":"Dit apparaat"},
         "mhAccount": {"en":"Account (server)","el":"Λογαριασμός (διακομιστής)","es":"Cuenta (servidor)","bg":"Акаунт (сървър)","fr":"Compte (serveur)","ar":"الحساب (الخادم)","zh":"帳號（伺服器）","ru":"Аккаунт (сервер)","de":"Konto (Server)","tr":"Hesap (sunucu)","pl":"Konto (serwer)","nl":"Account (server)"},
@@ -16732,6 +16733,7 @@ var displayText = {
         performanceMode: 'Tryb wydajnosci (slabsze PC/telefony)',
         fpsLimit: 'Limit FPS (0 = bez limitu)',
         menuFpsCap: '25 FPS gdy menu jest otwarte (oszczedza baterie)',
+        reducedMotion: 'Ograniczony ruch (bez trzesienia ekranu i czasteczek smierci)',
         cellContours: 'Only cells contours',
         noNames: 'Wylacz nazwy',
         noColors: 'Wylacz kolory',
@@ -16866,6 +16868,8 @@ var displayText = {
         showLbData: 'Pokaz mase w topce',
         lbHideBots: 'Zwin powtarzajace sie nicki (boty) w topce',
         lbPassToast: 'Powiadomienie gdy awansujesz w topce',
+        lbClickSpectate: 'Wolna obserwacja: klik w mase w topce sledzi gracza',
+        lmSpecFollowing: 'Obserwujesz',
         noFocusHud: 'Pokaz NO FOCUS gdy okno gry nie jest aktywne',
         //normalLb: 'Naglowek \"Topka\"',
         centeredLb: 'Wysrodkowana topka',
@@ -16966,6 +16970,7 @@ var displayText = {
         'hk-pingDanger': 'Ping druzyny: Niebezpieczenstwo',
         'hk-pingGoHere': 'Ping druzyny: Idz tutaj',
         'hk-pingVirus': 'Ping druzyny: Tu jest wirus',
+        'hk-specNextTop': 'Wolna obserwacja: sledz nastepnego gracza z topki',
         'hk-switchServerMode': 'Przelacz serwer [publiczny/prywatny]',
         'hk-showTargeting': 'Pokaz/ukryj panel namierzania',
         'hk-voiceChat': 'Glos do tekstu',
@@ -17268,6 +17273,7 @@ var displayText = {
         performanceMode: 'Performance mode (weak PCs/phones)',
         fpsLimit: 'FPS limit (0 = no limit; saves battery)',
         menuFpsCap: '25 FPS while the menu is open (saves battery)',
+        reducedMotion: 'Reduced motion (no screen shake or death particles)',
         cellContours: 'Only cells contours',
         noNames: 'No names',
         noColors: 'No colors',
@@ -17404,6 +17410,8 @@ var displayText = {
         showLbData: 'Show leaderboard mass',
         lbHideBots: 'Leaderboard: collapse repeated (bot) names',
         lbPassToast: 'Leaderboard: notify when you move up',
+        lbClickSpectate: 'Free spectate: click a leaderboard mass to follow that player',
+        lmSpecFollowing: 'Following',
         noFocusHud: 'Show NO FOCUS when the game window is not active',
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
@@ -17504,6 +17512,7 @@ var displayText = {
         'hk-pingDanger': 'Team ping: Danger',
         'hk-pingGoHere': 'Team ping: Go here',
         'hk-pingVirus': 'Team ping: Virus here',
+        'hk-specNextTop': 'Free spectate: follow next leaderboard player',
         'hk-switchServerMode': 'Switch server [public/private]',
         'hk-showTargeting': 'Show/hide targeting panel',
         'hk-voiceChat': 'Voice to text',
@@ -18149,6 +18158,116 @@ var themePresets = {
         miniMapTeammatesColor: '#ffffff',
         miniMapDeathLocationColor: '#ffffff',
         miniMapSectorsOpacity: 0.1
+    },
+    colorblind: {
+        /* Okabe-Ito palette: enemy sizes stay apart for red-green and blue-yellow
+         * colour blindness; opaque HUD, white virus outline, bigger minimap marks */
+        name: 'Colour-blind safe (high contrast)',
+        darkTheme: true,
+        mainColor: '#56b4e9',
+        bgColor: '#000000',
+        bordersColor: '#ffffff',
+        gridColor: '#333333',
+        sectorsColor: '#333333',
+        namesColor: '#ffffff',
+        namesStrokeColor: '#000000',
+        massColor: '#ffffff',
+        massStrokeColor: '#000000',
+        virusColor: '#000000',
+        virusStrokeColor: '#ffffff',
+        virusGlowColor: '#ffffff',
+        mVirusColor: '#cc79a7',
+        mVirusStrokeColor: '#ffffff',
+        foodColor: '#f0e442',
+        teammatesIndColor: '#ffffff',
+        cursorTrackingColor: '#ffffff',
+        splitRangeColor: '#ffffff',
+        enemyBSTEDColor: '#cc79a7',
+        enemyBSTEColor: '#d55e00',
+        enemyBColor: '#e69f00',
+        enemySColor: '#56b4e9',
+        enemySSTEColor: '#0072b2',
+        enemySSTEDColor: '#009e73',
+        safeAreaColor: '#009e73',
+        dangerAreaColor: '#d55e00',
+        namesFont: 'ubuntu-bold',
+        massFont: 'ubuntu-bold',
+        sectorsFont: 'ubuntu',
+        namesScale: 1,
+        massScale: 3,
+        foodSize: 5,
+        bordersWidth: 40,
+        sectorsWidth: 40,
+        sectorsFontSize: 1200,
+        cellsAlpha: 1,
+        skinsAlpha: 1,
+        virusAlpha: 0.6,
+        textAlpha: 1,
+        backgroundAlpha: 0.6,
+        virusStrokeSize: 24,
+        virusGlowSize: 14,
+        borderGlowSize: 14,
+        menuPreset: 'legendv2',
+        graphics: 'high',
+        indicators: 'normal',
+        menuMainColor: '#56b4e9',
+        menuBtnTextColor: '#ffffff',
+        menuPanelColor: '#000000',
+        menuPanelColor2: '#1a1a1a',
+        menuTextColor: '#ffffff',
+        menuTextColor2: '#cccccc',
+        btn1Color: '#0072b2',
+        btn1Color2: '#005a8c',
+        btn2Color: '#009e73',
+        btn2Color2: '#007d5b',
+        btn3Color: '#cc79a7',
+        btn3Color2: '#b5628f',
+        btn4Color: '#d55e00',
+        btn4Color2: '#b34f00',
+        menuBg: 'https://www.legendmod.ml/banners/static/img/pattern.png',
+        menuOpacity: 1,
+        hudMainColor: '#56b4e9',
+        hudColor: 'rgba(0,0,0,1)',
+        hudTextColor: '#ffffff',
+        statsHudColor: '#ffffff',
+        timeHudColor: '#f0e442',
+        top5MassColor: '#e69f00',
+        lbMeColor: '#f0e442',
+        lbTeammateColor: '#56b4e9',
+        lbTeammateColor2: '#56b4e9',
+        hudFont: 'ubuntu-bold',
+        hudScale: 1,
+
+        messageColor: 'rgba(0,0,0,0.9)',
+        messageTextColor: '#ffffff',
+        messageTimeColor: '#56b4e9',
+        messageNickColor: '#f0e442',
+        commandsColor: 'rgba(0,114,178,0.95)',
+        commandsTextColor: '#ffffff',
+        commandsTimeColor: '#f0e442',
+        commandsNickColor: '#ffffff',
+        chatBoxColor: 'rgba(0,0,0,0.9)',
+        chatScale: 1,
+        miniMapSectorsColor: '#ffffff',
+        miniMapSectorColor: '#56b4e9',
+        miniMapGuidesColor: '#e69f00',
+        miniMapNickColor: '#ffffff',
+        miniMapNickStrokeColor: '#000000',
+        miniMapMyCellColor: '#f0e442',
+        miniMapMyCellStrokeColor: '#000000',
+        miniMapTeammatesColor: '#56b4e9',
+        miniMapDeathLocationColor: '#d55e00',
+        miniMapFont: 'ubuntu-bold',
+        miniMapNickFont: 'ubuntu-bold',
+        miniMapWidth: 240,
+        miniMapSectorsOpacity: 0.2,
+        miniMapNickSize: 14,
+        miniMapNickStrokeSize: 3,
+        miniMapMyCellSize: 10,
+        miniMapMyCellStrokeSize: 4,
+        miniMapTeammatesSize: 7.5,
+        customBackground: '',
+        customCursor: 'https://www.legendmod.ml/cursors/cursor_02.cur'
     }
 }
 var themeMenus = {
@@ -19657,6 +19776,7 @@ function _getParticleBlob(color) {
 }
 
 function _spawnDeathBurst(wx, wy, victimSize, victimColor) {
+    if (defaultmapsettings.reducedMotion) return;
     /*
      * During the final Expanding Land local-player cinematic, the dedicated
      * top overlay owns the particle burst.
@@ -19729,6 +19849,7 @@ var defaultmapsettings = {
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
     fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
     menuFpsCap: false,            /* like agar.io: 25 fps while the menu is shown and you are not playing */
+    reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -19844,6 +19965,7 @@ var defaultmapsettings = {
     showLbData: true,
     lbHideBots: false,
     lbPassToast: false,
+    lbClickSpectate: false,       /* free spectate: leaderboard mass click follows that player */
     noFocusHud: false,            /* warn while playing when keys/mouse no longer reach the game (alt-tab, 2nd window) */           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
     showDevConsole: false,
@@ -25036,6 +25158,7 @@ function thelegendmodproject() {
                     competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStatsFPS: true, showStatsPPS: true } },
                     battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0 } },
                     streamer: { key: 'lmPresetStreamer', en: 'Streamer', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false } },
+                    reducedMotion: { key: 'lmPresetReducedMotion', en: 'Reduced motion', set: { reducedMotion: true, jellyPhisycs: false, suckAnimation: false, animatedRainbowColor: false, rainbowMapBorders: false, tweenMaxEffect: false } },
                     cleanHud: { key: 'lmPresetCleanHud', en: 'Clean HUD', set: { showTop5: false, showTargeting: false, showTime: false, showLbData: false, top5skins: false, showStatsN16: false, showStatsWorldSize: false, showStatsDecayInfo: false, showStatsServerHz: false, showMiniMapGuides: false, showExtraMiniMapGuides: false } }
                 };
                 var setOpt = function (k, v) {
@@ -25154,7 +25277,7 @@ function thelegendmodproject() {
                 }
             })();
             //this.addOptions(["unlockedFPS"], "animationGroup");
-            this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode", "menuFpsCap"], "animationGroup");
+            this.addOptions(["highDPI", "recordReplays", "glAntialias", "performanceMode", "menuFpsCap", "reducedMotion"], "animationGroup");
 
             this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
@@ -25204,7 +25327,7 @@ function thelegendmodproject() {
             $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "lbClickSpectate", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "mergeRings", "gameOverStats", "massGraph", "personalBests", "matchHistory", "showKiller", "hideEventBanner", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Scan Trick section: was never built, so its settings could not be changed. */
@@ -26415,6 +26538,7 @@ function thelegendmodproject() {
              * got no death handling: no auto-respawn, no menu) */
             this._lmLastDeathAt = 0;
             if (window.legendmod) legendmod._lmKiller = null;
+            if (window.legendmod && legendmod._lmSpecLb != null) { legendmod._lmSpecLb = null; legendmod._lmSpecLbHud(); }
             if (!this._lmLifeStartAt) { this._lmLifeStartAt = Date.now(); this._lmMassHist = []; this._lmMassStride = 1; this._lmMassAcc = 0; this._lmMassAccN = 0; }
 
             /* The Game Over card (screen centre, top z-index) took the mouse and stayed for 12 s
@@ -39827,6 +39951,7 @@ function thelegendmodproject() {
             this.sendMessage(view);
         },
         sendSpectate() {
+            if (this._lmSpecLb != null) { this._lmSpecLb = null; this._lmSpecLbHud(); }
             this.isSpectateEnabled = true;
             this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry */
             /* Expanding Land leaves World Spectate on opcode 1 and 18 (client.c on_spectate /
@@ -39850,6 +39975,7 @@ function thelegendmodproject() {
             this.sendAction(1);
         },
         sendFreeSpectate() {
+            if (this._lmSpecLb != null) { this._lmSpecLb = null; this._lmSpecLbHud(); }
             this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry, like sendSpectate */
             this.isFreeSpectate = !this.isFreeSpectate;
             this._isWorldSpectating = false;
@@ -40629,6 +40755,15 @@ function thelegendmodproject() {
                             /* targetX/Y are local (rotated) coordinates: translate like the cursor. */
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.targetX) : this.targetX;
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.targetY) : this.targetY;
+                        }
+                        /* free spectate following a leaderboard player: ghost cells are local
+                         * (rotated) coordinates like targetX/Y, so translate the same way */
+                        else if (this._lmSpecLb != null) {
+                            var _lmSpG = !this.play && this.isFreeSpectate && this.ghostCells ? this.ghostCells[this._lmSpecLb] : null;
+                            if (_lmSpG) {
+                                cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(_lmSpG.x) : _lmSpG.x;
+                                cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(_lmSpG.y) : _lmSpG.y;
+                            } else this._lmSpecLbHud(); /* left free spectate, spawned or index gone: stop */
                         }
                     }
                     //autoplay handling
@@ -48830,6 +48965,7 @@ Most cells eaten   : ${mostCellsEaten}
                 this._lmPrevLbPos = _lmLbPos;
             } else this._lmPrevLbPos = 0;
             application.displayLeaderboard(teamText, text);
+            if (this._lmSpecLb != null) this._lmSpecLbHud();
             //application['displayPartyBots']();
 
 
@@ -48864,6 +49000,34 @@ Most cells eaten   : ${mostCellsEaten}
             window.targetingLeadX = _lmG.x;
             window.targetingLeadY = _lmG.y;
             legendmod.drawCommander2 = true;
+            /* optional: in free spectate the camera follows that player (a second click stops) */
+            if (defaultmapsettings.lbClickSpectate && !legendmod.play && legendmod.isFreeSpectate) {
+                legendmod._lmSpecLb = legendmod._lmSpecLb === o ? null : o;
+                legendmod._lmSpecLbHud();
+            }
+        },
+        /* Info line while free spectate follows a leaderboard player (_lmSpecLb = ghostCells index). */
+        _lmSpecLbHud() {
+            var el = document.getElementById('lm-spec-follow');
+            var i = this._lmSpecLb;
+            var g = (i != null && !this.play && this.isFreeSpectate && this.ghostCells) ? this.ghostCells[i] : null;
+            if (!g) {
+                this._lmSpecLb = null;
+                if (el) el.style.display = 'none';
+                return;
+            }
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'lm-spec-follow';
+                el.className = 'hud';
+                el.style.cssText = 'position:fixed;left:50%;top:44px;transform:translateX(-50%);padding:3px 10px;border-radius:4px;font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
+                document.body.appendChild(el);
+            }
+            var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
+            var sector = '';
+            try { sector = application.calculateMapSector(g.x + this.mapOffsetX, g.y + this.mapOffsetY); } catch (e) { }
+            el.textContent = label + ' #' + (i + 1) + ' \u00B7 ' + application.shortMassFormat(g.mass) + (sector ? ' \u00B7 ' + sector : '');
+            el.style.display = '';
         },
         flushCellsData(preserveMapGeometry) {
             /*
@@ -72069,7 +72233,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             if (
-                _screenShakeStart
+                _screenShakeStart &&
+                !defaultmapsettings.reducedMotion
             ) {
                 var _shakeElapsed =
                     Date.now() -
@@ -72252,7 +72417,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 if (
                     _elElapsed >=
-                        _EL_DURATION
+                        _EL_DURATION ||
+                    defaultmapsettings.reducedMotion
                 ) {
                     _elFx.active =
                         false;
