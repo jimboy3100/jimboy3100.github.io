@@ -307,7 +307,7 @@
     }
 
     /* a chat / alert sound starts: lower the playing video skins now; their 500 ms volume
-     * timer (checkVideos2) keeps them low until the time is up and then brings them back */
+     * tick (lmVideoSkinRegistry in ogario.v4.js) keeps them low until the time is up and then brings them back */
     function duck(channel) {
         if (!settings().audioDucking || !DUCK_CHANNELS[channel]) return;
         var wasDucked = now() < duckUntil;
