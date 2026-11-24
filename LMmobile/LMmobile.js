@@ -24,6 +24,20 @@
     /* loaded twice: two sets of buttons, every tap split twice */
     if (window.LM_IS_MOBILE) return;
     window.LM_IS_MOBILE = true;
+    /* drawRender.resizeCanvas gives phones their 2x backing store from this flag, but the canvas
+     * was sized before the flag existed and stayed 1x until the first rotation, fullscreen or menu
+     * resize. Apply it once as soon as the renderer is there (at most 15 s of polling). */
+    (function () {
+        var tries = 0;
+        var t = setInterval(function () {
+            tries++;
+            var r = window.drawRender;
+            if (r && typeof r.resizeCanvas === 'function') {
+                clearInterval(t);
+                try { r.resizeCanvas(); } catch (e) { }
+            } else if (tries >= 60) clearInterval(t);
+        }, 250);
+    })();
     /* where this file came from: the control editor (LMmobile-editor.js) loads from the same place */
     var _lmmSrc = (document.currentScript && document.currentScript.src) || '';
 
