@@ -56,7 +56,7 @@
     height: 40px;
     width: 100px;
     font-size: 30px;
-    font-weigth: bold;
+    font-weight: bold;
     text-align: center;
   }
   #copy:hover{
@@ -70,7 +70,7 @@
     height: 40px;
     width: 100px;
     font-size: 30px;
-    font-weigth: bold;
+    font-weight: bold;
     text-align: center;
 	left:110px;
   }
@@ -246,8 +246,8 @@ cursor:pointer;
 </div>
 </center>
  <div class="topright">* For vanilla game (visible to actual user)
- <br>** For <img src="https://jimboy3100.github.io/banners/iconMinions.png" width="25" height="20"><a target="_blank" href="https://chrome.google.com/webstore/detail/raga-minions/dbcocnmfmbpgfgffogfckoljdjcefgko"><font color="#FF0000"><b>Raga</font><b></a> mod (visible to all Raga users)
- <br>*** Generate <a target="_blank" href="https://jimboy3100.github.io/nicks"><font color="#FF0000"><b>nickname</font><b></a></div>
+ <br>** For <img src="https://jimboy3100.github.io/banners/iconMinions.png" width="25" height="20"><a target="_blank" href="https://chrome.google.com/webstore/detail/raga-minions/dbcocnmfmbpgfgffogfckoljdjcefgko" rel="noopener"><font color="#FF0000"><b>Raga</font><b></a> mod (visible to all Raga users)
+ <br>*** Generate <a target="_blank" href="https://jimboy3100.github.io/nicks" rel="noopener"><font color="#FF0000"><b>nickname</font><b></a></div>
 <div id="tab" style="width:100%">
 <color="red" style="display:inline; font-size: 25px;">Version: <select id="ss-select-agarVersionDestinations" onchange="changeFunction()" class="form-control" required="" style="display:inline; width: 160px; margin-top: -30px;font-size: 25px;"></select></color>
 <a class="tabActive" id="wc" href="javascript:void(0);">&nbsp;Web console [F12]&nbsp;</a>
@@ -258,7 +258,7 @@ cursor:pointer;
 </div>
 <textarea id="textarea" onclick="sA('textarea')" readonly></textarea><br>
 <div class="page"></div>
-<div id="result"><a target="_blank" href="http://jimboy3100.github.io"><font size="5" color="#FF0000"><b>[NEW VERSION HERE]</font><b></a></div>
+<div id="result"><a target="_blank" href="http://jimboy3100.github.io" rel="noopener"><font size="5" color="#FF0000"><b>[NEW VERSION HERE]</font><b></a></div>
 
 <div class="page"></div>
 <script>
@@ -360,7 +360,7 @@ function AgarVersionDestinations2(custom) {
 		
 		startProject()   
 		window.started = true
-		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank">' + 'Destination' + '</a> -<br></div>'
+		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank" rel="noopener">' + 'Destination' + '</a> -<br></div>'
 }
 		
 function isObject(val) {
@@ -377,7 +377,7 @@ setTimeout(function() {
 		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
 
 		startProject()    
-		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank">' + 'Destination' + '</a> -<br></div>'
+		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank" rel="noopener">' + 'Destination' + '</a> -<br></div>'
    }
 }, 5000);
 
@@ -673,8 +673,8 @@ document.getElementById(i).src= 'https://jimboy3100.github.io/banners/iconImageN
 <br>
   <img id="hello" style="display:none" src="http://whos.amung.us/widget/agarskins.png" width="1" height="1" border="0"  style="display:none" />
   <div id="knownIssues2"<br></div>
-  - <a id="knownIssues" target="_blank" href="https://jimboy3100.github.io/skins/skinrotator.txt">Known issues</a> -
-  <br>© <year></year> <a target="_blank" href="http://jimboy3100.github.io">The Legend Mod Project</a> - MIT Licence -</center>
+  - <a id="knownIssues" target="_blank" href="https://jimboy3100.github.io/skins/skinrotator.txt" rel="noopener">Known issues</a> -
+  <br>© <year></year> <a target="_blank" href="http://jimboy3100.github.io" rel="noopener">The Legend Mod Project</a> - MIT Licence -</center>
 <script>
 function year(){var d=new Date();var y=d.getFullYear();if(document.getElementsByTagName("year").length>0){document.getElementsByTagName("year")[0].innerHTML=y}}year();
 </script>

@@ -896,7 +896,7 @@ function renderDetailPage() {
             <td class="time-text">${s.ended_at ? formatTime(s.ended_at) : '<span style="color:#00b894;font-weight:600">Playing now</span>'}</td>
             <td>${durText}</td>
             <td class="nick">${esc(s.nickname || '—')}</td>
-            <td>${srv.id ? '<a href="https://agar.io/?ip=' + encodeURI(s.server) + '" target="_blank" class="server-link">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
+            <td>${srv.id ? '<a href="https://agar.io/?ip=' + encodeURI(s.server) + '" target="_blank" class="server-link" rel="noopener">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
             <td class="name-text">${esc(s.region || '')}</td>
             <td>${s.mode ? '<span class="mode-badge" style="background:' + mc + '15;color:' + mc + '">' + esc(s.mode.toUpperCase()) + '</span>' : ''}</td>
             <td>${s.agario_level ? '<span class="level-badge">⭐ ' + esc(s.agario_level) + '</span>' : ''}</td>
