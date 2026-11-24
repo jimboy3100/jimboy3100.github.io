@@ -250,7 +250,8 @@
         boundKeys: { en: 'Bound keys', el: 'Πλήκτρα' },
         exportImport: { en: 'Export / import settings', el: 'Εξαγωγή / εισαγωγή ρυθμίσεων' },
         searchSettings: { en: 'Search settings', el: 'Αναζήτηση ρυθμίσεων' },
-        friends: { en: 'Friends', el: 'Φίλοι' }
+        friends: { en: 'Friends', el: 'Φίλοι' },
+        mobileControls: { en: 'Edit touch controls', el: 'Επεξεργασία κουμπιών αφής' }
     };
     function lang() {
         try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
@@ -409,7 +410,9 @@
         { id: 'boundKeys', en: tEn('boundKeys'), label: function () { var s = W.lmT && W.lmT('boundKeys'); return s && s !== 'boundKeys' ? s : t('boundKeys'); }, avail: function () { return !!D.getElementById('lm-hk-sheet'); }, run: function () { clickEl('#lm-hk-sheet'); } },
         { id: 'exportImport', en: tEn('exportImport'), label: function () { return plain(TL().exportImport) || t('exportImport'); }, avail: function () { return !!D.querySelector('#og-settings .btn-export'); }, run: function () { clickEl('#og-settings .btn-export'); } },
         { id: 'searchSettings', en: tEn('searchSettings'), label: function () { return t('searchSettings'); }, avail: function () { return !!D.getElementById('lm-settings-search'); }, run: function () { openTab('og-settings'); setTimeout(function () { var s = D.getElementById('lm-settings-search'); if (s) s.focus(); }, 250); } },
-        { id: 'friends', en: tEn('friends'), label: function () { return t('friends'); }, avail: function () { var b = D.getElementById('lm-friends-btn'); return !!(b && !b.disabled); }, run: function () { clickEl('#lm-friends-btn'); } }
+        { id: 'friends', en: tEn('friends'), label: function () { return t('friends'); }, avail: function () { var b = D.getElementById('lm-friends-btn'); return !!(b && !b.disabled); }, run: function () { clickEl('#lm-friends-btn'); } },
+        /* phones only: the touch control editor of LMmobile.js */
+        { id: 'mobileControls', en: tEn('mobileControls'), label: function () { return t('mobileControls'); }, avail: function () { return !!(W._lmMobileHost && typeof W._lmMobileHost.openEditor === 'function'); }, run: function () { W._lmMobileHost.openEditor(); } }
     ];
 
     /* ═══ Running items ═══ */

@@ -25601,9 +25601,10 @@ function thelegendmodproject() {
             /* Issue #15: include Performance Mode backup and preset undo snapshot so they survive a browser wipe.
              * They hold gameplay settings, so they go with those only (the import reads them only
              * with those too). The phone controls (LMmobile gear panel: joystick sensitivity,
-             * button size and opacity, toggles) and the gamepad buttons and profiles go with them as well. */
+             * button size and opacity, toggles), the phone control layouts (LMmobile-editor.js) and the
+             * gamepad buttons and profiles go with them as well. */
             if (options.ogarioSettings) {
-                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs', 'lmGamepad'].forEach(function (k) {
+                ['lmPerfBackup', 'lmPresetUndo', 'lm-mobile-prefs', 'lmGamepad', 'lm-mobile-layouts'].forEach(function (k) {
                     try {
                         var v = JSON.parse(window.localStorage.getItem(k) || 'null');
                         if (v && typeof v === 'object' && !Array.isArray(v)) options[k] = v;
@@ -25713,6 +25714,9 @@ function thelegendmodproject() {
                             /* gamepad buttons and profiles: the same, ogario/gamepad.js checks them on load */
                             _impStep = 'lmGamepad';
                             if (_impObject(importValue.lmGamepad)) _impSet('lmGamepad', JSON.stringify(importValue.lmGamepad));
+                            /* phone control layouts: the same, LMmobile-editor.js checks them on load */
+                            _impStep = 'lm-mobile-layouts';
+                            if (_impObject(importValue['lm-mobile-layouts'])) _impSet('lm-mobile-layouts', JSON.stringify(importValue['lm-mobile-layouts']));
                         }
                     }
                 } catch (writeErr) {
