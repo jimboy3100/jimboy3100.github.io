@@ -4208,7 +4208,76 @@ window._lmRecLive = false;
 window._lmRecM = function () {
     if (!window._lmRecLive || typeof defaultmapsettings === 'undefined' || defaultmapsettings.recordReplays === false) return null;
     var a = window.RecordedProtocol[window.temporaryRecordedProtocol];
-    return a && a._lm && window.catholicCalculator < 90000 ? a._lm : null;
+    /* the same limits as the packets (lmRecRoom), so the timeline ends where the packets end */
+    return a && a._lm && lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) ? a._lm : null;
+};
+/* Replay memory. One recording stops at 90000 packets or 100 MiB; all kept recordings together
+ * also share one budget that depends on the device (lmRecByteBudget). When it is used up the
+ * oldest recordings are freed (the one being recorded, a replay that is playing and one being
+ * saved stay), then the current recording stops like at 100 MiB. Only memory is freed: the
+ * Replay Studio library (IndexedDB) and saved .lm files are not touched. Nothing here runs while
+ * recordReplays is off: the check is called from the packet recording branch only. */
+var LM_REC_PKT_OVERHEAD = 64; /* the DataView, its ArrayBuffer object and the time slot of a packet */
+function lmRecRoom(count, bytes, full) {
+    return count < 90000 && (bytes || 0) < 104857600 && !full;
+}
+function lmRecByteBudget(deviceMemory, mobile) {
+    var mb = deviceMemory > 0 ? Math.max(64, Math.min(mobile ? 160 : 320, deviceMemory * 48)) : (mobile ? 150 : 300);
+    return mb * 1048576;
+}
+/* memory one packet keeps alive: a view over part of a bigger buffer keeps all of it (live
+ * packets are views over their own WebSocket buffer, so this is their length) */
+function lmRecPacketBytes(d) {
+    if (!d) return 0;
+    var n = d.byteLength || 0, b = d.buffer && d.buffer.byteLength;
+    return b > n ? b : n;
+}
+/* size of a kept recording, cached on the array until its length changes */
+function lmRecArrBytes(a) {
+    if (!a || !a.length) return 0;
+    if (a._lmBytesN === a.length) return a._lmBytes;
+    var n = 0;
+    for (var i = 0; i < a.length; i++) n += lmRecPacketBytes(a[i]) + LM_REC_PKT_OVERHEAD;
+    a._lmBytes = n;
+    a._lmBytesN = a.length;
+    return n;
+}
+/* entries: the other kept recordings, oldest first, { key, bytes, keep }; cur: bytes of the one
+ * being recorded. Returns the keys to free (oldest first, never keep ones) and whether the
+ * current recording still does not fit and has to stop. */
+function lmRecBudgetPlan(entries, cur, budget) {
+    var total = cur, evict = [], i;
+    for (i = 0; i < entries.length; i++) total += entries[i].bytes || 0;
+    for (i = 0; i < entries.length && total > budget; i++) {
+        if (entries[i].keep) continue;
+        evict.push(entries[i].key);
+        total -= entries[i].bytes || 0;
+    }
+    return { evict: evict, stop: total > budget, total: total };
+}
+/* called every MiB of recorded packets (and on the first packet of a recording) */
+window._lmRecBudgetCheck = function () {
+    var list = window.RecordedProtocolArenas, rp = window.RecordedProtocol, cur = window.temporaryRecordedProtocol;
+    if (!Array.isArray(list) || !rp) return;
+    if (!window._lmRecBudget) window._lmRecBudget = lmRecByteBudget(navigator.deviceMemory, typeof isMobile !== 'undefined' && isMobile);
+    var play = window.legendmod && window.legendmod.playingReplayServer, entries = [];
+    for (var i = 0; i < list.length; i++) {
+        var k = list[i], a = rp[k];
+        if (k === cur) continue;
+        entries.push({ key: k, bytes: lmRecArrBytes(a), keep: k === play || !!(a && a._lmSaving) });
+    }
+    var plan = lmRecBudgetPlan(entries, (window._lmRecSlotBytes || 0) + window.catholicCalculator * LM_REC_PKT_OVERHEAD, window._lmRecBudget);
+    for (i = 0; i < plan.evict.length; i++) {
+        var idx = list.indexOf(plan.evict[i]);
+        if (idx !== -1) list.splice(idx, 1);
+        delete rp[plan.evict[i]];
+        if (window.RecordedArenasSpecifications) delete window.RecordedArenasSpecifications[plan.evict[i]];
+    }
+    if (plan.evict.length) console.info('[Replays] Memory budget: freed ' + plan.evict.length + ' older recording(s) from memory');
+    if (plan.stop && !window._lmRecFull) {
+        window._lmRecFull = true;
+        console.info('[Replays] Memory budget reached: this recording stops here');
+    }
 };
 /* event types: d death (best mass), s spawn, k own cell ate a player cell (its mass),
  * v own cell popped a virus, p split sent (1 split, 2 double...), f feeding */
@@ -42251,6 +42320,9 @@ function thelegendmodproject() {
                 }
                 window.catholicCalculator = 0
                 window._lmRecSlotBytes = 0
+                /* memory budget (window._lmRecBudgetCheck): not full, check on the first packet */
+                window._lmRecFull = false
+                window._lmRecChkAt = 0
                 window.RecordedProtocol[window.temporaryRecordedProtocol] = []
                 /* Replay Studio times and samples (see window._lmRecM), only while recording */
                 window._lmRecLive = defaultmapsettings.recordReplays !== false;
@@ -43971,19 +44043,25 @@ function thelegendmodproject() {
             /* One #server-token lookup per packet instead of two. */
             var _recServerToken;
             /* recordReplays off: keep no packets (an undefined setting counts as on) */
-            /* also stop at 100 MB per recording (5 are kept): busy servers send big packets */
-            if (defaultmapsettings.recordReplays !== false && window.catholicCalculator < 90000 && (window._lmRecSlotBytes || 0) < 104857600 && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+            /* also stop at 100 MB per recording (5 are kept): busy servers send big packets,
+             * and when all kept recordings use up the memory budget (lmRecRoom, _lmRecFull) */
+            if (defaultmapsettings.recordReplays !== false && lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 var _lmRecArr = window.RecordedProtocol[window.temporaryRecordedProtocol];
                 _lmRecArr[window.catholicCalculator] = data
                 /* its time for Replay Studio (accurate playback speed and seeking) */
                 if (_lmRecArr._lm) _lmRecArr._lm.t[window.catholicCalculator] = Date.now() - _lmRecArr._lm.t0;
-                window._lmRecSlotBytes = (window._lmRecSlotBytes || 0) + ((data && data.byteLength) || 0)
+                window._lmRecSlotBytes = (window._lmRecSlotBytes || 0) + lmRecPacketBytes(data)
 
                 //window.RecordedProtocolArenas[legendmod.ws][]
                 //window.RecordedProtocolArenas[window.specificRecordedProtocol[legendmod.ws]] = window.RecordedProtocol[window.catholicCalculator] 
                 window.catholicCalculator++
+                /* all kept recordings within the memory budget, checked once per MiB */
+                if (!(window._lmRecSlotBytes < window._lmRecChkAt)) {
+                    window._lmRecChkAt = window._lmRecSlotBytes + 1048576;
+                    window._lmRecBudgetCheck();
+                }
             }
-            /*			
+            /*
             for (window.playrecord=0;window.playrecord<window.RecordedProtocol.length-1;window.playrecord++){
                 setTimeout(function() {	
                     legendmod.handleMessage(window.RecordedProtocol[window.playrecord])
