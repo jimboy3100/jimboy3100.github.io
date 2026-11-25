@@ -1263,7 +1263,7 @@ function ReportFakesSkin() {
 
         '<div class="modal-header">' +
         '<button type="button" class="close" onclick="exitSkinChanger(); return false;"><span aria-hidden="true">&#10005;</span></button>' +
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Premadeletter119 + '</h4>' +
+        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' + Premadeletter119 + '</h4>' +
         '</div>' +
 
         '<div id="SkinChangerhud" style="display:block; padding: 10px;">' +
@@ -8906,7 +8906,7 @@ function BannedUIDS() {
                 '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
                 '<div class="modal-content">' +
                 '<div id="CloseBannedUIDS2" class="modal-header"><button id="CloseBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-                '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + _lmxE('lmx.ex.bannedIds') + '</h4>' +
+                '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' + _lmxE('lmx.ex.bannedIds') + '</h4>' +
                 '</div>' +
                 '<div class="modal-body"><input type="text" class="form-control" id="Bannedagario_uid_input" placeholder="*' + _lmxE('lmx.ex.uidToBan') + '" style="width: 85%; display: inline-block">' +
                 '<button id="AddBannedUID" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 20%; padding: 4px 0px 6px; text-transform: capitalize;">' + _lmxE('lmx.ex.add') + '</button>' +
@@ -9250,7 +9250,7 @@ function LMnoBotsPromo() {
         '<span aria-hidden="true">?</span>' +
         '</button>' +
 
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
+        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' +
         '' + _lmxE('lmx.ex.noBotsTitle') + '' +
         '</h4>' +
 
@@ -9296,7 +9296,7 @@ function LMLegendFFAPromo() {
         '<span aria-hidden="true">?</span>' +
         '</button>' +
 
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
+        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' +
         '\ud83d\udc51 ' + _lmxE('lmx.ex.ffaServerTitle') + '' +
         '</h4>' +
 
@@ -9345,7 +9345,7 @@ function LMrewardDay() {
         '<span aria-hidden="true">?</span>' +
         '</button>' +
 
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
+        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' +
         '' + _lmxE('lmx.ex.rewardDay') + '' +
         '</h4>' +
 
@@ -9377,7 +9377,7 @@ function VideoSkinsPromo() {
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 922px;">' +
         '<div class="modal-content">' +
         '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + _lmxE('lmx.ex.videoSkinPromo') + '</h4>' +
+        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' + _lmxE('lmx.ex.videoSkinPromo') + '</h4>' +
         '</div>' +
         '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/developers/videoskins.html" width="920" height="550" >' +
         '</div>' +
@@ -9521,7 +9521,7 @@ function LMadvertisementMegaFFA() {
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
         '<div class="modal-content">' +
         '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + _lmxE('lmx.ex.dev2020') + '</h4>' +
+        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' + _lmxE('lmx.ex.dev2020') + '</h4>' +
         '</div>' +
         '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/extras/2020.html" width="620" height="490" >' +
         '</div>' +

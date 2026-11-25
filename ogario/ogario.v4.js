@@ -197,7 +197,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.620;
+window.OgVer = 3.621;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -386,9 +386,10 @@ function _lmMatchHistoryOpen() {
     var el = function (tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text !== undefined) e.textContent = text; return e; };
     var fmtTime = function (ms) { var s = Math.max(0, Math.round((+ms || 0) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); s = s % 60; return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s; };
     var md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:620px;max-width:calc(100vw - 32px);max-height:80vh;' +
-        'display:flex;flex-direction:column;z-index:2147483647;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
+        'display:flex;flex-direction:column;z-index:999990;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
         'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:12px;overflow:hidden;');
     md.id = 'lm-mh-modal';
+    md.className = 'lm-modal-container';
     var head = el('div', 'padding:10px 44px 8px 80px;text-align:center;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
     head.appendChild(el('div', 'font-size:16px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', _lmMhT('matchHistory', 'Match history')));
     var x = el('div', 'position:absolute;top:8px;right:12px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', '✕');
@@ -1000,9 +1001,10 @@ function _lmRoomOpen(tab, code) {
     var btnCss = 'min-height:36px;padding:6px 14px;border:none;border-radius:var(--lm-radius-s,4px);cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:' + mc + ';color:' + pc + ';';
     var btn2Css = 'min-height:32px;padding:4px 10px;border:1px solid ' + pc2 + ';border-radius:var(--lm-radius-s,4px);cursor:pointer;font-size:12px;font-family:inherit;background:rgba(255,255,255,0.05);color:' + tc + ';';
     var md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:460px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
-        'display:flex;flex-direction:column;z-index:2147483647;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
+        'display:flex;flex-direction:column;z-index:999990;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
         'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:13px;overflow:hidden;box-sizing:border-box;');
     md.id = 'lm-room-modal';
+    md.className = 'lm-modal-container';
     var head = el('div', 'flex:none;padding:10px 52px 8px 52px;text-align:center;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
     head.appendChild(el('div', 'font-size:16px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', '🔒 ' + _lmMhT('room', 'Private room')));
     var x = el('div', 'position:absolute;top:6px;right:10px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', '✕');
@@ -46579,9 +46581,9 @@ function thelegendmodproject() {
                     '</div>';
             }
 
-            var html = '<div id="lm-gameover-modal" style="' +
+            var html = '<div id="lm-gameover-modal" class="lm-modal-container" style="' +
                 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
-                'width:300px;max-width:calc(100vw - 16px);box-sizing:border-box;z-index:2147483647;pointer-events:auto;' +
+                'width:300px;max-width:calc(100vw - 16px);box-sizing:border-box;z-index:999990;pointer-events:auto;' +
                 'animation:lmGoSlideIn 0.4s cubic-bezier(.22,1,.36,1) forwards;' +
                 'opacity:0;font-family:inherit;">' +
 
