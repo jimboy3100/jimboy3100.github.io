@@ -117,3 +117,10 @@ overlay pass, canUseWebGLScene and the cell methods run on a small software 2D c
 frame (main + GL + overlay) must equal, pixel by pixel, the same scene in Canvas2D order. Covers
 overlapping cells, Canvas2D/WebGL switches, frames without marks, DPR 2, resize and context loss.
 Bodies and labels are models and no GPU runs. `node developers/tests/overlayfx.js [ogario.v4.js]`
+
+`cellshadows.js` checks cell shadows (showCellShadows) with the WebGL renderer: the real
+canUseWebGLScene in Node (a frame with a shadowed cell on screen goes to Canvas2D with the reason
+`cellShadows`; food, ejected mass and off-screen cells keep WebGL), then in headless Chrome the
+real WebGL batch and the real cell.draw composed like the page, jelly on/off, WebGL/Canvas2D,
+shadows off/default/blur 0, with overlapping cells, food and ejected mass. The Chrome part is
+skipped without Chrome. `node developers/tests/cellshadows.js [ogario.v4.js]`

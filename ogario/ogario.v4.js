@@ -36938,7 +36938,10 @@ function thelegendmodproject() {
                         var _appliedShadow = false;
                         if (defaultmapsettings.showCellShadows && !this.isFood && !this.isEjected) {
                             style.shadowColor = defaultSettings.cellShadowColor || 'rgba(0,0,0,0.35)';
-                            style.shadowBlur = defaultSettings.cellShadowBlur || 20;
+                            /* 0 is a valid blur (a hard shadow): only a missing or invalid value means 20 */
+                            var _shBlur = defaultSettings.cellShadowBlur;
+                            _shBlur = _shBlur === '' || _shBlur == null ? NaN : +_shBlur;
+                            style.shadowBlur = _shBlur >= 0 && _shBlur < Infinity ? _shBlur : 20;
                             style.shadowOffsetX = (defaultSettings.cellShadowOffsetX || 0);
                             style.shadowOffsetY = (defaultSettings.cellShadowOffsetY || 0);
                             _appliedShadow = true;
@@ -59155,6 +59158,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this._glSkinFrame = (this._glSkinFrame || 0) + 1;
             /* no per-cell overlay marks until the cell loop below finds some */
             this._lmFgFxN = 0;
+            /* why this frame stays on Canvas2D, for the checks below that name one */
+            this._lmGlFallback = '';
 
             /*
              * ================================================================
@@ -59538,6 +59543,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _glSpFx = (typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers) ? SpecialEffectPlayers : null;
             var _glFxCheck = !!(_glTeamNicks || _glTeamList || _glFbSkins || _glChatMap || _glSpFx);
             var _glFxN = 0;
+            /* Cell shadows are the Canvas2D drop shadow of cell.draw and the GPU batch has no
+             * shadow pass, so a frame with a shadowed cell on screen stays on Canvas2D (food
+             * and ejected mass cast none). Fallback reason: 'cellShadows'. */
+            var _glShadows = !!defaultmapsettings.showCellShadows;
 
 
             for (
@@ -59583,6 +59592,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         )
                 ) {
                     continue;
+                }
+
+                if (_glShadows && !cell.isEjected) {
+                    this._lmGlFallback = 'cellShadows';
+                    return false;
                 }
 
                 if (_glFxCheck) {
