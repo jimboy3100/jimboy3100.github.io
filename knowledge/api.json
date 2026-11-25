@@ -1,0 +1,33 @@
+{
+  "updated": "2026-11-25",
+  "description": "Static public knowledge resources. No authentication or live session data.",
+  "resources": [
+    {
+      "url": "https://www.legendmod.ml/knowledge/features.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/game.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/mechanics.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/modes.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/resources.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/graph.jsonld"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/graph.ttl"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/graph.rdf"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/vocabulary.ttl"
+    }
+  ]
+}

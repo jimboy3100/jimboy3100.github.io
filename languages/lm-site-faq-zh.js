@@ -31,6 +31,6 @@
 "site.faq.doesLegendModWork": "Legend Mod 能在 Sigmally 和 Senpa.io 上使用嗎？",
 "site.faq.yesLegendModIs4": "可以！Legend Mod 是<strong>唯一支援多個遊戲伺服器的 agar.io 擴充功能</strong>：官方 agar.io、Sigmally 和 Senpa.io。所有巨集、造型與功能在所有支援的伺服器上都能使用。你也可以在 <strong>Expanding Land</strong> 上遊玩，這是 Legend Mod 自己的私人伺服器，最多可容納 720 名玩家，網址為 <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>。",
 "site.faq.whatIsExpandingLand": "什麼是 Expanding Land？",
-"site.faq.expandingLandIsAn": "Expanding Land 是由 ℄ Legend Clan 打造的 agar.io 私人伺服器。它擁有會依玩家人數動態調整大小的超大地圖，最多支援 <strong>720 名真人玩家</strong>（沒有機器人）、200 多名觀戰者，還有藥水、反組隊機制和獨特的遊戲模式。到 <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a> 免費遊玩。"
+"site.faq.expandingLandIsAn": "Expanding Land 是獨立的多人瀏覽器細胞遊戲，圓形地圖會擴張與收縮。真人玩家與伺服器機器人的數量因競技場而異。 <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>."
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();

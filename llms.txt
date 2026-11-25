@@ -1,0 +1,15 @@
+# Legend Mod
+
+> Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.
+
+## Official resources
+- [Legend Mod](https://www.legendmod.ml/): browser client and extension.
+- [Features](https://www.legendmod.ml/features.html): settings and tools.
+- [Expanding Land](https://expanding.land/): playable game.
+- [Help](https://help.expanding.land/): official documentation.
+- [Dynamic map](https://help.expanding.land/dynamic-map.html): expansion and contraction.
+- [Players and bots](https://help.expanding.land/no-bots.html): population distinctions.
+- [Project facts](https://www.legendmod.ml/knowledge/): entity identifiers.
+
+- [Consolidated documentation](https://www.legendmod.ml/llms-full.txt): verified core facts and links.
+- [Knowledge API](https://www.legendmod.ml/knowledge/api.json): public read-only JSON resources.

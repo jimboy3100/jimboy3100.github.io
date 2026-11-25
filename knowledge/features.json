@@ -1,0 +1,56 @@
+{
+  "entity": "https://www.legendmod.ml/#app",
+  "updated": "2026-11-25",
+  "features": [
+    {
+      "id": "controls",
+      "name": "Configurable controls and hotkeys",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "skins",
+      "name": "Custom skins, video skins and skin tools",
+      "url": "https://www.legendmod.ml/skins/"
+    },
+    {
+      "id": "themes",
+      "name": "Themes and HUD customization",
+      "url": "https://www.legendmod.ml/themes/"
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile touch controls",
+      "url": "https://www.legendmod.ml/LMmobile/"
+    },
+    {
+      "id": "gamepad",
+      "name": "Gamepad support",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "multibox",
+      "name": "Multibox controls",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "replays",
+      "name": "Replay tools",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "performance",
+      "name": "WebGL rendering and performance diagnostics",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "profiles",
+      "name": "Settings profiles",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "companion",
+      "name": "Second-screen companion",
+      "url": "https://www.legendmod.ml/companion-guide.html"
+    }
+  ]
+}

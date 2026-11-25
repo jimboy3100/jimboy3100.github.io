@@ -1,0 +1,8 @@
+@prefix lm: <https://www.legendmod.ml/knowledge/vocabulary.ttl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+lm:GameMechanic a rdfs:Class ; rdfs:subClassOf schema:DefinedTerm ; rdfs:label "Game mechanic"@en ; rdfs:comment "A documented rule or behavior of a game."@en .
+lm:GameMode a rdfs:Class ; rdfs:subClassOf schema:DefinedTerm ; rdfs:label "Game mode"@en ; rdfs:comment "A supported style of gameplay."@en .
+lm:hasMechanic a rdf:Property ; rdfs:domain schema:VideoGame ; rdfs:range lm:GameMechanic ; rdfs:label "has mechanic"@en .
+lm:hasGameMode a rdf:Property ; rdfs:domain schema:VideoGame ; rdfs:range lm:GameMode ; rdfs:label "has game mode"@en .

@@ -1,0 +1,16 @@
+{
+  "entity": "https://expanding.land/#game",
+  "updated": "2026-11-25",
+  "modes": [
+    {
+      "id": "ffa",
+      "name": "Free-for-all",
+      "description": "Competitive individual play."
+    },
+    {
+      "id": "teams",
+      "name": "Teams",
+      "description": "Team-based play on supported arenas."
+    }
+  ]
+}

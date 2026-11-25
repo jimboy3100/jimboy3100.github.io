@@ -18,7 +18,7 @@
   <a href="https://github.com/jimboy3100/jimboy3100.github.io/stargazers"><img src="https://img.shields.io/github/stars/jimboy3100/jimboy3100.github.io?style=flat-square&color=yellow" alt="Stars"></a>
   <a href="https://github.com/jimboy3100/jimboy3100.github.io/network/members"><img src="https://img.shields.io/github/forks/jimboy3100/jimboy3100.github.io?style=flat-square&color=blue" alt="Forks"></a>
   <a href="https://github.com/jimboy3100/jimboy3100.github.io/blob/master/MITlicence.txt"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License"></a>
-  <img src="https://img.shields.io/badge/version-3.569-purple?style=flat-square" alt="Version">
+  <img src="https://img.shields.io/badge/version-3.628-purple?style=flat-square" alt="Version">
 </p>
 
 ---
@@ -91,20 +91,11 @@
 
 ---
 
-## 🌍 Expanding Land — The World's Largest IO Game
+## Expanding Land
 
-**[Expanding Land](https://expanding.land/)** is a free agar.io alternative built from scratch in **pure C** — supporting **1024 real players** per arena with zero bots.
+[Expanding Land](https://expanding.land/) is a free multiplayer browser cell game with a dynamic circular arena that expands and contracts. Human and server-controlled bot populations vary by arena. The game uses a C-based server.
 
-| Feature | Details |
-|---|---|
-| 👥 Players | 1024 real players — no bots |
-| ⚡ Performance | ~5ms tick time (8× faster than agar.io) |
-| 🗺️ Map | Dynamic sizing from 0.25× to 8× based on player count |
-| 🛡️ Security | Encrypted WSS + coordinate scramble anti-cheat |
-| 🎨 Mods | Full Legend Mod & Delta compatibility |
-| 💰 Price | 100% Free — no pay-to-win |
-
-🎮 [Play now](https://expanding.land/) · 📖 [Help & Guide](https://help.expanding.land/) · 💬 [Discord](https://discord.com/invite/JUfpR9k)
+[Play](https://expanding.land/) · [Help](https://help.expanding.land/) · [Dynamic map](https://help.expanding.land/dynamic-map.html)
 
 ---
 
@@ -158,3 +149,7 @@ Legend Mod is built on [OGario](http://ogario.ovh/) and [Kitty](https://kittymod
 <p align="center">
   <a href="https://www.legendmod.ml/play.html"><img src="https://img.shields.io/badge/🎮_Play_Now-legendmod.ml-7c3aed?style=for-the-badge" alt="Play Now"></a>
 </p>
+
+## Public machine-readable documentation
+
+[Project facts](https://www.legendmod.ml/knowledge/) · [LLM documentation](https://www.legendmod.ml/llms-full.txt) · [Knowledge API](https://www.legendmod.ml/knowledge/api.json)

@@ -1,0 +1,61 @@
+{
+  "updated": "2026-11-25",
+  "resources": [
+    {
+      "name": "Legend Mod",
+      "url": "https://www.legendmod.ml/"
+    },
+    {
+      "name": "Play with Legend Mod",
+      "url": "https://www.legendmod.ml/play.html"
+    },
+    {
+      "name": "Install Chrome extension",
+      "url": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja"
+    },
+    {
+      "name": "Features",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "name": "FAQ",
+      "url": "https://www.legendmod.ml/faq.html"
+    },
+    {
+      "name": "Release notes",
+      "url": "https://www.legendmod.ml/changelog.html"
+    },
+    {
+      "name": "Developers",
+      "url": "https://www.legendmod.ml/developers/"
+    },
+    {
+      "name": "Expanding Land",
+      "url": "https://expanding.land/"
+    },
+    {
+      "name": "Game help",
+      "url": "https://help.expanding.land/"
+    },
+    {
+      "name": "Strategy",
+      "url": "https://help.expanding.land/guide.html"
+    },
+    {
+      "name": "Glossary",
+      "url": "https://help.expanding.land/glossary.html"
+    },
+    {
+      "name": "Dynamic map",
+      "url": "https://help.expanding.land/dynamic-map.html"
+    },
+    {
+      "name": "Bots and fair play",
+      "url": "https://help.expanding.land/no-bots.html"
+    },
+    {
+      "name": "Game updates",
+      "url": "https://help.expanding.land/changelog.html"
+    }
+  ]
+}

@@ -31,6 +31,6 @@
 "site.faq.doesLegendModWork": "هل يعمل Legend Mod على Sigmally وSenpa.io؟",
 "site.faq.yesLegendModIs4": "نعم! Legend Mod هو <strong>إضافة agar.io الوحيدة</strong> التي تدعم عدة خوادم لعب: agar.io الرسمي وSigmally وSenpa.io. تعمل جميع الماكرو والسكنات والميزات على كل الخوادم المدعومة. ويمكنك أيضًا اللعب على <strong>Expanding Land</strong> — الخادم الخاص بـ Legend Mod الذي يتسع لما يصل إلى 720 لاعبًا على <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>.",
 "site.faq.whatIsExpandingLand": "ما هو Expanding Land؟",
-"site.faq.expandingLandIsAn": "Expanding Land خادم agar.io خاص أنشأته ℄ Legend Clan. يتميز بخرائط ضخمة يتغير حجمها ديناميكيًا حسب عدد اللاعبين، ويدعم ما يصل إلى <strong>720 لاعبًا حقيقيًا</strong> (بلا بوتات)، وأكثر من 200 مشاهد، والجرعات، وآليات مكافحة التحالف، وأنماط لعب فريدة. العب مجانًا على <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>."
+"site.faq.expandingLandIsAn": "Expanding Land لعبة خلايا مستقلة متعددة اللاعبين عبر المتصفح، بخريطة دائرية تتمدد وتتقلص. يختلف عدد اللاعبين البشر وروبوتات الخادم حسب الساحة. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>."
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();

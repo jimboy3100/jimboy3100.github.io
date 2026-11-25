@@ -5290,5 +5290,47 @@
     "tr": "Kapatmak için tıklayın",
     "pl": "Kliknij, aby zamknąć",
     "nl": "Klik om te sluiten"
+  },
+  "site.index.officialProjectFacts": {
+    "en": "Official project facts",
+    "el": "Επίσημα στοιχεία έργου",
+    "es": "Datos oficiales del proyecto",
+    "bg": "Официални данни за проекта",
+    "fr": "Informations officielles du projet",
+    "ar": "معلومات المشروع الرسمية",
+    "zh": "官方專案資訊",
+    "ru": "Официальные сведения о проекте",
+    "de": "Offizielle Projektinformationen",
+    "tr": "Resmî proje bilgileri",
+    "pl": "Oficjalne informacje o projekcie",
+    "nl": "Officiële projectinformatie"
+  },
+  "site.index.companionGuide": {
+    "en": "Companion guide",
+    "el": "Οδηγός Companion",
+    "es": "Guía de Companion",
+    "bg": "Ръководство за Companion",
+    "fr": "Guide Companion",
+    "ar": "دليل Companion",
+    "zh": "Companion 指南",
+    "ru": "Руководство Companion",
+    "de": "Companion-Anleitung",
+    "tr": "Companion kılavuzu",
+    "pl": "Poradnik Companion",
+    "nl": "Companion-handleiding"
+  },
+  "site.index.expandingLandDynamicMap": {
+    "en": "Expanding Land dynamic map",
+    "el": "Δυναμικός χάρτης Expanding Land",
+    "es": "Mapa dinámico de Expanding Land",
+    "bg": "Динамична карта на Expanding Land",
+    "fr": "Carte dynamique d’Expanding Land",
+    "ar": "الخريطة الديناميكية لـ Expanding Land",
+    "zh": "Expanding Land 動態地圖",
+    "ru": "Динамическая карта Expanding Land",
+    "de": "Dynamische Karte von Expanding Land",
+    "tr": "Expanding Land dinamik haritası",
+    "pl": "Dynamiczna mapa Expanding Land",
+    "nl": "Dynamische kaart van Expanding Land"
   }
 }

@@ -1,0 +1,70 @@
+@prefix schema: <https://schema.org/> .
+@prefix lm: <https://www.legendmod.ml/knowledge/vocabulary.ttl#> .
+<https://www.legendmod.ml/#app> a schema:SoftwareApplication, schema:WebApplication ;
+  schema:name "Legend Mod" ;
+  schema:url <https://www.legendmod.ml/> ;
+  schema:description "Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools." ;
+  schema:applicationCategory "GameApplication" ;
+  schema:operatingSystem "Web browser" ;
+  schema:featureList "Custom skins", "Themes", "Configurable controls", "Multiboxing", "Replay tools" ;
+  schema:isRelatedTo <https://expanding.land/#game> .
+
+<https://expanding.land/#game> a schema:VideoGame, schema:WebApplication ;
+  schema:name "Expanding Land" ;
+  schema:url <https://expanding.land/> ;
+  schema:description "Expanding Land is a free multiplayer browser cell game with a dynamic circular arena that expands and contracts, FFA and Teams modes, and a C-based server. Human and server-controlled bot populations vary by arena." ;
+  schema:genre "Multiplayer cell game", "IO game" ;
+  schema:gamePlatform "Web browser" ;
+  schema:operatingSystem "Web browser" ;
+  schema:applicationCategory "GameApplication" ;
+  schema:featureList "Dynamic circular map", "FFA and Teams modes", "Spectator mode" ;
+  schema:isRelatedTo <https://www.legendmod.ml/#app> ;
+  lm:hasMechanic <https://help.expanding.land/knowledge/#mechanic-dynamic-map>, <https://help.expanding.land/knowledge/#mechanic-cell-growth>, <https://help.expanding.land/knowledge/#mechanic-split>, <https://help.expanding.land/knowledge/#mechanic-mass>, <https://help.expanding.land/knowledge/#mechanic-bots>, <https://help.expanding.land/knowledge/#mechanic-spectate> ;
+  lm:hasGameMode <https://help.expanding.land/knowledge/#mode-ffa>, <https://help.expanding.land/knowledge/#mode-teams> .
+
+<https://www.legendmod.ml/#website> a schema:WebSite ;
+  schema:name "Legend Mod" ;
+  schema:url <https://www.legendmod.ml/> ;
+  schema:about <https://www.legendmod.ml/#app> .
+
+<https://expanding.land/#website> a schema:WebSite ;
+  schema:name "Expanding Land" ;
+  schema:url <https://expanding.land/> ;
+  schema:about <https://expanding.land/#game> .
+
+<https://help.expanding.land/#website> a schema:WebSite ;
+  schema:name "Expanding Land Help" ;
+  schema:url <https://help.expanding.land/> ;
+  schema:about <https://expanding.land/#game> .
+
+<https://help.expanding.land/knowledge/#mechanic-dynamic-map> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Server-controlled circular arena that expands and contracts" ;
+  schema:url <https://help.expanding.land/dynamic-map.html> .
+
+<https://help.expanding.land/knowledge/#mechanic-cell-growth> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Collect food and consume smaller cells to grow" ;
+  schema:url <https://help.expanding.land/guide.html> .
+
+<https://help.expanding.land/knowledge/#mechanic-split> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Split cells as a gameplay technique" ;
+  schema:url <https://help.expanding.land/guide.html#splitting> .
+
+<https://help.expanding.land/knowledge/#mechanic-mass> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Mass management and ejection" ;
+  schema:url <https://help.expanding.land/guide.html#mass> .
+
+<https://help.expanding.land/knowledge/#mechanic-bots> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Human and server-controlled bot populations vary by arena" ;
+  schema:url <https://help.expanding.land/no-bots.html> .
+
+<https://help.expanding.land/knowledge/#mechanic-spectate> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Spectator mode" ;
+  schema:url <https://help.expanding.land/glossary.html> .
+
+<https://help.expanding.land/knowledge/#mode-ffa> a schema:DefinedTerm, lm:GameMode ;
+  schema:name "Free-for-all" ;
+  schema:description "Competitive individual play." .
+
+<https://help.expanding.land/knowledge/#mode-teams> a schema:DefinedTerm, lm:GameMode ;
+  schema:name "Teams" ;
+  schema:description "Team-based play on supported arenas." .

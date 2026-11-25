@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" prefix="og: https://ogp.me/ns#" vocab="https://schema.org/" typeof="WebPage">
+<html lang="en" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,103 +39,113 @@
 
     <!-- ═══ FAQPage Schema — Gets Rich Snippets in Google! ═══ -->
     <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
     {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-            {
-                "@type": "Question",
-                "name": "What is Legend Mod and how does it improve agar.io?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Legend Mod is the most feature-rich free agar.io extension. It adds 60+ macros (tricksplit, doublesplit, popsplit, quick feeding, cannon split, freeze cell), custom skins with animated/video support, anti-lag FPS boost with WASM acceleration, team chat, minimap, multibox, gamepad support, and more. It works on Chrome, Edge, Firefox, Opera, Brave, and mobile browsers."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "How do I install Legend Mod?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "For Chrome/Edge/Brave: Install 'Legend Express' from the Chrome Web Store. For Firefox/Opera: Install Tampermonkey, then add the Legend Mod userscript. For mobile: open www.legendmod.ml/play.html on your phone (touch controls load automatically), or use Firefox for Android or Orion (iOS) with Tampermonkey."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "Why is Legend Mod not working after an agar.io update?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "When agar.io updates their client, Legend Mod may need an update too. Solutions: 1) Check for extension updates in chrome://extensions. 2) Clear browser cache (Ctrl+Shift+Delete). 3) Disable and re-enable the extension. 4) Reinstall from the Chrome Web Store. Updates are usually released within 24 hours of an agar.io client change."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "How do I fix lag in agar.io with Legend Mod?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Legend Mod includes built-in anti-lag features: 1) Turn on 'Performance mode (weak PCs/phones)' in settings, or pick the Battery saver preset next to the settings search. 2) Disable animated and video skins. 3) Set an FPS limit, and turn on '25 FPS while the menu is open', to save heat and battery. 4) Hide food with the Show/hide food hotkey or the Auto hide food options. 5) WASM acceleration and WebGL rendering are on by default. 6) Close other browser tabs. 7) Use a wired internet connection instead of Wi-Fi."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "How do I add custom skins in Legend Mod?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Go to the Legend Mod settings panel → Skins tab. You can: 1) Paste any image URL as a skin. 2) Upload your own image file. 3) Use the Skin Rotator to cycle through multiple skins. 4) Add animated GIF or video skins (Legend Mod exclusive feature). 5) Browse community skins at legendmod.ml/skins/"
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "What macros does Legend Mod support?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Legend Mod supports 60+ macros including: Tricksplit, Doublesplit, Popsplit, Cannon Split, Quick Feeding (W spam), Freeze Cell, Auto Respawn, Auto Coins, Reverse Movement, Split patterns, Line split, and many more. All macros are customizable — you can rebind any key in the Hotkeys settings panel."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "Does Legend Mod work on Sigmally and Senpa.io?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Yes! Legend Mod is the only agar.io extension that supports multiple game servers: official agar.io, Sigmally, and Senpa.io. All macros, skins, and features work across all supported servers. You can also play on Expanding Land — Legend Mod's own private server with up to 720 players."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "Is Legend Mod safe? Does it contain viruses?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Yes, Legend Mod is completely safe. It is 100% open source — the full source code is available on GitHub (github.com/jimboy3100/jimboy3100.github.io). It is distributed through the official Chrome Web Store, which scans extensions for malware. Legend Mod does not collect personal data, does not inject ads, and does not modify your browser settings."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "What is Expanding Land?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Expanding Land is an agar.io private server built by Legend Clan. It features massive maps that dynamically resize based on player count, supports up to 720 real players (no bots), 200+ spectators, potions, anti-team mechanics, and unique gamemodes. Play free at expanding.land"
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "How do I use multibox in Legend Mod?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Legend Mod supports multibox: a second unit in the same tab. Set a key for 'Multibox Toggle Next' in Settings → Hotkeys; pressing it starts the second unit and then swaps control between your two cells. The MultiBox options can show the middle of both units, draw rings around them and freeze the inactive unit, and each unit can use its own skin profile."
-                }
-            }
-        ]
+      "@type": "Question",
+      "name": "What is Legend Mod and how does it improve agar.io?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Legend Mod is the most feature-rich free agar.io extension. It adds 60+ macros (tricksplit, doublesplit, popsplit, quick feeding, cannon split, freeze cell), custom skins with animated/video support, anti-lag FPS boost with WASM acceleration, team chat, minimap, multibox, gamepad support, and more. It works on Chrome, Edge, Firefox, Opera, Brave, and mobile browsers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I install Legend Mod?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For Chrome/Edge/Brave: Install 'Legend Express' from the Chrome Web Store. For Firefox/Opera: Install Tampermonkey, then add the Legend Mod userscript. For mobile: open www.legendmod.ml/play.html on your phone (touch controls load automatically), or use Firefox for Android or Orion (iOS) with Tampermonkey."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is Legend Mod not working after an agar.io update?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When agar.io updates their client, Legend Mod may need an update too. Solutions: 1) Check for extension updates in chrome://extensions. 2) Clear browser cache (Ctrl+Shift+Delete). 3) Disable and re-enable the extension. 4) Reinstall from the Chrome Web Store. Updates are usually released within 24 hours of an agar.io client change."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I fix lag in agar.io with Legend Mod?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Legend Mod includes built-in anti-lag features: 1) Turn on 'Performance mode (weak PCs/phones)' in settings, or pick the Battery saver preset next to the settings search. 2) Disable animated and video skins. 3) Set an FPS limit, and turn on '25 FPS while the menu is open', to save heat and battery. 4) Hide food with the Show/hide food hotkey or the Auto hide food options. 5) WASM acceleration and WebGL rendering are on by default. 6) Close other browser tabs. 7) Use a wired internet connection instead of Wi-Fi."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I add custom skins in Legend Mod?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Go to the Legend Mod settings panel → Skins tab. You can: 1) Paste any image URL as a skin. 2) Upload your own image file. 3) Use the Skin Rotator to cycle through multiple skins. 4) Add animated GIF or video skins (Legend Mod exclusive feature). 5) Browse community skins at legendmod.ml/skins/"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What macros does Legend Mod support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Legend Mod supports 60+ macros including: Tricksplit, Doublesplit, Popsplit, Cannon Split, Quick Feeding (W spam), Freeze Cell, Auto Respawn, Auto Coins, Reverse Movement, Split patterns, Line split, and many more. All macros are customizable — you can rebind any key in the Hotkeys settings panel."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Legend Mod work on Sigmally and Senpa.io?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! Legend Mod is the only agar.io extension that supports multiple game servers: official agar.io, Sigmally, and Senpa.io. All macros, skins, and features work across all supported servers. You can also play on Expanding Land — Legend Mod's own private server with up to 720 players."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Legend Mod safe? Does it contain viruses?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, Legend Mod is completely safe. It is 100% open source — the full source code is available on GitHub (github.com/jimboy3100/jimboy3100.github.io). It is distributed through the official Chrome Web Store, which scans extensions for malware. Legend Mod does not collect personal data, does not inject ads, and does not modify your browser settings."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Expanding Land?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Expanding Land is an independent multiplayer browser cell game with a circular map that expands and contracts. Human and server-controlled bot populations vary by arena."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I use multibox in Legend Mod?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Legend Mod supports multibox: a second unit in the same tab. Set a key for 'Multibox Toggle Next' in Settings → Hotkeys; pressing it starts the second unit and then swaps control between your two cells. The MultiBox options can show the middle of both units, draw rings around them and freeze the inactive unit, and each unit can use its own skin profile."
+      }
     }
-    </script>
+  ]
+}
+</script>
     <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
     {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Legend Mod", "item": "https://www.legendmod.ml/" },
-            { "@type": "ListItem", "position": 2, "name": "FAQ", "item": "https://www.legendmod.ml/faq.html" }
-        ]
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Legend Mod",
+      "item": "https://www.legendmod.ml/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "FAQ",
+      "item": "https://www.legendmod.ml/faq.html"
     }
-    </script>
+  ]
+}
+</script>
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/png" href="https://jimboy3100.github.io/banners/icon512.png">
@@ -251,7 +261,7 @@
     </div>
     <div class="faq-item">
         <div data-i18n="site.faq.whatIsExpandingLand" class="faq-q">What is Expanding Land?</div>
-        <div class="faq-a"><p data-i18n-html="site.faq.expandingLandIsAn">Expanding Land is an agar.io private server built by ℄ Legend Clan. It features massive maps that dynamically resize based on player count, supports up to <strong>720 real players</strong> (no bots), 200+ spectators, potions, anti-team mechanics, and unique gamemodes. Play free at <a href="https://expanding.land" target="_blank" rel="noopener">expanding.land</a>.</p></div>
+        <div class="faq-a"><p data-i18n-html="site.faq.expandingLandIsAn">Expanding Land is an independent multiplayer browser cell game with a circular map that expands and contracts. Human and server-controlled bot populations vary by arena. <a href="https://expanding.land/" target="_blank" rel="noopener">Play Expanding Land</a>.</p></div>
     </div>
 
     <div style="text-align:center">

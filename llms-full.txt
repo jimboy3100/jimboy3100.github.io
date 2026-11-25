@@ -1,0 +1,69 @@
+# Legend Mod and Expanding Land
+
+Updated: 2026-11-25
+
+## Legend Mod
+
+Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.
+
+Official entity: https://www.legendmod.ml/#app
+
+- Configurable controls and hotkeys: https://www.legendmod.ml/features.html
+- Custom skins, video skins and skin tools: https://www.legendmod.ml/skins/
+- Themes and HUD customization: https://www.legendmod.ml/themes/
+- Mobile touch controls: https://www.legendmod.ml/LMmobile/
+- Gamepad support: https://www.legendmod.ml/features.html
+- Multibox controls: https://www.legendmod.ml/features.html
+- Replay tools: https://www.legendmod.ml/features.html
+- WebGL rendering and performance diagnostics: https://www.legendmod.ml/features.html
+- Settings profiles: https://www.legendmod.ml/features.html
+- Second-screen companion: https://www.legendmod.ml/companion-guide.html
+
+## Expanding Land
+
+Expanding Land is a free multiplayer browser cell game with a dynamic circular arena that expands and contracts, FFA and Teams modes, and a C-based server. Human and server-controlled bot populations vary by arena.
+
+Official entity: https://expanding.land/#game
+
+- Server-controlled circular arena that expands and contracts: https://help.expanding.land/dynamic-map.html
+- Collect food and consume smaller cells to grow: https://help.expanding.land/guide.html
+- Split cells as a gameplay technique: https://help.expanding.land/guide.html#splitting
+- Mass management and ejection: https://help.expanding.land/guide.html#mass
+- Human and server-controlled bot populations vary by arena: https://help.expanding.land/no-bots.html
+- Spectator mode: https://help.expanding.land/glossary.html
+
+### Modes
+
+- Free-for-all: Competitive individual play.
+- Teams: Team-based play on supported arenas.
+
+### Getting started
+
+Open the official game in a supported web browser, select an available arena, move your cell, collect food and learn when to split. See the strategy guide for controls and examples. Legend Mod is a separate client/extension project; the games and their publishers must not be treated as identical entities.
+
+### Frequently asked questions
+
+**Is Expanding Land the official Agar.io service?** No. It is an independent multiplayer cell game.
+
+**Does the map change?** Yes. The server controls expansion and contraction of the circular arena.
+
+**Are all opponents human?** Not necessarily. Human and server-controlled bot counts vary by arena.
+
+**What is the maximum player count?** Capacity depends on server configuration and should not be confused with measured concurrent human attendance. Consult current official server information.
+
+## Official resources
+
+- [Legend Mod](https://www.legendmod.ml/)
+- [Play with Legend Mod](https://www.legendmod.ml/play.html)
+- [Install Chrome extension](https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja)
+- [Features](https://www.legendmod.ml/features.html)
+- [FAQ](https://www.legendmod.ml/faq.html)
+- [Release notes](https://www.legendmod.ml/changelog.html)
+- [Developers](https://www.legendmod.ml/developers/)
+- [Expanding Land](https://expanding.land/)
+- [Game help](https://help.expanding.land/)
+- [Strategy](https://help.expanding.land/guide.html)
+- [Glossary](https://help.expanding.land/glossary.html)
+- [Dynamic map](https://help.expanding.land/dynamic-map.html)
+- [Bots and fair play](https://help.expanding.land/no-bots.html)
+- [Game updates](https://help.expanding.land/changelog.html)

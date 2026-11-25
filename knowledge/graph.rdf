@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:schema="https://schema.org/" xmlns:lm="https://www.legendmod.ml/knowledge/vocabulary.ttl#">
+  <rdf:Description rdf:about="https://www.legendmod.ml/#app">
+    <rdf:type rdf:resource="https://schema.org/SoftwareApplication"/>
+    <rdf:type rdf:resource="https://schema.org/WebApplication"/>
+    <schema:name>Legend Mod</schema:name>
+    <schema:url rdf:resource="https://www.legendmod.ml/"/>
+    <schema:description>Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.</schema:description>
+    <schema:applicationCategory>GameApplication</schema:applicationCategory>
+    <schema:operatingSystem>Web browser</schema:operatingSystem>
+    <schema:featureList>Custom skins</schema:featureList>
+    <schema:featureList>Themes</schema:featureList>
+    <schema:featureList>Configurable controls</schema:featureList>
+    <schema:featureList>Multiboxing</schema:featureList>
+    <schema:featureList>Replay tools</schema:featureList>
+    <schema:isRelatedTo rdf:resource="https://expanding.land/#game"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://expanding.land/#game">
+    <rdf:type rdf:resource="https://schema.org/VideoGame"/>
+    <rdf:type rdf:resource="https://schema.org/WebApplication"/>
+    <schema:name>Expanding Land</schema:name>
+    <schema:url rdf:resource="https://expanding.land/"/>
+    <schema:description>Expanding Land is a free multiplayer browser cell game with a dynamic circular arena that expands and contracts, FFA and Teams modes, and a C-based server. Human and server-controlled bot populations vary by arena.</schema:description>
+    <schema:genre>Multiplayer cell game</schema:genre>
+    <schema:genre>IO game</schema:genre>
+    <schema:gamePlatform>Web browser</schema:gamePlatform>
+    <schema:operatingSystem>Web browser</schema:operatingSystem>
+    <schema:applicationCategory>GameApplication</schema:applicationCategory>
+    <schema:featureList>Dynamic circular map</schema:featureList>
+    <schema:featureList>FFA and Teams modes</schema:featureList>
+    <schema:featureList>Spectator mode</schema:featureList>
+    <schema:isRelatedTo rdf:resource="https://www.legendmod.ml/#app"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-dynamic-map"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-cell-growth"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-split"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-mass"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-bots"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-spectate"/>
+    <lm:hasGameMode rdf:resource="https://help.expanding.land/knowledge/#mode-ffa"/>
+    <lm:hasGameMode rdf:resource="https://help.expanding.land/knowledge/#mode-teams"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/#website">
+    <rdf:type rdf:resource="https://schema.org/WebSite"/>
+    <schema:name>Legend Mod</schema:name>
+    <schema:url rdf:resource="https://www.legendmod.ml/"/>
+    <schema:about rdf:resource="https://www.legendmod.ml/#app"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://expanding.land/#website">
+    <rdf:type rdf:resource="https://schema.org/WebSite"/>
+    <schema:name>Expanding Land</schema:name>
+    <schema:url rdf:resource="https://expanding.land/"/>
+    <schema:about rdf:resource="https://expanding.land/#game"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/#website">
+    <rdf:type rdf:resource="https://schema.org/WebSite"/>
+    <schema:name>Expanding Land Help</schema:name>
+    <schema:url rdf:resource="https://help.expanding.land/"/>
+    <schema:about rdf:resource="https://expanding.land/#game"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-dynamic-map">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Server-controlled circular arena that expands and contracts</schema:name>
+    <schema:url rdf:resource="https://help.expanding.land/dynamic-map.html"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-cell-growth">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Collect food and consume smaller cells to grow</schema:name>
+    <schema:url rdf:resource="https://help.expanding.land/guide.html"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-split">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Split cells as a gameplay technique</schema:name>
+    <schema:url rdf:resource="https://help.expanding.land/guide.html#splitting"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-mass">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Mass management and ejection</schema:name>
+    <schema:url rdf:resource="https://help.expanding.land/guide.html#mass"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-bots">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Human and server-controlled bot populations vary by arena</schema:name>
+    <schema:url rdf:resource="https://help.expanding.land/no-bots.html"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-spectate">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Spectator mode</schema:name>
+    <schema:url rdf:resource="https://help.expanding.land/glossary.html"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mode-ffa">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMode"/>
+    <schema:name>Free-for-all</schema:name>
+    <schema:description>Competitive individual play.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mode-teams">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMode"/>
+    <schema:name>Teams</schema:name>
+    <schema:description>Team-based play on supported arenas.</schema:description>
+  </rdf:Description>
+</rdf:RDF>

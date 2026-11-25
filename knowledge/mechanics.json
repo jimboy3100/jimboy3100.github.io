@@ -1,0 +1,36 @@
+{
+  "entity": "https://expanding.land/#game",
+  "updated": "2026-11-25",
+  "mechanics": [
+    {
+      "id": "dynamic-map",
+      "name": "Server-controlled circular arena that expands and contracts",
+      "url": "https://help.expanding.land/dynamic-map.html"
+    },
+    {
+      "id": "cell-growth",
+      "name": "Collect food and consume smaller cells to grow",
+      "url": "https://help.expanding.land/guide.html"
+    },
+    {
+      "id": "split",
+      "name": "Split cells as a gameplay technique",
+      "url": "https://help.expanding.land/guide.html#splitting"
+    },
+    {
+      "id": "mass",
+      "name": "Mass management and ejection",
+      "url": "https://help.expanding.land/guide.html#mass"
+    },
+    {
+      "id": "bots",
+      "name": "Human and server-controlled bot populations vary by arena",
+      "url": "https://help.expanding.land/no-bots.html"
+    },
+    {
+      "id": "spectate",
+      "name": "Spectator mode",
+      "url": "https://help.expanding.land/glossary.html"
+    }
+  ]
+}

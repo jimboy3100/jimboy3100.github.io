@@ -1,0 +1,191 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "lm": "https://www.legendmod.ml/knowledge/vocabulary.ttl#",
+    "url": {
+      "@type": "@id"
+    }
+  },
+  "@graph": [
+    {
+      "@id": "https://www.legendmod.ml/#app",
+      "@type": [
+        "SoftwareApplication",
+        "WebApplication"
+      ],
+      "name": "Legend Mod",
+      "url": "https://www.legendmod.ml/",
+      "description": "Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.",
+      "applicationCategory": "BrowserExtension",
+      "operatingSystem": "Web browser",
+      "featureList": [
+        "Custom skins",
+        "Themes",
+        "Configurable controls",
+        "Multiboxing",
+        "Replay tools"
+      ],
+      "isRelatedTo": {
+        "@id": "https://expanding.land/#game"
+      }
+    },
+    {
+      "@id": "https://expanding.land/#game",
+      "@type": [
+        "VideoGame",
+        "WebApplication"
+      ],
+      "name": "Expanding Land",
+      "url": "https://expanding.land/",
+      "description": "Expanding Land is a free multiplayer browser cell game with a dynamic circular arena that expands and contracts, FFA and Teams modes, and a C-based server. Human and server-controlled bot populations vary by arena.",
+      "genre": [
+        "Multiplayer cell game",
+        "IO game"
+      ],
+      "gamePlatform": "Web browser",
+      "operatingSystem": "Web browser",
+      "applicationCategory": "BrowserExtension",
+      "featureList": [
+        "Dynamic circular map",
+        "FFA and Teams modes",
+        "Spectator mode"
+      ],
+      "playMode": "MultiPlayer",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "isRelatedTo": {
+        "@id": "https://www.legendmod.ml/#app"
+      },
+      "lm:hasMechanic": [
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-cell-growth"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-split"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-mass"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-bots"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-spectate"
+        }
+      ],
+      "lm:hasGameMode": [
+        {
+          "@id": "https://help.expanding.land/knowledge/#mode-ffa"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mode-teams"
+        }
+      ]
+    },
+    {
+      "@id": "https://www.legendmod.ml/#website",
+      "@type": "WebSite",
+      "name": "Legend Mod",
+      "url": "https://www.legendmod.ml/",
+      "about": {
+        "@id": "https://www.legendmod.ml/#app"
+      }
+    },
+    {
+      "@id": "https://expanding.land/#website",
+      "@type": "WebSite",
+      "name": "Expanding Land",
+      "url": "https://expanding.land/",
+      "about": {
+        "@id": "https://expanding.land/#game"
+      }
+    },
+    {
+      "@id": "https://help.expanding.land/#website",
+      "@type": "WebSite",
+      "name": "Expanding Land Help",
+      "url": "https://help.expanding.land/",
+      "about": {
+        "@id": "https://expanding.land/#game"
+      }
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map",
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
+      "name": "Server-controlled circular arena that expands and contracts",
+      "url": "https://help.expanding.land/dynamic-map.html"
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-cell-growth",
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
+      "name": "Collect food and consume smaller cells to grow",
+      "url": "https://help.expanding.land/guide.html"
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-split",
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
+      "name": "Split cells as a gameplay technique",
+      "url": "https://help.expanding.land/guide.html#splitting"
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-mass",
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
+      "name": "Mass management and ejection",
+      "url": "https://help.expanding.land/guide.html#mass"
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-bots",
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
+      "name": "Human and server-controlled bot populations vary by arena",
+      "url": "https://help.expanding.land/no-bots.html"
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-spectate",
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
+      "name": "Spectator mode",
+      "url": "https://help.expanding.land/glossary.html"
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mode-ffa",
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMode"
+      ],
+      "name": "Free-for-all",
+      "description": "Competitive individual play."
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mode-teams",
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMode"
+      ],
+      "name": "Teams",
+      "description": "Team-based play on supported arenas."
+    }
+  ]
+}

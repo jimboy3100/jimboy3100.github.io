@@ -1,12 +1,11 @@
-# Legend Mod — robots.txt
+# Public search and AI discovery: Googlebot, Bingbot, OAI-SearchBot, GPTBot, Claude-SearchBot, ClaudeBot, Google-Extended, PerplexityBot and CCBot.
+# Wildcard policy permits public content. Robots rules are not access control.
 User-agent: *
 Allow: /
-
-# Sitemap
-Sitemap: https://www.legendmod.ml/sitemap.xml
-
-# Disallow internal/utility paths
 Disallow: /server-side/
 Disallow: /ogario/captcha.html
 Disallow: /Lc/auth/
 Disallow: /LMexpress/extension/
+Disallow: /AjaxData/
+
+Sitemap: https://www.legendmod.ml/sitemap.xml

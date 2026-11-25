@@ -31,6 +31,6 @@
 "site.faq.doesLegendModWork": "Работает ли Legend Mod на Sigmally и Senpa.io?",
 "site.faq.yesLegendModIs4": "Да! Legend Mod — <strong>единственное расширение для agar.io</strong>, которое поддерживает несколько игровых серверов: официальный agar.io, Sigmally и Senpa.io. Все макросы, скины и функции работают на всех поддерживаемых серверах. Также можно играть на <strong>Expanding Land</strong> — собственном приватном сервере Legend Mod до 720 игроков на <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>.",
 "site.faq.whatIsExpandingLand": "Что такое Expanding Land?",
-"site.faq.expandingLandIsAn": "Expanding Land — приватный сервер agar.io, созданный ℄ Legend Clan. Огромные карты, которые динамически меняют размер в зависимости от числа игроков, до <strong>720 реальных игроков</strong> (без ботов), 200+ зрителей, зелья, механики против тиминга и уникальные режимы. Играйте бесплатно на <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>."
+"site.faq.expandingLandIsAn": "Expanding Land — независимая многопользовательская браузерная игра с клетками и круглой картой, которая расширяется и сужается. Число людей и серверных ботов зависит от арены. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>."
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();

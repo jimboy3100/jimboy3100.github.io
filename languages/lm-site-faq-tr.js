@@ -31,6 +31,6 @@
 "site.faq.doesLegendModWork": "Legend Mod, Sigmally ve Senpa.io'da çalışıyor mu?",
 "site.faq.yesLegendModIs4": "Evet! Legend Mod, birden çok oyun sunucusunu destekleyen <strong>tek agar.io eklentisidir</strong>: resmi agar.io, Sigmally ve Senpa.io. Tüm makrolar, skinler ve özellikler desteklenen tüm sunucularda çalışır. Ayrıca Legend Mod'un 720 oyuncuya kadar destekleyen kendi özel sunucusu <strong>Expanding Land</strong>'de de <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a> adresinden oynayabilirsiniz.",
 "site.faq.whatIsExpandingLand": "Expanding Land nedir?",
-"site.faq.expandingLandIsAn": "Expanding Land, ℄ Legend Clan tarafından geliştirilmiş bir agar.io özel sunucusudur. Oyuncu sayısına göre dinamik olarak boyutlanan devasa haritalara sahiptir; <strong>720 gerçek oyuncuya</strong> (bot yok), 200+ izleyiciye, iksirlere, anti-team mekaniklerine ve benzersiz oyun modlarına destek verir. <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a> adresinde ücretsiz oynayın."
+"site.faq.expandingLandIsAn": "Expanding Land, genişleyip daralan dairesel haritaya sahip bağımsız, çok oyunculu bir tarayıcı hücre oyunudur. İnsan oyuncu ve sunucu botu sayısı arenaya göre değişir. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>."
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();
