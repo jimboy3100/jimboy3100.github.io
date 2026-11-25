@@ -305,7 +305,7 @@
   },
   "pack.connectToServerOr": {
     "global": "Languageletter12",
-    "en": "Connect to server, or restablish communication",
+    "en": "Connect to server, or re-establish communication",
     "el": "Συνδεθείτε στο διακομιστή ή επαναφέρετε την επικοινωνία",
     "es": "Conectar al servidor o restablecer la comunicación",
     "bg": "Свързане към сървъра, Или възстановяване на комуникацията",
@@ -951,7 +951,7 @@
   },
   "pack.suggestedToBeEnabled": {
     "global": "Languageletter41c",
-    "en": "Suggested to be enabled for Lag reduce",
+    "en": "Suggested to be enabled to reduce lag",
     "el": "Προτείνεται να είναι ενεργοποιημένη η μείωση Lag",
     "es": "Sugerido para ser habilitado para reducir Lag",
     "bg": "Предложено да бъде активирано за намаляване на закъснението",
@@ -2680,7 +2680,7 @@
   },
   "pack.showQues": {
     "global": "Languageletter108",
-    "en": "Show quesτ",
+    "en": "Show quest",
     "el": "Εμφάνιση αποστολής",
     "es": "Mostrar retos",
     "bg": "Покажи предизвикателството",
@@ -6461,7 +6461,7 @@
   },
   "pack.leaderbodard": {
     "global": "Languageletter299",
-    "en": "Leaderbodard",
+    "en": "Leaderboard",
     "el": "Ηγετες",
     "es": "Clasificación",
     "bg": "Табло",
@@ -7259,7 +7259,7 @@
   },
   "pack.eG": {
     "global": "Languageletter339",
-    "en": "e.g",
+    "en": "e.g.",
     "el": "π.χ.",
     "es": "p. ej.",
     "bg": "напр.",
@@ -8133,7 +8133,7 @@
   },
   "pack.youWereBannedRestart": {
     "global": "Premadeletter11",
-    "en": "You were banned, restart your rooter!",
+    "en": "You were banned, restart your router!",
     "el": "Έχετε αποκλειστεί, κάντε επανεκκίνηση του δρομολογητή (rooter) σας!",
     "es": "Has sido baneado, reinicia tu router",
     "bg": "Бяхте забранени, рестартирайте рутера си!",
@@ -9843,7 +9843,7 @@
   },
   "pack.informMeWhenYou": {
     "global": "Premadeletter97",
-    "en": "Inform me when you finish with Recapatcha",
+    "en": "Inform me when you finish with reCAPTCHA",
     "el": "Ενημερώστε με όταν τελειώσετε με την Recaptcha",
     "es": "Informarme cuando termines con Recaptcha",
     "bg": "Информирайте ме, когато приключите с Recaptcha",
@@ -11154,7 +11154,7 @@
   },
   "pack.importantNoticeDoNot": {
     "global": "Externalletter13",
-    "en": "IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES",
+    "en": "IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If a script damages onload events, then DELETE COOKIES",
     "el": "ΣΗΜΑΝΤΙΚΗ ΕΙΔΟΠΟΙΗΣΗ: Μην κρατάτε τις διευθύνσεις URL που δεν λειτουργούν, επειδή χρησιμοποιούνται ως συμβάντα onload. Εάν το Scenario βλάψει τα γεγονότα φόρτωσης, στη συνέχεια ΣΒΉΣΤΕ ΤΑ COOKIES",
     "es": "AVISO IMPORTANTE: No guarde las URL que no funcionen, ya que se utilizan como eventos de carga. Si el escenario daña los eventos de carga, entonces ELIMINAR COOKIES",
     "bg": "ВАЖНО ЗАБЕЛЕЖКА: Не спазвайте URL адресите, които не работят, защото се използват като събития при зареждане. Ако сценарият поврежда събития при зареждане, ИЗТРИВАЙТЕ КООКИТЕ",
