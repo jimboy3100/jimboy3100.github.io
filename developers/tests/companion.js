@@ -195,7 +195,7 @@ check('look-alike host is not trusted', plan.mode === 'popup');
 /* ── page and loader wiring ── */
 const page = fs.readFileSync(path.join(repo, 'companion.html'), 'utf8');
 check('companion.html loads the module as a page', page.indexOf('window.LMCompanionPage = true') >= 0 && page.indexOf('src="ogario/modules/companion.js"') >= 0);
-check('companion.html loads nothing from other sites', !/<script[^>]+src="https?:/i.test(page) && !/<link[^>]+href="https?:/i.test(page));
+check('companion.html loads nothing from other sites', !/<script[^>]+src="https?:/i.test(page) && !/<link(?![^>]*rel="canonical")[^>]+href="https?:/i.test(page));
 check('companion.html never uses innerHTML', page.indexOf('innerHTML') < 0 && src.indexOf('innerHTML') < 0);
 check('companion.html mentions WebRTC pairing as not supported', /WebRTC/.test(page));
 

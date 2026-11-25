@@ -11,7 +11,11 @@
     "de": "Alle Funktionen von <span class=\"accent\">Legend Mod</span>",
     "tr": "Tüm <span class=\"accent\">Legend Mod</span> Özellikleri",
     "pl": "Wszystkie funkcje <span class=\"accent\">Legend Mod</span>",
-    "nl": "Alle functies van <span class=\"accent\">Legend Mod</span>"
+    "nl": "Alle functies van <span class=\"accent\">Legend Mod</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.theMostFeatureRich": {
     "en": "The most feature-rich agar.io extension. Every tool a competitive player needs — macros, skins, performance, teamwork, and multi-server support.",
@@ -25,7 +29,11 @@
     "de": "Die funktionsreichste agar.io-Erweiterung. Jedes Werkzeug, das ein kompetitiver Spieler braucht – Makros, Skins, Performance, Teamplay und Multi-Server-Unterstützung.",
     "tr": "En çok özelliğe sahip agar.io eklentisi. Rekabetçi bir oyuncunun ihtiyaç duyduğu her araç: makrolar, skinler, performans, takım çalışması ve çoklu sunucu desteği.",
     "pl": "Najbogatsze w funkcje rozszerzenie do agar.io. Każde narzędzie, którego potrzebuje gracz rywalizujący — makra, skiny, wydajność, gra zespołowa i obsługa wielu serwerów.",
-    "nl": "De agar.io-extensie met de meeste functies. Elke tool die een competitieve speler nodig heeft — macro's, skins, prestaties, teamwork en ondersteuning voor meerdere servers."
+    "nl": "De agar.io-extensie met de meeste functies. Elke tool die een competitieve speler nodig heeft — macro's, skins, prestaties, teamwork en ondersteuning voor meerdere servers.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.macrosHotkeys": {
     "en": "60+ Macros & Hotkeys",
@@ -39,7 +47,11 @@
     "de": "Über 60 Makros & Hotkeys",
     "tr": "60+ Makro ve Kısayol Tuşu",
     "pl": "60+ makr i skrótów klawiszowych",
-    "nl": "60+ macro's & sneltoetsen"
+    "nl": "60+ macro's & sneltoetsen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.everyCompetitiveMoveAt": {
     "en": "Every competitive move at your fingertips. Fully customizable keybinds.",
@@ -53,7 +65,11 @@
     "de": "Jeder kompetitive Move griffbereit. Komplett anpassbare Tastenbelegung.",
     "tr": "Her rekabetçi hamle parmaklarınızın ucunda. Tamamen özelleştirilebilir tuş atamaları.",
     "pl": "Każdy ruch na wyciągnięcie ręki. W pełni konfigurowalne klawisze.",
-    "nl": "Elke competitieve move binnen handbereik. Volledig aanpasbare toetsen."
+    "nl": "Elke competitieve move binnen handbereik. Volledig aanpasbare toetsen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.tricksplitDoublesplitPopsplit": {
     "en": "Tricksplit, Doublesplit, Popsplit",
@@ -67,7 +83,11 @@
     "de": "Tricksplit, Doublesplit, Popsplit",
     "tr": "Tricksplit, Doublesplit, Popsplit",
     "pl": "Tricksplit, Doublesplit, Popsplit",
-    "nl": "Tricksplit, Doublesplit, Popsplit"
+    "nl": "Tricksplit, Doublesplit, Popsplit",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.cannonSplitLineSplit": {
     "en": "Cannon Split, Line Split",
@@ -81,7 +101,11 @@
     "de": "Cannon Split, Line Split",
     "tr": "Cannon Split, Line Split",
     "pl": "Cannon Split, Line Split",
-    "nl": "Cannon Split, Line Split"
+    "nl": "Cannon Split, Line Split",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.quickFeedingWSpam": {
     "en": "Quick Feeding (W spam)",
@@ -95,7 +119,11 @@
     "de": "Quick Feeding (W-Spam)",
     "tr": "Hızlı Besleme (W spam)",
     "pl": "Szybkie karmienie (W spam)",
-    "nl": "Quick Feeding (W-spam)"
+    "nl": "Quick Feeding (W-spam)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.freezeCellAutoRespawn": {
     "en": "Freeze Cell, Auto Respawn",
@@ -109,7 +137,11 @@
     "de": "Freeze Cell, Auto Respawn",
     "tr": "Hücre Dondurma, Otomatik Yeniden Doğma",
     "pl": "Zamrożenie komórki, automatyczne odrodzenie",
-    "nl": "Freeze Cell, Auto Respawn"
+    "nl": "Freeze Cell, Auto Respawn",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.reverseMovement": {
     "en": "Reverse Movement",
@@ -123,7 +155,11 @@
     "de": "Reverse Movement",
     "tr": "Ters Hareket",
     "pl": "Odwrócony ruch",
-    "nl": "Reverse Movement"
+    "nl": "Reverse Movement",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.autoCoinsCustomPatterns": {
     "en": "Auto Coins, Custom Patterns",
@@ -137,7 +173,11 @@
     "de": "Auto Coins, eigene Muster",
     "tr": "Otomatik Coin, Özel Desenler",
     "pl": "Automatyczne monety, własne wzorce",
-    "nl": "Auto Coins, eigen patronen"
+    "nl": "Auto Coins, eigen patronen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.customAnimatedSkinsExclusive": {
     "en": "Custom & Animated Skins <span class=\"badge badge-exclusive\">Exclusive</span>",
@@ -151,7 +191,11 @@
     "de": "Eigene & animierte Skins <span class=\"badge badge-exclusive\">Exklusiv</span>",
     "tr": "Özel ve Animasyonlu Skinler <span class=\"badge badge-exclusive\">Özel</span>",
     "pl": "Własne i animowane skiny <span class=\"badge badge-exclusive\">Ekskluzywne</span>",
-    "nl": "Eigen & geanimeerde skins <span class=\"badge badge-exclusive\">Exclusief</span>"
+    "nl": "Eigen & geanimeerde skins <span class=\"badge badge-exclusive\">Exclusief</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.expressYourselfWithUnique": {
     "en": "Express yourself with unique skins no other mod supports.",
@@ -165,7 +209,11 @@
     "de": "Zeig dich mit einzigartigen Skins, die kein anderer Mod unterstützt.",
     "tr": "Başka hiçbir modun desteklemediği benzersiz skinlerle kendinizi ifade edin.",
     "pl": "Wyraź siebie unikalnymi skinami, których nie obsługuje żaden inny mod.",
-    "nl": "Laat jezelf zien met unieke skins die geen andere mod ondersteunt."
+    "nl": "Laat jezelf zien met unieke skins die geen andere mod ondersteunt.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.imageUrlSkins": {
     "en": "Image URL skins",
@@ -179,7 +227,11 @@
     "de": "Skins per Bild-URL",
     "tr": "Görsel URL'si skinleri",
     "pl": "Skiny z URL obrazka",
-    "nl": "Skins via afbeeldings-URL"
+    "nl": "Skins via afbeeldings-URL",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.animatedGifSkins": {
     "en": "Animated GIF skins",
@@ -193,7 +245,11 @@
     "de": "Animierte GIF-Skins",
     "tr": "Animasyonlu GIF skinler",
     "pl": "Animowane skiny GIF",
-    "nl": "Geanimeerde GIF-skins"
+    "nl": "Geanimeerde GIF-skins",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.videoSkinsMp4Webm": {
     "en": "Video skins (MP4/WebM)",
@@ -207,7 +263,11 @@
     "de": "Video-Skins (MP4/WebM)",
     "tr": "Video skinler (MP4/WebM)",
     "pl": "Skiny wideo (MP4/WebM)",
-    "nl": "Videoskins (MP4/WebM)"
+    "nl": "Videoskins (MP4/WebM)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.skinRotatorCycleAutomatically": {
     "en": "Skin Rotator — cycle automatically",
@@ -221,7 +281,11 @@
     "de": "Skin Rotator – automatisch durchwechseln",
     "tr": "Skin Rotator: otomatik geçiş",
     "pl": "Skin Rotator — automatyczna zmiana",
-    "nl": "Skin Rotator — wisselt automatisch"
+    "nl": "Skin Rotator — wisselt automatisch",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.communitySkinGallery": {
     "en": "Community skin gallery",
@@ -235,7 +299,11 @@
     "de": "Community-Skin-Galerie",
     "tr": "Topluluk skin galerisi",
     "pl": "Galeria skinów społeczności",
-    "nl": "Skingalerij van de community"
+    "nl": "Skingalerij van de community",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.antiLagFpsBoost": {
     "en": "Anti-Lag & FPS Boost",
@@ -249,7 +317,11 @@
     "de": "Anti-Lag & FPS-Boost",
     "tr": "Anti-Lag ve FPS Artışı",
     "pl": "Anti-Lag i wzrost FPS",
-    "nl": "Anti-lag & FPS-boost"
+    "nl": "Anti-lag & FPS-boost",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.smoothGameplayEvenOn": {
     "en": "Smooth gameplay even on low-end hardware.",
@@ -263,7 +335,11 @@
     "de": "Flüssiges Gameplay selbst auf schwacher Hardware.",
     "tr": "Düşük donanımlarda bile akıcı oyun.",
     "pl": "Płynna rozgrywka nawet na słabym sprzęcie.",
-    "nl": "Soepele gameplay, zelfs op zwakke hardware."
+    "nl": "Soepele gameplay, zelfs op zwakke hardware.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.builtInAntiLag": {
     "en": "Built-in anti-lag system",
@@ -277,7 +353,11 @@
     "de": "Eingebautes Anti-Lag-System",
     "tr": "Yerleşik anti-lag sistemi",
     "pl": "Wbudowany system anti-lag",
-    "nl": "Ingebouwd anti-lagsysteem"
+    "nl": "Ingebouwd anti-lagsysteem",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.webglGpuCellRendering": {
     "en": "WebGL GPU cell rendering, on by default",
@@ -291,7 +371,11 @@
     "de": "WebGL-GPU-Zellrendering, standardmäßig aktiv",
     "tr": "WebGL GPU hücre işleme, varsayılan olarak açık",
     "pl": "Renderowanie komórek WebGL na GPU, domyślnie włączone",
-    "nl": "WebGL GPU-rendering van cellen, standaard aan"
+    "nl": "WebGL GPU-rendering van cellen, standaard aan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.wasmAccelerationNew": {
     "en": "WASM acceleration <span class=\"badge badge-new\">New</span>",
@@ -305,7 +389,11 @@
     "de": "WASM-Beschleunigung <span class=\"badge badge-new\">Neu</span>",
     "tr": "WASM hızlandırma <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Akceleracja WASM <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "WASM-versnelling <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "WASM-versnelling <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.performanceModeSwitchFor": {
     "en": "Performance mode switch for weak PCs and phones",
@@ -319,7 +407,11 @@
     "de": "Performance-Modus für schwache PCs und Handys",
     "tr": "Zayıf PC'ler ve telefonlar için performans modu anahtarı",
     "pl": "Przełącznik trybu wydajności dla słabych PC i telefonów",
-    "nl": "Schakelaar voor prestatiemodus voor zwakke pc's en telefoons"
+    "nl": "Schakelaar voor prestatiemodus voor zwakke pc's en telefoons",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalFpsLimitAnd": {
     "en": "Optional FPS limit and 25 FPS while the menu is open (saves battery)",
@@ -333,7 +425,11 @@
     "de": "Optionales FPS-Limit und 25 FPS bei offenem Menü (spart Akku)",
     "tr": "İsteğe bağlı FPS sınırı ve menü açıkken 25 FPS (pil tasarrufu)",
     "pl": "Opcjonalny limit FPS i 25 FPS przy otwartym menu (oszczędza baterię)",
-    "nl": "Optionele FPS-limiet en 25 FPS zolang het menu open is (spaart batterij)"
+    "nl": "Optionele FPS-limiet en 25 FPS zolang het menu open is (spaart batterij)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.autoHideFoodOption": {
     "en": "Auto-hide food option",
@@ -347,7 +443,11 @@
     "de": "Option zum automatischen Ausblenden von Futter",
     "tr": "Yemi otomatik gizleme seçeneği",
     "pl": "Opcja automatycznego ukrywania jedzenia",
-    "nl": "Optie om voedsel automatisch te verbergen"
+    "nl": "Optie om voedsel automatisch te verbergen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.multiServerSupportExclusive": {
     "en": "Multi-Server Support <span class=\"badge badge-exclusive\">Exclusive</span>",
@@ -361,7 +461,11 @@
     "de": "Multi-Server-Unterstützung <span class=\"badge badge-exclusive\">Exklusiv</span>",
     "tr": "Çoklu Sunucu Desteği <span class=\"badge badge-exclusive\">Özel</span>",
     "pl": "Obsługa wielu serwerów <span class=\"badge badge-exclusive\">Ekskluzywne</span>",
-    "nl": "Ondersteuning voor meerdere servers <span class=\"badge badge-exclusive\">Exclusief</span>"
+    "nl": "Ondersteuning voor meerdere servers <span class=\"badge badge-exclusive\">Exclusief</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.theOnlyModThat": {
     "en": "The only mod that works on multiple game servers.",
@@ -375,7 +479,11 @@
     "de": "Der einzige Mod, der auf mehreren Spielservern funktioniert.",
     "tr": "Birden çok oyun sunucusunda çalışan tek mod.",
     "pl": "Jedyny mod, który działa na wielu serwerach gry.",
-    "nl": "De enige mod die op meerdere gameservers werkt."
+    "nl": "De enige mod die op meerdere gameservers werkt.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.officialAgarIo": {
     "en": "Official Agar.io",
@@ -389,7 +497,11 @@
     "de": "Offizielles Agar.io",
     "tr": "Resmi Agar.io",
     "pl": "Oficjalne Agar.io",
-    "nl": "Officieel Agar.io"
+    "nl": "Officieel Agar.io",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.new": {
     "en": "New",
@@ -403,7 +515,11 @@
     "de": "Neu",
     "tr": "Yeni",
     "pl": "Nowość",
-    "nl": "Nieuw"
+    "nl": "Nieuw",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.expandingLandOwnServer": {
     "en": "Expanding Land (own server)",
@@ -417,7 +533,11 @@
     "de": "Expanding Land (eigener Server)",
     "tr": "Expanding Land (kendi sunucumuz)",
     "pl": "Expanding Land (własny serwer)",
-    "nl": "Expanding Land (eigen server)"
+    "nl": "Expanding Land (eigen server)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.allFeaturesWorkEverywhere": {
     "en": "All features work everywhere",
@@ -431,7 +551,11 @@
     "de": "Alle Funktionen laufen überall",
     "tr": "Tüm özellikler her yerde çalışır",
     "pl": "Wszystkie funkcje działają wszędzie",
-    "nl": "Alle functies werken overal"
+    "nl": "Alle functies werken overal",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.teamChatMinimap": {
     "en": "Team Chat & Minimap",
@@ -445,7 +569,11 @@
     "de": "Team-Chat & Minimap",
     "tr": "Takım Sohbeti ve Mini Harita",
     "pl": "Czat drużynowy i minimapa",
-    "nl": "Teamchat & minimap"
+    "nl": "Teamchat & minimap",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.coordinateWithYourTeam": {
     "en": "Coordinate with your team in real time.",
@@ -459,7 +587,11 @@
     "de": "Stimm dich in Echtzeit mit deinem Team ab.",
     "tr": "Takımınızla gerçek zamanlı koordinasyon kurun.",
     "pl": "Koordynuj działania z drużyną w czasie rzeczywistym.",
-    "nl": "Werk in realtime samen met je team."
+    "nl": "Werk in realtime samen met je team.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.inGameTeamChat": {
     "en": "In-game team chat",
@@ -473,7 +605,11 @@
     "de": "Team-Chat im Spiel",
     "tr": "Oyun içi takım sohbeti",
     "pl": "Czat drużynowy w grze",
-    "nl": "Teamchat in de game"
+    "nl": "Teamchat in de game",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.minimapWithTeammatePositions": {
     "en": "Minimap with teammate positions",
@@ -487,7 +623,11 @@
     "de": "Minimap mit Positionen deiner Teammates",
     "tr": "Takım arkadaşlarının konumlarını gösteren mini harita",
     "pl": "Minimapa z pozycjami członków drużyny",
-    "nl": "Minimap met posities van teamgenoten"
+    "nl": "Minimap met posities van teamgenoten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.teamQuadrantSystem": {
     "en": "Team quadrant system",
@@ -501,7 +641,11 @@
     "de": "Team-Quadranten-System",
     "tr": "Takım çeyrek sistemi",
     "pl": "System ćwiartek drużyny",
-    "nl": "Kwadrantensysteem voor teams"
+    "nl": "Kwadrantensysteem voor teams",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.nickDisplayOnMinimap": {
     "en": "Nick display on minimap",
@@ -515,7 +659,11 @@
     "de": "Nick-Anzeige auf der Minimap",
     "tr": "Mini haritada nick gösterimi",
     "pl": "Wyświetlanie nicków na minimapie",
-    "nl": "Nicknames op de minimap"
+    "nl": "Nicknames op de minimap",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.smoothPositionInterpolation": {
     "en": "Smooth position interpolation",
@@ -529,7 +677,11 @@
     "de": "Flüssige Positionsinterpolation",
     "tr": "Akıcı konum enterpolasyonu",
     "pl": "Płynna interpolacja pozycji",
-    "nl": "Vloeiende interpolatie van posities"
+    "nl": "Vloeiende interpolatie van posities",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.teamPingsNew": {
     "en": "Team Pings <span class=\"badge badge-new\">New</span>",
@@ -543,7 +695,11 @@
     "de": "Team-Pings <span class=\"badge badge-new\">Neu</span>",
     "tr": "Takım Pingleri <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Pingi drużynowe <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "Teampings <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "Teampings <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.markASpotFor": {
     "en": "Mark a spot for your team in one key press.",
@@ -557,7 +713,11 @@
     "de": "Markiere mit einem Tastendruck einen Punkt für dein Team.",
     "tr": "Tek tuşla takımınız için bir noktayı işaretleyin.",
     "pl": "Oznacz miejsce dla drużyny jednym naciśnięciem klawisza.",
-    "nl": "Markeer met één toetsdruk een plek voor je team."
+    "nl": "Markeer met één toetsdruk een plek voor je team.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.helpDangerGoHere": {
     "en": "<i>Help</i>, <i>Danger</i>, <i>Go here</i> and <i>Virus here</i> at your cursor",
@@ -571,7 +731,11 @@
     "de": "<i>Help</i>, <i>Danger</i>, <i>Go here</i> und <i>Virus here</i> an deinem Cursor",
     "tr": "İmlecinizin olduğu yerde <i>Yardım</i>, <i>Tehlike</i>, <i>Buraya git</i> ve <i>Burada virüs</i>",
     "pl": "<i>Pomocy</i>, <i>Niebezpieczeństwo</i>, <i>Idź tutaj</i> i <i>Tu wirus</i> przy kursorze",
-    "nl": "<i>Help</i>, <i>Danger</i>, <i>Go here</i> en <i>Virus here</i> op je cursor"
+    "nl": "<i>Help</i>, <i>Danger</i>, <i>Go here</i> en <i>Virus here</i> op je cursor",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.shownToTeammatesOn": {
     "en": "Shown to teammates on the map and the minimap",
@@ -585,7 +749,11 @@
     "de": "Für Teammates auf der Map und der Minimap sichtbar",
     "tr": "Takım arkadaşlarına haritada ve mini haritada gösterilir",
     "pl": "Widoczne dla drużyny na mapie i minimapie",
-    "nl": "Zichtbaar voor teamgenoten op de map en de minimap"
+    "nl": "Zichtbaar voor teamgenoten op de map en de minimap",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.hotkeysWithNoDefault": {
     "en": "Hotkeys with no default key: pick your own in Hotkeys",
@@ -599,7 +767,11 @@
     "de": "Hotkeys ohne Standardtaste: Wähl deine eigene unter Hotkeys",
     "tr": "Varsayılan tuşu olmayan kısayollar: Kısayol Tuşları bölümünden kendiniz seçin",
     "pl": "Skróty bez domyślnego klawisza: wybierz własny w Skrótach klawiszowych",
-    "nl": "Sneltoetsen zonder standaardtoets: kies je eigen toets in Hotkeys"
+    "nl": "Sneltoetsen zonder standaardtoets: kies je eigen toets in Hotkeys",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.deltaPlayersOnThe": {
     "en": "Delta players on the same team see a wave",
@@ -613,7 +785,11 @@
     "de": "Delta-Spieler im selben Team sehen eine Welle",
     "tr": "Aynı takımdaki Delta oyuncuları bir dalga görür",
     "pl": "Gracze Delta w tej samej drużynie widzą falę",
-    "nl": "Delta-spelers in hetzelfde team zien een golf"
+    "nl": "Delta-spelers in hetzelfde team zien een golf",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalPingButtonOn": {
     "en": "Optional ping button on phones",
@@ -627,7 +803,11 @@
     "de": "Optionaler Ping-Button auf Handys",
     "tr": "Telefonlarda isteğe bağlı ping düğmesi",
     "pl": "Opcjonalny przycisk pingu na telefonach",
-    "nl": "Optionele pingknop op telefoons"
+    "nl": "Optionele pingknop op telefoons",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.multibox": {
     "en": "Multibox",
@@ -641,7 +821,11 @@
     "de": "Multibox",
     "tr": "Multibox",
     "pl": "Multibox",
-    "nl": "Multibox"
+    "nl": "Multibox",
+    "pt": "Multibox",
+    "id": "Multibox",
+    "ja": "Multibox",
+    "it": "Multibox"
   },
   "site.features.playTwoCellsAt": {
     "en": "Play two cells at once from one tab.",
@@ -655,7 +839,11 @@
     "de": "Spiel zwei Zellen gleichzeitig in einem Tab.",
     "tr": "Tek sekmeden aynı anda iki hücre oynayın.",
     "pl": "Graj dwiema komórkami naraz z jednej karty.",
-    "nl": "Speel met twee cellen tegelijk vanuit één tabblad."
+    "nl": "Speel met twee cellen tegelijk vanuit één tabblad.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.aSecondUnitNext": {
     "en": "A second unit next to your main cell",
@@ -669,7 +857,11 @@
     "de": "Eine zweite Einheit neben deiner Hauptzelle",
     "tr": "Ana hücrenizin yanında ikinci bir birim",
     "pl": "Druga jednostka obok twojej głównej komórki",
-    "nl": "Een tweede unit naast je hoofdcel"
+    "nl": "Een tweede unit naast je hoofdcel",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.nextBackSwapAnd": {
     "en": "Next / back swap and follow-mouse hotkeys",
@@ -683,7 +875,11 @@
     "de": "Hotkeys für Weiter-/Zurück-Wechsel und Maus folgen",
     "tr": "İleri / geri değiştirme ve fareyi takip etme kısayolları",
     "pl": "Skróty przełączania dalej / wstecz i podążania za myszą",
-    "nl": "Sneltoetsen voor volgende / vorige wisselen en muis volgen"
+    "nl": "Sneltoetsen voor volgende / vorige wisselen en muis volgen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalViewOnThe": {
     "en": "Optional view on the middle of both units",
@@ -697,7 +893,11 @@
     "de": "Optionale Ansicht auf die Mitte beider Einheiten",
     "tr": "İsteğe bağlı olarak iki birimin ortasına odaklanan görünüm",
     "pl": "Opcjonalny widok na środek między obiema jednostkami",
-    "nl": "Optioneel beeld op het midden van beide units"
+    "nl": "Optioneel beeld op het midden van beide units",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalUnitRingsAnd": {
     "en": "Optional unit rings and freeze for the inactive unit",
@@ -711,7 +911,11 @@
     "de": "Optionale Einheitenringe und Einfrieren der inaktiven Einheit",
     "tr": "İsteğe bağlı birim halkaları ve aktif olmayan birimi dondurma",
     "pl": "Opcjonalne pierścienie jednostek i zamrożenie nieaktywnej jednostki",
-    "nl": "Optionele ringen om units en bevriezen van de inactieve unit"
+    "nl": "Optionele ringen om units en bevriezen van de inactieve unit",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.itsOwnSkinProfile": {
     "en": "Its own skin profile for each unit",
@@ -725,7 +929,11 @@
     "de": "Ein eigenes Skin-Profil für jede Einheit",
     "tr": "Her birim için ayrı skin profili",
     "pl": "Własny profil skinów dla każdej jednostki",
-    "nl": "Een eigen skinprofiel voor elke unit"
+    "nl": "Een eigen skinprofiel voor elke unit",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.gamepadControllerExclusive": {
     "en": "Gamepad & Controller <span class=\"badge badge-exclusive\">Exclusive</span>",
@@ -739,7 +947,11 @@
     "de": "Gamepad & Controller <span class=\"badge badge-exclusive\">Exklusiv</span>",
     "tr": "Gamepad ve Kontrolcü <span class=\"badge badge-exclusive\">Özel</span>",
     "pl": "Gamepad i kontroler <span class=\"badge badge-exclusive\">Ekskluzywne</span>",
-    "nl": "Gamepad & controller <span class=\"badge badge-exclusive\">Exclusief</span>"
+    "nl": "Gamepad & controller <span class=\"badge badge-exclusive\">Exclusief</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.playWithAController": {
     "en": "Play with a controller (optional: turn on <i>Gamepad / controller support</i> in Mouse control).",
@@ -753,7 +965,11 @@
     "de": "Spiel mit einem Controller (optional: Aktiviere <i>Gamepad / controller support</i> unter Mouse control).",
     "tr": "Kontrolcüyle oynayın (isteğe bağlı: Mouse control bölümünde <i>Gamepad / controller support</i> seçeneğini açın).",
     "pl": "Graj kontrolerem (opcjonalnie: włącz <i>Obsługa gamepada / kontrolera</i> w Sterowaniu myszą).",
-    "nl": "Speel met een controller (optioneel: zet <i>Gamepad / controller support</i> aan in Mouse control)."
+    "nl": "Speel met een controller (optioneel: zet <i>Gamepad / controller support</i> aan in Mouse control).",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.leftStickMovesRight": {
     "en": "Left stick moves, right stick zooms",
@@ -767,7 +983,11 @@
     "de": "Linker Stick bewegt, rechter Stick zoomt",
     "tr": "Sol çubuk hareket ettirir, sağ çubuk yakınlaştırır",
     "pl": "Lewy drążek porusza, prawy drążek przybliża",
-    "nl": "Linkerstick beweegt, rechterstick zoomt"
+    "nl": "Linkerstick beweegt, rechterstick zoomt",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.aSplitXDouble": {
     "en": "A split, X double split, RB 16 split",
@@ -781,7 +1001,11 @@
     "de": "A Split, X Doublesplit, RB 16er-Split",
     "tr": "A bölünme, X çift bölünme, RB 16'lı bölünme",
     "pl": "A podział, X podwójny podział, RB podział na 16",
-    "nl": "A split, X double split, RB 16 split"
+    "nl": "A split, X double split, RB 16 split",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.bFeedHoldY": {
     "en": "B feed (hold), Y respawn, Start menu",
@@ -795,7 +1019,11 @@
     "de": "B Füttern (halten), Y Respawn, Start Menü",
     "tr": "B besleme (basılı tut), Y yeniden doğma, Start menü",
     "pl": "B karmienie (przytrzymaj), Y odrodzenie, Start menu",
-    "nl": "B voeren (ingedrukt houden), Y respawn, Start menu"
+    "nl": "B voeren (ingedrukt houden), Y respawn, Start menu",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.lbSwapsTheMultibox": {
     "en": "LB swaps the multibox unit",
@@ -809,7 +1037,11 @@
     "de": "LB wechselt die Multibox-Einheit",
     "tr": "LB multibox birimini değiştirir",
     "pl": "LB przełącza jednostkę multiboxa",
-    "nl": "LB wisselt de multibox-unit"
+    "nl": "LB wisselt de multibox-unit",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.xboxPlaystationAndOther": {
     "en": "Xbox, PlayStation and other pads with the standard browser layout",
@@ -823,7 +1055,11 @@
     "de": "Xbox-, PlayStation- und andere Pads mit dem Standard-Browserlayout",
     "tr": "Standart tarayıcı düzenine sahip Xbox, PlayStation ve diğer kontrolcüler",
     "pl": "Xbox, PlayStation i inne pady ze standardowym układem przeglądarki",
-    "nl": "Xbox, PlayStation en andere pads met de standaard browserindeling"
+    "nl": "Xbox, PlayStation en andere pads met de standaard browserindeling",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.replaysNew": {
     "en": "Replays <span class=\"badge badge-new\">New</span>",
@@ -837,7 +1073,11 @@
     "de": "Replays <span class=\"badge badge-new\">Neu</span>",
     "tr": "Tekrarlar <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Powtórki <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "Replays <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "Replays <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.watchYourGamesBack": {
     "en": "Watch your games back and share them.",
@@ -851,7 +1091,11 @@
     "de": "Schau dir deine Spiele noch mal an und teile sie.",
     "tr": "Oyunlarınızı yeniden izleyin ve paylaşın.",
     "pl": "Oglądaj swoje gry ponownie i udostępniaj je.",
-    "nl": "Kijk je games terug en deel ze."
+    "nl": "Kijk je games terug en deel ze.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.recordsYourGamesTurn": {
     "en": "Records your games (turn off <i>Record replays</i> to save memory)",
@@ -865,7 +1109,11 @@
     "de": "Zeichnet deine Spiele auf (deaktiviere <i>Record replays</i>, um Speicher zu sparen)",
     "tr": "Oyunlarınızı kaydeder (bellek tasarrufu için <i>Record replays</i> seçeneğini kapatın)",
     "pl": "Nagrywa twoje gry (wyłącz <i>Nagrywanie powtórek</i>, aby oszczędzać pamięć)",
-    "nl": "Neemt je games op (zet <i>Record replays</i> uit om geheugen te sparen)"
+    "nl": "Neemt je games op (zet <i>Record replays</i> uit om geheugen te sparen)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.pauseFasterSlowerAnd": {
     "en": "Pause, faster / slower and seek hotkeys",
@@ -879,7 +1127,11 @@
     "de": "Hotkeys für Pause, schneller/langsamer und Spulen",
     "tr": "Duraklatma, hızlandırma / yavaşlatma ve sarma kısayolları",
     "pl": "Skróty pauzy, przyspieszania / zwalniania i przewijania",
-    "nl": "Sneltoetsen voor pauze, sneller / langzamer en spoelen"
+    "nl": "Sneltoetsen voor pauze, sneller / langzamer en spoelen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.progressBarWhileA": {
     "en": "Progress bar while a replay plays: click to seek",
@@ -893,7 +1145,11 @@
     "de": "Fortschrittsleiste während eines Replays: zum Spulen klicken",
     "tr": "Tekrar oynatılırken ilerleme çubuğu: sarmak için tıklayın",
     "pl": "Pasek postępu podczas powtórki: kliknij, aby przewinąć",
-    "nl": "Voortgangsbalk tijdens het afspelen van een replay: klik om te spoelen"
+    "nl": "Voortgangsbalk tijdens het afspelen van een replay: klik om te spoelen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.shareReplaysWithReplay": {
     "en": "Share replays with <i>?replay=</i> links and iframes",
@@ -907,7 +1163,11 @@
     "de": "Teile Replays mit <i>?replay=</i>-Links und iframes",
     "tr": "Tekrarları <i>?replay=</i> bağlantıları ve iframe'lerle paylaşın",
     "pl": "Udostępniaj powtórki za pomocą linków <i>?replay=</i> i iframe",
-    "nl": "Deel replays met <i>?replay=</i>-links en iframes"
+    "nl": "Deel replays met <i>?replay=</i>-links en iframes",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.pauseAndSeekButtons": {
     "en": "Pause and seek buttons and a touch replay bar on phones",
@@ -921,7 +1181,11 @@
     "de": "Pause- und Spul-Buttons sowie eine Touch-Replay-Leiste auf Handys",
     "tr": "Telefonlarda duraklatma ve sarma düğmeleri ile dokunmatik tekrar çubuğu",
     "pl": "Przyciski pauzy i przewijania oraz dotykowy pasek powtórek na telefonach",
-    "nl": "Knoppen voor pauze en spoelen en een touch-replaybalk op telefoons"
+    "nl": "Knoppen voor pauze en spoelen en een touch-replaybalk op telefoons",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.gameOverCardMatch": {
     "en": "Game Over Card & Match History <span class=\"badge badge-new\">New</span>",
@@ -935,7 +1199,11 @@
     "de": "Game-Over-Karte & Match-Verlauf <span class=\"badge badge-new\">Neu</span>",
     "tr": "Oyun Sonu Kartı ve Maç Geçmişi <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Karta Game Over i historia meczów <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "Game Over-kaart & wedstrijdgeschiedenis <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "Game Over-kaart & wedstrijdgeschiedenis <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.seeHowYourLast": {
     "en": "See how your last life went.",
@@ -949,7 +1217,11 @@
     "de": "Sieh dir an, wie dein letztes Leben gelaufen ist.",
     "tr": "Son canınızın nasıl geçtiğini görün.",
     "pl": "Zobacz, jak poszło ci ostatnie życie.",
-    "nl": "Zie hoe je laatste leven ging."
+    "nl": "Zie hoe je laatste leven ging.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.copyStatsButtonOn": {
     "en": "Copy stats button on the Game Over card",
@@ -963,7 +1235,11 @@
     "de": "Button zum Kopieren der Stats auf der Game-Over-Karte",
     "tr": "Oyun Sonu kartında istatistikleri kopyalama düğmesi",
     "pl": "Przycisk kopiowania statystyk na karcie Game Over",
-    "nl": "Knop om stats te kopiëren op de Game Over-kaart"
+    "nl": "Knop om stats te kopiëren op de Game Over-kaart",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalMassGraphOf": {
     "en": "Optional mass graph of your life",
@@ -977,7 +1253,11 @@
     "de": "Optionaler Masse-Graph deines Lebens",
     "tr": "Canınız boyunca isteğe bağlı kütle grafiği",
     "pl": "Opcjonalny wykres masy z twojego życia",
-    "nl": "Optionele massagrafiek van je leven"
+    "nl": "Optionele massagrafiek van je leven",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalAllTimePersonal": {
     "en": "Optional all-time personal bests with a <i>New best!</i> badge",
@@ -991,7 +1271,11 @@
     "de": "Optionale persönliche Allzeit-Bestwerte mit <i>New best!</i>-Badge",
     "tr": "<i>Yeni rekor!</i> rozetiyle isteğe bağlı tüm zamanların kişisel rekorları",
     "pl": "Opcjonalne rekordy wszech czasów z odznaką <i>Nowy rekord!</i>",
-    "nl": "Optionele persoonlijke records aller tijden met een <i>New best!</i>-badge"
+    "nl": "Optionele persoonlijke records aller tijden met een <i>New best!</i>-badge",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalEatenByRow": {
     "en": "Optional <i>Eaten by</i> row with the nick and mass that ate you",
@@ -1005,7 +1289,11 @@
     "de": "Optionale Zeile <i>Eaten by</i> mit Nick und Masse dessen, der dich gefressen hat",
     "tr": "Sizi yiyen oyuncunun nick'i ve kütlesiyle isteğe bağlı <i>Yiyen</i> satırı",
     "pl": "Opcjonalny wiersz <i>Zjedzony przez</i> z nickiem i masą gracza, który cię zjadł",
-    "nl": "Optionele <i>Eaten by</i>-regel met de nick en massa van wie je opat"
+    "nl": "Optionele <i>Eaten by</i>-regel met de nick en massa van wie je opat",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalMatchHistoryYour": {
     "en": "Optional match history: your last 50 games in a window under the menu",
@@ -1019,7 +1307,11 @@
     "de": "Optionaler Match-Verlauf: deine letzten 50 Spiele in einem Fenster unter dem Menü",
     "tr": "İsteğe bağlı maç geçmişi: menünün altındaki pencerede son 50 oyununuz",
     "pl": "Opcjonalna historia meczów: twoje ostatnie 50 gier w oknie pod menu",
-    "nl": "Optionele wedstrijdgeschiedenis: je laatste 50 games in een venster onder het menu"
+    "nl": "Optionele wedstrijdgeschiedenis: je laatste 50 games in een venster onder het menu",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.sessionSummaryUnderThe": {
     "en": "Session summary under the menu",
@@ -1033,7 +1325,11 @@
     "de": "Sitzungsübersicht unter dem Menü",
     "tr": "Menünün altında oturum özeti",
     "pl": "Podsumowanie sesji pod menu",
-    "nl": "Sessieoverzicht onder het menu"
+    "nl": "Sessieoverzicht onder het menu",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.spectatingNew": {
     "en": "Spectating <span class=\"badge badge-new\">New</span>",
@@ -1047,7 +1343,11 @@
     "de": "Zuschauen <span class=\"badge badge-new\">Neu</span>",
     "tr": "İzleme <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Obserwowanie <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "Toeschouwen <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "Toeschouwen <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.followTheActionIn": {
     "en": "Follow the action in free spectate.",
@@ -1061,7 +1361,11 @@
     "de": "Verfolge das Geschehen im freien Zuschauermodus.",
     "tr": "Serbest izleme modunda aksiyonu takip edin.",
     "pl": "Śledź akcję w trybie swobodnej obserwacji.",
-    "nl": "Volg de actie in vrije toeschouwersmodus."
+    "nl": "Volg de actie in vrije toeschouwersmodus.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.followALeaderboardPlayer": {
     "en": "Follow a leaderboard player: click a leaderboard mass (optional) or use the <i>follow next leaderboard player</i> hotkey",
@@ -1075,7 +1379,11 @@
     "de": "Folge einem Spieler aus der Rangliste: Klick auf eine Masse in der Rangliste (optional) oder nutze den Hotkey <i>follow next leaderboard player</i>",
     "tr": "Liderlik tablosundaki bir oyuncuyu takip edin: liderlik tablosundaki bir kütleye tıklayın (isteğe bağlı) veya <i>sonraki liderlik tablosu oyuncusunu takip et</i> kısayolunu kullanın",
     "pl": "Śledź gracza z rankingu: kliknij masę w rankingu (opcjonalnie) albo użyj skrótu <i>śledź następnego gracza z rankingu</i>",
-    "nl": "Volg een speler uit het leaderboard: klik op een massa in het leaderboard (optioneel) of gebruik de sneltoets <i>follow next leaderboard player</i>"
+    "nl": "Volg een speler uit het leaderboard: klik op een massa in het leaderboard (optioneel) of gebruik de sneltoets <i>follow next leaderboard player</i>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalClickAPlayer": {
     "en": "Optional: click a player cell to follow it, click empty space to stop",
@@ -1089,7 +1397,11 @@
     "de": "Optional: Klick auf eine Spielerzelle, um ihr zu folgen, Klick ins Leere zum Beenden",
     "tr": "İsteğe bağlı: takip etmek için bir oyuncu hücresine tıklayın, durdurmak için boş alana tıklayın",
     "pl": "Opcjonalnie: kliknij komórkę gracza, aby ją śledzić, kliknij puste miejsce, aby przestać",
-    "nl": "Optioneel: klik op een spelercel om die te volgen, klik op lege ruimte om te stoppen"
+    "nl": "Optioneel: klik op een spelercel om die te volgen, klik op lege ruimte om te stoppen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.expandingLandWorldSpectate": {
     "en": "Expanding Land World Spectate: optional minimap click moves the camera there",
@@ -1103,7 +1415,11 @@
     "de": "Expanding Land World Spectate: Optional bewegt ein Klick auf die Minimap die Kamera dorthin",
     "tr": "Expanding Land World Spectate: isteğe bağlı olarak mini haritaya tıklamak kamerayı oraya taşır",
     "pl": "Expanding Land World Spectate: opcjonalnie kliknięcie minimapy przenosi tam kamerę",
-    "nl": "Expanding Land World Spectate: een optionele klik op de minimap verplaatst de camera daarheen"
+    "nl": "Expanding Land World Spectate: een optionele klik op de minimap verplaatst de camera daarheen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.hotkeyToEnlargeThe": {
     "en": "Hotkey to enlarge the minimap",
@@ -1117,7 +1433,11 @@
     "de": "Hotkey zum Vergrößern der Minimap",
     "tr": "Mini haritayı büyütmek için kısayol tuşu",
     "pl": "Skrót do powiększenia minimapy",
-    "nl": "Sneltoets om de minimap te vergroten"
+    "nl": "Sneltoets om de minimap te vergroten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.chatToolsNew": {
     "en": "Chat Tools <span class=\"badge badge-new\">New</span>",
@@ -1131,7 +1451,11 @@
     "de": "Chat-Tools <span class=\"badge badge-new\">Neu</span>",
     "tr": "Sohbet Araçları <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Narzędzia czatu <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "Chattools <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "Chattools <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.aFasterCleanerChat": {
     "en": "A faster, cleaner chat.",
@@ -1145,7 +1469,11 @@
     "de": "Ein schnellerer, aufgeräumterer Chat.",
     "tr": "Daha hızlı, daha temiz bir sohbet.",
     "pl": "Szybszy i czytelniejszy czat.",
-    "nl": "Een snellere, overzichtelijkere chat."
+    "nl": "Een snellere, overzichtelijkere chat.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.upDownInThe": {
     "en": "Up / Down in the chat box recalls your last messages",
@@ -1159,7 +1487,11 @@
     "de": "Hoch/Runter im Chatfeld ruft deine letzten Nachrichten wieder auf",
     "tr": "Sohbet kutusunda Yukarı / Aşağı son mesajlarınızı geri getirir",
     "pl": "Strzałki w górę / w dół w polu czatu przywołują twoje ostatnie wiadomości",
-    "nl": "Omhoog / omlaag in het chatvak haalt je laatste berichten terug"
+    "nl": "Omhoog / omlaag in het chatvak haalt je laatste berichten terug",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.clickANickIn": {
     "en": "Click a nick in the chat to put it into your message",
@@ -1173,7 +1505,11 @@
     "de": "Klick auf einen Nick im Chat, um ihn in deine Nachricht einzufügen",
     "tr": "Mesajınıza eklemek için sohbetteki bir nick'e tıklayın",
     "pl": "Kliknij nick w czacie, aby wstawić go do wiadomości",
-    "nl": "Klik op een nick in de chat om die in je bericht te zetten"
+    "nl": "Klik op een nick in de chat om die in je bericht te zetten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalWordFilterHides": {
     "en": "Optional word filter hides lines with words you choose",
@@ -1187,7 +1523,11 @@
     "de": "Optionaler Wortfilter blendet Zeilen mit von dir gewählten Wörtern aus",
     "tr": "İsteğe bağlı kelime filtresi, seçtiğiniz kelimeleri içeren satırları gizler",
     "pl": "Opcjonalny filtr słów ukrywa wiersze z wybranymi przez ciebie słowami",
-    "nl": "Optioneel woordfilter verbergt regels met woorden die jij kiest"
+    "nl": "Optioneel woordfilter verbergt regels met woorden die jij kiest",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalDesktopNotificationWhen": {
     "en": "Optional desktop notification when someone mentions you",
@@ -1201,7 +1541,11 @@
     "de": "Optionale Desktop-Benachrichtigung, wenn dich jemand erwähnt",
     "tr": "Biri sizden bahsettiğinde isteğe bağlı masaüstü bildirimi",
     "pl": "Opcjonalne powiadomienie na pulpicie, gdy ktoś cię wspomni",
-    "nl": "Optionele bureaubladmelding als iemand je noemt"
+    "nl": "Optionele bureaubladmelding als iemand je noemt",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.hotkeyToMuteUnmute": {
     "en": "Hotkey to mute / unmute chat sounds",
@@ -1215,7 +1559,11 @@
     "de": "Hotkey zum Stummschalten der Chat-Sounds",
     "tr": "Sohbet seslerini kapatıp açmak için kısayol tuşu",
     "pl": "Skrót do wyciszania / włączania dźwięków czatu",
-    "nl": "Sneltoets om chatgeluiden te dempen / aan te zetten"
+    "nl": "Sneltoets om chatgeluiden te dempen / aan te zetten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.smartSettingsNew": {
     "en": "Smart Settings <span class=\"badge badge-new\">New</span>",
@@ -1229,7 +1577,11 @@
     "de": "Smarte Einstellungen <span class=\"badge badge-new\">Neu</span>",
     "tr": "Akıllı Ayarlar <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Inteligentne ustawienia <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "Slimme instellingen <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "Slimme instellingen <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.findAndSetUp": {
     "en": "Find and set up options in seconds.",
@@ -1243,7 +1595,11 @@
     "de": "Optionen in Sekunden finden und einrichten.",
     "tr": "Seçenekleri saniyeler içinde bulun ve ayarlayın.",
     "pl": "Znajdź i skonfiguruj opcje w kilka sekund.",
-    "nl": "Vind en stel opties in binnen enkele seconden."
+    "nl": "Vind en stel opties in binnen enkele seconden.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.searchBoxForEvery": {
     "en": "Search box for every option",
@@ -1257,7 +1613,11 @@
     "de": "Suchfeld für jede Option",
     "tr": "Her seçenek için arama kutusu",
     "pl": "Wyszukiwarka wszystkich opcji",
-    "nl": "Zoekvak voor elke optie"
+    "nl": "Zoekvak voor elke optie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.presetsCompetitiveBatterySaver": {
     "en": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (with Undo)",
@@ -1271,7 +1631,11 @@
     "de": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (mit Rückgängig)",
     "tr": "Ön ayarlar: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (Geri Al ile)",
     "pl": "Presety: Rywalizacja, Oszczędzanie baterii, Streamer, Czysty HUD, Ograniczony ruch (z cofnięciem)",
-    "nl": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (met Undo)"
+    "nl": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (met Undo)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.newBadgesAndA": {
     "en": "<b>NEW</b> badges and a <i>Show new options</i> filter",
@@ -1285,7 +1649,11 @@
     "de": "<b>NEU</b>-Badges und ein Filter <i>Show new options</i>",
     "tr": "<b>YENİ</b> rozetleri ve <i>Show new options</i> filtresi",
     "pl": "Odznaki <b>NOWOŚĆ</b> i filtr <i>Pokaż nowe opcje</i>",
-    "nl": "<b>NEW</b>-badges en een filter <i>Show new options</i>"
+    "nl": "<b>NEW</b>-badges en een filter <i>Show new options</i>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.boundKeysListIn": {
     "en": "Bound keys list in Hotkeys",
@@ -1299,7 +1667,11 @@
     "de": "Liste der belegten Tasten unter Hotkeys",
     "tr": "Kısayol Tuşları bölümünde atanmış tuşlar listesi",
     "pl": "Lista przypisanych klawiszy w Skrótach klawiszowych",
-    "nl": "Lijst met toegewezen toetsen in Hotkeys"
+    "nl": "Lijst met toegewezen toetsen in Hotkeys",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.settingsThemeAndHotkey": {
     "en": "Settings, theme and hotkey labels in 12 languages",
@@ -1313,7 +1685,11 @@
     "de": "Einstellungen, Theme und Hotkey-Bezeichnungen in 12 Sprachen",
     "tr": "12 dilde ayar, tema ve kısayol etiketleri",
     "pl": "Ustawienia, motywy i etykiety skrótów w 12 językach",
-    "nl": "Labels voor instellingen, thema en sneltoetsen in 12 talen"
+    "nl": "Labels voor instellingen, thema en sneltoetsen in 12 talen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.downloadLoadSettingsFiles": {
     "en": "Download / load settings files and cloud sync with a sync code",
@@ -1327,7 +1703,11 @@
     "de": "Einstellungsdateien herunterladen/laden und Cloud-Sync mit einem Sync-Code",
     "tr": "Ayar dosyalarını indirme / yükleme ve senkronizasyon koduyla bulut senkronizasyonu",
     "pl": "Pobieranie / wczytywanie plików ustawień i synchronizacja w chmurze z kodem synchronizacji",
-    "nl": "Instellingenbestanden downloaden / laden en cloudsync met een synccode"
+    "nl": "Instellingenbestanden downloaden / laden en cloudsync met een synccode",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.accessibilityNew": {
     "en": "Accessibility <span class=\"badge badge-new\">New</span>",
@@ -1341,7 +1721,11 @@
     "de": "Barrierefreiheit <span class=\"badge badge-new\">Neu</span>",
     "tr": "Erişilebilirlik <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Dostępność <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "Toegankelijkheid <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "Toegankelijkheid <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.comfortableToLookAt": {
     "en": "Comfortable to look at for everyone.",
@@ -1355,7 +1739,11 @@
     "de": "Angenehm anzusehen für alle.",
     "tr": "Herkes için göz yormayan bir görünüm.",
     "pl": "Wygodne dla oczu każdego.",
-    "nl": "Prettig om naar te kijken voor iedereen."
+    "nl": "Prettig om naar te kijken voor iedereen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.colourBlindSafeHigh": {
     "en": "<i>Colour-blind safe (high contrast)</i> theme preset",
@@ -1369,7 +1757,11 @@
     "de": "Theme-Preset <i>Colour-blind safe (high contrast)</i>",
     "tr": "<i>Colour-blind safe (high contrast)</i> tema ön ayarı",
     "pl": "Preset motywu <i>Bezpieczny dla daltonistów (wysoki kontrast)</i>",
-    "nl": "Themapreset <i>Colour-blind safe (high contrast)</i>"
+    "nl": "Themapreset <i>Colour-blind safe (high contrast)</i>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalReducedMotionNo": {
     "en": "Optional reduced motion: no screen shake, death particles or Expanding Land join spin",
@@ -1383,7 +1775,11 @@
     "de": "Optional reduzierte Bewegung: kein Bildschirmwackeln, keine Todespartikel und kein Dreh-Effekt beim Beitritt zu Expanding Land",
     "tr": "İsteğe bağlı azaltılmış hareket: ekran sarsıntısı, ölüm parçacıkları veya Expanding Land katılma dönüşü yok",
     "pl": "Opcjonalnie ograniczony ruch: bez trzęsienia ekranu, cząsteczek śmierci i obrotu przy dołączaniu do Expanding Land",
-    "nl": "Optioneel minder beweging: geen schermschudden, doodsdeeltjes of de draai bij het joinen van Expanding Land"
+    "nl": "Optioneel minder beweging: geen schermschudden, doodsdeeltjes of de draai bij het joinen van Expanding Land",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.gameBrightnessAndSaturation": {
     "en": "Game brightness and saturation sliders",
@@ -1397,7 +1793,11 @@
     "de": "Regler für Helligkeit und Sättigung im Spiel",
     "tr": "Oyun parlaklığı ve doygunluğu kaydırıcıları",
     "pl": "Suwaki jasności i nasycenia gry",
-    "nl": "Schuifregelaars voor helderheid en verzadiging van de game"
+    "nl": "Schuifregelaars voor helderheid en verzadiging van de game",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.zoomGlideSpeedSlider": {
     "en": "Zoom glide speed slider",
@@ -1411,7 +1811,11 @@
     "de": "Regler für die Zoom-Gleitgeschwindigkeit",
     "tr": "Yakınlaştırma kayma hızı kaydırıcısı",
     "pl": "Suwak szybkości płynnego przybliżania",
-    "nl": "Schuifregelaar voor de glijsnelheid van de zoom"
+    "nl": "Schuifregelaar voor de glijsnelheid van de zoom",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.labelsInYourLanguage": {
     "en": "Labels in your language from the language menu",
@@ -1425,7 +1829,11 @@
     "de": "Beschriftungen in deiner Sprache über das Sprachmenü",
     "tr": "Dil menüsünden kendi dilinizde etiketler",
     "pl": "Etykiety w twoim języku z menu języka",
-    "nl": "Labels in jouw taal via het taalmenu"
+    "nl": "Labels in jouw taal via het taalmenu",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.mobileTouchControlsNew": {
     "en": "Mobile Touch Controls <span class=\"badge badge-new\">New</span>",
@@ -1439,7 +1847,11 @@
     "de": "Mobile Touch-Steuerung <span class=\"badge badge-new\">Neu</span>",
     "tr": "Mobil Dokunmatik Kontroller <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Mobilne sterowanie dotykowe <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "Mobiele touchbediening <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "Mobiele touchbediening <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.playOnYourPhone": {
     "en": "Play on your phone or tablet.",
@@ -1453,7 +1865,11 @@
     "de": "Spiel auf deinem Handy oder Tablet.",
     "tr": "Telefonunuzda veya tabletinizde oynayın.",
     "pl": "Graj na telefonie lub tablecie.",
-    "nl": "Speel op je telefoon of tablet."
+    "nl": "Speel op je telefoon of tablet.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.touchJoystickWithSplit": {
     "en": "Touch joystick with split and feed buttons",
@@ -1467,7 +1883,11 @@
     "de": "Touch-Joystick mit Split- und Füttern-Buttons",
     "tr": "Bölünme ve besleme düğmeli dokunmatik joystick",
     "pl": "Dotykowy joystick z przyciskami podziału i karmienia",
-    "nl": "Touchjoystick met knoppen voor splitsen en voeren"
+    "nl": "Touchjoystick met knoppen voor splitsen en voeren",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalTeamPingButton": {
     "en": "Optional team ping button: tap for <i>Go here</i>, hold and slide for Help, Danger or Virus here",
@@ -1481,7 +1901,11 @@
     "de": "Optionaler Team-Ping-Button: Tippen für <i>Go here</i>, halten und wischen für Help, Danger oder Virus here",
     "tr": "İsteğe bağlı takım ping düğmesi: <i>Buraya git</i> için dokunun, Yardım, Tehlike veya Burada virüs için basılı tutup kaydırın",
     "pl": "Opcjonalny przycisk pingu drużynowego: stuknij dla <i>Idź tutaj</i>, przytrzymaj i przesuń dla Pomocy, Niebezpieczeństwa lub Tu wirus",
-    "nl": "Optionele teampingknop: tik voor <i>Go here</i>, houd vast en schuif voor Help, Danger of Virus here"
+    "nl": "Optionele teampingknop: tik voor <i>Go here</i>, houd vast en schuif voor Help, Danger of Virus here",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalStopOnRelease": {
     "en": "Optional <i>Stop on release</i>",
@@ -1495,7 +1919,11 @@
     "de": "Optional <i>Stop on release</i>",
     "tr": "İsteğe bağlı <i>Bırakınca dur</i>",
     "pl": "Opcjonalne <i>Zatrzymanie po puszczeniu</i>",
-    "nl": "Optioneel <i>Stop on release</i>"
+    "nl": "Optioneel <i>Stop on release</i>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.optionalQuickChatButtons": {
     "en": "Optional quick chat buttons, multibox button and vibration settings",
@@ -1509,7 +1937,11 @@
     "de": "Optionale Schnellchat-Buttons, Multibox-Button und Vibrationseinstellungen",
     "tr": "İsteğe bağlı hızlı sohbet düğmeleri, multibox düğmesi ve titreşim ayarları",
     "pl": "Opcjonalne przyciski szybkiego czatu, przycisk multiboxa i ustawienia wibracji",
-    "nl": "Optionele snelchatknoppen, multiboxknop en trilinstellingen"
+    "nl": "Optionele snelchatknoppen, multiboxknop en trilinstellingen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.replayPauseAndSeek": {
     "en": "Replay pause and seek buttons, net graph in the touch settings",
@@ -1523,7 +1955,11 @@
     "de": "Replay-Pause- und Spul-Buttons, Netzgraph in den Touch-Einstellungen",
     "tr": "Dokunmatik ayarlarda tekrar duraklatma ve sarma düğmeleri, ağ grafiği",
     "pl": "Przyciski pauzy i przewijania powtórek, wykres sieci w ustawieniach dotyku",
-    "nl": "Knoppen voor pauze en spoelen in replays, netgrafiek in de touchinstellingen"
+    "nl": "Knoppen voor pauze en spoelen in replays, netgrafiek in de touchinstellingen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.extraFeaturesOnOur": {
     "en": "Extra features on our own server.",
@@ -1537,7 +1973,11 @@
     "de": "Extra-Funktionen auf unserem eigenen Server.",
     "tr": "Kendi sunucumuzda ekstra özellikler.",
     "pl": "Dodatkowe funkcje na naszym własnym serwerze.",
-    "nl": "Extra functies op onze eigen server."
+    "nl": "Extra functies op onze eigen server.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.dailyChallengesTwoNew": {
     "en": "Daily challenges, two new ones each day, with Claim and Claim All",
@@ -1551,7 +1991,11 @@
     "de": "Tägliche Challenges, jeden Tag zwei neue, mit Claim und Claim All",
     "tr": "Her gün iki yeni günlük görev, Claim ve Claim All ile",
     "pl": "Codzienne wyzwania, dwa nowe każdego dnia, z przyciskami Odbierz i Odbierz wszystko",
-    "nl": "Dagelijkse uitdagingen, elke dag twee nieuwe, met Claim en Claim All"
+    "nl": "Dagelijkse uitdagingen, elke dag twee nieuwe, met Claim en Claim All",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.serverEventCountdownDouble": {
     "en": "Server event countdown (Double XP, potion rain, golden food, virus storm)",
@@ -1565,7 +2009,11 @@
     "de": "Countdown für Server-Events (Double XP, Trankregen, goldenes Futter, Virussturm)",
     "tr": "Sunucu etkinliği geri sayımı (Double XP, iksir yağmuru, altın yem, virüs fırtınası)",
     "pl": "Odliczanie do wydarzeń serwera (podwójne XP, deszcz mikstur, złote jedzenie, burza wirusów)",
-    "nl": "Aftellen naar serverevents (Double XP, potion-regen, gouden voedsel, virusstorm)"
+    "nl": "Aftellen naar serverevents (Double XP, potion-regen, gouden voedsel, virusstorm)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.leaguesWithLastWeek": {
     "en": "Leagues with last week's results",
@@ -1579,7 +2027,11 @@
     "de": "Ligen mit den Ergebnissen der letzten Woche",
     "tr": "Geçen haftanın sonuçlarıyla ligler",
     "pl": "Ligi z wynikami z zeszłego tygodnia",
-    "nl": "Leagues met de resultaten van vorige week"
+    "nl": "Leagues met de resultaten van vorige week",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.eatenByUsesThe": {
     "en": "<i>Eaten by</i> uses the killer the server sends",
@@ -1593,7 +2045,11 @@
     "de": "<i>Eaten by</i> nutzt den Killer, den der Server meldet",
     "tr": "<i>Yiyen</i>, sunucunun gönderdiği katil bilgisini kullanır",
     "pl": "<i>Zjedzony przez</i> korzysta z zabójcy przesłanego przez serwer",
-    "nl": "<i>Eaten by</i> gebruikt de killer die de server doorgeeft"
+    "nl": "<i>Eaten by</i> gebruikt de killer die de server doorgeeft",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.matchHistoryOnYour": {
     "en": "Match history on your account, on every device",
@@ -1607,7 +2063,11 @@
     "de": "Match-Verlauf in deinem Konto, auf jedem Gerät",
     "tr": "Maç geçmişi hesabınızda, her cihazda",
     "pl": "Historia meczów na twoim koncie, na każdym urządzeniu",
-    "nl": "Wedstrijdgeschiedenis op je account, op elk apparaat"
+    "nl": "Wedstrijdgeschiedenis op je account, op elk apparaat",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.hotkeysForLeaguesShop": {
     "en": "Hotkeys for Leagues, Shop, Challenges, Potions and Claim All",
@@ -1621,7 +2081,11 @@
     "de": "Hotkeys für Ligen, Shop, Challenges, Tränke und Claim All",
     "tr": "Ligler, Mağaza, Görevler, İksirler ve Claim All için kısayol tuşları",
     "pl": "Skróty do Lig, Sklepu, Wyzwań, Mikstur i Odbierz wszystko",
-    "nl": "Sneltoetsen voor Leagues, Shop, Challenges, Potions en Claim All"
+    "nl": "Sneltoetsen voor Leagues, Shop, Challenges, Potions en Claim All",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.userScriptApiNew": {
     "en": "User Script API <span class=\"badge badge-new\">New</span>",
@@ -1635,7 +2099,11 @@
     "de": "User-Script-API <span class=\"badge badge-new\">Neu</span>",
     "tr": "Kullanıcı Betiği API'si <span class=\"badge badge-new\">Yeni</span>",
     "pl": "User Script API <span class=\"badge badge-new\">Nowość</span>",
-    "nl": "User Script API <span class=\"badge badge-new\">Nieuw</span>"
+    "nl": "User Script API <span class=\"badge badge-new\">Nieuw</span>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.writeYourOwnAdd": {
     "en": "Write your own add-ons without patching the mod.",
@@ -1649,7 +2117,11 @@
     "de": "Schreib deine eigenen Add-ons, ohne den Mod zu patchen.",
     "tr": "Modu yamalamadan kendi eklentilerinizi yazın.",
     "pl": "Pisz własne dodatki bez modyfikowania moda.",
-    "nl": "Schrijf je eigen add-ons zonder de mod aan te passen."
+    "nl": "Schrijf je eigen add-ons zonder de mod aan te passen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.upTo5User": {
     "en": "Up to 5 user scripts (URL or pasted code)",
@@ -1663,7 +2135,11 @@
     "de": "Bis zu 5 User-Scripts (URL oder eingefügter Code)",
     "tr": "En fazla 5 kullanıcı betiği (URL veya yapıştırılmış kod)",
     "pl": "Do 5 skryptów użytkownika (URL lub wklejony kod)",
-    "nl": "Tot 5 userscripts (URL of geplakte code)"
+    "nl": "Tot 5 userscripts (URL of geplakte code)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.windowLmeventsSpawnDeath": {
     "en": "<code>window.LMEvents</code>: spawn, death, chat, server change, mass and leaderboard events",
@@ -1677,7 +2153,11 @@
     "de": "<code>window.LMEvents</code>: Events für Spawn, Tod, Chat, Serverwechsel, Masse und Rangliste",
     "tr": "<code>window.LMEvents</code>: doğma, ölüm, sohbet, sunucu değişimi, kütle ve liderlik tablosu olayları",
     "pl": "<code>window.LMEvents</code>: zdarzenia odrodzenia, śmierci, czatu, zmiany serwera, masy i rankingu",
-    "nl": "<code>window.LMEvents</code>: events voor spawn, dood, chat, serverwissel, massa en leaderboard"
+    "nl": "<code>window.LMEvents</code>: events voor spawn, dood, chat, serverwissel, massa en leaderboard",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.helpersMassPositionPlaying": {
     "en": "Helpers: mass, position, playing state, server type, chat and toasts",
@@ -1691,7 +2171,11 @@
     "de": "Helfer: Masse, Position, Spielstatus, Servertyp, Chat und Toasts",
     "tr": "Yardımcılar: kütle, konum, oyun durumu, sunucu türü, sohbet ve bildirimler",
     "pl": "Funkcje pomocnicze: masa, pozycja, stan gry, typ serwera, czat i powiadomienia",
-    "nl": "Helpers: massa, positie, speelstatus, servertype, chat en toasts"
+    "nl": "Helpers: massa, positie, speelstatus, servertype, chat en toasts",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.aFailingScriptNever": {
     "en": "A failing script never breaks the game",
@@ -1705,7 +2189,11 @@
     "de": "Ein fehlerhaftes Script macht nie das Spiel kaputt",
     "tr": "Hata veren bir betik oyunu asla bozmaz",
     "pl": "Wadliwy skrypt nigdy nie psuje gry",
-    "nl": "Een script dat faalt, breekt de game nooit"
+    "nl": "Een script dat faalt, breekt de game nooit",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.readTheLmeventsGuide": {
     "en": "Read the LMEvents guide",
@@ -1719,7 +2207,11 @@
     "de": "Lies den LMEvents-Guide",
     "tr": "LMEvents rehberini okuyun",
     "pl": "Przeczytaj przewodnik po LMEvents",
-    "nl": "Lees de LMEvents-handleiding"
+    "nl": "Lees de LMEvents-handleiding",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.mapRotation": {
     "en": "Map Rotation",
@@ -1733,7 +2225,11 @@
     "de": "Map-Rotation",
     "tr": "Harita Döndürme",
     "pl": "Obrót mapy",
-    "nl": "Maprotatie"
+    "nl": "Maprotatie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.uniqueMapRotationSystem": {
     "en": "Unique map rotation system for tactical advantage.",
@@ -1747,7 +2243,11 @@
     "de": "Einzigartiges Map-Rotationssystem für taktische Vorteile.",
     "tr": "Taktik avantaj için benzersiz harita döndürme sistemi.",
     "pl": "Unikalny system obrotu mapy dający przewagę taktyczną.",
-    "nl": "Uniek maprotatiesysteem voor tactisch voordeel."
+    "nl": "Uniek maprotatiesysteem voor tactisch voordeel.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.rotateTheEntireGame": {
     "en": "Rotate the entire game map",
@@ -1761,7 +2261,11 @@
     "de": "Dreh die gesamte Spielkarte",
     "tr": "Tüm oyun haritasını döndürün",
     "pl": "Obracaj całą mapę gry",
-    "nl": "Draai de hele gamemap"
+    "nl": "Draai de hele gamemap",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.flipAxesForMirrored": {
     "en": "Flip axes for mirrored view",
@@ -1775,7 +2279,11 @@
     "de": "Spiegle die Achsen für eine gespiegelte Ansicht",
     "tr": "Ayna görünümü için eksenleri çevirin",
     "pl": "Odwracaj osie dla widoku lustrzanego",
-    "nl": "Spiegel de assen voor een gespiegeld beeld"
+    "nl": "Spiegel de assen voor een gespiegeld beeld",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.smoothCoordinateTranslation": {
     "en": "Smooth coordinate translation",
@@ -1789,7 +2297,11 @@
     "de": "Flüssige Koordinatenumrechnung",
     "tr": "Akıcı koordinat dönüşümü",
     "pl": "Płynne przeliczanie współrzędnych",
-    "nl": "Vloeiende omrekening van coördinaten"
+    "nl": "Vloeiende omrekening van coördinaten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.worksWithAllOverlays": {
     "en": "Works with all overlays",
@@ -1803,7 +2315,11 @@
     "de": "Funktioniert mit allen Overlays",
     "tr": "Tüm katmanlarla çalışır",
     "pl": "Działa ze wszystkimi nakładkami",
-    "nl": "Werkt met alle overlays"
+    "nl": "Werkt met alle overlays",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.freeOpenSource": {
     "en": "100% Free & Open Source",
@@ -1817,7 +2333,11 @@
     "de": "100 % kostenlos & Open Source",
     "tr": "%100 Ücretsiz ve Açık Kaynak",
     "pl": "100% darmowy i open source",
-    "nl": "100% gratis & open source"
+    "nl": "100% gratis & open source",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.noPremiumTierNo": {
     "en": "No premium tier, no ads, no tracking.",
@@ -1831,7 +2351,11 @@
     "de": "Keine Premium-Stufe, keine Werbung, kein Tracking.",
     "tr": "Premium paket yok, reklam yok, takip yok.",
     "pl": "Bez wersji premium, bez reklam, bez śledzenia.",
-    "nl": "Geen premiumversie, geen advertenties, geen tracking."
+    "nl": "Geen premiumversie, geen advertenties, geen tracking.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.freeForeverNoHidden": {
     "en": "Free forever — no hidden fees",
@@ -1845,7 +2369,11 @@
     "de": "Für immer kostenlos – keine versteckten Kosten",
     "tr": "Sonsuza dek ücretsiz, gizli ücret yok",
     "pl": "Darmowy na zawsze — bez ukrytych opłat",
-    "nl": "Voor altijd gratis — geen verborgen kosten"
+    "nl": "Voor altijd gratis — geen verborgen kosten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.fullSourceCodeOn": {
     "en": "Full source code on GitHub",
@@ -1859,7 +2387,11 @@
     "de": "Kompletter Quellcode auf GitHub",
     "tr": "Kaynak kodunun tamamı GitHub'da",
     "pl": "Pełny kod źródłowy na GitHub",
-    "nl": "Volledige broncode op GitHub"
+    "nl": "Volledige broncode op GitHub",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.communityDrivenDevelopment": {
     "en": "Community-driven development",
@@ -1873,7 +2405,11 @@
     "de": "Community-getriebene Entwicklung",
     "tr": "Topluluk odaklı geliştirme",
     "pl": "Rozwój napędzany przez społeczność",
-    "nl": "Ontwikkeling gedreven door de community"
+    "nl": "Ontwikkeling gedreven door de community",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.chromeEdgeFirefoxMobile": {
     "en": "Chrome, Edge, Firefox, mobile",
@@ -1887,7 +2423,11 @@
     "de": "Chrome, Edge, Firefox, mobil",
     "tr": "Chrome, Edge, Firefox, mobil",
     "pl": "Chrome, Edge, Firefox, telefony",
-    "nl": "Chrome, Edge, Firefox, mobiel"
+    "nl": "Chrome, Edge, Firefox, mobiel",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.features.regularUpdates": {
     "en": "Regular updates",
@@ -1901,6 +2441,10 @@
     "de": "Regelmäßige Updates",
     "tr": "Düzenli güncellemeler",
     "pl": "Regularne aktualizacje",
-    "nl": "Regelmatige updates"
+    "nl": "Regelmatige updates",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

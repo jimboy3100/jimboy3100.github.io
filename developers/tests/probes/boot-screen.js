@@ -17,7 +17,7 @@
   var lm = 0;
   try { lm = parseInt(localStorage.getItem('languagemod'), 10) || 0; } catch (e) { }
   info.lang = window._lmBootLang;
-  if (!(window._lmBootLang >= 1 && window._lmBootLang <= 12)) fail.push('loading screen language not set (' + window._lmBootLang + ')');
-  else if (lm >= 1 && lm <= 12 && window._lmBootLang !== lm) fail.push('loading screen language ' + window._lmBootLang + ', chosen ' + lm);
+  if (!(window._lmBootLang >= 1 && window._lmBootLang <= 16)) fail.push('loading screen language not set (' + window._lmBootLang + ')');
+  else if (lm >= 1 && lm <= 16 && window._lmBootLang !== lm) fail.push('loading screen language ' + window._lmBootLang + ', chosen ' + lm);
   return { fail: fail, info: info };
 })()

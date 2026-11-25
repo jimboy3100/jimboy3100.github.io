@@ -11,7 +11,11 @@
     "de": "Sprache",
     "tr": "Dil",
     "pl": "Język",
-    "nl": "Taal"
+    "nl": "Taal",
+    "pt": "Idioma",
+    "id": "Bahasa",
+    "ja": "言語",
+    "it": "Lingua"
   },
   "site.home": {
     "en": "Home",
@@ -25,7 +29,11 @@
     "de": "Startseite",
     "tr": "Ana Sayfa",
     "pl": "Strona główna",
-    "nl": "Home"
+    "nl": "Home",
+    "pt": "Início",
+    "id": "Beranda",
+    "ja": "ホーム",
+    "it": "Home"
   },
   "site.features": {
     "en": "Features",
@@ -39,7 +47,11 @@
     "de": "Funktionen",
     "tr": "Özellikler",
     "pl": "Funkcje",
-    "nl": "Functies"
+    "nl": "Functies",
+    "pt": "Recursos",
+    "id": "Fitur",
+    "ja": "機能",
+    "it": "Funzionalità"
   },
   "site.compare": {
     "en": "Compare",
@@ -53,7 +65,11 @@
     "de": "Vergleich",
     "tr": "Karşılaştır",
     "pl": "Porównanie",
-    "nl": "Vergelijken"
+    "nl": "Vergelijken",
+    "pt": "Comparar",
+    "id": "Bandingkan",
+    "ja": "比較",
+    "it": "Confronta"
   },
   "site.macroGuide": {
     "en": "Macro Guide",
@@ -67,7 +83,11 @@
     "de": "Makro-Guide",
     "tr": "Makro Rehberi",
     "pl": "Poradnik makr",
-    "nl": "Macrogids"
+    "nl": "Macrogids",
+    "pt": "Guia de macros",
+    "id": "Panduan makro",
+    "ja": "マクロガイド",
+    "it": "Guida alle macro"
   },
   "site.changelog": {
     "en": "Changelog",
@@ -81,7 +101,11 @@
     "de": "Changelog",
     "tr": "Değişiklik Günlüğü",
     "pl": "Lista zmian",
-    "nl": "Changelog"
+    "nl": "Changelog",
+    "pt": "Histórico de alterações",
+    "id": "Catatan perubahan",
+    "ja": "変更履歴",
+    "it": "Registro modifiche"
   },
   "site.skins": {
     "en": "Skins",
@@ -95,7 +119,11 @@
     "de": "Skins",
     "tr": "Skinler",
     "pl": "Skiny",
-    "nl": "Skins"
+    "nl": "Skins",
+    "pt": "Skins",
+    "id": "Skin",
+    "ja": "スキン",
+    "it": "Skin"
   },
   "site.themes": {
     "en": "Themes",
@@ -109,7 +137,11 @@
     "de": "Themes",
     "tr": "Temalar",
     "pl": "Motywy",
-    "nl": "Thema's"
+    "nl": "Thema's",
+    "pt": "Temas",
+    "id": "Tema",
+    "ja": "テーマ",
+    "it": "Temi"
   },
   "site.skinRotator": {
     "en": "Skin Rotator",
@@ -123,7 +155,11 @@
     "de": "Skin Rotator",
     "tr": "Skin Rotator",
     "pl": "Skin Rotator",
-    "nl": "Skin Rotator"
+    "nl": "Skin Rotator",
+    "pt": "Rotador de skins",
+    "id": "Rotator skin",
+    "ja": "スキン切り替え",
+    "it": "Rotazione skin"
   },
   "site.developers": {
     "en": "Developers",
@@ -137,7 +173,11 @@
     "de": "Entwickler",
     "tr": "Geliştiriciler",
     "pl": "Deweloperzy",
-    "nl": "Ontwikkelaars"
+    "nl": "Ontwikkelaars",
+    "pt": "Desenvolvedores",
+    "id": "Pengembang",
+    "ja": "開発者",
+    "it": "Sviluppatori"
   },
   "site.privacy": {
     "en": "Privacy",
@@ -151,7 +191,11 @@
     "de": "Datenschutz",
     "tr": "Gizlilik",
     "pl": "Prywatność",
-    "nl": "Privacy"
+    "nl": "Privacy",
+    "pt": "Privacidade",
+    "id": "Privasi",
+    "ja": "プライバシー",
+    "it": "Privacy"
   },
   "site.terms": {
     "en": "Terms",
@@ -165,7 +209,11 @@
     "de": "Nutzungsbedingungen",
     "tr": "Koşullar",
     "pl": "Regulamin",
-    "nl": "Voorwaarden"
+    "nl": "Voorwaarden",
+    "pt": "Termos",
+    "id": "Ketentuan",
+    "ja": "利用規約",
+    "it": "Termini"
   },
   "site.close": {
     "en": "Close",
@@ -179,7 +227,11 @@
     "de": "Schließen",
     "tr": "Kapat",
     "pl": "Zamknij",
-    "nl": "Sluiten"
+    "nl": "Sluiten",
+    "pt": "Fechar",
+    "id": "Tutup",
+    "ja": "閉じる",
+    "it": "Chiudi"
   },
   "site.downloadFree": {
     "en": "⬇ Download Legend Mod — Free",
@@ -193,7 +245,11 @@
     "de": "⬇ Legend Mod herunterladen – kostenlos",
     "tr": "⬇ Legend Mod'u İndir — Ücretsiz",
     "pl": "⬇ Pobierz Legend Mod — za darmo",
-    "nl": "⬇ Download Legend Mod — gratis"
+    "nl": "⬇ Download Legend Mod — gratis",
+    "pt": "⬇ Baixar Legend Mod — Grátis",
+    "id": "⬇ Unduh Legend Mod — Gratis",
+    "ja": "⬇ Legend Modを無料ダウンロード",
+    "it": "⬇ Scarica Legend Mod — Gratis"
   },
   "site.copyright": {
     "en": "© 2024–2026 Legend Mod by ℄ Legend Clan. Free and open source.",
@@ -207,7 +263,11 @@
     "de": "© 2024–2026 Legend Mod von ℄ Legend Clan. Kostenlos und Open Source.",
     "tr": "© 2024–2026 Legend Mod, ℄ Legend Clan tarafından. Ücretsiz ve açık kaynak.",
     "pl": "© 2024–2026 Legend Mod od ℄ Legend Clan. Darmowy i open source.",
-    "nl": "© 2024–2026 Legend Mod door ℄ Legend Clan. Gratis en open source."
+    "nl": "© 2024–2026 Legend Mod door ℄ Legend Clan. Gratis en open source.",
+    "pt": "© 2024–2026 Legend Mod por ℄ Legend Clan. Gratuito e de código aberto.",
+    "id": "© 2024–2026 Legend Mod oleh ℄ Legend Clan. Gratis dan sumber terbuka.",
+    "ja": "© 2024–2026 ℄ Legend ClanによるLegend Mod。無料・オープンソース。",
+    "it": "© 2024–2026 Legend Mod di ℄ Legend Clan. Gratuito e open source."
   },
   "site.footerProject": {
     "en": "© 2026 Legend Mod Project",
@@ -221,7 +281,11 @@
     "de": "© 2026 Legend Mod Project",
     "tr": "© 2026 Legend Mod Projesi",
     "pl": "© 2026 Legend Mod Project",
-    "nl": "© 2026 Legend Mod Project"
+    "nl": "© 2026 Legend Mod Project",
+    "pt": "© 2026 Projeto Legend Mod",
+    "id": "© 2026 Proyek Legend Mod",
+    "ja": "© 2026 Legend Modプロジェクト",
+    "it": "© 2026 Progetto Legend Mod"
   },
   "site.restoreTheme": {
     "en": "Restore website theme",
@@ -235,6 +299,10 @@
     "de": "Website-Design wiederherstellen",
     "tr": "Site temasını geri yükle",
     "pl": "Przywróć motyw strony",
-    "nl": "Websitethema herstellen"
+    "nl": "Websitethema herstellen",
+    "pt": "Restaurar tema do site",
+    "id": "Pulihkan tema situs",
+    "ja": "サイトのテーマを復元",
+    "it": "Ripristina tema del sito"
   }
 }

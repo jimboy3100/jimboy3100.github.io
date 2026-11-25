@@ -34094,7 +34094,7 @@ function initializeLM(modVersion) {
         '<input id="yt6url" class="form-control" placeholder="Youtube Message Url 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
         '</div></div>' +
 
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://www.legendmod.ml/languages/LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="">Choose Language:  </span>' +
         '<select id="legendlanguages" class="form-control" onchange="changeModLanguage();" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
         '<option value="1" data-itr="" selected>English</option>' +
         '<option value="6" data-itr="">Arabic</option>' +

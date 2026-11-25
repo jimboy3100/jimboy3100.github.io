@@ -11,7 +11,11 @@
     "de": "Kombi-Name",
     "tr": "Kombo isim",
     "pl": "Nick łączony",
-    "nl": "Combinatienaam"
+    "nl": "Combinatienaam",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.nicks.urbanName": {
     "en": "Urban Name",
@@ -25,7 +29,11 @@
     "de": "Urban-Name",
     "tr": "Urban isim",
     "pl": "Nick w stylu urban",
-    "nl": "Urban naam"
+    "nl": "Urban naam",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.nicks.startTypingYourNick": {
     "en": "Start typing your Nick...",
@@ -39,7 +47,11 @@
     "de": "Fang an, deinen Nick zu tippen...",
     "tr": "Takma adını yazmaya başla...",
     "pl": "Zacznij wpisywać swój nick...",
-    "nl": "Begin met het typen van je nick..."
+    "nl": "Begin met het typen van je nick...",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.nicks.failedToGenerateName": {
     "en": "Failed to generate name",
@@ -53,6 +65,10 @@
     "de": "Name konnte nicht erzeugt werden",
     "tr": "İsim oluşturulamadı",
     "pl": "Nie udało się wygenerować nicku",
-    "nl": "Naam genereren mislukt"
+    "nl": "Naam genereren mislukt",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

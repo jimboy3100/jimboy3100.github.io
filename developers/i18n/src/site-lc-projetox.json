@@ -11,7 +11,11 @@
     "de": "Legend Clan Logo",
     "tr": "Legend Clan Logosu",
     "pl": "Logo Legend Clan",
-    "nl": "Logo van Legend Clan"
+    "nl": "Logo van Legend Clan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.home": {
     "en": "Home",
@@ -25,7 +29,11 @@
     "de": "Start",
     "tr": "Ana Sayfa",
     "pl": "Start",
-    "nl": "Home"
+    "nl": "Home",
+    "pt": "Início",
+    "id": "Beranda",
+    "ja": "ホーム",
+    "it": "Home"
   },
   "site.lc.projetox.members": {
     "en": "Members",
@@ -39,7 +47,11 @@
     "de": "Mitglieder",
     "tr": "Üyeler",
     "pl": "Członkowie",
-    "nl": "Leden"
+    "nl": "Leden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.about": {
     "en": "About",
@@ -53,7 +65,11 @@
     "de": "Über uns",
     "tr": "Hakkında",
     "pl": "O nas",
-    "nl": "Over"
+    "nl": "Over",
+    "pt": "Sobre",
+    "id": "Tentang",
+    "ja": "概要",
+    "it": "Informazioni"
   },
   "site.lc.projetox.media": {
     "en": "Media",
@@ -67,7 +83,11 @@
     "de": "Medien",
     "tr": "Medya",
     "pl": "Media",
-    "nl": "Media"
+    "nl": "Media",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.information": {
     "en": "Information",
@@ -81,7 +101,11 @@
     "de": "Infos",
     "tr": "Bilgi",
     "pl": "Informacje",
-    "nl": "Informatie"
+    "nl": "Informatie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.projects": {
     "en": "Projects",
@@ -95,7 +119,11 @@
     "de": "Projekte",
     "tr": "Projeler",
     "pl": "Projekty",
-    "nl": "Projecten"
+    "nl": "Projecten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.updates": {
     "en": "Updates",
@@ -109,7 +137,11 @@
     "de": "Updates",
     "tr": "Güncellemeler",
     "pl": "Aktualności",
-    "nl": "Updates"
+    "nl": "Updates",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.officialClanTitle": {
     "en": "LEGEND OFFICIAL CLAN ℄C",
@@ -123,7 +155,11 @@
     "de": "LEGEND OFFIZIELLER CLAN ℄C",
     "tr": "LEGEND RESMİ KLANI ℄C",
     "pl": "LEGEND - OFICJALNY KLAN ℄C",
-    "nl": "LEGEND OFFICIËLE CLAN ℄C"
+    "nl": "LEGEND OFFICIËLE CLAN ℄C",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.officialAgarClan": {
     "en": "Official Agar.io clan",
@@ -137,7 +173,11 @@
     "de": "Offizieller Agar.io-Clan",
     "tr": "Resmi Agar.io klanı",
     "pl": "Oficjalny klan Agar.io",
-    "nl": "Officiële Agar.io-clan"
+    "nl": "Officiële Agar.io-clan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.membersOnlineDiscord": {
     "en": "Members online<br /> Discord",
@@ -151,7 +191,11 @@
     "de": "Mitglieder online<br /> Discord",
     "tr": "Çevrimiçi üyeler<br /> Discord",
     "pl": "Członkowie online<br /> Discord",
-    "nl": "Leden online<br /> Discord"
+    "nl": "Leden online<br /> Discord",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.howToUseSite": {
     "en": "HOW TO USE THE SITE",
@@ -165,7 +209,11 @@
     "de": "SO NUTZT DU DIE WEBSITE",
     "tr": "SİTE NASIL KULLANILIR",
     "pl": "JAK KORZYSTAĆ ZE STRONY",
-    "nl": "ZO GEBRUIK JE DE SITE"
+    "nl": "ZO GEBRUIK JE DE SITE",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.clickHere": {
     "en": "Click here",
@@ -179,7 +227,11 @@
     "de": "Klicke hier",
     "tr": "Buraya tıkla",
     "pl": "Kliknij tutaj",
-    "nl": "Klik hier"
+    "nl": "Klik hier",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutUs": {
     "en": "About us",
@@ -193,7 +245,11 @@
     "de": "Über uns",
     "tr": "Hakkımızda",
     "pl": "O nas",
-    "nl": "Over ons"
+    "nl": "Over ons",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutTitle": {
     "en": "Legend Clan — About us 🔥",
@@ -207,7 +263,11 @@
     "de": "Legend Clan — Über uns 🔥",
     "tr": "Legend Clan — Hakkımızda 🔥",
     "pl": "Legend Clan — O nas 🔥",
-    "nl": "Legend Clan — Over ons 🔥"
+    "nl": "Legend Clan — Over ons 🔥",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutText1": {
     "en": "This is the official space for Legend Clan LC's social networks and announcements.",
@@ -221,7 +281,11 @@
     "de": "Das ist der offizielle Ort für die sozialen Netzwerke und Ankündigungen von Legend Clan LC.",
     "tr": "Burası Legend Clan LC'nin sosyal ağları ve duyuruları için resmi alan.",
     "pl": "To oficjalne miejsce mediów społecznościowych i ogłoszeń Legend Clan LC.",
-    "nl": "Dit is de officiële plek voor de sociale netwerken en aankondigingen van Legend Clan LC."
+    "nl": "Dit is de officiële plek voor de sociale netwerken en aankondigingen van Legend Clan LC.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutText2": {
     "en": "Here you will find all the essential information about the clan, including official announcements, internal rules, events, achievements and the historical records of our journey.",
@@ -235,7 +299,11 @@
     "de": "Hier findest du alle wichtigen Infos zum Clan, darunter offizielle Ankündigungen, interne Regeln, Events, Erfolge und die Chronik unseres Weges.",
     "tr": "Burada resmi duyurular, iç kurallar, etkinlikler, başarılar ve yolculuğumuzun tarihi kayıtları dahil klanla ilgili tüm temel bilgileri bulacaksın.",
     "pl": "Znajdziesz tu wszystkie najważniejsze informacje o klanie, w tym oficjalne ogłoszenia, wewnętrzne zasady, wydarzenia, osiągnięcia i historyczne zapisy naszej drogi.",
-    "nl": "Hier vind je alle belangrijke info over de clan, waaronder officiële aankondigingen, interne regels, events, prestaties en de geschiedenis van onze reis."
+    "nl": "Hier vind je alle belangrijke info over de clan, waaronder officiële aankondigingen, interne regels, events, prestaties en de geschiedenis van onze reis.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutHistory": {
     "en": "📜 History and archives: follow the evolution of Legend Clan LC through our public archives, where we gather articles, guides, timelines and exclusive content.",
@@ -249,7 +317,11 @@
     "de": "📜 Geschichte und Archiv: Verfolge die Entwicklung von Legend Clan LC in unserem öffentlichen Archiv mit Artikeln, Guides, Zeitleisten und exklusiven Inhalten.",
     "tr": "📜 Tarihçe ve arşivler: makaleleri, rehberleri, zaman çizelgelerini ve özel içerikleri topladığımız herkese açık arşivlerimizden Legend Clan LC'nin gelişimini takip et.",
     "pl": "📜 Historia i archiwa: śledź rozwój Legend Clan LC w naszych publicznych archiwach, gdzie zbieramy artykuły, poradniki, osie czasu i ekskluzywne treści.",
-    "nl": "📜 Geschiedenis en archief: volg de ontwikkeling van Legend Clan LC via ons openbare archief, waar we artikelen, gidsen, tijdlijnen en exclusieve content verzamelen."
+    "nl": "📜 Geschiedenis en archief: volg de ontwikkeling van Legend Clan LC via ons openbare archief, waar we artikelen, gidsen, tijdlijnen en exclusieve content verzamelen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutLinks": {
     "en": "The links are always available in the matching posts.",
@@ -263,7 +335,11 @@
     "de": "Die Links findest du immer in den passenden Beiträgen.",
     "tr": "Bağlantılar her zaman ilgili gönderilerde mevcut.",
     "pl": "Linki są zawsze dostępne w odpowiednich postach.",
-    "nl": "De links staan altijd in de bijbehorende posts."
+    "nl": "De links staan altijd in de bijbehorende posts.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutRules": {
     "en": "⚔️ Rules and ethics: we value respect, loyalty and team spirit.",
@@ -277,7 +353,11 @@
     "de": "⚔️ Regeln und Ethik: Uns sind Respekt, Loyalität und Teamgeist wichtig.",
     "tr": "⚔️ Kurallar ve etik: saygıya, sadakate ve takım ruhuna önem veriyoruz.",
     "pl": "⚔️ Zasady i etyka: cenimy szacunek, lojalność i ducha drużyny.",
-    "nl": "⚔️ Regels en ethiek: we hechten aan respect, loyaliteit en teamgeest."
+    "nl": "⚔️ Regels en ethiek: we hechten aan respect, loyaliteit en teamgeest.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutFairPlay": {
     "en": "Fair play is mandatory for all members. Any breach of the rules can lead to warnings or, in more serious cases, expulsion from the clan.",
@@ -291,7 +371,11 @@
     "de": "Fairplay ist für alle Mitglieder Pflicht. Jeder Regelverstoß kann zu Verwarnungen oder in schweren Fällen zum Ausschluss aus dem Clan führen.",
     "tr": "Fair play tüm üyeler için zorunludur. Kuralların ihlali uyarıyla ya da daha ciddi durumlarda klandan atılmayla sonuçlanabilir.",
     "pl": "Fair play obowiązuje wszystkich członków. Każde złamanie zasad może skończyć się ostrzeżeniem, a w poważniejszych przypadkach wyrzuceniem z klanu.",
-    "nl": "Fair play is verplicht voor alle leden. Elke overtreding van de regels kan leiden tot waarschuwingen of, in ernstigere gevallen, verwijdering uit de clan."
+    "nl": "Fair play is verplicht voor alle leden. Elke overtreding van de regels kan leiden tot waarschuwingen of, in ernstigere gevallen, verwijdering uit de clan.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutAnnouncements": {
     "en": "📢 Announcements and events: watch the official announcements so you don't miss events, important updates and the clan's administrative decisions.",
@@ -305,7 +389,11 @@
     "de": "📢 Ankündigungen und Events: Behalte die offiziellen Ankündigungen im Blick, damit du keine Events, wichtigen Updates und Entscheidungen der Clan-Leitung verpasst.",
     "tr": "📢 Duyurular ve etkinlikler: etkinlikleri, önemli güncellemeleri ve klanın yönetim kararlarını kaçırmamak için resmi duyuruları takip et.",
     "pl": "📢 Ogłoszenia i wydarzenia: śledź oficjalne ogłoszenia, żeby nie przegapić wydarzeń, ważnych aktualizacji i decyzji administracyjnych klanu.",
-    "nl": "📢 Aankondigingen en events: volg de officiële aankondigingen, zodat je geen events, belangrijke updates en bestuurlijke beslissingen van de clan mist."
+    "nl": "📢 Aankondigingen en events: volg de officiële aankondigingen, zodat je geen events, belangrijke updates en bestuurlijke beslissingen van de clan mist.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.aboutContact": {
     "en": "💬 Contact and support: for questions, support or administrative matters, contact us on our official Discord or send a message directly to the administrators.",
@@ -319,7 +407,11 @@
     "de": "💬 Kontakt und Support: Bei Fragen, für Support oder organisatorische Anliegen kontaktiere uns auf unserem offiziellen Discord oder schreib den Administratoren direkt.",
     "tr": "💬 İletişim ve destek: sorular, destek veya yönetimsel konular için resmi Discord'umuzdan bize ulaş ya da doğrudan yöneticilere mesaj gönder.",
     "pl": "💬 Kontakt i wsparcie: z pytaniami, prośbą o pomoc lub w sprawach administracyjnych skontaktuj się z nami na oficjalnym Discordzie albo napisz bezpośrednio do administratorów.",
-    "nl": "💬 Contact en support: voor vragen, support of bestuurlijke zaken neem je contact met ons op via onze officiële Discord of stuur je direct een bericht naar de beheerders."
+    "nl": "💬 Contact en support: voor vragen, support of bestuurlijke zaken neem je contact met ons op via onze officiële Discord of stuur je direct een bericht naar de beheerders.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.gameplayPhotos": {
     "en": "Gameplay photos",
@@ -333,7 +425,11 @@
     "de": "Gameplay-Fotos",
     "tr": "Oyun fotoğrafları",
     "pl": "Zdjęcia z rozgrywek",
-    "nl": "Gameplayfoto's"
+    "nl": "Gameplayfoto's",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.contractedPlayers": {
     "en": "Profiles of the players we have signed",
@@ -347,7 +443,11 @@
     "de": "Profile unserer unter Vertrag genommenen Spieler",
     "tr": "Anlaştığımız oyuncuların profilleri",
     "pl": "Profile graczy, z którymi podpisaliśmy kontrakty",
-    "nl": "Profielen van de spelers die we hebben gecontracteerd"
+    "nl": "Profielen van de spelers die we hebben gecontracteerd",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.assistants": {
     "en": "Assistants",
@@ -361,7 +461,11 @@
     "de": "Assistenten",
     "tr": "Asistanlar",
     "pl": "Asystenci",
-    "nl": "Assistenten"
+    "nl": "Assistenten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.moddersDevelopers": {
     "en": "Modders and developers",
@@ -375,7 +479,11 @@
     "de": "Modder und Entwickler",
     "tr": "Modcular ve geliştiriciler",
     "pl": "Modderzy i deweloperzy",
-    "nl": "Modders en developers"
+    "nl": "Modders en developers",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.clickToViewProjects": {
     "en": "Click here to view the projects",
@@ -389,7 +497,11 @@
     "de": "Klicke hier, um die Projekte anzusehen",
     "tr": "Projeleri görmek için buraya tıkla",
     "pl": "Kliknij tutaj, aby zobaczyć projekty",
-    "nl": "Klik hier om de projecten te bekijken"
+    "nl": "Klik hier om de projecten te bekijken",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.redFireImage": {
     "en": "Red fire image",
@@ -403,7 +515,11 @@
     "de": "Bild mit rotem Feuer",
     "tr": "Kırmızı ateş görseli",
     "pl": "Obraz czerwonego ognia",
-    "nl": "Afbeelding van rood vuur"
+    "nl": "Afbeelding van rood vuur",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.newMemberPromotion": {
     "en": "New member promotion",
@@ -417,7 +533,11 @@
     "de": "Neue Mitglieder-Beförderungen",
     "tr": "Yeni üye terfileri",
     "pl": "Awans nowych członków",
-    "nl": "Nieuwe promoties van leden"
+    "nl": "Nieuwe promoties van leden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.clickToSeeMore": {
     "en": "Click here to see more",
@@ -431,7 +551,11 @@
     "de": "Klicke hier für mehr",
     "tr": "Daha fazlası için buraya tıkla",
     "pl": "Kliknij tutaj, aby zobaczyć więcej",
-    "nl": "Klik hier voor meer"
+    "nl": "Klik hier voor meer",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.clanLoyalty": {
     "en": "Clan loyalty",
@@ -445,7 +569,11 @@
     "de": "Clan-Loyalität",
     "tr": "Klan sadakati",
     "pl": "Lojalność wobec klanu",
-    "nl": "Clanloyaliteit"
+    "nl": "Clanloyaliteit",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.senpaiRule": {
     "en": "Senpai rule",
@@ -459,7 +587,11 @@
     "de": "Senpai-Regel",
     "tr": "Senpai kuralı",
     "pl": "Zasada Senpai",
-    "nl": "Senpai-regel"
+    "nl": "Senpai-regel",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.clanRules": {
     "en": "Rules about the clan",
@@ -473,7 +605,11 @@
     "de": "Regeln zum Clan",
     "tr": "Klan kuralları",
     "pl": "Zasady dotyczące klanu",
-    "nl": "Regels over de clan"
+    "nl": "Regels over de clan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.lcRules": {
     "en": "LC rules",
@@ -487,7 +623,11 @@
     "de": "LC-Regeln",
     "tr": "LC kuralları",
     "pl": "Zasady LC",
-    "nl": "LC-regels"
+    "nl": "LC-regels",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.strategyTips": {
     "en": "Strategy tips",
@@ -501,7 +641,11 @@
     "de": "Strategie-Tipps",
     "tr": "Strateji ipuçları",
     "pl": "Porady strategiczne",
-    "nl": "Strategietips"
+    "nl": "Strategietips",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.thanks": {
     "en": "Acknowledgements",
@@ -515,7 +659,11 @@
     "de": "Danksagungen",
     "tr": "Teşekkürler",
     "pl": "Podziękowania",
-    "nl": "Dankwoord"
+    "nl": "Dankwoord",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.lcMemberRules": {
     "en": "Rules for LC members",
@@ -529,7 +677,11 @@
     "de": "Regeln für LC-Mitglieder",
     "tr": "LC üyeleri için kurallar",
     "pl": "Zasady dla członków LC",
-    "nl": "Regels voor LC-leden"
+    "nl": "Regels voor LC-leden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.form": {
     "en": "Form",
@@ -543,7 +695,11 @@
     "de": "Formular",
     "tr": "Form",
     "pl": "Formularz",
-    "nl": "Formulier"
+    "nl": "Formulier",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.name": {
     "en": "Name",
@@ -557,7 +713,11 @@
     "de": "Name",
     "tr": "İsim",
     "pl": "Imię",
-    "nl": "Naam"
+    "nl": "Naam",
+    "pt": "Nome",
+    "id": "Nama",
+    "ja": "名前",
+    "it": "Nome"
   },
   "site.lc.projetox.nuclearain": {
     "note": "a name, address or code: the same in every language",
@@ -572,7 +732,11 @@
     "de": "Nuclearain..",
     "tr": "Nuclearain..",
     "pl": "Nuclearain..",
-    "nl": "Nuclearain.."
+    "nl": "Nuclearain..",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.email": {
     "en": "Email",
@@ -586,7 +750,11 @@
     "de": "E-Mail",
     "tr": "E-posta",
     "pl": "E-mail",
-    "nl": "E-mail"
+    "nl": "E-mail",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.legendclanGmailCom": {
     "note": "a name, address or code: the same in every language",
@@ -601,7 +769,11 @@
     "de": "LegendClan@gmail.com",
     "tr": "LegendClan@gmail.com",
     "pl": "LegendClan@gmail.com",
-    "nl": "LegendClan@gmail.com"
+    "nl": "LegendClan@gmail.com",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.message": {
     "en": "Message",
@@ -615,7 +787,11 @@
     "de": "Nachricht",
     "tr": "Mesaj",
     "pl": "Wiadomość",
-    "nl": "Bericht"
+    "nl": "Bericht",
+    "pt": "Mensagem",
+    "id": "Pesan",
+    "ja": "メッセージ",
+    "it": "Messaggio"
   },
   "site.lc.projetox.chooseFile": {
     "en": "📁 Choose file",
@@ -629,7 +805,11 @@
     "de": "📁 Datei auswählen",
     "tr": "📁 Dosya seç",
     "pl": "📁 Wybierz plik",
-    "nl": "📁 Kies bestand"
+    "nl": "📁 Kies bestand",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.noFileChosen": {
     "en": "No file chosen",
@@ -643,7 +823,11 @@
     "de": "Keine Datei ausgewählt",
     "tr": "Dosya seçilmedi",
     "pl": "Nie wybrano pliku",
-    "nl": "Geen bestand gekozen"
+    "nl": "Geen bestand gekozen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.send": {
     "en": "Send",
@@ -657,7 +841,11 @@
     "de": "Senden",
     "tr": "Gönder",
     "pl": "Wyślij",
-    "nl": "Versturen"
+    "nl": "Versturen",
+    "pt": "Enviar",
+    "id": "Kirim",
+    "ja": "送信",
+    "it": "Invia"
   },
   "site.lc.projetox.delete": {
     "en": "Delete",
@@ -671,7 +859,11 @@
     "de": "Löschen",
     "tr": "Sil",
     "pl": "Usuń",
-    "nl": "Verwijderen"
+    "nl": "Verwijderen",
+    "pt": "Excluir",
+    "id": "Hapus",
+    "ja": "削除",
+    "it": "Elimina"
   },
   "site.lc.projetox.menu": {
     "en": "Menu",
@@ -685,7 +877,11 @@
     "de": "Menü",
     "tr": "Menü",
     "pl": "Menu",
-    "nl": "Menu"
+    "nl": "Menu",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.homePage": {
     "en": "Home page",
@@ -699,7 +895,11 @@
     "de": "Startseite",
     "tr": "Ana sayfa",
     "pl": "Strona główna",
-    "nl": "Startpagina"
+    "nl": "Startpagina",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.photoGallery": {
     "en": "Photo gallery",
@@ -713,7 +913,11 @@
     "de": "Fotogalerie",
     "tr": "Fotoğraf galerisi",
     "pl": "Galeria zdjęć",
-    "nl": "Fotogalerij"
+    "nl": "Fotogalerij",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.contactUs": {
     "en": "Contact us",
@@ -727,7 +931,11 @@
     "de": "Kontaktiere uns",
     "tr": "Bize ulaş",
     "pl": "Kontakt",
-    "nl": "Neem contact op"
+    "nl": "Neem contact op",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.legendclanoficialGmailCom": {
     "note": "a name, address or code: the same in every language",
@@ -742,7 +950,11 @@
     "de": "<i class=\"icon icon-mail\"></i>legendclanOficial@Gmail.com",
     "tr": "<i class=\"icon icon-mail\"></i>legendclanOficial@Gmail.com",
     "pl": "<i class=\"icon icon-mail\"></i>legendclanOficial@Gmail.com",
-    "nl": "<i class=\"icon icon-mail\"></i>legendclanOficial@Gmail.com"
+    "nl": "<i class=\"icon icon-mail\"></i>legendclanOficial@Gmail.com",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.socialNetworks": {
     "en": "Social networks",
@@ -756,7 +968,11 @@
     "de": "Soziale Netzwerke",
     "tr": "Sosyal ağlar",
     "pl": "Media społecznościowe",
-    "nl": "Sociale netwerken"
+    "nl": "Sociale netwerken",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.instagram": {
     "note": "a name, address or code: the same in every language",
@@ -771,7 +987,11 @@
     "de": "<i class=\"icon icon-instagram\"></i>Instagram",
     "tr": "<i class=\"icon icon-instagram\"></i>Instagram",
     "pl": "<i class=\"icon icon-instagram\"></i>Instagram",
-    "nl": "<i class=\"icon icon-instagram\"></i>Instagram"
+    "nl": "<i class=\"icon icon-instagram\"></i>Instagram",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.copyright": {
     "en": "The Legend Clan LC Agario - 2025, all rights reserved.",
@@ -785,7 +1005,11 @@
     "de": "The Legend Clan LC Agario - 2025, alle Rechte vorbehalten.",
     "tr": "The Legend Clan LC Agario - 2025, tüm hakları saklıdır.",
     "pl": "The Legend Clan LC Agario - 2025, wszelkie prawa zastrzeżone.",
-    "nl": "The Legend Clan LC Agario - 2025, alle rechten voorbehouden."
+    "nl": "The Legend Clan LC Agario - 2025, alle rechten voorbehouden.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.developer": {
     "en": "<i class=\"icon icon-heart-3\"></i> Developer: <a href=\"https://www.youtube.com/@Junior_devTI\" title=\"Developer\"> <span class=\"dev-name\">Júnior devTI</span>💎</a >",
@@ -799,7 +1023,11 @@
     "de": "<i class=\"icon icon-heart-3\"></i> Entwickler: <a href=\"https://www.youtube.com/@Junior_devTI\" title=\"Developer\"> <span class=\"dev-name\">Júnior devTI</span>💎</a >",
     "tr": "<i class=\"icon icon-heart-3\"></i> Geliştirici: <a href=\"https://www.youtube.com/@Junior_devTI\" title=\"Developer\"> <span class=\"dev-name\">Júnior devTI</span>💎</a >",
     "pl": "<i class=\"icon icon-heart-3\"></i> Deweloper: <a href=\"https://www.youtube.com/@Junior_devTI\" title=\"Developer\"> <span class=\"dev-name\">Júnior devTI</span>💎</a >",
-    "nl": "<i class=\"icon icon-heart-3\"></i> Developer: <a href=\"https://www.youtube.com/@Junior_devTI\" title=\"Developer\"> <span class=\"dev-name\">Júnior devTI</span>💎</a >"
+    "nl": "<i class=\"icon icon-heart-3\"></i> Developer: <a href=\"https://www.youtube.com/@Junior_devTI\" title=\"Developer\"> <span class=\"dev-name\">Júnior devTI</span>💎</a >",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.howToUseSiteTitle": {
     "en": "How to use the site",
@@ -813,7 +1041,11 @@
     "de": "So nutzt du die Website",
     "tr": "Site nasıl kullanılır",
     "pl": "Jak korzystać ze strony",
-    "nl": "Zo gebruik je de site"
+    "nl": "Zo gebruik je de site",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.messagePlaceholder": {
     "en": "Type your message...",
@@ -827,7 +1059,11 @@
     "de": "Schreib deine Nachricht...",
     "tr": "Mesajını yaz...",
     "pl": "Wpisz wiadomość...",
-    "nl": "Typ je bericht..."
+    "nl": "Typ je bericht...",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.messageSent": {
     "en": "Message sent successfully!",
@@ -841,7 +1077,11 @@
     "de": "Nachricht erfolgreich gesendet!",
     "tr": "Mesaj başarıyla gönderildi!",
     "pl": "Wiadomość wysłana!",
-    "nl": "Bericht verstuurd!"
+    "nl": "Bericht verstuurd!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.sendError": {
     "en": "Error sending the form.",
@@ -855,7 +1095,11 @@
     "de": "Fehler beim Senden des Formulars.",
     "tr": "Form gönderilirken hata oluştu.",
     "pl": "Błąd podczas wysyłania formularza.",
-    "nl": "Fout bij het versturen van het formulier."
+    "nl": "Fout bij het versturen van het formulier.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.projetox.connectionError": {
     "en": "Connection error.",
@@ -869,6 +1113,10 @@
     "de": "Verbindungsfehler.",
     "tr": "Bağlantı hatası.",
     "pl": "Błąd połączenia.",
-    "nl": "Verbindingsfout."
+    "nl": "Verbindingsfout.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

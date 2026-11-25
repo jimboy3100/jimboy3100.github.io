@@ -11,7 +11,11 @@
     "de": "Kostenlose Agar.io Themes & Vorlagen für die Mods Legend Mod, Delta, Expanding Land & OGario",
     "tr": "Legend Mod, Delta, Expanding Land ve OGario modları için ücretsiz Agar.io temaları ve şablonları",
     "pl": "Darmowe motywy i szablony Agar.io dla modów Legend Mod, Delta, Expanding Land i OGario",
-    "nl": "Gratis Agar.io thema's & sjablonen voor de mods Legend Mod, Delta, Expanding Land & OGario"
+    "nl": "Gratis Agar.io thema's & sjablonen voor de mods Legend Mod, Delta, Expanding Land & OGario",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.lmThemes": {
     "en": "LM THEMES",
@@ -25,7 +29,11 @@
     "de": "LM THEMES",
     "tr": "LM TEMALARI",
     "pl": "MOTYWY LM",
-    "nl": "LM THEMA'S"
+    "nl": "LM THEMA'S",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.yourTheme": {
     "en": "YOUR THEME",
@@ -39,7 +47,11 @@
     "de": "DEIN THEME",
     "tr": "SENİN TEMAN",
     "pl": "TWÓJ MOTYW",
-    "nl": "JOUW THEMA"
+    "nl": "JOUW THEMA",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.downloadTheme": {
     "en": "Download Theme",
@@ -53,7 +65,11 @@
     "de": "Theme herunterladen",
     "tr": "Temayı indir",
     "pl": "Pobierz motyw",
-    "nl": "Thema downloaden"
+    "nl": "Thema downloaden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.deltaModUsersCan": {
     "en": "*Delta mod users can download, and save as .json file and then import the file from Restore tab",
@@ -67,7 +83,11 @@
     "de": "*Nutzer des Delta Mods können es herunterladen, als .json-Datei speichern und die Datei dann im Tab Restore importieren",
     "tr": "*Delta modu kullanıcıları temayı indirip .json dosyası olarak kaydedebilir, ardından dosyayı Restore sekmesinden içe aktarabilir",
     "pl": "*Użytkownicy moda Delta mogą pobrać motyw, zapisać go jako plik .json, a potem zaimportować plik z karty Restore",
-    "nl": "*Gebruikers van de Delta mod kunnen het downloaden, opslaan als .json-bestand en het bestand daarna importeren via het tabblad Restore"
+    "nl": "*Gebruikers van de Delta mod kunnen het downloaden, opslaan als .json-bestand en het bestand daarna importeren via het tabblad Restore",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.skinUrlCopiedTo": {
     "en": "SKIN URL COPIED TO CLIPBOARD <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
@@ -81,7 +101,11 @@
     "de": "SKIN-URL IN DIE ZWISCHENABLAGE KOPIERT <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
     "tr": "SKIN URL'Sİ PANOYA KOPYALANDI <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
     "pl": "URL SKINA SKOPIOWANY DO SCHOWKA <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
-    "nl": "SKIN-URL GEKOPIEERD NAAR KLEMBORD <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">"
+    "nl": "SKIN-URL GEKOPIEERD NAAR KLEMBORD <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.themePreview": {
     "en": "THEME PREVIEW",
@@ -95,7 +119,11 @@
     "de": "THEME-VORSCHAU",
     "tr": "TEMA ÖNİZLEMESİ",
     "pl": "PODGLĄD MOTYWU",
-    "nl": "THEMAVOORBEELD"
+    "nl": "THEMAVOORBEELD",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.themeNumber": {
     "en": "Theme #{0}",
@@ -109,7 +137,11 @@
     "de": "Theme #{0}",
     "tr": "Tema #{0}",
     "pl": "Motyw #{0}",
-    "nl": "Thema #{0}"
+    "nl": "Thema #{0}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.copy": {
     "en": "COPY",
@@ -123,7 +155,11 @@
     "de": "KOPIEREN",
     "tr": "KOPYALA",
     "pl": "KOPIUJ",
-    "nl": "KOPIËREN"
+    "nl": "KOPIËREN",
+    "pt": "Copiar",
+    "id": "Salin",
+    "ja": "コピー",
+    "it": "Copia"
   },
   "site.themes.copyToClipboardPrompt": {
     "en": "Copy to clipboard: Ctrl C, Enter",
@@ -137,7 +173,11 @@
     "de": "In die Zwischenablage kopieren: Ctrl C, Enter",
     "tr": "Panoya kopyala: Ctrl C, Enter",
     "pl": "Kopiuj do schowka: Ctrl C, Enter",
-    "nl": "Kopiëren naar klembord: Ctrl C, Enter"
+    "nl": "Kopiëren naar klembord: Ctrl C, Enter",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.socialId": {
     "en": "Social ID",
@@ -151,7 +191,11 @@
     "de": "Social ID",
     "tr": "Social ID",
     "pl": "Social ID",
-    "nl": "Social ID"
+    "nl": "Social ID",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.jsonCode": {
     "en": "JSON code",
@@ -165,7 +209,11 @@
     "de": "JSON-Code",
     "tr": "JSON kodu",
     "pl": "Kod JSON",
-    "nl": "JSON-code"
+    "nl": "JSON-code",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.themes.pleaseUseAValidSocialId": {
     "en": "Please use a valid Social ID",
@@ -179,6 +227,10 @@
     "de": "Bitte gib eine gültige Social ID ein",
     "tr": "Lütfen geçerli bir Social ID kullan",
     "pl": "Użyj prawidłowego Social ID",
-    "nl": "Gebruik een geldige Social ID"
+    "nl": "Gebruik een geldige Social ID",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

@@ -11,7 +11,11 @@
     "de": "Werbung",
     "tr": "Reklam",
     "pl": "Reklama",
-    "nl": "Advertentie"
+    "nl": "Advertentie",
+    "pt": "Publicidade",
+    "id": "Iklan",
+    "ja": "広告",
+    "it": "Pubblicità"
   },
   "agario.page_back_button": {
     "en": "Back",
@@ -25,7 +29,11 @@
     "de": "Zurück",
     "tr": "Geri",
     "pl": "Wroc",
-    "nl": "Terug"
+    "nl": "Terug",
+    "pt": "Voltar",
+    "id": "Kembali",
+    "ja": "戻る",
+    "it": "Indietro"
   },
   "agario.page_button_label_leave": {
     "en": "Leave",
@@ -39,7 +47,11 @@
     "de": "Verlassen",
     "tr": "Ayrıl",
     "pl": "Opuść",
-    "nl": "Verlaten"
+    "nl": "Verlaten",
+    "pt": "Sair",
+    "id": "Keluar",
+    "ja": "退出",
+    "it": "Esci"
   },
   "agario.page_changelog": {
     "en": "Changelog",
@@ -53,7 +65,11 @@
     "de": "Änderungsprotokoll",
     "tr": "Değişiklikler",
     "pl": "Lista zmian",
-    "nl": "Wijzigingen"
+    "nl": "Wijzigingen",
+    "pt": "Histórico de alterações",
+    "id": "Catatan perubahan",
+    "ja": "変更履歴",
+    "it": "Registro modifiche"
   },
   "agario.page_connect_help": {
     "en": "If you cannot connect to the servers, check if you have some anti virus or firewall blocking the connection.",
@@ -67,7 +83,11 @@
     "de": "Wenn du keine Verbindung zu den Servern herstellen kannst, prüfe, ob ein Virenschutz oder eine Firewall die Verbindung blockiert.",
     "tr": "Sunuculara bağlanamıyorsan, bağlantıyı engelleyen bir antivirüs veya güvenlik duvarı olup olmadığını kontrol et.",
     "pl": "Jeśli nie możesz połączyć się z serwerami, sprawdź, czy antywirus lub zapora nie blokuje połączenia.",
-    "nl": "Kun je geen verbinding maken met de servers? Controleer of een antivirusprogramma of firewall de verbinding blokkeert."
+    "nl": "Kun je geen verbinding maken met de servers? Controleer of een antivirusprogramma of firewall de verbinding blokkeert.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_connecting": {
     "en": "Connecting",
@@ -81,7 +101,11 @@
     "de": "Verbinde",
     "tr": "Bağlanıyor",
     "pl": "Łączenie",
-    "nl": "Verbinden"
+    "nl": "Verbinden",
+    "pt": "Conectando",
+    "id": "Menghubungkan",
+    "ja": "接続中",
+    "it": "Connessione"
   },
   "agario.page_continue": {
     "en": "Continue",
@@ -95,7 +119,11 @@
     "de": "Weiter",
     "tr": "Devam",
     "pl": "Kontynuuj",
-    "nl": "Doorgaan"
+    "nl": "Doorgaan",
+    "pt": "Continuar",
+    "id": "Lanjutkan",
+    "ja": "続ける",
+    "it": "Continua"
   },
   "agario.page_create_party": {
     "en": "Create",
@@ -109,7 +137,11 @@
     "de": "Erstellen",
     "tr": "Oluştur",
     "pl": "Stworz party",
-    "nl": "Aanmaken"
+    "nl": "Aanmaken",
+    "pt": "Criar",
+    "id": "Buat",
+    "ja": "作成",
+    "it": "Crea"
   },
   "agario.page_create_party_instructions": {
     "en": "Share this link with your friends!",
@@ -123,7 +155,11 @@
     "de": "Teile diesen Link mit deinen Freunden!",
     "tr": "Bu bağlantıyı arkadaşlarınla paylaş!",
     "pl": "Udostępnij ten link znajomym!",
-    "nl": "Deel deze link met je vrienden!"
+    "nl": "Deel deze link met je vrienden!",
+    "pt": "Compartilhe este link com seus amigos!",
+    "id": "Bagikan tautan ini kepada teman-temanmu!",
+    "ja": "このリンクを友達と共有しよう！",
+    "it": "Condividi questo link con i tuoi amici!"
   },
   "agario.page_creating_party": {
     "en": "Creating party...",
@@ -137,7 +173,11 @@
     "de": "Party wird erstellt...",
     "tr": "Parti oluşturuluyor...",
     "pl": "Tworzenie party...",
-    "nl": "Party aanmaken..."
+    "nl": "Party aanmaken...",
+    "pt": "Criando grupo...",
+    "id": "Membuat grup...",
+    "ja": "パーティー作成中...",
+    "it": "Creazione gruppo..."
   },
   "agario.page_fb_matchresults_description": {
     "en": "Can you do better? Come and play!",
@@ -151,7 +191,11 @@
     "de": "Schaffst du mehr? Komm und spiel!",
     "tr": "Daha iyisini yapabilir misin? Gel ve oyna!",
     "pl": "Dasz radę lepiej? Przyjdź i zagraj!",
-    "nl": "Kun jij het beter? Kom spelen!"
+    "nl": "Kun jij het beter? Kom spelen!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_fb_matchresults_subtitle": {
     "en": "I survived %@m %@s and got a score of %@",
@@ -165,7 +209,11 @@
     "de": "Ich habe %@m %@s überlebt und %@ Punkte erreicht",
     "tr": "%@d %@sn hayatta kaldım ve %@ puan aldım",
     "pl": "Przetrwałem %@m %@s i zdobyłem %@ punktów",
-    "nl": "Ik overleefde %@m %@s en haalde een score van %@"
+    "nl": "Ik overleefde %@m %@s en haalde een score van %@",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_fb_matchresults_title": {
     "en": "Got a new score in Agar.io",
@@ -179,7 +227,11 @@
     "de": "Neuer Punktestand in Agar.io",
     "tr": "Agar.io'da yeni bir skor",
     "pl": "Nowy wynik w Agar.io",
-    "nl": "Nieuwe score in Agar.io"
+    "nl": "Nieuwe score in Agar.io",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_g_plus_share_stats": {
     "en": "I survived %@m %@s and got a score of %@ in Agar.io! Can you do better? Come and play!",
@@ -193,7 +245,11 @@
     "de": "Ich habe in Agar.io %@m %@s überlebt und %@ Punkte erreicht! Schaffst du mehr? Komm und spiel!",
     "tr": "Agar.io'da %@d %@sn hayatta kaldım ve %@ puan aldım! Daha iyisini yapabilir misin? Gel ve oyna!",
     "pl": "Przetrwałem %@m %@s i zdobyłem %@ punktów w Agar.io! Dasz radę lepiej? Przyjdź i zagraj!",
-    "nl": "Ik overleefde %@m %@s en haalde een score van %@ in Agar.io! Kun jij het beter? Kom spelen!"
+    "nl": "Ik overleefde %@m %@s en haalde een score van %@ in Agar.io! Kun jij het beter? Kom spelen!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_gamemode_experimental": {
     "en": "Experimental",
@@ -207,7 +263,11 @@
     "de": "Experimentell",
     "tr": "Deneysel",
     "pl": "Eksperymentalny",
-    "nl": "Experimenteel"
+    "nl": "Experimenteel",
+    "pt": "Experimental",
+    "id": "Eksperimental",
+    "ja": "実験モード",
+    "it": "Sperimentale"
   },
   "agario.page_gamemode_ffa": {
     "en": "FFA",
@@ -221,7 +281,11 @@
     "de": "FFA",
     "tr": "FFA",
     "pl": "FFA",
-    "nl": "FFA"
+    "nl": "FFA",
+    "pt": "FFA",
+    "id": "FFA",
+    "ja": "FFA",
+    "it": "FFA"
   },
   "agario.page_gamemode_battle_royale": {
     "en": "Battle Royale",
@@ -235,7 +299,11 @@
     "de": "Battle Royale",
     "tr": "Battle Royale",
     "pl": "Battle Royale",
-    "nl": "Battle Royale"
+    "nl": "Battle Royale",
+    "pt": "Battle Royale",
+    "id": "Battle Royale",
+    "ja": "バトルロイヤル",
+    "it": "Battle Royale"
   },
   "agario.page_gamemode_rush": {
     "en": "Rush",
@@ -249,7 +317,11 @@
     "de": "Rush",
     "tr": "Rush",
     "pl": "Rush",
-    "nl": "Rush"
+    "nl": "Rush",
+    "pt": "Rush",
+    "id": "Rush",
+    "ja": "Rush",
+    "it": "Rush"
   },
   "agario.page_gamemode_teams": {
     "en": "Teams",
@@ -263,7 +335,11 @@
     "de": "Teams",
     "tr": "Takımlar",
     "pl": "Drużyny",
-    "nl": "Teams"
+    "nl": "Teams",
+    "pt": "Equipes",
+    "id": "Tim",
+    "ja": "チーム",
+    "it": "Squadre"
   },
   "agario.page_games_played": {
     "en": "Games played",
@@ -277,7 +353,11 @@
     "de": "Gespielte Spiele",
     "tr": "Oynanan oyunlar",
     "pl": "Rozegrane gry",
-    "nl": "Gespeelde spellen"
+    "nl": "Gespeelde spellen",
+    "pt": "Partidas jogadas",
+    "id": "Pertandingan dimainkan",
+    "ja": "プレイ回数",
+    "it": "Partite giocate"
   },
   "agario.page_graphics_auto": {
     "en": "Graphics: Auto",
@@ -291,7 +371,11 @@
     "de": "Grafik: Auto",
     "tr": "Grafik: Otomatik",
     "pl": "Grafika: Auto",
-    "nl": "Graphics: Auto"
+    "nl": "Graphics: Auto",
+    "pt": "Gráficos: automático",
+    "id": "Grafis: otomatis",
+    "ja": "画質：自動",
+    "it": "Grafica: automatica"
   },
   "agario.page_graphics_high": {
     "en": "Graphics: High",
@@ -305,7 +389,11 @@
     "de": "Grafik: Hoch",
     "tr": "Grafik: Yüksek",
     "pl": "Grafika: Wysoka",
-    "nl": "Graphics: Hoog"
+    "nl": "Graphics: Hoog",
+    "pt": "Gráficos: alto",
+    "id": "Grafis: tinggi",
+    "ja": "画質：高",
+    "it": "Grafica: alta"
   },
   "agario.page_graphics_low": {
     "en": "Graphics: Low",
@@ -319,7 +407,11 @@
     "de": "Grafik: Niedrig",
     "tr": "Grafik: Düşük",
     "pl": "Grafika: Niska",
-    "nl": "Graphics: Laag"
+    "nl": "Graphics: Laag",
+    "pt": "Gráficos: baixo",
+    "id": "Grafis: rendah",
+    "ja": "画質：低",
+    "it": "Grafica: bassa"
   },
   "agario.page_graphics_medium": {
     "en": "Graphics: Medium",
@@ -333,7 +425,11 @@
     "de": "Grafik: Mittel",
     "tr": "Grafik: Orta",
     "pl": "Grafika: Średnia",
-    "nl": "Graphics: Gemiddeld"
+    "nl": "Graphics: Gemiddeld",
+    "pt": "Gráficos: médio",
+    "id": "Grafis: sedang",
+    "ja": "画質：中",
+    "it": "Grafica: media"
   },
   "agario.page_graphics_retina": {
     "en": "Graphics: Retina",
@@ -347,7 +443,11 @@
     "de": "Grafik: Retina",
     "tr": "Grafik: Retina",
     "pl": "Grafika: Retina",
-    "nl": "Graphics: Retina"
+    "nl": "Graphics: Retina",
+    "pt": "Gráficos: Retina",
+    "id": "Grafis: Retina",
+    "ja": "画質：Retina",
+    "it": "Grafica: Retina"
   },
   "agario.page_graphics_title": {
     "en": "-- Graphics Quality --",
@@ -361,7 +461,11 @@
     "de": "-- Grafikqualität --",
     "tr": "-- Grafik Kalitesi --",
     "pl": "-- Jakość grafiki --",
-    "nl": "-- Grafische kwaliteit --"
+    "nl": "-- Grafische kwaliteit --",
+    "pt": "-- Qualidade gráfica --",
+    "id": "-- Kualitas grafis --",
+    "ja": "-- 画質 --",
+    "it": "-- Qualità grafica --"
   },
   "agario.page_graphics_very_low": {
     "en": "Graphics: Very Low",
@@ -375,7 +479,11 @@
     "de": "Grafik: Sehr niedrig",
     "tr": "Grafik: Çok Düşük",
     "pl": "Grafika: Bardzo niska",
-    "nl": "Graphics: Zeer laag"
+    "nl": "Graphics: Zeer laag",
+    "pt": "Gráficos: muito baixo",
+    "id": "Grafis: sangat rendah",
+    "ja": "画質：最低",
+    "it": "Grafica: molto bassa"
   },
   "agario.page_highest_mass": {
     "en": "Highest mass",
@@ -389,7 +497,11 @@
     "de": "Höchste Masse",
     "tr": "En yüksek kütle",
     "pl": "Największa masa",
-    "nl": "Hoogste massa"
+    "nl": "Hoogste massa",
+    "pt": "Maior massa",
+    "id": "Massa tertinggi",
+    "ja": "最大質量",
+    "it": "Massa massima"
   },
   "agario.page_instructions_mouse": {
     "en": "Move your mouse to control your cell",
@@ -403,7 +515,11 @@
     "de": "Bewege die Maus, um deine Zelle zu steuern",
     "tr": "Hücreni kontrol etmek için fareyi hareket ettir",
     "pl": "Poruszaj myszą, aby sterować komórką",
-    "nl": "Beweeg je muis om je cel te besturen"
+    "nl": "Beweeg je muis om je cel te besturen",
+    "pt": "Mova o mouse para controlar sua célula",
+    "id": "Gerakkan tetikus untuk mengontrol sel",
+    "ja": "マウスを動かしてセルを操作",
+    "it": "Muovi il mouse per controllare la cellula"
   },
   "agario.page_instructions_space": {
     "en": "Press <b>Space</b> to split",
@@ -417,7 +533,11 @@
     "de": "Drücke <b>Leertaste</b> zum Teilen",
     "tr": "Bölünmek için <b>Boşluk</b> tuşuna bas",
     "pl": "Naciśnij <b>Spację</b>, aby się podzielić",
-    "nl": "Druk op <b>Spatie</b> om te splitsen"
+    "nl": "Druk op <b>Spatie</b> om te splitsen",
+    "pt": "Pressione <b>Espaço</b> para dividir",
+    "id": "Tekan <b>Spasi</b> untuk membelah",
+    "ja": "<b>Space</b>キーで分裂",
+    "it": "Premi <b>Spazio</b> per dividerti"
   },
   "agario.page_instructions_w": {
     "en": "Press <b>W</b> to eject some mass",
@@ -431,7 +551,11 @@
     "de": "Drücke <b>W</b>, um Masse auszustoßen",
     "tr": "Kütle atmak için <b>W</b> tuşuna bas",
     "pl": "Naciśnij <b>W</b>, aby wyrzucić trochę masy",
-    "nl": "Druk op <b>W</b> om massa uit te stoten"
+    "nl": "Druk op <b>W</b> om massa uit te stoten",
+    "pt": "Pressione <b>W</b> para ejetar massa",
+    "id": "Tekan <b>W</b> untuk mengeluarkan massa",
+    "ja": "<b>W</b>キーで質量を放出",
+    "it": "Premi <b>W</b> per espellere massa"
   },
   "agario.page_join_party": {
     "en": "Join",
@@ -445,7 +569,11 @@
     "de": "Beitreten",
     "tr": "Katıl",
     "pl": "Dolacz",
-    "nl": "Deelnemen"
+    "nl": "Deelnemen",
+    "pt": "Entrar",
+    "id": "Gabung",
+    "ja": "参加",
+    "it": "Unisciti"
   },
   "agario.page_join_party_code": {
     "en": "Enter the code your friends sent!",
@@ -459,7 +587,11 @@
     "de": "Gib den Code ein, den deine Freunde geschickt haben!",
     "tr": "Arkadaşlarının gönderdiği kodu gir!",
     "pl": "Wpisz kod od znajomych!",
-    "nl": "Voer de code in die je vrienden stuurden!"
+    "nl": "Voer de code in die je vrienden stuurden!",
+    "pt": "Insira o código enviado por seus amigos!",
+    "id": "Masukkan kode yang dikirim temanmu!",
+    "ja": "友達から送られたコードを入力！",
+    "it": "Inserisci il codice inviato dai tuoi amici!"
   },
   "agario.page_join_party_confirmation": {
     "en": "You are about to enter party mode.\n\nDo you want to join a party?",
@@ -473,7 +605,11 @@
     "de": "Du wechselst gleich in den Party-Modus.\n\nMöchtest du einer Party beitreten?",
     "tr": "Parti moduna girmek üzeresin.\n\nBir partiye katılmak istiyor musun?",
     "pl": "Za chwilę wejdziesz w tryb party.\n\nCzy chcesz dołączyć do party?",
-    "nl": "Je gaat de partymodus in.\n\nWil je deelnemen aan een party?"
+    "nl": "Je gaat de partymodus in.\n\nWil je deelnemen aan een party?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_join_party_instructions": {
     "en": "Share the link with more friends!",
@@ -487,7 +623,11 @@
     "de": "Teile den Link mit weiteren Freunden!",
     "tr": "Bağlantıyı daha fazla arkadaşınla paylaş!",
     "pl": "Udostępnij link kolejnym znajomym!",
-    "nl": "Deel de link met meer vrienden!"
+    "nl": "Deel de link met meer vrienden!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_joined_party_instructions": {
     "en": "You have joined this party, share the link with more friends!",
@@ -501,7 +641,11 @@
     "de": "Du bist dieser Party beigetreten, teile den Link mit weiteren Freunden!",
     "tr": "Bu partiye katıldın, bağlantıyı daha fazla arkadaşınla paylaş!",
     "pl": "Dołączyłeś do tego party, udostępnij link kolejnym znajomym!",
-    "nl": "Je doet mee aan deze party, deel de link met meer vrienden!"
+    "nl": "Je doet mee aan deze party, deel de link met meer vrienden!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_joining_party": {
     "en": "Joining party...",
@@ -515,7 +659,11 @@
     "de": "Party wird beigetreten...",
     "tr": "Partiye katılınıyor...",
     "pl": "Dołączanie do party...",
-    "nl": "Deelnemen aan party..."
+    "nl": "Deelnemen aan party...",
+    "pt": "Entrando no grupo...",
+    "id": "Bergabung ke grup...",
+    "ja": "パーティー参加中...",
+    "it": "Accesso al gruppo..."
   },
   "agario.page_last_match_results": {
     "en": "Last match results",
@@ -529,7 +677,11 @@
     "de": "Ergebnisse der letzten Runde",
     "tr": "Son maç sonuçları",
     "pl": "Wyniki ostatniego meczu",
-    "nl": "Resultaten laatste potje"
+    "nl": "Resultaten laatste potje",
+    "pt": "Resultados da última partida",
+    "id": "Hasil pertandingan terakhir",
+    "ja": "前回の試合結果",
+    "it": "Risultati ultima partita"
   },
   "agario.page_leaderboard": {
     "en": "Leaderboard",
@@ -543,7 +695,11 @@
     "de": "Bestenliste",
     "tr": "Sıralama",
     "pl": "Ranking",
-    "nl": "Klassement"
+    "nl": "Klassement",
+    "pt": "Classificação",
+    "id": "Papan peringkat",
+    "ja": "ランキング",
+    "it": "Classifica"
   },
   "agario.page_leaderboard_time": {
     "en": "Leaderboard Time",
@@ -557,7 +713,11 @@
     "de": "Zeit in der Bestenliste",
     "tr": "Sıralamada Kalma Süresi",
     "pl": "Czas w rankingu",
-    "nl": "Tijd in klassement"
+    "nl": "Tijd in klassement",
+    "pt": "Tempo na classificação",
+    "id": "Waktu di papan peringkat",
+    "ja": "ランキング滞在時間",
+    "it": "Tempo in classifica"
   },
   "agario.page_leave_party_tooltip": {
     "en": "Leave Party",
@@ -571,7 +731,11 @@
     "de": "Party verlassen",
     "tr": "Partiden Ayrıl",
     "pl": "Opuść party",
-    "nl": "Party verlaten"
+    "nl": "Party verlaten",
+    "pt": "Sair do grupo",
+    "id": "Keluar dari grup",
+    "ja": "パーティー退出",
+    "it": "Lascia gruppo"
   },
   "agario.page_login_and_play": {
     "en": "Login and play",
@@ -585,7 +749,11 @@
     "de": "Anmelden und spielen",
     "tr": "Giriş yap ve oyna",
     "pl": "Zaloguj",
-    "nl": "Inloggen en spelen"
+    "nl": "Inloggen en spelen",
+    "pt": "Entrar e jogar",
+    "id": "Masuk dan main",
+    "ja": "ログインしてプレイ",
+    "it": "Accedi e gioca"
   },
   "agario.page_login_tooltip": {
     "en": "Login to get your benefits!",
@@ -599,7 +767,11 @@
     "de": "Melde dich an, um deine Vorteile zu erhalten!",
     "tr": "Avantajlarını almak için giriş yap!",
     "pl": "Zaloguj się, aby odebrać korzyści!",
-    "nl": "Log in voor je voordelen!"
+    "nl": "Log in voor je voordelen!",
+    "pt": "Entre para receber seus benefícios!",
+    "id": "Masuk untuk mendapatkan manfaat!",
+    "ja": "ログインして特典を受け取ろう！",
+    "it": "Accedi per ottenere i tuoi vantaggi!"
   },
   "agario.page_logout": {
     "en": "Logout",
@@ -613,7 +785,11 @@
     "de": "Abmelden",
     "tr": "Çıkış yap",
     "pl": "Wyloguj",
-    "nl": "Uitloggen"
+    "nl": "Uitloggen",
+    "pt": "Sair",
+    "id": "Keluar",
+    "ja": "ログアウト",
+    "it": "Esci"
   },
   "agario.page_longest_survival": {
     "en": "Longest survival",
@@ -627,7 +803,11 @@
     "de": "Längstes Überleben",
     "tr": "En uzun hayatta kalma",
     "pl": "Najdłuższe przetrwanie",
-    "nl": "Langst overleefd"
+    "nl": "Langst overleefd",
+    "pt": "Maior tempo de sobrevivência",
+    "id": "Bertahan terlama",
+    "ja": "最長生存時間",
+    "it": "Sopravvivenza più lunga"
   },
   "agario.page_main_menu_skins": {
     "en": "Skins",
@@ -641,7 +821,11 @@
     "de": "Skins",
     "tr": "Skinler",
     "pl": "Skiny",
-    "nl": "Skins"
+    "nl": "Skins",
+    "pt": "Skins",
+    "id": "Skin",
+    "ja": "スキン",
+    "it": "Skin"
   },
   "agario.page_mass_eaten": {
     "en": "Mass Eaten",
@@ -655,7 +839,11 @@
     "de": "Gefressene Masse",
     "tr": "Yenen Kütle",
     "pl": "Zjedzona masa",
-    "nl": "Gegeten massa"
+    "nl": "Gegeten massa",
+    "pt": "Massa consumida",
+    "id": "Massa dimakan",
+    "ja": "捕食した質量",
+    "it": "Massa mangiata"
   },
   "agario.page_menu_login_facebook": {
     "en": "Sign in with Facebook",
@@ -669,7 +857,11 @@
     "de": "Mit Facebook anmelden",
     "tr": "Facebook ile giriş yap",
     "pl": "Zaloguj z Facebook",
-    "nl": "Inloggen met Facebook"
+    "nl": "Inloggen met Facebook",
+    "pt": "Entrar com Facebook",
+    "id": "Masuk dengan Facebook",
+    "ja": "Facebookでログイン",
+    "it": "Accedi con Facebook"
   },
   "agario.page_menu_login_google": {
     "en": "Sign in with Google",
@@ -683,7 +875,11 @@
     "de": "Mit Google anmelden",
     "tr": "Google ile giriş yap",
     "pl": "Zaloguj z Google",
-    "nl": "Inloggen met Google"
+    "nl": "Inloggen met Google",
+    "pt": "Entrar com Google",
+    "id": "Masuk dengan Google",
+    "ja": "Googleでログイン",
+    "it": "Accedi con Google"
   },
   "agario.page_menu_main_dailyquests": {
     "en": "Daily Quests",
@@ -697,7 +893,11 @@
     "de": "Tagesquest",
     "tr": "Günlük görev",
     "pl": "Zadania",
-    "nl": "Dagelijkse quest"
+    "nl": "Dagelijkse quest",
+    "pt": "Missões diárias",
+    "id": "Misi harian",
+    "ja": "デイリークエスト",
+    "it": "Missioni giornaliere"
   },
   "agario.page_menu_main_free_coins": {
     "en": "Free Coins",
@@ -711,7 +911,11 @@
     "de": "Gratis-Münzen",
     "tr": "Ücretsiz altın",
     "pl": "Darmowe Monety",
-    "nl": "Gratis munten"
+    "nl": "Gratis munten",
+    "pt": "Moedas grátis",
+    "id": "Koin gratis",
+    "ja": "無料コイン",
+    "it": "Monete gratis"
   },
   "agario.page_menu_main_gifts": {
     "en": "Gifts",
@@ -725,7 +929,11 @@
     "de": "Geschenke",
     "tr": "Hediyeler",
     "pl": "Prezenty",
-    "nl": "Cadeaus"
+    "nl": "Cadeaus",
+    "pt": "Presentes",
+    "id": "Hadiah",
+    "ja": "ギフト",
+    "it": "Regali"
   },
   "agario.page_menu_main_potions": {
     "en": "Potions",
@@ -739,7 +947,11 @@
     "de": "Tränke",
     "tr": "İksirler",
     "pl": "Mikstury",
-    "nl": "Drankjes"
+    "nl": "Drankjes",
+    "pt": "Poções",
+    "id": "Ramuan",
+    "ja": "ポーション",
+    "it": "Pozioni"
   },
   "agario.page_menu_shop_cancel": {
     "en": "Cancel",
@@ -753,7 +965,11 @@
     "de": "Abbrechen",
     "tr": "İptal",
     "pl": "Anuluj",
-    "nl": "Annuleren"
+    "nl": "Annuleren",
+    "pt": "Cancelar",
+    "id": "Batal",
+    "ja": "キャンセル",
+    "it": "Annulla"
   },
   "agario.page_online_status_setting_tooltip": {
     "en": "Display Facebook profile picture",
@@ -767,7 +983,11 @@
     "de": "Facebook-Profilbild anzeigen",
     "tr": "Facebook profil resmini göster",
     "pl": "Pokaż zdjęcie profilowe z Facebooka",
-    "nl": "Facebook-profielfoto tonen"
+    "nl": "Facebook-profielfoto tonen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_option_dark_theme": {
     "en": "Dark theme",
@@ -781,7 +1001,11 @@
     "de": "Dunkles Design",
     "tr": "Koyu tema",
     "pl": "Ciemny motyw",
-    "nl": "Donker thema"
+    "nl": "Donker thema",
+    "pt": "Tema escuro",
+    "id": "Tema gelap",
+    "ja": "ダークテーマ",
+    "it": "Tema scuro"
   },
   "agario.page_option_no_colors": {
     "en": "No colors",
@@ -795,7 +1019,11 @@
     "de": "Keine Farben",
     "tr": "Renk yok",
     "pl": "Bez kolorów",
-    "nl": "Geen kleuren"
+    "nl": "Geen kleuren",
+    "pt": "Sem cores",
+    "id": "Tanpa warna",
+    "ja": "色なし",
+    "it": "Senza colori"
   },
   "agario.page_option_no_names": {
     "en": "No names",
@@ -809,7 +1037,11 @@
     "de": "Keine Namen",
     "tr": "İsim yok",
     "pl": "Bez nicków",
-    "nl": "Geen namen"
+    "nl": "Geen namen",
+    "pt": "Sem nomes",
+    "id": "Tanpa nama",
+    "ja": "名前なし",
+    "it": "Senza nomi"
   },
   "agario.page_option_no_skins": {
     "en": "No skins",
@@ -823,7 +1055,11 @@
     "de": "Keine Skins",
     "tr": "Skin yok",
     "pl": "Bez skinów",
-    "nl": "Geen skins"
+    "nl": "Geen skins",
+    "pt": "Sem skins",
+    "id": "Tanpa skin",
+    "ja": "スキンなし",
+    "it": "Senza skin"
   },
   "agario.page_option_show_mass": {
     "en": "Show mass",
@@ -837,7 +1073,11 @@
     "de": "Masse anzeigen",
     "tr": "Kütleyi göster",
     "pl": "Pokaż masę",
-    "nl": "Massa tonen"
+    "nl": "Massa tonen",
+    "pt": "Mostrar massa",
+    "id": "Tampilkan massa",
+    "ja": "質量を表示",
+    "it": "Mostra massa"
   },
   "agario.page_option_show_online_status": {
     "en": "Show Online Status",
@@ -851,7 +1091,11 @@
     "de": "Online-Status anzeigen",
     "tr": "Çevrimiçi Durumu Göster",
     "pl": "Pokaż status online",
-    "nl": "Onlinestatus tonen"
+    "nl": "Onlinestatus tonen",
+    "pt": "Mostrar status online",
+    "id": "Tampilkan status online",
+    "ja": "オンライン状態を表示",
+    "it": "Mostra stato online"
   },
   "agario.page_option_show_quest": {
     "en": "Show Quest",
@@ -865,7 +1109,11 @@
     "de": "Quest anzeigen",
     "tr": "Görevi Göster",
     "pl": "Pokaż zadanie",
-    "nl": "Quest tonen"
+    "nl": "Quest tonen",
+    "pt": "Mostrar missão",
+    "id": "Tampilkan misi",
+    "ja": "クエストを表示",
+    "it": "Mostra missione"
   },
   "agario.page_option_skip_stats": {
     "en": "Skip stats",
@@ -879,7 +1127,11 @@
     "de": "Statistik überspringen",
     "tr": "İstatistikleri atla",
     "pl": "Pomiń statystyki",
-    "nl": "Statistieken overslaan"
+    "nl": "Statistieken overslaan",
+    "pt": "Pular estatísticas",
+    "id": "Lewati statistik",
+    "ja": "統計をスキップ",
+    "it": "Salta statistiche"
   },
   "agario.page_party": {
     "en": "Party Mode",
@@ -893,7 +1145,11 @@
     "de": "Party-Modus",
     "tr": "Parti Modu",
     "pl": "Tryb party",
-    "nl": "Partymodus"
+    "nl": "Partymodus",
+    "pt": "Modo grupo",
+    "id": "Mode grup",
+    "ja": "パーティーモード",
+    "it": "Modalità gruppo"
   },
   "agario.page_party_description": {
     "en": "Play with your friends in the same arena",
@@ -907,7 +1163,11 @@
     "de": "Spiele mit deinen Freunden in derselben Arena",
     "tr": "Arkadaşlarınla aynı arenada oyna",
     "pl": "Graj ze znajomymi na tej samej arenie",
-    "nl": "Speel met je vrienden in dezelfde arena"
+    "nl": "Speel met je vrienden in dezelfde arena",
+    "pt": "Jogue com seus amigos na mesma arena",
+    "id": "Main bersama teman di arena yang sama",
+    "ja": "同じアリーナで友達と遊ぼう",
+    "it": "Gioca con i tuoi amici nella stessa arena"
   },
   "agario.page_party_is_full_message": {
     "en": "The party you are trying to join is full",
@@ -921,7 +1181,11 @@
     "de": "Die Party, der du beitreten willst, ist voll",
     "tr": "Katılmaya çalıştığın parti dolu",
     "pl": "Party, do którego próbujesz dołączyć, jest pełne",
-    "nl": "De party waaraan je wilt deelnemen is vol"
+    "nl": "De party waaraan je wilt deelnemen is vol",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_party_join_error": {
     "en": "There was a problem joining that party, please make sure the code is correct, or try creating another party",
@@ -935,7 +1199,11 @@
     "de": "Beim Beitreten der Party ist ein Problem aufgetreten. Prüfe, ob der Code stimmt, oder erstelle eine neue Party",
     "tr": "Partiye katılırken bir sorun oluştu, kodun doğru olduğundan emin ol veya yeni bir parti oluşturmayı dene",
     "pl": "Nie mozna dolaczyc do tego party. Upewnij sie, ze token jest prawidlowy lub stworz nowy.",
-    "nl": "Er ging iets mis bij het deelnemen aan die party. Controleer of de code klopt, of maak een andere party aan"
+    "nl": "Er ging iets mis bij het deelnemen aan die party. Controleer of de code klopt, of maak een andere party aan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_party_leave_ffa": {
     "en": "You are in <b>%mode%</b> mode.<br><br>Do you want to continue or create a party?",
@@ -949,7 +1217,11 @@
     "de": "Du bist im Modus <b>%mode%</b>.<br><br>Möchtest du fortfahren oder eine Party erstellen?",
     "tr": "<b>%mode%</b> modundasın.<br><br>Devam etmek mi yoksa parti oluşturmak mı istiyorsun?",
     "pl": "Jesteś w trybie <b>%mode%</b>.<br><br>Chcesz kontynuować czy utworzyć party?",
-    "nl": "Je zit in de modus <b>%mode%</b>.<br><br>Wil je doorgaan of een party aanmaken?"
+    "nl": "Je zit in de modus <b>%mode%</b>.<br><br>Wil je doorgaan of een party aanmaken?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_party_leave_party": {
     "en": "Are you sure you want to leave the party?",
@@ -963,7 +1235,11 @@
     "de": "Willst du die Party wirklich verlassen?",
     "tr": "Partiden ayrılmak istediğine emin misin?",
     "pl": "Na pewno chcesz opuścić party?",
-    "nl": "Weet je zeker dat je de party wilt verlaten?"
+    "nl": "Weet je zeker dat je de party wilt verlaten?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_play": {
     "en": "Play",
@@ -977,7 +1253,11 @@
     "de": "Spielen",
     "tr": "Oyna",
     "pl": "Graj",
-    "nl": "Spelen"
+    "nl": "Spelen",
+    "pt": "Jogar",
+    "id": "Main",
+    "ja": "プレイ",
+    "it": "Gioca"
   },
   "agario.page_play_as_guest": {
     "en": "Play as guest",
@@ -991,7 +1271,11 @@
     "de": "Als Gast spielen",
     "tr": "Misafir olarak oyna",
     "pl": "Graj jako gosc",
-    "nl": "Spelen als gast"
+    "nl": "Spelen als gast",
+    "pt": "Jogar como visitante",
+    "id": "Main sebagai tamu",
+    "ja": "ゲストとしてプレイ",
+    "it": "Gioca come ospite"
   },
   "agario.page_player_cells_eaten": {
     "en": "Player Cells Eaten",
@@ -1005,7 +1289,11 @@
     "de": "Gefressene Spielerzellen",
     "tr": "Yenen Oyuncu Hücreleri",
     "pl": "Zjedzone komórki graczy",
-    "nl": "Gegeten spelercellen"
+    "nl": "Gegeten spelercellen",
+    "pt": "Células de jogadores consumidas",
+    "id": "Sel pemain yang dimakan",
+    "ja": "捕食したプレイヤーセル",
+    "it": "Cellule dei giocatori mangiate"
   },
   "agario.page_position_1": {
     "en": "First",
@@ -1019,7 +1307,11 @@
     "de": "Erster",
     "tr": "Birinci",
     "pl": "Pierwsze",
-    "nl": "Eerste"
+    "nl": "Eerste",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_10": {
     "en": "Tenth",
@@ -1033,7 +1325,11 @@
     "de": "Zehnter",
     "tr": "Onuncu",
     "pl": "Dziesiąte",
-    "nl": "Tiende"
+    "nl": "Tiende",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_2": {
     "en": "Second",
@@ -1047,7 +1343,11 @@
     "de": "Zweiter",
     "tr": "İkinci",
     "pl": "Drugie",
-    "nl": "Tweede"
+    "nl": "Tweede",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_3": {
     "en": "Third",
@@ -1061,7 +1361,11 @@
     "de": "Dritter",
     "tr": "Üçüncü",
     "pl": "Trzecie",
-    "nl": "Derde"
+    "nl": "Derde",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_4": {
     "en": "Fourth",
@@ -1075,7 +1379,11 @@
     "de": "Vierter",
     "tr": "Dördüncü",
     "pl": "Czwarte",
-    "nl": "Vierde"
+    "nl": "Vierde",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_5": {
     "en": "Fifth",
@@ -1089,7 +1397,11 @@
     "de": "Fünfter",
     "tr": "Beşinci",
     "pl": "Piąte",
-    "nl": "Vijfde"
+    "nl": "Vijfde",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_6": {
     "en": "Sixth",
@@ -1103,7 +1415,11 @@
     "de": "Sechster",
     "tr": "Altıncı",
     "pl": "Szóste",
-    "nl": "Zesde"
+    "nl": "Zesde",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_7": {
     "en": "Seventh",
@@ -1117,7 +1433,11 @@
     "de": "Siebter",
     "tr": "Yedinci",
     "pl": "Siódme",
-    "nl": "Zevende"
+    "nl": "Zevende",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_8": {
     "en": "Eighth",
@@ -1131,7 +1451,11 @@
     "de": "Achter",
     "tr": "Sekizinci",
     "pl": "Ósme",
-    "nl": "Achtste"
+    "nl": "Achtste",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_position_9": {
     "en": "Ninth",
@@ -1145,7 +1469,11 @@
     "de": "Neunter",
     "tr": "Dokuzuncu",
     "pl": "Dziewiąte",
-    "nl": "Negende"
+    "nl": "Negende",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_privacy_policy": {
     "en": "Privacy Policy",
@@ -1159,7 +1487,11 @@
     "de": "Datenschutzerklärung",
     "tr": "Gizlilik Politikası",
     "pl": "Polityka prywatności",
-    "nl": "Privacybeleid"
+    "nl": "Privacybeleid",
+    "pt": "Política de privacidade",
+    "id": "Kebijakan privasi",
+    "ja": "プライバシーポリシー",
+    "it": "Informativa sulla privacy"
   },
   "agario.page_region_australia": {
     "en": "Australia",
@@ -1173,7 +1505,11 @@
     "de": "Australien",
     "tr": "Avustralya",
     "pl": "Australia",
-    "nl": "Australië"
+    "nl": "Australië",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_china": {
     "en": "China",
@@ -1187,7 +1523,11 @@
     "de": "China",
     "tr": "Çin",
     "pl": "Chiny",
-    "nl": "China"
+    "nl": "China",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_east_asia": {
     "en": "East Asia",
@@ -1201,7 +1541,11 @@
     "de": "Ostasien",
     "tr": "Doğu Asya",
     "pl": "Azja Wschodnia",
-    "nl": "Oost-Azië"
+    "nl": "Oost-Azië",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_europe": {
     "en": "Europe",
@@ -1215,7 +1559,11 @@
     "de": "Europa",
     "tr": "Avrupa",
     "pl": "Europa",
-    "nl": "Europa"
+    "nl": "Europa",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_north_america": {
     "en": "North America",
@@ -1229,7 +1577,11 @@
     "de": "Nordamerika",
     "tr": "Kuzey Amerika",
     "pl": "Ameryka Północna",
-    "nl": "Noord-Amerika"
+    "nl": "Noord-Amerika",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_oceania": {
     "en": "Oceania",
@@ -1243,7 +1595,11 @@
     "de": "Ozeanien",
     "tr": "Okyanusya",
     "pl": "Oceania",
-    "nl": "Oceanië"
+    "nl": "Oceanië",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_players": {
     "en": "players",
@@ -1257,7 +1613,11 @@
     "de": "Spieler",
     "tr": "oyuncu",
     "pl": "graczy",
-    "nl": "spelers"
+    "nl": "spelers",
+    "pt": "jogadores",
+    "id": "pemain",
+    "ja": "プレイヤー",
+    "it": "giocatori"
   },
   "agario.page_region_poland": {
     "en": "Poland",
@@ -1271,7 +1631,11 @@
     "de": "Polen",
     "tr": "Polonya",
     "pl": "Polska",
-    "nl": "Polen"
+    "nl": "Polen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_russia": {
     "en": "Russia",
@@ -1285,7 +1649,11 @@
     "de": "Russland",
     "tr": "Rusya",
     "pl": "Rosja",
-    "nl": "Rusland"
+    "nl": "Rusland",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_select": {
     "en": " -- Select a Region -- ",
@@ -1299,7 +1667,11 @@
     "de": " -- Region wählen -- ",
     "tr": " -- Bölge Seç -- ",
     "pl": " -- Wybierz region -- ",
-    "nl": " -- Kies een regio -- "
+    "nl": " -- Kies een regio -- ",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_south_america": {
     "en": "South America",
@@ -1313,7 +1685,11 @@
     "de": "Südamerika",
     "tr": "Güney Amerika",
     "pl": "Ameryka Południowa",
-    "nl": "Zuid-Amerika"
+    "nl": "Zuid-Amerika",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_turkey": {
     "en": "Turkey",
@@ -1327,7 +1703,11 @@
     "de": "Türkei",
     "tr": "Türkiye",
     "pl": "Turcja",
-    "nl": "Turkije"
+    "nl": "Turkije",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_us_east": {
     "en": "US East",
@@ -1341,7 +1721,11 @@
     "de": "USA Ost",
     "tr": "ABD Doğu",
     "pl": "USA Wschód",
-    "nl": "VS Oost"
+    "nl": "VS Oost",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_region_us_west": {
     "en": "US West",
@@ -1355,7 +1739,11 @@
     "de": "USA West",
     "tr": "ABD Batı",
     "pl": "USA Zachód",
-    "nl": "VS West"
+    "nl": "VS West",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_results_party_share_link": {
     "en": "Share the link with your friends!<br>Press Play to enter party!",
@@ -1369,7 +1757,11 @@
     "de": "Teile den Link mit deinen Freunden!<br>Drücke Spielen, um der Party beizutreten!",
     "tr": "Bağlantıyı arkadaşlarınla paylaş!<br>Partiye girmek için Oyna'ya bas!",
     "pl": "Udostępnij link znajomym!<br>Naciśnij Graj, aby wejść do party!",
-    "nl": "Deel de link met je vrienden!<br>Druk op Spelen om de party in te gaan!"
+    "nl": "Deel de link met je vrienden!<br>Druk op Spelen om de party in te gaan!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_rush_details_message": {
     "en": "You have %i minutes.\\\\nGet as big as you can!",
@@ -1383,7 +1775,11 @@
     "de": "Du hast %i Minuten.\\\\nWerde so groß wie möglich!",
     "tr": "%i dakikan var.\\\\nOlabildiğince büyü!",
     "pl": "Masz %i minut.\\\\nUrośnij jak najbardziej!",
-    "nl": "Je hebt %i minuten.\\\\nWord zo groot als je kunt!"
+    "nl": "Je hebt %i minuten.\\\\nWord zo groot als je kunt!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_rush_details_placedesc_a": {
     "en": "1st Place",
@@ -1397,7 +1793,11 @@
     "de": "1. Platz",
     "tr": "1. Sıra",
     "pl": "1. miejsce",
-    "nl": "1e plaats"
+    "nl": "1e plaats",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_rush_details_placedesc_d": {
     "en": "Finish",
@@ -1411,7 +1811,11 @@
     "de": "Ziel",
     "tr": "Bitiş",
     "pl": "Meta",
-    "nl": "Finish"
+    "nl": "Finish",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_rush_mode_unlock_fee": {
     "en": "Fee: %rush_fee%",
@@ -1425,7 +1829,11 @@
     "de": "Gebühr: %rush_fee%",
     "tr": "Ücret: %rush_fee%",
     "pl": "Opłata: %rush_fee%",
-    "nl": "Kosten: %rush_fee%"
+    "nl": "Kosten: %rush_fee%",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_rush_unavail_footer": {
     "en": "Unlock at Level %i",
@@ -1439,7 +1847,11 @@
     "de": "Freischaltung ab Level %i",
     "tr": "Seviye %i'de açılır",
     "pl": "Odblokuj na poziomie %i",
-    "nl": "Ontgrendeld op level %i"
+    "nl": "Ontgrendeld op level %i",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_score": {
     "en": "Score",
@@ -1453,7 +1865,11 @@
     "de": "Punkte",
     "tr": "Skor",
     "pl": "Wynik",
-    "nl": "Score"
+    "nl": "Score",
+    "pt": "Pontuação",
+    "id": "Skor",
+    "ja": "スコア",
+    "it": "Punteggio"
   },
   "agario.page_share": {
     "en": "Share",
@@ -1467,7 +1883,11 @@
     "de": "Teilen",
     "tr": "Paylaş",
     "pl": "Udostępnij",
-    "nl": "Delen"
+    "nl": "Delen",
+    "pt": "Compartilhar",
+    "id": "Bagikan",
+    "ja": "共有",
+    "it": "Condividi"
   },
   "agario.page_shop": {
     "en": "Shop",
@@ -1481,7 +1901,11 @@
     "de": "Shop",
     "tr": "Mağaza",
     "pl": "Sklep",
-    "nl": "Winkel"
+    "nl": "Winkel",
+    "pt": "Loja",
+    "id": "Toko",
+    "ja": "ショップ",
+    "it": "Negozio"
   },
   "agario.page_spectate": {
     "en": "Spectate",
@@ -1495,7 +1919,11 @@
     "de": "Beobachten",
     "tr": "İzle",
     "pl": "Obserwuj",
-    "nl": "Kijken"
+    "nl": "Kijken",
+    "pt": "Observar",
+    "id": "Menonton",
+    "ja": "観戦",
+    "it": "Spettatore"
   },
   "agario.page_stats": {
     "en": "Stats",
@@ -1509,7 +1937,11 @@
     "de": "Statistik",
     "tr": "İstatistikler",
     "pl": "Statystyki",
-    "nl": "Statistieken"
+    "nl": "Statistieken",
+    "pt": "Estatísticas",
+    "id": "Statistik",
+    "ja": "統計",
+    "it": "Statistiche"
   },
   "agario.page_stats_cells_eaten": {
     "en": "cells eaten",
@@ -1523,7 +1955,11 @@
     "de": "gefressene Zellen",
     "tr": "yenen hücre",
     "pl": "zjedzone komórki",
-    "nl": "gegeten cellen"
+    "nl": "gegeten cellen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_stats_food_eaten": {
     "en": "food eaten",
@@ -1537,7 +1973,11 @@
     "de": "gefressenes Futter",
     "tr": "yenen yem",
     "pl": "zjedzone jedzenie",
-    "nl": "gegeten voedsel"
+    "nl": "gegeten voedsel",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_stats_highest_mass": {
     "en": "highest mass",
@@ -1551,7 +1991,11 @@
     "de": "höchste Masse",
     "tr": "en yüksek kütle",
     "pl": "największa masa",
-    "nl": "hoogste massa"
+    "nl": "hoogste massa",
+    "pt": "Maior massa",
+    "id": "Massa tertinggi",
+    "ja": "最大質量",
+    "it": "Massa massima"
   },
   "agario.page_stats_leaderboard_time": {
     "en": "leaderboard time",
@@ -1565,7 +2009,11 @@
     "de": "Zeit in der Bestenliste",
     "tr": "sıralama süresi",
     "pl": "czas w rankingu",
-    "nl": "tijd in klassement"
+    "nl": "tijd in klassement",
+    "pt": "Tempo na classificação",
+    "id": "Waktu di papan peringkat",
+    "ja": "ランキング滞在時間",
+    "it": "Tempo in classifica"
   },
   "agario.page_stats_time_alive": {
     "en": "time alive",
@@ -1579,7 +2027,11 @@
     "de": "Überlebenszeit",
     "tr": "hayatta kalma süresi",
     "pl": "czas przetrwania",
-    "nl": "tijd in leven"
+    "nl": "tijd in leven",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_stats_top_position": {
     "en": "top position",
@@ -1593,7 +2045,11 @@
     "de": "beste Position",
     "tr": "en iyi sıra",
     "pl": "najlepsza pozycja",
-    "nl": "hoogste positie"
+    "nl": "hoogste positie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_survival_time": {
     "en": "Survival Time",
@@ -1607,7 +2063,11 @@
     "de": "Überlebenszeit",
     "tr": "Hayatta Kalma Süresi",
     "pl": "Czas przetrwania",
-    "nl": "Overlevingstijd"
+    "nl": "Overlevingstijd",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_terms_of_service": {
     "en": "Terms of Service",
@@ -1621,7 +2081,11 @@
     "de": "Nutzungsbedingungen",
     "tr": "Hizmet Şartları",
     "pl": "Warunki korzystania",
-    "nl": "Servicevoorwaarden"
+    "nl": "Servicevoorwaarden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_top_position": {
     "en": "Top Position",
@@ -1635,7 +2099,11 @@
     "de": "Beste Position",
     "tr": "En İyi Sıra",
     "pl": "Najlepsza pozycja",
-    "nl": "Hoogste positie"
+    "nl": "Hoogste positie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_total_cells_eaten": {
     "en": "Total cells eaten",
@@ -1649,7 +2117,11 @@
     "de": "Gefressene Zellen gesamt",
     "tr": "Toplam yenen hücre",
     "pl": "Łącznie zjedzonych komórek",
-    "nl": "Totaal gegeten cellen"
+    "nl": "Totaal gegeten cellen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_total_mass_eaten": {
     "en": "Total mass eaten",
@@ -1663,7 +2135,11 @@
     "de": "Gefressene Masse gesamt",
     "tr": "Toplam yenen kütle",
     "pl": "Łącznie zjedzonej masy",
-    "nl": "Totaal gegeten massa"
+    "nl": "Totaal gegeten massa",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_tt_share_stats": {
     "en": "I survived %@m %@s and got a score of %@ in Agar.io! Can you do better? Come and play! http://r.agar.io",
@@ -1677,7 +2153,11 @@
     "de": "Ich habe in Agar.io %@m %@s überlebt und %@ Punkte erreicht! Schaffst du mehr? Komm und spiel! http://r.agar.io",
     "tr": "Agar.io'da %@d %@sn hayatta kaldım ve %@ puan aldım! Daha iyisini yapabilir misin? Gel ve oyna! http://r.agar.io",
     "pl": "Przetrwałem %@m %@s i zdobyłem %@ punktów w Agar.io! Dasz radę lepiej? Przyjdź i zagraj! http://r.agar.io",
-    "nl": "Ik overleefde %@m %@s en haalde een score van %@ in Agar.io! Kun jij het beter? Kom spelen! http://r.agar.io"
+    "nl": "Ik overleefde %@m %@s en haalde een score van %@ in Agar.io! Kun jij het beter? Kom spelen! http://r.agar.io",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_unnamed_cell": {
     "en": "An unnamed cell",
@@ -1691,7 +2171,11 @@
     "de": "Eine namenlose Zelle",
     "tr": "İsimsiz bir hücre",
     "pl": "Komórka bez nazwy",
-    "nl": "Een naamloze cel"
+    "nl": "Een naamloze cel",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.page_web_disconnect_title": {
     "en": "Disconnected",
@@ -1705,7 +2189,11 @@
     "de": "Verbindung getrennt",
     "tr": "Bağlantı kesildi",
     "pl": "Rozłączono",
-    "nl": "Verbinding verbroken"
+    "nl": "Verbinding verbroken",
+    "pt": "Desconectado",
+    "id": "Terputus",
+    "ja": "切断済み",
+    "it": "Disconnesso"
   },
   "agario.page_web_disconnect_body": {
     "en": "Please check your internet connection.",
@@ -1719,7 +2207,11 @@
     "de": "Bitte prüfe deine Internetverbindung.",
     "tr": "Lütfen internet bağlantını kontrol et.",
     "pl": "Sprawdź połączenie z internetem.",
-    "nl": "Controleer je internetverbinding."
+    "nl": "Controleer je internetverbinding.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.menu_force_update_action_web": {
     "en": "Refresh now!",
@@ -1733,7 +2225,11 @@
     "de": "Jetzt aktualisieren!",
     "tr": "Şimdi yenile!",
     "pl": "Odśwież teraz!",
-    "nl": "Nu vernieuwen!"
+    "nl": "Nu vernieuwen!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.menu_settings_sfx": {
     "en": "Menu Sounds",
@@ -1747,7 +2243,11 @@
     "de": "Menü-Sounds",
     "tr": "Menü Sesleri",
     "pl": "Dźwięki menu",
-    "nl": "Menugeluiden"
+    "nl": "Menugeluiden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.menu_settings_arena_sfx": {
     "en": "Game Sounds",
@@ -1761,7 +2261,11 @@
     "de": "Spiel-Sounds",
     "tr": "Oyun Sesleri",
     "pl": "Dźwięki gry",
-    "nl": "Spelgeluiden"
+    "nl": "Spelgeluiden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.soft_update_title": {
     "en": "Time to update!",
@@ -1775,7 +2279,11 @@
     "de": "Zeit für ein Update!",
     "tr": "Güncelleme zamanı!",
     "pl": "Czas na aktualizację!",
-    "nl": "Tijd voor een update!"
+    "nl": "Tijd voor een update!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "agario.soft_update_title_web": {
     "en": "A new Agar.io version is available.",
@@ -1789,6 +2297,10 @@
     "de": "Eine neue Agar.io-Version ist verfügbar.",
     "tr": "Yeni bir Agar.io sürümü mevcut.",
     "pl": "Dostępna jest nowa wersja Agar.io.",
-    "nl": "Er is een nieuwe versie van Agar.io beschikbaar."
+    "nl": "Er is een nieuwe versie van Agar.io beschikbaar.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

@@ -11,7 +11,11 @@
     "de": "Agar.io SKIN ROTATOR<br>Das Legend Mod Projekt",
     "tr": "Agar.io SKIN ROTATOR<br>Legend Mod Projesi",
     "pl": "Agar.io SKIN ROTATOR<br>Projekt Legend Mod",
-    "nl": "Agar.io SKIN ROTATOR<br>Het Legend Mod Project"
+    "nl": "Agar.io SKIN ROTATOR<br>Het Legend Mod Project",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.forVanillaGameVisible": {
     "en": "* For vanilla game (visible to actual user)",
@@ -25,7 +29,11 @@
     "de": "* Für das Vanilla-Spiel (sichtbar für den Nutzer selbst)",
     "tr": "* Normal oyun için (yalnızca kullanıcının kendisi görür)",
     "pl": "* Dla zwykłej gry (widoczne dla samego użytkownika)",
-    "nl": "* Voor het vanilla spel (zichtbaar voor de gebruiker zelf)"
+    "nl": "* Voor het vanilla spel (zichtbaar voor de gebruiker zelf)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.version": {
     "en": "Version:",
@@ -39,7 +47,11 @@
     "de": "Version:",
     "tr": "Sürüm:",
     "pl": "Wersja:",
-    "nl": "Versie:"
+    "nl": "Versie:",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.webConsoleF12": {
     "en": "Web console [F12]",
@@ -53,7 +65,11 @@
     "de": "Web-Konsole [F12]",
     "tr": "Tarayıcı konsolu [F12]",
     "pl": "Konsola przeglądarki [F12]",
-    "nl": "Webconsole [F12]"
+    "nl": "Webconsole [F12]",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.tampermonkeyGreasemonkey": {
     "en": "Tampermonkey | Greasemonkey",
@@ -67,7 +83,11 @@
     "de": "Tampermonkey | Greasemonkey",
     "tr": "Tampermonkey | Greasemonkey",
     "pl": "Tampermonkey | Greasemonkey",
-    "nl": "Tampermonkey | Greasemonkey"
+    "nl": "Tampermonkey | Greasemonkey",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.copy": {
     "en": "Copy",
@@ -81,7 +101,11 @@
     "de": "Kopieren",
     "tr": "Kopyala",
     "pl": "Kopiuj",
-    "nl": "Kopiëren"
+    "nl": "Kopiëren",
+    "pt": "Copiar",
+    "id": "Salin",
+    "ja": "コピー",
+    "it": "Copia"
   },
   "site.skinrotator.clear": {
     "en": "Clear",
@@ -95,7 +119,11 @@
     "de": "Leeren",
     "tr": "Temizle",
     "pl": "Wyczyść",
-    "nl": "Wissen"
+    "nl": "Wissen",
+    "pt": "Limpar",
+    "id": "Bersihkan",
+    "ja": "クリア",
+    "it": "Cancella"
   },
   "site.skinrotator.knownIssues": {
     "en": "Known issues",
@@ -109,7 +137,11 @@
     "de": "Bekannte Probleme",
     "tr": "Bilinen sorunlar",
     "pl": "Znane problemy",
-    "nl": "Bekende problemen"
+    "nl": "Bekende problemen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.theLegendModProject": {
     "en": "The Legend Mod Project",
@@ -123,7 +155,11 @@
     "de": "Das Legend Mod Projekt",
     "tr": "Legend Mod Projesi",
     "pl": "Projekt Legend Mod",
-    "nl": "Het Legend Mod Project"
+    "nl": "Het Legend Mod Project",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.mitLicence": {
     "en": "- MIT Licence -",
@@ -137,7 +173,11 @@
     "de": "- MIT-Lizenz -",
     "tr": "- MIT Lisansı -",
     "pl": "- Licencja MIT -",
-    "nl": "- MIT-licentie -"
+    "nl": "- MIT-licentie -",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.forRagaMod": {
     "en": "** For {0} mod (visible to all Raga users)",
@@ -151,7 +191,11 @@
     "de": "** Für den {0} Mod (sichtbar für alle Raga-Nutzer)",
     "tr": "** {0} modu için (tüm Raga kullanıcıları görür)",
     "pl": "** Dla moda {0} (widoczne dla wszystkich użytkowników Raga)",
-    "nl": "** Voor de {0} mod (zichtbaar voor alle Raga-gebruikers)"
+    "nl": "** Voor de {0} mod (zichtbaar voor alle Raga-gebruikers)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.generateNickname": {
     "en": "*** Generate <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nickname</b></a>",
@@ -165,7 +209,11 @@
     "de": "*** <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">Nickname</b></a> erzeugen",
     "tr": "*** <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">Takma ad</b></a> oluştur",
     "pl": "*** Wygeneruj <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nick</b></a>",
-    "nl": "*** Genereer een <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nickname</b></a>"
+    "nl": "*** Genereer een <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nickname</b></a>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.newVersionHere": {
     "en": "[NEW VERSION HERE]",
@@ -179,7 +227,11 @@
     "de": "[NEUE VERSION HIER]",
     "tr": "[YENİ SÜRÜM BURADA]",
     "pl": "[NOWA WERSJA TUTAJ]",
-    "nl": "[NIEUWE VERSIE HIER]"
+    "nl": "[NIEUWE VERSIE HIER]",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.destination": {
     "en": "Destination",
@@ -193,7 +245,11 @@
     "de": "Ziel",
     "tr": "Hedef",
     "pl": "Cel",
-    "nl": "Bestemming"
+    "nl": "Bestemming",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skinrotator.codeOutdated": {
     "note": "goes into a \"...\" string of the generated code: no double quotes",
@@ -208,6 +264,10 @@
     "de": "Dein Code ist veraltet, geh auf die SKIN ROTATOR Website, um ihn zu aktualisieren.",
     "tr": "Kodun güncel değil, güncellemek için SKIN ROTATOR sitesine git.",
     "pl": "Twój kod jest nieaktualny, wejdź na stronę SKIN ROTATOR, aby go zaktualizować.",
-    "nl": "Je code is verouderd, ga naar de SKIN ROTATOR website om hem bij te werken."
+    "nl": "Je code is verouderd, ga naar de SKIN ROTATOR website om hem bij te werken.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

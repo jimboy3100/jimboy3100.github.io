@@ -11,7 +11,11 @@
     "de": "Antworten auf die häufigsten Fragen zu Legend Mod – Installation, Makros, Skins, Fehlerbehebung und mehr.",
     "tr": "Legend Mod hakkında en sık sorulan soruların yanıtları: kurulum, makrolar, skinler, sorun giderme ve daha fazlası.",
     "pl": "Odpowiedzi na najczęstsze pytania o Legend Mod — instalacja, makra, skiny, rozwiązywanie problemów i nie tylko.",
-    "nl": "Antwoorden op de meestgestelde vragen over Legend Mod — installatie, macro's, skins, probleemoplossing en meer."
+    "nl": "Antwoorden op de meestgestelde vragen over Legend Mod — installatie, macro's, skins, probleemoplossing en meer.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.gettingStarted": {
     "en": "🚀 Getting Started",
@@ -25,7 +29,11 @@
     "de": "🚀 Erste Schritte",
     "tr": "🚀 Başlarken",
     "pl": "🚀 Pierwsze kroki",
-    "nl": "🚀 Aan de slag"
+    "nl": "🚀 Aan de slag",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.whatIsLegendMod": {
     "en": "What is Legend Mod and how does it improve agar.io?",
@@ -39,7 +47,11 @@
     "de": "Was ist Legend Mod und wie verbessert es agar.io?",
     "tr": "Legend Mod nedir ve agar.io'yu nasıl geliştirir?",
     "pl": "Czym jest Legend Mod i jak ulepsza agar.io?",
-    "nl": "Wat is Legend Mod en hoe maakt het agar.io beter?"
+    "nl": "Wat is Legend Mod en hoe maakt het agar.io beter?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.legendModIsThe": {
     "en": "Legend Mod is the most feature-rich free agar.io extension. It adds <strong>60+ macros</strong> (tricksplit, doublesplit, popsplit, quick feeding, cannon split, freeze cell), <strong>custom skins</strong> with animated/video support, <strong>anti-lag FPS boost</strong> with WASM acceleration, team chat, minimap, multibox, gamepad support, and more. It works on Chrome, Edge, Firefox, Opera, Brave, and mobile browsers.",
@@ -53,7 +65,11 @@
     "de": "Legend Mod ist die funktionsreichste kostenlose agar.io-Erweiterung. Sie bietet <strong>über 60 Makros</strong> (Tricksplit, Doublesplit, Popsplit, Quick Feeding, Cannon Split, Freeze Cell), <strong>eigene Skins</strong> mit Animations- und Video-Unterstützung, <strong>Anti-Lag-FPS-Boost</strong> mit WASM-Beschleunigung, Team-Chat, Minimap, Multibox, Gamepad-Unterstützung und vieles mehr. Sie funktioniert in Chrome, Edge, Firefox, Opera, Brave und mobilen Browsern.",
     "tr": "Legend Mod, en çok özelliğe sahip ücretsiz agar.io eklentisidir. <strong>60+ makro</strong> (tricksplit, doublesplit, popsplit, hızlı besleme, cannon split, hücre dondurma), animasyonlu/video destekli <strong>özel skinler</strong>, WASM hızlandırmalı <strong>anti-lag FPS artışı</strong>, takım sohbeti, mini harita, multibox, gamepad desteği ve daha fazlasını ekler. Chrome, Edge, Firefox, Opera, Brave ve mobil tarayıcılarda çalışır.",
     "pl": "Legend Mod to najbogatsze w funkcje darmowe rozszerzenie do agar.io. Dodaje <strong>60+ makr</strong> (tricksplit, doublesplit, popsplit, szybkie karmienie, cannon split, zamrożenie komórki), <strong>własne skiny</strong> z obsługą animacji/wideo, <strong>anti-lag i wzrost FPS</strong> z akceleracją WASM, czat drużynowy, minimapę, multibox, obsługę gamepada i wiele więcej. Działa w Chrome, Edge, Firefox, Opera, Brave i przeglądarkach mobilnych.",
-    "nl": "Legend Mod is de gratis agar.io-extensie met de meeste functies. Het voegt <strong>60+ macro's</strong> toe (tricksplit, doublesplit, popsplit, snel voeren, cannon split, freeze cell), <strong>eigen skins</strong> met ondersteuning voor animaties/video, <strong>anti-lag FPS-boost</strong> met WASM-versnelling, teamchat, minimap, multibox, gamepadondersteuning en meer. Het werkt in Chrome, Edge, Firefox, Opera, Brave en mobiele browsers."
+    "nl": "Legend Mod is de gratis agar.io-extensie met de meeste functies. Het voegt <strong>60+ macro's</strong> toe (tricksplit, doublesplit, popsplit, snel voeren, cannon split, freeze cell), <strong>eigen skins</strong> met ondersteuning voor animaties/video, <strong>anti-lag FPS-boost</strong> met WASM-versnelling, teamchat, minimap, multibox, gamepadondersteuning en meer. Het werkt in Chrome, Edge, Firefox, Opera, Brave en mobiele browsers.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.howDoIInstall": {
     "en": "How do I install Legend Mod?",
@@ -67,7 +83,11 @@
     "de": "Wie installiere ich Legend Mod?",
     "tr": "Legend Mod'u nasıl kurarım?",
     "pl": "Jak zainstalować Legend Mod?",
-    "nl": "Hoe installeer ik Legend Mod?"
+    "nl": "Hoe installeer ik Legend Mod?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.forChromeEdgeBrave": {
     "en": "For <strong>Chrome/Edge/Brave</strong>: Install <a href=\"https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja\">\"Legend Express\"</a> from the Chrome Web Store. For <strong>Firefox/Opera</strong>: Install Tampermonkey, then add the Legend Mod userscript. For <strong>mobile</strong>: open <a href=\"https://www.legendmod.ml/play.html\">www.legendmod.ml/play.html</a> on your phone (touch controls load automatically), or use Firefox for Android or Orion (iOS) with Tampermonkey.",
@@ -81,7 +101,11 @@
     "de": "Für <strong>Chrome/Edge/Brave</strong>: Installiere <a href=\"https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja\">„Legend Express“</a> aus dem Chrome Web Store. Für <strong>Firefox/Opera</strong>: Installiere Tampermonkey und füge dann das Legend-Mod-Userscript hinzu. Für <strong>Mobilgeräte</strong>: Öffne <a href=\"https://www.legendmod.ml/play.html\">www.legendmod.ml/play.html</a> auf deinem Handy (die Touch-Steuerung lädt automatisch) oder nutze Firefox für Android bzw. Orion (iOS) mit Tampermonkey.",
     "tr": "<strong>Chrome/Edge/Brave</strong> için: Chrome Web Mağazası'ndan <a href=\"https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja\">\"Legend Express\"</a> eklentisini kurun. <strong>Firefox/Opera</strong> için: Tampermonkey'i kurun, ardından Legend Mod kullanıcı betiğini ekleyin. <strong>Mobil</strong> için: telefonunuzda <a href=\"https://www.legendmod.ml/play.html\">www.legendmod.ml/play.html</a> adresini açın (dokunmatik kontroller otomatik yüklenir) ya da Tampermonkey ile Android için Firefox veya Orion (iOS) kullanın.",
     "pl": "Dla <strong>Chrome/Edge/Brave</strong>: zainstaluj <a href=\"https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja\">\"Legend Express\"</a> z Chrome Web Store. Dla <strong>Firefox/Opera</strong>: zainstaluj Tampermonkey, a potem dodaj userscript Legend Mod. Na <strong>telefonie</strong>: otwórz <a href=\"https://www.legendmod.ml/play.html\">www.legendmod.ml/play.html</a> (sterowanie dotykowe ładuje się automatycznie) albo użyj Firefoksa na Androida lub Oriona (iOS) z Tampermonkey.",
-    "nl": "Voor <strong>Chrome/Edge/Brave</strong>: installeer <a href=\"https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja\">\"Legend Express\"</a> uit de Chrome Web Store. Voor <strong>Firefox/Opera</strong>: installeer Tampermonkey en voeg daarna het Legend Mod-userscript toe. Voor <strong>mobiel</strong>: open <a href=\"https://www.legendmod.ml/play.html\">www.legendmod.ml/play.html</a> op je telefoon (de touchbediening laadt automatisch), of gebruik Firefox voor Android of Orion (iOS) met Tampermonkey."
+    "nl": "Voor <strong>Chrome/Edge/Brave</strong>: installeer <a href=\"https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja\">\"Legend Express\"</a> uit de Chrome Web Store. Voor <strong>Firefox/Opera</strong>: installeer Tampermonkey en voeg daarna het Legend Mod-userscript toe. Voor <strong>mobiel</strong>: open <a href=\"https://www.legendmod.ml/play.html\">www.legendmod.ml/play.html</a> op je telefoon (de touchbediening laadt automatisch), of gebruik Firefox voor Android of Orion (iOS) met Tampermonkey.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.isLegendModFree": {
     "en": "Is Legend Mod free?",
@@ -95,7 +119,11 @@
     "de": "Ist Legend Mod kostenlos?",
     "tr": "Legend Mod ücretsiz mi?",
     "pl": "Czy Legend Mod jest darmowy?",
-    "nl": "Is Legend Mod gratis?"
+    "nl": "Is Legend Mod gratis?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.yesLegendModIs": {
     "en": "Yes, Legend Mod is <strong>100% free</strong>. It's available on the Chrome Web Store and as a Tampermonkey userscript. The full source code is open source on <a href=\"https://github.com/jimboy3100/jimboy3100.github.io/\" target=\"_blank\" rel=\"noopener\">GitHub</a>. There are no hidden fees, no premium tier, and no ads.",
@@ -109,7 +137,11 @@
     "de": "Ja, Legend Mod ist <strong>100 % kostenlos</strong>. Es ist im Chrome Web Store und als Tampermonkey-Userscript erhältlich. Der komplette Quellcode ist Open Source auf <a href=\"https://github.com/jimboy3100/jimboy3100.github.io/\" target=\"_blank\" rel=\"noopener\">GitHub</a>. Es gibt keine versteckten Kosten, keine Premium-Stufe und keine Werbung.",
     "tr": "Evet, Legend Mod <strong>%100 ücretsizdir</strong>. Chrome Web Mağazası'nda ve Tampermonkey kullanıcı betiği olarak sunulur. Kaynak kodunun tamamı <a href=\"https://github.com/jimboy3100/jimboy3100.github.io/\" target=\"_blank\" rel=\"noopener\">GitHub</a> üzerinde açık kaynaktır. Gizli ücret, premium paket veya reklam yoktur.",
     "pl": "Tak, Legend Mod jest <strong>w 100% darmowy</strong>. Jest dostępny w Chrome Web Store oraz jako userscript do Tampermonkey. Cały kod źródłowy jest otwarty na <a href=\"https://github.com/jimboy3100/jimboy3100.github.io/\" target=\"_blank\" rel=\"noopener\">GitHub</a>. Bez ukrytych opłat, bez wersji premium i bez reklam.",
-    "nl": "Ja, Legend Mod is <strong>100% gratis</strong>. Het is beschikbaar in de Chrome Web Store en als Tampermonkey-userscript. De volledige broncode is open source op <a href=\"https://github.com/jimboy3100/jimboy3100.github.io/\" target=\"_blank\" rel=\"noopener\">GitHub</a>. Geen verborgen kosten, geen premiumversie en geen advertenties."
+    "nl": "Ja, Legend Mod is <strong>100% gratis</strong>. Het is beschikbaar in de Chrome Web Store en als Tampermonkey-userscript. De volledige broncode is open source op <a href=\"https://github.com/jimboy3100/jimboy3100.github.io/\" target=\"_blank\" rel=\"noopener\">GitHub</a>. Geen verborgen kosten, geen premiumversie en geen advertenties.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.isLegendModSafe": {
     "en": "Is Legend Mod safe? Does it contain viruses?",
@@ -123,7 +155,11 @@
     "de": "Ist Legend Mod sicher? Enthält es Viren?",
     "tr": "Legend Mod güvenli mi? Virüs içeriyor mu?",
     "pl": "Czy Legend Mod jest bezpieczny? Czy zawiera wirusy?",
-    "nl": "Is Legend Mod veilig? Zitten er virussen in?"
+    "nl": "Is Legend Mod veilig? Zitten er virussen in?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.yesLegendModIs2": {
     "en": "Yes, Legend Mod is completely safe. It's <strong>100% open source</strong> — the full source code is on GitHub. It's distributed through the official Chrome Web Store, which scans extensions for malware. Legend Mod does not collect personal data, does not inject ads, and does not modify your browser settings.",
@@ -137,7 +173,11 @@
     "de": "Ja, Legend Mod ist völlig sicher. Es ist <strong>100 % Open Source</strong> – der komplette Quellcode liegt auf GitHub. Es wird über den offiziellen Chrome Web Store verteilt, der Erweiterungen auf Malware prüft. Legend Mod sammelt keine persönlichen Daten, blendet keine Werbung ein und ändert keine Browsereinstellungen.",
     "tr": "Evet, Legend Mod tamamen güvenlidir. <strong>%100 açık kaynaktır</strong>; kaynak kodunun tamamı GitHub'dadır. Eklentileri kötü amaçlı yazılımlara karşı tarayan resmi Chrome Web Mağazası üzerinden dağıtılır. Legend Mod kişisel veri toplamaz, reklam eklemez ve tarayıcı ayarlarınızı değiştirmez.",
     "pl": "Tak, Legend Mod jest całkowicie bezpieczny. Jest <strong>w 100% open source</strong> — cały kod źródłowy znajduje się na GitHub. Jest dystrybuowany przez oficjalny Chrome Web Store, który skanuje rozszerzenia pod kątem złośliwego oprogramowania. Legend Mod nie zbiera danych osobowych, nie wstrzykuje reklam i nie zmienia ustawień przeglądarki.",
-    "nl": "Ja, Legend Mod is volledig veilig. Het is <strong>100% open source</strong> — de volledige broncode staat op GitHub. Het wordt verspreid via de officiële Chrome Web Store, die extensies controleert op malware. Legend Mod verzamelt geen persoonlijke gegevens, voegt geen advertenties in en wijzigt je browserinstellingen niet."
+    "nl": "Ja, Legend Mod is volledig veilig. Het is <strong>100% open source</strong> — de volledige broncode staat op GitHub. Het wordt verspreid via de officiële Chrome Web Store, die extensies controleert op malware. Legend Mod verzamelt geen persoonlijke gegevens, voegt geen advertenties in en wijzigt je browserinstellingen niet.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.macrosControls": {
     "en": "🎮 Macros & Controls",
@@ -151,7 +191,11 @@
     "de": "🎮 Makros & Steuerung",
     "tr": "🎮 Makrolar ve Kontroller",
     "pl": "🎮 Makra i sterowanie",
-    "nl": "🎮 Macro's & besturing"
+    "nl": "🎮 Macro's & besturing",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.whatMacrosDoesLegend": {
     "en": "What macros does Legend Mod support?",
@@ -165,7 +209,11 @@
     "de": "Welche Makros unterstützt Legend Mod?",
     "tr": "Legend Mod hangi makroları destekliyor?",
     "pl": "Jakie makra obsługuje Legend Mod?",
-    "nl": "Welke macro's ondersteunt Legend Mod?"
+    "nl": "Welke macro's ondersteunt Legend Mod?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.legendModSupports60": {
     "en": "Legend Mod supports <strong>60+ macros</strong> including: Tricksplit, Doublesplit, Popsplit, Cannon Split, Quick Feeding (W spam), Freeze Cell, Auto Respawn, Auto Coins, Reverse Movement, Line Split, and many more. All macros are customizable — you can rebind any key in Settings → Hotkeys.",
@@ -179,7 +227,11 @@
     "de": "Legend Mod unterstützt <strong>über 60 Makros</strong>, darunter: Tricksplit, Doublesplit, Popsplit, Cannon Split, Quick Feeding (W-Spam), Freeze Cell, Auto Respawn, Auto Coins, Reverse Movement, Line Split und viele mehr. Alle Makros sind anpassbar – du kannst jede Taste unter Einstellungen → Hotkeys neu belegen.",
     "tr": "Legend Mod <strong>60+ makroyu</strong> destekler: Tricksplit, Doublesplit, Popsplit, Cannon Split, Hızlı Besleme (W spam), Hücre Dondurma, Otomatik Yeniden Doğma, Otomatik Coin, Ters Hareket, Line Split ve çok daha fazlası. Tüm makrolar özelleştirilebilir; Ayarlar → Kısayol Tuşları bölümünden istediğiniz tuşu yeniden atayabilirsiniz.",
     "pl": "Legend Mod obsługuje <strong>60+ makr</strong>, m.in.: Tricksplit, Doublesplit, Popsplit, Cannon Split, szybkie karmienie (W spam), zamrożenie komórki, automatyczne odrodzenie, automatyczne monety, odwrócony ruch, Line Split i wiele innych. Wszystkie makra można dostosować — każdy klawisz zmienisz w Ustawienia → Skróty klawiszowe.",
-    "nl": "Legend Mod ondersteunt <strong>60+ macro's</strong>, waaronder: Tricksplit, Doublesplit, Popsplit, Cannon Split, Quick Feeding (W-spam), Freeze Cell, Auto Respawn, Auto Coins, Reverse Movement, Line Split en nog veel meer. Alle macro's zijn aan te passen — je kunt elke toets opnieuw instellen via Settings → Hotkeys."
+    "nl": "Legend Mod ondersteunt <strong>60+ macro's</strong>, waaronder: Tricksplit, Doublesplit, Popsplit, Cannon Split, Quick Feeding (W-spam), Freeze Cell, Auto Respawn, Auto Coins, Reverse Movement, Line Split en nog veel meer. Alle macro's zijn aan te passen — je kunt elke toets opnieuw instellen via Settings → Hotkeys.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.howDoIUse": {
     "en": "How do I use multibox in Legend Mod?",
@@ -193,7 +245,11 @@
     "de": "Wie nutze ich Multibox in Legend Mod?",
     "tr": "Legend Mod'da multibox nasıl kullanılır?",
     "pl": "Jak używać multiboxa w Legend Mod?",
-    "nl": "Hoe gebruik ik multibox in Legend Mod?"
+    "nl": "Hoe gebruik ik multibox in Legend Mod?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.multiboxGivesYouA": {
     "en": "Multibox gives you a second unit in the same tab. Set a key for <strong>Multibox Toggle Next</strong> in Settings → Hotkeys: pressing it starts the second unit and then swaps control between your two cells. The MultiBox options can show the middle of both units, draw rings around them and freeze the inactive unit, and each unit can use its own skin profile.",
@@ -207,7 +263,11 @@
     "de": "Multibox gibt dir eine zweite Einheit im selben Tab. Lege unter Einstellungen → Hotkeys eine Taste für <strong>Multibox Toggle Next</strong> fest: Ein Druck startet die zweite Einheit und wechselt danach die Steuerung zwischen deinen beiden Zellen. Die MultiBox-Optionen können die Mitte beider Einheiten anzeigen, Ringe um sie zeichnen und die inaktive Einheit einfrieren, und jede Einheit kann ihr eigenes Skin-Profil nutzen.",
     "tr": "Multibox size aynı sekmede ikinci bir birim verir. Ayarlar → Kısayol Tuşları bölümünde <strong>Multibox Toggle Next</strong> için bir tuş belirleyin: bu tuşa basmak ikinci birimi başlatır ve ardından kontrolü iki hücreniz arasında değiştirir. MultiBox seçenekleri iki birimin ortasını gösterebilir, etraflarına halka çizebilir ve aktif olmayan birimi dondurabilir; her birim kendi skin profilini kullanabilir.",
     "pl": "Multibox daje ci drugą jednostkę w tej samej karcie. Ustaw klawisz dla <strong>Multibox Toggle Next</strong> w Ustawienia → Skróty klawiszowe: jego naciśnięcie uruchamia drugą jednostkę, a potem przełącza sterowanie między twoimi dwiema komórkami. Opcje MultiBox mogą pokazywać środek między obiema jednostkami, rysować wokół nich pierścienie i zamrażać nieaktywną jednostkę, a każda jednostka może mieć własny profil skinów.",
-    "nl": "Met multibox krijg je een tweede unit in hetzelfde tabblad. Stel een toets in voor <strong>Multibox Toggle Next</strong> in Settings → Hotkeys: druk erop om de tweede unit te starten en daarna wissel je ermee de besturing tussen je twee cellen. De MultiBox-opties kunnen het midden van beide units tonen, ringen om ze heen tekenen en de inactieve unit bevriezen, en elke unit kan een eigen skinprofiel gebruiken."
+    "nl": "Met multibox krijg je een tweede unit in hetzelfde tabblad. Stel een toets in voor <strong>Multibox Toggle Next</strong> in Settings → Hotkeys: druk erop om de tweede unit te starten en daarna wissel je ermee de besturing tussen je twee cellen. De MultiBox-opties kunnen het midden van beide units tonen, ringen om ze heen tekenen en de inactieve unit bevriezen, en elke unit kan een eigen skinprofiel gebruiken.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.doesLegendModSupport": {
     "en": "Does Legend Mod support gamepads?",
@@ -221,7 +281,11 @@
     "de": "Unterstützt Legend Mod Gamepads?",
     "tr": "Legend Mod gamepad destekliyor mu?",
     "pl": "Czy Legend Mod obsługuje gamepady?",
-    "nl": "Ondersteunt Legend Mod gamepads?"
+    "nl": "Ondersteunt Legend Mod gamepads?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.yesLegendModIs3": {
     "en": "Yes! Legend Mod is the only agar.io extension with <strong>gamepad support</strong>. Turn on <strong>Gamepad / controller support</strong> in the Mouse control settings (it is off by default) and connect an Xbox, PlayStation or other controller that the browser reports with the standard layout. Left stick moves, right stick zooms, A splits, X double splits, RB splits 16 times, B feeds (hold), Y respawns, LB swaps the multibox unit and Start opens the menu.",
@@ -235,7 +299,11 @@
     "de": "Ja! Legend Mod ist die einzige agar.io-Erweiterung mit <strong>Gamepad-Unterstützung</strong>. Aktiviere <strong>Gamepad / controller support</strong> in den Maussteuerungs-Einstellungen (standardmäßig aus) und verbinde einen Xbox-, PlayStation- oder anderen Controller, den der Browser mit dem Standardlayout erkennt. Linker Stick bewegt, rechter Stick zoomt, A splittet, X macht einen Doublesplit, RB splittet 16-mal, B füttert (halten), Y respawnt, LB wechselt die Multibox-Einheit und Start öffnet das Menü.",
     "tr": "Evet! Legend Mod, <strong>gamepad desteği</strong> sunan tek agar.io eklentisidir. Fare kontrolü ayarlarında <strong>Gamepad / controller support</strong> seçeneğini açın (varsayılan olarak kapalıdır) ve tarayıcının standart düzende tanıdığı bir Xbox, PlayStation veya başka bir kontrolcü bağlayın. Sol çubuk hareket ettirir, sağ çubuk yakınlaştırır, A bölünür, X çift bölünür, RB 16 kez bölünür, B besler (basılı tutun), Y yeniden doğar, LB multibox birimini değiştirir ve Start menüyü açar.",
     "pl": "Tak! Legend Mod to jedyne rozszerzenie do agar.io z <strong>obsługą gamepada</strong>. Włącz <strong>Obsługa gamepada / kontrolera</strong> w ustawieniach sterowania myszą (domyślnie jest wyłączona) i podłącz kontroler Xbox, PlayStation lub inny, który przeglądarka rozpoznaje ze standardowym układem. Lewy drążek porusza, prawy drążek przybliża, A dzieli, X robi podwójny podział, RB dzieli 16 razy, B karmi (przytrzymaj), Y odradza, LB przełącza jednostkę multiboxa, a Start otwiera menu.",
-    "nl": "Ja! Legend Mod is de enige agar.io-extensie met <strong>gamepadondersteuning</strong>. Zet <strong>Gamepad / controller support</strong> aan in de instellingen van Mouse control (standaard staat het uit) en sluit een Xbox-, PlayStation- of andere controller aan die de browser met de standaardindeling herkent. De linkerstick beweegt, de rechterstick zoomt, A splitst, X doet een double split, RB splitst 16 keer, B voert (ingedrukt houden), Y respawnt, LB wisselt de multibox-unit en Start opent het menu."
+    "nl": "Ja! Legend Mod is de enige agar.io-extensie met <strong>gamepadondersteuning</strong>. Zet <strong>Gamepad / controller support</strong> aan in de instellingen van Mouse control (standaard staat het uit) en sluit een Xbox-, PlayStation- of andere controller aan die de browser met de standaardindeling herkent. De linkerstick beweegt, de rechterstick zoomt, A splitst, X doet een double split, RB splitst 16 keer, B voert (ingedrukt houden), Y respawnt, LB wisselt de multibox-unit en Start opent het menu.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.skinsVisuals": {
     "en": "🎨 Skins & Visuals",
@@ -249,7 +317,11 @@
     "de": "🎨 Skins & Optik",
     "tr": "🎨 Skinler ve Görseller",
     "pl": "🎨 Skiny i wygląd",
-    "nl": "🎨 Skins & graphics"
+    "nl": "🎨 Skins & graphics",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.howDoIAdd": {
     "en": "How do I add custom skins?",
@@ -263,7 +335,11 @@
     "de": "Wie füge ich eigene Skins hinzu?",
     "tr": "Özel skinleri nasıl eklerim?",
     "pl": "Jak dodać własne skiny?",
-    "nl": "Hoe voeg ik eigen skins toe?"
+    "nl": "Hoe voeg ik eigen skins toe?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.openTheLegendMod": {
     "en": "Open the Legend Mod settings → Skins tab. You can: 1) Paste any image URL as a skin. 2) Upload your own image file. 3) Use the <strong>Skin Rotator</strong> to cycle through multiple skins. 4) Add animated GIF or video skins (Legend Mod exclusive). 5) Browse community skins at <a href=\"/skins/\">legendmod.ml/skins</a>.",
@@ -277,7 +353,11 @@
     "de": "Öffne die Legend-Mod-Einstellungen → Tab „Skins“. Du kannst: 1) Eine beliebige Bild-URL als Skin einfügen. 2) Eine eigene Bilddatei hochladen. 3) Mit dem <strong>Skin Rotator</strong> mehrere Skins durchwechseln. 4) Animierte GIF- oder Video-Skins hinzufügen (exklusiv bei Legend Mod). 5) Community-Skins unter <a href=\"/skins/\">legendmod.ml/skins</a> durchstöbern.",
     "tr": "Legend Mod ayarlarını açın → Skinler sekmesi. Şunları yapabilirsiniz: 1) Herhangi bir görsel URL'sini skin olarak yapıştırın. 2) Kendi görsel dosyanızı yükleyin. 3) Birden çok skin arasında geçiş yapmak için <strong>Skin Rotator</strong>'ı kullanın. 4) Animasyonlu GIF veya video skinler ekleyin (Legend Mod'a özel). 5) <a href=\"/skins/\">legendmod.ml/skins</a> adresinde topluluk skinlerine göz atın.",
     "pl": "Otwórz ustawienia Legend Mod → zakładka Skiny. Możesz: 1) Wkleić URL dowolnego obrazka jako skin. 2) Przesłać własny plik graficzny. 3) Użyć <strong>Skin Rotator</strong>, aby zmieniać kilka skinów po kolei. 4) Dodać animowane skiny GIF lub wideo (tylko w Legend Mod). 5) Przeglądać skiny społeczności na <a href=\"/skins/\">legendmod.ml/skins</a>.",
-    "nl": "Open de Legend Mod-instellingen → tabblad Skins. Je kunt: 1) Een willekeurige afbeeldings-URL als skin plakken. 2) Je eigen afbeeldingsbestand uploaden. 3) De <strong>Skin Rotator</strong> gebruiken om door meerdere skins te wisselen. 4) Geanimeerde GIF- of videoskins toevoegen (exclusief voor Legend Mod). 5) Communityskins bekijken op <a href=\"/skins/\">legendmod.ml/skins</a>."
+    "nl": "Open de Legend Mod-instellingen → tabblad Skins. Je kunt: 1) Een willekeurige afbeeldings-URL als skin plakken. 2) Je eigen afbeeldingsbestand uploaden. 3) De <strong>Skin Rotator</strong> gebruiken om door meerdere skins te wisselen. 4) Geanimeerde GIF- of videoskins toevoegen (exclusief voor Legend Mod). 5) Communityskins bekijken op <a href=\"/skins/\">legendmod.ml/skins</a>.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.troubleshooting": {
     "en": "🔧 Troubleshooting",
@@ -291,7 +371,11 @@
     "de": "🔧 Fehlerbehebung",
     "tr": "🔧 Sorun Giderme",
     "pl": "🔧 Rozwiązywanie problemów",
-    "nl": "🔧 Probleemoplossing"
+    "nl": "🔧 Probleemoplossing",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.whyIsLegendMod": {
     "en": "Why is Legend Mod not working after an agar.io update?",
@@ -305,7 +389,11 @@
     "de": "Warum funktioniert Legend Mod nach einem agar.io-Update nicht?",
     "tr": "agar.io güncellemesinden sonra Legend Mod neden çalışmıyor?",
     "pl": "Dlaczego Legend Mod nie działa po aktualizacji agar.io?",
-    "nl": "Waarom werkt Legend Mod niet na een agar.io-update?"
+    "nl": "Waarom werkt Legend Mod niet na een agar.io-update?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.whenAgarIoUpdates": {
     "en": "When agar.io updates their client, Legend Mod may need a compatibility update. Try: 1) Check for extension updates in <code>chrome://extensions</code>. 2) Clear browser cache (Ctrl+Shift+Delete). 3) Disable and re-enable the extension. 4) Reinstall from the Chrome Web Store. Updates are usually released within 24 hours.",
@@ -319,7 +407,11 @@
     "de": "Wenn agar.io seinen Client aktualisiert, braucht Legend Mod eventuell ein Kompatibilitäts-Update. Versuch Folgendes: 1) Prüfe unter <code>chrome://extensions</code>, ob es Updates für die Erweiterung gibt. 2) Leere den Browser-Cache (Strg+Umschalt+Entf). 3) Deaktiviere die Erweiterung und aktiviere sie wieder. 4) Installiere sie neu aus dem Chrome Web Store. Updates erscheinen meist innerhalb von 24 Stunden.",
     "tr": "agar.io istemcisini güncellediğinde Legend Mod'un bir uyumluluk güncellemesine ihtiyacı olabilir. Şunları deneyin: 1) <code>chrome://extensions</code> sayfasında eklenti güncellemelerini kontrol edin. 2) Tarayıcı önbelleğini temizleyin (Ctrl+Shift+Delete). 3) Eklentiyi devre dışı bırakıp yeniden etkinleştirin. 4) Chrome Web Mağazası'ndan yeniden kurun. Güncellemeler genellikle 24 saat içinde yayınlanır.",
     "pl": "Gdy agar.io zaktualizuje swojego klienta, Legend Mod może wymagać aktualizacji zgodności. Spróbuj: 1) Sprawdź aktualizacje rozszerzenia w <code>chrome://extensions</code>. 2) Wyczyść pamięć podręczną przeglądarki (Ctrl+Shift+Delete). 3) Wyłącz i ponownie włącz rozszerzenie. 4) Zainstaluj ponownie z Chrome Web Store. Aktualizacje zwykle pojawiają się w ciągu 24 godzin.",
-    "nl": "Als agar.io zijn client bijwerkt, kan Legend Mod een compatibiliteitsupdate nodig hebben. Probeer: 1) Controleer op extensie-updates in <code>chrome://extensions</code>. 2) Wis de browsercache (Ctrl+Shift+Delete). 3) Schakel de extensie uit en weer in. 4) Installeer opnieuw vanuit de Chrome Web Store. Updates verschijnen meestal binnen 24 uur."
+    "nl": "Als agar.io zijn client bijwerkt, kan Legend Mod een compatibiliteitsupdate nodig hebben. Probeer: 1) Controleer op extensie-updates in <code>chrome://extensions</code>. 2) Wis de browsercache (Ctrl+Shift+Delete). 3) Schakel de extensie uit en weer in. 4) Installeer opnieuw vanuit de Chrome Web Store. Updates verschijnen meestal binnen 24 uur.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.howDoIFix": {
     "en": "How do I fix lag in agar.io?",
@@ -333,7 +425,11 @@
     "de": "Wie behebe ich Lag in agar.io?",
     "tr": "agar.io'da lag sorununu nasıl çözerim?",
     "pl": "Jak naprawić lagi w agar.io?",
-    "nl": "Hoe los ik lag in agar.io op?"
+    "nl": "Hoe los ik lag in agar.io op?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.legendModHasBuilt": {
     "en": "Legend Mod has built-in anti-lag features: 1) Turn on \"Performance mode (weak PCs/phones)\" in settings, or pick the <strong>Battery saver</strong> preset next to the settings search. 2) Disable animated and video skins. 3) Set an FPS limit, and turn on \"25 FPS while the menu is open\", to save heat and battery. 4) Hide food with the Show/hide food hotkey or the Auto hide food options. 5) WASM acceleration and WebGL rendering are on by default. 6) Close other browser tabs. 7) Use wired internet instead of Wi-Fi.",
@@ -347,7 +443,11 @@
     "de": "Legend Mod hat eingebaute Anti-Lag-Funktionen: 1) Aktiviere „Performance mode (weak PCs/phones)“ in den Einstellungen oder wähle das Preset <strong>Battery saver</strong> neben der Einstellungssuche. 2) Deaktiviere animierte und Video-Skins. 3) Setze ein FPS-Limit und aktiviere „25 FPS while the menu is open“, um Wärme und Akku zu sparen. 4) Blende Futter mit dem Hotkey „Show/hide food“ oder den Optionen „Auto hide food“ aus. 5) WASM-Beschleunigung und WebGL-Rendering sind standardmäßig aktiv. 6) Schließe andere Browser-Tabs. 7) Nutze kabelgebundenes Internet statt WLAN.",
     "tr": "Legend Mod'un yerleşik anti-lag özellikleri vardır: 1) Ayarlarda \"Performance mode (weak PCs/phones)\" seçeneğini açın ya da ayar aramasının yanındaki <strong>Battery saver</strong> ön ayarını seçin. 2) Animasyonlu ve video skinleri kapatın. 3) Isınmayı ve pil tüketimini azaltmak için bir FPS sınırı belirleyin ve \"25 FPS while the menu is open\" seçeneğini açın. 4) Yemi, Show/hide food kısayol tuşu veya Auto hide food seçenekleriyle gizleyin. 5) WASM hızlandırma ve WebGL işleme varsayılan olarak açıktır. 6) Diğer tarayıcı sekmelerini kapatın. 7) Wi-Fi yerine kablolu internet kullanın.",
     "pl": "Legend Mod ma wbudowane funkcje anti-lag: 1) Włącz „Tryb wydajności (słabe PC/telefony)” w ustawieniach albo wybierz preset <strong>Oszczędzanie baterii</strong> obok wyszukiwarki ustawień. 2) Wyłącz animowane i wideo skiny. 3) Ustaw limit FPS i włącz „25 FPS przy otwartym menu”, aby ograniczyć nagrzewanie i oszczędzać baterię. 4) Ukryj jedzenie skrótem Pokaż/ukryj jedzenie lub opcjami automatycznego ukrywania jedzenia. 5) Akceleracja WASM i renderowanie WebGL są domyślnie włączone. 6) Zamknij inne karty przeglądarki. 7) Używaj internetu przewodowego zamiast Wi-Fi.",
-    "nl": "Legend Mod heeft ingebouwde anti-lagfuncties: 1) Zet \"Performance mode (weak PCs/phones)\" aan in de instellingen, of kies de preset <strong>Battery saver</strong> naast de zoekbalk van de instellingen. 2) Schakel geanimeerde en videoskins uit. 3) Stel een FPS-limiet in en zet \"25 FPS while the menu is open\" aan om warmte en batterij te sparen. 4) Verberg voedsel met de sneltoets Show/hide food of de Auto hide food-opties. 5) WASM-versnelling en WebGL-rendering staan standaard aan. 6) Sluit andere browsertabbladen. 7) Gebruik bekabeld internet in plaats van wifi."
+    "nl": "Legend Mod heeft ingebouwde anti-lagfuncties: 1) Zet \"Performance mode (weak PCs/phones)\" aan in de instellingen, of kies de preset <strong>Battery saver</strong> naast de zoekbalk van de instellingen. 2) Schakel geanimeerde en videoskins uit. 3) Stel een FPS-limiet in en zet \"25 FPS while the menu is open\" aan om warmte en batterij te sparen. 4) Verberg voedsel met de sneltoets Show/hide food of de Auto hide food-opties. 5) WASM-versnelling en WebGL-rendering staan standaard aan. 6) Sluit andere browsertabbladen. 7) Gebruik bekabeld internet in plaats van wifi.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.servers": {
     "en": "🌐 Servers",
@@ -361,7 +461,11 @@
     "de": "🌐 Server",
     "tr": "🌐 Sunucular",
     "pl": "🌐 Serwery",
-    "nl": "🌐 Servers"
+    "nl": "🌐 Servers",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.doesLegendModWork": {
     "en": "Does Legend Mod work on Sigmally and Senpa.io?",
@@ -375,7 +479,11 @@
     "de": "Funktioniert Legend Mod auf Sigmally und Senpa.io?",
     "tr": "Legend Mod, Sigmally ve Senpa.io'da çalışıyor mu?",
     "pl": "Czy Legend Mod działa na Sigmally i Senpa.io?",
-    "nl": "Werkt Legend Mod op Sigmally en Senpa.io?"
+    "nl": "Werkt Legend Mod op Sigmally en Senpa.io?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.yesLegendModIs4": {
     "en": "Yes! Legend Mod is the <strong>only agar.io extension</strong> that supports multiple game servers: official agar.io, Sigmally, and Senpa.io. All macros, skins, and features work across all supported servers. You can also play on <strong>Expanding Land</strong> — Legend Mod's own private server with up to 720 players at <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>.",
@@ -389,7 +497,11 @@
     "de": "Ja! Legend Mod ist die <strong>einzige agar.io-Erweiterung</strong>, die mehrere Spielserver unterstützt: das offizielle agar.io, Sigmally und Senpa.io. Alle Makros, Skins und Funktionen laufen auf allen unterstützten Servern. Du kannst auch auf <strong>Expanding Land</strong> spielen – dem eigenen privaten Server von Legend Mod mit bis zu 720 Spielern auf <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>.",
     "tr": "Evet! Legend Mod, birden çok oyun sunucusunu destekleyen <strong>tek agar.io eklentisidir</strong>: resmi agar.io, Sigmally ve Senpa.io. Tüm makrolar, skinler ve özellikler desteklenen tüm sunucularda çalışır. Ayrıca Legend Mod'un 720 oyuncuya kadar destekleyen kendi özel sunucusu <strong>Expanding Land</strong>'de de <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a> adresinden oynayabilirsiniz.",
     "pl": "Tak! Legend Mod to <strong>jedyne rozszerzenie do agar.io</strong>, które obsługuje wiele serwerów gry: oficjalne agar.io, Sigmally i Senpa.io. Wszystkie makra, skiny i funkcje działają na wszystkich obsługiwanych serwerach. Możesz też grać na <strong>Expanding Land</strong> — własnym prywatnym serwerze Legend Mod dla maksymalnie 720 graczy na <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>.",
-    "nl": "Ja! Legend Mod is de <strong>enige agar.io-extensie</strong> die meerdere gameservers ondersteunt: het officiële agar.io, Sigmally en Senpa.io. Alle macro's, skins en functies werken op alle ondersteunde servers. Je kunt ook spelen op <strong>Expanding Land</strong> — de eigen privéserver van Legend Mod met tot 720 spelers op <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>."
+    "nl": "Ja! Legend Mod is de <strong>enige agar.io-extensie</strong> die meerdere gameservers ondersteunt: het officiële agar.io, Sigmally en Senpa.io. Alle macro's, skins en functies werken op alle ondersteunde servers. Je kunt ook spelen op <strong>Expanding Land</strong> — de eigen privéserver van Legend Mod met tot 720 spelers op <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.whatIsExpandingLand": {
     "en": "What is Expanding Land?",
@@ -403,7 +515,11 @@
     "de": "Was ist Expanding Land?",
     "tr": "Expanding Land nedir?",
     "pl": "Czym jest Expanding Land?",
-    "nl": "Wat is Expanding Land?"
+    "nl": "Wat is Expanding Land?",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.faq.expandingLandIsAn": {
     "en": "Expanding Land is an independent multiplayer browser cell game with a circular map that expands and contracts. Human and server-controlled bot populations vary by arena. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>.",
@@ -417,6 +533,10 @@
     "de": "Expanding Land ist ein unabhängiges Mehrspieler-Zellenspiel im Browser mit einer runden Karte, die wächst und schrumpft. Die Zahl der menschlichen Spieler und Serverbots variiert je nach Arena. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>.",
     "tr": "Expanding Land, genişleyip daralan dairesel haritaya sahip bağımsız, çok oyunculu bir tarayıcı hücre oyunudur. İnsan oyuncu ve sunucu botu sayısı arenaya göre değişir. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>.",
     "pl": "Expanding Land to niezależna wieloosobowa gra komórkowa w przeglądarce, z okrągłą mapą, która się powiększa i kurczy. Liczba graczy i botów serwerowych zależy od areny. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>.",
-    "nl": "Expanding Land is een onafhankelijk multiplayer-celspel in de browser, met een ronde kaart die groter en kleiner wordt. Het aantal menselijke spelers en serverbots verschilt per arena. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>."
+    "nl": "Expanding Land is een onafhankelijk multiplayer-celspel in de browser, met een ronde kaart die groter en kleiner wordt. Het aantal menselijke spelers en serverbots verschilt per arena. <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

@@ -63,5 +63,13 @@ check('other agar.io pages: left alone', r.log.length === 0);
 r = run('/captcha', {}, true);
 check('captcha page: stopped at once, no Legend loading screen, the helper page fetched', r.sync.join() === 'stop,clear' && r.log.indexOf('fetch') > 0);
 
+for (const [i, c] of ['pt', 'id', 'ja', 'it'].entries()) {
+    const n = i + 13;
+    const r2 = run('/', { languagemod: String(n) }, true);
+    check(c + ': stored language accepted', r2.ctx.lmxExtLang(String(n)) === n);
+    check(c + ': actual loading translation', r2.ctx.lmxExtText('boot.loading', n) !== r2.ctx.lmxExtText('boot.loading', 1));
+    r2.ctx.navigator.language = c + '-XX';
+    check(c + ': no automatic preview selection', r2.ctx.lmxExtLang(null) === 1);
+}
 console.log(fail ? fail + ' FAILED' : 'all extension checks passed');
 process.exit(fail ? 1 : 0);

@@ -11,7 +11,11 @@
     "de": "Ligen",
     "tr": "Ligler",
     "pl": "Ligi",
-    "nl": "Competities"
+    "nl": "Competities",
+    "pt": "Ligas",
+    "id": "Liga",
+    "ja": "リーグ",
+    "it": "Leghe"
   },
   "friends": {
     "en": "Friends",
@@ -25,7 +29,11 @@
     "de": "Freunde",
     "tr": "Arkadaşlar",
     "pl": "Znajomi",
-    "nl": "Vrienden"
+    "nl": "Vrienden",
+    "pt": "Amigos",
+    "id": "Teman",
+    "ja": "フレンド",
+    "it": "Amici"
   },
   "claimAll": {
     "en": "Claim All",
@@ -39,7 +47,11 @@
     "de": "Alles abholen",
     "tr": "Hepsini al",
     "pl": "Odbierz wszystko",
-    "nl": "Alles ophalen"
+    "nl": "Alles ophalen",
+    "pt": "Resgatar tudo",
+    "id": "Klaim semua",
+    "ja": "すべて受け取る",
+    "it": "Riscatta tutto"
   },
   "offer": {
     "en": "Official Offer",
@@ -53,7 +65,11 @@
     "de": "Offizielles Angebot",
     "tr": "Resmi teklif",
     "pl": "Oficjalna oferta",
-    "nl": "Officiële aanbieding"
+    "nl": "Officiële aanbieding",
+    "pt": "Oferta oficial",
+    "id": "Penawaran resmi",
+    "ja": "公式オファー",
+    "it": "Offerta ufficiale"
   },
   "retry": {
     "en": "Retry",
@@ -67,7 +83,11 @@
     "de": "Erneut versuchen",
     "tr": "Tekrar dene",
     "pl": "Ponów",
-    "nl": "Opnieuw"
+    "nl": "Opnieuw",
+    "pt": "Tentar novamente",
+    "id": "Coba lagi",
+    "ja": "再試行",
+    "it": "Riprova"
   },
   "close": {
     "en": "Close",
@@ -81,7 +101,11 @@
     "de": "Schließen",
     "tr": "Kapat",
     "pl": "Zamknij",
-    "nl": "Sluiten"
+    "nl": "Sluiten",
+    "pt": "Fechar",
+    "id": "Tutup",
+    "ja": "閉じる",
+    "it": "Chiudi"
   },
   "leaderboards": {
     "en": "Leaderboards",
@@ -95,7 +119,11 @@
     "de": "Bestenlisten",
     "tr": "Lider tabloları",
     "pl": "Rankingi",
-    "nl": "Ranglijsten"
+    "nl": "Ranglijsten",
+    "pt": "Classificações",
+    "id": "Papan peringkat",
+    "ja": "ランキング",
+    "it": "Classifiche"
   },
   "help": {
     "en": "Help",
@@ -109,7 +137,11 @@
     "de": "Hilfe",
     "tr": "Yardım",
     "pl": "Pomoc",
-    "nl": "Hulp"
+    "nl": "Hulp",
+    "pt": "Ajuda",
+    "id": "Bantuan",
+    "ja": "ヘルプ",
+    "it": "Aiuto"
   },
   "matchHistory": {
     "en": "Match history",
@@ -123,7 +155,11 @@
     "de": "Spielverlauf",
     "tr": "Maç geçmişi",
     "pl": "Historia meczów",
-    "nl": "Speelgeschiedenis"
+    "nl": "Speelgeschiedenis",
+    "pt": "Histórico de partidas",
+    "id": "Riwayat pertandingan",
+    "ja": "対戦履歴",
+    "it": "Cronologia partite"
   },
   "mhDate": {
     "en": "Date",
@@ -137,7 +173,11 @@
     "de": "Datum",
     "tr": "Tarih",
     "pl": "Data",
-    "nl": "Datum"
+    "nl": "Datum",
+    "pt": "Data",
+    "id": "Tanggal",
+    "ja": "日付",
+    "it": "Data"
   },
   "mhMass": {
     "en": "Mass",
@@ -151,7 +191,11 @@
     "de": "Masse",
     "tr": "Kütle",
     "pl": "Masa",
-    "nl": "Massa"
+    "nl": "Massa",
+    "pt": "Massa",
+    "id": "Massa",
+    "ja": "質量",
+    "it": "Massa"
   },
   "mhServer": {
     "en": "Server",
@@ -165,7 +209,11 @@
     "de": "Server",
     "tr": "Sunucu",
     "pl": "Serwer",
-    "nl": "Server"
+    "nl": "Server",
+    "pt": "Servidor",
+    "id": "Server",
+    "ja": "サーバー",
+    "it": "Server"
   },
   "mhMode": {
     "en": "Mode",
@@ -179,7 +227,11 @@
     "de": "Modus",
     "tr": "Mod",
     "pl": "Tryb",
-    "nl": "Modus"
+    "nl": "Modus",
+    "pt": "Modo",
+    "id": "Mode",
+    "ja": "モード",
+    "it": "Modalità"
   },
   "mhClear": {
     "en": "Clear",
@@ -193,7 +245,11 @@
     "de": "Leeren",
     "tr": "Temizle",
     "pl": "Wyczyść",
-    "nl": "Wissen"
+    "nl": "Wissen",
+    "pt": "Limpar",
+    "id": "Bersihkan",
+    "ja": "クリア",
+    "it": "Cancella"
   },
   "mhClearConfirm": {
     "en": "Clear the match history?",
@@ -207,7 +263,11 @@
     "de": "Spielverlauf leeren?",
     "tr": "Maç geçmişi temizlensin mi?",
     "pl": "Wyczyścić historię meczów?",
-    "nl": "Speelgeschiedenis wissen?"
+    "nl": "Speelgeschiedenis wissen?",
+    "pt": "Limpar o histórico de partidas?",
+    "id": "Hapus riwayat pertandingan?",
+    "ja": "対戦履歴を消去しますか？",
+    "it": "Cancellare la cronologia delle partite?"
   },
   "mhEmpty": {
     "en": "No games recorded yet.",
@@ -221,7 +281,11 @@
     "de": "Noch keine Spiele gespeichert.",
     "tr": "Henüz kayıtlı oyun yok.",
     "pl": "Brak zapisanych gier.",
-    "nl": "Nog geen spellen opgeslagen."
+    "nl": "Nog geen spellen opgeslagen.",
+    "pt": "Nenhuma partida registrada.",
+    "id": "Belum ada permainan yang direkam.",
+    "ja": "まだ記録された試合はありません。",
+    "it": "Nessuna partita registrata."
   },
   "eventLeft": {
     "en": "{0}: {1} left",
@@ -235,7 +299,11 @@
     "de": "{0}: noch {1}",
     "tr": "{0}: {1} kaldı",
     "pl": "{0}: zostało {1}",
-    "nl": "{0}: nog {1}"
+    "nl": "{0}: nog {1}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmPresetReducedMotion": {
     "en": "Reduced motion",
@@ -249,7 +317,11 @@
     "de": "Weniger Bewegung",
     "tr": "Azaltılmış hareket",
     "pl": "Ograniczony ruch",
-    "nl": "Minder beweging"
+    "nl": "Minder beweging",
+    "pt": "Movimento reduzido",
+    "id": "Kurangi gerakan",
+    "ja": "動きを抑える",
+    "it": "Movimento ridotto"
   },
   "shop": {
     "en": "Shop",
@@ -263,7 +335,11 @@
     "de": "Shop",
     "tr": "Mağaza",
     "pl": "Sklep",
-    "nl": "Winkel"
+    "nl": "Winkel",
+    "pt": "Loja",
+    "id": "Toko",
+    "ja": "ショップ",
+    "it": "Negozio"
   },
   "shareStats": {
     "en": "Share",
@@ -277,7 +353,11 @@
     "de": "Teilen",
     "tr": "Paylaş",
     "pl": "Udostępnij",
-    "nl": "Delen"
+    "nl": "Delen",
+    "pt": "Compartilhar",
+    "id": "Bagikan",
+    "ja": "共有",
+    "it": "Condividi"
   },
   "noPrevServer": {
     "en": "No previous server",
@@ -291,7 +371,11 @@
     "de": "Kein vorheriger Server",
     "tr": "Önceki sunucu yok",
     "pl": "Brak poprzedniego serwera",
-    "nl": "Geen vorige server"
+    "nl": "Geen vorige server",
+    "pt": "Nenhum servidor anterior",
+    "id": "Tidak ada server sebelumnya",
+    "ja": "以前のサーバーがありません",
+    "it": "Nessun server precedente"
   },
   "badges": {
     "en": "Badges",
@@ -305,7 +389,11 @@
     "de": "Abzeichen",
     "tr": "Rozetler",
     "pl": "Odznaki",
-    "nl": "Badges"
+    "nl": "Badges",
+    "pt": "Emblemas",
+    "id": "Lencana",
+    "ja": "バッジ",
+    "it": "Distintivi"
   },
   "badgeUnlocked": {
     "en": "Badge unlocked: {name}",
@@ -319,7 +407,11 @@
     "de": "Abzeichen freigeschaltet: {name}",
     "tr": "Rozet açıldı: {name}",
     "pl": "Odblokowano odznakę: {name}",
-    "nl": "Badge ontgrendeld: {name}"
+    "nl": "Badge ontgrendeld: {name}",
+    "pt": "Emblema desbloqueado: {name}",
+    "id": "Lencana terbuka: {name}",
+    "ja": "バッジ解除：{name}",
+    "it": "Distintivo sbloccato: {name}"
   },
   "bdgGames": {
     "en": "Player",
@@ -333,7 +425,11 @@
     "de": "Spieler",
     "tr": "Oyuncu",
     "pl": "Gracz",
-    "nl": "Speler"
+    "nl": "Speler",
+    "pt": "Jogador",
+    "id": "Pemain",
+    "ja": "プレイヤー",
+    "it": "Giocatore"
   },
   "bdgReqGames": {
     "en": "Play {n} games",
@@ -347,7 +443,11 @@
     "de": "Spiele {n} Runden",
     "tr": "{n} oyun oyna",
     "pl": "Zagraj {n} gier",
-    "nl": "Speel {n} potjes"
+    "nl": "Speel {n} potjes",
+    "pt": "Jogue {n} partidas",
+    "id": "Mainkan {n} pertandingan",
+    "ja": "{n}回プレイする",
+    "it": "Gioca {n} partite"
   },
   "bdgMass": {
     "en": "Heavyweight",
@@ -361,7 +461,11 @@
     "de": "Schwergewicht",
     "tr": "Ağır siklet",
     "pl": "Waga ciężka",
-    "nl": "Zwaargewicht"
+    "nl": "Zwaargewicht",
+    "pt": "Peso pesado",
+    "id": "Kelas berat",
+    "ja": "ヘビー級",
+    "it": "Peso massimo"
   },
   "bdgReqMass": {
     "en": "Reach {n} mass",
@@ -375,7 +479,11 @@
     "de": "Erreiche {n} Masse",
     "tr": "{n} kütleye ulaş",
     "pl": "Osiągnij masę {n}",
-    "nl": "Bereik {n} massa"
+    "nl": "Bereik {n} massa",
+    "pt": "Alcance {n} de massa",
+    "id": "Capai massa {n}",
+    "ja": "質量{n}に到達する",
+    "it": "Raggiungi massa {n}"
   },
   "bdgEat": {
     "en": "Glutton",
@@ -389,7 +497,11 @@
     "de": "Vielfraß",
     "tr": "Obur",
     "pl": "Żarłok",
-    "nl": "Veelvraat"
+    "nl": "Veelvraat",
+    "pt": "Comilão",
+    "id": "Rakus",
+    "ja": "大食い",
+    "it": "Ghiottone"
   },
   "bdgReqEat": {
     "en": "Consume {n} mass in total",
@@ -403,7 +515,11 @@
     "de": "Verschlinge insgesamt {n} Masse",
     "tr": "Toplam {n} kütle tüket",
     "pl": "Zjedz łącznie {n} masy",
-    "nl": "Eet in totaal {n} massa"
+    "nl": "Eet in totaal {n} massa",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "bdgLife": {
     "en": "Survivor",
@@ -417,7 +533,11 @@
     "de": "Überlebender",
     "tr": "Hayatta kalan",
     "pl": "Ocalały",
-    "nl": "Overlever"
+    "nl": "Overlever",
+    "pt": "Sobrevivente",
+    "id": "Penyintas",
+    "ja": "生存者",
+    "it": "Sopravvissuto"
   },
   "bdgReqLife": {
     "en": "Stay alive {n} in one life",
@@ -431,7 +551,11 @@
     "de": "Überlebe {n} in einem Leben",
     "tr": "Tek canda {n} hayatta kal",
     "pl": "Przeżyj {n} w jednym życiu",
-    "nl": "Overleef {n} in één leven"
+    "nl": "Overleef {n} in één leven",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "bdgAlive": {
     "en": "Veteran",
@@ -445,7 +569,11 @@
     "de": "Veteran",
     "tr": "Kıdemli",
     "pl": "Weteran",
-    "nl": "Veteraan"
+    "nl": "Veteraan",
+    "pt": "Veterano",
+    "id": "Veteran",
+    "ja": "ベテラン",
+    "it": "Veterano"
   },
   "bdgReqAlive": {
     "en": "Stay alive {n} in total",
@@ -459,7 +587,11 @@
     "de": "Überlebe insgesamt {n}",
     "tr": "Toplam {n} hayatta kal",
     "pl": "Przeżyj łącznie {n}",
-    "nl": "Overleef in totaal {n}"
+    "nl": "Overleef in totaal {n}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "bdgLevel": {
     "en": "Experienced",
@@ -473,7 +605,11 @@
     "de": "Erfahren",
     "tr": "Tecrübeli",
     "pl": "Doświadczony",
-    "nl": "Ervaren"
+    "nl": "Ervaren",
+    "pt": "Experiente",
+    "id": "Berpengalaman",
+    "ja": "熟練者",
+    "it": "Esperto"
   },
   "bdgReqLevel": {
     "en": "Reach level {n}",
@@ -487,7 +623,11 @@
     "de": "Erreiche Level {n}",
     "tr": "{n}. seviyeye ulaş",
     "pl": "Osiągnij poziom {n}",
-    "nl": "Bereik level {n}"
+    "nl": "Bereik level {n}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "bdgTop": {
     "en": "Champion",
@@ -501,7 +641,11 @@
     "de": "Champion",
     "tr": "Şampiyon",
     "pl": "Mistrz",
-    "nl": "Kampioen"
+    "nl": "Kampioen",
+    "pt": "Campeão",
+    "id": "Juara",
+    "ja": "チャンピオン",
+    "it": "Campione"
   },
   "bdgReqTop": {
     "en": "Reach #1 on the leaderboard in one of your last 50 games",
@@ -515,7 +659,11 @@
     "de": "Erreiche #1 der Rangliste in einem deiner letzten 50 Spiele",
     "tr": "Son 50 oyunundan birinde sıralamada #1 ol",
     "pl": "Zdobądź #1 w rankingu w jednej z ostatnich 50 gier",
-    "nl": "Bereik #1 op het scorebord in een van je laatste 50 potjes"
+    "nl": "Bereik #1 op het scorebord in een van je laatste 50 potjes",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "bdgHunt": {
     "en": "Hunter",
@@ -529,7 +677,11 @@
     "de": "Jäger",
     "tr": "Avcı",
     "pl": "Łowca",
-    "nl": "Jager"
+    "nl": "Jager",
+    "pt": "Caçador",
+    "id": "Pemburu",
+    "ja": "ハンター",
+    "it": "Cacciatore"
   },
   "bdgReqHunt": {
     "en": "Eat {n} players in one of your last 50 games",
@@ -543,7 +695,11 @@
     "de": "Friss {n} Spieler in einem deiner letzten 50 Spiele",
     "tr": "Son 50 oyunundan birinde {n} oyuncu ye",
     "pl": "Zjedz {n} graczy w jednej z ostatnich 50 gier",
-    "nl": "Eet {n} spelers in een van je laatste 50 potjes"
+    "nl": "Eet {n} spelers in een van je laatste 50 potjes",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "watchKiller": {
     "en": "Watch killer",
@@ -557,7 +713,11 @@
     "de": "Mörder beobachten",
     "tr": "Katili izle",
     "pl": "Obserwuj zabójcę",
-    "nl": "Kijk naar je moordenaar"
+    "nl": "Kijk naar je moordenaar",
+    "pt": "Observar quem eliminou você",
+    "id": "Tonton pemain yang mengalahkanmu",
+    "ja": "倒した相手を観戦",
+    "it": "Osserva chi ti ha eliminato"
   },
   "watchKillerGone": {
     "en": "Your killer is no longer in view",
@@ -571,7 +731,11 @@
     "de": "Dein Mörder ist nicht mehr zu sehen",
     "tr": "Katilin artık görünmüyor",
     "pl": "Twój zabójca nie jest już widoczny",
-    "nl": "Je moordenaar is niet meer in beeld"
+    "nl": "Je moordenaar is niet meer in beeld",
+    "pt": "Quem eliminou você não está mais visível",
+    "id": "Pemain yang mengalahkanmu tidak lagi terlihat",
+    "ja": "倒した相手は視界から外れました",
+    "it": "Chi ti ha eliminato non è più visibile"
   },
   "leaguesResetsIn": {
     "en": "Resets in {t}",
@@ -585,7 +749,11 @@
     "de": "Zurücksetzung in {t}",
     "tr": "{t} sonra sıfırlanır",
     "pl": "Reset za {t}",
-    "nl": "Reset over {t}"
+    "nl": "Reset over {t}",
+    "pt": "Reinicia em {t}",
+    "id": "Diatur ulang dalam {t}",
+    "ja": "{t}後にリセット",
+    "it": "Si azzera tra {t}"
   },
   "avgMass": {
     "en": "Average Mass",
@@ -599,7 +767,11 @@
     "de": "Durchschnittliche Masse",
     "tr": "Ortalama kütle",
     "pl": "Średnia masa",
-    "nl": "Gemiddelde massa"
+    "nl": "Gemiddelde massa",
+    "pt": "Massa média",
+    "id": "Massa rata-rata",
+    "ja": "平均質量",
+    "it": "Massa media"
   },
   "leaguePassYou1": {
     "en": "{name} passed you in the World leaderboard!",
@@ -613,7 +785,11 @@
     "de": "{name} hat dich in der Weltrangliste überholt!",
     "tr": "{name} Dünya sıralamasında seni geçti!",
     "pl": "{name} wyprzedził cię w rankingu światowym!",
-    "nl": "{name} heeft je ingehaald in het Wereldklassement!"
+    "nl": "{name} heeft je ingehaald in het Wereldklassement!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "leaguePassYou2": {
     "en": "{name} passed you in the Country leaderboard!",
@@ -627,7 +803,11 @@
     "de": "{name} hat dich in der Länderrangliste überholt!",
     "tr": "{name} Ülke sıralamasında seni geçti!",
     "pl": "{name} wyprzedził cię w rankingu kraju!",
-    "nl": "{name} heeft je ingehaald in het Landenklassement!"
+    "nl": "{name} heeft je ingehaald in het Landenklassement!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "leaguePassYou3": {
     "en": "{name} passed you in your League!",
@@ -641,7 +821,11 @@
     "de": "{name} hat dich in deiner Liga überholt!",
     "tr": "{name} Liginde seni geçti!",
     "pl": "{name} wyprzedził cię w twojej lidze!",
-    "nl": "{name} heeft je ingehaald in je Competitie!"
+    "nl": "{name} heeft je ingehaald in je Competitie!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "leaguePassYou4": {
     "en": "{name} passed you in the Friends leaderboard!",
@@ -655,7 +839,11 @@
     "de": "{name} hat dich in der Freundesrangliste überholt!",
     "tr": "{name} Arkadaş sıralamasında seni geçti!",
     "pl": "{name} wyprzedził cię w rankingu znajomych!",
-    "nl": "{name} heeft je ingehaald in het Vriendenklassement!"
+    "nl": "{name} heeft je ingehaald in het Vriendenklassement!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "leaguePassMe1": {
     "en": "You passed {name} in the World leaderboard!",
@@ -669,7 +857,11 @@
     "de": "Du hast {name} in der Weltrangliste überholt!",
     "tr": "Dünya sıralamasında {name} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {name} w rankingu światowym!",
-    "nl": "Je hebt {name} ingehaald in het Wereldklassement!"
+    "nl": "Je hebt {name} ingehaald in het Wereldklassement!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "leaguePassMe2": {
     "en": "You passed {name} in the Country leaderboard!",
@@ -683,7 +875,11 @@
     "de": "Du hast {name} in der Länderrangliste überholt!",
     "tr": "Ülke sıralamasında {name} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {name} w rankingu kraju!",
-    "nl": "Je hebt {name} ingehaald in het Landenklassement!"
+    "nl": "Je hebt {name} ingehaald in het Landenklassement!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "leaguePassMe3": {
     "en": "You passed {name} in your League!",
@@ -697,7 +893,11 @@
     "de": "Du hast {name} in deiner Liga überholt!",
     "tr": "Liginde {name} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {name} w twojej lidze!",
-    "nl": "Je hebt {name} ingehaald in je Competitie!"
+    "nl": "Je hebt {name} ingehaald in je Competitie!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "leaguePassMe4": {
     "en": "You passed {name} in the Friends leaderboard!",
@@ -711,7 +911,11 @@
     "de": "Du hast {name} in der Freundesrangliste überholt!",
     "tr": "Arkadaş sıralamasında {name} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {name} w rankingu znajomych!",
-    "nl": "Je hebt {name} ingehaald in het Vriendenklassement!"
+    "nl": "Je hebt {name} ingehaald in het Vriendenklassement!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "room": {
     "en": "Private room",
@@ -725,7 +929,11 @@
     "de": "Privater Raum",
     "tr": "Özel oda",
     "pl": "Prywatny pokój",
-    "nl": "Privékamer"
+    "nl": "Privékamer",
+    "pt": "Sala privada",
+    "id": "Ruang privat",
+    "ja": "プライベートルーム",
+    "it": "Stanza privata"
   },
   "roomCreate": {
     "en": "Create",
@@ -739,7 +947,11 @@
     "de": "Erstellen",
     "tr": "Oluştur",
     "pl": "Utwórz",
-    "nl": "Maken"
+    "nl": "Maken",
+    "pt": "Criar",
+    "id": "Buat",
+    "ja": "作成",
+    "it": "Crea"
   },
   "roomJoin": {
     "en": "Join",
@@ -753,7 +965,11 @@
     "de": "Beitreten",
     "tr": "Katıl",
     "pl": "Dołącz",
-    "nl": "Deelnemen"
+    "nl": "Deelnemen",
+    "pt": "Entrar",
+    "id": "Gabung",
+    "ja": "参加",
+    "it": "Unisciti"
   },
   "roomPublic": {
     "en": "Public rooms",
@@ -767,7 +983,11 @@
     "de": "Öffentliche Räume",
     "tr": "Herkese açık odalar",
     "pl": "Publiczne pokoje",
-    "nl": "Openbare kamers"
+    "nl": "Openbare kamers",
+    "pt": "Salas públicas",
+    "id": "Ruang publik",
+    "ja": "公開ルーム",
+    "it": "Stanze pubbliche"
   },
   "roomMode": {
     "en": "Mode",
@@ -781,7 +1001,11 @@
     "de": "Modus",
     "tr": "Mod",
     "pl": "Tryb",
-    "nl": "Modus"
+    "nl": "Modus",
+    "pt": "Modo",
+    "id": "Mode",
+    "ja": "モード",
+    "it": "Modalità"
   },
   "roomTeams": {
     "en": "Teams",
@@ -795,7 +1019,11 @@
     "de": "Teams",
     "tr": "Takımlar",
     "pl": "Drużyny",
-    "nl": "Teams"
+    "nl": "Teams",
+    "pt": "Equipes",
+    "id": "Tim",
+    "ja": "チーム",
+    "it": "Squadre"
   },
   "roomBots": {
     "en": "Bots",
@@ -809,7 +1037,11 @@
     "de": "Bots",
     "tr": "Botlar",
     "pl": "Boty",
-    "nl": "Bots"
+    "nl": "Bots",
+    "pt": "Bots",
+    "id": "Bot",
+    "ja": "ボット",
+    "it": "Bot"
   },
   "roomMapSize": {
     "en": "Map size",
@@ -823,7 +1055,11 @@
     "de": "Kartengröße",
     "tr": "Harita boyutu",
     "pl": "Rozmiar mapy",
-    "nl": "Kaartgrootte"
+    "nl": "Kaartgrootte",
+    "pt": "Tamanho do mapa",
+    "id": "Ukuran peta",
+    "ja": "マップサイズ",
+    "it": "Dimensione mappa"
   },
   "roomMaxPlayers": {
     "en": "Max players",
@@ -837,7 +1073,11 @@
     "de": "Max. Spieler",
     "tr": "Maks. oyuncu",
     "pl": "Maks. graczy",
-    "nl": "Max. spelers"
+    "nl": "Max. spelers",
+    "pt": "Máximo de jogadores",
+    "id": "Pemain maksimum",
+    "ja": "最大プレイヤー数",
+    "it": "Giocatori massimi"
   },
   "roomPassOpt": {
     "en": "Password (optional)",
@@ -851,7 +1091,11 @@
     "de": "Passwort (optional)",
     "tr": "Şifre (isteğe bağlı)",
     "pl": "Hasło (opcjonalnie)",
-    "nl": "Wachtwoord (optioneel)"
+    "nl": "Wachtwoord (optioneel)",
+    "pt": "Senha (opcional)",
+    "id": "Kata sandi (opsional)",
+    "ja": "パスワード（任意）",
+    "it": "Password (facoltativa)"
   },
   "roomPass": {
     "en": "Password",
@@ -865,7 +1109,11 @@
     "de": "Passwort",
     "tr": "Şifre",
     "pl": "Hasło",
-    "nl": "Wachtwoord"
+    "nl": "Wachtwoord",
+    "pt": "Senha",
+    "id": "Kata sandi",
+    "ja": "パスワード",
+    "it": "Password"
   },
   "roomListed": {
     "en": "Show in public rooms",
@@ -879,7 +1127,11 @@
     "de": "In öffentlichen Räumen anzeigen",
     "tr": "Herkese açık odalarda göster",
     "pl": "Pokaż w publicznych pokojach",
-    "nl": "Tonen bij openbare kamers"
+    "nl": "Tonen bij openbare kamers",
+    "pt": "Mostrar nas salas públicas",
+    "id": "Tampilkan di ruang publik",
+    "ja": "公開ルームに表示",
+    "it": "Mostra nelle stanze pubbliche"
   },
   "roomNameOpt": {
     "en": "Room name (optional)",
@@ -893,7 +1145,11 @@
     "de": "Raumname (optional)",
     "tr": "Oda adı (isteğe bağlı)",
     "pl": "Nazwa pokoju (opcjonalnie)",
-    "nl": "Kamernaam (optioneel)"
+    "nl": "Kamernaam (optioneel)",
+    "pt": "Nome da sala (opcional)",
+    "id": "Nama ruang (opsional)",
+    "ja": "ルーム名（任意）",
+    "it": "Nome stanza (facoltativo)"
   },
   "roomCreateBtn": {
     "en": "Create room",
@@ -907,7 +1163,11 @@
     "de": "Raum erstellen",
     "tr": "Oda oluştur",
     "pl": "Utwórz pokój",
-    "nl": "Kamer maken"
+    "nl": "Kamer maken",
+    "pt": "Criar sala",
+    "id": "Buat ruang",
+    "ja": "ルームを作成",
+    "it": "Crea stanza"
   },
   "roomCode": {
     "en": "Room code",
@@ -921,7 +1181,11 @@
     "de": "Raumcode",
     "tr": "Oda kodu",
     "pl": "Kod pokoju",
-    "nl": "Kamercode"
+    "nl": "Kamercode",
+    "pt": "Código da sala",
+    "id": "Kode ruang",
+    "ja": "ルームコード",
+    "it": "Codice stanza"
   },
   "roomJoinBtn": {
     "en": "Join room",
@@ -935,7 +1199,11 @@
     "de": "Raum beitreten",
     "tr": "Odaya katıl",
     "pl": "Dołącz do pokoju",
-    "nl": "Kamer betreden"
+    "nl": "Kamer betreden",
+    "pt": "Entrar na sala",
+    "id": "Gabung ke ruang",
+    "ja": "ルームに参加",
+    "it": "Entra nella stanza"
   },
   "roomRefresh": {
     "en": "Refresh",
@@ -949,7 +1217,11 @@
     "de": "Aktualisieren",
     "tr": "Yenile",
     "pl": "Odśwież",
-    "nl": "Vernieuwen"
+    "nl": "Vernieuwen",
+    "pt": "Atualizar",
+    "id": "Segarkan",
+    "ja": "更新",
+    "it": "Aggiorna"
   },
   "roomNone": {
     "en": "No public rooms right now.",
@@ -963,7 +1235,11 @@
     "de": "Gerade keine öffentlichen Räume.",
     "tr": "Şu anda herkese açık oda yok.",
     "pl": "Brak publicznych pokoi.",
-    "nl": "Er zijn nu geen openbare kamers."
+    "nl": "Er zijn nu geen openbare kamers.",
+    "pt": "Nenhuma sala pública no momento.",
+    "id": "Tidak ada ruang publik saat ini.",
+    "ja": "現在公開ルームはありません。",
+    "it": "Nessuna stanza pubblica al momento."
   },
   "roomLoading": {
     "en": "Loading…",
@@ -977,7 +1253,11 @@
     "de": "Wird geladen…",
     "tr": "Yükleniyor…",
     "pl": "Ładowanie…",
-    "nl": "Laden…"
+    "nl": "Laden…",
+    "pt": "Carregando…",
+    "id": "Memuat…",
+    "ja": "読み込み中…",
+    "it": "Caricamento…"
   },
   "roomCopy": {
     "en": "Copy code",
@@ -991,7 +1271,11 @@
     "de": "Code kopieren",
     "tr": "Kodu kopyala",
     "pl": "Kopiuj kod",
-    "nl": "Code kopiëren"
+    "nl": "Code kopiëren",
+    "pt": "Copiar código",
+    "id": "Salin kode",
+    "ja": "コードをコピー",
+    "it": "Copia codice"
   },
   "roomShareBtn": {
     "en": "Share",
@@ -1005,7 +1289,11 @@
     "de": "Teilen",
     "tr": "Paylaş",
     "pl": "Udostępnij",
-    "nl": "Delen"
+    "nl": "Delen",
+    "pt": "Compartilhar",
+    "id": "Bagikan",
+    "ja": "共有",
+    "it": "Condividi"
   },
   "roomShareInvite": {
     "en": "Join my Expanding Land room",
@@ -1019,7 +1307,11 @@
     "de": "Komm in meinen Expanding-Land-Raum",
     "tr": "Expanding Land odama katıl",
     "pl": "Dołącz do mojego pokoju Expanding Land",
-    "nl": "Kom in mijn Expanding Land-kamer"
+    "nl": "Kom in mijn Expanding Land-kamer",
+    "pt": "Entre na minha sala do Expanding Land",
+    "id": "Gabung ke ruang Expanding Land saya",
+    "ja": "私のExpanding Landルームに参加しよう",
+    "it": "Entra nella mia stanza di Expanding Land"
   },
   "roomCopyLink": {
     "en": "Copy link",
@@ -1033,7 +1325,11 @@
     "de": "Link kopieren",
     "tr": "Bağlantıyı kopyala",
     "pl": "Kopiuj link",
-    "nl": "Link kopiëren"
+    "nl": "Link kopiëren",
+    "pt": "Copiar link",
+    "id": "Salin tautan",
+    "ja": "リンクをコピー",
+    "it": "Copia link"
   },
   "roomCopied": {
     "en": "Copied",
@@ -1047,7 +1343,11 @@
     "de": "Kopiert",
     "tr": "Kopyalandı",
     "pl": "Skopiowano",
-    "nl": "Gekopieerd"
+    "nl": "Gekopieerd",
+    "pt": "Copiado",
+    "id": "Disalin",
+    "ja": "コピーしました",
+    "it": "Copiato"
   },
   "roomShare": {
     "en": "Share the code or link with your friends.",
@@ -1061,7 +1361,11 @@
     "de": "Teile den Code oder Link mit deinen Freunden.",
     "tr": "Kodu veya bağlantıyı arkadaşlarınla paylaş.",
     "pl": "Udostępnij kod lub link znajomym.",
-    "nl": "Deel de code of link met je vrienden."
+    "nl": "Deel de code of link met je vrienden.",
+    "pt": "Compartilhe o código ou link com seus amigos.",
+    "id": "Bagikan kode atau tautan kepada teman-temanmu.",
+    "ja": "コードまたはリンクを友達と共有してください。",
+    "it": "Condividi il codice o il link con i tuoi amici."
   },
   "roomIdle": {
     "en": "The room closes after {n} minutes without players.",
@@ -1075,7 +1379,11 @@
     "de": "Der Raum schließt nach {n} Minuten ohne Spieler.",
     "tr": "Oda {n} dakika oyuncusuz kalınca kapanır.",
     "pl": "Pokój zamyka się po {n} min bez graczy.",
-    "nl": "De kamer sluit na {n} minuten zonder spelers."
+    "nl": "De kamer sluit na {n} minuten zonder spelers.",
+    "pt": "A sala fecha após {n} minutos sem jogadores.",
+    "id": "Ruang ditutup setelah {n} menit tanpa pemain.",
+    "ja": "プレイヤーがいない状態が{n}分続くとルームは閉じます。",
+    "it": "La stanza si chiude dopo {n} minuti senza giocatori."
   },
   "roomRejoin": {
     "en": "Rejoin",
@@ -1089,7 +1397,11 @@
     "de": "Erneut beitreten",
     "tr": "Yeniden katıl",
     "pl": "Dołącz ponownie",
-    "nl": "Opnieuw deelnemen"
+    "nl": "Opnieuw deelnemen",
+    "pt": "Entrar novamente",
+    "id": "Gabung kembali",
+    "ja": "再参加",
+    "it": "Rientra"
   },
   "roomLost": {
     "en": "Disconnected from the private room.",
@@ -1103,7 +1415,11 @@
     "de": "Verbindung zum privaten Raum getrennt.",
     "tr": "Özel oda bağlantısı kesildi.",
     "pl": "Rozłączono z prywatnym pokojem.",
-    "nl": "Verbinding met de privékamer verbroken."
+    "nl": "Verbinding met de privékamer verbroken.",
+    "pt": "Desconectado da sala privada.",
+    "id": "Terputus dari ruang privat.",
+    "ja": "プライベートルームから切断されました。",
+    "it": "Disconnesso dalla stanza privata."
   },
   "roomConnecting": {
     "en": "Connecting…",
@@ -1117,7 +1433,11 @@
     "de": "Verbinde…",
     "tr": "Bağlanıyor…",
     "pl": "Łączenie…",
-    "nl": "Verbinden…"
+    "nl": "Verbinden…",
+    "pt": "Conectando…",
+    "id": "Menghubungkan…",
+    "ja": "接続中…",
+    "it": "Connessione…"
   },
   "roomErrCode": {
     "en": "Enter the 6-character room code.",
@@ -1131,7 +1451,11 @@
     "de": "Gib den 6-stelligen Raumcode ein.",
     "tr": "6 karakterlik oda kodunu girin.",
     "pl": "Wpisz 6-znakowy kod pokoju.",
-    "nl": "Voer de kamercode van 6 tekens in."
+    "nl": "Voer de kamercode van 6 tekens in.",
+    "pt": "Insira o código de 6 caracteres da sala.",
+    "id": "Masukkan kode ruang 6 karakter.",
+    "ja": "6文字のルームコードを入力してください。",
+    "it": "Inserisci il codice stanza di 6 caratteri."
   },
   "roomErrName": {
     "en": "Room name: up to 24 characters, no < or >.",
@@ -1145,7 +1469,11 @@
     "de": "Raumname: bis zu 24 Zeichen, ohne < oder >.",
     "tr": "Oda adı: en fazla 24 karakter, < veya > olmadan.",
     "pl": "Nazwa pokoju: do 24 znaków, bez < i >.",
-    "nl": "Kamernaam: maximaal 24 tekens, geen < of >."
+    "nl": "Kamernaam: maximaal 24 tekens, geen < of >.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomErrNotFound": {
     "en": "Room not found. Check the code (a room closes after 10 minutes without players).",
@@ -1159,7 +1487,11 @@
     "de": "Raum nicht gefunden. Prüfe den Code (ein Raum schließt nach 10 Minuten ohne Spieler).",
     "tr": "Oda bulunamadı. Kodu kontrol edin (oda 10 dakika oyuncusuz kalınca kapanır).",
     "pl": "Nie znaleziono pokoju. Sprawdź kod (pokój zamyka się po 10 min bez graczy).",
-    "nl": "Kamer niet gevonden. Controleer de code (een kamer sluit na 10 minuten zonder spelers)."
+    "nl": "Kamer niet gevonden. Controleer de code (een kamer sluit na 10 minuten zonder spelers).",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomErrPassword": {
     "en": "Wrong password.",
@@ -1173,7 +1505,11 @@
     "de": "Falsches Passwort.",
     "tr": "Yanlış şifre.",
     "pl": "Błędne hasło.",
-    "nl": "Onjuist wachtwoord."
+    "nl": "Onjuist wachtwoord.",
+    "pt": "Senha incorreta.",
+    "id": "Kata sandi salah.",
+    "ja": "パスワードが違います。",
+    "it": "Password errata."
   },
   "roomErrFull": {
     "en": "The room is full.",
@@ -1187,7 +1523,11 @@
     "de": "Der Raum ist voll.",
     "tr": "Oda dolu.",
     "pl": "Pokój jest pełny.",
-    "nl": "De kamer is vol."
+    "nl": "De kamer is vol.",
+    "pt": "A sala está cheia.",
+    "id": "Ruang penuh.",
+    "ja": "ルームが満員です。",
+    "it": "La stanza è piena."
   },
   "roomErrFullRetry": {
     "en": "The room is full right now. Try again in a few seconds.",
@@ -1201,7 +1541,11 @@
     "de": "Der Raum ist gerade voll. Versuche es in ein paar Sekunden erneut.",
     "tr": "Oda şu anda dolu. Birkaç saniye sonra tekrar deneyin.",
     "pl": "Pokój jest teraz pełny. Spróbuj ponownie za kilka sekund.",
-    "nl": "De kamer is nu vol. Probeer het over een paar seconden opnieuw."
+    "nl": "De kamer is nu vol. Probeer het over een paar seconden opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomConnected": {
     "en": "Connected to the room.",
@@ -1215,7 +1559,11 @@
     "de": "Mit dem Raum verbunden.",
     "tr": "Odaya bağlanıldı.",
     "pl": "Połączono z pokojem.",
-    "nl": "Verbonden met de kamer."
+    "nl": "Verbonden met de kamer.",
+    "pt": "Conectado à sala.",
+    "id": "Terhubung ke ruang.",
+    "ja": "ルームに接続しました。",
+    "it": "Connesso alla stanza."
   },
   "roomErrRate": {
     "en": "Too many requests. Please wait a while and try again.",
@@ -1229,7 +1577,11 @@
     "de": "Zu viele Anfragen. Warte etwas und versuche es erneut.",
     "tr": "Çok fazla istek. Biraz bekleyip tekrar deneyin.",
     "pl": "Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.",
-    "nl": "Te veel verzoeken. Wacht even en probeer het opnieuw."
+    "nl": "Te veel verzoeken. Wacht even en probeer het opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomErrOwn": {
     "en": "You already have an open room.",
@@ -1243,7 +1595,11 @@
     "de": "Du hast schon einen offenen Raum.",
     "tr": "Zaten açık bir odanız var.",
     "pl": "Masz już otwarty pokój.",
-    "nl": "Je hebt al een open kamer."
+    "nl": "Je hebt al een open kamer.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomErrBusy": {
     "en": "All private rooms are in use. Try again later.",
@@ -1257,7 +1613,11 @@
     "de": "Alle privaten Räume sind belegt. Versuche es später.",
     "tr": "Tüm özel odalar kullanımda. Daha sonra tekrar deneyin.",
     "pl": "Wszystkie prywatne pokoje są zajęte. Spróbuj później.",
-    "nl": "Alle privékamers zijn in gebruik. Probeer het later opnieuw."
+    "nl": "Alle privékamers zijn in gebruik. Probeer het later opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomErrNetwork": {
     "en": "Could not reach the room server. Check your connection and try again.",
@@ -1271,7 +1631,11 @@
     "de": "Der Raumserver ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
     "tr": "Oda sunucusuna ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.",
     "pl": "Nie można połączyć się z serwerem pokoi. Sprawdź połączenie i spróbuj ponownie.",
-    "nl": "De kamerserver is niet bereikbaar. Controleer je verbinding en probeer het opnieuw."
+    "nl": "De kamerserver is niet bereikbaar. Controleer je verbinding en probeer het opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomErrServer": {
     "en": "The room server could not do this (error {n}). Try again later.",
@@ -1285,7 +1649,11 @@
     "de": "Der Raumserver konnte das nicht ausführen (Fehler {n}). Versuche es später.",
     "tr": "Oda sunucusu bunu yapamadı (hata {n}). Daha sonra tekrar deneyin.",
     "pl": "Serwer pokoi nie mógł tego wykonać (błąd {n}). Spróbuj później.",
-    "nl": "De kamerserver kon dit niet uitvoeren (fout {n}). Probeer het later opnieuw."
+    "nl": "De kamerserver kon dit niet uitvoeren (fout {n}). Probeer het later opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomProtected": {
     "en": "Password protected",
@@ -1299,7 +1667,11 @@
     "de": "Passwortgeschützt",
     "tr": "Şifre korumalı",
     "pl": "Chronione hasłem",
-    "nl": "Met wachtwoord"
+    "nl": "Met wachtwoord",
+    "pt": "Protegido por senha",
+    "id": "Dilindungi kata sandi",
+    "ja": "パスワード保護",
+    "it": "Protetta da password"
   },
   "roomShopOff": {
     "en": "Shop is off in private rooms; nothing is saved.",
@@ -1313,7 +1685,11 @@
     "de": "Der Shop ist in privaten Räumen aus; nichts wird gespeichert.",
     "tr": "Özel odalarda mağaza kapalı; hiçbir şey kaydedilmez.",
     "pl": "Sklep jest wyłączony w prywatnych pokojach; nic nie jest zapisywane.",
-    "nl": "De winkel staat uit in privékamers; er wordt niets opgeslagen."
+    "nl": "De winkel staat uit in privékamers; er wordt niets opgeslagen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomCloseBtn": {
     "en": "Close room",
@@ -1327,7 +1703,11 @@
     "de": "Raum schließen",
     "tr": "Odayı kapat",
     "pl": "Zamknij pokój",
-    "nl": "Kamer sluiten"
+    "nl": "Kamer sluiten",
+    "pt": "Fechar sala",
+    "id": "Tutup ruang",
+    "ja": "ルームを閉じる",
+    "it": "Chiudi stanza"
   },
   "roomCloseAsk": {
     "en": "Close the room for everyone?",
@@ -1341,7 +1721,11 @@
     "de": "Den Raum für alle schließen?",
     "tr": "Oda herkes için kapatılsın mı?",
     "pl": "Zamknąć pokój dla wszystkich?",
-    "nl": "De kamer voor iedereen sluiten?"
+    "nl": "De kamer voor iedereen sluiten?",
+    "pt": "Fechar a sala para todos?",
+    "id": "Tutup ruang untuk semua orang?",
+    "ja": "全員のルームを閉じますか？",
+    "it": "Chiudere la stanza per tutti?"
   },
   "roomCloseYes": {
     "en": "Yes, close it",
@@ -1355,7 +1739,11 @@
     "de": "Ja, schließen",
     "tr": "Evet, kapat",
     "pl": "Tak, zamknij",
-    "nl": "Ja, sluiten"
+    "nl": "Ja, sluiten",
+    "pt": "Sim, fechar",
+    "id": "Ya, tutup",
+    "ja": "はい、閉じる",
+    "it": "Sì, chiudila"
   },
   "roomCancel": {
     "en": "Cancel",
@@ -1369,7 +1757,11 @@
     "de": "Abbrechen",
     "tr": "İptal",
     "pl": "Anuluj",
-    "nl": "Annuleren"
+    "nl": "Annuleren",
+    "pt": "Cancelar",
+    "id": "Batal",
+    "ja": "キャンセル",
+    "it": "Annulla"
   },
   "roomClosing": {
     "en": "Closing the room…",
@@ -1383,7 +1775,11 @@
     "de": "Raum wird geschlossen…",
     "tr": "Oda kapatılıyor…",
     "pl": "Zamykanie pokoju…",
-    "nl": "Kamer wordt gesloten…"
+    "nl": "Kamer wordt gesloten…",
+    "pt": "Fechando a sala…",
+    "id": "Menutup ruang…",
+    "ja": "ルームを閉じています…",
+    "it": "Chiusura stanza…"
   },
   "roomClosed": {
     "en": "Room closed.",
@@ -1397,7 +1793,11 @@
     "de": "Raum geschlossen.",
     "tr": "Oda kapatıldı.",
     "pl": "Pokój zamknięty.",
-    "nl": "Kamer gesloten."
+    "nl": "Kamer gesloten.",
+    "pt": "Sala fechada.",
+    "id": "Ruang ditutup.",
+    "ja": "ルームを閉じました。",
+    "it": "Stanza chiusa."
   },
   "roomCloseGone": {
     "en": "The room is already closed.",
@@ -1411,7 +1811,11 @@
     "de": "Der Raum ist bereits geschlossen.",
     "tr": "Oda zaten kapalı.",
     "pl": "Pokój jest już zamknięty.",
-    "nl": "De kamer is al gesloten."
+    "nl": "De kamer is al gesloten.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomCloseDenied": {
     "en": "This room cannot be closed from this device.",
@@ -1425,7 +1829,11 @@
     "de": "Dieser Raum kann von diesem Gerät nicht geschlossen werden.",
     "tr": "Bu oda bu cihazdan kapatılamaz.",
     "pl": "Tego pokoju nie można zamknąć z tego urządzenia.",
-    "nl": "Deze kamer kan niet vanaf dit apparaat worden gesloten."
+    "nl": "Deze kamer kan niet vanaf dit apparaat worden gesloten.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "roomYours": {
     "en": "Your room",
@@ -1439,7 +1847,11 @@
     "de": "Dein Raum",
     "tr": "Odan",
     "pl": "Twój pokój",
-    "nl": "Jouw kamer"
+    "nl": "Jouw kamer",
+    "pt": "Sua sala",
+    "id": "Ruang Anda",
+    "ja": "あなたのルーム",
+    "it": "La tua stanza"
   },
   "mhThisDevice": {
     "en": "This device",
@@ -1453,7 +1865,11 @@
     "de": "Dieses Gerät",
     "tr": "Bu cihaz",
     "pl": "To urządzenie",
-    "nl": "Dit apparaat"
+    "nl": "Dit apparaat",
+    "pt": "Este dispositivo",
+    "id": "Perangkat ini",
+    "ja": "この端末",
+    "it": "Questo dispositivo"
   },
   "mhAccount": {
     "en": "Account (server)",
@@ -1467,7 +1883,11 @@
     "de": "Konto (Server)",
     "tr": "Hesap (sunucu)",
     "pl": "Konto (serwer)",
-    "nl": "Account (server)"
+    "nl": "Account (server)",
+    "pt": "Conta (servidor)",
+    "id": "Akun (server)",
+    "ja": "アカウント（サーバー）",
+    "it": "Account (server)"
   },
   "mhLoading": {
     "en": "Loading…",
@@ -1481,7 +1901,11 @@
     "de": "Wird geladen…",
     "tr": "Yükleniyor…",
     "pl": "Wczytywanie…",
-    "nl": "Laden…"
+    "nl": "Laden…",
+    "pt": "Carregando…",
+    "id": "Memuat…",
+    "ja": "読み込み中…",
+    "it": "Caricamento…"
   },
   "mhNoReply": {
     "en": "The server did not answer. Try again later.",
@@ -1495,7 +1919,11 @@
     "de": "Der Server hat nicht geantwortet. Versuche es später erneut.",
     "tr": "Sunucu yanıt vermedi. Daha sonra tekrar dene.",
     "pl": "Serwer nie odpowiedział. Spróbuj później.",
-    "nl": "De server heeft niet geantwoord. Probeer het later opnieuw."
+    "nl": "De server heeft niet geantwoord. Probeer het later opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "mhTop": {
     "en": "Best place",
@@ -1509,7 +1937,11 @@
     "de": "Beste Platzierung",
     "tr": "En iyi sıra",
     "pl": "Najlepsze miejsce",
-    "nl": "Beste plaats"
+    "nl": "Beste plaats",
+    "pt": "Melhor posição",
+    "id": "Posisi terbaik",
+    "ja": "最高順位",
+    "it": "Miglior posizione"
   },
   "mhKills": {
     "en": "Players / viruses",
@@ -1523,7 +1955,11 @@
     "de": "Spieler / Viren",
     "tr": "Oyuncu / virüs",
     "pl": "Gracze / wirusy",
-    "nl": "Spelers / virussen"
+    "nl": "Spelers / virussen",
+    "pt": "Jogadores / vírus",
+    "id": "Pemain / virus",
+    "ja": "プレイヤー / ウイルス",
+    "it": "Giocatori / virus"
   },
   "dailyChallenges": {
     "en": "Daily Challenges",
@@ -1537,7 +1973,11 @@
     "de": "Tägliche Herausforderungen",
     "tr": "Günlük meydan okumalar",
     "pl": "Codzienne wyzwania",
-    "nl": "Dagelijkse uitdagingen"
+    "nl": "Dagelijkse uitdagingen",
+    "pt": "Desafios diários",
+    "id": "Tantangan harian",
+    "ja": "デイリーチャレンジ",
+    "it": "Sfide giornaliere"
   },
   "chPlayersEaten": {
     "en": "Eat {0} player cells in one life",
@@ -1551,7 +1991,11 @@
     "de": "Friss {0} Spielerzellen in einem Leben",
     "tr": "Tek canda {0} oyuncu hücresi ye",
     "pl": "Zjedz {0} komórek graczy w jednym życiu",
-    "nl": "Eet {0} spelercellen in één leven"
+    "nl": "Eet {0} spelercellen in één leven",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chTimeAlive": {
     "en": "Survive {0} minutes in one life",
@@ -1565,7 +2009,11 @@
     "de": "Überlebe {0} Minuten in einem Leben",
     "tr": "Tek canda {0} dakika hayatta kal",
     "pl": "Przetrwaj {0} minut w jednym życiu",
-    "nl": "Overleef {0} minuten in één leven"
+    "nl": "Overleef {0} minuten in één leven",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chTopPosition": {
     "en": "Reach the top {0} of the leaderboard",
@@ -1579,7 +2027,11 @@
     "de": "Erreiche die Top {0} der Rangliste",
     "tr": "Liderlik tablosunda ilk {0} içine gir",
     "pl": "Wejdź do top {0} rankingu",
-    "nl": "Haal de top {0} van het klassement"
+    "nl": "Haal de top {0} van het klassement",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chVirusesEaten": {
     "en": "Eat {0} viruses in one life",
@@ -1593,7 +2045,11 @@
     "de": "Friss {0} Viren in einem Leben",
     "tr": "Tek canda {0} virüs ye",
     "pl": "Zjedz {0} wirusów w jednym życiu",
-    "nl": "Eet {0} virussen in één leven"
+    "nl": "Eet {0} virussen in één leven",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chClaim": {
     "en": "Claim",
@@ -1607,7 +2063,11 @@
     "de": "Abholen",
     "tr": "Al",
     "pl": "Odbierz",
-    "nl": "Ophalen"
+    "nl": "Ophalen",
+    "pt": "Resgatar",
+    "id": "Klaim",
+    "ja": "受け取る",
+    "it": "Riscatta"
   },
   "chClaimed": {
     "en": "Claimed",
@@ -1621,7 +2081,11 @@
     "de": "Abgeholt",
     "tr": "Alındı",
     "pl": "Odebrano",
-    "nl": "Opgehaald"
+    "nl": "Opgehaald",
+    "pt": "Resgatado",
+    "id": "Diklaim",
+    "ja": "受け取り済み",
+    "it": "Riscattato"
   },
   "chReward": {
     "en": "+{0} coins, +{1} DNA",
@@ -1635,7 +2099,11 @@
     "de": "+{0} Münzen, +{1} DNA",
     "tr": "+{0} altın, +{1} DNA",
     "pl": "+{0} monet, +{1} DNA",
-    "nl": "+{0} munten, +{1} DNA"
+    "nl": "+{0} munten, +{1} DNA",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chNewIn": {
     "en": "New challenges in {0}",
@@ -1649,7 +2117,11 @@
     "de": "Neue Herausforderungen in {0}",
     "tr": "Yeni meydan okumalara kalan: {0}",
     "pl": "Nowe wyzwania za {0}",
-    "nl": "Nieuwe uitdagingen over {0}"
+    "nl": "Nieuwe uitdagingen over {0}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chCompleted": {
     "en": "Daily challenge complete: {0}. Claim it in Challenges.",
@@ -1663,7 +2135,11 @@
     "de": "Tägliche Herausforderung geschafft: {0}. Hol die Belohnung unter Herausforderungen ab.",
     "tr": "Günlük meydan okuma tamamlandı: {0}. Ödülü Meydan Okumalar bölümünden al.",
     "pl": "Codzienne wyzwanie ukończone: {0}. Odbierz nagrodę w Wyzwaniach.",
-    "nl": "Dagelijkse uitdaging voltooid: {0}. Haal de beloning op bij Uitdagingen."
+    "nl": "Dagelijkse uitdaging voltooid: {0}. Haal de beloning op bij Uitdagingen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chClaimedToast": {
     "en": "Challenge reward claimed: {0}",
@@ -1677,7 +2153,11 @@
     "de": "Belohnung abgeholt: {0}",
     "tr": "Meydan okuma ödülü alındı: {0}",
     "pl": "Odebrano nagrodę za wyzwanie: {0}",
-    "nl": "Beloning opgehaald: {0}"
+    "nl": "Beloning opgehaald: {0}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chClaimFailed": {
     "en": "The challenge could not be claimed.",
@@ -1691,7 +2171,11 @@
     "de": "Die Herausforderung konnte nicht abgeholt werden.",
     "tr": "Meydan okuma ödülü alınamadı.",
     "pl": "Nie udało się odebrać wyzwania.",
-    "nl": "De uitdaging kon niet worden opgehaald."
+    "nl": "De uitdaging kon niet worden opgehaald.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "chFooter": {
     "en": "Daily challenges change at 00:00 UTC. Each one is met in a single life.",
@@ -1705,7 +2189,11 @@
     "de": "Die täglichen Herausforderungen wechseln um 00:00 UTC. Jede wird in einem einzigen Leben erfüllt.",
     "tr": "Günlük meydan okumalar 00:00 UTC'de değişir. Her biri tek canda tamamlanır.",
     "pl": "Codzienne wyzwania zmieniają się o 00:00 UTC. Każde wykonuje się w jednym życiu.",
-    "nl": "Dagelijkse uitdagingen wisselen om 00:00 UTC. Elke uitdaging haal je in één leven."
+    "nl": "Dagelijkse uitdagingen wisselen om 00:00 UTC. Elke uitdaging haal je in één leven.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "itemChallenge": {
     "en": "daily challenge",
@@ -1719,7 +2207,11 @@
     "de": "tägliche Herausforderung",
     "tr": "günlük meydan okuma",
     "pl": "codzienne wyzwanie",
-    "nl": "dagelijkse uitdaging"
+    "nl": "dagelijkse uitdaging",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmPresets": {
     "en": "Presets",
@@ -1733,7 +2225,11 @@
     "de": "Voreinstellungen",
     "tr": "Hazır ayarlar",
     "pl": "Presety",
-    "nl": "Voorinstellingen"
+    "nl": "Voorinstellingen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmPresetCompetitive": {
     "en": "Competitive",
@@ -1747,7 +2243,11 @@
     "de": "Wettkampf",
     "tr": "Rekabetçi",
     "pl": "Rywalizacja",
-    "nl": "Competitief"
+    "nl": "Competitief",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmPresetBattery": {
     "en": "Battery saver",
@@ -1761,7 +2261,11 @@
     "de": "Akku sparen",
     "tr": "Pil tasarrufu",
     "pl": "Oszczędzanie baterii",
-    "nl": "Batterij sparen"
+    "nl": "Batterij sparen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmPresetStreamer": {
     "en": "Streamer",
@@ -1775,7 +2279,11 @@
     "de": "Streamer",
     "tr": "Yayıncı",
     "pl": "Streamer",
-    "nl": "Streamer"
+    "nl": "Streamer",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmPresetCleanHud": {
     "en": "Clean HUD",
@@ -1789,7 +2297,11 @@
     "de": "Aufgeräumtes HUD",
     "tr": "Sade HUD",
     "pl": "Czysty HUD",
-    "nl": "Schone HUD"
+    "nl": "Schone HUD",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmPresetUndo": {
     "en": "Undo preset",
@@ -1803,7 +2315,11 @@
     "de": "Voreinstellung rückgängig",
     "tr": "Hazır ayarı geri al",
     "pl": "Cofnij preset",
-    "nl": "Voorinstelling ongedaan maken"
+    "nl": "Voorinstelling ongedaan maken",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmSettingsProfiles": {
     "en": "Settings profiles",
@@ -1817,7 +2333,11 @@
     "de": "Einstellungsprofile",
     "tr": "Ayar profilleri",
     "pl": "Profile ustawień",
-    "nl": "Instellingsprofielen"
+    "nl": "Instellingsprofielen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmPresetConfirm": {
     "en": "Apply this preset? These settings change (Undo puts them back):",
@@ -1831,7 +2351,11 @@
     "de": "Diese Voreinstellung anwenden? Diese Einstellungen ändern sich (Rückgängig stellt sie wieder her):",
     "tr": "Bu hazır ayar uygulansın mı? Şu ayarlar değişir (Geri al eski hâline getirir):",
     "pl": "Zastosować ten preset? Zmienią się te ustawienia (Cofnij je przywraca):",
-    "nl": "Deze voorinstelling toepassen? Deze instellingen veranderen (Ongedaan maken zet ze terug):"
+    "nl": "Deze voorinstelling toepassen? Deze instellingen veranderen (Ongedaan maken zet ze terug):",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmShowNewOptions": {
     "en": "Show new options",
@@ -1845,7 +2369,11 @@
     "de": "Neue Optionen zeigen",
     "tr": "Yeni seçenekleri göster",
     "pl": "Pokaż nowe opcje",
-    "nl": "Nieuwe opties tonen"
+    "nl": "Nieuwe opties tonen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmNewBadge": {
     "en": "NEW",
@@ -1859,7 +2387,11 @@
     "de": "NEU",
     "tr": "YENİ",
     "pl": "NOWE",
-    "nl": "NIEUW"
+    "nl": "NIEUW",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "eatenBy": {
     "en": "Eaten by",
@@ -1873,7 +2405,11 @@
     "de": "Gefressen von",
     "tr": "Seni yiyen",
     "pl": "Zjedzony przez",
-    "nl": "Opgegeten door"
+    "nl": "Opgegeten door",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "copyStats": {
     "en": "Copy stats",
@@ -1887,7 +2423,11 @@
     "de": "Statistik kopieren",
     "tr": "İstatistikleri kopyala",
     "pl": "Kopiuj statystyki",
-    "nl": "Statistieken kopiëren"
+    "nl": "Statistieken kopiëren",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "rewardReady": {
     "en": "A reward is ready to claim.",
@@ -1901,7 +2441,11 @@
     "de": "Eine Belohnung ist bereit.",
     "tr": "Alınacak bir ödül var.",
     "pl": "Nagroda gotowa do odebrania.",
-    "nl": "Er staat een beloning klaar."
+    "nl": "Er staat een beloning klaar.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "remindOn": {
     "en": "You will be reminded when a reward is ready.",
@@ -1915,7 +2459,11 @@
     "de": "Du wirst erinnert, wenn eine Belohnung bereit ist.",
     "tr": "Bir ödül hazır olduğunda hatırlatılacaksın.",
     "pl": "Przypomnimy, gdy nagroda będzie gotowa.",
-    "nl": "Je krijgt een herinnering als er een beloning klaarstaat."
+    "nl": "Je krijgt een herinnering als er een beloning klaarstaat.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "remindOff": {
     "en": "Reward reminder off.",
@@ -1929,7 +2477,11 @@
     "de": "Belohnungs-Erinnerung aus.",
     "tr": "Ödül hatırlatıcısı kapalı.",
     "pl": "Przypomnienie o nagrodach wyłączone.",
-    "nl": "Beloningsherinnering uit."
+    "nl": "Beloningsherinnering uit.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "sessionLine": {
     "en": "This session: {0} games · best mass {1} · {2} played",
@@ -1943,7 +2495,11 @@
     "de": "Diese Sitzung: {0} Spiele · beste Masse {1} · {2} gespielt",
     "tr": "Bu oturum: {0} oyun · en iyi kütle {1} · {2} oynandı",
     "pl": "Ta sesja: {0} gier · najlepsza masa {1} · {2} gry",
-    "nl": "Deze sessie: {0} spellen · beste massa {1} · {2} gespeeld"
+    "nl": "Deze sessie: {0} spellen · beste massa {1} · {2} gespeeld",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "searchSettings": {
     "en": "Search settings...",
@@ -1957,7 +2513,11 @@
     "de": "Einstellungen suchen...",
     "tr": "Ayarlarda ara...",
     "pl": "Szukaj ustawień...",
-    "nl": "Instellingen zoeken..."
+    "nl": "Instellingen zoeken...",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "itemHourly": {
     "en": "hourly bonus",
@@ -1971,7 +2531,11 @@
     "de": "stündlicher Bonus",
     "tr": "saatlik bonus",
     "pl": "bonus godzinny",
-    "nl": "uurbonus"
+    "nl": "uurbonus",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "itemDaily": {
     "en": "daily quest",
@@ -1985,7 +2549,11 @@
     "de": "tägliche Quest",
     "tr": "günlük görev",
     "pl": "codzienne zadanie",
-    "nl": "dagelijkse missie"
+    "nl": "dagelijkse missie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "itemGift": {
     "en": "gift",
@@ -1999,7 +2567,11 @@
     "de": "Geschenk",
     "tr": "hediye",
     "pl": "prezent",
-    "nl": "cadeau"
+    "nl": "cadeau",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "itemIn": {
     "en": "{0} in {1}",
@@ -2013,7 +2585,11 @@
     "de": "{0} in {1}",
     "tr": "{0}: {1} sonra",
     "pl": "{0} za {1}",
-    "nl": "{0} over {1}"
+    "nl": "{0} over {1}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "dailyRunning": {
     "en": "daily quest still running",
@@ -2027,7 +2603,11 @@
     "de": "tägliche Quest läuft noch",
     "tr": "günlük görev hâlâ sürüyor",
     "pl": "codzienne zadanie wciąż trwa",
-    "nl": "dagelijkse missie loopt nog"
+    "nl": "dagelijkse missie loopt nog",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "nextDaily": {
     "en": "next daily quest",
@@ -2041,7 +2621,11 @@
     "de": "nächste tägliche Quest",
     "tr": "sonraki günlük görev",
     "pl": "następne codzienne zadanie",
-    "nl": "volgende dagelijkse missie"
+    "nl": "volgende dagelijkse missie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "statsTitle": {
     "en": "Player Profile Stats",
@@ -2055,7 +2639,11 @@
     "de": "Profilstatistik",
     "tr": "Profil istatistikleri",
     "pl": "Statystyki profilu",
-    "nl": "Profielstatistieken"
+    "nl": "Profielstatistieken",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "levelWord": {
     "en": "Level",
@@ -2069,7 +2657,11 @@
     "de": "Level",
     "tr": "Seviye",
     "pl": "Poziom",
-    "nl": "Level"
+    "nl": "Level",
+    "pt": "Nível",
+    "id": "Level",
+    "ja": "レベル",
+    "it": "Livello"
   },
   "gamesPlayed": {
     "en": "Games Played",
@@ -2083,7 +2675,11 @@
     "de": "Gespielte Spiele",
     "tr": "Oynanan oyunlar",
     "pl": "Rozegrane gry",
-    "nl": "Gespeelde spellen"
+    "nl": "Gespeelde spellen",
+    "pt": "Partidas jogadas",
+    "id": "Pertandingan dimainkan",
+    "ja": "プレイ回数",
+    "it": "Partite giocate"
   },
   "rewardCollected": {
     "en": "Reward collected!",
@@ -2097,7 +2693,11 @@
     "de": "Belohnung erhalten!",
     "tr": "Ödül alındı!",
     "pl": "Nagroda odebrana!",
-    "nl": "Beloning ontvangen!"
+    "nl": "Beloning ontvangen!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "nextInMin": {
     "en": "Next one in {0} min.",
@@ -2111,7 +2711,11 @@
     "de": "Die nächste in {0} Min.",
     "tr": "Sonraki {0} dk sonra.",
     "pl": "Następna za {0} min.",
-    "nl": "Volgende over {0} min."
+    "nl": "Volgende over {0} min.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "boostActivated": {
     "en": "Boost activated!",
@@ -2125,7 +2729,11 @@
     "de": "Boost aktiviert!",
     "tr": "Takviye etkin!",
     "pl": "Wzmocnienie włączone!",
-    "nl": "Boost geactiveerd!"
+    "nl": "Boost geactiveerd!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "expiresInMin": {
     "en": "Expires in {0} min",
@@ -2139,7 +2747,11 @@
     "de": "Läuft in {0} Min. ab",
     "tr": "{0} dk sonra bitiyor",
     "pl": "Wygasa za {0} min",
-    "nl": "Verloopt over {0} min"
+    "nl": "Verloopt over {0} min",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "questActivated": {
     "en": "Quest activated!",
@@ -2153,7 +2765,11 @@
     "de": "Quest aktiviert!",
     "tr": "Görev etkin!",
     "pl": "Zadanie włączone!",
-    "nl": "Missie geactiveerd!"
+    "nl": "Missie geactiveerd!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "questType": {
     "en": "Type: {0}",
@@ -2167,7 +2783,11 @@
     "de": "Typ: {0}",
     "tr": "Tür: {0}",
     "pl": "Typ: {0}",
-    "nl": "Type: {0}"
+    "nl": "Type: {0}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "potionOpened": {
     "en": "Potion opened!",
@@ -2181,7 +2801,11 @@
     "de": "Trank geöffnet!",
     "tr": "İksir açıldı!",
     "pl": "Eliksir otwarty!",
-    "nl": "Drankje geopend!"
+    "nl": "Drankje geopend!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "brewingStarted": {
     "en": "Brewing started!",
@@ -2195,7 +2819,11 @@
     "de": "Brauen gestartet!",
     "tr": "Demleme başladı!",
     "pl": "Warzenie rozpoczęte!",
-    "nl": "Brouwen gestart!"
+    "nl": "Brouwen gestart!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "activatingQuest": {
     "en": "Activating quest...",
@@ -2209,7 +2837,11 @@
     "de": "Quest wird aktiviert...",
     "tr": "Görev etkinleştiriliyor...",
     "pl": "Włączanie zadania...",
-    "nl": "Missie activeren..."
+    "nl": "Missie activeren...",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "activatingBoost": {
     "en": "Activating boost...",
@@ -2223,7 +2855,11 @@
     "de": "Boost wird aktiviert...",
     "tr": "Takviye etkinleştiriliyor...",
     "pl": "Włączanie wzmocnienia...",
-    "nl": "Boost activeren..."
+    "nl": "Boost activeren...",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "claimed": {
     "en": "Claimed: {0}",
@@ -2237,7 +2873,11 @@
     "de": "Erhalten: {0}",
     "tr": "Alındı: {0}",
     "pl": "Odebrano: {0}",
-    "nl": "Ontvangen: {0}"
+    "nl": "Ontvangen: {0}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "claimWaiting": {
     "en": "Waiting: {0}",
@@ -2251,7 +2891,11 @@
     "de": "Wartend: {0}",
     "tr": "Bekleyen: {0}",
     "pl": "Oczekuje: {0}",
-    "nl": "Wachtend: {0}"
+    "nl": "Wachtend: {0}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "nothingToClaim": {
     "en": "Nothing to claim right now",
@@ -2265,7 +2909,11 @@
     "de": "Gerade nichts abzuholen",
     "tr": "Şu an alınacak bir şey yok",
     "pl": "Nie ma teraz nic do odebrania",
-    "nl": "Er is nu niets op te halen"
+    "nl": "Er is nu niets op te halen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "levelRewardsNote": {
     "en": "Level rewards are given by the server on level-up.",
@@ -2279,7 +2927,11 @@
     "de": "Level-Belohnungen gibt der Server beim Levelaufstieg.",
     "tr": "Seviye ödülleri seviye atlayınca sunucu tarafından verilir.",
     "pl": "Nagrody za poziom serwer daje po awansie.",
-    "nl": "Levelbeloningen geeft de server bij een level-up."
+    "nl": "Levelbeloningen geeft de server bij een level-up.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "rewardsTimers": {
     "en": "ACCOUNT REWARDS & TIMERS",
@@ -2293,7 +2945,11 @@
     "de": "BELOHNUNGEN & TIMER",
     "tr": "HESAP ÖDÜLLERİ VE SÜRELER",
     "pl": "NAGRODY I LICZNIKI",
-    "nl": "BELONINGEN & TIMERS"
+    "nl": "BELONINGEN & TIMERS",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "levelNext": {
     "en": "Level {0} → {1}",
@@ -2307,7 +2963,11 @@
     "de": "Level {0} → {1}",
     "tr": "Seviye {0} → {1}",
     "pl": "Poziom {0} → {1}",
-    "nl": "Level {0} → {1}"
+    "nl": "Level {0} → {1}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "noReward": {
     "en": "No configured reward",
@@ -2321,7 +2981,11 @@
     "de": "Keine Belohnung festgelegt",
     "tr": "Ayarlı ödül yok",
     "pl": "Brak ustawionej nagrody",
-    "nl": "Geen beloning ingesteld"
+    "nl": "Geen beloning ingesteld",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "hourlyBonus": {
     "en": "Hourly Bonus",
@@ -2335,7 +2999,11 @@
     "de": "Stündlicher Bonus",
     "tr": "Saatlik bonus",
     "pl": "Bonus godzinny",
-    "nl": "Uurbonus"
+    "nl": "Uurbonus",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "timedReward": {
     "en": "Configured timed reward",
@@ -2349,7 +3017,11 @@
     "de": "Zeitbelohnung",
     "tr": "Zamanlı ödül",
     "pl": "Nagroda czasowa",
-    "nl": "Tijdbeloning"
+    "nl": "Tijdbeloning",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "dailyQuest": {
     "en": "Daily Quest",
@@ -2363,7 +3035,11 @@
     "de": "Tägliche Quest",
     "tr": "Günlük görev",
     "pl": "Codzienne zadanie",
-    "nl": "Dagelijkse missie"
+    "nl": "Dagelijkse missie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "ready": {
     "en": "READY",
@@ -2377,7 +3053,11 @@
     "de": "BEREIT",
     "tr": "HAZIR",
     "pl": "GOTOWE",
-    "nl": "KLAAR"
+    "nl": "KLAAR",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "waitingServer": {
     "en": "Waiting for server",
@@ -2391,7 +3071,11 @@
     "de": "Warte auf Server",
     "tr": "Sunucu bekleniyor",
     "pl": "Czekam na serwer",
-    "nl": "Wachten op server"
+    "nl": "Wachten op server",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "pEmpty": {
     "en": "EMPTY",
@@ -2405,7 +3089,11 @@
     "de": "LEER",
     "tr": "BOŞ",
     "pl": "PUSTE",
-    "nl": "LEEG"
+    "nl": "LEEG",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "pBrew": {
     "en": "BREW",
@@ -2419,7 +3107,11 @@
     "de": "BRAUEN",
     "tr": "DEMLE",
     "pl": "WARZ",
-    "nl": "BROUWEN"
+    "nl": "BROUWEN",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "pWaiting": {
     "en": "WAITING",
@@ -2433,7 +3125,11 @@
     "de": "WARTET",
     "tr": "BEKLİYOR",
     "pl": "CZEKA",
-    "nl": "WACHT"
+    "nl": "WACHT",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "pOpen": {
     "en": "OPEN",
@@ -2447,7 +3143,11 @@
     "de": "ÖFFNEN",
     "tr": "AÇ",
     "pl": "OTWÓRZ",
-    "nl": "OPENEN"
+    "nl": "OPENEN",
+    "pt": "Abrir",
+    "id": "Buka",
+    "ja": "開く",
+    "it": "Apri"
   },
   "anotherBrewing": {
     "en": "Another potion is brewing",
@@ -2461,7 +3161,11 @@
     "de": "Ein anderer Trank wird gebraut",
     "tr": "Başka bir iksir demleniyor",
     "pl": "Warzy się inny eliksir",
-    "nl": "Er wordt een ander drankje gebrouwen"
+    "nl": "Er wordt een ander drankje gebrouwen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "skip": {
     "en": "Skip",
@@ -2475,7 +3179,11 @@
     "de": "Überspringen",
     "tr": "Atla",
     "pl": "Pomiń",
-    "nl": "Overslaan"
+    "nl": "Overslaan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "skipOwned": {
     "en": "Skip (owned)",
@@ -2489,7 +3197,11 @@
     "de": "Überspringen (vorhanden)",
     "tr": "Atla (sahipsin)",
     "pl": "Pomiń (posiadasz)",
-    "nl": "Overslaan (in bezit)"
+    "nl": "Overslaan (in bezit)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "gameOver": {
     "en": "Game Over",
@@ -2503,7 +3215,11 @@
     "de": "Spiel vorbei",
     "tr": "Oyun bitti",
     "pl": "Koniec gry",
-    "nl": "Game over"
+    "nl": "Game over",
+    "pt": "Fim de jogo",
+    "id": "Permainan berakhir",
+    "ja": "ゲームオーバー",
+    "it": "Partita terminata"
   },
   "finalMass": {
     "en": "Final Mass",
@@ -2517,7 +3233,11 @@
     "de": "Endmasse",
     "tr": "Son kütle",
     "pl": "Masa końcowa",
-    "nl": "Eindmassa"
+    "nl": "Eindmassa",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "highestMass": {
     "en": "Highest Mass",
@@ -2531,7 +3251,11 @@
     "de": "Höchste Masse",
     "tr": "En yüksek kütle",
     "pl": "Najwyższa masa",
-    "nl": "Hoogste massa"
+    "nl": "Hoogste massa",
+    "pt": "Maior massa",
+    "id": "Massa tertinggi",
+    "ja": "最大質量",
+    "it": "Massa massima"
   },
   "topPosition": {
     "en": "Top Position",
@@ -2545,7 +3269,11 @@
     "de": "Beste Platzierung",
     "tr": "En iyi sıra",
     "pl": "Najlepsza pozycja",
-    "nl": "Beste positie"
+    "nl": "Beste positie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "finalPosition": {
     "en": "Final Position",
@@ -2559,7 +3287,11 @@
     "de": "Endplatzierung",
     "tr": "Son sıra",
     "pl": "Pozycja końcowa",
-    "nl": "Eindpositie"
+    "nl": "Eindpositie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "timeAlive": {
     "en": "Time Alive",
@@ -2573,7 +3305,11 @@
     "de": "Überlebenszeit",
     "tr": "Hayatta kalma",
     "pl": "Czas życia",
-    "nl": "Tijd in leven"
+    "nl": "Tijd in leven",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "timeOnLb": {
     "en": "Time on LB",
@@ -2587,7 +3323,11 @@
     "de": "Zeit in der Rangliste",
     "tr": "Sıralamada süre",
     "pl": "Czas w rankingu",
-    "nl": "Tijd in ranglijst"
+    "nl": "Tijd in ranglijst",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "massConsumed": {
     "en": "Mass Consumed",
@@ -2601,7 +3341,11 @@
     "de": "Gefressene Masse",
     "tr": "Yenen kütle",
     "pl": "Zjedzona masa",
-    "nl": "Gegeten massa"
+    "nl": "Gegeten massa",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "foodEaten": {
     "en": "Food Eaten",
@@ -2615,7 +3359,11 @@
     "de": "Gefressenes Futter",
     "tr": "Yenen yem",
     "pl": "Zjedzone jedzenie",
-    "nl": "Gegeten voedsel"
+    "nl": "Gegeten voedsel",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "playersEaten": {
     "en": "Players Eaten",
@@ -2629,7 +3377,11 @@
     "de": "Gefressene Spieler",
     "tr": "Yenen oyuncular",
     "pl": "Zjedzeni gracze",
-    "nl": "Gegeten spelers"
+    "nl": "Gegeten spelers",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "cellsEaten": {
     "en": "Cells Eaten",
@@ -2643,7 +3395,11 @@
     "de": "Gefressene Zellen",
     "tr": "Yenen hücreler",
     "pl": "Zjedzone komórki",
-    "nl": "Gegeten cellen"
+    "nl": "Gegeten cellen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "virusesEaten": {
     "en": "Viruses Eaten",
@@ -2657,7 +3413,11 @@
     "de": "Gefressene Viren",
     "tr": "Yenen virüsler",
     "pl": "Zjedzone wirusy",
-    "nl": "Gegeten virussen"
+    "nl": "Gegeten virussen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "mapExpanding": {
     "en": "Map expanding — new territory ahead!",
@@ -2671,7 +3431,11 @@
     "de": "Die Karte wächst – neues Gebiet voraus!",
     "tr": "Harita genişliyor — yeni bölge geliyor!",
     "pl": "Mapa się powiększa — nowy teren przed tobą!",
-    "nl": "De kaart wordt groter — nieuw gebied!"
+    "nl": "De kaart wordt groter — nieuw gebied!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "mapShrinking": {
     "en": "Map shrinking in {0}s — move inward",
@@ -2685,7 +3449,11 @@
     "de": "Karte schrumpft in {0}s – nach innen bewegen",
     "tr": "Harita {0} sn içinde küçülüyor — içeri ilerle",
     "pl": "Mapa zmniejszy się za {0}s — idź do środka",
-    "nl": "Kaart krimpt over {0}s — ga naar binnen"
+    "nl": "Kaart krimpt over {0}s — ga naar binnen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "dangerZone": {
     "en": "Danger zone — leave the red area",
@@ -2699,7 +3467,11 @@
     "de": "Gefahrenzone – verlasse den roten Bereich",
     "tr": "Tehlike bölgesi — kırmızı alandan çık",
     "pl": "Strefa zagrożenia — opuść czerwony obszar",
-    "nl": "Gevarenzone — verlaat het rode gebied"
+    "nl": "Gevarenzone — verlaat het rode gebied",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "noServer": {
     "en": "Could not find a server. Press Play, or change the region or mode, to try again.",
@@ -2713,7 +3485,11 @@
     "de": "Kein Server gefunden. Drücke Play oder ändere Region oder Modus, um es erneut zu versuchen.",
     "tr": "Sunucu bulunamadı. Tekrar denemek için Oyna'ya basın veya bölgeyi ya da modu değiştirin.",
     "pl": "Nie znaleziono serwera. Naciśnij Graj albo zmień region lub tryb, aby spróbować ponownie.",
-    "nl": "Geen server gevonden. Druk op Spelen of kies een andere regio of modus om het opnieuw te proberen."
+    "nl": "Geen server gevonden. Druk op Spelen of kies een andere regio of modus om het opnieuw te proberen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "noRegion": {
     "en": "Could not determine your region. Select a region manually.",
@@ -2727,7 +3503,11 @@
     "de": "Deine Region konnte nicht ermittelt werden. Wähle eine Region manuell.",
     "tr": "Bölgeniz belirlenemedi. Lütfen bölgeyi elle seçin.",
     "pl": "Nie udało się ustalić Twojego regionu. Wybierz region ręcznie.",
-    "nl": "Je regio kon niet worden bepaald. Kies handmatig een regio."
+    "nl": "Je regio kon niet worden bepaald. Kies handmatig een regio.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "partyRejoin": {
     "en": "Connection lost. Trying to rejoin your party...",
@@ -2741,7 +3521,11 @@
     "de": "Verbindung verloren. Versuche, deiner Party wieder beizutreten...",
     "tr": "Bağlantı koptu. Partinize yeniden katılmaya çalışılıyor...",
     "pl": "Utracono połączenie. Próba ponownego dołączenia do drużyny...",
-    "nl": "Verbinding verbroken. Bezig met opnieuw deelnemen aan je party..."
+    "nl": "Verbinding verbroken. Bezig met opnieuw deelnemen aan je party...",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "loginExpired": {
     "en": "Your login expired. Please log in again.",
@@ -2755,7 +3539,11 @@
     "de": "Deine Anmeldung ist abgelaufen. Bitte melde dich erneut an.",
     "tr": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.",
     "pl": "Sesja logowania wygasła. Zaloguj się ponownie.",
-    "nl": "Je login is verlopen. Log opnieuw in."
+    "nl": "Je login is verlopen. Log opnieuw in.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "connDrops": {
     "en": "The connection keeps dropping. Press Play or change the server to try again.",
@@ -2769,7 +3557,11 @@
     "de": "Die Verbindung bricht ständig ab. Drücke Play oder wechsle den Server, um es erneut zu versuchen.",
     "tr": "Bağlantı sürekli kopuyor. Tekrar denemek için Oyna'ya basın veya sunucuyu değiştirin.",
     "pl": "Połączenie ciągle się zrywa. Naciśnij Graj albo zmień serwer, aby spróbować ponownie.",
-    "nl": "De verbinding valt steeds weg. Druk op Spelen of kies een andere server om het opnieuw te proberen."
+    "nl": "De verbinding valt steeds weg. Druk op Spelen of kies een andere server om het opnieuw te proberen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "partyFull": {
     "en": "This party is full.",
@@ -2783,7 +3575,11 @@
     "de": "Diese Party ist voll.",
     "tr": "Bu parti dolu.",
     "pl": "Ta drużyna jest pełna.",
-    "nl": "Deze party is vol."
+    "nl": "Deze party is vol.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "partyToken": {
     "en": "Enter a valid party token.",
@@ -2797,7 +3593,11 @@
     "de": "Gib einen gültigen Party-Code ein.",
     "tr": "Geçerli bir parti kodu girin.",
     "pl": "Wpisz prawidłowy kod drużyny.",
-    "nl": "Voer een geldige partycode in."
+    "nl": "Voer een geldige partycode in.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "needLogin": {
     "en": "LOGIN & PLAY NEEDED",
@@ -2811,7 +3611,11 @@
     "de": "LOGIN & SPIEL NÖTIG",
     "tr": "GİRİŞ VE OYUN GEREKLİ",
     "pl": "ZALOGUJ SIĘ I ZAGRAJ",
-    "nl": "INLOGGEN & SPELEN NODIG"
+    "nl": "INLOGGEN & SPELEN NODIG",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmRecClear": {
     "en": "Clear recordings in memory",
@@ -2825,7 +3629,11 @@
     "de": "Aufnahmen im Speicher löschen",
     "tr": "Bellekteki kayıtları temizle",
     "pl": "Wyczyść nagrania z pamięci",
-    "nl": "Opnames in geheugen wissen"
+    "nl": "Opnames in geheugen wissen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmRecClearNone": {
     "en": "No replay recordings in memory to clear.",
@@ -2839,7 +3647,11 @@
     "de": "Keine Replay-Aufnahmen im Speicher zum Löschen.",
     "tr": "Bellekte temizlenecek tekrar kaydı yok.",
     "pl": "Brak nagrań powtórek w pamięci do wyczyszczenia.",
-    "nl": "Geen replay-opnames in het geheugen om te wissen."
+    "nl": "Geen replay-opnames in het geheugen om te wissen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmRecClearAsk": {
     "en": "Free {0} replay recording(s) kept in memory? This cannot be undone. Replays saved in the Replay Studio library and .lm files stay.",
@@ -2853,7 +3665,11 @@
     "de": "{0} Replay-Aufnahme(n) aus dem Speicher freigeben? Das kann nicht rückgängig gemacht werden. In der Replay-Studio-Bibliothek gespeicherte Replays und .lm-Dateien bleiben erhalten.",
     "tr": "Bellekteki {0} tekrar kaydı silinsin mi? Bu geri alınamaz. Replay Studio kütüphanesine kaydedilen tekrarlar ve .lm dosyaları kalır.",
     "pl": "Zwolnić {0} nagrań powtórek z pamięci? Tej operacji nie można cofnąć. Powtórki zapisane w bibliotece Replay Studio i pliki .lm zostaną.",
-    "nl": "{0} replay-opname(s) uit het geheugen vrijgeven? Dit kan niet ongedaan worden gemaakt. Replays in de Replay Studio-bibliotheek en .lm-bestanden blijven bewaard."
+    "nl": "{0} replay-opname(s) uit het geheugen vrijgeven? Dit kan niet ongedaan worden gemaakt. Replays in de Replay Studio-bibliotheek en .lm-bestanden blijven bewaard.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "lmRecCleared": {
     "en": "Freed {0} replay recording(s) from memory.",
@@ -2867,7 +3683,11 @@
     "de": "{0} Replay-Aufnahme(n) aus dem Speicher freigegeben.",
     "tr": "Bellekten {0} tekrar kaydı silindi.",
     "pl": "Zwolniono {0} nagrań powtórek z pamięci.",
-    "nl": "{0} replay-opname(s) uit het geheugen vrijgegeven."
+    "nl": "{0} replay-opname(s) uit het geheugen vrijgegeven.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "core.langChanged": {
     "en": "Language changed. Reload the page to update the settings rows too.",
@@ -2881,7 +3701,11 @@
     "de": "Sprache geändert. Seite neu laden, um auch die Einstellungen zu aktualisieren.",
     "tr": "Dil değiştirildi. Ayar satırlarını da güncellemek için sayfayı yenileyin.",
     "pl": "Zmieniono język. Odśwież stronę, aby zaktualizować także ustawienia.",
-    "nl": "Taal gewijzigd. Laad de pagina opnieuw om ook de instellingen bij te werken."
+    "nl": "Taal gewijzigd. Laad de pagina opnieuw om ook de instellingen bij te werken.",
+    "pt": "Idioma alterado. Recarregue a página para atualizar também as opções de configuração.",
+    "id": "Bahasa diubah. Muat ulang halaman untuk memperbarui pengaturan juga.",
+    "ja": "言語を変更しました。設定項目も更新するにはページを再読み込みしてください。",
+    "it": "Lingua modificata. Ricarica la pagina per aggiornare anche le voci delle impostazioni."
   },
   "core.langFirstTitle": {
     "en": "Choose your language",
@@ -2895,7 +3719,11 @@
     "de": "Wähle deine Sprache",
     "tr": "Dilinizi seçin",
     "pl": "Wybierz swój język",
-    "nl": "Kies je taal"
+    "nl": "Kies je taal",
+    "pt": "Escolha seu idioma",
+    "id": "Pilih bahasa Anda",
+    "ja": "言語を選択してください",
+    "it": "Scegli la tua lingua"
   },
   "core.langFirstText": {
     "en": "You can change it later in Settings > Choose Language.",
@@ -2909,7 +3737,11 @@
     "de": "Du kannst sie später unter Einstellungen > Sprache wählen ändern.",
     "tr": "Daha sonra Ayarlar > Dil Seçin bölümünden değiştirebilirsiniz.",
     "pl": "Możesz go później zmienić w Ustawienia > Wybierz język.",
-    "nl": "Je kunt dit later wijzigen via Instellingen > Taal kiezen."
+    "nl": "Je kunt dit later wijzigen via Instellingen > Taal kiezen.",
+    "pt": "Você pode alterar depois em Configurações > Escolher idioma.",
+    "id": "Anda dapat mengubahnya nanti di Pengaturan > Pilih bahasa.",
+    "ja": "後で「設定」>「言語を選択」から変更できます。",
+    "it": "Puoi cambiarla in seguito in Impostazioni > Scegli lingua."
   },
   "core.ok": {
     "en": "OK",
@@ -2923,7 +3755,11 @@
     "de": "OK",
     "tr": "Tamam",
     "pl": "OK",
-    "nl": "OK"
+    "nl": "OK",
+    "pt": "OK",
+    "id": "OK",
+    "ja": "OK",
+    "it": "OK"
   },
   "core.close": {
     "en": "Close",
@@ -2937,6 +3773,10 @@
     "de": "Schließen",
     "tr": "Kapat",
     "pl": "Zamknij",
-    "nl": "Sluiten"
+    "nl": "Sluiten",
+    "pt": "Fechar",
+    "id": "Tutup",
+    "ja": "閉じる",
+    "it": "Chiudi"
   }
 }

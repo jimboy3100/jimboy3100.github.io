@@ -9,7 +9,7 @@ function _lmxT(k, v) { return window.lmT ? window.lmT(k, v) : String(k); }
 function _lmxE(k, v) { return String(_lmxT(k, v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 /* Choose Language: every language under its own name (the same in every language), value = languagemod number */
 function _lmxLanguageOptions() {
-    var names = (window.LMi18n && window.LMi18n.names) || ['English', 'Greek', 'Spanish', 'Bulgarian', 'French', 'Arabic', 'Chinese', 'Russian', 'German', 'Turkish', 'Polish', 'Dutch'];
+    var names = (window.LMi18n && window.LMi18n.names) || ['English', 'Greek', 'Spanish', 'Bulgarian', 'French', 'Arabic', 'Chinese', 'Russian', 'German', 'Turkish', 'Polish', 'Dutch', 'Portuguese (Brazil) - Beta', 'Indonesian - Beta', 'Japanese - Beta', 'Italian - Beta'];
     var html = '';
     for (var i = 0; i < names.length; i++) html += '<option value="' + (i + 1) + '" data-itr=""' + (i === 0 ? ' selected' : '') + '>' + String(names[i]).replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</option>';
     return html;
@@ -4966,7 +4966,7 @@ function _lmRunLanguageHandler() {
     var done = function () { _lmLanguageHandler.loading = false; };
     _lmAddLanguageScript("https://www.legendmod.ml/languages/LanguagePackHandler.js?v=" + (window.OgVer || ''), done, done);
 }
-/* First visit (no language chosen, never asked): a small window with the 12 languages, the browser's
+/* First visit (no language chosen, never asked): a small window with the supported languages, the browser's
  * one picked. OK switches like Choose Language and saves it; the cross or Esc keeps the browser's
  * language unsaved. Asked once (localStorage lmLangAsked), on the main menu, not over the loading
  * screen and not while playing. */
@@ -6973,7 +6973,7 @@ function initializeLM(modVersion) {
         '<input id="yt6url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
         '</div></div>' +
 
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-i18n-title="lmx.ex.languageUploadTip" data-original-title="' + _lmxE('lmx.ex.languageUploadTip', ['https://www.legendmod.ml/languages/LanguagePackEnglish.js']) + '" data-i18n-vars=\'{"0":"https://www.legendmod.ml/languages/LanguagePackEnglish.js"}\'><span data-i18n="lmx.ex.chooseLanguage">' + _lmxE('lmx.ex.chooseLanguage') + '</span>:  </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style=""><span data-i18n="lmx.ex.chooseLanguage">' + _lmxE('lmx.ex.chooseLanguage') + '</span>:  </span>' +
         '<select id="legendlanguages" class="form-control" onchange="changeModLanguage(true);" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
         _lmxLanguageOptions() +
         '</select></div>' +
@@ -9080,7 +9080,7 @@ function changeFrameWorkStart() {
  * lmThemeHash()  -> returns "#lm=<base64url JSON>"
  * lmThemeSend(iframe) -> sends the theme with postMessage, only to a Legend page
  * lmThemeChanged() -> the theme setters call it: open Legend pages that said "lm-theme-ready" get the new theme
- * lang: the Choose Language number (1 English .. 12 Dutch): the web pages (lib/lm-i18n.js) show
+ * lang: the Choose Language number (1 English .. 16 Italian): the web pages (lib/lm-i18n.js) show
  * that language; on agar.io the site cannot read the mod's localStorage. */
 /* the exact HTTPS origins of the Legend pages: nothing else gets the theme */
 var LM_THEME_ORIGINS = ['https://www.legendmod.ml', 'https://legendmod.ml', 'https://jimboy3100.github.io'];
@@ -9151,12 +9151,12 @@ function lmThemeData() {
         if (isFinite(rad)) d.rad = String(rad);
         if (isFinite(rad) && isFinite(rs)) d.rs = String(rs);
     } catch (e) { }
-    /* the Legend Mod language (languagemod 1 English ... 12 Dutch): the only setting that goes with the theme.
+    /* the Legend Mod language (languagemod 1 English ... 16 Italian): the only setting that goes with the theme.
      * The language on screen (LMi18n.num()) first: a first-time player's browser language is not saved yet. */
     try {
         var lang = parseInt((window.LMi18n && window.LMi18n.num()) ||
             (typeof languagemod !== 'undefined' && languagemod ? languagemod : localStorage.getItem('languagemod')), 10);
-        d.lang = lang >= 1 && lang <= 12 ? String(lang) : '1';
+        d.lang = lang >= 1 && lang <= 16 ? String(lang) : '1';
     } catch (e) { d.lang = '1'; }
     return d;
 }

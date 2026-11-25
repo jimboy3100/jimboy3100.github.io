@@ -11,7 +11,11 @@
     "de": "Nutzungsbedingungen",
     "tr": "Hizmet Şartları",
     "pl": "Warunki korzystania",
-    "nl": "Gebruiksvoorwaarden"
+    "nl": "Gebruiksvoorwaarden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.lastUpdatedMarch18": {
     "en": "Last updated: March 18, 2026",
@@ -25,7 +29,11 @@
     "de": "Zuletzt aktualisiert: 18. März 2026",
     "tr": "Son güncelleme: 18 Mart 2026",
     "pl": "Ostatnia aktualizacja: 18 marca 2026",
-    "nl": "Laatst bijgewerkt: 18 maart 2026"
+    "nl": "Laatst bijgewerkt: 18 maart 2026",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.acceptanceOfTerms": {
     "en": "1. Acceptance of Terms",
@@ -39,7 +47,11 @@
     "de": "1. Annahme der Bedingungen",
     "tr": "1. Şartların kabulü",
     "pl": "1. Akceptacja warunków",
-    "nl": "1. Aanvaarding van de voorwaarden"
+    "nl": "1. Aanvaarding van de voorwaarden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.byAccessingOrUsing": {
     "en": "By accessing or using Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>), or the Legend Express Chrome extension, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.",
@@ -53,7 +65,11 @@
     "de": "Durch den Zugriff auf oder die Nutzung von Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>) oder der Chrome-Erweiterung Legend Express erklärst du dich mit diesen Nutzungsbedingungen einverstanden. Wenn du nicht einverstanden bist, nutze unsere Dienste bitte nicht.",
     "tr": "Expanding Land'e (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod'a (<a href=\"https://legendmod.ml\">legendmod.ml</a>) veya Legend Express Chrome eklentisine erişerek ya da bunları kullanarak bu Hizmet Şartları ile bağlı olmayı kabul edersin. Kabul etmiyorsan lütfen hizmetlerimizi kullanma.",
     "pl": "Uzyskując dostęp do Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>) lub rozszerzenia Chrome Legend Express albo korzystając z nich, zgadzasz się przestrzegać niniejszych Warunków korzystania. Jeśli się nie zgadzasz, nie korzystaj z naszych usług.",
-    "nl": "Door Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>) of de Chrome-extensie Legend Express te openen of te gebruiken, ga je ermee akkoord gebonden te zijn aan deze Gebruiksvoorwaarden. Als je niet akkoord gaat, gebruik onze diensten dan niet."
+    "nl": "Door Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>) of de Chrome-extensie Legend Express te openen of te gebruiken, ga je ermee akkoord gebonden te zijn aan deze Gebruiksvoorwaarden. Als je niet akkoord gaat, gebruik onze diensten dan niet.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.descriptionOfService": {
     "en": "2. Description of Service",
@@ -67,7 +83,11 @@
     "de": "2. Beschreibung des Dienstes",
     "tr": "2. Hizmetin tanımı",
     "pl": "2. Opis usługi",
-    "nl": "2. Beschrijving van de dienst"
+    "nl": "2. Beschrijving van de dienst",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.weProvide": {
     "en": "We provide:",
@@ -81,7 +101,11 @@
     "de": "Wir bieten:",
     "tr": "Sunduklarımız:",
     "pl": "Zapewniamy:",
-    "nl": "Wij bieden:"
+    "nl": "Wij bieden:",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.expandingLandAnOnline": {
     "en": "<strong>Expanding Land</strong> — an online multiplayer browser game.",
@@ -95,7 +119,11 @@
     "de": "<strong>Expanding Land</strong> — ein Online-Multiplayer-Browserspiel.",
     "tr": "<strong>Expanding Land</strong> — çevrim içi çok oyunculu bir tarayıcı oyunu.",
     "pl": "<strong>Expanding Land</strong> — wieloosobowa gra przeglądarkowa online.",
-    "nl": "<strong>Expanding Land</strong> — een online multiplayer-browsergame."
+    "nl": "<strong>Expanding Land</strong> — een online multiplayer-browsergame.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.legendModAnOnline": {
     "en": "<strong>Legend Mod</strong> — an online multiplayer browser game and modding platform.",
@@ -109,7 +137,11 @@
     "de": "<strong>Legend Mod</strong> — ein Online-Multiplayer-Browserspiel und eine Modding-Plattform.",
     "tr": "<strong>Legend Mod</strong> — çevrim içi çok oyunculu bir tarayıcı oyunu ve modding platformu.",
     "pl": "<strong>Legend Mod</strong> — wieloosobowa gra przeglądarkowa online i platforma do modowania.",
-    "nl": "<strong>Legend Mod</strong> — een online multiplayer-browsergame en moddingplatform."
+    "nl": "<strong>Legend Mod</strong> — een online multiplayer-browsergame en moddingplatform.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.legendExpressAChrome": {
     "en": "<strong>Legend Express</strong> — a Chrome extension that enhances the Agar.io gameplay experience.",
@@ -123,7 +155,11 @@
     "de": "<strong>Legend Express</strong> — eine Chrome-Erweiterung, die das Spielerlebnis in Agar.io verbessert.",
     "tr": "<strong>Legend Express</strong> — Agar.io oyun deneyimini geliştiren bir Chrome eklentisi.",
     "pl": "<strong>Legend Express</strong> — rozszerzenie Chrome, które ulepsza rozgrywkę w Agar.io.",
-    "nl": "<strong>Legend Express</strong> — een Chrome-extensie die de spelervaring van Agar.io verbetert."
+    "nl": "<strong>Legend Express</strong> — een Chrome-extensie die de spelervaring van Agar.io verbetert.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.ourServicesAreProvided": {
     "en": "Our services are provided free of charge and on an \"as-is\" basis.",
@@ -137,7 +173,11 @@
     "de": "Unsere Dienste werden kostenlos und „wie besehen“ bereitgestellt.",
     "tr": "Hizmetlerimiz ücretsiz ve “olduğu gibi” esasıyla sunulur.",
     "pl": "Nasze usługi są świadczone bezpłatnie i w stanie „takim, jakie są”.",
-    "nl": "Onze diensten worden gratis en \"in de staat waarin ze zich bevinden\" (as-is) aangeboden."
+    "nl": "Onze diensten worden gratis en \"in de staat waarin ze zich bevinden\" (as-is) aangeboden.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.userConduct": {
     "en": "3. User Conduct",
@@ -151,7 +191,11 @@
     "de": "3. Verhalten der Nutzer",
     "tr": "3. Kullanıcı davranışı",
     "pl": "3. Zachowanie użytkowników",
-    "nl": "3. Gedrag van gebruikers"
+    "nl": "3. Gedrag van gebruikers",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.youAgreeNotTo": {
     "en": "You agree not to:",
@@ -165,7 +209,11 @@
     "de": "Du verpflichtest dich, Folgendes zu unterlassen:",
     "tr": "Şunları yapmamayı kabul edersin:",
     "pl": "Zgadzasz się, że nie będziesz:",
-    "nl": "Je gaat ermee akkoord dat je niet:"
+    "nl": "Je gaat ermee akkoord dat je niet:",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.useCheatsHacksExploits": {
     "en": "Use cheats, hacks, exploits, or unauthorized third-party software to gain an unfair advantage.",
@@ -179,7 +227,11 @@
     "de": "Cheats, Hacks, Exploits oder nicht autorisierte Software Dritter zu verwenden, um dir einen unfairen Vorteil zu verschaffen.",
     "tr": "Haksız avantaj elde etmek için hile, hack, exploit veya yetkisiz üçüncü taraf yazılımları kullanmak.",
     "pl": "Używać cheatów, hacków, exploitów ani nieautoryzowanego oprogramowania stron trzecich w celu uzyskania nieuczciwej przewagi.",
-    "nl": "Cheats, hacks, exploits of niet-geautoriseerde software van derden gebruikt om een oneerlijk voordeel te behalen."
+    "nl": "Cheats, hacks, exploits of niet-geautoriseerde software van derden gebruikt om een oneerlijk voordeel te behalen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.harassAbuseOrThreaten": {
     "en": "Harass, abuse, or threaten other players through in-game chat or any related communication channel.",
@@ -193,7 +245,11 @@
     "de": "Andere Spieler über den Spielchat oder einen anderen damit verbundenen Kommunikationskanal zu belästigen, zu beleidigen oder zu bedrohen.",
     "tr": "Oyun içi sohbet veya ilgili herhangi bir iletişim kanalı üzerinden diğer oyuncuları taciz etmek, onlara hakaret etmek veya onları tehdit etmek.",
     "pl": "Nękać, obrażać ani zastraszać innych graczy za pośrednictwem czatu w grze lub dowolnego powiązanego kanału komunikacji.",
-    "nl": "Andere spelers lastigvalt, beledigt of bedreigt via de chat in het spel of een ander gerelateerd communicatiekanaal."
+    "nl": "Andere spelers lastigvalt, beledigt of bedreigt via de chat in het spel of een ander gerelateerd communicatiekanaal.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.attemptToDisruptOverload": {
     "en": "Attempt to disrupt, overload, or interfere with our game servers or infrastructure.",
@@ -207,7 +263,11 @@
     "de": "Zu versuchen, unsere Spielserver oder unsere Infrastruktur zu stören, zu überlasten oder zu beeinträchtigen.",
     "tr": "Oyun sunucularımızı veya altyapımızı aksatmaya, aşırı yüklemeye veya bunlara müdahale etmeye çalışmak.",
     "pl": "Próbować zakłócać działania, przeciążać ani w inny sposób ingerować w nasze serwery gry lub infrastrukturę.",
-    "nl": "Probeert onze spelservers of infrastructuur te verstoren, te overbelasten of te hinderen."
+    "nl": "Probeert onze spelservers of infrastructuur te verstoren, te overbelasten of te hinderen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.impersonateOtherPlayersModerators": {
     "en": "Impersonate other players, moderators, or administrators.",
@@ -221,7 +281,11 @@
     "de": "Dich als andere Spieler, Moderatoren oder Administratoren auszugeben.",
     "tr": "Diğer oyuncuların, moderatörlerin veya yöneticilerin kimliğine bürünmek.",
     "pl": "Podszywać się pod innych graczy, moderatorów lub administratorów.",
-    "nl": "Je voordoet als andere spelers, moderators of beheerders."
+    "nl": "Je voordoet als andere spelers, moderators of beheerders.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.useOurServicesFor": {
     "en": "Use our services for any illegal or unauthorized purpose.",
@@ -235,7 +299,11 @@
     "de": "Unsere Dienste für rechtswidrige oder nicht autorisierte Zwecke zu nutzen.",
     "tr": "Hizmetlerimizi yasa dışı veya yetkisiz herhangi bir amaçla kullanmak.",
     "pl": "Korzystać z naszych usług w jakimkolwiek nielegalnym lub nieautoryzowanym celu.",
-    "nl": "Onze diensten gebruikt voor illegale of niet-geautoriseerde doeleinden."
+    "nl": "Onze diensten gebruikt voor illegale of niet-geautoriseerde doeleinden.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.accounts": {
     "en": "4. Accounts",
@@ -249,7 +317,11 @@
     "de": "4. Konten",
     "tr": "4. Hesaplar",
     "pl": "4. Konta",
-    "nl": "4. Accounts"
+    "nl": "4. Accounts",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.youMaySignIn": {
     "en": "You may sign in using Google OAuth. You are responsible for maintaining the security of your account. We reserve the right to suspend or terminate accounts that violate these terms.",
@@ -263,7 +335,11 @@
     "de": "Du kannst dich über Google OAuth anmelden. Du bist für die Sicherheit deines Kontos verantwortlich. Wir behalten uns das Recht vor, Konten zu sperren oder zu kündigen, die gegen diese Bedingungen verstoßen.",
     "tr": "Google OAuth ile oturum açabilirsin. Hesabının güvenliğini korumaktan sen sorumlusun. Bu şartları ihlal eden hesapları askıya alma veya kapatma hakkımızı saklı tutarız.",
     "pl": "Możesz zalogować się przez Google OAuth. Odpowiadasz za utrzymanie bezpieczeństwa swojego konta. Zastrzegamy sobie prawo do zawieszenia lub usunięcia kont naruszających niniejsze warunki.",
-    "nl": "Je kunt inloggen via Google OAuth. Je bent zelf verantwoordelijk voor de beveiliging van je account. We behouden ons het recht voor accounts die deze voorwaarden schenden te schorsen of te beëindigen."
+    "nl": "Je kunt inloggen via Google OAuth. Je bent zelf verantwoordelijk voor de beveiliging van je account. We behouden ons het recht voor accounts die deze voorwaarden schenden te schorsen of te beëindigen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.intellectualProperty": {
     "en": "5. Intellectual Property",
@@ -277,7 +353,11 @@
     "de": "5. Geistiges Eigentum",
     "tr": "5. Fikrî mülkiyet",
     "pl": "5. Własność intelektualna",
-    "nl": "5. Intellectueel eigendom"
+    "nl": "5. Intellectueel eigendom",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.allGameAssetsCode": {
     "en": "All game assets, code, and content associated with Expanding Land, Legend Mod, and Legend Express are the property of their respective creators. You may not copy, modify, distribute, or reverse-engineer our software without permission.",
@@ -291,7 +371,11 @@
     "de": "Alle Spielressourcen, der Code und die Inhalte im Zusammenhang mit Expanding Land, Legend Mod und Legend Express sind Eigentum ihrer jeweiligen Urheber. Du darfst unsere Software ohne Erlaubnis nicht kopieren, verändern, verbreiten oder per Reverse Engineering nachbauen.",
     "tr": "Expanding Land, Legend Mod ve Legend Express ile ilişkili tüm oyun varlıkları, kodlar ve içerikler ilgili yaratıcılarının mülkiyetindedir. Yazılımımızı izin almadan kopyalayamaz, değiştiremez, dağıtamaz veya ona tersine mühendislik uygulayamazsın.",
     "pl": "Wszystkie zasoby gry, kod i treści związane z Expanding Land, Legend Mod i Legend Express są własnością ich odpowiednich twórców. Nie możesz kopiować, modyfikować, rozpowszechniać ani poddawać inżynierii wstecznej naszego oprogramowania bez zgody.",
-    "nl": "Alle spelbestanden, code en content die verband houden met Expanding Land, Legend Mod en Legend Express zijn eigendom van hun respectieve makers. Je mag onze software niet kopiëren, wijzigen, verspreiden of reverse-engineeren zonder toestemming."
+    "nl": "Alle spelbestanden, code en content die verband houden met Expanding Land, Legend Mod en Legend Express zijn eigendom van hun respectieve makers. Je mag onze software niet kopiëren, wijzigen, verspreiden of reverse-engineeren zonder toestemming.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.moderationBans": {
     "en": "6. Moderation & Bans",
@@ -305,7 +389,11 @@
     "de": "6. Moderation & Sperren",
     "tr": "6. Moderasyon ve yasaklamalar",
     "pl": "6. Moderacja i bany",
-    "nl": "6. Moderatie & bans"
+    "nl": "6. Moderatie & bans",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.weReserveTheRight": {
     "en": "We reserve the right to moderate in-game chat, mute or ban players, and take any action necessary to maintain a fair and enjoyable experience for all users. Bans may be issued for violations of these terms or at the discretion of our moderation team.",
@@ -319,7 +407,11 @@
     "de": "Wir behalten uns das Recht vor, den Spielchat zu moderieren, Spieler stummzuschalten oder zu sperren und alle erforderlichen Maßnahmen zu ergreifen, um ein faires und angenehmes Erlebnis für alle Nutzer zu gewährleisten. Sperren können bei Verstößen gegen diese Bedingungen oder nach Ermessen unseres Moderationsteams verhängt werden.",
     "tr": "Oyun içi sohbeti denetleme, oyuncuları susturma veya yasaklama ve tüm kullanıcılar için adil ve keyifli bir deneyim sağlamak üzere gereken her türlü önlemi alma hakkımızı saklı tutarız. Yasaklamalar bu şartların ihlali nedeniyle veya moderasyon ekibimizin takdirine bağlı olarak uygulanabilir.",
     "pl": "Zastrzegamy sobie prawo do moderowania czatu w grze, wyciszania lub banowania graczy oraz podejmowania wszelkich działań niezbędnych do zapewnienia uczciwej i przyjemnej rozgrywki wszystkim użytkownikom. Bany mogą być nakładane za naruszenia niniejszych warunków lub według uznania naszego zespołu moderatorów.",
-    "nl": "We behouden ons het recht voor de chat in het spel te modereren, spelers te dempen of te bannen en alle maatregelen te nemen die nodig zijn om een eerlijke en plezierige ervaring voor alle gebruikers te behouden. Bans kunnen worden opgelegd bij schendingen van deze voorwaarden of naar eigen inzicht van ons moderatieteam."
+    "nl": "We behouden ons het recht voor de chat in het spel te modereren, spelers te dempen of te bannen en alle maatregelen te nemen die nodig zijn om een eerlijke en plezierige ervaring voor alle gebruikers te behouden. Bans kunnen worden opgelegd bij schendingen van deze voorwaarden of naar eigen inzicht van ons moderatieteam.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.disclaimerOfWarranties": {
     "en": "7. Disclaimer of Warranties",
@@ -333,7 +425,11 @@
     "de": "7. Gewährleistungsausschluss",
     "tr": "7. Garanti reddi",
     "pl": "7. Wyłączenie gwarancji",
-    "nl": "7. Uitsluiting van garanties"
+    "nl": "7. Uitsluiting van garanties",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.ourServicesAreProvided2": {
     "en": "Our services are provided \"as is\" without warranties of any kind, either express or implied. We do not guarantee that the services will be uninterrupted, error-free, or free of harmful components.",
@@ -347,7 +443,11 @@
     "de": "Unsere Dienste werden „wie besehen“ ohne jegliche ausdrückliche oder stillschweigende Gewährleistung bereitgestellt. Wir garantieren nicht, dass die Dienste unterbrechungsfrei, fehlerfrei oder frei von schädlichen Komponenten sind.",
     "tr": "Hizmetlerimiz, açık veya zımni hiçbir garanti olmaksızın “olduğu gibi” sunulur. Hizmetlerin kesintisiz, hatasız veya zararlı bileşenlerden arınmış olacağını garanti etmeyiz.",
     "pl": "Nasze usługi są świadczone w stanie „takim, jakie są”, bez jakichkolwiek gwarancji, wyraźnych ani dorozumianych. Nie gwarantujemy, że usługi będą działać bez przerw i bez błędów ani że będą wolne od szkodliwych komponentów.",
-    "nl": "Onze diensten worden aangeboden \"in de staat waarin ze zich bevinden\" (as is), zonder enige garantie, uitdrukkelijk of stilzwijgend. We garanderen niet dat de diensten ononderbroken, foutloos of vrij van schadelijke componenten zijn."
+    "nl": "Onze diensten worden aangeboden \"in de staat waarin ze zich bevinden\" (as is), zonder enige garantie, uitdrukkelijk of stilzwijgend. We garanderen niet dat de diensten ononderbroken, foutloos of vrij van schadelijke componenten zijn.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.limitationOfLiability": {
     "en": "8. Limitation of Liability",
@@ -361,7 +461,11 @@
     "de": "8. Haftungsbeschränkung",
     "tr": "8. Sorumluluğun sınırlandırılması",
     "pl": "8. Ograniczenie odpowiedzialności",
-    "nl": "8. Beperking van aansprakelijkheid"
+    "nl": "8. Beperking van aansprakelijkheid",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.inNoEventShall": {
     "en": "In no event shall we be liable for any indirect, incidental, special, or consequential damages arising out of or in connection with your use of our services.",
@@ -375,7 +479,11 @@
     "de": "In keinem Fall haften wir für indirekte, zufällige, besondere oder Folgeschäden, die sich aus oder im Zusammenhang mit deiner Nutzung unserer Dienste ergeben.",
     "tr": "Hizmetlerimizi kullanmandan kaynaklanan veya bununla bağlantılı olarak ortaya çıkan dolaylı, arızi, özel veya sonuç olarak doğan zararlardan hiçbir durumda sorumlu değiliz.",
     "pl": "W żadnym wypadku nie ponosimy odpowiedzialności za jakiekolwiek szkody pośrednie, przypadkowe, szczególne lub wtórne wynikające z korzystania z naszych usług lub z nim związane.",
-    "nl": "In geen geval zijn wij aansprakelijk voor indirecte, incidentele, bijzondere of gevolgschade die voortvloeit uit of verband houdt met je gebruik van onze diensten."
+    "nl": "In geen geval zijn wij aansprakelijk voor indirecte, incidentele, bijzondere of gevolgschade die voortvloeit uit of verband houdt met je gebruik van onze diensten.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.changesToTerms": {
     "en": "9. Changes to Terms",
@@ -389,7 +497,11 @@
     "de": "9. Änderungen der Bedingungen",
     "tr": "9. Şartlarda değişiklik",
     "pl": "9. Zmiany warunków",
-    "nl": "9. Wijzigingen in de voorwaarden"
+    "nl": "9. Wijzigingen in de voorwaarden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.weMayUpdateThese": {
     "en": "We may update these Terms of Service at any time. Changes will be posted on this page with an updated revision date. Continued use of our services after changes constitutes acceptance of the new terms.",
@@ -403,7 +515,11 @@
     "de": "Wir können diese Nutzungsbedingungen jederzeit aktualisieren. Änderungen werden auf dieser Seite mit einem aktualisierten Revisionsdatum veröffentlicht. Die weitere Nutzung unserer Dienste nach Änderungen gilt als Annahme der neuen Bedingungen.",
     "tr": "Bu Hizmet Şartlarını istediğimiz zaman güncelleyebiliriz. Değişiklikler, güncellenmiş bir revizyon tarihiyle bu sayfada yayımlanır. Değişikliklerden sonra hizmetlerimizi kullanmaya devam etmen, yeni şartları kabul ettiğin anlamına gelir.",
     "pl": "Możemy w dowolnym momencie zaktualizować niniejsze Warunki korzystania. Zmiany będą publikowane na tej stronie wraz ze zaktualizowaną datą wersji. Dalsze korzystanie z naszych usług po wprowadzeniu zmian oznacza akceptację nowych warunków.",
-    "nl": "We kunnen deze Gebruiksvoorwaarden op elk moment bijwerken. Wijzigingen worden op deze pagina gepubliceerd met een bijgewerkte revisiedatum. Als je onze diensten na wijzigingen blijft gebruiken, geldt dat als aanvaarding van de nieuwe voorwaarden."
+    "nl": "We kunnen deze Gebruiksvoorwaarden op elk moment bijwerken. Wijzigingen worden op deze pagina gepubliceerd met een bijgewerkte revisiedatum. Als je onze diensten na wijzigingen blijft gebruiken, geldt dat als aanvaarding van de nieuwe voorwaarden.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.contact": {
     "en": "10. Contact",
@@ -417,7 +533,11 @@
     "de": "10. Kontakt",
     "tr": "10. İletişim",
     "pl": "10. Kontakt",
-    "nl": "10. Contact"
+    "nl": "10. Contact",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.ifYouHaveQuestions": {
     "en": "If you have questions about these Terms, contact: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> or via GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
@@ -431,7 +551,11 @@
     "de": "Bei Fragen zu diesen Bedingungen kontaktiere: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> oder über GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
     "tr": "Bu Şartlarla ilgili soruların varsa iletişim: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> veya GitHub üzerinden: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
     "pl": "Jeśli masz pytania dotyczące niniejszych Warunków, napisz: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> lub przez GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
-    "nl": "Heb je vragen over deze Voorwaarden, neem dan contact op: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> of via GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>"
+    "nl": "Heb je vragen over deze Voorwaarden, neem dan contact op: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> of via GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.backToExpandingLand": {
     "en": "← Back to Expanding Land",
@@ -445,7 +569,11 @@
     "de": "← Zurück zu Expanding Land",
     "tr": "← Expanding Land'e dön",
     "pl": "← Powrót do Expanding Land",
-    "nl": "← Terug naar Expanding Land"
+    "nl": "← Terug naar Expanding Land",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.terms.privacyPolicy": {
     "en": "Privacy Policy",
@@ -459,7 +587,11 @@
     "de": "Datenschutzerklärung",
     "tr": "Gizlilik Politikası",
     "pl": "Polityka prywatności",
-    "nl": "Privacybeleid"
+    "nl": "Privacybeleid",
+    "pt": "Política de privacidade",
+    "id": "Kebijakan privasi",
+    "ja": "プライバシーポリシー",
+    "it": "Informativa sulla privacy"
   },
   "site.terms.bindingNote": {
     "note": "only shown when the page is not in English",
@@ -474,6 +606,10 @@
     "de": "Dies ist eine Übersetzung zu deiner Information. Verbindlich ist die englische Fassung dieser Bedingungen.",
     "tr": "Bu çeviri kolaylık olsun diye sunulmuştur. Bu Şartların bağlayıcı olan sürümü İngilizce sürümüdür.",
     "pl": "To tłumaczenie ma ci jedynie ułatwić lekturę. Wiążąca jest angielska wersja niniejszych Warunków.",
-    "nl": "Dit is een vertaling voor je gemak. De Engelse versie van deze Voorwaarden is bindend."
+    "nl": "Dit is een vertaling voor je gemak. De Engelse versie van deze Voorwaarden is bindend.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

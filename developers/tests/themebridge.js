@@ -157,7 +157,7 @@ check('a non-object is not a theme', C(null) === null && C('x') === null && p.ap
 const lp = page({ hash: '#lm=' + enc(Object.assign({}, T, { lang: 2 })) });
 check('language: the Legend Mod language number becomes a code on html', lp.attrs['data-lm-lang'] === 'el' && lp.api.getLang() === 'el' && lp.api.getTheme().lang === '2');
 check('language: urlLang() keeps the number from the address for lm-i18n.js', lp.api.urlLang() === '2' && page({ session: lp.session }).api.urlLang() === '');
-check('language: only 1-12 passes', C({ mc: '#fff', lang: 13 }).lang === '' && C({ mc: '#fff', lang: 'en' }).lang === '' && C({ mc: '#fff', lang: '12' }).lang === '12' && page({ hash: '#lm=' + enc(T) }).api.getLang() === '');
+check('language: only 1-16 passes', C({ mc: '#fff', lang: 17 }).lang === '' && C({ mc: '#fff', lang: 13 }).lang === '13' && C({ mc: '#fff', lang: 16 }).lang === '16' && C({ mc: '#fff', lang: 'en' }).lang === '' && C({ mc: '#fff', lang: '12' }).lang === '12' && page({ hash: '#lm=' + enc(T) }).api.getLang() === '');
 const kept = page({ session: lp.session });
 check('session: another Legend page in the same tab keeps the theme and language', kept.api.isThemed() && kept.props['--lm-mc'] === '#ff0000' && kept.attrs['data-lm-lang'] === 'el');
 check('session: a new tab without #lm= shows the normal design', !page({ session: {} }).api.isThemed());

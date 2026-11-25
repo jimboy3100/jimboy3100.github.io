@@ -2,14 +2,17 @@
 
 Every text a player sees comes from the language packs, in the language chosen in Legend Mod's
 **Choose Language** list (localStorage `languagemod`: 1 English, 2 Greek, 3 Spanish, 4 Bulgarian,
-5 French, 6 Arabic, 7 Traditional Chinese, 8 Russian, 9 German, 10 Turkish, 11 Polish, 12 Dutch).
+5 French, 6 Arabic, 7 Traditional Chinese, 8 Russian, 9 German, 10 Turkish, 11 Polish, 12 Dutch, 13 Brazilian Portuguese, 14 Indonesian, 15 Japanese, 16 Italian).
+The last four are explicitly marked Beta and opt-in until complete. Missing texts use English, and
+`node developers/tests/i18n.js --require-complete` is the release gate; do not remove Beta labels
+or enable automatic detection for these locales until that gate passes.
 The web pages on www.legendmod.ml use the same packs.
 
 ## Files
 
 | Path | What |
 | --- | --- |
-| `developers/i18n/src/<area>.json` | **The only place texts live.** `{ "key": { "en": "...", "el": "...", ... all 12 } }` |
+| `developers/i18n/src/<area>.json` | **The only place texts live.** `{ "key": { "en": "...", "el": "...", ... all 16 } }` |
 | `developers/i18n/runtime.js` | the runtime source (`window.LMi18n`, `window.lmT`); ASCII only |
 | `languages/lm-<code>.js` | generated: the mod's texts (every area except `site*`), one file per language |
 | `languages/lm-site-<code>.js`, `languages/lm-site-<page>-<code>.js` | generated: web-page texts, one file per site area and language |
@@ -33,7 +36,7 @@ labels = `textLanguage`, `settings.*`), `agario` (agar.io's page texts = `i18n_d
 - One area file per work package (feature, module group, page): parallel work then never touches the
   same file. A key must exist in one area only (the test checks it).
 - Name keys after their meaning, not their position (`modules.notif.markAllRead`, not `text12`).
-- Fields other than the 12 languages: `"global"` (old global variable kept in sync, packs only),
+- Fields other than the 16 languages: `"global"` (old global variable kept in sync, packs only),
   `"note"` (context for translators), `"allowEmpty": true` (empty on purpose in every language).
 
 ## Placeholders and HTML
@@ -128,7 +131,7 @@ get `#lm=` with the language and theme (LMexpress.js `lmThemeHash`), iframes get
 
 ## Tests
 
-- `node developers/tests/i18n.js`: packs complete (12 languages, same placeholders/tags), key names,
+- `node developers/tests/i18n.js`: released packs complete (same placeholders/tags); preview gaps reported, key names,
   generated files up to date, old globals, lmT fallbacks, apply(), switching, the page runtime, the
   scanner (strict files must have 0 findings).
 - `developers/tests/probes/zzzz-i18n.js` (in `run.js`): live switch to Greek and Arabic in the game page.

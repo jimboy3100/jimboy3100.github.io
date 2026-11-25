@@ -29,7 +29,7 @@ Object.keys(all).forEach((area) => {
         ok(k.indexOf(I.areaPrefix(area)) === 0 || (area === 'core' && /^[A-Za-z][A-Za-z0-9_]*$/.test(k)), k + ': key must start with ' + I.areaPrefix(area));
         I.CODES.forEach((c) => {
             ok(typeof e[c] === 'string', k + ': ' + c + ' missing');
-            if (!e.allowEmpty) ok(typeof e[c] === 'string' && e[c].trim() !== '', k + ': ' + c + ' empty');
+            if (!e.allowEmpty && (I.PREVIEW_CODES.indexOf(c) < 0 || process.argv.includes('--require-complete'))) ok(typeof e[c] === 'string' && e[c].trim() !== '', k + ': ' + c + ' empty');
         });
         const p = I.placeholders(e.en).join('|');
         I.CODES.forEach((c) => {
@@ -98,7 +98,8 @@ function page(opts) {
     const runUrl = (src) => {
         const m = /^https:\/\/(www\.legendmod\.ml|jimboy3100\.github\.io)\/([^?#]+)/.exec(src);
         const file = m && path.join(repo, m[2]);
-        if (!file || !fs.existsSync(file)) return false;
+        if (!file || !fs.existsSync(file) || (opts.failUrl && opts.failUrl(src))) return false;
+        if (opts.emptyUrl && opts.emptyUrl(src)) return true;
         vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: m[2] });
         return true;
     };
@@ -205,6 +206,73 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         ok(w.i18n('page_play') === all.agario['agario.page_play'].el, 'i18n.js: agar.io texts in Greek');
         ok(w.parseString('page_fb_matchresults_subtitle', '%@', [1, 2, 3]).indexOf('%@') < 0, 'i18n.js: parseString');
     }
+    /* A failed or non-registering script must not poison the loaded cache. */
+    {
+        let offline = true;
+        const w = page({ failUrl: src => offline && /lm-el\.js/.test(src) });
+        w.run('languages/lm-i18n.js');
+        w.run('languages/lm-en.js');
+        const L = w.LMi18n;
+        const label = makeEl('span', { 'data-i18n': 'discord.post' });
+        w.document.body.appendChild(label);
+        await new Promise(resolve => L.setLang('el', resolve));
+        ok(!L.loaded('el') && label.textContent === all.discord['discord.post'].en, 'failed pack is not cached as loaded');
+        offline = false;
+        let changes = 0;
+        L.onChange(() => changes++);
+        await new Promise(resolve => L.setLang('el', resolve));
+        ok(L.loaded('el') && label.textContent === all.discord['discord.post'].el && changes === 1, 'same-language retry refreshes labels and listeners');
+        const w2 = page({ emptyUrl: src => /www\.legendmod\.ml.*lm-fr\.js/.test(src) });
+        w2.run('languages/lm-i18n.js');
+        w2.run('languages/lm-en.js');
+        await new Promise(resolve => w2.LMi18n.setLang('fr', resolve));
+        ok(w2.LMi18n.loaded('fr') && w2.lmT('leagues') === all.core.leagues.fr, 'non-registering primary script retries alternate host');
+    }
+    /* Discover cards must match the feature titles, and all mod packs must actually register. */
+    {
+        const w = page({});
+        w.run('languages/lm-i18n.js');
+        w.run('languages/lm-en.js');
+        for (const code of I.CODES) {
+            await new Promise(resolve => w.LMi18n.setLang(code, resolve));
+            ok(w.LMi18n.loaded(code) && w.LMi18n.lang() === code, code + ': mod pack registered');
+            ok(w.lmT('discord.post') === (all.discord['discord.post'][code] || all.discord['discord.post'].en), code + ': Discord button');
+            ok(w.lmT('modules.discovery.card.plugins') === w.lmT('lmx.sn.title'), code + ': Discover User Scripts title');
+            ok(w.lmT('modules.discovery.card.replayStudio') === w.lmT('modules.replaystudio.title'), code + ': Discover Replay Studio title');
+        }
+    }
+    /* New locale IDs are append-only. Incomplete previews must be explicit, not automatic. */
+    {
+        ok(I.CODES.slice(0, 12).join(',') === 'en,el,es,bg,fr,ar,zh,ru,de,tr,pl,nl', 'existing saved IDs unchanged');
+        ok(I.CODES.slice(12).join(',') === 'pt,id,ja,it', 'new locale IDs 13-16');
+        for (const code of I.PREVIEW_CODES) {
+            const w = page({ navLang: code + '-XX' });
+            w.run('languages/lm-i18n.js');
+            w.run('languages/lm-en.js');
+            ok(w.LMi18n.lang() === 'en', code + ': preview is opt-in');
+            await new Promise(resolve => w.LMi18n.setLang(code, resolve));
+            ok(w.LMi18n.lang() === code && w.store.languagemod === String(I.CODES.indexOf(code) + 1), code + ': selection persists');
+            ok(w.lmT('boot.loading') === all.boot['boot.loading'][code], code + ': translated loading text');
+            ok(/Beta/.test(w.LMi18n.names[I.CODES.indexOf(code)]), code + ': preview label');
+            const reload = page({ storage: w.store });
+            reload.run('languages/lm-i18n.js');
+            reload.run('languages/lm-en.js');
+            ok(reload.LMi18n.lang() === code && reload.lmT('boot.loading') === all.boot['boot.loading'][code], code + ': persisted selection works on reload');
+            const missing = Object.entries(all.core).find(([k, e]) => !e[code] && e.en);
+            if (missing) ok(w.lmT(missing[0]) === missing[1].en, code + ': untranslated text falls back to English');
+            const theme = Buffer.from(JSON.stringify({ lang: I.CODES.indexOf(code) + 1 })).toString('base64');
+            const label = makeEl('span', { 'data-i18n': 'site.home' }, 'Home');
+            const site = page({ hash: '#lm=' + theme, body: [label] });
+            site.run('lib/lm-i18n.js');
+            site.ready();
+            for (let i = 0; i < 20 && label.textContent === 'Home'; i++) await tick();
+            ok(site.LMi18n.lang() === code && label.textContent === all.site['site.home'][code] && site.document.documentElement.attrs.lang === (code === 'pt' ? 'pt-BR' : code), code + ': website receives language from game link');
+        }
+        for (const code of I.PREVIEW_CODES) {
+            const missing = Object.values(all).flatMap(Object.values).filter(e => !e.allowEmpty && !e[code]).length;
+            console.log('PREVIEW ' + code + ': ' + missing + ' entries still untranslated');
+        }
+    }
     /* ---------- 4. the mod without a stored language: English, nothing written ---------- */
     {
         const w = page({});
@@ -246,7 +314,7 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         ok(h1.textContent === all.site['site.features'].ar, 'page: data-i18n in Arabic');
         ok(w.document.documentElement.attrs.dir === 'rtl' && w.document.documentElement.attrs.lang === 'ar', 'page: <html dir=rtl lang=ar>');
         const sel = picker.children[0];
-        ok(sel && sel.tagName === 'SELECT' && sel.children.length === 12 && sel.value === '6', 'page: language picker with 12 languages');
+        ok(sel && sel.tagName === 'SELECT' && sel.children.length === I.CODES.length && sel.value === '6', 'page: language picker with all supported languages');
         ok(typeof w.lmT === 'function' && w.lmT('site.faq.' + Object.keys(all['site-faq'])[0].split('.').pop()) !== undefined, 'page: lmT');
         /* postMessage from the mod (iframe) */
         w._onMessage({ data: { type: 'lm-theme', theme: { lang: '2' } } });

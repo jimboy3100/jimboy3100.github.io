@@ -18,7 +18,7 @@ const LANG_DIR = path.join(__dirname, '..', '..', '..', 'languages');
 const read = (f) => fs.readFileSync(path.join(LANG_DIR, f), 'utf8');
 
 function sandbox(code) {
-    const store = { languagemod: String(['en', 'el', 'es', 'bg', 'fr', 'ar', 'zh', 'ru', 'de', 'tr', 'pl', 'nl'].indexOf(code) + 1 || 1) };
+    const store = { languagemod: String(require('../../i18n/lib').CODES.indexOf(code) + 1 || 1) };
     const sb = {
         console,
         localStorage: {

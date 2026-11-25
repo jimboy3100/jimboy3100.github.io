@@ -12,6 +12,10 @@
     "de": "Wird geladen... bitte warten",
     "tr": "Yükleniyor... lütfen bekleyin",
     "pl": "Ładowanie... proszę czekać",
-    "nl": "Laden... even geduld"
+    "nl": "Laden... even geduld",
+    "pt": "Carregando... aguarde",
+    "id": "Memuat... harap tunggu",
+    "ja": "読み込み中...お待ちください",
+    "it": "Caricamento... attendere"
   }
 }

@@ -17,7 +17,7 @@
   need('chooser opens', !!first);
   if (first) {
     var fsel = first.querySelector('select.lm-lang-select');
-    need('chooser: 12 languages, current one picked', !!fsel && fsel.options.length === 12 && fsel.value === L.num());
+    need('chooser: supported languages, current one picked', !!fsel && fsel.options.length === L.codes.length && fsel.value === L.num());
     var r = first.querySelector('.modal-content').getBoundingClientRect();
     info.chooser = Math.round(r.width) + 'x' + Math.round(r.height) + ' in ' + innerWidth + 'x' + innerHeight;
     need('chooser fits the screen', r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight);

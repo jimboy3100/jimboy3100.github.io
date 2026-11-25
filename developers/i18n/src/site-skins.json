@@ -11,7 +11,11 @@
     "de": "Kostenlose Agar.io Skins – 700+ eigene Skins, Video-Skins, Skin-Checker & Rotator von Legend Mod",
     "tr": "Ücretsiz Agar.io Skinleri – 700+ özel skin, video skinler, Legend Mod'dan skin kontrol aracı ve döndürücü",
     "pl": "Darmowe skiny Agar.io – ponad 700 własnych skinów, video skiny, sprawdzarka i rotator skinów od Legend Mod",
-    "nl": "Gratis Agar.io skins – 700+ eigen skins, videoskins, skin-checker & rotator van Legend Mod"
+    "nl": "Gratis Agar.io skins – 700+ eigen skins, videoskins, skin-checker & rotator van Legend Mod",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.imgur": {
     "en": "Imgur",
@@ -25,7 +29,11 @@
     "de": "Imgur",
     "tr": "Imgur",
     "pl": "Imgur",
-    "nl": "Imgur"
+    "nl": "Imgur",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.lowResMoreFps": {
     "en": "Low Res-More FPS",
@@ -39,7 +47,11 @@
     "de": "Niedrige Auflösung - Mehr FPS",
     "tr": "Düşük çözünürlük - Daha fazla FPS",
     "pl": "Niska rozdzielczość - więcej FPS",
-    "nl": "Lage resolutie - Meer FPS"
+    "nl": "Lage resolutie - Meer FPS",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.vanilla": {
     "en": "Vanilla",
@@ -53,7 +65,11 @@
     "de": "Vanilla",
     "tr": "Normal",
     "pl": "Zwykłe",
-    "nl": "Vanilla"
+    "nl": "Vanilla",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.video": {
     "en": "Video",
@@ -67,7 +83,11 @@
     "de": "Video",
     "tr": "Video",
     "pl": "Wideo",
-    "nl": "Video"
+    "nl": "Video",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.checker": {
     "en": "Checker",
@@ -81,7 +101,11 @@
     "de": "Checker",
     "tr": "Kontrol",
     "pl": "Sprawdzarka",
-    "nl": "Checker"
+    "nl": "Checker",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.rotator": {
     "en": "Rotator",
@@ -95,7 +119,11 @@
     "de": "Rotator",
     "tr": "Döndürücü",
     "pl": "Rotator",
-    "nl": "Rotator"
+    "nl": "Rotator",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.skinUrl": {
     "en": "Skin URL",
@@ -109,7 +137,11 @@
     "de": "Skin-URL",
     "tr": "Skin URL'si",
     "pl": "URL skina",
-    "nl": "Skin-URL"
+    "nl": "Skin-URL",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.copy": {
     "en": "Copy",
@@ -123,7 +155,11 @@
     "de": "Kopieren",
     "tr": "Kopyala",
     "pl": "Kopiuj",
-    "nl": "Kopiëren"
+    "nl": "Kopiëren",
+    "pt": "Copiar",
+    "id": "Salin",
+    "ja": "コピー",
+    "it": "Copia"
   },
   "site.skins.hizliresim": {
     "en": "Hizliresim",
@@ -137,7 +173,11 @@
     "de": "Hizliresim",
     "tr": "Hizliresim",
     "pl": "Hizliresim",
-    "nl": "Hizliresim"
+    "nl": "Hizliresim",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.imgurSkins": {
     "en": "imgur skins",
@@ -151,7 +191,11 @@
     "de": "imgur Skins",
     "tr": "imgur skinleri",
     "pl": "skiny imgur",
-    "nl": "imgur skins"
+    "nl": "imgur skins",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.hizliresimSkins": {
     "en": "hizliresim skins",
@@ -165,7 +209,11 @@
     "de": "hizliresim Skins",
     "tr": "hizliresim skinleri",
     "pl": "skiny hizliresim",
-    "nl": "hizliresim skins"
+    "nl": "hizliresim skins",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.skins.ogarioBySzymy": {
     "en": "OGARio by szymy",
@@ -179,6 +227,10 @@
     "de": "OGARio von szymy",
     "tr": "OGARio (yapımcı: szymy)",
     "pl": "OGARio autorstwa szymy",
-    "nl": "OGARio door szymy"
+    "nl": "OGARio door szymy",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

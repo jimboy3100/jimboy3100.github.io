@@ -12,7 +12,11 @@
     "de": "LegendMod",
     "tr": "LegendMod",
     "pl": "LegendMod",
-    "nl": "LegendMod"
+    "nl": "LegendMod",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.auth.discordLinked": {
     "en": "✅ Discord Linked!",
@@ -26,7 +30,11 @@
     "de": "✅ Discord verknüpft!",
     "tr": "✅ Discord Bağlandı!",
     "pl": "✅ Discord połączony!",
-    "nl": "✅ Discord gekoppeld!"
+    "nl": "✅ Discord gekoppeld!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.auth.closingThisWindow": {
     "en": "Closing this window...",
@@ -40,7 +48,11 @@
     "de": "Dieses Fenster wird geschlossen...",
     "tr": "Bu pencere kapatılıyor...",
     "pl": "Zamykanie okna...",
-    "nl": "Dit venster wordt gesloten..."
+    "nl": "Dit venster wordt gesloten...",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.auth.ifThisWindowDoesn": {
     "en": "If this window doesn't close, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Close Window</a>",
@@ -54,7 +66,11 @@
     "de": "Falls sich dieses Fenster nicht schließt: <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Fenster schließen</a>",
     "tr": "Bu pencere kapanmazsa: <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Pencereyi Kapat</a>",
     "pl": "Jeśli to okno się nie zamknie, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Zamknij okno</a>",
-    "nl": "Sluit dit venster niet vanzelf, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">sluit venster</a>"
+    "nl": "Sluit dit venster niet vanzelf, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">sluit venster</a>",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.auth.loginFailed": {
     "en": "Login Failed",
@@ -68,7 +84,11 @@
     "de": "Anmeldung fehlgeschlagen",
     "tr": "Giriş Başarısız",
     "pl": "Logowanie nie powiodło się",
-    "nl": "Inloggen mislukt"
+    "nl": "Inloggen mislukt",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.auth.backToGame": {
     "en": "Back to Game",
@@ -82,7 +102,11 @@
     "de": "Zurück zum Spiel",
     "tr": "Oyuna Dön",
     "pl": "Wróć do gry",
-    "nl": "Terug naar de game"
+    "nl": "Terug naar de game",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "site.lc.auth.noCode": {
     "en": "No authorization code received.",
@@ -96,6 +120,10 @@
     "de": "Kein Autorisierungscode empfangen.",
     "tr": "Yetkilendirme kodu alınmadı.",
     "pl": "Nie otrzymano kodu autoryzacji.",
-    "nl": "Geen autorisatiecode ontvangen."
+    "nl": "Geen autorisatiecode ontvangen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }

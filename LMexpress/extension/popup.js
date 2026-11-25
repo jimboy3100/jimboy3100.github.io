@@ -1,7 +1,7 @@
 /* Fills the data-i18n texts (texts.js, generated from developers/i18n/src) in the language chosen in
  * Legend Mod: content.js saves it when agar.io opens; before that the browser's language, else English. */
 function showTexts(lang) {
-    document.documentElement.lang = LMX_EXT_CODES[lang - 1];
+    document.documentElement.lang = lang === 13 ? 'pt-BR' : lang === 7 ? 'zh-Hant' : LMX_EXT_CODES[lang - 1];
     document.documentElement.dir = lang === 6 ? 'rtl' : 'ltr';
     document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = lmxExtText(el.getAttribute('data-i18n'), lang); });
     document.querySelectorAll('[data-i18n-alt]').forEach((el) => { el.alt = lmxExtText(el.getAttribute('data-i18n-alt'), lang); });

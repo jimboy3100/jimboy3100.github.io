@@ -11,7 +11,11 @@
     "de": "Server-IP auf Discord posten",
     "tr": "Sunucu IP adresini Discord’da paylaş",
     "pl": "Opublikuj IP serwera na Discordzie",
-    "nl": "Server-IP op Discord plaatsen"
+    "nl": "Server-IP op Discord plaatsen",
+    "pt": "Publicar IP do servidor no Discord",
+    "id": "Kirim IP server ke Discord",
+    "ja": "サーバーIPをDiscordに投稿",
+    "it": "Pubblica IP del server su Discord"
   },
   "discord.sent": {
     "en": "<b>[SERVER]</b>: Server Sent to Discord.",
@@ -25,7 +29,11 @@
     "de": "<b>[SERVER]</b>: Server an Discord gesendet.",
     "tr": "<b>[SUNUCU]</b>: Sunucu Discord’a gönderildi.",
     "pl": "<b>[SERWER]</b>: Serwer wysłany na Discord.",
-    "nl": "<b>[SERVER]</b>: Server naar Discord verzonden."
+    "nl": "<b>[SERVER]</b>: Server naar Discord verzonden.",
+    "pt": "<b>[SERVIDOR]</b>: Servidor enviado ao Discord.",
+    "id": "<b>[SERVER]</b>: Server dikirim ke Discord.",
+    "ja": "<b>[サーバー]</b>: Discordに送信しました。",
+    "it": "<b>[SERVER]</b>: Server inviato a Discord."
   },
   "discord.postAgar": {
     "en": "Post Agar Server IP to Discord",
@@ -39,6 +47,10 @@
     "de": "Agar-Server-IP auf Discord posten",
     "tr": "Agar sunucusunun IP adresini Discord’da paylaş",
     "pl": "Opublikuj IP serwera Agar na Discordzie",
-    "nl": "Agar-server-IP op Discord plaatsen"
+    "nl": "Agar-server-IP op Discord plaatsen",
+    "pt": "Publicar IP do servidor Agar no Discord",
+    "id": "Kirim IP server Agar ke Discord",
+    "ja": "AgarサーバーのIPをDiscordに投稿",
+    "it": "Pubblica IP del server Agar su Discord"
   }
 }

@@ -11,7 +11,11 @@
     "de": "Schließen",
     "tr": "Kapat",
     "pl": "Zamknij",
-    "nl": "Sluiten"
+    "nl": "Sluiten",
+    "pt": "Fechar",
+    "id": "Tutup",
+    "ja": "閉じる",
+    "it": "Chiudi"
   },
   "misc.noIframes": {
     "en": "Your browser does not support iframes.",
@@ -25,7 +29,11 @@
     "de": "Ihr Browser unterstützt keine iframes.",
     "tr": "Tarayıcınız iframe desteklemiyor.",
     "pl": "Twoja przeglądarka nie obsługuje ramek iframe.",
-    "nl": "Je browser ondersteunt geen iframes."
+    "nl": "Je browser ondersteunt geen iframes.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.nameLabel": {
     "en": "Name:",
@@ -39,7 +47,11 @@
     "de": "Name:",
     "tr": "Ad:",
     "pl": "Nazwa:",
-    "nl": "Naam:"
+    "nl": "Naam:",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.uidLabel": {
     "en": "UID:",
@@ -53,7 +65,11 @@
     "de": "UID:",
     "tr": "UID:",
     "pl": "UID:",
-    "nl": "UID:"
+    "nl": "UID:",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.socialIdLabel": {
     "en": "Social ID:",
@@ -67,7 +83,11 @@
     "de": "Social-ID:",
     "tr": "Sosyal ID:",
     "pl": "ID społecznościowe:",
-    "nl": "Sociale ID:"
+    "nl": "Sociale ID:",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.timesUsedLabel": {
     "en": "Times Used:",
@@ -81,7 +101,11 @@
     "de": "Mal benutzt:",
     "tr": "Kullanım sayısı:",
     "pl": "Liczba użyć:",
-    "nl": "Keer gebruikt:"
+    "nl": "Keer gebruikt:",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.guest": {
     "en": "Guest",
@@ -95,7 +119,11 @@
     "de": "Gast",
     "tr": "Misafir",
     "pl": "Gość",
-    "nl": "Gast"
+    "nl": "Gast",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.selectBoost": {
     "en": "-- Select boost --",
@@ -109,7 +137,11 @@
     "de": "-- Boost wählen --",
     "tr": "-- Takviye seçin --",
     "pl": "-- Wybierz wzmocnienie --",
-    "nl": "-- Kies een boost --"
+    "nl": "-- Kies een boost --",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.boostMass": {
     "en": "Mass boost {0}x, {1} h ({2})",
@@ -123,7 +155,11 @@
     "de": "Masse-Boost {0}x, {1} h ({2})",
     "tr": "Kütle takviyesi {0}x, {1} sa ({2})",
     "pl": "Wzmocnienie masy {0}x, {1} h ({2})",
-    "nl": "Massaboost {0}x, {1} u ({2})"
+    "nl": "Massaboost {0}x, {1} u ({2})",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.boostXp": {
     "en": "XP boost {0}x, {1} h ({2})",
@@ -137,7 +173,11 @@
     "de": "XP-Boost {0}x, {1} h ({2})",
     "tr": "XP takviyesi {0}x, {1} sa ({2})",
     "pl": "Wzmocnienie XP {0}x, {1} h ({2})",
-    "nl": "XP-boost {0}x, {1} u ({2})"
+    "nl": "XP-boost {0}x, {1} u ({2})",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.buy": {
     "en": "BUY",
@@ -151,7 +191,11 @@
     "de": "KAUFEN",
     "tr": "SATIN AL",
     "pl": "KUP",
-    "nl": "KOPEN"
+    "nl": "KOPEN",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.use": {
     "en": "USE",
@@ -165,7 +209,11 @@
     "de": "NUTZEN",
     "tr": "KULLAN",
     "pl": "UŻYJ",
-    "nl": "GEBRUIK"
+    "nl": "GEBRUIK",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.potionEmpty": {
     "en": "empty",
@@ -179,7 +227,11 @@
     "de": "leer",
     "tr": "boş",
     "pl": "puste",
-    "nl": "leeg"
+    "nl": "leeg",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.private": {
     "en": "Private",
@@ -193,7 +245,11 @@
     "de": "Privat",
     "tr": "Özel",
     "pl": "Prywatne",
-    "nl": "Privé"
+    "nl": "Privé",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.page.privacy": {
     "en": "Privacy Policy",
@@ -207,7 +263,11 @@
     "de": "Datenschutzerklärung",
     "tr": "Gizlilik Politikası",
     "pl": "Polityka prywatności",
-    "nl": "Privacybeleid"
+    "nl": "Privacybeleid",
+    "pt": "Política de privacidade",
+    "id": "Kebijakan privasi",
+    "ja": "プライバシーポリシー",
+    "it": "Informativa sulla privacy"
   },
   "misc.page.closeStats": {
     "en": "Close the statistics",
@@ -221,7 +281,11 @@
     "de": "Statistik schließen",
     "tr": "İstatistikleri kapat",
     "pl": "Zamknij statystyki",
-    "nl": "Statistieken sluiten"
+    "nl": "Statistieken sluiten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.tagMaster": {
     "en": "Master",
@@ -235,7 +299,11 @@
     "de": "Master",
     "tr": "Ana sunucu",
     "pl": "Główny",
-    "nl": "Master"
+    "nl": "Master",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.loggedInTo": {
     "en": "Logged in to {0}!",
@@ -249,7 +317,11 @@
     "de": "Bei {0} angemeldet!",
     "tr": "{0} ile giriş yapıldı!",
     "pl": "Zalogowano do {0}!",
-    "nl": "Ingelogd bij {0}!"
+    "nl": "Ingelogd bij {0}!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.loggedOut": {
     "en": "Logged out!",
@@ -263,7 +335,11 @@
     "de": "Abgemeldet!",
     "tr": "Çıkış yapıldı!",
     "pl": "Wylogowano!",
-    "nl": "Uitgelogd!"
+    "nl": "Uitgelogd!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.fbUnavailable": {
     "en": "Facebook login is unavailable. Check browser extensions and privacy settings.",
@@ -277,7 +353,11 @@
     "de": "Die Facebook-Anmeldung ist nicht verfügbar. Prüfe Browser-Erweiterungen und Datenschutzeinstellungen.",
     "tr": "Facebook ile giriş kullanılamıyor. Tarayıcı eklentilerini ve gizlilik ayarlarını kontrol edin.",
     "pl": "Logowanie przez Facebooka jest niedostępne. Sprawdź rozszerzenia przeglądarki i ustawienia prywatności.",
-    "nl": "Inloggen met Facebook is niet beschikbaar. Controleer je browserextensies en privacy-instellingen."
+    "nl": "Inloggen met Facebook is niet beschikbaar. Controleer je browserextensies en privacy-instellingen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.fbBlocked": {
     "en": "Facebook login is blocked in your browser. Please check your extensions (ad/tracker blockers) and try again.",
@@ -291,7 +371,11 @@
     "de": "Die Facebook-Anmeldung ist in deinem Browser blockiert. Prüfe deine Erweiterungen (Werbe-/Tracker-Blocker) und versuche es erneut.",
     "tr": "Facebook ile giriş tarayıcınızda engellenmiş. Eklentilerinizi (reklam/izleyici engelleyiciler) kontrol edip tekrar deneyin.",
     "pl": "Logowanie przez Facebooka jest zablokowane w przeglądarce. Sprawdź rozszerzenia (blokery reklam/śledzenia) i spróbuj ponownie.",
-    "nl": "Inloggen met Facebook is geblokkeerd in je browser. Controleer je extensies (advertentie-/trackerblokkers) en probeer het opnieuw."
+    "nl": "Inloggen met Facebook is geblokkeerd in je browser. Controleer je extensies (advertentie-/trackerblokkers) en probeer het opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.googleBlocked": {
     "en": "Google sign-in is blocked by an extension or a privacy setting.",
@@ -305,7 +389,11 @@
     "de": "Die Google-Anmeldung wird von einer Erweiterung oder Datenschutzeinstellung blockiert.",
     "tr": "Google ile giriş bir eklenti veya gizlilik ayarı tarafından engelleniyor.",
     "pl": "Logowanie przez Google blokuje rozszerzenie lub ustawienie prywatności.",
-    "nl": "Inloggen met Google wordt geblokkeerd door een extensie of privacy-instelling."
+    "nl": "Inloggen met Google wordt geblokkeerd door een extensie of privacy-instelling.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.googleLoading": {
     "en": "Google sign-in is still loading. Please try again in a moment.",
@@ -319,7 +407,11 @@
     "de": "Die Google-Anmeldung lädt noch. Bitte versuche es gleich noch einmal.",
     "tr": "Google ile giriş hâlâ yükleniyor. Lütfen birazdan tekrar deneyin.",
     "pl": "Logowanie przez Google wciąż się ładuje. Spróbuj ponownie za chwilę.",
-    "nl": "Inloggen met Google wordt nog geladen. Probeer het zo opnieuw."
+    "nl": "Inloggen met Google wordt nog geladen. Probeer het zo opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.googleAgain": {
     "en": "Click Google to sign in again.",
@@ -333,7 +425,11 @@
     "de": "Klicke auf Google, um dich erneut anzumelden.",
     "tr": "Tekrar giriş yapmak için Google'a tıklayın.",
     "pl": "Kliknij Google, aby zalogować się ponownie.",
-    "nl": "Klik op Google om opnieuw in te loggen."
+    "nl": "Klik op Google om opnieuw in te loggen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.googleCancelled": {
     "en": "Google sign-in was cancelled.",
@@ -347,7 +443,11 @@
     "de": "Die Google-Anmeldung wurde abgebrochen.",
     "tr": "Google ile giriş iptal edildi.",
     "pl": "Logowanie przez Google zostało anulowane.",
-    "nl": "Inloggen met Google is geannuleerd."
+    "nl": "Inloggen met Google is geannuleerd.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.googleFailed": {
     "en": "Google sign-in failed. Allow popups and third-party cookies for this site, then try again.",
@@ -361,7 +461,11 @@
     "de": "Die Google-Anmeldung ist fehlgeschlagen. Erlaube Pop-ups und Drittanbieter-Cookies für diese Seite und versuche es erneut.",
     "tr": "Google ile giriş başarısız oldu. Bu site için açılır pencerelere ve üçüncü taraf çerezlere izin verip tekrar deneyin.",
     "pl": "Logowanie przez Google nie powiodło się. Zezwól tej stronie na wyskakujące okna i pliki cookie innych firm, a potem spróbuj ponownie.",
-    "nl": "Inloggen met Google is mislukt. Sta pop-ups en cookies van derden toe voor deze site en probeer het opnieuw."
+    "nl": "Inloggen met Google is mislukt. Sta pop-ups en cookies van derden toe voor deze site en probeer het opnieuw.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.login.partyJoinFailed": {
     "en": "Could not join the party ({0}).",
@@ -375,7 +479,11 @@
     "de": "Der Party konnte nicht beigetreten werden ({0}).",
     "tr": "Partiye katılınamadı ({0}).",
     "pl": "Nie udało się dołączyć do grupy ({0}).",
-    "nl": "Kon niet bij de party komen ({0})."
+    "nl": "Kon niet bij de party komen ({0}).",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.rotate": {
     "en": "Rotate your phone<br>for better gameplay",
@@ -389,7 +497,11 @@
     "de": "Drehe dein Handy<br>für ein besseres Spiel",
     "tr": "Daha iyi oyun için<br>telefonunuzu çevirin",
     "pl": "Obróć telefon<br>dla lepszej gry",
-    "nl": "Draai je telefoon<br>voor een betere speelervaring"
+    "nl": "Draai je telefoon<br>voor een betere speelervaring",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.landscape": {
     "en": "Landscape mode required",
@@ -403,7 +515,11 @@
     "de": "Querformat erforderlich",
     "tr": "Yatay mod gerekli",
     "pl": "Wymagany tryb poziomy",
-    "nl": "Liggende stand vereist"
+    "nl": "Liggende stand vereist",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.joystick": {
     "en": "Joystick",
@@ -417,7 +533,11 @@
     "de": "Joystick",
     "tr": "Joystick",
     "pl": "Joystick",
-    "nl": "Joystick"
+    "nl": "Joystick",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.opacity": {
     "en": "Opacity",
@@ -431,7 +551,11 @@
     "de": "Deckkraft",
     "tr": "Opaklık",
     "pl": "Krycie",
-    "nl": "Dekking"
+    "nl": "Dekking",
+    "pt": "Opacidade",
+    "id": "Opasitas",
+    "ja": "不透明度",
+    "it": "Opacità"
   },
   "misc.mobile.btnSize": {
     "en": "Button size",
@@ -445,7 +569,11 @@
     "de": "Tastengröße",
     "tr": "Düğme boyutu",
     "pl": "Rozmiar przycisków",
-    "nl": "Knopgrootte"
+    "nl": "Knopgrootte",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.flickSplit": {
     "en": "Flick split (left half: right = split, up = double)",
@@ -459,7 +587,11 @@
     "de": "Wisch-Split (linke Hälfte: rechts = Split, hoch = doppelt)",
     "tr": "Kaydırarak bölünme (sol yarı: sağa = bölün, yukarı = çift)",
     "pl": "Podział machnięciem (lewa połowa: w prawo = podział, w górę = podwójny)",
-    "nl": "Veegsplit (linkerhelft: rechts = splitsen, omhoog = dubbel)"
+    "nl": "Veegsplit (linkerhelft: rechts = splitsen, omhoog = dubbel)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.noVibration": {
     "en": "No vibration on death and chat",
@@ -473,7 +605,11 @@
     "de": "Keine Vibration bei Tod und Chat",
     "tr": "Ölüm ve sohbette titreşim yok",
     "pl": "Bez wibracji przy śmierci i czacie",
-    "nl": "Geen trilling bij dood en chat"
+    "nl": "Geen trilling bij dood en chat",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.stopRelease": {
     "en": "Stop on release (cell stops when you lift the joystick thumb)",
@@ -487,7 +623,11 @@
     "de": "Stopp beim Loslassen (die Zelle hält an, wenn du den Daumen vom Joystick nimmst)",
     "tr": "Bırakınca dur (başparmağınızı joystickten kaldırınca hücre durur)",
     "pl": "Zatrzymaj po puszczeniu (komórka staje, gdy zdejmiesz kciuk z joysticka)",
-    "nl": "Stop bij loslaten (de cel stopt als je je duim van de joystick haalt)"
+    "nl": "Stop bij loslaten (de cel stopt als je je duim van de joystick haalt)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.tapHaptic": {
     "en": "Short vibration on Split / Feed",
@@ -501,7 +641,11 @@
     "de": "Kurze Vibration bei Split / Füttern",
     "tr": "Bölünme / Besleme sırasında kısa titreşim",
     "pl": "Krótka wibracja przy Podziale / Karmieniu",
-    "nl": "Korte trilling bij Splitsen / Voeren"
+    "nl": "Korte trilling bij Splitsen / Voeren",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.quickChat": {
     "en": "Quick chat buttons (commands 1-4)",
@@ -515,7 +659,11 @@
     "de": "Schnellchat-Tasten (Befehle 1-4)",
     "tr": "Hızlı sohbet düğmeleri (komut 1-4)",
     "pl": "Przyciski szybkiego czatu (polecenia 1-4)",
-    "nl": "Snelchatknoppen (commando 1-4)"
+    "nl": "Snelchatknoppen (commando 1-4)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.mbButton": {
     "en": "Multibox button (second player; uses more data)",
@@ -529,7 +677,11 @@
     "de": "Multibox-Taste (zweiter Spieler; braucht mehr Daten)",
     "tr": "Multibox düğmesi (ikinci oyuncu; daha fazla veri kullanır)",
     "pl": "Przycisk multiboxa (drugi gracz; zużywa więcej danych)",
-    "nl": "Multiboxknop (tweede speler; gebruikt meer data)"
+    "nl": "Multiboxknop (tweede speler; gebruikt meer data)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.pingButton": {
     "en": "Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)",
@@ -543,7 +695,11 @@
     "de": "Team-Ping-Taste (Tippen = Hierhin; halten und wischen = Hilfe, Gefahr, Virus hier)",
     "tr": "Takım işaret düğmesi (dokun = Buraya gel; basılı tut ve kaydır = Yardım, Tehlike, Burada virüs)",
     "pl": "Przycisk sygnału drużyny (dotknięcie = Idź tutaj; przytrzymaj i przesuń = Pomoc, Niebezpieczeństwo, Wirus tutaj)",
-    "nl": "Teampingknop (tik = Ga hierheen; vasthouden en schuiven = Help, Gevaar, Virus hier)"
+    "nl": "Teampingknop (tik = Ga hierheen; vasthouden en schuiven = Help, Gevaar, Virus hier)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.netGraph": {
     "en": "Net graph (FPS and ping of the last 30 seconds)",
@@ -557,7 +713,11 @@
     "de": "Netzgrafik (FPS und Ping der letzten 30 Sekunden)",
     "tr": "Ağ grafiği (son 30 saniyenin FPS ve ping değeri)",
     "pl": "Wykres sieci (FPS i ping z ostatnich 30 sekund)",
-    "nl": "Netwerkgrafiek (FPS en ping van de laatste 30 seconden)"
+    "nl": "Netwerkgrafiek (FPS en ping van de laatste 30 seconden)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.touchDir": {
     "en": "Direction on touch (no joystick): the cell moves toward where your finger touches",
@@ -571,7 +731,11 @@
     "de": "Richtung per Berührung (ohne Joystick): die Zelle bewegt sich dorthin, wo dein Finger tippt",
     "tr": "Dokunarak yön (joystick yok): hücre parmağınızın dokunduğu yere gider",
     "pl": "Kierunek dotykiem (bez joysticka): komórka płynie tam, gdzie dotyka palec",
-    "nl": "Richting met aanraking (geen joystick): de cel gaat naar waar je vinger raakt"
+    "nl": "Richting met aanraking (geen joystick): de cel gaat naar waar je vinger raakt",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.editControls": {
     "en": "Edit controls",
@@ -585,7 +749,11 @@
     "de": "Steuerung bearbeiten",
     "tr": "Kontrolleri düzenle",
     "pl": "Edytuj sterowanie",
-    "nl": "Bediening aanpassen"
+    "nl": "Bediening aanpassen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.split": {
     "en": "SPLIT",
@@ -599,7 +767,11 @@
     "de": "SPLIT",
     "tr": "BÖLÜN",
     "pl": "PODZIAŁ",
-    "nl": "SPLITS"
+    "nl": "SPLITS",
+    "pt": "Dividir",
+    "id": "Membelah",
+    "ja": "分裂",
+    "it": "Dividi"
   },
   "misc.mobile.feed": {
     "en": "FEED",
@@ -613,7 +785,11 @@
     "de": "FÜTTERN",
     "tr": "BESLE",
     "pl": "KARM",
-    "nl": "VOER"
+    "nl": "VOER",
+    "pt": "Alimentar",
+    "id": "Beri makan",
+    "ja": "エサを与える",
+    "it": "Nutri"
   },
   "misc.mobile.pingHelp": {
     "en": "Help",
@@ -627,7 +803,11 @@
     "de": "Hilfe",
     "tr": "Yardım",
     "pl": "Pomoc",
-    "nl": "Help"
+    "nl": "Help",
+    "pt": "Ajuda",
+    "id": "Bantuan",
+    "ja": "ヘルプ",
+    "it": "Aiuto"
   },
   "misc.mobile.pingDanger": {
     "en": "Danger",
@@ -641,7 +821,11 @@
     "de": "Gefahr",
     "tr": "Tehlike",
     "pl": "Niebezpieczeństwo",
-    "nl": "Gevaar"
+    "nl": "Gevaar",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.pingGo": {
     "en": "Go here",
@@ -655,7 +839,11 @@
     "de": "Hierhin",
     "tr": "Buraya gel",
     "pl": "Idź tutaj",
-    "nl": "Ga hierheen"
+    "nl": "Ga hierheen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.pingVirus": {
     "en": "Virus here",
@@ -669,7 +857,11 @@
     "de": "Virus hier",
     "tr": "Burada virüs",
     "pl": "Wirus tutaj",
-    "nl": "Virus hier"
+    "nl": "Virus hier",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.mobile.hudZoom": {
     "en": "HUD {0}%",
@@ -683,7 +875,11 @@
     "de": "HUD {0} %",
     "tr": "HUD %{0}",
     "pl": "HUD {0}%",
-    "nl": "HUD {0}%"
+    "nl": "HUD {0}%",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.ctlJoystick": {
     "en": "Joystick zone",
@@ -697,7 +893,11 @@
     "de": "Joystick-Bereich",
     "tr": "Joystick alanı",
     "pl": "Strefa joysticka",
-    "nl": "Joystickzone"
+    "nl": "Joystickzone",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.ctlSplit": {
     "en": "Split",
@@ -711,7 +911,11 @@
     "de": "Split",
     "tr": "Bölünme",
     "pl": "Podział",
-    "nl": "Splitsen"
+    "nl": "Splitsen",
+    "pt": "Dividir",
+    "id": "Membelah",
+    "ja": "分裂",
+    "it": "Dividi"
   },
   "misc.editor.ctlFeed": {
     "en": "Feed",
@@ -725,7 +929,11 @@
     "de": "Füttern",
     "tr": "Besleme",
     "pl": "Karmienie",
-    "nl": "Voeren"
+    "nl": "Voeren",
+    "pt": "Alimentar",
+    "id": "Beri makan",
+    "ja": "エサを与える",
+    "it": "Nutri"
   },
   "misc.editor.ctlX4": {
     "en": "4x split",
@@ -739,7 +947,11 @@
     "de": "4x-Split",
     "tr": "4x bölünme",
     "pl": "Podział 4x",
-    "nl": "4x splitsen"
+    "nl": "4x splitsen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.ctlX16": {
     "en": "16x split",
@@ -753,7 +965,11 @@
     "de": "16x-Split",
     "tr": "16x bölünme",
     "pl": "Podział 16x",
-    "nl": "16x splitsen"
+    "nl": "16x splitsen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.ctlMultibox": {
     "en": "Multibox",
@@ -767,7 +983,11 @@
     "de": "Multibox",
     "tr": "Multibox",
     "pl": "Multibox",
-    "nl": "Multibox"
+    "nl": "Multibox",
+    "pt": "Multibox",
+    "id": "Multibox",
+    "ja": "Multibox",
+    "it": "Multibox"
   },
   "misc.editor.ctlQuick": {
     "en": "Quick chat {0}",
@@ -781,7 +1001,11 @@
     "de": "Schnellchat {0}",
     "tr": "Hızlı sohbet {0}",
     "pl": "Szybki czat {0}",
-    "nl": "Snelchat {0}"
+    "nl": "Snelchat {0}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.ctlMenu": {
     "en": "Menu",
@@ -795,7 +1019,11 @@
     "de": "Menü",
     "tr": "Menü",
     "pl": "Menu",
-    "nl": "Menu"
+    "nl": "Menu",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.ctlMinimap": {
     "en": "Minimap",
@@ -809,7 +1037,11 @@
     "de": "Minikarte",
     "tr": "Mini harita",
     "pl": "Minimapa",
-    "nl": "Minikaart"
+    "nl": "Minikaart",
+    "pt": "Minimapa",
+    "id": "Peta mini",
+    "ja": "ミニマップ",
+    "it": "Minimappa"
   },
   "misc.editor.ctlLeft": {
     "en": "Left buttons",
@@ -823,7 +1055,11 @@
     "de": "Linke Tasten",
     "tr": "Sol düğmeler",
     "pl": "Lewe przyciski",
-    "nl": "Linkerknoppen"
+    "nl": "Linkerknoppen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.saveFailed": {
     "en": "Could not save the layout: the browser storage is full or blocked.",
@@ -837,7 +1073,11 @@
     "de": "Das Layout konnte nicht gespeichert werden: Der Browserspeicher ist voll oder gesperrt.",
     "tr": "Düzen kaydedilemedi: tarayıcı depolama alanı dolu veya engelli.",
     "pl": "Nie udało się zapisać układu: pamięć przeglądarki jest pełna lub zablokowana.",
-    "nl": "De indeling kon niet worden opgeslagen: de browseropslag is vol of geblokkeerd."
+    "nl": "De indeling kon niet worden opgeslagen: de browseropslag is vol of geblokkeerd.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.openFailed": {
     "en": "The control editor could not open.",
@@ -851,7 +1091,11 @@
     "de": "Der Steuerungs-Editor konnte nicht geöffnet werden.",
     "tr": "Kontrol düzenleyicisi açılamadı.",
     "pl": "Nie udało się otworzyć edytora sterowania.",
-    "nl": "De bedieningseditor kon niet worden geopend."
+    "nl": "De bedieningseditor kon niet worden geopend.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.savedLandscape": {
     "en": "Control layout saved (landscape).",
@@ -865,7 +1109,11 @@
     "de": "Steuerungs-Layout gespeichert (Querformat).",
     "tr": "Kontrol düzeni kaydedildi (yatay).",
     "pl": "Układ sterowania zapisany (poziomo).",
-    "nl": "Bedieningsindeling opgeslagen (liggend)."
+    "nl": "Bedieningsindeling opgeslagen (liggend).",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.savedPortrait": {
     "en": "Control layout saved (portrait).",
@@ -879,7 +1127,11 @@
     "de": "Steuerungs-Layout gespeichert (Hochformat).",
     "tr": "Kontrol düzeni kaydedildi (dikey).",
     "pl": "Układ sterowania zapisany (pionowo).",
-    "nl": "Bedieningsindeling opgeslagen (staand)."
+    "nl": "Bedieningsindeling opgeslagen (staand).",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.save": {
     "en": "Save",
@@ -893,7 +1145,11 @@
     "de": "Speichern",
     "tr": "Kaydet",
     "pl": "Zapisz",
-    "nl": "Opslaan"
+    "nl": "Opslaan",
+    "pt": "Salvar",
+    "id": "Simpan",
+    "ja": "保存",
+    "it": "Salva"
   },
   "misc.editor.saveTitle": {
     "en": "Save this layout",
@@ -907,7 +1163,11 @@
     "de": "Dieses Layout speichern",
     "tr": "Bu düzeni kaydet",
     "pl": "Zapisz ten układ",
-    "nl": "Deze indeling opslaan"
+    "nl": "Deze indeling opslaan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.cancel": {
     "en": "Cancel",
@@ -921,7 +1181,11 @@
     "de": "Abbrechen",
     "tr": "İptal",
     "pl": "Anuluj",
-    "nl": "Annuleren"
+    "nl": "Annuleren",
+    "pt": "Cancelar",
+    "id": "Batal",
+    "ja": "キャンセル",
+    "it": "Annulla"
   },
   "misc.editor.cancelTitle": {
     "en": "Close without saving",
@@ -935,7 +1199,11 @@
     "de": "Schließen ohne Speichern",
     "tr": "Kaydetmeden kapat",
     "pl": "Zamknij bez zapisywania",
-    "nl": "Sluiten zonder opslaan"
+    "nl": "Sluiten zonder opslaan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.reset": {
     "en": "Reset",
@@ -949,7 +1217,11 @@
     "de": "Zurücksetzen",
     "tr": "Sıfırla",
     "pl": "Resetuj",
-    "nl": "Herstellen"
+    "nl": "Herstellen",
+    "pt": "Redefinir",
+    "id": "Atur ulang",
+    "ja": "リセット",
+    "it": "Ripristina"
   },
   "misc.editor.resetTitle": {
     "en": "Every control back to its usual place (this orientation)",
@@ -963,7 +1235,11 @@
     "de": "Alle Steuerelemente an ihren üblichen Platz (diese Ausrichtung)",
     "tr": "Tüm kontroller olağan yerine (bu yön)",
     "pl": "Wszystkie przyciski na zwykłe miejsce (ta orientacja)",
-    "nl": "Alle bediening terug naar de gewone plek (deze stand)"
+    "nl": "Alle bediening terug naar de gewone plek (deze stand)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.snapTitle": {
     "en": "Snap to a {0} px grid and to the screen edges",
@@ -977,7 +1253,11 @@
     "de": "An einem {0}-px-Raster und den Bildschirmrändern ausrichten",
     "tr": "{0} px ızgaraya ve ekran kenarlarına hizala",
     "pl": "Przyciągaj do siatki {0} px i do krawędzi ekranu",
-    "nl": "Uitlijnen op een raster van {0} px en de schermranden"
+    "nl": "Uitlijnen op een raster van {0} px en de schermranden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.snapOn": {
     "en": "Snap: on",
@@ -991,7 +1271,11 @@
     "de": "Raster: an",
     "tr": "Hizalama: açık",
     "pl": "Przyciąganie: wł.",
-    "nl": "Uitlijnen: aan"
+    "nl": "Uitlijnen: aan",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.snapOff": {
     "en": "Snap: off",
@@ -1005,7 +1289,11 @@
     "de": "Raster: aus",
     "tr": "Hizalama: kapalı",
     "pl": "Przyciąganie: wył.",
-    "nl": "Uitlijnen: uit"
+    "nl": "Uitlijnen: uit",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.layouts": {
     "en": "Layouts",
@@ -1019,7 +1307,11 @@
     "de": "Layouts",
     "tr": "Düzenler",
     "pl": "Układy",
-    "nl": "Indelingen"
+    "nl": "Indelingen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.layoutsTitle": {
     "en": "Named layouts: save, load, delete",
@@ -1033,7 +1325,11 @@
     "de": "Benannte Layouts: speichern, laden, löschen",
     "tr": "Adlandırılmış düzenler: kaydet, yükle, sil",
     "pl": "Nazwane układy: zapisz, wczytaj, usuń",
-    "nl": "Benoemde indelingen: opslaan, laden, verwijderen"
+    "nl": "Benoemde indelingen: opslaan, laden, verwijderen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.barEdge": {
     "en": "Move this bar to the other edge",
@@ -1047,7 +1343,11 @@
     "de": "Diese Leiste an den anderen Rand verschieben",
     "tr": "Bu çubuğu diğer kenara taşı",
     "pl": "Przenieś ten pasek na drugą krawędź",
-    "nl": "Deze balk naar de andere rand verplaatsen"
+    "nl": "Deze balk naar de andere rand verplaatsen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.smaller": {
     "en": "Smaller",
@@ -1061,7 +1361,11 @@
     "de": "Kleiner",
     "tr": "Daha küçük",
     "pl": "Mniejszy",
-    "nl": "Kleiner"
+    "nl": "Kleiner",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.bigger": {
     "en": "Bigger",
@@ -1075,7 +1379,11 @@
     "de": "Größer",
     "tr": "Daha büyük",
     "pl": "Większy",
-    "nl": "Groter"
+    "nl": "Groter",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.opacityTitle": {
     "en": "Opacity of this control",
@@ -1089,7 +1397,11 @@
     "de": "Deckkraft dieses Steuerelements",
     "tr": "Bu kontrolün opaklığı",
     "pl": "Krycie tego przycisku",
-    "nl": "Dekking van deze knop"
+    "nl": "Dekking van deze knop",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.hide": {
     "en": "Hide",
@@ -1103,7 +1415,11 @@
     "de": "Ausblenden",
     "tr": "Gizle",
     "pl": "Ukryj",
-    "nl": "Verbergen"
+    "nl": "Verbergen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.show": {
     "en": "Show",
@@ -1117,7 +1433,11 @@
     "de": "Einblenden",
     "tr": "Göster",
     "pl": "Pokaż",
-    "nl": "Tonen"
+    "nl": "Tonen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.hideTitle": {
     "en": "Hide or show this control",
@@ -1131,7 +1451,11 @@
     "de": "Dieses Steuerelement aus- oder einblenden",
     "tr": "Bu kontrolü gizle veya göster",
     "pl": "Ukryj lub pokaż ten przycisk",
-    "nl": "Deze knop verbergen of tonen"
+    "nl": "Deze knop verbergen of tonen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.hidden": {
     "en": "hidden",
@@ -1145,7 +1469,11 @@
     "de": "ausgeblendet",
     "tr": "gizli",
     "pl": "ukryty",
-    "nl": "verborgen"
+    "nl": "verborgen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.def": {
     "en": "Default",
@@ -1159,7 +1487,11 @@
     "de": "Standard",
     "tr": "Varsayılan",
     "pl": "Domyślne",
-    "nl": "Standaard"
+    "nl": "Standaard",
+    "pt": "Padrão",
+    "id": "Bawaan",
+    "ja": "既定",
+    "it": "Predefinito"
   },
   "misc.editor.defTitle": {
     "en": "This control back to its usual place",
@@ -1173,7 +1505,11 @@
     "de": "Dieses Steuerelement an seinen üblichen Platz",
     "tr": "Bu kontrol olağan yerine",
     "pl": "Ten przycisk na zwykłe miejsce",
-    "nl": "Deze knop terug naar de gewone plek"
+    "nl": "Deze knop terug naar de gewone plek",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.overlaps": {
     "en": "{0} overlaps {1}",
@@ -1187,7 +1523,11 @@
     "de": "{0} überdeckt {1}",
     "tr": "{0}, {1} ile çakışıyor",
     "pl": "{0} nachodzi na {1}",
-    "nl": "{0} overlapt {1}"
+    "nl": "{0} overlapt {1}",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.landscape": {
     "en": "Landscape",
@@ -1201,7 +1541,11 @@
     "de": "Querformat",
     "tr": "Yatay",
     "pl": "Poziomo",
-    "nl": "Liggend"
+    "nl": "Liggend",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.portrait": {
     "en": "Portrait",
@@ -1215,7 +1559,11 @@
     "de": "Hochformat",
     "tr": "Dikey",
     "pl": "Pionowo",
-    "nl": "Staand"
+    "nl": "Staand",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.choose": {
     "en": "Choose control",
@@ -1229,7 +1577,11 @@
     "de": "Steuerelement wählen",
     "tr": "Kontrol seç",
     "pl": "Wybierz przycisk",
-    "nl": "Kies een knop"
+    "nl": "Kies een knop",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.named": {
     "en": "Named layouts",
@@ -1243,7 +1595,11 @@
     "de": "Benannte Layouts",
     "tr": "Adlandırılmış düzenler",
     "pl": "Nazwane układy",
-    "nl": "Benoemde indelingen"
+    "nl": "Benoemde indelingen",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.none": {
     "en": "None yet. A named layout keeps both orientations.",
@@ -1257,7 +1613,11 @@
     "de": "Noch keine. Ein benanntes Layout speichert beide Ausrichtungen.",
     "tr": "Henüz yok. Adlandırılmış bir düzen iki yönü de saklar.",
     "pl": "Jeszcze brak. Nazwany układ zachowuje obie orientacje.",
-    "nl": "Nog geen. Een benoemde indeling bewaart beide standen."
+    "nl": "Nog geen. Een benoemde indeling bewaart beide standen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.load": {
     "en": "Load",
@@ -1271,7 +1631,11 @@
     "de": "Laden",
     "tr": "Yükle",
     "pl": "Wczytaj",
-    "nl": "Laden"
+    "nl": "Laden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.loadTitle": {
     "en": "Edit this layout (Save keeps it)",
@@ -1285,7 +1649,11 @@
     "de": "Dieses Layout bearbeiten (Speichern behält es)",
     "tr": "Bu düzeni düzenle (Kaydet onu saklar)",
     "pl": "Edytuj ten układ (Zapisz go zachowa)",
-    "nl": "Deze indeling bewerken (Opslaan bewaart hem)"
+    "nl": "Deze indeling bewerken (Opslaan bewaart hem)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.del": {
     "en": "Delete",
@@ -1299,7 +1667,11 @@
     "de": "Löschen",
     "tr": "Sil",
     "pl": "Usuń",
-    "nl": "Verwijderen"
+    "nl": "Verwijderen",
+    "pt": "Excluir",
+    "id": "Hapus",
+    "ja": "削除",
+    "it": "Elimina"
   },
   "misc.editor.namePlaceholder": {
     "en": "Name, e.g. Competitive",
@@ -1313,7 +1685,11 @@
     "de": "Name, z. B. Wettkampf",
     "tr": "Ad, ör. Rekabetçi",
     "pl": "Nazwa, np. Turniejowy",
-    "nl": "Naam, bijv. Competitief"
+    "nl": "Naam, bijv. Competitief",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.saveAs": {
     "en": "Save as",
@@ -1327,7 +1703,11 @@
     "de": "Speichern als",
     "tr": "Farklı kaydet",
     "pl": "Zapisz jako",
-    "nl": "Opslaan als"
+    "nl": "Opslaan als",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.saveAsTitle": {
     "en": "Keep the layout being edited under this name",
@@ -1341,7 +1721,11 @@
     "de": "Das bearbeitete Layout unter diesem Namen behalten",
     "tr": "Düzenlenen düzeni bu adla sakla",
     "pl": "Zachowaj edytowany układ pod tą nazwą",
-    "nl": "De bewerkte indeling onder deze naam bewaren"
+    "nl": "De bewerkte indeling onder deze naam bewaren",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.nameNeeded": {
     "en": "Give the layout a name (up to {0} characters).",
@@ -1355,7 +1739,11 @@
     "de": "Gib dem Layout einen Namen (bis zu {0} Zeichen).",
     "tr": "Düzene bir ad verin (en fazla {0} karakter).",
     "pl": "Nadaj układowi nazwę (do {0} znaków).",
-    "nl": "Geef de indeling een naam (tot {0} tekens)."
+    "nl": "Geef de indeling een naam (tot {0} tekens).",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.maxNamed": {
     "en": "At most {0} named layouts: delete one first.",
@@ -1369,7 +1757,11 @@
     "de": "Höchstens {0} benannte Layouts: lösche zuerst eins.",
     "tr": "En fazla {0} adlandırılmış düzen: önce birini silin.",
     "pl": "Najwyżej {0} nazwanych układów: najpierw usuń jeden.",
-    "nl": "Hoogstens {0} benoemde indelingen: verwijder er eerst een."
+    "nl": "Hoogstens {0} benoemde indelingen: verwijder er eerst een.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.editor.namedSaved": {
     "en": "Layout \"{0}\" saved.",
@@ -1383,7 +1775,11 @@
     "de": "Layout „{0}“ gespeichert.",
     "tr": "\"{0}\" düzeni kaydedildi.",
     "pl": "Układ „{0}” zapisany.",
-    "nl": "Indeling \"{0}\" opgeslagen."
+    "nl": "Indeling \"{0}\" opgeslagen.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.helper.nickChars": {
     "en": "Nickname Characters",
@@ -1397,7 +1793,11 @@
     "de": "Zeichen für den Nicknamen",
     "tr": "Takma ad karakterleri",
     "pl": "Znaki do nicku",
-    "nl": "Tekens voor bijnaam"
+    "nl": "Tekens voor bijnaam",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.helper.agarioWhite": {
     "en": "Agario Default (White)",
@@ -1411,7 +1811,11 @@
     "de": "Agario-Standard (Weiß)",
     "tr": "Agario varsayılan (Beyaz)",
     "pl": "Agario domyślny (Biały)",
-    "nl": "Agario-standaard (Wit)"
+    "nl": "Agario-standaard (Wit)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.helper.noSoups": {
     "en": "No Soups Settings (Black)",
@@ -1425,7 +1829,11 @@
     "de": "No-Soups-Einstellungen (Schwarz)",
     "tr": "No Soups ayarları (Siyah)",
     "pl": "Ustawienia No Soups (Czarny)",
-    "nl": "No Soups-instellingen (Zwart)"
+    "nl": "No Soups-instellingen (Zwart)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.helper.vanillaBetter": {
     "en": "Vanilla better (Grey)",
@@ -1439,7 +1847,11 @@
     "de": "Vanilla verbessert (Grau)",
     "tr": "Geliştirilmiş Vanilla (Gri)",
     "pl": "Ulepszony Vanilla (Szary)",
-    "nl": "Vanilla verbeterd (Grijs)"
+    "nl": "Vanilla verbeterd (Grijs)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.helper.galaxy": {
     "en": "Galaxy (Black)",
@@ -1453,7 +1865,11 @@
     "de": "Galaxie (Schwarz)",
     "tr": "Galaksi (Siyah)",
     "pl": "Galaktyka (Czarny)",
-    "nl": "Melkweg (Zwart)"
+    "nl": "Melkweg (Zwart)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.helper.legendDefault": {
     "en": "Legend Default (Dark Blue)",
@@ -1467,7 +1883,11 @@
     "de": "Legend-Standard (Dunkelblau)",
     "tr": "Legend varsayılan (Koyu mavi)",
     "pl": "Legend domyślny (Ciemnoniebieski)",
-    "nl": "Legend-standaard (Donkerblauw)"
+    "nl": "Legend-standaard (Donkerblauw)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.helper.vanillaLike": {
     "en": "Vanilla like (Grey)",
@@ -1481,7 +1901,11 @@
     "de": "Wie Vanilla (Grau)",
     "tr": "Vanilla benzeri (Gri)",
     "pl": "Jak Vanilla (Szary)",
-    "nl": "Zoals Vanilla (Grijs)"
+    "nl": "Zoals Vanilla (Grijs)",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.rotate.unrotated": {
     "en": "Minimap is still unrotated, only sectors rotate",
@@ -1495,7 +1919,11 @@
     "de": "Die Minikarte dreht sich noch nicht, nur die Sektoren drehen sich",
     "tr": "Mini harita henüz dönmüyor, yalnızca sektörler dönüyor",
     "pl": "Minimapa jeszcze się nie obraca, obracają się tylko sektory",
-    "nl": "De minikaart draait nog niet, alleen de sectoren draaien"
+    "nl": "De minikaart draait nog niet, alleen de sectoren draaien",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.confirm": {
     "en": "Are you sure you want to load the Dying Light template?<br>Save your settings to a file, because they will be lost.",
@@ -1509,7 +1937,11 @@
     "de": "Möchtest du die Dying-Light-Vorlage wirklich laden?<br>Speichere deine Einstellungen in einer Datei, sonst gehen sie verloren.",
     "tr": "Dying Light şablonunu yüklemek istediğinize emin misiniz?<br>Ayarlarınızı bir dosyaya kaydedin, yoksa kaybolacaklar.",
     "pl": "Na pewno wczytać szablon Dying Light?<br>Zapisz ustawienia do pliku, bo zostaną utracone.",
-    "nl": "Weet je zeker dat je het Dying Light-sjabloon wilt laden?<br>Sla je instellingen op in een bestand, want ze gaan verloren."
+    "nl": "Weet je zeker dat je het Dying Light-sjabloon wilt laden?<br>Sla je instellingen op in een bestand, want ze gaan verloren.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.hudMap": {
     "en": "The Map",
@@ -1523,7 +1955,11 @@
     "de": "Die Karte",
     "tr": "Harita",
     "pl": "Mapa",
-    "nl": "De Kaart"
+    "nl": "De Kaart",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.hudLead": {
     "en": "The Most Dead",
@@ -1537,7 +1973,11 @@
     "de": "Die Totesten",
     "tr": "En Ölüler",
     "pl": "Najbardziej martwi",
-    "nl": "De Doodsten"
+    "nl": "De Doodsten",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.hudTeam": {
     "en": "The Alive",
@@ -1551,7 +1991,11 @@
     "de": "Die Lebenden",
     "tr": "Hayatta Kalanlar",
     "pl": "Żywi",
-    "nl": "De Levenden"
+    "nl": "De Levenden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.pic1": {
     "en": "Volatile Attack",
@@ -1565,7 +2009,11 @@
     "de": "Volatile-Angriff",
     "tr": "Volatile saldırısı",
     "pl": "Atak Zmiennego",
-    "nl": "Volatile-aanval"
+    "nl": "Volatile-aanval",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.pic2": {
     "en": "Screamer",
@@ -1579,7 +2027,11 @@
     "de": "Schreier",
     "tr": "Çığlıkçı",
     "pl": "Krzykacz",
-    "nl": "Schreeuwer"
+    "nl": "Schreeuwer",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.pic3": {
     "en": "Killing Volatile",
@@ -1593,7 +2045,11 @@
     "de": "Volatile töten",
     "tr": "Volatile öldürmek",
     "pl": "Zabijanie Zmiennego",
-    "nl": "Volatile doden"
+    "nl": "Volatile doden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.pic4": {
     "en": "Too weak to kill",
@@ -1607,7 +2063,11 @@
     "de": "Zu schwach zum Töten",
     "tr": "Öldüremeyecek kadar zayıf",
     "pl": "Za słaby, by zabić",
-    "nl": "Te zwak om te doden"
+    "nl": "Te zwak om te doden",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.pic5": {
     "en": "Talking zombie",
@@ -1621,7 +2081,11 @@
     "de": "Sprechender Zombie",
     "tr": "Konuşan zombi",
     "pl": "Gadający zombie",
-    "nl": "Pratende zombie"
+    "nl": "Pratende zombie",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.yt1": {
     "en": "Dying Light Song",
@@ -1635,7 +2099,11 @@
     "de": "Dying-Light-Song",
     "tr": "Dying Light şarkısı",
     "pl": "Piosenka z Dying Light",
-    "nl": "Dying Light-nummer"
+    "nl": "Dying Light-nummer",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.yt2": {
     "en": "Super Aggressive Zombies",
@@ -1649,7 +2117,11 @@
     "de": "Superaggressive Zombies",
     "tr": "Süper agresif zombiler",
     "pl": "Superagresywne zombie",
-    "nl": "Superagressieve zombies"
+    "nl": "Superagressieve zombies",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.yt3": {
     "en": "Finishing Moves Night Hunter",
@@ -1663,7 +2135,11 @@
     "de": "Finishing Moves des Night Hunter",
     "tr": "Night Hunter bitirme hareketleri",
     "pl": "Wykończenia Nocnego Łowcy",
-    "nl": "Finishing moves van de Night Hunter"
+    "nl": "Finishing moves van de Night Hunter",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.yt4": {
     "en": "Volatile Massacre",
@@ -1677,7 +2153,11 @@
     "de": "Volatile-Massaker",
     "tr": "Volatile katliamı",
     "pl": "Masakra Zmiennych",
-    "nl": "Volatile-bloedbad"
+    "nl": "Volatile-bloedbad",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.yt5": {
     "en": "End Game 3rd Person",
@@ -1691,7 +2171,11 @@
     "de": "Spielende in der dritten Person",
     "tr": "Üçüncü şahıs oyun sonu",
     "pl": "Zakończenie w trzeciej osobie",
-    "nl": "Einde van het spel in derde persoon"
+    "nl": "Einde van het spel in derde persoon",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.disableHint": {
     "en": "To disable Dying Light, click the \"Dying Light\" icon on the <b><font color=\"blue\">API</font></b> tab!",
@@ -1705,7 +2189,11 @@
     "de": "Um Dying Light auszuschalten, klicke auf das Symbol „Dying Light“ im Tab <b><font color=\"blue\">API</font></b>!",
     "tr": "Dying Light'ı kapatmak için <b><font color=\"blue\">API</font></b> sekmesindeki \"Dying Light\" simgesine tıklayın!",
     "pl": "Aby wyłączyć Dying Light, kliknij ikonę „Dying Light” na karcie <b><font color=\"blue\">API</font></b>!",
-    "nl": "Klik op het pictogram \"Dying Light\" op het tabblad <b><font color=\"blue\">API</font></b> om Dying Light uit te zetten!"
+    "nl": "Klik op het pictogram \"Dying Light\" op het tabblad <b><font color=\"blue\">API</font></b> om Dying Light uit te zetten!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.songHint": {
     "en": "Play the song from the last tab <b><font color=\"blue\">(YOUTUBE)</font></b>!",
@@ -1719,7 +2207,11 @@
     "de": "Spiele den Song im letzten Tab <b><font color=\"blue\">(YOUTUBE)</font></b> ab!",
     "tr": "Şarkıyı son sekmeden <b><font color=\"blue\">(YOUTUBE)</font></b> çalın!",
     "pl": "Odtwórz piosenkę z ostatniej karty <b><font color=\"blue\">(YOUTUBE)</font></b>!",
-    "nl": "Speel het nummer af via het laatste tabblad <b><font color=\"blue\">(YOUTUBE)</font></b>!"
+    "nl": "Speel het nummer af via het laatste tabblad <b><font color=\"blue\">(YOUTUBE)</font></b>!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.quoteNight": {
     "en": "This is GRE speaking, get to the nearest safe house and wait until dawn. Good night, and good luck!",
@@ -1733,7 +2225,11 @@
     "de": "Hier spricht die GRE: Geht zum nächsten Unterschlupf und wartet bis zum Morgengrauen. Gute Nacht und viel Glück!",
     "tr": "Burası GRE, en yakın güvenli eve gidin ve şafağı bekleyin. İyi geceler ve bol şans!",
     "pl": "Mówi GRE, dotrzyjcie do najbliższej kryjówki i czekajcie do świtu. Dobranoc i powodzenia!",
-    "nl": "Hier spreekt de GRE: ga naar het dichtstbijzijnde safehouse en wacht tot de ochtend. Goedenacht en veel geluk!"
+    "nl": "Hier spreekt de GRE: ga naar het dichtstbijzijnde safehouse en wacht tot de ochtend. Goedenacht en veel geluk!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.quoteAntizin": {
     "en": "You get Antizin when I say you get it, not one second before!",
@@ -1747,7 +2243,11 @@
     "de": "Du bekommst Antizin, wenn ich es sage, keine Sekunde früher!",
     "tr": "Antizin'i ben ne zaman dersem o zaman alırsın, bir saniye bile önce değil!",
     "pl": "Dostaniesz Antizin, kiedy ja powiem, ani sekundy wcześniej!",
-    "nl": "Je krijgt Antizin wanneer ik het zeg, geen seconde eerder!"
+    "nl": "Je krijgt Antizin wanneer ik het zeg, geen seconde eerder!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.quoteBravo": {
     "en": "Well, you not only did the job, Kyle, but you made it back in one piece.<br>Bravo!<br>Did you think I would be satisfied so easily? There is still plenty to prove!",
@@ -1761,7 +2261,11 @@
     "de": "Nun, du hast nicht nur den Job erledigt, Kyle, sondern bist auch heil zurückgekommen.<br>Bravo!<br>Dachtest du, ich wäre so leicht zufrieden? Es gibt noch viel zu beweisen!",
     "tr": "Eh, Kyle, işi yapmakla kalmadın, bir de sağ salim döndün.<br>Bravo!<br>Bu kadar kolay tatmin olacağımı mı sandın? Kanıtlaman gereken daha çok şey var!",
     "pl": "No cóż, Kyle, nie tylko wykonałeś zadanie, ale wróciłeś w jednym kawałku.<br>Brawo!<br>Myślałeś, że tak łatwo mnie zadowolisz? Wciąż masz wiele do udowodnienia!",
-    "nl": "Nou, Kyle, je hebt niet alleen de klus geklaard, je bent ook heelhuids teruggekomen.<br>Bravo!<br>Dacht je dat ik zo snel tevreden zou zijn? Er valt nog genoeg te bewijzen!"
+    "nl": "Nou, Kyle, je hebt niet alleen de klus geklaard, je bent ook heelhuids teruggekomen.<br>Bravo!<br>Dacht je dat ik zo snel tevreden zou zijn? Er valt nog genoeg te bewijzen!",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.serverChanged": {
     "en": "Server Changed",
@@ -1775,7 +2279,11 @@
     "de": "Server gewechselt",
     "tr": "Sunucu değişti",
     "pl": "Zmieniono serwer",
-    "nl": "Server gewijzigd"
+    "nl": "Server gewijzigd",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.quoteRules": {
     "en": "The creation of one's own rules, <font color=\"red\">THAT</font> is what makes a man!<br>Do you live by your own rules, Crane?<br>Or are you merely someone else's puppet???",
@@ -1789,7 +2297,11 @@
     "de": "Seine eigenen Regeln zu schaffen, <font color=\"red\">DAS</font> macht einen Mann aus!<br>Lebst du nach deinen eigenen Regeln, Crane?<br>Oder bist du nur die Marionette eines anderen???",
     "tr": "Kendi kurallarını koymak, <font color=\"red\">İŞTE</font> insanı adam yapan budur!<br>Kendi kurallarınla mı yaşıyorsun, Crane?<br>Yoksa sadece başkasının kuklası mısın???",
     "pl": "Tworzenie własnych zasad, <font color=\"red\">TO</font> czyni człowieka mężczyzną!<br>Żyjesz według własnych zasad, Crane?<br>Czy jesteś tylko czyjąś marionetką???",
-    "nl": "Je eigen regels maken, <font color=\"red\">DÁT</font> maakt een man!<br>Leef jij volgens je eigen regels, Crane?<br>Of ben je slechts andermans marionet???"
+    "nl": "Je eigen regels maken, <font color=\"red\">DÁT</font> maakt een man!<br>Leef jij volgens je eigen regels, Crane?<br>Of ben je slechts andermans marionet???",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   },
   "misc.dl.quoteProphecy": {
     "en": "I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the Mother, and I am in no position to ask why.",
@@ -1803,6 +2315,10 @@
     "de": "Ich erforsche Spuren der Prophezeiung über den Sonnengott in den Relikten der örtlichen Kultur. Für die Mutter scheint es um Leben und Tod zu gehen, und ich bin nicht in der Lage, nach dem Warum zu fragen.",
     "tr": "Yerel kültürün kalıntılarında güneş tanrısı kehanetinin izlerini araştırıyorum. Ana için bu bir ölüm kalım meselesi gibi görünüyor ve nedenini sormak bana düşmez.",
     "pl": "Badam ślady proroctwa o bogu słońca w reliktach miejscowej kultury. Dla Matki to chyba sprawa życia i śmierci, a ja nie mogę pytać dlaczego.",
-    "nl": "Ik onderzoek sporen van de profetie over de zonnegod in de relikwieën van de plaatselijke cultuur. Voor de Moeder lijkt het een kwestie van leven of dood, en ik kan niet vragen waarom."
+    "nl": "Ik onderzoek sporen van de profetie over de zonnegod in de relikwieën van de plaatselijke cultuur. Voor de Moeder lijkt het een kwestie van leven of dood, en ik kan niet vragen waarom.",
+    "pt": "",
+    "id": "",
+    "ja": "",
+    "it": ""
   }
 }
