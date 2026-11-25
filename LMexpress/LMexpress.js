@@ -4005,17 +4005,8 @@ function bumpLog() {
 
 
 
-function SquareAgar() {
-    var headID = document.getElementsByTagName("head")[0];
-    $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
-        '.input-group-addon, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel{border-radius: 10px;}.menu-tabs,' +
-        '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0;} #hotkeys {border-radius: 10px;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0;}  ' +
-        '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%; }.agario-profile-picture { border-radius: 32px;}' +
-        '#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 0 0 15px 15px;}' +
-        //				'#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 15px 15px 15px 15px;}'+
-        '#top5-hud{ border-radius: 15px; } #target-hud{ border-radius: 15px; } #legendAdImg, #stats-hud { border-radius: 10px; } ' +
-        '#time-hud { border-radius: 10px; } </style>');
-}
+/* SquareAgar — REMOVED: dead code, superseded by _lmHudCorners() (line ~7628)
+ * which uses var(--lm-radius) CSS custom properties. */
 
 
 
@@ -6834,7 +6825,7 @@ function initializeLM(modVersion) {
     $("body").prepend('<div id="backgroundFade" style="width: 100%; height: 100%; position: absolute; background: black; z-index: 100; opacity: 0.6; display: none;"></div>');
 
 
-    $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: rgba(0, 0, 0, 0.2);padding: 3px;border-radius: 4px;width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: #ffffff;">' +
+    $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: rgba(0, 0, 0, 0.2);padding: 3px;border-radius: var(--lm-radius-s,4px);width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: #ffffff;">' +
         '<p style="float: right; margin-right: 10px;"><span id="notesServer">' + _lmxE('pack.servers') + ': </span><span id="numServers"></span> (<span id="pps"></span> <span data-toggle="tooltip" data-placement="top" data-i18n-title="lmx.ex.playersPerServer" data-original-title="' + _lmxE('lmx.ex.playersPerServer') + '">PPS</span>)</p>' +
         '<p style="float: right;margin-right: 100px;"><span id="notesPlayers">' + _lmxE('pack.players') + ': </span><span id="numPlayers"></span> / <span id="totalPlayers"  data-toggle="tooltip" data-placement="top" data-i18n-title="lmx.ex.totalPlayersOnline" data-original-title="' + _lmxE('lmx.ex.totalPlayersOnline') + '"></span></p></div>' +
         '<div id="searchHud" class="hud" style="width: 65%; height: 60px; z-index: 15; margin: auto; top: 0; right: 0; left: 0; bottom: 0; position: fixed;">' +
@@ -6879,7 +6870,7 @@ function initializeLM(modVersion) {
         title: function () { return _lmxT('lmx.ex.videoSkinsTip', ['https://www.legendmod.ml/developers/videoskins.html']); },
         placement: "top"
     });
-    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">' + _lmxE('pack.saveForLater') + '</h5>' +
+    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: var(--lm-radius-s,4px);width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">' + _lmxE('pack.saveForLater') + '</h5>' +
         '<input id="note1" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 25%;float:left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-right: 7px; text-align: center;">' +
         '<input id="note2" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 24%; float: left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 0px; margin-right: 7px; text-align: center; ">' +
         '<input id="note3" class="form-control main-color note" style="background: transparent;color: lightgrey; width: 49%; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 10px; text-align: center; ">' +
@@ -7077,7 +7068,7 @@ function initializeLM(modVersion) {
     // save notes
 
     $("#import-settings-btn").attr('class', 'btn btn-success');
-    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;display: none;background-color: rgba(0, 0, 0, 0.2);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">' + _lmxE('lmx.ex.results') + '</h5>' +
+    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: var(--lm-radius-s,4px);width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;display: none;background-color: rgba(0, 0, 0, 0.2);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">' + _lmxE('lmx.ex.results') + '</h5>' +
         '<div id="log" style="font-weight: normal; overflow-x: hidden; overflow-y: auto;height: 90%;">' +
         '</div></div>');
 

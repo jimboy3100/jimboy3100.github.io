@@ -197,7 +197,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.619;
+window.OgVer = 3.620;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -37706,7 +37706,9 @@ function thelegendmodproject() {
                     if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
                         window.teammatenicks && this.targetNick != "" &&
                         (window._lmTeammateNickSet ? window._lmTeammateNickSet.has(this.targetNick) : window.teammatenicks.includes(this.targetNick))) {
-                        drawRender.drawTeammatesInd(style, this.x, this.y, y)
+                        /* WebGL frames: use overlay canvas so the indicator is visible
+                         * above the GL cell layer (main canvas sits below it). */
+                        drawRender.drawTeammatesInd(_wasWebGL ? (drawRender._foregroundCtx || style) : style, this.x, this.y, y)
                     }
 
                     /* Skip Canvas2D nick/mass text for WebGL-rendered cells — text is now drawn
@@ -37745,17 +37747,26 @@ function thelegendmodproject() {
 
                         }
                     } else {
-                        /* WebGL cell: still draw chat/merge on Canvas2D (rare overlay effects) */
+                        /* WebGL cell: draw chat/merge/special effects on the OVERLAY canvas
+                         * (the main canvas sits below the GL canvas in DOM z-order, so
+                         * anything drawn on `style` = this.ctx would be hidden). Use
+                         * drawRender._foregroundCtx which points to overlayCtx during
+                         * GPU frames, falling back to style for Canvas2D-only frames. */
+                        var _fgCtx = drawRender._foregroundCtx || style;
+                        /* Special effects (hats, crowns, smoke, etc.) — drawn above the cell body */
+                        if (typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers[this.targetNick]) {
+                            this.drawSpecialSkin(_fgCtx, y);
+                        }
                         if (defaultmapsettings.showChat || (window.ExternalScripts && !window.legendmod5.optimizedMass)) {
                             this.setDrawing();
                             this.setDrawingScale();
                             if (this.mass > 0 && !this.isVirus) {
                                 if (this.setMass(this.size)) {
                                     if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
-                                        this.drawMerge(style);
+                                        this.drawMerge(_fgCtx);
                                     }
                                     if (defaultmapsettings.showChat) {
-                                        this.drawChat(style);
+                                        this.drawChat(_fgCtx);
                                     }
                                 }
                             }
@@ -58859,6 +58870,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * on the main Canvas2D, which sits BELOW the GL cell layer, and
              * the ring lies inside the cell disc: with GPU cells it was
              * fully hidden. Keep those frames on Canvas2D.
+             *
+             * HYBRID RENDERER NOTE: These could be drawn on overlayCtx, but
+             * the visual result differs (ring appears above skin/text instead
+             * of between body and skin). Moving them requires GL-side ring
+             * support. Kept as Canvas2D fallback — only triggers when a cell
+             * is actively selected or reverse-trick is targeting a visible cell.
              */
             if (
                 (
@@ -59210,33 +59227,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * image that appears above the cell body is now drawn on
                  * the overlay canvas by the post-cell overlay pass.
                  */
-                /* (chat, teammate, FB-skin checks removed — overlays stay) */
-
-
-                /*
-                 * Cell-specific special effects still require Canvas ownership
-                 * of the complete body world.
-                 */
-                if (
-                    cell.SpecialEffect ||
-                    cell.SpecialEffect2 ||
-                    cell.specialEffect ||
-                    cell.specialEffect2
-                ) {
-                    return false;
-                }
-
-
-                if (
-                    cell.targetNick &&
-                    typeof SpecialEffectPlayers !==
-                        'undefined' &&
-                    SpecialEffectPlayers[
-                        cell.targetNick
-                    ]
-                ) {
-                    return false;
-                }
+                /* (chat, teammate, FB-skin, special-effects checks removed — overlays stay) */
 
 
                 /*

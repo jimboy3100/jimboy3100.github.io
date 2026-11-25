@@ -404,6 +404,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         `;
         document.head.appendChild(style);
     }
+    /* Expose globally so ogario/modules/*.js can inject the shared modal CSS
+     * before creating a dialog. Idempotent — safe to call many times. */
+    window._lmEnsureModalCSS = injectStyles;
 
     // ─── Component 1: 🏆 Leaderboards & Weekly Leagues Modal ───
     window.currentLeagueTab = 1; // 1 = My League, 2 = Country, 3 = World, 4 = Friends

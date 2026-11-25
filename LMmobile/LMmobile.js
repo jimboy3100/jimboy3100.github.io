@@ -770,7 +770,11 @@
                 var dx = x - sx, dy = y - sy;
                 pick = 0;
                 if (dx * dx + dy * dy >= 256) pick = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 6 : 7) : (dy < 0 ? 5 : 8);
-                items.forEach(function (it, i) { it.style.background = PING_DIRS[i][0] === pick ? 'rgba(1,160,150,.95)' : 'rgba(0,36,62,.88)'; });
+                var _lmSt = getComputedStyle(document.documentElement);
+                var _lmSelBg = 'rgba(1,160,150,.95)', _lmDefBg = 'rgba(0,36,62,.88)';
+                try { var _mc = _lmSt.getPropertyValue('--lm-mc').trim(); if (_mc) _lmSelBg = _mc; } catch(e){}
+                try { var _pc = _lmSt.getPropertyValue('--lm-pc').trim(); if (_pc) _lmDefBg = _pc; } catch(e){}
+                items.forEach(function (it, i) { it.style.background = PING_DIRS[i][0] === pick ? _lmSelBg : _lmDefBg; });
             }
             function findT(e) {
                 for (var i = 0; i < e.changedTouches.length; i++) if (e.changedTouches[i].identifier === tid) return e.changedTouches[i];
@@ -1867,7 +1871,7 @@
                 tc.name = 'theme-color';
                 document.head.appendChild(tc);
             }
-            tc.content = '#00243e';
+            tc.content = getComputedStyle(document.documentElement).getPropertyValue('--lm-pc').trim() || '#00243e';
 
             /* PWA manifest is now in play.html <head> — no need to inject here */
         })();
