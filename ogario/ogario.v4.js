@@ -20079,12 +20079,22 @@ var escapeChar = {
 /* ═══════════════════════════════════════════════════════════════════════════════
  * §3  DEFAULT SETTINGS
  * ═══════════════════════════════════════════════════════════════════════════════ */
-/* Theme values as CSS custom properties (--lm-mc, --lm-pc, ...): windows and modules use
- * var(--lm-x, fallback) so they follow the menu theme and update live when it changes.
+/* Theme values as CSS custom properties: windows and modules use var(--lm-x, fallback) so they
+ * follow the theme and update live when it changes. This is the one set, all on :root, written by
+ * the Settings setters below (setMenu..., setHud...):
+ *   menu: --lm-mc accent, --lm-pc / --lm-pc2 panels, --lm-tc / --lm-tc2 text, --lm-op opacity,
+ *         --lm-menu-bg image, --lm-btn-tc button text, --lm-btn1..4 buttons, --lm-btn1b..4b hover
+ *   HUD:  --lm-hud-mc, --lm-hud-bg, --lm-hud-tc, --lm-hud-font, --lm-hud-fw, --lm-hud-scale, --lm-hud-fs
+ *   --lm-radius comes from Rounded / Square HUD (LMexpress.js), unset when neither was chosen.
+ * lib/lm-theme-bridge.js uses the same names on Legend web pages.
  * Values come from imported settings, so only colour characters pass. */
 function _lmCssVal(v, d) {
     var s = String(v == null ? '' : v).replace(/[^#a-zA-Z0-9(),.%\s+-]/g, '').trim();
     return s || d;
+}
+function _lmCssNum(v, lo, hi, d) {
+    var n = parseFloat(v);
+    return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d;
 }
 function _lmCssUrl(u) {
     var s = String(u == null ? '' : u).replace(/["'\\()\s<>]/g, '');
@@ -24324,7 +24334,9 @@ function thelegendmodproject() {
                 '#hotkeys-cfg .custom-key-in:placeholder-shown{background-color:var(--lm-pc2,#002f52);border-color:var(--lm-tc2,#8096a7)}' +
                 /* window title like the other LM windows; narrow screens need the row for the buttons */
                 '#lm-hk-title{position:absolute;top:0;left:0;padding:26px 16px;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1;z-index:1002;pointer-events:none}' +
-                '@media (max-width:1100px){#lm-hk-title{display:none}}');
+                '@media (max-width:1100px){#lm-hk-title{display:none}}' +
+                /* windows and pages that fade with the menu read the opacity from here */
+                ':root{--lm-op:' + _lmCssNum(defaultSettings.menuOpacity, 0.1, 1, 0.96) + '}');
         },
         setMenuMainColor() {
             var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
@@ -24400,6 +24412,9 @@ function thelegendmodproject() {
                 'font-family': defaultSettings.hudFontFamily,
                 'font-weight': defaultSettings.hudFontWeight
             });
+            /* HUD parts outside #overlays-hud (bell, kill feed, command bar...) read the font from here */
+            var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
+            this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}');
         },
         setHudScale() {
             /* Issue #8: clamp hudScale to the slider max so saved values from bigger screens don't overflow */
@@ -24417,6 +24432,8 @@ function thelegendmodproject() {
             var r = Math.floor(20 * defaultSettings.hudScale);
 
             $('#overlays-hud').css('font-size', t + 'px');
+            /* HUD parts outside #overlays-hud scale with these */
+            this.addCustomCSS('hudScaleVarCSS', ':root{--lm-hud-scale:' + _lmCssNum(defaultSettings.hudScale, 0.3, 2, 1) + ';--lm-hud-fs:' + t + 'px}');
             $('#time-hud').width(e);
             $('#leaderboard-hud').css('transform', 'scale(' + defaultSettings.hudScale + ')');
             $('#top5-hud').css('transform', 'scale(' + defaultSettings.hudScale + ')');
