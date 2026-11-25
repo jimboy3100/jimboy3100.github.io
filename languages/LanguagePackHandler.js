@@ -90,7 +90,7 @@ $("#UserProfileName").replace('Name', Languageletter362);
 $("#UserProfileUID").replace('Social ID', Languageletter363);
 
 $("#TimesUsedPanel").replaceWith('<div id="TimesUsedPanel" align="left" style="display:inline-block; margin-top: -10px; margin-bottom: -10px; "><h6><i>' + Languageletter32+': '+timesopened+
-		'<br>'+ Languageletter33 + ': jimboy3100<br>' + Languageletter34 + ': ' + translator + '</i></h6></div>');
+		'<br>'+ Languageletter33 + ': jimboy3100<br>' + Languageletter34 + ': ' + translator + '</i></h6></div>'); /* i18n-ok: jimboy3100 is the author's name */
 
 $("#tcm>#tcm-header>p").text(Languageletter35);
 
@@ -279,12 +279,12 @@ $("#theme-main>div>span").eq(15).text(Languageletter149); //Food
 $("#theme-main>div>span").eq(16).text(Languageletter150); //Teammate indicator
 $("#theme-main>div>span").eq(17).text(Languageletter151); //Cursor tracking
 $("#theme-main>div>span").eq(18).text(Languageletter152); //Split range
-$("#theme-main>div>span").eq(19).text("B2STE " + Languageletter102 + " " + Languageletter175); //B2STE Enemy Color
+$("#theme-main>div>span").eq(19).text("B2STE " + Languageletter102 + " " + Languageletter175); //B2STE Enemy Color /* i18n-ok: B2STE is a size class name, the same in every language */
 $("#theme-main>div>span").eq(20).text("BSTE " + Languageletter102 + " " + Languageletter175); //BSTE Enemy Color
 $("#theme-main>div>span").eq(21).text(Languageletter154a + " " + Languageletter102 + " " + Languageletter175); //Bigger Enemy Color
 $("#theme-main>div>span").eq(22).text(Languageletter154b + " " + Languageletter102 + " " + Languageletter175); //Smaller Enemy Color
 $("#theme-main>div>span").eq(23).text("SSTE " + Languageletter102 + " " + Languageletter175); //SSTE Enemy Color
-$("#theme-main>div>span").eq(24).text("S2STE " + Languageletter102 + " " + Languageletter175); //S2STE Enemy Color
+$("#theme-main>div>span").eq(24).text("S2STE " + Languageletter102 + " " + Languageletter175); //S2STE Enemy Color /* i18n-ok: S2STE is a size class name, the same in every language */
 $("#theme-main>div>span").eq(25).text(Languageletter154); //Safe area
 $("#theme-main>div>span").eq(26).text(Languageletter154); //Danger area
 $("#theme-main>div>span").eq(27).text(Languageletter90a); //Ghost cells

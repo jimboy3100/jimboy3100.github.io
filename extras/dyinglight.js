@@ -6,9 +6,12 @@ var usedonce=0;
 var usedonce1=1;
 var usedonce2=0;
 var usedonce3=1;
+/* texts from the language packs (developers/i18n/src/misc.json, pack.*): toasts and the theme's
+ * names, in the language chosen in Legend Mod */
+function _lmDT(key) { return window.lmT ? window.lmT(key) : key; }
 
 if(dyinglight1load==null||dyinglight1load=="null"){
-toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightbanner.jpg); color:#018cf6; font-size:16px; text-align:center">Are you sure you want to load Dying Light Template?<br>Save your Settings on a file, because they will be lost.<br>' + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-DyingLight" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ Premadeletter25 + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
+toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightbanner.jpg); color:#018cf6; font-size:16px; text-align:center">' + _lmDT('misc.dl.confirm') + '<br>' + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-DyingLight" style="margin-top: 10px;border-color: darkblue;">' + _lmDT('pack.accept') + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ _lmDT('pack.noWay') + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
 playSound("https://jimboy3100.github.io/banners/dyinglingsong5.mp3");
 $(".btn.btn-sm.btn-primary.btn-play.btn-do-DyingLight").click(function () { acceptedDying(); });	
 }
@@ -23,28 +26,28 @@ function acceptedDying(){
 function dyinglighttemplate(){
 localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=jL6ckpJ7K7E");
 	
-$("#minbtext").val("The Map");
+$("#minbtext").val(_lmDT('misc.dl.hudMap'));
 $("#minbtext").blur();
-$("#leadbtext").val("The Most Dead");
+$("#leadbtext").val(_lmDT('misc.dl.hudLead'));
 $("#leadbtext").blur();
-$("#teambtext").val("The Alive");
+$("#teambtext").val(_lmDT('misc.dl.hudTeam'));
 $("#teambtext").blur();
 $("#imgUrl").val("https://jimboy3100.github.io/banners/dyinglightbanner2.jpg");
 $("#imgUrl").blur();
 $("#imgHref").val("http://dyinglightgame.com/buy/?mainsite");
 $("#imgHref").blur();
 //load dying light icons
-$("#pic1url").val("http://i.imgur.com/5jIjJVc.gif").blur();$("#pic1data").val("Volatile Attack").blur();
-$("#pic2url").val("http://i.imgur.com/5zLjitu.gif").blur();$("#pic2data").val("Screamer").blur();
-$("#pic3url").val("https://i.imgur.com/zxdXe9o.gif").blur();$("#pic3data").val("Killing Volatile").blur();
-$("#pic4url").val("http://i.imgur.com/LpFoDbK.gif").blur();$("#pic4data").val("Too weak to kill").blur();
-$("#pic5url").val("http://i.imgur.com/l2RhyAf.gif").blur();$("#pic5data").val("Talking zombie").blur();
+$("#pic1url").val("http://i.imgur.com/5jIjJVc.gif").blur();$("#pic1data").val(_lmDT('misc.dl.pic1')).blur();
+$("#pic2url").val("http://i.imgur.com/5zLjitu.gif").blur();$("#pic2data").val(_lmDT('misc.dl.pic2')).blur();
+$("#pic3url").val("https://i.imgur.com/zxdXe9o.gif").blur();$("#pic3data").val(_lmDT('misc.dl.pic3')).blur();
+$("#pic4url").val("http://i.imgur.com/LpFoDbK.gif").blur();$("#pic4data").val(_lmDT('misc.dl.pic4')).blur();
+$("#pic5url").val("http://i.imgur.com/l2RhyAf.gif").blur();$("#pic5data").val(_lmDT('misc.dl.pic5')).blur();
 //load dying light youtube
-$("#yt1url").val("https://www.youtube.com/watch?v=jL6ckpJ7K7E").blur();$("#yt1data").val("Dying Light Song").blur();
-$("#yt2url").val("https://www.youtube.com/watch?v=0J9-PapbMBI").blur();$("#yt2data").val("Super Aggressive Zombies").blur();
-$("#yt3url").val("https://www.youtube.com/watch?v=Ej8LUO9P7Sw").blur();$("#yt3data").val("Finishing Moves Night Hunter").blur();
-$("#yt4url").val("https://www.youtube.com/watch?v=4_KEV0tBKDc").blur();$("#yt4data").val("Volatile Massacre").blur();
-$("#yt5url").val("https://www.youtube.com/watch?v=gbNiUIz43G0").blur();$("#yt5data").val("End Game 3rd Person").blur();
+$("#yt1url").val("https://www.youtube.com/watch?v=jL6ckpJ7K7E").blur();$("#yt1data").val(_lmDT('misc.dl.yt1')).blur();
+$("#yt2url").val("https://www.youtube.com/watch?v=0J9-PapbMBI").blur();$("#yt2data").val(_lmDT('misc.dl.yt2')).blur();
+$("#yt3url").val("https://www.youtube.com/watch?v=Ej8LUO9P7Sw").blur();$("#yt3data").val(_lmDT('misc.dl.yt3')).blur();
+$("#yt4url").val("https://www.youtube.com/watch?v=4_KEV0tBKDc").blur();$("#yt4data").val(_lmDT('misc.dl.yt4')).blur();
+$("#yt5url").val("https://www.youtube.com/watch?v=gbNiUIz43G0").blur();$("#yt5data").val(_lmDT('misc.dl.yt5')).blur();
 
 window.history.pushState(null, null, window.location.pathname);	
 
@@ -80,8 +83,8 @@ $("#leaderboard-positions").css('background-image', 'url(" http://rs437.pbsrc.co
 setTimeout(function () {$("#playerBtn").focusout();}, 2100);
 	
 
-toastr["error"]('To disable Dying Light, click the icon "Dying light" on the <b><font color="blue">API</font></b> tab!').css("width", "350px");
-toastr["error"]('Suggested to PLAY song of the <b><font color="blue">(YOUTUBE) last </font></b> tab!').css("width", "350px");
+toastr["error"](_lmDT('misc.dl.disableHint')).css("width", "350px");
+toastr["error"](_lmDT('misc.dl.songHint')).css("width", "350px");
 
 $("#minimap-sectors").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightbabyteamboard.png)');	
 $("#log").css('background-image', 'url(" https://jimboy3100.github.io/banners/dyinglightother1.jpg ")');
@@ -192,10 +195,10 @@ toastr["error"](" !!!").css("width", "200px");
 }
 if(timeslost==1){
 playSound("https://jimboy3100.github.io/banners/dyinglingsong4.mp3");
-toastr["error"]("This is IO speaking, get to the nearest safe house and wait until dawn. Good night, and good luck!").css("width", "400px");	
+toastr["error"](_lmDT('misc.dl.quoteNight')).css("width", "400px");	
 }
 if(timeslost==2){playSound("https://jimboy3100.github.io/banners/dyinglingsong6.mp3");
-toastr["error"](" You get antozine when I say you get it, not one second before!").css("width", "400px");	
+toastr["error"](_lmDT('misc.dl.quoteAntizin')).css("width", "400px");	
 }
 
 timeslost++;
@@ -209,7 +212,7 @@ function olddisconnect() {
 		
 		playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
 //		toastr["error"]("Disconnected :(");
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Well, you not only did the job Karim, must of you, but you made it back in one piece.<br> Bravo!<br> Did you think I would be satisfied so easily? Is still plenty to prove!<br><font color="yellow">Server Changed </font></b> </div>').css("width", "400px");		   
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>' + _lmDT('misc.dl.quoteBravo') + '<br><font color="yellow">' + _lmDT('misc.dl.serverChanged') + '</font></b> </div>').css("width", "400px");		   
 };
 	
 //MC.__onDisconnect = MC.onDisconnect;
@@ -238,19 +241,19 @@ function btnmgs() {
 	$("#copySIPBtn").click(function () {
 		if(usedonce==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>' + _lmDT('misc.dl.quoteRules') + '</b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});
 	$("#server-join").click(function () {
 		if(usedonce==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>' + _lmDT('misc.dl.quoteRules') + '</b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});	
 	$('*[data-itr="page_spectate"]').click(function () {
 		if(usedonce2==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong9.mp3");	
-toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");			usedonce2=1;
+toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>' + _lmDT('misc.dl.quoteProphecy') + '</b> </div>').css("width", "400px");			usedonce2=1;
 		}});
 }		
 //toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		

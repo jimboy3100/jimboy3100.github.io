@@ -48,21 +48,25 @@
         })();
     </script>
     <!-- Loading screen: the page was white until every script below had loaded. It names the file
-         being loaded, shows the progress and goes away when the menu is there. Clicks pass through. -->
-    <div id="lm-boot" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;pointer-events:none;background:#00243e;color:#fff;font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;align-items:center;justify-content:center;transition:opacity .4s;">
-        <div style="width:min(360px,80vw);text-align:center;">
-            <div style="font-size:26px;font-weight:700;letter-spacing:1px;">Legend Mod</div>
-            <div id="lm-boot-text" style="margin:10px 0 12px;opacity:.85;">Loading...</div>
-            <div style="height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;">
-                <div id="lm-boot-bar" style="height:100%;width:3%;border-radius:3px;background:#01d9cc;transition:width .25s;"></div>
-            </div>
-            <div id="lm-boot-file" style="margin-top:8px;font-size:12px;opacity:.6;min-height:18px;word-break:break-all;"></div>
-        </div>
-    </div>
+         being loaded, shows the progress and goes away when the menu is there. Clicks pass through.
+         It is made by the script below, not written as markup: a <div> here ends <head> for the
+         parser, and the stylesheets after it then came after the theme's style tags (appended to
+         <head>), so their default colours beat the player's menu theme. -->
     <script>
         (function () {
-            var boot = document.getElementById('lm-boot'), bar = document.getElementById('lm-boot-bar');
-            var text = document.getElementById('lm-boot-text'), file = document.getElementById('lm-boot-file');
+            /* added to <html> itself, next to <head>: the parser stays in <head> for the stylesheets */
+            var boot = document.createElement('div');
+            boot.id = 'lm-boot';
+            boot.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;pointer-events:none;background:#00243e;color:#fff;font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;align-items:center;justify-content:center;transition:opacity .4s;';
+            boot.innerHTML = '<div style="width:min(360px,80vw);text-align:center;">' +
+                '<div style="font-size:26px;font-weight:700;letter-spacing:1px;">Legend Mod</div>' +
+                '<div id="lm-boot-text" style="margin:10px 0 12px;opacity:.85;"></div>' +
+                '<div style="height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;">' +
+                '<div id="lm-boot-bar" style="height:100%;width:3%;border-radius:3px;background:#01d9cc;transition:width .25s;"></div></div>' +
+                '<div id="lm-boot-file" style="margin-top:8px;font-size:12px;opacity:.6;min-height:18px;word-break:break-all;"></div></div>';
+            document.documentElement.appendChild(boot);
+            var bar = boot.querySelector('#lm-boot-bar');
+            var text = boot.querySelector('#lm-boot-text'), file = boot.querySelector('#lm-boot-file');
             /* the language chosen in Legend Mod (localStorage languagemod: 1 English, 2 Greek ... 12 Dutch,
              * as in the Choose Language list); never chosen: the browser's language, else English.
              * The Legend Express extension's loading screen (LMexpress/extension/content.js) has the same list. */
@@ -319,19 +323,19 @@
                             src="https://jimboy3100.github.io/banners/profilepic_guest.png" />
                         <div id="user-stats" class="clearfix"
                             style="position: relative; top: 10px; width: 100%; display: none;">
-                            <div id="close-stats" style="float: right;">X</div>
+                            <div id="close-stats" style="float: right;" title="Close the statistics" data-i18n-title="misc.page.closeStats">X</div>
                             <br />
                             <div id="stats-content" style="float: right; width: 50%; font-size: 12px;"></div>
                             <div id="user-info" style="font-size: 12px;"></div>
                             <div style="font-size: 12px;">
-                                <div id="UserProfileName">Name: <div id="UserProfileName1" class="user-name"
-                                        style="display:inline-block">Guest</div>
+                                <div id="UserProfileName"><span data-i18n="misc.page.nameLabel">Name:</span> <div id="UserProfileName1" class="user-name"
+                                        style="display:inline-block" data-i18n="misc.page.guest">Guest</div>
                                 </div>
-                                <div id="UserProfileUUID">UID: <input id="UserProfileUUID1" class="user-name"
+                                <div id="UserProfileUUID"><span data-i18n="misc.page.uidLabel">UID:</span> <input id="UserProfileUUID1" class="user-name"
                                         style="display:inline-block; width: 180px; font-size: 9px;"></div>
-                                <div id="UserProfileUID">Social ID: <input id="UserProfileUID1" class="user-name"
+                                <div id="UserProfileUID"><span data-i18n="misc.page.socialIdLabel">Social ID:</span> <input id="UserProfileUID1" class="user-name"
                                         style="display:inline-block"></div>
-                                <div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used:
+                                <div id="TimesUsedPanel" class="user-name" style="display:inline-block;"><span data-i18n="misc.page.timesUsedLabel">Times Used:</span>
                                     <div id="TimesUsed" style="display:inline-block"></div>
                                 </div>
                             </div>
@@ -348,18 +352,18 @@
                     <br clear="both" />
                     <div style="display: none; width: 100%;">
                         <select id="s-boost" class="form-control" required="" style="float: left; width: 60%;">
-                            <option selected="" value="" data-itr="--Select boost--"></option>
-                            <option value="mass_boost_3x_24h" data-itr="mass_boost_3x_24h(990):"></option>
-                            <option value="mass_boost_3x_1h" data-itr="mass_boost_3x_1h(490):"></option>
-                            <option value="mass_boost_2x_24h" data-itr="mass_boost_2x_24h(790):"></option>
-                            <option value="mass_boost_2x_1h" data-itr="mass_boost_2x_1h(290):"></option>
-                            <option value="xp_boost_3x_24h" data-itr="xp_boost_3x_24h(990):"></option>
-                            <option value="xp_boost_3x_1h" data-itr="xp_boost_3x_1h(490):"></option>
-                            <option value="xp_boost_2x_24h" data-itr="xp_boost_2x_24h(790):"></option>
-                            <option value="xp_boost_2x_1h" data-itr="xp_boost_2x_1h(290):"></option>
+                            <option selected="" value="" data-i18n="misc.page.selectBoost">-- Select boost --</option>
+                            <option value="mass_boost_3x_24h" data-i18n="misc.page.boostMass" data-i18n-vars='{"0":"3","1":"24","2":"990"}'>Mass boost 3x, 24 h (990)</option>
+                            <option value="mass_boost_3x_1h" data-i18n="misc.page.boostMass" data-i18n-vars='{"0":"3","1":"1","2":"490"}'>Mass boost 3x, 1 h (490)</option>
+                            <option value="mass_boost_2x_24h" data-i18n="misc.page.boostMass" data-i18n-vars='{"0":"2","1":"24","2":"790"}'>Mass boost 2x, 24 h (790)</option>
+                            <option value="mass_boost_2x_1h" data-i18n="misc.page.boostMass" data-i18n-vars='{"0":"2","1":"1","2":"290"}'>Mass boost 2x, 1 h (290)</option>
+                            <option value="xp_boost_3x_24h" data-i18n="misc.page.boostXp" data-i18n-vars='{"0":"3","1":"24","2":"990"}'>XP boost 3x, 24 h (990)</option>
+                            <option value="xp_boost_3x_1h" data-i18n="misc.page.boostXp" data-i18n-vars='{"0":"3","1":"1","2":"490"}'>XP boost 3x, 1 h (490)</option>
+                            <option value="xp_boost_2x_24h" data-i18n="misc.page.boostXp" data-i18n-vars='{"0":"2","1":"24","2":"790"}'>XP boost 2x, 24 h (790)</option>
+                            <option value="xp_boost_2x_1h" data-i18n="misc.page.boostXp" data-i18n-vars='{"0":"2","1":"1","2":"290"}'>XP boost 2x, 1 h (290)</option>
                         </select>
-                        <button id="buy-boost" class="btn btn-primary" style="float: left; width: 20%;">BUY</button>
-                        <button id="use-boost" class="btn btn-success" style="float: left; width: 20%;">USE</button>
+                        <button id="buy-boost" class="btn btn-primary" style="float: left; width: 20%;" data-i18n="misc.page.buy">BUY</button>
+                        <button id="use-boost" class="btn btn-success" style="float: left; width: 20%;" data-i18n="misc.page.use">USE</button>
                     </div>
                     <br clear="both" />
                     <div id="xp-active" style="width: 100%;"></div>
@@ -371,15 +375,15 @@
                     <div id="potions" class="clearfix" style="display: none">
                         <div id="potion1" class="potion">
                             <img src="https://jimboy3100.github.io/banners/potion_empty.png" />
-                            <div>empty</div>
+                            <div data-i18n="misc.page.potionEmpty">empty</div>
                         </div>
                         <div id="potion2" class="potion">
                             <img src="https://jimboy3100.github.io/banners/potion_empty.png" />
-                            <div>empty</div>
+                            <div data-i18n="misc.page.potionEmpty">empty</div>
                         </div>
                         <div id="potion3" class="potion">
                             <img src="https://jimboy3100.github.io/banners/potion_empty.png" />
-                            <div>empty</div>
+                            <div data-i18n="misc.page.potionEmpty">empty</div>
                         </div>
                     </div>
                     <br clear="both" />
@@ -390,7 +394,7 @@
                     <div role="form" novalidate>
                         <div class="form-group clearfix"></div>
                         <div class="form-group clearfix">
-                            <input id="nick" class="form-control" placeholder="Nick" />
+                            <input id="nick" class="form-control" placeholder="Name" data-i18n-placeholder="pack.name" />
                             <select id="gamemode" class="form-control" required>
                                 <option value=":ffa" data-itr="page_gamemode_ffa"></option>
                                 <option value=":battleroyale" data-itr="page_gamemode_battle_royale"></option>
@@ -402,7 +406,7 @@
                         <div id="locationUnknown">
                             <select id="region" class="form-control" onchange="changeregion()" required>
                                 <option selected value="" data-itr="page_region_select"></option>
-                                <option value="Private" data-itr="Private">Private</option>
+                                <option value="Private" data-i18n="misc.page.private">Private</option>
                                 <option value="US-Atlanta" data-itr="page_region_north_america"></option>
                                 <option value="BR-Brazil" data-itr="page_region_south_america"></option>
                                 <option value="EU-London" data-itr="page_region_europe"></option>
@@ -416,7 +420,7 @@
                         <div class="form-group" id="agario-main-buttons">
                             <div class="row">
                                 <button type="button" onclick="toggleSettings(); return false;"
-                                    class="btn btn-info btn-settings" aria-label="Settings" title="Settings"><i class="glyphicon glyphicon-cog"></i></button>
+                                    class="btn btn-info btn-settings" aria-label="Settings" title="Settings" data-i18n-aria-label="pack.settings" data-i18n-title="pack.settings"><i class="glyphicon glyphicon-cog"></i></button>
                                 <button type="submit" class="btn btn-play btn-primary btn-needs-server"
                                     data-itr="page_play"></button>
                                 <button type="submit" class="btn btn-play-guest btn-success btn-needs-server"
@@ -448,9 +452,9 @@
                             </div>
                             <div style="float: right; width: 120px;">
                                 <button class="btn btn-warning btn-spectate btn-needs-server"
-                                    data-itr="page_spectate">Spectate</button>
+                                    data-itr="page_spectate"></button>
                                 <button id="logoutbtn" onclick="logout(); return false;"
-                                    class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>
+                                    class="btn btn-danger btn-logout" data-itr="page_logout"></button>
                             </div>
                             <br clear="both" />
                         </div>
@@ -514,7 +518,7 @@
         window.ga = window.ga || function () { };
     </script>
     <a href="https://expanding.land/privacy.html"
-        style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;">Privacy Policy</a>
+        style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;" data-i18n="misc.page.privacy">Privacy Policy</a>
 
     <script>
         /* A touch-only device, not any device with a touchscreen (touch laptops have a mouse). */
@@ -523,6 +527,11 @@
             _lmm.src = 'https://www.legendmod.ml/LMmobile/LMmobile.js?v=3.603';
             document.body.appendChild(_lmm);
         }
+    </script>
+    <script>
+        /* the texts marked data-i18n above (profile, boosts, potions, region list...) in the chosen
+         * language; a language change fills them again (LMi18n.setLang applies the whole page) */
+        if (window.LMi18n) window.LMi18n.apply(document.body);
     </script>
     <!-- ═══ Referral System ═══ -->
     <script>

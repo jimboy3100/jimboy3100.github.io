@@ -2,7 +2,23 @@
 
 var consoleMsgLMMaster = "[Master] ";
 /* translated text from window.lmT (ogario.v4.js); English when it is not loaded */
-function _lmMT(key, en) { try { var s = window.lmT && window.lmT(key); return s && s !== key ? s : en; } catch (e) { return en; } }
+/* A text from the language packs (developers/i18n/src); en (with the same {0} placeholders) only when
+ * the packs did not load at all */
+function _lmMT(key, en, vars) {
+    try { var s = window.lmT && window.lmT(key, vars); if (s && s !== key) return s; } catch (e) { }
+    return window.LMi18n ? window.LMi18n.format(en, vars) : en;
+}
+/* "[Master]:" / "[SERVER]:" in front of a toast, in the chosen language */
+function _lmMTag(which) {
+    return '<b>[' + (which === 'server' ? _lmMT('pack.server', 'SERVER') : _lmMT('misc.login.tagMaster', 'Master')) + ']:</b> ';
+}
+/* The profile name: the player's name, or "Guest" in the chosen language (data-i18n keeps that one
+ * following a language change; a real name must not be replaced by it) */
+function _lmSetProfileName(name) {
+    var el = $("#UserProfileName1");
+    if (name) el.removeAttr("data-i18n").text(name);
+    else el.attr("data-i18n", "misc.page.guest").text(_lmMT("misc.page.guest", "Guest"));
+}
 
 // ── Centralized URL constants (single source of truth) ──
 // All other files must use these instead of hardcoding domains.
@@ -256,7 +272,7 @@ function legendmaster(self) {
             return true;
         }
 
-        var _lmFbUnav = "Facebook login is unavailable. Check browser extensions and privacy settings.";
+        var _lmFbUnav = _lmMT("misc.login.fbUnavailable", "Facebook login is unavailable. Check browser extensions and privacy settings.");
         if (window.toastr) toastr.warning(_lmFbUnav); else alert(_lmFbUnav);
 
         return false;
@@ -314,7 +330,7 @@ function legendmaster(self) {
 					//$(".progress-bar-striped").width("100%");
 					$("#login-google").attr("class", "menu-bar-button");
 					$("#login-facebook").attr("class", "menu-bar-button barf");
-					toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Facebook!");
+					toastr.info(_lmMTag('server') + _lmMT("misc.login.loggedInTo", "Logged in to {0}!", ["Facebook"]));
 					window.loggedIn=true;
 				}
             } else {
@@ -415,7 +431,7 @@ function legendmaster(self) {
             $("#helloContainer").attr("data-logged-in", "1");
             $("#login-facebook").attr("class", "menu-bar-button");
             $("#login-google").attr("class", "menu-bar-button barf");
-            toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Google!");
+            toastr.info(_lmMTag('server') + _lmMT("misc.login.loggedInTo", "Logged in to {0}!", ["Google"]));
             window.loggedIn = true;
         }
 
@@ -448,8 +464,8 @@ function legendmaster(self) {
             /* the provider is saved by onCredential once sign-in succeeds: a cancelled Google
              * attempt must not switch off a Facebook player's automatic login */
             if (!gisReady) {
-                toastr.warning(gisFailed ? "Google sign-in is blocked by an extension or a privacy setting." :
-                    "Google sign-in is still loading. Please try again in a moment.");
+                toastr.warning(gisFailed ? _lmMT("misc.login.googleBlocked", "Google sign-in is blocked by an extension or a privacy setting.") :
+                    _lmMT("misc.login.googleLoading", "Google sign-in is still loading. Please try again in a moment."));
                 return;
             }
             userAsked = true;
@@ -489,7 +505,7 @@ function legendmaster(self) {
                             if (n && ((n.isNotDisplayed && n.isNotDisplayed()) || (n.isSkippedMoment && n.isSkippedMoment())) &&
                                 !window.loggedIn && !pendingRefresh) {
                                 $("#helloContainer").attr("data-logged-in", "0");
-                                toastr.info("<b>[" + Premadeletter123 + "]:</b> Click Google to sign in again.");
+                                toastr.info(_lmMTag('server') + _lmMT("misc.login.googleAgain", "Click Google to sign in again."));
                             }
                         });
                     } catch (e) { }
@@ -583,8 +599,8 @@ function legendmaster(self) {
                     prevLogin = null;
                     if (window.toastr) {
                         toastr.error(code === "popup_closed_by_user"
-                            ? "Google sign-in was cancelled."
-                            : "Google sign-in failed. Allow popups and third-party cookies for this site, then try again.");
+                            ? _lmMT("misc.login.googleCancelled", "Google sign-in was cancelled.")
+                            : _lmMT("misc.login.googleFailed", "Google sign-in failed. Allow popups and third-party cookies for this site, then try again."));
                     }
                 }
             );
@@ -635,7 +651,7 @@ function legendmaster(self) {
 				//$(".progress-bar-striped").width("100%");
 				$("#login-facebook").attr("class", "menu-bar-button");
 				$("#login-google").attr("class", "menu-bar-button barf");
-				toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Google!");
+				toastr.info(_lmMTag('server') + _lmMT("misc.login.loggedInTo", "Logged in to {0}!", ["Google"]));
 				window.loggedIn=true;
 			}
         }
@@ -925,7 +941,7 @@ function legendmaster(self) {
                             canvasLayersManager.reconnect(false, "country-request-fallback");
                         }
                     } else if (window.toastr) {
-                        toastr.warning('<b>[Master]:</b> ' + _lmMT('noRegion', 'Could not determine your region. Select a region manually.'));
+                        toastr.warning(_lmMTag() + _lmMT('noRegion', 'Could not determine your region. Select a region manually.'));
                     }
                 },
                 success(playlistCopy) {
@@ -1245,7 +1261,7 @@ function legendmaster(self) {
             this._lmFindGaveUp = true;
             console.warn("[Master] No server found after 3 attempts");
             if (window.toastr) {
-                toastr.error("<b>[Master]:</b> " + _lmMT("noServer", "Could not find a server. Press Play, or change the region or mode, to try again."));
+                toastr.error(_lmMTag() + _lmMT("noServer", "Could not find a server. Press Play, or change the region or mode, to try again."));
             }
             return true;
         },
@@ -1392,7 +1408,7 @@ function legendmaster(self) {
 
                 if (window.toastr) {
                     toastr.warning(
-                        "<b>[Master]:</b> " + _lmMT("partyToken", "Enter a valid party token.")
+                        _lmMTag() + _lmMT("partyToken", "Enter a valid party token.")
                     );
                 }
 
@@ -1442,10 +1458,10 @@ function legendmaster(self) {
                         console.warn("[Master] Party join refused:", joinStatus);
                         if (window.toastr) {
                             toastr.warning(
-                                "<b>[Master]:</b> " +
+                                _lmMTag() +
                                 (joinStatus === "party_full"
                                     ? _lmMT("partyFull", "This party is full.")
-                                    : "Could not join the party (" + String(joinStatus).replace(/[^\w-]/g, "") + ").")
+                                    : _lmMT("misc.login.partyJoinFailed", "Could not join the party ({0}).", [String(joinStatus).replace(/[^\w-]/g, "")]))
                             );
                         }
                         scopeHeaderOverrides.setPartyState("6");
@@ -1491,7 +1507,7 @@ function legendmaster(self) {
                         var rejoinDelay = 2000 * (rejoinTries + 1);
                         console.warn("[Master] Party rejoin failed, retrying in " + rejoinDelay + " ms");
                         if (rejoinTries === 0 && window.toastr) {
-                            toastr.warning("<b>[Master]:</b> " + _lmMT("partyRejoin", "Connection lost. Trying to rejoin your party..."));
+                            toastr.warning(_lmMTag() + _lmMT("partyRejoin", "Connection lost. Trying to rejoin your party..."));
                         }
                         setTimeout(function() {
                             /* The user picked another server/mode meanwhile: their choice wins. */
@@ -1783,7 +1799,7 @@ function legendmaster(self) {
                         if (window.legendmod) window.legendmod.accessTokenSent = false;
                         refreshMaster.login();
                     } else if (typeof toastr !== "undefined") {
-                        toastr.warning("<b>[SERVER]:</b> " + _lmMT("loginExpired", "Your login expired. Please log in again."));
+                        toastr.warning(_lmMTag('server') + _lmMT("loginExpired", "Your login expired. Please log in again."));
                     }
                 });
             }
@@ -1800,7 +1816,7 @@ function legendmaster(self) {
                 window._lwReconnecting = false;
                 console.warn("[Master] Giving up after 8 failed reconnects");
                 if (typeof toastr !== "undefined") {
-                    toastr.error("<b>[SERVER]:</b> " + _lmMT("connDrops", "The connection keeps dropping. Press Play or change the server to try again."));
+                    toastr.error(_lmMTag('server') + _lmMT("connDrops", "The connection keeps dropping. Press Play or change the server to try again."));
                 }
                 return;
             }
@@ -2167,7 +2183,7 @@ function legendmaster(self) {
          * for a burst of logout() calls. */
         if (!window._lmQuietLogout && !(Date.now() - (self._lmLogoutToastAt || 0) < 3000)) {
             self._lmLogoutToastAt = Date.now();
-            toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");
+            toastr.info(_lmMTag('server') + _lmMT("misc.login.loggedOut", "Logged out!"));
         }
 		potionsLogout();
         master.logout();
@@ -2175,7 +2191,7 @@ function legendmaster(self) {
     };
     self.facebookLogin = function() {
         /* alert() takes one argument: the console colour codes were shown as "[31m%s[34m%s[0m" */
-        var _lmFbMsg = "Facebook login is blocked in your browser. Please check your extensions (ad/tracker blockers) and try again.";
+        var _lmFbMsg = _lmMT("misc.login.fbBlocked", "Facebook login is blocked in your browser. Please check your extensions (ad/tracker blockers) and try again.");
         if (window.toastr) toastr.warning(_lmFbMsg); else alert(_lmFbMsg);
     };
 	
@@ -2212,7 +2228,7 @@ function legendmaster(self) {
             }
             var savedName = self.localStorage.getItem("userfirstname");
             if (savedName) {
-                $("#UserProfileName1").text(savedName);
+                _lmSetProfileName(savedName);
             }
             $("#helloContainer").attr("data-logged-in", "1");
 
@@ -2221,7 +2237,7 @@ function legendmaster(self) {
 	
 };
 function continuelogout(){
-        $("#UserProfileName1").text("Guest");
+        _lmSetProfileName("");
 		
         $("#UserProfileUID1").val("");
 		$("#replayuid").val("")
@@ -2253,7 +2269,7 @@ function doFB() {
         /* without an access token Graph returns a grey silhouette for app-scoped ids; the
          * tokened /me/picture result (stored in options) is the real one, so keep it */
         $(".agario-profile-picture").attr('src', (options.userInfo && options.userInfo.picture) || ('https://graph.facebook.com/' + encodeURIComponent(facebookID) + '/picture?type=large'));
-        $("#UserProfileName1").text(firstName);
+        _lmSetProfileName(firstName);
         $("#UserProfileUID1").val(facebookID);
 		$("#replayuid").val(facebookID)
 		
@@ -2293,7 +2309,7 @@ function _lmApplyGoogleProfile(p) {
     var GgProfileSurName = p.family_name || "";
     var GgUID = p.sub || "";
     if (GgImg) $(".agario-profile-picture").attr('src', GgImg);
-    $("#UserProfileName1").text(GgProfileName);
+    _lmSetProfileName(GgProfileName);
     $("#UserProfileUID1").val(GgUID);
     $("#replayuid").val(GgUID);
     if (GgUID && userid == GgUID) {
@@ -2314,7 +2330,7 @@ function doGl() {
 	var GgUID = window.gapi.auth2.getAuthInstance().currentUser.get().getId();
 
 	$(".agario-profile-picture").attr('src', GgImg);	
-	$("#UserProfileName1").text(GgProfileName);
+	_lmSetProfileName(GgProfileName);
 	
 	$("#UserProfileUID1").val(GgUID);
 	$("#replayuid").val(GgUID)
@@ -2405,15 +2421,15 @@ function getInfo() {
 function potionsLogout(){
 $("#potions").html('<div id="potion1" class="potion">'+
                                         '<img src="https://jimboy3100.github.io/banners/potion_empty.png" />'+
-                                        '<div>empty</div>'+
+                                        '<div data-i18n="misc.page.potionEmpty">' + _lmMT("misc.page.potionEmpty", "empty") + '</div>'+
                                     '</div>'+
                                     '<div id="potion2" class="potion">'+
                                         '<img src="https://jimboy3100.github.io/banners/potion_empty.png" />'+
-                                        '<div>empty</div>'+
+                                        '<div data-i18n="misc.page.potionEmpty">' + _lmMT("misc.page.potionEmpty", "empty") + '</div>'+
                                     '</div>'+
                                    '<div id="potion3" class="potion">'+
                                         '<img src="https://jimboy3100.github.io/banners/potion_empty.png" />'+
-                                        '<div>empty</div>'+
+                                        '<div data-i18n="misc.page.potionEmpty">' + _lmMT("misc.page.potionEmpty", "empty") + '</div>'+
                                     '</div>')
 $("#potions").hide()									
 }

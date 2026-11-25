@@ -22,9 +22,13 @@
     touch('touchend', el, 7, x, y, true);
     await sleep(30);
   };
-  var barBtn = function (text) {
+  /* a text button by its language-pack key (its text must be that key's text), a symbol button by its text */
+  var barBtn = function (id) {
     var bs = document.querySelectorAll('#lm-ed-bar button');
-    for (var i = 0; i < bs.length; i++) if (bs[i].textContent === text) return bs[i];
+    for (var i = 0; i < bs.length; i++) {
+      if (bs[i].getAttribute('data-i18n') === id) return bs[i].textContent === window.lmT(id) && bs[i].textContent !== id ? bs[i] : null;
+      if (bs[i].textContent === id) return bs[i];
+    }
     return null;
   };
   var openEd = async function () {
@@ -46,7 +50,7 @@
     if (orc.width < innerWidth - 1 || orc.height < innerHeight - 1) fail.push('editor does not cover the screen (game input not paused)');
     if (br.left < 0 || br.top < 0 || br.right > innerWidth + 1 || br.bottom > innerHeight + 1) fail.push('editor bar outside the screen: ' + info.bar);
     if (br.height > 120) fail.push('editor bar too tall: ' + info.bar);
-    ['Save', 'Cancel', 'Reset', 'Layouts'].forEach(function (t) { var b = barBtn(t); if (!b) fail.push('no ' + t + ' button'); else if (b.getBoundingClientRect().height < 32) fail.push(t + ' button too small for touch'); });
+    ['misc.editor.save', 'misc.editor.cancel', 'misc.editor.reset', 'misc.editor.layouts'].forEach(function (t) { var b = barBtn(t); if (!b) fail.push('no ' + t + ' button'); else if (b.getBoundingClientRect().height < 32) fail.push(t + ' button too small for touch'); });
     var ids = ['joystick', 'split', 'feed', 'x4', 'x16', 'menu'];
     ids.forEach(function (id) { if (!ov.querySelector('[data-ed="' + id + '"]')) fail.push('no handle for ' + id); });
     var ctl = H.controls();
@@ -73,7 +77,7 @@
     if (!(pSplit.getBoundingClientRect().width > w0 + 2)) fail.push('+ did not make Split bigger');
     var op = document.querySelector('#lm-ed-bar input[type=range]');
     op.value = '50'; op.dispatchEvent(new Event('input', { bubbles: true }));
-    barBtn('Save').click();
+    barBtn('misc.editor.save').click();
     await sleep(50);
     if (document.getElementById('lm-ed')) fail.push('Save did not close the editor');
     ctl = H.controls();
@@ -112,9 +116,9 @@
     // named layout
     if (E.saveNamed('Probe layout') !== 'Probe layout' || !E.store().named['Probe layout']) fail.push('named layout not saved');
     // Reset
-    barBtn('Reset').click();
+    barBtn('misc.editor.reset').click();
     await sleep(20);
-    barBtn('Save').click();
+    barBtn('misc.editor.save').click();
     await sleep(50);
     ctl = H.controls();
     if (ctl.split.parentNode !== H.root.right || ctl.feed.parentNode !== H.root.right) fail.push('Reset did not put Split / Feed back');

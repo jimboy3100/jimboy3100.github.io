@@ -141,6 +141,8 @@
         'letter-spacing:.5px;text-transform:uppercase;display:flex;' +
         'justify-content:space-between;align-items:center}' +
         '#lm-sp label span{color:#01d9cc;font-weight:700}' +
+        /* a label's own text (lm-t) keeps the label colour; the value spans stay teal */
+        '#lm-sp label span.lm-t{color:inherit;font-weight:inherit}' +
         '#lm-sp input[type=range]{-webkit-appearance:none;width:100%;height:4px;' +
         'background:rgba(1,217,204,.25);border-radius:2px;outline:none;margin-top:4px}' +
         '#lm-sp #lm-ed-open{min-height:40px;border-radius:8px;border:1.5px solid rgba(1,217,204,.55);' +
@@ -459,8 +461,8 @@
         /* ── Persistent portrait overlay (replaces one-time toast) ── */
         var portOv = mk('div'); portOv.id = 'lm-portrait-ov';
         portOv.innerHTML = '<div class="icon">📱</div>' +
-            'Rotate your phone<br>for better gameplay' +
-            '<div style="font-size:13px;opacity:.6;margin-top:8px">Landscape mode required</div>';
+            '<span data-i18n-html="misc.mobile.rotate">' + T('misc.mobile.rotate') + '</span>' +
+            '<div style="font-size:13px;opacity:.6;margin-top:8px">' + tx('misc.mobile.landscape') + '</div>';
         document.body.appendChild(portOv);
 
         function checkOrientation() {
@@ -588,23 +590,23 @@
         /* ── Settings panel: inside drawer (no fixed position) ── */
         var sp = mk('div'); sp.id = 'lm-sp';
         sp.innerHTML =
-            '<label>Joystick <span id="lm-js-v">' + prefs.jsSensitivity + '</span></label>' +
+            '<label>' + tx('misc.mobile.joystick', 'lm-t') + ' <span id="lm-js-v">' + prefs.jsSensitivity + '</span></label>' +
             '<input type="range" id="lm-js" min="100" max="600" step="25" value="' + prefs.jsSensitivity + '">' +
-            '<label>Opacity <span id="lm-op-v">' + Math.round(prefs.btnOpacity * 100) + '%</span></label>' +
+            '<label>' + tx('misc.mobile.opacity', 'lm-t') + ' <span id="lm-op-v">' + Math.round(prefs.btnOpacity * 100) + '%</span></label>' +
             '<input type="range" id="lm-op" min="20" max="100" step="5" value="' + Math.round(prefs.btnOpacity * 100) + '">' +
-            '<label>Btn Size <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
+            '<label>' + tx('misc.mobile.btnSize', 'lm-t') + ' <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
-            '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> Flick split (left half: right = split, up = double)</label>' +
-            '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> No vibration on death and chat</label>' +
-            '<label><input type="checkbox" id="lm-stoprel"' + (prefs.stopOnRelease ? ' checked' : '') + '> Stop on release (cell stops when you lift the joystick thumb)</label>' +
-            '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> Short vibration on Split / Feed</label>' +
-            '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> Quick chat buttons (commands 1-4)</label>' +
-            '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> Multibox button (second player; uses more data)</label>' +
-            '<label><input type="checkbox" id="lm-pingbtn"' + (prefs.pingBtn ? ' checked' : '') + '> Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)</label>' +
-            '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> Net graph (FPS and ping of the last 30 seconds)</label>' +
-            '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> Direction on touch (no joystick): the cell moves toward where your finger touches</label>' +
+            '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> ' + tx('misc.mobile.flickSplit', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> ' + tx('misc.mobile.noVibration', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-stoprel"' + (prefs.stopOnRelease ? ' checked' : '') + '> ' + tx('misc.mobile.stopRelease', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> ' + tx('misc.mobile.tapHaptic', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> ' + tx('misc.mobile.quickChat', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> ' + tx('misc.mobile.mbButton', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-pingbtn"' + (prefs.pingBtn ? ' checked' : '') + '> ' + tx('misc.mobile.pingButton', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> ' + tx('misc.mobile.netGraph', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> ' + tx('misc.mobile.touchDir', 'lm-t') + '</label>' +
             /* move, resize, fade or hide each touch control (LMmobile-editor.js, loaded on the first tap) */
-            '<button type="button" id="lm-ed-open">Edit controls</button>';
+            '<button type="button" id="lm-ed-open">' + tx('misc.mobile.editControls') + '</button>';
         drawer.appendChild(sp);
 
         /* The panel only shows with class "on", and nothing ever added it, so joystick
@@ -696,8 +698,8 @@
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
         document.body.appendChild(rootR);
 
-        var bSplit = mkb('⚔', 'SPLIT', false);
-        var bFeed = mkb('⬤', 'FEED', false);
+        var bSplit = mkb('⚔', 'misc.mobile.split', false);
+        var bFeed = mkb('⬤', 'misc.mobile.feed', false);
         rootR.appendChild(bSplit);
         rootR.appendChild(bFeed);
 
@@ -730,7 +732,9 @@
          * 4-way choice, slide the thumb towards one and lift to send it (lifting without sliding
          * sends nothing). The ping goes where the joystick aims. */
         var bPing = null, pingRad = null;
-        var PING_DIRS = [[5, 0, -1, '\u271A Help'], [6, -1, 0, '\u26A0 Danger'], [7, 1, 0, '\u279C Go here'], [8, 0, 1, '\u2739 Virus here']];
+        /* [ping type, x, y, icon, text key] */
+        var PING_DIRS = [[5, 0, -1, '\u271A', 'misc.mobile.pingHelp'], [6, -1, 0, '\u26A0', 'misc.mobile.pingDanger'],
+            [7, 1, 0, '\u279C', 'misc.mobile.pingGo'], [8, 0, 1, '\u2739', 'misc.mobile.pingVirus']];
         function sendPing(type) {
             if (typeof application !== 'undefined' && application && typeof application.sendTeamPing === 'function') application.sendTeamPing(type);
         }
@@ -744,7 +748,7 @@
             rad.style.cssText = 'position:fixed;display:none;z-index:100002;pointer-events:none;width:0;height:0';
             var items = PING_DIRS.map(function (d) {
                 var it = mk('div');
-                it.textContent = d[3];
+                it.innerHTML = d[3] + ' ' + tx(d[4]);
                 it.style.cssText = 'position:absolute;transform:translate(-50%,-50%);left:' + (d[1] * 64) + 'px;top:' + (d[2] * 46) + 'px;' +
                     'white-space:nowrap;padding:6px 10px;border-radius:14px;font:700 13px Ubuntu,Roboto,sans-serif;color:#fff;' +
                     'background:rgba(0,36,62,.88);border:1.5px solid rgba(1,217,204,.35)';
@@ -1307,7 +1311,7 @@
                         defaultSettings.hudScale = ns;
                         if (typeof ogario !== 'undefined') ogario.hudScale = ns;
                         if (typeof ogarhusettings === 'function') ogarhusettings();
-                        zP.textContent = '🔍 HUD ' + Math.round(ns * 100) + '%';
+                        zP.textContent = '🔍 ' + T('misc.mobile.hudZoom', [Math.round(ns * 100)]);
                     }
                 } else {
                     /* ── Map zoom mode ── */
@@ -1402,11 +1406,19 @@
          * ═══════════════════════════════════════════════════════ */
         function mk(tag) { return document.createElement(tag); }
 
+        /* Texts come from the language packs (developers/i18n/src/misc.json). tx() marks them with
+         * data-i18n, so a language change (LMi18n.setLang applies the whole page) updates them. */
+        function T(key, vars) { return window.lmT ? window.lmT(key, vars) : key; }
+        function escH(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+        function tx(key, cls) {
+            return '<span' + (cls ? ' class="' + cls + '"' : '') + ' data-i18n="' + key + '">' + escH(T(key)) + '</span>';
+        }
+
         function mkb(icon, label, isUtil) {
             var b = mk('div');
             b.className = 'lm-b ' + (isUtil ? 'lm-u' : 'lm-a');
             if (label)
-                b.innerHTML = '<div class="lm-bi"><span class="i">' + icon + '</span><span class="l">' + label + '</span></div>';
+                b.innerHTML = '<div class="lm-bi"><span class="i">' + icon + '</span>' + tx(label, 'l') + '</div>';
             else
                 b.textContent = icon;
             return b;

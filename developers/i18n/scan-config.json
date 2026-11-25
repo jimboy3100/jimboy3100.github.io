@@ -14,7 +14,26 @@
     "LMexpress/i18n.js",
     "languages/lm-i18n.js",
     "lib/lm-i18n.js",
-    "developers/i18n/runtime.js"
+    "developers/i18n/runtime.js",
+    "play.html",
+    "LMmobile/LMmobile.js",
+    "LMmobile/LMmobile-editor.js",
+    "LMmobile/LMmobile.user.js",
+    "ogario/ogario.v4.master.js",
+    "extras/legendhelper.js",
+    "extras/dyinglight.js",
+    "extras/legendformIframe.js",
+    "extras/legendrotateminimap.js",
+    "extras/BleedingMod.js",
+    "extras/bannerbackgroundEARTH.js",
+    "extras/buffer.js",
+    "extras/foggy.js",
+    "extras/key-event.js",
+    "extras/rotating500images.js",
+    "extras/LcHistory/LcHistoryBanner.js",
+    "nicks/nicknamechars.js",
+    "nicks/emoji/DisMojiPicker[1].js",
+    "languages/LanguagePackHandler.js"
   ],
   "groups": {
     "a: ogario/modules": [

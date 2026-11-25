@@ -9,8 +9,10 @@ $('body').append(
     '<div class="modal-content">' +
 
     '<div class="modal-header">' +
-    '<button type="button" class="close" onclick="closecustomskinsIframe(); return false;"><span aria-hidden="true">&#10005;</span></button>' +
-    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">Nickname Characters</h4>' +
+    '<button type="button" class="close" onclick="closecustomskinsIframe(); return false;" data-i18n-title="misc.close" data-i18n-aria-label="misc.close"><span aria-hidden="true">&#10005;</span></button>' +
+    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif" data-i18n="misc.helper.nickChars">' +
+    /* from the language packs (developers/i18n/src/misc.json); data-i18n follows a language change */
+    String(window.lmT ? window.lmT('misc.helper.nickChars') : 'misc.helper.nickChars').replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</h4>' +
     '</div>' +
 
     '<div style="padding:10px;">' +
@@ -22,6 +24,7 @@ $('body').append(
     '</div>'
 );
 
+if (window.LMi18n) window.LMi18n.apply(document.getElementById('legendchars'));
 if (typeof lmPromoChrome === 'function') lmPromoChrome('#legendchars');
 
 function closecustomskinsIframe(){
