@@ -176,6 +176,6 @@ ctx.fillText("D1",7*(xcanvas/5)/2,spaceheight+9*(xcanvas/5)/2);
 ctx.fillText("E1",9*(xcanvas/5)/2,spaceheight+9*(xcanvas/5)/2);
 }
 if (rotateminimapfirst==0){
-toastr["info"]("Minimap is still unrotated, only sectors rotate").css("width","210px");
+toastr["info"](window.lmT ? window.lmT("misc.rotate.unrotated") : "misc.rotate.unrotated").css("width","210px");
 rotateminimapfirst=1;
 }

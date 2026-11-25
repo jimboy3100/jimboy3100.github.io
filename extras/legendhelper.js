@@ -1,21 +1,14 @@
 //v1.0
 var Languagetimesused;
 var Languagetimesused1=0;
-var Externalletter0a;
-var Externalletter0b;
-var Externalletter1;
-var Externalletter2;
-var Externalletter3;
-var Externalletter4;
-var Externalletter5;
-
-if(Externalletter0a==null){Externalletter0a = "LANGUAGES";}
-if(Externalletter0b==null){Externalletter0b = "Choose a language";}
-if(Externalletter1==null){Externalletter1 = "INFORMATION";}
-if(Externalletter2==null){Externalletter2 = "TEMPLATES";}
-if(Externalletter3==null){Externalletter3 = "MANUAL TEMPLATES";}
-if(Externalletter4==null){Externalletter4 = "MANUAL TEMPLATES";}
-if(Externalletter5==null){Externalletter5 = "Or choose an expansion";}
+/* Texts from the language packs (developers/i18n/src: pack.* are the old Externalletter texts,
+ * misc.* this window's own), escaped for the HTML below. data-i18n marks let a language change
+ * update the window while it is open. */
+function _lmHT(key, vars) {
+    var s = window.lmT ? window.lmT(key, vars) : key;
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function _lmHTx(key) { return '<span data-i18n="' + key + '">' + _lmHT(key) + '</span>'; }
 
 $("#main-menu").hide();
 $("#skins-panel").hide();
@@ -30,7 +23,7 @@ $('body').append(
 									
     '<div class="modal-header">' +
     '<button type="button" class="close" onclick="return closeLegendHelper(event);"><span aria-hidden="true">&#10005;</span></button>' +
-    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">Mod Info & Templates</h4>' +
+    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + _lmHTx('pack.modInfoTemplates') + '</h4>' +
     '</div>' +
 
     '<div id="Userscriptshud2" style="padding:10px;">' +
@@ -40,11 +33,11 @@ $('body').append(
     '</div>' +
 
     '<div class="modal-footer" style="text-align:left;border-top:1px solid rgba(255,255,255,.1);">' +
-    '<button type="button" id="LegendHelperBacktomenu" onclick="return closeLegendHelper(event);" class="btn btn-danger">' + (typeof Premadeletter113 !== 'undefined' ? Premadeletter113 : 'Close') + '</button>' +
-    '<button id="Infobtn11" onclick="Infobtn11(); return false" class="btn btn-success" style="margin-left:10px;">' + Externalletter1 + '</button>' +
-    '<button id="TemplatesBtn" onclick="templatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + Externalletter2 + '</button>' +
-    '<button id="ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + Externalletter3 + '</button>' +
-    '<button id="LanguagesTempBtn" onclick="LanguagesTempIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + Externalletter0a + '</button>' +
+    '<button type="button" id="LegendHelperBacktomenu" onclick="return closeLegendHelper(event);" class="btn btn-danger">' + _lmHTx('misc.close') + '</button>' +
+    '<button id="Infobtn11" onclick="Infobtn11(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.information') + '</button>' +
+    '<button id="TemplatesBtn" onclick="templatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.templates') + '</button>' +
+    '<button id="ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.manualTemplates') + '</button>' +
+    '<button id="LanguagesTempBtn" onclick="LanguagesTempIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.languages') + '</button>' +
     '</div>' +
 
     '</div>' +
@@ -77,20 +70,21 @@ function closeLegendHelper(event) {
 function templatesIframe(){
 
 $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="820" height="490">'+
-	'<p style="color:white; font-size:24px"; align="middle"><b>' + Externalletter4 + '</b></p>'+	
-	'<div id="settingbanners"><img src="https://jimboy3100.github.io/banners/iconagario.png" alt="Search Servers" id= "searchicon" onclick="agariowhitesettings(); return false" class="img-rounded" alt="Cinque Terre" width=20% height="50">' +
-	'<u style="color:white; font-size:22px"; align="left" onclick="agariowhitesettings(); return false">Agario Default(White)</u><br>'+	
-	'<img src="https://jimboy3100.github.io/banners/iconnosoup.png" alt="NoSoupsSettings" id = "legendclanbanner" class="img-rounded"  width=20% height="50" onclick="nosoups(); return false" > '+
-	'<u style="color:white; font-size:22px"; align="right" onclick="nosoups(); return false">No Soups Settings (Black)</u><br>'+
-	'<img src="https://jimboy3100.github.io/banners/vanillapic.jpg" alt="Vanilla Like Settings" id = "vanillaset" onclick="vanillabetter(); return false" class="img-rounded" width=20% height="50" >' +
-	'<u style="color:white; font-size:22px"; align="right" onclick="vanillabetter(); return false">Vanilla better (Grey)</u><br>'+	
-	'<img src="https://jimboy3100.github.io/banners/galaxybanner.jpg" alt=" Vanilla Like Settings" id = "galaxyset" onclick="galaxysettings(); return false" class="img-rounded"  return false" width=20%" height="50"  >' +
-	'<u style="color:white; font-size:22px"; align="left" onclick="galaxysettings(); return false">Galaxy (Black)</u><br>'+	
-	'<img src="https://jimboy3100.github.io/banners/iconmod.png" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="legenddefaultsettings(); return false" > '+
-	'<u style="color:white; font-size:22px"; align="right" onclick="legenddefaultsettings(); return false">Legend Default (Dark Blue)</u><br>'+
-	'<img src="https://jimboy3100.github.io/banners/iconvanilla.jpg" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
-	'<u style="color:white; font-size:22px"; align="right" onclick="vanillalike(); return false">Vanilla like (Grey)</u><br>'+
-	'<p style="color:white; font-size:24px"; align="middle"><b>' + Externalletter5 + '</b></p></div>'+
+	'<p style="color:white; font-size:24px"; align="middle"><b>' + _lmHTx('pack.chooseYourTemplate') + '</b></p>'+	
+	'<div id="settingbanners"><img src="https://jimboy3100.github.io/banners/iconagario.png" alt="' + _lmHT('misc.helper.agarioWhite') + '" id= "searchicon" onclick="agariowhitesettings(); return false" class="img-rounded" width=20% height="50">' +
+	'<u style="color:white; font-size:22px"; align="left" onclick="agariowhitesettings(); return false">' + _lmHTx('misc.helper.agarioWhite') + '</u><br>'+	
+	'<img src="https://jimboy3100.github.io/banners/iconnosoup.png" alt="' + _lmHT('misc.helper.noSoups') + '" id = "legendclanbanner" class="img-rounded"  width=20% height="50" onclick="nosoups(); return false" > '+
+	'<u style="color:white; font-size:22px"; align="right" onclick="nosoups(); return false">' + _lmHTx('misc.helper.noSoups') + '</u><br>'+
+	'<img src="https://jimboy3100.github.io/banners/vanillapic.jpg" alt="' + _lmHT('misc.helper.vanillaBetter') + '" id = "vanillaset" onclick="vanillabetter(); return false" class="img-rounded" width=20% height="50" >' +
+	'<u style="color:white; font-size:22px"; align="right" onclick="vanillabetter(); return false">' + _lmHTx('misc.helper.vanillaBetter') + '</u><br>'+	
+	'<img src="https://jimboy3100.github.io/banners/galaxybanner.jpg" alt="' + _lmHT('misc.helper.galaxy') + '" id = "galaxyset" onclick="galaxysettings(); return false" class="img-rounded"  return false" width=20%" height="50"  >' +
+	'<u style="color:white; font-size:22px"; align="left" onclick="galaxysettings(); return false">' + _lmHTx('misc.helper.galaxy') + '</u><br>'+	
+	'<img src="https://jimboy3100.github.io/banners/iconmod.png" alt="' + _lmHT('misc.helper.legendDefault') + '" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="legenddefaultsettings(); return false" > '+
+	'<u style="color:white; font-size:22px"; align="right" onclick="legenddefaultsettings(); return false">' + _lmHTx('misc.helper.legendDefault') + '</u><br>'+
+	'<img src="https://jimboy3100.github.io/banners/iconvanilla.jpg" alt="' + _lmHT('misc.helper.vanillaLike') + '" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
+	'<u style="color:white; font-size:22px"; align="right" onclick="vanillalike(); return false">' + _lmHTx('misc.helper.vanillaLike') + '</u><br>'+
+	'<p style="color:white; font-size:24px"; align="middle"><b>' + _lmHTx('pack.orChooseAnExpansion') + '</b></p></div>'+
+	/* i18n-ok: Dying Light is the game's name */
 	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a><u style="color:white; font-size:22px"; align="right" onclick="opendyinglight(); return false">Dying Light</u></div>'+	   
 	'<br><br></div></div>');
 //$('#TemplatesBtn').hide();	
@@ -98,17 +92,23 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 
 function LanguagesTempIframe(){
 $("#Userscriptshud3").html('<div id="tutorial10" style="display:block;" width="820" height="490">'+
-	'<p id="chooselangtext1" style="color:white; font-size:24px"; align="middle"><b>' + Externalletter0b + '</b></p>'+
-	'<br><br><select id="legendlanguages2" class="form-control" onchange="changeModLanguage2();" required="" data-original-title="" title="" style="display:inline; width: 50%"><option value="1" data-itr="" selected>English</option><option value="6" data-itr="">Arabic - عربى</option><option value="4" data-itr="">Bulgarian - български</option><option value="5" data-itr="">French - Français</option><option value="9" data-itr="">German - Deutsch</option><option value="2" data-itr="">Greek - Ελληνικά</option><option value="11" data-itr="">Polish - Polskie</option><option value="8" data-itr="">Russian - Русские</option>' +
-    '<option value="3" data-itr="">Spanish - Español</option><option value="7" data-itr="">Trad. Chinese - 繁體中文</option><option value="10" data-itr="">Turkish - Türk</option><option value="12" data-itr="">Dutch</option></select>'+
+	'<p id="chooselangtext1" style="color:white; font-size:24px"; align="middle"><b>' + _lmHTx('pack.chooseALanguage') + '</b></p>'+
+	'<br><br><select id="legendlanguages2" class="form-control" onchange="changeModLanguage2();" required="" data-original-title="" title="" style="display:inline; width: 50%">' + _lmLangOptions() + '</select>'+
 	'<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><br><br>');
 	$('#legendlanguages2').val(languagemod);
+}
+
+/* the Choose Language list: every language by its own name, value = languagemod (1 English ... 12 Dutch) */
+function _lmLangOptions() {
+    var names = (window.LMi18n && window.LMi18n.names) || ['English'], out = '';
+    for (var i = 0; i < names.length; i++) out += '<option value="' + (i + 1) + '">' + names[i] + '</option>';
+    return out;
 }
 
 function Infobtn11(){
 
 $("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/extras/helper.html" width="920" height="490" style="border:0;max-width:100%;display:block;">'+
-    '<p>Your browser does not support iframes.</p>'+
+    '<p>' + _lmHTx('misc.noIframes') + '</p>'+
 	'</iframe>');
 //$('#TemplatesBtn').hide();	
 }
@@ -199,174 +199,16 @@ function openrotatingmod() {
 }
 
 function changeModLanguage2() {
-	
-    if ($("#legendlanguages2").val() == 1) {
-        localStorage.setItem("languagemod", 1);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackEnglish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
+    /* the same path as the main Choose Language list: loads the language file, updates every text
+     * (this window included) and saves languagemod */
+    var v = $("#legendlanguages2").val();
+    if ($("#legendlanguages").length && typeof changeModLanguage === "function") {
+        $("#legendlanguages").val(v);
+        changeModLanguage(true);
+    } else if (window.LMi18n) {
+        window.LMi18n.setLang(v);
+    } else {
+        try { localStorage.setItem("languagemod", v); } catch (e) { }
     }
-    if ($("#legendlanguages2").val() == 2) {
-        localStorage.setItem("languagemod", 2);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackGreek.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages2").val() == 3) {
-        localStorage.setItem("languagemod", 3);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackSpanish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages2").val() == 4) {
-        localStorage.setItem("languagemod", 4);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackBulgarian.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages2").val() == 5) {
-        localStorage.setItem("languagemod", 5);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackFrench.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages2").val() == 6) {
-        localStorage.setItem("languagemod", 6);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackArabic.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages2").val() == 7) {
-        localStorage.setItem("languagemod", 7);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackTraditionalChinese.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages2").val() == 8) {
-        localStorage.setItem("languagemod", 8);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackRussian.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }	
-    if ($("#legendlanguages2").val() == 9) {
-        localStorage.setItem("languagemod", 9);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackGerman.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }	
-    if ($("#legendlanguages2").val() == 10) {
-        localStorage.setItem("languagemod", 10);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackTurkish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }	
-    if ($("#legendlanguages2").val() == 11) {
-        localStorage.setItem("languagemod", 11);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackPolish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages2").val() == 12) {
-        localStorage.setItem("languagemod", 12);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackDutch.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/languages/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-		return Languagetimesused="1";
+    return Languagetimesused = "1";
 }

@@ -25,18 +25,19 @@
     /* hide: the player may hide it in the editor (the menu button stays: without it the game menu
      * cannot be reached; the joystick zone is not a button). act: game action, no taps while the
      * main menu is open (as in LMmobile.js). */
+    /* lk: the name's key in the language packs (developers/i18n/src/misc.json), lv: its {0} */
     var CONTROLS = [
-        { id: 'joystick', label: 'Joystick zone', zone: true },
-        { id: 'split', label: 'Split', icon: '⚔', hide: true, act: true },
-        { id: 'feed', label: 'Feed', icon: '⬤', hide: true, act: true },
-        { id: 'x4', label: '4x split', icon: '4×', hide: true, act: true },
-        { id: 'x16', label: '16x split', icon: '16×', hide: true, act: true },
-        { id: 'multibox', label: 'Multibox', icon: '⇄', hide: true },
-        { id: 'q1', label: 'Quick chat 1', icon: '1', hide: true },
-        { id: 'q2', label: 'Quick chat 2', icon: '2', hide: true },
-        { id: 'q3', label: 'Quick chat 3', icon: '3', hide: true },
-        { id: 'q4', label: 'Quick chat 4', icon: '4', hide: true },
-        { id: 'menu', label: 'Menu', icon: '☰' }
+        { id: 'joystick', lk: 'misc.editor.ctlJoystick', zone: true },
+        { id: 'split', lk: 'misc.editor.ctlSplit', icon: '⚔', hide: true, act: true },
+        { id: 'feed', lk: 'misc.editor.ctlFeed', icon: '⬤', hide: true, act: true },
+        { id: 'x4', lk: 'misc.editor.ctlX4', icon: '4×', hide: true, act: true },
+        { id: 'x16', lk: 'misc.editor.ctlX16', icon: '16×', hide: true, act: true },
+        { id: 'multibox', lk: 'misc.editor.ctlMultibox', icon: '⇄', hide: true },
+        { id: 'q1', lk: 'misc.editor.ctlQuick', lv: [1], icon: '1', hide: true },
+        { id: 'q2', lk: 'misc.editor.ctlQuick', lv: [2], icon: '2', hide: true },
+        { id: 'q3', lk: 'misc.editor.ctlQuick', lv: [3], icon: '3', hide: true },
+        { id: 'q4', lk: 'misc.editor.ctlQuick', lv: [4], icon: '4', hide: true },
+        { id: 'menu', lk: 'misc.editor.ctlMenu', icon: '☰' }
     ];
     var CTL = {};
     CONTROLS.forEach(function (c) { CTL[c.id] = c; });
@@ -214,11 +215,15 @@
     var store = load();
     function save() {
         try { W.localStorage.setItem(KEY, JSON.stringify(store)); return true; }
-        catch (e) { toast('error', 'Could not save the layout: the browser storage is full or blocked.'); return false; }
+        catch (e) { toast('error', T('misc.editor.saveFailed')); return false; }
     }
     function toast(kind, text) {
         try { if (W.toastr && typeof W.toastr[kind] === 'function') W.toastr[kind](esc(text)); } catch (e) { }
     }
+    /* the texts, in the language chosen in Legend Mod (lmT falls back to English) */
+    function T(key, vars) { return W.lmT ? W.lmT(key, vars) : key; }
+    /* the shown name of a control or of a fixed part of the screen */
+    function lab(o) { return o ? (o.lk ? T(o.lk, o.lv) : o.id) : ''; }
     function esc(s) {
         return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
     }
@@ -229,21 +234,21 @@
     var css = D.createElement('style');
     css.id = 'lm-ed-css';
     css.textContent =
-        '.lm-ed-slot{position:fixed;z-index:100000;pointer-events:none;transform-origin:center center;' +
+        '.lm-ed-slot{position:fixed;z-index:100000;pointer-events:none;transform-origin:center center;' + /* i18n-ok: CSS */
         'display:flex;align-items:center;justify-content:center;margin:0;padding:0}' +
         /* game actions take no taps while the main menu is open (as their usual groups) */
         '.lm-menu .lm-ed-act,.lm-menu .lm-ed-act *{pointer-events:none!important}' +
         '#lm-ed{position:fixed;left:0;top:0;width:100%;height:100%;z-index:200001;touch-action:none;' +
         'background:rgba(0,12,24,.55);user-select:none;-webkit-user-select:none;font:600 12px/1.2 Ubuntu,Roboto,sans-serif;color:#fff}' +
-        '#lm-ed.grid{background-image:linear-gradient(rgba(1,217,204,.07) 1px,transparent 1px),' +
-        'linear-gradient(90deg,rgba(1,217,204,.07) 1px,transparent 1px);background-size:' + GRID + 'px ' + GRID + 'px}' +
+        '#lm-ed.grid{background-image:linear-gradient(rgba(1,217,204,.07) 1px,transparent 1px),' + /* i18n-ok: CSS */
+        'linear-gradient(90deg,rgba(1,217,204,.07) 1px,transparent 1px);background-size:' + GRID + 'px ' + GRID + 'px}' + /* i18n-ok: CSS */
         '.lm-ed-px{position:absolute;z-index:3;box-sizing:border-box;border-radius:50%;display:flex;align-items:center;' +
         'justify-content:center;background:rgba(0,36,62,.85);border:2px solid rgba(1,217,204,.7);color:#fff;' +
         'font:700 18px/1 Ubuntu,Roboto,sans-serif;touch-action:none}' +
         '.lm-ed-px.sel{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35)}' +
         '.lm-ed-px.bad{border-color:#ff4d4d;box-shadow:0 0 10px rgba(255,77,77,.7)}' +
         '.lm-ed-px.hid{border-style:dashed;background:rgba(0,36,62,.35);color:rgba(255,255,255,.45)}' +
-        '.lm-ed-px.hid:after{content:"hidden";position:absolute;bottom:-15px;font:600 10px Ubuntu,sans-serif;color:#ffb347}' +
+        '.lm-ed-px.hid:after{content:attr(data-hid);position:absolute;bottom:-15px;font:600 10px Ubuntu,sans-serif;color:#ffb347}' +
         '.lm-ed-zone{position:absolute;z-index:1;box-sizing:border-box;border:2px dashed rgba(255,213,79,.65);' +
         'background:rgba(255,213,79,.05);pointer-events:none}' +
         '.lm-ed-zone.sel{border-color:#ffd54f;background:rgba(255,213,79,.10)}' +
@@ -388,7 +393,7 @@
         var mm = D.getElementById('minimap-hud');
         if (mm) {
             var mr = rectOf(mm);
-            if (mr.w >= 10 && mr.h >= 10 && mr.x < v.w && mr.y < v.h) fixedRects.push({ id: 'minimap', label: 'Minimap', x: mr.x, y: mr.y, w: mr.w, h: mr.h, fixed: true });
+            if (mr.w >= 10 && mr.h >= 10 && mr.x < v.w && mr.y < v.h) fixedRects.push({ id: 'minimap', lk: 'misc.editor.ctlMinimap', x: mr.x, y: mr.y, w: mr.w, h: mr.h, fixed: true });
         }
         var mine = [];
         for (var k in els) if (els[k]) mine.push(els[k]);
@@ -397,7 +402,7 @@
             var b = left[i];
             if (mine.indexOf(b) >= 0 || !/\blm-b\b/.test(b.className)) continue;
             var br = rectOf(b);
-            if (br.w > 0 && br.h > 0) fixedRects.push({ id: 'left' + i, label: 'Left buttons', x: br.x, y: br.y, w: br.w, h: br.h, round: true, fixed: true });
+            if (br.w > 0 && br.h > 0) fixedRects.push({ id: 'left' + i, lk: 'misc.editor.ctlLeft', x: br.x, y: br.y, w: br.w, h: br.h, round: true, fixed: true });
         }
     }
     function layoutOf(o) { return work[o] || (work[o] = { controls: {} }); }
@@ -431,10 +436,15 @@
         if (text !== undefined) e.textContent = text;
         return e;
     }
-    function btn(text, title, fn, cls) {
-        var b = el('button', cls, text);
+    /* text: a pack key ("misc.editor.save") or a symbol; title: a pack key. The data-i18n marks
+     * let a language change while the editor is open update them (LMi18n.apply). */
+    function btn(text, title, fn, cls, vars) {
+        var isKey = /^misc\./.test(text);
+        var b = el('button', cls, isKey ? T(text, vars) : text);
         b.type = 'button';
-        if (title) b.title = title;
+        if (isKey) b.setAttribute('data-i18n', text);
+        if (title) { b.title = T(title, vars); b.setAttribute('data-i18n-title', title); }
+        if (vars) b.setAttribute('data-i18n-vars', JSON.stringify(vars));
         b.addEventListener('click', function (ev) { ev.stopPropagation(); fn(); });
         return b;
     }
@@ -460,7 +470,7 @@
         } catch (err) {
             /* never leave the controls invisible behind a broken editor */
             close(false);
-            toast('error', 'The control editor could not open.');
+            toast('error', T('misc.editor.openFailed'));
         }
     }
     function close(keep) {
@@ -474,7 +484,7 @@
             var prev = { landscape: store.current.landscape, portrait: store.current.portrait };
             ORIENTS.forEach(function (o) { store.current[o] = pending[o]; });
             if (save()) {
-                toast('success', 'Control layout saved (' + orient + ').');
+                toast('success', T(orient === 'portrait' ? 'misc.editor.savedPortrait' : 'misc.editor.savedLandscape'));
             } else {
                 store.current.landscape = prev.landscape;
                 store.current.portrait = prev.portrait;
@@ -518,20 +528,20 @@
         bar.id = 'lm-ed-bar';
         if (store.barBottom) bar.classList.add('bottom');
         var r1 = el('div', 'row'), r2 = el('div', 'row');
-        r1.appendChild(btn('Save', 'Save this layout', function () { close(true); }, 'pri'));
-        r1.appendChild(btn('Cancel', 'Close without saving', function () { close(false); }));
-        r1.appendChild(btn('Reset', 'Every control back to its usual place (this orientation)', function () {
+        r1.appendChild(btn('misc.editor.save', 'misc.editor.saveTitle', function () { close(true); }, 'pri'));
+        r1.appendChild(btn('misc.editor.cancel', 'misc.editor.cancelTitle', function () { close(false); }));
+        r1.appendChild(btn('misc.editor.reset', 'misc.editor.resetTitle', function () {
             work[orient] = null;
             render();
         }));
-        ui.snap = btn('', 'Snap to a ' + GRID + ' px grid and to the screen edges', function () {
+        ui.snap = btn('', 'misc.editor.snapTitle', function () {
             store.snap = !store.snap;
             ov.classList.toggle('grid', store.snap);
             render();
-        });
+        }, '', [GRID]);
         r1.appendChild(ui.snap);
-        r1.appendChild(btn('Layouts', 'Named layouts: save, load, delete', function () { showLayouts(); }));
-        r1.appendChild(btn('⇅', 'Move this bar to the other edge', function () {
+        r1.appendChild(btn('misc.editor.layouts', 'misc.editor.layoutsTitle', function () { showLayouts(); }));
+        r1.appendChild(btn('⇅', 'misc.editor.barEdge', function () {
             store.barBottom = !store.barBottom;
             bar.classList.toggle('bottom', store.barBottom);
         }));
@@ -543,27 +553,28 @@
         ui.sel.id = 'lm-ed-sel';
         ui.sel.addEventListener('change', function () { select(ui.sel.value || null); });
         r2.appendChild(ui.sel);
-        ui.minus = btn('−', 'Smaller', function () { resizeSel(1 / 1.1); });
-        ui.plus = btn('+', 'Bigger', function () { resizeSel(1.1); });
+        ui.minus = btn('−', 'misc.editor.smaller', function () { resizeSel(1 / 1.1); });
+        ui.plus = btn('+', 'misc.editor.bigger', function () { resizeSel(1.1); });
         r2.appendChild(ui.minus);
         r2.appendChild(ui.plus);
         ui.op = el('input');
         ui.op.type = 'range'; ui.op.min = '15'; ui.op.max = '100'; ui.op.step = '5';
-        ui.op.title = 'Opacity of this control';
+        ui.op.title = T('misc.editor.opacityTitle');
+        ui.op.setAttribute('data-i18n-title', 'misc.editor.opacityTitle');
         ui.op.addEventListener('input', function () {
             if (!sel || CTL[sel].zone) return;
             ensureEntry(sel).o = Math.min(1, Math.max(LIM.o[0], Number(ui.op.value) / 100));
             render();
         });
         r2.appendChild(ui.op);
-        ui.hide = btn('Hide', 'Hide or show this control', function () {
+        ui.hide = btn('', 'misc.editor.hideTitle', function () {
             if (!sel || !CTL[sel].hide) return;
             var e = ensureEntry(sel);
             if (e.hide) delete e.hide; else e.hide = true;
             render();
         });
         r2.appendChild(ui.hide);
-        ui.def = btn('Default', 'This control back to its usual place', function () {
+        ui.def = btn('misc.editor.def', 'misc.editor.defTitle', function () {
             if (!sel || !work[orient]) return;
             delete work[orient].controls[sel];
             render();
@@ -609,7 +620,8 @@
             if (!p) {
                 if (c.zone) {
                     p = px[c.id] = el('div', 'lm-ed-zone');
-                    p._tab = el('div', 'lm-ed-ztab', 'Joystick zone');
+                    p._tab = el('div', 'lm-ed-ztab', lab(c));
+                    p._tab.setAttribute('data-i18n', c.lk);
                     p._tab.setAttribute('data-ed', c.id);
                     p._tab.setAttribute('data-ed-act', 'move');
                     p._h = el('div', 'lm-ed-zh', '⇲');
@@ -622,10 +634,11 @@
                     p = px[c.id] = el('div', 'lm-ed-px', c.icon);
                     p.setAttribute('data-ed', c.id);
                     p.setAttribute('data-ed-act', 'move');
-                    p.title = c.label;
                     ov.insertBefore(p, bar);
                 }
             }
+            /* names in the chosen language (render runs again after a language change) */
+            if (!c.zone) { p.title = lab(c); p.setAttribute('data-hid', T('misc.editor.hidden')); }
             place(p, r);
             p.classList.toggle('sel', sel === c.id);
             if (c.zone) {
@@ -639,27 +652,27 @@
             var o = e && e.o !== undefined ? e.o : H.prefs.btnOpacity;
             p.style.opacity = String(Math.max(0.45, o));
             p.classList.toggle('hid', !!(e && e.hide));
-            if (!(e && e.hide)) items.push({ id: c.id, label: c.label, x: r.x, y: r.y, w: r.w, h: r.h, round: true });
+            if (!(e && e.hide)) items.push({ id: c.id, lk: c.lk, lv: c.lv, x: r.x, y: r.y, w: r.w, h: r.h, round: true });
         });
         var pairs = findOverlaps(items.concat(fixedRects), 2);
         var bad = {};
         pairs.forEach(function (pr) { bad[pr[0]] = 1; bad[pr[1]] = 1; });
         list.forEach(function (c) { if (px[c.id] && !c.zone) px[c.id].classList.toggle('bad', !!bad[c.id]); });
-        var names = function (id) { return CTL[id] ? CTL[id].label : (fixedRects.filter(function (f) { return f.id === id; })[0] || {}).label || id; };
-        ui.warn.textContent = pairs.length ? '⚠ ' + pairs.slice(0, 2).map(function (pr) { return names(pr[0]) + ' overlaps ' + names(pr[1]); }).join(', ') +
+        var names = function (id) { return CTL[id] ? lab(CTL[id]) : lab(fixedRects.filter(function (f) { return f.id === id; })[0] || { id: id }); };
+        ui.warn.textContent = pairs.length ? '⚠ ' + pairs.slice(0, 2).map(function (pr) { return T('misc.editor.overlaps', [names(pr[0]), names(pr[1])]); }).join(', ') +
             (pairs.length > 2 ? ' (+' + (pairs.length - 2) + ')' : '') : '';
         ui.warn.title = ui.warn.textContent;
         api._overlaps = pairs;
-        ui.snap.textContent = 'Snap: ' + (store.snap ? 'on' : 'off');
-        ui.orient.textContent = orient === 'landscape' ? 'Landscape' : 'Portrait';
+        ui.snap.textContent = T(store.snap ? 'misc.editor.snapOn' : 'misc.editor.snapOff');
+        ui.orient.textContent = T(orient === 'landscape' ? 'misc.editor.landscape' : 'misc.editor.portrait');
         /* control choice */
         var want = [''].concat(list.map(function (c) { return c.id; })).join(',');
         if (ui.sel._ids !== want) {
             while (ui.sel.firstChild) ui.sel.removeChild(ui.sel.firstChild);
-            var o0 = el('option', '', 'Choose control');
+            var o0 = el('option', '', T('misc.editor.choose'));
             o0.value = '';
             ui.sel.appendChild(o0);
-            list.forEach(function (c) { var op = el('option', '', c.label); op.value = c.id; ui.sel.appendChild(op); });
+            list.forEach(function (c) { var op = el('option', '', lab(c)); op.value = c.id; ui.sel.appendChild(op); });
             ui.sel._ids = want;
         }
         ui.sel.value = sel || '';
@@ -668,7 +681,7 @@
         ui.op.disabled = !sel || isZone;
         ui.op.value = String(Math.round(100 * (se && se.o !== undefined ? se.o : H.prefs.btnOpacity)));
         ui.hide.disabled = !sel || !CTL[sel].hide;
-        ui.hide.textContent = se && se.hide ? 'Show' : 'Hide';
+        ui.hide.textContent = T(se && se.hide ? 'misc.editor.show' : 'misc.editor.hide');
         ui.def.disabled = !se;
     }
     function place(d, r) {
@@ -823,17 +836,17 @@
         layDlg = el('div');
         layDlg.id = 'lm-ed-lay';
         var hd = el('div', 'hd');
-        hd.appendChild(el('span', '', 'Named layouts'));
-        hd.appendChild(btn('✕', 'Close', function () { showLayouts(); }));
+        hd.appendChild(el('span', '', T('misc.editor.named')));
+        hd.appendChild(btn('✕', 'misc.close', function () { showLayouts(); }));
         layDlg.appendChild(hd);
         var names = Object.keys(store.named);
-        if (!names.length) layDlg.appendChild(el('div', '', 'None yet. A named layout keeps both orientations.'));
+        if (!names.length) layDlg.appendChild(el('div', '', T('misc.editor.none')));
         names.forEach(function (n) {
             var it = el('div', 'it');
             var lb = el('span', '', n + (store.active === n ? ' ✓' : ''));
             lb.title = n;
             it.appendChild(lb);
-            it.appendChild(btn('Load', 'Edit this layout (Save keeps it)', function () {
+            it.appendChild(btn('misc.editor.load', 'misc.editor.loadTitle', function () {
                 var p = store.named[n];
                 if (!p) return;
                 work = { landscape: copy(p.landscape), portrait: copy(p.portrait) };
@@ -843,7 +856,7 @@
                 showLayouts();
                 render();
             }));
-            it.appendChild(btn('✕', 'Delete', function () {
+            it.appendChild(btn('✕', 'misc.editor.del', function () {
                 delete store.named[n];
                 if (store.active === n) store.active = null;
                 save();
@@ -855,11 +868,11 @@
         var inp = el('input');
         inp.type = 'text';
         inp.maxLength = NAME_MAX;
-        inp.placeholder = 'Name, e.g. Competitive';
+        inp.placeholder = T('misc.editor.namePlaceholder');
         inp.id = 'lm-ed-name';
         if (store.active) inp.value = store.active;
         row.appendChild(inp);
-        row.appendChild(btn('Save as', 'Keep the layout being edited under this name', function () {
+        row.appendChild(btn('misc.editor.saveAs', 'misc.editor.saveAsTitle', function () {
             var n = saveNamed(inp.value);
             if (n) { showLayouts(); }
         }));
@@ -868,9 +881,9 @@
     }
     function saveNamed(name) {
         var n = cleanName(name);
-        if (!n) { toast('warning', 'Give the layout a name (up to ' + NAME_MAX + ' characters).'); return null; }
+        if (!n) { toast('warning', T('misc.editor.nameNeeded', [NAME_MAX])); return null; }
         if (!own(store.named, n) && Object.keys(store.named).length >= MAX_NAMED) {
-            toast('warning', 'At most ' + MAX_NAMED + ' named layouts: delete one first.');
+            toast('warning', T('misc.editor.maxNamed', [MAX_NAMED]));
             return null;
         }
         /* P1 fix #76: save previous state so a failed persist can be rolled back */
@@ -883,11 +896,20 @@
             store.active = prevActive;
             return null;
         }
-        toast('success', 'Layout "' + n + '" saved.');
+        toast('success', T('misc.editor.namedSaved', [n]));
         return n;
     }
 
     api.open = open;
+    /* a language change while the editor is open: the bar's marked texts follow (LMi18n.apply), the
+     * texts render() writes (names, warnings, Snap, Show/Hide, the control list) are written again */
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {
+        if (!ov) return;
+        if (ui.sel) ui.sel._ids = null;
+        for (var k in px) if (px[k] && px[k]._tab) px[k]._tab.textContent = lab(CTL[k]);
+        if (layDlg) { showLayouts(); showLayouts(); }
+        render();
+    });
     api.close = close;
     api.isOpen = function () { return !!ov; };
     /* read the saved layouts again (an import, a probe) and place the controls */

@@ -90,7 +90,7 @@ $("#UserProfileName").replace('Name', Languageletter362);
 $("#UserProfileUID").replace('Social ID', Languageletter363);
 
 $("#TimesUsedPanel").replaceWith('<div id="TimesUsedPanel" align="left" style="display:inline-block; margin-top: -10px; margin-bottom: -10px; "><h6><i>' + Languageletter32+': '+timesopened+
-		'<br>'+ Languageletter33 + ': jimboy3100<br>' + Languageletter34 + ': ' + translator + '</i></h6></div>');
+		'<br>'+ Languageletter33 + ': jimboy3100<br>' + Languageletter34 + ': ' + translator + '</i></h6></div>'); /* i18n-ok: jimboy3100 is the author's name */
 
 $("#tcm>#tcm-header>p").text(Languageletter35);
 
@@ -279,12 +279,12 @@ $("#theme-main>div>span").eq(15).text(Languageletter149); //Food
 $("#theme-main>div>span").eq(16).text(Languageletter150); //Teammate indicator
 $("#theme-main>div>span").eq(17).text(Languageletter151); //Cursor tracking
 $("#theme-main>div>span").eq(18).text(Languageletter152); //Split range
-$("#theme-main>div>span").eq(19).text("B2STE " + Languageletter102 + " " + Languageletter175); //B2STE Enemy Color
+$("#theme-main>div>span").eq(19).text("B2STE " + Languageletter102 + " " + Languageletter175); //B2STE Enemy Color /* i18n-ok: B2STE is a size class name, the same in every language */
 $("#theme-main>div>span").eq(20).text("BSTE " + Languageletter102 + " " + Languageletter175); //BSTE Enemy Color
 $("#theme-main>div>span").eq(21).text(Languageletter154a + " " + Languageletter102 + " " + Languageletter175); //Bigger Enemy Color
 $("#theme-main>div>span").eq(22).text(Languageletter154b + " " + Languageletter102 + " " + Languageletter175); //Smaller Enemy Color
 $("#theme-main>div>span").eq(23).text("SSTE " + Languageletter102 + " " + Languageletter175); //SSTE Enemy Color
-$("#theme-main>div>span").eq(24).text("S2STE " + Languageletter102 + " " + Languageletter175); //S2STE Enemy Color
+$("#theme-main>div>span").eq(24).text("S2STE " + Languageletter102 + " " + Languageletter175); //S2STE Enemy Color /* i18n-ok: S2STE is a size class name, the same in every language */
 $("#theme-main>div>span").eq(25).text(Languageletter154); //Safe area
 $("#theme-main>div>span").eq(26).text(Languageletter154); //Danger area
 $("#theme-main>div>span").eq(27).text(Languageletter90a); //Ghost cells
@@ -595,7 +595,7 @@ $('#yt6data').attr('placeholder',Languageletter342b + " 6");
 $('#discwebhook1').attr('placeholder',Languageletter342 + ' 1').attr('data-original-title', Languageletter343 + '. https://discordapp.com/api/webhooks/.../...');
 $('#discwebhook2').attr('placeholder',Languageletter342 + ' 2').attr('data-original-title', Languageletter344 + '. https://discordapp.com/api/webhooks/.../...');
 
-$("#HideAllBthn").attr('data-original-title',Languageletter345);
+/* #HideAllBthn's tooltip comes from LMexpress.js (lmx.ex.hideAllTip): Languageletter345 is the popup-blocked warning in English */
 
 $("#logoutbtn").text(Languageletter31); //for LM Express
 $("#CopyAll").attr('data-original-title',Languageletter26a); //for LM Express
@@ -604,7 +604,7 @@ $(".btn.btn-play.btn-primary").text(Languageletter19); //may not work
 
 $("#potions").text(Languageletter349);
 //$("#oldSkinsBtn").text(Languageletter350);
-$("#SpecialDealsBtn").text(Languageletter351);
+/* #SpecialDealsBtn: its text is a data-i18n span next to the icon and the badge (LMexpress.js); .text() here removed both */
 $("#SpecialDealsQuickBtn").attr("data-original-title", Languageletter351);
 $(".btn.btn-primary.btn-success.btn-leagues").text(Languageletter352); //Leaderboards
 
@@ -640,20 +640,12 @@ $("#userscripter2").text(Externalletter13);
 $("#userscriptBtn1").text(Externalletter7);
 $("#userscriptpages").text(Externalletter8);
 $("#EraseScripter").text(Externalletter9);
-$("#UserscripttextA").attr('placeholder','User Script 1 '+ Externalletter10);
-$("#UserscripttextB").attr('placeholder','User Script 2 '+ Externalletter10);
-$("#UserscripttextC").attr('placeholder','User Script 3 '+ Externalletter10);
-$("#UserscripttextD").attr('placeholder','User Script 4 '+ Externalletter10);
-$("#UserscripttextE").attr('placeholder','User Script 5 '+ Externalletter10);
-$("#UserscriptA").attr('placeholder','User Script 1 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
-$("#UserscriptB").attr('placeholder','User Script 2 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
-$("#UserscriptC").attr('placeholder','User Script 3 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
-$("#UserscriptD").attr('placeholder','User Script 4 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
-$("#UserscriptE").attr('placeholder','User Script 5 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+/* the user script name and URL fields have their own data-i18n texts (LMexpress.sniff2.js: lmx.sn.scriptNameN,
+ * lmx.sn.scriptUrlN, lmx.sn.scriptUrlTip), with the script number in every language */
 }, 4000);
 
 setTimeout(function () {
-$("#ao2t-hud>span").replace('Universal', Languageletter365);	
+/* #ao2t-hud's "Universal" has its own data-i18n text (pack.universal, LMexpress.js) */
 $("#block-warn").replace('WARNING! Popups are blocked in the settings.', Languageletter347);
 $("#block-warn").replace('Temporary unblock', Languageletter348);
 }, 1500);
