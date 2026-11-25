@@ -572,7 +572,7 @@
         var st = D.createElement('style');
         st.id = 'lm-cc-style';
         st.textContent =
-            '#lm-cc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;display:flex;align-items:flex-start;justify-content:center;' +
+            '#lm-cc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999993;display:flex;align-items:flex-start;justify-content:center;' +
             'background:rgba(0,0,0,.55);padding:10vh 16px 16px;box-sizing:border-box;font-family:inherit}' +
             '#lm-cc *{box-sizing:border-box}' +
             // i18n-ok: CSS
@@ -630,7 +630,7 @@
         root.id = 'lm-cc';
         root.setAttribute('role', 'dialog');
         root.setAttribute('aria-modal', 'true');
-        var panel = mk('div', 'lm-cc-panel');
+        var panel = mk('div', 'lm-cc-panel lm-modal-container');
         var head = mk('div', 'lm-cc-head');
         input = mk('input');
         input.id = 'lm-cc-q';

@@ -719,9 +719,10 @@
         if (md) { paint(); return; }
         var t = theme();
         md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:720px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
-            'display:flex;flex-direction:column;z-index:2147483647;background:' + t.pc + ';border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';' +
+            'display:flex;flex-direction:column;z-index:999992;background:' + t.pc + ';border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';' +
             'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + t.tc + ';font-family:inherit;font-size:12px;overflow:hidden;box-sizing:border-box;');
         md.id = 'lm-analytics';
+        md.className = 'lm-modal-container';
         md.setAttribute('role', 'dialog');
         md.setAttribute('aria-label', T('title'));
         md.dir = langDir();

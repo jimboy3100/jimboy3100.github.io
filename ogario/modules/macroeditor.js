@@ -218,7 +218,7 @@
         /* window chrome follows the menu theme (--lm-* from ogario.v4.js, the old colours as
          * fallbacks); the split / feed / mouse colours are the timeline legend and stay fixed */
         s.textContent =
-            '#lm-me{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147481500;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font-family:inherit;font-size:13px;line-height:1.35;color:var(--lm-tc,#eee)}' +
+            '#lm-me{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999992;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font-family:inherit;font-size:13px;line-height:1.35;color:var(--lm-tc,#eee)}' +
             '#lm-me-p{width:min(640px,calc(100vw - 12px));max-height:calc(100vh - 12px);box-sizing:border-box;display:flex;flex-direction:column;background:var(--lm-pc,#00243e);border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden}' +
             '#lm-me-p .lm-me-h{display:flex;align-items:center;gap:4px;padding:6px 8px;border-bottom:1px solid var(--lm-pc2,#002f52);background:linear-gradient(180deg,var(--lm-pc2,#002f52) 0%,var(--lm-pc,#00243e) 100%)}' +
             '#lm-me-p .lm-me-t{flex:1;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--lm-mc,#01d9cc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
@@ -390,6 +390,7 @@
         root.addEventListener('pointerdown', function (e) { if (e.target === root) close(); });
         panel = mk('div');
         panel.id = 'lm-me-p';
+        panel.className = 'lm-modal-container';
         panel.setAttribute('role', 'dialog');
         panel.setAttribute('aria-label', t('title'));
         try { if (W.LMi18n && W.LMi18n.dir) panel.setAttribute('dir', W.LMi18n.dir()); } catch (e) { }

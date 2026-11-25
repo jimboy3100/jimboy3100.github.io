@@ -47,7 +47,7 @@
         var s = D.createElement('style');
         s.id = 'lm-he-css';
         s.textContent =
-            '#lm-he{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147481000;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,.12);font-size:13px;line-height:1.35;font-family:inherit;color:var(--lm-tc,#eee)}' +
+            '#lm-he{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999993;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,.12);font-size:13px;line-height:1.35;font-family:inherit;color:var(--lm-tc,#eee)}' +
             '#lm-he.lm-he-grid{background-image:linear-gradient(rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.09) 1px,transparent 1px)}' +
             '.lm-he-f{position:absolute;box-sizing:border-box;border:2px solid var(--lm-mc,#01d9cc);background:rgba(1,217,204,.10);cursor:move;touch-action:none;min-width:16px;min-height:16px}' +
             '.lm-he-f.sel{border-color:#ffd200;background:rgba(255,210,0,.14);z-index:2}' +

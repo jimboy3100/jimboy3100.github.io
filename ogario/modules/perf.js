@@ -1566,9 +1566,10 @@
         var box = 'background:rgba(0,0,0,0.25);border:1px solid ' + pc2 + ';border-radius:var(--lm-radius-s,3px);padding:4px 6px;word-break:normal;';
         /* fits a 915x412 phone: narrow, scrolls inside, the close cross is a large tap target */
         var md = el('div', 'position:fixed;top:8px;left:8px;width:380px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
-            'display:flex;flex-direction:column;z-index:2147481000;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
+            'display:flex;flex-direction:column;z-index:999992;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
             'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:11px;line-height:1.35;overflow:hidden;');
         md.id = 'lm-perf-diag';
+        md.className = 'lm-modal-container';
         var head = el('div', 'padding:7px 44px 6px 10px;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
         var title = el('div', 'font-size:13px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;');
         head.appendChild(title);

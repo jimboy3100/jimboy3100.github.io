@@ -339,10 +339,10 @@
             /* screenshot mode: only the game view and the exit chip stay visible */
             '.lm-shot-hide{visibility:hidden !important;}' +
             'body.lm-shot-on #toast-container{visibility:hidden !important;}' +
-            '#lm-shot-chip{position:fixed;right:8px;bottom:8px;z-index:2147483600;display:flex;gap:6px;transition:opacity .4s;font:12px sans-serif;}' +
+            '#lm-shot-chip{position:fixed;right:8px;bottom:8px;z-index:999996;display:flex;gap:6px;transition:opacity .4s;font:12px sans-serif;}' +
             '#lm-shot-chip div{cursor:pointer;min-width:34px;height:34px;line-height:34px;padding:0 10px;border-radius:17px;text-align:center;background:rgba(0,0,0,0.55);color:#fff;border:1px solid rgba(255,255,255,0.35);box-sizing:border-box;}' +
             '#lm-shot-chip.idle{opacity:.18;}' +
-            '#lm-radial{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483500;cursor:crosshair;touch-action:none;}' +
+            '#lm-radial{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999994;cursor:crosshair;touch-action:none;}' +
             '#lm-radial .lm-rd-item{position:absolute;transform:translate(-50%,-50%);max-width:120px;padding:4px 8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.72);color:#fff;font:600 12px sans-serif;text-align:center;border:2px solid rgba(255,255,255,0.25);white-space:normal;line-height:1.25;pointer-events:none;}' +
             '#lm-radial .lm-rd-item.on{background:' + c.mc + ';color:' + c.pc + ';border-color:#fff;}' +
             '#lm-radial .lm-rd-ring{position:absolute;border-radius:50%;border:2px dashed rgba(255,255,255,0.35);pointer-events:none;box-sizing:border-box;}' +
@@ -375,14 +375,15 @@
         closeWin();
         addStyle();
         var c = colors();
-        var backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483400;background:rgba(0,0,0,0.55);');
+        var backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:999991;background:rgba(0,0,0,0.55);');
         backdrop.id = id + '-backdrop';
         backdrop.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); closeWin(); });
         var root = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:' + (width || 560) + 'px;max-width:calc(100vw - 16px);' +
-            'max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-sizing:border-box;z-index:2147483401;' +
+            'max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-sizing:border-box;z-index:999992;' +
             'background:' + c.pc + ';border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
             'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
         root.id = id;
+        root.className = 'lm-modal-container';
         root.className = 'lm-st-win';
         root.dir = langDir();
         var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:4px 6px 4px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
@@ -927,7 +928,7 @@
     function showPreview(url, name) {
         closePreview();
         var c = colors();
-        var p = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483650;background:rgba(0,0,0,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;box-sizing:border-box;color:#fff;font:12px sans-serif;');
+        var p = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:999997;background:rgba(0,0,0,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;box-sizing:border-box;color:#fff;font:12px sans-serif;');
         p.id = 'lm-st-shot-preview';
         p.className = 'lm-st-win';
         p.dir = langDir();

@@ -270,7 +270,7 @@
         var st = D.createElement('style');
         st.id = 'lm-dc-style';
         st.textContent =
-            '#lm-dc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;' +
+            '#lm-dc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999993;display:flex;align-items:center;justify-content:center;' +
             'background:rgba(0,0,0,.55);padding:8px;box-sizing:border-box;font-family:inherit}' +
             '#lm-dc *{box-sizing:border-box}' +
             // i18n-ok: CSS
@@ -329,7 +329,7 @@
             if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); close(); }
         }, false);
         root.addEventListener('click', function (e) { if (e.target === root) close(); }, false);
-        var panel = mk('div', 'lm-dc-panel');
+        var panel = mk('div', 'lm-dc-panel lm-modal-container');
         var head = mk('div', 'lm-dc-head');
         head.appendChild(mk('div', 'lm-dc-title'));
         ['features', 'server'].forEach(function (id) {

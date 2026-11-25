@@ -548,14 +548,15 @@
         addStyle(c);
         g.setSuspended(true);
         /* a tap outside the window closes it */
-        backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483646;background:rgba(0,0,0,0.55);');
+        backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:999994;background:rgba(0,0,0,0.55);');
         backdrop.id = 'lm-gp-backdrop';
         backdrop.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); close(); });
         modal = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:720px;max-width:calc(100vw - 16px);' +
-            'height:auto;max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-sizing:border-box;z-index:2147483647;' +
+            'height:auto;max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-sizing:border-box;z-index:999995;' +
             'background:' + c.pc + ';border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
             'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
         modal.id = 'lm-gp-modal';
+        modal.className = 'lm-modal-container';
         setDir(modal);
         var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
         head.appendChild(el('div', 'font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;flex:none;', '\ud83c\udfae ' + t('title')));
