@@ -8,6 +8,30 @@
   var L = window.LMi18n;
   need('LMi18n', !!L && typeof L.setLang === 'function');
   if (!L) return { fail: fail, info: info };
+  /* the one-time language window: the smoke test marks it as asked (developers/tests/i18n-firstrun.js
+   * tests a real first visit), so it must not be there; opened here on purpose to check it */
+  need('first-run chooser stays away once asked', !document.getElementById('lm-lang-first') && localStorage.getItem('lmLangAsked') === '1');
+  need('chooser functions', typeof _lmShowLanguageChooser === 'function' && typeof _lmFirstLanguageChooser === 'function');
+  if (typeof _lmShowLanguageChooser === 'function') _lmShowLanguageChooser();
+  var first = document.getElementById('lm-lang-first');
+  need('chooser opens', !!first);
+  if (first) {
+    var fsel = first.querySelector('select.lm-lang-select');
+    need('chooser: 12 languages, current one picked', !!fsel && fsel.options.length === 12 && fsel.value === L.num());
+    var r = first.querySelector('.modal-content').getBoundingClientRect();
+    info.chooser = Math.round(r.width) + 'x' + Math.round(r.height) + ' in ' + innerWidth + 'x' + innerHeight;
+    need('chooser fits the screen', r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight);
+    var hb = first.querySelector('.modal-header').getBoundingClientRect(), cb = first.querySelector('.lm-lang-first-close').getBoundingClientRect();
+    need('chooser: close button on the right', cb.left > hb.left + hb.width / 2);
+    need('chooser: coloured OK button', /btn-success/.test(first.querySelector('.lm-lang-first-ok').className));
+    /* Esc: keeps the browser's language, not saved, never asked again */
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
+    need('chooser: Esc closes it', !document.getElementById('lm-lang-first'));
+    need('chooser: nothing saved, asked once', localStorage.getItem('languagemod') == null && localStorage.getItem('lmLangAsked') === '1');
+    if (typeof _lmFirstLanguageChooser === 'function') _lmFirstLanguageChooser();
+    await new Promise(function (r2) { setTimeout(r2, 1500); });
+    need('chooser: not again', !document.getElementById('lm-lang-first'));
+  }
   var saved = null;
   try { saved = localStorage.getItem('languagemod'); } catch (e) { }
   info.start = L.lang();

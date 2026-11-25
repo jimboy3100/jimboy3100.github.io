@@ -4921,6 +4921,7 @@ function languagemodfun() {
     /* the chosen language's texts were loaded with the page (languages/lm-i18n.js): the language pack
      * handler puts them into the menus whose HTML has the English text */
     if (languagemod != 1) _lmRunLanguageHandler();
+    _lmFirstLanguageChooser();
 }
 
 /* fromUser: the dropdown was changed (not the start-up call in languagemodfun) */
@@ -4965,17 +4966,87 @@ function _lmAddLanguageScript(src, onload, onfail) {
 /* languages/LanguagePackHandler.js puts the texts into the menus by id (it reads the old globals
  * Languageletter*, which LMi18n keeps in the chosen language). Loaded once, the first time it is
  * needed; later changes call its function again. */
-var _lmLanguageHandler = { loading: false, again: false };
+/* (an object made on first use: languagemodfun can run before this line of the file has run) */
+var _lmLanguageHandler;
 function _lmRunLanguageHandler() {
     if (typeof window.lmApplyLanguagePack === 'function') {
         try { window.lmApplyLanguagePack(); } catch (e) { console.error('[Legend] language pack handler', e); }
         return;
     }
     /* a change while it loads: the file applies the language current when it runs */
+    if (!_lmLanguageHandler) _lmLanguageHandler = { loading: false };
     if (_lmLanguageHandler.loading) return;
     _lmLanguageHandler.loading = true;
     var done = function () { _lmLanguageHandler.loading = false; };
     _lmAddLanguageScript("https://www.legendmod.ml/languages/LanguagePackHandler.js?v=" + (window.OgVer || ''), done, done);
+}
+/* First visit (no language chosen, never asked): a small window with the 12 languages, the browser's
+ * one picked. OK switches like Choose Language and saves it; the cross or Esc keeps the browser's
+ * language unsaved. Asked once (localStorage lmLangAsked), on the main menu, not over the loading
+ * screen and not while playing. */
+function _lmLangChooserWanted() {
+    try {
+        var v = localStorage.getItem('languagemod');
+        if (v && v !== 'null') return false;
+        return !localStorage.getItem('lmLangAsked');
+    } catch (e) { return false; }
+}
+function _lmFirstLanguageChooser() {
+    if (!window.LMi18n || !_lmLangChooserWanted()) return;
+    var tries = 0;
+    var wait = setInterval(function () {
+        if (++tries > 600) { clearInterval(wait); return; }
+        if (!_lmLangChooserWanted()) { clearInterval(wait); return; }
+        if (document.getElementById('lm-boot') || !$('#main-menu').is(':visible') || !$('#overlays').is(':visible')) return;
+        if (window.legendmod && window.legendmod.play) return;
+        clearInterval(wait);
+        _lmShowLanguageChooser();
+    }, 500);
+}
+function _lmShowLanguageChooser() {
+    if (document.getElementById('lm-lang-first')) return;
+    var L = window.LMi18n;
+    var esc = function (k) { return _lmEscLang(window.lmT(k)); };
+    var box = $('<div class="modal fade in" id="lm-lang-first" role="dialog" aria-modal="true" aria-hidden="false" style="display:block;">' +
+        '<div class="modal-backdrop fade in"></div>' +
+        '<div class="modal-dialog" style="width:340px;max-width:calc(100vw - 16px);">' +
+        '<div class="modal-content">' +
+        '<div class="modal-header"><button type="button" class="close lm-lang-first-close" data-i18n-aria-label="core.close" aria-label="' + esc('core.close') + '">&times;</button>' +
+        '<h4 class="modal-title" data-i18n="core.langFirstTitle">' + esc('core.langFirstTitle') + '</h4></div>' +
+        '<div class="modal-body" style="text-align:center;max-height:calc(100vh - 150px);overflow:auto;">' +
+        '<p data-i18n="core.langFirstText" style="margin:0 0 10px;">' + esc('core.langFirstText') + '</p>' +
+        '<span data-lm-lang-picker="manual"></span></div>' +
+        '<div class="modal-footer" style="text-align:center;"><button type="button" class="btn btn-success lm-lang-first-ok" data-i18n="core.ok" style="min-width:96px;">' + esc('core.ok') + '</button></div>' +
+        '</div></div></div>');
+    box.attr('dir', L.dir());
+    $('#helloContainer').length ? $('#helloContainer').after(box) : $('body').append(box);
+    L.renderPickers(box[0]);
+    var sel = box.find('select.lm-lang-select').addClass('form-control').css({ display: 'inline-block', width: 'auto', minWidth: '180px', fontSize: '16px' });
+    sel.val(L.num());
+    if (typeof lmPromoChrome === 'function') lmPromoChrome('#lm-lang-first');
+    var asked = function () { try { localStorage.setItem('lmLangAsked', '1'); } catch (e) { } };
+    var close = function () {
+        asked();
+        window.removeEventListener('keydown', onKey, true);
+        box.remove();
+    };
+    box.find('.lm-lang-first-close').on('click', close);
+    box.find('.modal-backdrop').on('click', close);
+    box.find('.lm-lang-first-ok').on('click', function () {
+        var n = String(sel.val() || L.num());
+        close();
+        /* the Choose Language path: switches at once and saves languagemod */
+        $('#legendlanguages').val(n);
+        if ($('#legendlanguages').length) changeModLanguage(true);
+        else L.setLang(n);
+    });
+    /* Esc closes it before the mod's own Esc (menu toggle) sees the key: capture phase on window */
+    function onKey(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopImmediatePropagation(); close(); }
+        else if ((e.key === 'Enter' || e.keyCode === 13) && document.activeElement === sel[0]) { e.preventDefault(); e.stopImmediatePropagation(); box.find('.lm-lang-first-ok').trigger('click'); }
+    }
+    window.addEventListener('keydown', onKey, true);
+    setTimeout(function () { try { sel[0].focus(); } catch (e) { } }, 50);
 }
 function newsubmit() {
     if (legendmod.play == true) {
@@ -6761,8 +6832,9 @@ function initializeLM(modVersion) {
     PremiumUsersFFAScore()
 
 
-    $("button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
-    $("button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
+    /* by their agar.io text key too: those texts are in the chosen language now, not always English */
+    $("button[data-itr='page_spectate'], button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
+    $("button[data-itr='page_logout'], button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
     $("button:contains('Copy')").removeClass("btn-info").addClass("btn-link");
 
     $("#create-party-btn-2").html('<span class="glyphicon glyphicon-plus"></span>');

@@ -126,6 +126,16 @@ texts (menu, footer) go in `site.json`.
 From the mod (agar.io or another origin), links to www.legendmod.ml / jimboy3100.github.io pages
 get `#lm=` with the language and theme (LMexpress.js `lmThemeHash`), iframes get the postMessage.
 
+## Tests
+
+- `node developers/tests/i18n.js`: packs complete (12 languages, same placeholders/tags), key names,
+  generated files up to date, old globals, lmT fallbacks, apply(), switching, the page runtime, the
+  scanner (strict files must have 0 findings).
+- `developers/tests/probes/zzzz-i18n.js` (in `run.js`): live switch to Greek and Arabic in the game page.
+- `node developers/tests/i18n-firstrun.js`: headless first visit with a Greek browser (window shown,
+  Greek picked, OK saves, never again) and with English stored (never shown). The smoke test pins the
+  browser to English and hides the first-visit window (`SMOKE_LANG`, `SMOKE_FIRSTRUN`, `SMOKE_STORAGE`).
+
 ## Hard-coded text scanner
 
 ```sh
@@ -149,6 +159,13 @@ reason on the line (or on a comment line just above), or an entry in `scan-confi
   where play.html is written with `document.write`). An inline guard after them loads what is missing
   synchronously (Chrome may refuse document.write scripts). Files created at run time use absolute
   `https://www.legendmod.ml/` URLs, `charset="utf-8"`, and fall back to jimboy3100.github.io.
+- Which language: the mod and the pages use (1) a language passed with the Theme Bridge (`#lm=`), saved,
+  (2) localStorage `languagemod` (Choose Language), (3) the browser's language when it is one of the
+  twelve, not saved (it keeps following the browser until the player picks one), (4) English.
+- First visit (nothing stored, `lmLangAsked` not set): LMexpress.js shows a small window once on the
+  main menu (`_lmShowLanguageChooser`, the runtime's `data-lm-lang-picker="manual"` list, the
+  browser's language picked). OK = the Choose Language path (saves `languagemod`); the cross / Esc keep
+  the browser's language unsaved. Either way `lmLangAsked` = 1.
 - Lookup: chosen language, else English, else the key (counted in `LMi18n.missing()`).
 - Quick chat commands (`settings.comm0..50`) are sent to teammates: they stay English in every
   language but Polish (as before).

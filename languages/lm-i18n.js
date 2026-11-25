@@ -908,10 +908,54 @@
     alias(ALIASES);
     api._drain();
 
+    /* The language Legend Mod passed with the Theme Bridge (#lm= / ?lm= base64 JSON {..., lang: n},
+     * or a postMessage {type: 'lm-theme', theme: {..., lang: n}}): agar.io's storage is not visible here */
+    function fromBridge() {
+        var m = /[#&?]lm=([^&]+)/.exec((W.location.hash || '') + '&' + (W.location.search || ''));
+        if (!m) return null;
+        try { var d = JSON.parse(atob(decodeURIComponent(m[1]))); return d && toCode(d.lang); } catch (e) { return null; }
+    }
+    function pick() {
+        var b = fromBridge();
+        if (b) { save(b); return b; }
+        return stored() || browserLang() || 'en';
+    }
+    /* [data-lm-lang-picker]: a list of the 12 languages (native names, Choose Language numbers) that
+     * switches the language; data-lm-lang-picker="manual" only shows the choice (the page reads
+     * select.lm-lang-select's value, e.g. an OK button). The mod calls LMi18n.renderPickers(root). */
+    function renderPickers(root) {
+        var els = (root || document).querySelectorAll('[data-lm-lang-picker]');
+        for (var i = 0; i < els.length; i++) {
+            var box = els[i], sel = box.querySelector('select.lm-lang-select');
+            if (!sel) {
+                sel = document.createElement('select');
+                sel.className = 'lm-lang-select';
+                /* its name for screen readers, set again by apply() */
+                var nameKey = SITE ? 'site.language' : 'pack.chooseALanguage';
+                sel.setAttribute('data-i18n-aria-label', nameKey);
+                if (lookup(nameKey, current) !== undefined) sel.setAttribute('aria-label', lookup(nameKey, current));
+                for (var j = 0; j < CODES.length; j++) {
+                    var o = document.createElement('option');
+                    o.value = String(j + 1);
+                    o.textContent = NAMES[j];
+                    o.setAttribute('lang', CODES[j]);
+                    sel.appendChild(o);
+                }
+                if (box.getAttribute('data-lm-lang-picker') !== 'manual') sel.addEventListener('change', function () { setLang(this.value); });
+                box.appendChild(sel);
+                sel.value = api.num();
+            } else if (box.getAttribute('data-lm-lang-picker') !== 'manual') sel.value = api.num();
+        }
+    }
+    api.renderPickers = renderPickers;
+
     if (!SITE) {
-        /* the game page: the language chosen in Legend Mod; never chosen: the browser's language, else
-         * English. That one is not saved: it follows the browser until the player picks one. */
-        current = stored() || browserLang() || 'en';
+        /* the game page: a language passed with the Theme Bridge (#lm= in its address, saved), else the one
+         * chosen in Legend Mod; never chosen: the browser's language, else English. That one is not saved:
+         * it follows the browser until the player picks one. */
+        current = fromBridge() || stored() || browserLang() || 'en';
+        if (fromBridge()) save(current);
+        onChange(function () { renderPickers(document); });
         setDocLang();
         exportGlobals();
         /* its file must be there before the mod's scripts run: written into the page right after
@@ -928,41 +972,6 @@
     }
 
     /* ---------- web pages (lib/lm-i18n.js) ---------- */
-    /* The language Legend Mod passed with the Theme Bridge (#lm= / ?lm= base64 JSON {..., lang: n},
-     * or a postMessage {type: 'lm-theme', theme: {..., lang: n}}): agar.io's storage is not visible here */
-    function fromBridge() {
-        var m = /[#&?]lm=([^&]+)/.exec((W.location.hash || '') + '&' + (W.location.search || ''));
-        if (!m) return null;
-        try { var d = JSON.parse(atob(decodeURIComponent(m[1]))); return d && toCode(d.lang); } catch (e) { return null; }
-    }
-    function pick() {
-        var b = fromBridge();
-        if (b) { save(b); return b; }
-        return stored() || browserLang() || 'en';
-    }
-    function renderPickers(root) {
-        var els = (root || document).querySelectorAll('[data-lm-lang-picker]');
-        for (var i = 0; i < els.length; i++) {
-            var box = els[i], sel = box.querySelector('select.lm-lang-select');
-            if (!sel) {
-                sel = document.createElement('select');
-                sel.className = 'lm-lang-select';
-                /* its name for screen readers: site.language, set again by apply() */
-                sel.setAttribute('data-i18n-aria-label', 'site.language');
-                if (lookup('site.language', current) !== undefined) sel.setAttribute('aria-label', lookup('site.language', current));
-                for (var j = 0; j < CODES.length; j++) {
-                    var o = document.createElement('option');
-                    o.value = String(j + 1);
-                    o.textContent = NAMES[j];
-                    o.setAttribute('lang', CODES[j]);
-                    sel.appendChild(o);
-                }
-                sel.addEventListener('change', function () { setLang(this.value); });
-                box.appendChild(sel);
-            }
-            sel.value = api.num();
-        }
-    }
     var started = false;
     api._startSite = function () {
         if (started) return;
@@ -1003,6 +1012,5 @@
             if (c && c !== current) setLang(c);
         });
     };
-    api.renderPickers = renderPickers;
     api._startSite();
 })();
