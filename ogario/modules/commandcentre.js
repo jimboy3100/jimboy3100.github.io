@@ -881,25 +881,15 @@
         toggle();
     }, true);
 
-    /* ═══ Button next to the settings search (reachable on phones) ═══ */
+    /* ═══ Button next to the settings search — REMOVED ═══
+     * The Command Centre is already accessible via Ctrl+K, its own bindable
+     * hotkey, and the Command Centre tab; it does not need a button in the
+     * settings presets row. The function is kept as a no-op so callers
+     * (the interval and the language-change handler) do not break. */
 
-    function addMenuButton() {
-        if (D.getElementById('lm-cc-open')) return true;
-        var row = D.querySelector('.lm-settings-search-wrap .lm-presets-row') || D.querySelector('.lm-settings-search-wrap');
-        if (!row) return false;
-        var b = mk('button', 'btn btn-xs lm-cc-open-btn');
-        b.id = 'lm-cc-open';
-        b.type = 'button';
-        menuButtonTexts(b);
-        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open(); });
-        row.appendChild(b);
-        return true;
-    }
+    function addMenuButton() { return true; }
 
-    function menuButtonTexts(b) {
-        b.textContent = '\u2318 ' + t('title');
-        b.title = t('title') + ' (Ctrl+K)';
-    }
+    function menuButtonTexts() { }
 
     /* ═══ Quick bar with the favourites (option commandCentreBar) ═══ */
 
