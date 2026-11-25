@@ -49,7 +49,14 @@
         upAfter: 10,        /* seconds fast before one level back */
         maxUpAfter: 120,
         bounceWindow: 20,   /* too slow again this soon after a level came back: wait twice as long */
-        calmAfter: 60       /* this long fine after a level came back: forget the earlier bounces */
+        calmAfter: 60,      /* this long fine after a level came back: forget the earlier bounces */
+        renderShare: 0.5,   /* slow counts only while drawing takes at least half the frame budget:
+                             * when the time goes to packets, scripts or the browser, fewer effects
+                             * cannot make it faster and only make the game look worse */
+        judgeAfter: 6,      /* seconds after a level down to see whether it helped */
+        gainFps: 1.05,      /* it helped: FPS up at least 5%, */
+        gainRender: 0.85,   /* or drawing at least 15% faster, or the target reached */
+        noHelpFor: 600      /* a level that did not help is undone and not tried again for 10 min */
     };
     var REFRESH_RATES = [24, 30, 48, 50, 60, 72, 75, 90, 100, 120, 144, 165, 180, 240];
 
@@ -103,40 +110,77 @@
     }
 
     function newController() {
-        return { level: 0, low: 0, high: 0, upAfter: CTL.upAfter, t: 0, lastUp: -1e9, lastChange: -1e9 };
+        return { level: 0, low: 0, high: 0, upAfter: CTL.upAfter, t: 0, lastUp: -1e9, lastChange: -1e9,
+            base: { fps: 0, render: 0, n: 0 }, judge: null, capLevel: MAX_LEVEL, capUntil: -1e9 };
     }
 
     /* One measured period (dt seconds, usually 1): its FPS, the effective target and the 90th
      * percentile render time in ms (null when unknown). Updates st.level and returns the change
-     * made: +1 (one level down in quality), -1 (one level back) or 0. */
+     * made: +1 (one level down in quality), -1 (one level back) or 0.
+     * A level goes down only while drawing is what is slow (renderShare), and each level down is
+     * checked judgeAfter seconds later: when neither the FPS nor the drawing time got better it
+     * is undone at once and that level is not tried again for noHelpFor seconds. */
     function controllerStep(st, fps, target, renderP90, dt, maxLevel) {
         var top = maxLevel || MAX_LEVEL;
         dt = dt > 0 ? dt : 1;
         st.t += dt;
-        var spare = renderP90 == null || !(target > 0) || renderP90 < (1000 / target) * CTL.headroom;
-        if (fps < target * CTL.lowRatio) {
+        if (!st.base) { st.base = { fps: 0, render: 0, n: 0 }; st.judge = null; st.capLevel = MAX_LEVEL; st.capUntil = -1e9; }
+        if (st.t < st.capUntil) top = Math.min(top, st.capLevel);
+        var budget = target > 0 ? 1000 / target : 0;
+        var spare = renderP90 == null || !budget || renderP90 < budget * CTL.headroom;
+        var renderBound = renderP90 == null || !budget || renderP90 >= budget * CTL.renderShare;
+        var rt = renderP90 == null ? 0 : renderP90;
+        if (fps < target * CTL.lowRatio && renderBound) {
             st.low += dt;
             st.high = 0;
+            st.base.fps += fps * dt; st.base.render += rt * dt; st.base.n += dt;
         } else if (fps >= target * CTL.okRatio && spare) {
             st.low = Math.min(st.low, 0);
             st.high += dt;
+            st.base = { fps: 0, render: 0, n: 0 };
         } else {
-            /* close to the target: neither way; an earlier slow stretch fades out */
+            /* close to the target, or slow for another reason than drawing: neither way; an
+             * earlier slow stretch fades out */
             if (st.low > 0) st.low = Math.max(0, st.low - dt);
             st.high = 0;
         }
-        if (st.low >= CTL.downAfter && st.level < top) {
+        /* did the last level down help? */
+        var j = st.judge;
+        if (j) {
+            j.fps += fps * dt; j.render += rt * dt; j.n += dt;
+            if (j.n >= CTL.judgeAfter) {
+                st.judge = null;
+                var af = j.fps / j.n, ar = j.render / j.n;
+                var helped = af >= target * CTL.okRatio || af >= j.before.fps * CTL.gainFps ||
+                    (j.before.render > 0 && ar <= j.before.render * CTL.gainRender);
+                if (!helped && st.level > 0) {
+                    st.level--;
+                    st.capLevel = st.level;
+                    st.capUntil = st.t + CTL.noHelpFor;
+                    st.low = 0;
+                    st.high = 0;
+                    st.base = { fps: 0, render: 0, n: 0 };
+                    st.lastChange = st.t;
+                    return -1;
+                }
+            }
+        }
+        if (!st.judge && st.low >= CTL.downAfter && st.level < top) {
             if (st.t - st.lastUp < CTL.bounceWindow) st.upAfter = Math.min(CTL.maxUpAfter, st.upAfter * 2);
             st.level++;
             st.low = -CTL.settle;
             st.high = 0;
             st.lastChange = st.t;
+            var bn = st.base.n || 1;
+            st.judge = { before: { fps: st.base.n ? st.base.fps / bn : fps, render: st.base.n ? st.base.render / bn : rt }, fps: 0, render: 0, n: 0 };
+            st.base = { fps: 0, render: 0, n: 0 };
             return 1;
         }
         if (st.high >= st.upAfter && st.level > 0) {
             st.level--;
             st.high = 0;
             st.low = 0;
+            st.judge = null;
             st.lastUp = st.lastChange = st.t;
             return -1;
         }

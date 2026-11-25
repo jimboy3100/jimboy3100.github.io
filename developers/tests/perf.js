@@ -33,20 +33,40 @@ check('even frames with heavy drawing: held by the game', P.displayBound(P.sorte
 check('uneven frames: held by the game', P.displayBound(P.sortedCopy(uneven), 4) === false);
 
 /* ---- controller: stepping with hysteresis ---- */
-const run = (st, fps, secs, target, rp90) => { const ch = []; for (let i = 0; i < secs; i++) { const c = P.controllerStep(st, fps, target || 60, rp90 === undefined ? 4 : rp90, 1); if (c) ch.push([st.t, c]); } return ch; };
+/* rp90 left out: slow seconds draw heavily (10 ms of a 16.7 ms frame), fast ones lightly (4 ms) */
+const run = (st, fps, secs, target, rp90) => { const ch = []; for (let i = 0; i < secs; i++) { const c = P.controllerStep(st, fps, target || 60, rp90 === undefined ? (fps < (target || 60) * 0.9 ? 10 : 4) : rp90, 1); if (c) ch.push([st.t, c]); } return ch; };
 let st = P.newController();
 check('2 s slow: no change', run(st, 40, 2).length === 0 && st.level === 0);
 run(st, 60, 1);
 check('slow stretch broken by a fast second starts again', run(st, 40, 2).length === 0 && st.level === 0);
+/* slow, but drawing takes little of the frame (packets, scripts, the browser): fewer effects
+ * would not help, nothing is lowered */
 st = P.newController();
-let ch = run(st, 40, 3);
-check('3 s below target: level 1', st.level === 1 && ch.length === 1);
-ch = run(st, 40, 4);
-check('next level waits for the settle time (not after 3 more s)', st.level === 1 && ch.length === 0);
-ch = run(st, 40, 1);
-check('level 2 after 3 s + settle', st.level === 2 && ch.length === 1);
-run(st, 40, 5); run(st, 40, 5);
-check('never past level 3', st.level === 3);
+check('slow with light drawing (4 of 16.7 ms): nothing lowered', run(st, 40, 60, 60, 4).length === 0 && st.level === 0);
+st = P.newController();
+let ch = run(st, 40, 3, 60, 14);
+check('3 s slow with heavy drawing: level 1', st.level === 1 && ch.length === 1);
+ch = run(st, 40, 5, 60, 14);
+check('no next level while the last one is being checked', st.level === 1 && ch.length === 0);
+ch = run(st, 40, 1, 60, 14);
+check('a level that helped neither FPS nor drawing is undone after 6 s', st.level === 0 && ch.length === 1 && ch[0][1] === -1);
+ch = run(st, 40, 300, 60, 14);
+check('and not tried again for 10 minutes', st.level === 0 && ch.length === 0);
+ch = run(st, 40, 400, 60, 14);
+check('tried again after 10 minutes', ch.some(c => c[1] === 1 && c[0] >= 609));
+st = P.newController();
+run(st, 40, 3, 60, 14);
+ch = run(st, 40, 6, 60, 10);
+check('drawing 15% faster counts as helped: kept', st.level >= 1 && !ch.some(c => c[1] === -1));
+run(st, 40, 3, 60, 10);
+check('still slow and drawing-bound: the next level follows', st.level === 2);
+st = P.newController();
+run(st, 40, 3, 60, 14);
+ch = run(st, 43, 6, 60, 14);
+check('FPS 5% up counts as helped: kept', st.level >= 1 && !ch.some(c => c[1] === -1));
+st = P.newController();
+for (let l = 0; l < 6; l++) { run(st, 40, 3, 60, 14 - l * 3 > 9 ? 14 - l * 3 : 9); run(st, 40, 6, 60, Math.max(9, 11 - l * 3)); }
+check('never past level 3', st.level <= 3);
 st = P.newController(); run(st, 40, 3);
 check('close to the target (55 of 60): no change either way', run(st, 55, 30).length === 0 && st.level === 1);
 ch = run(st, 60, 9);
@@ -163,12 +183,13 @@ pg.ctx.application.saveSettings(S, 'ogarioSettings');
 let saved = JSON.parse(pg.store.ogarioSettings);
 check('saved settings hold the player\'s values', saved.suckAnimation === true && saved.hudBlur === 3 && saved.animatedRainbowColor === true && !('toJSON' in saved));
 check('export (nested) holds them too', JSON.parse(JSON.stringify({ ogarioSettings: S })).ogarioSettings.hudBlur === 3);
-frames(pg, 31 * 6, 33.3, 20);
+/* each level helps a little (about 7% more FPS) but the game is still slow and drawing-bound */
+frames(pg, 205, 31, 20);
 check('still slow: level 2', pg.ctx.LMPerf.level() === 2 && S.jellyPhisycs === false);
-frames(pg, 31 * 6, 33.3, 20);
+frames(pg, 220, 29, 20);
 check('resolution option off (default): stays at level 2, full resolution', pg.ctx.LMPerf.level() === 2 && !(pg.ctx._lmAdaptiveScale > 0) && pg.calls.indexOf('resize:0.75') < 0);
 S.adaptivePerfRes = true; pg.ctx.LMPerf.configChanged();
-frames(pg, 31 * 6, 33.3, 20);
+frames(pg, 236, 27, 20);
 check('still slow: level 3, lower resolution', pg.ctx.LMPerf.level() === 3 && pg.ctx._lmAdaptiveScale === 0.75 && pg.calls.indexOf('resize:0.75') >= 0);
 check('one message per level', pg.toasts.length === 3);
 /* menu opened: own values back (presets and Performance mode see them), frames ignored */
@@ -536,7 +557,8 @@ check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')'
 {
     const rp = page(Object.assign(user(), { adaptivePerf: true, adaptivePerfRes: true }));
     frames(rp, 120, 16.7, 3);
-    for (let i = 0; i < 4; i++) frames(rp, 31 * 6, 33.3, 20);
+    /* slow and drawing-bound, each level a little faster (a level that does not help is undone) */
+    frames(rp, 31 * 4, 33.3, 20); frames(rp, 205, 31, 20); frames(rp, 220, 29, 20); frames(rp, 236, 27, 20);
     const was3 = rp.ctx.LMPerf.level() === 3 && rp.ctx._lmAdaptiveScale === 0.75;
     rp.ctx.legendmod5.adaptivePerfRes = false; rp.ctx.LMPerf.configChanged();
     check('resolution option off at level 3: level 2, full resolution now', was3 && rp.ctx.LMPerf.level() === 2 && !(rp.ctx._lmAdaptiveScale > 0));
