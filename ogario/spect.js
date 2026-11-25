@@ -27,6 +27,16 @@ if (typeof window.spects === "undefined" || !window.spects) {
 }
 var spects = window.spects;
 
+/* The core's indexed-list helpers (lmCellIdx, ogario.v4.js). A cached older core
+ * without them gets the plain array operations it was written for. */
+var _lmIdxPlain = {
+    push: function (a, c) { a.push(c); },
+    of: function (a, c) { return a.indexOf(c); },
+    remove: function (a, c) { var i = a.indexOf(c); if (i !== -1) a.splice(i, 1); return i !== -1; },
+    filter: function (a, p, keep) { return a.filter(keep); }
+};
+function lmSpectIdx() { return window.lmCellIdx || _lmIdxPlain; }
+
 function addBox() {
     let spect = new Spect({ player: true });
     legendmod.multiBoxPlayerExists = true;
@@ -347,7 +357,7 @@ class Spect {
         //this.cells = [];
         //this.deleteFromArray("cells")
         // Only remove this unit's cells from playerCellsMulti, not all units'
-        legendmod.playerCellsMulti = legendmod.playerCellsMulti.filter(function(c) {
+        legendmod.playerCellsMulti = lmSpectIdx().filter(legendmod.playerCellsMulti, '_playerMultiIdx', function(c) {
             return c.spectator !== this.number;
         }.bind(this));
         this.playerCellIDs = [];
@@ -1859,9 +1869,9 @@ class Spect {
             const victimKey = this.newID(view.readUInt32LE(offset + 4));
             const eaterCell = legendmod.indexedCells[eaterKey];
             const victimCell = legendmod.indexedCells[victimKey];
-            if (legendmod.playerCellsMulti.includes(victimCell)) {
+            /* O(1) and keeps the other cells' stored slots right (splice shifted them) */
+            if (victimCell && lmSpectIdx().remove(legendmod.playerCellsMulti, victimCell, '_playerMultiIdx')) {
                 this.removePlayerCell = true;
-                legendmod.playerCellsMulti.splice(legendmod.playerCellsMulti.indexOf(victimCell), 1)
                 const playerCellIndex = this.playerCellIDs.indexOf(victimKey);
                 if (playerCellIndex !== -1) this.playerCellIDs.splice(playerCellIndex, 1)
             }
@@ -2010,6 +2020,8 @@ class Spect {
                 color = defaultSettings.foodColor
             }
             cell = null;
+            /* every list push stores the cell's slot, so removeCell() never scans */
+            var _idx = lmSpectIdx();
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 cell.spectator = this.number;
@@ -2017,7 +2029,7 @@ class Spect {
                     var preferredCopy = lmMultiboxIdMaster(cell);
                     if (!preferredCopy) {
                         cell._renderSuppressed = false;
-                        if (legendmod.cells.indexOf(cell) === -1) legendmod.cells.push(cell);
+                        if (_idx.of(legendmod.cells, cell, '_cellsIdx') === -1) _idx.push(legendmod.cells, cell, '_cellsIdx');
                     }
                 }
 
@@ -2028,10 +2040,10 @@ class Spect {
                 //if (!isFood) {
                 if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
-                        legendmod.viruses.push(cell);
+                        _idx.push(legendmod.viruses, cell, '_virusIdx');
                     }
                     //legendmod.cells.push(cell);
-                    if (this.playerCellIDs.indexOf(id) !== -1 && legendmod.playerCellsMulti.indexOf(cell) === -1) {
+                    if (this.playerCellIDs.indexOf(id) !== -1 && _idx.of(legendmod.playerCellsMulti, cell, '_playerMultiIdx') === -1) {
                         cell.isPlayerCell = true;
                         var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
                             ? application.mbSlots[this.number] : application.selectedOldProfile;
@@ -2050,7 +2062,7 @@ class Spect {
                             }
                         }
 
-                        legendmod.playerCellsMulti.push(cell);
+                        _idx.push(legendmod.playerCellsMulti, cell, '_playerMultiIdx');
                         if (!this.active) {
                             console.log('[SPECT] Player cell is active (unit ' + this.number + ')')
                             this.active = true
@@ -2061,14 +2073,14 @@ class Spect {
                         }
                     }
                 } else if (isFood) {
-                    legendmod.foodMulti.push(cell); cell._lmInFoodMulti = true; //this causes problems					
+                    _idx.push(legendmod.foodMulti, cell, '_foodMultiIdx'); //this causes problems					
                 }
                 if (defaultmapsettings.oneColoredSpectator && !this.player) {
-                    if (!isFood && !remove) legendmod.cells.push(cell);
+                    if (!isFood && !remove) _idx.push(legendmod.cells, cell, '_cellsIdx');
                 } else {
                     //if (!remove && (!invisible && isVirus)){
                     if (!remove) {
-                        legendmod.cells.push(cell);
+                        _idx.push(legendmod.cells, cell, '_cellsIdx');
                     }
                 }
                 legendmod.indexedCells[id] = cell;

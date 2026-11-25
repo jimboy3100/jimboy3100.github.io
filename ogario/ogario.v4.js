@@ -26339,16 +26339,16 @@ function thelegendmodproject() {
                 legendmod._spawnTransitGate = true;
                 /* Keep the multibox/spectator units' cells (spectator > 0): their sockets are not
                  * respawning, and wiping them made a living unit look dead (playerCellsMulti stale). */
-                legendmod.cells = legendmod.cells.filter(function (c) { return c && c.spectator > 0; });
+                legendmod.cells = lmIdxFilter(legendmod.cells, '_cellsIdx', function (c) { return c && c.spectator > 0; });
                 var _lmKeptCells = {};
                 for (var _lmK in legendmod.indexedCells) {
                     if (legendmod.indexedCells[_lmK] && legendmod.indexedCells[_lmK].spectator > 0) _lmKeptCells[_lmK] = legendmod.indexedCells[_lmK];
                 }
                 legendmod.indexedCells = _lmKeptCells;
                 legendmod.removedCells = [];
-                legendmod.food = [];
-                legendmod.viruses = [];
-                legendmod.playerCells = [];
+                legendmod.food = lmIdxClear(legendmod.food, '_foodIdx');
+                legendmod.viruses = lmIdxClear(legendmod.viruses, '_virusIdx');
+                legendmod.playerCells = lmIdxClear(legendmod.playerCells, '_playerIdx');
                 if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
 
                 /* Safety timeout: auto-clear the gate after 3s in case the server
@@ -26711,8 +26711,8 @@ function thelegendmodproject() {
                         if (typeof this._lmEvMbSwap === 'function') this._lmEvMbSwap(0);
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
-                        legendmod.playerCells = [];
-                        legendmod.cells = legendmod.cells.filter(function (c) { return c.spectator && c.spectator > 0; });
+                        legendmod.playerCells = lmIdxClear(legendmod.playerCells, '_playerIdx');
+                        legendmod.cells = lmIdxFilter(legendmod.cells, '_cellsIdx', function (c) { return c.spectator && c.spectator > 0; });
                         for (var _cid in legendmod.indexedCells) {
                             if (!legendmod.indexedCells[_cid].spectator || legendmod.indexedCells[_cid].spectator === 0) {
                                 delete legendmod.indexedCells[_cid];
@@ -34556,6 +34556,42 @@ function thelegendmodproject() {
         cell[idxProp] = arr.length;
         arr.push(cell);
     }
+    /* Slot of cell in an indexed list, or -1. Every insert, move and drop keeps the
+     * stored slot right and -1 means "not in the list", so the common case never scans.
+     * Only a slot that is unknown or stale (a list replaced by a reset) falls back to a scan. */
+    function lmIdxOf(arr, cell, idxProp) {
+        var i = cell[idxProp];
+        if (i === -1 || !arr) return -1;
+        if (i >= 0 && i < arr.length && arr[i] === cell) return i;
+        i = arr.indexOf(cell);
+        cell[idxProp] = i;
+        return i;
+    }
+    /* Remove cell from an indexed list if it is there; it is marked absent either way. */
+    function lmIdxRemove(arr, cell, idxProp) {
+        var i = lmIdxOf(arr, cell, idxProp);
+        if (i !== -1) quickSwapDelete(arr, i, idxProp);
+        cell[idxProp] = -1;
+        return i !== -1;
+    }
+    /* filter() for an indexed list: kept cells get their new slot, dropped ones the absent mark */
+    function lmIdxFilter(arr, idxProp, keep) {
+        var out = [];
+        for (var i = 0; i < arr.length; i++) {
+            var c = arr[i];
+            if (keep(c)) {
+                if (c) c[idxProp] = out.length;
+                out.push(c);
+            } else if (c) c[idxProp] = -1;
+        }
+        return out;
+    }
+    /* A list about to be replaced by []: its cells are marked absent first, so a later
+     * removeCell() of a cell kept elsewhere (a multibox unit's) does not scan the new list. */
+    function lmIdxClear(arr, idxProp) {
+        if (arr) for (var i = 0; i < arr.length; i++) if (arr[i]) arr[i][idxProp] = -1;
+        return [];
+    }
 
     var ogarCellPool = [];
     function getPooledCell(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
@@ -34676,6 +34712,9 @@ function thelegendmodproject() {
 
         this._pixiSkinId =
             0;
+        /* not in any indexed list yet (see lmIdxOf) */
+        this._cellsIdx = this._virusIdx = this._foodIdx = this._foodMultiIdx = -1;
+        this._playerIdx = this._playerMultiIdx = this._removedIdx = -1;
         //this.nHeight = 6;
     }
     /* Methods live on the prototype (they only use `this`), so creating a
@@ -34789,6 +34828,10 @@ function thelegendmodproject() {
             }
 
             this.maxPointRad = 0;
+
+            /* a reused object starts outside every indexed list */
+            this._cellsIdx = this._virusIdx = this._foodIdx = this._foodMultiIdx = -1;
+            this._playerIdx = this._playerMultiIdx = this._removedIdx = -1;
 
             return this;
         };
@@ -35382,135 +35425,26 @@ function thelegendmodproject() {
 
 
             /*
-             * Remove from the authoritative active-cell collection.
-             * O(1) via stored index (set by indexedPush at insertion).
+             * Leave every indexed list in O(1): each list stores the cell's slot and -1
+             * means "not in it", so food, viruses and other players' cells skip the
+             * lists they were never in (no scan of LM.cells, the virus list or either
+             * player list).
              */
-            var cells = this._cellsIdx;
+            lmIdxRemove(LM.cells, this, '_cellsIdx');
+            lmIdxRemove(LM.viruses, this, '_virusIdx');
+            lmIdxRemove(LM.food, this, '_foodIdx');
+            lmIdxRemove(LM.foodMulti, this, '_foodMultiIdx');
+            lmIdxRemove(LM.playerCellsMulti, this, '_playerMultiIdx');
 
-            if (cells != null && cells >= 0 && cells < LM.cells.length && LM.cells[cells] === this) {
-                quickSwapDelete(
-                    LM.cells,
-                    cells,
-                    '_cellsIdx'
-                );
-            } else {
-                /* fallback: a cell without a stored index (legacy/edge case) */
-                cells = LM.cells.indexOf(this);
-                if (cells !== -1) quickSwapDelete(LM.cells, cells, '_cellsIdx');
-            }
-            this._cellsIdx = -1;
-
-
-            /*
-             * Virus collection.
-             */
-            if (
-                this.isVirus ||
-                (defaultmapsettings
-                    .virusesRange &&
-                    this._virusIdx >= 0)
-            ) {
-                var virIdx = this._virusIdx;
-
-                if (virIdx != null && virIdx >= 0 && virIdx < LM.viruses.length && LM.viruses[virIdx] === this) {
-                    quickSwapDelete(LM.viruses, virIdx, '_virusIdx');
-                } else {
-                    virIdx = LM.viruses.indexOf(this);
-                    if (virIdx !== -1) quickSwapDelete(LM.viruses, virIdx, '_virusIdx');
-                }
-                this._virusIdx = -1;
-            }
-
-
-            /*
-             * Food collection. Every push into LM.food / LM.foodMulti marks the cell
-             * (_lmInFood / _lmInFoodMulti), so a cell that was never pushed skips the
-             * scan entirely. With stored indices the scan is O(1).
-             */
-            if (this._lmInFood || this.isFood) {
-                var foodIdx = this._foodIdx;
-                if (foodIdx != null && foodIdx >= 0 && foodIdx < LM.food.length && LM.food[foodIdx] === this) {
-                    quickSwapDelete(LM.food, foodIdx, '_foodIdx');
-                } else {
-                    foodIdx = LM.food.indexOf(this);
-                    if (foodIdx !== -1) quickSwapDelete(LM.food, foodIdx, '_foodIdx');
-                }
-                this._foodIdx = -1;
-                this._lmInFood = false;
-            }
-
-
-            /*
-             * Multibox food collection.
-             */
-            if (this._lmInFoodMulti || this.isFood) {
-                var fmIdx = this._foodMultiIdx;
-                if (fmIdx != null && fmIdx >= 0 && fmIdx < LM.foodMulti.length && LM.foodMulti[fmIdx] === this) {
-                    quickSwapDelete(LM.foodMulti, fmIdx, '_foodMultiIdx');
-                } else {
-                    fmIdx = LM.foodMulti.indexOf(this);
-                    if (fmIdx !== -1) quickSwapDelete(LM.foodMulti, fmIdx, '_foodMultiIdx');
-                }
-                this._foodMultiIdx = -1;
-                this._lmInFoodMulti = false;
-            }
-
-
-            /*
-             * Multibox player collection.
-             */
-            var pmIdx = this._playerMultiIdx;
-            if (pmIdx != null && pmIdx >= 0 && pmIdx < LM.playerCellsMulti.length && LM.playerCellsMulti[pmIdx] === this) {
-                quickSwapDelete(LM.playerCellsMulti, pmIdx, '_playerMultiIdx');
-            } else {
-                pmIdx = LM.playerCellsMulti.indexOf(this);
-                if (pmIdx !== -1) quickSwapDelete(LM.playerCellsMulti, pmIdx, '_playerMultiIdx');
-            }
-            this._playerMultiIdx = -1;
-
-
-            /*
-             * Main player's cells.
-             */
-            var pcIdx = this._playerIdx;
-            if (pcIdx != null && pcIdx >= 0 && pcIdx < LM.playerCells.length && LM.playerCells[pcIdx] === this) {
+            /* Main player's cells. */
+            if (lmIdxRemove(LM.playerCells, this, '_playerIdx')) {
                 LM.removePlayerCell = true;
-                quickSwapDelete(LM.playerCells, pcIdx, '_playerIdx');
-
-                cells =
-                    LM.playerCellIDs
-                        .indexOf(
-                            this.id
-                        );
-
+                var cells = LM.playerCellIDs.indexOf(this.id);
                 if (cells !== -1) {
-                    quickSwapDelete(
-                        LM.playerCellIDs,
-                        cells
-                    );
-
-                    if (
-                        LM._playerCellIDSet
-                    ) {
-                        LM._playerCellIDSet
-                            .delete(
-                                this.id
-                            );
-                    }
-                }
-            } else {
-                pcIdx = LM.playerCells.indexOf(this);
-                if (pcIdx !== -1) {
-                    LM.removePlayerCell = true;
-                    quickSwapDelete(LM.playerCells, pcIdx, '_playerIdx');
-                    cells = LM.playerCellIDs.indexOf(this.id);
-                    if (cells !== -1) {
-                        quickSwapDelete(LM.playerCellIDs, cells);
-                        if (LM._playerCellIDSet) LM._playerCellIDSet.delete(this.id);
-                    }
+                    quickSwapDelete(LM.playerCellIDs, cells);
+                    if (LM._playerCellIDSet) LM._playerCellIDSet.delete(this.id);
                 }
             }
-            this._playerIdx = -1;
 
 
             /*
@@ -35702,45 +35636,16 @@ function thelegendmodproject() {
              * Cleanup from removedCells once the interpolation/fade has
              * completely finished.
              */
-            if (
-                delay >= 1
-            ) {
-                var removedIdx =
-                    (this._removedIdx != null &&
-                     this._removedIdx >= 0 &&
-                     this._removedIdx < LM.removedCells.length &&
-                     LM.removedCells[this._removedIdx] === this)
-                        ? this._removedIdx
-                        : LM.removedCells.indexOf(this);
-
-                if (
-                    removedIdx !== -1
-                ) {
-                    var _rcLast =
-                        LM.removedCells.length -
-                        1;
-
-                    if (
-                        removedIdx !== _rcLast
-                    ) {
-                        LM.removedCells[
-                            removedIdx
-                        ] =
-                            LM.removedCells[
-                                _rcLast
-                            ];
-                        /* Update the swapped cell's index */
-                        LM.removedCells[
-                            removedIdx
-                        ]._removedIdx =
-                            removedIdx;
-                    }
-
-                    LM.removedCells.length =
-                        _rcLast;
-                    this._removedIdx = -1;
-                }
-            }
+            if (delay >= 1) this._lmDropRemoved();
+        };
+        /* Leave removedCells in O(1) (swap with the last entry). */
+        this._lmDropRemoved = function () {
+            lmIdxRemove(LM.removedCells, this, '_removedIdx');
+        };
+        /* The removal fade is over: the same test as delay >= 1 in moveCell(). */
+        this._lmFadeDone = function () {
+            var anim = this._deathSlowMo ? _DEATH_SLOWMO_ANIM : (defaultmapsettings.animation || 120);
+            return LM.time - (this.updateTime || this.time) >= anim;
         };
         this.isInView = function () {
             if (window.fullSpectator) return this.id > 0;
@@ -37897,6 +37802,8 @@ function thelegendmodproject() {
             }
     }).call(ogarbasicassembly.prototype);
     window.legendmod1 = ogarbasicassembly;
+    /* spect.js keeps the same indexed lists (cells, viruses, foodMulti, playerCellsMulti) */
+    window.lmCellIdx = { push: indexedPush, of: lmIdxOf, remove: lmIdxRemove, filter: lmIdxFilter };
 
 
     if (null !== localStorage.getItem("ogarioProtocolVersion")) {
@@ -40089,13 +39996,13 @@ function thelegendmodproject() {
                                     }
                                     indexedPush(self.cells, cell, '_cellsIdx');
                                     self._cellsDirty = true;
-                                    if (!isEjected && self.playerCellIDs.indexOf(cellID) !== -1 && self.playerCells.indexOf(cell) === -1) {
+                                    if (!isEjected && self.playerCellIDs.indexOf(cellID) !== -1 && lmIdxOf(self.playerCells, cell, '_playerIdx') === -1) {
                                         cell.isPlayerCell = true;
                                         self.playerColor = cellColor;
                                         indexedPush(self.playerCells, cell, '_playerIdx');
                                     }
                                 } else {
-                                    indexedPush(self.food, cell, '_foodIdx'); cell._lmInFood = true;
+                                    indexedPush(self.food, cell, '_foodIdx');
                                 }
                                 self.indexedCells[cellID] = cell;
                             } else if (cellColor) {
@@ -42276,7 +42183,7 @@ function thelegendmodproject() {
                             if (this.playerCells[_lmCo]) this.playerCells[_lmCo].isPlayerCell = false;
                         }
                     }
-                    this.playerCells = [];
+                    this.playerCells = lmIdxClear(this.playerCells, '_playerIdx');
                     this.playerCellIDs = [];
                     if (this._playerCellIDSet) this._playerCellIDSet.clear();
                     break;
@@ -42292,16 +42199,16 @@ function thelegendmodproject() {
                      * a clean world with proper color/skin/name ADDs. */
                     if (this._spawnTransitGate) {
                         /* Multibox/spectator unit cells (spectator > 0) belong to other sockets: keep them. */
-                        this.cells = this.cells.filter(function (c) { return c && c.spectator > 0; });
+                        this.cells = lmIdxFilter(this.cells, '_cellsIdx', function (c) { return c && c.spectator > 0; });
                         var _lmKept32 = {};
                         for (var _lmK32 in this.indexedCells) {
                             if (this.indexedCells[_lmK32] && this.indexedCells[_lmK32].spectator > 0) _lmKept32[_lmK32] = this.indexedCells[_lmK32];
                         }
                         this.indexedCells = _lmKept32;
                         this.removedCells = [];
-                        this.food = [];
-                        this.viruses = [];
-                        this.playerCells = [];
+                        this.food = lmIdxClear(this.food, '_foodIdx');
+                        this.viruses = lmIdxClear(this.viruses, '_virusIdx');
+                        this.playerCells = lmIdxClear(this.playerCells, '_playerIdx');
                         if (this._cellsDirty !== undefined) this._cellsDirty = true;
                         this._spawnTransitGate = false;
                         if (this._spawnGateTimer) {
@@ -50997,14 +50904,14 @@ function thelegendmodproject() {
                         }
                         indexedPush(this.cells, cellObj, '_cellsIdx');
                         this._cellsDirty = true;
-                        if (!isEjected && (this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
+                        if (!isEjected && (this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && lmIdxOf(this.playerCells, cellObj, '_playerIdx') === -1) {
                             cellObj.isPlayerCell = true;
                             this.playerColor = color;
                             cellObj.color = color;
                             indexedPush(this.playerCells, cellObj, '_playerIdx');
                         }
                     } else {
-                        indexedPush(this.food, cellObj, '_foodIdx'); cellObj._lmInFood = true;
+                        indexedPush(this.food, cellObj, '_foodIdx');
                     }
                     this.indexedCells[id] = cellObj;
                     cellObj.isFood = isFood ? 1 : 0;
@@ -51229,7 +51136,7 @@ function thelegendmodproject() {
                             isOwnPlayerCell = false;
                             if (this._playerCellIDSet) this._playerCellIDSet.delete(id);
                         }
-                        if (!isEjected && isOwnPlayerCell && this.playerCells.indexOf(cellObj) === -1) {
+                        if (!isEjected && isOwnPlayerCell && lmIdxOf(this.playerCells, cellObj, '_playerIdx') === -1) {
                             cellObj.isPlayerCell = true;
                             cellObj.rawServerColor = color;
                             this.playerColor = color || this.playerColor;
@@ -51238,7 +51145,7 @@ function thelegendmodproject() {
                             indexedPush(this.playerCells, cellObj, '_playerIdx');
                         }
                     } else {
-                        indexedPush(this.food, cellObj, '_foodIdx'); cellObj._lmInFood = true;
+                        indexedPush(this.food, cellObj, '_foodIdx');
                     }
                     this.indexedCells[id] = cellObj;
                 }
@@ -51546,9 +51453,7 @@ function thelegendmodproject() {
                  */
                 var _victimWasPlayer =
                     !!victimID.isPlayerCell ||
-                    this.playerCells.indexOf(
-                        victimID
-                    ) !== -1 ||
+                    lmIdxOf(this.playerCells, victimID, '_playerIdx') !== -1 ||
                     (
                         this._playerCellIDSet &&
                         this._playerCellIDSet.has(
@@ -52034,7 +51939,7 @@ function thelegendmodproject() {
                          * Player ownership must come exclusively from authoritative protocol IDs.
                          * Never infer ownership from colour, nickname, position, size or skin.
                          */
-                        if (!isEjected && isOwnPlayerCell && this.playerCells.indexOf(cellUpdateCells) === -1) {
+                        if (!isEjected && isOwnPlayerCell && lmIdxOf(this.playerCells, cellUpdateCells, '_playerIdx') === -1) {
                             cellUpdateCells.isPlayerCell = true;
                             cellUpdateCells.rawServerColor = rawServerColor;
                             if (this.gameMode === ":teams") {
@@ -52050,7 +51955,7 @@ function thelegendmodproject() {
                             indexedPush(this.playerCells, cellUpdateCells, '_playerIdx');
                         }
                     } else if (isFood) {
-                        indexedPush(this.food, cellUpdateCells, '_foodIdx'); cellUpdateCells._lmInFood = true;
+                        indexedPush(this.food, cellUpdateCells, '_foodIdx');
                     }
                     this.indexedCells[id] = cellUpdateCells;
                 }
@@ -52187,9 +52092,7 @@ function thelegendmodproject() {
                  */
                 var _removedWasPlayer =
                     !!cell.isPlayerCell ||
-                    this.playerCells.indexOf(
-                        cell
-                    ) !== -1 ||
+                    lmIdxOf(this.playerCells, cell, '_playerIdx') !== -1 ||
                     (
                         this._playerCellIDSet &&
                         this._playerCellIDSet.has(
@@ -52841,9 +52744,10 @@ function thelegendmodproject() {
                 var tSize = tmp.size, tId = tmp.id;
                 var j = i - 1;
                 while (j >= 0 && a[j] && (a[j].size > tSize || (a[j].size === tSize && a[j].id > tId))) {
-                    a[j + 1] = a[j]; j--;
+                    a[j + 1] = a[j]; a[j + 1]._cellsIdx = j + 1; j--;
                 }
-                a[j + 1] = tmp;
+                /* only cells that moved get a new slot (no full index pass per frame) */
+                if (j + 1 !== i) { a[j + 1] = tmp; tmp._cellsIdx = j + 1; }
                 budget -= i - 1 - j;
                 if (budget < 0) {
                     /* empty slots stop the insertion sort's scan; the native sort cannot copy
@@ -52854,7 +52758,6 @@ function thelegendmodproject() {
                     budget = Infinity;
                 }
             }
-            this._lmRebuildCellsIdx(a);
         },
         /* draw order of sortCells: smaller first, equal sizes by id */
         _lmCellOrder(p, q) {
@@ -52862,7 +52765,7 @@ function thelegendmodproject() {
             if (q.size > p.size || (q.size === p.size && q.id > p.id)) return -1;
             return 0;
         },
-        /* Rebuild _cellsIdx for every element after sort/dedup/compaction reorders LM.cells */
+        /* Rebuild _cellsIdx for every element after the native sort or a dedup reorders LM.cells */
         _lmRebuildCellsIdx(a) {
             for (var i = 0, len = a.length; i < len; i++) {
                 if (a[i]) a[i]._cellsIdx = i;
@@ -74880,6 +74783,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                 }
                 if (_dedupMap.size < _cellsBefore) {
+                    /* the dropped copies are no longer in LM.cells */
+                    for (ci = 0; ci < _cellsBefore; ci++) {
+                        cellItem = LM.cells[ci];
+                        if (cellItem && (!cellItem.id || _dedupMap.get(cellItem.id) !== cellItem)) cellItem._cellsIdx = -1;
+                    }
                     var _w = 0;
                     _dedupMap.forEach(function(v) { LM.cells[_w++] = v; });
                     LM.cells.length = _w;
@@ -75933,7 +75841,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!this._virusesRangeWasOn && LM.cells && LM.viruses) {
                         for (var _vri = 0; _vri < LM.cells.length; _vri++) {
                             var _vrc = LM.cells[_vri];
-                            if (_vrc && _vrc.isVirus && LM.viruses.indexOf(_vrc) === -1) {
+                            if (_vrc && _vrc.isVirus && lmIdxOf(LM.viruses, _vrc, '_virusIdx') === -1) {
                                 indexedPush(LM.viruses, _vrc, '_virusIdx');
                             }
                         }
@@ -76038,6 +75946,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             } finally {
                                 rCell._lmDrawNoText = false;
                             }
+                            /* A cell not moved above (hidden), or snapped to its live multibox
+                             * copy in moveCell(), never reached the end of its fade there and
+                             * stayed in this list for good: drop it once its fade time is over,
+                             * which is when moveCell() drops the others. */
+                            if (rCell.removed && rCell._removedIdx === i && rCell._lmFadeDone()) rCell._lmDropRemoved();
                         } catch (eRCell) { }
                     }
                 }
@@ -76089,6 +76002,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         !cell ||
                         cell.removed
                     ) {
+                        /* dropped from LM.cells here */
+                        if (cell) cell._cellsIdx = -1;
                         continue;
                     }
 
@@ -76100,6 +76015,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (lmMultiboxIdMaster(cell)) {
                         cell._renderSuppressed =
                             true;
+                        cell._cellsIdx = -1;
 
                         continue;
                     }
@@ -76150,6 +76066,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             _cW
                         ] =
                             cell;
+                        /* moved cells get their new slot here, no second pass */
+                        cell._cellsIdx = _cW;
                     }
 
                     _cW++;
@@ -76162,7 +76080,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ) {
                     LM.cells.length =
                         _cW;
-                    LM._lmRebuildCellsIdx(LM.cells);
                 }
 
 

@@ -251,7 +251,7 @@ check('determinism: every exercise runs and repeats exactly', allEx);
             };
         };
         vm.createContext(g);
-        if (helpers) vm.runInContext(helpers + '\nthis.quickSwapDelete = quickSwapDelete; this.indexedPush = indexedPush;', g);
+        if (helpers) vm.runInContext(helpers + '\n' + [...helpers.matchAll(/^ {4}function (\w+)\(/gm)].map(m => 'this.' + m[1] + ' = ' + m[1] + ';').join(' '), g);
         /* every other name the handler touches (EL effects, HUD hooks) resolves to a no-op */
         g.__h = null;
         g.__env = new Proxy({}, { has: (t, k) => typeof k === 'string' && !(k in g), get: (t, k) => k in t ? t[k] : noop }); /* implicit globals of the handler (cell, cellUpdateCells) keep their values */
