@@ -299,10 +299,11 @@ function SpecialDeals(defaultTab) {
         styleEl.id = 'skinShopStyles';
         styleEl.textContent = [
             '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid ' + pc2 + ' !important; border-top: 3px solid ' + mc + ' !important; border-radius: 6px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; resize: both; overflow: hidden; min-width: 340px; min-height: 300px; }',
-            '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; padding: 10px 15px 8px; position: relative; background: linear-gradient(180deg, ' + pc2 + ' 0%, ' + pc + ' 100%); }',
-            '#CloseSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 1; color: ' + tc2 + ' !important; font-size: 18px; line-height: 1; margin-left: 12px; cursor: pointer; padding: 0; border: none; background: rgba(255,255,255,.05); transition: all 0.2s; outline: none; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 400; }',
+            /* header laid out like every other Legend window (lmPromoChrome): centred title, close at the top right, help at the top left */
+            '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; min-height: 0; padding: 10px 52px 8px; text-align: center; position: relative; background: linear-gradient(180deg, ' + pc2 + ' 0%, ' + pc + ' 100%); }',
+            '#CloseSpecialDeals { position: absolute; top: 6px; right: 10px; float: none; margin: 0 !important; z-index: 1050; opacity: 1; color: ' + tc2 + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 0; border: none; background: rgba(255,255,255,.05); transition: all 0.2s; outline: none; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 400; }',
             '#CloseSpecialDeals:hover { color: ' + tc + ' !important; background: rgba(255,255,255,.12); }',
-            '#FAQSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: ' + mc + ' !important; font-size: 18px; line-height: 1; margin-right: 6px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
+            '#FAQSpecialDeals { position: absolute; top: 6px; left: 10px; float: none; margin: 0 !important; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: rgba(255,255,255,.05) !important; font-size: 14px !important; z-index: 1050; opacity: 0.85; color: ' + mc + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 8px; border: none; transition: all 0.2s; outline: none; }',
             '#FAQSpecialDeals:hover { opacity: 1; color: ' + mc + ' !important; transform: scale(1.15); filter: brightness(1.3); }',
             '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid ' + pc2 + '; margin: 0 -15px; padding: 0 15px; background: rgba(0,0,0,0.2); }',
             '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: ' + tc2 + ' !important; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
@@ -405,7 +406,7 @@ function SpecialDeals(defaultTab) {
         '<div id="CloseSpecialDeals2" class="modal-header">' +
         '<button id="CloseSpecialDeals" type="button" class="close" title="Close" onclick="window.closeSpecialShopModal(); return false;"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
         '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true"><b>?</b></span><span class="sr-only">Help</span></button>' +
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: ' + mc + '; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">' + initialTabTitle + '</h4>' +
+        '<h4 class="modal-title" style="font-weight: 700; color: ' + mc + '; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">' + initialTabTitle + '</h4>' +
         '</div>' +
 
         // Tab bar

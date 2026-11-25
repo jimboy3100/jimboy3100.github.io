@@ -28,6 +28,10 @@ function sandbox(code) {
         }
     };
     sb.window = sb;
+    /* the runtime also reads a language passed in the address (#lm=) and the browser's language */
+    sb.location = { hash: '', search: '', href: 'https://www.legendmod.ml/play.html' };
+    sb.navigator = { language: 'en-US' };
+    sb.addEventListener = function () { };
     sb.document = {
         currentScript: null,
         readyState: 'complete',

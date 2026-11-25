@@ -2,11 +2,11 @@
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
     '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
-    '<div class="modal-content">' +
-    '<div id="CloseReplay2" class="modal-header"><button id="CloseReplay" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQReplay" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Replay' + '</h4>' +
+    '<div class="modal-content" style="background:var(--lm-pc,#00243e);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);">' +
+    '<div id="CloseReplay2" class="modal-header" style="border-bottom:1px solid var(--lm-pc2,#002f52);background:linear-gradient(180deg,var(--lm-pc2,#002f52) 0%,var(--lm-pc,#00243e) 100%);cursor:move"><button id="CloseReplay" type="button" class="close" data-dismiss="modal" style="color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none"><span aria-hidden="true">×</span><span class="sr-only">' + (typeof Premadeletter113 !== 'undefined' ? Premadeletter113 : 'Close') + '</span></button> <button id="FAQReplay" type="button" class="close" data-dismiss="modal" style="color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none"><span aria-hidden="true">?</span><span class="sr-only">' + (typeof Premadeletter113 !== 'undefined' ? Premadeletter113 : 'Close') + '</span></button>' +
+    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif;color:var(--lm-mc,#01d9cc);font-weight:700;text-transform:uppercase;letter-spacing:1px">' + 'Replay' + '</h4>' +
     '</div>' +
-    '<div class="modal-body">' +
+    '<div class="modal-body" style="background:transparent;color:var(--lm-tc,#fff);padding:12px 15px">' +
     '<select id="savedArenas" class="form-control" required="" style="display:inline; margin-bottom: 10px; width: 70%"></select>' +	
 	'<button id="watchReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal">Watch</button>' +
 	'<button onclick="saveTextAsFile()" style="display:inline;">Save</button>' +
@@ -35,6 +35,13 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '</div>' +
     '</div>');
 if (typeof lmPromoChrome === 'function') lmPromoChrome('#replayModal');
+/* Dark-theme the replay controls even when lmPromoChrome was not available yet */
+(function(){var rs=document.createElement('style');rs.textContent=
+'#replayModal .form-control{background:rgba(0,0,0,.25)!important;color:var(--lm-tc,#fff)!important;border:1px solid var(--lm-pc2,#002f52)!important}'+
+'#replayModal button:not(.close){background:var(--lm-pc2,#002f52);color:var(--lm-tc,#fff);border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:4px 12px;cursor:pointer}'+
+'#replayModal button:not(.close):hover{background:rgba(255,255,255,.12)}'+
+'#replayModal color{color:var(--lm-tc2,#8096a7)}';
+(document.head||document.documentElement).appendChild(rs);})();
 $("#replayModal").draggable()	
 $("#stopReplaybtn").prop('disabled', true);
 if (window.replayGreyScale){

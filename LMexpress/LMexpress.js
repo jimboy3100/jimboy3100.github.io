@@ -4921,6 +4921,7 @@ function languagemodfun() {
     /* the chosen language's texts were loaded with the page (languages/lm-i18n.js): the language pack
      * handler puts them into the menus whose HTML has the English text */
     if (languagemod != 1) _lmRunLanguageHandler();
+    _lmFirstLanguageChooser();
 }
 
 /* fromUser: the dropdown was changed (not the start-up call in languagemodfun) */
@@ -4965,17 +4966,87 @@ function _lmAddLanguageScript(src, onload, onfail) {
 /* languages/LanguagePackHandler.js puts the texts into the menus by id (it reads the old globals
  * Languageletter*, which LMi18n keeps in the chosen language). Loaded once, the first time it is
  * needed; later changes call its function again. */
-var _lmLanguageHandler = { loading: false, again: false };
+/* (an object made on first use: languagemodfun can run before this line of the file has run) */
+var _lmLanguageHandler;
 function _lmRunLanguageHandler() {
     if (typeof window.lmApplyLanguagePack === 'function') {
         try { window.lmApplyLanguagePack(); } catch (e) { console.error('[Legend] language pack handler', e); }
         return;
     }
     /* a change while it loads: the file applies the language current when it runs */
+    if (!_lmLanguageHandler) _lmLanguageHandler = { loading: false };
     if (_lmLanguageHandler.loading) return;
     _lmLanguageHandler.loading = true;
     var done = function () { _lmLanguageHandler.loading = false; };
     _lmAddLanguageScript("https://www.legendmod.ml/languages/LanguagePackHandler.js?v=" + (window.OgVer || ''), done, done);
+}
+/* First visit (no language chosen, never asked): a small window with the 12 languages, the browser's
+ * one picked. OK switches like Choose Language and saves it; the cross or Esc keeps the browser's
+ * language unsaved. Asked once (localStorage lmLangAsked), on the main menu, not over the loading
+ * screen and not while playing. */
+function _lmLangChooserWanted() {
+    try {
+        var v = localStorage.getItem('languagemod');
+        if (v && v !== 'null') return false;
+        return !localStorage.getItem('lmLangAsked');
+    } catch (e) { return false; }
+}
+function _lmFirstLanguageChooser() {
+    if (!window.LMi18n || !_lmLangChooserWanted()) return;
+    var tries = 0;
+    var wait = setInterval(function () {
+        if (++tries > 600) { clearInterval(wait); return; }
+        if (!_lmLangChooserWanted()) { clearInterval(wait); return; }
+        if (document.getElementById('lm-boot') || !$('#main-menu').is(':visible') || !$('#overlays').is(':visible')) return;
+        if (window.legendmod && window.legendmod.play) return;
+        clearInterval(wait);
+        _lmShowLanguageChooser();
+    }, 500);
+}
+function _lmShowLanguageChooser() {
+    if (document.getElementById('lm-lang-first')) return;
+    var L = window.LMi18n;
+    var esc = function (k) { return _lmEscLang(window.lmT(k)); };
+    var box = $('<div class="modal fade in" id="lm-lang-first" role="dialog" aria-modal="true" aria-hidden="false" style="display:block;">' +
+        '<div class="modal-backdrop fade in"></div>' +
+        '<div class="modal-dialog" style="width:340px;max-width:calc(100vw - 16px);">' +
+        '<div class="modal-content">' +
+        '<div class="modal-header"><button type="button" class="close lm-lang-first-close" data-i18n-aria-label="core.close" aria-label="' + esc('core.close') + '">&times;</button>' +
+        '<h4 class="modal-title" data-i18n="core.langFirstTitle">' + esc('core.langFirstTitle') + '</h4></div>' +
+        '<div class="modal-body" style="text-align:center;max-height:calc(100vh - 150px);overflow:auto;">' +
+        '<p data-i18n="core.langFirstText" style="margin:0 0 10px;">' + esc('core.langFirstText') + '</p>' +
+        '<span data-lm-lang-picker="manual"></span></div>' +
+        '<div class="modal-footer" style="text-align:center;"><button type="button" class="btn btn-success lm-lang-first-ok" data-i18n="core.ok" style="min-width:96px;">' + esc('core.ok') + '</button></div>' +
+        '</div></div></div>');
+    box.attr('dir', L.dir());
+    $('#helloContainer').length ? $('#helloContainer').after(box) : $('body').append(box);
+    L.renderPickers(box[0]);
+    var sel = box.find('select.lm-lang-select').addClass('form-control').css({ display: 'inline-block', width: 'auto', minWidth: '180px', fontSize: '16px' });
+    sel.val(L.num());
+    if (typeof lmPromoChrome === 'function') lmPromoChrome('#lm-lang-first');
+    var asked = function () { try { localStorage.setItem('lmLangAsked', '1'); } catch (e) { } };
+    var close = function () {
+        asked();
+        window.removeEventListener('keydown', onKey, true);
+        box.remove();
+    };
+    box.find('.lm-lang-first-close').on('click', close);
+    box.find('.modal-backdrop').on('click', close);
+    box.find('.lm-lang-first-ok').on('click', function () {
+        var n = String(sel.val() || L.num());
+        close();
+        /* the Choose Language path: switches at once and saves languagemod */
+        $('#legendlanguages').val(n);
+        if ($('#legendlanguages').length) changeModLanguage(true);
+        else L.setLang(n);
+    });
+    /* Esc closes it before the mod's own Esc (menu toggle) sees the key: capture phase on window */
+    function onKey(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopImmediatePropagation(); close(); }
+        else if ((e.key === 'Enter' || e.keyCode === 13) && document.activeElement === sel[0]) { e.preventDefault(); e.stopImmediatePropagation(); box.find('.lm-lang-first-ok').trigger('click'); }
+    }
+    window.addEventListener('keydown', onKey, true);
+    setTimeout(function () { try { sel[0].focus(); } catch (e) { } }, 50);
 }
 function newsubmit() {
     if (legendmod.play == true) {
@@ -6761,8 +6832,9 @@ function initializeLM(modVersion) {
     PremiumUsersFFAScore()
 
 
-    $("button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
-    $("button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
+    /* by their agar.io text key too: those texts are in the chosen language now, not always English */
+    $("button[data-itr='page_spectate'], button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
+    $("button[data-itr='page_logout'], button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
     $("button:contains('Copy')").removeClass("btn-info").addClass("btn-link");
 
     $("#create-party-btn-2").html('<span class="glyphicon glyphicon-plus"></span>');
@@ -6848,10 +6920,10 @@ function initializeLM(modVersion) {
         '<div id="UserProfileUUID">UID: <input id="UserProfileUUID1" class="user-name" style="display:inline-block; width: 180px; font-size: 9px;"></div>' +
         '<div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used: <div id="TimesUsed" style="display:inline-block"></div></div><br>' +
         '</div></div>' +*/
-        '<button id="SHOSHOBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-puzzle-piece"></i>' + Premadeletter42 + '</button>' +
-        '<button id="MAINBTBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-minus"></i>' + Premadeletter45a + '</button>' +
-        '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="Temporarily Hide/Show Everything. Function for Youtubers" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
-        '<button id="TIMEcalBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-calculator"></i>' + Premadeletter50 + '</button>' +
+        '<button id="SHOSHOBtn" type="button" class="btn btn-sm btn-warning" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-puzzle-piece"></i>' + Premadeletter42 + '</button>' +
+        '<button id="MAINBTBtn" type="button" class="btn btn-sm btn-warning" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-minus"></i>' + Premadeletter45a + '</button>' +
+        '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="Temporarily Hide/Show Everything. Function for Youtubers" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
+        '<button id="TIMEcalBtn" type="button" class="btn btn-sm btn-warning" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-calculator"></i>' + Premadeletter50 + '</button>' +
 
         '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>User Scripts</button>' +
         '<button id="SpecialDealsBtn" class="btn btn-primary btn btn-shop" type="submit" disabled="disabled" onclick="BeforeSpecialDeals(); return false;" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first" data-itr="page_shop"><i class="fa fa-paint-brush"></i>Agar.io Skins<div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY NEEDED</div></button>' +
@@ -6994,7 +7066,7 @@ function initializeLM(modVersion) {
     $('.agario-panel.radio-panel').after('<div id="youtubeplayer" style="margin-left: 0px;"><h5 class="main-color" style="margin-right: 15px;">Youtube player</h5>' +
         '<iframe id="musicFrame" width="350" height="180" src="' + _lmEscHtml(getEmbedUrl(initialMusicUrl) || getEmbedUrl(defaultMusicUrl)) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
         '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + _lmEscHtml(initialMusicUrl) + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">');
-    //			'<button id="YoutubeBackgroundBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter61 + '</button></div>' +
+    //			'<button id="YoutubeBackgroundBtn" type="button" class="btn btn-block btn-info" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter61 + '</button></div>' +
 
     $('.agario-panel.radio-panel').hide();
     $('.agario-panel.ogario-yt-panel').hide();
@@ -7551,7 +7623,10 @@ function initializeLM(modVersion) {
     });
 
     $("#SHOSHOBtn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
+        var wasPressed = $(this).attr('aria-pressed') === 'true';
+        var checked = !wasPressed;
+        $(this).attr('aria-pressed', String(checked));
+        $(this).toggleClass('active', checked);
         if (checked) {
             localStorage.setItem("SHOSHOBtn", true);
             $("#shortcuts-hud").show();
@@ -7570,38 +7645,54 @@ function initializeLM(modVersion) {
             return seticon = "YES";
         }
     });
+    /* the chosen corners (rounded or square) win over the stylesheets: ogario.v3.css comes later in
+     * the page with the same selectors (.btn, .form-control...) and kept buttons and inputs square */
+    function _lmHudCornersWin() {
+        var st = document.getElementById('RNCN');
+        if (st) st.textContent = st.textContent.replace(/border-radius:\s*([^;}!]+?)\s*(?=[;}])/g, 'border-radius: $1 !important');
+    }
     $("#MAINBTBtn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
+        /* Toggle state manually: do NOT rely on Bootstrap's button.js toggling
+         * aria-pressed, because agar.io may not load the button plugin. */
+        var wasPressed = $(this).attr('aria-pressed') === 'true';
+        var checked = !wasPressed;
+        $(this).attr('aria-pressed', String(checked));
+        $(this).toggleClass('active', checked);
         if (checked) {
             localStorage.setItem("MAINBTBtn", true);
             var headID = document.getElementsByTagName("head")[0];
             $('#RNCN').remove(); /* one style tag, not one more per toggle */
-            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
-                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel{border-radius: 10px;}.menu-tabs,' +
-                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0;} #hotkeys {border-radius: 10px;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0;}  ' +
-                '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%; }.agario-profile-picture { border-radius: 32px;}' +
-                '#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 0 0 15px 15px;}' +
-                '#top5-hud{ border-radius: 15px; } #target-hud{ border-radius: 15px; } #legendAdImg, #stats-hud { border-radius: 10px; } ' +
-                '#time-hud { border-radius: 10px; } </style>');
+            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, #main-menu, .center-container, .btn, .form-control, ' +
+                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, #skins-panel, #quick-menu, #exp-bar, #exp-bar .progress{border-radius: 10px!important;}.menu-tabs,' +
+                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0!important;} #hotkeys {border-radius: 10px!important;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0!important;}  ' +
+                '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%!important; }.agario-profile-picture { border-radius: 32px!important;}' +
+                '#menu-footer { border-radius: 0 0 10px 10px!important; } #leaderboard-hud { border-radius: 15px!important;} #dropDown, #dropDown2 { border-radius: 15px!important;} #minimap-hud { border-radius: 0 0 15px 15px!important;}' +
+                '#top5-hud{ border-radius: 15px!important; } #target-hud{ border-radius: 15px!important; } #legendAdImg, #stats-hud { border-radius: 10px!important; } ' +
+                '#time-hud, #timertools-hud { border-radius: 10px!important; } </style>');
+            _lmHudCornersWin();
             $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45b);
         } else {
             localStorage.setItem("MAINBTBtn", false);
             var headID = document.getElementsByTagName("head")[0];
             $('#RNCN').remove(); /* one style tag, not one more per toggle */
-            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
-                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, .menu-tabs,' +
-                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys,  #hotkeys, .skin, .input-group-btn, .input-group.nick,  ' +
+            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, #main-menu, .center-container, .btn, .form-control, ' +
+                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, #skins-panel, #quick-menu, #exp-bar, #exp-bar .progress, .menu-tabs,' +
+                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys, .skin, .input-group-btn, .input-group.nick,  ' +
                 '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i, .agario-profile-picture,' +
                 '#menu-footer, #leaderboard-hud, #dropDown, #dropDown2, #minimap-hud,' +
                 '#top5-hud, #target-hud, #legendAdImg, #stats-hud, ' +
-                '#time-hud { border-radius: 0 0 0 0 } </style>');
+                '#time-hud, #timertools-hud { border-radius: 0!important; } </style>');
+            _lmHudCornersWin();
             $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45a);
         }
     });
 
 
     $("#TIMEcalBtn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
+        var wasPressed = $(this).attr('aria-pressed') === 'true';
+        var checked = !wasPressed;
+        $(this).attr('aria-pressed', String(checked));
+        $(this).toggleClass('active', checked);
         if (checked) {
             localStorage.setItem("TIMEcalBtn", true);
             $("#timertools-hud").show();
@@ -7615,7 +7706,10 @@ function initializeLM(modVersion) {
         }
     });
     $("#HideAllBthn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
+        var wasPressed = $(this).attr('aria-pressed') === 'true';
+        var checked = !wasPressed;
+        $(this).attr('aria-pressed', String(checked));
+        $(this).toggleClass('active', checked);
         /* un-hiding showed every HUD, also the ones turned off in the settings (minimap, top 5,
          * targeting, stats), and never the clock: remember what was shown */
         var _lmHudSel = "#shortcuts-hud,#exp-bar,#time-hud,#leaderboard-hud,#minimap-hud,#stats-hud,#top5-hud,#target-hud,#target-panel-hud";

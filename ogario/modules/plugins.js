@@ -535,7 +535,9 @@
 
     /* ---------- the panel ---------- */
 
-    var view = 'editor', settingsFor = 0;
+    /* the list of the 5 slots is the main view; the editor of one slot opens from its Edit button
+     * (a separate Editor tab showed the same slots a second way) */
+    var view = 'plugins', settingsFor = 0, opening = false;
     function el(tag, cls, text) {
         var e = document.createElement(tag);
         if (cls) e.className = cls;
@@ -763,6 +765,9 @@
         hud.classList.toggle('lm-us-alt', view !== 'editor');
         var bs = document.querySelectorAll('#lm-us-bar button');
         for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('active', bs[i].getAttribute('data-view') === view);
+        /* "All slots" only while a slot is edited */
+        var ab = document.getElementById('lm-us-allslots');
+        if (ab) ab.style.display = view === 'editor' ? '' : 'none';
         renderInfo();
         if (view === 'editor') return;
         var top = ext.scrollTop;
@@ -818,12 +823,19 @@
         var h5 = hud.querySelector('h5');
         var bar = el('div');
         bar.id = 'lm-us-bar';
-        [['editor', 'editor'], ['plugins', 'plugins'], ['catalogue', 'catalogue']].forEach(function (v) {
+        [['plugins', 'plugins'], ['catalogue', 'catalogue']].forEach(function (v) {
             var b = el('button', '', tx(v[1]));
             b.type = 'button';
             b.setAttribute('data-view', v[0]);
             bar.appendChild(b);
         });
+        /* back from the editor of one slot to the list (the slot's Edit button opens the editor) */
+        var all = el('button', '', tx('allSlots'));
+        all.type = 'button';
+        all.id = 'lm-us-allslots';
+        all.setAttribute('data-view', 'plugins');
+        all.style.display = 'none';
+        bar.insertBefore(all, bar.firstChild);
         var ext = el('div');
         ext.id = 'lm-us-ext';
         setDir(bar);
@@ -852,10 +864,13 @@
         });
         /* the header line follows what is typed or erased in the editor */
         panel.addEventListener('focusout', function (e) { if (e.target && /^Userscript/.test(e.target.id || '')) setTimeout(refresh, 50); });
+        /* the menu's User Scripts button opens the list of slots again (not the last slot edited) */
+        var ob = document.getElementById('OpenuserScripts');
+        if (ob) ob.addEventListener('click', function () { if (!opening && view === 'editor') { view = 'plugins'; settingsFor = 0; render(); } });
         /* a language change: the views and the header line again in the new language */
         if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
             setDir(bar); setDir(ext); setDir(info);
-            for (var i = 0; i < bar.children.length; i++) bar.children[i].textContent = tx(bar.children[i].getAttribute('data-view'));
+            for (var i = 0; i < bar.children.length; i++) bar.children[i].textContent = bar.children[i].id === 'lm-us-allslots' ? tx('allSlots') : tx(bar.children[i].getAttribute('data-view'));
             render();
         });
         var eb = document.getElementById('EraseScripter');
@@ -867,11 +882,16 @@
     /* opens the User Scripts panel (from the hotkey, the Command Centre, the Lab) */
     function open(v) {
         var $ = jq();
-        if (v === 'plugins' || v === 'catalogue' || v === 'editor') view = v;
+        /* the list of slots unless a view is asked for */
+        view = v === 'catalogue' || v === 'editor' ? v : 'plugins';
         settingsFor = 0;
         try { if (window.application && typeof window.application.showMenu === 'function') window.application.showMenu(); } catch (e) { }
-        if ($ && $('#OpenuserScripts').length) $('#OpenuserScripts').trigger('click');
-        else if ($) { $('#main-menu, #skins-panel, #quick-menu, #exp-bar').hide(); $('#userscripts').show(); }
+        /* the click below is this call's own: it keeps the view asked for */
+        opening = true;
+        try {
+            if ($ && $('#OpenuserScripts').length) $('#OpenuserScripts').trigger('click');
+            else if ($) { $('#main-menu, #skins-panel, #quick-menu, #exp-bar').hide(); $('#userscripts').show(); }
+        } finally { opening = false; }
         mount();
         render();
     }

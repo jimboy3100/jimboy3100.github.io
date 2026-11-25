@@ -2882,5 +2882,61 @@
     "tr": "Dil değiştirildi. Ayar satırlarını da güncellemek için sayfayı yenileyin.",
     "pl": "Zmieniono język. Odśwież stronę, aby zaktualizować także ustawienia.",
     "nl": "Taal gewijzigd. Laad de pagina opnieuw om ook de instellingen bij te werken."
+  },
+  "core.langFirstTitle": {
+    "en": "Choose your language",
+    "el": "Επιλέξτε τη γλώσσα σας",
+    "es": "Elige tu idioma",
+    "bg": "Изберете своя език",
+    "fr": "Choisissez votre langue",
+    "ar": "اختر لغتك",
+    "zh": "選擇您的語言",
+    "ru": "Выберите язык",
+    "de": "Wähle deine Sprache",
+    "tr": "Dilinizi seçin",
+    "pl": "Wybierz swój język",
+    "nl": "Kies je taal"
+  },
+  "core.langFirstText": {
+    "en": "You can change it later in Settings > Choose Language.",
+    "el": "Μπορείτε να την αλλάξετε αργότερα στις Ρυθμίσεις > Επιλογή γλώσσας.",
+    "es": "Puedes cambiarlo más tarde en Ajustes > Elegir idioma.",
+    "bg": "Можете да го промените по-късно от Настройки > Избор на език.",
+    "fr": "Vous pourrez la changer plus tard dans Réglages > Choisir la langue.",
+    "ar": "يمكنك تغييرها لاحقًا من الإعدادات > اختيار اللغة.",
+    "zh": "您之後可以在「設定 > 選擇語言」中變更。",
+    "ru": "Его можно изменить позже в Настройки > Выбор языка.",
+    "de": "Du kannst sie später unter Einstellungen > Sprache wählen ändern.",
+    "tr": "Daha sonra Ayarlar > Dil Seçin bölümünden değiştirebilirsiniz.",
+    "pl": "Możesz go później zmienić w Ustawienia > Wybierz język.",
+    "nl": "Je kunt dit later wijzigen via Instellingen > Taal kiezen."
+  },
+  "core.ok": {
+    "en": "OK",
+    "el": "Εντάξει",
+    "es": "Aceptar",
+    "bg": "OK",
+    "fr": "OK",
+    "ar": "موافق",
+    "zh": "確定",
+    "ru": "ОК",
+    "de": "OK",
+    "tr": "Tamam",
+    "pl": "OK",
+    "nl": "OK"
+  },
+  "core.close": {
+    "en": "Close",
+    "el": "Κλείσιμο",
+    "es": "Cerrar",
+    "bg": "Затвори",
+    "fr": "Fermer",
+    "ar": "إغلاق",
+    "zh": "關閉",
+    "ru": "Закрыть",
+    "de": "Schließen",
+    "tr": "Kapat",
+    "pl": "Zamknij",
+    "nl": "Sluiten"
   }
 }
