@@ -181,6 +181,11 @@
         '#leaderboard-hud{font-size:85%!important}' +
         '#leaderboard-hud h5{font-size:16px!important}' +
         '#leaderboard-positions{font-size:14px!important}' +
+        /* the mass/sector column has the names' size, so its rows stay level with them (at its
+         * desktop 17px each row was taller and the column ran far below the names) */
+        '#leaderboard-data{font-size:14px!important}#leaderboard-data span{font-size:inherit!important}' +
+        /* tighter rows while the leaderboard has to shrink to end above the right-hand controls */
+        '#leaderboard-hud.lm-lb-fit #leaderboard-positions,#leaderboard-hud.lm-lb-fit #leaderboard-data{line-height:1.2!important}' +
         '#top5-hud{font-size:85%!important}' +
         '#top5-pos{font-size:13px!important}' +
 
@@ -1645,6 +1650,39 @@
             /* controls placed in the control editor are not in these groups: they only get
              * clamped to the (maybe rotated or resized) screen */
             layoutRefresh();
+            fitLeaderboard();
+        }
+
+        /* The leaderboard (top right) and its mass/sector column end above the touch controls
+         * and the minimap below them. Expanding Land sends 20 rows: at the normal size they ran
+         * down over SPLIT/FEED, 4x/16x and the minimap. Rows get tighter and the box smaller
+         * until it fits, never below half size; every row stays. A HUD layout that places the
+         * leaderboard sizes it itself. Runs with repositionButtons (resize, rotation, 2.5 s). */
+        function fitLeaderboard() {
+            var lb = document.getElementById('leaderboard-hud');
+            var he = window.LMHudEditor;
+            if (!lb || (he && he.owns && he.owns('leaderboard'))) return;
+            var base = parseFloat(lb.dataset.lmBaseScale) || 0.75, s = base;
+            var r = lb.getBoundingClientRect();
+            if (!(r.width >= 1 && r.height >= 1)) return; /* leaderboard turned off */
+            var data = document.getElementById('leaderboard-data');
+            /* unscaled size; the mass column is drawn to the left of the box */
+            var left = r.right - (lb.offsetWidth + (data ? data.offsetWidth : 0)) * base;
+            var top = Infinity, c = window._lmMobileHost ? window._lmMobileHost.controls() : {};
+            var els = [document.getElementById('minimap-hud')];
+            for (var k in c) if (c[k]) els.push(c[k]);
+            els.forEach(function (el) {
+                var q = el.getBoundingClientRect();
+                if (q.width >= 1 && q.height >= 1 && q.right > left && q.left < r.right && q.top > r.top + 8 && q.top < top) top = q.top;
+            });
+            var height = function () { return Math.max(lb.offsetHeight, data ? data.offsetTop + data.offsetHeight : 0); };
+            lb.classList.remove('lm-lb-fit');
+            if (top < Infinity && height() * base > top - r.top - 6) {
+                lb.classList.add('lm-lb-fit');
+                s = Math.max(0.5, Math.min(base, (top - r.top - 6) / height()));
+            }
+            var t = 'scale(' + Math.round(s * 1000) / 1000 + ')';
+            if (lb.style.getPropertyValue('transform') !== t) lb.style.setProperty('transform', t, 'important');
         }
 
         /* ═══════════════════════════════════════════════════════
@@ -1800,6 +1838,9 @@
                     // the base scale comes from an !important stylesheet rule, not the inline style
                     if (el) el.style.setProperty('transform', 'scale(0.9)', 'important');
                 });
+                /* fitLeaderboard shrinks from this size */
+                var lbh = document.querySelector('#leaderboard-hud');
+                if (lbh) lbh.dataset.lmBaseScale = '0.9';
                 var mm = document.querySelector('#minimap-hud');
                 if (mm) {
                     mm.dataset.lmBaseScale = '0.65';
