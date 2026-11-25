@@ -165,27 +165,25 @@
 
 <body>
     <div class="header">
-        <img src="icon48.png" alt="Legend Express Logo">
+        <img src="icon48.png" alt="" data-i18n-alt="lmx.ext.logoAlt">
         <h1>Legend Express</h1>
     </div>
-    <div class="description">
-        Legend Express loads Legend Mod on Agar.io: smooth WebGL rendering, skins, replays, team chat,
-        Expanding Land servers and many macros and hotkeys.
-    </div>
+    <div class="description" data-i18n="lmx.ext.description"></div>
     <div class="links">
         <div class="toggle-container">
-            <span>Enable Extension</span>
+            <span data-i18n="lmx.ext.enable"></span>
             <label class="switch">
                 <input type="checkbox" id="extensionToggle">
                 <span class="slider"></span>
             </label>
         </div>
-        <div id="reloadHint" style="display:none;font-size:12px;opacity:.8;margin:-4px 0 8px;">Reload the agar.io tab to apply.</div>
-        <button id="play" class="link-button">Play now</button>
-        <button id="website" class="link-button">Legend Mod Website</button>
-        <button id="library" class="link-button">Mod Library (GitHub)</button>
-        <button id="donate" class="link-button">Buy me a beer 🍺</button>
+        <div id="reloadHint" style="display:none;font-size:12px;opacity:.8;margin:-4px 0 8px;" data-i18n="lmx.ext.reloadHint"></div>
+        <button id="play" class="link-button" data-i18n="lmx.ext.playNow"></button>
+        <button id="website" class="link-button" data-i18n="lmx.ext.website"></button>
+        <button id="library" class="link-button" data-i18n="lmx.ext.library"></button>
+        <button id="donate" class="link-button" data-i18n="lmx.ext.beer"></button>
     </div>
+    <script src="texts.js"></script>
     <script src="popup.js"></script>
 </body>
 
