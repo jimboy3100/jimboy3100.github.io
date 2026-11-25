@@ -5119,6 +5119,29 @@ function _isValidSkin(s) {
     if (typeof s.width === "number" && s.width > 0) return true;
     return false;
 }
+/* A picture that is (almost) fully transparent or a solid black disc is no skin: placeholder
+ * and broken skin links (a chat teammate without a skin) drew black cells and black avatars in
+ * the team list. Checked once per URL on a 24x24 copy; a picture the browser will not let us
+ * read (no CORS) is kept. The URLs found are remembered for the page (_lmBlankSkins). */
+window._lmBlankSkins = window._lmBlankSkins || {};
+function _lmSkinLooksEmpty(img) {
+    try {
+        var sz = 24, c = document.createElement('canvas');
+        c.width = sz;
+        c.height = sz;
+        var x = c.getContext('2d', { willReadFrequently: true });
+        x.drawImage(img, 0, 0, sz, sz);
+        var d = x.getImageData(0, 0, sz, sz).data, opaque = 0, dark = 0;
+        for (var i = 0; i < d.length; i += 4) {
+            if (d[i + 3] < 24) continue;
+            opaque++;
+            if (d[i] < 40 && d[i + 1] < 40 && d[i + 2] < 40) dark++;
+        }
+        return opaque < sz * sz * 0.03 || dark >= opaque * 0.97;
+    } catch (e) {
+        return false;
+    }
+}
 
 /* ── Fallback gradient avatar for skinless cells ──
  * Generates a deterministic radial gradient canvas from a player name hash.
@@ -26013,7 +26036,8 @@ function thelegendmodproject() {
                             /* top5 entries carry the teammate's own skin as .skin (updateTeamPlayers);
                              * the nick lookups picked another player's skin when nicks repeat. */
                             var skinUrl = p.skinURL || p.skin || application.customSkinsMap[p.nick] || application.customSkinsMap[p.nick + "#000000"] || (p.color ? application.customSkinsMap[p.nick + p.color] : null);
-                            var isValidSkinUrl = skinUrl && typeof skinUrl === 'string' && (/^(https?:\/\/|data:image\/)/i.test(skinUrl));
+                            /* a blank (transparent or black) skin shows the Legend icon instead */
+                            var isValidSkinUrl = skinUrl && typeof skinUrl === 'string' && (/^(https?:\/\/|data:image\/)/i.test(skinUrl)) && !window._lmBlankSkins[skinUrl];
                             if (isValidSkinUrl) {
                                 if (!p.skinURL) p.skinURL = skinUrl;
                                 if (!this.customSkinsCache[skinUrl]) {
@@ -29692,6 +29716,8 @@ function thelegendmodproject() {
             if (url.includes(' ')) {
                 url = url.replace(/ /g, '_');
             }
+            /* found blank (transparent or black) before: not fetched again */
+            if (window._lmBlankSkins[url] || window._lmBlankSkins[origUrl]) return;
             // Validate basic URL structure (must contain a valid domain dot e.g. http(s)://domain.com/...)
             if (!/^https?:\/\/[^/]+\.[^/]+/i.test(url)) return;
 
@@ -29852,6 +29878,16 @@ function thelegendmodproject() {
                         delete img[url];
                     }
 
+                    return false;
+                }
+
+                /* a fully transparent or solid black picture is no skin: dropped for good */
+                if (_lmSkinLooksEmpty(imageObj)) {
+                    imageObj._failed = true;
+                    if (img && img[url] === imageObj) delete img[url];
+                    window._lmBlankSkins[url] = 1;
+                    if (origUrl && origUrl !== url) window._lmBlankSkins[origUrl] = 1;
+                    console.warn('[LM] Blank skin ignored (transparent or black): ' + url);
                     return false;
                 }
 
