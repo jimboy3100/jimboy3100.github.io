@@ -4,8 +4,7 @@
 var semimodVersion = "30"; // the version 1.1-> 1.11
 
 /* Texts shown to the player come from the language packs (developers/i18n/src/lmx.json, keys "lmx.ex.*"):
- * _lmxT gives the text in the chosen language, _lmxE the same escaped for HTML and attributes. *
-/
+ * _lmxT gives the text in the chosen language, _lmxE the same escaped for HTML and attributes. */
 function _lmxT(k, v) { return window.lmT ? window.lmT(k, v) : String(k); }
 function _lmxE(k, v) { return String(_lmxT(k, v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 /* Choose Language: every language under its own name (the same in every language), value = languagemod number */
