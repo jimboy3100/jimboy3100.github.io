@@ -13,5 +13,11 @@
   info.scripts = n;
   if (!(n > 5)) fail.push('script count not remembered (' + n + ')');
   if (!document.getElementById('main-menu')) fail.push('no #main-menu (the screen waits for it)');
+  /* its text is in the language chosen in Legend Mod (languagemod), when one was chosen */
+  var lm = 0;
+  try { lm = parseInt(localStorage.getItem('languagemod'), 10) || 0; } catch (e) { }
+  info.lang = window._lmBootLang;
+  if (!(window._lmBootLang >= 1 && window._lmBootLang <= 12)) fail.push('loading screen language not set (' + window._lmBootLang + ')');
+  else if (lm >= 1 && lm <= 12 && window._lmBootLang !== lm) fail.push('loading screen language ' + window._lmBootLang + ', chosen ' + lm);
   return { fail: fail, info: info };
 })()

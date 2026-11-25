@@ -63,8 +63,19 @@
         (function () {
             var boot = document.getElementById('lm-boot'), bar = document.getElementById('lm-boot-bar');
             var text = document.getElementById('lm-boot-text'), file = document.getElementById('lm-boot-file');
-            var el = (navigator.language || '').slice(0, 2) === 'el';
-            text.textContent = el ? 'Φόρτωση... παρακαλώ περιμένετε' : 'Loading... please wait';
+            /* the language chosen in Legend Mod (localStorage languagemod: 1 English, 2 Greek ... 12 Dutch,
+             * as in the Choose Language list); never chosen: the browser's language, else English.
+             * The Legend Express extension's loading screen (LMexpress/extension/content.js) has the same list. */
+            var LANG_TEXT = ['Loading... please wait', 'Φόρτωση... παρακαλώ περιμένετε', 'Cargando... por favor espere',
+                'Зареждане... моля, изчакайте', 'Chargement... veuillez patienter', 'جارٍ التحميل... يرجى الانتظار',
+                '載入中... 請稍候', 'Загрузка... пожалуйста, подождите', 'Wird geladen... bitte warten',
+                'Yükleniyor... lütfen bekleyin', 'Ładowanie... proszę czekać', 'Laden... even geduld'];
+            var langN = 0;
+            try { langN = parseInt(localStorage.getItem('languagemod'), 10) || 0; } catch (e) { }
+            if (!(langN >= 1 && langN <= 12)) langN = { en: 1, el: 2, es: 3, bg: 4, fr: 5, ar: 6, zh: 7, ru: 8, de: 9, tr: 10, pl: 11, nl: 12 }[(navigator.language || '').slice(0, 2).toLowerCase()] || 1;
+            text.textContent = LANG_TEXT[langN - 1];
+            if (langN === 6) text.dir = 'rtl';
+            window._lmBootLang = langN;
             /* the player's own menu colours, when saved */
             try {
                 var th = JSON.parse(localStorage.getItem('ogarioThemeSettings') || '{}');

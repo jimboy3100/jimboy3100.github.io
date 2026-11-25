@@ -101,10 +101,19 @@ function showLoading() {
         const box = document.createElement('div');
         box.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#00243e;color:#fff;' +
             'font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;';
-        const greek = (navigator.language || '').slice(0, 2) === 'el';
+        /* the language chosen in Legend Mod (agar.io's localStorage languagemod, 1 English ... 12 Dutch);
+         * never chosen: the browser's language, else English. Same list as play.html's loading screen. */
+        const texts = ['Loading... please wait', 'Φόρτωση... παρακαλώ περιμένετε', 'Cargando... por favor espere',
+            'Зареждане... моля, изчакайте', 'Chargement... veuillez patienter', 'جارٍ التحميل... يرجى الانتظار',
+            '載入中... 請稍候', 'Загрузка... пожалуйста, подождите', 'Wird geladen... bitte warten',
+            'Yükleniyor... lütfen bekleyin', 'Ładowanie... proszę czekać', 'Laden... even geduld'];
+        let n = 0;
+        try { n = parseInt(localStorage.getItem('languagemod'), 10) || 0; } catch (e) { }
+        if (!(n >= 1 && n <= 12)) n = { en: 1, el: 2, es: 3, bg: 4, fr: 5, ar: 6, zh: 7, ru: 8, de: 9, tr: 10, pl: 11, nl: 12 }[(navigator.language || '').slice(0, 2).toLowerCase()] || 1;
         box.innerHTML = '<div><div style="font-size:26px;font-weight:700;letter-spacing:1px;">Legend Mod</div>' +
             '<div style="margin-top:10px;opacity:.85;"></div></div>';
-        box.firstChild.lastChild.textContent = greek ? 'Φόρτωση... παρακαλώ περιμένετε' : 'Loading... please wait';
+        box.firstChild.lastChild.textContent = texts[n - 1];
+        if (n === 6) box.firstChild.lastChild.dir = 'rtl';
         document.documentElement.appendChild(box);
     } catch (e) { }
 }
