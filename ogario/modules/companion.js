@@ -626,6 +626,13 @@
                 row.appendChild(el);
             });
             privacyControls(row);
+            /* exactly what leaves the game, and what Stream mode takes out (buildState) */
+            var note = D.createElement('div');
+            note.className = 'lm-companion-note';
+            note.setAttribute('data-i18n', 'pkg.i.companionShares');
+            note.textContent = typeof root.lmT === 'function' ? root.lmT('pkg.i.companionShares') : '';
+            note.style.cssText = 'flex-basis:100%;font-size:11px;opacity:.8;line-height:1.35;';
+            row.appendChild(note);
         }
         if (row.previousSibling !== label) label.parentNode.insertBefore(row, label.nextSibling);
         return true;

@@ -20260,7 +20260,7 @@ var defaultmapsettings = {
     hudCellPanel: false,          /* panel with the own cell masses */
     massFormat: 0,                /* mass text: 0 as before (Short mass), 1 exact, 2 12.3k, 3 auto */
     virusesRange: false,
-    textStroke: false,
+    textStroke: false,            /* legacy: no switch and no effect (namesStroke / massStroke are used); kept for saved settings and old scripts */
     namesStroke: true,
     massStroke: true,
     bubbleCursorTracker: false,
@@ -20275,7 +20275,7 @@ var defaultmapsettings = {
     mouseWheelClick: false,
     mouseCommand4: false,
     mouseCommand5: false,
-    mouseInvert: false,
+    mouseInvert: false,           /* legacy: no switch and no effect (the mouse buttons have their own commands); kept for saved settings and old scripts */
     disableChat: false,
     coloredNicks: false,
     hideChat: false,
@@ -23881,6 +23881,8 @@ function thelegendmodproject() {
             if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {
                 /* Adaptive performance keeps lowered values for now: the player's change wins */
                 if (window.LMPerf) { try { window.LMPerf.onSetting(id, checked); } catch (e) { } }
+                /* ... and over the copy Performance mode keeps (after the adaptive values are back) */
+                this._lmPerfModeOwn(id, checked);
                 //switch (defaultmapsettings[id] = checked, ogario.hasOwnProperty(id) && (ogario[id] = checked), id) {
                 defaultmapsettings[id] = checked;
                 if (ogario.hasOwnProperty(id)) {
@@ -24050,8 +24052,7 @@ function thelegendmodproject() {
                          * input + change (value label, its callback, save). Setting the checkbox
                          * with a change that does not bubble skipped setSettings, and the HUD blur
                          * slider kept showing the old value while the blur was 0. */
-                        var _lmPerfKeys = ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor',
-                            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias', 'hudBlur'].filter(function (k) { return Object.prototype.hasOwnProperty.call(defaultmapsettings, k); });
+                        var _lmPerfKeys = this._lmPerfModeKeys.filter(function (k) { return Object.prototype.hasOwnProperty.call(defaultmapsettings, k); });
                         var _lmPerfApp = this;
                         var _lmPerfSet = function (k, v) {
                             var cb = document.getElementById(k);
@@ -24114,6 +24115,41 @@ function thelegendmodproject() {
                 /* the save sends LMEvents 'settingsChange' when the value changed (lmSettingsCommit) */
                 this.saveSettings(defaultmapsettings, 'ogarioSettings');
             }
+        },
+        /* The settings Performance mode turns off; it keeps their earlier values ('lmPerfBackup')
+         * to put back when it is turned off. */
+        _lmPerfModeKeys: ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor',
+            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias', 'hudBlur'],
+        /* What the player sets while the mode is on wins over that copy: turning the mode off
+         * puts back only the values nobody changed meanwhile. setSettings calls this before a
+         * value is stored (after Adaptive performance put its lowered values back), presets and
+         * their Undo call it for their keys.
+         * - One of the keys set while the mode is on (switch, hotkey, preset): the value is the
+         *   player's, it leaves the copy. Not for the mode's own changes, nor for a settings
+         *   profile (it brings its own copy).
+         * - The mode turned off: a key that no longer has the value the mode gave it was changed
+         *   meanwhile some other way (a slider, a script), so it leaves the copy too. */
+        _lmPerfModeOwn(id, value) {
+            var keys = this._lmPerfModeKeys, drop = [];
+            if (id === 'performanceMode') {
+                if (value !== false || defaultmapsettings.performanceMode !== true) return;
+                drop = keys.filter(function (k) {
+                    var v = defaultmapsettings[k];
+                    return k === 'hudBlur' ? Number(v) !== 0 : v !== false;
+                });
+            } else if (defaultmapsettings.performanceMode === true && !this._lmPerfApplying && keys.indexOf(id) >= 0) {
+                drop = [id];
+            }
+            if (!drop.length) return;
+            var mem = window._lmPerfBackupMem;
+            if (mem && typeof mem === 'object') drop.forEach(function (k) { delete mem[k]; });
+            try {
+                var b = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null');
+                if (!b || typeof b !== 'object') return;
+                var n = 0;
+                drop.forEach(function (k) { if (Object.prototype.hasOwnProperty.call(b, k)) { delete b[k]; n++; } });
+                if (n) window.localStorage.setItem('lmPerfBackup', JSON.stringify(b));
+            } catch (e) { }
         },
         profiling() {
             if (defaultmapsettings.profileNumber < 15) {
@@ -24708,7 +24744,7 @@ function thelegendmodproject() {
             $("#main-panel div[role=form] .form-group:first").remove();
             $("#nick").before('<input id="clantag" class="form-control" ' + _lmG1a('placeholder', 'game1.menu.clanTagPh') + ' maxlength="10"><div class="input-group nick"></div>');
             $("#nick").appendTo($(".nick"));
-            $(".nick").append('<span class="input-group-btn"><button id="stream-mode" class="btn active ogicon-eye"></button></span>');
+            $(".nick").append('<span class="input-group-btn"><button id="stream-mode" class="btn active ogicon-eye"' + _lmG1a('title', 'pkg.i.streamModeTip') + '></button></span>');
             $(".nick").after('<div class="input-group skin"><input id="skin" class="form-control" ' + _lmG1a('placeholder', 'game1.menu.skinUrlPh') + ' maxlength="150"><input type="hidden" id="color" value="' + ogarcopythelb.color + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye" style="display: none"></button></span></div>');
             $('#stream-mode').before('<button id="opennamechars" class="btn btn-info" style="background-color: transparent;" onclick="opennamechars();return false;"><i class="fa fa-language"></i></button>');
             $('#opennamechars').tooltip({
@@ -25006,7 +25042,9 @@ function thelegendmodproject() {
                 var presets = {
                     competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStatsFPS: true, showStatsPPS: true } },
                     battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0 } },
-                    streamer: { key: 'lmPresetStreamer', en: 'Streamer', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false } },
+                    /* tip: what it changes and what it leaves (it is not a privacy switch: Stream
+                     * mode, Hide skin URL and the stream overlay's own switches are) */
+                    streamer: { key: 'lmPresetStreamer', en: 'Streamer', tip: 'pkg.i.streamerTip', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false } },
                     reducedMotion: { key: 'lmPresetReducedMotion', en: 'Reduced motion', set: { reducedMotion: true, jellyPhisycs: false, suckAnimation: false, animatedRainbowColor: false, rainbowMapBorders: false, tweenMaxEffect: false } },
                     cleanHud: { key: 'lmPresetCleanHud', en: 'Clean HUD', set: { showTop5: false, showTargeting: false, showTime: false, showLbData: false, top5skins: false, showStatsN16: false, showStatsWorldSize: false, showStatsDecayInfo: false, showStatsServerHz: false, showMiniMapGuides: false, showExtraMiniMapGuides: false } }
                 };
@@ -25033,7 +25071,8 @@ function thelegendmodproject() {
                 var row = $('<div class="lm-presets-row"></div>');
                 row.append($('<span class="lm-presets-title"></span>').text(_lmTx('lmPresets', 'Presets') + ':'));
                 Object.keys(presets).forEach(function (id) {
-                    $('<button type="button" class="btn btn-xs lm-preset-btn"></button>').attr('data-preset', id).text(_lmTx(presets[id].key, presets[id].en)).appendTo(row);
+                    var pBtn = $('<button type="button" class="btn btn-xs lm-preset-btn"></button>').attr('data-preset', id).text(_lmTx(presets[id].key, presets[id].en)).appendTo(row);
+                    if (presets[id].tip) pBtn.attr({ title: _lmTx(presets[id].tip, ''), 'data-i18n-title': presets[id].tip });
                 });
                 var undoBtn = $('<button type="button" class="btn btn-xs lm-preset-undo"></button>').text(_lmTx('lmPresetUndo', 'Undo preset')).appendTo(row);
                 var newBtn = $('<button type="button" class="btn btn-xs lm-new-toggle"></button>').text(_lmTx('lmShowNewOptions', 'Show new options')).appendTo(row);
@@ -25053,15 +25092,19 @@ function thelegendmodproject() {
                         var v = p.set[k];
                         return '- ' + String(textLanguage[k] || k).replace(/<[^>]*>/g, '').trim() + ': ' + (v === true ? 'ON' : v === false ? 'OFF' : v);
                     });
-                    if (!window.confirm(_lmTx(p.key, p.en) + '\n' + _lmTx('lmPresetConfirm', 'Apply this preset? These settings change (Undo puts them back):') + '\n\n' + lines.join('\n'))) return false;
+                    var tip = p.tip ? _lmTx(p.tip, '') : '';
+                    if (!window.confirm(_lmTx(p.key, p.en) + '\n' + _lmTx('lmPresetConfirm', 'Apply this preset? These settings change (Undo puts them back):') + '\n\n' + lines.join('\n') + (tip ? '\n\n' + tip : ''))) return false;
                     /* a Theme Workshop preview ends first: the save below would store its sounds */
                     if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
                     /* a second preset keeps the values from before the first one */
+                    /* the player's values, not one Adaptive performance has lowered for now */
                     var snap = undoSnap || {};
-                    keys.forEach(function (k) { if (!snap.hasOwnProperty(k)) snap[k] = defaultmapsettings[k]; });
+                    keys.forEach(function (k) { if (!snap.hasOwnProperty(k)) snap[k] = window.LMPerf && typeof window.LMPerf.userValue === 'function' ? window.LMPerf.userValue(k) : defaultmapsettings[k]; });
                     undoSnap = snap;
                     try { window.localStorage.setItem(undoKey, JSON.stringify(snap)); } catch (e) { }
-                    keys.forEach(function (k) { setOpt(k, p.set[k]); });
+                    /* a preset value is the player's choice over Performance mode's copy, also one
+                     * the mode had set already (no change event then) */
+                    keys.forEach(function (k) { setOpt(k, p.set[k]); application._lmPerfModeOwn(k); });
                     application.saveSettings(defaultmapsettings, 'ogarioSettings');
                     undoBtn.show();
                     return false;
@@ -25075,7 +25118,7 @@ function thelegendmodproject() {
                         /* the snapshot can come from an import: only values that fit their setting */
                         Object.keys(snap).forEach(function (k) {
                             var v = lmSettingValue(k, snap[k]);
-                            if (v !== undefined && defaultmapsettings.hasOwnProperty(k)) setOpt(k, v);
+                            if (v !== undefined && defaultmapsettings.hasOwnProperty(k)) { setOpt(k, v); application._lmPerfModeOwn(k); }
                         });
                         application.saveSettings(defaultmapsettings, 'ogarioSettings');
                     }
@@ -25346,6 +25389,8 @@ function thelegendmodproject() {
                     gamepadEnabled: ['gamepadDeadzone'],
                     adaptivePerf: ['adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes'],
                     companionLive: ['companionChat'],
+                    /* parts of the Game Over card, which opens only with Game over stats on */
+                    gameOverStats: ['massGraph', 'showKiller', 'deathRecap'],
                     recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
                     massLossAlert: ['massLossPct']

@@ -136,6 +136,42 @@ check('stream mode: the state says so, building again keeps it hidden', st.strea
   check('server change: chat of the old server dropped', lastState().chat.length === 0);
 }
 
+/* ── Settings: the row under the option says exactly what is shared (in the chosen language) ── */
+{
+  const timers = [];
+  const el = (tag) => ({ tag, style: {}, attrs: {}, children: [], textContent: '', setAttribute(k, v) { this.attrs[k] = String(v); }, addEventListener() { },
+    appendChild(c) { this.children.push(c); return c; } });
+  let row = null;
+  const label = { parentNode: { insertBefore(r) { row = r; } } };
+  const g = {
+    URL, Date, Math, Number, JSON, String, Array, Object, isFinite,
+    document: { createElement: el, getElementById: (id) => id === 'companionLive' ? { closest: () => label } : null },
+    LMEvents: { on() { }, off() { } },
+    legendmod5: { companionLive: false },
+    localStorage: { getItem: () => null, setItem() { } },
+    location: { hostname: 'www.legendmod.ml' },
+    setTimeout: f => { timers.push(f); return timers.length; }, clearTimeout() { }, setInterval: () => 1, clearInterval() { },
+    addEventListener() { }, removeEventListener() { }
+  };
+  g.window = g;
+  vm.createContext(g);
+  i18n(g, 'el');
+  vm.runInContext(src, g);
+  timers.shift()();
+  const note = row && row.children.find(c => c.className === 'lm-companion-note');
+  check('settings row: a note on what is shared, from the language pack', !!note && note.attrs['data-i18n'] === 'pkg.i.companionShares' &&
+    note.textContent === i18n.t('pkg.i.companionShares', null, 'el') && note.textContent !== i18n.t('pkg.i.companionShares'));
+  /* the note names every published field (English) and what Stream mode leaves out ... */
+  const en = i18n.t('pkg.i.companionShares');
+  check('the note names what is published and what Stream mode leaves out', ['nick', 'skin', 'country', 'server', 'mode', 'mass', 'rank', 'cells', 'time alive', 'eaten cells', 'top 10', 'events', 'minimap', 'trail', 'teammates', 'ghost cells', 'chat'].every(w => en.indexOf(w) >= 0) &&
+    /never with a server/.test(en) && /Stream mode leaves out your nick, skin, server, player names and chat text/.test(en));
+  /* ... which is what buildState does */
+  const shown = C.buildState(full, { chat: true });
+  const streamed = C.buildState(full, { streamMode: true, chat: true });
+  check('the note matches buildState', !!(shown.nick && shown.skin && shown.server) && !streamed.nick && !streamed.skin && !streamed.server &&
+    streamed.chat.every(c => !c.nick && c.text === '[redacted]') && streamed.map.team.every(t => !t.nick) && C.buildState(full, {}).chat === undefined);
+}
+
 /* ── throttling ── */
 const posted = [];
 const pub = C.createPublisher((s, now) => posted.push([s.n, now]), { interval: 250, keepalive: 2000 });
