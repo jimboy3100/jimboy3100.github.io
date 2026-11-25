@@ -22,6 +22,8 @@
  * developers/i18n/scan-config.json ("allow": { "<file>" or "*": ["exact text", "/regex/"] }).
  * Heuristic by design: a finding may be a false positive (allowlist it); a text built from pieces
  * may be missed.
+ * Archived pages (scan-config.json "archived": { "<file>": "why" }, files nothing live links to) are
+ * left out of the group counts; --report lists them with their count and reason.
  */
 'use strict';
 const fs = require('fs');
@@ -335,7 +337,8 @@ function groups() {
             else if (fs.existsSync(path.join(I.ROOT, spec))) files.push(spec);
         });
         const skip = (config.skip || []).map((s) => new RegExp(s));
-        res[name] = [...new Set(files)].filter((f) => !skip.some((r) => r.test(f)));
+        const archived = config.archived || {};
+        res[name] = [...new Set(files)].filter((f) => !skip.some((r) => r.test(f)) && !archived[f]);
     });
     return res;
 }
@@ -356,6 +359,12 @@ if (require.main === module) {
             console.log('\n' + name + ': ' + sum);
             rows.filter((r) => r[1]).sort((a, b) => b[1] - a[1]).forEach((r) => console.log('  ' + String(r[1]).padStart(5) + '  ' + r[0]));
         });
+        /* not linked from the mod or a live page: kept for the record, not counted */
+        const arch = Object.keys(config.archived || {});
+        if (arch.length) {
+            console.log('\narchived (not linked from the mod or a live page, not counted): ' + arch.length + ' files');
+            arch.forEach((f) => { if (fs.existsSync(path.join(I.ROOT, f))) console.log('  ' + String(scanFile(f).length).padStart(5) + '  ' + f + '  (' + config.archived[f] + ')'); });
+        }
         console.log('\ntotal: ' + total + '  (strict, must stay 0: ' + (config.strict || []).join(', ') + ')');
         process.exit(0);
     }
