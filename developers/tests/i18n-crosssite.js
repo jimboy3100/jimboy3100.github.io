@@ -10,6 +10,10 @@
 //  5. help.expanding.land opened with that link: its language, saved, the token taken out of the address.
 //  6. a Legend page with the Theme Bridge opened with a language-only #lm=: that language.
 //  7. LMexpress/LMexpress.html with Greek saved starts in Greek (it used to load LanguagePackEnglish.js).
+//  8. a frame whose address is on jimboy3100.github.io (GitHub Pages sends it on to www.legendmod.ml, as the
+//     skins / themes pages of expanding.land and legendffa on help.expanding.land do) gets and sends the language.
+//  9. the game (play.html) in a frame, as on help.expanding.land/unblocked.html: a language passed from the shell
+//     also shows in its Choose Language list (languagemod), and one chosen there comes back to the shell.
 // Usage: node developers/tests/i18n-crosssite.js
 'use strict';
 const { spawn } = require('child_process');
@@ -44,14 +48,21 @@ const SHELL = page('site-expandingland', '<span data-lm-lang-picker></span><h1 d
 const VIRTUAL = {
     'expanding.land/': SHELL,
     'help.expanding.land/guide.html': page('site-help-guide', '<span data-lm-lang-picker></span><p data-i18n="site.help.live">LIVE</p><p id="tips">tips</p>'),
-    'jimboy3100.github.io/developers/tests/_cross-picker.html': page('site', '<span data-lm-lang-picker></span>'),
+    'www.legendmod.ml/developers/tests/_cross-picker.html': page('site', '<span data-lm-lang-picker></span>'),
     /* the game page's start: the mod runtime and English */
     'www.legendmod.ml/developers/tests/_cross-mod.html': '<!doctype html><html><head><meta charset="utf-8">' +
         '<script src="https://www.legendmod.ml/languages/lm-i18n.js" charset="utf-8"></script><script src="https://www.legendmod.ml/languages/lm-en.js" charset="utf-8"></script></head><body>mod</body></html>',
     /* not marked data-lm-lang-frame: its messages must not count */
     'www.legendmod.ml/developers/tests/_cross-rogue.html': '<!doctype html><html><body><script>setTimeout(function () { parent.postMessage({ type: "lm-lang", lang: 3 }, "https://expanding.land"); }, 50);</script></body></html>',
-    'example.com/_cross-evil.html': '<!doctype html><html><body><script>setTimeout(function () { parent.postMessage({ type: "lm-lang", lang: 4 }, "*"); }, 50);</script></body></html>'
+    'example.com/_cross-evil.html': '<!doctype html><html><body><script>setTimeout(function () { parent.postMessage({ type: "lm-lang", lang: 4 }, "*"); }, 50);</script></body></html>',
+    /* 8: a page frame with a jimboy3100.github.io address (GitHub Pages redirects it, see REDIRECT) */
+    'expanding.land/redir.html': page('site-expandingland', '<iframe id="moved" data-lm-lang-frame src="https://jimboy3100.github.io/developers/tests/_cross-moved.html"></iframe>'),
+    'www.legendmod.ml/developers/tests/_cross-moved.html': page('site', '<span data-lm-lang-picker></span>'),
+    /* 9: the game in a frame, as help.expanding.land/unblocked.html embeds it */
+    'help.expanding.land/_cross-game.html': page('site-help-unblocked', '<span data-lm-lang-picker></span><iframe id="game" data-lm-lang-frame src="https://jimboy3100.github.io/play.html" style="width:960px;height:600px"></iframe>')
 };
+/* GitHub Pages serves jimboy3100.github.io under its custom domain (CNAME www.legendmod.ml): pages there answer 301 */
+const REDIRECT = ['/developers/tests/_cross-picker.html', '/developers/tests/_cross-moved.html', '/play.html'];
 const DIRS = { 'www.legendmod.ml': repo, 'jimboy3100.github.io': repo, 'legendmod.ml': repo };
 if (process.env.CROSS_EL_DIR) DIRS['expanding.land'] = process.env.CROSS_EL_DIR;
 if (process.env.CROSS_HELP_DIR) DIRS['help.expanding.land'] = process.env.CROSS_HELP_DIR;
@@ -86,6 +97,10 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
         else if (m.method === 'Fetch.requestPaused') {
             const u = new URL(m.params.request.url);
             const key = u.hostname + u.pathname;
+            if (u.hostname === 'jimboy3100.github.io' && REDIRECT.indexOf(u.pathname) >= 0) {
+                send('Fetch.fulfillRequest', { requestId: m.params.requestId, responseCode: 301, responseHeaders: [{ name: 'Location', value: 'https://www.legendmod.ml' + u.pathname + u.search }], body: '' });
+                return;
+            }
             let body = VIRTUAL[key], file = null;
             if (body === undefined && DIRS[u.hostname]) {
                 let rel = decodeURIComponent(u.pathname.replace(/^\//, ''));
@@ -198,6 +213,37 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
     ok(v7.lang === 'el' && v7.html === 'el', '7 LMexpress.html starts in the saved language (Greek): ' + r7);
     ok(!v7.old, '7 LMexpress.html no longer loads LanguagePackEnglish.js');
     ok(/[\u0370-\u03ff]/.test(v7.name || ''), '7 its profile labels are Greek at the first render');
+
+    /* 8 (the frames' storage is per embedding site: the frame starts in the shell's Greek from steps 2 and 4) */
+    await go('https://expanding.land/redir.html');
+    const top8 = (await frameIds()).top;
+    await evalIn(top8, 'LMi18n.setLang(10), 1');
+    ok(await waitFor(async () => (await langOf('_cross-moved')) === 'tr|10', 8000), '8 a redirected frame (jimboy3100.github.io -> www.legendmod.ml) gets the shell choice (Turkish): ' + (await langOf('_cross-moved')));
+    const moved = await frame('_cross-moved');
+    if (moved) await evalIn(moved, 'var s = document.querySelector("select.lm-lang-select"); s.value = "5"; s.dispatchEvent(new Event("change")); 1');
+    ok(await waitFor(async () => (await evalIn(top8, 'LMi18n.lang()')) === 'fr', 8000), '8 ... and a choice made in it comes back to the shell: ' + (await evalIn(top8, 'LMi18n.lang()')));
+    /* two quick choices in the frame (Turkish, then French; both files already there): the first one must not
+     * come back to the frame after the second and start both windows switching back and forth */
+    await evalIn(top8, 'window._lmSwitches = 0; LMi18n.onChange(function () { window._lmSwitches++; }); 1');
+    if (moved) await evalIn(moved, 'window._lmSwitches = 0; LMi18n.onChange(function () { window._lmSwitches++; }); var s = document.querySelector("select.lm-lang-select"); s.value = "10"; s.dispatchEvent(new Event("change")); s.value = "5"; s.dispatchEvent(new Event("change")); 1');
+    await sleep(1500);
+    const sw = [await evalIn(top8, 'window._lmSwitches + "|" + LMi18n.lang()'), moved ? await evalIn(moved, 'window._lmSwitches + "|" + LMi18n.lang()') : 'no frame'];
+    ok(sw[0] === '2|fr' && sw[1] === '2|fr', '8 two quick choices end in the last one, each window switches twice (shell, frame): ' + sw.join(' '));
+
+    /* 9 the game in a frame (help.expanding.land has Greek saved, step 5) */
+    await go('https://help.expanding.land/_cross-game.html');
+    const top9 = (await frameIds()).top;
+    const gameQ = 'JSON.stringify({ lang: window.LMi18n && LMi18n.lang(), list: (document.getElementById("legendlanguages") || {}).value, mod: String(window.languagemod) })';
+    const gameState = async () => { const g = await frame('legendmod.ml/play'); return g ? JSON.parse((await evalIn(g, gameQ)) || '{}') : {}; };
+    /* the menu (Choose Language list) is built after the mod's scripts loaded */
+    await waitFor(async () => !!(await gameState()).list, 60000);
+    await evalIn(top9, 'LMi18n.setLang(11), 1');
+    await waitFor(async () => { const g = await gameState(); return g.lang === 'pl' && g.list === '11'; }, 10000);
+    const g9 = await gameState();
+    ok(g9.lang === 'pl' && g9.list === '11' && g9.mod === '11', '9 a language chosen on the shell (Polish) is the game\'s Choose Language value too: ' + JSON.stringify(g9));
+    const game = await frame('legendmod.ml/play');
+    if (game) await evalIn(game, '$("#legendlanguages").val("3"); changeModLanguage(true); 1');
+    ok(await waitFor(async () => (await evalIn(top9, 'LMi18n.lang() + "|" + localStorage.getItem("languagemod")')) === 'es|3', 10000), '9 a language chosen in the game (Spanish) comes back to the shell: ' + (await evalIn(top9, 'LMi18n.lang()')));
 
     ws.close(); proc.kill();
     try { fs.rmSync(out, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); } catch (e) { }

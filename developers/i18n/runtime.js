@@ -402,6 +402,9 @@
      * windows and these origins; nothing else in the message is read. */
     var PEERS = ['https://www.legendmod.ml', 'https://jimboy3100.github.io', 'https://expanding.land', 'https://help.expanding.land'];
     function originOf(url) { try { return new URL(url, W.location.href).origin; } catch (e) { return ''; } }
+    /* GitHub Pages sends every jimboy3100.github.io address on to www.legendmod.ml (CNAME): a frame with such an
+     * address runs on www.legendmod.ml, so that is the origin it is told with and the one its messages come from */
+    function frameOrigin(f) { var o = originOf(f.getAttribute('src') || ''); return o === 'https://jimboy3100.github.io' ? 'https://www.legendmod.ml' : o; }
     function langNum(v) { var s = String(v); return /^(?:[1-9]|1[0-6])$/.test(s) ? s : null; }
     /* the chosen (saved) language number, or null while the page only follows the browser */
     function chosen() { var c = stored(); return c ? String(CODES.indexOf(c) + 1) : null; }
@@ -415,12 +418,15 @@
         return o || originOf(document.referrer || '');
     }
     function frames() { return document.querySelectorAll ? document.querySelectorAll('iframe[data-lm-lang-frame]') : []; }
-    function tellFrame(f, n) { if (f && f.contentWindow) tell(f.contentWindow, originOf(f.getAttribute('src') || ''), n); }
+    function tellFrame(f, n) { if (f && f.contentWindow) tell(f.contentWindow, frameOrigin(f), n); }
     function fromFrame(src) {
         var list = frames();
         for (var i = 0; i < list.length; i++) if (list[i].contentWindow === src) return list[i];
         return null;
     }
+    /* { code, win }: the language just received from win; it is not sent back there (two quick choices would
+     * otherwise come back out of order and keep both windows switching between them) */
+    var echo = null;
     function crossSite() {
         W.addEventListener('message', function (ev) {
             var d = ev && ev.data;
@@ -428,16 +434,17 @@
             var src = ev.source, frame = SITE ? fromFrame(src) : null;
             if (!src || !((W.parent !== W && src === W.parent) || (SITE && src === W.opener) || frame)) return;
             /* a frame only speaks for the origin its address points to */
-            if (frame && originOf(frame.getAttribute('src') || '') !== ev.origin) return;
+            if (frame && frameOrigin(frame) !== ev.origin) return;
             var n = langNum(d.lang);
-            if (n && CODES[n - 1] !== current) setLang(n);
+            if (n && CODES[n - 1] !== current) { echo = { code: CODES[n - 1], win: src }; setLang(n); }
         });
         /* a choice made here goes to the other windows (not the start-up language, not a browser fallback) */
         onChange(function (code, prev) {
-            var n = chosen();
+            var n = chosen(), from = echo && echo.code === code ? echo.win : null;
+            echo = null;
             if (code === prev || !n || CODES[n - 1] !== code) return;
-            if (W.parent !== W) tell(W.parent, parentOrigin(), n);
-            if (SITE) { var list = frames(); for (var i = 0; i < list.length; i++) tellFrame(list[i], n); }
+            if (W.parent !== W && W.parent !== from) tell(W.parent, parentOrigin(), n);
+            if (SITE) { var list = frames(); for (var i = 0; i < list.length; i++) if (list[i].contentWindow !== from) tellFrame(list[i], n); }
         });
     }
     crossSite();

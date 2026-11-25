@@ -4927,6 +4927,17 @@ function changeModLanguage(fromUser) {
         if (fromUser === true && window.toastr) toastr.info(_lmEscLang(window.lmT('core.langChanged')));
     });
 }
+/* A language can also be chosen outside the Choose Language list (passed by expanding.land or
+ * help.expanding.land when the game is in their frame): the list, languagemod and the menus filled by
+ * id follow it. A change from the list itself already set languagemod, so it is not handled twice. */
+if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
+    var n = window.LMi18n.num(), saved = null;
+    try { saved = localStorage.getItem('languagemod'); } catch (e) { }
+    if (saved !== n || String(languagemod) === n) return;
+    languagemod = n;
+    if (typeof $ === 'function') $('#legendlanguages, #legendlanguages2').val(n);
+    _lmRunLanguageHandler();
+});
 function _lmEscLang(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
