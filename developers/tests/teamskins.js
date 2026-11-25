@@ -33,7 +33,7 @@ vm.runInContext([fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn
     '\nvar LM = { gameMode: ":ffa" };' +
     '\nvar core = { registerSkin: function () { } };' +
     '\nvar application = {' + [method('_lmSkinKeys'), method('checkSkinURL', true), method('teamSkinUrl'), method('cacheCustomSkin'),
-        method('getCustomSkin')].join(',\n') +
+        method('getCustomSkin'), method('customSkinKey')].join(',\n') +
     ', customSkinsMap: {}, customSkinsCache: {}, loadSkin: function () { }, _lmTouchSkin: function () { },' +
     ' getCachedSkin: function (cache, url) { return url; } };' +
     '\nvar legendmod = {' + method('vanillaskins') + '};', ctx);
@@ -93,8 +93,13 @@ check('two teammates with the same loose nick: no loose match', ctx.lmTeamSkinFo
 check('no team list: nothing changes', ctx.lmTeamSkinFor(null, 'bait', false, null) === null && ctx.lmTeamSkinMap(null).exact.size === 0);
 
 /* ---- every renderer asks the team list the same way ---- */
-const uses = src.split('teamSkinUrl(cell.targetNick)').length - 1, usesLoose = src.split('teamSkinUrl(cell.targetNick, true)').length - 1;
-check('both WebGL skin lookups use the team list skins (exact and loose)', uses === 2 && usesLoose === 2);
+/* both WebGL skin lookups (cell batch and the per-cell helper) call the one shared lookup,
+ * application.customSkinKey (behind getCustomSkin, i.e. Canvas2D and the teamboard), which asks
+ * the team list exactly and loosely; no renderer keeps its own copy that can drift */
+const shared = src.split('application.customSkinKey(cell.targetNick, cell.color, cell.skin)').length - 1;
+const keyFn = method('customSkinKey');
+check('both WebGL skin lookups use the shared lookup', shared === 2 && src.indexOf('teamSkinUrl(cell.targetNick') < 0);
+check('the shared lookup uses the team list skins (exact and loose)', /this\.teamSkinUrl\(nick\)/.test(keyFn) && /this\.teamSkinUrl\(nick, true\)/.test(keyFn));
 check('the team skins are rebuilt with the teammate nick set', /_lmTeammateNickSet = new Set\(window\.teammatenicks\);\n\s*\/\*[^\n]*\*\/\n\s*window\._lmTeamSkins = lmTeamSkinMap\(application\.top5/.test(src));
 
 console.log(failed ? 'FAILED ' + failed : 'all ok');
