@@ -40,7 +40,7 @@ $('body').append(
     '</div>' +
 
     '<div class="modal-footer" style="text-align:left;border-top:1px solid rgba(255,255,255,.1);">' +
-    '<button type="button" id="LegendHelperBacktomenu" onclick="return closeLegendHelper(event);" class="btn btn-danger">' + Premadeletter113 + '</button>' +
+    '<button type="button" id="LegendHelperBacktomenu" onclick="return closeLegendHelper(event);" class="btn btn-danger">' + (typeof Premadeletter113 !== 'undefined' ? Premadeletter113 : 'Close') + '</button>' +
     '<button id="Infobtn11" onclick="Infobtn11(); return false" class="btn btn-success" style="margin-left:10px;">' + Externalletter1 + '</button>' +
     '<button id="TemplatesBtn" onclick="templatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + Externalletter2 + '</button>' +
     '<button id="ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + Externalletter3 + '</button>' +
@@ -52,7 +52,7 @@ $('body').append(
     '</div>'
 );
 
-if (typeof lmPromoChrome === 'function') lmPromoChrome('#legendhelper');
+if (typeof lmPromoChrome === 'function') { try { lmPromoChrome('#legendhelper'); } catch(e) {} }
 
 function closeLegendHelper(event) {
     if (event) {
