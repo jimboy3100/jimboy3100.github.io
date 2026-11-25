@@ -24,7 +24,8 @@
     "_lmvoE",
     "lmShopSpan",
     "lmxExtText",
-    "lmxText"
+    "lmxText",
+    "_lmDiscordT"
   ],
   "strict": [
     "LMexpress/i18n.js",
@@ -156,7 +157,10 @@
     "Lc/members.html",
     "Lc/rules.html",
     "Lc/legend-clan-redesign/assets/js/main.js",
-    "Lc/PROJETOX.HTML/arquivo.js"
+    "Lc/PROJETOX.HTML/arquivo.js",
+    "agarscripts/DiscordSIP.user.js",
+    "LMexpress/shop/shop.js",
+    "LMexpress/shop/shopscript.js"
   ],
   "groups": {
     "a: ogario/modules": [
@@ -195,6 +199,15 @@
     "f: extras pages and Lc": [
       "extras/*.html",
       "Lc/**.html"
+    ],
+    "g: active external scripts": [
+      "agarscripts/DiscordSIP.user.js",
+      "LMexpress/shop/shop.js",
+      "LMexpress/shop/shopscript.js"
+    ],
+    "h: in-game linked informational pages": [
+      "LMexpress/olddeals.html",
+      "developers/videoskins.html"
     ]
   },
   "skip": [
@@ -219,6 +232,30 @@
     ],
     "Lc/articles/announcement-29a-12-2025.html": [
       "alt=\"Legend Clan\""
+    ],
+    "ogario/ogario.v4.js": [
+      "👑 Expanding Land FFA",
+      "👑 Expanding Land Teams",
+      "Arctida",
+      "Dagestan",
+      "Rookery",
+      "Maxisplit",
+      "Exp Rookery",
+      "Delta EU Party 1",
+      "Delta EU Party 2",
+      "Delta EU FFA",
+      "Delta EU FFA Arcade",
+      "Delta US Party",
+      "Delta Experimental",
+      "Delta Dagestyle",
+      "Delta Rookery",
+      "Delta Arctida",
+      "Legend v2",
+      "Legend v1",
+      "Legend Original",
+      "Crazy Style 2",
+      "Crazy Style 1",
+      "LM express"
     ]
   }
 }

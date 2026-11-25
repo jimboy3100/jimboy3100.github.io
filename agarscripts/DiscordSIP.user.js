@@ -23,8 +23,13 @@ var serverChannel = "https://discordapp.com/api/webhooks/.../...";
 window.messageone;
 var discordcodetosend;
 
+function _lmDiscordT(key, fallback) {
+	var value = typeof window.lmT === 'function' ? window.lmT(key) : key;
+	return value === key ? fallback : value;
+}
+
 function displayDiscordNotification() {
-	var discText = '<b>[SERVER]</b>: Server Sent to Discord.';
+	var discText = _lmDiscordT('discord.sent', '<b>[SERVER]</b>: Server Sent to Discord.');
 
 	if (window.messageone == "0" || window.messageone == "1") { //IF using Legend Mod
 		toastr["info"](discText).css("width", "300px");
@@ -245,7 +250,9 @@ function postToDiscord(discordUrl, isGeneralChannel) {
 			serverChannel = localStorage.getItem("discwebhook2");
 		}
 		var r = $('<button/>', {
-			text: 'Post Server IP to Discord',
+			text: _lmDiscordT('discord.post', 'Post Server IP to Discord'),
+			'data-i18n': 'discord.post',
+			id: 'lm-discord-post-server',
 			class: 'btn btn-primary btn',
 			style: 'width: 100%;margin-top: 0px'
 		});
@@ -262,6 +269,7 @@ function postToDiscord(discordUrl, isGeneralChannel) {
 				a.before(r[0]);
 				a.remove();
 			}
+			if (window.LMi18n) window.LMi18n.apply(r[0]);
 			r[0].onclick = function() {
 
 				postToDiscord(serverChannel, false);
@@ -272,7 +280,7 @@ function postToDiscord(discordUrl, isGeneralChannel) {
 		// menu function
 		var GM_registerMenuCommand;
 		if (GM_registerMenuCommand) {
-			GM_registerMenuCommand('Post Agar Server IP to Discord', function() {
+			GM_registerMenuCommand(_lmDiscordT('discord.postAgar', 'Post Agar Server IP to Discord'), function() {
 				postToDiscord(serverChannel, false);
 				postToDiscord(generalChannel, true);
 				displayDiscordNotification();

@@ -1,0 +1,44 @@
+{
+  "discord.post": {
+    "en": "Post Server IP to Discord",
+    "el": "Δημοσίευση IP διακομιστή στο Discord",
+    "es": "Publicar IP del servidor en Discord",
+    "bg": "Публикуване на IP на сървъра в Discord",
+    "fr": "Publier l’IP du serveur sur Discord",
+    "ar": "نشر عنوان IP للخادم على Discord",
+    "zh": "將伺服器 IP 發佈至 Discord",
+    "ru": "Отправить IP сервера в Discord",
+    "de": "Server-IP auf Discord posten",
+    "tr": "Sunucu IP adresini Discord’da paylaş",
+    "pl": "Opublikuj IP serwera na Discordzie",
+    "nl": "Server-IP op Discord plaatsen"
+  },
+  "discord.sent": {
+    "en": "<b>[SERVER]</b>: Server Sent to Discord.",
+    "el": "<b>[ΔΙΑΚΟΜΙΣΤΗΣ]</b>: Ο διακομιστής κοινοποιήθηκε στο Discord.",
+    "es": "<b>[SERVIDOR]</b>: Servidor enviado a Discord.",
+    "bg": "<b>[СЪРВЪР]</b>: Сървърът е изпратен в Discord.",
+    "fr": "<b>[SERVEUR]</b>: Serveur envoyé sur Discord.",
+    "ar": "<b>[الخادم]</b>: تم إرسال الخادم إلى Discord.",
+    "zh": "<b>[伺服器]</b>: 伺服器已傳送至 Discord。",
+    "ru": "<b>[СЕРВЕР]</b>: Сервер отправлен в Discord.",
+    "de": "<b>[SERVER]</b>: Server an Discord gesendet.",
+    "tr": "<b>[SUNUCU]</b>: Sunucu Discord’a gönderildi.",
+    "pl": "<b>[SERWER]</b>: Serwer wysłany na Discord.",
+    "nl": "<b>[SERVER]</b>: Server naar Discord verzonden."
+  },
+  "discord.postAgar": {
+    "en": "Post Agar Server IP to Discord",
+    "el": "Δημοσίευση IP διακομιστή Agar στο Discord",
+    "es": "Publicar IP del servidor de Agar en Discord",
+    "bg": "Публикуване на IP на сървъра на Agar в Discord",
+    "fr": "Publier l’IP du serveur Agar sur Discord",
+    "ar": "نشر عنوان IP لخادم Agar على Discord",
+    "zh": "將 Agar 伺服器 IP 發佈至 Discord",
+    "ru": "Отправить IP сервера Agar в Discord",
+    "de": "Agar-Server-IP auf Discord posten",
+    "tr": "Agar sunucusunun IP adresini Discord’da paylaş",
+    "pl": "Opublikuj IP serwera Agar na Discordzie",
+    "nl": "Agar-server-IP op Discord plaatsen"
+  }
+}

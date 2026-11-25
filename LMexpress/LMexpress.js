@@ -9401,7 +9401,7 @@ function VideoSkinsPromo() {
     });
 }
 //2. Administration Tools
-Premadeletter39 = "Due to spamming issues, you must be in game and use password";
+/* Premadeletter39 is supplied by the active language pack. */
 function adminstuff() {
 
 

@@ -141,9 +141,9 @@
 				'<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; max-height: 85vh; margin: 0; z-index: 1050;">' +
                 '<div class="modal-content" style="overflow: hidden; position: relative; z-index: 1051; max-height: 85vh; display: flex; flex-direction: column;">' +
                 '<div id="CloseLMShop2" class="modal-header">' +
-                '<button id="CloseLMShop" type="button" class="close" data-dismiss="modal" title="Close" onclick="jQuery(\'#LMShop\').remove(); jQuery(\'.modal-backdrop\').remove(); jQuery(\'body\').removeClass(\'modal-open\');"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
-                '<button id="FAQLMShop" type="button" class="close" title="Help"><span aria-hidden="true">&#x2753;</span><span class="sr-only">Help</span></button>' +
-                '<h4 class="modal-title"><i class="fa fa-shopping-cart"></i> Shop</h4>' +
+                '<button id="CloseLMShop" type="button" class="close" data-dismiss="modal" title="Close" data-i18n-title="shop.close" onclick="jQuery(\'#LMShop\').remove(); jQuery(\'.modal-backdrop\').remove(); jQuery(\'body\').removeClass(\'modal-open\');"><span aria-hidden="true">&times;</span><span class="sr-only" data-i18n="shop.close">Close</span></button>' +
+                '<button id="FAQLMShop" type="button" class="close" title="Help" data-i18n-title="shop.help"><span aria-hidden="true">&#x2753;</span><span class="sr-only" data-i18n="shop.help">Help</span></button>' +
+                '<h4 class="modal-title"><i class="fa fa-shopping-cart"></i> <span data-i18n="shop.title">Shop</span></h4>' +
                 '</div>' +
 				
 				'<div id="LMShop3" style="overflow-y: auto; max-height: 70vh;">' +
@@ -153,14 +153,14 @@
         '<div id="nav">' +
             '<ul>' +
 				
-                '<li><a href="#imgur" class="active">Premium</a></li>' +
-				'<li><a href="#lowres">WaterMarks</a></li>' +
-				'<li><a href="#animatedLikeGif">Animated-Free</a></li>' +
-				'<li><a href="#free">Free</a></li>' +						
-				'<li><a href="#vanillaskins">In Use</a></li>' +			  		
-                '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" readonly></li>' +
-		'<li><a id="UseEffect" class="link">Use</a></li>' +
-		'<li><a id="UseEffect2" class="link">Stop</a></li>' +
+                '<li><a href="#imgur" class="active" data-i18n="shop.premium">Premium</a></li>' +
+				'<li><a href="#lowres" data-i18n="shop.watermarks">WaterMarks</a></li>' +
+				'<li><a href="#animatedLikeGif" data-i18n="shop.animatedFree">Animated-Free</a></li>' +
+				'<li><a href="#free" data-i18n="shop.free">Free</a></li>' +
+				'<li><a href="#vanillaskins" data-i18n="shop.inUse">In Use</a></li>' +
+                '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" data-i18n-placeholder="shop.effect" readonly></li>' +
+		'<li><a id="UseEffect" class="link" data-i18n="shop.use">Use</a></li>' +
+		'<li><a id="UseEffect2" class="link" data-i18n="shop.stop">Stop</a></li>' +
 		    '</ul>' +
         '</div>' +
     '</div>' +
@@ -216,6 +216,7 @@
                 '</div>' +
                 '</div>' +
                 '</div>');
+			if (window.LMi18n) window.LMi18n.apply(document.getElementById("LMShop"));
 			$("#animatedLikeGif").children().css("width", "55px");	
 			$("#animatedLikeGif").css("padding-right", "100px");
             $("#CloseLMShop").off('click').on('click', function(e) {

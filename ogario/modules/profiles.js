@@ -1087,7 +1087,7 @@
     }
     var includeOpts = null;
     function includes() {
-        if (!includeOpts) includeOpts = { t: true, h: true, m: !!readJSON('lm-mobile-prefs'), g: !!readJSON('lmGamepad') };
+        if (!includeOpts) includeOpts = { t: true, h: true, m: !!(readJSON('lm-mobile-prefs') || readJSON('lm-mobile-layouts')), g: !!readJSON('lmGamepad') };
         return includeOpts;
     }
     function render() {

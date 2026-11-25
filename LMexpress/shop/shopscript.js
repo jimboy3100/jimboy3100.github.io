@@ -95,7 +95,7 @@ setTimeout(function() {
 		
 		if (document.getElementsByClassName("skins-wrapper")[4].children[0]){
 			document.getElementsByClassName("skins-wrapper")[4].children[0].remove()
-			toastr.info("<b>[SERVER]:</b> Special Effect erased");
+			toastr.info(lmT('shop.erased'));
 		}
 			SpecialEffectPlayers[application.lastSentNick]=null
 			//
@@ -141,7 +141,7 @@ function loadSpecialEffectSkin(e){
 		($("#skin-url").val() == "Byzantium" || $("#skin-url").val() == "LegendHeroes" || $("#skin-url").val() == "LegendClan" || $("#skin-url").val() == "HappyNewYear" || $("#skin-url").val() == "ThanksGivings" || $("#skin-url").val() == "ChristmasTree" || $("#skin-url").val() == "Flag4July")
 		|| window.tempAnimatedCoolArray.includes($("#skin-url").val())){
 			try {	
-			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
+			toastr.info(lmT('shop.activated', [String($('#skin-url').val() || '').replace(/[&<>"']/g, function(c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; })]));
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
 				if ($(".skins-wrapper")[i].style.display != "none"){
 					for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
@@ -161,10 +161,10 @@ function loadSpecialEffectSkin(e){
 			} catch (e) {}
 		}
 		else{
-			toastr.warning("<b>[SERVER]:</b> Not Premium account found. If you donated in the past, please refer it to Legend mod discord.<br>Thank you for using our scripts!").css("width", "350px");
+			toastr.warning(lmT('shop.notPremium')).css("width", "350px");
 		}
 	}
 	else{
-		toastr.warning("<b>[SERVER]:</b> No effect selected").css("width", "350px");
+		toastr.warning(lmT('shop.noEffect')).css("width", "350px");
 	}
 }	

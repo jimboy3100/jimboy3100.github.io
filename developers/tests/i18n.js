@@ -260,6 +260,54 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         w3.run('lib/lm-i18n.js');
         ok(w3.LMi18n.lang() === 'nl', 'page: localStorage languagemod wins over the browser');
     }
+    /* Delayed modules must translate on insertion and during a live language change. */
+    {
+        const w = page({ navLang: 'en-US' });
+        w.run('languages/lm-i18n.js');
+        w.run('languages/lm-en.js');
+        /* Run the real optional Discord script without any WebSocket or webhook calls. */
+        const menu = makeEl('div', {id:'agario-main-buttons'});
+        w.document.body.appendChild(menu);
+        let button, toast, delayed;
+        menu.append = menu.appendChild;
+        w.messageone = '1';
+        w.$ = function (selector, attrs) {
+            if (selector !== '<button/>') throw Error('unexpected Discord selector: ' + selector);
+            button = makeEl('button', attrs, attrs.text);
+            return [button];
+        };
+        w.$.find = selector => selector === '#agario-main-buttons' ? [menu] : [];
+        w.toastr = {info: value => { toast = value; return {css() {}}; }};
+        await new Promise(resolve => w.LMi18n.setLang(2, resolve));
+        const realTimer = w.setTimeout;
+        w.setTimeout = fn => { delayed = fn; };
+        try { w.run('agarscripts/DiscordSIP.user.js'); delayed(); }
+        finally { w.setTimeout = realTimer; }
+        ok(menu.children.length === 1 && button.attrs.id === 'lm-discord-post-server', 'real Discord button inserted once');
+        w.displayDiscordNotification();
+        ok(toast === all.discord['discord.sent'].el, 'real Discord confirmation Greek');
+
+        const tab = makeEl('a', {'data-i18n':'shop.animatedFree'}, 'Animated-Free');
+        const close = makeEl('button', {'data-i18n-title':'shop.close'}, '');
+        await new Promise(resolve => w.LMi18n.setLang(2, resolve));
+        w.document.body.appendChild(tab);
+        w.document.body.appendChild(close);
+        w.LMi18n.apply(button);
+        w.LMi18n.apply(tab);
+        w.LMi18n.apply(close);
+        ok(button.textContent === all.discord['discord.post'].el, 'late Discord button Greek');
+        ok(tab.textContent === all.shop['shop.animatedFree'].el, 'late shop tab Greek');
+        ok(close.getAttribute('title') === all.shop['shop.close'].el, 'late shop tooltip Greek');
+        await new Promise(resolve => w.LMi18n.setLang(6, resolve));
+        ok(button.textContent === all.discord['discord.post'].ar, 'existing Discord button Arabic');
+        w.displayDiscordNotification();
+        ok(toast === all.discord['discord.sent'].ar, 'real Discord confirmation Arabic');
+        ok(tab.textContent === all.shop['shop.animatedFree'].ar, 'existing shop tab Arabic');
+        ok(close.getAttribute('title') === all.shop['shop.close'].ar, 'existing shop tooltip Arabic');
+        await new Promise(resolve => w.LMi18n.setLang(1, resolve));
+        ok(button.textContent === all.discord['discord.post'].en, 'existing Discord button English');
+        ok(w.lmT('shop.activated', ['Example']) === all.shop['shop.activated'].en.replace('{0}', 'Example'), 'shop notification substitution');
+    }
     /* ---------- 6. the scanner ---------- */
     {
         const tmp = path.join(repo, 'developers', 'tests', 'out');
@@ -275,11 +323,13 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
             "var css = '.a{color:red;}';",
             "var id = 'some-id';",
             "alert('Shown text'); // i18n-ok: test",
-            "var o = { label: 'Menu label' };"
+            "var o = { label: 'Menu label' };",
+            "var button = $('<button/>', {\ntext: 'Post Server IP to Discord'\n});",
+            "Premadeletter39 = 'English override';"
         ].join('\n'));
         const res = scan.scanFile(path.relative(repo, f));
         const got = res.map((r) => r.kind + ':' + r.text).join(' | ');
-        const want = ['text:Hello there', 'key:core.noSuchKey', 'html:Title', 'html:two words', 'text:Tooltip text', 'text:Menu label'];
+        const want = ['text:Hello there', 'key:core.noSuchKey', 'html:Title', 'html:two words', 'text:Tooltip text', 'text:Menu label', 'text:Post Server IP to Discord', 'text:Premadeletter39 = English override'];
         ok(want.every((x) => got.indexOf(x) >= 0) && res.length === want.length, 'scanner sample: ' + got);
         fs.unlinkSync(f);
         /* strict files: nothing hard-coded left */

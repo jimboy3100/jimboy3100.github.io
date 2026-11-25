@@ -237,6 +237,9 @@ function scanJs(src, offset, base, findings) {
     lits.forEach((L, li) => {
         const ctx = L.ctx;
         const pos = offset + L.start;
+        /* Do not allow a feature to reset a generated legacy language global. */
+        const legacy = /(?:^|[^\w$])(?:window\.)?((?:Premadeletter|Languageletter|Externalletter)\w*|translator)\s*=\s*$/.exec(ctx);
+        if (legacy && L.raw.trim()) { findings.push({ pos, kind: 'text', text: legacy[1] + ' = ' + L.raw }); return; }
         if (fnRe.test(ctx)) {
             if (!L.tpl && /^[A-Za-z][\w.\-]*$/.test(L.raw) && !keys().has(L.raw)) findings.push({ pos, kind: 'key', text: L.raw });
             return;
@@ -263,7 +266,9 @@ function scanJs(src, offset, base, findings) {
         }
         /* .attr("title", "Text") / setAttribute("placeholder", ...): the attribute name was a literal too */
         const attrSink = /\.\s*(attr|setAttribute)\s*\(\s*"S"\s*,\s*$/.test(ctx) && li > 0 && /^(title|placeholder|data-original-title|aria-label|alt|value)$/.test(lits[li - 1].raw);
-        if (!attrSink && !SINK.test(stmt)) return;
+        /* A first object field on a new line loses its opening brace in statementCtx. */
+        const fieldSink = /[{,]\s*(?:label|title|text|desc|description|tooltip|placeholder|message|msg|hint|caption|help|note|heading|header|subtitle|name)\s*:\s*$/.test(ctx);
+        if (!attrSink && !fieldSink && !SINK.test(stmt)) return;
         const x = textLike(raw);
         if (!x) return;
         /* single lower-case words in a sink are usually ids or classes */
