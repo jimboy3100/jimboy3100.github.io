@@ -46,111 +46,15 @@
         return JSON.stringify(v);
     }
 
-    /* ── Texts (English, Greek; other languages show English) ── */
-    var TEXT = {
-        title: ['Theme workshop', 'Εργαστήριο θεμάτων'],
-        openBtn: ['Theme workshop', 'Εργαστήριο θεμάτων'],
-        tabMine: ['My themes', 'Τα θέματά μου'],
-        tabGallery: ['Gallery', 'Συλλογή'],
-        tabIo: ['Import / export', 'Εισαγωγή / εξαγωγή'],
-        tabCompare: ['Compare', 'Σύγκριση'],
-        close: ['Close', 'Κλείσιμο'],
-        namePh: ['Theme name', 'Όνομα θέματος'],
-        saveCurrent: ['Save current as theme', 'Αποθήκευση τρέχοντος ως θέμα'],
-        mineNote: ['Kept in this browser only. Preview shows a theme for 15 s: press Keep, or your theme comes back by itself.', 'Μόνο σε αυτόν τον browser. Η Δοκιμή δείχνει ένα θέμα για 15 δ.: πάτα Κράτησε, αλλιώς το θέμα σου επιστρέφει μόνο του.'],
-        empty: ['No themes yet: save the current theme or install one from the Gallery.', 'Δεν υπάρχουν θέματα: αποθήκευσε το τρέχον θέμα ή εγκατάστησε ένα από τη Συλλογή.'],
-        preview: ['Preview', 'Δοκιμή'],
-        update: ['Update', 'Ενημέρωση'],
-        rename: ['Rename', 'Μετονομασία'],
-        duplicate: ['Copy', 'Αντίγραφο'],
-        exportBtn: ['Export', 'Εξαγωγή'],
-        history: ['History ({0})', 'Ιστορικό ({0})'],
-        del: ['Delete', 'Διαγραφή'],
-        restore: ['Restore', 'Επαναφορά'],
-        compare: ['Compare', 'Σύγκριση'],
-        versionOf: ['{0}, version of {1}', '{0}, έκδοση {1}'],
-        noHistory: ['No earlier versions yet: Update keeps the last 5.', 'Δεν υπάρχουν παλαιότερες εκδόσεις: η Ενημέρωση κρατά τις 5 τελευταίες.'],
-        by: ['by {0}', 'από {0}'],
-        needName: ['Type a name first.', 'Γράψε πρώτα ένα όνομα.'],
-        tooMany: ['You have the maximum number of themes (30). Delete one first.', 'Έχεις τον μέγιστο αριθμό θεμάτων (30). Διάγραψε ένα πρώτα.'],
-        storageFull: ['The browser storage is full: nothing was changed.', 'Ο χώρος αποθήκευσης είναι γεμάτος: δεν άλλαξε τίποτα.'],
-        tooBigStore: ['Your themes are too large to save. Delete one first.', 'Τα θέματά σου είναι πολύ μεγάλα για αποθήκευση. Διάγραψε ένα πρώτα.'],
-        saved: ['Theme saved: {0}', 'Το θέμα αποθηκεύτηκε: {0}'],
-        updated: ['"{0}" updated (the previous version is in its history).', 'Το "{0}" ενημερώθηκε (η προηγούμενη έκδοση είναι στο ιστορικό του).'],
-        sameTheme: ['"{0}" already has the current theme.', 'Το "{0}" έχει ήδη το τρέχον θέμα.'],
-        confirmUpdate: ['Replace "{0}" with the current theme? The old version stays in its history.', 'Αντικατάσταση του "{0}" με το τρέχον θέμα; Η παλιά έκδοση μένει στο ιστορικό του.'],
-        confirmDelete: ['Delete the theme "{0}" and its history?', 'Διαγραφή του θέματος "{0}" και του ιστορικού του;'],
-        renamePrompt: ['New name:', 'Νέο όνομα:'],
-        copySuffix: [' (copy)', ' (αντίγραφο)'],
-        restored: ['"{0}": the version from {1} is back (the replaced one is in its history). Preview it to use it.', '"{0}": επανήλθε η έκδοση {1} (αυτή που αντικαταστάθηκε είναι στο ιστορικό). Δοκίμασέ το για να το χρησιμοποιήσεις.'],
-        previewing: ['Preview: {0}', 'Δοκιμή: {0}'],
-        revertsIn: ['back in {0} s', 'επιστροφή σε {0} δ.'],
-        keep: ['Keep', 'Κράτησε'],
-        revert: ['Revert', 'Επαναφορά'],
-        kept: ['Theme applied: {0}', 'Εφαρμόστηκε το θέμα: {0}'],
-        reverted: ['Preview ended: your theme is back.', 'Η δοκιμή τελείωσε: το θέμα σου επέστρεψε.'],
-        revertedNewer: ['Preview ended before your other change: your theme is back, the new change stays.', 'Η δοκιμή τελείωσε πριν από την άλλη αλλαγή σου: το θέμα σου επέστρεψε, η νέα αλλαγή μένει.'],
-        revertedAuto: ['Not kept within 15 s: your theme is back.', 'Δεν το κράτησες μέσα σε 15 δ.: το θέμα σου επέστρεψε.'],
-        saveFailed: ['The theme is applied but could not be saved (browser storage full): a reload brings the old one back.', 'Το θέμα εφαρμόστηκε αλλά δεν αποθηκεύτηκε (γεμάτος χώρος): μετά από επαναφόρτωση επιστρέφει το παλιό.'],
-        urlsTitle: ['This theme loads files from these addresses. Check them before you continue:', 'Αυτό το θέμα φορτώνει αρχεία από αυτές τις διευθύνσεις. Έλεγξέ τες πριν συνεχίσεις:'],
-        go: ['Continue', 'Συνέχεια'],
-        cancel: ['Cancel', 'Άκυρο'],
-        galleryNote: ['Themes shipped with Legend Mod. Preview one or install it into My themes.', 'Θέματα που έρχονται με το Legend Mod. Δοκίμασε ένα ή εγκατάστησέ το στα θέματά σου.'],
-        publishNote: ['Publish your own: export it to a file (Import / export) and share the file, e.g. on Discord. There is no upload service: nothing is sent anywhere.', 'Δημοσίευσε το δικό σου: κάνε εξαγωγή σε αρχείο (Εισαγωγή / εξαγωγή) και μοιράσου το αρχείο, π.χ. στο Discord. Δεν υπάρχει υπηρεσία ανεβάσματος: τίποτα δεν στέλνεται πουθενά.'],
-        galleryLoading: ['Loading the gallery...', 'Φόρτωση της συλλογής...'],
-        builtinTitle: ['Built-in presets', 'Ενσωματωμένα θέματα'],
-        builtinNote: ['A game preset sets the game colours, fonts and sizes, a menu preset the menu colours; everything else stays as it is. Apply keeps it at once, Preview shows it for 15 s.', 'Ένα θέμα παιχνιδιού ορίζει χρώματα, γραμματοσειρές και μεγέθη του παιχνιδιού, ένα θέμα μενού τα χρώματα του μενού. Τα υπόλοιπα μένουν ως έχουν. Η Εφαρμογή το κρατά αμέσως, η Δοκιμή το δείχνει για 15 δευτ.'],
-        kindGame: ['game', 'παιχνίδι'],
-        kindMenu: ['menu', 'μενού'],
-        apply: ['Apply', 'Εφαρμογή'],
-        galleryTitle: ['Gallery themes', 'Θέματα συλλογής'],
-        galleryFail: ['The gallery could not be loaded.', 'Η συλλογή δεν φορτώθηκε.'],
-        retry: ['Retry', 'Ξανά'],
-        install: ['Install', 'Εγκατάσταση'],
-        installed: ['Installed', 'Εγκαταστάθηκε'],
-        installedMsg: ['"{0}" installed in My themes.', 'Το "{0}" εγκαταστάθηκε στα θέματά σου.'],
-        already: ['"{0}" is already in My themes.', 'Το "{0}" υπάρχει ήδη στα θέματά σου.'],
-        importTitle: ['Import', 'Εισαγωγή'],
-        importPh: ['Paste a theme (.json text) here', 'Επικόλλησε εδώ ένα θέμα (κείμενο .json)'],
-        importBtn: ['Import pasted text', 'Εισαγωγή κειμένου'],
-        importFile: ['Import from file', 'Εισαγωγή από αρχείο'],
-        exportTitle: ['Export', 'Εξαγωγή'],
-        currentTheme: ['Current theme', 'Τρέχον θέμα'],
-        download: ['Download file', 'Λήψη αρχείου'],
-        showJson: ['Show text', 'Εμφάνιση κειμένου'],
-        copy: ['Copy text', 'Αντιγραφή κειμένου'],
-        copied: ['Copied.', 'Αντιγράφηκε.'],
-        exported: ['Exported: {0}', 'Εξαγωγή: {0}'],
-        imported: ['Imported "{0}": {1} settings.', 'Εισαγωγή του "{0}": {1} ρυθμίσεις.'],
-        importedDropped: [' {0} unknown or invalid values were left out.', ' {0} άγνωστες ή άκυρες τιμές παραλείφθηκαν.'],
-        importedUrls: [' It loads files from: {0} (shown again before use).', ' Φορτώνει αρχεία από: {0} (εμφανίζονται ξανά πριν από τη χρήση).'],
-        e_tooBig: ['The theme is too large (max 64 KB).', 'Το θέμα είναι πολύ μεγάλο (έως 64 KB).'],
-        e_notJson: ['This is not valid theme text (JSON).', 'Αυτό δεν είναι έγκυρο κείμενο θέματος (JSON).'],
-        e_notTheme: ['This is not a Legend Mod theme (format lm-theme).', 'Αυτό δεν είναι θέμα του Legend Mod (μορφή lm-theme).'],
-        e_newer: ['This theme was made by a newer version of Legend Mod.', 'Αυτό το θέμα φτιάχτηκε από νεότερη έκδοση του Legend Mod.'],
-        e_empty: ['The theme has no usable settings.', 'Το θέμα δεν έχει χρησιμοποιήσιμες ρυθμίσεις.'],
-        cmpA: ['Theme A', 'Θέμα Α'],
-        cmpB: ['Theme B', 'Θέμα Β'],
-        diffNone: ['No differences.', 'Καμία διαφορά.'],
-        diffCount: ['{0} differences', '{0} διαφορές'],
-        colSetting: ['Setting', 'Ρύθμιση'],
-        hudLayout: ['HUD layout', 'Διάταξη HUD'],
-        notSet: ['(not set)', '(κανένα)'],
-        on: ['ON', 'ΝΑΙ'],
-        off: ['OFF', 'ΟΧΙ'],
-        loadingMod: ['The theme workshop is loading, try again in a moment.', 'Το εργαστήριο θεμάτων φορτώνει, δοκίμασε σε λίγο.']
-    };
-    function lang() {
-        var l = null;
-        try { l = W.localStorage.getItem('languagemod'); } catch (e) { }
-        return l === '2' ? 1 : 0;
-    }
+    /* ── Texts: the shared language packs (developers/i18n/src) ── */
+    var P = 'modules.themeworkshop.';
+    /* tx('key', a, b): the text in the chosen language with {0} = a, {1} = b */
     function tx(key) {
-        var row = TEXT[key];
-        var s = row ? (row[lang()] || row[0]) : key;
-        for (var i = 1; i < arguments.length; i++) s = s.split('{' + (i - 1) + '}').join(String(arguments[i]));
-        return s;
+        var vars = Array.prototype.slice.call(arguments, 1);
+        return typeof W.lmT === 'function' ? W.lmT(P + key, vars) : key;
     }
+    function lang() { return W.LMi18n && typeof W.LMi18n.lang === 'function' ? W.LMi18n.lang() : ''; }
+    function dir() { return W.LMi18n && typeof W.LMi18n.dir === 'function' ? W.LMi18n.dir() : 'ltr'; }
     function esc(s) {
         return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -321,7 +225,7 @@
             else info.dropped.push('hudLayout');
         }
         var pkg = {
-            name: cleanText(raw.name, NAME_MAX) || 'Theme',
+            name: cleanText(raw.name, NAME_MAX) || tx('defaultName'),
             author: cleanText(raw.author, AUTHOR_MAX),
             description: cleanText(raw.description, DESC_MAX),
             created: toTime(raw.created, Date.now()),
@@ -346,6 +250,7 @@
     function toPackage(entry) {
         var b = entry.body || {}, theme = {};
         Object.keys(b.theme || {}).forEach(function (k) { if (k !== 'customCursor' && k !== 'customBackground') theme[k] = b.theme[k]; });
+        // i18n-ok: file data (the exported package), not shown text
         var out = { format: FORMAT, version: VERSION, name: entry.name || 'Theme', author: entry.author || '', description: entry.description || '' };
         try { out.created = new Date(entry.created || Date.now()).toISOString(); } catch (e) { out.created = new Date().toISOString(); }
         out.theme = theme;
@@ -441,7 +346,7 @@
         var now = Date.now();
         var out = {
             id: e.id,
-            name: cleanText(e.name, NAME_MAX) || 'Theme',
+            name: cleanText(e.name, NAME_MAX) || tx('defaultName'),
             author: cleanText(e.author, AUTHOR_MAX),
             description: cleanText(e.description, DESC_MAX),
             created: toTime(e.created, now),
@@ -604,7 +509,7 @@
     function toast(kind, html) {
         var t = W.toastr;
         if (!t) return;
-        try { (t[kind] || t.info).call(t, '<b>[THEMES]:</b> ' + html); } catch (e) { }
+        try { (t[kind] || t.info).call(t, '<b>[' + esc(tx('tag')) + ']:</b> ' + html); } catch (e) { }
     }
     /* the current theme as a body (the enlarged minimap counts with its normal width) */
     function captureBody() {
@@ -793,6 +698,7 @@
     }
 
     /* ═══ Window ═══ */
+    var TABS = { mine: 'tabMine', gallery: 'tabGallery', io: 'tabIo', compare: 'tabCompare' };
     var tab = 'mine', openHist = {}, pending = null, gallery = null, galleryState = '', cmpA = 'cur', cmpB = '', ioText = '';
     function frame() { return D.getElementById('lm-tw'); }
     function isOpen() { return !!frame(); }
@@ -891,13 +797,13 @@
         css();
         var $ = jq();
         var f = $('<div id="lm-tw"></div>');
-        var win = $('<div class="lm-tw-win" role="dialog" aria-modal="false"></div>').attr('aria-label', tx('title')).appendTo(f);
+        var win = $('<div class="lm-tw-win" role="dialog" aria-modal="false"></div>').attr('aria-label', tx('title')).attr('dir', dir()).appendTo(f);
         var head = $('<div class="lm-tw-head"></div>').appendTo(win);
         $('<b></b>').text(tx('title')).appendTo(head);
         $('<button type="button" class="lm-tw-x">&times;</button>').attr('aria-label', tx('close')).attr('title', tx('close')).appendTo(head);
         var tabs = $('<div class="lm-tw-tabs"></div>').appendTo(win);
-        [['mine', 'tabMine'], ['gallery', 'tabGallery'], ['io', 'tabIo'], ['compare', 'tabCompare']].forEach(function (t) {
-            $('<button type="button"></button>').attr('data-tab', t[0]).text(tx(t[1])).appendTo(tabs);
+        Object.keys(TABS).forEach(function (t) {
+            $('<button type="button"></button>').attr('data-tab', t).text(tx(TABS[t])).appendTo(tabs);
         });
         $('<div class="lm-tw-body"></div>').appendTo(win);
         win.on('click', '.lm-tw-x', function (e) { e.preventDefault(); close(); });
@@ -924,6 +830,22 @@
         pending = null;
         if (!preview) W.removeEventListener('resize', onResize);
     }
+    /* a language change: the open window (title, tabs, the open tab) and the preview bar again;
+     * the Theme tab button has data-i18n (LMi18n.apply updates it) */
+    function relabel() {
+        var $ = jq();
+        if (!$) return;
+        var f = $('#lm-tw');
+        if (f.length) {
+            f.find('.lm-tw-win').attr('aria-label', tx('title')).attr('dir', dir());
+            f.find('.lm-tw-head b').text(tx('title'));
+            f.find('.lm-tw-x').attr('aria-label', tx('close')).attr('title', tx('close'));
+            f.find('.lm-tw-tabs button').each(function () { $(this).text(tx(TABS[$(this).attr('data-tab')])); });
+            render();
+        }
+        if (preview) renderBar();
+    }
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(relabel);
     function toggle() { if (preview) return; if (isOpen()) close(); else open(); }
     function showFrame(on) {
         var f = frame();
@@ -936,7 +858,7 @@
         if (!preview) return;
         css();
         $('#lm-tw-pv').remove();
-        var b = $('<div id="lm-tw-pv" role="status"></div>');
+        var b = $('<div id="lm-tw-pv" role="status"></div>').attr('dir', dir());
         $('<span class="lm-tw-pv-name"></span>').text(tx('previewing', preview.name)).appendTo(b);
         $('<span class="lm-tw-pv-left"></span>').text(tx('revertsIn', Math.ceil(PREVIEW_MS / 1000))).appendTo(b);
         $('<button type="button" class="lm-tw-btn lm-tw-go" data-pv="keep"></button>').text(tx('keep')).appendTo(b);
@@ -960,12 +882,13 @@
     }
     function when(t) {
         if (!t) return '';
-        try { return new Date(t).toLocaleString(); } catch (e) { return String(t); }
+        try { var c = lang(); return new Date(t).toLocaleString(c === 'zh' ? 'zh-TW' : c || undefined); } catch (e) { return String(t); }
     }
     /* a small picture of the theme: field, border, a cell with its name, food, a virus, a menu panel */
     function previewPic(body) {
         var $ = jq(), e = effectiveTheme(body, T());
         var p = $('<div class="lm-tw-prev" aria-hidden="true"></div>').css({ background: e.bgColor, borderColor: e.bordersColor });
+        // i18n-ok: sample letters on the cell of the small theme picture (aria-hidden)
         $('<span class="c">Aa</span>').css({ background: e.mainColor, color: e.namesColor }).appendTo(p);
         [[38, 8], [70, 38], [30, 38]].forEach(function (xy) { $('<span class="f"></span>').css({ left: xy[0] + 'px', top: xy[1] + 'px', background: e.foodColor }).appendTo(p); });
         $('<span class="v"></span>').css({ background: e.virusColor, borderColor: e.virusStrokeColor }).appendTo(p);
@@ -1009,7 +932,7 @@
             previewPic(e.body).appendTo(it);
             var nm = $('<div class="lm-tw-name"></div>').appendTo(it);
             $('<span></span>').text(e.name).appendTo(nm);
-            $('<small></small>').text((e.author ? tx('by', e.author) + ' · ' : '') + when(e.updated)).appendTo(nm);
+            $('<small></small>').text((e.author ? tx('by', e.author) + ' \u00b7 ' : '') + when(e.updated)).appendTo(nm);
             if (e.description) $('<div class="lm-tw-desc"></div>').text(e.description).appendTo(nm);
             var acts = $('<div class="lm-tw-acts"></div>').appendTo(it);
             btn(tx('preview'), 'pv', e.id, 'lm-tw-go').appendTo(acts);
@@ -1364,7 +1287,7 @@
         if (!$ || $('#theme .lm-tw-open').length) return !!$;
         var save = $('#theme > .btn-save');
         if (!save.length) return false;
-        $('<button type="button" class="btn btn-block btn-info lm-tw-open"></button>').text(tx('openBtn')).insertBefore(save.first()).on('click', function (e) {
+        $('<button type="button" class="btn btn-block btn-info lm-tw-open"></button>').attr('data-i18n', P + 'title').text(tx('title')).insertBefore(save.first()).on('click', function (e) {
             e.preventDefault();
             open();
         });
@@ -1389,7 +1312,7 @@
     api.isOpen = isOpen;
     /* for scripts and the smoke test */
     api.previewing = previewing;
-    api.preview = function (body, name, ms) { return startPreview(cleanBody(body), cleanName(name) || 'Script', ms); };
+    api.preview = function (body, name, ms) { return startPreview(cleanBody(body), cleanName(name) || tx('script'), ms); };
     api.keep = function () { endPreview(true); };
     api.revert = function () { endPreview(false); };
     /* Before something else changes the settings (a settings profile, preset, import, restore):

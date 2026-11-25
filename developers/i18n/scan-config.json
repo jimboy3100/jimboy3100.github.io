@@ -19,7 +19,11 @@
     "ogario/modules/discovery.js",
     "ogario/modules/companion.js",
     "ogario/modules/notifications.js",
-    "companion.html"
+    "companion.html",
+    "ogario/modules/profiles.js",
+    "ogario/modules/themeworkshop.js",
+    "ogario/modules/hudeditor.js",
+    "ogario/modules/hudeditor-ui.js"
   ],
   "groups": {
     "a: ogario/modules": [

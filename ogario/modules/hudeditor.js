@@ -31,21 +31,21 @@
     /* The HUD boxes the editor knows. sel: the element; extra: parts drawn outside its box that
      * must stay on screen too (the leaderboard mass column, the toolbars above the minimap). */
     var COMPONENTS = [
-        { id: 'leaderboard', sel: '#leaderboard-hud', extra: '#leaderboard-hud > *', en: 'Leaderboard', el: 'Πίνακας κατάταξης' },
-        { id: 'minimap', sel: '#minimap-hud', extra: '#minimap-hud > *', en: 'Minimap', el: 'Μικρός χάρτης' },
-        { id: 'stats', sel: '#stats-hud', en: 'Game stats (FPS, ping, mass)', el: 'Στατιστικά (FPS, ping, μάζα)' },
-        { id: 'phoneStats', sel: '#lm-stats', en: 'Phone stats', el: 'Στατιστικά κινητού' },
-        { id: 'team', sel: '#top5-hud', en: 'Team list', el: 'Λίστα ομάδας' },
-        { id: 'time', sel: '#time-hud', en: 'Time', el: 'Ώρα' },
-        { id: 'target', sel: '#target-hud', en: 'Target', el: 'Στόχος' },
-        { id: 'targetPanel', sel: '#target-panel-hud', en: 'Target buttons', el: 'Κουμπιά στόχου' },
-        { id: 'chatBox', sel: '#chat-box', en: 'Chat box', el: 'Πλαίσιο συνομιλίας' },
-        { id: 'chatInput', sel: '#message-box', en: 'Chat input', el: 'Πεδίο συνομιλίας' },
-        { id: 'popups', sel: '#toast-container', en: 'Chat popups and notifications', el: 'Αναδυόμενα συνομιλίας και ειδοποιήσεις' },
-        { id: 'netGraph', sel: '#lm-net-graph', en: 'Network graph (FPS, ping)', el: 'Γράφημα δικτύου (FPS, ping)' },
-        { id: 'cellPanel', sel: '#lm-hh-cells', en: 'Cell panel', el: 'Πίνακας κυττάρων' },
-        { id: 'bell', sel: '#lm-notif-bell', en: 'Notification bell', el: 'Καμπανάκι ειδοποιήσεων' },
-        { id: 'quickBar', sel: '#lm-cc-bar', en: 'Command Centre quick bar', el: 'Γρήγορη μπάρα Κέντρου εντολών' }
+        { id: 'leaderboard', sel: '#leaderboard-hud', extra: '#leaderboard-hud > *' },
+        { id: 'minimap', sel: '#minimap-hud', extra: '#minimap-hud > *' },
+        { id: 'stats', sel: '#stats-hud' },
+        { id: 'phoneStats', sel: '#lm-stats' },
+        { id: 'team', sel: '#top5-hud' },
+        { id: 'time', sel: '#time-hud' },
+        { id: 'target', sel: '#target-hud' },
+        { id: 'targetPanel', sel: '#target-panel-hud' },
+        { id: 'chatBox', sel: '#chat-box' },
+        { id: 'chatInput', sel: '#message-box' },
+        { id: 'popups', sel: '#toast-container' },
+        { id: 'netGraph', sel: '#lm-net-graph' },
+        { id: 'cellPanel', sel: '#lm-hh-cells' },
+        { id: 'bell', sel: '#lm-notif-bell' },
+        { id: 'quickBar', sel: '#lm-cc-bar' }
     ];
     var BY_ID = {};
     COMPONENTS.forEach(function (c) { BY_ID[c.id] = c; });
@@ -233,20 +233,12 @@
     };
     var api = W.LMHudEditor = { core: core, components: COMPONENTS };
 
-    /* ═══ Text (English, Greek; other languages show English) ═══ */
+    /* ═══ Text (the shared language packs: developers/i18n/src) ═══ */
 
-    var STR = {
-        layout: ['HUD layout', 'Διάταξη HUD'],
-        defaultHud: ['Default HUD', 'Προεπιλεγμένο HUD'],
-        edit: ['Edit HUD', 'Επεξεργασία HUD'],
-        editTip: ['Move, resize, lock or hide the HUD boxes and save layouts', 'Μετακίνηση, μέγεθος, κλείδωμα ή απόκρυψη των πλαισίων του HUD και αποθήκευση διατάξεων'],
-        applied: ['HUD layout: ', 'Διάταξη HUD: '],
-        loading: ['The HUD editor could not be loaded, try again in a moment.', 'Ο επεξεργαστής HUD δεν φορτώθηκε, δοκίμασε σε λίγο.']
-    };
-    function lang() { try { return W.localStorage.getItem('languagemod') === '2' ? 1 : 0; } catch (e) { return 0; } }
-    function tx(k) { var r = STR[k]; return r ? (r[lang()] || r[0]) : k; }
-    api.lang = lang;
-    api.compLabel = function (c) { return lang() === 1 && c.el ? c.el : c.en; };
+    var P = 'modules.hudeditor.';
+    function tx(k, vars) { return typeof W.lmT === 'function' ? W.lmT(P + k, vars) : k; }
+    /* a box name in the chosen language (the editor UI uses it too) */
+    api.compLabel = function (c) { return tx('comp.' + c.id); };
 
     /* ═══ Storage ═══ */
 
@@ -423,7 +415,7 @@
         boosts = {};
         if (!preview) { eff = {}; render(); }
         syncSelect();
-        if (!quiet && W.toastr) { try { W.toastr.info(esc(tx('applied') + (l ? l.name : tx('defaultHud')))); } catch (e) { } }
+        if (!quiet && W.toastr) { try { W.toastr.info(esc(tx('applied', l ? l.name : tx('defaultHud')))); } catch (e) { } }
         return true;
     };
     /* the stored layouts as text with another active one ('' the normal HUD), or null when there
@@ -580,6 +572,14 @@
         if (addSettingsRow()) return;
         if (++tries < 240) setTimeout(boot, 500);
     })();
+    /* a language change: the Theme > HUD row in the new language */
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {
+        var row = D.getElementById('lm-he-settings'), b = D.getElementById('lm-he-open');
+        var lab = row && row.querySelector ? row.querySelector('span') : null;
+        if (lab) lab.textContent = tx('layout') + ':';
+        if (b) { b.textContent = tx('edit'); b.title = tx('editTip'); }
+        syncSelect();
+    });
     ['resize', 'orientationchange'].forEach(function (n) { W.addEventListener(n, refreshSoon); });
     D.addEventListener('fullscreenchange', refreshSoon);
     D.addEventListener('webkitfullscreenchange', refreshSoon);

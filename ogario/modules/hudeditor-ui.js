@@ -13,44 +13,15 @@
     var core = HE.core;
     var own = Object.prototype.hasOwnProperty;
 
-    var STR = {
-        title: ['Edit HUD', 'Επεξεργασία HUD'],
-        done: ['Done', 'Τέλος'],
-        cancel: ['Cancel', 'Άκυρο'],
-        collapse: ['Collapse', 'Σύμπτυξη'],
-        expand: ['Expand', 'Ανάπτυξη'],
-        layout: ['Layout', 'Διάταξη'],
-        defaultHud: ['Default HUD', 'Προεπιλεγμένο HUD'],
-        namePh: ['Layout name', 'Όνομα διάταξης'],
-        save: ['Save', 'Αποθήκευση'],
-        del: ['Delete', 'Διαγραφή'],
-        delSure: ['Delete? Tap again', 'Διαγραφή; Πάτα ξανά'],
-        snap: ['Snap to edges and boxes', 'Κούμπωμα σε άκρες και πλαίσια'],
-        grid: ['Grid', 'Πλέγμα'],
-        off: ['Off', 'Όχι'],
-        profile: ['Apply with settings profile', 'Εφαρμογή με προφίλ ρυθμίσεων'],
-        none: ['None', 'Κανένα'],
-        resetAll: ['Reset all', 'Επαναφορά όλων'],
-        reset: ['Reset (normal place and size)', 'Επαναφορά (κανονική θέση και μέγεθος)'],
-        lock: ['Lock (cannot be moved)', 'Κλείδωμα (δεν μετακινείται)'],
-        unlock: ['Unlock', 'Ξεκλείδωμα'],
-        hide: ['Hide this box (it stays in this list)', 'Απόκρυψη του πλαισίου (μένει στη λίστα)'],
-        show: ['Show this box again', 'Εμφάνιση του πλαισίου ξανά'],
-        smaller: ['Smaller', 'Μικρότερο'],
-        bigger: ['Bigger', 'Μεγαλύτερο'],
-        notShown: ['not on screen now', 'δεν φαίνεται τώρα'],
-        hidden: ['hidden', 'κρυμμένο'],
-        moved: ['moved', 'μετακινήθηκε'],
-        locked: ['locked', 'κλειδωμένο'],
-        hint: ['Edit HUD: drag a box to move it, its corner to resize it. Done saves the layout.', 'Επεξεργασία HUD: σύρε ένα πλαίσιο για να το μετακινήσεις, τη γωνία του για το μέγεθος. Το Τέλος αποθηκεύει τη διάταξη.'],
-        saved: ['HUD layout saved: ', 'Η διάταξη HUD αποθηκεύτηκε: '],
-        saveFail: ['The layout could not be saved (storage full, or already 20 layouts).', 'Η διάταξη δεν αποθηκεύτηκε (γεμάτος χώρος ή ήδη 20 διατάξεις).'],
-        unsaved: ['Changes not saved: press Esc again to discard them, or Done to save.', 'Οι αλλαγές δεν αποθηκεύτηκαν: πάτα ξανά Esc για απόρριψη ή Τέλος για αποθήκευση.'],
-        note: ['Moved boxes keep their place and size from the layout (theme position and HUD scale settings no longer move them).', 'Τα μετακινημένα πλαίσια κρατούν θέση και μέγεθος από τη διάταξη (οι ρυθμίσεις θέσης και κλίμακας HUD δεν τα μετακινούν πια).'],
-        custom: ['Custom', 'Προσαρμοσμένη']
-    };
-    var SUGGEST = ['Competitive', 'Streaming', 'Mobile', 'Spectating', 'Multibox'];
-    function t(k) { var r = STR[k]; return r ? (r[HE.lang()] || r[0]) : k; }
+    /* texts: the shared language packs (developers/i18n/src); the box names and the words shared
+     * with the Theme > HUD row come from hudeditor.js's keys */
+    var P = 'modules.hudeditorui.';
+    function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(P + k, vars) : k; }
+    function heT(k) { return typeof W.lmT === 'function' ? W.lmT('modules.hudeditor.' + k) : k; }
+    function dir() { return W.LMi18n && typeof W.LMi18n.dir === 'function' ? W.LMi18n.dir() : 'ltr'; }
+    /* layout names offered in the name box (the player may type anything) */
+    var SUGGEST = ['competitive', 'streaming', 'mobile', 'spectating', 'multibox'];
+    var HINT_OPTS = { timeOut: 0, extendedTimeOut: 0, tapToDismiss: false, closeButton: false };
 
     function mk(tag, cls, text) {
         var e = D.createElement(tag);
@@ -384,7 +355,7 @@
     function fillLayouts() {
         while (layoutSel.firstChild) layoutSel.removeChild(layoutSel.firstChild);
         [''].concat(HE.list()).forEach(function (n) {
-            var o = mk('option', null, n || t('defaultHud'));
+            var o = mk('option', null, n || heT('defaultHud'));
             o.value = n;
             layoutSel.appendChild(o);
         });
@@ -428,11 +399,11 @@
             if (st.length) { nm.appendChild(D.createTextNode(' ')); nm.appendChild(mk('span', 'st', '(' + st.join(', ') + ')')); }
             nm.addEventListener('click', function () { select(c.id); });
             row.appendChild(nm);
-            row.appendChild(btn('−', t('smaller'), function () { select(c.id); scaleBy(c.id, 1 / 1.1); }));
+            row.appendChild(btn('\u2212', t('smaller'), function () { select(c.id); scaleBy(c.id, 1 / 1.1); }));
             row.appendChild(btn('+', t('bigger'), function () { select(c.id); scaleBy(c.id, 1.1); }));
-            row.appendChild(btn(e.lock ? '🔒' : '🔓', e.lock ? t('unlock') : t('lock'), function () { select(c.id); toggleFlag(c.id, 'lock'); }, e.lock ? 'on' : ''));
-            row.appendChild(btn(e.hide ? '🚫' : '👁', e.hide ? t('show') : t('hide'), function () { select(c.id); toggleFlag(c.id, 'hide'); }, e.hide ? 'on warn' : ''));
-            var rb = btn('↺', t('reset'), function () { select(c.id); resetOne(c.id); });
+            row.appendChild(btn(e.lock ? '\ud83d\udd12' : '\ud83d\udd13', e.lock ? t('unlock') : t('lock'), function () { select(c.id); toggleFlag(c.id, 'lock'); }, e.lock ? 'on' : ''));
+            row.appendChild(btn(e.hide ? '\ud83d\udeab' : '\ud83d\udc41', e.hide ? t('show') : t('hide'), function () { select(c.id); toggleFlag(c.id, 'hide'); }, e.hide ? 'on warn' : ''));
+            var rb = btn('\u21ba', t('reset'), function () { select(c.id); resetOne(c.id); });
             rb.disabled = !draft[c.id];
             row.appendChild(rb);
             listEl.appendChild(row);
@@ -458,7 +429,7 @@
         nameIn.value = r;
         baseSig = sig();
         fillLayouts();
-        toast('success', t('saved') + r);
+        toast('success', t('saved', r));
         return true;
     }
     function done() {
@@ -480,19 +451,20 @@
         panel = mk('div');
         panel.id = 'lm-he-p';
         panel.setAttribute('role', 'dialog');
-        panel.setAttribute('aria-label', t('title'));
+        panel.setAttribute('aria-label', heT('edit'));
+        panel.setAttribute('dir', dir());
         var head = mk('div', 'lm-he-h');
-        head.appendChild(mk('span', 'lm-he-t', t('title')));
-        var minB = btn('▾', t('collapse'), function () {
+        head.appendChild(mk('span', 'lm-he-t', heT('edit')));
+        var minB = btn('\u25be', t('collapse'), function () {
             var min = !panel.classList.contains('min');
             panel.classList.toggle('min', min);
-            minB.textContent = min ? '▸' : '▾';
+            minB.textContent = min ? '\u25b8' : '\u25be';
             minB.title = min ? t('expand') : t('collapse');
             clampPanel();
         });
         head.appendChild(minB);
         head.appendChild(btn(t('done'), t('done'), done, 'go lm-he-done'));
-        head.appendChild(btn('×', t('cancel'), function () { close(false); }, 'warn lm-he-x'));
+        head.appendChild(btn('\u00d7', t('cancel'), function () { close(false); }, 'warn lm-he-x'));
         head.addEventListener('pointerdown', function (ev) {
             if (ev.target.closest && ev.target.closest('button')) return;
             pdrag = { id: ev.pointerId, x0: ev.clientX, y0: ev.clientY, l: panel.offsetLeft, t: panel.offsetTop };
@@ -534,7 +506,7 @@
         nameIn.setAttribute('list', 'lm-he-names');
         var dl = mk('datalist');
         dl.id = 'lm-he-names';
-        SUGGEST.forEach(function (n) { var o = mk('option'); o.value = n; dl.appendChild(o); });
+        SUGGEST.forEach(function (n) { var o = mk('option'); o.value = t('suggest.' + n); dl.appendChild(o); });
         r2.appendChild(nameIn);
         r2.appendChild(dl);
         r2.appendChild(btn(t('save'), t('save'), saveDraft, 'go lm-he-save'));
@@ -619,6 +591,27 @@
         if (mv && selected) { e.preventDefault(); nudge(selected, mv[0], mv[1]); return; }
         if ((e.key === '+' || e.key === '=' || e.key === '-') && selected) { e.preventDefault(); scaleBy(selected, e.key === '-' ? 1 / 1.05 : 1.05); }
     }
+    /* a language change while the editor is open: the panel, the box names and the hint again
+     * (the draft, the layout name being typed and the panel place stay) */
+    function relabel() {
+        if (!isOpen()) return;
+        var old = panel, name = nameIn.value, place = old.style.cssText;
+        root.replaceChild(buildPanel(), old);
+        panel.style.cssText = place;
+        nameIn.value = name;
+        core.COMPONENTS.forEach(function (c) {
+            var f = frames[c.id];
+            if (!f) return;
+            var l = f.querySelector('.lm-he-l'), rs = f.querySelector('.lm-he-rs');
+            if (l) l.textContent = HE.compLabel(c);
+            if (rs) rs.title = t('bigger') + ' / ' + t('smaller');
+        });
+        fillLayouts();
+        renderList();
+        try { if (hint && W.toastr) W.toastr.clear(hint); } catch (e) { }
+        hint = toast('info', t('hint'), HINT_OPTS);
+    }
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(relabel);
     function onResize() { if (isOpen()) { HE.refreshNow(); placeFrames(); renderList(); clampPanel(); dockPanel(); } }
 
     function open() {
@@ -648,7 +641,7 @@
         W.addEventListener('orientationchange', onResize);
         showGrid();
         /* a hint that stays until the editor closes; it also gives the popups box something to frame */
-        hint = toast('info', t('hint'), { timeOut: 0, extendedTimeOut: 0, tapToDismiss: false, closeButton: false });
+        hint = toast('info', t('hint'), HINT_OPTS);
         selected = '';
         userMoved = false;
         loadLayout(HE.active());
