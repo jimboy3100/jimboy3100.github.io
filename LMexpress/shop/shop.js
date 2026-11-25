@@ -142,7 +142,7 @@
                 '<div class="modal-content" style="overflow: hidden; position: relative; z-index: 1051; max-height: 85vh; display: flex; flex-direction: column;">' +
                 '<div id="CloseLMShop2" class="modal-header">' +
                 '<button id="CloseLMShop" type="button" class="close" data-dismiss="modal" title="Close" onclick="jQuery(\'#LMShop\').remove(); jQuery(\'.modal-backdrop\').remove(); jQuery(\'body\').removeClass(\'modal-open\');"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
-                '<button id="FAQLMShop" type="button" class="close" title="Help" onclick="window.open(\'https://jimboy3100.github.io/LMexpress/olddeals.html\', \'_blank\');"><span aria-hidden="true">&#x2753;</span><span class="sr-only">Help</span></button>' +
+                '<button id="FAQLMShop" type="button" class="close" title="Help"><span aria-hidden="true">&#x2753;</span><span class="sr-only">Help</span></button>' +
                 '<h4 class="modal-title"><i class="fa fa-shopping-cart"></i> Shop</h4>' +
                 '</div>' +
 				
@@ -227,6 +227,8 @@
             });
             $("#FAQLMShop").off('click').on('click', function(e) {
                 if (e) e.stopPropagation();
-                window.open('https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
+                /* one handler only (an inline onclick opened the page a second time); the page gets the theme */
+                var _lmDeals = 'https://www.legendmod.ml/LMexpress/olddeals.html';
+                window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl(_lmDeals) : _lmDeals, '_blank');
             });	
 //$(".modal-dialog").draggable()
