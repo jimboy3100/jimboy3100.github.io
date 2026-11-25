@@ -24589,6 +24589,35 @@ function thelegendmodproject() {
         return avg;
     }
     /*
+     * WebGL jelly bodies are drawn as one indexed triangle list. Fan of one body: its centre vertex
+     * followed by its n perimeter vertices; triangle i is (centre, point i, point i + 1), the last one
+     * closing on point 0 - the same triangles, in the same order, as one TRIANGLE_FAN per body with
+     * the first point repeated at the end. Writes 3n indices into out at at; returns the next at.
+     */
+    function lmJellyFanIndices(out, at, center, n) {
+        for (var i = 0; i < n; i++) {
+            out[at++] = center;
+            out[at++] = center + 1 + i;
+            out[at++] = center + (i + 1 === n ? 1 : i + 2);
+        }
+        return at;
+    }
+    /* Stroke band of one body: inner and outer vertex of point i at base + 2i and base + 2i + 1; per
+     * edge i -> i + 1 the triangles (inner i, outer i, outer i+1) and (inner i, outer i+1, inner i+1),
+     * as the six vertices per edge written before. Writes 6n indices; returns the next at. */
+    function lmJellyBandIndices(out, at, base, n) {
+        for (var i = 0; i < n; i++) {
+            var i0 = base + 2 * i, i1 = base + (i + 1 === n ? 0 : 2 * i + 2);
+            out[at++] = i0;
+            out[at++] = i0 + 1;
+            out[at++] = i1 + 1;
+            out[at++] = i0;
+            out[at++] = i1 + 1;
+            out[at++] = i1;
+        }
+        return at;
+    }
+    /*
      * WebGL text textures (nick/mass quads). The cache was limited to 500 textures whatever their
      * size (up to 2048 x 512 RGBA = 4 MB each). Now also by bytes: from navigator.deviceMemory
      * (GB) when the browser tells it, else 32 MB.
@@ -72730,6 +72759,41 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 );
 
 
+                /*
+                 * Index list of every body's fan triangles (centre, point i,
+                 * point i + 1): all bodies in one drawElements instead of one
+                 * TRIANGLE_FAN draw per cell (ANGLE on Direct3D also has to turn
+                 * every fan into a list on its own). Bound while the VAO is, so
+                 * it is the VAO's element buffer.
+                 */
+                this.glJellyIndexCapacity =
+                    196608;
+
+
+                this.glJellyIndexData =
+                    new Uint32Array(
+                        this.glJellyIndexCapacity
+                    );
+
+
+                this.glJellyIBO =
+                    gl.createBuffer();
+
+
+                gl.bindBuffer(
+                    gl.ELEMENT_ARRAY_BUFFER,
+                    this.glJellyIBO
+                );
+
+
+                gl.bufferData(
+                    gl.ELEMENT_ARRAY_BUFFER,
+                    this.glJellyIndexData
+                        .byteLength,
+                    gl.DYNAMIC_DRAW
+                );
+
+
                 gl.bindVertexArray(
                     null
                 );
@@ -72742,12 +72806,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  *      [point 0]
                  *      [point 1]
                  *      ...
-                 *      [point N]
-                 *      [point 0 again]
+                 *      [point N - 1]
                  *
-                 * Each range is drawn using:
-                 *
-                 *      gl.TRIANGLE_FAN
+                 * plus its number of points, its number of stroke bands and
+                 * where its band vertices start. The index lists are built from
+                 * these (_lmJellyBuildIndices); _glJellyIdxCells counts the
+                 * leading cells whose indices are uploaded (none yet).
                  */
                 this.glJellyDrawCapacity =
                     8192;
@@ -72763,6 +72827,34 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     new Int32Array(
                         this.glJellyDrawCapacity
                     );
+
+
+                this.glJellyDrawBands =
+                    new Int32Array(
+                        this.glJellyDrawCapacity
+                    );
+
+
+                this.glJellyDrawStrokeStarts =
+                    new Int32Array(
+                        this.glJellyDrawCapacity
+                    );
+
+
+                this.glJellyFillIdxStarts =
+                    new Int32Array(
+                        this.glJellyDrawCapacity
+                    );
+
+
+                this.glJellyStrokeIdxStarts =
+                    new Int32Array(
+                        this.glJellyDrawCapacity
+                    );
+
+
+                this._glJellyIdxCells =
+                    0;
 
 
                 /*
@@ -72987,6 +73079,38 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 );
 
 
+                /*
+                 * Bands are indexed too: an inner and an outer vertex per point,
+                 * two triangles per edge (see writeWebGLJellyStrokeBand).
+                 */
+                this.glJellyStrokeIndexCapacity =
+                    393216;
+
+
+                this.glJellyStrokeIndexData =
+                    new Uint32Array(
+                        this.glJellyStrokeIndexCapacity
+                    );
+
+
+                this.glJellyStrokeIBO =
+                    gl.createBuffer();
+
+
+                gl.bindBuffer(
+                    gl.ELEMENT_ARRAY_BUFFER,
+                    this.glJellyStrokeIBO
+                );
+
+
+                gl.bufferData(
+                    gl.ELEMENT_ARRAY_BUFFER,
+                    this.glJellyStrokeIndexData
+                        .byteLength,
+                    gl.DYNAMIC_DRAW
+                );
+
+
                 gl.bindVertexArray(
                     null
                 );
@@ -73013,7 +73137,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
                 console.log(
-                    '[LegendMod WebGL] Delta-style jelly TRIANGLE_FAN renderer initialized.'
+                    '[LegendMod WebGL] Delta-style jelly renderer initialized (indexed batch).'
                 );
             }
             catch (
@@ -73047,6 +73171,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     null;
 
 
+                this.glJellyIBO =
+                    null;
+
+
+                this.glJellyStrokeIBO =
+                    null;
+
+
                 this.glJellyStrokeVAO =
                     null;
 
@@ -73066,7 +73198,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         ensureWebGLJellyCapacity(
             needFill,
             needStroke,
-            needDraws
+            needDraws,
+            needFillIdx,
+            needStrokeIdx
         ) {
             if (
                 !this.gl
@@ -73174,6 +73308,119 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
 
 
+                /*
+                 * Index buffers: a new size drops their contents, so every
+                 * cell's indices are made and uploaded again (_glJellyIdxCells).
+                 * Bound through their VAO (the element buffer is VAO state).
+                 */
+                if (
+                    needFillIdx >
+                    this.glJellyIndexCapacity
+                ) {
+                    var fillIdxCap =
+                        Math.max(
+                            this.glJellyIndexCapacity ||
+                                196608,
+                            196608
+                        );
+
+
+                    while (
+                        fillIdxCap <
+                        needFillIdx
+                    ) {
+                        fillIdxCap *=
+                            2;
+                    }
+
+
+                    this.glJellyIndexCapacity =
+                        fillIdxCap;
+
+
+                    this.glJellyIndexData =
+                        new Uint32Array(
+                            fillIdxCap
+                        );
+
+
+                    gl.bindVertexArray(
+                        this.glJellyVAO
+                    );
+
+
+                    gl.bufferData(
+                        gl.ELEMENT_ARRAY_BUFFER,
+                        this.glJellyIndexData
+                            .byteLength,
+                        gl.DYNAMIC_DRAW
+                    );
+
+
+                    gl.bindVertexArray(
+                        null
+                    );
+
+
+                    this._glJellyIdxCells =
+                        0;
+                }
+
+
+                if (
+                    needStrokeIdx >
+                    this.glJellyStrokeIndexCapacity
+                ) {
+                    var strokeIdxCap =
+                        Math.max(
+                            this.glJellyStrokeIndexCapacity ||
+                                393216,
+                            393216
+                        );
+
+
+                    while (
+                        strokeIdxCap <
+                        needStrokeIdx
+                    ) {
+                        strokeIdxCap *=
+                            2;
+                    }
+
+
+                    this.glJellyStrokeIndexCapacity =
+                        strokeIdxCap;
+
+
+                    this.glJellyStrokeIndexData =
+                        new Uint32Array(
+                            strokeIdxCap
+                        );
+
+
+                    gl.bindVertexArray(
+                        this.glJellyStrokeVAO
+                    );
+
+
+                    gl.bufferData(
+                        gl.ELEMENT_ARRAY_BUFFER,
+                        this.glJellyStrokeIndexData
+                            .byteLength,
+                        gl.DYNAMIC_DRAW
+                    );
+
+
+                    gl.bindVertexArray(
+                        null
+                    );
+
+
+                    this._glJellyIdxCells =
+                        0;
+                }
+
+
                 if (
                     needDraws >
                     this.glJellyDrawCapacity
@@ -73209,6 +73456,34 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         new Int32Array(
                             drawCap
                         );
+
+
+                    this.glJellyDrawBands =
+                        new Int32Array(
+                            drawCap
+                        );
+
+
+                    this.glJellyDrawStrokeStarts =
+                        new Int32Array(
+                            drawCap
+                        );
+
+
+                    this.glJellyFillIdxStarts =
+                        new Int32Array(
+                            drawCap
+                        );
+
+
+                    this.glJellyStrokeIdxStarts =
+                        new Int32Array(
+                            drawCap
+                        );
+
+
+                    this._glJellyIdxCells =
+                        0;
                 }
 
 
@@ -73228,99 +73503,199 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
 
 
-        writeWebGLJellyVertex(
-            x,
-            y,
-            u,
-            v,
-            r,
-            g,
-            b,
-            a,
+        /*
+         * Fill vertices of one jelly body (format above): the centre, then this
+         * frame's perimeter points. Everything per vertex comes from locals: this
+         * object has hundreds of properties, and reading them for each of the
+         * 11 floats of every vertex was a large part of the frame. Returns the
+         * index of the centre vertex.
+         */
+        _lmJellyWriteFill(
+            cell,
+            points,
+            textureRadius,
+            rgb,
+            alpha,
             skinLayer,
             skinAlpha,
             z
         ) {
-            var i =
-                this._glJellyVertexCount++ *
-                this.glJellyStride;
-
-
             var d =
                 this.glJellyVertexData;
+            var stride =
+                this.glJellyStride;
+            var start =
+                this._glJellyVertexCount;
+            var o =
+                start *
+                stride;
+            var offX =
+                this._glJellyOffX || 0;
+            var offY =
+                this._glJellyOffY || 0;
+            var cx =
+                cell.x;
+            var cy =
+                cell.y;
+            var r =
+                rgb[0];
+            var g =
+                rgb[1];
+            var b =
+                rgb[2];
+            var span =
+                2 *
+                textureRadius;
+            var n =
+                points.length;
 
-            d[i] =
-                x + (this._glJellyOffX || 0);
+            d[o] = cx + offX;
+            d[o + 1] = cy + offY;
+            d[o + 2] = 0.5;
+            d[o + 3] = 0.5;
+            d[o + 4] = r;
+            d[o + 5] = g;
+            d[o + 6] = b;
+            d[o + 7] = alpha;
+            d[o + 8] = skinLayer;
+            d[o + 9] = skinAlpha;
+            d[o + 10] = z;
 
-            d[i + 1] =
-                y + (this._glJellyOffY || 0);
+            for (
+                var i = 0;
+                i < n;
+                i++
+            ) {
+                var p =
+                    points[i];
+                var px =
+                    p.x;
+                var py =
+                    p.y;
 
-            d[i + 2] =
-                u;
+                o +=
+                    stride;
 
-            d[i + 3] =
-                v;
+                d[o] = px + offX;
+                d[o + 1] = py + offY;
+                /* skin anchored on the centre, not on this frame's bounds */
+                d[o + 2] = 0.5 + (px - cx) / span;
+                d[o + 3] = 0.5 + (py - cy) / span;
+                d[o + 4] = r;
+                d[o + 5] = g;
+                d[o + 6] = b;
+                d[o + 7] = alpha;
+                d[o + 8] = skinLayer;
+                d[o + 9] = skinAlpha;
+                d[o + 10] = z;
+            }
 
-            d[i + 4] =
-                r;
+            this._glJellyVertexCount =
+                start +
+                n +
+                1;
 
-            d[i + 5] =
-                g;
-
-            d[i + 6] =
-                b;
-
-            d[i + 7] =
-                a;
-
-            d[i + 8] =
-                skinLayer;
-
-            d[i + 9] =
-                skinAlpha;
-
-            d[i + 10] =
-                z;
+            return start;
         },
 
 
-        writeWebGLJellyStrokeVertex(
-            x,
-            y,
-            r,
-            g,
-            b,
-            a,
-            z
+        /*
+         * Index lists for the drawn cells from..to-1 (from: the first whose point
+         * or band count differs from the uploaded indices; the ones before keep
+         * theirs). Returns the ranges to upload and the totals to draw.
+         */
+        _lmJellyBuildIndices(
+            from,
+            to
         ) {
-            var i =
-                this._glJellyStrokeVertexCount++ *
-                this.glJellyStrokeStride;
+            var counts =
+                this.glJellyDrawCounts;
+            var bands =
+                this.glJellyDrawBands;
+            var starts =
+                this.glJellyDrawStarts;
+            var strokeStarts =
+                this.glJellyDrawStrokeStarts;
+            var fillAt =
+                this.glJellyFillIdxStarts;
+            var strokeAt =
+                this.glJellyStrokeIdxStarts;
+            var fillIdx =
+                this.glJellyIndexData;
+            var strokeIdx =
+                this.glJellyStrokeIndexData;
+            var fi =
+                from > 0
+                    ? fillAt[from - 1] + counts[from - 1] * 3
+                    : 0;
+            var si =
+                from > 0
+                    ? strokeAt[from - 1] + counts[from - 1] * bands[from - 1] * 6
+                    : 0;
+            var out = {
+                fillFrom: fi,
+                strokeFrom: si,
+                fillTo: fi,
+                strokeTo: si,
+                fillTotal: 0,
+                strokeTotal: 0
+            };
 
+            for (
+                var k = from;
+                k < to;
+                k++
+            ) {
+                var n =
+                    counts[k];
 
-            var d =
-                this.glJellyStrokeVertexData;
+                fillAt[k] =
+                    fi;
 
-            d[i] =
-                x + (this._glJellyOffX || 0);
+                fi =
+                    lmJellyFanIndices(
+                        fillIdx,
+                        fi,
+                        starts[k],
+                        n
+                    );
 
-            d[i + 1] =
-                y + (this._glJellyOffY || 0);
+                strokeAt[k] =
+                    si;
 
-            d[i + 2] =
-                r;
+                for (
+                    var b = 0;
+                    b < bands[k];
+                    b++
+                ) {
+                    si =
+                        lmJellyBandIndices(
+                            strokeIdx,
+                            si,
+                            strokeStarts[k] + b * n * 2,
+                            n
+                        );
+                }
+            }
 
-            d[i + 3] =
-                g;
+            out.fillTo =
+                fi;
+            out.strokeTo =
+                si;
 
-            d[i + 4] =
-                b;
+            var last =
+                to - 1;
 
-            d[i + 5] =
-                a;
+            out.fillTotal =
+                to > 0
+                    ? fillAt[last] + counts[last] * 3
+                    : 0;
+            out.strokeTotal =
+                to > 0
+                    ? strokeAt[last] + counts[last] * bands[last] * 6
+                    : 0;
 
-            d[i + 6] =
-                z;
+            return out;
         },
 
 
@@ -73356,7 +73731,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 n <
                 3
             ) {
-                return;
+                return 0;
             }
 
 
@@ -73568,148 +73943,64 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * Six vertices per polygon edge:
+             * Two vertices per point, inner then outer; the index list
+             * (lmJellyBandIndices) makes two triangles per polygon edge:
              *
              *     inner0 -------- inner1
              *       |           /   |
              *       |         /     |
              *     outer0 -------- outer1
+             *
+             * Locals only in this loop (see _lmJellyWriteFill).
              */
+            var d =
+                this.glJellyStrokeVertexData;
+            var stride =
+                this.glJellyStrokeStride;
+            var o =
+                this._glJellyStrokeVertexCount *
+                stride;
+            var offX =
+                this._glJellyOffX || 0;
+            var offY =
+                this._glJellyOffY || 0;
+
             for (
                 var e = 0;
                 e <
                     n;
                 e++
             ) {
-                var j =
-                    (
-                        e +
-                        1
-                    ) %
-                    n;
-
-
-                var p0 =
+                var p =
                     points[e];
 
+                d[o] = p.x + nx[e] * innerOffset + offX;
+                d[o + 1] = p.y + ny[e] * innerOffset + offY;
+                d[o + 2] = r;
+                d[o + 3] = g;
+                d[o + 4] = b;
+                d[o + 5] = innerA;
+                d[o + 6] = z;
 
-                var p1 =
-                    points[j];
+                o +=
+                    stride;
 
+                d[o] = p.x + nx[e] * outerOffset + offX;
+                d[o + 1] = p.y + ny[e] * outerOffset + offY;
+                d[o + 2] = r;
+                d[o + 3] = g;
+                d[o + 4] = b;
+                d[o + 5] = outerA;
+                d[o + 6] = z;
 
-                var i0x =
-                    p0.x +
-                    nx[e] *
-                    innerOffset;
-
-
-                var i0y =
-                    p0.y +
-                    ny[e] *
-                    innerOffset;
-
-
-                var o0x =
-                    p0.x +
-                    nx[e] *
-                    outerOffset;
-
-
-                var o0y =
-                    p0.y +
-                    ny[e] *
-                    outerOffset;
-
-
-                var i1x =
-                    p1.x +
-                    nx[j] *
-                    innerOffset;
-
-
-                var i1y =
-                    p1.y +
-                    ny[j] *
-                    innerOffset;
-
-
-                var o1x =
-                    p1.x +
-                    nx[j] *
-                    outerOffset;
-
-
-                var o1y =
-                    p1.y +
-                    ny[j] *
-                    outerOffset;
-
-
-                this.writeWebGLJellyStrokeVertex(
-                    i0x,
-                    i0y,
-                    r,
-                    g,
-                    b,
-                    innerA,
-                    z
-                );
-
-
-                this.writeWebGLJellyStrokeVertex(
-                    o0x,
-                    o0y,
-                    r,
-                    g,
-                    b,
-                    outerA,
-                    z
-                );
-
-
-                this.writeWebGLJellyStrokeVertex(
-                    o1x,
-                    o1y,
-                    r,
-                    g,
-                    b,
-                    outerA,
-                    z
-                );
-
-
-                this.writeWebGLJellyStrokeVertex(
-                    i0x,
-                    i0y,
-                    r,
-                    g,
-                    b,
-                    innerA,
-                    z
-                );
-
-
-                this.writeWebGLJellyStrokeVertex(
-                    o1x,
-                    o1y,
-                    r,
-                    g,
-                    b,
-                    outerA,
-                    z
-                );
-
-
-                this.writeWebGLJellyStrokeVertex(
-                    i1x,
-                    i1y,
-                    r,
-                    g,
-                    b,
-                    innerA,
-                    z
-                );
+                o +=
+                    stride;
             }
+
+            this._glJellyStrokeVertexCount +=
+                n * 2;
+
+            return 1;
         },
 
 
@@ -74301,6 +74592,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     0;
 
 
+                /* index counts: three per triangle (fill: one triangle per point,
+                 * stroke band: two per point) */
+                var needFillIdx =
+                    0;
+
+
+                var needStrokeIdx =
+                    0;
+
+
                 /*
                  * ========================================================
                  * PASS 1
@@ -74390,11 +74691,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
 
+                    /* centre + one vertex per point (the index list closes the
+                     * fan, no repeated first point) */
                     needFill +=
                         jellyCountCell
                             .points
                             .length +
-                        2;
+                        1;
+
+
+                    needFillIdx +=
+                        jellyCountCell
+                            .points
+                            .length *
+                        3;
 
 
                     needDraws++;
@@ -74418,6 +74728,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 jellyCountCell
                                     .points
                                     .length *
+                                2;
+                            needStrokeIdx +=
+                                jellyCountCell
+                                    .points
+                                    .length *
                                 6;
                         }
 
@@ -74427,6 +74742,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             0
                         ) {
                             needStroke +=
+                                jellyCountCell
+                                    .points
+                                    .length *
+                                2;
+                            needStrokeIdx +=
                                 jellyCountCell
                                     .points
                                     .length *
@@ -74451,6 +74771,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             jellyCountCell
                                 .points
                                 .length *
+                            2;
+                        needStrokeIdx +=
+                            jellyCountCell
+                                .points
+                                .length *
                             6;
                     }
                 }
@@ -74461,7 +74786,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         .ensureWebGLJellyCapacity(
                             needFill,
                             needStroke,
-                            needDraws
+                            needDraws,
+                            needFillIdx,
+                            needStrokeIdx
                         )
                 ) {
                     return abortCellBatch();
@@ -74480,6 +74807,43 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 var jellyDrawCount =
                     0;
+
+
+                /*
+                 * Index lists of the frame (all bodies in one drawElements, all
+                 * bands in another). They depend only on the sequence of point
+                 * and band counts, so the cells whose counts match the previous
+                 * frame keep their uploaded indices: jellyIdxValid is how many
+                 * leading cells still match (_glJellyIdxCells: how many were
+                 * uploaded). If the batch stops halfway, only the cells that
+                 * still match the uploaded indices are kept for the next frame.
+                 */
+                var jellyIdxValid =
+                    this._glJellyIdxCells || 0;
+
+
+                var jellyDrawCounts =
+                    this.glJellyDrawCounts;
+
+
+                var jellyDrawBands =
+                    this.glJellyDrawBands;
+
+
+                var jellySelf =
+                    this;
+
+
+                var abortJellyLayout =
+                    function () {
+                        jellySelf._glJellyIdxCells =
+                            Math.min(
+                                jellyIdxValid,
+                                jellyDrawCount
+                            );
+
+                        return abortCellBatch();
+                    };
 
                 /* Expanding Land: per-cell map deformation offset (rigid) */
                 this._glJellyOffX = 0;
@@ -74605,7 +74969,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cell.points.length <
                             3
                     ) {
-                        return abortCellBatch();
+                        return abortJellyLayout();
                     }
 
 
@@ -74962,7 +75326,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         skinRes
                             .arrayChanged
                     ) {
-                        return abortCellBatch();
+                        return abortJellyLayout();
                     }
 
 
@@ -74980,7 +75344,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             0 &&
                         (skinRes.video || skinRes.canvasOnly)
                     ) {
-                        return abortCellBatch();
+                        return abortJellyLayout();
                     }
 
 
@@ -75033,158 +75397,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         skinBorder;
 
 
+                    /*
+                     * Centre + this frame's perimeter points; the index list
+                     * makes the fan triangles (centre, point i, point i + 1).
+                     */
                     var fillStart =
-                        this
-                            ._glJellyVertexCount;
-
-
-                    /*
-                     * ====================================================
-                     * TRIANGLE FAN CENTER
-                     * ====================================================
-                     */
-                    this
-                        .writeWebGLJellyVertex(
-                            cell.x,
-                            cell.y,
-
-                            0.5,
-                            0.5,
-
-                            bodyRGB[0],
-                            bodyRGB[1],
-                            bodyRGB[2],
+                        this._lmJellyWriteFill(
+                            cell,
+                            points,
+                            textureRadius,
+                            bodyRGB,
                             bodyAlpha,
-
                             skinRes.layer,
                             skinRes.alpha,
-
                             z
                         );
 
 
-                    /*
-                     * ====================================================
-                     * FINAL CURRENT-FRAME PERIMETER
-                     * ====================================================
-                     */
-                    for (
-                        var pointIndex = 0;
-                        pointIndex <
-                            pointCount;
-                        pointIndex++
-                    ) {
-                        var point =
-                            points[
-                                pointIndex
-                            ];
-
-
-                        var u =
-                            0.5 +
-                            (
-                                point.x -
-                                cell.x
-                            ) /
-                            (
-                                2 *
-                                textureRadius
-                            );
-
-
-                        var v =
-                            0.5 +
-                            (
-                                point.y -
-                                cell.y
-                            ) /
-                            (
-                                2 *
-                                textureRadius
-                            );
-
-
+                    var strokeStart =
                         this
-                            .writeWebGLJellyVertex(
-                                point.x,
-                                point.y,
-
-                                u,
-                                v,
-
-                                bodyRGB[0],
-                                bodyRGB[1],
-                                bodyRGB[2],
-                                bodyAlpha,
-
-                                skinRes.layer,
-                                skinRes.alpha,
-
-                                z
-                            );
-                    }
+                            ._glJellyStrokeVertexCount;
 
 
-                    /*
-                     * Explicitly close TRIANGLE_FAN with point zero.
-                     */
-                    var firstPoint =
-                        points[0];
-
-
-                    this
-                        .writeWebGLJellyVertex(
-                            firstPoint.x,
-                            firstPoint.y,
-
-                            0.5 +
-                            (
-                                firstPoint.x -
-                                cell.x
-                            ) /
-                            (
-                                2 *
-                                textureRadius
-                            ),
-
-                            0.5 +
-                            (
-                                firstPoint.y -
-                                cell.y
-                            ) /
-                            (
-                                2 *
-                                textureRadius
-                            ),
-
-                            bodyRGB[0],
-                            bodyRGB[1],
-                            bodyRGB[2],
-                            bodyAlpha,
-
-                            skinRes.layer,
-                            skinRes.alpha,
-
-                            z
-                        );
-
-
-                    this
-                        .glJellyDrawStarts[
-                            jellyDrawCount
-                        ] =
-                        fillStart;
-
-
-                    this
-                        .glJellyDrawCounts[
-                            jellyDrawCount
-                        ] =
-                        pointCount +
-                        2;
-
-
-                    jellyDrawCount++;
+                    var jellyBands =
+                        0;
 
 
                     /*
@@ -75211,7 +75447,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             virusGlow >
                             0
                         ) {
-                            this
+                            jellyBands += this
                                 .writeWebGLJellyStrokeBand(
                                     cell,
                                     points,
@@ -75244,7 +75480,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             virusStroke >
                             0
                         ) {
-                            this
+                            jellyBands += this
                                 .writeWebGLJellyStrokeBand(
                                     cell,
                                     points,
@@ -75277,7 +75513,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         skinRes.layer >=
                             0
                     ) {
-                        this
+                        jellyBands += this
                             .writeWebGLJellyStrokeBand(
                                 cell,
                                 points,
@@ -75301,6 +75537,37 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
                     /*
+                     * This cell's range; the indices from here on are made
+                     * again when its counts differ from the uploaded ones.
+                     */
+                    if (
+                        jellyDrawCount < jellyIdxValid &&
+                        (
+                            jellyDrawCounts[jellyDrawCount] !== pointCount ||
+                            jellyDrawBands[jellyDrawCount] !== jellyBands
+                        )
+                    ) {
+                        jellyIdxValid =
+                            jellyDrawCount;
+                    }
+
+
+                    this.glJellyDrawStarts[jellyDrawCount] =
+                        fillStart;
+
+                    jellyDrawCounts[jellyDrawCount] =
+                        pointCount;
+
+                    jellyDrawBands[jellyDrawCount] =
+                        jellyBands;
+
+                    this.glJellyDrawStrokeStarts[jellyDrawCount] =
+                        strokeStart;
+
+                    jellyDrawCount++;
+
+
+                    /*
                      * Cell.draw() now knows the actual world body is GPU-owned.
                      */
                     cell
@@ -75320,15 +75587,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     jellyDrawCount ===
                     0
                 ) {
+                    this._glJellyIdxCells =
+                        0;
+
                     return true;
                 }
+
+
+                /*
+                 * Indices of the cells that differ from the uploaded ones (all
+                 * of them after a resize or context restore).
+                 */
+                var idxRange =
+                    this._lmJellyBuildIndices(
+                        Math.min(
+                            jellyIdxValid,
+                            jellyDrawCount
+                        ),
+                        jellyDrawCount
+                    );
 
 
                 /*
                  * ========================================================
                  * PASS 3
                  *
-                 * ONE DYNAMIC VBO UPLOAD + VARIABLE TRIANGLE FANS
+                 * ONE DYNAMIC VBO UPLOAD + ONE INDEXED DRAW FOR ALL BODIES
                  * ========================================================
                  */
                 gl.enable(
@@ -75451,28 +75735,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
                 /*
-                 * DELTA-STYLE VARIABLE LENGTH BODY DRAW.
+                 * The fan triangles of every body, in cell order: one draw keeps
+                 * the order of the triangles, so depth and blending come out as
+                 * with one fan per cell. The element buffer belongs to the VAO.
                  */
-                for (
-                    var drawIndex = 0;
-                    drawIndex <
-                        jellyDrawCount;
-                    drawIndex++
+                if (
+                    idxRange.fillTo >
+                    idxRange.fillFrom
                 ) {
-                    gl.drawArrays(
-                        gl.TRIANGLE_FAN,
-
-                        this
-                            .glJellyDrawStarts[
-                                drawIndex
-                            ],
-
-                        this
-                            .glJellyDrawCounts[
-                                drawIndex
-                            ]
+                    gl.bufferSubData(
+                        gl.ELEMENT_ARRAY_BUFFER,
+                        idxRange.fillFrom * 4,
+                        this.glJellyIndexData
+                            .subarray(
+                                idxRange.fillFrom,
+                                idxRange.fillTo
+                            )
                     );
                 }
+
+
+                gl.drawElements(
+                    gl.TRIANGLES,
+                    idxRange.fillTotal,
+                    gl.UNSIGNED_INT,
+                    0
+                );
 
 
                 gl.bindVertexArray(
@@ -75555,12 +75843,27 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     );
 
 
-                    gl.drawArrays(
-                        gl.TRIANGLES,
-                        0,
+                    if (
+                        idxRange.strokeTo >
+                        idxRange.strokeFrom
+                    ) {
+                        gl.bufferSubData(
+                            gl.ELEMENT_ARRAY_BUFFER,
+                            idxRange.strokeFrom * 4,
+                            this.glJellyStrokeIndexData
+                                .subarray(
+                                    idxRange.strokeFrom,
+                                    idxRange.strokeTo
+                                )
+                        );
+                    }
 
-                        this
-                            ._glJellyStrokeVertexCount
+
+                    gl.drawElements(
+                        gl.TRIANGLES,
+                        idxRange.strokeTotal,
+                        gl.UNSIGNED_INT,
+                        0
                     );
 
 
@@ -75573,6 +75876,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         true
                     );
                 }
+
+
+                this._glJellyIdxCells =
+                    jellyDrawCount;
 
 
                 if (
