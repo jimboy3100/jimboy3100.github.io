@@ -7,6 +7,10 @@
   if (info.inputs < 50) fail.push('#og-options has only ' + info.inputs + ' inputs');
   ['.settings-tab a', '.theme-tab a', '.hotkeys-link', '.music-tab a', '.profile-tab a', '#main-panel', '#og-settings', '#theme', '#music', '#profile']
     .forEach(function (s) { if (!$(s).length) fail.push('missing ' + s); });
+  // keyboard hotkeys live in the Hotkeys tab only: no Hotkeys or Command Centre button in Settings
+  // (the Command Centre stays on Ctrl+K and its own hotkey; the settings search stays)
+  if ($('#og-settings #lm-open-hotkeys-btn, #og-settings #lm-cc-open, #og-settings .lm-cc-open-btn').length) fail.push('hotkeys / Command Centre button in the Settings tab');
+  if (!$('#lm-settings-search').closest('#og-settings').length) fail.push('settings search missing');
   // every checkbox option maps to a known setting
   var unknown = [];
   $('#og-options input[type=checkbox]').each(function () {

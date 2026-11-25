@@ -1,4 +1,4 @@
-// Command Centre: Ctrl+K opens it, a search finds a switch, Enter toggles it and back, Esc closes;
+// Command Centre: no button in the Settings tab, Ctrl+K opens it, a search finds a switch, Enter toggles it and back, Esc closes;
 // Ctrl+K in the chat box does nothing; the quick bar keeps clear of the HUD. Everything is put back.
 (async () => {
   var fail = [], info = {};
@@ -26,9 +26,10 @@
     if (!kinds.tab || !kinds.win) fail.push('no menu tabs / windows');
     if (all.some(function (it) { return it.id === 'hk:hk-commandCentre'; })) fail.push('lists its own hotkey');
     if (all.some(function (it) { return !it.label; })) fail.push('item without a label');
-    /* the button is added by a 1 s retry: wait for it instead of a fixed time (busy machines were too slow) */
-    for (var wb = 0; wb < 40 && !document.getElementById('lm-cc-open'); wb++) await sleep(100);
-    if (!document.getElementById('lm-cc-open')) fail.push('no button next to the settings search');
+    /* no Command Centre button in the Settings tab (removed on purpose: Ctrl+K and its own hotkey
+     * open it); the old 1 s retry must not bring it back */
+    await sleep(1200);
+    if (document.querySelector('#lm-cc-open, .lm-cc-open-btn, #og-settings [id^="lm-cc"]')) fail.push('Command Centre button is in the Settings tab');
 
     // Ctrl+K on the page (unless the player bound Ctrl+K to a hotkey)
     var bound = window.hotkeys && hotkeys['CTRL+K'];

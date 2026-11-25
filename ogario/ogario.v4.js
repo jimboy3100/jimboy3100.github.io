@@ -21603,6 +21603,8 @@ function thelegendmodproject() {
             $('#target-hud').css('padding-top', r + 'px');
             /* a HUD layout keeps the resized boxes on screen */
             if (window.LMHudEditor) window.LMHudEditor.refresh();
+            /* the menu scale follows hudScale at once (it was refitted only on the next resize) */
+            _lmMenuFitQueue();
         },
         setChat() {
             this.setChatColors();
@@ -25459,14 +25461,8 @@ function thelegendmodproject() {
                     if (window.LMGamepad && typeof window.LMGamepad.openWindow === 'function') window.LMGamepad.openWindow();
                     else if (window.toastr) toastr.info(lmT('game1.set.gamepadLoading'));
                 });
-            /* Keyboard: the Hotkeys window, so all controls start from this section */
-            $('<button type="button" id="lm-open-hotkeys-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
-                .text(this._lmMenuText('lmOpenHotkeys'))
-                .appendTo('.mouseGroup')
-                .on('click', function (e) {
-                    e.preventDefault();
-                    $('.menu-tabs .hotkeys-link').first().trigger('click');
-                });
+            /* no Hotkeys button here: keyboard hotkeys are only in the Hotkeys tab (the owner asked
+             * for them not to appear in Settings; the mouse button commands above stay) */
             this.addSliderBox(".statsGroup", "massLossPct", 10, 90, 5);
             /* Options that do something only while another option is on, or only on some servers.
              * They stay saved and can still be changed; while they have no effect they are dimmed
@@ -26211,16 +26207,18 @@ function thelegendmodproject() {
                 i.siblings().removeClass('active'),
                 i.siblings().find('a').removeClass('active');
             var o = t.attr('href');
+            /* stop: a tab clicked again within the 1 s fade had its fade queued, and that fade showed
+             * it later next to the tab picked after it (two panels at once, a menu twice as tall) */
             if ('submenu-panel' === e) {
                 var a = $(o).parent().attr('id');
-                $('#' + a + ' .submenu-panel').not(o).css('display', 'none');
+                $('#' + a + ' .submenu-panel').not(o).stop(true, true).css('display', 'none');
             } else {
                 try {
-                    $('.menu-panel').not(o).css('display', 'none');
+                    $('.menu-panel').not(o).stop(true, true).css('display', 'none');
                 } catch (error) { }
             }
             try {
-                $(o).fadeIn(1000);
+                $(o).stop(true).fadeIn(1000);
             } catch (error) { }
             ogarhusettings();
             //ogarhusettingsImportExportMobile();
@@ -81598,56 +81596,117 @@ function pickPlayerCellBySize(players, selectBiggest) {
      * §10  SETTINGS UI
      *      Settings panel builders for desktop and mobile.
      * ═══════════════════════════════════════════════════════════════════════════ */
-    function ogarhusettings() {
-        var innerWidth = window.innerWidth;
-        var innerHeigth = window.innerHeight;
-        var helloContainer = $("#helloContainer");
-        var helloContainerHeight = helloContainer.innerHeight();
-        if (helloContainerHeight > 0) {
-            ogario.menuHeight = helloContainerHeight;
+    /* Main menu layout (#helloContainer). This is the only code that sizes and places the menu
+     * (LMmobile calls it too). The scale is the player's hudScale, made smaller only when the
+     * menu would not fit the window. The open tab's scroll list (.submenu-panel) gets the
+     * height that is left after the real header, tab bar and footer, so the whole menu stays
+     * inside the window and every setting is reached by scrolling. Before, the scale was
+     * fitted to the unscaled menu and then multiplied by hudScale, and the top was a fixed
+     * 250-520 px minus 30% of the height: tall menus (long translations, logged in, bigger
+     * text) lost their top bar and footer. The fitted scale is never saved: hudScale keeps
+     * the player's value. */
+    var _lmMenuFitState = null;
+    function _lmMenuFitPlan(o) {
+        var m = o.margin, aw = Math.max(1, o.vw - 2 * m), ah = Math.max(1, o.vh - 2 * m);
+        var s = isFinite(o.desired) && o.desired > 0 ? o.desired : 1;
+        s = Math.min(s, aw / Math.max(1, o.menuW));
+        var others = Math.max(0, o.othersH || 0), region = -1, h;
+        if (o.hasRegion) {
+            var content = Math.max(0, Math.min(o.regionContent, o.designMax));
+            /* the list keeps a few rows; below that the menu is scaled down instead */
+            var need = Math.min(content, o.minRegion);
+            s = Math.min(s, ah / Math.max(1, o.fixedH + need), ah / Math.max(1, others));
+            s = Math.max(0.2, s);
+            region = Math.max(need, Math.min(o.designMax, Math.floor(ah / s - o.fixedH + 1e-6)));
+            h = Math.max(o.fixedH + Math.min(content, region), others);
         } else {
-            helloContainerHeight = ogario.menuHeight || 618;
+            h = Math.max(o.fixedH, others);
+            s = Math.max(0.2, Math.min(s, ah / Math.max(1, h)));
         }
-        /* fit the width too: the 920-974 px menu was cut off in narrow windows (split screen,
-         * portrait tablets). transform does not change outerWidth, so this is the unscaled width. */
-        var helloContainerWidth = helloContainer.outerWidth() || 974;
-        var scale = Math.min(1, innerHeigth / helloContainerHeight, Math.max(0.2, (innerWidth - 16) / helloContainerWidth));
-        //
-        scale = scale * defaultSettings.hudScale;
-        //
-        var topValue = () => {
-            //var distance=355;
-            var distance;
-            //var tempp = window.screen.height
-            if (innerHeigth <= 992) {
-
-                distance = 250;
-                //scale += 0.1*defaultSettings.hudScale;
-            } else if (innerHeigth <= 1080) {
-                distance = 300;
-                //scale += 0.1*defaultSettings.hudScale;
-            } else if (innerHeigth > 1080 && innerHeigth < 1440) {
-                distance = 420;
-                //scale += 0.2*defaultSettings.hudScale;
-            } else if (innerHeigth >= 1440) {
-                distance = 520;
-                //scale += 0.3*defaultSettings.hudScale;
-            }
-            if (defaultSettings.hudScale > 1) {
-                distance = distance / defaultSettings.hudScale
-            }
-            helloContainer.css("top", distance + "px");
-        }
-
-        topValue()
-        var transform = "translate(-50%, -30%) scale(" + scale + ")";
-
-        helloContainer.css("transform", transform);
-        helloContainer.css("-ms-transform", transform);
-        helloContainer.css("-webkit-transform", transform);
-        ogario.innerW = innerWidth;
-        ogario.innerH = innerHeigth;
+        s = Math.floor(s * 10000) / 10000;
+        /* centred, never above the top margin (the top bar stays visible) */
+        var top = m + Math.max(0, (ah - s * h) / 2);
+        return { scale: s, region: region, top: Math.round(top), height: h, left: Math.round(o.vw / 2) };
     }
+    function _lmMenuFitQueue() {
+        var st = _lmMenuFitState || (_lmMenuFitState = {});
+        if (st.raf || typeof requestAnimationFrame !== 'function') return;
+        st.raf = requestAnimationFrame(function () { st.raf = 0; ogarhusettings(); });
+    }
+    function _lmMenuFitVisible(el) { return !!(el && el.getClientRects().length); }
+    function ogarhusettings() {
+        var st = _lmMenuFitState || (_lmMenuFitState = {});
+        var hc = document.getElementById('helloContainer');
+        var vw = window.innerWidth, vh = window.innerHeight;
+        ogario.innerW = vw;
+        ogario.innerH = vh;
+        if (!hc) return;
+        if (!st.ro && typeof ResizeObserver === 'function') {
+            /* a tab, translation, font, text scale or late module row that changes the menu size
+             * refits it once in the next frame (only events, nothing per frame) */
+            st.ro = new ResizeObserver(_lmMenuFitQueue);
+            st.ro.observe(hc);
+            if (window.visualViewport) window.visualViewport.addEventListener('resize', _lmMenuFitQueue);
+            window.addEventListener('orientationchange', _lmMenuFitQueue);
+        }
+        if (!_lmMenuFitVisible(hc)) return;
+        /* phone keyboard open for a field in the menu: the smaller window is not refitted */
+        var ae = document.activeElement;
+        if (ae && hc.contains(ae) && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && vw === st.vw && vh < st.vh &&
+            window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+        st.vw = vw;
+        st.vh = vh;
+        /* the open tab's scroll list */
+        var region = null, panels = hc.querySelectorAll('.menu-panel');
+        for (var i = 0; i < panels.length && !region; i++) {
+            if (!_lmMenuFitVisible(panels[i])) continue;
+            for (var c = panels[i].firstElementChild; c; c = c.nextElementSibling) {
+                if (c.classList.contains('submenu-panel') && _lmMenuFitVisible(c)) { region = c; break; }
+            }
+        }
+        var col = region;
+        while (col && col.parentNode !== hc) col = col.parentNode;
+        var colB = 0, othersB = 0;
+        for (var k = hc.firstElementChild; k; k = k.nextElementSibling) {
+            if (!_lmMenuFitVisible(k)) continue;
+            var pos = getComputedStyle(k).position;
+            if (pos === 'absolute' || pos === 'fixed') continue;
+            var b = k.offsetTop + k.offsetHeight;
+            if (k === col) colB = b; else othersB = Math.max(othersB, b);
+        }
+        var tail = Math.max(0, hc.offsetHeight - Math.max(colB, othersB));
+        var o = { vw: vw, vh: vh, margin: 8, minRegion: 160, menuW: hc.offsetWidth || 920,
+            desired: parseFloat(defaultSettings.hudScale) || 1, hasRegion: !!(region && col), othersH: othersB ? othersB + tail : 0 };
+        if (o.hasRegion) {
+            /* the stylesheet height is the largest the list gets (the menu's usual look) */
+            var prev = region.style.maxHeight;
+            region.style.maxHeight = '';
+            var dm = parseFloat(getComputedStyle(region).maxHeight);
+            region.style.maxHeight = prev;
+            o.designMax = isFinite(dm) && dm > 0 ? dm : region.scrollHeight;
+            o.regionContent = region.scrollHeight;
+            o.fixedH = colB + tail - region.offsetHeight;
+        } else o.fixedH = Math.max(colB, othersB) + tail;
+        var p = _lmMenuFitPlan(o);
+        st.input = o;
+        if (region) {
+            var mh = p.region + 'px';
+            if (region.style.maxHeight !== mh) {
+                region.style.maxHeight = mh;
+                try { $(region).perfectScrollbar('update'); } catch (e) { }
+            }
+        }
+        var par = hc.offsetParent, pr = par && par !== document.body ? par.getBoundingClientRect() : { left: 0, top: 0 };
+        var css = { top: (p.top - pr.top) + 'px', left: (p.left - pr.left) + 'px', transformOrigin: 'center top',
+            transform: 'translate(-50%, 0) scale(' + p.scale + ')' };
+        for (var n in css) if (hc.style[n] !== css[n]) hc.style[n] = css[n];
+        st.plan = p;
+    }
+    /* for LMmobile and tests: fit now, or once in the next frame */
+    window.lmMenuFit = function () { ogarhusettings(); return _lmMenuFitState && _lmMenuFitState.plan; };
+    window.lmMenuFit.queue = _lmMenuFitQueue;
+    window.lmMenuFit.plan = _lmMenuFitPlan;
+    window.lmMenuFit.state = function () { return _lmMenuFitState; };
 
     function ogarhusettingsImportExportMobile() {
         if (isMobile) {

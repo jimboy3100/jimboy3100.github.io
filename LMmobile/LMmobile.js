@@ -283,40 +283,12 @@
         }
         // Safari/iOS: prevent native pinch-zoom gesture
 
-        /* ── Scale #helloContainer to fit viewport (preserves internal layout) ── */
-        (function fitHelloContainer() {
-            function fit() {
-                var hc = document.getElementById('helloContainer');
-                if (!hc) return;
-                /* Skip re-fit when an input/textarea inside helloContainer is focused.
-                 * The mobile keyboard shrinks innerHeight, which would rescale the
-                 * container to a tiny size, effectively hiding it. */
-                var active = document.activeElement;
-                if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) {
-                    if (hc.contains(active)) return;
-                }
-                var vw = window.innerWidth;
-                var vh = window.innerHeight;
-                var baseW = 740; // original width from legend.css
-                var baseH = hc.scrollHeight || 600; // actual content height
-                var ratioW = (vw - 16) / baseW;
-                var ratioH = (vh - 16) / baseH;
-                var ratio = Math.min(1, ratioW, ratioH);
-                hc.style.transform = 'translate(-50%,-50%) scale(' + ratio + ')';
-                hc.style.transformOrigin = 'center center';
-                hc.style.position = 'fixed';
-                hc.style.top = '50%';
-                hc.style.left = '50%';
-                hc.style.maxHeight = Math.floor(vh / ratio) + 'px';
-                hc.style.overflowY = 'auto';
-            }
-            /* Expose globally so other code (menu toggle) can call it instantly */
-            window._lm_fitHC = fit;
-            fit();
-            setInterval(function () { if (!document.hidden) fit(); }, 4000); /* slow fallback — main triggers are events below */
-            window.addEventListener('resize', fit);
-            window.addEventListener('orientationchange', function () { requestAnimationFrame(fit); });
-        })();
+        /* ── #helloContainer size and place: the core's menu layout (window.lmMenuFit) owns them.
+         * This file had its own fit here (740 px base width, centre origin, its own max-height
+         * and a 4 s timer) that undid the core's layout every few seconds; the core refits on
+         * resize, orientation, visualViewport and menu size changes, and keeps the layout while
+         * the phone keyboard is open for a field in the menu. ── */
+        window._lm_fitHC = function () { if (typeof window.lmMenuFit === 'function') window.lmMenuFit(); };
         /* ── Mobile visual overrides: proportional to user settings ── */
         (function mobileVisuals() {
             /* Values this function wrote last time: reduce only values that changed since
@@ -1320,7 +1292,7 @@
                         var ns = Math.min(1, Math.max(0.3, defaultSettings.hudScale + step));
                         defaultSettings.hudScale = ns;
                         if (typeof ogario !== 'undefined') ogario.hudScale = ns;
-                        if (typeof ogarhusettings === 'function') ogarhusettings();
+                        if (window.lmMenuFit && window.lmMenuFit.queue) window.lmMenuFit.queue(); /* once per frame while pinching */
                         zP.textContent = '🔍 ' + T('misc.mobile.hudZoom', [Math.round(ns * 100)]);
                     }
                 } else {
