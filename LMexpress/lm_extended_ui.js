@@ -209,6 +209,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
     // ─── Inject Base CSS Styles ───
     function injectStyles() {
+        /* the shared window chrome and sizes (LMexpress.js) */
+        if (typeof window.lmUiKit === 'function') window.lmUiKit();
         if (document.getElementById('lm-extended-ui-styles')) return;
         var style = document.createElement('style');
         style.id = 'lm-extended-ui-styles';
@@ -232,7 +234,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             @keyframes spin {
                 to { transform: rotate(360deg); }
             }
-            .lm-modal-container {
+            /* the size is for these dialogs only (in .lm-modal-overlay): module windows with the
+             * .lm-modal-container class keep their own size, see lmUiKit in LMexpress.js */
+            .lm-modal-overlay .lm-modal-container {
                 width: 620px;
                 max-width: 94vw;
                 max-height: 85vh;

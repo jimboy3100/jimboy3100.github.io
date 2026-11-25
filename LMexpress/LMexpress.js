@@ -214,7 +214,10 @@ var AdminRights = 0;
 var LegendClanSymbol = "0";
 /* Theme values (menuBg URL, panel colour) can come from imported or cloud settings:
  * keep only characters that cannot leave a CSS url()/colour or the HTML attribute. */
-function _lmCssUrl(u) { return String(u == null ? '' : u).replace(/["'()<>\\\s`]/g, ''); }
+/* a URL for url(...): quotes, brackets and spaces removed. Not named _lmCssUrl: ogario.v4.js has a global
+ * _lmCssUrl that returns the whole url("..."), and this one replaced it once loaded (the menu background
+ * image and --lm-menu-bg were lost after a theme change) */
+function _lmxCssUrl(u) { return String(u == null ? '' : u).replace(/["'()<>\\\s`]/g, ''); }
 function _lmCssColor(c) { return String(c == null ? '' : c).replace(/[^#a-zA-Z0-9(),.%\s-]/g, ''); }
 var legbgcolor = $("#menuPanelColor").val();
 var legbgpic = $("#menuBg").val();
@@ -2728,7 +2731,7 @@ function universalchat() {
         local_style += '}';
         local_style += '#ao2t-cfg-dlg {';
         local_style += ' border-radius:0; font-size: 80%; padding: 2px 10px; position: fixed;';
-        local_style += ' pointer-events: auto; background-image: url(' + _lmCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + ' ; color: #ffffff;';
+        local_style += ' pointer-events: auto; background-image: url(' + _lmxCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + ' ; color: #ffffff;';
         local_style += ' overflow: hidden;';
         local_style += '}';
         local_style += '#ao2t-cfg-dlg * {';
@@ -9488,6 +9491,49 @@ function VideoSkinsPromo() {
         window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
+/* Shared look of the Legend windows (Profiles, Performance, Command Centre, ... and the
+ * lm_extended_ui dialogs). Every window module calls lmUiKit() before it builds its window,
+ * so the window never depends on another script having added these rules first.
+ * The --lm-w-* sizes and surfaces below are read by the modules' own styles with their old
+ * value as fallback: header, title, text, padding and control sizes are the same everywhere,
+ * and the window surface follows the menu opacity (--lm-op) and background image (--lm-menu-bg).
+ * The opacity is on the surface colour only: the text and the controls stay fully opaque.
+ * .lm-modal-container gives the window chrome only (border, accent, corners, shadow, font);
+ * the size of the lm_extended_ui dialogs is set for those dialogs alone (.lm-modal-overlay). */
+function lmUiKit() {
+    if (document.getElementById('lm-ui-kit')) return;
+    var mix = false;
+    try { mix = !!(window.CSS && CSS.supports && CSS.supports('color', 'color-mix(in srgb, red 50%, transparent)')); } catch (e) { }
+    /* the surface colour at the menu opacity; older browsers: the plain panel colour.
+     * Windows are full of small text: at least 82 %, so what is behind never makes it unreadable */
+    var A = function (c, k) { return mix ? 'color-mix(in srgb, ' + c + ' ' + k + ', transparent)' : c; };
+    var op = 'calc(max(var(--lm-op, 1), 0.82) * 100%)';
+    var s1 = A('var(--lm-pc, #00243e)', op), s2 = A('var(--lm-pc2, #002f52)', op);
+    var st = document.createElement('style');
+    st.id = 'lm-ui-kit';
+    st.textContent =
+        ':root{--lm-w-fs:12px;--lm-w-fs-s:11px;--lm-w-title:14px;--lm-w-gap:6px;--lm-w-pad:8px 12px;--lm-w-hpad:4px 6px 4px 12px;' + // i18n-ok: CSS
+        '--lm-w-ctl:28px;--lm-w-x:36px;' +
+        '--lm-w-surface:' + s1 + ';' + // i18n-ok: CSS
+        '--lm-w-bg:linear-gradient(' + s1 + ',' + s1 + '),var(--lm-menu-bg, none) center/cover no-repeat;' + // i18n-ok: CSS
+        '--lm-w-head:linear-gradient(180deg,' + s2 + ' 0%,' + s1 + ' 100%);' +
+        '--lm-w-sep:' + (mix ? A('var(--lm-tc, #fff)', '10%') : 'rgba(255,255,255,.1)') + ';' + // i18n-ok: CSS
+        '--lm-w-btn:' + (mix ? A('var(--lm-tc, #fff)', '6%') : 'rgba(255,255,255,.06)') + ';' + // i18n-ok: CSS
+        '--lm-w-btn-h:' + (mix ? A('var(--lm-tc, #fff)', '14%') : 'rgba(255,255,255,.14)') + ';' + // i18n-ok: CSS
+        '--lm-w-field:rgba(0,0,0,.22)}' +
+        /* touch screens: larger controls and close crosses */
+        '@media (pointer:coarse){:root{--lm-w-ctl:36px;--lm-w-x:40px}}' +
+        '.lm-modal-container{border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);' +
+        'border:1px solid var(--lm-pc2,rgba(255,255,255,.12));border-top:3px solid var(--lm-mc,#01d9cc);' +
+        'font-family:var(--lm-hud-font,\'Ubuntu\',\'Inter\',sans-serif);box-sizing:border-box}' +
+        /* low priority (:where): a window's own rules stay in charge */
+        ':where(.lm-w) :focus-visible{outline:2px solid var(--lm-mc,#01d9cc);outline-offset:1px}' +
+        ':where(.lm-w) ::-webkit-scrollbar{width:8px;height:8px}' +
+        ':where(.lm-w) ::-webkit-scrollbar-thumb{background:' + (mix ? A('var(--lm-tc, #fff)', '22%') : 'rgba(255,255,255,.22)') + ';border-radius:var(--lm-radius-s,4px)}' +
+        ':where(.lm-w) ::-webkit-scrollbar-track{background:transparent}';
+    (document.head || document.documentElement).appendChild(st);
+}
+window.lmUiKit = lmUiKit;
 //2. Administration Tools
 /* Premadeletter39 is supplied by the active language pack. */
 function adminstuff() {
@@ -9502,15 +9548,24 @@ function adminstuff() {
     }
 
 
-    var legbgpic = $("#menuBg").val();
-    var legbgcolor = $("#menuPanelColor").val();
-    $("#menu-footer").after('<div id="administrationtools" style="display: none; background-image: url(' + _lmCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + '; border: 1px solid black; height: 165px; width: 500px; ";>' + // i18n-ok: CSS
+    /* a menu panel in the current menu theme (it had the colours of the moment it was made, a black
+     * border, white text and a fixed 500 x 165 size) */
+    lmUiKit();
+    if (!document.getElementById('lm-admin-css')) {
+        $('head').append($('<style id="lm-admin-css">').text(
+            '#administrationtools{width:500px;max-width:calc(100vw - 16px);min-height:165px;box-sizing:border-box;padding-bottom:8px;color:var(--lm-tc,#fff);font-size:var(--lm-w-fs,12px);' + // i18n-ok: CSS
+            'background-color:var(--lm-pc,#00243e);background-image:var(--lm-menu-bg,none);background-size:cover;background-position:center;' +
+            'border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:var(--lm-radius,6px)}' +
+            '#administrationtools h5{font-size:var(--lm-w-title,14px);font-weight:700;letter-spacing:1px;text-transform:uppercase}' +
+            '#administrationtools p{color:var(--lm-tc2,#fff);font-size:var(--lm-w-fs,12px)}'));
+    }
+    $("#menu-footer").after('<div id="administrationtools" style="display: none;">' +
         '<div id="administrationtoolshud" style="display:block; margin-left: 10px; margin-right: 10px;">' + //margin-left: 10px"
         '<div id="administrationtoolshud1" align="middle"><h5 class="main-color">' + _lmxE('lmx.ex.adminTools') + '</h5>' +
-        '<p style="color:white; font-size:12px";" align="middle">' + _lmxE('lmx.ex.adminEnter') + '</p>' +
+        '<p align="middle">' + _lmxE('lmx.ex.adminEnter') + '</p>' +
         '<input id="AdminClanSymbol" class="form-control" placeholder="' + _lmxE('lmx.ex.clanSymbol') + '" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="' + _lmxE('lmx.ex.clanSymbolTip') + '" >' +
         '<input id="AdminPassword" type="password" class="form-control" placeholder="' + _lmxE('roomPass') + '" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="' + _lmxE('lmx.ex.adminPasswordTip') + '" >' +
-        '</div><p style="color:white; font-size:12px";" align="middle">' + _lmxE('lmx.ex.adminNotice') + '</p>' +
+        '</div><p align="middle">' + _lmxE('lmx.ex.adminNotice') + '</p>' +
         '</div></div>');
     $("#administrationtoolshud").after('<button id="AdminBacktomenu" onclick="administrationtools(); return false" class="btn btn-danger"  style="margin-left: 10px;" data-original-title="" title="">' + _lmxE('pack.close') + '</button>');
     $("#AdminClanSymbol").val("℄");

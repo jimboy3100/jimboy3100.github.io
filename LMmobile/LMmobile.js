@@ -229,7 +229,8 @@
         /* replay bar: taller for a thumb and above the buttons (!important beats its inline bottom) */
         '#lm-replay-bar{height:26px!important;bottom:64px!important}' +
         /* windows fit short landscape screens; close crosses big enough for a thumb */
-        '.lm-modal-container{max-height:96vh!important;overflow-y:auto!important}#lm-mh-modal,#lm-room-modal{max-height:94vh!important}' +
+        /* (the dialogs only: module windows with this class scroll inside their own body) */
+        '.lm-modal-overlay .lm-modal-container,#lm-gameover-modal{max-height:96vh!important;overflow-y:auto!important}#lm-mh-modal,#lm-room-modal{max-height:94vh!important}' +
         '#lm-mh-close,#lm-room-close,.lm-modal-close,#lm-challenges-modal .lm-modal-header>button{min-width:44px!important;min-height:44px!important}' +
         /* net graph: top middle (at the left it sat under the chat box) */
         '#lm-net-graph{left:50%!important;top:54px!important;transform:translateX(-50%)}' +
