@@ -13,7 +13,8 @@
   var RS = window.LMReplayStudio;
   if (!RS || !RS.run) return { fail: ['module did not load'] };
   if (window.legendmod.play) { info.skipped = 'playing'; return { fail: fail, info: info }; }
-  var playB = document.querySelector('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.play')) + '"]');
+  /* the play button: its title, and the play sign (in Greek the Player tab has the same title) */
+  var playB = Array.prototype.filter.call(document.querySelectorAll('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.play')) + '"]'), function (b) { return b.textContent === '▶'; })[0];
   if (!playB) return { fail: ['no play button'] };
   playB.click();
   for (w = 0; w < 40 && !RS.state().driving; w++) await sleep(100);
