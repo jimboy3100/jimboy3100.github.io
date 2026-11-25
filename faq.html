@@ -168,99 +168,102 @@
         .footer a{color:var(--accent2);text-decoration:none}.footer-links{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem}
         @media(max-width:600px){.nav{padding:.6rem 1rem;gap:1rem}.hero{padding:2.5rem 1rem 2rem}.container{padding:2rem 1rem}.faq-q{font-size:.95rem;padding:1rem}}
     </style>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-faq" charset="utf-8"></script>
 </head>
 <body>
 <nav class="nav">
     <a href="/" class="nav-logo">℄ <span>Legend Mod</span></a>
-    <a href="/features.html">Features</a>
-    <a href="/compare.html">Compare</a>
-    <a href="/#Features">Macro Guide</a>
+    <a data-i18n="site.features" href="/features.html">Features</a>
+    <a data-i18n="site.compare" href="/compare.html">Compare</a>
+    <a data-i18n="site.macroGuide" href="/#Features">Macro Guide</a>
     <a href="/faq.html" class="nav-active">FAQ</a>
-    <a href="/#Changelog">Changelog</a>
+    <a data-i18n="site.changelog" href="/#Changelog">Changelog</a>
+    <span data-lm-lang-picker></span>
 </nav>
 
 <header class="hero">
     <h1><span class="accent">Legend Mod</span> FAQ</h1>
-    <p>Answers to the most common questions about Legend Mod — installation, macros, skins, troubleshooting, and more.</p>
+    <p data-i18n="site.faq.answersToTheMost">Answers to the most common questions about Legend Mod — installation, macros, skins, troubleshooting, and more.</p>
 </header>
 
 <main class="container">
 
-    <h2 class="faq-category">🚀 Getting Started</h2>
+    <h2 data-i18n="site.faq.gettingStarted" class="faq-category">🚀 Getting Started</h2>
 
     <div class="faq-item">
-        <div class="faq-q">What is Legend Mod and how does it improve agar.io?</div>
-        <div class="faq-a"><p>Legend Mod is the most feature-rich free agar.io extension. It adds <strong>60+ macros</strong> (tricksplit, doublesplit, popsplit, quick feeding, cannon split, freeze cell), <strong>custom skins</strong> with animated/video support, <strong>anti-lag FPS boost</strong> with WASM acceleration, team chat, minimap, multibox, gamepad support, and more. It works on Chrome, Edge, Firefox, Opera, Brave, and mobile browsers.</p></div>
+        <div data-i18n="site.faq.whatIsLegendMod" class="faq-q">What is Legend Mod and how does it improve agar.io?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.legendModIsThe">Legend Mod is the most feature-rich free agar.io extension. It adds <strong>60+ macros</strong> (tricksplit, doublesplit, popsplit, quick feeding, cannon split, freeze cell), <strong>custom skins</strong> with animated/video support, <strong>anti-lag FPS boost</strong> with WASM acceleration, team chat, minimap, multibox, gamepad support, and more. It works on Chrome, Edge, Firefox, Opera, Brave, and mobile browsers.</p></div>
     </div>
     <div class="faq-item">
-        <div class="faq-q">How do I install Legend Mod?</div>
-        <div class="faq-a"><p>For <strong>Chrome/Edge/Brave</strong>: Install <a href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja">"Legend Express"</a> from the Chrome Web Store. For <strong>Firefox/Opera</strong>: Install Tampermonkey, then add the Legend Mod userscript. For <strong>mobile</strong>: open <a href="https://www.legendmod.ml/play.html">www.legendmod.ml/play.html</a> on your phone (touch controls load automatically), or use Firefox for Android or Orion (iOS) with Tampermonkey.</p></div>
+        <div data-i18n="site.faq.howDoIInstall" class="faq-q">How do I install Legend Mod?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.forChromeEdgeBrave">For <strong>Chrome/Edge/Brave</strong>: Install <a href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja">"Legend Express"</a> from the Chrome Web Store. For <strong>Firefox/Opera</strong>: Install Tampermonkey, then add the Legend Mod userscript. For <strong>mobile</strong>: open <a href="https://www.legendmod.ml/play.html">www.legendmod.ml/play.html</a> on your phone (touch controls load automatically), or use Firefox for Android or Orion (iOS) with Tampermonkey.</p></div>
     </div>
     <div class="faq-item">
-        <div class="faq-q">Is Legend Mod free?</div>
-        <div class="faq-a"><p>Yes, Legend Mod is <strong>100% free</strong>. It's available on the Chrome Web Store and as a Tampermonkey userscript. The full source code is open source on <a href="https://github.com/jimboy3100/jimboy3100.github.io/" target="_blank" rel="noopener">GitHub</a>. There are no hidden fees, no premium tier, and no ads.</p></div>
+        <div data-i18n="site.faq.isLegendModFree" class="faq-q">Is Legend Mod free?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.yesLegendModIs">Yes, Legend Mod is <strong>100% free</strong>. It's available on the Chrome Web Store and as a Tampermonkey userscript. The full source code is open source on <a href="https://github.com/jimboy3100/jimboy3100.github.io/" target="_blank" rel="noopener">GitHub</a>. There are no hidden fees, no premium tier, and no ads.</p></div>
     </div>
     <div class="faq-item">
-        <div class="faq-q">Is Legend Mod safe? Does it contain viruses?</div>
-        <div class="faq-a"><p>Yes, Legend Mod is completely safe. It's <strong>100% open source</strong> — the full source code is on GitHub. It's distributed through the official Chrome Web Store, which scans extensions for malware. Legend Mod does not collect personal data, does not inject ads, and does not modify your browser settings.</p></div>
-    </div>
-
-    <h2 class="faq-category">🎮 Macros & Controls</h2>
-
-    <div class="faq-item">
-        <div class="faq-q">What macros does Legend Mod support?</div>
-        <div class="faq-a"><p>Legend Mod supports <strong>60+ macros</strong> including: Tricksplit, Doublesplit, Popsplit, Cannon Split, Quick Feeding (W spam), Freeze Cell, Auto Respawn, Auto Coins, Reverse Movement, Line Split, and many more. All macros are customizable — you can rebind any key in Settings → Hotkeys.</p></div>
-    </div>
-    <div class="faq-item">
-        <div class="faq-q">How do I use multibox in Legend Mod?</div>
-        <div class="faq-a"><p>Multibox gives you a second unit in the same tab. Set a key for <strong>Multibox Toggle Next</strong> in Settings → Hotkeys: pressing it starts the second unit and then swaps control between your two cells. The MultiBox options can show the middle of both units, draw rings around them and freeze the inactive unit, and each unit can use its own skin profile.</p></div>
-    </div>
-    <div class="faq-item">
-        <div class="faq-q">Does Legend Mod support gamepads?</div>
-        <div class="faq-a"><p>Yes! Legend Mod is the only agar.io extension with <strong>gamepad support</strong>. Turn on <strong>Gamepad / controller support</strong> in the Mouse control settings (it is off by default) and connect an Xbox, PlayStation or other controller that the browser reports with the standard layout. Left stick moves, right stick zooms, A splits, X double splits, RB splits 16 times, B feeds (hold), Y respawns, LB swaps the multibox unit and Start opens the menu.</p></div>
+        <div data-i18n="site.faq.isLegendModSafe" class="faq-q">Is Legend Mod safe? Does it contain viruses?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.yesLegendModIs2">Yes, Legend Mod is completely safe. It's <strong>100% open source</strong> — the full source code is on GitHub. It's distributed through the official Chrome Web Store, which scans extensions for malware. Legend Mod does not collect personal data, does not inject ads, and does not modify your browser settings.</p></div>
     </div>
 
-    <h2 class="faq-category">🎨 Skins & Visuals</h2>
+    <h2 data-i18n="site.faq.macrosControls" class="faq-category">🎮 Macros & Controls</h2>
 
     <div class="faq-item">
-        <div class="faq-q">How do I add custom skins?</div>
-        <div class="faq-a"><p>Open the Legend Mod settings → Skins tab. You can: 1) Paste any image URL as a skin. 2) Upload your own image file. 3) Use the <strong>Skin Rotator</strong> to cycle through multiple skins. 4) Add animated GIF or video skins (Legend Mod exclusive). 5) Browse community skins at <a href="/skins/">legendmod.ml/skins</a>.</p></div>
-    </div>
-
-    <h2 class="faq-category">🔧 Troubleshooting</h2>
-
-    <div class="faq-item">
-        <div class="faq-q">Why is Legend Mod not working after an agar.io update?</div>
-        <div class="faq-a"><p>When agar.io updates their client, Legend Mod may need a compatibility update. Try: 1) Check for extension updates in <code>chrome://extensions</code>. 2) Clear browser cache (Ctrl+Shift+Delete). 3) Disable and re-enable the extension. 4) Reinstall from the Chrome Web Store. Updates are usually released within 24 hours.</p></div>
+        <div data-i18n="site.faq.whatMacrosDoesLegend" class="faq-q">What macros does Legend Mod support?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.legendModSupports60">Legend Mod supports <strong>60+ macros</strong> including: Tricksplit, Doublesplit, Popsplit, Cannon Split, Quick Feeding (W spam), Freeze Cell, Auto Respawn, Auto Coins, Reverse Movement, Line Split, and many more. All macros are customizable — you can rebind any key in Settings → Hotkeys.</p></div>
     </div>
     <div class="faq-item">
-        <div class="faq-q">How do I fix lag in agar.io?</div>
-        <div class="faq-a"><p>Legend Mod has built-in anti-lag features: 1) Turn on "Performance mode (weak PCs/phones)" in settings, or pick the <strong>Battery saver</strong> preset next to the settings search. 2) Disable animated and video skins. 3) Set an FPS limit, and turn on "25 FPS while the menu is open", to save heat and battery. 4) Hide food with the Show/hide food hotkey or the Auto hide food options. 5) WASM acceleration and WebGL rendering are on by default. 6) Close other browser tabs. 7) Use wired internet instead of Wi-Fi.</p></div>
-    </div>
-
-    <h2 class="faq-category">🌐 Servers</h2>
-
-    <div class="faq-item">
-        <div class="faq-q">Does Legend Mod work on Sigmally and Senpa.io?</div>
-        <div class="faq-a"><p>Yes! Legend Mod is the <strong>only agar.io extension</strong> that supports multiple game servers: official agar.io, Sigmally, and Senpa.io. All macros, skins, and features work across all supported servers. You can also play on <strong>Expanding Land</strong> — Legend Mod's own private server with up to 720 players at <a href="https://expanding.land" target="_blank" rel="noopener">expanding.land</a>.</p></div>
+        <div data-i18n="site.faq.howDoIUse" class="faq-q">How do I use multibox in Legend Mod?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.multiboxGivesYouA">Multibox gives you a second unit in the same tab. Set a key for <strong>Multibox Toggle Next</strong> in Settings → Hotkeys: pressing it starts the second unit and then swaps control between your two cells. The MultiBox options can show the middle of both units, draw rings around them and freeze the inactive unit, and each unit can use its own skin profile.</p></div>
     </div>
     <div class="faq-item">
-        <div class="faq-q">What is Expanding Land?</div>
-        <div class="faq-a"><p>Expanding Land is an agar.io private server built by ℄ Legend Clan. It features massive maps that dynamically resize based on player count, supports up to <strong>720 real players</strong> (no bots), 200+ spectators, potions, anti-team mechanics, and unique gamemodes. Play free at <a href="https://expanding.land" target="_blank" rel="noopener">expanding.land</a>.</p></div>
+        <div data-i18n="site.faq.doesLegendModSupport" class="faq-q">Does Legend Mod support gamepads?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.yesLegendModIs3">Yes! Legend Mod is the only agar.io extension with <strong>gamepad support</strong>. Turn on <strong>Gamepad / controller support</strong> in the Mouse control settings (it is off by default) and connect an Xbox, PlayStation or other controller that the browser reports with the standard layout. Left stick moves, right stick zooms, A splits, X double splits, RB splits 16 times, B feeds (hold), Y respawns, LB swaps the multibox unit and Start opens the menu.</p></div>
+    </div>
+
+    <h2 data-i18n="site.faq.skinsVisuals" class="faq-category">🎨 Skins & Visuals</h2>
+
+    <div class="faq-item">
+        <div data-i18n="site.faq.howDoIAdd" class="faq-q">How do I add custom skins?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.openTheLegendMod">Open the Legend Mod settings → Skins tab. You can: 1) Paste any image URL as a skin. 2) Upload your own image file. 3) Use the <strong>Skin Rotator</strong> to cycle through multiple skins. 4) Add animated GIF or video skins (Legend Mod exclusive). 5) Browse community skins at <a href="/skins/">legendmod.ml/skins</a>.</p></div>
+    </div>
+
+    <h2 data-i18n="site.faq.troubleshooting" class="faq-category">🔧 Troubleshooting</h2>
+
+    <div class="faq-item">
+        <div data-i18n="site.faq.whyIsLegendMod" class="faq-q">Why is Legend Mod not working after an agar.io update?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.whenAgarIoUpdates">When agar.io updates their client, Legend Mod may need a compatibility update. Try: 1) Check for extension updates in <code>chrome://extensions</code>. 2) Clear browser cache (Ctrl+Shift+Delete). 3) Disable and re-enable the extension. 4) Reinstall from the Chrome Web Store. Updates are usually released within 24 hours.</p></div>
+    </div>
+    <div class="faq-item">
+        <div data-i18n="site.faq.howDoIFix" class="faq-q">How do I fix lag in agar.io?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.legendModHasBuilt">Legend Mod has built-in anti-lag features: 1) Turn on "Performance mode (weak PCs/phones)" in settings, or pick the <strong>Battery saver</strong> preset next to the settings search. 2) Disable animated and video skins. 3) Set an FPS limit, and turn on "25 FPS while the menu is open", to save heat and battery. 4) Hide food with the Show/hide food hotkey or the Auto hide food options. 5) WASM acceleration and WebGL rendering are on by default. 6) Close other browser tabs. 7) Use wired internet instead of Wi-Fi.</p></div>
+    </div>
+
+    <h2 data-i18n="site.faq.servers" class="faq-category">🌐 Servers</h2>
+
+    <div class="faq-item">
+        <div data-i18n="site.faq.doesLegendModWork" class="faq-q">Does Legend Mod work on Sigmally and Senpa.io?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.yesLegendModIs4">Yes! Legend Mod is the <strong>only agar.io extension</strong> that supports multiple game servers: official agar.io, Sigmally, and Senpa.io. All macros, skins, and features work across all supported servers. You can also play on <strong>Expanding Land</strong> — Legend Mod's own private server with up to 720 players at <a href="https://expanding.land" target="_blank" rel="noopener">expanding.land</a>.</p></div>
+    </div>
+    <div class="faq-item">
+        <div data-i18n="site.faq.whatIsExpandingLand" class="faq-q">What is Expanding Land?</div>
+        <div class="faq-a"><p data-i18n-html="site.faq.expandingLandIsAn">Expanding Land is an agar.io private server built by ℄ Legend Clan. It features massive maps that dynamically resize based on player count, supports up to <strong>720 real players</strong> (no bots), 200+ spectators, potions, anti-team mechanics, and unique gamemodes. Play free at <a href="https://expanding.land" target="_blank" rel="noopener">expanding.land</a>.</p></div>
     </div>
 
     <div style="text-align:center">
-        <a href="/" class="cta">⬇ Download Legend Mod — Free</a>
+        <a data-i18n="site.downloadFree" href="/" class="cta">⬇ Download Legend Mod — Free</a>
     </div>
 </main>
 
 <footer class="footer">
     <nav class="footer-links">
-        <a href="/">Home</a><a href="/features.html">Features</a><a href="/compare.html">Compare</a>
-        <a href="/#Features">Macro Guide</a><a href="/faq.html">FAQ</a><a href="/#Changelog">Changelog</a><a href="/privacy.html">Privacy</a>
+        <a data-i18n="site.home" href="/">Home</a><a data-i18n="site.features" href="/features.html">Features</a><a data-i18n="site.compare" href="/compare.html">Compare</a>
+        <a data-i18n="site.macroGuide" href="/#Features">Macro Guide</a><a href="/faq.html">FAQ</a><a data-i18n="site.changelog" href="/#Changelog">Changelog</a><a data-i18n="site.privacy" href="/privacy.html">Privacy</a>
         <a href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener">Discord</a>
     </nav>
-    <p>© 2024–2026 Legend Mod by ℄ Legend Clan. Free and open source.</p>
+    <p data-i18n="site.copyright">© 2024–2026 Legend Mod by ℄ Legend Clan. Free and open source.</p>
 </footer>
 
 <script>

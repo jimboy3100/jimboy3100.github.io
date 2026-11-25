@@ -1,11 +1,19 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.3
+//v1.4: a function, run again by every language change
 
 //Legend Mod By Jimboy3100
 var Languagetimesused;
 var Languagetimesused1;
 
+/* Puts the texts of the chosen language into the menus by id. The texts are the old globals
+ * (Languageletter*, Premadeletter*, Externalletter*, translator), which languages/lm-i18n.js keeps
+ * in the language chosen in Choose Language (they come from developers/i18n/src/packs.json).
+ * LMexpress.js calls window.lmApplyLanguagePack() after every change; loading this file runs it once.
+ * Event handlers are bound with a namespace so running it again does not add copies. */
+window.lmApplyLanguagePack = function () {
+/* the global (Choose Language number) is read below: the Arabic check */
+var languagemod = window.languagemod;
 if($('#LanguageAuthorPanel').length==0){
 	$("#TimesUsed").after('<br><div id="LanguageAuthorPanel" class="user-name" style="display:inline-block;">'+Languageletter34+': </div><div id="LanguageAuthor" style="display:inline-block"></div><br>');
 	$("#LanguageAuthor").text(translator);
@@ -23,7 +31,6 @@ $("#HideAllBthn").click();
 $("#HideAllBthn").click();
 $("#TIMEcalBtn").click();
 $("#TIMEcalBtn").click();
-var languagemod;
 if (languagemod!=6){
 $('#region').replace("North America",Premadeletter134).replace("South America",Premadeletter135).replace("Europe",Premadeletter136).replace("Russia",Premadeletter137).replace("Turkey",Premadeletter138).replace("East Asia",Premadeletter139).replace("China",Premadeletter139a).replace("Oceania",Premadeletter140).replace(" -- Select a Region -- ",Premadeletter140a);
 }
@@ -463,7 +470,7 @@ $(".agario-panel.sounds-panel>div>span").eq(2).text(Languageletter41d);
 
 $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
 $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
-        $("#copySIPBtn").mouseenter(function() {
+        $("#copySIPBtn").off("mouseenter.lmLang").on("mouseenter.lmLang", function() {
             $("#dropDown3")[0].style.setProperty("display", "none", "important");
             $("#copySIPBtn").text(Languageletter290);
 			if ($("#clantag").val()!=""){
@@ -473,7 +480,7 @@ $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languagelett
 				$("#dropDown")[0].style.setProperty("display", "block", "important");
 				}
         });
-$("#leaderboard-menu").mouseleave(function () {$("#dropDown")[0].style.setProperty("display","none","important");$("#dropDown2")[0].style.setProperty("display","none","important");$("#dropDown3")[0].style.setProperty("display","none","important");$("#copySIPBtn").text(Languageletter291);});
+$("#leaderboard-menu").off("mouseleave.lmLang").on("mouseleave.lmLang", function () {$("#dropDown")[0].style.setProperty("display","none","important");$("#dropDown2")[0].style.setProperty("display","none","important");$("#dropDown3")[0].style.setProperty("display","none","important");$("#copySIPBtn").text(Languageletter291);});
 $("#copyLBBtn").text(Languageletter290a).attr('data-original-title', Languageletter291a);
 $("#dropDown>#copyLBBtn").text(Languageletter290a).attr('data-original-title', Languageletter291a);
 $("#copySIPandPass").text(Languageletter290b).attr('data-original-title', Languageletter291b);
@@ -650,8 +657,11 @@ $("#ao2t-hud>span").replace('Universal', Languageletter365);
 $("#block-warn").replace('WARNING! Popups are blocked in the settings.', Languageletter347);
 $("#block-warn").replace('Temporary unblock', Languageletter348);
 }, 1500);
+};
 
 function Languagestimeusedplus1(){
 Languagetimesused1++;
 return Languagetimesused1;
 }
+
+window.lmApplyLanguagePack();

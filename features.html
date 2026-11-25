@@ -99,265 +99,268 @@
         .footer a{color:var(--accent2);text-decoration:none}.footer-links{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem}
         @media(max-width:600px){.nav{padding:.6rem 1rem;gap:1rem}.hero{padding:2.5rem 1rem 2rem}.container{padding:2rem 1rem}}
     </style>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-features" charset="utf-8"></script>
 </head>
 <body>
 <nav class="nav">
     <a href="/" class="nav-logo">℄ <span>Legend Mod</span></a>
-    <a href="/features.html" class="nav-active">Features</a>
-    <a href="/compare.html">Compare</a>
-    <a href="/#Features">Macro Guide</a>
+    <a data-i18n="site.features" href="/features.html" class="nav-active">Features</a>
+    <a data-i18n="site.compare" href="/compare.html">Compare</a>
+    <a data-i18n="site.macroGuide" href="/#Features">Macro Guide</a>
     <a href="/faq.html">FAQ</a>
-    <a href="/#Changelog">Changelog</a>
+    <a data-i18n="site.changelog" href="/#Changelog">Changelog</a>
+    <span data-lm-lang-picker></span>
 </nav>
 <header class="hero">
-    <h1>All <span class="accent">Legend Mod</span> Features</h1>
-    <p>The most feature-rich agar.io extension. Every tool a competitive player needs — macros, skins, performance, teamwork, and multi-server support.</p>
+    <h1 data-i18n-html="site.features.allLegendModFeatures">All <span class="accent">Legend Mod</span> Features</h1>
+    <p data-i18n="site.features.theMostFeatureRich">The most feature-rich agar.io extension. Every tool a competitive player needs — macros, skins, performance, teamwork, and multi-server support.</p>
 </header>
 <main class="container">
     <div class="features-grid">
         <div class="feature-card">
             <div class="feature-icon">⚡</div>
-            <h3>60+ Macros & Hotkeys</h3>
-            <p>Every competitive move at your fingertips. Fully customizable keybinds.</p>
+            <h3 data-i18n="site.features.macrosHotkeys">60+ Macros & Hotkeys</h3>
+            <p data-i18n="site.features.everyCompetitiveMoveAt">Every competitive move at your fingertips. Fully customizable keybinds.</p>
             <ul>
-                <li>Tricksplit, Doublesplit, Popsplit</li>
-                <li>Cannon Split, Line Split</li>
-                <li>Quick Feeding (W spam)</li>
-                <li>Freeze Cell, Auto Respawn</li>
-                <li>Reverse Movement</li>
-                <li>Auto Coins, Custom Patterns</li>
+                <li data-i18n="site.features.tricksplitDoublesplitPopsplit">Tricksplit, Doublesplit, Popsplit</li>
+                <li data-i18n="site.features.cannonSplitLineSplit">Cannon Split, Line Split</li>
+                <li data-i18n="site.features.quickFeedingWSpam">Quick Feeding (W spam)</li>
+                <li data-i18n="site.features.freezeCellAutoRespawn">Freeze Cell, Auto Respawn</li>
+                <li data-i18n="site.features.reverseMovement">Reverse Movement</li>
+                <li data-i18n="site.features.autoCoinsCustomPatterns">Auto Coins, Custom Patterns</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🎨</div>
-            <h3>Custom & Animated Skins <span class="badge badge-exclusive">Exclusive</span></h3>
-            <p>Express yourself with unique skins no other mod supports.</p>
+            <h3 data-i18n-html="site.features.customAnimatedSkinsExclusive">Custom & Animated Skins <span class="badge badge-exclusive">Exclusive</span></h3>
+            <p data-i18n="site.features.expressYourselfWithUnique">Express yourself with unique skins no other mod supports.</p>
             <ul>
-                <li>Image URL skins</li>
-                <li>Animated GIF skins</li>
-                <li>Video skins (MP4/WebM)</li>
-                <li>Skin Rotator — cycle automatically</li>
-                <li>Community skin gallery</li>
+                <li data-i18n="site.features.imageUrlSkins">Image URL skins</li>
+                <li data-i18n="site.features.animatedGifSkins">Animated GIF skins</li>
+                <li data-i18n="site.features.videoSkinsMp4Webm">Video skins (MP4/WebM)</li>
+                <li data-i18n="site.features.skinRotatorCycleAutomatically">Skin Rotator — cycle automatically</li>
+                <li data-i18n="site.features.communitySkinGallery">Community skin gallery</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🚀</div>
-            <h3>Anti-Lag & FPS Boost</h3>
-            <p>Smooth gameplay even on low-end hardware.</p>
+            <h3 data-i18n="site.features.antiLagFpsBoost">Anti-Lag & FPS Boost</h3>
+            <p data-i18n="site.features.smoothGameplayEvenOn">Smooth gameplay even on low-end hardware.</p>
             <ul>
-                <li>Built-in anti-lag system</li>
-                <li>WebGL GPU cell rendering, on by default</li>
-                <li>WASM acceleration <span class="badge badge-new">New</span></li>
-                <li>Performance mode switch for weak PCs and phones</li>
-                <li>Optional FPS limit and 25 FPS while the menu is open (saves battery)</li>
-                <li>Auto-hide food option</li>
+                <li data-i18n="site.features.builtInAntiLag">Built-in anti-lag system</li>
+                <li data-i18n="site.features.webglGpuCellRendering">WebGL GPU cell rendering, on by default</li>
+                <li data-i18n-html="site.features.wasmAccelerationNew">WASM acceleration <span class="badge badge-new">New</span></li>
+                <li data-i18n="site.features.performanceModeSwitchFor">Performance mode switch for weak PCs and phones</li>
+                <li data-i18n="site.features.optionalFpsLimitAnd">Optional FPS limit and 25 FPS while the menu is open (saves battery)</li>
+                <li data-i18n="site.features.autoHideFoodOption">Auto-hide food option</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🌐</div>
-            <h3>Multi-Server Support <span class="badge badge-exclusive">Exclusive</span></h3>
-            <p>The only mod that works on multiple game servers.</p>
+            <h3 data-i18n-html="site.features.multiServerSupportExclusive">Multi-Server Support <span class="badge badge-exclusive">Exclusive</span></h3>
+            <p data-i18n="site.features.theOnlyModThat">The only mod that works on multiple game servers.</p>
             <ul>
-                <li>Official Agar.io</li>
-                <li>Sigmally <span class="badge badge-new">New</span></li>
-                <li>Senpa.io <span class="badge badge-new">New</span></li>
-                <li>Expanding Land (own server)</li>
-                <li>All features work everywhere</li>
+                <li data-i18n="site.features.officialAgarIo">Official Agar.io</li>
+                <li>Sigmally <span data-i18n="site.features.new" class="badge badge-new">New</span></li>
+                <li>Senpa.io <span data-i18n="site.features.new" class="badge badge-new">New</span></li>
+                <li data-i18n="site.features.expandingLandOwnServer">Expanding Land (own server)</li>
+                <li data-i18n="site.features.allFeaturesWorkEverywhere">All features work everywhere</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">👥</div>
-            <h3>Team Chat & Minimap</h3>
-            <p>Coordinate with your team in real time.</p>
+            <h3 data-i18n="site.features.teamChatMinimap">Team Chat & Minimap</h3>
+            <p data-i18n="site.features.coordinateWithYourTeam">Coordinate with your team in real time.</p>
             <ul>
-                <li>In-game team chat</li>
-                <li>Minimap with teammate positions</li>
-                <li>Team quadrant system</li>
-                <li>Nick display on minimap</li>
-                <li>Smooth position interpolation</li>
+                <li data-i18n="site.features.inGameTeamChat">In-game team chat</li>
+                <li data-i18n="site.features.minimapWithTeammatePositions">Minimap with teammate positions</li>
+                <li data-i18n="site.features.teamQuadrantSystem">Team quadrant system</li>
+                <li data-i18n="site.features.nickDisplayOnMinimap">Nick display on minimap</li>
+                <li data-i18n="site.features.smoothPositionInterpolation">Smooth position interpolation</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">📍</div>
-            <h3>Team Pings <span class="badge badge-new">New</span></h3>
-            <p>Mark a spot for your team in one key press.</p>
+            <h3 data-i18n-html="site.features.teamPingsNew">Team Pings <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.markASpotFor">Mark a spot for your team in one key press.</p>
             <ul>
-                <li><i>Help</i>, <i>Danger</i>, <i>Go here</i> and <i>Virus here</i> at your cursor</li>
-                <li>Shown to teammates on the map and the minimap</li>
-                <li>Hotkeys with no default key: pick your own in Hotkeys</li>
-                <li>Delta players on the same team see a wave</li>
-                <li>Optional ping button on phones</li>
+                <li data-i18n-html="site.features.helpDangerGoHere"><i>Help</i>, <i>Danger</i>, <i>Go here</i> and <i>Virus here</i> at your cursor</li>
+                <li data-i18n="site.features.shownToTeammatesOn">Shown to teammates on the map and the minimap</li>
+                <li data-i18n="site.features.hotkeysWithNoDefault">Hotkeys with no default key: pick your own in Hotkeys</li>
+                <li data-i18n="site.features.deltaPlayersOnThe">Delta players on the same team see a wave</li>
+                <li data-i18n="site.features.optionalPingButtonOn">Optional ping button on phones</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">👾</div>
-            <h3>Multibox</h3>
-            <p>Play two cells at once from one tab.</p>
+            <h3 data-i18n="site.features.multibox">Multibox</h3>
+            <p data-i18n="site.features.playTwoCellsAt">Play two cells at once from one tab.</p>
             <ul>
-                <li>A second unit next to your main cell</li>
-                <li>Next / back swap and follow-mouse hotkeys</li>
-                <li>Optional view on the middle of both units</li>
-                <li>Optional unit rings and freeze for the inactive unit</li>
-                <li>Its own skin profile for each unit</li>
+                <li data-i18n="site.features.aSecondUnitNext">A second unit next to your main cell</li>
+                <li data-i18n="site.features.nextBackSwapAnd">Next / back swap and follow-mouse hotkeys</li>
+                <li data-i18n="site.features.optionalViewOnThe">Optional view on the middle of both units</li>
+                <li data-i18n="site.features.optionalUnitRingsAnd">Optional unit rings and freeze for the inactive unit</li>
+                <li data-i18n="site.features.itsOwnSkinProfile">Its own skin profile for each unit</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🎮</div>
-            <h3>Gamepad & Controller <span class="badge badge-exclusive">Exclusive</span></h3>
-            <p>Play with a controller (optional: turn on <i>Gamepad / controller support</i> in Mouse control).</p>
+            <h3 data-i18n-html="site.features.gamepadControllerExclusive">Gamepad & Controller <span class="badge badge-exclusive">Exclusive</span></h3>
+            <p data-i18n-html="site.features.playWithAController">Play with a controller (optional: turn on <i>Gamepad / controller support</i> in Mouse control).</p>
             <ul>
-                <li>Left stick moves, right stick zooms</li>
-                <li>A split, X double split, RB 16 split</li>
-                <li>B feed (hold), Y respawn, Start menu</li>
-                <li>LB swaps the multibox unit</li>
-                <li>Xbox, PlayStation and other pads with the standard browser layout</li>
+                <li data-i18n="site.features.leftStickMovesRight">Left stick moves, right stick zooms</li>
+                <li data-i18n="site.features.aSplitXDouble">A split, X double split, RB 16 split</li>
+                <li data-i18n="site.features.bFeedHoldY">B feed (hold), Y respawn, Start menu</li>
+                <li data-i18n="site.features.lbSwapsTheMultibox">LB swaps the multibox unit</li>
+                <li data-i18n="site.features.xboxPlaystationAndOther">Xbox, PlayStation and other pads with the standard browser layout</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">⏯️</div>
-            <h3>Replays <span class="badge badge-new">New</span></h3>
-            <p>Watch your games back and share them.</p>
+            <h3 data-i18n-html="site.features.replaysNew">Replays <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.watchYourGamesBack">Watch your games back and share them.</p>
             <ul>
-                <li>Records your games (turn off <i>Record replays</i> to save memory)</li>
-                <li>Pause, faster / slower and seek hotkeys</li>
-                <li>Progress bar while a replay plays: click to seek</li>
-                <li>Share replays with <i>?replay=</i> links and iframes</li>
-                <li>Pause and seek buttons and a touch replay bar on phones</li>
+                <li data-i18n-html="site.features.recordsYourGamesTurn">Records your games (turn off <i>Record replays</i> to save memory)</li>
+                <li data-i18n="site.features.pauseFasterSlowerAnd">Pause, faster / slower and seek hotkeys</li>
+                <li data-i18n="site.features.progressBarWhileA">Progress bar while a replay plays: click to seek</li>
+                <li data-i18n-html="site.features.shareReplaysWithReplay">Share replays with <i>?replay=</i> links and iframes</li>
+                <li data-i18n="site.features.pauseAndSeekButtons">Pause and seek buttons and a touch replay bar on phones</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🏁</div>
-            <h3>Game Over Card & Match History <span class="badge badge-new">New</span></h3>
-            <p>See how your last life went.</p>
+            <h3 data-i18n-html="site.features.gameOverCardMatch">Game Over Card & Match History <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.seeHowYourLast">See how your last life went.</p>
             <ul>
-                <li>Copy stats button on the Game Over card</li>
-                <li>Optional mass graph of your life</li>
-                <li>Optional all-time personal bests with a <i>New best!</i> badge</li>
-                <li>Optional <i>Eaten by</i> row with the nick and mass that ate you</li>
-                <li>Optional match history: your last 50 games in a window under the menu</li>
-                <li>Session summary under the menu</li>
+                <li data-i18n="site.features.copyStatsButtonOn">Copy stats button on the Game Over card</li>
+                <li data-i18n="site.features.optionalMassGraphOf">Optional mass graph of your life</li>
+                <li data-i18n-html="site.features.optionalAllTimePersonal">Optional all-time personal bests with a <i>New best!</i> badge</li>
+                <li data-i18n-html="site.features.optionalEatenByRow">Optional <i>Eaten by</i> row with the nick and mass that ate you</li>
+                <li data-i18n="site.features.optionalMatchHistoryYour">Optional match history: your last 50 games in a window under the menu</li>
+                <li data-i18n="site.features.sessionSummaryUnderThe">Session summary under the menu</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">👁️</div>
-            <h3>Spectating <span class="badge badge-new">New</span></h3>
-            <p>Follow the action in free spectate.</p>
+            <h3 data-i18n-html="site.features.spectatingNew">Spectating <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.followTheActionIn">Follow the action in free spectate.</p>
             <ul>
-                <li>Follow a leaderboard player: click a leaderboard mass (optional) or use the <i>follow next leaderboard player</i> hotkey</li>
-                <li>Optional: click a player cell to follow it, click empty space to stop</li>
-                <li>Expanding Land World Spectate: optional minimap click moves the camera there</li>
-                <li>Hotkey to enlarge the minimap</li>
+                <li data-i18n-html="site.features.followALeaderboardPlayer">Follow a leaderboard player: click a leaderboard mass (optional) or use the <i>follow next leaderboard player</i> hotkey</li>
+                <li data-i18n="site.features.optionalClickAPlayer">Optional: click a player cell to follow it, click empty space to stop</li>
+                <li data-i18n="site.features.expandingLandWorldSpectate">Expanding Land World Spectate: optional minimap click moves the camera there</li>
+                <li data-i18n="site.features.hotkeyToEnlargeThe">Hotkey to enlarge the minimap</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">💬</div>
-            <h3>Chat Tools <span class="badge badge-new">New</span></h3>
-            <p>A faster, cleaner chat.</p>
+            <h3 data-i18n-html="site.features.chatToolsNew">Chat Tools <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.aFasterCleanerChat">A faster, cleaner chat.</p>
             <ul>
-                <li>Up / Down in the chat box recalls your last messages</li>
-                <li>Click a nick in the chat to put it into your message</li>
-                <li>Optional word filter hides lines with words you choose</li>
-                <li>Optional desktop notification when someone mentions you</li>
-                <li>Hotkey to mute / unmute chat sounds</li>
+                <li data-i18n="site.features.upDownInThe">Up / Down in the chat box recalls your last messages</li>
+                <li data-i18n="site.features.clickANickIn">Click a nick in the chat to put it into your message</li>
+                <li data-i18n="site.features.optionalWordFilterHides">Optional word filter hides lines with words you choose</li>
+                <li data-i18n="site.features.optionalDesktopNotificationWhen">Optional desktop notification when someone mentions you</li>
+                <li data-i18n="site.features.hotkeyToMuteUnmute">Hotkey to mute / unmute chat sounds</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">⚙️</div>
-            <h3>Smart Settings <span class="badge badge-new">New</span></h3>
-            <p>Find and set up options in seconds.</p>
+            <h3 data-i18n-html="site.features.smartSettingsNew">Smart Settings <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.findAndSetUp">Find and set up options in seconds.</p>
             <ul>
-                <li>Search box for every option</li>
-                <li>Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (with Undo)</li>
-                <li><b>NEW</b> badges and a <i>Show new options</i> filter</li>
-                <li>Bound keys list in Hotkeys</li>
-                <li>Settings, theme and hotkey labels in 12 languages</li>
-                <li>Download / load settings files and cloud sync with a sync code</li>
+                <li data-i18n="site.features.searchBoxForEvery">Search box for every option</li>
+                <li data-i18n="site.features.presetsCompetitiveBatterySaver">Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (with Undo)</li>
+                <li data-i18n-html="site.features.newBadgesAndA"><b>NEW</b> badges and a <i>Show new options</i> filter</li>
+                <li data-i18n="site.features.boundKeysListIn">Bound keys list in Hotkeys</li>
+                <li data-i18n="site.features.settingsThemeAndHotkey">Settings, theme and hotkey labels in 12 languages</li>
+                <li data-i18n="site.features.downloadLoadSettingsFiles">Download / load settings files and cloud sync with a sync code</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">♿</div>
-            <h3>Accessibility <span class="badge badge-new">New</span></h3>
-            <p>Comfortable to look at for everyone.</p>
+            <h3 data-i18n-html="site.features.accessibilityNew">Accessibility <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.comfortableToLookAt">Comfortable to look at for everyone.</p>
             <ul>
-                <li><i>Colour-blind safe (high contrast)</i> theme preset</li>
-                <li>Optional reduced motion: no screen shake, death particles or Expanding Land join spin</li>
-                <li>Game brightness and saturation sliders</li>
-                <li>Zoom glide speed slider</li>
-                <li>Labels in your language from the language menu</li>
+                <li data-i18n-html="site.features.colourBlindSafeHigh"><i>Colour-blind safe (high contrast)</i> theme preset</li>
+                <li data-i18n="site.features.optionalReducedMotionNo">Optional reduced motion: no screen shake, death particles or Expanding Land join spin</li>
+                <li data-i18n="site.features.gameBrightnessAndSaturation">Game brightness and saturation sliders</li>
+                <li data-i18n="site.features.zoomGlideSpeedSlider">Zoom glide speed slider</li>
+                <li data-i18n="site.features.labelsInYourLanguage">Labels in your language from the language menu</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">📱</div>
-            <h3>Mobile Touch Controls <span class="badge badge-new">New</span></h3>
-            <p>Play on your phone or tablet.</p>
+            <h3 data-i18n-html="site.features.mobileTouchControlsNew">Mobile Touch Controls <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.playOnYourPhone">Play on your phone or tablet.</p>
             <ul>
-                <li>Touch joystick with split and feed buttons</li>
-                <li>Optional team ping button: tap for <i>Go here</i>, hold and slide for Help, Danger or Virus here</li>
-                <li>Optional <i>Stop on release</i></li>
-                <li>Optional quick chat buttons, multibox button and vibration settings</li>
-                <li>Replay pause and seek buttons, net graph in the touch settings</li>
+                <li data-i18n="site.features.touchJoystickWithSplit">Touch joystick with split and feed buttons</li>
+                <li data-i18n-html="site.features.optionalTeamPingButton">Optional team ping button: tap for <i>Go here</i>, hold and slide for Help, Danger or Virus here</li>
+                <li data-i18n-html="site.features.optionalStopOnRelease">Optional <i>Stop on release</i></li>
+                <li data-i18n="site.features.optionalQuickChatButtons">Optional quick chat buttons, multibox button and vibration settings</li>
+                <li data-i18n="site.features.replayPauseAndSeek">Replay pause and seek buttons, net graph in the touch settings</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🏆</div>
-            <h3>Expanding Land <span class="badge badge-new">New</span></h3>
-            <p>Extra features on our own server.</p>
+            <h3>Expanding Land <span data-i18n="site.features.new" class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.extraFeaturesOnOur">Extra features on our own server.</p>
             <ul>
-                <li>Daily challenges, two new ones each day, with Claim and Claim All</li>
-                <li>Server event countdown (Double XP, potion rain, golden food, virus storm)</li>
-                <li>Leagues with last week&#39;s results</li>
-                <li><i>Eaten by</i> uses the killer the server sends</li>
-                <li>Match history on your account, on every device</li>
-                <li>Hotkeys for Leagues, Shop, Challenges, Potions and Claim All</li>
+                <li data-i18n="site.features.dailyChallengesTwoNew">Daily challenges, two new ones each day, with Claim and Claim All</li>
+                <li data-i18n="site.features.serverEventCountdownDouble">Server event countdown (Double XP, potion rain, golden food, virus storm)</li>
+                <li data-i18n="site.features.leaguesWithLastWeek">Leagues with last week&#39;s results</li>
+                <li data-i18n-html="site.features.eatenByUsesThe"><i>Eaten by</i> uses the killer the server sends</li>
+                <li data-i18n="site.features.matchHistoryOnYour">Match history on your account, on every device</li>
+                <li data-i18n="site.features.hotkeysForLeaguesShop">Hotkeys for Leagues, Shop, Challenges, Potions and Claim All</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🧩</div>
-            <h3>User Script API <span class="badge badge-new">New</span></h3>
-            <p>Write your own add-ons without patching the mod.</p>
+            <h3 data-i18n-html="site.features.userScriptApiNew">User Script API <span class="badge badge-new">New</span></h3>
+            <p data-i18n="site.features.writeYourOwnAdd">Write your own add-ons without patching the mod.</p>
             <ul>
-                <li>Up to 5 user scripts (URL or pasted code)</li>
-                <li><code>window.LMEvents</code>: spawn, death, chat, server change, mass and leaderboard events</li>
-                <li>Helpers: mass, position, playing state, server type, chat and toasts</li>
-                <li>A failing script never breaks the game</li>
-                <li><a href="/developers/LMEvents.md" style="color:var(--accent2)">Read the LMEvents guide</a></li>
+                <li data-i18n="site.features.upTo5User">Up to 5 user scripts (URL or pasted code)</li>
+                <li data-i18n-html="site.features.windowLmeventsSpawnDeath"><code>window.LMEvents</code>: spawn, death, chat, server change, mass and leaderboard events</li>
+                <li data-i18n="site.features.helpersMassPositionPlaying">Helpers: mass, position, playing state, server type, chat and toasts</li>
+                <li data-i18n="site.features.aFailingScriptNever">A failing script never breaks the game</li>
+                <li><a data-i18n="site.features.readTheLmeventsGuide" href="/developers/LMEvents.md" style="color:var(--accent2)">Read the LMEvents guide</a></li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🗺️</div>
-            <h3>Map Rotation</h3>
-            <p>Unique map rotation system for tactical advantage.</p>
+            <h3 data-i18n="site.features.mapRotation">Map Rotation</h3>
+            <p data-i18n="site.features.uniqueMapRotationSystem">Unique map rotation system for tactical advantage.</p>
             <ul>
-                <li>Rotate the entire game map</li>
-                <li>Flip axes for mirrored view</li>
-                <li>Smooth coordinate translation</li>
-                <li>Works with all overlays</li>
+                <li data-i18n="site.features.rotateTheEntireGame">Rotate the entire game map</li>
+                <li data-i18n="site.features.flipAxesForMirrored">Flip axes for mirrored view</li>
+                <li data-i18n="site.features.smoothCoordinateTranslation">Smooth coordinate translation</li>
+                <li data-i18n="site.features.worksWithAllOverlays">Works with all overlays</li>
             </ul>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🔓</div>
-            <h3>100% Free & Open Source</h3>
-            <p>No premium tier, no ads, no tracking.</p>
+            <h3 data-i18n="site.features.freeOpenSource">100% Free & Open Source</h3>
+            <p data-i18n="site.features.noPremiumTierNo">No premium tier, no ads, no tracking.</p>
             <ul>
-                <li>Free forever — no hidden fees</li>
-                <li>Full source code on GitHub</li>
-                <li>Community-driven development</li>
-                <li>Chrome, Edge, Firefox, mobile</li>
-                <li>Regular updates</li>
+                <li data-i18n="site.features.freeForeverNoHidden">Free forever — no hidden fees</li>
+                <li data-i18n="site.features.fullSourceCodeOn">Full source code on GitHub</li>
+                <li data-i18n="site.features.communityDrivenDevelopment">Community-driven development</li>
+                <li data-i18n="site.features.chromeEdgeFirefoxMobile">Chrome, Edge, Firefox, mobile</li>
+                <li data-i18n="site.features.regularUpdates">Regular updates</li>
             </ul>
         </div>
     </div>
     <div style="text-align:center">
-        <a href="/" class="cta">⬇ Download Legend Mod — Free</a>
+        <a data-i18n="site.downloadFree" href="/" class="cta">⬇ Download Legend Mod — Free</a>
     </div>
 </main>
 <footer class="footer">
     <nav class="footer-links">
-        <a href="/">Home</a><a href="/features.html">Features</a><a href="/compare.html">Compare</a>
-        <a href="/#Features">Macro Guide</a><a href="/faq.html">FAQ</a><a href="/#Changelog">Changelog</a><a href="/privacy.html">Privacy</a>
+        <a data-i18n="site.home" href="/">Home</a><a data-i18n="site.features" href="/features.html">Features</a><a data-i18n="site.compare" href="/compare.html">Compare</a>
+        <a data-i18n="site.macroGuide" href="/#Features">Macro Guide</a><a href="/faq.html">FAQ</a><a data-i18n="site.changelog" href="/#Changelog">Changelog</a><a data-i18n="site.privacy" href="/privacy.html">Privacy</a>
         <a href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener">Discord</a>
     </nav>
-    <p>© 2024–2026 Legend Mod by ℄ Legend Clan. Free and open source.</p>
+    <p data-i18n="site.copyright">© 2024–2026 Legend Mod by ℄ Legend Clan. Free and open source.</p>
 </footer>
 </body>
 </html>

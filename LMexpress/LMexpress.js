@@ -4913,64 +4913,43 @@ function openrotatingmod() {
 }
 
 function languagemodfun() {
-    /* nothing stored yet (null, or the string "null" saved by older versions): keep English selected */
-    if (!languagemod || languagemod == "null") languagemod = "1";
-    if (languagemod != 1) {
-        $('#legendlanguages').val(languagemod);
-        changeModLanguage();
-    }
+    /* nothing chosen yet (null, or the string "null" saved by older versions): the language the texts
+     * were loaded in (the browser's, else English), not saved: it keeps following the browser until the
+     * player picks one in the list */
+    if (!languagemod || languagemod == "null") languagemod = (window.LMi18n && window.LMi18n.num()) || "1";
+    $('#legendlanguages').val(languagemod);
+    /* the chosen language's texts were loaded with the page (languages/lm-i18n.js): the language pack
+     * handler puts them into the menus whose HTML has the English text */
+    if (languagemod != 1) _lmRunLanguageHandler();
+    _lmFirstLanguageChooser();
 }
 
 /* fromUser: the dropdown was changed (not the start-up call in languagemodfun) */
 function changeModLanguage(fromUser) {
     /* keep the global in sync: the language pack handler reads it (Arabic check) */
     languagemod = $("#legendlanguages").val();
-    localStorage.setItem("languagemod", languagemod);
-    /* the settings-tab labels are picked at start-up (ogario.v4.js), so say how to apply them */
-    if (fromUser === true && window.toastr) toastr.info('Reload the page to show the new language in every menu.');
-    if ($("#legendlanguages").val() == 1) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackEnglish.js");
+    if (!window.LMi18n) {
+        try { localStorage.setItem("languagemod", languagemod); } catch (e) { }
+        return;
     }
-    else if ($("#legendlanguages").val() == 2) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackGreek.js");
-    }
-    else if ($("#legendlanguages").val() == 3) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackSpanish.js");
-    }
-    else if ($("#legendlanguages").val() == 4) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackBulgarian.js");
-    }
-    else if ($("#legendlanguages").val() == 5) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackFrench.js");
-    }
-    else if ($("#legendlanguages").val() == 6) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackArabic.js");
-    }
-    else if ($("#legendlanguages").val() == 7) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackTraditionalChinese.js");
-    }
-    else if ($("#legendlanguages").val() == 8) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackRussian.js");
-    }
-    else if ($("#legendlanguages").val() == 9) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackGerman.js");
-    }
-    else if ($("#legendlanguages").val() == 10) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackTurkish.js");
-    }
-    else if ($("#legendlanguages").val() == 11) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackPolish.js");
-    }
-    else if ($("#legendlanguages").val() == 12) {
-        languageinjector("https://www.legendmod.ml/languages/LanguagePackDutch.js");
-    }
+    /* loads the language file when needed, then updates lmT, the old globals, textLanguage, agar.io's
+     * texts and every data-i18n element (LMi18n.onChange listeners), saves languagemod */
+    window.LMi18n.setLang(languagemod, function () {
+        _lmRunLanguageHandler();
+        /* the settings rows were built from the labels at start-up: they change on the next reload */
+        if (fromUser === true && window.toastr) toastr.info(_lmEscLang(window.lmT('core.langChanged')));
+    });
+}
+function _lmEscLang(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/* Adds a language script to <head>. If www.legendmod.ml fails, the same file is tried from
+/* Adds a script to <head>. If www.legendmod.ml fails, the same file is tried from
  * jimboy3100.github.io once; onfail runs when both fail. */
 function _lmAddLanguageScript(src, onload, onfail) {
     var script = document.createElement('script');
     script.className = 'lm-language-script';
+    script.charset = 'utf-8';
     script.onload = onload;
     script.onerror = function () {
         script.remove();
@@ -4984,31 +4963,90 @@ function _lmAddLanguageScript(src, onload, onfail) {
     document.head.appendChild(script);
 }
 
-/* One language load at a time. Every change of the dropdown used to add two more tags to
- * <head> (the pack and LanguagePackHandler.js), and two quick changes could run the handler
- * after the older pack had replaced the newer pack's texts. A change made while a pack is
- * loading waits for it; only the last such change is loaded. */
-var _lmLanguageLoad = { busy: false, next: null };
-
-function languageinjector(url) {
-    if (_lmLanguageLoad.busy) {
-        _lmLanguageLoad.next = url;
+/* languages/LanguagePackHandler.js puts the texts into the menus by id (it reads the old globals
+ * Languageletter*, which LMi18n keeps in the chosen language). Loaded once, the first time it is
+ * needed; later changes call its function again. */
+/* (an object made on first use: languagemodfun can run before this line of the file has run) */
+var _lmLanguageHandler;
+function _lmRunLanguageHandler() {
+    if (typeof window.lmApplyLanguagePack === 'function') {
+        try { window.lmApplyLanguagePack(); } catch (e) { console.error('[Legend] language pack handler', e); }
         return;
     }
-    _lmLanguageLoad.busy = true;
-    /* the earlier packs already ran: their tags only piled up (play.html's English pack has no class and stays) */
-    $('script.lm-language-script').remove();
-    var done = function () {
-        _lmLanguageLoad.busy = false;
-        var next = _lmLanguageLoad.next;
-        _lmLanguageLoad.next = null;
-        /* switched away and back while this one loaded: this language is already applied */
-        if (next && next !== url) languageinjector(next);
+    /* a change while it loads: the file applies the language current when it runs */
+    if (!_lmLanguageHandler) _lmLanguageHandler = { loading: false };
+    if (_lmLanguageHandler.loading) return;
+    _lmLanguageHandler.loading = true;
+    var done = function () { _lmLanguageHandler.loading = false; };
+    _lmAddLanguageScript("https://www.legendmod.ml/languages/LanguagePackHandler.js?v=" + (window.OgVer || ''), done, done);
+}
+/* First visit (no language chosen, never asked): a small window with the 12 languages, the browser's
+ * one picked. OK switches like Choose Language and saves it; the cross or Esc keeps the browser's
+ * language unsaved. Asked once (localStorage lmLangAsked), on the main menu, not over the loading
+ * screen and not while playing. */
+function _lmLangChooserWanted() {
+    try {
+        var v = localStorage.getItem('languagemod');
+        if (v && v !== 'null') return false;
+        return !localStorage.getItem('lmLangAsked');
+    } catch (e) { return false; }
+}
+function _lmFirstLanguageChooser() {
+    if (!window.LMi18n || !_lmLangChooserWanted()) return;
+    var tries = 0;
+    var wait = setInterval(function () {
+        if (++tries > 600) { clearInterval(wait); return; }
+        if (!_lmLangChooserWanted()) { clearInterval(wait); return; }
+        if (document.getElementById('lm-boot') || !$('#main-menu').is(':visible') || !$('#overlays').is(':visible')) return;
+        if (window.legendmod && window.legendmod.play) return;
+        clearInterval(wait);
+        _lmShowLanguageChooser();
+    }, 500);
+}
+function _lmShowLanguageChooser() {
+    if (document.getElementById('lm-lang-first')) return;
+    var L = window.LMi18n;
+    var esc = function (k) { return _lmEscLang(window.lmT(k)); };
+    var box = $('<div class="modal fade in" id="lm-lang-first" role="dialog" aria-modal="true" aria-hidden="false" style="display:block;">' +
+        '<div class="modal-backdrop fade in"></div>' +
+        '<div class="modal-dialog" style="width:340px;max-width:calc(100vw - 16px);">' +
+        '<div class="modal-content">' +
+        '<div class="modal-header"><button type="button" class="close lm-lang-first-close" data-i18n-aria-label="core.close" aria-label="' + esc('core.close') + '">&times;</button>' +
+        '<h4 class="modal-title" data-i18n="core.langFirstTitle">' + esc('core.langFirstTitle') + '</h4></div>' +
+        '<div class="modal-body" style="text-align:center;max-height:calc(100vh - 150px);overflow:auto;">' +
+        '<p data-i18n="core.langFirstText" style="margin:0 0 10px;">' + esc('core.langFirstText') + '</p>' +
+        '<span data-lm-lang-picker="manual"></span></div>' +
+        '<div class="modal-footer" style="text-align:center;"><button type="button" class="btn btn-success lm-lang-first-ok" data-i18n="core.ok" style="min-width:96px;">' + esc('core.ok') + '</button></div>' +
+        '</div></div></div>');
+    box.attr('dir', L.dir());
+    $('#helloContainer').length ? $('#helloContainer').after(box) : $('body').append(box);
+    L.renderPickers(box[0]);
+    var sel = box.find('select.lm-lang-select').addClass('form-control').css({ display: 'inline-block', width: 'auto', minWidth: '180px', fontSize: '16px' });
+    sel.val(L.num());
+    if (typeof lmPromoChrome === 'function') lmPromoChrome('#lm-lang-first');
+    var asked = function () { try { localStorage.setItem('lmLangAsked', '1'); } catch (e) { } };
+    var close = function () {
+        asked();
+        window.removeEventListener('keydown', onKey, true);
+        box.remove();
     };
-    /* the handler applies the pack's texts, so it runs after the pack (not at all if the pack failed) */
-    _lmAddLanguageScript(url, function () {
-        _lmAddLanguageScript("https://www.legendmod.ml/languages/LanguagePackHandler.js", done, done);
-    }, done);
+    box.find('.lm-lang-first-close').on('click', close);
+    box.find('.modal-backdrop').on('click', close);
+    box.find('.lm-lang-first-ok').on('click', function () {
+        var n = String(sel.val() || L.num());
+        close();
+        /* the Choose Language path: switches at once and saves languagemod */
+        $('#legendlanguages').val(n);
+        if ($('#legendlanguages').length) changeModLanguage(true);
+        else L.setLang(n);
+    });
+    /* Esc closes it before the mod's own Esc (menu toggle) sees the key: capture phase on window */
+    function onKey(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopImmediatePropagation(); close(); }
+        else if ((e.key === 'Enter' || e.keyCode === 13) && document.activeElement === sel[0]) { e.preventDefault(); e.stopImmediatePropagation(); box.find('.lm-lang-first-ok').trigger('click'); }
+    }
+    window.addEventListener('keydown', onKey, true);
+    setTimeout(function () { try { sel[0].focus(); } catch (e) { } }, 50);
 }
 function newsubmit() {
     if (legendmod.play == true) {
@@ -6794,8 +6832,9 @@ function initializeLM(modVersion) {
     PremiumUsersFFAScore()
 
 
-    $("button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
-    $("button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
+    /* by their agar.io text key too: those texts are in the chosen language now, not always English */
+    $("button[data-itr='page_spectate'], button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
+    $("button[data-itr='page_logout'], button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
     $("button:contains('Copy')").removeClass("btn-info").addClass("btn-link");
 
     $("#create-party-btn-2").html('<span class="glyphicon glyphicon-plus"></span>');
@@ -9078,13 +9117,16 @@ function changeFrameWorkStart() {
     defaultmapsettings.unlockedFPS = false;
 }
 /* ── Legend Mod Theme Bridge (mod-side helpers), the receiver is lib/lm-theme-bridge.js ──
- * lmThemeData()  → only visual values: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b, rad}
+ * lmThemeData()  → only visual values: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b, rad} and lang
  * lmThemeQuery() → returns "?lm=<base64 JSON>" to append to any URL
  * lmThemeHash()  → returns "#lm=<base64 JSON>"
- * lmThemeSend(iframe) → sends the theme with postMessage, only to a Legend page */
+ * lmThemeSend(iframe) → sends the theme with postMessage, only to a Legend page
+ * lang: the Choose Language number (1 English .. 12 Dutch): the web pages (lib/lm-i18n.js) show
+ * that language; on agar.io the site cannot read the mod's localStorage. */
 function lmThemeData() {
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
     var d = {
+        lang: (window.LMi18n && window.LMi18n.num()) || '1',
         pc:  ds.menuPanelColor   || $('#menuPanelColor').val()  || '#00243e',
         pc2: ds.menuPanelColor2  || $('#menuPanelColor2').val() || '#002f52',
         mc:  ds.menuMainColor    || $('#hudMainColor').val()    || '#01d9cc',
@@ -9149,6 +9191,17 @@ function lmThemeSendToModalIframes(sel) {
         });
     }, 200);
 }
+/* Links from the mod to Legend Mod's web pages carry the language (and the theme) in #lm=...:
+ * on agar.io the pages cannot read the mod's localStorage. On www.legendmod.ml itself they share it,
+ * and a link that has its own # is left alone. */
+document.addEventListener('click', function (ev) {
+    var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
+    if (!a || location.hostname === 'www.legendmod.ml') return;
+    var href = a.getAttribute('href') || '';
+    if (!/^https:\/\/(www\.legendmod\.ml|jimboy3100\.github\.io)\/[^#]*\.html(\?[^#]*)?$/.test(href)) return;
+    if (/\/play\.html/.test(href)) return;
+    a.setAttribute('href', href + lmThemeHash());
+}, true);
 
 /* The theme's CSS custom properties are set by the theme setters in ogario.v4.js (setMenu..., setHud...),
  * on :root and, for the menu colours, inline. This copies the menu colours inline again for windows built
