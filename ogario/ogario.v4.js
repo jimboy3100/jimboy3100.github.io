@@ -197,7 +197,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.603;
+window.OgVer = 3.609;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -21278,6 +21278,10 @@ function thelegendmodproject() {
         setMenuMainColor() {
             var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
             css += ':root{--lm-mc:' + _lmCssVal(defaultSettings.menuMainColor, '#01d9cc') + '}';
+            /* Switchery paints a switch's colour inline when it is created, so a later theme change
+             * never reached the switches: the switched-on colour now follows the theme */
+            var swc = _lmCssVal(defaultSettings.menuMainColor, '#01d9cc');
+            css += 'input:checked+.switchery{background-color:' + swc + '!important;border-color:' + swc + '!important;box-shadow:' + swc + ' 0 0 0 16px inset!important}';
             this.addCustomCSS('menuMainColorCSS', css);
             /* Keep the inline --lm-mc in sync so it always wins over CSS fallbacks */
             try { document.documentElement.style.setProperty('--lm-mc', _lmCssVal(defaultSettings.menuMainColor, '#01d9cc')); } catch(e){}
@@ -21298,6 +21302,11 @@ function thelegendmodproject() {
         },
         setMenuButtons() {
             var css = 'a,a:hover{color:' + defaultSettings.btn1Color + '}.btn,#hotkeys-cfg .custom-key-in{color:' + defaultSettings.menuBtnTextColor + '}.btn-primary{background-color:' + defaultSettings.btn1Color + '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:' + defaultSettings.btn1Color2 + '!important}.btn-success{background-color:' + defaultSettings.btn2Color + '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:' + defaultSettings.btn2Color2 + '!important}.btn-warning{background-color:' + defaultSettings.btn3Color + '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:' + defaultSettings.btn3Color2 + '!important}.btn-danger{background-color:' + defaultSettings.btn4Color + '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:' + defaultSettings.btn4Color2 + '!important}#hotkeys-cfg .custom-key-in{background-color:' + defaultSettings.btn4Color2 + ';border-color:' + defaultSettings.btn4Color2 + '}';
+            /* .btn-info (Theme Workshop, many Legend buttons) used Bootstrap's own light blue: it takes
+             * button colour 2. Not !important, so buttons styled inline (e.g. transparent) keep their look */
+            css += '.btn.btn-info{background-color:' + defaultSettings.btn2Color + ';border-color:' + defaultSettings.btn2Color + ';color:' + defaultSettings.menuBtnTextColor + '}.btn.btn-info:active,.btn.btn-info:focus,.btn.btn-info:hover{background-color:' + defaultSettings.btn2Color2 + ';border-color:' + defaultSettings.btn2Color2 + ';color:' + defaultSettings.menuBtnTextColor + '}';
+            /* information pop-ups (toastr info) were always #018cf6, the default of button colour 1 */
+            css += '#toast-container>.toast-info{background-color:' + defaultSettings.btn1Color + '}';
             var cv = function (k, d) { return _lmCssVal(defaultSettings[k], d); };
             css += ':root{--lm-btn-tc:' + cv('menuBtnTextColor', '#ffffff') +
                 ';--lm-btn1:' + cv('btn1Color', '#018cf6') + ';--lm-btn1b:' + cv('btn1Color2', '#0176ce') +
@@ -21325,8 +21334,10 @@ function thelegendmodproject() {
             this.setHudScale();
         },
         setHudColors() {
+            /* ".hud,.hud-b,#.emoji-picker" was not a valid selector list, so the browser dropped the
+             * whole rule and the HUD background colour setting never reached the HUD */
             var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,' +
-                '.hud-b,#.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
+                '.hud-b,.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
             $('.top5-mass-bar').css('background-color', $('#hudMainColor')[0].value)
             /* in-game panels (HUD helpers, death recap, ...) read these */
             css += ':root{--lm-hud-mc:' + _lmCssVal(defaultSettings.hudMainColor, '#01d9cc') + ';--lm-hud-bg:' + _lmCssVal(defaultSettings.hudColor, 'rgba(0,0,0,0.4)') + ';--lm-hud-tc:' + _lmCssVal(defaultSettings.hudTextColor, '#ffffff') + '}';
@@ -34923,31 +34934,62 @@ function thelegendmodproject() {
             var self =
                 this;
 
-            var collisionProbe = { x: 0, y: 0, w: 10, h: 10 };
+            /*
+             * Collision index of this frame. The jelly point grid (WasmQuadTree in
+             * wasm_quadtree.js) answers the per-point question itself: is a point of
+             * another cell within 5 units? It reads a few packed buckets and stops at
+             * the first point that passes, with no callback per point found. The JS
+             * PointQuadTree (used only when wasm_quadtree.js did not load) keeps the
+             * generic some(box, test) path below.
+             */
+            var collisionIndex =
+                LM.quadtree;
+            var collisionGrid =
+                collisionIndex &&
+                typeof collisionIndex.touches === "function"
+                    ? collisionIndex
+                    : null;
+            /* beginCell() before any point of this cell moves: later questions of
+             * other cells then read this cell's new positions. */
+            var collisionOrd =
+                collisionGrid
+                    ? collisionGrid.beginCell(this)
+                    : -1;
+
+            var collisionProbe = null;
             var collisionPoint = null;
-            var collisionTest = function (item) {
-                return (
-                    item &&
-                    item.parent !== self &&
-                    self.sqDist(item, collisionPoint) <= 25
-                );
-            };
+            var collisionTest = null;
 
             /*
              * Broad phase: one query over the bounding box of all this cell's
              * points, widened past the +-5 per-point probe so it contains every
-             * per-point probe (also after float32 rounding in the WASM tree).
-             * If it holds no point of another cell, no per-point query below can
-             * find one and they are skipped (affected stays false). A hit, a
-             * non-finite point, or a WASM query that may have stopped at its
-             * 4096-result limit runs the per-point loop unchanged. A cell that was
-             * touching another one last frame goes straight to the per-point loop
-             * (the broad query would only hit again).
+             * per-point probe (also after float32 rounding in the grid). If it
+             * holds no point of another cell, no per-point query below can find one
+             * and they are skipped (affected stays false). A hit or a non-finite
+             * point runs the per-point loop unchanged. A cell that was touching
+             * another one last frame goes straight to the per-point loop (the broad
+             * query would only hit again). The grid answers it from its packed
+             * arrays (anyForeign), the PointQuadTree with some(box, test); neither
+             * has a result limit any more (quadtree.wasm stopped at 4096, so a
+             * full answer had to be checked for).
              */
             var skipCollisionQueries = false;
             var anyAffected = false;
             if (
-                LM.quadtree &&
+                collisionIndex &&
+                !collisionGrid
+            ) {
+                collisionProbe = { x: 0, y: 0, w: 10, h: 10 };
+                collisionTest = function (item) {
+                    return (
+                        item &&
+                        item.parent !== self &&
+                        self.sqDist(item, collisionPoint) <= 25
+                    );
+                };
+            }
+            if (
+                collisionIndex &&
                 !this._lmJellyTouching
             ) {
                 var broadMinX = Infinity, broadMinY = Infinity, broadMaxX = -Infinity, broadMaxY = -Infinity;
@@ -34961,10 +35003,18 @@ function thelegendmodproject() {
                     if (broadY < broadMinY) broadMinY = broadY;
                     if (broadY > broadMaxY) broadMaxY = broadY;
                 }
-                if (broadOk) {
-                    var broadCalls = 0;
+                if (broadOk && collisionGrid) {
+                    skipCollisionQueries =
+                        !collisionGrid.anyForeign(
+                            broadMinX - 6,
+                            broadMinY - 6,
+                            broadMaxX - broadMinX + 12,
+                            broadMaxY - broadMinY + 12,
+                            collisionOrd
+                        );
+                }
+                else if (broadOk) {
                     var broadTest = function (item) {
-                        broadCalls++;
                         return !!item && item.parent !== self;
                     };
                     collisionProbe.x = broadMinX - 6;
@@ -34972,11 +35022,24 @@ function thelegendmodproject() {
                     collisionProbe.w = broadMaxX - broadMinX + 12;
                     collisionProbe.h = broadMaxY - broadMinY + 12;
                     skipCollisionQueries =
-                        !LM.quadtree.some(collisionProbe, broadTest) &&
-                        broadCalls < 4096;
+                        !collisionIndex.some(collisionProbe, broadTest);
                     collisionProbe.w = 10;
                     collisionProbe.h = 10;
                 }
+            }
+
+            /* cos/sin of 2*PI*i/len from a table per point count (same expression, so the
+             * same values): 2 trig calls per point per frame for every jelly cell before.
+             * Looked up once per cell, not once per point. */
+            var _lmTrig = window._lmJellyTrig && window._lmJellyTrig[len];
+            if (!_lmTrig) {
+                window._lmJellyTrig = window._lmJellyTrig || {};
+                _lmTrig = { c: new Float64Array(len), s: new Float64Array(len) };
+                for (var _lmTi = 0; _lmTi < len; _lmTi++) {
+                    _lmTrig.c[_lmTi] = Math.cos(2 * Math.PI * _lmTi / len);
+                    _lmTrig.s[_lmTi] = Math.sin(2 * Math.PI * _lmTi / len);
+                }
+                window._lmJellyTrig[len] = _lmTrig;
             }
 
             for (
@@ -35020,7 +35083,18 @@ function thelegendmodproject() {
                     false;
 
                 if (
-                    LM.quadtree &&
+                    collisionGrid &&
+                    !skipCollisionQueries
+                ) {
+                    affected =
+                        collisionGrid.touches(
+                            curP.x,
+                            curP.y,
+                            collisionOrd
+                        );
+                }
+                else if (
+                    collisionIndex &&
                     !skipCollisionQueries
                 ) {
                     // Reuse one probe rect and predicate (no per-point allocations).
@@ -35029,7 +35103,7 @@ function thelegendmodproject() {
                     collisionPoint = curP;
 
                     affected =
-                        LM.quadtree.some(
+                        collisionIndex.some(
                             collisionProbe,
                             collisionTest
                         );
@@ -35102,20 +35176,6 @@ function thelegendmodproject() {
                         curRl
                     ) /
                     10;
-
-
-                /* cos/sin of 2*PI*i/len from a table per point count (same expression, so the
-                 * same values): 2 trig calls per point per frame for every jelly cell before */
-                var _lmTrig = window._lmJellyTrig && window._lmJellyTrig[len];
-                if (!_lmTrig) {
-                    window._lmJellyTrig = window._lmJellyTrig || {};
-                    _lmTrig = { c: new Float64Array(len), s: new Float64Array(len) };
-                    for (var _lmTi = 0; _lmTi < len; _lmTi++) {
-                        _lmTrig.c[_lmTi] = Math.cos(2 * Math.PI * _lmTi / len);
-                        _lmTrig.s[_lmTi] = Math.sin(2 * Math.PI * _lmTi / len);
-                    }
-                    window._lmJellyTrig[len] = _lmTrig;
-                }
 
 
                 var renderRadius =
@@ -37637,6 +37697,146 @@ function thelegendmodproject() {
     var LM = {
         integrity: true,
         quadtree: null,
+        /*
+         * ═══════════════════════════════════════════════════════════
+         * JELLY PHYSICS — FRAME PREPARATION (pass 1 of the frame)
+         * ═══════════════════════════════════════════════════════════
+         *
+         * Build/resize the perimeter of every jelly cell drawn this frame
+         * and collect them in out (reused array) for updateQuadtree() and
+         * movePoints().
+         *
+         * Cells neither renderer draws (the skip rules of Cell.draw and
+         * drawWebGLCellBatch: multibox copies hidden as invisible, small
+         * bots while hideSmallBots is on) get no physics and are no
+         * colliders: they used to be simulated every frame and dented the
+         * drawn cells they overlap (a hidden multibox copy sits exactly on
+         * the shown one). Their points are dropped, so a cell shown again
+         * starts from a round perimeter like a new cell instead of one left
+         * from long ago.
+         */
+        prepareJellyCells: function (
+            cells,
+            out
+        ) {
+            out.length = 0;
+
+            var hideSmall =
+                !!this.hideSmallBots;
+
+            for (
+                var i = 0;
+                i < cells.length;
+                i++
+            ) {
+                var cell =
+                    cells[i];
+
+                if (
+                    !cell ||
+                    cell.removed ||
+                    cell.isFood ||
+                    typeof cell
+                        .updateNumPoints !==
+                        "function"
+                ) {
+                    continue;
+                }
+
+                if (
+                    cell.invisible === true ||
+                    (
+                        hideSmall &&
+                        cell.size <= 36
+                    )
+                ) {
+                    if (
+                        cell.points &&
+                        cell.points.length
+                    ) {
+                        cell.points.length = 0;
+
+                        if (cell.pointsVel) {
+                            cell.pointsVel.length = 0;
+                        }
+                    }
+
+                    continue;
+                }
+
+
+                var inView =
+                    true;
+
+                if (
+                    typeof cell
+                        .isInView ===
+                        "function"
+                ) {
+                    try {
+                        inView =
+                            cell
+                                .isInView();
+                    }
+                    catch (
+                        jellyViewError
+                    ) {
+                        /*
+                         * Rendering must not die merely because one
+                         * visibility helper threw.
+                         */
+                        inView =
+                            true;
+                    }
+                }
+
+                if (
+                    !inView
+                ) {
+                    continue;
+                }
+
+
+                try {
+                    cell
+                        .updateNumPoints();
+                }
+                catch (
+                    jellyPointCountError
+                ) {
+                    console.error(
+                        "[JELLY PHYSICS] updateNumPoints failed:",
+                        cell.id,
+                        jellyPointCountError
+                    );
+
+                    continue;
+                }
+
+
+                /*
+                 * Only valid current-frame point sets participate.
+                 *
+                 * Viruses ARE included.
+                 *
+                 * updateNumPoints() forces viruses to 100 points.
+                 */
+                if (
+                    cell.points &&
+                    cell.points.length >=
+                        3 &&
+                    cell.pointsVel &&
+                    cell.pointsVel.length ===
+                        cell.points.length
+                ) {
+                    out.push(
+                        cell
+                    );
+                }
+            }
+
+            return out;
+        },
         updateQuadtree: function (
             cells
         ) {
@@ -37752,8 +37952,11 @@ function thelegendmodproject() {
 
             /*
              * ═══════════════════════════════════════════════════════════
-             * WASM FAST PATH
+             * POINT GRID FAST PATH (wasm_quadtree.js)
              * ═══════════════════════════════════════════════════════════
+             *
+             * Packed typed-array grid, complete (no point or result limit);
+             * movePoints() asks it LM.quadtree.touches(x, y, ord) per point.
              */
             if (
                 typeof WasmQuadTree !==
@@ -37778,25 +37981,12 @@ function thelegendmodproject() {
                         )
                     ) {
                         /*
-                         * Keep the API expected by movePoints():
-                         *
-                         *      LM.quadtree.some(aabb, callback)
+                         * The grid itself is the index: it has both
+                         * LM.quadtree.some(aabb, callback) and the
+                         * touches()/ordOf() questions movePoints() uses.
                          */
-                        /* One wrapper for the session, not a new object and closure every frame. */
                         this.quadtree =
-                            this._wasmQuadtreeWrapper ||
-                            (this._wasmQuadtreeWrapper = {
-                                some: function (
-                                    aabb,
-                                    test
-                                ) {
-                                    return WasmQuadTree
-                                        .some(
-                                            aabb,
-                                            test
-                                        );
-                                }
-                            });
+                            WasmQuadTree;
 
                         return;
                     }
@@ -75170,112 +75360,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         .jellyPhisycs
                 ) {
                     /*
+                     * Timed as one part (diagnostics "jelly physics" and the
+                     * client profiler): preparing the points and building the
+                     * collision index are part of the jelly cost too.
+                     */
+                    var _tPhys =
+                        performance.now();
+                    var _lmScPhys = window._lmScope ? window._lmScope.b('jelly physics') : -1;
+
+                    /*
                      * ───────────────────────────────────────────────────
                      * PASS 1
-                     * Build/resize every visible jelly perimeter.
+                     * Build/resize every drawn jelly perimeter.
                      * ───────────────────────────────────────────────────
                      */
-                    for (
-                        var jellyPrepareIndex = 0;
-                        jellyPrepareIndex <
-                            LM.cells.length;
-                        jellyPrepareIndex++
-                    ) {
-                        var jellyPrepareCell =
-                            LM.cells[
-                                jellyPrepareIndex
-                            ];
-
-                        if (
-                            !jellyPrepareCell ||
-                            jellyPrepareCell.removed ||
-                            jellyPrepareCell.isFood ||
-                            typeof jellyPrepareCell
-                                .updateNumPoints !==
-                                "function"
-                        ) {
-                            continue;
-                        }
-
-
-                        var jellyInView =
-                            true;
-
-                        if (
-                            typeof jellyPrepareCell
-                                .isInView ===
-                                "function"
-                        ) {
-                            try {
-                                jellyInView =
-                                    jellyPrepareCell
-                                        .isInView();
-                            }
-                            catch (
-                                jellyViewError
-                            ) {
-                                /*
-                                 * Rendering must not die merely because one
-                                 * visibility helper threw.
-                                 */
-                                jellyInView =
-                                    true;
-                            }
-                        }
-
-
-                        if (
-                            !jellyInView
-                        ) {
-                            continue;
-                        }
-
-
-                        try {
-                            jellyPrepareCell
-                                .updateNumPoints();
-                        }
-                        catch (
-                            jellyPointCountError
-                        ) {
-                            console.error(
-                                "[JELLY PHYSICS] updateNumPoints failed:",
-                                jellyPrepareCell.id,
-                                jellyPointCountError
-                            );
-
-                            continue;
-                        }
-
-
-                        /*
-                         * Only valid current-frame point sets participate.
-                         *
-                         * Viruses ARE included.
-                         *
-                         * updateNumPoints() forces viruses to 100 points.
-                         */
-                        if (
-                            jellyPrepareCell
-                                .points &&
-                            jellyPrepareCell
-                                .points
-                                .length >=
-                                3 &&
-                            jellyPrepareCell
-                                .pointsVel &&
-                            jellyPrepareCell
-                                .pointsVel
-                                .length ===
-                                jellyPrepareCell
-                                    .points
-                                    .length
-                        ) {
-                            _jellyCells.push(
-                                jellyPrepareCell
-                            );
-                        }
-                    }
+                    LM.prepareJellyCells(
+                        LM.cells,
+                        _jellyCells
+                    );
 
 
                     /*
@@ -75320,9 +75422,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * Simulate each perimeter exactly once.
                      * ───────────────────────────────────────────────────
                      */
-                    var _tPhys =
-                        performance.now();
-                    var _lmScPhys = window._lmScope ? window._lmScope.b('jelly physics') : -1;
 
                     for (
                         var jellyMoveIndex = 0;
@@ -81959,12 +82058,12 @@ function openhelper() {
     }
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/extras/legendhelper.js";
+    s.src = "https://www.legendmod.ml/extras/legendhelper.js?v=2";
     s.onerror = function () {
         /* legendmod.ml may be blocked or slow: try the GitHub mirror */
         var s2 = document.createElement("script");
         s2.type = "text/javascript";
-        s2.src = "https://jimboy3100.github.io/extras/legendhelper.js";
+        s2.src = "https://jimboy3100.github.io/extras/legendhelper.js?v=2";
         s2.onerror = function () {
             if (window.toastr) toastr.error('Could not load Mod Info & Templates.');
         };

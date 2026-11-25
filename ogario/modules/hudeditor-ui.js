@@ -78,14 +78,14 @@
         s.textContent =
             '#lm-he{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147481000;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,.12);font-size:13px;line-height:1.35;font-family:inherit;color:var(--lm-tc,#eee)}' +
             '#lm-he.lm-he-grid{background-image:linear-gradient(rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.09) 1px,transparent 1px)}' +
-            '.lm-he-f{position:absolute;box-sizing:border-box;border:2px solid #01d9cc;background:rgba(1,217,204,.10);cursor:move;touch-action:none;min-width:16px;min-height:16px}' +
+            '.lm-he-f{position:absolute;box-sizing:border-box;border:2px solid var(--lm-mc,#01d9cc);background:rgba(1,217,204,.10);cursor:move;touch-action:none;min-width:16px;min-height:16px}' +
             '.lm-he-f.sel{border-color:#ffd200;background:rgba(255,210,0,.14);z-index:2}' +
             '.lm-he-f.ghost{border-style:dashed}' +
             '.lm-he-f.locked{border-color:#999;cursor:not-allowed}' +
             '.lm-he-f.hid{border-color:#e0605c;background:rgba(224,96,92,.12)}' +
             '.lm-he-l{position:absolute;left:-2px;bottom:100%;font-weight:600;font-size:11px;line-height:1.4;font-family:inherit;color:#fff;background:rgba(0,0,0,.75);padding:0 5px;white-space:nowrap;pointer-events:none}' +
             '.lm-he-f.low .lm-he-l{bottom:auto;top:0}' +
-            '.lm-he-rs{position:absolute;right:-9px;bottom:-9px;width:18px;height:18px;box-sizing:border-box;border:2px solid #000;background:#01d9cc;border-radius:3px;cursor:nwse-resize;touch-action:none}' +
+            '.lm-he-rs{position:absolute;right:-9px;bottom:-9px;width:18px;height:18px;box-sizing:border-box;border:2px solid #000;background:var(--lm-mc,#01d9cc);border-radius:3px;cursor:nwse-resize;touch-action:none}' +
             '.lm-he-f.rs-in .lm-he-rs{right:auto;bottom:auto;left:-2px;top:-2px}' +
             '.lm-he-f.sel .lm-he-rs{background:#ffd200}.lm-he-f.locked .lm-he-rs{display:none}' +
             '.lm-he-gd{position:absolute;background:#ffd200;pointer-events:none;display:none;z-index:3}' +

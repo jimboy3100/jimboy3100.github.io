@@ -14,7 +14,8 @@ $('body').append(
     '</div>' +
 
     '<div style="padding:10px;">' +
-    '<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/nicks/" height="490" width="420" style="border:0;max-width:100%;display:block;"></iframe>' +
+    /* the theme goes in the link too, so the page is themed even before the theme message arrives */
+    '<iframe id="customskinsIframe2" src="https://www.legendmod.ml/nicks/' + (typeof lmThemeHash === 'function' ? lmThemeHash() : '') + '" height="490" width="420" style="border:0;max-width:100%;display:block;"></iframe>' +
     '</div>' +
 
     '</div>' +

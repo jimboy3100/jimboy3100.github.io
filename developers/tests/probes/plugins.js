@@ -74,8 +74,12 @@
         if (LMEvents._has('massUpdate')) fail.push('turning the slot off left the listener');
         if (localStorage.getItem('UserscriptEnabled' + n) !== '0') fail.push('slot not turned off in storage');
       }
-      /* Editor view: the header of the chosen slot under the slot chooser */
-      document.querySelector('#lm-us-bar button[data-view=editor]').click();
+      /* Editor view, from the slot's Edit button: the header of the chosen slot under the slot chooser */
+      if (document.querySelector('#lm-us-bar button[data-view=editor]')) fail.push('a separate Editor tab is back');
+      var eb2 = document.querySelector('#lm-us-ext [data-slot="' + n + '"] [data-act=edit]');
+      if (!eb2) fail.push('no Edit button on the slot'); else eb2.click();
+      var allb = document.getElementById('lm-us-allslots');
+      if (!allb || allb.style.display === 'none') fail.push('no way back to all slots while editing');
       $('#Userscriptpages3').val(String(n)).trigger('change');
       await wait(50);
       if (hud.classList.contains('lm-us-alt')) fail.push('editor view not back');
