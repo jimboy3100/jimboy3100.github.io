@@ -197,7 +197,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.624;
+window.OgVer = 3.625;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -35513,10 +35513,13 @@ function thelegendmodproject() {
                 this._deathSlowMo
             ) {
                 if (
-                    LM.removedCells
-                        .indexOf(this) ===
-                    -1
+                    this._removedIdx == null ||
+                    this._removedIdx < 0 ||
+                    this._removedIdx >= LM.removedCells.length ||
+                    LM.removedCells[this._removedIdx] !== this
                 ) {
+                    this._removedIdx =
+                        LM.removedCells.length;
                     LM.removedCells.push(
                         this
                     );
@@ -35687,9 +35690,12 @@ function thelegendmodproject() {
                 delay >= 1
             ) {
                 var removedIdx =
-                    LM.removedCells.indexOf(
-                        this
-                    );
+                    (this._removedIdx != null &&
+                     this._removedIdx >= 0 &&
+                     this._removedIdx < LM.removedCells.length &&
+                     LM.removedCells[this._removedIdx] === this)
+                        ? this._removedIdx
+                        : LM.removedCells.indexOf(this);
 
                 if (
                     removedIdx !== -1
@@ -35707,10 +35713,16 @@ function thelegendmodproject() {
                             LM.removedCells[
                                 _rcLast
                             ];
+                        /* Update the swapped cell's index */
+                        LM.removedCells[
+                            removedIdx
+                        ]._removedIdx =
+                            removedIdx;
                     }
 
                     LM.removedCells.length =
                         _rcLast;
+                    this._removedIdx = -1;
                 }
             }
         };
@@ -37759,6 +37771,20 @@ function thelegendmodproject() {
                         /* Special effects (hats, crowns, smoke, etc.) — drawn above the cell body */
                         if (typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers[this.targetNick]) {
                             this.drawSpecialSkin(_fgCtx, y);
+                        }
+                        /* Facebook tracking skin badge — mirrored from Canvas-only branch.
+                         * Draws the small FB profile image overlay on the cell using the
+                         * overlay canvas so it stays visible above WebGL-rendered bodies. */
+                        if (defaultmapsettings.FBTracking) {
+                            var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
+                            if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
+                                var nodeFB = application.customSkinsCache[nodeFb + "_cached4"];
+                                if (nodeFB && !nodeFB._failed && (nodeFB.naturalWidth > 0 || nodeFB.width > 0)) {
+                                    try {
+                                        _fgCtx.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
+                                    } catch (e) { }
+                                }
+                            }
                         }
                         if (defaultmapsettings.showChat || (window.ExternalScripts && !window.legendmod5.optimizedMass)) {
                             this.setDrawing();
