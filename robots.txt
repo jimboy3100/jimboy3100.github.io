@@ -13,3 +13,8 @@ Sitemap: https://www.legendmod.ml/sitemap.xml
 # LLM discovery (llms.txt standard)
 # https://www.legendmod.ml/llms.txt
 # https://www.legendmod.ml/llms-full.txt
+
+# Knowledge graph (structured data for AI and crawlers)
+# https://www.legendmod.ml/knowledge/
+# https://www.legendmod.ml/knowledge/graph.jsonld
+# https://www.legendmod.ml/knowledge/api.json

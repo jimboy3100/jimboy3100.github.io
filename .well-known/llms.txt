@@ -1,0 +1,4 @@
+# LegendMod LLM Information
+# See: https://www.legendmod.ml/llms.txt
+# See: https://www.legendmod.ml/llms-full.txt
+# This is a redirect hint — the main files are at the root.
