@@ -52,7 +52,9 @@
     for (i = 0; i < 40 && !$('#lm-tw .lm-tw-gitem').length; i++) await wait(200);
     info.gallery = $('#lm-tw .lm-tw-gitem').length;
     if (info.gallery < 4) fail.push('gallery shows ' + info.gallery + ' themes');
-    if (!/no upload service/i.test($('#lm-tw .lm-tw-body').text())) fail.push('gallery does not say how to publish');
+    if ($('#lm-tw .lm-tw-body').text().indexOf('Export / Import') === -1) fail.push('gallery does not say how to share a theme');
+    /* the window's own import / export tab and buttons were removed (Settings > Export / Import is the one place) */
+    if ($('#lm-tw [data-act=export], #lm-tw [data-act=import], #lm-tw #lm-tw-text').length || $('#lm-tw').text().replace(/Export \/ Import/g, '').indexOf('Import / export') !== -1) fail.push('theme workshop still has its own import / export');
     $('#lm-tw [data-act=ginstall][data-id=neon]').trigger('click');
     var mine = TW.list().filter(function (t) { return t.src === 'g:neon'; })[0];
     if (!mine) fail.push('Neon not installed');
