@@ -4,6 +4,7 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const file = process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'perf.js');
 const P = require(file);
+const i18n = require('./lib/i18n-env');
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 const near = (a, b, e) => Math.abs(a - b) <= (e || 1e-9);
@@ -154,7 +155,8 @@ check('history that is not a list is empty', P.validateHistory({ a: 1 }).length 
 
 /* ---- in a page (vm): off costs nothing, levels apply runtime only, survive a reload ---- */
 const src = fs.readFileSync(file, 'utf8');
-function page(settings, stored, extra) {
+/* lang: the language of the translation runtime given to the page (default English) */
+function page(settings, stored, extra, lang) {
     const timers = [], toasts = [], store = Object.assign({}, stored || {}), calls = [], listeners = {};
     const overlays = { style: { display: 'none' }, isConnected: true };
     const ctx = {
@@ -173,6 +175,7 @@ function page(settings, stored, extra) {
     ctx.legendmod5 = settings;
     if (extra) Object.assign(ctx, extra);
     vm.createContext(ctx);
+    i18n(ctx, lang);
     vm.runInContext(src, ctx);
     return { ctx, timers, toasts, store, calls, overlays, listeners };
 }
@@ -188,6 +191,7 @@ frames(pg, 120, 16.7, 3); /* 2 s at 60 */
 check('60 FPS: level 0', pg.ctx.LMPerf.level() === 0);
 frames(pg, 31 * 4, 33.3, 20); /* about 4 s at 30 with heavy drawing */
 check('30 FPS for 3 s: level 1, one message', pg.ctx.LMPerf.level() === 1 && pg.toasts.length === 1);
+check('the level message comes from the language pack', pg.toasts[0] === i18n.t('settings.lmAdaptiveLevel1') && /level 1/.test(pg.toasts[0]));
 const S = pg.ctx.legendmod5;
 check('level 1 values lowered at runtime', S.suckAnimation === false && S.hudBlur === 0 && pg.calls.indexOf('rainbow') >= 0 && pg.calls.indexOf('blur') >= 0);
 pg.ctx.application.saveSettings(S, 'ogarioSettings');
@@ -202,7 +206,7 @@ check('resolution option off (default): stays at level 2, full resolution', pg.c
 S.adaptivePerfRes = true; pg.ctx.LMPerf.configChanged();
 frames(pg, 236, 27, 20);
 check('still slow: level 3, lower resolution', pg.ctx.LMPerf.level() === 3 && pg.ctx._lmAdaptiveScale === 0.75 && pg.calls.indexOf('resize:0.75') >= 0);
-check('one message per level', pg.toasts.length === 3);
+check('one message per level', pg.toasts.length === 3 && pg.toasts[2] === i18n.t('settings.lmAdaptiveLevel3'));
 /* menu opened: own values back (presets and Performance mode see them), frames ignored */
 pg.overlays.style.display = '';
 frames(pg, 60, 33.3, 20);
@@ -573,6 +577,83 @@ check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')'
     const was3 = rp.ctx.LMPerf.level() === 3 && rp.ctx._lmAdaptiveScale === 0.75;
     rp.ctx.legendmod5.adaptivePerfRes = false; rp.ctx.LMPerf.configChanged();
     check('resolution option off at level 3: level 2, full resolution now', was3 && rp.ctx.LMPerf.level() === 2 && !(rp.ctx._lmAdaptiveScale > 0));
+}
+/* ---- texts: language packs (developers/i18n/src/modules-c.json, keys modules.perf.*) ---- */
+{
+    const PFX = 'modules.perf.';
+    /* the English texts in perf.js (the copied report, the trace tools) are the pack's English ones */
+    const perfSrc2 = src.replace(/\r\n/g, '\n');
+    const pairs = [...perfSrc2.matchAll(/(?:say\(tr, |tp\()'(\w+)', '((?:[^'\\]|\\.)*)'/g)].map(m => [m[1], JSON.parse('"' + m[2].replace(/"/g, '\\"') + '"')]);
+    for (const map of [P.EV_KEYS, P.INFO_KEYS, P.RN_KEYS, P.KIND_KEYS]) for (const en of Object.keys(map)) pairs.push([map[en], en]);
+    pairs.push(['cfStyleBrowser', 'style and layout (browser)']);
+    const differ = pairs.filter(p => i18n.t(PFX + p[0]) !== p[1]).map(p => p[0] + ': ' + JSON.stringify(i18n.t(PFX + p[0])) + ' vs ' + JSON.stringify(p[1]));
+    check('English texts in perf.js match the pack (' + pairs.length + ')', pairs.length >= 50 && differ.length === 0 || (console.log('  ' + differ.join('\n  ')), false));
+    /* every key the window uses exists in English and Greek */
+    const used = new Set(pairs.map(p => PFX + p[0]));
+    for (const m of perfSrc2.matchAll(/\bT\('(\w+)'/g)) used.add(PFX + m[1]);
+    for (const m of perfSrc2.matchAll(/\bTS\('(\w+)'/g)) used.add('settings.' + m[1]);
+    /* not keys: the level number is added in the code, 'x' is the comment's example */
+    used.delete('settings.lmAdaptiveLevel'); used.delete(PFX + 'x'); used.delete('settings.x');
+    ['keepOn', 'keepOff'].forEach(k => used.add(PFX + k));
+    for (let l = 0; l <= 3; l++) used.add('settings.lmAdaptiveLevel' + l);
+    const elRt = {}; i18n(elRt, 'el');
+    const absent = [...used].filter(k => i18n.t(k) === k || !elRt.LMi18n.has(k, 'el'));
+    check('every text key used exists and has its Greek (' + used.size + ')', used.size >= 60 && absent.length === 0 || (console.log('  ' + absent.join(', ')), false));
+
+    /* the window's lines: English through the pack are the same as the report's, Greek differs */
+    const trOf = (code) => (k, v) => { const r = i18n.t(PFX + k, v, code); return r === PFX + k ? null : r; };
+    const fzT = { t: 10000, w: Date.now(), dur: 287, bd: { r: 'Canvas2D (WebGL off)', s: [{ n: 'render', ms: 40 }], q: '412 cells', qp: { s: ', ', p: [P.tp('infoCells', '{0} cells', [412])] } } };
+    const evsT = [{ type: 'packet gap', t: 10050, dur: 900 }, { type: 'visibility', t: 9800, info: 'hidden' }];
+    const enLine = P.classifyFreeze(fzT, [], evsT, { loaf: true }).line;
+    check('freeze line: English through the pack = report line', P.classifyFreeze(fzT, [], evsT, { loaf: true, tr: trOf('en') }).line === enLine);
+    const elLine = P.classifyFreeze(fzT, [], evsT, { loaf: true, tr: trOf('el') });
+    check('freeze line in Greek: translated, probable stays English data', elLine.line !== enLine && elLine.line.indexOf(i18n.t(PFX + 'cfTabHidden', null, 'el')) >= 0 &&
+        elLine.line.indexOf(i18n.t(PFX + 'infoCells', [412], 'el')) >= 0 && elLine.line.indexOf(i18n.t(PFX + 'rn2dOff', null, 'el')) >= 0 && elLine.probable === '');
+    const evT = { w: Date.now(), type: 'disconnect', dur: 0, info: 'code 1006 (not clean)', n: 1, ip: { s: ' ', p: [P.tp('infoCode', 'code {0}', [1006]), P.tp('notClean', '(not clean)')] } };
+    check('event line: English by default, Greek with the Greek texts', / disconnect code 1006 \(not clean\)$/.test(P.eventLine(evT)) &&
+        P.eventLine(evT, trOf('el')).indexOf(i18n.t(PFX + 'evDisconnect', null, 'el') + ' ' + i18n.t(PFX + 'infoCode', [1006], 'el') + ' ' + i18n.t(PFX + 'notClean', null, 'el')) > 0);
+    check('event line: details from ogario.v4.js translated, unknown ones kept', P.eventLine({ w: 0, type: 'packet gap', dur: 300, info: 'no world update', n: 1 }, trOf('el')).indexOf(i18n.t(PFX + 'infoNoUpdate', null, 'el')) > 0 &&
+        / x-type 5 ms player text$/.test(P.eventLine({ w: 0, type: 'x-type', dur: 5, info: 'player text', n: 1 }, trOf('el'))));
+
+    /* the diagnostics window in a small fake DOM: texts from the packs, a language change redraws them */
+    const mkEl = (tag) => {
+        const e = { tagName: tag.toUpperCase(), style: {}, children: [], attrs: {}, textContent: '', title: '', dir: '', fills: [],
+            appendChild(c) { c.parentNode = e; e.children.push(c); return c; },
+            removeChild(c) { e.children = e.children.filter(x => x !== c); c.parentNode = null; },
+            addEventListener() { }, setAttribute(k, v) { e.attrs[k] = String(v); }, getAttribute(k) { return e.attrs[k]; },
+            getBoundingClientRect: () => ({ left: 8, top: 8, width: 380, height: 300 }) };
+        if (tag === 'canvas') {
+            const c2 = { fillText(t) { e.fills.push(t); } };
+            ['clearRect', 'fillRect', 'beginPath', 'moveTo', 'lineTo', 'stroke', 'setLineDash'].forEach(n => { c2[n] = () => { }; });
+            e.getContext = () => c2;
+        }
+        return e;
+    };
+    const body = mkEl('body');
+    const wp = page(user(), null, { setTimeout: () => 0 });
+    wp.ctx.document.createElement = mkEl;
+    wp.ctx.document.body = body;
+    wp.ctx.LMPerf.openDiag();
+    const md = body.children[0];
+    const all = (e, out) => { out.push(e); (e.children || []).forEach(c => all(c, out)); return out; };
+    const nodes = all(md, []);
+    const byId = (id) => nodes.find(n => n.id === id);
+    const title = md.children[0].children[0];
+    const stats = nodes.find(n => n.tagName === 'PRE');
+    check('window: title, buttons and stats from the packs (English)', md.id === 'lm-perf-diag' && title.textContent === i18n.t('settings.lmPerfDiag') &&
+        byId('lm-perf-copy').textContent === i18n.t('settings.lmPerfCopy') && byId('lm-perf-keep').textContent === i18n.t(PFX + 'keepOff') &&
+        byId('lm-perf-diag-close').title === i18n.t('settings.close') && stats.textContent.indexOf(i18n.t(PFX + 'statAdaptiveOff')) >= 0 && md.dir === 'ltr');
+    const canv = nodes.filter(n => n.tagName === 'CANVAS');
+    check('window: graph labels from the packs', canv[0].fills.some(t => t === i18n.t(PFX + 'graphFrames', [50, 60])) && canv[1].fills.some(t => t === i18n.t(PFX + 'graphWaiting')));
+    wp.ctx.LMi18n.setLang('el');
+    check('window: a language change redraws it in Greek', title.textContent === i18n.t('settings.lmPerfDiag', null, 'el') && title.textContent !== i18n.t('settings.lmPerfDiag') &&
+        byId('lm-perf-clear').textContent === i18n.t('settings.lmNetClear', null, 'el') && stats.textContent.indexOf(i18n.t(PFX + 'statAdaptiveOff', null, 'el')) >= 0 &&
+        canv[0].fills.some(t => t === i18n.t(PFX + 'graphFrames', [50, 60], 'el')));
+    wp.ctx.LMi18n.setLang('ar');
+    check('window: right-to-left in Arabic, graphs stay left-to-right', md.dir === 'rtl' && canv.every(c => c.dir === 'ltr') && title.textContent === i18n.t('settings.lmPerfDiag', null, 'ar'));
+    check('report stays English in another language', /^Legend Mod .* performance report/.test(wp.ctx.LMPerf.report()) && /Freezes \(\u2265250 ms, foreground\): 0/.test(wp.ctx.LMPerf.report()));
+    wp.ctx.LMPerf.closeDiag();
+    check('window closed: removed', body.children.length === 0);
 }
 console.log(fail ? fail + ' failed' : 'all perf checks passed');
 process.exit(fail ? 1 : 0);

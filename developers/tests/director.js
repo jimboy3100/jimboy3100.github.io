@@ -3,6 +3,8 @@
  * (no panel is built) and drives the camera with a fake clock.
  * node developers/tests/director.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
+const T = (k, v, code) => i18n.t('modules.director.' + k, v, code);
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'director.js'), 'utf8');
 
 let fail = 0;
@@ -281,6 +283,7 @@ const sizeOf = m => Math.sqrt(m * 100);
   };
   ctx.window = ctx;
   vm.createContext(ctx);
+  i18n(ctx);
   vm.runInContext(src, ctx);
   const D = ctx.LMDirector;
   const LM = {
@@ -349,6 +352,8 @@ const sizeOf = m => Math.sqrt(m * 100);
   const bp = D.camPoint(LM);
   check('bookmark: camera goes there and stays (auto waits)', bp && Math.abs(bp.x - 1234) < 1 && Math.abs(bp.y + 50) < 1);
   check('bookmark: missing number only toasts', D.recallBookmark(7) === false && toasts.length > 0);
+  check('toast text from the language pack', toasts[toasts.length - 1] === T('markNone', [8]));
+  check('status text from the language pack', D.status() === T('stPoint', ['base']));
 
   /* watchlist */
   check('watch: add', D.addWatch('C') && D.addWatch('C') && D.watchlist().length === 1);
@@ -379,8 +384,83 @@ const sizeOf = m => Math.sqrt(m * 100);
   check('auto: nothing in view goes to the leaderboard #1', gp && Math.abs(gp.x - 7000) < 2 && D.followed() === 'A');
 
   D.setAuto(false);
+  check('status: idle', D.status() === T('stIdle'));
+  ctx.LMi18n.setLang('el');
+  check('status follows a language change (Greek)', D.status() === T('stIdle', null, 'el') && D.status() !== T('stIdle'));
+  D.toggleAuto();
+  check('toast in Greek', toasts[toasts.length - 1] === T('dirOn', null, 'el'));
+  D.toggleAuto();
+  ctx.LMi18n.setLang('en');
   D.disable();
   check('runtime: turn off stops everything', D.enabled === false && !D.isAuto() && !lmListeners.leaderboard && D.camPoint(LM) === null && (listeners.pointermove || []).length === 0);
+}
+
+/* 11. the panel in a small fake DOM: every text from the packs, rebuilt on a language change */
+{
+  const mkEl = (tag) => {
+    const e = {
+      tagName: String(tag).toUpperCase(), style: { setProperty() { } }, children: [], attrs: {}, className: '', _t: '', title: '', dir: '',
+      value: '', placeholder: '', type: '', id: '', parentNode: null, offsetHeight: 200, offsetWidth: 300,
+      get textContent() { return e._t + e.children.map(c => c.textContent).join(''); },
+      set textContent(v) { e._t = String(v); e.children = []; },
+      get firstChild() { return e.children[0] || null; },
+      classList: { toggle(c, on) { const l = e.className.split(' ').filter(Boolean).filter(x => x !== c); if (on) l.push(c); e.className = l.join(' '); }, contains(c) { return e.className.split(' ').indexOf(c) >= 0; } },
+      appendChild(c) { if (c.parentNode) c.parentNode.removeChild(c); c.parentNode = e; e.children.push(c); return c; },
+      removeChild(c) { e.children = e.children.filter(x => x !== c); c.parentNode = null; return c; },
+      addEventListener() { }, setAttribute(k, v) { e.attrs[k] = String(v); }, getAttribute(k) { return k in e.attrs ? e.attrs[k] : null; },
+      contains(x) { for (; x; x = x.parentNode) if (x === e) return true; return false; },
+      getBoundingClientRect: () => ({ left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 }),
+      querySelectorAll(sel) {
+        const out = [], walk = (n) => n.children.forEach(c => { if (c.children) { if (sel[0] === '.' ? (' ' + c.className + ' ').indexOf(' ' + sel.slice(1) + ' ') >= 0 : c.tagName === sel.toUpperCase()) out.push(c); walk(c); } });
+        walk(e);
+        return out;
+      }
+    };
+    if (e.tagName === 'CANVAS') e.getContext = () => null;
+    return e;
+  };
+  const body = mkEl('body'), head = mkEl('head');
+  const doc = {
+    body, head, addEventListener() { }, removeEventListener() { },
+    createElement: mkEl, createTextNode: (t) => ({ textContent: String(t) }),
+    getElementById: (id) => [head, body].map(r => [r].concat(r.querySelectorAll('div'), r.querySelectorAll('style'))).flat().find(n => n.id === id) || null,
+    querySelectorAll: () => []
+  };
+  const ctx = {
+    Date, Math, Number, JSON, String, Array, Object, console, document: doc, localStorage: makeStorage(),
+    performance: { now: () => 0 }, requestAnimationFrame: () => 1, setTimeout: () => 0,
+    addEventListener() { }, removeEventListener() { }, getComputedStyle: () => ({}), innerWidth: 915, innerHeight: 412
+  };
+  ctx.window = ctx;
+  vm.createContext(ctx);
+  i18n(ctx);
+  vm.runInContext(src, ctx);
+  const D = ctx.LMDirector;
+  D.open();
+  const panel = () => body.children.find(c => c.id === 'lm-dir-panel');
+  const find = (root, pred) => { let r = null; const w = (n) => (n.children || []).forEach(c => { if (!r && pred(c)) r = c; if (!r) w(c); }); w(root); return r; };
+  const all = (root, pred, out) => { out = out || []; (root.children || []).forEach(c => { if (pred(c)) out.push(c); all(c, pred, out); }); return out; };
+  const p1 = panel();
+  const titleOf = (p) => find(p, n => n.className === 'lmd-title').textContent;
+  const tabs = (p) => all(p, n => n.tagName === 'BUTTON' && n.attrs['data-tab']).map(b => b.textContent).join('|');
+  check('panel: title, tabs and buttons from the packs', p1 && titleOf(p1).indexOf(T('title')) >= 0 &&
+    tabs(p1) === [T('tCamera'), T('tWatch'), T('tMarks'), T('tBroadcast'), T('tHistory')].join('|') &&
+    find(p1, n => n.attrs['data-act'] === 'auto').textContent === T('auto') + ': ' + T('offShort') && p1.dir === 'ltr');
+  check('panel: easing names from the packs', all(p1, n => n.tagName === 'OPTION').map(o => o.textContent).join('|') === ['easeLinear', 'easeSmooth', 'easeCubic', 'easeSine', 'easeExpo'].map(k => T(k)).join('|'));
+  const nick = find(p1, n => n.tagName === 'INPUT' && n.placeholder === T('nickPh'));
+  nick.value = 'typed';
+  ctx.LMi18n.setLang('el');
+  const p2 = panel();
+  check('language change: the panel is built again in Greek, still open, typed text kept', p2 && p2 !== p1 && !p1.parentNode && D.isOpen() &&
+    titleOf(p2).indexOf(T('title', null, 'el')) >= 0 && tabs(p2).indexOf(T('tBroadcast', null, 'el')) >= 0 &&
+    find(p2, n => n.tagName === 'INPUT' && n.placeholder === T('nickPh', null, 'el')).value === 'typed' && body.children.filter(c => c.id === 'lm-dir-panel').length === 1);
+  ctx.LMi18n.setLang('ar');
+  check('Arabic: right-to-left panel, the chart canvas stays left-to-right', panel().dir === 'rtl' && find(panel(), n => n.tagName === 'CANVAS').dir === 'ltr');
+  D.close();
+  ctx.LMi18n.setLang('en');
+  check('closed panel: a language change keeps it closed', !D.isOpen() && !panel());
+  D.open();
+  check('opened again: English', titleOf(panel()).indexOf(T('title')) >= 0 && panel().dir === 'ltr');
 }
 
 console.log(fail ? fail + ' FAILED' : 'all passed');

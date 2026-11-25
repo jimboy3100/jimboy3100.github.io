@@ -398,97 +398,16 @@
 
     /* ═══ Text ═══ */
 
-    var STR = {
-        title: { en: 'Spectator director', el: 'Σκηνοθέτης θέασης' },
-        close: { en: 'Close', el: 'Κλείσιμο' },
-        off: { en: 'Turn off', el: 'Απενεργοποίηση' },
-        offTip: { en: 'Stop the director (camera, broadcast HUD and recording) until the panel is opened again', el: 'Σταματά τον σκηνοθέτη (κάμερα, HUD μετάδοσης, καταγραφή) μέχρι να ανοίξει ξανά το παράθυρο' },
-        tCamera: { en: 'Camera', el: 'Κάμερα' },
-        tWatch: { en: 'Watchlist', el: 'Λίστα' },
-        tMarks: { en: 'Bookmarks', el: 'Σελιδοδείκτες' },
-        tBroadcast: { en: 'Broadcast', el: 'Μετάδοση' },
-        tHistory: { en: 'History', el: 'Ιστορικό' },
-        auto: { en: 'Auto camera', el: 'Αυτόματη κάμερα' },
-        on: { en: 'ON', el: 'ΝΑΙ' },
-        offShort: { en: 'OFF', el: 'ΟΧΙ' },
-        stopCam: { en: 'Release camera', el: 'Ελευθέρωση κάμερας' },
-        freeSpec: { en: 'Free spectate', el: 'Ελεύθερη θέαση' },
-        stPlaying: { en: 'Works while spectating (not while playing).', el: 'Λειτουργεί όσο παρακολουθείς (όχι όσο παίζεις).' },
-        stNoSpec: { en: 'Spectate first: the camera needs free spectate (or Expanding Land World Spectate).', el: 'Ξεκίνα θέαση: η κάμερα χρειάζεται ελεύθερη θέαση (ή World Spectate στο Expanding Land).' },
-        stFixed: { en: 'The server picks the camera in this spectate mode: switch to free spectate.', el: 'Ο server επιλέγει την κάμερα σε αυτή τη θέαση: γύρνα σε ελεύθερη θέαση.' },
-        stLocked: { en: 'Camera lock is on: the director waits.', el: 'Το κλείδωμα κάμερας είναι ενεργό: ο σκηνοθέτης περιμένει.' },
-        stFollow: { en: 'A free spectate follow is active: the director waits.', el: 'Είναι ενεργή ακολούθηση ελεύθερης θέασης: ο σκηνοθέτης περιμένει.' },
-        stPaused: { en: 'Manual control: back in {0} s', el: 'Χειροκίνητος έλεγχος: επιστροφή σε {0} δ' },
-        stFollowing: { en: 'Following {0}', el: 'Ακολουθεί {0}' },
-        stPoint: { en: 'At bookmark {0}', el: 'Στον σελιδοδείκτη {0}' },
-        stIdle: { en: 'Ready. Auto camera is off.', el: 'Έτοιμο. Η αυτόματη κάμερα είναι ανενεργή.' },
-        stSearching: { en: 'Auto camera: nothing worth watching in view', el: 'Αυτόματη κάμερα: τίποτα ενδιαφέρον σε θέαση' },
-        transition: { en: 'Transition time (ms)', el: 'Χρόνος μετάβασης (ms)' },
-        easing: { en: 'Easing', el: 'Ομαλότητα' },
-        easeNames: { en: 'Linear|Smooth|Cubic|Sine|Expo', el: 'Γραμμική|Ομαλή|Κυβική|Ημιτονική|Εκθετική' },
-        followMs: { en: 'Follow smoothing (ms)', el: 'Εξομάλυνση ακολούθησης (ms)' },
-        dwell: { en: 'Minimum time on a target (s)', el: 'Ελάχιστος χρόνος σε στόχο (δ)' },
-        hyst: { en: 'Switch only when better by (%)', el: 'Αλλαγή μόνο αν είναι καλύτερος κατά (%)' },
-        override: { en: 'Manual override pause (s)', el: 'Παύση χειροκίνητου ελέγχου (δ)' },
-        cands: { en: 'Most interesting in view (tap to follow)', el: 'Τα πιο ενδιαφέροντα σε θέαση (πάτα για ακολούθηση)' },
-        fight: { en: 'fight', el: 'μάχη' },
-        split: { en: 'split', el: 'split' },
-        change: { en: 'mass change', el: 'αλλαγή μάζας' },
-        noName: { en: '(no name)', el: '(χωρίς όνομα)' },
-        none: { en: 'Nothing yet', el: 'Τίποτα ακόμα' },
-        nickPh: { en: 'Nick', el: 'Ψευδώνυμο' },
-        add: { en: 'Add', el: 'Προσθήκη' },
-        pick: { en: 'Pick a cell', el: 'Επιλογή κυττάρου' },
-        pickOn: { en: 'Tap a player cell... (Esc cancels)', el: 'Πάτα ένα κύτταρο παίκτη... (Esc ακύρωση)' },
-        prev: { en: '◀ Previous', el: '◀ Προηγούμενος' },
-        next: { en: 'Next ▶', el: 'Επόμενος ▶' },
-        go: { en: 'Go', el: 'Μετάβαση' },
-        del: { en: 'Remove', el: 'Αφαίρεση' },
-        inView: { en: 'in view', el: 'σε θέαση' },
-        notSeen: { en: 'not seen', el: 'δεν φαίνεται' },
-        lbTitle: { en: 'Leaderboard (tap + to watch)', el: 'Κατάταξη (πάτα + για παρακολούθηση)' },
-        watchFull: { en: 'The watchlist is full (20)', el: 'Η λίστα είναι γεμάτη (20)' },
-        watchAdded: { en: 'Watching {0}', el: 'Παρακολούθηση {0}' },
-        watchEmpty: { en: 'The watchlist is empty', el: 'Η λίστα είναι άδεια' },
-        noCell: { en: 'No named player cell there', el: 'Δεν υπάρχει κύτταρο παίκτη με όνομα εκεί' },
-        markPh: { en: 'Name (optional)', el: 'Όνομα (προαιρετικό)' },
-        markSave: { en: 'Save current view', el: 'Αποθήκευση τρέχουσας θέας' },
-        markSaved: { en: 'Bookmark {0} saved', el: 'Ο σελιδοδείκτης {0} αποθηκεύτηκε' },
-        markFull: { en: 'Bookmarks are full (20)', el: 'Οι σελιδοδείκτες είναι γεμάτοι (20)' },
-        markNone: { en: 'Bookmark {0} is not saved yet', el: 'Ο σελιδοδείκτης {0} δεν έχει αποθηκευτεί' },
-        markNoView: { en: 'No camera position yet', el: 'Δεν υπάρχει ακόμα θέση κάμερας' },
-        markHint: { en: 'Hotkeys go to bookmarks 1-5. Positions are per server map.', el: 'Τα πλήκτρα πηγαίνουν στους σελιδοδείκτες 1-5. Οι θέσεις αφορούν τον χάρτη κάθε server.' },
-        markN: { en: 'Bookmark {0}', el: 'Σελιδοδείκτης {0}' },
-        bc: { en: 'Broadcast HUD', el: 'HUD μετάδοσης' },
-        bcShow: { en: 'Show:', el: 'Εμφάνιση:' },
-        bcName: { en: 'Player name', el: 'Όνομα παίκτη' },
-        bcMass: { en: 'Mass', el: 'Μάζα' },
-        bcRank: { en: 'Rank', el: 'Θέση' },
-        bcTicker: { en: 'Leaderboard ticker', el: 'Ροή κατάταξης' },
-        bcHide: { en: 'Hide while the broadcast HUD is on (Legend Mod only):', el: 'Απόκρυψη όσο είναι ενεργό το HUD μετάδοσης (μόνο του Legend Mod):' },
-        hHudButtons: { en: 'HUD icon buttons', el: 'Κουμπιά εικονιδίων HUD' },
-        hBell: { en: 'Notification bell', el: 'Καμπανάκι ειδοποιήσεων' },
-        hQuickBar: { en: 'Command Centre quick bar', el: 'Γρήγορη μπάρα Κέντρου εντολών' },
-        hFollow: { en: '"Following" label', el: 'Ετικέτα «Ακολουθεί»' },
-        hNetGraph: { en: 'Network graph', el: 'Γράφημα δικτύου' },
-        passed: { en: '{0} passed {1}', el: '{0} πέρασε τον {1}' },
-        histNote: { en: 'Recorded while spectating: {0} changes (newest {1} kept)', el: 'Καταγράφεται όσο παρακολουθείς: {0} αλλαγές (κρατούνται οι νεότερες {1})' },
-        clear: { en: 'Clear', el: 'Καθαρισμός' },
-        dirOn: { en: 'Director: auto camera on', el: 'Σκηνοθέτης: αυτόματη κάμερα ενεργή' },
-        dirOff: { en: 'Director: auto camera off', el: 'Σκηνοθέτης: αυτόματη κάμερα ανενεργή' },
-        bcOn: { en: 'Broadcast HUD on', el: 'HUD μετάδοσης ενεργό' },
-        bcOff: { en: 'Broadcast HUD off', el: 'HUD μετάδοσης ανενεργό' },
-        specOnly: { en: 'The director works while spectating', el: 'Ο σκηνοθέτης λειτουργεί όσο παρακολουθείς' }
-    };
-    function lang() {
-        try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
-    }
+    /* texts: the language packs (developers/i18n/src, keys modules.director.*); {0} {1} are filled
+     * with a and b */
+    var P = 'modules.director.';
     function t(k, a, b) {
-        var r = STR[k], s = r ? (r[lang()] || r.en) : k;
-        if (a !== undefined) s = s.replace('{0}', a);
-        if (b !== undefined) s = s.replace('{1}', b);
-        return s;
+        var v = a === undefined ? null : b === undefined ? [a] : [a, b];
+        return typeof W.lmT === 'function' ? W.lmT(P + k, v) : k;
     }
+
+    /* 'rtl' for Arabic */
+    function textDir() { return W.LMi18n && typeof W.LMi18n.dir === 'function' ? W.LMi18n.dir() : 'ltr'; }
     function toast(msg) {
         /* plain text in, escaped for toastr's HTML */
         try {
@@ -1037,7 +956,7 @@
     var CSS = '' +
         '#lm-dir-panel{position:fixed;z-index:100000;width:460px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);display:flex;' +
         'flex-direction:column;box-sizing:border-box;background:var(--lm-pc,#12141a);color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid var(--lmd-mc,rgba(255,255,255,.15));overflow:hidden;' +
-        'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);font-size:12px;line-height:1.35;font-family:inherit;text-align:left}' +
+        'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);font-size:12px;line-height:1.35;font-family:inherit;text-align:start}' +
         '#lm-dir-panel .lmd-head{display:flex;align-items:center;gap:6px;padding:5px 6px 5px 10px;border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.1));background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%)}' +
         '#lm-dir-panel .lmd-title{font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;color:var(--lmd-mc,inherit);text-transform:uppercase;letter-spacing:1px}' +
         '#lm-dir-panel .lmd-tabs{display:flex;gap:2px;padding:4px 6px 0;flex-wrap:wrap;border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.1))}' +
@@ -1093,14 +1012,15 @@
             css();
             var self = this, root = mk('div');
             root.id = 'lm-dir-panel';
+            root.dir = textDir();
             root.setAttribute('role', 'dialog');
             root.setAttribute('aria-label', t('title'));
             var head = mk('div', 'lmd-head');
-            head.appendChild(mk('div', 'lmd-title', '🎬 ' + t('title')));
+            head.appendChild(mk('div', 'lmd-title', '\ud83c\udfac ' + t('title')));
             var offB = btn(t('off'), 'off');
             offB.title = t('offTip');
             head.appendChild(offB);
-            var x = btn('×', 'close', 'lmd-close');
+            var x = btn('\u00d7', 'close', 'lmd-close');
             x.title = t('close');
             x.setAttribute('aria-label', t('close'));
             head.appendChild(x);
@@ -1186,9 +1106,9 @@
             var sel = mk('select');
             sel.setAttribute('data-cfg', 'easing');
             sel.setAttribute('aria-label', t('easing'));
-            var names = t('easeNames').split('|');
-            EASINGS.forEach(function (e, i) {
-                var o = mk('option', '', names[i] || e);
+            EASINGS.forEach(function (e) {
+                /* modules.director.easeLinear, easeSmooth, ... */
+                var o = mk('option', '', t('ease' + e.charAt(0).toUpperCase() + e.slice(1)));
                 o.value = e;
                 sel.appendChild(o);
             });
@@ -1268,6 +1188,7 @@
             var s = this.section(body, 'history');
             var cv = mk('canvas');
             cv.width = 440; cv.height = 110;
+            cv.dir = 'ltr';
             this.els.chart = cv;
             s.appendChild(cv);
             this.els.legend = mk('div', 'lmd-legend');
@@ -1394,10 +1315,11 @@
             for (var i = 0; i < buttons.length; i++) li.appendChild(buttons[i]);
             return li;
         },
-        ibtn: function (text, act, i, nick) {
+        ibtn: function (text, act, i, nick, tip) {
             var b = btn(text, act);
             b.setAttribute('data-i', i);
             if (nick != null) b.setAttribute('data-n', nick);
+            if (tip) { b.title = tip; b.setAttribute('aria-label', tip); }
             return b;
         },
         update: function () {
@@ -1421,7 +1343,7 @@
                     if (c.split > 1) tags.push(t('split'));
                     if (c.change > 1) tags.push(t('change'));
                     if (c.top) tags.push('#1');
-                    rows.push(this.row(nickText(c.nick), shortMass(c.mass) + ' · ' + Math.round(c.score) + (tags.length ? ' · ' + tags.join(', ') : ''),
+                    rows.push(this.row(nickText(c.nick), shortMass(c.mass) + ' \u00b7 ' + Math.round(c.score) + (tags.length ? ' \u00b7 ' + tags.join(', ') : ''),
                         [this.ibtn(t('go'), 'cand', i, c.nick)], c.key === fk, typeof c.color === 'string' ? c.color : null));
                 }
                 this.list('cands', rows, sig);
@@ -1433,9 +1355,9 @@
                 sig = cur + '|' + watch.map(function (n) { return n + (vis[n] ? 1 : 0) + lbRank(LM, n); }).join('\u0002');
                 for (i = 0; i < watch.length; i++) {
                     var n = watch[i], r = lbRank(LM, n), meta = [];
-                    meta.push(vis[n] ? '● ' + t('inView') : '○ ' + t('notSeen'));
+                    meta.push(vis[n] ? '\u25cf ' + t('inView') : '\u25cb ' + t('notSeen'));
                     if (r) meta.push('#' + r);
-                    rows.push(this.row(n, meta.join(' · '), [this.ibtn(t('go'), 'wgo', i), this.ibtn('×', 'wdel', i)], n === cur));
+                    rows.push(this.row(n, meta.join(' \u00b7 '), [this.ibtn(t('go'), 'wgo', i), this.ibtn('\u00d7', 'wdel', i, null, t('del'))], n === cur));
                 }
                 this.list('watch', rows, sig);
                 var lb = [], lbSig = '';
@@ -1454,8 +1376,8 @@
                 for (i = 0; i < marks.length; i++) {
                     var b = marks[i];
                     rows.push(this.row((i < 5 ? '[' + (i + 1) + '] ' : '') + (b.name || t('markN', i + 1)),
-                        b.x + ', ' + b.y + (b.zoom ? ' · ' + b.zoom + 'x' : ''),
-                        [this.ibtn(t('go'), 'mgo', i), this.ibtn('×', 'mdel', i)], curM === b.x + ',' + b.y));
+                        b.x + ', ' + b.y + (b.zoom ? ' \u00b7 ' + b.zoom + 'x' : ''),
+                        [this.ibtn(t('go'), 'mgo', i), this.ibtn('\u00d7', 'mdel', i, null, t('del'))], curM === b.x + ',' + b.y));
                 }
                 this.list('marks', rows, sig);
             } else if (this.tab === 'history') {
@@ -1465,7 +1387,7 @@
                 var tk = st.ticker.slice(-12).reverse();
                 for (i = 0; i < tk.length; i++) {
                     var d = new Date(tk[i].t), hh = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
-                    rows.push(self.row(t('passed', nickText(tk[i].nick), nickText(tk[i].passed)), hh + ' · #' + tk[i].rank, [], false));
+                    rows.push(self.row(t('passed', nickText(tk[i].nick), nickText(tk[i].passed)), hh + ' \u00b7 #' + tk[i].rank, [], false));
                 }
                 this.list('ticker', rows, st.ticker.length + '|' + (st.ticker.length ? st.ticker[st.ticker.length - 1].t : 0));
             }
@@ -1525,6 +1447,23 @@
     };
     function refresh() { if (ui.open) ui.dirty = true; }
 
+    /* a language change: the panel is built again in the new language (its state is in cfg and
+     * st; typed text and the tab are kept), the broadcast HUD redraws its text */
+    function relang() {
+        bc.sig = '';
+        if (bc.el) bc.el.dir = textDir();
+        var r = ui.root;
+        if (!r) return;
+        var wasOpen = ui.open, nick = ui.els.nick ? ui.els.nick.value : '', mark = ui.els.markName ? ui.els.markName.value : '';
+        if (r.parentNode) r.parentNode.removeChild(r);
+        ui.root = null; ui.els = {}; ui.sigs = {}; ui.open = false;
+        if (!wasOpen) return;
+        ui.openPanel();
+        if (ui.els.nick) ui.els.nick.value = nick;
+        if (ui.els.markName) ui.els.markName.value = mark;
+    }
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () { try { relang(); } catch (e) { } });
+
     /* ═══ Broadcast HUD ═══ */
 
     var bc = { el: null, main: null, tick: null, sig: '', placedSig: '', placedAt: 0, hidden: '' };
@@ -1548,6 +1487,7 @@
         if (!bc.el) {
             bc.el = mk('div');
             bc.el.id = 'lm-dir-bc';
+            bc.el.dir = textDir();
             bc.main = mk('div', 'lmd-bc-main');
             bc.tick = mk('div', 'lmd-bc-tick');
             bc.el.appendChild(bc.main);
@@ -1570,7 +1510,7 @@
                 if (tm - st.ticker[i].t > 8000) break;
                 recent.push(t('passed', nickText(st.ticker[i].nick), nickText(st.ticker[i].passed)) + ' (#' + st.ticker[i].rank + ')');
             }
-            tick = recent.join(' · ');
+            tick = recent.join(' \u00b7 ');
         }
         sig = parts.join('\u0002') + '|' + tick;
         if (sig !== bc.sig) {
@@ -1579,8 +1519,8 @@
             if (parts.length) {
                 var first = cfg.bcName ? 1 : 0;
                 if (first) { var nb = mk('b', '', parts[0]); bc.main.appendChild(nb); }
-                var rest = parts.slice(first).join(' · ');
-                if (rest) bc.main.appendChild(D.createTextNode((first ? ' · ' : '') + rest));
+                var rest = parts.slice(first).join(' \u00b7 ');
+                if (rest) bc.main.appendChild(D.createTextNode((first ? ' \u00b7 ' : '') + rest));
             }
             bc.main.style.display = parts.length ? '' : 'none';
             bc.tick.textContent = tick;

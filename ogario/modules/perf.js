@@ -287,6 +287,35 @@
     }
     function num(v, def) { v = +v; return isFinite(v) ? v : (def || 0); }
 
+    /* Texts. The diagnostics window shows them in the chosen language: it passes tr(key, vars),
+     * which returns the language pack text of 'modules.perf.' + key (null when there is none).
+     * Without tr (the copied report, the trace tools in Node) the English text given here is
+     * used: the report is for the developers and stays in English. developers/tests/perf.js
+     * checks that every English text here is the same as the English one in the pack. */
+    function fmt(s, v) {
+        if (v == null) return s;
+        if (typeof v !== 'object') v = [v];
+        return s.replace(/\{([A-Za-z0-9_]+)\}/g, function (m, k) { return hasOwn(v, k) && v[k] != null ? String(v[k]) : m; });
+    }
+    function say(tr, k, en, v) {
+        var s = tr ? tr(k, v) : null;
+        return s == null ? fmt(en, v) : s;
+    }
+    /* a text part kept for later: shown in English in the report, translated in the window */
+    function tp(k, en, v) { return { k: k, en: en, v: v }; }
+    function partsText(ip, tr) {
+        var out = [];
+        for (var i = 0; i < ip.p.length; i++) {
+            var p = ip.p[i], s = typeof p === 'string' ? p : say(tr, p.k, p.en, p.v);
+            if (s) out.push(s);
+        }
+        return out.join(ip.s);
+    }
+    /* renderer names as rendererName() gives them -> their text */
+    var RN_KEYS = { 'Canvas2D (WebGL off)': 'rn2dOff', 'Canvas2D (WebGL reset)': 'rn2dReset' };
+    function rnPart(name) { return hasOwn(RN_KEYS, name) ? tp(RN_KEYS[name], name) : String(name); }
+    function rnText(name, tr) { var p = rnPart(name); return typeof p === 'string' ? p : say(tr, p.k, p.en); }
+
     var HISTORY_MAX = 10;
     /* stored history -> a clean array (it may be old, edited or broken) */
     function validateHistory(raw) {
@@ -398,9 +427,22 @@
         var d = new Date(w);
         return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + pad(d.getMilliseconds(), 3);
     }
-    /* "21:23:05.120 freeze 1532 ms render 1490 ms" (local time) */
-    function eventLine(ev) {
-        return timeText(ev.w) + ' ' + ev.type + (ev.dur ? ' ' + Math.round(ev.dur) + ' ms' : '') + (ev.info ? ' ' + ev.info : '') + (ev.n > 1 ? ' x' + ev.n : '');
+    /* event types -> their text (other types, e.g. from scripts, are shown as they are) */
+    var EV_KEYS = {
+        'freeze': 'evFreeze', 'pause': 'evPause', 'long task': 'evLongTask', 'render error': 'evRenderError',
+        'renderer': 'evRenderer', 'packet gap': 'evPacketGap', 'visibility': 'evVisibility', 'disconnect': 'evDisconnect', 'connect': 'evConnect'
+    };
+    /* English details sent by ogario.v4.js (the freeze detector) -> their text */
+    var INFO_KEYS = { 'no world update': 'infoNoUpdate', 'no world update, playing': 'infoNoUpdatePlaying' };
+    function infoText(ev, tr) {
+        if (!tr) return ev.info;
+        if (ev.ip) return partsText(ev.ip, tr);
+        return hasOwn(INFO_KEYS, ev.info) ? say(tr, INFO_KEYS[ev.info], ev.info) : ev.info;
+    }
+    /* "21:23:05.120 freeze 1532 ms render 1490 ms" (local time); tr: in the chosen language */
+    function eventLine(ev, tr) {
+        var type = tr && hasOwn(EV_KEYS, ev.type) ? say(tr, EV_KEYS[ev.type], ev.type) : ev.type, info = infoText(ev, tr);
+        return timeText(ev.w) + ' ' + type + (ev.dur ? ' ' + Math.round(ev.dur) + ' ms' : '') + (info ? ' ' + info : '') + (ev.n > 1 ? ' x' + ev.n : '');
     }
 
     /* ---- freeze attribution (diagnostics only): timing scopes and long animation frames ---- */
@@ -558,10 +600,14 @@
         return out;
     }
     /* "uploadSkinTexture (ogario.v4.js:12345678) 241 ms" */
-    function scriptText(s) {
-        return (s.fn || s.inv || s.type || 'script') + ' (' + (s.file || '?') + (s.pos >= 0 ? ':' + s.pos : '') + ')' +
-            (s.kind && s.kind !== 'legendmod' ? ' [' + s.kind + ']' : '') + ' ' + s.dur + ' ms' +
-            (s.fsl >= 5 ? ', forced layout ' + s.fsl + ' ms' : '') + (s.fn && s.inv && s.inv.indexOf(s.fn) < 0 ? ' via ' + s.inv : '');
+    /* script owners -> their text ('agar.io' is a name) */
+    var KIND_KEYS = { 'extension': 'kindExtension', 'page': 'kindPage', 'other': 'kindOther' };
+    function kindText(kind, tr) { return hasOwn(KIND_KEYS, kind) ? say(tr, KIND_KEYS[kind], kind) : kind; }
+    function scriptText(s, tr) {
+        return (s.fn || s.inv || s.type || say(tr, 'script', 'script')) + ' (' + (s.file || '?') + (s.pos >= 0 ? ':' + s.pos : '') + ')' +
+            (s.kind && s.kind !== 'legendmod' ? ' [' + kindText(s.kind, tr) + ']' : '') + ' ' + s.dur + ' ms' +
+            (s.fsl >= 5 ? say(tr, 'forcedLayout', ', forced layout {0} ms', [s.fsl]) : '') +
+            (s.fn && s.inv && s.inv.indexOf(s.fn) < 0 ? say(tr, 'via', ' via {0}', [s.inv]) : '');
     }
     function loafLine(l) {
         return Math.round(l.dur) + ' ms (blocking ' + l.block + ' ms, scripts ' + l.scriptMs + ' ms' +
@@ -634,17 +680,20 @@
     /* One freeze event (its .bd: the timed parts of the frame gap) put together with the long
      * animation frames and the other events around it. A "probable contributor" only when one
      * part took over half of the freeze; otherwise it is not attributed. Returns { line, probable }. */
+    /* opts.tr: the line in the chosen language (the window); probable stays English (it is
+     * counted and compared) */
     function classifyFreeze(fz, loafs, evs, opts) {
         opts = opts || {};
-        var dur = +fz.dur || 0, end = +fz.t || 0, start = end - dur, bd = fz.bd || null, probable = '', i;
-        var parts = [Math.round(dur) + ' ms freeze ' + timeText(fz.w)];
-        if (bd && bd.r) parts.push(bd.r);
+        var tr = opts.tr || null;
+        var dur = +fz.dur || 0, end = +fz.t || 0, start = end - dur, bd = fz.bd || null, probable = '', probText = '', i;
+        var parts = [say(tr, 'cfHead', '{0} ms freeze {1}', [Math.round(dur), timeText(fz.w)])];
+        if (bd && bd.r) parts.push(rnText(bd.r, tr));
         if (bd) {
             var top = [];
             for (i = 0; i < bd.s.length && top.length < 3; i++) if (bd.s[i].ms >= 1) top.push(bd.s[i].n + ' ' + Math.round(bd.s[i].ms) + ' ms');
-            parts.push(top.length ? top.join(', ') : 'no timed part over 1 ms');
-            if (bd.s.length && bd.s[0].ms > dur * 0.5) probable = bd.s[0].n;
-        } else if (opts.scopes !== false) parts.push('no breakdown');
+            parts.push(top.length ? top.join(', ') : say(tr, 'cfNoPart', 'no timed part over 1 ms'));
+            if (bd.s.length && bd.s[0].ms > dur * 0.5) probable = probText = bd.s[0].n;
+        } else if (opts.scopes !== false) parts.push(say(tr, 'cfNoBreakdown', 'no breakdown'));
         var best = null, bestOv = 0;
         for (i = 0; loafs && i < loafs.length; i++) {
             var ov = overlapMs(start, end, loafs[i].t, loafs[i].t + loafs[i].dur);
@@ -652,31 +701,43 @@
         }
         if (best) {
             var sc = best.scripts[0];
-            parts.push('LoAF ' + best.dur + ' ms: ' + (sc ? scriptText(sc) : 'no script') +
-                (best.style >= 0 && best.dur - best.style >= 20 ? ', style/layout ' + (best.dur - best.style) + ' ms' : ''));
-            if (!probable && sc && sc.dur > dur * 0.5) probable = 'script ' + (sc.fn || sc.inv || '?') + ' (' + (sc.file || '?') + (sc.kind && sc.kind !== 'legendmod' ? ', ' + sc.kind : '') + ')';
-            if (!probable && best.style >= 0 && best.dur - best.style > dur * 0.5) probable = 'style and layout (browser)';
-        } else if (opts.loaf) parts.push('LoAF: none');
+            parts.push('LoAF ' + best.dur + ' ms: ' + (sc ? scriptText(sc, tr) : say(tr, 'cfNoScript', 'no script')) +
+                (best.style >= 0 && best.dur - best.style >= 20 ? say(tr, 'cfStyle', ', style/layout {0} ms', [best.dur - best.style]) : ''));
+            if (!probable && sc && sc.dur > dur * 0.5) {
+                var who = (sc.fn || sc.inv || '?'), where = (sc.file || '?') + (sc.kind && sc.kind !== 'legendmod' ? ', ' : '');
+                probable = 'script ' + who + ' (' + where + (sc.kind && sc.kind !== 'legendmod' ? sc.kind : '') + ')';
+                probText = say(tr, 'cfScript', 'script {0} ({1})', [who, where + (sc.kind && sc.kind !== 'legendmod' ? kindText(sc.kind, tr) : '')]);
+            }
+            if (!probable && best.style >= 0 && best.dur - best.style > dur * 0.5) {
+                probable = 'style and layout (browser)';
+                probText = say(tr, 'cfStyleBrowser', probable);
+            }
+        } else if (opts.loaf) parts.push(say(tr, 'cfLoafNone', 'LoAF: none'));
         else {
-            for (i = 0; evs && i < evs.length; i++) if (evs[i].type === 'long task' && overlapMs(start, end, evs[i].t, evs[i].t + evs[i].dur) > 0) { parts.push('long task ' + evs[i].dur + ' ms'); break; }
+            for (i = 0; evs && i < evs.length; i++) if (evs[i].type === 'long task' && overlapMs(start, end, evs[i].t, evs[i].t + evs[i].dur) > 0) { parts.push(say(tr, 'cfLongTask', 'long task {0} ms', [evs[i].dur])); break; }
         }
-        var net = 'network normal';
+        var net = say(tr, 'cfNetOk', 'network normal');
         for (i = 0; evs && i < evs.length; i++) {
             var ev = evs[i];
             if (ev.type === 'packet gap' && overlapMs(start, end, ev.t - ev.dur, ev.t) > 0) {
-                net = ev.t - ev.dur < start - 250 ? 'packet gap ' + ev.dur + ' ms, began before the freeze (network or server)' : 'world updates only waited for the freeze';
-            } else if (ev.type === 'disconnect' && ev.t >= start - 1000 && ev.t <= end + 1000) net = 'disconnect';
+                net = ev.t - ev.dur < start - 250 ? say(tr, 'cfNetGap', 'packet gap {0} ms, began before the freeze (network or server)', [ev.dur]) : say(tr, 'cfNetWait', 'world updates only waited for the freeze');
+            } else if (ev.type === 'disconnect' && ev.t >= start - 1000 && ev.t <= end + 1000) net = say(tr, 'cfNetDisc', 'disconnect');
         }
         parts.push(net);
         for (i = 0; evs && i < evs.length; i++) {
-            if (evs[i].type === 'visibility' && evs[i].t >= start - 1000 && evs[i].t <= end + 500) { parts.push('tab ' + evs[i].info + ' nearby'); break; }
+            if (evs[i].type === 'visibility' && evs[i].t >= start - 1000 && evs[i].t <= end + 500) {
+                var vi = evs[i].info;
+                parts.push(vi === 'hidden' ? say(tr, 'cfTabHidden', 'tab hidden nearby') : say(tr, 'cfTabVisible', 'tab visible nearby'));
+                break;
+            }
         }
-        if (bd && bd.q) parts.push(bd.q);
-        parts.push(probable ? 'probable contributor: ' + probable : 'unattributed (GC/GPU/browser?)');
-        return { line: parts.join(' · '), probable: probable };
+        if (bd && (bd.qp || bd.q)) parts.push(bd.qp && tr ? partsText(bd.qp, tr) : bd.q);
+        parts.push(probable ? say(tr, 'cfProbable', 'probable contributor: {0}', [probText]) : say(tr, 'cfUnattr', 'unattributed (GC/GPU/browser?)'));
+        return { line: parts.join(' \u00b7 '), probable: probable };
     }
 
     var pure = {
+        fmt: fmt, tp: tp, partsText: partsText, EV_KEYS: EV_KEYS, INFO_KEYS: INFO_KEYS, RN_KEYS: RN_KEYS, KIND_KEYS: KIND_KEYS,
         timeText: timeText, SCOPES: SCOPES, createScopes: createScopes, createScopeRing: createScopeRing, topScopes: topScopes,
         scriptFile: scriptFile, cleanInvoker: cleanInvoker, parseLoaf: parseLoaf, scriptText: scriptText, loafLine: loafLine,
         enclosingName: enclosingName, classifyFreeze: classifyFreeze, LOAF_MIN: LOAF_MIN,
@@ -708,9 +769,16 @@
 
     var dms = function () { return window.legendmod5 || null; };
     var app = function () { return window.application || null; };
-    var T = function (k, en) {
-        var t = window.textLanguage && window.textLanguage[k];
-        return (typeof t === 'string' && t) ? t : en;
+    /* language pack texts: T('x') is 'modules.perf.x', TS('x') the menu text 'settings.x' */
+    var PFX = 'modules.perf.';
+    var T = function (k, vars) { return typeof window.lmT === 'function' ? window.lmT(PFX + k, vars) : k; };
+    // i18n-ok: key prefix of the existing menu texts (settings.lmPerfDiag, ...), not a key itself
+    var TS = function (k, vars) { return typeof window.lmT === 'function' ? window.lmT('settings.' + k, vars) : k; };
+    /* for the pure text functions: null when the pack has no text (they use their English one) */
+    var tr = function (k, vars) {
+        if (typeof window.lmT !== 'function') return null;
+        var s = window.lmT(PFX + k, vars);
+        return s === PFX + k ? null : s;
     };
     var now = function () { return (window.performance && performance.now) ? performance.now() : Date.now(); };
 
@@ -842,20 +910,21 @@
         try { if (window.performance && performance.memory) m[6] = Math.round(performance.memory.usedJSHeapSize / 1048576); } catch (e) { }
         m[7] = sc.total();
     }
-    function metaText(m) {
+    function metaParts(m) {
         var q = [];
-        if (m[2]) q.push(m[2] + ' cells');
-        if (m[3]) q.push('skin jobs ' + m[3]);
-        if (m[4]) q.push('skin uploads ' + m[4]);
-        if (m[5]) q.push('text textures ' + f1(m[5] / 1048576) + ' MB');
-        return q.join(', ');
+        if (m[2]) q.push(tp('infoCells', '{0} cells', [m[2]]));
+        if (m[3]) q.push(tp('qSkinJobs', 'skin jobs {0}', [m[3]]));
+        if (m[4]) q.push(tp('qSkinUploads', 'skin uploads {0}', [m[4]]));
+        if (m[5]) q.push(tp('qTextTextures', 'text textures {0} MB', [f1(m[5] / 1048576)]));
+        return { s: ', ', p: q };
     }
     /* the timed parts of the frame gap that ends now (a freeze: rare, so a small object) */
     function breakdown(t, g) {
         fillMeta(slowMeta, t, g);
         var r = rendererName();
         try { if (r === 'WebGL' && window.WebGL2RenderingContext && window.drawRender.gl instanceof window.WebGL2RenderingContext) r = 'WebGL2'; } catch (e) { }
-        return { r: r, s: topScopes(sc.acc, sc.cnt, sc.names, 0.5, 8), tot: Math.round(slowMeta[7]), q: metaText(slowMeta) };
+        var qp = metaParts(slowMeta);
+        return { r: r, s: topScopes(sc.acc, sc.cnt, sc.names, 0.5, 8), tot: Math.round(slowMeta[7]), q: partsText(qp, null), qp: qp };
     }
     var ctl = newController();
     var overrides = null;
@@ -873,22 +942,27 @@
 
     /* Events are kept only while measuring: with diagnostics and Adaptive performance off
      * this returns at once. t: performance.now() time of the event (default: now). */
+    /* info: text, or parts ({ s: separator, p: [text or tp()] }) that the window translates;
+     * ev.info is always the English text (compared, listed in the report) */
     function pushEvent(type, dur, info, merge, t) {
         if (window._lmPerfFrame !== onFrame) return null;
-        var n = now();
+        var n = now(), ip = null;
         if (t == null) t = n;
-        return events.push({ t: t, w: Date.now() - (n - t), type: type, dur: dur > 0 ? Math.round(dur) : 0, info: cleanText(info, 120) }, merge);
+        if (info && typeof info === 'object') { ip = info; info = partsText(ip, null); }
+        var ev = events.push({ t: t, w: Date.now() - (n - t), type: type, dur: dur > 0 ? Math.round(dur) : 0, info: cleanText(info, 120) }, merge);
+        if (ip && ev.n === 1) ev.ip = ip;
+        return ev;
     }
 
     function freezeInfo(t, g) {
         var lm = window.legendmod, out = [];
         /* the frame drawn at the start of the gap took this long */
-        if (fr.lastT1 >= t - g && fr.lastRt >= 1) out.push('render ' + Math.round(fr.lastRt) + ' ms');
-        if (fr.menu) out.push('menu');
-        else if (lm && lm.play) out.push('playing');
-        if (lm && lm.cells) out.push(lm.cells.length + ' cells');
-        try { if (window.performance && performance.memory) out.push(Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB heap'); } catch (e) { }
-        return out.join(', ');
+        if (fr.lastT1 >= t - g && fr.lastRt >= 1) out.push(tp('infoRender', 'render {0} ms', [Math.round(fr.lastRt)]));
+        if (fr.menu) out.push(tp('infoMenu', 'menu'));
+        else if (lm && lm.play) out.push(tp('infoPlaying', 'playing'));
+        if (lm && lm.cells) out.push(tp('infoCells', '{0} cells', [lm.cells.length]));
+        try { if (window.performance && performance.memory) out.push(tp('infoHeap', '{0} MB heap', [Math.round(performance.memory.usedJSHeapSize / 1048576)])); } catch (e) { }
+        return { s: ', ', p: out };
     }
 
     /* the tab was hidden, or hidden / shown, during the gap ending at t */
@@ -911,9 +985,9 @@
             /* what ran during the gap (attribution on) */
             if (fev && sc.on) fev.bd = breakdown(t, g);
         } else if (kind === 'pause') {
-            pushEvent('pause', g, 'over ' + PAUSE_MS / 1000 + ' s, sleep or suspend (not counted)');
+            pushEvent('pause', g, { s: '', p: [tp('infoPause', 'over {0} s, sleep or suspend (not counted)', [PAUSE_MS / 1000])] });
         } else if (kind === 'return' && g >= FREEZE_MS) {
-            pushEvent('freeze', g, 'right after the tab came back (not counted)');
+            pushEvent('freeze', g, { s: '', p: [tp('infoReturn', 'right after the tab came back (not counted)')] });
         }
         return kind;
     }
@@ -986,7 +1060,7 @@
     function endSecond() {
         /* the renderer changed (WebGL lost, turned off...) */
         var rn = rendererName();
-        if (fr.renderer && rn !== fr.renderer) pushEvent('renderer', 0, fr.renderer + ' -> ' + rn);
+        if (fr.renderer && rn !== fr.renderer) pushEvent('renderer', 0, { s: ' -> ', p: [rnPart(fr.renderer), rnPart(rn)] });
         fr.renderer = rn;
         /* refresh rate: the fastest regular frames seen (menu frames count: they are cheap) */
         if (fr.secAll.length >= 20) {
@@ -1103,13 +1177,6 @@
         try { if (changed.indexOf('hudBlur') >= 0 && a.applyHudBlur) a.applyHudBlur(); } catch (e) { }
     }
 
-    var LEVEL_TEXT = [
-        ['lmAdaptiveLevel0', 'Adaptive performance: all effects are back'],
-        ['lmAdaptiveLevel1', 'Adaptive performance: level 1 (decorative effects off for now)'],
-        ['lmAdaptiveLevel2', 'Adaptive performance: level 2 (jelly physics and video skins off for now)'],
-        ['lmAdaptiveLevel3', 'Adaptive performance: level 3 (lower resolution for now)']
-    ];
-
     function applyLevel(levelChanged) {
         var ov = ensureOverrides();
         var level = adaptiveOn ? ctl.level : 0;
@@ -1119,7 +1186,8 @@
         if (levelChanged) {
             var s = dms();
             if (s && s.adaptivePerfToasts !== false && window.toastr) {
-                try { toastr.info(T(LEVEL_TEXT[level][0], LEVEL_TEXT[level][1])); } catch (e) { }
+                /* settings.lmAdaptiveLevel0 .. 3 */
+                try { toastr.info(TS('lmAdaptiveLevel' + level)); } catch (e) { }
             }
             updateDiag();
         }
@@ -1186,7 +1254,7 @@
 
     function netEvent(type, info) {
         /* in the event list too, to line disconnects up with freezes */
-        if (type === 'close') pushEvent('disconnect', 0, 'code ' + Math.round(num(info && info.code)) + (info && info.wasClean === false ? ' (not clean)' : ''));
+        if (type === 'close') pushEvent('disconnect', 0, { s: ' ', p: [tp('infoCode', 'code {0}', [Math.round(num(info && info.code))]), info && info.wasClean === false ? tp('notClean', '(not clean)') : ''] });
         else if (type === 'open') pushEvent('connect', 0, hostOf(info && info.ws));
         if (!net.active) return;
         if (type === 'close') {
@@ -1246,7 +1314,7 @@
         var t = now();
         fr.visAt = t;
         if (!document.hidden) fr.visibleAt = t;
-        pushEvent('visibility', 0, document.hidden ? 'hidden' : 'visible');
+        pushEvent('visibility', 0, { s: '', p: [document.hidden ? tp('infoHidden', 'hidden') : tp('infoVisible', 'visible')] });
     });
 
     /* ---------- diagnostics window ---------- */
@@ -1291,10 +1359,10 @@
         lines.push('FPS: ' + f1(st.fps) + ' (last ' + st.n + ' frames)');
         lines.push('Frame time p50/p95/p99: ' + f1(st.p50) + ' / ' + f1(st.p95) + ' / ' + f1(st.p99) + ' ms');
         lines.push('Long frames (>' + LONG_FRAME + ' ms): ' + st.longN + ' recent, ' + st.longTotal + ' measured in total' +
-            (fr.stallCount ? ', stalls ≥100ms: ' + fr.stallCount + ' (worst ' + Math.round(fr.stallMax || 0) + ' ms)' : '') +
+            (fr.stallCount ? ', stalls \u2265100ms: ' + fr.stallCount + ' (worst ' + Math.round(fr.stallMax || 0) + ' ms)' : '') +
             (fr.capped ? ', ' + fr.capped + ' only long by the FPS limit (not counted)' : ''));
         lines.push(freezeLine(true));
-        if (fr.ltN || lto) lines.push('Long tasks (≥50 ms): ' + fr.ltN + (fr.ltN ? ', worst ' + Math.round(fr.ltMax) + ' ms' : '') + ' (listed from ' + LONGTASK_LOG + ' ms)');
+        if (fr.ltN || lto) lines.push('Long tasks (\u226550 ms): ' + fr.ltN + (fr.ltN ? ', worst ' + Math.round(fr.ltMax) + ' ms' : '') + ' (listed from ' + LONGTASK_LOG + ' ms)');
         lines.push('Freeze breakdown: ' + (attrOn ? 'on' : 'off (open this window or keep recording)') + ', long animation frames: ' +
             (loafObs ? 'observed' : attrOn ? 'not supported by this browser' : 'off') +
             ', time origin ' + (window.performance && performance.timeOrigin ? Math.round(performance.timeOrigin) : '-') + ', performance.now ' + Math.round(now()));
@@ -1327,11 +1395,11 @@
         var tot = slowRing.totals();
         if (tot.frames) {
             var parts = topScopes(tot.ms, tot.cnt, sc.names, 1, 8);
-            lines.push('Slow frames (≥' + LONG_FRAME + ' ms, last ' + tot.frames + '): average ' + Math.round(tot.gap / tot.frames) + ' ms, timed parts in total: ' +
+            lines.push('Slow frames (\u2265' + LONG_FRAME + ' ms, last ' + tot.frames + '): average ' + Math.round(tot.gap / tot.frames) + ' ms, timed parts in total: ' +
                 (parts.length ? parts.map(function (p) { return p.n + ' ' + Math.round(p.ms) + ' ms (' + p.c + 'x)'; }).join(', ') : 'none over 1 ms'));
         }
         if (ll.length) {
-            lines.push('Long animation frames (≥' + LOAF_MIN + ' ms, ' + ll.length + ' kept, last 20):');
+            lines.push('Long animation frames (\u2265' + LOAF_MIN + ' ms, ' + ll.length + ' kept, last 20):');
             ll.slice(-20).forEach(function (l) { lines.push('  ' + timeText(l.w) + ' ' + loafLine(l) + ' @' + Math.round(l.t)); });
         }
         var hist = readHistory();
@@ -1355,27 +1423,34 @@
     }
 
     /* freezes: foreground frame callback gaps from 250 ms to 10 s */
+    /* long: the English line of the report; otherwise the window's line */
     function freezeLine(long) {
         var t = fr.frzLast ? new Date(fr.frzLast) : null;
-        return (long ? 'Freezes (≥' + FREEZE_MS + ' ms, foreground): ' : T('lmPerfFreezes', 'Freezes') + ' (≥' + FREEZE_MS + ' ms): ') + fr.frzN +
-            (fr.frzN ? ', ' + T('lmPerfWorst', 'worst') + ' ' + Math.round(fr.frzMax) + ' ms, ' + T('lmPerfTotal', 'total') + ' ' + Math.round(fr.frzTotal) + ' ms' +
-                (t ? ', ' + T('lmPerfLast', 'last') + ' ' + pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds()) : '') : '') +
-            (long && fr.bgGaps ? ' (' + fr.bgGaps + ' background gaps not counted)' : '');
+        var at = t ? pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds()) : '';
+        if (!long) {
+            return T('freezes', [FREEZE_MS, fr.frzN]) +
+                (fr.frzN ? T('freezesWorst', [Math.round(fr.frzMax), Math.round(fr.frzTotal)]) + (t ? T('freezesLast', [at]) : '') : '');
+        }
+        return 'Freezes (\u2265' + FREEZE_MS + ' ms, foreground): ' + fr.frzN +
+            (fr.frzN ? ', worst ' + Math.round(fr.frzMax) + ' ms, total ' + Math.round(fr.frzTotal) + ' ms' + (t ? ', last ' + at : '') : '') +
+            (fr.bgGaps ? ' (' + fr.bgGaps + ' background gaps not counted)' : '');
     }
 
     function fmtDur(ms) {
         var m = Math.round(ms / 60000);
         return m >= 60 ? Math.floor(m / 60) + 'h' + (m % 60 < 10 ? '0' : '') + (m % 60) : m + 'm';
     }
-    function sessionLine(h) {
+    /* one saved session; tr: in the chosen language (the window), else English (the report).
+     * The close reasons are the server's own text. */
+    function sessionLine(h, tr) {
         var d = new Date(h.start);
         return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) +
-            ' ' + fmtDur(h.dur) + ', ping ' + h.pingAvg + ' (p95 ' + h.pingP95 + ') ±' + h.jitter + ', ' + h.ppsAvg + ' pkt/s, ' +
-            h.disc + ' disc.' + (h.reasons.length ? ' [' + h.reasons.map(function (r) { return r.code + (r.reason ? ' ' + r.reason : '') + (r.n > 1 ? ' x' + r.n : ''); }).join('; ') + ']' : '');
+            ' ' + fmtDur(h.dur) + say(tr, 'session', ', ping {0} (p95 {1}) \u00b1{2}, {3} pkt/s, {4} disc.', [h.pingAvg, h.pingP95, h.jitter, h.ppsAvg, h.disc]) +
+            (h.reasons.length ? ' [' + h.reasons.map(function (r) { return r.code + (r.reason ? ' ' + r.reason : '') + (r.n > 1 ? ' x' + r.n : ''); }).join('; ') + ']' : '');
     }
 
     function copyText(text) {
-        var done = function () { if (window.toastr) try { toastr.info(T('lmPerfCopied', 'Report copied')); } catch (e) { } };
+        var done = function () { if (window.toastr) try { toastr.info(TS('lmPerfCopied')); } catch (e) { } };
         var fallback = function () {
             try {
                 var ta = document.createElement('textarea');
@@ -1473,10 +1548,11 @@
             'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:11px;line-height:1.35;overflow:hidden;');
         md.id = 'lm-perf-diag';
         var head = el('div', 'padding:7px 44px 6px 10px;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
-        head.appendChild(el('div', 'font-size:13px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', T('lmPerfDiag', 'Performance diagnostics')));
-        var x = el('div', 'position:absolute;top:2px;right:4px;cursor:pointer;font-size:18px;color:' + tc2 + ';width:34px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.05);', '✕');
+        var title = el('div', 'font-size:13px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;');
+        head.appendChild(title);
+        /* the close cross stays at the right (also in Arabic): the head keeps room for it there */
+        var x = el('div', 'position:absolute;top:2px;right:4px;cursor:pointer;font-size:18px;color:' + tc2 + ';width:34px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.05);', '\u2715');
         x.id = 'lm-perf-diag-close';
-        x.title = T('close', 'Close');
         var stop = function (e) { e.preventDefault(); e.stopPropagation(); };
         x.addEventListener('click', function (e) { stop(e); closeDiag(); });
         x.addEventListener('touchend', function (e) { stop(e); closeDiag(); });
@@ -1487,19 +1563,24 @@
         md.appendChild(body);
         var cv = el('canvas', 'display:block;width:100%;height:64px;background:rgba(0,0,0,0.35);border-radius:3px;');
         cv.width = 360; cv.height = 64;
+        cv.dir = 'ltr';
         body.appendChild(cv);
         var stats = el('pre', 'margin:4px 0 6px;white-space:pre-wrap;font:11px/1.35 monospace;color:' + tc + ';' + box);
         body.appendChild(stats);
-        body.appendChild(el('div', 'font-weight:700;color:' + mc + ';margin-top:2px;', T('lmPerfEvents', 'Events (newest first)')));
+        var hEvents = el('div', 'font-weight:700;color:' + mc + ';margin-top:2px;');
+        body.appendChild(hEvents);
         var evs = el('pre', 'margin:2px 0 6px;white-space:pre-wrap;font:10px/1.35 monospace;color:' + tc2 + ';max-height:84px;overflow:auto;' + box);
         body.appendChild(evs);
-        body.appendChild(el('div', 'font-weight:700;color:' + mc + ';margin-top:2px;', T('lmNetQuality', 'Network quality (this session)')));
+        var hNet = el('div', 'font-weight:700;color:' + mc + ';margin-top:2px;');
+        body.appendChild(hNet);
         var nv = el('canvas', 'display:block;width:100%;height:56px;background:rgba(0,0,0,0.35);border-radius:3px;margin-top:2px;');
         nv.width = 360; nv.height = 56;
+        nv.dir = 'ltr';
         body.appendChild(nv);
         var nstats = el('pre', 'margin:4px 0 6px;white-space:pre-wrap;font:11px/1.35 monospace;color:' + tc + ';' + box);
         body.appendChild(nstats);
-        body.appendChild(el('div', 'font-weight:700;color:' + mc + ';', T('lmNetSessions', 'Last sessions')));
+        var hSessions = el('div', 'font-weight:700;color:' + mc + ';');
+        body.appendChild(hSessions);
         var hist = el('pre', 'margin:2px 0 6px;white-space:pre-wrap;font:10px/1.35 monospace;color:' + tc2 + ';' + box);
         body.appendChild(hist);
         var row = el('div', 'display:flex;gap:6px;flex-wrap:wrap;');
@@ -1509,18 +1590,18 @@
             b.id = id;
             b.addEventListener('click', function (e) { stop(e); fn(); });
             row.appendChild(b);
+            return b;
         };
-        btn('lm-perf-copy', T('lmPerfCopy', 'Copy report'), function () { copyText(reportLines().join('\n')); });
-        btn('lm-perf-clear', T('lmNetClear', 'Clear history'), function () {
+        var bCopy = btn('lm-perf-copy', '', function () { copyText(reportLines().join('\n')); });
+        var bClear = btn('lm-perf-clear', '', function () {
             try { window.localStorage.removeItem(HISTORY_KEY); } catch (e) { }
             updateDiag();
         });
         /* this session only: frame times and events go on with the window closed (it covers
          * part of a phone screen), so a freeze while playing is in the report afterwards */
-        btn('lm-perf-keep', keepText(), function () {
+        var bKeep = btn('lm-perf-keep', '', function () {
             keepRec = !keepRec;
-            var b = document.getElementById('lm-perf-keep');
-            if (b) b.textContent = keepText();
+            bKeep.textContent = keepText();
             wantMeasuring();
         });
         body.appendChild(row);
@@ -1529,7 +1610,9 @@
             md.addEventListener(t, function (e) { e.stopPropagation(); }, { passive: true });
         });
         document.body.appendChild(md);
-        diag = { md: md, cv: cv, stats: stats, evs: evs, nv: nv, nstats: nstats, hist: hist, timer: 0 };
+        diag = { md: md, cv: cv, stats: stats, evs: evs, nv: nv, nstats: nstats, hist: hist, timer: 0,
+            title: title, x: x, hEvents: hEvents, hNet: hNet, hSessions: hSessions, bCopy: bCopy, bClear: bClear, bKeep: bKeep };
+        diagTexts();
         diagOpen = true;
         wantMeasuring();
         setNet(true);
@@ -1539,7 +1622,29 @@
     }
 
     function keepText() {
-        return T('lmPerfKeepRec', 'Keep recording when closed') + ': ' + (keepRec ? T('lmOn', 'on') : T('lmOff', 'off'));
+        return T(keepRec ? 'keepOn' : 'keepOff');
+    }
+
+    /* the fixed texts of the window (again after a language change); the rest is redrawn
+     * every 500 ms by updateDiag */
+    function diagTexts() {
+        if (!diag) return;
+        diag.md.dir = window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr';
+        diag.title.textContent = TS('lmPerfDiag');
+        diag.x.title = TS('close');
+        diag.x.setAttribute('aria-label', TS('close'));
+        diag.hEvents.textContent = TS('lmPerfEvents');
+        diag.hNet.textContent = TS('lmNetQuality');
+        diag.hSessions.textContent = TS('lmNetSessions');
+        diag.bCopy.textContent = TS('lmPerfCopy');
+        diag.bClear.textContent = TS('lmNetClear');
+        diag.bKeep.textContent = keepText();
+    }
+    if (window.LMi18n && window.LMi18n.onChange) {
+        window.LMi18n.onChange(function () {
+            if (!diag) return;
+            try { diagTexts(); updateDiag(); drawNetGraph(); } catch (e) { }
+        });
     }
 
     function closeDiag() {
@@ -1574,7 +1679,7 @@
         x.fillStyle = 'rgba(255,255,255,0.8)';
         x.font = '10px sans-serif';
         x.textBaseline = 'top';
-        x.fillText(T('lmPerfFrameTime', 'frame time') + ' (0-' + maxMs + ' ms), --- ' + Math.round(target) + ' FPS', 4, 1);
+        x.fillText(T('graphFrames', [maxMs, Math.round(target)]), 4, 1);
     }
 
     function drawNetGraph() {
@@ -1585,7 +1690,7 @@
         x.clearRect(0, 0, w, h);
         x.font = '10px sans-serif';
         x.textBaseline = 'top';
-        if (!n) { x.fillStyle = 'rgba(255,255,255,0.6)'; x.fillText(T('lmNetWaiting', 'collecting...'), 4, 2); return; }
+        if (!n) { x.fillStyle = 'rgba(255,255,255,0.6)'; x.fillText(T('graphWaiting'), 4, 2); return; }
         /* the whole session, squeezed to the width (the highest value of each column) */
         var cols = Math.min(w, n), per = n / cols, pMax = 100, qMax = 30, i, j;
         for (i = 0; i < n; i++) { if (net.ping[i] > pMax) pMax = net.ping[i]; if (net.pps[i] > qMax) qMax = net.pps[i]; }
@@ -1608,9 +1713,9 @@
             if (c.t < t0) return;
             x.fillRect(Math.min(w - 2, (c.t - t0) / Math.max(1, t1 - t0) * w), 10, 2, h - 10);
         });
-        x.fillStyle = '#ffb84d'; x.fillText('ping (max ' + Math.round(pMax) + ')', 4, 1);
-        x.fillStyle = '#4da6ff'; x.fillText('pkt/s (max ' + Math.round(qMax) + ')', 120, 1);
-        x.fillStyle = '#ff4d4d'; x.fillText('| ' + T('lmNetDisc', 'disconnect'), 240, 1);
+        x.fillStyle = '#ffb84d'; x.fillText(T('graphPing', [Math.round(pMax)]), 4, 1);
+        x.fillStyle = '#4da6ff'; x.fillText(T('graphPps', [Math.round(qMax)]), 120, 1);
+        x.fillStyle = '#ff4d4d'; x.fillText('| ' + T('graphDisc'), 240, 1);
     }
 
     function updateDiag() {
@@ -1619,29 +1724,31 @@
         drawFrameGraph(st);
         var target = effectiveTarget(s.adaptivePerfTarget, s.fpsLimit, fr.refreshHz);
         diag.stats.textContent =
-            'FPS ' + f1(st.fps) + (fr.refreshHz ? '   refresh ~' + fr.refreshHz + ' Hz' : '') + '\n' +
+            'FPS ' + f1(st.fps) + (fr.refreshHz ? T('statRefresh', [fr.refreshHz]) : '') + '\n' +
             'p50 ' + f1(st.p50) + '  p95 ' + f1(st.p95) + '  p99 ' + f1(st.p99) + ' ms\n' +
-            T('lmPerfLong', 'Long frames') + ' (>' + LONG_FRAME + ' ms): ' + st.longN + ' / ' + st.n + '   ' + T('lmPerfTotal', 'total') + ' ' + st.longTotal + '\n' +
+            T('statLong', [LONG_FRAME, st.longN, st.n, st.longTotal]) + '\n' +
             freezeLine(false) + '\n' +
-            T('lmPerfRender', 'Render') + ' ' + f1(st.render) + ' ms   ' + T('lmPerfOther', 'other') + ' ' + f1(st.other) + ' ms\n' +
-            T('lmPerfCells', 'Cells') + ' ' + (lm && lm.cells ? lm.cells.length : 0) + '   ' + rendererName() + '\n' +
-            'devicePixelRatio ' + (window.devicePixelRatio || 1) + '   ' + T('lmPerfScale', 'render scale') + ' ' + (dr && dr.dpr ? f1(dr.dpr) : '-') + '\n' +
-            T('lmAdaptiveShort', 'Adaptive performance') + ': ' + (adaptiveOn ? ctl.level + '/' + MAX_LEVEL + ' (' + Math.round(target) + ' FPS)' : T('lmOff', 'off')) + '\n' +
-            T('lmPerfAttr', 'Freeze breakdown') + ': ' + (attrOn ? T('lmOn', 'on') : T('lmOff', 'off')) + '   LoAF ' + (loafObs ? T('lmOn', 'on') : '-');
+            T('statRender', [f1(st.render), f1(st.other)]) + '\n' +
+            T('statCells', [lm && lm.cells ? lm.cells.length : 0]) + '   ' + rnText(rendererName(), tr) + '\n' +
+            T('statScale', [window.devicePixelRatio || 1, dr && dr.dpr ? f1(dr.dpr) : '-']) + '\n' +
+            (adaptiveOn ? T('statAdaptiveOn', [ctl.level, MAX_LEVEL, Math.round(target)]) : T('statAdaptiveOff')) + '\n' +
+            T('statAttr', [attrOn ? T('on') : T('off'), loafObs ? T('on') : '-']);
         var ev = events.list(), ll = loafs.list(), lopt = loafOpts();
+        lopt.tr = tr;
         diag.evs.textContent = ev.length ? ev.slice(-30).reverse().map(function (e) {
-            return e.type === 'freeze' ? classifyFreeze(e, ll, ev, lopt).line : eventLine(e);
-        }).join('\n') : T('lmPerfNoEvents', 'No freezes or other events yet.');
+            return e.type === 'freeze' ? classifyFreeze(e, ll, ev, lopt).line : eventLine(e, tr);
+        }).join('\n') : TS('lmPerfNoEvents');
         var sum = sessionSummary(), pn = pingNow();
         diag.nstats.textContent =
-            'ping ' + (pn.v || '-') + ' ms   avg ' + sum.pingAvg + '   p95 ' + sum.pingP95 + '   jitter ' + sum.jitter + ' ms\n' +
-            'pkt/s ' + (lm ? +lm.pps || 0 : 0) + ' (avg ' + sum.ppsAvg + ')   ' + T('lmNetDiscs', 'disconnects') + ' ' + sum.disc + '   ' + T('lmNetReconn', 'reconnects') + ' ' + sum.reconn +
+            T('netPing', [pn.v || '-', sum.pingAvg, sum.pingP95, sum.jitter]) + '\n' +
+            T('netPackets', [lm ? +lm.pps || 0 : 0, sum.ppsAvg, sum.disc, sum.reconn]) +
             net.closes.slice(-3).map(function (c) {
-                return '\n  ' + new Date(c.t).toLocaleTimeString() + ' code ' + c.code + (c.reason ? ' ' + c.reason : '') + (c.clean ? '' : ' (not clean)');
+                /* the reason is the server's own text */
+                return '\n  ' + new Date(c.t).toLocaleTimeString() + ' ' + T('infoCode', [c.code]) + (c.reason ? ' ' + c.reason : '') + (c.clean ? '' : ' ' + T('notClean'));
             }).join('');
         var h = readHistory();
-        diag.hist.textContent = h.length ? h.slice(-5).reverse().map(sessionLine).join('\n') :
-            (s.netHistory ? T('lmNetNoSessions', 'No sessions saved yet.') : T('lmNetHistOff', 'Turn on "Network quality history" (Animation) to keep a summary of each session.'));
+        diag.hist.textContent = h.length ? h.slice(-5).reverse().map(function (x) { return sessionLine(x, tr); }).join('\n') :
+            (s.netHistory ? T('netNoSessions') : T('netHistOff'));
     }
 
     /* ---------- wiring ---------- */
