@@ -37,7 +37,10 @@
     "ogario/modules/plugins.js",
     "ogario/modules/lab.js",
     "ogario/modules/macroeditor.js",
-    "ogario/modules/gamepad-ui.js"
+    "ogario/modules/gamepad-ui.js",
+    "index.html",
+    "features.html",
+    "faq.html"
   ],
   "groups": {
     "a: ogario/modules": [

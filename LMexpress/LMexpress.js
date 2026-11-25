@@ -4913,8 +4913,10 @@ function openrotatingmod() {
 }
 
 function languagemodfun() {
-    /* nothing stored yet (null, or the string "null" saved by older versions): keep English selected */
-    if (!languagemod || languagemod == "null") languagemod = "1";
+    /* nothing chosen yet (null, or the string "null" saved by older versions): the language the texts
+     * were loaded in (the browser's, else English), not saved: it keeps following the browser until the
+     * player picks one in the list */
+    if (!languagemod || languagemod == "null") languagemod = (window.LMi18n && window.LMi18n.num()) || "1";
     $('#legendlanguages').val(languagemod);
     /* the chosen language's texts were loaded with the page (languages/lm-i18n.js): the language pack
      * handler puts them into the menus whose HTML has the English text */

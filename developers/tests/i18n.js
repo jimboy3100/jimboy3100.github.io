@@ -1,0 +1,297 @@
+// Translations: the language packs (developers/i18n/src), the generated files, the runtime
+// (languages/lm-i18n.js, lib/lm-i18n.js), the old globals and the hard-coded text scanner.
+// Usage: node developers/tests/i18n.js
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+const { execSync } = require('child_process');
+
+const repo = path.resolve(__dirname, '..', '..');
+const I = require(path.join(repo, 'developers', 'i18n', 'lib'));
+const build = require(path.join(repo, 'developers', 'i18n', 'build'));
+const scan = require(path.join(repo, 'developers', 'i18n', 'scan'));
+
+let failed = 0;
+const ok = (cond, msg) => { if (!cond) { failed++; console.log('FAIL ' + msg); } };
+
+/* ---------- 1. the source files ---------- */
+const all = I.readAll();
+const seen = {};
+let keys = 0;
+Object.keys(all).forEach((area) => {
+    Object.keys(all[area]).forEach((k) => {
+        keys++;
+        const e = all[area][k];
+        ok(!seen[k], k + ': in ' + seen[k] + '.json and ' + area + '.json');
+        seen[k] = area;
+        /* key names: "<area>." (dashes as dots); core.json also has lmT's old bare keys */
+        ok(k.indexOf(I.areaPrefix(area)) === 0 || (area === 'core' && /^[A-Za-z][A-Za-z0-9_]*$/.test(k)), k + ': key must start with ' + I.areaPrefix(area));
+        I.CODES.forEach((c) => {
+            ok(typeof e[c] === 'string', k + ': ' + c + ' missing');
+            if (!e.allowEmpty) ok(typeof e[c] === 'string' && e[c].trim() !== '', k + ': ' + c + ' empty');
+        });
+        const p = I.placeholders(e.en).join('|');
+        I.CODES.forEach((c) => {
+            if (c !== 'en' && e[c]) ok(I.placeholders(e[c]).join('|') === p, k + ': ' + c + ' placeholders/tags differ from English (' + I.placeholders(e[c]).join(' ') + ' vs ' + p.split('|').join(' ') + ')');
+        });
+        Object.keys(e).forEach((f) => ok(I.isLang(f) || ['global', 'note', 'allowEmpty'].indexOf(f) >= 0, k + ': unknown field ' + f));
+    });
+});
+console.log('packs: ' + Object.keys(all).length + ' areas, ' + keys + ' keys x ' + I.CODES.length + ' languages');
+
+/* ---------- 2. generated files up to date ---------- */
+const { files, stale } = build.run(true);
+ok(stale.length === 0, 'generated files are stale (run node developers/i18n/build.js): ' + stale.join(', '));
+console.log('generated: ' + Object.keys(files).length + ' files' + (stale.length ? ', ' + stale.length + ' stale' : ', up to date'));
+
+/* ---------- a page in a vm: just enough DOM for the runtime ---------- */
+function makeEl(tag, attrs, text) {
+    const el = {
+        tagName: tag.toUpperCase(), attrs: Object.assign({}, attrs || {}), children: [], textContent: text || '', innerHTML: text || '', value: '',
+        getAttribute(n) { return Object.prototype.hasOwnProperty.call(this.attrs, n) ? this.attrs[n] : null; },
+        setAttribute(n, v) { this.attrs[n] = String(v); },
+        hasAttribute(n) { return Object.prototype.hasOwnProperty.call(this.attrs, n); },
+        appendChild(c) { this.children.push(c); c.parentNode = this; if (this._onAppend) this._onAppend(c); return c; },
+        removeChild(c) { this.children = this.children.filter((x) => x !== c); },
+        addEventListener() { },
+        querySelector(sel) { return this.querySelectorAll(sel)[0] || null; },
+        querySelectorAll(sel) {
+            const out = [];
+            const walk = (n) => n.children.forEach((c) => { if (c.matches(sel)) out.push(c); walk(c); });
+            walk(this);
+            return out;
+        },
+        matches(sel) {
+            return sel.split(',').some((s) => {
+                s = s.trim();
+                let m = /^\[([\w-]+)\]$/.exec(s);
+                if (m) return this.hasAttribute(m[1]);
+                m = /^(\w+)\.([\w-]+)$/.exec(s);
+                if (m) return this.tagName === m[1].toUpperCase() && (this.attrs.class || this.className || '') === m[2];
+                return false;
+            });
+        }
+    };
+    return el;
+}
+function page(opts) {
+    const store = Object.assign({}, opts.storage || {});
+    const written = [];
+    const html = makeEl('html');
+    const head = makeEl('head');
+    const body = makeEl('body');
+    html.appendChild(head);
+    html.appendChild(body);
+    (opts.body || []).forEach((e) => body.appendChild(e));
+    const ctx = {
+        console, setTimeout, clearTimeout, JSON, Object, Array, String, parseInt, Promise,
+        atob: (s) => Buffer.from(s, 'base64').toString('binary'),
+        btoa: (s) => Buffer.from(s, 'binary').toString('base64'),
+        localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } },
+        navigator: { language: opts.navLang || 'en-US' },
+        location: { hash: opts.hash || '', search: '', hostname: 'www.legendmod.ml' },
+        addEventListener: (t, fn) => { if (t === 'message') ctx._onMessage = fn; }
+    };
+    ctx.window = ctx;
+    /* a script element added at run time: run the local copy of its file */
+    const runUrl = (src) => {
+        const m = /^https:\/\/(www\.legendmod\.ml|jimboy3100\.github\.io)\/([^?#]+)/.exec(src);
+        const file = m && path.join(repo, m[2]);
+        if (!file || !fs.existsSync(file)) return false;
+        vm.runInContext(fs.readFileSync(file, 'utf8'), ctx, { filename: m[2] });
+        return true;
+    };
+    ctx.document = {
+        readyState: opts.readyState || 'loading',
+        documentElement: html, head, body,
+        currentScript: null,
+        getElementById: (id) => html.querySelectorAll('[id]').find((e) => e.attrs.id === id) || null,
+        querySelectorAll: (s) => html.querySelectorAll(s),
+        querySelector: (s) => html.querySelector(s),
+        matches: () => false,
+        createElement: (t) => makeEl(t),
+        addEventListener: (t, fn) => { if (t === 'DOMContentLoaded') ctx._onReady = fn; },
+        /* the parser runs a written script tag at once */
+        write: (s) => { written.push(s); const m = /src="([^"]+)"/.exec(s); if (m) runUrl(m[1]); }
+    };
+    head._onAppend = (c) => { if (c.tagName === 'SCRIPT' && c.src) setTimeout(() => { if (runUrl(c.src)) { if (c.onload) c.onload(); } else if (c.onerror) c.onerror(); }, 0); };
+    vm.createContext(ctx);
+    ctx.run = (rel, attrs) => {
+        ctx.document.currentScript = { src: 'https://www.legendmod.ml/' + rel + '?v=1', async: false, defer: false, getAttribute: (n) => (attrs || {})[n] || null };
+        vm.runInContext(fs.readFileSync(path.join(repo, rel), 'utf8'), ctx, { filename: rel });
+        ctx.document.currentScript = null;
+    };
+    ctx.ready = () => { ctx.document.readyState = 'complete'; if (ctx._onReady) ctx._onReady(); };
+    ctx.store = store;
+    ctx.written = written;
+    return ctx;
+}
+const tick = () => new Promise((r) => setTimeout(r, 5));
+
+(async () => {
+    /* ---------- 3. the mod: Greek chosen ---------- */
+    {
+        const w = page({ storage: { languagemod: '2' } });
+        w.run('languages/lm-i18n.js');
+        ok(w.written.length === 1 && /lm-el\.js\?v=1/.test(w.written[0]) && /charset="utf-8"/.test(w.written[0]), 'mod: writes the Greek file right after itself: ' + w.written.join(' '));
+        w.run('languages/lm-en.js');
+        const L = w.LMi18n;
+        ok(L.lang() === 'el' && L.num() === '2' && L.dir() === 'ltr', 'mod: language el');
+        ok(w.lmT('leagues') === all.core.leagues.el, 'lmT: Greek text');
+        ok(w.lmT('core.langChanged') === all.core['core.langChanged'].el, 'lmT: core.* key');
+        ok(w.Languageletter0 === all.packs['pack.home'].el, 'old global Languageletter0 in Greek: ' + w.Languageletter0);
+        ok(w.translator === all.packs['pack.translator'].el, 'old global translator');
+        ok(L.prefixed('settings.').showMass === all.settings['settings.showMass'].el, 'prefixed: settings labels (textLanguage)');
+        ok(L.prefixed('settings.', 'en').showMass === all.settings['settings.showMass'].en, 'prefixed: English labels');
+        /* fallbacks */
+        L.add('en', { 'test.onlyEnglish': 'Only English {0} and {name}' });
+        ok(w.lmT('test.onlyEnglish', [5]) === 'Only English 5 and {name}', 'lmT: English fallback with {0}');
+        ok(w.lmT('test.onlyEnglish', { name: 'Bob' }) === 'Only English {0} and Bob', 'lmT: {name}');
+        ok(w.lmT('test.onlyEnglish', 7) === 'Only English 7 and {name}', 'lmT: single value');
+        ok(w.lmT('test.nowhere') === 'test.nowhere', 'lmT: the key itself as a last resort');
+        ok(w.lmT('test.nowhere') === 'test.nowhere' && L.missing()['test.nowhere'] === 2, 'missing(): counted ' + JSON.stringify(L.missing()));
+        ok(!L.missing()['test.onlyEnglish'], 'missing(): an English fallback is not a miss');
+        L.table({ 'test.table': { en: 'Hello', el: 'Γεια' }, 'test.arr': ['One', 'Ένα'] });
+        ok(w.lmT('test.table') === 'Γεια' && w.lmT('test.arr') === 'Ένα', 'table(): a module\'s own texts');
+        /* every old global of 3.603's English pack is still defined (same names) */
+        let names = null;
+        try { names = Object.keys((() => { const c = {}; vm.createContext(c); vm.runInContext(execSync('git show 38e24289:languages/LanguagePackEnglish.js', { cwd: repo }).toString('utf8'), c); return c; })()); } catch (e) { names = null; }
+        if (names) {
+            const miss = names.filter((n) => typeof w[n] !== 'string' || !w[n]);
+            ok(miss.length === 0, 'old globals missing: ' + miss.join(', '));
+            console.log('old globals: ' + names.length + ' of 3.603\'s English pack defined');
+        } else console.log('old globals: git history not available, checked the packs.json names only');
+        Object.keys(all.packs).forEach((k) => { const g = all.packs[k].global; if (g) ok(typeof w[g] === 'string', 'old global ' + g + ' not defined'); });
+
+        /* switching: French arrives asynchronously, listeners and apply run, globals follow */
+        const label = makeEl('span', { 'data-i18n': 'leagues' }, 'Leagues');
+        const input = makeEl('input', { 'data-i18n-placeholder': 'pack.home', placeholder: 'Home', 'data-i18n-title': 'leagues', 'data-original-title': 'x' });
+        const html = makeEl('div', { 'data-i18n-html': 'test.html' }, '');
+        const vars = makeEl('b', { 'data-i18n': 'test.onlyEnglish', 'data-i18n-vars': '{"0":"9","name":"Al"}' });
+        const keep = makeEl('i', { 'data-i18n': 'test.unknownKey' }, 'English stays');
+        [label, input, html, vars, keep].forEach((e) => w.document.body.appendChild(e));
+        L.add('en', { 'test.html': '<b>Bold</b> text' });
+        let changed = null;
+        const off = L.onChange((code, prev) => { changed = prev + '>' + code; });
+        let done = false;
+        L.setLang('fr', () => { done = true; });
+        for (let i = 0; i < 50 && !done; i++) await tick();
+        ok(done && L.lang() === 'fr' && changed === 'el>fr', 'setLang: French loaded and onChange ran (' + changed + ')');
+        ok(w.store.languagemod === '5', 'setLang: saved languagemod 5');
+        ok(w.Languageletter0 === all.packs['pack.home'].fr, 'old globals follow the switch');
+        ok(label.textContent === all.core.leagues.fr, 'apply: data-i18n');
+        ok(input.attrs.placeholder === all.packs['pack.home'].fr && input.attrs.title === all.core.leagues.fr && input.attrs['data-original-title'] === all.core.leagues.fr, 'apply: attributes + Bootstrap copy');
+        ok(html.innerHTML === '<b>Bold</b> text', 'apply: data-i18n-html');
+        ok(vars.textContent === 'Only English 9 and Al', 'apply: data-i18n-vars');
+        ok(keep.textContent === 'English stays', 'apply: an unknown key leaves the element');
+        off();
+        L.setLang(1);
+        for (let i = 0; i < 20 && L.lang() !== 'en'; i++) await tick();
+        ok(L.lang() === 'en' && changed === 'el>fr', 'onChange: unsubscribed; back to English');
+        /* quick switches: the last one wins whichever file arrives first */
+        L.setLang('de'); L.setLang('ru');
+        for (let i = 0; i < 50 && L.lang() !== 'ru'; i++) await tick();
+        await tick(); await tick();
+        ok(L.lang() === 'ru', 'two quick switches: the last one wins (' + L.lang() + ')');
+
+        /* the old address of a pack switches the old globals (another page or script loads it) */
+        const before = w.store.languagemod;
+        w.run('languages/LanguagePackGreek.js');
+        for (let i = 0; i < 20 && L.lang() !== 'el'; i++) await tick();
+        ok(w.Languageletter0 === all.packs['pack.home'].el && w.store.languagemod === before, 'LanguagePackGreek.js: Greek globals, languagemod not changed');
+        /* agar.io's page texts (LMexpress/i18n.js) follow the language */
+        w.run('LMexpress/i18n.js');
+        ok(w.i18n('page_play') === all.agario['agario.page_play'].el, 'i18n.js: agar.io texts in Greek');
+        ok(w.parseString('page_fb_matchresults_subtitle', '%@', [1, 2, 3]).indexOf('%@') < 0, 'i18n.js: parseString');
+    }
+    /* ---------- 4. the mod without a stored language: English, nothing written ---------- */
+    {
+        const w = page({});
+        w.run('languages/lm-i18n.js');
+        w.run('languages/lm-en.js');
+        ok(w.written.length === 0 && w.LMi18n.lang() === 'en' && w.Languageletter0 === 'Home', 'mod: English for an English browser');
+        /* a first-time player (nothing chosen): the browser's language, not saved (the Choose Language
+         * list shows LMi18n.num(): LMexpress.js languagemodfun) */
+        const wg = page({ navLang: 'el-GR' });
+        wg.run('languages/lm-i18n.js');
+        wg.run('languages/lm-en.js');
+        ok(wg.LMi18n.lang() === 'el' && wg.LMi18n.num() === '2' && wg.LMi18n.prefixed('settings.').showMass === all.settings['settings.showMass'].el && wg.Languageletter0 === all.packs['pack.home'].el,
+            'mod: nothing chosen + Greek browser -> Greek labels, list value 2');
+        ok(!('languagemod' in wg.store), 'mod: the browser language is not saved');
+        const we = page({ navLang: 'el-GR', storage: { languagemod: '1' } });
+        we.run('languages/lm-i18n.js');
+        we.run('languages/lm-en.js');
+        ok(we.LMi18n.lang() === 'en' && we.written.length === 0 && we.Languageletter0 === 'Home', 'mod: English chosen + Greek browser -> English');
+        const wn = page({ navLang: 'el-GR', storage: { languagemod: 'null' } });
+        wn.run('languages/lm-i18n.js');
+        ok(wn.LMi18n.lang() === 'el', 'mod: "null" stored by old versions counts as nothing chosen');
+        /* a language file that arrives before the runtime (queue) */
+        const w2 = page({ storage: { languagemod: '6' } });
+        w2.run('languages/lm-ar.js');
+        w2.run('languages/lm-i18n.js');
+        ok(w2.LMi18n.loaded('ar') && w2.LMi18n.lang() === 'ar' && w2.LMi18n.dir() === 'rtl', 'queue: a file loaded before the runtime is used; Arabic is rtl');
+    }
+    /* ---------- 5. web pages (lib/lm-i18n.js) ---------- */
+    {
+        const theme = Buffer.from(JSON.stringify({ pc: '#000', lang: '6' }), 'binary').toString('base64');
+        const h1 = makeEl('h1', { 'data-i18n': 'site.features' }, 'Features');
+        const picker = makeEl('span', { 'data-lm-lang-picker': '' });
+        const w = page({ hash: '#lm=' + theme, body: [h1, picker] });
+        w.run('lib/lm-i18n.js', { 'data-areas': 'site-faq' });
+        ok(w.written.some((s) => /lm-site-en\.js/.test(s)) && w.written.some((s) => /lm-site-ar\.js/.test(s)) && w.written.some((s) => /lm-site-faq-ar\.js/.test(s)), 'page: writes site + page area files, English and Arabic: ' + w.written.length);
+        ok(w.store.languagemod === '6', 'page: the language from the Theme Bridge hash is saved');
+        w.ready();
+        for (let i = 0; i < 20 && h1.textContent === 'Features'; i++) await tick();
+        ok(h1.textContent === all.site['site.features'].ar, 'page: data-i18n in Arabic');
+        ok(w.document.documentElement.attrs.dir === 'rtl' && w.document.documentElement.attrs.lang === 'ar', 'page: <html dir=rtl lang=ar>');
+        const sel = picker.children[0];
+        ok(sel && sel.tagName === 'SELECT' && sel.children.length === 12 && sel.value === '6', 'page: language picker with 12 languages');
+        ok(typeof w.lmT === 'function' && w.lmT('site.faq.' + Object.keys(all['site-faq'])[0].split('.').pop()) !== undefined, 'page: lmT');
+        /* postMessage from the mod (iframe) */
+        w._onMessage({ data: { type: 'lm-theme', theme: { lang: '2' } } });
+        for (let i = 0; i < 20 && w.LMi18n.lang() !== 'el'; i++) await tick();
+        ok(w.LMi18n.lang() === 'el' && h1.textContent === all.site['site.features'].el && w.document.documentElement.attrs.dir === 'ltr', 'page: postMessage lang switches to Greek');
+        /* no bridge, no storage: the browser language */
+        const w2 = page({ navLang: 'de-DE' });
+        w2.run('lib/lm-i18n.js');
+        ok(w2.LMi18n.lang() === 'de', 'page: browser language when nothing was chosen');
+        const w3 = page({ navLang: 'ja-JP', storage: { languagemod: '12' } });
+        w3.run('lib/lm-i18n.js');
+        ok(w3.LMi18n.lang() === 'nl', 'page: localStorage languagemod wins over the browser');
+    }
+    /* ---------- 6. the scanner ---------- */
+    {
+        const tmp = path.join(repo, 'developers', 'tests', 'out');
+        fs.mkdirSync(tmp, { recursive: true });
+        const f = path.join(tmp, 'i18n-scan-sample.js');
+        fs.writeFileSync(f, [
+            "toastr.info('Hello there');",
+            "toastr.info(lmT('leagues'));",
+            "toastr.info(_lmTH('core.noSuchKey', 'Fallback English'));",
+            "el.innerHTML = '<b>Title</b> two words <span data-i18n=\"leagues\">Leagues</span>';",
+            "$('#x').attr('title', 'Tooltip text');",
+            "console.log('Not for players');",
+            "var css = '.a{color:red;}';",
+            "var id = 'some-id';",
+            "alert('Shown text'); // i18n-ok: test",
+            "var o = { label: 'Menu label' };"
+        ].join('\n'));
+        const res = scan.scanFile(path.relative(repo, f));
+        const got = res.map((r) => r.kind + ':' + r.text).join(' | ');
+        const want = ['text:Hello there', 'key:core.noSuchKey', 'html:Title', 'html:two words', 'text:Tooltip text', 'text:Menu label'];
+        ok(want.every((x) => got.indexOf(x) >= 0) && res.length === want.length, 'scanner sample: ' + got);
+        fs.unlinkSync(f);
+        /* strict files: nothing hard-coded left */
+        (scan.config.strict || []).forEach((file) => {
+            const r = scan.scanFile(file);
+            ok(r.length === 0, 'strict file ' + file + ' has hard-coded text: ' + r.slice(0, 5).map((x) => x.line + ' ' + x.text).join('; '));
+        });
+        /* report only: the work list of stage 2 */
+        const groups = scan.groups();
+        const summary = Object.keys(groups).map((g) => g.split(':')[0] + ' ' + groups[g].reduce((n, file) => n + scan.scanFile(file).length, 0));
+        console.log('scanner: strict ' + (scan.config.strict || []).length + ' files clean; still hard-coded per group: ' + summary.join(', '));
+    }
+    console.log(failed ? failed + ' check(s) failed' : 'i18n: all checks pass');
+    process.exit(failed ? 1 : 0);
+})().catch((e) => { console.log('FAIL ' + (e && e.stack || e)); process.exit(1); });

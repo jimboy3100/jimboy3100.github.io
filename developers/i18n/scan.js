@@ -234,7 +234,7 @@ function scanJs(src, offset, base, findings) {
     const lits = jsLiterals(src);
     const fnRe = new RegExp('(^|[^\\w$.])(' + KEY_FNS.map((f) => f.replace(/\./g, '\\.')).join('|') + ')\\s*\\(\\s*$');
     const fnArg2 = new RegExp('(^|[^\\w$.])(' + KEY_FNS.map((f) => f.replace(/\./g, '\\.')).join('|') + ')\\s*\\(\\s*"S"\\s*,\\s*$');
-    lits.forEach((L) => {
+    lits.forEach((L, li) => {
         const ctx = L.ctx;
         const pos = offset + L.start;
         if (fnRe.test(ctx)) {
@@ -261,7 +261,9 @@ function scanJs(src, offset, base, findings) {
             if (any) return;
             return;
         }
-        if (!SINK.test(stmt)) return;
+        /* .attr("title", "Text") / setAttribute("placeholder", ...): the attribute name was a literal too */
+        const attrSink = /\.\s*(attr|setAttribute)\s*\(\s*"S"\s*,\s*$/.test(ctx) && li > 0 && /^(title|placeholder|data-original-title|aria-label|alt|value)$/.test(lits[li - 1].raw);
+        if (!attrSink && !SINK.test(stmt)) return;
         const x = textLike(raw);
         if (!x) return;
         /* single lower-case words in a sink are usually ids or classes */

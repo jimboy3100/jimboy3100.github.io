@@ -1936,7 +1936,7 @@
 "pack.easterEgg3Activated": "Пасхальное яйцо 3 активировано",
 "pack.videoWorksBetterOn": "Видео работает лучше на ваниль, посетите:",
 "pack.notesFacebookCompatibilityIs": "Примечания: <b> Facebook </b> совместимость лучше, чем <b> Google Plus </b>.",
-"pack.notesAgarIoCan": "Примечания. Agar.io может подключаться только к <b> Google Plus </ b> при событиях onload. Если происходит выход из системы, присоединитесь к Agar.io или используйте <b> Facebook </b>.",
+"pack.notesAgarIoCan": "Примечания: Agar.io может подключаться к <b>Google Plus</b> только при загрузке страницы. Если произошёл выход, зайдите в Agar.io снова или используйте <b>Facebook</b>.",
 "pack.ifLogoutOccursOn": "Если в событиях onload произошел выход из системы, удалите почистите куки",
 "pack.disconnectedFromServer": "Отключен от сервера :(",
 "pack.youWereBannedRestart": "Вы были заблокированы, перезаподключитесь к интернету!",

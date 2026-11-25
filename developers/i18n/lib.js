@@ -69,7 +69,8 @@ function writeArea(area, obj) {
 /* Site areas (site.json, site-<page>.json) each go to their own languages/lm-<area>-<code>.js, the
  * rest to lm-<code>.js: a web page loads the shared site texts and its own, not the mod's ~2000. */
 /* the key prefix of an area: site-index -> site.index. (core.json also holds the old un-prefixed lmT keys) */
-const areaPrefix = (area) => area.replace(/-/g, '.') + '.';
+/* packs.json (the old LanguagePack variables) uses pack.* */
+const areaPrefix = (area) => (area === 'packs' ? 'pack.' : area.replace(/-/g, '.') + '.');
 const isSiteArea = (area) => area === 'site' || area.indexOf('site-') === 0;
 
 /* the parts of a text that must stay the same in every language */
