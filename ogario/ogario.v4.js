@@ -24618,6 +24618,75 @@ function thelegendmodproject() {
         return at;
     }
     /*
+     * WebGL text atlas: nick and mass textures share pages (the layers of one TEXTURE_2D_ARRAY), so
+     * all labels of a frame are drawn with one instanced draw instead of a texture bind and a draw
+     * each. Shelf packing: a page is cut into shelves (rows), each as high as the first label put
+     * on it; labels of about that height (up to 1/8 more) share it side by side. Widths are rounded
+     * up to 8 texels, so a mass texture can usually be drawn again in its place when its digits
+     * change. Pages are filled lowest first, so the last ones empty out and can be given back.
+     */
+    function lmTextAtlasNew(w, h, maxPages) {
+        return { w: w, h: h, maxPages: maxPages, pages: [] };
+    }
+    /* a slot { page, x, y, cw, h, shelf } for a w x h label, or null (too big, or all pages full);
+     * may add a page (at.pages.length grows: the caller makes the texture array bigger) */
+    function lmTextAtlasAlloc(at, w, h) {
+        if (!(w > 0 && h > 0) || w > at.w || h > at.h) return null;
+        var cw = Math.min(at.w, Math.ceil(w / 8) * 8);
+        var maxH = h + (h >> 3) + 2;
+        for (var p = 0; p <= at.pages.length; p++) {
+            if (p === at.pages.length) {
+                if (at.pages.length >= at.maxPages) return null;
+                at.pages.push({ top: 0, shelves: [] });
+            }
+            var page = at.pages[p], best = null, bestF = -1, s, f, sh;
+            /* the lowest fitting shelf with room */
+            for (s = 0; s < page.shelves.length; s++) {
+                sh = page.shelves[s];
+                if (sh.h < h || sh.h > (sh.used ? maxH : 2 * h) || (best && sh.h >= best.h)) continue;
+                for (f = 0; f < sh.free.length; f += 2) {
+                    if (sh.free[f + 1] >= cw) { best = sh; bestF = f; break; }
+                }
+            }
+            if (!best && page.top + h <= at.h) {
+                best = { y: page.top, h: h, used: 0, free: [0, at.w] };
+                page.shelves.push(best);
+                page.top += h;
+                bestF = 0;
+            }
+            if (!best) continue;
+            var x = best.free[bestF];
+            best.free[bestF] += cw;
+            best.free[bestF + 1] -= cw;
+            if (!best.free[bestF + 1]) best.free.splice(bestF, 2);
+            best.used++;
+            return { page: p, x: x, y: best.y, cw: cw, h: best.h, shelf: best };
+        }
+        return null;
+    }
+    /* gives the slot's span back (merged with free neighbours); empty shelves at the top of their
+     * page are removed, so the page's height can be used for any label again */
+    function lmTextAtlasFree(at, slot) {
+        var sh = slot && slot.shelf;
+        if (!sh || slot.freed) return;
+        slot.freed = true;
+        var fr = sh.free, i = 0;
+        while (i < fr.length && fr[i] < slot.x) i += 2;
+        fr.splice(i, 0, slot.x, slot.cw);
+        if (i + 2 < fr.length && fr[i] + fr[i + 1] === fr[i + 2]) { fr[i + 1] += fr[i + 3]; fr.splice(i + 2, 2); }
+        if (i >= 2 && fr[i - 2] + fr[i - 1] === fr[i]) { fr[i - 1] += fr[i + 1]; fr.splice(i, 2); }
+        sh.used--;
+        var page = at.pages[slot.page];
+        while (page && page.shelves.length && !page.shelves[page.shelves.length - 1].used) {
+            page.top = page.shelves.pop().y;
+        }
+    }
+    /* pages up to the last one that holds a label */
+    function lmTextAtlasLayers(at) {
+        for (var p = at.pages.length - 1; p >= 0; p--) if (at.pages[p].shelves.length) return p + 1;
+        return 0;
+    }
+    /*
      * WebGL text textures (nick/mass quads). The cache was limited to 500 textures whatever their
      * size (up to 2048 x 512 RGBA = 4 MB each). Now also by bytes: from navigator.deviceMemory
      * (GB) when the browser tells it, else 32 MB.
@@ -62515,6 +62584,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _self._lmTextBytes = 0;
                         _self._lmMassTex = null;
                         _self._lmMassBytes = 0;
+                        _self._lmTextAtlas = null;
                         if (_self.glCanvas) _self.glCanvas.style.display = '';
                         _self.initWebGL();
                         _self.resizeCanvas();
@@ -63881,6 +63951,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     gl.enableVertexAttribArray(a_text_pos);
                     gl.vertexAttribPointer(a_text_pos, 2, gl.FLOAT, false, 0, 0);
                     gl.bindVertexArray(null);
+                    /* the same quads from the label atlas, all labels in one instanced draw */
+                    this.initWebGLTextAtlas(gl, createAndLinkProgram, quadVBO);
                 }
 
                 // Text texture cache: Map<cacheKey, {tex, w, h, lastUsed}>
@@ -63890,6 +63962,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this._lmTextBytes = 0;
                 this._lmMassTex = null;
                 this._lmMassBytes = 0;
+                /* label atlas (_lmTextAtlasGet): made again for this context when first needed */
+                this._lmTextAtlas = null;
 
                 // Offscreen Canvas2D for text rendering → GL texture upload
                 this._textCanvas = document.createElement('canvas');
@@ -71689,16 +71763,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var w = size[0], h = size[1];
 
             var gl = this.gl;
-            var tex = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, tex);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-
-            var entry = { tex: tex, w: w, h: h, lastUsed: now, bytes: w * h * 4, frame: frame };
+            /* in the label atlas, or its own texture (_lmTextStore) */
+            var entry = { tex: null, slot: null, w: 0, h: 0, lastUsed: now, bytes: w * h * 4, frame: frame };
+            this._lmTextStore(entry, w, h);
+            entry.w = w;
+            entry.h = h;
             this._lmTextTouched = (this._lmTextTouched || 0) + 1;
             this.glTextCache.set(cacheKey, entry);
             this._lmTextBytes = (this._lmTextBytes || 0) + entry.bytes;
@@ -71710,11 +71779,280 @@ function pickPlayerCellBySize(players, selectBiggest) {
             for (var i = 0; i < drop.length; i++) {
                 var old = this.glTextCache.get(drop[i]);
                 if (!old || drop[i] === cacheKey) continue;
-                gl.deleteTexture(old.tex);
+                this._lmTextRelease(old);
                 this._lmTextBytes -= old.bytes || 0;
                 this.glTextCache.delete(drop[i]);
             }
             return entry;
+        },
+        /*
+         * ===== Label atlas (nick and mass textures in one texture array) =====
+         * Pages of 2048 x 1024 (every text raster fits: _lmRasterText clamps to 2048 x 512), at most
+         * twice the text + mass byte budgets in pages; a label that finds no room keeps its own
+         * texture and is drawn on its own, in its place in the order (drawWebGLTextQuad).
+         */
+        initWebGLTextAtlas(gl, createAndLinkProgram, quadVBO) {
+            this.glTextAtlasProgram = null;
+            try {
+                if (typeof gl.texStorage3D !== 'function' || typeof gl.vertexAttribDivisor !== 'function') return;
+                var vs = `#version 300 es
+                in vec2 a_pos;      // [-1,1] unit quad
+                in vec4 a_quad;     // world x, y (deformed), half width, half height
+                in vec2 a_offZ;     // vertical offset from the cell centre, depth
+                in vec4 a_rect;     // texel rectangle in the atlas page: x, y, w, h
+                in float a_layer;   // atlas page
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec2 v_uv;
+                flat out vec4 v_rect;
+                flat out float v_layer;
+                void main() {
+                    v_uv = a_pos * 0.5 + 0.5;
+                    vec2 worldPos = a_quad.xy + vec2(0.0, a_offZ.x) + a_pos * a_quad.zw;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, a_offZ.y, 1.0);
+                    v_rect = a_rect;
+                    v_layer = a_layer;
+                }`;
+                /* Sampling clamped to the label's own texel centres: the same result as its own
+                 * texture with CLAMP_TO_EDGE and LINEAR, and the neighbours are never read. */
+                var fs = `#version 300 es
+                precision highp float;
+                precision highp sampler2DArray;
+                in vec2 v_uv;
+                flat in vec4 v_rect;
+                flat in float v_layer;
+                uniform sampler2DArray u_atlas;
+                uniform vec2 u_atlasInv;
+                uniform float u_alpha;
+                out vec4 fragColor;
+                void main() {
+                    vec2 t = v_rect.xy + clamp(v_uv * v_rect.zw, vec2(0.5), v_rect.zw - vec2(0.5));
+                    fragColor = texture(u_atlas, vec3(t * u_atlasInv, v_layer));
+                    if (fragColor.a < 0.01) discard;
+                    fragColor.a *= u_alpha;
+                }`;
+                var prog = createAndLinkProgram(gl, vs, fs);
+                if (!prog) return;
+                this.u_textAtlas_viewCenter = gl.getUniformLocation(prog, 'u_viewCenter');
+                this.u_textAtlas_viewScale = gl.getUniformLocation(prog, 'u_viewScale');
+                this.u_textAtlas_atlasInv = gl.getUniformLocation(prog, 'u_atlasInv');
+                this.u_textAtlas_alpha = gl.getUniformLocation(prog, 'u_alpha');
+                gl.useProgram(prog);
+                /* the atlas is kept on texture unit 1, which nothing else uses */
+                gl.uniform1i(gl.getUniformLocation(prog, 'u_atlas'), 1);
+                gl.useProgram(null);
+                this.glTextAtlasMax = 1024;
+                this.glTextAtlasData = new Float32Array(this.glTextAtlasMax * 11);
+                this.glTextAtlasVAO = gl.createVertexArray();
+                this.glTextAtlasVBO = gl.createBuffer();
+                gl.bindVertexArray(this.glTextAtlasVAO);
+                gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+                var loc = gl.getAttribLocation(prog, 'a_pos');
+                gl.enableVertexAttribArray(loc);
+                gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.glTextAtlasVBO);
+                gl.bufferData(gl.ARRAY_BUFFER, this.glTextAtlasData.byteLength, gl.DYNAMIC_DRAW);
+                var attrs = [['a_quad', 4, 0], ['a_offZ', 2, 4], ['a_rect', 4, 6], ['a_layer', 1, 10]];
+                for (var i = 0; i < attrs.length; i++) {
+                    loc = gl.getAttribLocation(prog, attrs[i][0]);
+                    gl.enableVertexAttribArray(loc);
+                    gl.vertexAttribPointer(loc, attrs[i][1], gl.FLOAT, false, 44, attrs[i][2] * 4);
+                    gl.vertexAttribDivisor(loc, 1);
+                }
+                gl.bindVertexArray(null);
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                this.glTextAtlasProgram = prog;
+            } catch (e) {
+                console.warn('[LegendMod WebGL] Label atlas unavailable; labels keep their own textures:', e);
+                this.glTextAtlasProgram = null;
+            }
+        },
+        /* the atlas of this context (made when first needed), or null: labels then keep their own
+         * textures, as before */
+        _lmTextAtlasGet() {
+            var gl = this.gl;
+            if (!gl || !this.glTextAtlasProgram || this._lmTextAtlasOff) return null;
+            var a = this._lmTextAtlas;
+            if (a && a.gl === gl) return a;
+            var budget = this._lmTextBudget || (this._lmTextBudget = lmTextTexBudget(window.navigator && Number(window.navigator.deviceMemory)));
+            var W = 2048, H = 1024;
+            var maxLayers = Number(gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS)) || 256;
+            var pages = Math.max(2, Math.min(maxLayers, 16, Math.ceil(2 * (budget + budget / 2) / (W * H * 4))));
+            a = this._lmTextAtlas = { gl: gl, tex: null, layers: 0, w: W, h: H, alloc: lmTextAtlasNew(W, H, pages) };
+            return a;
+        },
+        /* the atlas texture with room for layers pages; the pages in use are copied over on the
+         * GPU. False when the GPU could not make it (the old texture then stays). */
+        _lmTextAtlasResize(a, layers) {
+            var gl = this.gl;
+            gl.getError();
+            var tex = gl.createTexture();
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, tex);
+            gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, a.w, a.h, layers);
+            if (gl.getError() !== gl.NO_ERROR) {
+                gl.deleteTexture(tex);
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
+                gl.activeTexture(gl.TEXTURE0);
+                return false;
+            }
+            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            var keep = Math.min(a.layers, layers, lmTextAtlasLayers(a.alloc));
+            if (a.tex && keep > 0) {
+                var prev = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
+                var fb = gl.createFramebuffer();
+                gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fb);
+                for (var l = 0; l < keep; l++) {
+                    gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, a.tex, 0, l);
+                    gl.copyTexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, l, 0, 0, a.w, a.h);
+                }
+                gl.bindFramebuffer(gl.READ_FRAMEBUFFER, prev);
+                gl.deleteFramebuffer(fb);
+            }
+            if (a.tex) gl.deleteTexture(a.tex);
+            a.tex = tex;
+            a.layers = layers;
+            gl.activeTexture(gl.TEXTURE0);
+            return true;
+        },
+        /*
+         * Puts the text just drawn on _textCanvas (w x h) into entry: in its atlas slot when it still
+         * fits there (a mass value of about the same width), else a new slot; without the atlas, or
+         * with no room left, in the entry's own texture (redrawn in place when the size is the same).
+         * The caller sets entry.w / entry.h afterwards.
+         */
+        _lmTextStore(entry, w, h) {
+            var gl = this.gl;
+            var a = this._lmTextAtlasGet();
+            var slot = entry.slot;
+            if (slot && !(a && entry.atlas === a && w <= slot.cw && h <= slot.h && slot.h <= h + (h >> 3) + 2)) {
+                if (a && entry.atlas === a) lmTextAtlasFree(a.alloc, slot);
+                slot = entry.slot = null;
+            }
+            if (a && !slot) {
+                slot = lmTextAtlasAlloc(a.alloc, w, h);
+                if (slot && a.alloc.pages.length > a.layers) {
+                    var want = 1;
+                    while (want < a.alloc.pages.length) want *= 2;
+                    want = Math.min(want, a.alloc.maxPages);
+                    if (!this._lmTextAtlasResize(a, want)) {
+                        /* no GPU memory for more pages: keep the ones there are */
+                        lmTextAtlasFree(a.alloc, slot);
+                        slot = null;
+                        a.alloc.pages.length = Math.max(a.layers, lmTextAtlasLayers(a.alloc));
+                        a.alloc.maxPages = a.alloc.pages.length;
+                        if (!a.layers) this._lmTextAtlasOff = true;
+                    }
+                }
+            }
+            if (slot) {
+                if (entry.tex) {
+                    gl.deleteTexture(entry.tex);
+                    entry.tex = null;
+                }
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
+                gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, slot.x, slot.y, slot.page, w, h, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
+                gl.activeTexture(gl.TEXTURE0);
+                entry.slot = slot;
+                entry.atlas = a;
+                return;
+            }
+            var fresh = !entry.tex;
+            if (fresh) entry.tex = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, entry.tex);
+            if (!fresh && entry.w === w && entry.h === h) {
+                /* same size (digits are usually equally wide): rewrite the pixels only */
+                gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
+            } else {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
+            }
+            if (fresh) {
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            }
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        },
+        /* frees what holds a text entry's pixels (atlas slot or own texture) */
+        _lmTextRelease(e) {
+            if (e.slot) {
+                if (this._lmTextAtlas && e.atlas === this._lmTextAtlas) lmTextAtlasFree(this._lmTextAtlas.alloc, e.slot);
+                e.slot = null;
+            }
+            if (e.tex) {
+                var gl = this.gl;
+                if (gl && !(gl.isContextLost && gl.isContextLost())) gl.deleteTexture(e.tex);
+                e.tex = null;
+            }
+        },
+        /* draws the labels queued by drawWebGLTextQuad (one instanced draw, in their order) */
+        _lmTextFlush() {
+            var n = this._lmTextBatchN || 0;
+            this._lmTextBatchN = 0;
+            var gl = this.gl, a = this._lmTextAtlas;
+            if (!n || !gl || !a || !a.tex || a.gl !== gl) return;
+            var s = this.scale || 1;
+            gl.useProgram(this.glTextAtlasProgram);
+            gl.uniform2f(this.u_textAtlas_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_textAtlas_viewScale, 2.0 * s / this.canvasWidth, 2.0 * s / this.canvasHeight);
+            gl.uniform2f(this.u_textAtlas_atlasInv, 1 / a.w, 1 / a.h);
+            gl.uniform1f(this.u_textAtlas_alpha, defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0);
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindVertexArray(this.glTextAtlasVAO);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glTextAtlasVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.glTextAtlasData.subarray(0, n * 11));
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, n);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            this._lmTextProg = 2;
+        },
+        /*
+         * The nick/mass pass over the GPU-drawn cells, in cell order, after the bodies and rings:
+         * depth-tested against the bodies (LEQUAL: a label shows on its own body's depth, not over
+         * a bigger cell in front), no depth writes. Labels in the atlas are queued and drawn
+         * together; one with its own texture first draws the queue, so the order stays the same.
+         */
+        drawWebGLTextPass(worldGl, cells) {
+            this._lmTextFrameBegin();
+            worldGl.enable(worldGl.DEPTH_TEST);
+            worldGl.depthFunc(worldGl.LEQUAL);
+            worldGl.depthMask(false);
+            var s = this.scale || 1;
+            worldGl.useProgram(this.glTextProgram);
+            worldGl.uniform2f(this.u_text_viewCenter, this.camX, this.camY);
+            worldGl.uniform2f(this.u_text_viewScale, 2.0 * s / this.canvasWidth, 2.0 * s / this.canvasHeight);
+            worldGl.uniform1i(this.u_text_tex, 0);
+            worldGl.uniform1f(this.u_text_alpha, defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0);
+            worldGl.bindVertexArray(this.glTextVAO);
+            this._lmTextProg = 1;
+            this._lmTextBatchN = 0;
+            this._lmTextBatchOn = !!this.glTextAtlasProgram;
+            try {
+                for (var i = 0; i < cells.length; i++) {
+                    var cell = cells[i];
+                    if (!cell || !cell._webglRendered) continue;
+                    try {
+                        this.drawWebGLCellText(cell);
+                    } catch (e) {
+                        /* one cached text item failing must not invalidate already-correct body geometry */
+                    }
+                }
+                this._lmTextFlush();
+            } finally {
+                this._lmTextBatchOn = false;
+                this._lmTextBatchN = 0;
+            }
+            worldGl.bindVertexArray(null);
+            worldGl.depthMask(true);
+            /* ordinary depth mode expected by other raw WebGL passes */
+            worldGl.depthFunc(worldGl.LESS);
         },
         /* Draws text on this._textCanvas (resized to fit) the way every WebGL text texture is
          * made; returns [w, h] or null */
@@ -71791,27 +72129,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (due === 2) this._lmMassForced = (this._lmMassForced || 0) + 1;
             var size = this._lmRasterText(text, font, fillStyle, strokeStyle, strokeWidth);
             if (!size) return entry || null;
-            var gl = this.gl;
-            var fresh = !entry;
-            if (fresh) {
-                entry = { tex: gl.createTexture(), w: 0, h: 0, bytes: 0, txt: '', style: '', at: 0, due: 0, frame: frame };
+            if (!entry) {
+                entry = { tex: null, slot: null, w: 0, h: 0, bytes: 0, txt: '', style: '', at: 0, due: 0, frame: frame };
                 pool.set(cell, entry);
                 this._lmMassTouched = (this._lmMassTouched || 0) + 1;
             }
-            gl.bindTexture(gl.TEXTURE_2D, entry.tex);
-            if (!fresh && entry.w === size[0] && entry.h === size[1]) {
-                /* same size (digits are usually equally wide): rewrite the pixels only */
-                gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
-            } else {
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
-            }
-            if (fresh) {
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            }
-            gl.bindTexture(gl.TEXTURE_2D, null);
+            /* atlas slot (drawn again in place while it fits) or its own texture */
+            this._lmTextStore(entry, size[0], size[1]);
             var bytes = size[0] * size[1] * 4;
             this._lmMassBytes = (this._lmMassBytes || 0) + bytes - entry.bytes;
             entry.bytes = bytes;
@@ -71865,7 +72189,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 for (i = 0; i < drop.length; i++) {
                     var old = cache.get(drop[i]);
                     if (!old) continue;
-                    gl.deleteTexture(old.tex);
+                    this._lmTextRelease(old);
                     this._lmTextBytes -= old.bytes || 0;
                     cache.delete(drop[i]);
                 }
@@ -71880,9 +72204,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 for (i = 0; i < gone.length; i++) {
                     var e = pool.get(gone[i]);
-                    gl.deleteTexture(e.tex);
+                    this._lmTextRelease(e);
                     this._lmMassBytes -= e.bytes || 0;
                     pool.delete(gone[i]);
+                }
+            }
+            /* every 60 frames: atlas pages above the last one in use are given back */
+            var atl = this._lmTextAtlas;
+            if (atl && atl.gl === gl && atl.tex && frame % 60 === 0) {
+                var used = lmTextAtlasLayers(atl.alloc), want = 1;
+                while (want < used) want *= 2;
+                if (want < atl.layers) {
+                    atl.alloc.pages.length = used;
+                    this._lmTextAtlasResize(atl, want);
                 }
             }
             if (this._lmTextIdleDraining) {
@@ -71919,7 +72253,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var it = map.keys();
                 for (var r = it.next(); !r.done && n < 64; r = it.next()) {
                     var e = map.get(r.value);
-                    if (live) gl.deleteTexture(e.tex);
+                    this._lmTextRelease(e);
                     this[bytesKey[m]] -= e.bytes || 0;
                     map.delete(r.value);
                     n++;
@@ -71927,6 +72261,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (!map.size) this[bytesKey[m]] = 0;
             }
             this._lmTextIdleDraining = !!((pool && pool.size) || (cache && cache.size));
+            var atl = this._lmTextAtlas;
+            if (!this._lmTextIdleDraining && atl) {
+                /* nothing left in it: the atlas texture goes too */
+                if (live && atl.tex && atl.gl === gl) gl.deleteTexture(atl.tex);
+                this._lmTextAtlas = null;
+            }
             if (this._lmTextIdleDraining) {
                 this._lmTextIdleTimer = setTimeout(function () { self._lmTextIdle(); }, 50);
             }
@@ -71953,6 +72293,44 @@ function pickPlayerCellBySize(players, selectBiggest) {
             );
             worldX = _txtPt.x;
             worldY = _txtPt.y;
+
+            if (texEntry.slot) {
+                /* in the atlas: queued, drawn by _lmTextFlush with the others */
+                var n = this._lmTextBatchN || 0;
+                if (n >= this.glTextAtlasMax) {
+                    var grown = new Float32Array(this.glTextAtlasMax * 2 * 11);
+                    grown.set(this.glTextAtlasData);
+                    this.glTextAtlasData = grown;
+                    this.glTextAtlasMax *= 2;
+                    gl.bindBuffer(gl.ARRAY_BUFFER, this.glTextAtlasVBO);
+                    gl.bufferData(gl.ARRAY_BUFFER, grown.byteLength, gl.DYNAMIC_DRAW);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                }
+                var d = this.glTextAtlasData, o = n * 11, sl = texEntry.slot;
+                d[o] = worldX;
+                d[o + 1] = worldY;
+                d[o + 2] = halfW;
+                d[o + 3] = halfH;
+                d[o + 4] = offsetY;
+                d[o + 5] = z;
+                d[o + 6] = sl.x;
+                d[o + 7] = sl.y;
+                d[o + 8] = texEntry.w;
+                d[o + 9] = texEntry.h;
+                d[o + 10] = sl.page;
+                this._lmTextBatchN = n + 1;
+                /* outside the text pass nothing would draw the queue */
+                if (!this._lmTextBatchOn) this._lmTextFlush();
+                return;
+            }
+            if (!texEntry.tex) return;
+            /* its own texture: what is queued goes first, then this label with the per-label program */
+            if (this._lmTextBatchN) this._lmTextFlush();
+            if (this._lmTextProg === 2) {
+                gl.useProgram(this.glTextProgram);
+                gl.bindVertexArray(this.glTextVAO);
+                this._lmTextProg = 1;
+            }
 
             gl.uniform2f(this.u_text_worldPos, worldX, worldY);
             gl.uniform2f(this.u_text_quadSize, halfW, halfH);
@@ -79132,156 +79510,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             var unifiedWebGLTextStarted =
                                 performance.now();
                             var _lmScText = window._lmScope ? window._lmScope.b('text pass') : -1;
-                            this._lmTextFrameBegin();
-
-
-                            worldGl.enable(
-                                worldGl.DEPTH_TEST
-                            );
-
-
-                            /*
-                             * Text has the cell's body Z.
-                             *
-                             * LEQUAL allows it to appear over the body's equal
-                             * depth while still respecting foreground cells.
-                             */
-                            worldGl.depthFunc(
-                                worldGl.LEQUAL
-                            );
-
-
-                            /*
-                             * Text tests against the completed body depth map
-                             * but must not modify world-cell depth ordering.
-                             */
-                            worldGl.depthMask(
-                                false
-                            );
-
-
-                            var unifiedWebGLTextScale =
-                                this.scale ||
-                                1;
-
-
-                            worldGl.useProgram(
-                                this.glTextProgram
-                            );
-
-
-                            worldGl.uniform2f(
-                                this
-                                    .u_text_viewCenter,
-
-                                this.camX,
-                                this.camY
-                            );
-
-
-                            worldGl.uniform2f(
-                                this
-                                    .u_text_viewScale,
-
-                                2.0 *
-                                    unifiedWebGLTextScale /
-                                    this.canvasWidth,
-
-                                2.0 *
-                                    unifiedWebGLTextScale /
-                                    this.canvasHeight
-                            );
-
-
-                            worldGl.uniform1i(
-                                this
-                                    .u_text_tex,
-
-                                0
-                            );
-
-
-                            worldGl.uniform1f(
-                                this
-                                    .u_text_alpha,
-
-                                defaultSettings
-                                    .textAlpha !=
-                                    null
-                                    ? defaultSettings
-                                        .textAlpha
-                                    : 1.0
-                            );
-
-
-                            worldGl.bindVertexArray(
-                                this.glTextVAO
-                            );
-
-
                             /*
                              * Use the SAME authoritative cell array/order.
                              *
                              * Only cells actually rendered by the GPU receive
-                             * GPU nickname/mass.
+                             * GPU nickname/mass (drawWebGLTextPass).
                              */
-                            for (
-                                var unifiedWebGLTextIndex = 0;
-                                unifiedWebGLTextIndex <
-                                    LM.cells.length;
-                                unifiedWebGLTextIndex++
-                            ) {
-                                var unifiedWebGLTextCell =
-                                    LM.cells[
-                                        unifiedWebGLTextIndex
-                                    ];
-
-
-                                if (
-                                    !unifiedWebGLTextCell ||
-                                    !unifiedWebGLTextCell
-                                        ._webglRendered
-                                ) {
-                                    continue;
-                                }
-
-
-                                try {
-                                    this
-                                        .drawWebGLCellText(
-                                            unifiedWebGLTextCell
-                                        );
-                                }
-                                catch (
-                                    unifiedWebGLTextError
-                                ) {
-                                    /*
-                                     * One cached text item failing must not
-                                     * invalidate already-correct body geometry.
-                                     */
-                                }
-                            }
-
-
-                            worldGl.bindVertexArray(
-                                null
+                            this.drawWebGLTextPass(
+                                worldGl,
+                                LM.cells
                             );
-
-
-                            worldGl.depthMask(
-                                true
-                            );
-
-
-                            /*
-                             * Restore ordinary depth mode expected by other raw
-                             * WebGL passes.
-                             */
-                            worldGl.depthFunc(
-                                worldGl.LESS
-                            );
-
-
                             if (
                                 window
                                     .clientProfiler

@@ -20,7 +20,8 @@
  *     --old FILE     reference ogario.v4.js from a file instead of git
  *     --bodies a,b   body counts for --bench (default 100,500,1000,2000)
  *     --frames N     timed frames per scene (default 30, after 5 warm-up frames)
- *     --out DIR      also write PNG-free raw diff stats as JSON there
+ *     --out DIR      also write the diff stats as JSON there
+ *     --dump DIR     write both pictures of every case as PNG there
  * Needs Node 22+ and Chrome (CHROME_PATH or the usual install places); without Chrome it only
  * prints that it was skipped. */
 'use strict';
@@ -76,7 +77,7 @@ function grabVar(src, name) {
 const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim',
     'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
-    'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree'];
+    'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers'];
 const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX'];
 
 function rendererFactory(src) {
@@ -211,7 +212,12 @@ function pageLib() {
         R.gl.viewport(0, 0, W, H);
         R.scale = cfg.scale; R.camX = cfg.camX || 0; R.camY = cfg.camY || 0;
         R._skinHalf = false;
-        /* skins: put four test skins into texture-array layers and map nicks to them */
+        uploadSkins(R, env);
+        makeCells(env, scene);
+        return { R: R, env: env };
+    }
+    /* skins: put four test skins into texture-array layers and map nicks to them */
+    function uploadSkins(R, env) {
         var gl = R.gl, urls = [];
         gl.bindTexture(gl.TEXTURE_2D_ARRAY, R.glSkinArray);
         for (var k = 0; k < 4; k++) {
@@ -224,8 +230,29 @@ function pageLib() {
         gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
         var skinned = window.__glbSkinned;
         Object.keys(skinned).forEach(function (n) { env.application.customSkinsMap[n] = urls[skinned[n]]; });
-        makeCells(env, scene);
-        return { R: R, env: env };
+    }
+    /* WebGL context lost and given back: what the webglcontextrestored handler of initWebGL does,
+     * then the skins again (the game uploads them again as they are drawn) */
+    function loseAndRestore(o) {
+        var R = o.R, gl = R.gl, ext = gl.getExtension('WEBGL_lose_context');
+        return new Promise(function (done) {
+            R.glCanvas.addEventListener('webglcontextlost', function (e) { e.preventDefault(); R.gl = null; setTimeout(function () { ext.restoreContext(); }, 0); }, { once: true });
+            R.glCanvas.addEventListener('webglcontextrestored', function () {
+                R.gl = null;
+                R.glSkinMap = {};
+                R._glSkinLayers = null;
+                R.glTextCache = new Map();
+                R._lmTextBytes = 0;
+                R._lmMassTex = null;
+                R._lmMassBytes = 0;
+                R._lmTextAtlas = null;
+                R.initWebGL();
+                R.gl.viewport(0, 0, W, H);
+                uploadSkins(R, o.env);
+                done();
+            }, { once: true });
+            ext.loseContext();
+        });
     }
     /* the nick/mass pass as it is inline in renderFrame before drawWebGLTextPass existed */
     function textPassInline(R, env) {
@@ -275,14 +302,24 @@ function pageLib() {
         gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, buf);
         return buf;
     }
+    /* the frame as a PNG data URL (rows flipped: readPixels starts at the bottom) */
+    function png(px) {
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var x = c.getContext('2d'), img = x.createImageData(W, H);
+        for (var y = 0; y < H; y++) img.data.set(px.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
+        x.putImageData(img, 0, 0);
+        return c.toDataURL('image/png');
+    }
     function diff(a, b) {
-        var max = 0, sum = 0, n = 0, big = 0, lit = 0;
+        var max = 0, sum = 0, n = 0, big = 0, lit = 0, hash = 0;
         for (var i = 0; i < a.length; i++) {
+            hash = (Math.imul(hash, 31) + b[i]) | 0;
             var d = Math.abs(a[i] - b[i]);
             if (d) { n++; sum += d; if (d > max) max = d; if (d > 8) big++; }
             if ((i & 3) === 3 && a[i]) lit++;
         }
-        return { max: max, mean: sum / a.length, differing: n, over8: big, litPixels: lit };
+        return { max: max, mean: sum / a.length, differing: n, over8: big, litPixels: lit, hashNew: hash };
     }
     /* counts draw calls, GL calls and uploaded bytes by wrapping the context's methods */
     function instrument(gl) {
@@ -309,15 +346,21 @@ function pageLib() {
     }
     function median(a) { var s = a.slice().sort(function (x, y) { return x - y; }); return s.length ? s[(s.length - 1) >> 1] : 0; }
     return {
-        compare: function (oldSrc, newSrc, defaults, cfg, scene) {
+        compare: async function (oldSrc, newSrc, defaults, cfg, scene) {
             var a = setup(oldSrc, defaults, cfg, scene), b = setup(newSrc, defaults, cfg, scene);
             /* two frames: textures are made in the first, the second is the steady state */
             frame(a); frame(b);
+            if (cfg.restore) {
+                await loseAndRestore(a);
+                await loseAndRestore(b);
+                frame(a); frame(b);
+            }
             var okA = frame(a), okB = frame(b);
             var pa = pixels(a.R), pb = pixels(b.R);
             var r = diff(pa, pb);
             r.okOld = okA; r.okNew = okB;
             r.glError = b.R.gl.getError();
+            if (cfg.dump) { r.pngOld = png(pa); r.pngNew = png(pb); }
             a.R.gl.getExtension('WEBGL_lose_context').loseContext();
             b.R.gl.getExtension('WEBGL_lose_context').loseContext();
             return r;
@@ -426,13 +469,21 @@ async function main() {
                 settings: { cellsAlpha: 0.6, skinsAlpha: 0.5, virusAlpha: 0.4, textAlpha: 0.7 } },
             { name: 'jelly on, zoomed in (large labels), short mass, no strokes', jelly: true, scale: 1.1, camX: 300, camY: -200,
                 map: { shortMass: true, namesStroke: false, massStroke: false } },
-            { name: 'jelly on, hide own name/mass, hide teammates names', jelly: true, map: { hideMyName: true, hideMyMass: true, hideTeammatesNames: true } }
+            { name: 'jelly on, hide own name/mass, hide teammates names', jelly: true, map: { hideMyName: true, hideMyMass: true, hideTeammatesNames: true } },
+            { name: 'jelly on, labels on, after WebGL context loss and restore', jelly: true, restore: true },
+            { name: 'jelly off, labels on, after WebGL context loss and restore', jelly: false, restore: true }
         ];
         const stats = [];
         for (const c of cases) {
-            const cfg = Object.assign({ scale: 0.35 }, c);
+            const cfg = Object.assign({ scale: 0.35, dump: !!opt('--dump', null) }, c);
             const sc = await scene(500, 777);
             const r = await evaluate('__glb.compare(__glbOld, __glbNew, __glbDefaults, ' + JSON.stringify(cfg) + ', ' + JSON.stringify(sc) + ')');
+            if (r.pngOld) {
+                for (const k of ['pngOld', 'pngNew']) {
+                    fs.writeFileSync(path.join(opt('--dump'), 'case' + cases.indexOf(c) + '-' + k.slice(3).toLowerCase() + '.png'), Buffer.from(r[k].split(',')[1], 'base64'));
+                    delete r[k];
+                }
+            }
             stats.push(Object.assign({ case: c.name }, r));
             const pct = (100 * r.differing / (1920 * 1080 * 4)).toFixed(3);
             console.log('     ' + c.name + ': max diff ' + r.max + ', mean ' + r.mean.toFixed(5) + ', channels differing ' + r.differing + ' (' + pct + '%), >8: ' + r.over8 + ', lit pixels ' + r.litPixels);
@@ -441,6 +492,8 @@ async function main() {
             check(c.name + ': same picture as the reference (max channel diff <= 8, < 0.05% channels over 8)', r.max <= 8 || r.over8 < 1920 * 1080 * 4 * 0.0005);
             check(c.name + ': the scene is not empty', r.litPixels > 1920 * 1080 * 0.05);
         }
+        /* the labels are really drawn: labels on and off give different pictures */
+        check('labels are drawn (labels on and off differ)', stats[0].hashNew !== stats[2].hashNew && stats[1].hashNew !== stats[3].hashNew);
         if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
         if (opt('--out', null)) fs.writeFileSync(path.join(opt('--out'), 'glbatch-diff.json'), JSON.stringify(stats, null, 2));
 

@@ -5,6 +5,8 @@
  * a changing world (points added and removed, cells hidden, shown, added and removed, skins and
  * viruses with bands, buffer growth, a batch stopped halfway): what the stub GPU holds after
  * each frame must draw exactly every visible body, in order, with no stale indices.
+ * Also the label atlas: its shelf allocator, and the renderer's text methods with it (slots, mass
+ * drawn again in place, frees, a full atlas, draw order with a label that keeps its own texture).
  * The pixel comparison with real WebGL is developers/tests/glbatch.js.
  * node developers/tests/renderbatch.js */
 'use strict';
@@ -209,6 +211,111 @@ R.initWebGLJellyRenderer(gl, () => ({}));
 gl.draws.length = 0;
 R.drawWebGLCellBatch(cells);
 check('after the renderer is set up again (context restore) every index is uploaded again', verifyFrame('restore').length === 0);
+
+/* ---- label atlas: the shelf allocator ---- */
+const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').replace(/var R = [\s\S]*$/, '') +
+    'return { New: lmTextAtlasNew, Alloc: lmTextAtlasAlloc, Free: lmTextAtlasFree, Layers: lmTextAtlasLayers };')({});
+{
+    const arng = makeRng(99);
+    const at = A.New(2048, 1024, 6);
+    const live = [];
+    let bad = 0;
+    const overlap = (a, b) => a.page === b.page && a.x < b.x + b.cw && b.x < a.x + a.cw && a.y < b.y + b.h && b.y < a.y + a.h;
+    for (let step = 0; step < 6000; step++) {
+        if (live.length && arng() < 0.45) {
+            const k = (arng() * live.length) | 0;
+            A.Free(at, live[k].s);
+            live.splice(k, 1);
+            continue;
+        }
+        const w = 1 + ((arng() < 0.1 ? 2047 : 400) * arng() | 0), h = arng() < 0.5 ? 140 : 9 + ((arng() * 120) | 0);
+        const s = A.Alloc(at, w, h);
+        if (!s) continue;
+        if (s.cw < w || s.h < h || s.x + s.cw > 2048 || s.y + s.h > 1024 || s.page >= 6) bad++;
+        for (const o of live) if (overlap(o.s, s)) bad++;
+        live.push({ s, w, h });
+    }
+    check('atlas: 6000 random allocations / frees: slots inside their page, big enough, never overlapping', bad === 0 && live.length > 50);
+    check('atlas: at most maxPages pages', at.pages.length <= 6);
+    for (const o of live) A.Free(at, o.s);
+    check('atlas: everything freed: every page empty again (shelves removed, free spans merged)', at.pages.every((p) => !p.shelves.length && p.top === 0) && A.Layers(at) === 0);
+    const at2 = A.New(2048, 1024, 1);
+    check('atlas: too big for a page: no slot', A.Alloc(at2, 2049, 10) === null && A.Alloc(at2, 10, 1025) === null);
+    let n = 0;
+    while (A.Alloc(at2, 2048, 512)) n++;
+    check('atlas: a full atlas gives no slot (the label then keeps its own texture)', n === 2 && A.Alloc(at2, 8, 8) === null);
+    const at3 = A.New(2048, 1024, 4);
+    const s1 = A.Alloc(at3, 300, 140), s2 = A.Alloc(at3, 300, 140);
+    check('atlas: labels of one height share a shelf side by side', s1.y === s2.y && s2.x === s1.x + 304);
+    A.Free(at3, s1);
+    const s3 = A.Alloc(at3, 290, 140);
+    check('atlas: a freed span is used again', s3.x === s1.x && s3.y === s1.y);
+}
+
+/* ---- label atlas in the renderer: stores, frees, draw order ---- */
+{
+    const tg = stubGL();
+    let texN = 0;
+    const log = [];
+    Object.assign(tg, {
+        TEXTURE_2D: 0xde1, TEXTURE1: 0x84c1, RGBA: 0x1908, RGBA8: 0x8058, UNSIGNED_BYTE: 0x1401, NO_ERROR: 0, MAX_ARRAY_TEXTURE_LAYERS: 0x88ff,
+        READ_FRAMEBUFFER: 0x8ca8, READ_FRAMEBUFFER_BINDING: 0x8caa, COLOR_ATTACHMENT0: 0x8ce0, TRIANGLE_STRIP: 5, LESS: 0x201,
+        TEXTURE_MIN_FILTER: 1, TEXTURE_MAG_FILTER: 2, TEXTURE_WRAP_S: 3, TEXTURE_WRAP_T: 4, LINEAR: 5, CLAMP_TO_EDGE: 6,
+        getError() { return 0; }, getParameter(p) { return p === this.MAX_ARRAY_TEXTURE_LAYERS ? 2048 : null; }, isContextLost() { return false; },
+        createTexture() { return { id: 't' + (++texN) }; }, deleteTexture(t) { log.push('del ' + (t && t.id)); },
+        texStorage3D(t, l, f, w, h, d) { log.push('storage ' + d); }, texParameteri() { }, texSubImage3D(t, l, x, y, z) { log.push('sub3d ' + z); },
+        texImage2D() { log.push('img'); }, texSubImage2D() { log.push('sub'); },
+        createFramebuffer() { return {}; }, bindFramebuffer() { }, deleteFramebuffer() { }, framebufferTextureLayer() { },
+        copyTexSubImage3D(t, l, x, y, z) { log.push('copy ' + z); },
+        vertexAttribDivisor() { }, uniform1f() { }, uniform1i() { },
+        drawArraysInstanced(m, f, c, n) { log.push('inst ' + n); }, drawArrays() { log.push('one'); }
+    });
+    const env2 = Object.assign({}, env, { defaultSettings: Object.assign({}, env.defaultSettings), defaultmapsettings: Object.assign({}, env.defaultmapsettings) });
+    const T = new Function('return (' + F.factory + ')')()(env2);
+    T.gl = tg;
+    T.glTextProgram = {};
+    T.glTextVAO = {};
+    T.initWebGLTextAtlas(tg, () => ({}), {});
+    check('atlas program set up on a WebGL2 context', !!T.glTextAtlasProgram);
+    Object.assign(T, { glTextCache: new Map(), glTextCacheMaxSize: 500, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0, _lmTextFrame: 0, _lmTextIdleTimer: 1,
+        _textCanvas: { width: 0, height: 0 }, scale: 1, camX: 0, camY: 0, canvasWidth: 1920, canvasHeight: 1080,
+        _textCtx: { font: '', measureText: (t) => ({ width: t.length * 50 }), setTransform() { }, clearRect() { }, scale() { }, strokeText() { }, fillText() { } },
+        getLegendWorldAttachedRenderPoint: (x, y) => ({ x, y }) });
+    const Fn = 'bold 100px Ubuntu';
+    T._lmTextFrameBegin();
+    const e1 = T.getOrCreateTextTexture('nick', Fn, '#fff', '#000', 10);
+    check('nick texture goes into the atlas (no texture of its own), bytes counted as before', !!e1.slot && !e1.tex && T._lmTextBytes === e1.w * e1.h * 4 && log.join() === 'storage 1,sub3d 0');
+    const cell = {};
+    const m1 = T._lmMassTexture(cell, '1234', Fn, '#fff', '#000', 10), slot1 = m1.slot;
+    log.length = 0;
+    T._lmMassTexture(cell, '1235', Fn, '#fff', '#000', 10);
+    check('mass value of the same width: drawn again in its own slot', m1.slot === slot1 && log.join() === 'sub3d 0');
+    T._lmMassTexture(cell, '123456789', Fn, '#fff', '#000', 10);
+    check('mass value wider than its slot: a new slot, the old one freed', m1.slot !== slot1 && slot1.freed === true);
+    /* no room left: the atlas cannot get more pages */
+    T._lmTextAtlas.alloc.maxPages = T._lmTextAtlas.alloc.pages.length;
+    let big = null;
+    for (let i = 0; i < 40 && !(big && big.tex); i++) big = T.getOrCreateTextTexture('x'.repeat(40) + i, 'bold 360px Ubuntu', '#fff', '#000', 10);
+    check('atlas full: the label keeps its own texture', !!(big && big.tex && !big.slot));
+    /* draw order: atlas, atlas, own texture, atlas -> instanced(2), one, instanced(1) */
+    log.length = 0;
+    T._lmTextBatchOn = true;
+    T._lmTextBatchN = 0;
+    T._lmTextProg = 1;
+    T.drawWebGLTextQuad(e1, 0, 0, 0, 30, 0.5);
+    T.drawWebGLTextQuad(m1, 0, 0, 10, 20, 0.5);
+    T.drawWebGLTextQuad(big, 5, 5, 0, 30, 0.4);
+    T.drawWebGLTextQuad(e1, 9, 9, 0, 30, 0.3);
+    T._lmTextFlush();
+    T._lmTextBatchOn = false;
+    check('labels keep their order: queued atlas labels are drawn before a label with its own texture', log.filter((l) => /^(inst|one)/.test(l)).join() === 'inst 2,one,inst 1');
+    const d = T.glTextAtlasData;
+    check('instance data: world position, half size, offset, depth, texel rectangle and page', d[0] === 9 && d[5] === Math.fround(0.3) && d[6] === e1.slot.x && d[8] === e1.w && d[9] === e1.h && d[10] === e1.slot.page);
+    /* the text pass stops: everything is freed, the atlas texture too */
+    T._lmTextPassAt = 0;
+    for (let k = 0; k < 20 && (T.glTextCache.size || (T._lmMassTex && T._lmMassTex.size)); k++) T._lmTextIdle();
+    check('idle: every label freed and the atlas texture deleted', !T.glTextCache.size && !T._lmMassTex.size && T._lmTextAtlas === null && T._lmTextBytes === 0 && T._lmMassBytes === 0);
+}
 
 if (failed) { console.log(failed + ' check(s) failed'); process.exit(1); }
 console.log('renderbatch ok');
