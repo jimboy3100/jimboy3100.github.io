@@ -92,3 +92,21 @@ or the JS PointQuadTree fallback), `--src file` / `--qt file` (another ogario.v4
 e.g. an older version from `git show`), `--json`. Without `--bench` it runs a quick self-check.
 `jelly.js` checks the collision index against a direct scan and whole frames against the
 previous code.
+
+## WebGL batching check and benchmark
+
+```
+node developers/tests/glbatch.js            # pixel comparison with the reference version
+node developers/tests/glbatch.js --bench    # + draw calls, GL calls, upload bytes, CPU ms per frame
+```
+
+Loads the real renderer (`window.drawRender` of ogario.v4.js) twice into one headless Chrome page,
+the working copy and a reference version (`--ref REF`, default the last version before the jelly
+bodies and labels were batched, or `--old file`), and draws the same seeded scene (real jelly points
+from bench-dense.js, skins, transparent skins, viruses, own and multibox cells, Unicode nicks and
+mass) with both: jelly on/off, labels on/off, transparency, zoomed in, hidden own/teammate labels.
+Prints the max/mean pixel difference per case. `--bench` adds a table for 100/500/1000/2000 bodies
+with labels on (`--bodies`, `--frames`, `--repeat`); `on*` rows change the point counts in every
+frame. `--profile N` prints the CPU self time of the working copy's frames.
+Skipped (exit 0) without Chrome. `renderbatch.js` checks the index lists and the jelly batch against
+a recording stub WebGL context in Node, over many frames of a changing world.

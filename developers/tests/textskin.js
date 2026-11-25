@@ -263,8 +263,8 @@ function textMethods() {
     const sb = { r: null, Map, Date: { now: () => dnow }, Math: fakeMath, parseInt, Infinity, window: { navigator: {} }, performance: { now: () => now },
         setTimeout: (f) => { const t = () => { if (!t.dead) f(); }; timers.push(t); return t; }, clearTimeout: (t) => { if (t) t.dead = true; } };
     vm.createContext(sb);
-    vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim'].map(grab).join('\n'), sb);
-    vm.runInContext('r = {' + ['getOrCreateTextTexture', '_lmRasterText', '_lmMassTexture', '_lmTextFrameBegin', '_lmTextIdle'].map(method).join(',\n') + '};', sb);
+    vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers'].map(grab).join('\n'), sb);
+    vm.runInContext('r = {' + ['getOrCreateTextTexture', '_lmRasterText', '_lmMassTexture', '_lmTextFrameBegin', '_lmTextIdle', '_lmTextStore', '_lmTextRelease', '_lmTextAtlasGet'].map(method).join(',\n') + '};', sb);
     const r = sb.r;
     const reset = () => Object.assign(r, { gl, glTextProgram: {}, glTextCache: new Map(), glTextCacheMaxSize: 500, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0,
         _textCanvas: canvas, _textCtx: tctx, _lmTextBudget: 0, _lmTextFrame: 0, _lmTextIdleTimer: 0 });
@@ -303,6 +303,7 @@ function textMethods() {
     const cell = {}, cell2 = {};
     r._lmTextFrameBegin();
     const m1 = r._lmMassTexture(cell, '1234', F, '#fff', '#000', 10);
+    const m1Tex = m1 && m1.tex; /* released entries drop their texture reference */
     check('mass: new cell gets its own texture, its bytes counted in _lmMassBytes', m1 && calls.join() === 'img' && m1.txt === '1234' && r._lmMassBytes === T);
     r._lmTextFrameBegin();
     const m2 = r._lmMassTexture(cell, '1235', F, '#fff', '#000', 10);
@@ -325,7 +326,7 @@ function textMethods() {
         r._lmTextFrameBegin();
         r._lmMassTexture(cell2, '99', F, '#fff', '#000', 10);
     }
-    check('mass: textures of cells no longer drawn are deleted, drawn ones kept, bytes follow', !r._lmMassTex.has(cell) && r._lmMassTex.has(cell2) && calls.join() === 'del' + m1.tex.id && r._lmMassBytes === 120 * 140 * 4);
+    check('mass: textures of cells no longer drawn are deleted, drawn ones kept, bytes follow', !r._lmMassTex.has(cell) && r._lmMassTex.has(cell2) && calls.join() === 'del' + m1Tex.id && r._lmMassBytes === 120 * 140 * 4);
 
     /* stress: 400 fresh cells at once (spawn, zoom out, reconnect), 0.25 ms per raster */
     reset();

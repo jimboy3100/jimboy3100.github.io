@@ -57,7 +57,7 @@
       fail.push('mass texture threw: ' + e.message);
     } finally {
       var me = R._lmMassTex && R._lmMassTex.get(cell);
-      if (me) { try { R.gl.deleteTexture(me.tex); } catch (e) { } R._lmMassTex.delete(cell); R._lmMassBytes -= me.bytes || 0; }
+      if (me) { try { if (R._lmTextRelease) R._lmTextRelease(me); else R.gl.deleteTexture(me.tex); } catch (e) { } R._lmMassTex.delete(cell); R._lmMassBytes -= me.bytes || 0; }
     }
   }
   return { fail: fail, info: info };
