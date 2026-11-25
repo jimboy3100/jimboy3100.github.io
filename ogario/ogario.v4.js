@@ -77812,7 +77812,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         drawViewPorts(ctx) {
             /* the server's view of the player (food box, calMinMax). It drew LM.camMin/Max, which since
              * the per-frame culling bounds (3.477) is the screen itself, so the box was never visible. */
-            if (Number.isFinite(LM.viewMinX)) this.drawViewport(this.ctx, '1', LM.viewMinX, LM.viewMinY, LM.viewMaxX, LM.viewMaxY, defaultSettings.bordersColor || '#ffffff', 15);
+            if (Number.isFinite(LM.srvViewMinX)) this.drawViewport(this.ctx, '1', LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY, defaultSettings.bordersColor || '#ffffff', 15);
             if (legendmod.multiBoxPlayerExists && typeof spects !== "undefined" && spects) {
                 var neededSpects = (defaultmapsettings.multiboxAmount || 2) - 1;
                 var viewScale = this.scale || 1;
@@ -78680,7 +78680,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * cell colour froze in place while skin and name moved on.
              */
             /* the food box alone first: it is the area the server sends, i.e. the server's view of the
-             * player, which the "show viewports" button draws (LM.viewMin/Max). The camera box is grown
+             * player, which the "show viewports" button draws (LM.srvViewMin/Max). The camera box is grown
              * by it afterwards, as before. */
             var minX = tempX, maxX = tempX, minY = tempY, maxY = tempY;
             var foodOffset = 10 + defaultSettings.foodSize;
@@ -78720,8 +78720,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (y < minY) minY = y; if (y > maxY) maxY = y;
                 }
             }
-            LM.viewMinX = minX; LM.viewMaxX = maxX;
-            LM.viewMinY = minY; LM.viewMaxY = maxY;
+            /* own names: LM.viewMin/Max hold the server's map border (opcode 64), which the visibility
+             * restore and the beacon re-apply; writing the food box there shrank the map (3.614-3.627) */
+            LM.srvViewMinX = minX; LM.srvViewMaxX = maxX;
+            LM.srvViewMinY = minY; LM.srvViewMaxY = maxY;
             if (Number.isFinite(LM.camMinX)) { minX = Math.min(minX, LM.camMinX); maxX = Math.max(maxX, LM.camMaxX); minY = Math.min(minY, LM.camMinY); maxY = Math.max(maxY, LM.camMaxY); }
             LM.camMinX = minX; LM.camMaxX = maxX;
             LM.camMinY = minY; LM.camMaxY = maxY;
