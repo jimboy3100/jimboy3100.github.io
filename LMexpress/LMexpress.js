@@ -9086,13 +9086,14 @@ function changeFrameWork() {
 function changeFrameWorkStart() {
     defaultmapsettings.unlockedFPS = false;
 }
-/* ── Legend Mod Theme Bridge (mod-side helpers) ──
- * lmThemeData()  → returns {pc, pc2, mc, tc, tc2, bg, op, btc, b1, b2, b3, b4}
+/* ── Legend Mod Theme Bridge (mod-side helpers), the receiver is lib/lm-theme-bridge.js ──
+ * lmThemeData()  → only visual values: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b, rad}
  * lmThemeQuery() → returns "?lm=<base64 JSON>" to append to any URL
- * lmThemeSend(iframe) → sends theme via postMessage to an iframe element */
+ * lmThemeHash()  → returns "#lm=<base64 JSON>"
+ * lmThemeSend(iframe) → sends the theme with postMessage, only to a Legend page */
 function lmThemeData() {
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
-    return {
+    var d = {
         pc:  ds.menuPanelColor   || $('#menuPanelColor').val()  || '#00243e',
         pc2: ds.menuPanelColor2  || $('#menuPanelColor2').val() || '#002f52',
         mc:  ds.menuMainColor    || $('#hudMainColor').val()    || '#01d9cc',
@@ -9104,8 +9105,18 @@ function lmThemeData() {
         b1:  ds.btn1Color        || '#018cf6',
         b2:  ds.btn2Color        || '#00b9e8',
         b3:  ds.btn3Color        || '#8d5fe6',
-        b4:  ds.btn4Color        || '#bf00aa'
+        b4:  ds.btn4Color        || '#bf00aa',
+        b1b: ds.btn1Color2       || '#0176ce',
+        b2b: ds.btn2Color2       || '#0099c0',
+        b3b: ds.btn3Color2       || '#814ee3',
+        b4b: ds.btn4Color2       || '#a80096'
     };
+    /* the corners of Rounded / Square HUD, when the player chose one */
+    try {
+        var rad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lm-radius'));
+        if (isFinite(rad)) d.rad = String(rad);
+    } catch (e) {}
+    return d;
 }
 function lmThemeQuery() {
     try { return '?lm=' + btoa(JSON.stringify(lmThemeData())); }
@@ -9115,13 +9126,26 @@ function lmThemeHash() {
     try { return '#lm=' + btoa(JSON.stringify(lmThemeData())); }
     catch (e) { return ''; }
 }
+/* The origins a Legend page can have: jimboy3100.github.io redirects to www.legendmod.ml,
+ * so a frame opened on one of them may be on the other. Empty for any other site. */
+function lmThemeOrigins(url) {
+    var LEGEND = ['https://www.legendmod.ml', 'https://jimboy3100.github.io'];
+    try {
+        var o = new URL(url, location.href).origin;
+        if (/^https:\/\/((www\.)?legendmod\.ml|jimboy3100\.github\.io)$/.test(o)) return LEGEND;
+        if (o === location.origin) return [o];
+    } catch (e) {}
+    return [];
+}
 function lmThemeSend(iframeEl) {
     if (!iframeEl || !iframeEl.contentWindow) return;
-    try {
-        iframeEl.contentWindow.postMessage({
-            type: 'lm-theme', theme: lmThemeData()
-        }, '*');
-    } catch (e) {}
+    /* never '*': the theme goes only to a Legend page, a third-party frame gets nothing */
+    var to = lmThemeOrigins(iframeEl.src || '');
+    if (!to.length) return;
+    var msg = { type: 'lm-theme', theme: lmThemeData() };
+    to.forEach(function (o) {
+        try { iframeEl.contentWindow.postMessage(msg, o); } catch (e) {}
+    });
 }
 /* After any lm-promo modal is built, send theme to its iframes */
 function lmThemeSendToModalIframes(sel) {
