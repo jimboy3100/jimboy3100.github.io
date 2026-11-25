@@ -111,6 +111,12 @@
         var d = OPTS[k];
         if (typeof d === 'boolean') return typeof v === 'boolean' ? v : undefined;
         if (typeof v !== 'number' || !isFinite(v)) return undefined;
+        /* the settings schema of the core (range and slider step), so a value set here is the
+         * one the menu slider shows and the next load keeps */
+        if (typeof window.lmSettingValue === 'function') {
+            var w = window.lmSettingValue(k, v);
+            if (typeof w === 'number') return w;
+        }
         return Math.min(d[1], Math.max(d[0], v));
     }
 

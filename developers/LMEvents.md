@@ -45,7 +45,7 @@ All three return `LMEvents`, so calls can be chained.
 | `multiboxSwap` | `{ unit, previous }` | the multibox unit you control changes (swap / back hotkeys, adding a unit, the switch after your main player died); `0` is the main player, other numbers are the unit numbers |
 | `replayStart` | `{ packets, start }` | a recorded replay starts playing: its packet count and the start packet. Seeking inside a replay sends no new event |
 | `replayStop` | `{ reason }` | the replay stops: `'end'` (finished), `'stopped'` (Stop button) or `'left'` (you joined a live server) |
-| `settingsChange` | `{ key, value }` | a gameplay setting is changed through `application.setSettings` (the switches in the settings menu, presets, the Command Centre); `key` is the setting name (e.g. `'showGrid'`), `value` the new boolean, number or text. Theme settings and sliders are not reported |
+| `settingsChange` | `{ key, value }` | a gameplay setting changed and was saved, whatever changed it: a switch, a slider, a text box or list in the settings menu, `application.setSettings`, a hotkey that toggles an option, a preset, a settings profile, the Command Centre or the gamepad window; `key` is the setting name (e.g. `'showGrid'`), `value` the new boolean, number or text. One event per changed setting, none when the value stays the same; a slider is reported once it rests or is released, not for every step. Theme settings are not reported |
 
 `time` values are `Date.now()` milliseconds.
 

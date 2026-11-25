@@ -20405,13 +20405,86 @@ var defaultmapsettings = {
  * schema that stored and imported settings are checked against. (Comparing with
  * defaultmapsettings itself compared with whatever had been loaded into it.) */
 var LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));
-/* A stored/imported value for a gameplay setting, made to fit the setting's type, or
- * undefined when it cannot be used (the default stays). "true"/"false" and numeric
- * strings from old saves are converted; NaN/Infinity are refused. Value ranges come
- * from the sliders (application.addSliderBox clamps when it builds one). */
+/* The valid values of the gameplay settings that are not plain switches or free text:
+ * [min, max, step] (step 0 = any value in the range) or { choices: [...] }. It is the one
+ * schema for loading, importing, profiles, the Theme Workshop, the cloud download and the
+ * sliders (application.addSliderBox builds its range from it), so a value the slider
+ * cannot show (fps limit -1, mass format 1.7) never reaches the game. Ranges and steps are
+ * those of the menu sliders (the gamepad ones: ogario/modules/gamepad-ui.js). */
+var LM_SETTINGS_SCHEMA = Object.freeze({
+    instantReplaySecs: [15, 60, 15],
+    fpsLimit: [0, 240, 10],
+    adaptivePerfTarget: [30, 120, 30],
+    /* its slider is gone; 3-4 from older versions are read as 2 (ensureMbSlots) */
+    multiboxAmount: [2, 4, 1],
+    mbRingSizeP1: [1, 100, 1],
+    mbRingSizeP2: [1, 100, 1],
+    scanTrickDirections: { choices: [8, 16, 32] },
+    scanTrickDistance: [100000, 10000000, 100000],
+    scanTrickRoundedDistance: [1000, 100000, 1000],
+    lineSplitCount: [1, 4, 1],
+    lineSplitDelay: [0, 200, 5],
+    lineSplitHold: [0, 3000, 100],
+    gamepadDeadzone: [0.05, 0.5, 0.01],
+    gamepadMoveRange: [0.15, 1, 0.01],
+    gamepadMoveCurve: [0.5, 3, 0.1],
+    gamepadZoomSens: [0.2, 4, 0.1],
+    gamepadTrigger: [0.1, 0.95, 0.05],
+    massFormat: [0, 3, 1],
+    rainbowBorderSpeed: [1, 20, 1],
+    hudBlur: [0, 8, 1],
+    timeFormat: [0, 2, 1],
+    massLossPct: [10, 90, 5],
+    animation: [5, 200, 1],
+    macroFeeding: [1, 160, 1],
+    macroSplitDelay: [20, 120, 1],
+    macroPopSplitDelay: [100, 400, 10],
+    /* no menu control: the size ratio that makes a cell edible (4/3) and its inverse */
+    dominationRate: [1, 4, 0],
+    dominatedRate: [0.25, 1, 0],
+    profileNumber: [10, 54, 1],
+    zoomSpeedValue2: [-0.9, 0.9, 0.01],
+    zoomSmooth: [2, 40, 1],
+    videoSkinSoundLevel: [0, 1, 0.01],
+    leaderboardlimit: [10, 30, 5],
+    teamboardlimit: [5, 40, 5],
+    volMaster: [0, 1, 0.01],
+    volChat: [0, 1, 0.01],
+    volCommands: [0, 1, 0.01],
+    volGameplay: [0, 1, 0.01],
+    volVideo: [0, 1, 0.01],
+    volNotifications: [0, 1, 0.01],
+    a11yTextScale: [1, 1.6, 0.05],
+    a11yHudTextScale: [1, 1.6, 0.05],
+    positionClass: { choices: ['toast-bottom-left', 'toast-bottom-right', 'toast-top-left', 'toast-top-right'] }
+});
+/* the number of decimals of a step or bound (0.05 -> 2), to drop float noise after snapping */
+function lmSchemaDecimals(x) {
+    var s = String(x), e = s.indexOf('e-');
+    if (e >= 0) return parseInt(s.slice(e + 2), 10) || 0;
+    var d = s.indexOf('.');
+    return d < 0 ? 0 : s.length - d - 1;
+}
+/* A number put on its range and step the way an <input type=range> shows it: clamped,
+ * then the nearest step counted from min (never above the last step inside max). */
+function lmSchemaFit(r, n) {
+    var min = r[0], max = r[1], step = r[2];
+    if (n < min) n = min;
+    if (n > max) n = max;
+    if (!(step > 0)) return n;
+    var dec = Math.max(lmSchemaDecimals(step), lmSchemaDecimals(min));
+    var last = Math.floor((max - min) / step + 1e-9);
+    var q = Math.min(last, Math.max(0, Math.round((n - min) / step)));
+    return Number((min + q * step).toFixed(dec));
+}
+/* A stored/imported value for a gameplay setting, made to fit the setting, or undefined
+ * when it cannot be used (the default stays). "true"/"false" and numeric strings from old
+ * saves are converted; NaN/Infinity and values outside a list of choices are refused; a
+ * number outside its range or between steps is brought onto it (LM_SETTINGS_SCHEMA). */
 function lmSettingValue(key, value) {
     if (!Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, key)) return undefined;
     var def = LM_SETTINGS_DEFAULTS[key];
+    var rule = Object.prototype.hasOwnProperty.call(LM_SETTINGS_SCHEMA, key) ? LM_SETTINGS_SCHEMA[key] : null;
     if (typeof def === 'boolean') {
         if (typeof value === 'boolean') return value;
         if (value === 'true') return true;
@@ -20420,10 +20493,51 @@ function lmSettingValue(key, value) {
     }
     if (typeof def === 'number') {
         var n = typeof value === 'number' ? value : (typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN);
-        return Number.isFinite(n) ? n : undefined;
+        if (!Number.isFinite(n)) return undefined;
+        if (rule && rule.choices) return rule.choices.indexOf(n) >= 0 ? n : undefined;
+        return rule ? lmSchemaFit(rule, n) : n;
     }
-    if (typeof def === 'string') return typeof value === 'string' ? value : undefined;
+    if (typeof def === 'string') {
+        if (typeof value !== 'string') return undefined;
+        if (rule && rule.choices) return rule.choices.indexOf(value) >= 0 ? value : undefined;
+        return value;
+    }
     return typeof value === typeof def ? value : undefined;
+}
+/* S5: one place announces gameplay setting changes. Every path that changes one (switch,
+ * slider, text box, select, hotkey toggle, profile, preset, gamepad, import of a part) saves
+ * through application.saveSettings(defaultmapsettings, 'ogarioSettings'); the save compares
+ * the player's values (perf.js toJSON leaves out Adaptive performance's temporary ones) with
+ * the last saved ones and sends one 'settingsChange' per changed key. A slider is announced
+ * when its debounced save runs (it rests or is released), not on every step; an unchanged
+ * value is not announced. */
+var _lmSettingsSeen = null;
+function lmSettingsUserView() {
+    var s = defaultmapsettings;
+    if (typeof s.toJSON === 'function') { try { return s.toJSON(); } catch (e) { } }
+    return s;
+}
+function lmSettingsCommit(view) {
+    var seen = _lmSettingsSeen, k, v;
+    if (!seen) {
+        seen = _lmSettingsSeen = {};
+        for (k in LM_SETTINGS_DEFAULTS) seen[k] = view[k];
+        return;
+    }
+    /* keys and values are taken before any listener runs: one that changes a setting saves
+     * again, and that save announces its own change */
+    var changed = null;
+    for (k in LM_SETTINGS_DEFAULTS) {
+        v = view[k];
+        if (seen[k] !== v && (v === v || seen[k] === seen[k])) { seen[k] = v; (changed || (changed = [])).push(k, v); }
+    }
+    if (!changed || !window.LMEvents || !window.LMEvents._has('settingsChange')) return;
+    for (var i = 0; i < changed.length; i += 2) {
+        v = changed[i + 1];
+        if (typeof v === 'boolean' || typeof v === 'number' || typeof v === 'string') {
+            window.LMEvents.emit('settingsChange', { key: changed[i], value: typeof v === 'string' ? v.slice(0, 500) : v });
+        }
+    }
 }
 /* The settings export carries these stored keys with the gameplay settings: the configuration of
  * the phone controls, the gamepad and the add-on windows. Configuration only: never game history,
@@ -23560,8 +23674,22 @@ function thelegendmodproject() {
             if (settings && settings.mbRings === false && !Object.prototype.hasOwnProperty.call(settings, 'mbRingsP2')) {
                 defaultmapsettings.mbRingsP2 = false;
             }
+            /* the loaded values are the ones later changes are compared with (settingsChange) */
+            _lmSettingsSeen = null;
+            lmSettingsCommit(lmSettingsUserView());
         },
         saveSettings(option, name) {
+            if (name === 'ogarioSettings' && option === defaultmapsettings) {
+                /* the shared change path: the save announces what changed (lmSettingsCommit),
+                 * also when the storage is full (the change is in effect all the same) */
+                var view = lmSettingsUserView();
+                try {
+                    window.localStorage.setItem(name, JSON.stringify(view));
+                } finally {
+                    lmSettingsCommit(view);
+                }
+                return;
+            }
             window.localStorage.setItem(name, JSON.stringify(option));
         },
         exportSettings() {
@@ -23629,8 +23757,8 @@ function thelegendmodproject() {
                 /* Issue #2: type-validate ogarioSettings and ogarioThemeSettings */
                 /* Values are checked against the frozen shipped defaults (the schema), not against
                  * the settings loaded now. A key the version does not know is dropped; a value
-                 * that does not fit its setting is dropped too, so the default applies. Ranges
-                 * are applied by the sliders after the reload. */
+                 * that does not fit its setting is dropped too, so the default applies; a number
+                 * is put on its range and step (LM_SETTINGS_SCHEMA) before it is stored. */
                 if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioSettings') && importValue.ogarioSettings && typeof importValue.ogarioSettings === 'object') {
                     var _impS = importValue.ogarioSettings;
                     for (var _impK in _impS) {
@@ -23744,6 +23872,11 @@ function thelegendmodproject() {
             if (checked === true && (id === 'x16Sound' || id === 'non16Sound' || id === 'virusPopSound' || id === 'virusEatSound' || id === 'hudMergeSound')) {
                 defaultmapsettings[id] = true;
                 this._lmLoadOptSounds();
+            }
+            /* scripts call this too: a known setting takes only a value that fits it (LM_SETTINGS_SCHEMA) */
+            if (null !== checked && Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, id)) {
+                checked = lmSettingValue(id, checked);
+                if (checked === undefined) return;
             }
             if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {
                 /* Adaptive performance keeps lowered values for now: the player's change wins */
@@ -23978,14 +24111,8 @@ function thelegendmodproject() {
                         if (window.toastr) toastr.info(lmT(checked ? 'game1.perf.modeOn' : 'game1.perf.modeOff'));
                         break;
                 }
+                /* the save sends LMEvents 'settingsChange' when the value changed (lmSettingsCommit) */
                 this.saveSettings(defaultmapsettings, 'ogarioSettings');
-                /* LMEvents 'settingsChange' for scripts (nothing is built while nobody listens) */
-                if (window.LMEvents._has('settingsChange')) {
-                    var _lmEvVal = defaultmapsettings[id];
-                    if (typeof _lmEvVal === 'boolean' || typeof _lmEvVal === 'number' || typeof _lmEvVal === 'string') {
-                        window.LMEvents.emit('settingsChange', { key: String(id), value: typeof _lmEvVal === 'string' ? _lmEvVal.slice(0, 500) : _lmEvVal });
-                    }
-                }
             }
         },
         profiling() {
@@ -24038,39 +24165,7 @@ function thelegendmodproject() {
                         };
                     }
                 }
-                /* Profiles cut off by a lower profile count are kept in
-                 * 'ogarioPlayerProfilesExtra' and restored when the count is raised again
-                 * (they used to be deleted on the next load). */
-                var extraProfiles = readLocalStorageJSON('ogarioPlayerProfilesExtra', []);
-                if (!Array.isArray(extraProfiles)) extraProfiles = [];
-                if (profiles.length < defaultmapsettings.profileNumber && extraProfiles.length) {
-                    while (profiles.length < defaultmapsettings.profileNumber && extraProfiles.length) {
-                        var restored = extraProfiles.shift();
-                        profiles.push(restored && typeof restored === 'object' ? restored : {
-                            'nick': 'Profile #' + (profiles.length + 1),
-                            'clanTag': '',
-                            'skinURL': '',
-                            'color': defaultSettings.mainColor
-                        });
-                    }
-                    application.saveSettings(extraProfiles, 'ogarioPlayerProfilesExtra');
-                }
-                if (profiles.length < defaultmapsettings.profileNumber) { //fix for old players
-                    //for (var t = 10; t < 15; t++) profiles.push({
-                    for (var t = profiles.length; t < defaultmapsettings.profileNumber; t++) {
-                        profiles.push({
-                            'nick': 'Profile #' + (t + 1),
-                            'clanTag': '',
-                            'skinURL': '',
-                            'color': defaultSettings.mainColor
-                        });
-                    }
-                } else if (profiles.length > defaultmapsettings.profileNumber) {
-                    //for (var t = 10; t < 15; t++) profiles.push({
-                    var removedProfiles = profiles.splice(defaultmapsettings.profileNumber);
-                    application.saveSettings(removedProfiles.concat(extraProfiles), 'ogarioPlayerProfilesExtra');
-
-                }
+                this._lmFitProfiles(defaultmapsettings.profileNumber);
             } else {
                 //for (var t = 0; t < 15; t++) profiles.push({
                 for (var t = 0; t < defaultmapsettings.profileNumber; t++) {
@@ -24127,6 +24222,76 @@ function thelegendmodproject() {
                 ogarcopythelb.skinURL = profiles[this.selectedProfile].skinURL;
                 ogarcopythelb.color = profiles[this.selectedProfile].color;
             }
+        },
+        /* The player profile list made as long as the profile count n. Profiles a lower count
+         * cuts off are kept in 'ogarioPlayerProfilesExtra' (the ones just cut off first) and come
+         * back, in order and with their skins, when the count is raised again; only then are new
+         * default profiles added. */
+        _lmFitProfiles(n) {
+            var make = function (i) {
+                return { 'nick': 'Profile #' + (i + 1), 'clanTag': '', 'skinURL': '', 'color': defaultSettings.mainColor };
+            };
+            var extra = readLocalStorageJSON('ogarioPlayerProfilesExtra', []);
+            if (!Array.isArray(extra)) extra = [];
+            var extraChanged = false;
+            while (profiles.length < n && extra.length) {
+                var restored = extra.shift();
+                extraChanged = true;
+                if (!restored || typeof restored !== 'object') restored = make(profiles.length);
+                /* a kept entry without nick/skin threw in setSkinPreview, as in loadProfiles */
+                if (typeof restored.nick !== 'string') restored.nick = 'Profile #' + (profiles.length + 1);
+                if (typeof restored.clanTag !== 'string') restored.clanTag = '';
+                if (typeof restored.skinURL !== 'string') restored.skinURL = '';
+                if (typeof restored.color !== 'string') restored.color = defaultSettings.mainColor;
+                profiles.push(restored);
+            }
+            while (profiles.length < n) profiles.push(make(profiles.length));
+            if (profiles.length > n) {
+                extra = profiles.splice(n).concat(extra);
+                extraChanged = true;
+            }
+            if (extraChanged) this.saveSettings(extra, 'ogarioPlayerProfilesExtra');
+        },
+        /* Profile count slider (and a settings profile that sets the count): the list changes at
+         * once (it changed only on the next load). The typed nick/skin are kept first; a selected
+         * profile that is cut off gives way to the first one, as at loading, and is selected again
+         * when a higher count brings it back in the same session (30 -> 10 -> 30 while dragging);
+         * the multibox slots follow. */
+        setProfileCount() {
+            var n = defaultmapsettings.profileNumber;
+            if (!Array.isArray(profiles) || !profiles.length || profiles.length === n) return;
+            if (!(n >= 10 && n <= 54) || n !== Math.floor(n)) return;
+            if ($('#nick').length) this.saveProfileFields();
+            var old = profiles.length;
+            this._lmFitProfiles(n);
+            this.saveSettings(profiles, 'ogarioPlayerProfiles');
+            var hid = this._lmHiddenSel;
+            if (hid && this.selectedProfile === hid.fp && this.selectedOldProfile === hid.fo && hid.p < n) {
+                this.selectedProfile = hid.p;
+                this.selectedOldProfile = hid.o < n ? hid.o : hid.p;
+                this._lmHiddenSel = hid = null;
+            }
+            var sp = this.selectedProfile, so = this.selectedOldProfile;
+            if (!(sp >= 0 && sp < n)) this.selectedProfile = 0;
+            if (!(so >= 0 && so < n)) this.selectedOldProfile = this.selectedProfile;
+            if (this.selectedProfile !== sp || this.selectedOldProfile !== so) {
+                /* the first cut keeps the selection to come back to */
+                this._lmHiddenSel = hid || { p: sp, o: so, fp: 0, fo: 0 };
+                this._lmHiddenSel.fp = this.selectedProfile;
+                this._lmHiddenSel.fo = this.selectedOldProfile;
+            }
+            this.mbSlots = [];
+            var list = $('#skins');
+            if (list.length) {
+                for (var i = n; i < old; i++) $('#profile-' + i).closest('.skin-box').remove();
+                for (var j = old; j < n; j++) {
+                    list.append('<div class="skin-box"><a href="#profile-' + j + '" id="profile-' + j + '" data-profile="' + j + '"></a></div>');
+                    this.setSkinPreview(profiles[j].skinURL, 'profile-' + j);
+                }
+            }
+            this.setProfile();
+            if (defaultmapsettings.multiBoxShadow) this.setProfileboxShadow();
+            this.profiling();
         },
         marqueeSkins(t) {
             const scrollingText = document.createElement('div');
@@ -24372,6 +24537,8 @@ function thelegendmodproject() {
 
             // Case 1: already slot 1 → do nothing
             if (idx === this.mbSlots[0]) return;
+            /* the player's own choice: a profile the count cut off is not selected again for it */
+            this._lmHiddenSel = null;
 
             // Save current profile's form data BEFORE switching
             this.setPlayerSettings();
@@ -24473,14 +24640,19 @@ function thelegendmodproject() {
             });
         },
         addSliderBox(id, name, min, max, step, callback) {
+            /* the range and step come from the settings schema, not from the call */
+            var _lmRule = Object.prototype.hasOwnProperty.call(LM_SETTINGS_SCHEMA, name) && Array.isArray(LM_SETTINGS_SCHEMA[name]) ? LM_SETTINGS_SCHEMA[name] : null;
+            if (_lmRule) { min = _lmRule[0]; max = _lmRule[1]; step = _lmRule[2] > 0 ? _lmRule[2] : 'any'; }
             $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\"></span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\"></div>');
             var app = this;
             /* The slider's range is the setting's valid range: a stored or imported value outside
-             * it (animation delay -10, gamepad dead zone 4) is brought inside and saved, so the
-             * game and the slider show the same value. */
+             * it (animation delay -10, gamepad dead zone 4) or between its steps is brought onto
+             * it and saved, so the game and the slider show the same value. */
             var _lmMin = Number(min), _lmMax = Number(max), _lmCur = defaultmapsettings[name];
             if (Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, name) && Number.isFinite(_lmMin) && Number.isFinite(_lmMax) && _lmMin <= _lmMax) {
-                var _lmFit = typeof _lmCur === 'number' && Number.isFinite(_lmCur) ? Math.min(_lmMax, Math.max(_lmMin, _lmCur)) : LM_SETTINGS_DEFAULTS[name];
+                var _lmFit = lmSettingValue(name, _lmCur);
+                if (_lmFit === undefined) _lmFit = LM_SETTINGS_DEFAULTS[name];
+                else if (!_lmRule && typeof _lmFit === 'number') _lmFit = Math.min(_lmMax, Math.max(_lmMin, _lmFit));
                 if (_lmFit !== _lmCur) {
                     defaultmapsettings[name] = _lmFit;
                     if (ogario.hasOwnProperty(name)) ogario[name] = _lmFit;
@@ -24504,18 +24676,16 @@ function thelegendmodproject() {
                 app._lmSettingsSaveT = null;
                 app.saveSettings(defaultmapsettings, 'ogarioSettings');
             });
-            callback ? $('#' + name + '-slider').on('input', function () {
+            $('#' + name + '-slider').on('input', function () {
+                /* the schema again: a value set from a script (val() + input) may be off the steps */
                 var t = parseFloat($(this).val());
+                var fit = Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, name) ? lmSettingValue(name, t) : (Number.isFinite(t) ? t : undefined);
+                if (fit === undefined) return;
+                t = fit;
                 $('#' + name + '-value').text(t);
                 defaultmapsettings[name] = t;
                 if (ogario.hasOwnProperty(name)) ogario[name] = t;
-                app[callback]();
-                saveSoon();
-            }) : $('#' + name + '-slider').on('input', function () {
-                var t = parseFloat($(this).val());
-                $('#' + name + '-value').text(t);
-                defaultmapsettings[name] = t;
-                if (ogario.hasOwnProperty(name)) ogario[name] = t;
+                if (callback) app[callback]();
                 saveSoon();
             });
         },
@@ -25134,7 +25304,7 @@ function thelegendmodproject() {
             this.addSliderBox(".boardGroup", "leaderboardlimit", 10, 30, 5);
             this.addSliderBox(".boardGroup", "teamboardlimit", 5, 40, 5);
 
-            this.addSliderBox(".profiles", "profileNumber", 10, 54, 1);
+            this.addSliderBox(".profiles", "profileNumber", 10, 54, 1, "setProfileCount");
             $('<div class="lm-group-note"></div>').text(this._lmMenuText('configNote')).appendTo('.profiles');
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
             this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
