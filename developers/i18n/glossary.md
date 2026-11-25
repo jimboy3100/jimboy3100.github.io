@@ -6,8 +6,9 @@ toasts, help text and the web pages.
 
 How to read the tables:
 
-- **Use** is the word to write. Its capitalisation is for a label; inside a sentence use the
-  language's normal case and grammar (plural, article, inflection).
+- **Use** is the word to write, in its base form and in lower case (German nouns and fixed labels
+  such as Game Over keep their capitals). Capitalise it as the label needs, and inflect it inside a
+  sentence (plural, article, case).
 - **EN** in the notes means players of that language keep the English word. Write it exactly as the
   table shows it: Latin letters or the community's own spelling.
 - **packs:** lists the other forms the packs use today. Those are the ones reviewers replace.
@@ -79,7 +80,7 @@ lower case inside a sentence.
 | toggle | ενεργοποίηση/απενεργοποίηση | as a verb in tooltips: άναψε/σβήσε |
 | show / hide | εμφάνιση / απόκρυψη | |
 | enable / disable | ενεργοποίηση / απενεργοποίηση | |
-| on / off | ΝΑΙ / ΟΧΙ | toggle states (packs agree). In sentences ενεργό / ανενεργό |
+| on / off | ΝΑΙ / ΟΧΙ | toggle states (packs agree). In sentences ενεργό / ανενεργό. verify: ON / OFF is also common |
 | overlay | overlay | EN. verify |
 | cursor | κέρσορας | |
 | background | φόντο | |
@@ -936,7 +937,7 @@ skin'ler) and take an apostrophe only after an abbreviation or a name (FPS'i, Di
 | accessibility | erişilebilirlik | |
 | Rounded / Square HUD | Yuvarlak / Köşeli | |
 | save / cancel / close / delete / apply | Kaydet / İptal / Kapat / Sil / Uygula | |
-| coins | altın | packs: Jeton. Agar.io's Turkish coins |
+| coins | altın | packs: Altın everywhere except one Jeton |
 | DNA | DNA | |
 | offer / deal | teklif | verify: fırsat for deals |
 | purchase / buy | satın al | |
@@ -1054,7 +1055,7 @@ skin, ping, lag, bot and multibox and inflect them (skiny, splitem).
 | reward | nagroda | |
 | daily | dzienne | Zadanie dzienne |
 | league | liga | |
-| login / logout | logowanie / wyloguj | buttons: Zaloguj się / Wyloguj |
+| login / logout | logowanie / wylogowanie | buttons: Zaloguj się / Wyloguj |
 | guest | gość | |
 | account | konto | |
 | language | język | |
