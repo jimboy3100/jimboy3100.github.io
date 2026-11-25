@@ -1779,6 +1779,25 @@ input.hide-url::selection,input.stream-mode::selection{
     background-color: #9A1B00;
 }
 
+/* Profile tab, compact: the line breaks between the parts left large empty gaps */
+#profile .agario-profile-panel > br,
+#user-stats > br {
+   display: none;
+}
+#profile .agario-profile-panel > .clearfix:first-child {
+   margin-bottom: 6px !important;
+}
+#user-stats {
+   top: 4px !important;
+}
+#profile #lm-extended-menu-btns {
+   margin: 6px 0 !important;
+}
+/* Analytics and the Badges button side by side */
+#user-stats #lm-analytics-btn {
+   display: inline-block !important;
+   vertical-align: top;
+}
 .agario-profile-panel .vanilla-skin-preview {
    cursor: pointer;
    float: right;

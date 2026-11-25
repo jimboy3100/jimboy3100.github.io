@@ -640,52 +640,110 @@ function _lmBadgesUpdate() {
     }
     window._lmBadgesLast = { earned: acct ? rec.e.slice() : fresh.map(function (d) { return d.id; }), toasted: toast.map(function (d) { return d.id; }) };
 }
-/* compact grid at the end of #user-stats (the profile stats); earned ones coloured, others dimmed */
+/* Badges in the profile stats (#user-stats): one small "Badges 3/14" button (the grid took a lot of
+ * room in the profile tab); it opens a window with every badge, its name and what it needs. */
+var _lmBadgesState = { m: null, earned: [] };
+function _lmBadgesShown(m, earned) {
+    return _lmBadgeDefs.filter(function (d) { return m[d.m] !== null || earned.indexOf(d.id) !== -1; });
+}
 function _lmBadgesRender(m, earned) {
+    _lmBadgesState = { m: m, earned: earned };
     var host = document.getElementById('user-stats');
     if (!host) return;
     var box = document.getElementById('lm-badges');
     if (!box) {
-        box = document.createElement('div');
+        box = document.createElement('button');
+        box.type = 'button';
         box.id = 'lm-badges';
-        box.style.cssText = 'clear:both;padding-top:6px;font-size:11px;';
-        /* tap shows the tooltip text (phones have no hover) */
-        box.addEventListener('click', function (e) {
-            var b = e.target && e.target.closest ? e.target.closest('.lm-badge') : null;
-            if (b && window.toastr) toastr.info(_lmBdgEsc(b.title));
-        });
+        box.style.cssText = 'display:inline-block;vertical-align:top;margin:6px 0 0 6px;cursor:pointer;font:inherit;font-size:11px;min-height:26px;padding:3px 10px;border-radius:4px;' +
+            'border:1px solid var(--lm-pc2,rgba(255,255,255,0.15));background:rgba(255,255,255,0.06);color:inherit;touch-action:manipulation;';
+        box.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); _lmBadgesOpen(); });
         host.appendChild(box);
     }
-    while (box.firstChild) box.removeChild(box.firstChild);
-    var shown = _lmBadgeDefs.filter(function (d) { return m[d.m] !== null || earned.indexOf(d.id) !== -1; });
-    box.style.display = shown.length ? '' : 'none';
-    if (!shown.length) return;
+    var shown = _lmBadgesShown(m, earned);
+    box.style.display = shown.length ? 'inline-block' : 'none';
     var got = shown.filter(function (d) { return earned.indexOf(d.id) !== -1; }).length;
-    var head = document.createElement('div');
-    head.style.cssText = 'margin-bottom:3px;opacity:0.8;';
-    head.textContent = _lmBdgT('badges', 'Badges') + ' ' + got + '/' + shown.length;
-    box.appendChild(head);
-    var grid = document.createElement('div');
-    grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
+    box.textContent = '🏅 ' + _lmBdgT('badges', 'Badges') + ' ' + got + '/' + shown.length;
+    if (document.getElementById('lm-badges-modal')) _lmBadgesOpen();
+}
+/* the badges window (standard Legend window chrome: lmPromoChrome); earned ones coloured, others dimmed */
+function _lmBadgesOpen() {
+    var m = _lmBadgesState.m, earned = _lmBadgesState.earned;
+    if (!m) return;
+    var shown = _lmBadgesShown(m, earned);
+    var old = document.getElementById('lm-badges-modal');
+    var list = '';
     shown.forEach(function (d) {
         var on = earned.indexOf(d.id) !== -1;
-        var b = document.createElement('span');
-        b.className = 'lm-badge' + (on ? ' lm-badge-on' : '');
-        b.setAttribute('data-badge', d.id);
-        b.title = _lmBdgTip(d);
-        b.style.cssText = 'position:relative;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;font-size:15px;line-height:1;border-radius:6px;cursor:help;box-sizing:border-box;' +
-            (on ? 'border:2px solid ' + d.col + ';background:rgba(255,255,255,0.08);' : 'border:2px solid rgba(255,255,255,0.15);opacity:0.35;filter:grayscale(100%);');
-        b.textContent = d.icon;
-        if (d.tier) {
-            var t = document.createElement('span');
-            t.style.cssText = 'position:absolute;right:1px;bottom:0;font-size:8px;font-weight:700;color:' + (on ? d.col : '#fff') + ';text-shadow:0 0 2px #000;';
-            t.textContent = d.tier;
-            b.appendChild(t);
-        }
-        grid.appendChild(b);
+        list += '<div class="lm-badge' + (on ? ' lm-badge-on' : '') + '" data-badge="' + d.id + '" style="display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px;background:rgba(0,0,0,0.18);' + (on ? '' : 'opacity:0.45;') + '">' +
+            '<span style="position:relative;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;font-size:16px;border-radius:6px;box-sizing:border-box;' +
+            (on ? 'border:2px solid ' + d.col + ';background:rgba(255,255,255,0.08);' : 'border:2px solid rgba(255,255,255,0.15);filter:grayscale(100%);') + '">' + d.icon +
+            (d.tier ? '<span style="position:absolute;right:1px;bottom:0;font-size:8px;font-weight:700;color:' + (on ? d.col : '#fff') + ';text-shadow:0 0 2px #000;">' + d.tier + '</span>' : '') + '</span>' +
+            '<span style="min-width:0;font-size:11px;line-height:1.3;"><b>' + _lmBdgEsc(_lmBdgName(d)) + '</b><br><span style="opacity:0.75;">' + _lmBdgEsc(_lmBdgTip(d).slice(_lmBdgName(d).length + 2)) + '</span></span></div>';
     });
-    box.appendChild(grid);
+    var got = shown.filter(function (d) { return earned.indexOf(d.id) !== -1; }).length;
+    var html = '<div class="modal-backdrop fade in" data-lm-close="1"></div>' +
+        '<div class="modal-dialog" style="width:440px;"><div class="modal-content">' +
+        '<div class="modal-header"><button type="button" class="close" data-lm-close="1"><span aria-hidden="true">&#10005;</span></button>' +
+        '<h4 class="modal-title">🏅 ' + _lmBdgEsc(_lmBdgT('badges', 'Badges')) + ' ' + got + '/' + shown.length + '</h4></div>' +
+        '<div class="modal-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;max-height:calc(100vh - 140px);overflow-y:auto;">' + list + '</div>' +
+        '</div></div>';
+    if (old) { old.innerHTML = html; return; }
+    var w = document.createElement('div');
+    w.className = 'modal fade in';
+    w.id = 'lm-badges-modal';
+    w.setAttribute('aria-hidden', 'false');
+    w.style.display = 'block';
+    w.innerHTML = html;
+    w.addEventListener('click', function (e) {
+        var c = e.target && e.target.closest ? e.target.closest('[data-lm-close]') : null;
+        if (c) { e.preventDefault(); if (w.parentNode) w.parentNode.removeChild(w); }
+    });
+    var hc = document.getElementById('helloContainer');
+    if (hc && hc.parentNode) hc.parentNode.insertBefore(w, hc.nextSibling); else document.body.appendChild(w);
+    if (typeof window.lmPromoChrome === 'function') window.lmPromoChrome('#lm-badges-modal');
 }
+window._lmBadgesOpen = _lmBadgesOpen;
+/* The profile's vanilla skin preview (.vanilla-skin-preview) showed the guest picture even when logged
+ * in: nothing set it since the profile panel was rebuilt. It now shows the account's equipped skin: the
+ * skin read at login (UserVanillaSkin), else the one the server confirmed (userSettings key 1), else the
+ * last one equipped here; the guest picture when logged out or the skin's picture is unknown yet. */
+var _lmVsGuest = 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+function _lmVanillaPreviewUrl() {
+    var hello = document.getElementById('helloContainer');
+    if (!hello || hello.getAttribute('data-logged-in') !== '1') return '';
+    var map = window.VanillaSkinUrlMap || {}, cdn = window.LM_CUSTOM_SKINS_CDN;
+    var stored = '';
+    try { stored = localStorage.getItem('equippedSkinId') || ''; } catch (e) { }
+    var list = [window.UserVanillaSkin, window.serverEquippedSkinId, stored];
+    for (var i = 0; i < list.length; i++) {
+        var v = list[i];
+        if (!v || typeof v !== 'string' || v === 'skin_empty') continue;
+        if (v.indexOf('https://') === 0) return v;
+        if (v.indexOf('skin_custom') !== -1) { if (cdn) return cdn + '/' + v.replace(/^U(?=skin_)/, '') + '.png'; continue; }
+        var u = map[v] || map[v.toLowerCase()] || map['%' + v] || map[('%' + v).toLowerCase()];
+        if (u) return u;
+    }
+    return '';
+}
+function _lmVanillaPreviewSync() {
+    var img = document.querySelectorAll('.vanilla-skin-preview');
+    if (!img.length) return;
+    var url = _lmVanillaPreviewUrl() || _lmVsGuest;
+    for (var i = 0; i < img.length; i++) {
+        if (img[i].getAttribute('src') === url) continue;
+        img[i].onerror = function () { this.onerror = null; this.src = _lmVsGuest; };
+        img[i].src = url;
+    }
+    /* the login state lives in #helloContainer[data-logged-in]: follow it */
+    var hello = document.getElementById('helloContainer');
+    if (hello && !hello._lmVsObs && window.MutationObserver) {
+        hello._lmVsObs = new MutationObserver(function () { _lmVanillaPreviewSync(); });
+        hello._lmVsObs.observe(hello, { attributes: true, attributeFilter: ['data-logged-in'] });
+    }
+}
+window._lmVanillaPreviewSync = _lmVanillaPreviewSync;
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _lmVanillaPreviewSync); else setTimeout(_lmVanillaPreviewSync, 0);
 /* opening the profile on Expanding Land asks the server for the match history (Champion / Hunter)
  * at most once per 5 minutes; the reply re-evaluates the badges */
 document.addEventListener('click', function (e) {
@@ -17812,6 +17870,8 @@ function _initGameConfigSectionsBody(gc) {
             ] = url;
         }
     }
+    /* the profile's skin preview may have waited for these pictures */
+    try { if (window._lmVanillaPreviewSync) window._lmVanillaPreviewSync(); } catch (e) { }
 
     /* ── Free Skins ── */
     window.FreskinsMap = [];
@@ -45888,9 +45948,11 @@ function thelegendmodproject() {
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png'; // OLD — may point to wrong domain
                                 window.UserVanillaSkin = window.LM_CUSTOM_SKINS_CDN + "/" + temp.substring(1) + '.png?';
+                                try { _lmVanillaPreviewSync(); } catch (e) { }
                             } else if (temp) {
                                 temp = temp.replace('skin_', "").replace(/\W+/g, "")
                                 window.UserVanillaSkin = temp;
+                                try { _lmVanillaPreviewSync(); } catch (e) { }
                                 //window.UserVanillaSkin = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + temp.charAt(0).toUpperCase() + temp.slice(1) + '.png'
                             }
                             if (_lmRawAgario) window.agarioUID = window.testobjects2.split('$')[1].substr(0, 36);
@@ -51420,6 +51482,7 @@ function thelegendmodproject() {
                         if (typeof window.updateEquippedSkinUI === 'function') {
                             try { window.updateEquippedSkinUI(); } catch (e) { }
                         }
+                        try { _lmVanillaPreviewSync(); } catch (e) { }
                         break;
                     case 2:
                         //stop moving on relise (1,0)
