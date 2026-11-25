@@ -5,117 +5,416 @@
     {
       "input": "Mouse movement",
       "action": "Move cell toward cursor",
-      "notes": "Smaller cells move faster"
+      "notes": "Smaller cells move faster",
+      "category": "core"
     },
     {
       "input": "Space",
       "action": "Split",
-      "notes": "Divide cell into two halves, up to 16 fragments"
+      "notes": "Divide cell into two halves, up to 16 fragments",
+      "category": "core"
     },
     {
       "input": "W",
       "action": "Eject mass",
-      "notes": "Fire small pellet (~15-16 mass) toward cursor"
+      "notes": "Fire small pellet (~15-16 mass) toward cursor",
+      "category": "core"
     },
     {
       "input": "E",
       "action": "Split macro (hold)",
-      "notes": "Rapid double/triple/16-split with configurable timing"
+      "notes": "Rapid double/triple/16-split with configurable timing",
+      "category": "core"
+    },
+    {
+      "input": "Ctrl+E",
+      "action": "Permanent macro feed",
+      "notes": "Toggle continuous mass ejection on/off",
+      "category": "core"
     },
     {
       "input": "Q",
       "action": "Double split",
-      "notes": "Quick double split"
+      "notes": "Quick double split for extended range",
+      "category": "core"
     },
     {
       "input": "Alt+Q",
       "action": "Pop split",
-      "notes": "Split + virus pop technique"
+      "notes": "Split + virus pop technique",
+      "category": "core"
     },
     {
       "input": "Shift",
       "action": "Split into 16",
-      "notes": "Maximum split"
-    },
-    {
-      "input": "Enter",
-      "action": "Chat message",
-      "notes": "Open/send chat"
-    },
-    {
-      "input": "Escape",
-      "action": "Menu / free spectate",
-      "notes": "Open menu or enter spectate"
-    },
-    {
-      "input": "Ctrl+K",
-      "action": "Command Centre",
-      "notes": "Fuzzy search palette for settings and commands"
-    },
-    {
-      "input": "T",
-      "action": "Toggle top 5 / team panel",
-      "notes": "Show/hide leaderboard panel"
-    },
-    {
-      "input": "A",
-      "action": "Toggle all skins",
-      "notes": "Show/hide skins"
-    },
-    {
-      "input": "S",
-      "action": "Toggle custom skins",
-      "notes": "Show/hide custom skins only"
-    },
-    {
-      "input": "M",
-      "action": "Toggle mass display",
-      "notes": "Show/hide mass numbers"
-    },
-    {
-      "input": "N",
-      "action": "Toggle names",
-      "notes": "Show/hide player names"
-    },
-    {
-      "input": "G",
-      "action": "Toggle grid",
-      "notes": "Show/hide grid lines"
-    },
-    {
-      "input": "V",
-      "action": "Toggle spectator mode",
-      "notes": "Enter/exit spectate"
+      "notes": "Maximum split (16 fragments)",
+      "category": "core"
     },
     {
       "input": "R",
       "action": "Pause cell movement",
-      "notes": "Freeze cell position"
+      "notes": "Freeze cell position",
+      "category": "core"
+    },
+    {
+      "input": "Alt+R",
+      "action": "Dance (hold)",
+      "notes": "Cells wiggle in place while held",
+      "category": "core"
+    },
+    {
+      "input": "Enter",
+      "action": "Chat message",
+      "notes": "Open chat input / send message",
+      "category": "core"
+    },
+    {
+      "input": "Y",
+      "action": "Quick response",
+      "notes": "Send preset message",
+      "category": "core"
+    },
+    {
+      "input": "Escape",
+      "action": "Menu / free spectate",
+      "notes": "Open menu or enter spectate",
+      "category": "core"
+    },
+    {
+      "input": "Tab",
+      "action": "Toggle leaderboard",
+      "notes": "Show/hide leaderboard or team panel",
+      "category": "core"
+    },
+    {
+      "input": "Ctrl+K",
+      "action": "Command Centre",
+      "notes": "Fuzzy search palette for settings and commands",
+      "category": "core"
+    },
+    {
+      "input": "J",
+      "action": "Autoplay",
+      "notes": "Toggle autoplay mode",
+      "category": "core"
     },
     {
       "input": "Z",
       "action": "Reset zoom (hold)",
-      "notes": "Return to default zoom level"
+      "notes": "Return to default zoom level",
+      "category": "core"
+    },
+    {
+      "input": "+ (Plus)",
+      "action": "Quit game",
+      "notes": "Respawn with new cell",
+      "category": "core"
+    },
+    {
+      "input": "- (Minus)",
+      "action": "Switch server mode",
+      "notes": "Change between FFA/Teams",
+      "category": "core"
+    },
+    {
+      "input": "= (Equals)",
+      "action": "Voice chat",
+      "notes": "Push-to-talk voice chat",
+      "category": "core"
+    },
+    {
+      "input": "~ (Tilde)",
+      "action": "Multibox follow mouse",
+      "notes": "Toggle follow-mouse for multibox",
+      "category": "core"
+    },
+    {
+      "input": "T",
+      "action": "Toggle top 5 / team panel",
+      "notes": "Show/hide leaderboard panel",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+T",
+      "action": "Toggle time display",
+      "notes": "Show/hide alive time",
+      "category": "toggle"
+    },
+    {
+      "input": "U",
+      "action": "Toggle split range circles",
+      "notes": "Show/hide split range indicators on enemies",
+      "category": "toggle"
+    },
+    {
+      "input": "I",
+      "action": "Toggle split indicators",
+      "notes": "Show/hide split direction indicators",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+I",
+      "action": "Toggle teammates indicators",
+      "notes": "Show/hide teammate indicators",
+      "category": "toggle"
+    },
+    {
+      "input": "O",
+      "action": "Toggle opponent colours",
+      "notes": "Show/hide distinct opponent colours",
+      "category": "toggle"
+    },
+    {
+      "input": "A",
+      "action": "Toggle all skins",
+      "notes": "Show/hide all cell skins",
+      "category": "toggle"
+    },
+    {
+      "input": "S",
+      "action": "Toggle custom skins",
+      "notes": "Show/hide custom skins only",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+S",
+      "action": "Toggle stats HUD",
+      "notes": "Show/hide stats overlay",
+      "category": "toggle"
+    },
+    {
+      "input": "D",
+      "action": "Toggle cells (ghost cells)",
+      "notes": "Show/hide ghost cells",
+      "category": "toggle"
+    },
+    {
+      "input": "F",
+      "action": "Toggle food visibility",
+      "notes": "Show/hide food pellets",
+      "category": "toggle"
+    },
+    {
+      "input": "G",
+      "action": "Toggle grid",
+      "notes": "Show/hide grid lines",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+G",
+      "action": "Toggle minimap guides",
+      "notes": "Show/hide minimap guide lines",
+      "category": "toggle"
+    },
+    {
+      "input": "H",
+      "action": "Hide/show chat",
+      "notes": "Toggle persistent chat panel",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+H",
+      "action": "Toggle HUD",
+      "notes": "Show/hide all HUD elements",
+      "category": "toggle"
+    },
+    {
+      "input": "K",
+      "action": "Toggle ghost cells info",
+      "notes": "Show/hide ghost cell details",
+      "category": "toggle"
+    },
+    {
+      "input": "L",
+      "action": "Copy leaderboard",
+      "notes": "Copy leaderboard text to clipboard",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+L",
+      "action": "Toggle leaderboard",
+      "notes": "Show/hide leaderboard",
+      "category": "toggle"
+    },
+    {
+      "input": "M",
+      "action": "Toggle mass display",
+      "notes": "Show/hide mass numbers on cells",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+M",
+      "action": "Toggle minimap",
+      "notes": "Show/hide minimap",
+      "category": "toggle"
+    },
+    {
+      "input": "N",
+      "action": "Toggle names",
+      "notes": "Show/hide player names",
+      "category": "toggle"
+    },
+    {
+      "input": "B",
+      "action": "Toggle background sectors",
+      "notes": "Show/hide sector labels",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+B",
+      "action": "Hide small bots",
+      "notes": "Hide small bot cells from view",
+      "category": "toggle"
+    },
+    {
+      "input": "V",
+      "action": "Toggle spectator mode",
+      "notes": "Enter/exit spectate",
+      "category": "toggle"
+    },
+    {
+      "input": "C",
+      "action": "Show/clear chat history (hold)",
+      "notes": "Hold to view, release to clear",
+      "category": "toggle"
+    },
+    {
+      "input": "X",
+      "action": "Toggle death location",
+      "notes": "Show/hide death location marker",
+      "category": "toggle"
+    },
+    {
+      "input": "Alt+1",
+      "action": "Zoom level 0.5 (closest)",
+      "notes": "Closest zoom level",
+      "category": "zoom"
+    },
+    {
+      "input": "Alt+2",
+      "action": "Zoom level 0.25",
+      "notes": "Second zoom level",
+      "category": "zoom"
+    },
+    {
+      "input": "Alt+3",
+      "action": "Zoom level 0.125",
+      "notes": "Middle zoom level",
+      "category": "zoom"
+    },
+    {
+      "input": "Alt+4",
+      "action": "Zoom level 0.075",
+      "notes": "Fourth zoom level",
+      "category": "zoom"
+    },
+    {
+      "input": "Alt+5",
+      "action": "Zoom level 0.05 (farthest)",
+      "notes": "Farthest zoom level",
+      "category": "zoom"
     },
     {
       "input": "Mouse scroll",
       "action": "Zoom in/out",
-      "notes": "Scroll wheel controls zoom"
+      "notes": "Scroll wheel controls zoom",
+      "category": "mouse"
     },
     {
       "input": "Left click",
       "action": "Macro feed (default)",
-      "notes": "Configurable mouse button binding"
+      "notes": "Configurable mouse button binding",
+      "category": "mouse"
     },
     {
       "input": "Right click",
       "action": "Split (default)",
-      "notes": "Configurable mouse button binding"
+      "notes": "Configurable mouse button binding",
+      "category": "mouse"
     },
     {
       "input": "Middle click",
       "action": "Multibox swap (default)",
-      "notes": "Configurable mouse button binding"
+      "notes": "Configurable mouse button binding",
+      "category": "mouse"
+    },
+    {
+      "input": "Mouse 4 (back)",
+      "action": "Double split",
+      "notes": "Back button double split",
+      "category": "mouse"
+    },
+    {
+      "input": "Mouse 5 (forward)",
+      "action": "16-split",
+      "notes": "Forward button maximum split",
+      "category": "mouse"
+    },
+    {
+      "input": "Gamepad A",
+      "action": "Split",
+      "notes": "Default gamepad mapping (customizable)",
+      "category": "gamepad"
+    },
+    {
+      "input": "Gamepad B",
+      "action": "Feed (macro)",
+      "notes": "Default gamepad mapping (customizable)",
+      "category": "gamepad"
+    },
+    {
+      "input": "Gamepad X",
+      "action": "Double split",
+      "notes": "Default gamepad mapping (customizable)",
+      "category": "gamepad"
+    },
+    {
+      "input": "Gamepad Y",
+      "action": "Respawn",
+      "notes": "Default gamepad mapping (customizable)",
+      "category": "gamepad"
+    },
+    {
+      "input": "Gamepad LB",
+      "action": "Multibox swap",
+      "notes": "Default gamepad mapping (customizable)",
+      "category": "gamepad"
+    },
+    {
+      "input": "Gamepad RB",
+      "action": "16-split",
+      "notes": "Default gamepad mapping (customizable)",
+      "category": "gamepad"
+    },
+    {
+      "input": "Gamepad Start",
+      "action": "Menu",
+      "notes": "Default gamepad mapping (customizable)",
+      "category": "gamepad"
+    },
+    {
+      "input": "Chat commands 1-9, 0",
+      "action": "Send chat command 1-10",
+      "notes": "50 total chat command slots, keys 1-0 = slots 1-10",
+      "category": "chat"
+    },
+    {
+      "input": "Arrow keys (L/U/R/D)",
+      "action": "Send chat commands 11-14",
+      "notes": "Arrow keys mapped to chat command slots",
+      "category": "chat"
+    },
+    {
+      "input": "Ctrl+1-5, 7-9, 0",
+      "action": "Send chat commands 15-23",
+      "notes": "Ctrl+number combinations for more chat slots",
+      "category": "chat"
+    },
+    {
+      "input": "Ctrl+Z/X/Q/M/B/L/D",
+      "action": "Send chat commands 24-30",
+      "notes": "Ctrl+letter combinations for chat commands",
+      "category": "chat"
     }
   ]
 }

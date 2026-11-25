@@ -10,8 +10,17 @@
 - [Dynamic map](https://help.expanding.land/dynamic-map.html): expansion and contraction.
 - [Players and bots](https://help.expanding.land/no-bots.html): population distinctions.
 - [Project facts](https://www.legendmod.ml/knowledge/): entity identifiers.
-- [Controls](https://www.legendmod.ml/knowledge/controls.json): default keyboard and mouse bindings.
+- [Controls](https://www.legendmod.ml/knowledge/controls.json): default keyboard, mouse and gamepad bindings.
 - [FAQ](https://www.legendmod.ml/knowledge/faq.json): frequently asked questions.
+- [Glossary](https://www.legendmod.ml/knowledge/glossary.json): 30+ game terms defined.
+- [Techniques](https://www.legendmod.ml/knowledge/techniques.json): advanced gameplay techniques.
+- [Settings](https://www.legendmod.ml/knowledge/settings.json): 300+ settings across 30 categories.
+- [Features (JSON)](https://www.legendmod.ml/knowledge/features.json): 28 feature descriptions.
+- [Game (JSON)](https://www.legendmod.ml/knowledge/game.json): game entity data.
+- [Mechanics (JSON)](https://www.legendmod.ml/knowledge/mechanics.json): 12 core game mechanics.
+- [Resources (JSON)](https://www.legendmod.ml/knowledge/resources.json): 35+ official page links.
 
 - [Consolidated documentation](https://www.legendmod.ml/llms-full.txt): verified core facts, features, controls, FAQ and links.
 - [Knowledge API](https://www.legendmod.ml/knowledge/api.json): public read-only JSON resources.
+- [Knowledge graph (JSON-LD)](https://www.legendmod.ml/knowledge/graph.jsonld): 32-entity structured data graph.
+

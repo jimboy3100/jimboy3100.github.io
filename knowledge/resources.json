@@ -122,9 +122,49 @@
       "url": "https://help.expanding.land/unblocked.html"
     },
     {
+      "name": "Skin Checker",
+      "description": "Tool to test whether a skin URL loads correctly before using it in-game.",
+      "url": "https://www.legendmod.ml/skins/checker.html"
+    },
+    {
+      "name": "Skin Rotator",
+      "description": "Automatically cycle through a set of skins during gameplay.",
+      "url": "https://www.legendmod.ml/skins/rotator.html"
+    },
+    {
+      "name": "Nicknames",
+      "description": "Browse and copy popular nicknames and clan tags for agar.io-style games.",
+      "url": "https://www.legendmod.ml/nicknames/"
+    },
+    {
+      "name": "Compare page",
+      "description": "Side-by-side comparison of Legend Mod, Delta, Agar2 and other mods.",
+      "url": "https://www.legendmod.ml/compare.html"
+    },
+    {
+      "name": "Knowledge hub",
+      "description": "Machine-readable project facts, JSON-LD knowledge graph, and public API for LLMs and search engines.",
+      "url": "https://www.legendmod.ml/knowledge/"
+    },
+    {
+      "name": "LLM documentation (full)",
+      "description": "Comprehensive verified documentation for LLMs covering all features, controls, mechanics, FAQ and links.",
+      "url": "https://www.legendmod.ml/llms-full.txt"
+    },
+    {
       "name": "Discord",
       "description": "Official Discord community server.",
       "url": "https://discord.com/invite/JUfpR9k"
+    },
+    {
+      "name": "GitHub (server)",
+      "description": "Expanding Land game server source repository.",
+      "url": "https://github.com/nicknameisavailable/LegendWorld"
+    },
+    {
+      "name": "Android APK",
+      "description": "Direct Android APK download for Expanding Land mobile play.",
+      "url": "https://expanding.land/app.html"
     }
   ]
 }

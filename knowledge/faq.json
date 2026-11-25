@@ -51,7 +51,7 @@
     },
     {
       "question": "What is the Command Centre?",
-      "answer": "A fuzzy-search palette (Ctrl+K) that lets you search and activate any setting, hotkey, theme option or window in Legend Mod."
+      "answer": "A fuzzy-search palette (Ctrl+K) that lets you search and activate any setting, hotkey, theme option or window in Legend Mod. It supports multi-language queries and can be pinned as a quick bar during gameplay."
     },
     {
       "question": "What is the dynamic map?",
@@ -60,6 +60,50 @@
     {
       "question": "What is a scan trick?",
       "answer": "A movement technique where cursor position snaps to fixed directional increments (8-32 directions) for precise cell positioning."
+    },
+    {
+      "question": "What is line split?",
+      "answer": "A rapid multi-split technique (x8 or x16) in a straight line toward the cursor with configurable timing and lock duration."
+    },
+    {
+      "question": "What is the Practice Arena?",
+      "answer": "An offline mode with 8 exercise types (free, split, virus, dodge, path, escape, feed, merge) where you practice against bots without connecting to a server. Personal bests and ghost replay of your best run."
+    },
+    {
+      "question": "What is the Theme Workshop?",
+      "answer": "A tool to create, save (up to 30 themes, 5 versions each), rename, copy and delete custom themes. Live preview with 15-second auto-revert, side-by-side comparison, and a gallery of shipped themes."
+    },
+    {
+      "question": "What are Settings Profiles?",
+      "answer": "Named sets of all gameplay and visual settings (up to 30 profiles) that can be switched instantly. Auto-switching per server type, game mode or input device. 5 automatic backups."
+    },
+    {
+      "question": "What is the Spectator Director?",
+      "answer": "An automatic camera system that follows the most interesting action while spectating. Includes watchlist (20 players), map bookmarks (20 positions), cinematic camera, broadcast HUD, and leaderboard history."
+    },
+    {
+      "question": "What are Custom Macros?",
+      "answer": "3 macro slots for automated action sequences (split, feed, wait, move) with up to 24 steps each. Dry run mode available. Safety timing limits enforced."
+    },
+    {
+      "question": "What are User Scripts / Plugins?",
+      "answer": "5 script slots for custom JavaScript extensions with plugin header format, settings API (up to 20 settings), version compatibility checking, and a catalogue of example plugins."
+    },
+    {
+      "question": "What is the companion second screen?",
+      "answer": "A feature that broadcasts live game state (minimap, mass, cell positions, chat) to a second browser window or device via BroadcastChannel. Useful for multi-monitor setups or streaming."
+    },
+    {
+      "question": "What is the death recap?",
+      "answer": "A Game Over card feature showing the last 20 seconds of your life as 3-6 summarised steps with a mass sparkline, plus the killer's name and mass."
+    },
+    {
+      "question": "What is the Danger Zone?",
+      "answer": "The outer ring during Expanding Land map contraction. Being in it adds +0.01 to the anti-teaming multiplier per cycle, discouraging camping at the edges."
+    },
+    {
+      "question": "How is Expanding Land different from Agar.io?",
+      "answer": "Expanding Land has a dynamic circular arena (not fixed square), is built from scratch in C (~5ms tick), supports 3,840 players per arena, has 200+ spectator slots, anti-teaming and coordinate scrambling anti-cheat, and is by an independent developer (not Miniclip)."
     }
   ]
 }

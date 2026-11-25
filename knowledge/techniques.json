@@ -1,0 +1,99 @@
+{
+  "entity": "https://expanding.land/#game",
+  "updated": "2026-11-25",
+  "techniques": [
+    {
+      "id": "tricksplit",
+      "name": "Tricksplit",
+      "description": "Rapid double or triple split for extended range. Press split in quick succession to project fragments further than a single split.",
+      "difficulty": "intermediate",
+      "keys": "Q (double split), Space×2-3 (manual)",
+      "tips": "Need approximately 2.6x target mass to split-kill. Time splits tightly for maximum range. Practice in the Practice Arena."
+    },
+    {
+      "id": "popsplit",
+      "name": "Popsplit",
+      "description": "Intentional virus pop combined with split. Use a virus pop to scatter your cells, then split from scattered fragments to reach targets at extreme range.",
+      "difficulty": "advanced",
+      "keys": "Alt+Q (pop split hotkey)",
+      "tips": "Requires a nearby virus and careful mass calculation. Risky — you may lose cells to other players during the pop phase."
+    },
+    {
+      "id": "cannon",
+      "name": "Cannon / Self-feed",
+      "description": "Rapid W ejection between own split cells to transfer mass. Feed from small fragments to a chosen cell before splitting it at a target.",
+      "difficulty": "intermediate",
+      "keys": "W (eject mass), E (macro feed)",
+      "tips": "Works best when you have many small fragments and one large cell. Use macro feed (E) for rapid ejection."
+    },
+    {
+      "id": "linesplit",
+      "name": "Line split",
+      "description": "Straight-line rapid multi-split (x8 with 3 splits, x16 with 4 splits). All fragments travel in a line toward the cursor for maximum distance coverage.",
+      "difficulty": "advanced",
+      "keys": "Configurable hotkey (no default)",
+      "tips": "Configure delay between splits (ms) and hold time. Use guide lines setting to visualize the split path. Very high risk — you are split into maximum fragments.",
+      "settings": {
+        "count": "3 (x8) or 4 (x16)",
+        "delay": "Configurable ms between splits",
+        "holdTime": "Lock duration in ms",
+        "guideLines": "Visual line showing split direction"
+      }
+    },
+    {
+      "id": "scantrick",
+      "name": "Scan trick",
+      "description": "Cursor position snaps to fixed directional increments (8-32 directions, configurable distance). Provides pixel-perfect cell positioning for split tricks.",
+      "difficulty": "advanced",
+      "keys": "Configurable hotkey (hold action)",
+      "tips": "Start with 8 directions and increase. Use 'rounded' mode for gentler snapping. Enable status display to see active direction.",
+      "settings": {
+        "directions": "8 to 32",
+        "distance": "Configurable snap distance",
+        "rounded": "Smoother snapping option",
+        "leftMouseOnly": "Only activate with left mouse",
+        "statusDisplay": "Show active direction indicator"
+      }
+    },
+    {
+      "id": "virusshot",
+      "name": "Virus shot",
+      "description": "Feed 7 W-presses into a virus to launch it toward the cursor at another player. Costs approximately 100-110 mass total. The launched virus pops any big cell it hits.",
+      "difficulty": "beginner",
+      "keys": "W × 7",
+      "tips": "Position yourself behind the virus relative to your target. If the target is small enough, they may pass through the virus safely."
+    },
+    {
+      "id": "baitandswitch",
+      "name": "Bait-and-switch",
+      "description": "Deception technique — appear to feed or retreat to lure an opponent into range, then quickly split to consume them.",
+      "difficulty": "intermediate",
+      "keys": "W (bait), Space (split)",
+      "tips": "Works best against aggressive players who chase mass. Feign feeding toward them, then split when they commit."
+    },
+    {
+      "id": "splitrunning",
+      "name": "Split running",
+      "description": "Splitting in the same direction you are moving to gain a speed boost. The front half travels faster than normal movement, useful for chasing or escaping.",
+      "difficulty": "beginner",
+      "keys": "Space (split toward cursor)",
+      "tips": "Good for escaping larger cells. Each split halves your mass but gives a burst of speed. Keep splitting if pursued."
+    },
+    {
+      "id": "virusfarm",
+      "name": "Virus farming",
+      "description": "Intentionally popping yourself on a virus to split into many fragments, then collecting nearby food to gain mass across all fragments simultaneously.",
+      "difficulty": "beginner",
+      "keys": "Move into virus, then collect food",
+      "tips": "Only do this in safe areas with lots of food. Being split into 16 pieces makes you very vulnerable to attack."
+    },
+    {
+      "id": "teamwork-feed",
+      "name": "Teamwork feeding",
+      "description": "In Teams mode, feed mass to a teammate using W to help them grow. Coordinated feeding can quickly create a dominant player.",
+      "difficulty": "beginner",
+      "keys": "W (eject mass toward teammate)",
+      "tips": "Feed the player in the best position to attack or defend. In FFA, excessive feeding triggers the anti-teaming system."
+    }
+  ]
+}

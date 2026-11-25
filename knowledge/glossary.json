@@ -1,0 +1,161 @@
+{
+  "entity": "https://expanding.land/#game",
+  "updated": "2026-11-25",
+  "glossary": [
+    {
+      "term": "Cell",
+      "definition": "The circular blob each player controls. Also called blob, player, or ball.",
+      "category": "basics"
+    },
+    {
+      "term": "Mass",
+      "definition": "Cell size/weight displayed as a number. Decays approximately 0.8% every 4 seconds. Bigger cells decay proportionally faster.",
+      "category": "basics"
+    },
+    {
+      "term": "Food",
+      "definition": "Small coloured dots scattered around the map. Each pellet is worth +1 mass. Also called pellets.",
+      "category": "basics"
+    },
+    {
+      "term": "Virus",
+      "definition": "Spiky green circle that pops big cells into approximately 16 pieces. Feed 7 W-presses into a virus to shoot it at another player (~100-110 mass cost).",
+      "category": "basics"
+    },
+    {
+      "term": "Split",
+      "definition": "Dividing your cell into two halves by pressing Space. Can split up to 16 fragments total. The front half flies toward cursor at high speed.",
+      "category": "controls"
+    },
+    {
+      "term": "Eject mass",
+      "definition": "Pressing W to fire a small pellet (~15-16 mass) toward the cursor. Used to feed teammates, shoot viruses, or reduce mass for speed.",
+      "category": "controls"
+    },
+    {
+      "term": "Merge",
+      "definition": "Split cells rejoin after a timer based on mass. Bigger cells take longer to merge. Players are vulnerable while split.",
+      "category": "mechanics"
+    },
+    {
+      "term": "Decay",
+      "definition": "Automatic mass loss of approximately 0.8% every 4 seconds. Makes extreme size difficult to maintain long-term.",
+      "category": "mechanics"
+    },
+    {
+      "term": "Ghost cell",
+      "definition": "Transparent cell appearing at the location where a player died. An Expanding Land-exclusive feature visible on the minimap.",
+      "category": "mechanics"
+    },
+    {
+      "term": "Dynamic map",
+      "definition": "The circular arena in Expanding Land that auto-resizes from 0.25x to 8x scale based on player count. During contraction, the outer ring becomes a Danger Zone.",
+      "category": "mechanics"
+    },
+    {
+      "term": "Danger Zone",
+      "definition": "The outer ring of the arena during map contraction. Being in the Danger Zone adds +0.01 to the anti-teaming multiplier per cycle, discouraging edge camping.",
+      "category": "mechanics"
+    },
+    {
+      "term": "Anti-teaming",
+      "definition": "Exponential multiplier decay system (Delta Server-style): decay = base × pow(1.086, multiplier). Penalises excessive mass sharing between cooperating players.",
+      "category": "mechanics"
+    },
+    {
+      "term": "Coordinate scrambling",
+      "definition": "Anti-cheat system where each connected player receives different coordinate offsets from the server, preventing external tools from sharing exact positions.",
+      "category": "mechanics"
+    },
+    {
+      "term": "Tricksplit",
+      "definition": "A rapid double or triple split for extended range. Involves pressing split in quick succession (Q key or spacebar combos) to reach distant targets.",
+      "category": "techniques"
+    },
+    {
+      "term": "Popsplit",
+      "definition": "Intentional virus pop combined with split. The player uses a virus pop to scatter their own cells and then splits from the scattered fragments to reach targets.",
+      "category": "techniques"
+    },
+    {
+      "term": "Cannon",
+      "definition": "Also called self-feed. Rapid W ejection between own split cells to transfer mass from one fragment to another, often to grow a cell before splitting it at a target.",
+      "category": "techniques"
+    },
+    {
+      "term": "Line split",
+      "definition": "A straight-line rapid multi-split (x8 or x16) in a straight line toward the cursor. Configurable timing (delay between splits) and lock duration.",
+      "category": "techniques"
+    },
+    {
+      "term": "Scan trick",
+      "definition": "A movement technique where cursor position snaps to fixed directional increments (8-32 directions). Allows precise cell positioning for split tricks.",
+      "category": "techniques"
+    },
+    {
+      "term": "Bait-and-switch",
+      "definition": "A deception technique where a player appears to feed or retreat to lure an opponent into range, then quickly splits to consume them.",
+      "category": "strategy"
+    },
+    {
+      "term": "Teaming",
+      "definition": "Two or more players cooperating in Free-for-All mode. Expanding Land has an anti-teaming system that penalises excessive mass sharing.",
+      "category": "strategy"
+    },
+    {
+      "term": "Multiboxing",
+      "definition": "Controlling multiple game connections simultaneously. Expanding Land allows up to 4 simultaneous accounts per player. Legend Mod provides multibox UI and controls.",
+      "category": "strategy"
+    },
+    {
+      "term": "Spectator",
+      "definition": "A player watching the game without playing. Expanding Land provides 200+ spectator slots with a free-roam camera. Press Escape to spectate.",
+      "category": "community"
+    },
+    {
+      "term": "FFA",
+      "definition": "Free-for-All game mode. Competitive individual play where every player competes against everyone else.",
+      "category": "community"
+    },
+    {
+      "term": "Teams",
+      "definition": "Team-based game mode on supported arenas with assigned team colours. Players cooperate with their team.",
+      "category": "community"
+    },
+    {
+      "term": "Command Centre",
+      "definition": "A fuzzy-search palette activated with Ctrl+K. Search and activate any setting, hotkey, theme option, or window in Legend Mod. Supports multi-language queries.",
+      "category": "el-specific"
+    },
+    {
+      "term": "Theme Workshop",
+      "definition": "A tool to create, save, rename, copy and delete custom themes. Supports up to 30 themes with 5 versions each, live preview with auto-revert.",
+      "category": "el-specific"
+    },
+    {
+      "term": "Settings Profile",
+      "definition": "A named snapshot of all gameplay and visual settings that can be switched instantly. Supports up to 30 profiles, auto-switching per server/mode/input device.",
+      "category": "el-specific"
+    },
+    {
+      "term": "Practice Arena",
+      "definition": "Offline mode for practising against bots without connecting to a server. Uses MultiOgar protocol. Tracks personal bests and replays ghost of best run.",
+      "category": "el-specific"
+    },
+    {
+      "term": "Replay Studio",
+      "definition": "Full playback tool for recorded game replays. Supports timeline, bookmarks, variable speed (0.25x-4x), pause, seek, and packet-by-packet stepping.",
+      "category": "el-specific"
+    },
+    {
+      "term": "LMEvents",
+      "definition": "Hook API for user scripts to listen to game events. Provides frozen plain data for listeners; failing listeners are logged but do not stop the game.",
+      "category": "el-specific"
+    },
+    {
+      "term": "HUD Editor",
+      "definition": "A tool for dragging and resizing HUD elements (leaderboard, minimap, stats, chat) into named layouts. Supports up to 20 layouts with grid snapping.",
+      "category": "el-specific"
+    }
+  ]
+}
