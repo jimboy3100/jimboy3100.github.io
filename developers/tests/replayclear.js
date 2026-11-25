@@ -25,6 +25,9 @@ if (!caseBody || !pkt) { console.log('FAIL code not found'); process.exit(1); }
 const overhead = /\nvar LM_REC_PKT_OVERHEAD = \d+;/.exec(src);
 
 let failed = 0;
+/* the English texts of the language packs (developers/i18n/src), as lmT gives them */
+const EN = {}; Object.values(require('../i18n/lib').readAll()).forEach((a) => Object.keys(a).forEach((k) => { EN[k] = a[k].en; }));
+const enT = (k, v) => { const s = EN[k]; if (s === undefined) return k; if (v == null) return s; if (typeof v !== 'object') v = [v]; return s.replace(/{([A-Za-z0-9_]+)}/g, (m, n) => (v[n] != null ? String(v[n]) : m)); };
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) failed++; };
 
 function boot() {
@@ -33,6 +36,7 @@ function boot() {
         console: { info() { }, log() { } }, Math, Date, Array, Object, JSON, String, DataView, ArrayBuffer, navigator: {},
         toastr: { info(m) { toasts.push(['info', m]); }, success(m) { toasts.push(['success', m]); } },
         confirm(m) { asked.push(m); return ctx.answer; }, answer: true,
+        lmT: enT, _lmMhT: (k, en) => { const t = enT(k); return t !== k ? t : en; },
         defaultmapsettings: { recordReplays: true },
         legendmod: { playingReplayServer: null },
         $: () => ({ val: () => 'wss://live-arena.example:443' })

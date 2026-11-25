@@ -19,7 +19,10 @@ function makeStorage(limit) {
     _map: m
   };
 }
-const ctx = { console, JSON, Math, Date, Object, Array, Number, String, isFinite, setTimeout() { }, clearTimeout() { } };
+/* the English texts of the language packs (developers/i18n/src), as lmT gives them */
+const EN = {}; Object.values(require('../i18n/lib').readAll()).forEach((a) => Object.keys(a).forEach((k) => { EN[k] = a[k].en; }));
+const enT = (k, v) => { const s = EN[k]; if (s === undefined) return k; if (v == null) return s; if (typeof v !== 'object') v = [v]; return s.replace(/{([A-Za-z0-9_]+)}/g, (m, n) => (v[n] != null ? String(v[n]) : m)); };
+const ctx = { lmT: enT, console, JSON, Math, Date, Object, Array, Number, String, isFinite, setTimeout() { }, clearTimeout() { } };
 ctx.window = ctx;
 ctx.localStorage = makeStorage(0);
 ctx.textLanguage = { bgColor: 'Background', hudScale: '<b>HUD</b> scale', messageSound: 'Message notification sound' };
