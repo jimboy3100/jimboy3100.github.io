@@ -12079,7 +12079,7 @@
   },
   "modules.replaystudio.noRec": {
     "en": "No recording yet. Play a game with \"Record replays\" on.",
-    "el": "Καμία εγγραφή ακόμα. Παίξε με ενεργή την «Καταγραφή επαναλήψεων».",
+    "el": "Καμία εγγραφή ακόμα. Παίξε με ενεργή την «Καταγραφή replays».",
     "es": "Aún no hay grabaciones. Juega con «Grabar repeticiones» activado.",
     "bg": "Още няма запис. Играй с включено „Записвай повторения“.",
     "fr": "Aucun enregistrement. Jouez avec « Enregistrer les replays » activé.",
@@ -12583,7 +12583,7 @@
   },
   "modules.replaystudio.recOff": {
     "en": "Turn on \"Record replays\" in Settings first.",
-    "el": "Ενεργοποίησε πρώτα την «Καταγραφή επαναλήψεων» στις Ρυθμίσεις.",
+    "el": "Ενεργοποίησε πρώτα την «Καταγραφή replays» στις Ρυθμίσεις.",
     "es": "Activa primero «Grabar repeticiones» en Ajustes.",
     "bg": "Първо включи „Записвай повторения“ в Настройки.",
     "fr": "Activez d'abord « Enregistrer les replays » dans les Paramètres.",
