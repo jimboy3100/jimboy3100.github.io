@@ -4,7 +4,7 @@
 (window._lmI18nQueue = window._lmI18nQueue || []).push(["tr", "site-nicks", {
 "site.nicks.comboName": "Kombo isim",
 "site.nicks.urbanName": "Urban isim",
-"site.nicks.startTypingYourNick": "Takma adını yazmaya başla...",
+"site.nicks.startTypingYourNick": "Nickini yazmaya başla...",
 "site.nicks.failedToGenerateName": "İsim oluşturulamadı"
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();

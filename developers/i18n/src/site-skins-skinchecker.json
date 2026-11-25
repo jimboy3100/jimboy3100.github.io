@@ -12,10 +12,10 @@
     "tr": "Başlamak için bir görsel yükle (URL veya dosya)",
     "pl": "Wczytaj obraz (URL lub plik), aby zacząć",
     "nl": "Laad een afbeelding (URL of bestand) om te beginnen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Carregue uma imagem (URL ou arquivo) para começar",
+    "id": "Muat gambar (URL atau file) untuk memulai",
+    "ja": "画像 (URL またはファイル) を読み込んで始めましょう",
+    "it": "Carica un'immagine (URL o file) per iniziare"
   },
   "site.skins.skinchecker.localPreviewOnlyImages": {
     "en": "Local preview only: images loaded here are shown only to you. To use as a custom skin, download the PNG, host it (e.g. imgur.com) and paste the link in Legend Mod's skin URL field.",
@@ -30,10 +30,10 @@
     "tr": "Yalnızca yerel önizleme: burada yüklenen görselleri sadece sen görürsün. Özel skin olarak kullanmak için PNG'yi indir, bir yere yükle (ör. imgur.com) ve bağlantıyı Legend Mod'un skin URL alanına yapıştır.",
     "pl": "Tylko lokalny podgląd: obrazy wczytane tutaj widzisz tylko ty. Aby użyć obrazu jako własnego skina, pobierz PNG, wrzuć go na hosting (np. imgur.com) i wklej link w pole URL skina w Legend Mod.",
     "nl": "Alleen lokale voorvertoning: afbeeldingen die je hier laadt, zie alleen jij. Om er een eigen skin van te maken, download je de PNG, host je hem ergens (bijv. imgur.com) en plak je de link in het skin-URL-veld van Legend Mod.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Somente pré-visualização local: as imagens carregadas aqui aparecem só para você. Para usar como skin personalizada, baixe o PNG, hospede-o (por exemplo, no imgur.com) e cole o link no campo de URL da skin do Legend Mod.",
+    "id": "Hanya pratinjau lokal: gambar yang dimuat di sini hanya terlihat olehmu. Untuk dipakai sebagai skin kustom, unduh PNG-nya, hosting di suatu tempat (mis. imgur.com) lalu tempel link-nya di kolom URL skin Legend Mod.",
+    "ja": "ローカルプレビュー専用：ここで読み込んだ画像はあなたにしか表示されません。カスタムスキンとして使うには、PNG をダウンロードしてどこかにアップロードし (imgur.com など)、そのリンクを Legend Mod のスキン URL 欄に貼り付けてください。",
+    "it": "Solo anteprima locale: le immagini caricate qui le vedi solo tu. Per usarla come skin personalizzata, scarica il PNG, caricalo su un hosting (ad es. imgur.com) e incolla il link nel campo URL della skin di Legend Mod."
   },
   "site.skins.skinchecker.imageUrlHttps": {
     "en": "Image URL (https://...)",
@@ -48,10 +48,10 @@
     "tr": "Görsel URL'si (https://...)",
     "pl": "URL obrazu (https://...)",
     "nl": "Afbeeldings-URL (https://...)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "URL da imagem (https://...)",
+    "id": "URL gambar (https://...)",
+    "ja": "画像の URL (https://...)",
+    "it": "URL dell'immagine (https://...)"
   },
   "site.skins.skinchecker.load": {
     "en": "Load",
@@ -66,10 +66,10 @@
     "tr": "Yükle",
     "pl": "Wczytaj",
     "nl": "Laden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Carregar",
+    "id": "Muat",
+    "ja": "読み込む",
+    "it": "Carica"
   },
   "site.skins.skinchecker.file": {
     "en": "File…",
@@ -84,10 +84,10 @@
     "tr": "Dosya…",
     "pl": "Plik…",
     "nl": "Bestand…",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Arquivo…",
+    "id": "File…",
+    "ja": "ファイル…",
+    "it": "File…"
   },
   "site.skins.skinchecker.zoom": {
     "en": "Zoom",
@@ -120,10 +120,10 @@
     "tr": "Döndür",
     "pl": "Obrót",
     "nl": "Draaien",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Girar",
+    "id": "Putar",
+    "ja": "回転",
+    "it": "Ruota"
   },
   "site.skins.skinchecker.rotateLeft90": {
     "en": "Rotate left 90°",
@@ -138,10 +138,10 @@
     "tr": "90° sola döndür",
     "pl": "Obróć w lewo o 90°",
     "nl": "90° naar links draaien",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Girar 90° para a esquerda",
+    "id": "Putar ke kiri 90°",
+    "ja": "左に90°回転",
+    "it": "Ruota a sinistra di 90°"
   },
   "site.skins.skinchecker.rotateRight90": {
     "en": "Rotate right 90°",
@@ -156,10 +156,10 @@
     "tr": "90° sağa döndür",
     "pl": "Obróć w prawo o 90°",
     "nl": "90° naar rechts draaien",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Girar 90° para a direita",
+    "id": "Putar ke kanan 90°",
+    "ja": "右に90°回転",
+    "it": "Ruota a destra di 90°"
   },
   "site.skins.skinchecker.reset": {
     "en": "Reset",
@@ -192,10 +192,10 @@
     "tr": "Önizleme",
     "pl": "Podgląd",
     "nl": "Voorvertoning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pré-visualização",
+    "id": "Pratinjau",
+    "ja": "プレビュー",
+    "it": "Anteprima"
   },
   "site.skins.skinchecker.cellName": {
     "en": "Cell name",
@@ -210,10 +210,10 @@
     "tr": "Hücre adı",
     "pl": "Nazwa komórki",
     "nl": "Celnaam",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nome da célula",
+    "id": "Nama sel",
+    "ja": "セルの名前",
+    "it": "Nome della cellula"
   },
   "site.skins.skinchecker.color": {
     "en": "Color",
@@ -246,10 +246,10 @@
     "tr": "PNG indir",
     "pl": "Pobierz PNG",
     "nl": "PNG downloaden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Baixar PNG",
+    "id": "Unduh PNG",
+    "ja": "PNG をダウンロード",
+    "it": "Scarica PNG"
   },
   "site.skins.skinchecker.keepInBrowser": {
     "en": "Keep in browser",
@@ -264,10 +264,10 @@
     "tr": "Tarayıcıda sakla",
     "pl": "Zachowaj w przeglądarce",
     "nl": "Bewaren in browser",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Guardar no navegador",
+    "id": "Simpan di browser",
+    "ja": "ブラウザーに保存",
+    "it": "Salva nel browser"
   },
   "site.skins.skinchecker.copyDataUrl": {
     "en": "Copy data URL",
@@ -282,10 +282,10 @@
     "tr": "Data URL'yi kopyala",
     "pl": "Kopiuj data URL",
     "nl": "Data-URL kopiëren",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Copiar data URL",
+    "id": "Salin data URL",
+    "ja": "データ URL をコピー",
+    "it": "Copia data URL"
   },
   "site.skins.skinchecker.keptInThisBrowser": {
     "en": "Kept in this browser (local only)",
@@ -300,10 +300,10 @@
     "tr": "Bu tarayıcıda saklananlar (yalnızca yerel)",
     "pl": "Zachowane w tej przeglądarce (tylko lokalnie)",
     "nl": "Bewaard in deze browser (alleen lokaal)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Guardadas neste navegador (só local)",
+    "id": "Tersimpan di browser ini (hanya lokal)",
+    "ja": "このブラウザーに保存済み (ローカルのみ)",
+    "it": "Salvate in questo browser (solo in locale)"
   },
   "site.skins.skinchecker.nothingKeptYet": {
     "en": "Nothing kept yet.",
@@ -318,10 +318,10 @@
     "tr": "Henüz saklanan bir şey yok.",
     "pl": "Nic jeszcze nie zachowano.",
     "nl": "Nog niets bewaard.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nada guardado ainda.",
+    "id": "Belum ada yang disimpan.",
+    "ja": "まだ何も保存されていません。",
+    "it": "Ancora niente di salvato."
   },
   "site.skins.skinchecker.title": {
     "en": "Skin Checker & Editor",
@@ -336,10 +336,10 @@
     "tr": "Skin Kontrol ve Düzenleyici",
     "pl": "Sprawdzarka i edytor skinów",
     "nl": "Skin-checker & editor",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Verificador e editor de skins",
+    "id": "Pemeriksa & Editor Skin",
+    "ja": "スキンチェッカー＆エディター",
+    "it": "Skin Checker ed editor"
   },
   "site.skins.skinchecker.customSkins": {
     "en": "Custom Skins",
@@ -354,10 +354,10 @@
     "tr": "Özel skinler",
     "pl": "Własne skiny",
     "nl": "Eigen skins",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins personalizadas",
+    "id": "Skin Kustom",
+    "ja": "カスタムスキン",
+    "it": "Skin personalizzate"
   },
   "site.skins.skinchecker.colorNone": {
     "en": "None",
@@ -390,10 +390,10 @@
     "tr": "Turkuaz",
     "pl": "Morski",
     "nl": "Groenblauw",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Verde-azulado",
+    "id": "Hijau toska",
+    "ja": "ティール",
+    "it": "Verde acqua"
   },
   "site.skins.skinchecker.colorGreen": {
     "en": "Green",
@@ -408,10 +408,10 @@
     "tr": "Yeşil",
     "pl": "Zielony",
     "nl": "Groen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Verde",
+    "id": "Hijau",
+    "ja": "緑",
+    "it": "Verde"
   },
   "site.skins.skinchecker.colorBlue": {
     "en": "Blue",
@@ -426,10 +426,10 @@
     "tr": "Mavi",
     "pl": "Niebieski",
     "nl": "Blauw",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Azul",
+    "id": "Biru",
+    "ja": "青",
+    "it": "Blu"
   },
   "site.skins.skinchecker.colorYellow": {
     "en": "Yellow",
@@ -444,10 +444,10 @@
     "tr": "Sarı",
     "pl": "Żółty",
     "nl": "Geel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Amarelo",
+    "id": "Kuning",
+    "ja": "黄",
+    "it": "Giallo"
   },
   "site.skins.skinchecker.colorRed": {
     "en": "Red",
@@ -462,10 +462,10 @@
     "tr": "Kırmızı",
     "pl": "Czerwony",
     "nl": "Rood",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vermelho",
+    "id": "Merah",
+    "ja": "赤",
+    "it": "Rosso"
   },
   "site.skins.skinchecker.colorOrange": {
     "en": "Orange",
@@ -480,10 +480,10 @@
     "tr": "Turuncu",
     "pl": "Pomarańczowy",
     "nl": "Oranje",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Laranja",
+    "id": "Oranye",
+    "ja": "オレンジ",
+    "it": "Arancione"
   },
   "site.skins.skinchecker.canvasHint": {
     "en": "Load an image (URL or file)",
@@ -498,10 +498,10 @@
     "tr": "Bir görsel yükle (URL veya dosya)",
     "pl": "Wczytaj obraz (URL lub plik)",
     "nl": "Laad een afbeelding (URL of bestand)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Carregue uma imagem (URL ou arquivo)",
+    "id": "Muat gambar (URL atau file)",
+    "ja": "画像 (URL またはファイル) を読み込んでください",
+    "it": "Carica un'immagine (URL o file)"
   },
   "site.skins.skinchecker.tainted": {
     "en": "This site does not allow its images to be exported. The preview works; to export, save the image and open it as a file.",
@@ -516,10 +516,10 @@
     "tr": "Bu site görsellerinin dışa aktarılmasına izin vermiyor. Önizleme çalışır; dışa aktarmak için görseli kaydet ve dosya olarak aç.",
     "pl": "Ta strona nie pozwala eksportować swoich obrazów. Podgląd działa; aby wyeksportować, zapisz obraz i otwórz go jako plik.",
     "nl": "Deze site staat niet toe dat zijn afbeeldingen worden geëxporteerd. De voorvertoning werkt; om te exporteren sla je de afbeelding op en open je hem als bestand.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este site não permite exportar as imagens dele. A pré-visualização funciona; para exportar, salve a imagem e abra-a como arquivo.",
+    "id": "Situs ini tidak mengizinkan gambarnya diekspor. Pratinjau tetap jalan; untuk mengekspor, simpan gambarnya lalu buka sebagai file.",
+    "ja": "このサイトは画像の書き出しを許可していません。プレビューは使えます。書き出すには、画像を保存してファイルとして開いてください。",
+    "it": "Questo sito non permette di esportare le sue immagini. L'anteprima funziona; per esportare, salva l'immagine e aprila come file."
   },
   "site.skins.skinchecker.loaded": {
     "en": "{0} · Drag the image to place it; wheel or two fingers to zoom.",
@@ -534,10 +534,10 @@
     "tr": "{0} · Yerleştirmek için görseli sürükle; yakınlaştırmak için tekerlek veya iki parmak.",
     "pl": "{0} · Przeciągnij obraz, aby go ustawić; kółko myszy lub dwa palce, aby przybliżyć.",
     "nl": "{0} · Sleep de afbeelding om hem te plaatsen; scrollwiel of twee vingers om te zoomen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} · Arraste a imagem para posicioná-la; use a roda do mouse ou dois dedos para dar zoom.",
+    "id": "{0} · Seret gambar untuk mengatur posisinya; scroll atau dua jari untuk zoom.",
+    "ja": "{0} · 画像をドラッグして位置を調整、ホイールか2本指でズームできます。",
+    "it": "{0} · Trascina l'immagine per posizionarla; rotellina o due dita per lo zoom."
   },
   "site.skins.skinchecker.loadFailed": {
     "en": "The image could not be loaded.",
@@ -552,10 +552,10 @@
     "tr": "Görsel yüklenemedi.",
     "pl": "Nie udało się wczytać obrazu.",
     "nl": "De afbeelding kon niet worden geladen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível carregar a imagem.",
+    "id": "Gambar tidak bisa dimuat.",
+    "ja": "画像を読み込めませんでした。",
+    "it": "Impossibile caricare l'immagine."
   },
   "site.skins.skinchecker.needHttps": {
     "en": "Enter an image link that starts with https://",
@@ -570,10 +570,10 @@
     "tr": "https:// ile başlayan bir görsel bağlantısı gir",
     "pl": "Wpisz link do obrazu zaczynający się od https://",
     "nl": "Voer een afbeeldingslink in die begint met https://",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Digite um link de imagem que comece com https://",
+    "id": "Masukkan link gambar yang diawali https://",
+    "ja": "https:// で始まる画像のリンクを入力してください",
+    "it": "Inserisci un link a un'immagine che inizi con https://"
   },
   "site.skins.skinchecker.notAnImage": {
     "en": "That file is not an image.",
@@ -588,10 +588,10 @@
     "tr": "Bu dosya bir görsel değil.",
     "pl": "Ten plik nie jest obrazem.",
     "nl": "Dat bestand is geen afbeelding.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esse arquivo não é uma imagem.",
+    "id": "File itu bukan gambar.",
+    "ja": "そのファイルは画像ではありません。",
+    "it": "Quel file non è un'immagine."
   },
   "site.skins.skinchecker.fileTooLarge": {
     "en": "The file is too large (20 MB at most).",
@@ -606,10 +606,10 @@
     "tr": "Dosya çok büyük (en fazla 20 MB).",
     "pl": "Plik jest za duży (maksymalnie 20 MB).",
     "nl": "Het bestand is te groot (maximaal 20 MB).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O arquivo é grande demais (máximo de 20 MB).",
+    "id": "File terlalu besar (maksimal 20 MB).",
+    "ja": "ファイルが大きすぎます (最大 20 MB)。",
+    "it": "Il file è troppo grande (massimo 20 MB)."
   },
   "site.skins.skinchecker.exportFailedTainted": {
     "en": "Export failed — the image may be tainted.",
@@ -624,10 +624,10 @@
     "tr": "Dışa aktarma başarısız — görsel “kirli” (tainted) olabilir.",
     "pl": "Eksport nie powiódł się — obraz może być „skażony” (tainted).",
     "nl": "Exporteren mislukt — de afbeelding is mogelijk \"tainted\".",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao exportar: a imagem pode estar bloqueada por outro site.",
+    "id": "Ekspor gagal — gambarnya mungkin diblokir (tainted).",
+    "ja": "書き出しに失敗しました — 画像が外部サイトの制限を受けている可能性があります。",
+    "it": "Esportazione non riuscita: l'immagine potrebbe essere protetta (tainted)."
   },
   "site.skins.skinchecker.storageFull": {
     "en": "Browser storage is full or blocked.",
@@ -642,10 +642,10 @@
     "tr": "Tarayıcı depolama alanı dolu veya engellenmiş.",
     "pl": "Pamięć przeglądarki jest pełna lub zablokowana.",
     "nl": "De browseropslag is vol of geblokkeerd.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O armazenamento do navegador está cheio ou bloqueado.",
+    "id": "Penyimpanan browser penuh atau diblokir.",
+    "ja": "ブラウザーのストレージがいっぱいか、ブロックされています。",
+    "it": "La memoria del browser è piena o bloccata."
   },
   "site.skins.skinchecker.kept": {
     "en": "Kept in this browser. Only you see it, only here.",
@@ -660,10 +660,10 @@
     "tr": "Bu tarayıcıda saklandı. Sadece sen görürsün, sadece burada.",
     "pl": "Zachowano w tej przeglądarce. Widzisz to tylko ty i tylko tutaj.",
     "nl": "Bewaard in deze browser. Alleen jij ziet het, alleen hier.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Guardada neste navegador. Só você vê, e só aqui.",
+    "id": "Tersimpan di browser ini. Hanya kamu yang melihatnya, hanya di sini.",
+    "ja": "このブラウザーに保存しました。見られるのはあなただけ、この端末だけです。",
+    "it": "Salvata in questo browser. La vedi solo tu, e solo qui."
   },
   "site.skins.skinchecker.exportFailed": {
     "en": "Export failed.",
@@ -678,10 +678,10 @@
     "tr": "Dışa aktarma başarısız.",
     "pl": "Eksport nie powiódł się.",
     "nl": "Exporteren mislukt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao exportar.",
+    "id": "Ekspor gagal.",
+    "ja": "書き出しに失敗しました。",
+    "it": "Esportazione non riuscita."
   },
   "site.skins.skinchecker.dataUrlCopied": {
     "en": "Data URL copied. It works only on this device; the skin field needs a hosted https link.",
@@ -696,10 +696,10 @@
     "tr": "Data URL kopyalandı. Yalnızca bu cihazda çalışır; skin alanı barındırılan bir https bağlantısı ister.",
     "pl": "Skopiowano data URL. Działa tylko na tym urządzeniu; pole skina wymaga linku https z hostingu.",
     "nl": "Data-URL gekopieerd. Hij werkt alleen op dit apparaat; het skinveld heeft een gehoste https-link nodig.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Data URL copiada. Ela só funciona neste dispositivo; o campo de skin precisa de um link https hospedado.",
+    "id": "Data URL disalin. Ini hanya berfungsi di perangkat ini; kolom skin butuh link https yang di-hosting.",
+    "ja": "データ URL をコピーしました。この端末でしか使えません。スキン欄には https のホスト済みリンクが必要です。",
+    "it": "Data URL copiato. Funziona solo su questo dispositivo; il campo skin richiede un link https ospitato online."
   },
   "site.skins.skinchecker.copyBlocked": {
     "en": "Copying is blocked in this browser.",
@@ -714,10 +714,10 @@
     "tr": "Bu tarayıcıda kopyalama engellenmiş.",
     "pl": "Kopiowanie jest zablokowane w tej przeglądarce.",
     "nl": "Kopiëren is geblokkeerd in deze browser.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Copiar está bloqueado neste navegador.",
+    "id": "Menyalin diblokir di browser ini.",
+    "ja": "このブラウザーではコピーがブロックされています。",
+    "it": "La copia è bloccata in questo browser."
   },
   "site.skins.skinchecker.defaultName": {
     "en": "Skin",
@@ -750,10 +750,10 @@
     "tr": "Düzenleyicide aç",
     "pl": "Otwórz w edytorze",
     "nl": "Openen in editor",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Abrir no editor",
+    "id": "Buka di editor",
+    "ja": "エディターで開く",
+    "it": "Apri nell'editor"
   },
   "site.skins.skinchecker.delete": {
     "en": "Delete",

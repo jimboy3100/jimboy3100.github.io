@@ -338,6 +338,8 @@ color:#FFFFFF;
 font-size:25px;
 }
 .tab{
+/* the label padding (was &nbsp; in the text, lost when the language pack replaces it) */
+padding:0 .25em;
 background:#000000;
 border:1px solid#FFFFFF;
 color:#FFFFFF;
@@ -349,6 +351,7 @@ border:1px solid#FFFFFF;
 color:#000000;
 }
 .tabActive{
+padding:0 .25em;
 background:#FFFFFF;
 border:1px solid#FFFFFF;
 color:#000000;
@@ -396,8 +399,8 @@ cursor:pointer;
  <br><span data-i18n-html="site.skinrotator.generateNickname">*** Generate <a target="_blank" href="https://jimboy3100.github.io/nicks" rel="noopener"><b style="color:#FF0000">nickname</b></a></span></div>
 <div id="tab" style="width:100%">
 <span data-i18n="site.skinrotator.version" style="display:inline; font-size: 25px;">Version:</span> <select id="ss-select-agarVersionDestinations" onchange="changeFunction()" class="form-control" required="" style="display:inline; width: 160px; margin-top: -30px;font-size: 25px;"></select>
-<a data-i18n="site.skinrotator.webConsoleF12" class="tabActive" id="wc" href="javascript:void(0);">&nbsp;Web console [F12]&nbsp;</a>
-<a data-i18n="site.skinrotator.tampermonkeyGreasemonkey" class="tab" id="tm" href="javascript:void(0);">&nbsp; Tampermonkey | Greasemonkey&nbsp;</a>
+<a data-i18n="site.skinrotator.webConsoleF12" class="tabActive" id="wc" href="javascript:void(0);">Web console [F12]</a>
+<a data-i18n="site.skinrotator.tampermonkeyGreasemonkey" class="tab" id="tm" href="javascript:void(0);">Tampermonkey | Greasemonkey</a>
 </div>
 <div id="btn">
 <div data-i18n="site.skinrotator.copy" id="copy">Copy</div><div data-i18n="site.skinrotator.clear" id="clear">Clear</div></div><div id="social">

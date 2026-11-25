@@ -1,7 +1,7 @@
 {
   "game2.tag.server": {
     "en": "SERVER",
-    "el": "ΔΙΑΚΟΜΙΣΤΗΣ",
+    "el": "SERVER",
     "es": "SERVIDOR",
     "bg": "СЪРВЪР",
     "fr": "SERVEUR",
@@ -48,10 +48,10 @@
     "tr": "ÖDÜL",
     "pl": "NAGRODA",
     "nl": "BELONING",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "RECOMPENSA",
+    "id": "HADIAH",
+    "ja": "報酬",
+    "it": "RICOMPENSA"
   },
   "game2.tag.potion": {
     "en": "POTION",
@@ -66,10 +66,10 @@
     "tr": "İKSİR",
     "pl": "MIKSTURA",
     "nl": "DRANKJE",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "POÇÃO",
+    "id": "RAMUAN",
+    "ja": "ポーション",
+    "it": "POZIONE"
   },
   "game2.tag.league": {
     "en": "LEAGUE",
@@ -84,28 +84,28 @@
     "tr": "LİG",
     "pl": "LIGA",
     "nl": "COMPETITIE",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "LIGA",
+    "id": "LIGA",
+    "ja": "リーグ",
+    "it": "LEGA"
   },
   "game2.tag.party": {
     "en": "PARTY",
-    "el": "ΠΑΡΕΑ",
-    "es": "GRUPO",
-    "bg": "ГРУПА",
-    "fr": "GROUPE",
-    "ar": "المجموعة",
-    "zh": "派對",
-    "ru": "ГРУППА",
+    "el": "PARTY",
+    "es": "PARTY",
+    "bg": "ПАРТИ",
+    "fr": "PARTY",
+    "ar": "بارتي",
+    "zh": "組隊",
+    "ru": "ПАТИ",
     "de": "PARTY",
     "tr": "PARTİ",
-    "pl": "DRUŻYNA",
+    "pl": "PARTY",
     "nl": "PARTY",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "PARTY",
+    "id": "PARTY",
+    "ja": "パーティー",
+    "it": "PARTY"
   },
   "game2.adminNotice": {
     "en": "Admin Notice",
@@ -120,10 +120,10 @@
     "tr": "Yönetici bildirimi",
     "pl": "Komunikat administratora",
     "nl": "Melding van beheerder",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aviso do admin",
+    "id": "Pemberitahuan Admin",
+    "ja": "管理者からのお知らせ",
+    "it": "Avviso dell'admin"
   },
   "game2.adminCommand": {
     "en": "Admin Command",
@@ -138,10 +138,10 @@
     "tr": "Yönetici komutu",
     "pl": "Polecenie administratora",
     "nl": "Beheerdersopdracht",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Comando do admin",
+    "id": "Perintah Admin",
+    "ja": "管理者コマンド",
+    "it": "Comando admin"
   },
   "game2.botCommandsHint": {
     "en": "For bot commands look at Hotkeys",
@@ -156,13 +156,13 @@
     "tr": "Bot komutları için Kısayol tuşlarına bakın",
     "pl": "Polecenia botów znajdziesz w Skrótach klawiszowych",
     "nl": "Botopdrachten vind je bij Sneltoetsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os comandos dos bots estão em Teclas de atalho",
+    "id": "Perintah bot ada di Hotkey",
+    "ja": "ボットのコマンドは「ショートカット」を見てください",
+    "it": "I comandi dei bot sono in Tasti rapidi"
   },
   "game2.brRanks": {
-    "en": "Battle Royal Ranks:",
+    "en": "Battle Royale ranks:",
     "el": "Κατάταξη Battle Royale:",
     "es": "Clasificación Battle Royale:",
     "bg": "Класиране в Battle Royale:",
@@ -174,10 +174,10 @@
     "tr": "Battle Royale sıralaması:",
     "pl": "Ranking Battle Royale:",
     "nl": "Battle Royale-ranglijst:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ranking do Battle Royale:",
+    "id": "Peringkat Battle Royale:",
+    "ja": "バトルロイヤル順位：",
+    "it": "Classifica Battle Royale:"
   },
   "game2.brYourRank": {
     "en": "Your rank:",
@@ -192,10 +192,10 @@
     "tr": "Sıralaman:",
     "pl": "Twoje miejsce:",
     "nl": "Jouw plaats:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sua posição:",
+    "id": "Peringkatmu:",
+    "ja": "あなたの順位：",
+    "it": "La tua posizione:"
   },
   "game2.garixCaptcha": {
     "en": "Garix requires a captcha ({0}) that Legend Mod cannot solve. Spawning may be refused; use the official Garix client.",
@@ -210,10 +210,10 @@
     "tr": "Garix, Legend Mod’un çözemediği bir captcha ({0}) istiyor. Doğma reddedilebilir; resmi Garix istemcisini kullanın.",
     "pl": "Garix wymaga captchy ({0}), której Legend Mod nie potrafi rozwiązać. Odrodzenie może zostać odrzucone; użyj oficjalnego klienta Garix.",
     "nl": "Garix vraagt een captcha ({0}) die Legend Mod niet kan oplossen. Spawnen kan geweigerd worden; gebruik de officiële Garix-client.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Garix exige um captcha ({0}) que o Legend Mod não consegue resolver. O spawn pode ser recusado; use o cliente oficial do Garix.",
+    "id": "Garix meminta captcha ({0}) yang tidak bisa diselesaikan Legend Mod. Spawn mungkin ditolak; pakai klien resmi Garix.",
+    "ja": "Garix は Legend Mod では解けないキャプチャ ({0}) を要求します。出現を拒否される場合があるので、Garix 公式クライアントを使ってください。",
+    "it": "Garix richiede un captcha ({0}) che Legend Mod non può risolvere. L'ingresso in gioco potrebbe essere rifiutato: usa il client ufficiale di Garix."
   },
   "game2.unknown": {
     "en": "Unknown",
@@ -264,10 +264,10 @@
     "tr": "Geçersiz satın alma yanıtı.",
     "pl": "Nieprawidłowa odpowiedź zakupu.",
     "nl": "Ongeldig aankoopantwoord.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Resposta de compra inválida.",
+    "id": "Respons pembelian tidak valid.",
+    "ja": "購入の応答が無効です。",
+    "it": "Risposta all'acquisto non valida."
   },
   "game2.purchaseOk": {
     "en": "Purchase successful!",
@@ -282,10 +282,10 @@
     "tr": "Satın alma başarılı!",
     "pl": "Zakup udany!",
     "nl": "Aankoop gelukt!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Compra concluída!",
+    "id": "Pembelian berhasil!",
+    "ja": "購入しました！",
+    "it": "Acquisto completato!"
   },
   "game2.purchaseNoFunds": {
     "en": "Purchase failed — not enough DNA/coins.",
@@ -297,13 +297,13 @@
     "zh": "購買失敗——DNA/金幣不足。",
     "ru": "Покупка не удалась — не хватает ДНК/монет.",
     "de": "Kauf fehlgeschlagen — nicht genug DNA/Münzen.",
-    "tr": "Satın alma başarısız — yeterli DNA/jeton yok.",
+    "tr": "Satın alma başarısız — yeterli DNA/altın yok.",
     "pl": "Zakup nieudany — za mało DNA/monet.",
     "nl": "Aankoop mislukt — niet genoeg DNA/munten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A compra falhou — DNA/moedas insuficientes.",
+    "id": "Pembelian gagal — DNA/koin tidak cukup.",
+    "ja": "購入に失敗しました — DNA/コインが足りません。",
+    "it": "Acquisto non riuscito: DNA/monete insufficienti."
   },
   "game2.purchaseUnavailable": {
     "en": "Purchase failed — item not available.",
@@ -318,10 +318,10 @@
     "tr": "Satın alma başarısız — ürün mevcut değil.",
     "pl": "Zakup nieudany — przedmiot niedostępny.",
     "nl": "Aankoop mislukt — item niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A compra falhou — item indisponível.",
+    "id": "Pembelian gagal — item tidak tersedia.",
+    "ja": "購入に失敗しました — このアイテムは利用できません。",
+    "it": "Acquisto non riuscito: oggetto non disponibile."
   },
   "game2.purchaseCode": {
     "en": "Purchase response: code",
@@ -336,10 +336,10 @@
     "tr": "Satın alma yanıtı: kod",
     "pl": "Odpowiedź zakupu: kod",
     "nl": "Aankoopantwoord: code",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Resposta da compra: código",
+    "id": "Respons pembelian: kode",
+    "ja": "購入の応答：コード",
+    "it": "Risposta all'acquisto: codice"
   },
   "game2.iapOk": {
     "en": "In-app purchase confirmed!",
@@ -354,10 +354,10 @@
     "tr": "Uygulama içi satın alma onaylandı!",
     "pl": "Zakup w aplikacji potwierdzony!",
     "nl": "In-app-aankoop bevestigd!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Compra no app confirmada!",
+    "id": "Pembelian dalam aplikasi dikonfirmasi!",
+    "ja": "アプリ内購入を確認しました！",
+    "it": "Acquisto in-app confermato!"
   },
   "game2.iapFailed": {
     "en": "In-app purchase failed (code {0})",
@@ -372,10 +372,10 @@
     "tr": "Uygulama içi satın alma başarısız (kod {0})",
     "pl": "Zakup w aplikacji nieudany (kod {0})",
     "nl": "In-app-aankoop mislukt (code {0})",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A compra no app falhou (código {0})",
+    "id": "Pembelian dalam aplikasi gagal (kode {0})",
+    "ja": "アプリ内購入に失敗しました (コード {0})",
+    "it": "Acquisto in-app non riuscito (codice {0})"
   },
   "game2.bundleOk": {
     "en": "Bundle purchased successfully!",
@@ -390,10 +390,10 @@
     "tr": "Paket başarıyla satın alındı!",
     "pl": "Pakiet kupiony!",
     "nl": "Bundel gekocht!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pacote comprado com sucesso!",
+    "id": "Paket berhasil dibeli!",
+    "ja": "バンドルを購入しました！",
+    "it": "Pacchetto acquistato!"
   },
   "game2.bundleInactive": {
     "en": "Offer bundle rejected — offer not active.",
@@ -408,10 +408,10 @@
     "tr": "Teklif paketi reddedildi — teklif etkin değil.",
     "pl": "Pakiet oferty odrzucony — oferta nieaktywna.",
     "nl": "Aanbiedingsbundel geweigerd — aanbieding niet actief.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pacote da oferta recusado — a oferta não está ativa.",
+    "id": "Paket penawaran ditolak — penawaran tidak aktif.",
+    "ja": "バンドルを購入できません — オファーの期間外です。",
+    "it": "Pacchetto offerta rifiutato: l'offerta non è attiva."
   },
   "game2.bundlePreconditions": {
     "en": "Offer bundle rejected — preconditions failed (e.g. not enough skin pieces or progression requirements not met).",
@@ -423,13 +423,13 @@
     "zh": "優惠組合包被拒——條件不符（例如造型碎片不足或未達進度要求）。",
     "ru": "Набор отклонён — условия не выполнены (например, мало частей скина или не выполнены требования прогресса).",
     "de": "Angebotspaket abgelehnt — Voraussetzungen nicht erfüllt (z. B. zu wenige Skin-Teile oder Fortschritt fehlt).",
-    "tr": "Teklif paketi reddedildi — ön koşullar sağlanmadı (ör. yetersiz kostüm parçası veya ilerleme şartları).",
+    "tr": "Teklif paketi reddedildi — ön koşullar sağlanmadı (ör. yetersiz skin parçası veya ilerleme şartları).",
     "pl": "Pakiet oferty odrzucony — niespełnione warunki (np. za mało części skina lub brak wymaganego postępu).",
     "nl": "Aanbiedingsbundel geweigerd — voorwaarden niet vervuld (bijv. te weinig skinstukjes of voortgangseisen niet gehaald).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pacote da oferta recusado — requisitos não atendidos (por exemplo, peças de skin insuficientes ou progresso necessário não alcançado).",
+    "id": "Paket penawaran ditolak — syarat tidak terpenuhi (misalnya kepingan skin kurang atau syarat progres belum tercapai).",
+    "ja": "バンドルを購入できません — 条件を満たしていません (スキンのピースが足りない、進行条件を満たしていないなど)。",
+    "it": "Pacchetto offerta rifiutato: requisiti non soddisfatti (ad es. pezzi di skin insufficienti o progressi non raggiunti)."
   },
   "game2.bundleCode": {
     "en": "Offer bundle response: unknown result code {0}",
@@ -444,10 +444,10 @@
     "tr": "Teklif paketi yanıtı: bilinmeyen sonuç kodu {0}",
     "pl": "Odpowiedź pakietu oferty: nieznany kod {0}",
     "nl": "Antwoord aanbiedingsbundel: onbekende code {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Resposta do pacote da oferta: código de resultado desconhecido {0}",
+    "id": "Respons paket penawaran: kode hasil tidak dikenal {0}",
+    "ja": "バンドルの応答：不明な結果コード {0}",
+    "it": "Risposta al pacchetto offerta: codice di risultato sconosciuto {0}"
   },
   "game2.statsLine": {
     "en": "Level {0} | Mass Consumed: {1} | Highest Mass: {2}",
@@ -462,10 +462,10 @@
     "tr": "Seviye {0} | Tüketilen kütle: {1} | En yüksek kütle: {2}",
     "pl": "Poziom {0} | Zjedzona masa: {1} | Największa masa: {2}",
     "nl": "Level {0} | Gegeten massa: {1} | Hoogste massa: {2}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nível {0} | Massa consumida: {1} | Maior massa: {2}",
+    "id": "Level {0} | Massa Dimakan: {1} | Massa Tertinggi: {2}",
+    "ja": "レベル {0} | 食べた質量：{1} | 最高質量：{2}",
+    "it": "Livello {0} | Massa mangiata: {1} | Massa massima: {2}"
   },
   "game2.giftClaimed": {
     "en": "Gift claimed successfully!",
@@ -480,10 +480,10 @@
     "tr": "Hediye başarıyla alındı!",
     "pl": "Prezent odebrany!",
     "nl": "Cadeau opgehaald!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Presente resgatado com sucesso!",
+    "id": "Hadiah berhasil diklaim!",
+    "ja": "ギフトを受け取りました！",
+    "it": "Regalo riscattato!"
   },
   "game2.giftConsumed": {
     "en": "Gift requests consumed",
@@ -498,10 +498,10 @@
     "tr": "Hediye istekleri kullanıldı",
     "pl": "Prośby o prezenty wykorzystane",
     "nl": "Cadeauverzoeken gebruikt",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pedidos de presente usados",
+    "id": "Permintaan hadiah sudah dipakai",
+    "ja": "ギフトリクエストを使用しました",
+    "it": "Richieste di regalo usate"
   },
   "game2.giftSent": {
     "en": "Gift requests sent",
@@ -516,10 +516,10 @@
     "tr": "Hediye istekleri gönderildi",
     "pl": "Prośby o prezenty wysłane",
     "nl": "Cadeauverzoeken verstuurd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pedidos de presente enviados",
+    "id": "Permintaan hadiah terkirim",
+    "ja": "ギフトリクエストを送りました",
+    "it": "Richieste di regalo inviate"
   },
   "game2.inviteReward": {
     "en": "Invitation reward received!",
@@ -534,28 +534,28 @@
     "tr": "Davet ödülü alındı!",
     "pl": "Otrzymano nagrodę za zaproszenie!",
     "nl": "Uitnodigingsbeloning ontvangen!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recompensa de convite recebida!",
+    "id": "Hadiah undangan diterima!",
+    "ja": "招待報酬を受け取りました！",
+    "it": "Ricompensa per l'invito ricevuta!"
   },
   "game2.boostFailed": {
     "en": "Boost could not be activated.",
-    "el": "Η ενίσχυση δεν ενεργοποιήθηκε.",
-    "es": "No se pudo activar el potenciador.",
-    "bg": "Бустът не можа да се активира.",
+    "el": "Το boost δεν ενεργοποιήθηκε.",
+    "es": "No se pudo activar el boost.",
+    "bg": "Буустът не можа да се активира.",
     "fr": "Le boost n’a pas pu être activé.",
     "ar": "تعذّر تفعيل المعزّز.",
     "zh": "無法啟用加成。",
     "ru": "Не удалось активировать буст.",
     "de": "Boost konnte nicht aktiviert werden.",
-    "tr": "Güçlendirme etkinleştirilemedi.",
-    "pl": "Nie udało się aktywować wzmocnienia.",
+    "tr": "Takviye etkinleştirilemedi.",
+    "pl": "Nie udało się aktywować boosta.",
     "nl": "Boost kon niet worden geactiveerd.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível ativar o boost.",
+    "id": "Boost tidak bisa diaktifkan.",
+    "ja": "ブーストを有効にできませんでした。",
+    "it": "Impossibile attivare il boost."
   },
   "game2.questFailed": {
     "en": "Quest could not be activated.",
@@ -570,10 +570,10 @@
     "tr": "Görev etkinleştirilemedi.",
     "pl": "Nie udało się aktywować zadania.",
     "nl": "Missie kon niet worden geactiveerd.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível ativar a missão.",
+    "id": "Misi tidak bisa diaktifkan.",
+    "ja": "クエストを開始できませんでした。",
+    "it": "Impossibile attivare la missione."
   },
   "game2.potionNoFunds": {
     "en": "Potion not opened — not enough currency.",
@@ -588,10 +588,10 @@
     "tr": "İksir açılmadı — yeterli para yok.",
     "pl": "Mikstura nieotwarta — za mało waluty.",
     "nl": "Drankje niet geopend — niet genoeg valuta.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Poção não aberta — moedas insuficientes.",
+    "id": "Ramuan tidak dibuka — mata uang tidak cukup.",
+    "ja": "ポーションを開けられません — 通貨が足りません。",
+    "it": "Pozione non aperta: valuta insufficiente."
   },
   "game2.potionCode": {
     "en": "Potion not opened (code {0}).",
@@ -606,10 +606,10 @@
     "tr": "İksir açılmadı (kod {0}).",
     "pl": "Mikstura nieotwarta (kod {0}).",
     "nl": "Drankje niet geopend (code {0}).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Poção não aberta (código {0}).",
+    "id": "Ramuan tidak dibuka (kode {0}).",
+    "ja": "ポーションを開けられませんでした (コード {0})。",
+    "it": "Pozione non aperta (codice {0})."
   },
   "game2.potionBusy": {
     "en": "Already brewing another potion. Wait for it to finish.",
@@ -624,10 +624,10 @@
     "tr": "Zaten başka bir iksir demleniyor. Bitmesini bekleyin.",
     "pl": "Już warzy się inna mikstura. Poczekaj, aż się skończy.",
     "nl": "Er wordt al een ander drankje gebrouwen. Wacht tot het klaar is.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você já está preparando outra poção. Espere ela terminar.",
+    "id": "Ramuan lain masih diracik. Tunggu sampai selesai.",
+    "ja": "別のポーションを醸造中です。終わるまでお待ちください。",
+    "it": "Stai già preparando un'altra pozione. Aspetta che finisca."
   },
   "game2.potionNotBrewable": {
     "en": "Potion not available to brew.",
@@ -642,10 +642,10 @@
     "tr": "Bu iksir demlenemez.",
     "pl": "Tej mikstury nie można uwarzyć.",
     "nl": "Dit drankje kan niet gebrouwen worden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta poção não está disponível para preparo.",
+    "id": "Ramuan tidak bisa diracik.",
+    "ja": "このポーションは醸造できません。",
+    "it": "Questa pozione non si può preparare."
   },
   "game2.potionNotReady": {
     "en": "Potion is not ready yet.",
@@ -660,10 +660,10 @@
     "tr": "İksir henüz hazır değil.",
     "pl": "Mikstura nie jest jeszcze gotowa.",
     "nl": "Het drankje is nog niet klaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A poção ainda não está pronta.",
+    "id": "Ramuan belum siap.",
+    "ja": "ポーションはまだできていません。",
+    "it": "La pozione non è ancora pronta."
   },
   "game2.leaguePassMe": {
     "en": "You passed {0} in the league!",
@@ -678,10 +678,10 @@
     "tr": "Ligde {0} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {0} w lidze!",
     "nl": "Je bent {0} voorbij in de competitie!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você passou {0} na liga!",
+    "id": "Kamu menyalip {0} di liga!",
+    "ja": "リーグで {0} を抜きました！",
+    "it": "Hai superato {0} nella lega!"
   },
   "game2.leaguePassYou": {
     "en": "{0} passed you in the league!",
@@ -696,10 +696,10 @@
     "tr": "{0} ligde seni geçti!",
     "pl": "{0} wyprzedził cię w lidze!",
     "nl": "{0} is je voorbij in de competitie!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} passou você na liga!",
+    "id": "{0} menyalipmu di liga!",
+    "ja": "リーグで {0} に抜かれました！",
+    "it": "{0} ti ha superato nella lega!"
   },
   "game2.aFriend": {
     "en": "A friend",
@@ -714,32 +714,32 @@
     "tr": "Bir arkadaş",
     "pl": "Znajomy",
     "nl": "Een vriend",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Um amigo",
+    "id": "Seorang teman",
+    "ja": "フレンド",
+    "it": "Un amico"
   },
   "game2.partyInvite": {
     "en": "{0} invited you to a party. Click to join.",
-    "el": "Ο/Η {0} σας προσκάλεσε σε παρέα. Πατήστε για συμμετοχή.",
-    "es": "{0} te ha invitado a un grupo. Haz clic para unirte.",
-    "bg": "{0} ви покани в група. Натиснете, за да се присъедините.",
-    "fr": "{0} vous a invité dans un groupe. Cliquez pour rejoindre.",
-    "ar": "دعاك {0} إلى مجموعة. انقر للانضمام.",
-    "zh": "{0} 邀請你加入派對，點擊加入。",
-    "ru": "{0} пригласил вас в группу. Нажмите, чтобы присоединиться.",
+    "el": "Ο/Η {0} σας προσκάλεσε σε party. Πατήστε για συμμετοχή.",
+    "es": "{0} te ha invitado a una party. Haz clic para unirte.",
+    "bg": "{0} ви покани в парти. Натиснете, за да се присъедините.",
+    "fr": "{0} vous a invité dans une party. Cliquez pour rejoindre.",
+    "ar": "دعاك {0} إلى بارتي. انقر للانضمام.",
+    "zh": "{0} 邀請你組隊，點擊加入。",
+    "ru": "{0} пригласил вас в пати. Нажмите, чтобы присоединиться.",
     "de": "{0} hat dich zu einer Party eingeladen. Klicke zum Beitreten.",
     "tr": "{0} seni bir partiye davet etti. Katılmak için tıkla.",
-    "pl": "{0} zaprasza cię do drużyny. Kliknij, aby dołączyć.",
+    "pl": "{0} zaprasza cię do party. Kliknij, aby dołączyć.",
     "nl": "{0} heeft je uitgenodigd voor een party. Klik om mee te doen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} convidou você para uma party. Clique para entrar.",
+    "id": "{0} mengundangmu ke party. Klik untuk bergabung.",
+    "ja": "{0} からパーティーに招待されました。クリックして参加。",
+    "it": "{0} ti ha invitato in un party. Clicca per entrare."
   },
   "game2.skinNoId": {
     "en": "Server accepted upload but returned no skin ID.",
-    "el": "Ο διακομιστής δέχτηκε τη μεταφόρτωση αλλά δεν έδωσε ID skin.",
+    "el": "Ο server δέχτηκε το ανέβασμα αλλά δεν έδωσε ID skin.",
     "es": "El servidor aceptó la subida pero no devolvió ID de skin.",
     "bg": "Сървърът прие качването, но не върна ID на скина.",
     "fr": "Le serveur a accepté l’envoi mais n’a renvoyé aucun ID de skin.",
@@ -747,13 +747,13 @@
     "zh": "伺服器已接受上傳，但沒有回傳造型 ID。",
     "ru": "Сервер принял загрузку, но не вернул ID скина.",
     "de": "Der Server hat den Upload angenommen, aber keine Skin-ID zurückgegeben.",
-    "tr": "Sunucu yüklemeyi kabul etti ama kostüm kimliği döndürmedi.",
+    "tr": "Sunucu yüklemeyi kabul etti ama skin kimliği döndürmedi.",
     "pl": "Serwer przyjął plik, ale nie zwrócił ID skina.",
     "nl": "De server nam de upload aan maar gaf geen skin-ID terug.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O servidor aceitou o envio, mas não retornou o ID da skin.",
+    "id": "Server menerima unggahan tapi tidak mengirim ID skin.",
+    "ja": "サーバーはアップロードを受け付けましたが、スキン ID が返ってきませんでした。",
+    "it": "Il server ha accettato il caricamento ma non ha restituito un ID skin."
   },
   "game2.skinNotPublished": {
     "en": "Agar.io accepted the transaction but did not return a published custom skin.",
@@ -765,13 +765,13 @@
     "zh": "Agar.io 已接受交易，但沒有回傳已發布的自訂造型。",
     "ru": "Agar.io принял транзакцию, но не вернул опубликованный скин.",
     "de": "Agar.io hat die Transaktion angenommen, aber keinen veröffentlichten eigenen Skin zurückgegeben.",
-    "tr": "Agar.io işlemi kabul etti ama yayımlanmış özel kostüm döndürmedi.",
+    "tr": "Agar.io işlemi kabul etti ama yayımlanmış özel skin döndürmedi.",
     "pl": "Agar.io przyjął transakcję, ale nie zwrócił opublikowanego własnego skina.",
     "nl": "Agar.io nam de transactie aan maar gaf geen gepubliceerde eigen skin terug.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Agar.io aceitou a transação, mas não retornou uma skin personalizada publicada.",
+    "id": "Agar.io menerima transaksi tapi tidak mengirim skin kustom yang terbit.",
+    "ja": "Agar.io は取引を受け付けましたが、公開されたカスタムスキンが返ってきませんでした。",
+    "it": "Agar.io ha accettato la transazione ma non ha restituito una skin personalizzata pubblicata."
   },
   "game2.skinCreated": {
     "en": "Skin created successfully!",
@@ -783,13 +783,13 @@
     "zh": "造型建立成功！",
     "ru": "Скин успешно создан!",
     "de": "Skin erfolgreich erstellt!",
-    "tr": "Kostüm başarıyla oluşturuldu!",
+    "tr": "Skin başarıyla oluşturuldu!",
     "pl": "Skin utworzony!",
     "nl": "Skin aangemaakt!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skin criada com sucesso!",
+    "id": "Skin berhasil dibuat!",
+    "ja": "スキンを作成しました！",
+    "it": "Skin creata!"
   },
   "game2.skinRegistered": {
     "en": "Custom skin created and registered:",
@@ -801,13 +801,13 @@
     "zh": "自訂造型已建立並註冊：",
     "ru": "Свой скин создан и зарегистрирован:",
     "de": "Eigener Skin erstellt und registriert:",
-    "tr": "Özel kostüm oluşturuldu ve kaydedildi:",
+    "tr": "Özel skin oluşturuldu ve kaydedildi:",
     "pl": "Własny skin utworzony i zarejestrowany:",
     "nl": "Eigen skin aangemaakt en geregistreerd:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skin personalizada criada e registrada:",
+    "id": "Skin kustom dibuat dan terdaftar:",
+    "ja": "カスタムスキンを作成・登録しました：",
+    "it": "Skin personalizzata creata e registrata:"
   },
   "game2.skinFailed": {
     "en": "Skin creation failed.",
@@ -819,13 +819,13 @@
     "zh": "造型建立失敗。",
     "ru": "Не удалось создать скин.",
     "de": "Skin-Erstellung fehlgeschlagen.",
-    "tr": "Kostüm oluşturulamadı.",
+    "tr": "Skin oluşturulamadı.",
     "pl": "Nie udało się utworzyć skina.",
     "nl": "Skin aanmaken mislukt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao criar a skin.",
+    "id": "Pembuatan skin gagal.",
+    "ja": "スキンの作成に失敗しました。",
+    "it": "Creazione della skin non riuscita."
   },
   "game2.insufficientFunds": {
     "en": "Insufficient funds.",
@@ -840,10 +840,10 @@
     "tr": "Yetersiz bakiye.",
     "pl": "Niewystarczające środki.",
     "nl": "Onvoldoende saldo.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Saldo insuficiente.",
+    "id": "Dana tidak cukup.",
+    "ja": "残高が足りません。",
+    "it": "Fondi insufficienti."
   },
   "game2.skinNoFunds": {
     "en": "Skin creation failed — insufficient funds.",
@@ -855,13 +855,13 @@
     "zh": "造型建立失敗——餘額不足。",
     "ru": "Не удалось создать скин — недостаточно средств.",
     "de": "Skin-Erstellung fehlgeschlagen — nicht genug Guthaben.",
-    "tr": "Kostüm oluşturulamadı — yetersiz bakiye.",
+    "tr": "Skin oluşturulamadı — yetersiz bakiye.",
     "pl": "Nie udało się utworzyć skina — niewystarczające środki.",
     "nl": "Skin aanmaken mislukt — onvoldoende saldo.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao criar a skin — saldo insuficiente.",
+    "id": "Pembuatan skin gagal — dana tidak cukup.",
+    "ja": "スキンの作成に失敗しました — 残高が足りません。",
+    "it": "Creazione della skin non riuscita: fondi insufficienti."
   },
   "game2.txError": {
     "en": "Temporary transaction error.",
@@ -876,10 +876,10 @@
     "tr": "Geçici işlem hatası.",
     "pl": "Tymczasowy błąd transakcji.",
     "nl": "Tijdelijke transactiefout.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Erro temporário na transação.",
+    "id": "Error transaksi sementara.",
+    "ja": "一時的な取引エラーです。",
+    "it": "Errore temporaneo della transazione."
   },
   "game2.txErrorRetry": {
     "en": "Temporary transaction error. Please try again.",
@@ -894,10 +894,10 @@
     "tr": "Geçici işlem hatası. Lütfen tekrar deneyin.",
     "pl": "Tymczasowy błąd transakcji. Spróbuj ponownie.",
     "nl": "Tijdelijke transactiefout. Probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Erro temporário na transação. Tente de novo.",
+    "id": "Error transaksi sementara. Coba lagi.",
+    "ja": "一時的な取引エラーです。もう一度お試しください。",
+    "it": "Errore temporaneo della transazione. Riprova."
   },
   "game2.resultCode": {
     "en": "Result code",
@@ -912,10 +912,10 @@
     "tr": "Sonuç kodu",
     "pl": "Kod wyniku",
     "nl": "Resultaatcode",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Código de resultado",
+    "id": "Kode hasil",
+    "ja": "結果コード",
+    "it": "Codice di risultato"
   },
   "game2.skinCode": {
     "en": "Skin create response: code",
@@ -927,13 +927,13 @@
     "zh": "造型建立回應：代碼",
     "ru": "Ответ на создание скина: код",
     "de": "Antwort zur Skin-Erstellung: Code",
-    "tr": "Kostüm oluşturma yanıtı: kod",
+    "tr": "Skin oluşturma yanıtı: kod",
     "pl": "Odpowiedź tworzenia skina: kod",
     "nl": "Antwoord skin aanmaken: code",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Resposta da criação de skin: código",
+    "id": "Respons pembuatan skin: kode",
+    "ja": "スキン作成の応答：コード",
+    "it": "Risposta alla creazione della skin: codice"
   },
   "game2.skinResponseFailed": {
     "en": "Failed to process skin creation response.",
@@ -945,13 +945,13 @@
     "zh": "無法處理造型建立回應。",
     "ru": "Не удалось обработать ответ на создание скина.",
     "de": "Antwort zur Skin-Erstellung konnte nicht verarbeitet werden.",
-    "tr": "Kostüm oluşturma yanıtı işlenemedi.",
+    "tr": "Skin oluşturma yanıtı işlenemedi.",
     "pl": "Nie udało się przetworzyć odpowiedzi tworzenia skina.",
     "nl": "Antwoord op skin aanmaken kon niet worden verwerkt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao processar a resposta da criação de skin.",
+    "id": "Gagal memproses respons pembuatan skin.",
+    "ja": "スキン作成の応答を処理できませんでした。",
+    "it": "Impossibile elaborare la risposta alla creazione della skin."
   },
   "game2.skinDeleted": {
     "en": "Custom skin deleted",
@@ -963,13 +963,13 @@
     "zh": "自訂造型已刪除",
     "ru": "Свой скин удалён",
     "de": "Eigener Skin gelöscht",
-    "tr": "Özel kostüm silindi",
+    "tr": "Özel skin silindi",
     "pl": "Własny skin usunięty",
     "nl": "Eigen skin verwijderd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skin personalizada excluída",
+    "id": "Skin kustom dihapus",
+    "ja": "カスタムスキンを削除しました",
+    "it": "Skin personalizzata eliminata"
   },
   "game2.newPotion": {
     "en": "New potion",
@@ -984,10 +984,10 @@
     "tr": "Yeni iksir",
     "pl": "Nowa mikstura",
     "nl": "Nieuw drankje",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nova poção",
+    "id": "Ramuan baru",
+    "ja": "新しいポーション",
+    "it": "Nuova pozione"
   },
   "game2.questCompleted": {
     "en": "Quest completed",
@@ -1002,10 +1002,10 @@
     "tr": "Görev tamamlandı",
     "pl": "Zadanie ukończone",
     "nl": "Missie voltooid",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Missão concluída",
+    "id": "Misi selesai",
+    "ja": "クエスト達成",
+    "it": "Missione completata"
   },
   "game2.skinCreatedShort": {
     "en": "Skin created",
@@ -1017,13 +1017,13 @@
     "zh": "造型已建立",
     "ru": "Скин создан",
     "de": "Skin erstellt",
-    "tr": "Kostüm oluşturuldu",
+    "tr": "Skin oluşturuldu",
     "pl": "Skin utworzony",
     "nl": "Skin aangemaakt",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skin criada",
+    "id": "Skin dibuat",
+    "ja": "スキン作成済み",
+    "it": "Skin creata"
   },
   "game2.rewardLinkClaimed": {
     "en": "This reward link was already claimed.",
@@ -1038,10 +1038,10 @@
     "tr": "Bu ödül bağlantısı zaten kullanıldı.",
     "pl": "Ten link z nagrodą został już wykorzystany.",
     "nl": "Deze beloningslink is al gebruikt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este link de recompensa já foi resgatado.",
+    "id": "Link hadiah ini sudah diklaim.",
+    "ja": "この報酬リンクはすでに受け取り済みです。",
+    "it": "Questo link ricompensa è già stato riscattato."
   },
   "game2.rewardLinkExpired": {
     "en": "This reward link has expired.",
@@ -1056,10 +1056,10 @@
     "tr": "Bu ödül bağlantısının süresi doldu.",
     "pl": "Ten link z nagrodą wygasł.",
     "nl": "Deze beloningslink is verlopen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este link de recompensa expirou.",
+    "id": "Link hadiah ini sudah kedaluwarsa.",
+    "ja": "この報酬リンクは期限切れです。",
+    "it": "Questo link ricompensa è scaduto."
   },
   "game2.rewardLinkCode": {
     "en": "Reward link not activated (code {0}).",
@@ -1074,10 +1074,10 @@
     "tr": "Ödül bağlantısı etkinleştirilmedi (kod {0}).",
     "pl": "Link z nagrodą nieaktywowany (kod {0}).",
     "nl": "Beloningslink niet geactiveerd (code {0}).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Link de recompensa não ativado (código {0}).",
+    "id": "Link hadiah tidak aktif (kode {0}).",
+    "ja": "報酬リンクを有効化できませんでした (コード {0})。",
+    "it": "Link ricompensa non attivato (codice {0})."
   },
   "game2.rewardLinkOk": {
     "en": "Reward link activated! &#x2714; {0} item(s) claimed",
@@ -1092,10 +1092,10 @@
     "tr": "Ödül bağlantısı etkinleştirildi! &#x2714; {0} ürün alındı",
     "pl": "Link z nagrodą aktywowany! &#x2714; Odebrane przedmioty: {0}",
     "nl": "Beloningslink geactiveerd! &#x2714; {0} item(s) ontvangen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Link de recompensa ativado! &#x2714; {0} item(ns) resgatado(s)",
+    "id": "Link hadiah aktif! &#x2714; {0} item diklaim",
+    "ja": "報酬リンクを有効化しました！&#x2714; {0} 個のアイテムを受け取りました",
+    "it": "Link ricompensa attivato! &#x2714; {0} oggetti riscattati"
   },
   "game2.rewardLinkEmpty": {
     "en": "Reward link processed (no items)",
@@ -1110,10 +1110,10 @@
     "tr": "Ödül bağlantısı işlendi (ürün yok)",
     "pl": "Link z nagrodą przetworzony (brak przedmiotów)",
     "nl": "Beloningslink verwerkt (geen items)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Link de recompensa processado (nenhum item)",
+    "id": "Link hadiah diproses (tanpa item)",
+    "ja": "報酬リンクを処理しました (アイテムなし)",
+    "it": "Link ricompensa elaborato (nessun oggetto)"
   },
   "game2.adTokenOk": {
     "en": "Ad reward token received!",
@@ -1128,10 +1128,10 @@
     "tr": "Reklam ödülü jetonu alındı!",
     "pl": "Otrzymano token nagrody za reklamę!",
     "nl": "Advertentiebeloningstoken ontvangen!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Token de recompensa do anúncio recebido!",
+    "id": "Token hadiah iklan diterima!",
+    "ja": "広告報酬のトークンを受け取りました！",
+    "it": "Token ricompensa della pubblicità ricevuto!"
   },
   "game2.adTokenEmpty": {
     "en": "Ad reward processed (no token)",
@@ -1146,10 +1146,10 @@
     "tr": "Reklam ödülü işlendi (jeton yok)",
     "pl": "Nagroda za reklamę przetworzona (brak tokena)",
     "nl": "Advertentiebeloning verwerkt (geen token)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recompensa do anúncio processada (sem token)",
+    "id": "Hadiah iklan diproses (tanpa token)",
+    "ja": "広告報酬を処理しました (トークンなし)",
+    "it": "Ricompensa della pubblicità elaborata (nessun token)"
   },
   "game2.adReward": {
     "en": "Ad Reward",
@@ -1164,10 +1164,10 @@
     "tr": "Reklam ödülü",
     "pl": "Nagroda za reklamę",
     "nl": "Advertentiebeloning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recompensa do anúncio",
+    "id": "Hadiah Iklan",
+    "ja": "広告報酬",
+    "it": "Ricompensa pubblicità"
   },
   "game2.disconnected": {
     "en": "User disconnected. {0}",
@@ -1182,10 +1182,10 @@
     "tr": "Kullanıcının bağlantısı kesildi. {0}",
     "pl": "Użytkownik rozłączony. {0}",
     "nl": "Gebruiker verbroken. {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Usuário desconectado. {0}",
+    "id": "Pengguna terputus. {0}",
+    "ja": "切断されました。{0}",
+    "it": "Utente disconnesso. {0}"
   },
   "game2.disc.incompatible": {
     "en": "Incompatible client",
@@ -1200,10 +1200,10 @@
     "tr": "Uyumsuz istemci",
     "pl": "Niezgodny klient",
     "nl": "Incompatibele client",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Cliente incompatível",
+    "id": "Klien tidak kompatibel",
+    "ja": "互換性のないクライアントです",
+    "it": "Client non compatibile"
   },
   "game2.disc.packet": {
     "en": "Packet not authorized",
@@ -1218,10 +1218,10 @@
     "tr": "Yetkisiz paket",
     "pl": "Niedozwolony pakiet",
     "nl": "Pakket niet toegestaan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pacote não autorizado",
+    "id": "Paket tidak diizinkan",
+    "ja": "許可されていないパケットです",
+    "it": "Pacchetto non autorizzato"
   },
   "game2.disc.elsewhere": {
     "en": "Login elsewhere",
@@ -1236,14 +1236,14 @@
     "tr": "Başka yerden giriş yapıldı",
     "pl": "Zalogowano w innym miejscu",
     "nl": "Elders ingelogd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Login feito em outro lugar",
+    "id": "Login di tempat lain",
+    "ja": "別の場所でログインされました",
+    "it": "Accesso effettuato da un'altra parte"
   },
   "game2.disc.offline": {
     "en": "Server offline",
-    "el": "Ο διακομιστής είναι εκτός σύνδεσης",
+    "el": "Ο server είναι εκτός σύνδεσης",
     "es": "Servidor fuera de línea",
     "bg": "Сървърът не е на линия",
     "fr": "Serveur hors ligne",
@@ -1254,10 +1254,10 @@
     "tr": "Sunucu çevrimdışı",
     "pl": "Serwer offline",
     "nl": "Server offline",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Servidor offline",
+    "id": "Server offline",
+    "ja": "サーバーがオフラインです",
+    "it": "Server offline"
   },
   "game2.disc.banned": {
     "en": "User banned",
@@ -1272,10 +1272,10 @@
     "tr": "Kullanıcı yasaklandı",
     "pl": "Użytkownik zbanowany",
     "nl": "Gebruiker verbannen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Usuário banido",
+    "id": "Pengguna diblokir",
+    "ja": "このユーザーは BAN されています",
+    "it": "Utente bannato"
   },
   "game2.disc.ping": {
     "en": "Ping error",
@@ -1290,10 +1290,10 @@
     "tr": "Ping hatası",
     "pl": "Błąd pingu",
     "nl": "Pingfout",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Erro de ping",
+    "id": "Error ping",
+    "ja": "Ping エラー",
+    "it": "Errore di ping"
   },
   "game2.disc.gameType": {
     "en": "Unknown game type",
@@ -1308,10 +1308,10 @@
     "tr": "Bilinmeyen oyun türü",
     "pl": "Nieznany typ gry",
     "nl": "Onbekend speltype",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tipo de jogo desconhecido",
+    "id": "Tipe game tidak dikenal",
+    "ja": "不明なゲームタイプです",
+    "it": "Tipo di partita sconosciuto"
   },
   "game2.disc.tooMany": {
     "en": "Too many operations",
@@ -1326,17 +1326,17 @@
     "tr": "Çok fazla işlem",
     "pl": "Zbyt wiele operacji",
     "nl": "Te veel handelingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Operações demais",
+    "id": "Terlalu banyak operasi",
+    "ja": "操作が多すぎます",
+    "it": "Troppe operazioni"
   },
   "game2.disc.realm": {
     "en": "Unreachable realm",
     "el": "Μη προσβάσιμη περιοχή",
-    "es": "Reino inaccesible",
+    "es": "Realm inaccesible",
     "bg": "Недостъпен регион",
-    "fr": "Royaume injoignable",
+    "fr": "Realm injoignable",
     "ar": "نطاق لا يمكن الوصول إليه",
     "zh": "無法連線的區域",
     "ru": "Недоступная область",
@@ -1344,10 +1344,10 @@
     "tr": "Erişilemeyen bölge",
     "pl": "Nieosiągalny region",
     "nl": "Onbereikbaar gebied",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Realm inacessível",
+    "id": "Realm tidak bisa dijangkau",
+    "ja": "レルムに接続できません",
+    "it": "Realm non raggiungibile"
   },
   "game2.disc.deleted": {
     "en": "User deleted",
@@ -1362,17 +1362,17 @@
     "tr": "Kullanıcı silindi",
     "pl": "Użytkownik usunięty",
     "nl": "Gebruiker verwijderd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Usuário excluído",
+    "id": "Pengguna dihapus",
+    "ja": "ユーザーは削除されています",
+    "it": "Utente eliminato"
   },
   "game2.disc.realmAuth": {
     "en": "Not authorized by realm",
     "el": "Χωρίς εξουσιοδότηση από την περιοχή",
-    "es": "No autorizado por el reino",
+    "es": "No autorizado por el realm",
     "bg": "Няма разрешение от региона",
-    "fr": "Non autorisé par le royaume",
+    "fr": "Non autorisé par le realm",
     "ar": "غير مصرّح من النطاق",
     "zh": "區域未授權",
     "ru": "Нет разрешения области",
@@ -1380,10 +1380,10 @@
     "tr": "Bölge tarafından yetkilendirilmedi",
     "pl": "Brak autoryzacji regionu",
     "nl": "Niet toegestaan door gebied",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não autorizado pelo realm",
+    "id": "Tidak diizinkan oleh realm",
+    "ja": "レルムに認証されていません",
+    "it": "Non autorizzato dal realm"
   },
   "game2.disc.badRequest": {
     "en": "Bad request",
@@ -1398,17 +1398,17 @@
     "tr": "Hatalı istek",
     "pl": "Błędne żądanie",
     "nl": "Ongeldig verzoek",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Requisição inválida",
+    "id": "Permintaan tidak valid",
+    "ja": "不正なリクエストです",
+    "it": "Richiesta non valida"
   },
   "game2.disc.reset": {
     "en": "Reset by peer",
-    "el": "Επαναφορά από την άλλη πλευρά",
-    "es": "Reiniciada por el otro extremo",
+    "el": "Η σύνδεση τερματίστηκε από την άλλη πλευρά",
+    "es": "Conexión cerrada por el otro extremo",
     "bg": "Връзката е прекъсната от другата страна",
-    "fr": "Réinitialisée par le pair",
+    "fr": "Connexion réinitialisée par le pair",
     "ar": "أعاد الطرف الآخر تعيين الاتصال",
     "zh": "連線被對方重設",
     "ru": "Сброшено другой стороной",
@@ -1416,10 +1416,10 @@
     "tr": "Karşı taraf bağlantıyı sıfırladı",
     "pl": "Zresetowane przez drugą stronę",
     "nl": "Verbroken door andere kant",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Conexão redefinida pelo servidor",
+    "id": "Koneksi direset oleh peer",
+    "ja": "相手側から接続がリセットされました",
+    "it": "Connessione chiusa dall'altro lato"
   },
   "game2.disc.invalidToken": {
     "en": "Invalid token",
@@ -1434,10 +1434,10 @@
     "tr": "Geçersiz jeton",
     "pl": "Nieprawidłowy token",
     "nl": "Ongeldig token",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Token inválido",
+    "id": "Token tidak valid",
+    "ja": "無効なトークンです",
+    "it": "Token non valido"
   },
   "game2.disc.expiredToken": {
     "en": "Expired token",
@@ -1452,10 +1452,10 @@
     "tr": "Süresi dolmuş jeton",
     "pl": "Token wygasł",
     "nl": "Token verlopen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Token expirado",
+    "id": "Token kedaluwarsa",
+    "ja": "トークンの期限が切れています",
+    "it": "Token scaduto"
   },
   "game2.disc.stateTransfer": {
     "en": "State transfer error",
@@ -1470,10 +1470,10 @@
     "tr": "Durum aktarım hatası",
     "pl": "Błąd przekazania stanu",
     "nl": "Fout bij statusoverdracht",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Erro na transferência de estado",
+    "id": "Error transfer status",
+    "ja": "状態の転送エラーです",
+    "it": "Errore nel trasferimento dello stato"
   },
   "game2.disc.unknown": {
     "en": "Unknown error: {0}",
@@ -1488,10 +1488,10 @@
     "tr": "Bilinmeyen hata: {0}",
     "pl": "Nieznany błąd: {0}",
     "nl": "Onbekende fout: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Erro desconhecido: {0}",
+    "id": "Error tidak dikenal: {0}",
+    "ja": "不明なエラー：{0}",
+    "it": "Errore sconosciuto: {0}"
   },
   "game2.virus": {
     "en": "Virus",
@@ -1500,7 +1500,7 @@
     "bg": "Вирус",
     "fr": "Virus",
     "ar": "فيروس",
-    "zh": "病毒",
+    "zh": "刺球",
     "ru": "Вирус",
     "de": "Virus",
     "tr": "Virüs",
@@ -1524,16 +1524,16 @@
     "tr": "İsimsiz bir hücre",
     "pl": "Komórka bez nazwy",
     "nl": "Een naamloze cel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Uma célula sem nome",
+    "id": "Sel tanpa nama",
+    "ja": "名前のないセル",
+    "it": "Una cellula senza nome"
   },
   "game2.downloadCard": {
     "en": "Download match card",
     "el": "Λήψη κάρτας αγώνα",
     "es": "Descargar tarjeta de partida",
-    "bg": "Изтегляне на карта на играта",
+    "bg": "Изтегляне на картичката от мача",
     "fr": "Télécharger la carte de partie",
     "ar": "تنزيل بطاقة المباراة",
     "zh": "下載對局卡片",
@@ -1542,16 +1542,16 @@
     "tr": "Maç kartını indir",
     "pl": "Pobierz kartę meczu",
     "nl": "Wedstrijdkaart downloaden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Baixar card da partida",
+    "id": "Unduh kartu match",
+    "ja": "マッチカードをダウンロード",
+    "it": "Scarica la scheda della partita"
   },
   "game2.shareCard": {
     "en": "Share Match Card",
     "el": "Κοινοποίηση κάρτας αγώνα",
     "es": "Compartir tarjeta de partida",
-    "bg": "Сподели картата на играта",
+    "bg": "Сподели картичката от мача",
     "fr": "Partager la carte de partie",
     "ar": "مشاركة بطاقة المباراة",
     "zh": "分享對局卡片",
@@ -1560,10 +1560,10 @@
     "tr": "Maç kartını paylaş",
     "pl": "Udostępnij kartę meczu",
     "nl": "Wedstrijdkaart delen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Compartilhar card da partida",
+    "id": "Bagikan Kartu Match",
+    "ja": "マッチカードを共有",
+    "it": "Condividi la scheda della partita"
   },
   "game2.copy": {
     "en": "Copy",
@@ -1596,16 +1596,16 @@
     "tr": "Yeni kütle rekoru!",
     "pl": "Nowy rekord masy!",
     "nl": "Nieuw massarecord!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Novo recorde de massa!",
+    "id": "Rekor massa baru!",
+    "ja": "最高質量を更新！",
+    "it": "Nuovo record di massa!"
   },
   "game2.newBestTime": {
     "en": "New best time alive!",
     "el": "Νέο ρεκόρ χρόνου ζωής!",
-    "es": "¡Nuevo récord de tiempo vivo!",
-    "bg": "Нов рекорд за време в живота!",
+    "es": "¡Nuevo récord de tiempo con vida!",
+    "bg": "Нов рекорд за оцеляване!",
     "fr": "Nouveau record de survie !",
     "ar": "رقم قياسي جديد لمدة البقاء!",
     "zh": "存活時間新紀錄！",
@@ -1614,16 +1614,16 @@
     "tr": "Yeni hayatta kalma rekoru!",
     "pl": "Nowy rekord czasu przeżycia!",
     "nl": "Nieuw overlevingsrecord!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Novo recorde de tempo vivo!",
+    "id": "Rekor waktu hidup baru!",
+    "ja": "最長生存時間を更新！",
+    "it": "Nuovo record di sopravvivenza!"
   },
   "game2.newBestBoth": {
     "en": "New best mass + time alive!",
     "el": "Νέο ρεκόρ μάζας + χρόνου ζωής!",
-    "es": "¡Nuevo récord de masa + tiempo vivo!",
-    "bg": "Нов рекорд за маса + време в живота!",
+    "es": "¡Nuevo récord de masa + tiempo con vida!",
+    "bg": "Нов рекорд за маса + оцеляване!",
     "fr": "Nouveau record de masse + survie !",
     "ar": "رقم قياسي جديد للكتلة + مدة البقاء!",
     "zh": "質量 + 存活時間新紀錄！",
@@ -1632,10 +1632,10 @@
     "tr": "Yeni kütle + hayatta kalma rekoru!",
     "pl": "Nowy rekord masy + czasu przeżycia!",
     "nl": "Nieuw massa- + overlevingsrecord!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Novo recorde de massa + tempo vivo!",
+    "id": "Rekor massa + waktu hidup baru!",
+    "ja": "最高質量と最長生存時間を更新！",
+    "it": "Nuovo record di massa e di sopravvivenza!"
   },
   "game2.allTime": {
     "en": "All-time: {0} · {1} · {2} games",
@@ -1650,10 +1650,10 @@
     "tr": "Tüm zamanlar: {0} · {1} · {2} oyun",
     "pl": "Od początku: {0} · {1} · gier: {2}",
     "nl": "Aller tijden: {0} · {1} · {2} spellen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Geral: {0} · {1} · {2} partidas",
+    "id": "Sepanjang masa: {0} · {1} · {2} game",
+    "ja": "通算：{0} · {1} · {2} ゲーム",
+    "it": "Di sempre: {0} · {1} · {2} partite"
   },
   "game2.copyFailed": {
     "en": "Could not copy.",
@@ -1668,10 +1668,10 @@
     "tr": "Kopyalanamadı.",
     "pl": "Nie udało się skopiować.",
     "nl": "Kopiëren mislukt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível copiar.",
+    "id": "Gagal menyalin.",
+    "ja": "コピーできませんでした。",
+    "it": "Impossibile copiare."
   },
   "game2.shareText": {
     "en": "I reached {0} mass and survived {1}",
@@ -1686,10 +1686,10 @@
     "tr": "{0} kütleye ulaştım ve {1} hayatta kaldım",
     "pl": "Osiągnąłem masę {0} i przetrwałem {1}",
     "nl": "Ik bereikte {0} massa en overleefde {1}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Cheguei a {0} de massa e sobrevivi {1}",
+    "id": "Aku mencapai massa {0} dan bertahan {1}",
+    "ja": "質量 {0} まで成長して、{1} 生き残りました",
+    "it": "Ho raggiunto {0} di massa e sono sopravvissuto {1}"
   },
   "game2.shareTextOn": {
     "en": "I reached {0} mass and survived {1} on {2}",
@@ -1704,10 +1704,10 @@
     "tr": "{2} üzerinde {0} kütleye ulaştım ve {1} hayatta kaldım",
     "pl": "Osiągnąłem masę {0} i przetrwałem {1} na {2}",
     "nl": "Ik bereikte {0} massa en overleefde {1} op {2}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Cheguei a {0} de massa e sobrevivi {1} em {2}",
+    "id": "Aku mencapai massa {0} dan bertahan {1} di {2}",
+    "ja": "{2} で質量 {0} まで成長して、{1} 生き残りました",
+    "it": "Ho raggiunto {0} di massa e sono sopravvissuto {1} su {2}"
   },
   "game2.matchComplete": {
     "en": "MATCH COMPLETE",
@@ -1722,10 +1722,10 @@
     "tr": "MAÇ BİTTİ",
     "pl": "MECZ ZAKOŃCZONY",
     "nl": "WEDSTRIJD VOORBIJ",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "PARTIDA CONCLUÍDA",
+    "id": "MATCH SELESAI",
+    "ja": "マッチ終了",
+    "it": "PARTITA FINITA"
   },
   "game2.matchCompleteTitle": {
     "en": "Match Complete",
@@ -1740,10 +1740,10 @@
     "tr": "Maç bitti",
     "pl": "Mecz zakończony",
     "nl": "Wedstrijd voorbij",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Partida concluída",
+    "id": "Match Selesai",
+    "ja": "マッチ終了",
+    "it": "Partita finita"
   },
   "game2.bestRank": {
     "en": "Best Rank",
@@ -1758,10 +1758,10 @@
     "tr": "En iyi sıra",
     "pl": "Najlepsze miejsce",
     "nl": "Beste plaats",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Melhor posição",
+    "id": "Peringkat Terbaik",
+    "ja": "最高順位",
+    "it": "Miglior posizione"
   },
   "game2.survival": {
     "en": "Survival",
@@ -1776,10 +1776,10 @@
     "tr": "Hayatta kalma",
     "pl": "Przetrwanie",
     "nl": "Overleving",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sobrevivência",
+    "id": "Bertahan",
+    "ja": "生存時間",
+    "it": "Sopravvivenza"
   },
   "game2.eliminations": {
     "en": "Eliminations",
@@ -1794,10 +1794,10 @@
     "tr": "Elemeler",
     "pl": "Eliminacje",
     "nl": "Eliminaties",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Eliminações",
+    "id": "Eliminasi",
+    "ja": "撃破数",
+    "it": "Eliminazioni"
   },
   "game2.beatMyScore": {
     "en": "Can you beat my score?",
@@ -1812,10 +1812,10 @@
     "tr": "Skorumu geçebilir misin?",
     "pl": "Pobijesz mój wynik?",
     "nl": "Kun jij mijn score verslaan?",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Consegue bater minha pontuação?",
+    "id": "Bisa kalahkan skorku?",
+    "ja": "このスコア、超えられる？",
+    "it": "Riesci a battere il mio punteggio?"
   },
   "game2.cardFailed": {
     "en": "Could not generate card.",
@@ -1830,16 +1830,16 @@
     "tr": "Kart oluşturulamadı.",
     "pl": "Nie udało się utworzyć karty.",
     "nl": "Kaart kon niet worden gemaakt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível gerar o card.",
+    "id": "Gagal membuat kartu.",
+    "ja": "カードを作成できませんでした。",
+    "it": "Impossibile creare la scheda."
   },
   "game2.cardDownloaded": {
     "en": "Match card downloaded!",
     "el": "Η κάρτα αγώνα κατέβηκε!",
     "es": "¡Tarjeta de partida descargada!",
-    "bg": "Картата на играта е изтеглена!",
+    "bg": "Картичката от мача е изтеглена!",
     "fr": "Carte de partie téléchargée !",
     "ar": "تم تنزيل بطاقة المباراة!",
     "zh": "對局卡片已下載！",
@@ -1848,10 +1848,10 @@
     "tr": "Maç kartı indirildi!",
     "pl": "Karta meczu pobrana!",
     "nl": "Wedstrijdkaart gedownload!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Card da partida baixado!",
+    "id": "Kartu match diunduh!",
+    "ja": "マッチカードをダウンロードしました！",
+    "it": "Scheda della partita scaricata!"
   },
   "game2.generating": {
     "en": "Generating...",
@@ -1866,16 +1866,16 @@
     "tr": "Oluşturuluyor...",
     "pl": "Generowanie...",
     "nl": "Bezig met maken...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Gerando...",
+    "id": "Membuat...",
+    "ja": "作成中...",
+    "it": "Creazione in corso..."
   },
   "game2.cardSaved": {
     "en": "Match card saved! Share it on social media",
     "el": "Η κάρτα αγώνα αποθηκεύτηκε! Μοιραστείτε τη στα social media",
     "es": "¡Tarjeta de partida guardada! Compártela en redes sociales",
-    "bg": "Картата на играта е запазена! Споделете я в социалните мрежи",
+    "bg": "Картичката от мача е запазена! Споделете я в социалните мрежи",
     "fr": "Carte de partie enregistrée ! Partagez-la sur les réseaux sociaux",
     "ar": "تم حفظ بطاقة المباراة! شاركها على وسائل التواصل",
     "zh": "對局卡片已儲存！分享到社群媒體吧",
@@ -1884,10 +1884,10 @@
     "tr": "Maç kartı kaydedildi! Sosyal medyada paylaş",
     "pl": "Karta meczu zapisana! Udostępnij ją w mediach społecznościowych",
     "nl": "Wedstrijdkaart opgeslagen! Deel hem op sociale media",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Card da partida salvo! Compartilhe nas redes sociais",
+    "id": "Kartu match disimpan! Bagikan di media sosial",
+    "ja": "マッチカードを保存しました！SNS でシェアしよう",
+    "it": "Scheda della partita salvata! Condividila sui social"
   },
   "game2.inviteCopiedShare": {
     "en": "Invite link copied! 🔗 Share it with friends!",
@@ -1902,10 +1902,10 @@
     "tr": "Davet bağlantısı kopyalandı! 🔗 Arkadaşlarınla paylaş!",
     "pl": "Link z zaproszeniem skopiowany! 🔗 Udostępnij go znajomym!",
     "nl": "Uitnodigingslink gekopieerd! 🔗 Deel hem met vrienden!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Link de convite copiado! 🔗 Compartilhe com os amigos!",
+    "id": "Link undangan disalin! 🔗 Bagikan ke teman-temanmu!",
+    "ja": "招待リンクをコピーしました！🔗 フレンドにシェアしよう！",
+    "it": "Link di invito copiato! 🔗 Condividilo con gli amici!"
   },
   "game2.inviteCopied": {
     "en": "Invite link copied!",
@@ -1920,10 +1920,10 @@
     "tr": "Davet bağlantısı kopyalandı!",
     "pl": "Link z zaproszeniem skopiowany!",
     "nl": "Uitnodigingslink gekopieerd!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Link de convite copiado!",
+    "id": "Link undangan disalin!",
+    "ja": "招待リンクをコピーしました！",
+    "it": "Link di invito copiato!"
   },
   "game2.stAllTime": {
     "en": "All time score",
@@ -1938,10 +1938,10 @@
     "tr": "Toplam skor",
     "pl": "Łączny wynik",
     "nl": "Totaalscore",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pontuação geral",
+    "id": "Skor sepanjang masa",
+    "ja": "通算スコア",
+    "it": "Punteggio di sempre"
   },
   "game2.stGames": {
     "en": "Games played",
@@ -1982,8 +1982,8 @@
   "game2.stLongest": {
     "en": "Longest time alive",
     "el": "Μεγαλύτερος χρόνος ζωής",
-    "es": "Mayor tiempo vivo",
-    "bg": "Най-дълго време в живота",
+    "es": "Mayor tiempo con vida",
+    "bg": "Най-дълго оцеляване",
     "fr": "Plus longue survie",
     "ar": "أطول مدة بقاء",
     "zh": "最長存活時間",
@@ -1992,10 +1992,10 @@
     "tr": "En uzun hayatta kalma",
     "pl": "Najdłuższy czas przeżycia",
     "nl": "Langst in leven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Maior tempo vivo",
+    "id": "Waktu hidup terlama",
+    "ja": "最長生存時間",
+    "it": "Sopravvivenza più lunga"
   },
   "game2.stConsumed": {
     "en": "Mass consumed",
@@ -2010,10 +2010,10 @@
     "tr": "Tüketilen kütle",
     "pl": "Zjedzona masa",
     "nl": "Gegeten massa",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Massa consumida",
+    "id": "Massa dimakan",
+    "ja": "食べた質量",
+    "it": "Massa mangiata"
   },
   "game2.stMostCells": {
     "en": "Most cells eaten",
@@ -2028,10 +2028,10 @@
     "tr": "En çok yenen hücre",
     "pl": "Najwięcej zjedzonych komórek",
     "nl": "Meeste cellen gegeten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Mais células comidas",
+    "id": "Sel terbanyak dimakan",
+    "ja": "最多セル捕食数",
+    "it": "Record di cellule mangiate"
   },
   "game2.na": {
     "en": "N/A",
@@ -2046,10 +2046,10 @@
     "tr": "Yok",
     "pl": "Brak",
     "nl": "n.v.t.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "N/D",
+    "id": "T/A",
+    "ja": "なし",
+    "it": "N/D"
   },
   "game2.uiAccountAge": {
     "en": "Account age",
@@ -2064,10 +2064,10 @@
     "tr": "Hesap yaşı",
     "pl": "Wiek konta",
     "nl": "Accountleeftijd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Idade da conta",
+    "id": "Umur akun",
+    "ja": "アカウント作成からの日数",
+    "it": "Età dell'account"
   },
   "game2.uiDays": {
     "en": "{0} d",
@@ -2082,10 +2082,10 @@
     "tr": "{0} g",
     "pl": "{0} dni",
     "nl": "{0} d",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} d",
+    "id": "{0} hr",
+    "ja": "{0} 日",
+    "it": "{0} g"
   },
   "game2.uiPotions": {
     "en": "Potions obtained",
@@ -2100,10 +2100,10 @@
     "tr": "Kazanılan iksirler",
     "pl": "Zdobyte mikstury",
     "nl": "Verkregen drankjes",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Poções obtidas",
+    "id": "Ramuan didapat",
+    "ja": "入手したポーション",
+    "it": "Pozioni ottenute"
   },
   "game2.uiQuests": {
     "en": "Quests completed",
@@ -2118,10 +2118,10 @@
     "tr": "Tamamlanan görevler",
     "pl": "Ukończone zadania",
     "nl": "Voltooide missies",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Missões concluídas",
+    "id": "Misi selesai",
+    "ja": "達成したクエスト",
+    "it": "Missioni completate"
   },
   "game2.uiSkins": {
     "en": "Skins created",
@@ -2133,13 +2133,13 @@
     "zh": "建立的造型",
     "ru": "Создано скинов",
     "de": "Erstellte Skins",
-    "tr": "Oluşturulan kostümler",
+    "tr": "Oluşturulan skinler",
     "pl": "Utworzone skiny",
     "nl": "Gemaakte skins",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins criadas",
+    "id": "Skin dibuat",
+    "ja": "作成したスキン",
+    "it": "Skin create"
   },
   "game2.uiCountry": {
     "en": "Country",
@@ -2154,10 +2154,10 @@
     "tr": "Ülke",
     "pl": "Kraj",
     "nl": "Land",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "País",
+    "id": "Negara",
+    "ja": "国",
+    "it": "Paese"
   },
   "game2.uiGameName": {
     "en": "Game name",
@@ -2172,10 +2172,10 @@
     "tr": "Oyun adı",
     "pl": "Nazwa w grze",
     "nl": "Spelnaam",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nome no jogo",
+    "id": "Nama game",
+    "ja": "ゲーム内の名前",
+    "it": "Nome in gioco"
   },
   "game2.bots": {
     "en": "Bots",
@@ -2226,10 +2226,10 @@
     "tr": "Daralma süresi",
     "pl": "Czas kurczenia",
     "nl": "Krimptijd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tempo para encolher",
+    "id": "Waktu menyusut",
+    "ja": "縮小までの時間",
+    "it": "Tempo di restringimento"
   },
   "game2.megaFfaWin": {
     "en": "<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>{0}</b></font>. Thank you for using our mod!",
@@ -2244,10 +2244,10 @@
     "tr": "<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Tebrikler</span>, FFA PowerUp skorun için.<br>  Lisansın <font color='blue'><b>{0}</b></font> tarihine kadar Giveaway Premium olarak kaydedildi. Modumuzu kullandığın için teşekkürler!",
     "pl": "<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Gratulacje</span> wyniku w FFA PowerUp.<br>  Twoja licencja jest zapisana jako Giveaway Premium do <font color='blue'><b>{0}</b></font>. Dziękujemy za korzystanie z naszego moda!",
     "nl": "<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Gefeliciteerd</span> met je score in FFA PowerUp.<br>  Je licentie is opgeslagen als Giveaway Premium tot <font color='blue'><b>{0}</b></font>. Bedankt voor het gebruiken van onze mod!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Parabéns</span> pela sua pontuação no FFA PowerUp.<br>  Sua licença fica salva como Giveaway Premium até <font color='blue'><b>{0}</b></font>. Obrigado por usar nosso mod!",
+    "id": "<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Selamat</span> atas skormu di FFA PowerUp.<br>  Lisensimu tersimpan sebagai Giveaway Premium sampai <font color='blue'><b>{0}</b></font>. Terima kasih sudah memakai mod kami!",
+    "ja": "FFA PowerUp でのスコア、<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>おめでとうございます</span>！<br>  あなたのライセンスは <font color='blue'><b>{0}</b></font> まで Giveaway Premium として保存されます。Mod をご利用いただきありがとうございます！",
+    "it": "<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Complimenti</span> per il tuo punteggio in FFA PowerUp.<br>  La tua licenza è registrata come Giveaway Premium fino al <font color='blue'><b>{0}</b></font>. Grazie per usare la nostra mod!"
   },
   "game2.directions": {
     "en": "{0} directions",
@@ -2262,10 +2262,10 @@
     "tr": "{0} yön",
     "pl": "kierunki: {0}",
     "nl": "{0} richtingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} direções",
+    "id": "{0} arah",
+    "ja": "{0} 方向",
+    "it": "{0} direzioni"
   },
   "game2.profTitle": {
     "en": "CLIENT PROFILER",
@@ -2280,10 +2280,10 @@
     "tr": "İSTEMCİ PROFİLLEYİCİ",
     "pl": "PROFILER KLIENTA",
     "nl": "CLIENTPROFILER",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "PROFILER DO CLIENTE",
+    "id": "PROFILER KLIEN",
+    "ja": "クライアントプロファイラー",
+    "it": "PROFILER DEL CLIENT"
   },
   "game2.profCpu": {
     "en": "CPU Load",
@@ -2298,10 +2298,10 @@
     "tr": "CPU yükü",
     "pl": "Obciążenie CPU",
     "nl": "CPU-belasting",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Uso de CPU",
+    "id": "Beban CPU",
+    "ja": "CPU 負荷",
+    "it": "Carico CPU"
   },
   "game2.profFrame": {
     "en": "Frame Time",
@@ -2316,10 +2316,10 @@
     "tr": "Kare süresi",
     "pl": "Czas klatki",
     "nl": "Frametijd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tempo de frame",
+    "id": "Waktu Frame",
+    "ja": "フレーム時間",
+    "it": "Tempo per frame"
   },
   "game2.profWebgl": {
     "en": "WebGL Draw",
@@ -2334,10 +2334,10 @@
     "tr": "WebGL çizimi",
     "pl": "Rysowanie WebGL",
     "nl": "WebGL-tekenen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Desenho WebGL",
+    "id": "Gambar WebGL",
+    "ja": "WebGL 描画",
+    "it": "Disegno WebGL"
   },
   "game2.profText": {
     "en": "Text Pass",
@@ -2352,10 +2352,10 @@
     "tr": "Metin çizimi",
     "pl": "Rysowanie tekstu",
     "nl": "Tekstronde",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Passe de texto",
+    "id": "Proses Teks",
+    "ja": "テキスト描画",
+    "it": "Passata del testo"
   },
   "game2.profPacket": {
     "en": "Packet 16",
@@ -2370,10 +2370,10 @@
     "tr": "Paket 16",
     "pl": "Pakiet 16",
     "nl": "Pakket 16",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pacote 16",
+    "id": "Paket 16",
+    "ja": "パケット 16",
+    "it": "Pacchetto 16"
   },
   "game2.profPhysics": {
     "en": "Physics",
@@ -2388,22 +2388,22 @@
     "tr": "Fizik",
     "pl": "Fizyka",
     "nl": "Fysica",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Física",
+    "id": "Fisika",
+    "ja": "物理演算",
+    "it": "Fisica"
   },
   "game2.profLb": {
     "en": "Leaderboard",
     "el": "Κατάταξη",
     "es": "Clasificación",
-    "bg": "Класиране",
+    "bg": "Класация",
     "fr": "Classement",
     "ar": "لوحة الصدارة",
     "zh": "排行榜",
     "ru": "Таблица лидеров",
     "de": "Bestenliste",
-    "tr": "Lider tablosu",
+    "tr": "Sıralama",
     "pl": "Ranking",
     "nl": "Ranglijst",
     "pt": "Ranking",
@@ -2424,14 +2424,14 @@
     "tr": "{0}ms (ort. {1}ms)",
     "pl": "{0}ms (śr. {1}ms)",
     "nl": "{0}ms (gem. {1}ms)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0}ms (média {1}ms)",
+    "id": "{0}ms (Rata-rata {1}ms)",
+    "ja": "{0}ms (平均 {1}ms)",
+    "it": "{0}ms (media {1}ms)"
   },
   "game2.hkElOnly": {
     "en": "Expanding Land only: join an Expanding Land server first.",
-    "el": "Μόνο για Expanding Land: συνδεθείτε πρώτα σε διακομιστή Expanding Land.",
+    "el": "Μόνο για Expanding Land: μπείτε πρώτα σε server Expanding Land.",
     "es": "Solo en Expanding Land: entra primero en un servidor de Expanding Land.",
     "bg": "Само за Expanding Land: първо влезте в сървър на Expanding Land.",
     "fr": "Expanding Land uniquement : rejoignez d’abord un serveur Expanding Land.",
@@ -2442,10 +2442,10 @@
     "tr": "Yalnızca Expanding Land: önce bir Expanding Land sunucusuna katıl.",
     "pl": "Tylko Expanding Land: najpierw dołącz do serwera Expanding Land.",
     "nl": "Alleen Expanding Land: ga eerst naar een Expanding Land-server.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Só no Expanding Land: entre primeiro em um servidor do Expanding Land.",
+    "id": "Khusus Expanding Land: masuk ke server Expanding Land dulu.",
+    "ja": "Expanding Land 専用です：先に Expanding Land のサーバーに入ってください。",
+    "it": "Solo Expanding Land: entra prima in un server di Expanding Land."
   },
   "game2.hkLoginFirst": {
     "en": "Log in and play a game session first",
@@ -2460,10 +2460,10 @@
     "tr": "Önce giriş yapıp bir oyun oyna",
     "pl": "Zaloguj się i najpierw zagraj jedną grę",
     "nl": "Log in en speel eerst een spel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entre na sua conta e jogue uma partida antes",
+    "id": "Masuk dan main satu sesi game dulu",
+    "ja": "ログインして、まず1回プレイしてください",
+    "it": "Accedi e gioca prima una partita"
   },
   "game2.hkPopSplit": {
     "en": "Popsplit",
@@ -2485,7 +2485,7 @@
   },
   "game2.hkPopBotSplit": {
     "en": "Bots Popsplit (Private servers)",
-    "el": "Popsplit των bots (ιδιωτικοί διακομιστές)",
+    "el": "Popsplit των bots (ιδιωτικοί servers)",
     "es": "Popsplit de bots (servidores privados)",
     "bg": "Popsplit на ботовете (частни сървъри)",
     "fr": "Popsplit des bots (serveurs privés)",
@@ -2496,14 +2496,14 @@
     "tr": "Bot Popsplit (özel sunucular)",
     "pl": "Popsplit botów (serwery prywatne)",
     "nl": "Bots-popsplit (privéservers)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Popsplit dos bots (servidores privados)",
+    "id": "Popsplit Bot (server privat)",
+    "ja": "ボットのポップ分裂 (プライベートサーバー)",
+    "it": "Popsplit dei bot (server privati)"
   },
   "game2.hkLinkCopied": {
     "en": "Server link copied.",
-    "el": "Ο σύνδεσμος διακομιστή αντιγράφηκε.",
+    "el": "Ο σύνδεσμος του server αντιγράφηκε.",
     "es": "Enlace del servidor copiado.",
     "bg": "Връзката към сървъра е копирана.",
     "fr": "Lien du serveur copié.",
@@ -2514,14 +2514,14 @@
     "tr": "Sunucu bağlantısı kopyalandı.",
     "pl": "Link do serwera skopiowany.",
     "nl": "Serverlink gekopieerd.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Link do servidor copiado.",
+    "id": "Link server disalin.",
+    "ja": "サーバーのリンクをコピーしました。",
+    "it": "Link del server copiato."
   },
   "game2.hkLinkNotYet": {
     "en": "Server link: not available yet.",
-    "el": "Σύνδεσμος διακομιστή: δεν είναι ακόμη διαθέσιμος.",
+    "el": "Σύνδεσμος server: δεν είναι ακόμη διαθέσιμος.",
     "es": "Enlace del servidor: aún no disponible.",
     "bg": "Връзка към сървъра: още не е налична.",
     "fr": "Lien du serveur : pas encore disponible.",
@@ -2532,10 +2532,10 @@
     "tr": "Sunucu bağlantısı: henüz hazır değil.",
     "pl": "Link do serwera: jeszcze niedostępny.",
     "nl": "Serverlink: nog niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Link do servidor: ainda não disponível.",
+    "id": "Link server: belum tersedia.",
+    "ja": "サーバーのリンク：まだ取得できません。",
+    "it": "Link del server: non ancora disponibile."
   },
   "game2.hkChatSoundsOn": {
     "en": "Chat sounds on",
@@ -2550,10 +2550,10 @@
     "tr": "Sohbet sesleri açık",
     "pl": "Dźwięki czatu włączone",
     "nl": "Chatgeluiden aan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sons do chat ligados",
+    "id": "Suara chat aktif",
+    "ja": "チャットの音：オン",
+    "it": "Suoni della chat attivi"
   },
   "game2.hkChatSoundsOff": {
     "en": "Chat sounds off",
@@ -2568,15 +2568,15 @@
     "tr": "Sohbet sesleri kapalı",
     "pl": "Dźwięki czatu wyłączone",
     "nl": "Chatgeluiden uit",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sons do chat desligados",
+    "id": "Suara chat nonaktif",
+    "ja": "チャットの音：オフ",
+    "it": "Suoni della chat disattivati"
   },
   "game2.hkFreeSpecFirst": {
     "en": "Free spectate first",
-    "el": "Πρώτα ελεύθερη παρακολούθηση",
-    "es": "Primero entra en espectador libre",
+    "el": "Πρώτα ελεύθερο spectate",
+    "es": "Primero activa espectar libre",
     "bg": "Първо влезте в свободно наблюдение",
     "fr": "Passez d’abord en spectateur libre",
     "ar": "ادخل وضع المشاهدة الحرة أولًا",
@@ -2586,10 +2586,10 @@
     "tr": "Önce serbest izlemeye geç",
     "pl": "Najpierw włącz wolne obserwowanie",
     "nl": "Eerst vrij toekijken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ative o espectar livre primeiro",
+    "id": "Aktifkan spectate bebas dulu",
+    "ja": "先に自由観戦にしてください",
+    "it": "Attiva prima lo spettatore libero"
   },
   "game2.ghostCell": {
     "en": "Ghost cell",
@@ -2604,10 +2604,10 @@
     "tr": "Hayalet hücre",
     "pl": "Komórka-duch",
     "nl": "Spookcel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Célula fantasma",
+    "id": "Sel hantu",
+    "ja": "ゴーストセル",
+    "it": "Cellula fantasma"
   },
   "game2.hkClear": {
     "en": "Clear",
@@ -2640,10 +2640,10 @@
     "tr": "tarayıcı tarafından ayrılmış",
     "pl": "jest zajęty przez przeglądarkę",
     "nl": "is van de browser",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "é reservada pelo navegador",
+    "id": "dipakai oleh browser",
+    "ja": "ブラウザーが使うキーです",
+    "it": "è riservato al browser"
   },
   "game2.hkBlocked": {
     "en": "<b>{0}</b> cannot be used: it {1}.",
@@ -2658,10 +2658,10 @@
     "tr": "<b>{0}</b> kullanılamaz: {1}.",
     "pl": "Nie można użyć <b>{0}</b>: {1}.",
     "nl": "<b>{0}</b> kan niet worden gebruikt: deze {1}.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<b>{0}</b> não pode ser usada: {1}.",
+    "id": "<b>{0}</b> tidak bisa dipakai: tombol ini {1}.",
+    "ja": "<b>{0}</b> は使えません ({1})。",
+    "it": "<b>{0}</b> non si può usare: {1}."
   },
   "game2.hkBrowserWarn": {
     "en": "<b>{0}</b> is set, but the browser may still use it: it {1}.",
@@ -2676,10 +2676,10 @@
     "tr": "<b>{0}</b> atandı, ama tarayıcı onu hâlâ kullanabilir: {1}.",
     "pl": "<b>{0}</b> ustawiony, ale przeglądarka może go nadal używać: {1}.",
     "nl": "<b>{0}</b> is ingesteld, maar de browser kan hem nog gebruiken: deze {1}.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<b>{0}</b> foi definida, mas o navegador ainda pode usá-la: {1}.",
+    "id": "<b>{0}</b> sudah diatur, tapi browser mungkin tetap memakainya: tombol ini {1}.",
+    "ja": "<b>{0}</b> を設定しましたが、ブラウザーが反応する場合があります ({1})。",
+    "it": "<b>{0}</b> è impostato, ma il browser potrebbe usarlo comunque: {1}."
   },
   "game2.hkMoved": {
     "en": "<b>{0}</b> moved to <b>{1}</b>",
@@ -2694,10 +2694,10 @@
     "tr": "<b>{0}</b> şuraya taşındı: <b>{1}</b>",
     "pl": "<b>{0}</b> przeniesiono na <b>{1}</b>",
     "nl": "<b>{0}</b> verplaatst naar <b>{1}</b>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<b>{0}</b> foi movida para <b>{1}</b>",
+    "id": "<b>{0}</b> dipindah ke <b>{1}</b>",
+    "ja": "<b>{0}</b> を <b>{1}</b> に移動しました",
+    "it": "<b>{0}</b> spostato su <b>{1}</b>"
   },
   "game2.hkUnbound": {
     "en": "<b>{0}</b> is now unbound",
@@ -2712,10 +2712,10 @@
     "tr": "<b>{0}</b> artık tuşsuz",
     "pl": "<b>{0}</b> nie ma już klawisza",
     "nl": "<b>{0}</b> heeft nu geen toets",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<b>{0}</b> agora está sem tecla",
+    "id": "<b>{0}</b> sekarang tidak punya tombol",
+    "ja": "<b>{0}</b> の割り当てを解除しました",
+    "it": "<b>{0}</b> ora non ha nessun tasto"
   },
   "game2.botsCaptchaThanks": {
     "en": "Thank you for solving Captcha for bots",
@@ -2730,10 +2730,10 @@
     "tr": "Botlar için captcha’yı çözdüğün için teşekkürler",
     "pl": "Dziękujemy za rozwiązanie captchy dla botów",
     "nl": "Bedankt voor het oplossen van de captcha voor bots",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Valeu por resolver o captcha para os bots",
+    "id": "Terima kasih sudah menyelesaikan captcha untuk bot",
+    "ja": "ボットのためにキャプチャを解いてくれてありがとうございます",
+    "it": "Grazie per aver risolto il captcha per i bot"
   },
   "game2.botsAmount": {
     "en": "Bots amount required (max 190)",
@@ -2748,28 +2748,28 @@
     "tr": "Bot sayısı gerekli (en fazla 190)",
     "pl": "Wymagana liczba botów (maks. 190)",
     "nl": "Aantal bots nodig (max. 190)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Informe a quantidade de bots (máx. 190)",
+    "id": "Jumlah bot wajib diisi (maks 190)",
+    "ja": "ボットの数を入力してください (最大 190)",
+    "it": "Indica il numero di bot (massimo 190)"
   },
   "game2.botsPartyOnly": {
     "en": "Party bots only available for Party mode",
-    "el": "Τα bots παρέας είναι διαθέσιμα μόνο στη λειτουργία Party",
-    "es": "Los bots de grupo solo están disponibles en el modo Party",
-    "bg": "Ботовете за група са само за режим Party",
-    "fr": "Les bots de groupe ne sont disponibles qu’en mode Party",
-    "ar": "بوتات المجموعة متاحة في وضع Party فقط",
-    "zh": "派對機器人僅適用於派對模式",
-    "ru": "Боты группы доступны только в режиме Party",
+    "el": "Τα bots του party είναι διαθέσιμα μόνο στη λειτουργία Party",
+    "es": "Los bots de party solo están disponibles en el modo Party",
+    "bg": "Ботовете за парти са само за режим Party",
+    "fr": "Les bots de party ne sont disponibles qu’en mode Party",
+    "ar": "بوتات البارتي متاحة في وضع البارتي فقط",
+    "zh": "組隊機器人僅適用於組隊模式",
+    "ru": "Боты для пати доступны только в режиме пати",
     "de": "Party-Bots gibt es nur im Party-Modus",
     "tr": "Parti botları yalnızca Party modunda kullanılabilir",
-    "pl": "Boty drużyny są dostępne tylko w trybie Party",
+    "pl": "Boty party są dostępne tylko w trybie Party",
     "nl": "Partybots zijn alleen beschikbaar in Party-modus",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Bots de party só estão disponíveis no modo Party",
+    "id": "Bot party hanya tersedia di mode Party",
+    "ja": "パーティーボットはパーティーモードでのみ使えます",
+    "it": "I bot del party sono disponibili solo in modalità Party"
   },
   "game2.ctxAttack": {
     "en": "Attack",
@@ -2784,10 +2784,10 @@
     "tr": "Saldır",
     "pl": "Atak",
     "nl": "Aanvallen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atacar",
+    "id": "Serang",
+    "ja": "攻撃",
+    "it": "Attacca"
   },
   "game2.ctxFight": {
     "en": "Fight",
@@ -2802,10 +2802,10 @@
     "tr": "Savaş",
     "pl": "Walcz",
     "nl": "Vechten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Lutar",
+    "id": "Lawan",
+    "ja": "戦え",
+    "it": "Combatti"
   },
   "game2.ctxRun": {
     "en": "Run",
@@ -2820,10 +2820,10 @@
     "tr": "Kaç",
     "pl": "Uciekaj",
     "nl": "Vluchten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Fugir",
+    "id": "Kabur",
+    "ja": "逃げろ",
+    "it": "Scappa"
   },
   "game2.ctxOpen": {
     "en": "Open",
@@ -2856,10 +2856,10 @@
     "tr": "ODAK YOK",
     "pl": "BRAK FOKUSU",
     "nl": "GEEN FOCUS",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "SEM FOCO",
+    "id": "TIDAK FOKUS",
+    "ja": "フォーカスなし",
+    "it": "NESSUN FOCUS"
   },
   "game2.ngCanvasOff": {
     "en": "Canvas (WebGL off)",
@@ -2874,10 +2874,10 @@
     "tr": "Canvas (WebGL kapalı)",
     "pl": "Canvas (WebGL wył.)",
     "nl": "Canvas (WebGL uit)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Canvas (WebGL desligado)",
+    "id": "Canvas (WebGL nonaktif)",
+    "ja": "Canvas (WebGL オフ)",
+    "it": "Canvas (WebGL disattivato)"
   },
   "game2.ngCanvasReset": {
     "en": "Canvas (GPU reset)",
@@ -2892,10 +2892,10 @@
     "tr": "Canvas (GPU sıfırlandı)",
     "pl": "Canvas (reset GPU)",
     "nl": "Canvas (GPU-reset)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Canvas (GPU reiniciada)",
+    "id": "Canvas (GPU direset)",
+    "ja": "Canvas (GPU リセット)",
+    "it": "Canvas (GPU reimpostata)"
   },
   "game2.helperFailed": {
     "en": "Could not load Mod Info & Templates.",
@@ -2910,10 +2910,10 @@
     "tr": "Mod bilgisi ve şablonlar yüklenemedi.",
     "pl": "Nie udało się wczytać informacji o modzie i szablonów.",
     "nl": "Mod-info en sjablonen konden niet worden geladen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível carregar Info do mod e templates.",
+    "id": "Gagal memuat Info Mod & Template.",
+    "ja": "Mod 情報とテンプレートを読み込めませんでした。",
+    "it": "Impossibile caricare Info sulla mod e template."
   },
   "game2.rotationBeforeViewports": {
     "en": "Rotation can work only before the creation of Multi-Viewports",
@@ -2928,14 +2928,14 @@
     "tr": "Döndürme yalnızca çoklu görünümler oluşturulmadan önce çalışır",
     "pl": "Obrót działa tylko przed utworzeniem wielu widoków",
     "nl": "Draaien werkt alleen vóór het maken van meerdere weergaven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A rotação só funciona antes de as multi-viewports serem criadas",
+    "id": "Rotasi hanya bisa sebelum Multi-Viewport dibuat",
+    "ja": "回転はマルチビューポートを作成する前にしか使えません",
+    "it": "La rotazione funziona solo prima che vengano create le multi-viewport"
   },
   "game2.tag.servers": {
     "en": "Servers",
-    "el": "Διακομιστές",
+    "el": "Servers",
     "es": "Servidores",
     "bg": "Сървъри",
     "fr": "Serveurs",
@@ -2957,21 +2957,21 @@
     "es": "Party",
     "bg": "Party",
     "fr": "Party",
-    "ar": "Party",
-    "zh": "派對",
-    "ru": "Party",
+    "ar": "بارتي",
+    "zh": "組隊",
+    "ru": "Пати",
     "de": "Party",
     "tr": "Party",
     "pl": "Party",
     "nl": "Party",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Party",
+    "id": "Party",
+    "ja": "パーティー",
+    "it": "Party"
   },
   "game2.sbServer": {
     "en": "Server",
-    "el": "Διακομιστής",
+    "el": "Server",
     "es": "Servidor",
     "bg": "Сървър",
     "fr": "Serveur",
@@ -3000,10 +3000,10 @@
     "tr": "{0} oyuncu",
     "pl": "{0} gracz",
     "nl": "{0} speler",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} jogador",
+    "id": "{0} pemain",
+    "ja": "{0} 人",
+    "it": "{0} giocatore"
   },
   "game2.sbPlayers": {
     "en": "{0} players",
@@ -3018,10 +3018,10 @@
     "tr": "{0} oyuncu",
     "pl": "graczy: {0}",
     "nl": "{0} spelers",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} jogadores",
+    "id": "{0} pemain",
+    "ja": "{0} 人",
+    "it": "{0} giocatori"
   },
   "game2.sbBot": {
     "en": "{0} bot",
@@ -3036,10 +3036,10 @@
     "tr": "{0} bot",
     "pl": "{0} bot",
     "nl": "{0} bot",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} bot",
+    "id": "{0} bot",
+    "ja": "ボット {0} 体",
+    "it": "{0} bot"
   },
   "game2.sbBots": {
     "en": "{0} bots",
@@ -3054,14 +3054,14 @@
     "tr": "{0} bot",
     "pl": "botów: {0}",
     "nl": "{0} bots",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} bots",
+    "id": "{0} bot",
+    "ja": "ボット {0} 体",
+    "it": "{0} bot"
   },
   "game2.sbNotReady": {
     "en": "Matchmaking is not ready yet. Try again in a moment.",
-    "el": "Η αναζήτηση διακομιστών δεν είναι ακόμη έτοιμη. Δοκιμάστε ξανά σε λίγο.",
+    "el": "Η αναζήτηση servers δεν είναι ακόμη έτοιμη. Δοκιμάστε ξανά σε λίγο.",
     "es": "El emparejamiento aún no está listo. Inténtalo en un momento.",
     "bg": "Търсенето на сървъри още не е готово. Опитайте след малко.",
     "fr": "Le matchmaking n’est pas encore prêt. Réessayez dans un instant.",
@@ -3072,14 +3072,14 @@
     "tr": "Eşleştirme henüz hazır değil. Birazdan tekrar dene.",
     "pl": "Dobieranie serwerów nie jest jeszcze gotowe. Spróbuj za chwilę.",
     "nl": "Matchmaking is nog niet klaar. Probeer het zo opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O matchmaking ainda não está pronto. Tente de novo daqui a pouco.",
+    "id": "Matchmaking belum siap. Coba lagi sebentar lagi.",
+    "ja": "マッチメイキングの準備がまだできていません。少ししてからもう一度お試しください。",
+    "it": "Il matchmaking non è ancora pronto. Riprova tra poco."
   },
   "game2.sbRefused": {
     "en": "Matchmaking refused this client version. Reload the page and scan again.",
-    "el": "Η αναζήτηση διακομιστών απέρριψε αυτή την έκδοση. Ανανεώστε τη σελίδα και σαρώστε ξανά.",
+    "el": "Η αναζήτηση servers απέρριψε αυτή την έκδοση. Ανανεώστε τη σελίδα και σαρώστε ξανά.",
     "es": "El emparejamiento rechazó esta versión del cliente. Recarga la página y busca de nuevo.",
     "bg": "Търсенето отхвърли тази версия на клиента. Презаредете страницата и сканирайте отново.",
     "fr": "Le matchmaking a refusé cette version du client. Rechargez la page et relancez la recherche.",
@@ -3090,14 +3090,14 @@
     "tr": "Eşleştirme bu istemci sürümünü reddetti. Sayfayı yenileyip tekrar tara.",
     "pl": "Dobieranie odrzuciło tę wersję klienta. Odśwież stronę i wyszukaj ponownie.",
     "nl": "Matchmaking weigerde deze clientversie. Herlaad de pagina en zoek opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O matchmaking recusou esta versão do cliente. Recarregue a página e escaneie de novo.",
+    "id": "Matchmaking menolak versi klien ini. Muat ulang halaman lalu scan lagi.",
+    "ja": "マッチメイキングがこのクライアントのバージョンを拒否しました。ページを再読み込みして、もう一度スキャンしてください。",
+    "it": "Il matchmaking ha rifiutato questa versione del client. Ricarica la pagina e cerca di nuovo."
   },
   "game2.sbNoAnswer": {
     "en": "Matchmaking did not answer. Press Scan to try again.",
-    "el": "Η αναζήτηση διακομιστών δεν απάντησε. Πατήστε Σάρωση για νέα προσπάθεια.",
+    "el": "Η αναζήτηση servers δεν απάντησε. Πατήστε Σάρωση για νέα προσπάθεια.",
     "es": "El emparejamiento no respondió. Pulsa Buscar para intentarlo de nuevo.",
     "bg": "Търсенето не отговори. Натиснете Сканирай, за да опитате пак.",
     "fr": "Le matchmaking n’a pas répondu. Appuyez sur Chercher pour réessayer.",
@@ -3108,10 +3108,10 @@
     "tr": "Eşleştirme yanıt vermedi. Tekrar denemek için Tara’ya bas.",
     "pl": "Dobieranie nie odpowiedziało. Naciśnij Szukaj, aby spróbować ponownie.",
     "nl": "Matchmaking gaf geen antwoord. Druk op Zoeken om het opnieuw te proberen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O matchmaking não respondeu. Clique em Escanear para tentar de novo.",
+    "id": "Matchmaking tidak merespons. Tekan Scan untuk mencoba lagi.",
+    "ja": "マッチメイキングから応答がありません。「スキャン」を押してもう一度お試しください。",
+    "it": "Il matchmaking non ha risposto. Premi Cerca per riprovare."
   },
   "game2.sbLeaveJoin": {
     "en": "Leave this game and join {0}?",
@@ -3126,14 +3126,14 @@
     "tr": "Bu oyundan çıkıp {0} sunucusuna katılınsın mı?",
     "pl": "Opuścić tę grę i dołączyć do {0}?",
     "nl": "Dit spel verlaten en naar {0} gaan?",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sair desta partida e entrar em {0}?",
+    "id": "Keluar dari game ini dan masuk ke {0}?",
+    "ja": "このゲームを抜けて {0} に参加しますか？",
+    "it": "Lasciare questa partita ed entrare in {0}?"
   },
   "game2.sbSwitchFailed": {
     "en": "Could not switch server: {0}",
-    "el": "Η αλλαγή διακομιστή απέτυχε: {0}",
+    "el": "Η αλλαγή server απέτυχε: {0}",
     "es": "No se pudo cambiar de servidor: {0}",
     "bg": "Смяната на сървъра не успя: {0}",
     "fr": "Impossible de changer de serveur : {0}",
@@ -3144,10 +3144,10 @@
     "tr": "Sunucu değiştirilemedi: {0}",
     "pl": "Nie udało się zmienić serwera: {0}",
     "nl": "Wisselen van server mislukt: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível trocar de servidor: {0}",
+    "id": "Gagal pindah server: {0}",
+    "ja": "サーバーを切り替えられませんでした：{0}",
+    "it": "Impossibile cambiare server: {0}"
   },
   "game2.sbJoining": {
     "en": "Joining {0}…",
@@ -3162,10 +3162,10 @@
     "tr": "{0} sunucusuna katılınıyor…",
     "pl": "Dołączanie do {0}…",
     "nl": "Verbinden met {0}…",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entrando em {0}…",
+    "id": "Masuk ke {0}…",
+    "ja": "{0} に参加中…",
+    "it": "Ingresso in {0}…"
   },
   "game2.sbJoinFailed": {
     "en": "Could not join {0}. Pick it again to retry.",
@@ -3180,14 +3180,14 @@
     "tr": "{0} sunucusuna katılınamadı. Tekrar denemek için yeniden seç.",
     "pl": "Nie udało się dołączyć do {0}. Wybierz go ponownie.",
     "nl": "Kon niet naar {0}. Kies hem opnieuw om het nog eens te proberen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível entrar em {0}. Escolha de novo para tentar outra vez.",
+    "id": "Gagal masuk ke {0}. Pilih lagi untuk mencoba ulang.",
+    "ja": "{0} に参加できませんでした。もう一度選ぶと再試行します。",
+    "it": "Impossibile entrare in {0}. Sceglilo di nuovo per riprovare."
   },
   "game2.sbSwitch": {
     "en": "Switch server",
-    "el": "Αλλαγή διακομιστή",
+    "el": "Αλλαγή server",
     "es": "Cambiar de servidor",
     "bg": "Смяна на сървъра",
     "fr": "Changer de serveur",
@@ -3198,10 +3198,10 @@
     "tr": "Sunucu değiştir",
     "pl": "Zmień serwer",
     "nl": "Wissel van server",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Trocar de servidor",
+    "id": "Pindah server",
+    "ja": "サーバー切り替え",
+    "it": "Cambia server"
   },
   "game2.sbScan": {
     "en": "Scan",
@@ -3216,10 +3216,10 @@
     "tr": "Tara",
     "pl": "Szukaj",
     "nl": "Zoeken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Escanear",
+    "id": "Scan",
+    "ja": "スキャン",
+    "it": "Cerca"
   },
   "game2.sbStop": {
     "en": "Stop",
@@ -3252,10 +3252,10 @@
     "tr": "Tarama durduruldu.",
     "pl": "Wyszukiwanie zatrzymane.",
     "nl": "Zoeken gestopt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Escaneamento parado.",
+    "id": "Scan dihentikan.",
+    "ja": "スキャンを停止しました。",
+    "it": "Ricerca interrotta."
   },
   "game2.sbChecking": {
     "en": "checking…",
@@ -3270,10 +3270,10 @@
     "tr": "kontrol ediliyor…",
     "pl": "sprawdzanie…",
     "nl": "controleren…",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "verificando…",
+    "id": "memeriksa…",
+    "ja": "確認中…",
+    "it": "controllo…"
   },
   "game2.sbCountedAt": {
     "en": "Counted at {0}",
@@ -3288,10 +3288,10 @@
     "tr": "Sayım: {0}",
     "pl": "Policzono o {0}",
     "nl": "Geteld om {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Contado às {0}",
+    "id": "Dihitung pukul {0}",
+    "ja": "{0} 時点の人数",
+    "it": "Contati alle {0}"
   },
   "game2.sbBotsTip": {
     "en": "Bots: names on the leaderboard 3 or more times",
@@ -3303,13 +3303,13 @@
     "zh": "機器人：在排行榜出現 3 次或以上的名稱",
     "ru": "Боты: имена, которые есть в таблице лидеров 3 и более раз",
     "de": "Bots: Namen, die 3-mal oder öfter in der Bestenliste stehen",
-    "tr": "Botlar: lider tablosunda 3 veya daha fazla kez geçen adlar",
+    "tr": "Botlar: sıralamada 3 veya daha fazla kez geçen adlar",
     "pl": "Boty: nazwy występujące w rankingu 3 lub więcej razy",
     "nl": "Bots: namen die 3 keer of vaker in de ranglijst staan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Bots: nomes que aparecem 3 vezes ou mais no ranking",
+    "id": "Bot: nama yang muncul di leaderboard 3 kali atau lebih",
+    "ja": "ボット：ランキングに3回以上出ている名前",
+    "it": "Bot: nomi presenti 3 o più volte in classifica"
   },
   "game2.sbLastCheck": {
     "en": "Last check: {0}",
@@ -3324,10 +3324,10 @@
     "tr": "Son kontrol: {0}",
     "pl": "Ostatnie sprawdzenie: {0}",
     "nl": "Laatste controle: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Última verificação: {0}",
+    "id": "Cek terakhir: {0}",
+    "ja": "最終確認：{0}",
+    "it": "Ultimo controllo: {0}"
   },
   "game2.sbStEmpty": {
     "en": "empty",
@@ -3342,16 +3342,16 @@
     "tr": "boş",
     "pl": "pusty",
     "nl": "leeg",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "vazio",
+    "id": "kosong",
+    "ja": "空き",
+    "it": "vuoto"
   },
   "game2.sbStCapped": {
     "en": "minimap list (at most 20)",
-    "el": "λίστα μίνι χάρτη (έως 20)",
+    "el": "λίστα του minimap (έως 20)",
     "es": "lista del minimapa (máx. 20)",
-    "bg": "списък от мини картата (до 20)",
+    "bg": "списък от миникартата (до 20)",
     "fr": "liste de la mini-carte (20 max)",
     "ar": "قائمة الخريطة المصغرة (20 كحد أقصى)",
     "zh": "小地圖名單（最多 20）",
@@ -3360,32 +3360,32 @@
     "tr": "mini harita listesi (en fazla 20)",
     "pl": "lista minimapy (maks. 20)",
     "nl": "minimaplijst (hooguit 20)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "lista do minimapa (no máximo 20)",
+    "id": "daftar minimap (maks 20)",
+    "ja": "ミニマップのリスト (最大 20)",
+    "it": "elenco della minimappa (massimo 20)"
   },
   "game2.sbPartyServer": {
     "en": "Party server",
-    "el": "Διακομιστής party",
-    "es": "Servidor de grupo",
-    "bg": "Сървър за група",
-    "fr": "Serveur de groupe",
-    "ar": "خادم المجموعة",
-    "zh": "派對伺服器",
-    "ru": "Сервер группы",
+    "el": "Server party",
+    "es": "Servidor de party",
+    "bg": "Сървър за парти",
+    "fr": "Serveur de party",
+    "ar": "خادم البارتي",
+    "zh": "組隊伺服器",
+    "ru": "Сервер пати",
     "de": "Party-Server",
     "tr": "Parti sunucusu",
-    "pl": "Serwer drużyny",
+    "pl": "Serwer party",
     "nl": "Partyserver",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Servidor da party",
+    "id": "Server party",
+    "ja": "パーティーサーバー",
+    "it": "Server del party"
   },
   "game2.sbThisServer": {
     "en": "This server",
-    "el": "Αυτός ο διακομιστής",
+    "el": "Αυτός ο server",
     "es": "Este servidor",
     "bg": "Този сървър",
     "fr": "Ce serveur",
@@ -3396,10 +3396,10 @@
     "tr": "Bu sunucu",
     "pl": "Ten serwer",
     "nl": "Deze server",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este servidor",
+    "id": "Server ini",
+    "ja": "このサーバー",
+    "it": "Questo server"
   },
   "game2.sbCounting": {
     "en": "counting…",
@@ -3414,10 +3414,10 @@
     "tr": "sayılıyor…",
     "pl": "liczenie…",
     "nl": "tellen…",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "contando…",
+    "id": "menghitung…",
+    "ja": "集計中…",
+    "it": "conteggio…"
   },
   "game2.sbConnecting": {
     "en": "connecting…",
@@ -3450,10 +3450,10 @@
     "tr": "buradasın",
     "pl": "jesteś tutaj",
     "nl": "je bent hier",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "você está aqui",
+    "id": "kamu di sini",
+    "ja": "現在地",
+    "it": "sei qui"
   },
   "game2.sbSameArena": {
     "en": "Same arena as {0}",
@@ -3468,10 +3468,10 @@
     "tr": "{0} ile aynı arena",
     "pl": "Ta sama arena co {0}",
     "nl": "Zelfde arena als {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Mesma arena que {0}",
+    "id": "Arena yang sama dengan {0}",
+    "ja": "{0} と同じアリーナ",
+    "it": "Stessa arena di {0}"
   },
   "game2.sbJoiningShort": {
     "en": "joining…",
@@ -3486,14 +3486,14 @@
     "tr": "katılınıyor…",
     "pl": "dołączanie…",
     "nl": "verbinden…",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "entrando…",
+    "id": "masuk…",
+    "ja": "参加中…",
+    "it": "ingresso…"
   },
   "game2.sbLooking": {
     "en": "Looking for servers…",
-    "el": "Αναζήτηση διακομιστών…",
+    "el": "Αναζήτηση servers…",
     "es": "Buscando servidores…",
     "bg": "Търсене на сървъри…",
     "fr": "Recherche de serveurs…",
@@ -3504,14 +3504,14 @@
     "tr": "Sunucular aranıyor…",
     "pl": "Szukanie serwerów…",
     "nl": "Servers zoeken…",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Procurando servidores…",
+    "id": "Mencari server…",
+    "ja": "サーバーを探しています…",
+    "it": "Cerco server…"
   },
   "game2.sbNoneYet": {
     "en": "No servers found yet",
-    "el": "Δεν βρέθηκαν ακόμη διακομιστές",
+    "el": "Δεν βρέθηκαν ακόμη servers",
     "es": "Aún no se encontraron servidores",
     "bg": "Още няма намерени сървъри",
     "fr": "Aucun serveur trouvé pour l’instant",
@@ -3522,32 +3522,32 @@
     "tr": "Henüz sunucu bulunamadı",
     "pl": "Nie znaleziono jeszcze serwerów",
     "nl": "Nog geen servers gevonden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nenhum servidor encontrado ainda",
+    "id": "Belum ada server ditemukan",
+    "ja": "まだサーバーが見つかりません",
+    "it": "Ancora nessun server trovato"
   },
   "game2.sbPartyOnlyYours": {
     "en": "Party servers belong to one party each, so only yours is listed.",
-    "el": "Κάθε διακομιστής party ανήκει σε μία παρέα, γι’ αυτό εμφανίζεται μόνο ο δικός σας.",
-    "es": "Cada servidor de grupo pertenece a un solo grupo, así que solo aparece el tuyo.",
-    "bg": "Всеки сървър за група е на една група, затова е показан само вашият.",
-    "fr": "Chaque serveur de groupe appartient à un seul groupe : seul le vôtre est affiché.",
-    "ar": "كل خادم مجموعة يخص مجموعة واحدة، لذا يظهر خادمك فقط.",
-    "zh": "每個派對伺服器只屬於一個派對，所以只列出你的。",
-    "ru": "Каждый сервер группы принадлежит одной группе, поэтому показан только ваш.",
+    "el": "Κάθε server party ανήκει σε ένα μόνο party, γι’ αυτό εμφανίζεται μόνο ο δικός σας.",
+    "es": "Cada servidor de party pertenece a una sola party, así que solo aparece el tuyo.",
+    "bg": "Всеки сървър за парти е на едно парти, затова е показан само вашият.",
+    "fr": "Chaque serveur de party appartient à une seule party : seul le vôtre est affiché.",
+    "ar": "كل خادم بارتي يخص بارتي واحدة، لذا يظهر خادمك فقط.",
+    "zh": "每個組隊伺服器只屬於一個隊伍，所以只列出你的。",
+    "ru": "Каждый сервер пати принадлежит одной пати, поэтому показан только ваш.",
     "de": "Jeder Party-Server gehört zu einer Party, deshalb steht nur deiner in der Liste.",
     "tr": "Her parti sunucusu tek bir partiye aittir, bu yüzden yalnızca seninki listelenir.",
-    "pl": "Każdy serwer drużyny należy do jednej drużyny, więc widać tylko twój.",
+    "pl": "Każdy serwer party należy do jednego party, więc widać tylko twój.",
     "nl": "Elke partyserver hoort bij één party, dus alleen die van jou staat erin.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Cada servidor de party pertence a uma party, então só o seu aparece.",
+    "id": "Setiap server party hanya milik satu party, jadi yang tampil hanya milikmu.",
+    "ja": "パーティーサーバーはパーティーごとに1つなので、あなたのものだけが表示されます。",
+    "it": "Ogni server party appartiene a un solo party, quindi viene mostrato solo il tuo."
   },
   "game2.sbLookingFor": {
     "en": "Looking for {0} servers {1}…",
-    "el": "Αναζήτηση διακομιστών {0} {1}…",
+    "el": "Αναζήτηση servers {0} {1}…",
     "es": "Buscando servidores {0} {1}…",
     "bg": "Търсене на сървъри {0} {1}…",
     "fr": "Recherche de serveurs {0} {1}…",
@@ -3558,14 +3558,14 @@
     "tr": "{0} sunucuları aranıyor {1}…",
     "pl": "Szukanie serwerów {0} {1}…",
     "nl": "{0}-servers zoeken {1}…",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Procurando servidores {0} {1}…",
+    "id": "Mencari server {0} {1}…",
+    "ja": "{0} のサーバーを探しています {1}…",
+    "it": "Cerco server {0} {1}…"
   },
   "game2.sbPressScan": {
     "en": "Press Scan to look for other {0} servers.",
-    "el": "Πατήστε Σάρωση για άλλους διακομιστές {0}.",
+    "el": "Πατήστε Σάρωση για άλλους servers {0}.",
     "es": "Pulsa Buscar para encontrar otros servidores {0}.",
     "bg": "Натиснете Сканирай за други сървъри {0}.",
     "fr": "Appuyez sur Chercher pour trouver d’autres serveurs {0}.",
@@ -3576,10 +3576,10 @@
     "tr": "Başka {0} sunucuları bulmak için Tara’ya bas.",
     "pl": "Naciśnij Szukaj, aby znaleźć inne serwery {0}.",
     "nl": "Druk op Zoeken voor andere {0}-servers.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Clique em Escanear para procurar outros servidores {0}.",
+    "id": "Tekan Scan untuk mencari server {0} lainnya.",
+    "ja": "「スキャン」を押すと、ほかの {0} サーバーを探します。",
+    "it": "Premi Cerca per trovare altri server {0}."
   },
   "game2.sbWaiting": {
     "en": "Waiting for the connection…",
@@ -3594,14 +3594,14 @@
     "tr": "Bağlantı bekleniyor…",
     "pl": "Oczekiwanie na połączenie…",
     "nl": "Wachten op de verbinding…",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aguardando a conexão…",
+    "id": "Menunggu koneksi…",
+    "ja": "接続を待っています…",
+    "it": "In attesa della connessione…"
   },
   "game2.sbKnownOne": {
     "en": "{0} {1} server",
-    "el": "{0} διακομιστής {1}",
+    "el": "{0} server {1}",
     "es": "{0} servidor {1}",
     "bg": "{0} сървър {1}",
     "fr": "{0} serveur {1}",
@@ -3612,14 +3612,14 @@
     "tr": "{0} {1} sunucusu",
     "pl": "{0} serwer {1}",
     "nl": "{0} {1}-server",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} servidor {1}",
+    "id": "{0} server {1}",
+    "ja": "{1} サーバー {0} 件",
+    "it": "{0} server {1}"
   },
   "game2.sbKnown": {
     "en": "{0} {1} servers",
-    "el": "{0} διακομιστές {1}",
+    "el": "{0} servers {1}",
     "es": "{0} servidores {1}",
     "bg": "{0} сървъра {1}",
     "fr": "{0} serveurs {1}",
@@ -3630,10 +3630,10 @@
     "tr": "{0} {1} sunucusu",
     "pl": "serwery {1}: {0}",
     "nl": "{0} {1}-servers",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} servidores {1}",
+    "id": "{0} server {1}",
+    "ja": "{1} サーバー {0} 件",
+    "it": "{0} server {1}"
   },
   "game2.sbPaused": {
     "en": "counts pause while you play",
@@ -3648,10 +3648,10 @@
     "tr": "oynarken sayım durur",
     "pl": "liczenie wstrzymane podczas gry",
     "nl": "tellen pauzeert terwijl je speelt",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "a contagem pausa enquanto você joga",
+    "id": "hitungan berhenti selama kamu bermain",
+    "ja": "プレイ中は集計を一時停止",
+    "it": "il conteggio si ferma mentre giochi"
   },
   "game2.sbRefresh": {
     "en": "counts refresh every {0} s",
@@ -3666,14 +3666,14 @@
     "tr": "sayım her {0} sn yenilenir",
     "pl": "odświeżanie co {0} s",
     "nl": "telling elke {0} s vernieuwd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "a contagem atualiza a cada {0} s",
+    "id": "hitungan diperbarui setiap {0} dtk",
+    "ja": "{0} 秒ごとに集計を更新",
+    "it": "il conteggio si aggiorna ogni {0} s"
   },
   "game2.sbStopTip": {
     "en": "Stop looking for servers",
-    "el": "Διακοπή αναζήτησης διακομιστών",
+    "el": "Διακοπή αναζήτησης servers",
     "es": "Dejar de buscar servidores",
     "bg": "Спри търсенето на сървъри",
     "fr": "Arrêter la recherche de serveurs",
@@ -3684,14 +3684,14 @@
     "tr": "Sunucu aramayı durdur",
     "pl": "Przestań szukać serwerów",
     "nl": "Stop met servers zoeken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Parar de procurar servidores",
+    "id": "Berhenti mencari server",
+    "ja": "サーバーの検索を停止",
+    "it": "Smetti di cercare server"
   },
   "game2.sbMoreTip": {
     "en": "Look for more {0} servers",
-    "el": "Αναζήτηση περισσότερων διακομιστών {0}",
+    "el": "Αναζήτηση περισσότερων servers {0}",
     "es": "Buscar más servidores {0}",
     "bg": "Търси още сървъри {0}",
     "fr": "Chercher d’autres serveurs {0}",
@@ -3702,28 +3702,28 @@
     "tr": "Daha fazla {0} sunucusu ara",
     "pl": "Szukaj więcej serwerów {0}",
     "nl": "Meer {0}-servers zoeken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Procurar mais servidores {0}",
+    "id": "Cari lebih banyak server {0}",
+    "ja": "ほかの {0} サーバーを探す",
+    "it": "Cerca altri server {0}"
   },
   "game2.sbPartyNoScan": {
     "en": "Party servers can’t be scanned",
-    "el": "Οι διακομιστές party δεν σαρώνονται",
-    "es": "Los servidores de grupo no se pueden buscar",
-    "bg": "Сървърите за група не могат да се сканират",
-    "fr": "Les serveurs de groupe ne peuvent pas être recherchés",
-    "ar": "لا يمكن البحث في خوادم المجموعات",
-    "zh": "派對伺服器無法掃描",
-    "ru": "Серверы групп нельзя искать",
+    "el": "Οι servers party δεν σαρώνονται",
+    "es": "Los servidores de party no se pueden buscar",
+    "bg": "Сървърите за парти не могат да се сканират",
+    "fr": "Les serveurs de party ne peuvent pas être recherchés",
+    "ar": "لا يمكن البحث في خوادم البارتي",
+    "zh": "組隊伺服器無法掃描",
+    "ru": "Серверы пати нельзя просканировать",
     "de": "Party-Server können nicht gesucht werden",
     "tr": "Parti sunucuları taranamaz",
-    "pl": "Serwerów drużyn nie można wyszukiwać",
+    "pl": "Serwerów party nie można wyszukiwać",
     "nl": "Partyservers kunnen niet worden doorzocht",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Servidores de party não podem ser escaneados",
+    "id": "Server party tidak bisa di-scan",
+    "ja": "パーティーサーバーはスキャンできません",
+    "it": "I server party non si possono cercare"
   },
   "game2.avoidReverseSplit": {
     "en": "Avoiding reverse split...",
@@ -3738,10 +3738,10 @@
     "tr": "Ters bölünmeden kaçınılıyor...",
     "pl": "Unikanie odwróconego splitu...",
     "nl": "Omgekeerde split vermijden...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Evitando reverse split...",
+    "id": "Menghindari reverse split...",
+    "ja": "逆分裂を回避中...",
+    "it": "Evito il reverse split..."
   },
   "game2.promoTitle": {
     "en": "2020 development",
@@ -3756,10 +3756,10 @@
     "tr": "2020 geliştirmesi",
     "pl": "Rozwój 2020",
     "nl": "Ontwikkeling 2020",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Desenvolvimento 2020",
+    "id": "Pengembangan 2020",
+    "ja": "2020年の開発",
+    "it": "Sviluppo 2020"
   },
   "game2.replayBackwards": {
     "en": "When time traveling, weird things happen...",
@@ -3774,10 +3774,10 @@
     "tr": "Zamanda yolculukta tuhaf şeyler olur...",
     "pl": "Podczas podróży w czasie dzieją się dziwne rzeczy...",
     "nl": "Bij tijdreizen gebeuren er rare dingen...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Quando se viaja no tempo, coisas estranhas acontecem...",
+    "id": "Kalau menjelajah waktu, hal-hal aneh bisa terjadi...",
+    "ja": "時間をさかのぼると、おかしなことが起こります...",
+    "it": "Quando viaggi nel tempo succedono cose strane..."
   },
   "game2.replayOnly": {
     "en": "Replay only: watch a replay first.",
@@ -3792,10 +3792,10 @@
     "tr": "Yalnızca tekrar: önce bir tekrar izle.",
     "pl": "Tylko w powtórce: najpierw obejrzyj powtórkę.",
     "nl": "Alleen in replays: bekijk eerst een replay.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Só no replay: assista a um replay primeiro.",
+    "id": "Khusus replay: tonton replay dulu.",
+    "ja": "リプレイ専用です：先にリプレイを再生してください。",
+    "it": "Solo per i replay: guarda prima un replay."
   },
   "game2.replayPaused": {
     "en": "Replay paused",
@@ -3810,10 +3810,10 @@
     "tr": "Tekrar duraklatıldı",
     "pl": "Powtórka wstrzymana",
     "nl": "Replay gepauzeerd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Replay pausado",
+    "id": "Replay dijeda",
+    "ja": "リプレイ一時停止",
+    "it": "Replay in pausa"
   },
   "game2.replayDelay": {
     "en": "Replay delay: {0} ms per packet",
@@ -3828,10 +3828,10 @@
     "tr": "Tekrar gecikmesi: paket başına {0} ms",
     "pl": "Opóźnienie powtórki: {0} ms na pakiet",
     "nl": "Replayvertraging: {0} ms per pakket",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atraso do replay: {0} ms por pacote",
+    "id": "Jeda replay: {0} ms per paket",
+    "ja": "リプレイの遅延：パケットごとに {0} ms",
+    "it": "Ritardo del replay: {0} ms per pacchetto"
   },
   "game2.replayNoSeek": {
     "en": "Seeking is not available while playing backwards.",
@@ -3846,10 +3846,10 @@
     "tr": "Geri oynatırken atlama yapılamaz.",
     "pl": "Przewijanie nie działa podczas odtwarzania wstecz.",
     "nl": "Spoelen kan niet tijdens achteruit afspelen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não dá para avançar ou voltar enquanto o replay toca de trás para frente.",
+    "id": "Tidak bisa melompat saat diputar mundur.",
+    "ja": "逆再生中はシークできません。",
+    "it": "Non puoi spostarti nel replay mentre va all'indietro."
   },
   "game2.replaySeekTip": {
     "en": "Replay: click to seek",
@@ -3864,10 +3864,10 @@
     "tr": "Tekrar: atlamak için tıkla",
     "pl": "Powtórka: kliknij, aby przewinąć",
     "nl": "Replay: klik om te spoelen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Replay: clique para ir até o ponto",
+    "id": "Replay: klik untuk melompat",
+    "ja": "リプレイ：クリックでシーク",
+    "it": "Replay: clicca per spostarti"
   },
   "game2.replayTimes": {
     "en": "Start and end time should be non negative",
@@ -3882,10 +3882,10 @@
     "tr": "Başlangıç ve bitiş süresi negatif olmamalı",
     "pl": "Czas początku i końca nie może być ujemny",
     "nl": "Begin- en eindtijd mogen niet negatief zijn",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os tempos de início e fim não podem ser negativos",
+    "id": "Waktu mulai dan selesai tidak boleh negatif",
+    "ja": "開始時間と終了時間は 0 以上にしてください",
+    "it": "L'ora di inizio e di fine non possono essere negative"
   },
   "game2.loading": {
     "en": "Loading...",
@@ -3900,10 +3900,10 @@
     "tr": "Yükleniyor...",
     "pl": "Ładowanie...",
     "nl": "Laden...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Carregando...",
+    "id": "Memuat...",
+    "ja": "読み込み中...",
+    "it": "Caricamento..."
   },
   "game2.replayStudioFailed": {
     "en": "Replay Studio could not be loaded.",
@@ -3918,10 +3918,10 @@
     "tr": "Replay Studio yüklenemedi.",
     "pl": "Nie udało się wczytać Replay Studio.",
     "nl": "Replay Studio kon niet worden geladen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível carregar o Replay Studio.",
+    "id": "Replay Studio gagal dimuat.",
+    "ja": "Replay Studio を読み込めませんでした。",
+    "it": "Impossibile caricare Replay Studio."
   },
   "game2.practiceFailed": {
     "en": "Practice arena could not be loaded.",
@@ -3936,10 +3936,10 @@
     "tr": "Antrenman arenası yüklenemedi.",
     "pl": "Nie udało się wczytać areny treningowej.",
     "nl": "Oefenarena kon niet worden geladen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível carregar a arena de treino.",
+    "id": "Arena latihan gagal dimuat.",
+    "ja": "練習アリーナを読み込めませんでした。",
+    "it": "Impossibile caricare l'arena di allenamento."
   },
   "game2.moduleFailed": {
     "en": "{0} could not be loaded.",
@@ -3954,14 +3954,14 @@
     "tr": "{0} yüklenemedi.",
     "pl": "Nie udało się wczytać: {0}.",
     "nl": "{0} kon niet worden geladen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível carregar {0}.",
+    "id": "{0} gagal dimuat.",
+    "ja": "{0} を読み込めませんでした。",
+    "it": "Impossibile caricare {0}."
   },
   "game2.macroEditor": {
     "en": "The macro editor",
-    "el": "Ο επεξεργαστής μακροεντολών",
+    "el": "Ο editor των macros",
     "es": "el editor de macros",
     "bg": "Редакторът на макроси",
     "fr": "l’éditeur de macros",
@@ -3972,10 +3972,10 @@
     "tr": "Makro düzenleyici",
     "pl": "edytor makr",
     "nl": "De macro-editor",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O editor de macros",
+    "id": "Editor makro",
+    "ja": "マクロエディター",
+    "it": "L'editor delle macro"
   },
   "game2.gpBack": {
     "en": "Back",
@@ -4026,10 +4026,10 @@
     "tr": "D-pad yukarı",
     "pl": "D-pad góra",
     "nl": "D-pad omhoog",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "D-pad para cima",
+    "id": "D-pad atas",
+    "ja": "十字キー上",
+    "it": "Croce direzionale su"
   },
   "game2.gpDown": {
     "en": "D-pad down",
@@ -4044,10 +4044,10 @@
     "tr": "D-pad aşağı",
     "pl": "D-pad dół",
     "nl": "D-pad omlaag",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "D-pad para baixo",
+    "id": "D-pad bawah",
+    "ja": "十字キー下",
+    "it": "Croce direzionale giù"
   },
   "game2.gpLeft": {
     "en": "D-pad left",
@@ -4062,10 +4062,10 @@
     "tr": "D-pad sol",
     "pl": "D-pad lewo",
     "nl": "D-pad links",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "D-pad para a esquerda",
+    "id": "D-pad kiri",
+    "ja": "十字キー左",
+    "it": "Croce direzionale sinistra"
   },
   "game2.gpRight": {
     "en": "D-pad right",
@@ -4080,24 +4080,24 @@
     "tr": "D-pad sağ",
     "pl": "D-pad prawo",
     "nl": "D-pad rechts",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "D-pad para a direita",
+    "id": "D-pad kanan",
+    "ja": "十字キー右",
+    "it": "Croce direzionale destra"
   },
   "game2.gpSplit": {
     "en": "Split",
-    "el": "Διαίρεση",
-    "es": "Dividir",
-    "bg": "Разделяне",
-    "fr": "Diviser",
+    "el": "Split",
+    "es": "Split",
+    "bg": "Сплит",
+    "fr": "Split",
     "ar": "انقسام",
     "zh": "分裂",
-    "ru": "Разделение",
-    "de": "Teilen",
-    "tr": "Bölün",
-    "pl": "Podział",
-    "nl": "Splitsen",
+    "ru": "Сплит",
+    "de": "Split",
+    "tr": "Split",
+    "pl": "Split",
+    "nl": "Split",
     "pt": "Split",
     "id": "Split",
     "ja": "分裂",
@@ -4105,93 +4105,93 @@
   },
   "game2.gpFeed": {
     "en": "Feed (hold = macro feed)",
-    "el": "Τάισμα (κρατήστε = μακρο τάισμα)",
-    "es": "Alimentar (mantener = macro)",
-    "bg": "Хранене (задръжте = макро хранене)",
-    "fr": "Nourrir (maintenir = macro)",
-    "ar": "تغذية (اضغط مطولًا = تغذية متكررة)",
-    "zh": "餵食（按住 = 連續餵食）",
-    "ru": "Кормить (удерживать = макро)",
-    "de": "Füttern (halten = Makro)",
-    "tr": "Besle (basılı tut = makro)",
-    "pl": "Karmienie (przytrzymaj = makro)",
-    "nl": "Voeren (vasthouden = macro)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "el": "Feed (κρατήστε = macro feed)",
+    "es": "Feed (mantener = macro feed)",
+    "bg": "Фийд (задръжте = макро фийд)",
+    "fr": "Feed (maintenir = macro feed)",
+    "ar": "إطعام (اضغط مطولًا = إطعام متكرر)",
+    "zh": "吐球（按住 = 連續吐球）",
+    "ru": "Фид (удерживать = макрофид)",
+    "de": "Feed (halten = Makro-Feed)",
+    "tr": "Feed (basılı tut = makro feed)",
+    "pl": "Feed (przytrzymaj = makro feed)",
+    "nl": "Feed (vasthouden = macro-feed)",
+    "pt": "Feed (segurar = macro feed)",
+    "id": "Feed (tahan = makro feed)",
+    "ja": "質量放出 (長押しで連続放出)",
+    "it": "Feed (tieni premuto = feed macro)"
   },
   "game2.gpDoubleSplit": {
     "en": "Double split",
-    "el": "Διπλή διαίρεση",
-    "es": "Doble división",
-    "bg": "Двойно разделяне",
-    "fr": "Double division",
+    "el": "Double split",
+    "es": "Doble split",
+    "bg": "Двоен сплит",
+    "fr": "Double split",
     "ar": "انقسام مزدوج",
-    "zh": "雙重分裂",
-    "ru": "Двойное разделение",
-    "de": "Doppelt teilen",
-    "tr": "Çift bölünme",
-    "pl": "Podwójny podział",
-    "nl": "Dubbel splitsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "zh": "雙分",
+    "ru": "Двойной сплит",
+    "de": "Doppelsplit",
+    "tr": "Çift split",
+    "pl": "Podwójny split",
+    "nl": "Dubbele split",
+    "pt": "Double split",
+    "id": "Double split",
+    "ja": "ダブル分裂",
+    "it": "Double split"
   },
   "game2.gpSplit16": {
     "en": "Split x16",
-    "el": "Διαίρεση x16",
-    "es": "Dividir x16",
-    "bg": "Разделяне x16",
-    "fr": "Diviser x16",
+    "el": "Split x16",
+    "es": "Split x16",
+    "bg": "Сплит x16",
+    "fr": "Split x16",
     "ar": "انقسام x16",
     "zh": "分裂 x16",
-    "ru": "Разделение x16",
-    "de": "Teilen x16",
-    "tr": "Bölün x16",
-    "pl": "Podział x16",
-    "nl": "Splitsen x16",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "ru": "Сплит x16",
+    "de": "Split x16",
+    "tr": "Split x16",
+    "pl": "Split x16",
+    "nl": "Split x16",
+    "pt": "Split x16",
+    "id": "Split x16",
+    "ja": "16分裂",
+    "it": "Split x16"
   },
   "game2.gpMultiboxSwap": {
     "en": "Multibox swap (existing units only)",
     "el": "Εναλλαγή multibox (μόνο υπάρχουσες μονάδες)",
     "es": "Cambio multibox (solo unidades existentes)",
-    "bg": "Смяна на multibox (само съществуващи)",
+    "bg": "Смяна на мултибокс (само съществуващи)",
     "fr": "Bascule multibox (unités existantes seulement)",
-    "ar": "تبديل المتعدد (الوحدات الموجودة فقط)",
+    "ar": "تبديل Multibox (الوحدات الموجودة فقط)",
     "zh": "多開切換（僅限現有單位）",
     "ru": "Смена мультибокса (только существующие)",
     "de": "Multibox wechseln (nur vorhandene Einheiten)",
     "tr": "Multibox geçişi (yalnızca mevcut birimler)",
     "pl": "Zmiana multiboxa (tylko istniejące)",
     "nl": "Multibox wisselen (alleen bestaande)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Trocar multibox (só unidades existentes)",
+    "id": "Ganti multibox (hanya unit yang ada)",
+    "ja": "マルチボックス切り替え (既存のユニットのみ)",
+    "it": "Cambio multibox (solo unità esistenti)"
   },
   "game2.gpRespawn": {
     "en": "Quick respawn / Play",
-    "el": "Γρήγορη επαναφορά / Παιχνίδι",
+    "el": "Γρήγορο respawn / Παίξε",
     "es": "Reaparición rápida / Jugar",
-    "bg": "Бързо съживяване / Игра",
+    "bg": "Бързо съживяване / Играй",
     "fr": "Réapparition rapide / Jouer",
     "ar": "إعادة ظهور سريعة / لعب",
     "zh": "快速重生 / 開始",
-    "ru": "Быстрое возрождение / Играть",
+    "ru": "Быстрый респавн / Играть",
     "de": "Schneller Respawn / Spielen",
     "tr": "Hızlı yeniden doğ / Oyna",
     "pl": "Szybkie odrodzenie / Graj",
     "nl": "Snel respawnen / Spelen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Respawn rápido / Jogar",
+    "id": "Respawn cepat / Play",
+    "ja": "クイックリスポーン / プレイ",
+    "it": "Respawn rapido / Gioca"
   },
   "game2.gpMenu": {
     "en": "Menu (like Esc)",
@@ -4206,10 +4206,10 @@
     "tr": "Menü (Esc gibi)",
     "pl": "Menu (jak Esc)",
     "nl": "Menu (zoals Esc)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Menu (como Esc)",
+    "id": "Menu (seperti Esc)",
+    "ja": "メニュー (Esc と同じ)",
+    "it": "Menu (come Esc)"
   },
   "game2.gpConnected": {
     "en": "Gamepad connected:",
@@ -4224,10 +4224,10 @@
     "tr": "Oyun kumandası bağlandı:",
     "pl": "Podłączono pad:",
     "nl": "Gamepad verbonden:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Gamepad conectado:",
+    "id": "Gamepad terhubung:",
+    "ja": "ゲームパッドを接続しました：",
+    "it": "Gamepad collegato:"
   },
   "game2.gpUiFailed": {
     "en": "Could not load the gamepad window. Check the connection and try again.",
@@ -4242,18 +4242,18 @@
     "tr": "Kumanda penceresi yüklenemedi. Bağlantını kontrol edip tekrar dene.",
     "pl": "Nie udało się wczytać okna pada. Sprawdź połączenie i spróbuj ponownie.",
     "nl": "Het gamepadvenster kon niet worden geladen. Controleer de verbinding en probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível carregar a janela do gamepad. Verifique a conexão e tente de novo.",
+    "id": "Gagal memuat jendela gamepad. Cek koneksi lalu coba lagi.",
+    "ja": "ゲームパッドのウィンドウを読み込めませんでした。接続を確認して、もう一度お試しください。",
+    "it": "Impossibile caricare la finestra del gamepad. Controlla la connessione e riprova."
   },
   "game2.tag.multibox": {
     "en": "MULTIBOX",
     "el": "MULTIBOX",
     "es": "MULTIBOX",
-    "bg": "MULTIBOX",
+    "bg": "МУЛТИБОКС",
     "fr": "MULTIBOX",
-    "ar": "متعدد",
+    "ar": "MULTIBOX",
     "zh": "多開",
     "ru": "МУЛЬТИБОКС",
     "de": "MULTIBOX",
@@ -4266,76 +4266,76 @@
     "it": "MULTIBOX"
   },
   "game2.spPrivateNoFull": {
-    "en": "Full spectator does not work for Private servers. <br>There is not such thing as <i>FreeSpectate</i> on Private Servers",
-    "el": "Η πλήρης παρακολούθηση δεν λειτουργεί σε ιδιωτικούς διακομιστές. <br>Δεν υπάρχει <i>FreeSpectate</i> σε ιδιωτικούς διακομιστές",
-    "es": "El espectador completo no funciona en servidores privados. <br>No existe <i>FreeSpectate</i> en servidores privados",
-    "bg": "Пълното наблюдение не работи на частни сървъри. <br>На частните сървъри няма <i>FreeSpectate</i>",
-    "fr": "Le spectateur complet ne fonctionne pas sur les serveurs privés. <br>Il n’y a pas de <i>FreeSpectate</i> sur les serveurs privés",
-    "ar": "المشاهدة الكاملة لا تعمل على الخوادم الخاصة. <br>لا يوجد <i>FreeSpectate</i> على الخوادم الخاصة",
-    "zh": "完整觀戰不適用於私人伺服器。<br>私人伺服器沒有 <i>FreeSpectate</i>",
-    "ru": "Полное наблюдение не работает на частных серверах. <br>На частных серверах нет <i>FreeSpectate</i>",
-    "de": "Voller Zuschauermodus geht auf privaten Servern nicht. <br>Auf privaten Servern gibt es kein <i>FreeSpectate</i>",
-    "tr": "Tam izleyici özel sunucularda çalışmaz. <br>Özel sunucularda <i>FreeSpectate</i> yoktur",
-    "pl": "Pełne obserwowanie nie działa na serwerach prywatnych. <br>Na serwerach prywatnych nie ma <i>FreeSpectate</i>",
-    "nl": "Volledig toekijken werkt niet op privéservers. <br>Op privéservers bestaat <i>FreeSpectate</i> niet",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "en": "Full spectate does not work on private servers.<br>Private servers have no <i>Free Spectate</i>.",
+    "el": "Το πλήρες spectate δεν λειτουργεί σε ιδιωτικούς servers.<br>Οι ιδιωτικοί servers δεν έχουν <i>ελεύθερο spectate</i>.",
+    "es": "El modo espectador completo no funciona en servidores privados.<br>Los servidores privados no tienen <i>espectar libre</i>.",
+    "bg": "Пълното наблюдение не работи на частни сървъри.<br>Частните сървъри нямат <i>свободно наблюдение</i>.",
+    "fr": "Le mode spectateur complet ne fonctionne pas sur les serveurs privés.<br>Les serveurs privés n’ont pas de <i>spectateur libre</i>.",
+    "ar": "المشاهدة الكاملة لا تعمل على الخوادم الخاصة.<br>لا توجد <i>مشاهدة حرة</i> على الخوادم الخاصة.",
+    "zh": "完整觀戰不適用於私人伺服器。<br>私人伺服器沒有<i>自由觀戰</i>。",
+    "ru": "Полное наблюдение не работает на частных серверах.<br>На частных серверах нет <i>свободного наблюдения</i>.",
+    "de": "Voller Zuschauermodus geht auf privaten Servern nicht.<br>Auf privaten Servern gibt es kein <i>Freies Zuschauen</i>.",
+    "tr": "Tam izleme özel sunucularda çalışmaz.<br>Özel sunucularda <i>serbest izleme</i> yoktur.",
+    "pl": "Pełna obserwacja nie działa na serwerach prywatnych.<br>Na serwerach prywatnych nie ma <i>wolnej obserwacji</i>.",
+    "nl": "Volledig toekijken werkt niet op privéservers.<br>Privéservers hebben geen <i>vrij toekijken</i>.",
+    "pt": "O espectar completo não funciona em servidores privados.<br>Servidores privados não têm <i>Free Spectate</i>.",
+    "id": "Spectate penuh tidak berfungsi di server privat.<br>Server privat tidak punya <i>Free Spectate</i>.",
+    "ja": "プライベートサーバーでは完全観戦は使えません。<br>プライベートサーバーには <i>自由観戦</i> がありません。",
+    "it": "La modalità spettatore completa non funziona sui server privati.<br>Sui server privati non c'è lo <i>spettatore libero</i>."
   },
   "game2.spFbGuest": {
     "en": "Facebook login is unavailable, the multibox unit plays as guest.",
     "el": "Η σύνδεση Facebook δεν είναι διαθέσιμη, η μονάδα multibox παίζει ως επισκέπτης.",
     "es": "El inicio de sesión de Facebook no está disponible; la unidad multibox juega como invitado.",
-    "bg": "Входът с Facebook не е наличен, единицата multibox играе като гост.",
+    "bg": "Входът с Facebook не е наличен, единицата на мултибокса играе като гост.",
     "fr": "La connexion Facebook est indisponible, l’unité multibox joue en invité.",
-    "ar": "تسجيل الدخول عبر Facebook غير متاح، تلعب وحدة المتعدد كضيف.",
+    "ar": "تسجيل الدخول عبر Facebook غير متاح، تلعب وحدة Multibox كضيف.",
     "zh": "Facebook 登入無法使用，多開單位以訪客身分遊玩。",
     "ru": "Вход через Facebook недоступен, юнит мультибокса играет как гость.",
     "de": "Facebook-Anmeldung nicht verfügbar, die Multibox-Einheit spielt als Gast.",
     "tr": "Facebook girişi kullanılamıyor, multibox birimi misafir olarak oynuyor.",
     "pl": "Logowanie Facebook niedostępne, jednostka multibox gra jako gość.",
     "nl": "Inloggen met Facebook is niet beschikbaar, de multibox-eenheid speelt als gast.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Login com Facebook indisponível, a unidade do multibox joga como convidado.",
+    "id": "Login Facebook tidak tersedia, unit multibox bermain sebagai tamu.",
+    "ja": "Facebook ログインが使えないため、マルチボックスのユニットはゲストとしてプレイします。",
+    "it": "Accesso con Facebook non disponibile: l'unità multibox gioca come ospite."
   },
   "game2.spCaptchaClosed": {
     "en": "Captcha requested from Multibox client. Multibox closed",
     "el": "Ο client multibox ζήτησε captcha. Το multibox έκλεισε",
     "es": "El cliente multibox pidió un captcha. Multibox cerrado",
-    "bg": "Клиентът multibox поиска captcha. Multibox е затворен",
+    "bg": "Клиентът на мултибокса поиска captcha. Мултибоксът е затворен",
     "fr": "Captcha demandé par le client multibox. Multibox fermé",
-    "ar": "طلب عميل المتعدد اختبار captcha. تم إغلاق المتعدد",
+    "ar": "طلب عميل Multibox اختبار captcha. تم إغلاق Multibox",
     "zh": "多開用戶端要求驗證碼，多開已關閉",
     "ru": "Клиент мультибокса запросил капчу. Мультибокс закрыт",
     "de": "Der Multibox-Client verlangt ein Captcha. Multibox geschlossen",
     "tr": "Multibox istemcisi captcha istedi. Multibox kapatıldı",
     "pl": "Klient multibox zażądał captchy. Multibox zamknięty",
     "nl": "De multibox-client vroeg een captcha. Multibox gesloten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O cliente do multibox pediu captcha. Multibox fechado",
+    "id": "Klien multibox meminta captcha. Multibox ditutup",
+    "ja": "マルチボックスのクライアントでキャプチャが要求されました。マルチボックスを終了しました",
+    "it": "Il client multibox ha chiesto un captcha. Multibox chiuso"
   },
   "game2.spSlowStart": {
-    "en": "Seems there is an excessive delay for Multibox to start. Please hold the line...",
+    "en": "Multibox is taking a long time to start. Please wait...",
     "el": "Το multibox αργεί πολύ να ξεκινήσει. Παρακαλώ περιμένετε...",
     "es": "Multibox tarda demasiado en iniciar. Espera un momento...",
-    "bg": "Multibox се стартира твърде бавно. Моля, изчакайте...",
+    "bg": "Мултибоксът се стартира твърде бавно. Моля, изчакайте...",
     "fr": "Le multibox met trop de temps à démarrer. Merci de patienter...",
-    "ar": "يبدو أن بدء المتعدد يتأخر كثيرًا. يرجى الانتظار...",
+    "ar": "يتأخر بدء Multibox كثيرًا. يرجى الانتظار...",
     "zh": "多開啟動似乎延遲過久，請稍候...",
     "ru": "Мультибокс запускается слишком долго. Пожалуйста, подождите...",
     "de": "Multibox braucht sehr lange zum Starten. Bitte warten...",
     "tr": "Multibox’un başlaması çok gecikiyor. Lütfen bekleyin...",
     "pl": "Multibox uruchamia się zbyt długo. Proszę czekać...",
     "nl": "Multibox start erg traag. Even geduld...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O multibox está demorando para iniciar. Aguarde...",
+    "id": "Multibox butuh waktu lama untuk mulai. Tunggu sebentar...",
+    "ja": "マルチボックスの起動に時間がかかっています。しばらくお待ちください...",
+    "it": "Il multibox ci sta mettendo molto ad avviarsi. Attendi..."
   },
   "game2.apVirusClose": {
     "en": "<font color='{c}'>Virus</font> is close. X: {x} , Y: {y}",
@@ -4344,16 +4344,16 @@
     "bg": "<font color='{c}'>Вирус</font> наблизо. X: {x} , Y: {y}",
     "fr": "<font color='{c}'>Virus</font> proche. X : {x} , Y : {y}",
     "ar": "<font color='{c}'>فيروس</font> قريب. X: {x} , Y: {y}",
-    "zh": "<font color='{c}'>病毒</font>接近。X: {x} , Y: {y}",
+    "zh": "<font color='{c}'>刺球</font>接近。X: {x} , Y: {y}",
     "ru": "<font color='{c}'>Вирус</font> рядом. X: {x} , Y: {y}",
     "de": "<font color='{c}'>Virus</font> in der Nähe. X: {x} , Y: {y}",
     "tr": "<font color='{c}'>Virüs</font> yakında. X: {x} , Y: {y}",
     "pl": "<font color='{c}'>Wirus</font> blisko. X: {x} , Y: {y}",
     "nl": "<font color='{c}'>Virus</font> dichtbij. X: {x} , Y: {y}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<font color='{c}'>Vírus</font> por perto. X: {x} , Y: {y}",
+    "id": "<font color='{c}'>Virus</font> dekat. X: {x} , Y: {y}",
+    "ja": "<font color='{c}'>ウイルス</font>が近くにあります。X: {x} , Y: {y}",
+    "it": "<font color='{c}'>Virus</font> vicino. X: {x} , Y: {y}"
   },
   "game2.apTeammate": {
     "en": "<font color='{c}'>{name}</font> (mass: {mass}) is teammate. X: {x} , Y: {y}",
@@ -4366,12 +4366,12 @@
     "ru": "<font color='{c}'>{name}</font> (масса: {mass}) — союзник. X: {x} , Y: {y}",
     "de": "<font color='{c}'>{name}</font> (Masse: {mass}) ist ein Mitspieler. X: {x} , Y: {y}",
     "tr": "<font color='{c}'>{name}</font> (kütle: {mass}) takım arkadaşı. X: {x} , Y: {y}",
-    "pl": "<font color='{c}'>{name}</font> (masa: {mass}) to sojusznik. X: {x} , Y: {y}",
+    "pl": "<font color='{c}'>{name}</font> (masa: {mass}) to członek drużyny. X: {x} , Y: {y}",
     "nl": "<font color='{c}'>{name}</font> (massa: {mass}) is teamgenoot. X: {x} , Y: {y}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<font color='{c}'>{name}</font> (massa: {mass}) é aliado. X: {x} , Y: {y}",
+    "id": "<font color='{c}'>{name}</font> (massa: {mass}) adalah rekan tim. X: {x} , Y: {y}",
+    "ja": "<font color='{c}'>{name}</font> (質量：{mass}) は味方です。X: {x} , Y: {y}",
+    "it": "<font color='{c}'>{name}</font> (massa: {mass}) è un compagno di squadra. X: {x} , Y: {y}"
   },
   "game2.apClose": {
     "en": "<font color='{c}'>{name}</font> (mass: {mass}) is close. X: {x} , Y: {y}",
@@ -4386,10 +4386,10 @@
     "tr": "<font color='{c}'>{name}</font> (kütle: {mass}) yakında. X: {x} , Y: {y}",
     "pl": "<font color='{c}'>{name}</font> (masa: {mass}) jest blisko. X: {x} , Y: {y}",
     "nl": "<font color='{c}'>{name}</font> (massa: {mass}) is dichtbij. X: {x} , Y: {y}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<font color='{c}'>{name}</font> (massa: {mass}) está por perto. X: {x} , Y: {y}",
+    "id": "<font color='{c}'>{name}</font> (massa: {mass}) dekat. X: {x} , Y: {y}",
+    "ja": "<font color='{c}'>{name}</font> (質量：{mass}) が近くにいます。X: {x} , Y: {y}",
+    "it": "<font color='{c}'>{name}</font> (massa: {mass}) è vicino. X: {x} , Y: {y}"
   },
   "game2.apSplitEat": {
     "en": "<font color='{c}'>{name}</font> (mass: {mass}) is close and will be eaten by split. X: {x} , Y: {y}",
@@ -4401,13 +4401,13 @@
     "zh": "<font color='{c}'>{name}</font>（質量：{mass}）接近，將以分裂吃掉。X: {x} , Y: {y}",
     "ru": "<font color='{c}'>{name}</font> (масса: {mass}) рядом, съедим сплитом. X: {x} , Y: {y}",
     "de": "<font color='{c}'>{name}</font> (Masse: {mass}) ist nah und wird per Split gefressen. X: {x} , Y: {y}",
-    "tr": "<font color='{c}'>{name}</font> (kütle: {mass}) yakında, bölünerek yenecek. X: {x} , Y: {y}",
+    "tr": "<font color='{c}'>{name}</font> (kütle: {mass}) yakında, split ile yenecek. X: {x} , Y: {y}",
     "pl": "<font color='{c}'>{name}</font> (masa: {mass}) jest blisko i zostanie zjedzony splitem. X: {x} , Y: {y}",
     "nl": "<font color='{c}'>{name}</font> (massa: {mass}) is dichtbij en wordt met een split gegeten. X: {x} , Y: {y}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<font color='{c}'>{name}</font> (massa: {mass}) está por perto e vai ser comido com split. X: {x} , Y: {y}",
+    "id": "<font color='{c}'>{name}</font> (massa: {mass}) dekat dan akan dimakan dengan split. X: {x} , Y: {y}",
+    "ja": "<font color='{c}'>{name}</font> (質量：{mass}) が近くにいます。分裂で捕食できます。X: {x} , Y: {y}",
+    "it": "<font color='{c}'>{name}</font> (massa: {mass}) è vicino e verrà mangiato con lo split. X: {x} , Y: {y}"
   },
   "game2.apFollow": {
     "en": "<font color='{c}'>{name}</font> (mass: {mass}) is close, AI follows... X: {x} , Y: {y}",
@@ -4422,10 +4422,10 @@
     "tr": "<font color='{c}'>{name}</font> (kütle: {mass}) yakında, yapay zekâ takip ediyor... X: {x} , Y: {y}",
     "pl": "<font color='{c}'>{name}</font> (masa: {mass}) jest blisko, SI podąża... X: {x} , Y: {y}",
     "nl": "<font color='{c}'>{name}</font> (massa: {mass}) is dichtbij, de AI volgt... X: {x} , Y: {y}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<font color='{c}'>{name}</font> (massa: {mass}) está por perto, a IA está seguindo... X: {x} , Y: {y}",
+    "id": "<font color='{c}'>{name}</font> (massa: {mass}) dekat, AI mengikuti... X: {x} , Y: {y}",
+    "ja": "<font color='{c}'>{name}</font> (質量：{mass}) が近くにいます。AI が追跡中... X: {x} , Y: {y}",
+    "it": "<font color='{c}'>{name}</font> (massa: {mass}) è vicino, l'IA lo segue... X: {x} , Y: {y}"
   },
   "game2.apCorner": {
     "en": "Avoiding corners {0} {1}",
@@ -4440,13 +4440,13 @@
     "tr": "Köşelerden kaçınılıyor {0} {1}",
     "pl": "Unikanie rogów {0} {1}",
     "nl": "Hoeken vermijden {0} {1}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Evitando cantos {0} {1}",
+    "id": "Menghindari sudut {0} {1}",
+    "ja": "角を回避中 {0} {1}",
+    "it": "Evito gli angoli {0} {1}"
   },
   "game2.apDanger": {
-    "en": "<font color='red'>Danger: <font> {0} and {1} are diametral",
+    "en": "<font color='red'>Danger: <font> {0} and {1} are on opposite sides",
     "el": "<font color='red'>Κίνδυνος: <font> {0} και {1} είναι αντιδιαμετρικά",
     "es": "<font color='red'>Peligro: <font> {0} y {1} están en lados opuestos",
     "bg": "<font color='red'>Опасност: <font> {0} и {1} са в противоположни посоки",
@@ -4458,50 +4458,50 @@
     "tr": "<font color='red'>Tehlike: <font> {0} ve {1} tam karşı karşıya",
     "pl": "<font color='red'>Niebezpieczeństwo: <font> {0} i {1} są naprzeciw siebie",
     "nl": "<font color='red'>Gevaar: <font> {0} en {1} staan tegenover elkaar",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<font color='red'>Perigo: <font> {0} e {1} estão em lados opostos",
+    "id": "<font color='red'>Bahaya: <font> {0} dan {1} ada di sisi berlawanan",
+    "ja": "<font color='red'>危険：<font> {0} と {1} が反対側にいます",
+    "it": "<font color='red'>Pericolo: <font> {0} e {1} sono ai lati opposti"
   },
   "game2.apShooting": {
-    "en": "<font color='yellow'>Shooting: <font> {name}({x} , {y})from virus {vx},{vy}",
+    "en": "<font color='yellow'>Shooting: <font> {name} ({x}, {y}) from virus {vx}, {vy}",
     "el": "<font color='yellow'>Βολή: <font> {name}({x} , {y}) από ιό {vx},{vy}",
     "es": "<font color='yellow'>Disparando: <font> {name}({x} , {y}) desde virus {vx},{vy}",
     "bg": "<font color='yellow'>Стрелба: <font> {name}({x} , {y}) от вирус {vx},{vy}",
     "fr": "<font color='yellow'>Tir : <font> {name}({x} , {y}) depuis le virus {vx},{vy}",
     "ar": "<font color='yellow'>إطلاق: <font> {name}({x} , {y}) من الفيروس {vx},{vy}",
-    "zh": "<font color='yellow'>射擊：<font> {name}({x} , {y}) 從病毒 {vx},{vy}",
+    "zh": "<font color='yellow'>射擊：<font> {name}({x} , {y}) 從刺球 {vx},{vy}",
     "ru": "<font color='yellow'>Выстрел: <font> {name}({x} , {y}) из вируса {vx},{vy}",
     "de": "<font color='yellow'>Schuss: <font> {name}({x} , {y}) vom Virus {vx},{vy}",
-    "tr": "<font color='yellow'>Atış: <font> {name}({x} , {y}) virüsten {vx},{vy}",
-    "pl": "<font color='yellow'>Strzał: <font> {name}({x} , {y}) z wirusa {vx},{vy}",
-    "nl": "<font color='yellow'>Schieten: <font> {name}({x} , {y}) vanaf virus {vx},{vy}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "tr": "<font color='yellow'>Atış: <font> {name} ({x}, {y}) virüsten {vx}, {vy}",
+    "pl": "<font color='yellow'>Strzał: <font> {name} ({x}, {y}) z wirusa {vx}, {vy}",
+    "nl": "<font color='yellow'>Schieten: <font> {name} ({x}, {y}) vanaf virus {vx}, {vy}",
+    "pt": "<font color='yellow'>Atirando: <font> {name} ({x}, {y}) a partir do vírus {vx}, {vy}",
+    "id": "<font color='yellow'>Menembak: <font> {name} ({x}, {y}) dari virus {vx}, {vy}",
+    "ja": "<font color='yellow'>発射：<font> {name} ({x}, {y}) にウイルス {vx}, {vy} から",
+    "it": "<font color='yellow'>Tiro: <font> {name} ({x}, {y}) dal virus {vx}, {vy}"
   },
   "game2.antiBeat": {
-    "en": "PAUSE! Anti beat:: {0}%",
-    "el": "ΠΑΥΣΗ! Anti beat:: {0}%",
-    "es": "¡PAUSA! Anti beat:: {0}%",
-    "bg": "ПАУЗА! Anti beat:: {0}%",
-    "fr": "PAUSE ! Anti beat :: {0}%",
-    "ar": "إيقاف مؤقت! Anti beat:: {0}%",
-    "zh": "暫停！Anti beat:: {0}%",
-    "ru": "ПАУЗА! Anti beat:: {0}%",
-    "de": "PAUSE! Anti beat:: {0}%",
-    "tr": "DURAKLAT! Anti beat:: {0}%",
-    "pl": "PAUZA! Anti beat:: {0}%",
-    "nl": "PAUZE! Anti beat:: {0}%",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "en": "PAUSE! Anti beat: {0}%",
+    "el": "ΠΑΥΣΗ! Anti beat: {0}%",
+    "es": "¡PAUSA! Anti beat: {0}%",
+    "bg": "ПАУЗА! Anti beat: {0}%",
+    "fr": "PAUSE ! Anti beat : {0}%",
+    "ar": "إيقاف مؤقت! Anti beat: {0}%",
+    "zh": "暫停！Anti beat: {0}%",
+    "ru": "ПАУЗА! Anti beat: {0}%",
+    "de": "PAUSE! Anti beat: {0}%",
+    "tr": "DURAKLAT! Anti beat: {0}%",
+    "pl": "PAUZA! Anti beat: {0}%",
+    "nl": "PAUZE! Anti beat: {0}%",
+    "pt": "PAUSA! Anti beat: {0}%",
+    "id": "JEDA! Anti beat: {0}%",
+    "ja": "一時停止！Anti beat：{0}%",
+    "it": "PAUSA! Anti beat: {0}%"
   },
   "game2.captchaLoadFailed": {
     "en": "The captcha could not load. Check your connection or ad blocker, then press Play again.",
-    "el": "Το captcha δεν φορτώθηκε. Ελέγξτε τη σύνδεση ή το ad blocker και πατήστε ξανά Παιχνίδι.",
+    "el": "Το captcha δεν φορτώθηκε. Ελέγξτε τη σύνδεση ή το ad blocker και πατήστε ξανά Παίξε.",
     "es": "El captcha no se pudo cargar. Revisa tu conexión o bloqueador de anuncios y pulsa Jugar otra vez.",
     "bg": "Captcha не се зареди. Проверете връзката или блокера на реклами и натиснете Играй отново.",
     "fr": "Le captcha n’a pas pu se charger. Vérifiez votre connexion ou votre bloqueur de pub, puis appuyez de nouveau sur Jouer.",
@@ -4512,14 +4512,14 @@
     "tr": "Captcha yüklenemedi. Bağlantını veya reklam engelleyiciyi kontrol edip tekrar Oyna’ya bas.",
     "pl": "Nie udało się wczytać captchy. Sprawdź połączenie lub blokadę reklam i ponownie naciśnij Graj.",
     "nl": "De captcha kon niet laden. Controleer je verbinding of adblocker en druk opnieuw op Spelen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível carregar o captcha. Verifique sua conexão ou o bloqueador de anúncios e clique em Jogar de novo.",
+    "id": "Captcha gagal dimuat. Cek koneksi atau ad blocker kamu, lalu tekan Play lagi.",
+    "ja": "キャプチャを読み込めませんでした。接続や広告ブロッカーを確認してから、もう一度「プレイ」を押してください。",
+    "it": "Impossibile caricare il captcha. Controlla la connessione o l'ad blocker, poi premi di nuovo Gioca."
   },
   "game2.captchaFailed": {
     "en": "The captcha check failed. Press Play again.",
-    "el": "Ο έλεγχος captcha απέτυχε. Πατήστε ξανά Παιχνίδι.",
+    "el": "Ο έλεγχος captcha απέτυχε. Πατήστε ξανά Παίξε.",
     "es": "La comprobación del captcha falló. Pulsa Jugar otra vez.",
     "bg": "Проверката с captcha не успя. Натиснете Играй отново.",
     "fr": "La vérification du captcha a échoué. Appuyez de nouveau sur Jouer.",
@@ -4530,9 +4530,9 @@
     "tr": "Captcha doğrulaması başarısız. Tekrar Oyna’ya bas.",
     "pl": "Weryfikacja captchy nie powiodła się. Ponownie naciśnij Graj.",
     "nl": "De captchacontrole is mislukt. Druk opnieuw op Spelen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A verificação do captcha falhou. Clique em Jogar de novo.",
+    "id": "Verifikasi captcha gagal. Tekan Play lagi.",
+    "ja": "キャプチャの確認に失敗しました。もう一度「プレイ」を押してください。",
+    "it": "Verifica captcha non riuscita. Premi di nuovo Gioca."
   }
 }

@@ -7,7 +7,7 @@
 "site.themes.yourTheme": "ΤΟ ΘΕΜΑ ΣΟΥ",
 "site.themes.downloadTheme": "Λήψη θέματος",
 "site.themes.deltaModUsersCan": "*Οι χρήστες του Delta μπορούν να το κατεβάσουν, να το αποθηκεύσουν ως αρχείο .json και μετά να εισαγάγουν το αρχείο από την καρτέλα Restore",
-"site.themes.skinUrlCopiedTo": "ΤΟ URL ΑΝΤΙΓΡΑΦΗΚΕ ΣΤΟ ΠΡΟΧΕΙΡΟ <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
+"site.themes.skinUrlCopiedTo": "ΤΟ URL ΤΟΥ SKIN ΑΝΤΙΓΡΑΦΗΚΕ ΣΤΟ ΠΡΟΧΕΙΡΟ <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
 "site.themes.themePreview": "ΠΡΟΕΠΙΣΚΟΠΗΣΗ ΘΕΜΑΤΟΣ",
 "site.themes.themeNumber": "Θέμα #{0}",
 "site.themes.copy": "ΑΝΤΙΓΡΑΦΗ",

@@ -12,10 +12,10 @@
     "tr": "Agar.io SKIN ROTATOR<br>Legend Mod Projesi",
     "pl": "Agar.io SKIN ROTATOR<br>Projekt Legend Mod",
     "nl": "Agar.io SKIN ROTATOR<br>Het Legend Mod Project",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "SKIN ROTATOR do Agar.io<br>The Legend Mod Project",
+    "id": "SKIN ROTATOR Agar.io<br>The Legend Mod Project",
+    "ja": "Agar.io スキンローテーター<br>The Legend Mod Project",
+    "it": "Agar.io SKIN ROTATOR<br>Il progetto Legend Mod"
   },
   "site.skinrotator.forVanillaGameVisible": {
     "en": "* For vanilla game (visible to actual user)",
@@ -30,10 +30,10 @@
     "tr": "* Normal oyun için (yalnızca kullanıcının kendisi görür)",
     "pl": "* Dla zwykłej gry (widoczne dla samego użytkownika)",
     "nl": "* Voor het vanilla spel (zichtbaar voor de gebruiker zelf)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "* Para o jogo vanilla (visível para o usuário real)",
+    "id": "* Untuk game vanilla (hanya terlihat oleh pengguna itu sendiri)",
+    "ja": "* バニラのゲーム用 (実際のユーザーに表示)",
+    "it": "* Per il gioco vanilla (visibile all'utente reale)"
   },
   "site.skinrotator.version": {
     "en": "Version:",
@@ -48,10 +48,10 @@
     "tr": "Sürüm:",
     "pl": "Wersja:",
     "nl": "Versie:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Versão:",
+    "id": "Versi:",
+    "ja": "バージョン：",
+    "it": "Versione:"
   },
   "site.skinrotator.webConsoleF12": {
     "en": "Web console [F12]",
@@ -66,10 +66,10 @@
     "tr": "Tarayıcı konsolu [F12]",
     "pl": "Konsola przeglądarki [F12]",
     "nl": "Webconsole [F12]",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Console do navegador [F12]",
+    "id": "Konsol web [F12]",
+    "ja": "ウェブコンソール [F12]",
+    "it": "Console web [F12]"
   },
   "site.skinrotator.tampermonkeyGreasemonkey": {
     "en": "Tampermonkey | Greasemonkey",
@@ -84,10 +84,10 @@
     "tr": "Tampermonkey | Greasemonkey",
     "pl": "Tampermonkey | Greasemonkey",
     "nl": "Tampermonkey | Greasemonkey",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tampermonkey | Greasemonkey",
+    "id": "Tampermonkey | Greasemonkey",
+    "ja": "Tampermonkey | Greasemonkey",
+    "it": "Tampermonkey | Greasemonkey"
   },
   "site.skinrotator.copy": {
     "en": "Copy",
@@ -138,10 +138,10 @@
     "tr": "Bilinen sorunlar",
     "pl": "Znane problemy",
     "nl": "Bekende problemen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Problemas conhecidos",
+    "id": "Masalah yang diketahui",
+    "ja": "既知の問題",
+    "it": "Problemi noti"
   },
   "site.skinrotator.theLegendModProject": {
     "en": "The Legend Mod Project",
@@ -156,10 +156,10 @@
     "tr": "Legend Mod Projesi",
     "pl": "Projekt Legend Mod",
     "nl": "Het Legend Mod Project",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "The Legend Mod Project",
+    "id": "The Legend Mod Project",
+    "ja": "The Legend Mod Project",
+    "it": "Il progetto Legend Mod"
   },
   "site.skinrotator.mitLicence": {
     "en": "- MIT Licence -",
@@ -174,10 +174,10 @@
     "tr": "- MIT Lisansı -",
     "pl": "- Licencja MIT -",
     "nl": "- MIT-licentie -",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "- Licença MIT -",
+    "id": "- Lisensi MIT -",
+    "ja": "- MIT ライセンス -",
+    "it": "- Licenza MIT -"
   },
   "site.skinrotator.forRagaMod": {
     "en": "** For {0} mod (visible to all Raga users)",
@@ -192,28 +192,28 @@
     "tr": "** {0} modu için (tüm Raga kullanıcıları görür)",
     "pl": "** Dla moda {0} (widoczne dla wszystkich użytkowników Raga)",
     "nl": "** Voor de {0} mod (zichtbaar voor alle Raga-gebruikers)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "** Para o mod {0} (visível para todos os usuários do Raga)",
+    "id": "** Untuk mod {0} (terlihat oleh semua pengguna Raga)",
+    "ja": "** {0} Mod 用 (Raga のすべてのユーザーに表示)",
+    "it": "** Per la mod {0} (visibile a tutti gli utenti Raga)"
   },
   "site.skinrotator.generateNickname": {
     "en": "*** Generate <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nickname</b></a>",
-    "el": "*** Δημιούργησε <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">ψευδώνυμο</b></a>",
+    "el": "*** Δημιούργησε <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nick</b></a>",
     "es": "*** Genera un <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nick</b></a>",
     "bg": "*** Генерирай <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">ник</b></a>",
     "fr": "*** Génère un <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">pseudo</b></a>",
-    "ar": "*** أنشئ <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">لقبًا</b></a>",
+    "ar": "*** أنشئ <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">اسمًا</b></a>",
     "zh": "*** 產生 <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">暱稱</b></a>",
     "ru": "*** Сгенерируй <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">ник</b></a>",
     "de": "*** <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">Nickname</b></a> erzeugen",
-    "tr": "*** <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">Takma ad</b></a> oluştur",
+    "tr": "*** <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">Nick</b></a> oluştur",
     "pl": "*** Wygeneruj <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nick</b></a>",
-    "nl": "*** Genereer een <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nickname</b></a>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "*** Genereer een <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nick</b></a>",
+    "pt": "*** Gerar <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nick</b></a>",
+    "id": "*** Buat <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nickname</b></a>",
+    "ja": "*** <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">ニックネーム</b></a>を生成",
+    "it": "*** Genera un <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nickname</b></a>"
   },
   "site.skinrotator.newVersionHere": {
     "en": "[NEW VERSION HERE]",
@@ -228,10 +228,10 @@
     "tr": "[YENİ SÜRÜM BURADA]",
     "pl": "[NOWA WERSJA TUTAJ]",
     "nl": "[NIEUWE VERSIE HIER]",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "[NOVA VERSÃO AQUI]",
+    "id": "[VERSI BARU DI SINI]",
+    "ja": "[新しいバージョンはこちら]",
+    "it": "[NUOVA VERSIONE QUI]"
   },
   "site.skinrotator.destination": {
     "en": "Destination",
@@ -246,10 +246,10 @@
     "tr": "Hedef",
     "pl": "Cel",
     "nl": "Bestemming",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Destino",
+    "id": "Tujuan",
+    "ja": "送信先",
+    "it": "Destinazione"
   },
   "site.skinrotator.codeOutdated": {
     "note": "goes into a \"...\" string of the generated code: no double quotes",
@@ -265,9 +265,9 @@
     "tr": "Kodun güncel değil, güncellemek için SKIN ROTATOR sitesine git.",
     "pl": "Twój kod jest nieaktualny, wejdź na stronę SKIN ROTATOR, aby go zaktualizować.",
     "nl": "Je code is verouderd, ga naar de SKIN ROTATOR website om hem bij te werken.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Seu código está desatualizado, acesse o site do SKIN ROTATOR para atualizá-lo.",
+    "id": "Kodemu sudah usang, buka situs SKIN ROTATOR untuk memperbaruinya.",
+    "ja": "コードが古くなっています。SKIN ROTATOR のサイトで更新してください。",
+    "it": "Il tuo codice è obsoleto, vai sul sito di SKIN ROTATOR per aggiornarlo."
   }
 }

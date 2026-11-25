@@ -1,10 +1,10 @@
 {
   "site.skins.freeAgarIoSkins": {
     "en": "Free Agar.io Skins – 700+ Custom Skins, Video Skins, Skin Checker & Rotator by Legend Mod",
-    "el": "Δωρεάν skins Agar.io – 700+ προσαρμοσμένα skins, video skins, έλεγχος και εναλλαγή skins από το Legend Mod",
-    "es": "Skins gratis de Agar.io – más de 700 skins personalizados, video skins, comprobador y rotador de skins de Legend Mod",
+    "el": "Δωρεάν skins Agar.io – 700+ προσαρμοσμένα skins, skins βίντεο, έλεγχος και εναλλαγή skins από το Legend Mod",
+    "es": "Skins gratis de Agar.io – más de 700 skins personalizados, skins de vídeo, comprobador y rotador de skins de Legend Mod",
     "bg": "Безплатни скинове за Agar.io – 700+ собствени скина, видео скинове, проверка и ротатор на скинове от Legend Mod",
-    "fr": "Skins Agar.io gratuits – plus de 700 skins personnalisés, video skins, vérificateur et rotateur de skins par Legend Mod",
+    "fr": "Skins Agar.io gratuits – plus de 700 skins personnalisés, skins vidéo, vérificateur et rotateur de skins par Legend Mod",
     "ar": "سكنات Agar.io مجانية – أكثر من 700 سكن مخصص، سكنات فيديو، فاحص ومبدّل السكنات من Legend Mod",
     "zh": "免費 Agar.io 造型 – 700+ 自訂造型、影片造型、造型檢查器與輪播，由 Legend Mod 提供",
     "ru": "Бесплатные скины Agar.io – 700+ своих скинов, видеоскины, проверка и ротатор скинов от Legend Mod",
@@ -12,10 +12,10 @@
     "tr": "Ücretsiz Agar.io Skinleri – 700+ özel skin, video skinler, Legend Mod'dan skin kontrol aracı ve döndürücü",
     "pl": "Darmowe skiny Agar.io – ponad 700 własnych skinów, video skiny, sprawdzarka i rotator skinów od Legend Mod",
     "nl": "Gratis Agar.io skins – 700+ eigen skins, videoskins, skin-checker & rotator van Legend Mod",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins grátis de Agar.io – mais de 700 skins personalizadas, skins de vídeo, Skin Checker e Rotator do Legend Mod",
+    "id": "Skin Agar.io Gratis – 700+ Skin Kustom, Skin Video, Skin Checker & Rotator dari Legend Mod",
+    "ja": "無料の Agar.io スキン – 700種類以上のカスタムスキン、動画スキン、スキンチェッカー＆ローテーター by Legend Mod",
+    "it": "Skin Agar.io gratis – oltre 700 skin personalizzate, skin video, Skin Checker e Rotator di Legend Mod"
   },
   "site.skins.imgur": {
     "en": "Imgur",
@@ -30,10 +30,10 @@
     "tr": "Imgur",
     "pl": "Imgur",
     "nl": "Imgur",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Imgur",
+    "id": "Imgur",
+    "ja": "Imgur",
+    "it": "Imgur"
   },
   "site.skins.lowResMoreFps": {
     "en": "Low Res-More FPS",
@@ -48,10 +48,10 @@
     "tr": "Düşük çözünürlük - Daha fazla FPS",
     "pl": "Niska rozdzielczość - więcej FPS",
     "nl": "Lage resolutie - Meer FPS",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Baixa resolução - mais FPS",
+    "id": "Resolusi Rendah-FPS Lebih Tinggi",
+    "ja": "低解像度・FPS 向上",
+    "it": "Bassa risoluzione - più FPS"
   },
   "site.skins.vanilla": {
     "en": "Vanilla",
@@ -66,10 +66,10 @@
     "tr": "Normal",
     "pl": "Zwykłe",
     "nl": "Vanilla",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vanilla",
+    "id": "Vanilla",
+    "ja": "バニラ",
+    "it": "Vanilla"
   },
   "site.skins.video": {
     "en": "Video",
@@ -84,10 +84,10 @@
     "tr": "Video",
     "pl": "Wideo",
     "nl": "Video",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vídeo",
+    "id": "Video",
+    "ja": "動画",
+    "it": "Video"
   },
   "site.skins.checker": {
     "en": "Checker",
@@ -102,10 +102,10 @@
     "tr": "Kontrol",
     "pl": "Sprawdzarka",
     "nl": "Checker",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Verificador",
+    "id": "Pemeriksa",
+    "ja": "チェッカー",
+    "it": "Checker"
   },
   "site.skins.rotator": {
     "en": "Rotator",
@@ -120,10 +120,10 @@
     "tr": "Döndürücü",
     "pl": "Rotator",
     "nl": "Rotator",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Rotator",
+    "id": "Rotator",
+    "ja": "ローテーター",
+    "it": "Rotator"
   },
   "site.skins.skinUrl": {
     "en": "Skin URL",
@@ -138,10 +138,10 @@
     "tr": "Skin URL'si",
     "pl": "URL skina",
     "nl": "Skin-URL",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "URL da skin",
+    "id": "URL Skin",
+    "ja": "スキンの URL",
+    "it": "URL della skin"
   },
   "site.skins.copy": {
     "en": "Copy",
@@ -174,10 +174,10 @@
     "tr": "Hizliresim",
     "pl": "Hizliresim",
     "nl": "Hizliresim",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Hizliresim",
+    "id": "Hizliresim",
+    "ja": "Hizliresim",
+    "it": "Hizliresim"
   },
   "site.skins.imgurSkins": {
     "en": "imgur skins",
@@ -192,10 +192,10 @@
     "tr": "imgur skinleri",
     "pl": "skiny imgur",
     "nl": "imgur skins",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "skins do imgur",
+    "id": "skin imgur",
+    "ja": "imgur のスキン",
+    "it": "skin imgur"
   },
   "site.skins.hizliresimSkins": {
     "en": "hizliresim skins",
@@ -210,10 +210,10 @@
     "tr": "hizliresim skinleri",
     "pl": "skiny hizliresim",
     "nl": "hizliresim skins",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "skins do hizliresim",
+    "id": "skin hizliresim",
+    "ja": "hizliresim のスキン",
+    "it": "skin hizliresim"
   },
   "site.skins.ogarioBySzymy": {
     "en": "OGARio by szymy",
@@ -228,9 +228,9 @@
     "tr": "OGARio (yapımcı: szymy)",
     "pl": "OGARio autorstwa szymy",
     "nl": "OGARio door szymy",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "OGARio por szymy",
+    "id": "OGARio oleh szymy",
+    "ja": "OGARio (作者：szymy)",
+    "it": "OGARio di szymy"
   }
 }

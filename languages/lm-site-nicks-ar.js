@@ -4,7 +4,7 @@
 (window._lmI18nQueue = window._lmI18nQueue || []).push(["ar", "site-nicks", {
 "site.nicks.comboName": "اسم مركّب",
 "site.nicks.urbanName": "اسم Urban",
-"site.nicks.startTypingYourNick": "ابدأ بكتابة لقبك...",
+"site.nicks.startTypingYourNick": "ابدأ بكتابة اسمك...",
 "site.nicks.failedToGenerateName": "تعذّر إنشاء اسم"
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();

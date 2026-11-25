@@ -4,7 +4,7 @@
 (window._lmI18nQueue = window._lmI18nQueue || []).push(["el", "site-nicks", {
 "site.nicks.comboName": "Συνδυαστικό όνομα",
 "site.nicks.urbanName": "Urban όνομα",
-"site.nicks.startTypingYourNick": "Άρχισε να γράφεις το ψευδώνυμό σου...",
+"site.nicks.startTypingYourNick": "Άρχισε να γράφεις το nick σου...",
 "site.nicks.failedToGenerateName": "Η δημιουργία ονόματος απέτυχε"
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();

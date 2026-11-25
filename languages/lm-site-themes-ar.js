@@ -7,7 +7,7 @@
 "site.themes.yourTheme": "سمتك",
 "site.themes.downloadTheme": "تنزيل السمة",
 "site.themes.deltaModUsersCan": "*يمكن لمستخدمي مود Delta تنزيلها وحفظها كملف .json ثم استيراد الملف من تبويب Restore",
-"site.themes.skinUrlCopiedTo": "تم نسخ الرابط إلى الحافظة <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
+"site.themes.skinUrlCopiedTo": "تم نسخ رابط السكن إلى الحافظة <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
 "site.themes.themePreview": "معاينة السمة",
 "site.themes.themeNumber": "السمة #{0}",
 "site.themes.copy": "نسخ",

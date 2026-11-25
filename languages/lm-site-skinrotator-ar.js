@@ -13,7 +13,7 @@
 "site.skinrotator.theLegendModProject": "مشروع Legend Mod",
 "site.skinrotator.mitLicence": "- رخصة MIT -",
 "site.skinrotator.forRagaMod": "** لمود {0} (يراها كل مستخدمي Raga)",
-"site.skinrotator.generateNickname": "*** أنشئ <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">لقبًا</b></a>",
+"site.skinrotator.generateNickname": "*** أنشئ <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">اسمًا</b></a>",
 "site.skinrotator.newVersionHere": "[الإصدار الجديد هنا]",
 "site.skinrotator.destination": "الوجهة",
 "site.skinrotator.codeOutdated": "الكود الخاص بك قديم، اذهب إلى موقع SKIN ROTATOR لتحديثه."

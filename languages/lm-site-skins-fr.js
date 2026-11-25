@@ -2,7 +2,7 @@
  * Change the texts in developers/i18n/src and run: node developers/i18n/build.js */
 /* French (fr, languagemod 5): 13 texts */
 (window._lmI18nQueue = window._lmI18nQueue || []).push(["fr", "site-skins", {
-"site.skins.freeAgarIoSkins": "Skins Agar.io gratuits – plus de 700 skins personnalisés, video skins, vérificateur et rotateur de skins par Legend Mod",
+"site.skins.freeAgarIoSkins": "Skins Agar.io gratuits – plus de 700 skins personnalisés, skins vidéo, vérificateur et rotateur de skins par Legend Mod",
 "site.skins.imgur": "Imgur",
 "site.skins.lowResMoreFps": "Basse résolution - Plus de FPS",
 "site.skins.vanilla": "De base",

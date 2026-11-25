@@ -1,21 +1,21 @@
 {
   "game1.tag.boost": {
     "en": "BOOST",
-    "el": "ΕΝΙΣΧΥΣΗ",
-    "es": "IMPULSO",
-    "bg": "УСИЛВАНЕ",
+    "el": "BOOST",
+    "es": "BOOST",
+    "bg": "БУУСТ",
     "fr": "BOOST",
-    "ar": "تعزيز",
+    "ar": "معزز",
     "zh": "加成",
-    "ru": "УСИЛЕНИЕ",
+    "ru": "БУСТ",
     "de": "BOOST",
-    "tr": "GÜÇLENDİRME",
-    "pl": "DOPALACZ",
+    "tr": "TAKVİYE",
+    "pl": "BOOST",
     "nl": "BOOST",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "BOOST",
+    "id": "BOOST",
+    "ja": "ブースト",
+    "it": "BOOST"
   },
   "game1.tag.auth": {
     "en": "LOGIN",
@@ -48,10 +48,10 @@
     "tr": "Discord veya Google ile giriş yapın ve önce bir oyun oynayın.",
     "pl": "Zaloguj się przez Discord lub Google i najpierw zagraj jedną grę.",
     "nl": "Log in met Discord of Google en speel eerst één potje.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entre com Discord ou Google e jogue uma partida antes.",
+    "id": "Masuk dengan Discord atau Google, lalu main satu game dulu.",
+    "ja": "Discord または Google でログインして、まず1回プレイしてください。",
+    "it": "Accedi con Discord o Google e gioca prima una partita."
   },
   "game1.login.hintAgar": {
     "en": "Log in with Google or Facebook and play one game first.",
@@ -66,10 +66,10 @@
     "tr": "Google veya Facebook ile giriş yapın ve önce bir oyun oynayın.",
     "pl": "Zaloguj się przez Google lub Facebook i najpierw zagraj jedną grę.",
     "nl": "Log in met Google of Facebook en speel eerst één potje.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entre com Google ou Facebook e jogue uma partida antes.",
+    "id": "Masuk dengan Google atau Facebook, lalu main satu game dulu.",
+    "ja": "Google または Facebook でログインして、まず1回プレイしてください。",
+    "it": "Accedi con Google o Facebook e gioca prima una partita."
   },
   "game1.login.hintGeneric": {
     "en": "Log in and play a game session first",
@@ -84,10 +84,10 @@
     "tr": "Giriş yapın ve önce bir oyun oynayın",
     "pl": "Zaloguj się i najpierw zagraj jedną grę",
     "nl": "Log in en speel eerst een potje",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entre na sua conta e jogue uma partida antes",
+    "id": "Masuk dan main satu sesi game dulu",
+    "ja": "ログインして、まず1回プレイしてください",
+    "it": "Accedi e gioca prima una partita"
   },
   "game1.login.popupBlocked": {
     "en": "Your browser blocked the login popup. Allow popups for this site and press Sign in again.",
@@ -102,14 +102,14 @@
     "tr": "Tarayıcınız giriş penceresini engelledi. Bu site için açılır pencerelere izin verin ve yeniden Giriş yap'a basın.",
     "pl": "Przeglądarka zablokowała okno logowania. Zezwól na wyskakujące okna dla tej strony i ponownie kliknij Zaloguj.",
     "nl": "Je browser heeft het inlogvenster geblokkeerd. Sta pop-ups toe voor deze site en klik opnieuw op Inloggen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Seu navegador bloqueou a janela de login. Permita pop-ups para este site e clique em Entrar de novo.",
+    "id": "Browser kamu memblokir popup login. Izinkan popup untuk situs ini, lalu tekan Masuk lagi.",
+    "ja": "ブラウザーがログイン用のポップアップをブロックしました。このサイトのポップアップを許可して、もう一度「ログイン」を押してください。",
+    "it": "Il browser ha bloccato la finestra di accesso. Consenti i popup per questo sito e premi di nuovo Accedi."
   },
   "game1.login.noSocket": {
     "en": "Could not reach the Expanding Land server. Check your connection and try again.",
-    "el": "Δεν ήταν δυνατή η σύνδεση με τον διακομιστή του Expanding Land. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+    "el": "Δεν ήταν δυνατή η σύνδεση με τον server του Expanding Land. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
     "es": "No se pudo conectar con el servidor de Expanding Land. Comprueba tu conexión e inténtalo de nuevo.",
     "bg": "Сървърът на Expanding Land е недостъпен. Проверете връзката си и опитайте отново.",
     "fr": "Impossible de joindre le serveur Expanding Land. Vérifiez votre connexion et réessayez.",
@@ -120,14 +120,14 @@
     "tr": "Expanding Land sunucusuna ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.",
     "pl": "Nie udało się połączyć z serwerem Expanding Land. Sprawdź połączenie i spróbuj ponownie.",
     "nl": "De Expanding Land-server is niet bereikbaar. Controleer je verbinding en probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível conectar ao servidor do Expanding Land. Verifique sua conexão e tente de novo.",
+    "id": "Tidak bisa terhubung ke server Expanding Land. Cek koneksimu dan coba lagi.",
+    "ja": "Expanding Land のサーバーに接続できませんでした。接続を確認して、もう一度お試しください。",
+    "it": "Impossibile raggiungere il server di Expanding Land. Controlla la connessione e riprova."
   },
   "game1.login.notEl": {
     "en": "This login works on Expanding Land servers. Join an Expanding Land server and sign in again.",
-    "el": "Αυτή η σύνδεση λειτουργεί στους διακομιστές του Expanding Land. Μπείτε σε έναν διακομιστή Expanding Land και συνδεθείτε ξανά.",
+    "el": "Αυτή η σύνδεση λειτουργεί στους servers του Expanding Land. Μπείτε σε έναν server Expanding Land και συνδεθείτε ξανά.",
     "es": "Este inicio de sesión funciona en los servidores de Expanding Land. Entra en un servidor de Expanding Land y vuelve a iniciar sesión.",
     "bg": "Този вход работи на сървърите на Expanding Land. Влезте в сървър на Expanding Land и опитайте отново.",
     "fr": "Cette connexion fonctionne sur les serveurs Expanding Land. Rejoignez un serveur Expanding Land et reconnectez-vous.",
@@ -138,10 +138,10 @@
     "tr": "Bu giriş Expanding Land sunucularında çalışır. Bir Expanding Land sunucusuna girip yeniden giriş yapın.",
     "pl": "To logowanie działa na serwerach Expanding Land. Wejdź na serwer Expanding Land i zaloguj się ponownie.",
     "nl": "Deze login werkt op Expanding Land-servers. Ga naar een Expanding Land-server en log opnieuw in.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este login funciona nos servidores do Expanding Land. Entre em um servidor do Expanding Land e faça login de novo.",
+    "id": "Login ini hanya untuk server Expanding Land. Masuk ke server Expanding Land, lalu login lagi.",
+    "ja": "このログインは Expanding Land のサーバーで使えます。Expanding Land のサーバーに入ってから、もう一度ログインしてください。",
+    "it": "Questo accesso funziona sui server di Expanding Land. Entra in un server di Expanding Land e accedi di nuovo."
   },
   "game1.login.timedOut": {
     "en": "Expanding Land did not confirm the login. Please try again.",
@@ -156,10 +156,10 @@
     "tr": "Expanding Land girişi onaylamadı. Lütfen tekrar deneyin.",
     "pl": "Expanding Land nie potwierdził logowania. Spróbuj ponownie.",
     "nl": "Expanding Land heeft de login niet bevestigd. Probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Expanding Land não confirmou o login. Tente de novo.",
+    "id": "Expanding Land tidak mengonfirmasi login. Coba lagi.",
+    "ja": "Expanding Land からログインの確認がありませんでした。もう一度お試しください。",
+    "it": "Expanding Land non ha confermato l'accesso. Riprova."
   },
   "game1.login.failed": {
     "en": "The login did not complete. Please try again.",
@@ -174,10 +174,10 @@
     "tr": "Giriş tamamlanmadı. Lütfen tekrar deneyin.",
     "pl": "Logowanie nie zostało ukończone. Spróbuj ponownie.",
     "nl": "Het inloggen is niet voltooid. Probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O login não foi concluído. Tente de novo.",
+    "id": "Login tidak selesai. Coba lagi.",
+    "ja": "ログインが完了しませんでした。もう一度お試しください。",
+    "it": "L'accesso non è stato completato. Riprova."
   },
   "game1.login.loggedIn": {
     "en": "Logged in to {0} as {1}",
@@ -192,10 +192,10 @@
     "tr": "{0} hesabına {1} olarak giriş yapıldı",
     "pl": "Zalogowano do {0} jako {1}",
     "nl": "Ingelogd bij {0} als {1}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Conectado em {0} como {1}",
+    "id": "Masuk ke {0} sebagai {1}",
+    "ja": "{0} に {1} としてログインしました",
+    "it": "Accesso effettuato su {0} come {1}"
   },
   "game1.login.player": {
     "en": "Player",
@@ -228,10 +228,10 @@
     "tr": "Beklenmeyen bağlantı kopması. Otomatik giriş deneniyor ({0}/{1})...",
     "pl": "Nieoczekiwane rozłączenie. Próba automatycznego logowania ({0}/{1})...",
     "nl": "Onverwachte verbreking. Automatisch inloggen wordt geprobeerd ({0}/{1})...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Desconexão inesperada. Tentando login automático ({0}/{1})...",
+    "id": "Koneksi terputus tiba-tiba. Mencoba login otomatis ({0}/{1})...",
+    "ja": "予期しない切断を検出しました。自動ログインを試しています ({0}/{1})...",
+    "it": "Disconnessione imprevista. Provo ad accedere di nuovo in automatico ({0}/{1})..."
   },
   "game1.auth.ok": {
     "en": "Re-authenticated successfully!",
@@ -246,10 +246,10 @@
     "tr": "Yeniden giriş başarılı!",
     "pl": "Ponowne logowanie udane!",
     "nl": "Opnieuw ingelogd!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Login refeito com sucesso!",
+    "id": "Berhasil login kembali!",
+    "ja": "再ログインに成功しました！",
+    "it": "Accesso ripristinato!"
   },
   "game1.purchase.notEnough": {
     "en": "Not enough DNA/coins.",
@@ -261,13 +261,13 @@
     "zh": "DNA/金幣不足。",
     "ru": "Недостаточно ДНК/монет.",
     "de": "Nicht genug DNA/Münzen.",
-    "tr": "Yeterli DNA/jeton yok.",
+    "tr": "Yeterli DNA/altın yok.",
     "pl": "Za mało DNA/monet.",
     "nl": "Niet genoeg DNA/munten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "DNA/moedas insuficientes.",
+    "id": "DNA/koin tidak cukup.",
+    "ja": "DNA/コインが足りません。",
+    "it": "DNA/monete insufficienti."
   },
   "game1.purchase.unavailable": {
     "en": "This is not available right now.",
@@ -282,10 +282,10 @@
     "tr": "Bu şu anda kullanılamıyor.",
     "pl": "To jest teraz niedostępne.",
     "nl": "Dit is nu niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Isso não está disponível no momento.",
+    "id": "Ini sedang tidak tersedia.",
+    "ja": "現在は利用できません。",
+    "it": "Non è disponibile in questo momento."
   },
   "game1.purchase.failed": {
     "en": "Purchase failed.",
@@ -300,10 +300,10 @@
     "tr": "Satın alma başarısız.",
     "pl": "Zakup nie powiódł się.",
     "nl": "Aankoop mislukt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A compra falhou.",
+    "id": "Pembelian gagal.",
+    "ja": "購入に失敗しました。",
+    "it": "Acquisto non riuscito."
   },
   "game1.mh.virus": {
     "en": "Virus",
@@ -312,7 +312,7 @@
     "bg": "Вирус",
     "fr": "Virus",
     "ar": "فيروس",
-    "zh": "病毒",
+    "zh": "刺球",
     "ru": "Вирус",
     "de": "Virus",
     "tr": "Virüs",
@@ -325,7 +325,7 @@
   },
   "game1.ps.noFacebook": {
     "en": "Facebook login is NOT allowed on this private server!",
-    "el": "Η σύνδεση μέσω Facebook ΔΕΝ επιτρέπεται σε αυτόν τον ιδιωτικό διακομιστή!",
+    "el": "Η σύνδεση μέσω Facebook ΔΕΝ επιτρέπεται σε αυτόν τον ιδιωτικό server!",
     "es": "¡El inicio de sesión con Facebook NO está permitido en este servidor privado!",
     "bg": "Входът с Facebook НЕ е разрешен на този частен сървър!",
     "fr": "La connexion Facebook n'est PAS autorisée sur ce serveur privé !",
@@ -336,28 +336,28 @@
     "tr": "Bu özel sunucuda Facebook girişine izin VERİLMEZ!",
     "pl": "Logowanie przez Facebook NIE jest dozwolone na tym prywatnym serwerze!",
     "nl": "Inloggen met Facebook is NIET toegestaan op deze privéserver!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Login com Facebook NÃO é permitido neste servidor privado!",
+    "id": "Login Facebook TIDAK diizinkan di server privat ini!",
+    "ja": "このプライベートサーバーでは Facebook ログインは使えません！",
+    "it": "L'accesso con Facebook NON è consentito su questo server privato!"
   },
   "game1.boost.noPurchaseId": {
     "en": "This boost has no configured purchase ID.",
-    "el": "Αυτή η ενίσχυση δεν έχει ορισμένο αναγνωριστικό αγοράς.",
-    "es": "Este impulso no tiene un ID de compra configurado.",
-    "bg": "Това усилване няма зададен идентификатор за покупка.",
+    "el": "Αυτό το boost δεν έχει ορισμένο αναγνωριστικό αγοράς.",
+    "es": "Este boost no tiene un ID de compra configurado.",
+    "bg": "Този бууст няма зададен идентификатор за покупка.",
     "fr": "Ce boost n'a pas d'identifiant d'achat configuré.",
-    "ar": "لا يوجد معرّف شراء مُعدّ لهذا التعزيز.",
+    "ar": "لا يوجد معرّف شراء مُعدّ لهذا المعزز.",
     "zh": "此加成沒有設定購買 ID。",
-    "ru": "Для этого усиления не задан ID покупки.",
+    "ru": "Для этого буста не задан ID покупки.",
     "de": "Für diesen Boost ist keine Kauf-ID eingestellt.",
-    "tr": "Bu güçlendirmenin ayarlı bir satın alma kimliği yok.",
-    "pl": "Ten dopalacz nie ma ustawionego ID zakupu.",
+    "tr": "Bu takviyenin ayarlı bir satın alma kimliği yok.",
+    "pl": "Ten boost nie ma ustawionego ID zakupu.",
     "nl": "Deze boost heeft geen ingestelde aankoop-ID.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este boost não tem um ID de compra configurado.",
+    "id": "Boost ini belum punya ID pembelian.",
+    "ja": "このブーストには購入 ID が設定されていません。",
+    "it": "Questo boost non ha un ID di acquisto configurato."
   },
   "game1.boost.noTransport": {
     "en": "Soft-purchase transport is unavailable.",
@@ -369,35 +369,35 @@
     "zh": "金幣購買服務無法使用。",
     "ru": "Сервис покупок за монеты недоступен.",
     "de": "Der Münzkauf-Dienst ist nicht verfügbar.",
-    "tr": "Jetonla satın alma hizmeti kullanılamıyor.",
+    "tr": "Altınla satın alma hizmeti kullanılamıyor.",
     "pl": "Usługa zakupów za monety jest niedostępna.",
     "nl": "De muntaankoopdienst is niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O canal de compra com moedas não está disponível.",
+    "id": "Jalur pembelian soft currency tidak tersedia.",
+    "ja": "ソフト通貨での購入機能が利用できません。",
+    "it": "Il canale per gli acquisti con valuta di gioco non è disponibile."
   },
   "game1.boost.unknown": {
     "en": "Unknown boost product.",
-    "el": "Άγνωστο προϊόν ενίσχυσης.",
-    "es": "Producto de impulso desconocido.",
-    "bg": "Неизвестен продукт за усилване.",
+    "el": "Άγνωστο προϊόν boost.",
+    "es": "Producto de boost desconocido.",
+    "bg": "Неизвестен продукт бууст.",
     "fr": "Produit de boost inconnu.",
-    "ar": "منتج تعزيز غير معروف.",
+    "ar": "منتج معزز غير معروف.",
     "zh": "未知的加成商品。",
-    "ru": "Неизвестный товар усиления.",
+    "ru": "Неизвестный буст.",
     "de": "Unbekanntes Boost-Produkt.",
-    "tr": "Bilinmeyen güçlendirme ürünü.",
-    "pl": "Nieznany produkt dopalacza.",
+    "tr": "Bilinmeyen takviye ürünü.",
+    "pl": "Nieznany produkt boost.",
     "nl": "Onbekend boostproduct.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Produto de boost desconhecido.",
+    "id": "Produk boost tidak dikenal.",
+    "ja": "不明なブースト商品です。",
+    "it": "Boost sconosciuto."
   },
   "game1.boost.pending": {
     "en": "Activation already sent, waiting for the server.",
-    "el": "Η ενεργοποίηση στάλθηκε ήδη, αναμονή για τον διακομιστή.",
+    "el": "Η ενεργοποίηση στάλθηκε ήδη, αναμονή για τον server.",
     "es": "Activación ya enviada, esperando al servidor.",
     "bg": "Активирането вече е изпратено, чака се сървърът.",
     "fr": "Activation déjà envoyée, en attente du serveur.",
@@ -408,28 +408,28 @@
     "tr": "Etkinleştirme zaten gönderildi, sunucu bekleniyor.",
     "pl": "Aktywacja już wysłana, czekam na serwer.",
     "nl": "Activering al verzonden, wachten op de server.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A ativação já foi enviada, aguardando o servidor.",
+    "id": "Aktivasi sudah dikirim, menunggu server.",
+    "ja": "有効化はすでに送信済みです。サーバーの応答を待っています。",
+    "it": "Attivazione già inviata, in attesa del server."
   },
   "game1.boost.noActivation": {
     "en": "Boost activation transport is unavailable.",
-    "el": "Η υπηρεσία ενεργοποίησης ενισχύσεων δεν είναι διαθέσιμη.",
-    "es": "El servicio de activación de impulsos no está disponible.",
-    "bg": "Услугата за активиране на усилвания не е налична.",
+    "el": "Η υπηρεσία ενεργοποίησης boost δεν είναι διαθέσιμη.",
+    "es": "El servicio de activación de boosts no está disponible.",
+    "bg": "Услугата за активиране на буустове не е налична.",
     "fr": "Le service d'activation des boosts est indisponible.",
-    "ar": "خدمة تفعيل التعزيزات غير متاحة.",
+    "ar": "خدمة تفعيل المعززات غير متاحة.",
     "zh": "加成啟用服務無法使用。",
-    "ru": "Сервис активации усилений недоступен.",
+    "ru": "Сервис активации бустов недоступен.",
     "de": "Der Dienst zum Aktivieren von Boosts ist nicht verfügbar.",
-    "tr": "Güçlendirme etkinleştirme hizmeti kullanılamıyor.",
-    "pl": "Usługa aktywacji dopalaczy jest niedostępna.",
+    "tr": "Takviye etkinleştirme hizmeti kullanılamıyor.",
+    "pl": "Usługa aktywacji boostów jest niedostępna.",
     "nl": "De dienst voor het activeren van boosts is niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O canal de ativação de boost não está disponível.",
+    "id": "Jalur aktivasi boost tidak tersedia.",
+    "ja": "ブーストの有効化機能が利用できません。",
+    "it": "Il canale per attivare i boost non è disponibile."
   },
   "game1.bots.outdated": {
     "en": "Your version is outdated for the bots. Download {0}.",
@@ -444,10 +444,10 @@
     "tr": "Sürümünüz botlar için eski. {0} sürümünü indirin.",
     "pl": "Twoja wersja jest za stara dla botów. Pobierz {0}.",
     "nl": "Je versie is verouderd voor de bots. Download {0}.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sua versão está desatualizada para os bots. Baixe {0}.",
+    "id": "Versimu sudah terlalu lama untuk bot. Unduh {0}.",
+    "ja": "このバージョンはボットに対応していません。{0} をダウンロードしてください。",
+    "it": "La tua versione è troppo vecchia per i bot. Scarica {0}."
   },
   "game1.bots.visit": {
     "en": "Visit:",
@@ -462,10 +462,10 @@
     "tr": "Ziyaret edin:",
     "pl": "Odwiedź:",
     "nl": "Bezoek:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Acesse:",
+    "id": "Kunjungi:",
+    "ja": "アクセス：",
+    "it": "Visita:"
   },
   "game1.bots.captchaTip": {
     "en": "In case of a captcha, change your IP by <b>restarting your router</b> or use a <b>VPN</b>",
@@ -480,10 +480,10 @@
     "tr": "Captcha çıkarsa <b>modemi yeniden başlatarak</b> IP'nizi değiştirin veya <b>VPN</b> kullanın",
     "pl": "W razie captchy zmień IP, <b>restartując router</b>, lub użyj <b>VPN</b>",
     "nl": "Bij een captcha: wijzig je IP door <b>je router te herstarten</b> of gebruik een <b>VPN</b>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Se aparecer captcha, troque seu IP <b>reiniciando o roteador</b> ou use uma <b>VPN</b>",
+    "id": "Kalau muncul captcha, ganti IP-mu dengan <b>me-restart router</b> atau pakai <b>VPN</b>",
+    "ja": "キャプチャが出る場合は、<b>ルーターを再起動</b>して IP を変えるか、<b>VPN</b> を使ってください",
+    "it": "Se compare un captcha, cambia IP <b>riavviando il router</b> oppure usa una <b>VPN</b>"
   },
   "game1.bots.connected": {
     "en": "Connected",
@@ -552,10 +552,10 @@
     "tr": "Botları durdur",
     "pl": "Zatrzymaj boty",
     "nl": "Bots stoppen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Parar bots",
+    "id": "Hentikan Bot",
+    "ja": "ボット停止",
+    "it": "Ferma i bot"
   },
   "game1.bots.stopping": {
     "en": "Stopping Bots...",
@@ -570,10 +570,10 @@
     "tr": "Botlar durduruluyor...",
     "pl": "Zatrzymywanie botów...",
     "nl": "Bots stoppen...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Parando os bots...",
+    "id": "Menghentikan bot...",
+    "ja": "ボットを停止中...",
+    "it": "Arresto dei bot..."
   },
   "game1.bots.disabled": {
     "en": "Disabled",
@@ -606,14 +606,14 @@
     "tr": "IP'nizde captcha var, bu yüzden botlar doğamıyor. Botları kullanmak için IP'nizi captcha olmayan biriyle değiştirin (örneğin VPN ile).",
     "pl": "Twoje IP ma captchę, więc boty nie mogą się pojawić. Aby ich używać, zmień IP (np. przez VPN) na takie bez captchy.",
     "nl": "Je IP heeft een captcha, dus de bots kunnen niet spawnen. Wissel naar een IP zonder captcha (bijvoorbeeld met een VPN) om de bots te gebruiken.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Seu IP está com captcha, então os bots não conseguem nascer. Para usar os bots, troque para um IP sem captcha (por exemplo, com uma VPN).",
+    "id": "IP-mu kena captcha, jadi bot tidak bisa spawn. Untuk memakai bot, ganti IP (misalnya dengan VPN) ke IP yang tidak kena captcha.",
+    "ja": "お使いの IP にキャプチャが出ているため、ボットを出現させられません。ボットを使うには、キャプチャの出ない IP に変えてください (VPN など)。",
+    "it": "Il tuo IP ha un captcha, quindi i bot non possono entrare in gioco. Per usare i bot, cambia IP (ad esempio con una VPN) con uno senza captcha."
   },
   "game1.bots.closing": {
     "en": "The server or the bots are closing",
-    "el": "Ο διακομιστής ή τα bots κλείνουν",
+    "el": "Ο server ή τα bots κλείνουν",
     "es": "El servidor o los bots se están cerrando",
     "bg": "Сървърът или ботовете се затварят",
     "fr": "Le serveur ou les bots sont en cours de fermeture",
@@ -624,10 +624,10 @@
     "tr": "Sunucu veya botlar kapanıyor",
     "pl": "Serwer lub boty są zamykane",
     "nl": "De server of de bots worden gesloten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O servidor ou os bots estão sendo fechados",
+    "id": "Server atau bot sedang ditutup",
+    "ja": "サーバーまたはボットが終了しています",
+    "it": "Il server o i bot si stanno chiudendo"
   },
   "game1.bots.wsClosed": {
     "en": "WebSocket closed",
@@ -642,10 +642,10 @@
     "tr": "WebSocket kapandı",
     "pl": "WebSocket zamknięty",
     "nl": "WebSocket gesloten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "WebSocket fechado",
+    "id": "WebSocket tertutup",
+    "ja": "WebSocket が切断されました",
+    "it": "WebSocket chiuso"
   },
   "game1.video.tooLong": {
     "en": "Next time please use videos shorter than <font color='blue'><b>5 minutes</b></font>, in <font color='blue'><b>low quality</b></font> and at most <font color='blue'><b>1080</b></font> pixels wide.",
@@ -660,28 +660,28 @@
     "tr": "Bir dahaki sefere <font color='blue'><b>5 dakikadan</b></font> kısa, <font color='blue'><b>düşük kaliteli</b></font> ve en fazla <font color='blue'><b>1080</b></font> piksel genişliğinde videolar kullanın.",
     "pl": "Następnym razem używaj filmów krótszych niż <font color='blue'><b>5 minut</b></font>, w <font color='blue'><b>niskiej jakości</b></font> i o szerokości najwyżej <font color='blue'><b>1080</b></font> pikseli.",
     "nl": "Gebruik de volgende keer video's korter dan <font color='blue'><b>5 minuten</b></font>, in <font color='blue'><b>lage kwaliteit</b></font> en hooguit <font color='blue'><b>1080</b></font> pixels breed.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Da próxima vez, use vídeos com menos de <font color='blue'><b>5 minutos</b></font>, em <font color='blue'><b>baixa qualidade</b></font> e com no máximo <font color='blue'><b>1080</b></font> pixels de largura.",
+    "id": "Lain kali pakai video yang lebih pendek dari <font color='blue'><b>5 menit</b></font>, dengan <font color='blue'><b>kualitas rendah</b></font> dan lebar maksimal <font color='blue'><b>1080</b></font> piksel.",
+    "ja": "次回は <font color='blue'><b>5分</b></font>未満、<font color='blue'><b>低画質</b></font>、横幅 <font color='blue'><b>1080</b></font> ピクセル以下の動画を使ってください。",
+    "it": "La prossima volta usa video più brevi di <font color='blue'><b>5 minuti</b></font>, in <font color='blue'><b>bassa qualità</b></font> e larghi al massimo <font color='blue'><b>1080</b></font> pixel."
   },
   "game1.tag.rushBoost": {
     "en": "RUSH BOOST",
-    "el": "ΕΝΙΣΧΥΣΗ RUSH",
-    "es": "IMPULSO RUSH",
-    "bg": "RUSH УСИЛВАНЕ",
+    "el": "RUSH BOOST",
+    "es": "BOOST RUSH",
+    "bg": "RUSH БУУСТ",
     "fr": "BOOST RUSH",
-    "ar": "تعزيز RUSH",
+    "ar": "معزز RUSH",
     "zh": "衝刺加成",
-    "ru": "RUSH-УСИЛЕНИЕ",
+    "ru": "RUSH-БУСТ",
     "de": "RUSH-BOOST",
-    "tr": "RUSH GÜÇLENDİRME",
-    "pl": "DOPALACZ RUSH",
+    "tr": "RUSH TAKVİYE",
+    "pl": "RUSH BOOST",
     "nl": "RUSH-BOOST",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "RUSH BOOST",
+    "id": "RUSH BOOST",
+    "ja": "ラッシュブースト",
+    "it": "RUSH BOOST"
   },
   "game1.tag.vip": {
     "en": "VIP",
@@ -696,34 +696,34 @@
     "tr": "VIP",
     "pl": "VIP",
     "nl": "VIP",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "VIP",
+    "id": "VIP",
+    "ja": "VIP",
+    "it": "VIP"
   },
   "game1.tag.party": {
     "en": "PARTY",
     "el": "PARTY",
     "es": "PARTY",
-    "bg": "PARTY",
+    "bg": "ПАРТИ",
     "fr": "PARTY",
     "ar": "بارتي",
-    "zh": "派對",
+    "zh": "組隊",
     "ru": "ПАТИ",
     "de": "PARTY",
     "tr": "PARTİ",
     "pl": "PARTY",
     "nl": "PARTY",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "PARTY",
+    "id": "PARTY",
+    "ja": "パーティー",
+    "it": "PARTY"
   },
   "game1.tag.potion": {
     "en": "POTION",
     "el": "ΦΙΛΤΡΟ",
     "es": "POCIÓN",
-    "bg": "ЕЛИКСИР",
+    "bg": "ОТВАРА",
     "fr": "POTION",
     "ar": "جرعة",
     "zh": "藥水",
@@ -732,10 +732,10 @@
     "tr": "İKSİR",
     "pl": "MIKSTURA",
     "nl": "DRANKJE",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "POÇÃO",
+    "id": "RAMUAN",
+    "ja": "ポーション",
+    "it": "POZIONE"
   },
   "game1.tag.chat": {
     "en": "CHAT",
@@ -786,10 +786,10 @@
     "tr": "SCAN TRICK",
     "pl": "SCAN TRICK",
     "nl": "SCAN TRICK",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "SCAN TRICK",
+    "id": "SCAN TRICK",
+    "ja": "スキャントリック",
+    "it": "SCAN TRICK"
   },
   "game1.tag.performance": {
     "en": "PERFORMANCE",
@@ -822,10 +822,10 @@
     "tr": "Satın alma ayarları kullanılamıyor.",
     "pl": "Konfiguracja zakupu jest niedostępna.",
     "nl": "Aankoopinstellingen niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Configuração de compra indisponível.",
+    "id": "Konfigurasi pembelian tidak tersedia.",
+    "ja": "購入設定を取得できません。",
+    "it": "Configurazione degli acquisti non disponibile."
   },
   "game1.shop.noTransport": {
     "en": "Purchase transport unavailable.",
@@ -840,10 +840,10 @@
     "tr": "Satın alma hizmeti kullanılamıyor.",
     "pl": "Usługa zakupów jest niedostępna.",
     "nl": "Aankoopdienst niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Canal de compra indisponível.",
+    "id": "Jalur pembelian tidak tersedia.",
+    "ja": "購入機能が利用できません。",
+    "it": "Canale per gli acquisti non disponibile."
   },
   "game1.shop.pending": {
     "en": "Purchase is already pending.",
@@ -858,10 +858,10 @@
     "tr": "Satın alma zaten beklemede.",
     "pl": "Zakup jest już w toku.",
     "nl": "De aankoop is al bezig.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Já há uma compra em andamento.",
+    "id": "Pembelian masih diproses.",
+    "ja": "購入処理がすでに進行中です。",
+    "it": "C'è già un acquisto in corso."
   },
   "game1.shop.pendingThis": {
     "en": "This purchase is already pending.",
@@ -876,28 +876,28 @@
     "tr": "Bu satın alma zaten beklemede.",
     "pl": "Ten zakup jest już w toku.",
     "nl": "Deze aankoop is al bezig.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta compra já está em andamento.",
+    "id": "Pembelian ini masih diproses.",
+    "ja": "この購入はすでに処理中です。",
+    "it": "Questo acquisto è già in corso."
   },
   "game1.shop.rushBought": {
     "en": "+{0} mass boost purchased.",
-    "el": "Αγοράστηκε ενίσχυση +{0} μάζας.",
-    "es": "Impulso de +{0} de masa comprado.",
-    "bg": "Купено усилване +{0} маса.",
+    "el": "Αγοράστηκε boost +{0} μάζας.",
+    "es": "Boost de +{0} de masa comprado.",
+    "bg": "Купен бууст +{0} маса.",
     "fr": "Boost de +{0} de masse acheté.",
-    "ar": "تم شراء تعزيز كتلة +{0}.",
+    "ar": "تم شراء معزز كتلة +{0}.",
     "zh": "已購買 +{0} 質量加成。",
-    "ru": "Куплено усиление +{0} массы.",
+    "ru": "Куплен буст +{0} массы.",
     "de": "+{0} Masse-Boost gekauft.",
-    "tr": "+{0} kütle güçlendirmesi satın alındı.",
-    "pl": "Kupiono dopalacz +{0} masy.",
+    "tr": "+{0} kütle takviyesi satın alındı.",
+    "pl": "Kupiono boost +{0} masy.",
     "nl": "+{0} massaboost gekocht.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Boost de +{0} de massa comprado.",
+    "id": "Boost massa +{0} berhasil dibeli.",
+    "ja": "+{0} 質量ブーストを購入しました。",
+    "it": "Boost di massa +{0} acquistato."
   },
   "game1.shop.notEnoughOf": {
     "en": "Not enough {0}.",
@@ -912,10 +912,10 @@
     "tr": "Yeterli {0} yok.",
     "pl": "Za mało: {0}.",
     "nl": "Niet genoeg {0}.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} insuficiente.",
+    "id": "{0} tidak cukup.",
+    "ja": "{0} が足りません。",
+    "it": "{0} insufficienti."
   },
   "game1.shop.currency": {
     "en": "currency",
@@ -928,30 +928,30 @@
     "ru": "валюты",
     "de": "Währung",
     "tr": "para birimi",
-    "pl": "waluty",
+    "pl": "waluta",
     "nl": "valuta",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "moeda",
+    "id": "mata uang",
+    "ja": "通貨",
+    "it": "valuta"
   },
   "game1.shop.boostUnavailable": {
     "en": "This boost is not currently available.",
-    "el": "Αυτή η ενίσχυση δεν είναι διαθέσιμη τώρα.",
-    "es": "Este impulso no está disponible ahora.",
-    "bg": "Това усилване в момента не е налично.",
+    "el": "Αυτό το boost δεν είναι διαθέσιμο τώρα.",
+    "es": "Este boost no está disponible ahora.",
+    "bg": "Този бууст в момента не е наличен.",
     "fr": "Ce boost n'est pas disponible pour le moment.",
-    "ar": "هذا التعزيز غير متاح حاليًا.",
+    "ar": "هذا المعزز غير متاح حاليًا.",
     "zh": "此加成目前無法使用。",
-    "ru": "Это усиление сейчас недоступно.",
+    "ru": "Этот буст сейчас недоступен.",
     "de": "Dieser Boost ist gerade nicht verfügbar.",
-    "tr": "Bu güçlendirme şu anda kullanılamıyor.",
-    "pl": "Ten dopalacz jest teraz niedostępny.",
+    "tr": "Bu takviye şu anda kullanılamıyor.",
+    "pl": "Ten boost jest teraz niedostępny.",
     "nl": "Deze boost is nu niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este boost não está disponível no momento.",
+    "id": "Boost ini sedang tidak tersedia.",
+    "ja": "このブーストは現在利用できません。",
+    "it": "Questo boost al momento non è disponibile."
   },
   "game1.shop.noResponse": {
     "en": "No purchase response was received.",
@@ -966,10 +966,10 @@
     "tr": "Satın alma yanıtı alınmadı.",
     "pl": "Nie otrzymano odpowiedzi na zakup.",
     "nl": "Geen antwoord op de aankoop ontvangen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nenhuma resposta da compra foi recebida.",
+    "id": "Tidak ada respons pembelian.",
+    "ja": "購入の応答がありませんでした。",
+    "it": "Nessuna risposta ricevuta per l'acquisto."
   },
   "game1.vip.noProduct": {
     "en": "No configured VIP subscription product from Agar.io.",
@@ -984,10 +984,10 @@
     "tr": "Agar.io'dan ayarlı bir VIP abonelik ürünü yok.",
     "pl": "Brak skonfigurowanego produktu subskrypcji VIP z Agar.io.",
     "nl": "Geen ingesteld VIP-abonnementsproduct van Agar.io.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Agar.io não tem nenhum produto de assinatura VIP configurado.",
+    "id": "Agar.io tidak menyediakan produk langganan VIP.",
+    "ja": "Agar.io の VIP サブスクリプション商品が設定されていません。",
+    "it": "Agar.io non ha configurato nessun abbonamento VIP."
   },
   "game1.vip.login": {
     "en": "Log in to your Agar.io account first.",
@@ -1002,10 +1002,10 @@
     "tr": "Önce Agar.io hesabınıza giriş yapın.",
     "pl": "Najpierw zaloguj się na konto Agar.io.",
     "nl": "Log eerst in op je Agar.io-account.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entre primeiro na sua conta do Agar.io.",
+    "id": "Masuk ke akun Agar.io kamu dulu.",
+    "ja": "先に Agar.io アカウントにログインしてください。",
+    "it": "Prima accedi al tuo account Agar.io."
   },
   "game1.vip.active": {
     "en": "VIP is already active on this account.",
@@ -1020,10 +1020,10 @@
     "tr": "Bu hesapta VIP zaten etkin.",
     "pl": "VIP jest już aktywny na tym koncie.",
     "nl": "VIP is al actief op dit account.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O VIP já está ativo nesta conta.",
+    "id": "VIP sudah aktif di akun ini.",
+    "ja": "このアカウントではすでに VIP が有効です。",
+    "it": "Il VIP è già attivo su questo account."
   },
   "game1.vip.notReady": {
     "en": "VIP status not ready yet. Wait for profile to load.",
@@ -1038,10 +1038,10 @@
     "tr": "VIP durumu henüz hazır değil. Profilin yüklenmesini bekleyin.",
     "pl": "Status VIP nie jest jeszcze gotowy. Poczekaj na wczytanie profilu.",
     "nl": "VIP-status nog niet klaar. Wacht tot het profiel geladen is.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O status VIP ainda não está pronto. Aguarde o perfil carregar.",
+    "id": "Status VIP belum siap. Tunggu profil selesai dimuat.",
+    "ja": "VIP の状態をまだ取得できていません。プロフィールの読み込みを待ってください。",
+    "it": "Lo stato VIP non è ancora pronto. Aspetta che il profilo si carichi."
   },
   "game1.vip.noBridge": {
     "en": "Official Agar.io purchase bridge not loaded.",
@@ -1056,10 +1056,10 @@
     "tr": "Resmi Agar.io satın alma köprüsü yüklenmedi.",
     "pl": "Oficjalny moduł zakupów Agar.io nie jest wczytany.",
     "nl": "De officiële Agar.io-aankoopkoppeling is niet geladen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O sistema oficial de compras do Agar.io não foi carregado.",
+    "id": "Jembatan pembelian resmi Agar.io belum dimuat.",
+    "ja": "Agar.io 公式の購入機能が読み込まれていません。",
+    "it": "Il sistema di acquisto ufficiale di Agar.io non è caricato."
   },
   "game1.vip.weekly": {
     "en": "Agar.io VIP Weekly Subscription",
@@ -1074,10 +1074,10 @@
     "tr": "Agar.io VIP Haftalık Abonelik",
     "pl": "Tygodniowa subskrypcja VIP Agar.io",
     "nl": "Agar.io VIP-weekabonnement",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Assinatura semanal VIP do Agar.io",
+    "id": "Langganan Mingguan VIP Agar.io",
+    "ja": "Agar.io VIP 週間サブスクリプション",
+    "it": "Abbonamento settimanale VIP di Agar.io"
   },
   "game1.party.badCode": {
     "en": "Invalid Agar.io Party code.",
@@ -1086,16 +1086,16 @@
     "bg": "Невалиден код за парти в Agar.io.",
     "fr": "Code de party Agar.io invalide.",
     "ar": "رمز بارتي Agar.io غير صالح.",
-    "zh": "無效的 Agar.io 派對代碼。",
+    "zh": "無效的 Agar.io 組隊代碼。",
     "ru": "Неверный код пати Agar.io.",
     "de": "Ungültiger Agar.io-Party-Code.",
     "tr": "Geçersiz Agar.io parti kodu.",
     "pl": "Nieprawidłowy kod party Agar.io.",
     "nl": "Ongeldige Agar.io-partycode.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Código de party do Agar.io inválido.",
+    "id": "Kode Party Agar.io tidak valid.",
+    "ja": "Agar.io のパーティーコードが無効です。",
+    "it": "Codice party di Agar.io non valido."
   },
   "game1.party.joinFailed": {
     "en": "Could not join the party.",
@@ -1104,16 +1104,16 @@
     "bg": "Влизането в партито не бе успешно.",
     "fr": "Impossible de rejoindre la party.",
     "ar": "تعذّر الانضمام إلى البارتي.",
-    "zh": "無法加入派對。",
+    "zh": "無法加入隊伍。",
     "ru": "Не удалось войти в пати.",
     "de": "Beitritt zur Party fehlgeschlagen.",
     "tr": "Partiye katılınamadı.",
     "pl": "Nie udało się dołączyć do party.",
     "nl": "Kon niet deelnemen aan de party.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível entrar na party.",
+    "id": "Tidak bisa bergabung ke party.",
+    "ja": "パーティーに参加できませんでした。",
+    "it": "Impossibile entrare nel party."
   },
   "game1.party.joinFailedWhy": {
     "en": "Could not join the party: {0}",
@@ -1122,16 +1122,16 @@
     "bg": "Влизането в партито не бе успешно: {0}",
     "fr": "Impossible de rejoindre la party : {0}",
     "ar": "تعذّر الانضمام إلى البارتي: {0}",
-    "zh": "無法加入派對：{0}",
+    "zh": "無法加入隊伍：{0}",
     "ru": "Не удалось войти в пати: {0}",
     "de": "Beitritt zur Party fehlgeschlagen: {0}",
     "tr": "Partiye katılınamadı: {0}",
     "pl": "Nie udało się dołączyć do party: {0}",
     "nl": "Kon niet deelnemen aan de party: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível entrar na party: {0}",
+    "id": "Tidak bisa bergabung ke party: {0}",
+    "ja": "パーティーに参加できませんでした：{0}",
+    "it": "Impossibile entrare nel party: {0}"
   },
   "game1.party.noApi": {
     "en": "Party API is not available yet.",
@@ -1140,22 +1140,22 @@
     "bg": "Функцията за парти още не е налична.",
     "fr": "La fonction party n'est pas encore disponible.",
     "ar": "خدمة البارتي غير متاحة بعد.",
-    "zh": "派對功能尚未就緒。",
+    "zh": "組隊功能尚未就緒。",
     "ru": "Функция пати пока недоступна.",
     "de": "Die Party-Funktion ist noch nicht verfügbar.",
     "tr": "Parti özelliği henüz kullanılamıyor.",
     "pl": "Funkcja party nie jest jeszcze dostępna.",
     "nl": "De partyfunctie is nog niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A API de party ainda não está disponível.",
+    "id": "API party belum tersedia.",
+    "ja": "パーティー機能はまだ利用できません。",
+    "it": "Le funzioni party non sono ancora disponibili."
   },
   "game1.potion.bought": {
     "en": "Purchased successfully. Opening potion...",
     "el": "Η αγορά έγινε. Άνοιγμα φίλτρου...",
     "es": "Compra realizada. Abriendo poción...",
-    "bg": "Покупката е успешна. Отваряне на еликсира...",
+    "bg": "Покупката е успешна. Отваряне на отварата...",
     "fr": "Achat réussi. Ouverture de la potion...",
     "ar": "تم الشراء بنجاح. جارٍ فتح الجرعة...",
     "zh": "購買成功。正在開啟藥水...",
@@ -1164,10 +1164,10 @@
     "tr": "Satın alındı. İksir açılıyor...",
     "pl": "Zakup udany. Otwieranie mikstury...",
     "nl": "Gekocht. Drankje wordt geopend...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Compra concluída. Abrindo a poção...",
+    "id": "Berhasil dibeli. Membuka ramuan...",
+    "ja": "購入しました。ポーションを開けています...",
+    "it": "Acquisto completato. Apro la pozione..."
   },
   "game1.potion.boughtNoOpen": {
     "en": "Purchased successfully, but automatic opening could not start.",
@@ -1182,16 +1182,16 @@
     "tr": "Satın alındı, ancak otomatik açma başlatılamadı.",
     "pl": "Zakup udany, ale automatyczne otwarcie nie mogło się rozpocząć.",
     "nl": "Gekocht, maar automatisch openen kon niet starten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Compra concluída, mas não foi possível abrir a poção automaticamente.",
+    "id": "Berhasil dibeli, tapi ramuan tidak bisa dibuka otomatis.",
+    "ja": "購入しましたが、自動で開けることができませんでした。",
+    "it": "Acquisto completato, ma non è stato possibile aprirla in automatico."
   },
   "game1.potion.unavailable": {
     "en": "This potion is not currently available.",
     "el": "Αυτό το φίλτρο δεν είναι διαθέσιμο τώρα.",
     "es": "Esta poción no está disponible ahora.",
-    "bg": "Този еликсир в момента не е наличен.",
+    "bg": "Тази отвара в момента не е налична.",
     "fr": "Cette potion n'est pas disponible pour le moment.",
     "ar": "هذه الجرعة غير متاحة حاليًا.",
     "zh": "此藥水目前無法使用。",
@@ -1200,10 +1200,10 @@
     "tr": "Bu iksir şu anda kullanılamıyor.",
     "pl": "Ta mikstura jest teraz niedostępna.",
     "nl": "Dit drankje is nu niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta poção não está disponível no momento.",
+    "id": "Ramuan ini sedang tidak tersedia.",
+    "ja": "このポーションは現在利用できません。",
+    "it": "Questa pozione al momento non è disponibile."
   },
   "game1.preset.chatDefault": {
     "en": "Default",
@@ -1236,10 +1236,10 @@
     "tr": "Sağ alt",
     "pl": "Na dole po prawej",
     "nl": "Rechtsonder",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Inferior direito",
+    "id": "Kanan Bawah",
+    "ja": "右下",
+    "it": "In basso a destra"
   },
   "game1.preset.topLeft": {
     "en": "Top Left",
@@ -1254,10 +1254,10 @@
     "tr": "Sol üst",
     "pl": "Na górze po lewej",
     "nl": "Linksboven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Superior esquerdo",
+    "id": "Kiri Atas",
+    "ja": "左上",
+    "it": "In alto a sinistra"
   },
   "game1.preset.topRight": {
     "en": "Top Right",
@@ -1272,10 +1272,10 @@
     "tr": "Sağ üst",
     "pl": "Na górze po prawej",
     "nl": "Rechtsboven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Superior direito",
+    "id": "Kanan Atas",
+    "ja": "右上",
+    "it": "In alto a destra"
   },
   "game1.preset.high": {
     "en": "High",
@@ -1290,10 +1290,10 @@
     "tr": "Yüksek",
     "pl": "Wysoka",
     "nl": "Hoog",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Alto",
+    "id": "Tinggi",
+    "ja": "高",
+    "it": "Alta"
   },
   "game1.preset.medium": {
     "en": "Medium",
@@ -1308,10 +1308,10 @@
     "tr": "Orta",
     "pl": "Średnia",
     "nl": "Gemiddeld",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Médio",
+    "id": "Sedang",
+    "ja": "中",
+    "it": "Media"
   },
   "game1.preset.low": {
     "en": "Low",
@@ -1326,10 +1326,10 @@
     "tr": "Düşük",
     "pl": "Niska",
     "nl": "Laag",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Baixo",
+    "id": "Rendah",
+    "ja": "低",
+    "it": "Bassa"
   },
   "game1.preset.veryLow": {
     "en": "Very Low",
@@ -1344,10 +1344,10 @@
     "tr": "Çok düşük",
     "pl": "Bardzo niska",
     "nl": "Zeer laag",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Muito baixo",
+    "id": "Sangat Rendah",
+    "ja": "最低",
+    "it": "Molto bassa"
   },
   "game1.preset.normal": {
     "en": "Normal",
@@ -1362,10 +1362,10 @@
     "tr": "Normal",
     "pl": "Normalny",
     "nl": "Normaal",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Normal",
+    "id": "Normal",
+    "ja": "標準",
+    "it": "Normale"
   },
   "game1.preset.heart": {
     "en": "Heart",
@@ -1380,10 +1380,10 @@
     "tr": "Kalp",
     "pl": "Serce",
     "nl": "Hart",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Coração",
+    "id": "Hati",
+    "ja": "ハート",
+    "it": "Cuore"
   },
   "game1.preset.smile": {
     "en": "Smile",
@@ -1398,10 +1398,10 @@
     "tr": "Gülümseme",
     "pl": "Uśmiech",
     "nl": "Glimlach",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sorriso",
+    "id": "Senyum",
+    "ja": "スマイル",
+    "it": "Sorriso"
   },
   "game1.preset.agarLight": {
     "en": "Agar.io Light",
@@ -1416,10 +1416,10 @@
     "tr": "Agar.io Açık",
     "pl": "Agar.io jasny",
     "nl": "Agar.io licht",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Agar.io claro",
+    "id": "Agar.io Terang",
+    "ja": "Agar.io ライト",
+    "it": "Agar.io chiaro"
   },
   "game1.preset.agarDark": {
     "en": "Agar.io Dark",
@@ -1434,10 +1434,10 @@
     "tr": "Agar.io Koyu",
     "pl": "Agar.io ciemny",
     "nl": "Agar.io donker",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Agar.io escuro",
+    "id": "Agar.io Gelap",
+    "ja": "Agar.io ダーク",
+    "it": "Agar.io scuro"
   },
   "game1.preset.colourBlind": {
     "en": "Colour-blind safe (high contrast)",
@@ -1452,10 +1452,10 @@
     "tr": "Renk körlüğüne uygun (yüksek kontrast)",
     "pl": "Dla daltonistów (wysoki kontrast)",
     "nl": "Kleurenblindvriendelijk (hoog contrast)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Seguro para daltônicos (alto contraste)",
+    "id": "Ramah buta warna (kontras tinggi)",
+    "ja": "色覚サポート (高コントラスト)",
+    "it": "Adatto ai daltonici (alto contrasto)"
   },
   "game1.scan.dirs": {
     "en": "{0} directions — {1}°",
@@ -1470,16 +1470,16 @@
     "tr": "{0} yön — {1}°",
     "pl": "{0} kierunków — {1}°",
     "nl": "{0} richtingen — {1}°",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} direções — {1}°",
+    "id": "{0} arah — {1}°",
+    "ja": "{0} 方向 — {1}°",
+    "it": "{0} direzioni — {1}°"
   },
   "game1.scan.help": {
     "en": "<strong>Usage:</strong> Scan Trick works only while a key is held. Open the Hotkeys menu, find “Hold Scan Trick” (it has no key by default) and press a key for it. In game, hold that key: the cursor is sent far in the mouse direction. Hold left mouse too to snap to the chosen directions.",
-    "el": "<strong>Χρήση:</strong> Το Scan Trick λειτουργεί μόνο όσο κρατάτε πατημένο ένα πλήκτρο. Ανοίξτε το μενού Πλήκτρα, βρείτε το «Hold Scan Trick» (δεν έχει πλήκτρο από προεπιλογή) και πατήστε ένα πλήκτρο για αυτό. Στο παιχνίδι κρατήστε το πατημένο: ο κέρσορας στέλνεται μακριά προς την κατεύθυνση του ποντικιού. Κρατήστε και το αριστερό κουμπί για να κλειδώνει στις επιλεγμένες κατευθύνσεις.",
-    "es": "<strong>Uso:</strong> Scan Trick solo funciona mientras mantienes pulsada una tecla. Abre el menú Teclas, busca «Hold Scan Trick» (no tiene tecla por defecto) y pulsa una tecla para él. En el juego, mantén esa tecla: el cursor se envía lejos en la dirección del ratón. Mantén también el botón izquierdo para ajustarlo a las direcciones elegidas.",
-    "bg": "<strong>Употреба:</strong> Scan Trick работи само докато държите клавиш. Отворете менюто Клавиши, намерете „Hold Scan Trick“ (по подразбиране няма клавиш) и натиснете клавиш за него. В играта задръжте този клавиш: курсорът се изпраща далеч по посоката на мишката. Задръжте и левия бутон, за да се подравнява към избраните посоки.",
+    "el": "<strong>Χρήση:</strong> Το Scan Trick λειτουργεί μόνο όσο κρατάτε πατημένο ένα πλήκτρο. Ανοίξτε το μενού Πλήκτρα συντόμευσης, βρείτε το «Hold Scan Trick» (δεν έχει πλήκτρο από προεπιλογή) και πατήστε ένα πλήκτρο για αυτό. Στο παιχνίδι κρατήστε το πατημένο: ο κέρσορας στέλνεται μακριά προς την κατεύθυνση του ποντικιού. Κρατήστε και το αριστερό κουμπί για να κλειδώνει στις επιλεγμένες κατευθύνσεις.",
+    "es": "<strong>Uso:</strong> Scan Trick solo funciona mientras mantienes pulsada una tecla. Abre el menú Teclas rápidas, busca «Hold Scan Trick» (no tiene tecla por defecto) y pulsa una tecla para él. En el juego, mantén esa tecla: el cursor se envía lejos en la dirección del ratón. Mantén también el botón izquierdo para ajustarlo a las direcciones elegidas.",
+    "bg": "<strong>Употреба:</strong> Scan Trick работи само докато държите клавиш. Отворете менюто Бързи клавиши, намерете „Hold Scan Trick“ (по подразбиране няма клавиш) и натиснете клавиш за него. В играта задръжте този клавиш: курсорът се изпраща далеч по посоката на мишката. Задръжте и левия бутон, за да се подравнява към избраните посоки.",
     "fr": "<strong>Utilisation :</strong> Scan Trick ne fonctionne que tant qu'une touche est maintenue. Ouvrez le menu Raccourcis, trouvez « Hold Scan Trick » (sans touche par défaut) et attribuez-lui une touche. En jeu, maintenez cette touche : le curseur est envoyé loin dans la direction de la souris. Maintenez aussi le clic gauche pour l'aligner sur les directions choisies.",
     "ar": "<strong>الاستخدام:</strong> يعمل Scan Trick فقط أثناء الضغط المستمر على مفتاح. افتح قائمة المفاتيح، وابحث عن «Hold Scan Trick» (بلا مفتاح افتراضيًا) واضغط مفتاحًا له. في اللعبة اضغط هذا المفتاح باستمرار: يُرسل المؤشر بعيدًا في اتجاه الفأرة. اضغط زر الفأرة الأيسر أيضًا للالتزام بالاتجاهات المختارة.",
     "zh": "<strong>用法：</strong>Scan Trick 只在按住按鍵時運作。打開快捷鍵選單，找到「Hold Scan Trick」（預設沒有按鍵）並為它設定一個按鍵。遊戲中按住該鍵：游標會被送往滑鼠方向的遠處。同時按住滑鼠左鍵可對齊到所選方向。",
@@ -1487,11 +1487,11 @@
     "de": "<strong>Verwendung:</strong> Scan Trick funktioniert nur, solange eine Taste gehalten wird. Öffne das Tastenmenü, suche „Hold Scan Trick“ (standardmäßig ohne Taste) und lege eine Taste fest. Halte sie im Spiel: Der Cursor wird weit in Mausrichtung geschickt. Halte zusätzlich die linke Maustaste, um auf die gewählten Richtungen einzurasten.",
     "tr": "<strong>Kullanım:</strong> Scan Trick yalnızca bir tuş basılı tutulurken çalışır. Kısayollar menüsünü açın, “Hold Scan Trick” öğesini bulun (varsayılan tuşu yoktur) ve bir tuş atayın. Oyunda bu tuşu basılı tutun: imleç fare yönünde uzağa gönderilir. Seçilen yönlere oturması için sol fare tuşunu da basılı tutun.",
     "pl": "<strong>Użycie:</strong> Scan Trick działa tylko, gdy przytrzymujesz klawisz. Otwórz menu Skróty, znajdź „Hold Scan Trick” (domyślnie bez klawisza) i przypisz mu klawisz. W grze przytrzymaj go: kursor zostaje wysłany daleko w kierunku myszy. Przytrzymaj też lewy przycisk, by przyciągać do wybranych kierunków.",
-    "nl": "<strong>Gebruik:</strong> Scan Trick werkt alleen zolang je een toets ingedrukt houdt. Open het menu Sneltoetsen, zoek “Hold Scan Trick” (standaard zonder toets) en kies er een toets voor. Houd die toets in het spel ingedrukt: de cursor wordt ver in de muisrichting gestuurd. Houd ook de linkermuisknop ingedrukt om op de gekozen richtingen te klikken.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "<strong>Gebruik:</strong> Scan Trick werkt alleen zolang je een toets ingedrukt houdt. Open het menu Sneltoetsen, zoek “Hold Scan Trick” (standaard zonder toets) en kies er een toets voor. Houd die toets in het spel ingedrukt: de cursor wordt ver in de muisrichting gestuurd. Houd ook de linkermuisknop ingedrukt om de cursor op de gekozen richtingen vast te zetten.",
+    "pt": "<strong>Como usar:</strong> o Scan Trick só funciona enquanto uma tecla estiver pressionada. Abra o menu Teclas de atalho, encontre “Segurar Scan Trick” (não tem tecla por padrão) e pressione uma tecla para ele. No jogo, segure essa tecla: o cursor é enviado para longe na direção do mouse. Segure também o botão esquerdo do mouse para travar nas direções escolhidas.",
+    "id": "<strong>Cara pakai:</strong> Scan Trick hanya bekerja selama tombol ditahan. Buka menu Hotkey, cari “Hold Scan Trick” (secara default belum punya tombol) lalu tekan tombol untuknya. Di dalam game, tahan tombol itu: kursor dikirim jauh ke arah mouse. Tahan juga klik kiri agar arah terkunci ke arah yang dipilih.",
+    "ja": "<strong>使い方：</strong>スキャントリックはキーを押している間だけ動作します。「ショートカット」メニューを開き、「スキャントリック (長押し)」(初期状態ではキーなし) にキーを割り当ててください。ゲーム中にそのキーを押し続けると、カーソルがマウスの方向の遠くへ送られます。左クリックも押し続けると、選んだ方向にスナップします。",
+    "it": "<strong>Come si usa:</strong> lo Scan Trick funziona solo finché tieni premuto un tasto. Apri il menu Tasti rapidi, cerca “Hold Scan Trick” (di base non ha nessun tasto) e premi il tasto che vuoi usare. In partita tieni premuto quel tasto: il cursore viene spinto lontano nella direzione del mouse. Tieni premuto anche il tasto sinistro del mouse per agganciarti alle direzioni scelte."
   },
   "game1.ph.egStar": {
     "en": "e.g. ☆",
@@ -1506,10 +1506,10 @@
     "tr": "örn. ☆",
     "pl": "np. ☆",
     "nl": "bijv. ☆",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "ex.: ☆",
+    "id": "mis. ☆",
+    "ja": "例：☆",
+    "it": "es. ☆"
   },
   "game1.ph.imageUrl": {
     "en": "Image URL",
@@ -1524,10 +1524,10 @@
     "tr": "Resim URL'si",
     "pl": "URL obrazu",
     "nl": "Afbeeldings-URL",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "URL da imagem",
+    "id": "URL gambar",
+    "ja": "画像の URL",
+    "it": "URL dell'immagine"
   },
   "game1.ph.cursorUrl": {
     "en": "Cursor image URL",
@@ -1542,10 +1542,10 @@
     "tr": "İmleç resmi URL'si",
     "pl": "URL obrazu kursora",
     "nl": "URL van cursorafbeelding",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "URL da imagem do cursor",
+    "id": "URL gambar kursor",
+    "ja": "カーソル画像の URL",
+    "it": "URL dell'immagine del cursore"
   },
   "game1.ph.chatWords": {
     "en": "e.g. spam, discord.gg",
@@ -1560,10 +1560,10 @@
     "tr": "örn. spam, discord.gg",
     "pl": "np. spam, discord.gg",
     "nl": "bijv. spam, discord.gg",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "ex.: spam, discord.gg",
+    "id": "mis. spam, discord.gg",
+    "ja": "例：spam, discord.gg",
+    "it": "es. spam, discord.gg"
   },
   "game1.ph.soundUrl": {
     "en": "Sound URL",
@@ -1578,10 +1578,10 @@
     "tr": "Ses URL'si",
     "pl": "URL dźwięku",
     "nl": "Geluids-URL",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "URL do som",
+    "id": "URL suara",
+    "ja": "サウンドの URL",
+    "it": "URL del suono"
   },
   "game1.theme.resetAsk": {
     "en": "Reset the theme to the default? This cannot be undone.",
@@ -1592,14 +1592,14 @@
     "ar": "إعادة السمة إلى الافتراضي؟ لا يمكن التراجع عن ذلك.",
     "zh": "要將主題重設為預設嗎？此動作無法復原。",
     "ru": "Сбросить тему на стандартную? Это нельзя отменить.",
-    "de": "Design auf Standard zurücksetzen? Das kann nicht rückgängig gemacht werden.",
+    "de": "Theme auf Standard zurücksetzen? Das kann nicht rückgängig gemacht werden.",
     "tr": "Tema varsayılana sıfırlansın mı? Bu geri alınamaz.",
     "pl": "Przywrócić domyślny motyw? Tego nie można cofnąć.",
     "nl": "Thema terugzetten naar standaard? Dit kan niet ongedaan worden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Redefinir o tema para o padrão? Isso não pode ser desfeito.",
+    "id": "Kembalikan tema ke default? Ini tidak bisa dibatalkan.",
+    "ja": "テーマを初期設定に戻しますか？元に戻すことはできません。",
+    "it": "Ripristinare il tema predefinito? Non si può annullare."
   },
   "game1.hud.tier": {
     "en": "Tier {0}",
@@ -1614,10 +1614,10 @@
     "tr": "Seviye {0}",
     "pl": "Poziom {0}",
     "nl": "Niveau {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nível {0}",
+    "id": "Tier {0}",
+    "ja": "ティア {0}",
+    "it": "Livello {0}"
   },
   "game1.hud.anti": {
     "en": "Anti",
@@ -1632,10 +1632,10 @@
     "tr": "Anti",
     "pl": "Anti",
     "nl": "Anti",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Anti",
+    "id": "Anti",
+    "ja": "アンチ",
+    "it": "Anti"
   },
   "game1.hud.zone": {
     "en": "Zone",
@@ -1650,10 +1650,10 @@
     "tr": "Bölge",
     "pl": "Strefa",
     "nl": "Zone",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Zona",
+    "id": "Zona",
+    "ja": "ゾーン",
+    "it": "Zona"
   },
   "game1.chat.slowDown2s": {
     "en": "Slow down: one message every 2 seconds.",
@@ -1668,10 +1668,10 @@
     "tr": "Yavaşla: 2 saniyede bir mesaj.",
     "pl": "Wolniej: jedna wiadomość co 2 sekundy.",
     "nl": "Rustig aan: één bericht per 2 seconden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Calma: uma mensagem a cada 2 segundos.",
+    "id": "Pelan-pelan: satu pesan setiap 2 detik.",
+    "ja": "送信が速すぎます：メッセージは2秒に1回までです。",
+    "it": "Rallenta: un messaggio ogni 2 secondi."
   },
   "game1.chat.slowDown": {
     "en": "Slow down.",
@@ -1686,10 +1686,10 @@
     "tr": "Yavaşla.",
     "pl": "Wolniej.",
     "nl": "Rustig aan.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Calma aí.",
+    "id": "Pelan-pelan.",
+    "ja": "送信が速すぎます。",
+    "it": "Rallenta."
   },
   "game1.chat.notConnected": {
     "en": "Chat is not connected, message not sent.",
@@ -1704,10 +1704,10 @@
     "tr": "Sohbet bağlı değil, mesaj gönderilmedi.",
     "pl": "Czat nie jest połączony, wiadomość nie została wysłana.",
     "nl": "Chat niet verbonden, bericht niet verzonden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O chat não está conectado, mensagem não enviada.",
+    "id": "Chat tidak terhubung, pesan tidak terkirim.",
+    "ja": "チャットに接続されていないため、メッセージは送信されませんでした。",
+    "it": "La chat non è connessa, messaggio non inviato."
   },
   "game1.import.badJson": {
     "en": "Import failed: the text is not valid JSON.",
@@ -1722,10 +1722,10 @@
     "tr": "İçe aktarma başarısız: metin geçerli bir JSON değil.",
     "pl": "Import nieudany: tekst nie jest poprawnym JSON.",
     "nl": "Importeren mislukt: de tekst is geen geldige JSON.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao importar: o texto não é um JSON válido.",
+    "id": "Impor gagal: teks bukan JSON yang valid.",
+    "ja": "インポートに失敗しました：テキストが有効な JSON ではありません。",
+    "it": "Importazione non riuscita: il testo non è un JSON valido."
   },
   "game1.import.badFormat": {
     "en": "Import failed: unexpected settings format.",
@@ -1740,10 +1740,10 @@
     "tr": "İçe aktarma başarısız: beklenmeyen ayar biçimi.",
     "pl": "Import nieudany: nieoczekiwany format ustawień.",
     "nl": "Importeren mislukt: onverwacht instellingenformaat.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao importar: formato de configurações inesperado.",
+    "id": "Impor gagal: format pengaturan tidak dikenali.",
+    "ja": "インポートに失敗しました：設定の形式が正しくありません。",
+    "it": "Importazione non riuscita: formato delle impostazioni non riconosciuto."
   },
   "game1.import.fullNoRestore": {
     "en": "Import failed and the browser storage is full: {0} could not be restored.",
@@ -1758,10 +1758,10 @@
     "tr": "İçe aktarma başarısız ve tarayıcı depolaması dolu: {0} geri yüklenemedi.",
     "pl": "Import nieudany, a pamięć przeglądarki jest pełna: nie udało się przywrócić {0}.",
     "nl": "Importeren mislukt en de browseropslag is vol: {0} kon niet worden hersteld.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao importar e o armazenamento do navegador está cheio: não foi possível restaurar {0}.",
+    "id": "Impor gagal dan penyimpanan browser penuh: {0} tidak bisa dipulihkan.",
+    "ja": "インポートに失敗し、ブラウザーのストレージもいっぱいです：{0} を復元できませんでした。",
+    "it": "Importazione non riuscita e la memoria del browser è piena: impossibile ripristinare {0}."
   },
   "game1.import.fullRolledBack": {
     "en": "Import failed: the browser storage is full ({0} not saved). All changes rolled back.",
@@ -1776,16 +1776,16 @@
     "tr": "İçe aktarma başarısız: tarayıcı depolaması dolu ({0} kaydedilmedi). Tüm değişiklikler geri alındı.",
     "pl": "Import nieudany: pamięć przeglądarki jest pełna ({0} nie zapisano). Wszystkie zmiany cofnięto.",
     "nl": "Importeren mislukt: de browseropslag is vol ({0} niet opgeslagen). Alle wijzigingen zijn teruggedraaid.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao importar: o armazenamento do navegador está cheio ({0} não foi salvo). Todas as alterações foram desfeitas.",
+    "id": "Impor gagal: penyimpanan browser penuh ({0} tidak tersimpan). Semua perubahan dibatalkan.",
+    "ja": "インポートに失敗しました：ブラウザーのストレージがいっぱいです ({0} は保存されていません)。変更はすべて元に戻しました。",
+    "it": "Importazione non riuscita: la memoria del browser è piena ({0} non salvato). Tutte le modifiche sono state annullate."
   },
   "game1.scan.setKey": {
     "en": "Set a key for “Hold Scan Trick” in the Hotkeys menu, then hold it in game.",
-    "el": "Ορίστε πλήκτρο για το «Hold Scan Trick» στο μενού Πλήκτρα και κρατήστε το πατημένο στο παιχνίδι.",
-    "es": "Asigna una tecla a «Hold Scan Trick» en el menú Teclas y mantenla pulsada en el juego.",
-    "bg": "Задайте клавиш за „Hold Scan Trick“ в менюто Клавиши и го задръжте в играта.",
+    "el": "Ορίστε πλήκτρο για το «Hold Scan Trick» στο μενού Πλήκτρα συντόμευσης και κρατήστε το πατημένο στο παιχνίδι.",
+    "es": "Asigna una tecla a «Hold Scan Trick» en el menú Teclas rápidas y mantenla pulsada en el juego.",
+    "bg": "Задайте клавиш за „Hold Scan Trick“ в менюто Бързи клавиши и го задръжте в играта.",
     "fr": "Attribuez une touche à « Hold Scan Trick » dans le menu Raccourcis, puis maintenez-la en jeu.",
     "ar": "عيّن مفتاحًا لـ «Hold Scan Trick» في قائمة المفاتيح، ثم اضغطه باستمرار في اللعبة.",
     "zh": "在快捷鍵選單為「Hold Scan Trick」設定按鍵，然後在遊戲中按住它。",
@@ -1794,10 +1794,10 @@
     "tr": "Kısayollar menüsünde “Hold Scan Trick” için bir tuş atayın, sonra oyunda basılı tutun.",
     "pl": "Przypisz klawisz do „Hold Scan Trick” w menu Skróty, a potem przytrzymaj go w grze.",
     "nl": "Kies in het menu Sneltoetsen een toets voor “Hold Scan Trick” en houd die in het spel ingedrukt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Defina uma tecla para “Segurar Scan Trick” no menu Teclas de atalho e segure-a no jogo.",
+    "id": "Atur tombol untuk “Hold Scan Trick” di menu Hotkey, lalu tahan tombol itu di dalam game.",
+    "ja": "「ショートカット」メニューで「スキャントリック (長押し)」にキーを割り当て、ゲーム中に押し続けてください。",
+    "it": "Imposta un tasto per “Hold Scan Trick” nel menu Tasti rapidi, poi tienilo premuto in partita."
   },
   "game1.scan.hold": {
     "en": "Hold <b>{0}</b> in game to use it.",
@@ -1812,14 +1812,14 @@
     "tr": "Kullanmak için oyunda <b>{0}</b> tuşunu basılı tutun.",
     "pl": "Przytrzymaj <b>{0}</b> w grze, aby tego użyć.",
     "nl": "Houd <b>{0}</b> in het spel ingedrukt om het te gebruiken.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Segure <b>{0}</b> no jogo para usar.",
+    "id": "Tahan <b>{0}</b> di dalam game untuk memakainya.",
+    "ja": "ゲーム中に <b>{0}</b> を押し続けると使えます。",
+    "it": "Tieni premuto <b>{0}</b> in partita per usarlo."
   },
   "game1.rec.off": {
     "en": "Replay recording is off: this connection is not recorded any more. Recordings already in memory are kept (Clear recordings in memory frees them).",
-    "el": "Η εγγραφή επαναλήψεων είναι ανενεργή: αυτή η σύνδεση δεν καταγράφεται πια. Οι εγγραφές που υπάρχουν ήδη στη μνήμη κρατιούνται (το «Εκκαθάριση εγγραφών από τη μνήμη» τις ελευθερώνει).",
+    "el": "Η εγγραφή replay είναι ανενεργή: αυτή η σύνδεση δεν καταγράφεται πια. Οι εγγραφές που υπάρχουν ήδη στη μνήμη κρατιούνται (το «Εκκαθάριση εγγραφών από τη μνήμη» τις ελευθερώνει).",
     "es": "La grabación de repeticiones está desactivada: esta conexión ya no se graba. Las grabaciones en memoria se conservan («Borrar grabaciones de la memoria» las libera).",
     "bg": "Записът на повторения е изключен: тази връзка вече не се записва. Записите в паметта се пазят („Изчисти записите от паметта“ ги освобождава).",
     "fr": "L'enregistrement des replays est désactivé : cette connexion n'est plus enregistrée. Les enregistrements en mémoire sont conservés (« Vider les enregistrements en mémoire » les libère).",
@@ -1830,14 +1830,14 @@
     "tr": "Tekrar kaydı kapalı: bu bağlantı artık kaydedilmiyor. Bellekteki kayıtlar tutulur (“Bellekteki kayıtları temizle” onları boşaltır).",
     "pl": "Nagrywanie powtórek jest wyłączone: to połączenie nie jest już nagrywane. Nagrania w pamięci zostają («Wyczyść nagrania z pamięci» je zwalnia).",
     "nl": "Replay-opname staat uit: deze verbinding wordt niet meer opgenomen. Opnames in het geheugen blijven bewaard („Opnames in geheugen wissen” maakt ze vrij).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A gravação de replays está desligada: esta conexão não é mais gravada. As gravações que já estão na memória são mantidas (Limpar gravações da memória as libera).",
+    "id": "Perekaman replay nonaktif: koneksi ini tidak direkam lagi. Rekaman yang sudah ada di memori tetap disimpan (Hapus rekaman di memori untuk mengosongkannya).",
+    "ja": "リプレイの録画はオフです：この接続はこれ以上録画されません。メモリー内の録画は残ります (「メモリー内の録画を消去」で解放できます)。",
+    "it": "Registrazione dei replay disattivata: questa connessione non viene più registrata. Le registrazioni già in memoria restano (Cancella registrazioni in memoria le libera)."
   },
   "game1.rec.again": {
     "en": "Replays are recorded again from the next server you join.",
-    "el": "Οι επαναλήψεις καταγράφονται ξανά από τον επόμενο διακομιστή που θα μπείτε.",
+    "el": "Τα replay καταγράφονται ξανά από τον επόμενο server που θα μπείτε.",
     "es": "Las repeticiones se graban de nuevo desde el próximo servidor al que entres.",
     "bg": "Повторенията се записват отново от следващия сървър, в който влезете.",
     "fr": "Les replays sont de nouveau enregistrés à partir du prochain serveur rejoint.",
@@ -1848,10 +1848,10 @@
     "tr": "Tekrarlar katıldığınız bir sonraki sunucudan itibaren yeniden kaydedilir.",
     "pl": "Powtórki będą znów nagrywane od następnego serwera, na który wejdziesz.",
     "nl": "Replays worden weer opgenomen vanaf de volgende server waar je naartoe gaat.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os replays voltam a ser gravados a partir do próximo servidor em que você entrar.",
+    "id": "Replay akan direkam lagi mulai dari server berikutnya yang kamu masuki.",
+    "ja": "次に入るサーバーから、リプレイの録画を再開します。",
+    "it": "I replay verranno registrati di nuovo dal prossimo server in cui entri."
   },
   "game1.notif.blocked": {
     "en": "Notifications are blocked in this browser for this site.",
@@ -1866,10 +1866,10 @@
     "tr": "Bu tarayıcıda bu site için bildirimler engelli.",
     "pl": "Powiadomienia dla tej strony są zablokowane w tej przeglądarce.",
     "nl": "Meldingen zijn in deze browser geblokkeerd voor deze site.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "As notificações estão bloqueadas neste navegador para este site.",
+    "id": "Notifikasi untuk situs ini diblokir di browser ini.",
+    "ja": "このブラウザーでは、このサイトの通知がブロックされています。",
+    "it": "Le notifiche per questo sito sono bloccate in questo browser."
   },
   "game1.perf.aaReload": {
     "en": "Reload the page to apply anti-aliasing.",
@@ -1884,10 +1884,10 @@
     "tr": "Kenar yumuşatmayı uygulamak için sayfayı yenileyin.",
     "pl": "Odśwież stronę, aby zastosować wygładzanie.",
     "nl": "Herlaad de pagina om anti-aliasing toe te passen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recarregue a página para aplicar o anti-aliasing.",
+    "id": "Muat ulang halaman untuk menerapkan anti-aliasing.",
+    "ja": "アンチエイリアスを適用するには、ページを再読み込みしてください。",
+    "it": "Ricarica la pagina per applicare l'anti-aliasing."
   },
   "game1.perf.storageFull": {
     "en": "The browser storage is full: turning Performance mode off puts your effect settings back only until the page is reloaded.",
@@ -1902,10 +1902,10 @@
     "tr": "Tarayıcı depolaması dolu: Performans modunu kapatmak efekt ayarlarınızı yalnızca sayfa yenilenene kadar geri getirir.",
     "pl": "Pamięć przeglądarki jest pełna: wyłączenie trybu wydajności przywróci ustawienia efektów tylko do odświeżenia strony.",
     "nl": "De browseropslag is vol: Prestatiemodus uitzetten zet je effectinstellingen alleen terug tot de pagina opnieuw geladen wordt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O armazenamento do navegador está cheio: ao desligar o Modo desempenho, suas configurações de efeitos só voltam até a página ser recarregada.",
+    "id": "Penyimpanan browser penuh: mematikan Mode performa hanya mengembalikan pengaturan efekmu sampai halaman dimuat ulang.",
+    "ja": "ブラウザーのストレージがいっぱいです：パフォーマンスモードをオフにしても、エフェクトの設定が戻るのはページを再読み込みするまでです。",
+    "it": "La memoria del browser è piena: disattivando la modalità prestazioni, le impostazioni degli effetti tornano come prima solo fino al prossimo ricaricamento della pagina."
   },
   "game1.perf.modeOn": {
     "en": "Performance mode on. Reload the page to apply it everywhere.",
@@ -1920,10 +1920,10 @@
     "tr": "Performans modu açık. Her yerde uygulamak için sayfayı yenileyin.",
     "pl": "Tryb wydajności włączony. Odśwież stronę, aby zastosować go wszędzie.",
     "nl": "Prestatiemodus aan. Herlaad de pagina om hem overal toe te passen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Modo desempenho ligado. Recarregue a página para aplicar em tudo.",
+    "id": "Mode performa aktif. Muat ulang halaman agar berlaku di semua tempat.",
+    "ja": "パフォーマンスモードをオンにしました。すべてに適用するには、ページを再読み込みしてください。",
+    "it": "Modalità prestazioni attiva. Ricarica la pagina per applicarla ovunque."
   },
   "game1.perf.modeOff": {
     "en": "Performance mode off. Reload the page to apply it everywhere.",
@@ -1938,14 +1938,14 @@
     "tr": "Performans modu kapalı. Her yerde uygulamak için sayfayı yenileyin.",
     "pl": "Tryb wydajności wyłączony. Odśwież stronę, aby zastosować go wszędzie.",
     "nl": "Prestatiemodus uit. Herlaad de pagina om hem overal toe te passen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Modo desempenho desligado. Recarregue a página para aplicar em tudo.",
+    "id": "Mode performa nonaktif. Muat ulang halaman agar berlaku di semua tempat.",
+    "ja": "パフォーマンスモードをオフにしました。すべてに適用するには、ページを再読み込みしてください。",
+    "it": "Modalità prestazioni disattivata. Ricarica la pagina per applicarla ovunque."
   },
   "game1.tag.server": {
     "en": "SERVER",
-    "el": "ΔΙΑΚΟΜΙΣΤΗΣ",
+    "el": "SERVER",
     "es": "SERVIDOR",
     "bg": "СЪРВЪР",
     "fr": "SERVEUR",
@@ -1989,7 +1989,7 @@
     "zh": "造型",
     "ru": "СКИН",
     "de": "SKIN",
-    "tr": "KOSTÜM",
+    "tr": "SKIN",
     "pl": "SKIN",
     "nl": "SKIN",
     "pt": "Skin",
@@ -2028,10 +2028,10 @@
     "tr": "Yükle ve satın al",
     "pl": "Wyślij i kup",
     "nl": "Uploaden & kopen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Enviar e comprar",
+    "id": "Unggah & Beli",
+    "ja": "アップロードして購入",
+    "it": "Carica e acquista"
   },
   "game1.skinUp.buttonFree": {
     "en": "Upload & Buy (free)",
@@ -2046,10 +2046,10 @@
     "tr": "Yükle ve satın al (ücretsiz)",
     "pl": "Wyślij i kup (za darmo)",
     "nl": "Uploaden & kopen (gratis)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Enviar e comprar (grátis)",
+    "id": "Unggah & Beli (gratis)",
+    "ja": "アップロードして購入 (無料)",
+    "it": "Carica e acquista (gratis)"
   },
   "game1.skinUp.buttonCost": {
     "en": "Upload & Buy ({0} {1})",
@@ -2064,14 +2064,14 @@
     "tr": "Yükle ve satın al ({0} {1})",
     "pl": "Wyślij i kup ({0} {1})",
     "nl": "Uploaden & kopen ({0} {1})",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Enviar e comprar ({0} {1})",
+    "id": "Unggah & Beli ({0} {1})",
+    "ja": "アップロードして購入 ({0} {1})",
+    "it": "Carica e acquista ({0} {1})"
   },
   "game1.skinUp.working": {
     "en": "Working...",
-    "el": "Εργασία...",
+    "el": "Επεξεργασία...",
     "es": "Procesando...",
     "bg": "Обработка...",
     "fr": "En cours...",
@@ -2082,10 +2082,10 @@
     "tr": "İşleniyor...",
     "pl": "Przetwarzanie...",
     "nl": "Bezig...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Processando...",
+    "id": "Memproses...",
+    "ja": "処理中...",
+    "it": "In corso..."
   },
   "game1.skinUp.uploading": {
     "en": "Uploading skin...",
@@ -2097,13 +2097,13 @@
     "zh": "正在上傳造型...",
     "ru": "Загрузка скина...",
     "de": "Skin wird hochgeladen...",
-    "tr": "Kostüm yükleniyor...",
+    "tr": "Skin yükleniyor...",
     "pl": "Wysyłanie skina...",
     "nl": "Skin uploaden...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Enviando skin...",
+    "id": "Mengunggah skin...",
+    "ja": "スキンをアップロード中...",
+    "it": "Caricamento della skin..."
   },
   "game1.skinUp.timedOut": {
     "en": "Upload timed out. Try again.",
@@ -2118,10 +2118,10 @@
     "tr": "Yükleme zaman aşımına uğradı. Tekrar deneyin.",
     "pl": "Przekroczono czas wysyłania. Spróbuj ponownie.",
     "nl": "Uploaden duurde te lang. Probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O envio demorou demais. Tente de novo.",
+    "id": "Waktu unggah habis. Coba lagi.",
+    "ja": "アップロードがタイムアウトしました。もう一度お試しください。",
+    "it": "Caricamento scaduto. Riprova."
   },
   "game1.skinUp.notSent": {
     "en": "Upload could not be sent.",
@@ -2136,10 +2136,10 @@
     "tr": "Yükleme gönderilemedi.",
     "pl": "Nie udało się wysłać.",
     "nl": "Upload kon niet worden verzonden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível enviar.",
+    "id": "Unggahan tidak bisa dikirim.",
+    "ja": "アップロードを送信できませんでした。",
+    "it": "Impossibile inviare il caricamento."
   },
   "game1.skinUp.buyingToken": {
     "en": "Buying skin token...",
@@ -2151,13 +2151,13 @@
     "zh": "正在購買造型代幣...",
     "ru": "Покупка токена скина...",
     "de": "Skin-Token wird gekauft...",
-    "tr": "Kostüm jetonu satın alınıyor...",
+    "tr": "Skin jetonu satın alınıyor...",
     "pl": "Kupowanie tokenu skina...",
     "nl": "Skintoken kopen...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Comprando token de skin...",
+    "id": "Membeli token skin...",
+    "ja": "スキントークンを購入中...",
+    "it": "Acquisto del token skin..."
   },
   "game1.skinUp.tokenNoUpload": {
     "en": "Token purchased, but the upload could not start.",
@@ -2172,10 +2172,10 @@
     "tr": "Jeton satın alındı, ancak yükleme başlatılamadı.",
     "pl": "Token kupiony, ale wysyłanie nie mogło się rozpocząć.",
     "nl": "Token gekocht, maar het uploaden kon niet starten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Token comprado, mas não foi possível iniciar o envio.",
+    "id": "Token sudah dibeli, tapi unggahan tidak bisa dimulai.",
+    "ja": "トークンは購入しましたが、アップロードを開始できませんでした。",
+    "it": "Token acquistato, ma il caricamento non è partito."
   },
   "game1.skinUp.tokenFailed": {
     "en": "Skin-token purchase failed.",
@@ -2187,13 +2187,13 @@
     "zh": "造型代幣購買失敗。",
     "ru": "Покупка токена скина не удалась.",
     "de": "Kauf des Skin-Tokens fehlgeschlagen.",
-    "tr": "Kostüm jetonu satın alınamadı.",
+    "tr": "Skin jetonu satın alınamadı.",
     "pl": "Zakup tokenu skina nie powiódł się.",
     "nl": "Aankoop van skintoken mislukt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A compra do token de skin falhou.",
+    "id": "Pembelian token skin gagal.",
+    "ja": "スキントークンの購入に失敗しました。",
+    "it": "Acquisto del token skin non riuscito."
   },
   "game1.skinUp.tokenTimedOut": {
     "en": "Skin-token purchase timed out.",
@@ -2205,13 +2205,13 @@
     "zh": "造型代幣購買逾時。",
     "ru": "Время покупки токена скина истекло.",
     "de": "Zeitüberschreitung beim Kauf des Skin-Tokens.",
-    "tr": "Kostüm jetonu satın alma zaman aşımına uğradı.",
+    "tr": "Skin jetonu satın alma zaman aşımına uğradı.",
     "pl": "Przekroczono czas zakupu tokenu skina.",
     "nl": "Aankoop van skintoken duurde te lang.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A compra do token de skin demorou demais.",
+    "id": "Waktu pembelian token skin habis.",
+    "ja": "スキントークンの購入がタイムアウトしました。",
+    "it": "Acquisto del token skin scaduto."
   },
   "game1.skinUp.tokenNoStart": {
     "en": "Could not start the skin-token purchase.",
@@ -2223,13 +2223,13 @@
     "zh": "無法開始購買造型代幣。",
     "ru": "Не удалось начать покупку токена скина.",
     "de": "Kauf des Skin-Tokens konnte nicht starten.",
-    "tr": "Kostüm jetonu satın alma başlatılamadı.",
+    "tr": "Skin jetonu satın alma başlatılamadı.",
     "pl": "Nie udało się rozpocząć zakupu tokenu skina.",
     "nl": "Kon de aankoop van de skintoken niet starten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível iniciar a compra do token de skin.",
+    "id": "Tidak bisa memulai pembelian token skin.",
+    "ja": "スキントークンの購入を開始できませんでした。",
+    "it": "Impossibile avviare l'acquisto del token skin."
   },
   "game1.discord.signIn": {
     "en": "Sign in with Discord",
@@ -2244,10 +2244,10 @@
     "tr": "Discord ile giriş yap",
     "pl": "Zaloguj przez Discord",
     "nl": "Inloggen met Discord",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entrar com Discord",
+    "id": "Masuk dengan Discord",
+    "ja": "Discord でログイン",
+    "it": "Accedi con Discord"
   },
   "game1.ping.help": {
     "en": "✚ Help",
@@ -2262,10 +2262,10 @@
     "tr": "✚ Yardım",
     "pl": "✚ Pomoc",
     "nl": "✚ Hulp",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "✚ Ajuda",
+    "id": "✚ Bantu",
+    "ja": "✚ 助けて",
+    "it": "✚ Aiuto"
   },
   "game1.ping.danger": {
     "en": "⚠ Danger",
@@ -2280,10 +2280,10 @@
     "tr": "⚠ Tehlike",
     "pl": "⚠ Niebezpieczeństwo",
     "nl": "⚠ Gevaar",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "⚠ Perigo",
+    "id": "⚠ Bahaya",
+    "ja": "⚠ 危険",
+    "it": "⚠ Pericolo"
   },
   "game1.ping.goHere": {
     "en": "➜ Go here",
@@ -2298,10 +2298,10 @@
     "tr": "➜ Buraya git",
     "pl": "➜ Idź tutaj",
     "nl": "➜ Ga hierheen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "➜ Vem aqui",
+    "id": "➜ Ke sini",
+    "ja": "➜ ここへ行け",
+    "it": "➜ Vai qui"
   },
   "game1.ping.virusHere": {
     "en": "✹ Virus here",
@@ -2310,21 +2310,21 @@
     "bg": "✹ Вирус тук",
     "fr": "✹ Virus ici",
     "ar": "✹ فيروس هنا",
-    "zh": "✹這裡有病毒",
+    "zh": "✹這裡有刺球",
     "ru": "✹ Вирус здесь",
     "de": "✹ Virus hier",
     "tr": "✹ Virüs burada",
     "pl": "✹ Wirus tutaj",
     "nl": "✹ Virus hier",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "✹ Vírus aqui",
+    "id": "✹ Ada virus",
+    "ja": "✹ ここにウイルス",
+    "it": "✹ Virus qui"
   },
   "game1.menu.clanTagPh": {
     "en": "Tag, e.g. Lc",
-    "el": "Ετικέτα, π.χ. Lc",
-    "es": "Etiqueta, p. ej. Lc",
+    "el": "Tag, π.χ. Lc",
+    "es": "Tag, p. ej. Lc",
     "bg": "Таг, напр. Lc",
     "fr": "Tag, ex. Lc",
     "ar": "الوسم، مثال: Lc",
@@ -2334,10 +2334,10 @@
     "tr": "Etiket, örn. Lc",
     "pl": "Tag, np. Lc",
     "nl": "Tag, bijv. Lc",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tag, ex.: Lc",
+    "id": "Tag, mis. Lc",
+    "ja": "タグ (例：Lc)",
+    "it": "Tag, es. Lc"
   },
   "game1.menu.skinUrlPh": {
     "en": "Manual direct skin URL",
@@ -2349,7 +2349,7 @@
     "zh": "造型直接網址",
     "ru": "Прямая ссылка на скин",
     "de": "Direkte Skin-URL",
-    "tr": "Doğrudan kostüm URL'si",
+    "tr": "Doğrudan skin URL'si",
     "pl": "Bezpośredni URL skina",
     "nl": "Directe skin-URL",
     "pt": "URL direta da skin",
@@ -2359,21 +2359,21 @@
   },
   "game1.menu.nickFont": {
     "en": "Design Nickname Font",
-    "el": "Σχεδίαση γραμματοσειράς ονόματος",
-    "es": "Diseñar la fuente del nombre",
-    "bg": "Шрифт за името",
+    "el": "Σχεδίαση γραμματοσειράς nick",
+    "es": "Diseñar la fuente del nick",
+    "bg": "Шрифт за ника",
     "fr": "Personnaliser la police du pseudo",
     "ar": "تصميم خط الاسم",
     "zh": "設計暱稱字型",
     "ru": "Шрифт ника",
     "de": "Schriftart des Namens gestalten",
-    "tr": "Takma ad yazı tipi tasarla",
+    "tr": "Nick yazı tipini tasarla",
     "pl": "Zaprojektuj czcionkę nicku",
     "nl": "Lettertype van je naam ontwerpen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Criar fonte do nick",
+    "id": "Desain Font Nick",
+    "ja": "ニックネームのフォントをデザイン",
+    "it": "Personalizza il font del nick"
   },
   "game1.menu.flagFake": {
     "en": "Flag the Fake's Skin",
@@ -2385,13 +2385,13 @@
     "zh": "標記冒牌者的造型",
     "ru": "Отметить скин фейка",
     "de": "Skin des Fakes markieren",
-    "tr": "Sahtekarın kostümünü işaretle",
+    "tr": "Sahtekarın skinini işaretle",
     "pl": "Oznacz skin podróbki",
     "nl": "Skin van de nep-speler markeren",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Marcar a skin do fake",
+    "id": "Tandai Skin si Palsu",
+    "ja": "偽物のスキンを報告",
+    "it": "Segna la skin del fake"
   },
   "game1.menu.name": {
     "en": "Name",
@@ -2413,7 +2413,7 @@
   },
   "game1.menu.serverWsPh": {
     "en": "Server WS",
-    "el": "WS διακομιστή",
+    "el": "WS του server",
     "es": "WS del servidor",
     "bg": "WS на сървъра",
     "fr": "WS du serveur",
@@ -2424,14 +2424,14 @@
     "tr": "Sunucu WS",
     "pl": "WS serwera",
     "nl": "Server-WS",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "WS do servidor",
+    "id": "WS server",
+    "ja": "サーバー WS",
+    "it": "WS del server"
   },
   "game1.menu.serverTokenPh": {
     "en": "Server token",
-    "el": "Token διακομιστή",
+    "el": "Token του server",
     "es": "Token del servidor",
     "bg": "Токен на сървъра",
     "fr": "Jeton du serveur",
@@ -2442,28 +2442,28 @@
     "tr": "Sunucu kodu",
     "pl": "Token serwera",
     "nl": "Servertoken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Token do servidor",
+    "id": "Token server",
+    "ja": "サーバートークン",
+    "it": "Token del server"
   },
   "game1.menu.partyTokenPh": {
     "en": "Party token",
-    "el": "Token party",
-    "es": "Token de party",
-    "bg": "Токен на партито",
-    "fr": "Jeton de party",
+    "el": "Κωδικός party",
+    "es": "Código de party",
+    "bg": "Код за парти",
+    "fr": "Code de party",
     "ar": "رمز البارتي",
-    "zh": "派對代碼",
+    "zh": "組隊代碼",
     "ru": "Токен пати",
     "de": "Party-Token",
     "tr": "Parti kodu",
-    "pl": "Token party",
-    "nl": "Partytoken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pl": "Kod party",
+    "nl": "Partycode",
+    "pt": "Código da party",
+    "id": "Kode party",
+    "ja": "パーティーコード",
+    "it": "Codice party"
   },
   "game1.menu.themes": {
     "en": "Themes",
@@ -2474,7 +2474,7 @@
     "ar": "السمات",
     "zh": "主題",
     "ru": "Темы",
-    "de": "Designs",
+    "de": "Themes",
     "tr": "Temalar",
     "pl": "Motywy",
     "nl": "Thema's",
@@ -2496,10 +2496,10 @@
     "tr": "Mod bilgisi ve şablonlar",
     "pl": "Informacje o modzie i szablony",
     "nl": "Mod-info & sjablonen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Info do mod e templates",
+    "id": "Info Mod & Template",
+    "ja": "Mod 情報とテンプレート",
+    "it": "Info sulla mod e template"
   },
   "game1.menu.rewardDay": {
     "en": "Reward day",
@@ -2514,10 +2514,10 @@
     "tr": "Ödül günü",
     "pl": "Dzień nagrody",
     "nl": "Beloningsdag",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Dia de recompensa",
+    "id": "Hari hadiah",
+    "ja": "報酬日",
+    "it": "Giorno della ricompensa"
   },
   "game1.menu.help": {
     "en": "Help",
@@ -2544,16 +2544,16 @@
     "bg": "Ботове за парти",
     "fr": "Bots de party",
     "ar": "بوتات البارتي",
-    "zh": "派對機器人",
+    "zh": "組隊機器人",
     "ru": "Боты для пати",
     "de": "Party-Bots",
     "tr": "Parti botları",
     "pl": "Boty do party",
     "nl": "Partybots",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Bots de party",
+    "id": "Bot party",
+    "ja": "パーティーボット",
+    "it": "Bot del party"
   },
   "game1.bots.count": {
     "en": "Bot Count",
@@ -2568,14 +2568,14 @@
     "tr": "Bot sayısı",
     "pl": "Liczba botów",
     "nl": "Aantal bots",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Quantidade de bots",
+    "id": "Jumlah Bot",
+    "ja": "ボット数",
+    "it": "Numero di bot"
   },
   "game1.bots.slots": {
     "en": "Server slots",
-    "el": "Θέσεις διακομιστή",
+    "el": "Θέσεις στον server",
     "es": "Plazas del servidor",
     "bg": "Места на сървъра",
     "fr": "Places du serveur",
@@ -2586,10 +2586,10 @@
     "tr": "Sunucu yuvaları",
     "pl": "Miejsca na serwerze",
     "nl": "Serverplaatsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vagas no servidor",
+    "id": "Slot server",
+    "ja": "サーバー枠",
+    "it": "Posti sul server"
   },
   "game1.bots.tokens": {
     "en": "Captcha tokens",
@@ -2604,10 +2604,10 @@
     "tr": "Captcha kodları",
     "pl": "Tokeny captcha",
     "nl": "Captchatokens",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tokens de captcha",
+    "id": "Token captcha",
+    "ja": "キャプチャトークン",
+    "it": "Token captcha"
   },
   "game1.bots.waiting": {
     "en": "Waiting",
@@ -2622,10 +2622,10 @@
     "tr": "Bekleniyor",
     "pl": "Oczekiwanie",
     "nl": "Wachten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aguardando",
+    "id": "Menunggu",
+    "ja": "待機中",
+    "it": "In attesa"
   },
   "game1.bots.status": {
     "en": "Status:",
@@ -2640,10 +2640,10 @@
     "tr": "Durum:",
     "pl": "Stan:",
     "nl": "Status:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Status:",
+    "id": "Status:",
+    "ja": "状態：",
+    "it": "Stato:"
   },
   "game1.bots.ai": {
     "en": "Bots AI:",
@@ -2658,16 +2658,16 @@
     "tr": "Bot yapay zekâsı:",
     "pl": "SI botów:",
     "nl": "Bot-AI:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "IA dos bots:",
+    "id": "AI bot:",
+    "ja": "ボット AI：",
+    "it": "IA dei bot:"
   },
   "game1.bots.namePh": {
     "en": "Bots Name",
-    "el": "Όνομα bots",
+    "el": "Nick των bots",
     "es": "Nombre de los bots",
-    "bg": "Име на ботовете",
+    "bg": "Ник на ботовете",
     "fr": "Nom des bots",
     "ar": "اسم البوتات",
     "zh": "機器人名稱",
@@ -2676,10 +2676,10 @@
     "tr": "Bot adı",
     "pl": "Nazwa botów",
     "nl": "Naam van de bots",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nome dos bots",
+    "id": "Nama bot",
+    "ja": "ボットの名前",
+    "it": "Nome dei bot"
   },
   "game1.bots.amountPh": {
     "en": "Bots Amount",
@@ -2694,10 +2694,10 @@
     "tr": "Bot miktarı",
     "pl": "Liczba botów",
     "nl": "Aantal bots",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Quantidade de bots",
+    "id": "Jumlah bot",
+    "ja": "ボットの数",
+    "it": "Numero di bot"
   },
   "game1.bots.start": {
     "en": "Start Bots",
@@ -2712,10 +2712,10 @@
     "tr": "Botları başlat",
     "pl": "Uruchom boty",
     "nl": "Bots starten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Iniciar bots",
+    "id": "Mulai Bot",
+    "ja": "ボット開始",
+    "it": "Avvia i bot"
   },
   "game1.bots.install": {
     "en": "Installation",
@@ -2730,10 +2730,10 @@
     "tr": "Kurulum",
     "pl": "Instalacja",
     "nl": "Installatie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Instalação",
+    "id": "Instalasi",
+    "ja": "インストール",
+    "it": "Installazione"
   },
   "game1.bots.tutPc": {
     "en": "Tutorial video for PC node.js",
@@ -2748,10 +2748,10 @@
     "tr": "PC için video rehber (node.js)",
     "pl": "Poradnik wideo na PC (node.js)",
     "nl": "Videohandleiding voor pc (node.js)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vídeo tutorial para PC (node.js)",
+    "id": "Video tutorial untuk node.js di PC",
+    "ja": "PC (node.js) 用の解説動画",
+    "it": "Video tutorial per PC (node.js)"
   },
   "game1.bots.tutRepl": {
     "en": "Tutorial video for repl.it VPS",
@@ -2766,10 +2766,10 @@
     "tr": "repl.it VPS için video rehber",
     "pl": "Poradnik wideo dla repl.it VPS",
     "nl": "Videohandleiding voor repl.it VPS",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vídeo tutorial para VPS no repl.it",
+    "id": "Video tutorial untuk VPS repl.it",
+    "ja": "repl.it VPS 用の解説動画",
+    "it": "Video tutorial per VPS su repl.it"
   },
   "game1.bots.tip": {
     "en": "Tip: connect more PCs to the same WebSocket and let them create tokens",
@@ -2784,10 +2784,10 @@
     "tr": "İpucu: aynı WebSocket'e daha fazla bilgisayar bağlayın ve kod üretmelerine izin verin",
     "pl": "Wskazówka: podłącz więcej komputerów do tego samego WebSocketu i pozwól im tworzyć tokeny",
     "nl": "Tip: verbind meer pc's met dezelfde WebSocket en laat ze tokens maken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Dica: conecte mais PCs ao mesmo WebSocket e deixe que eles gerem tokens",
+    "id": "Tips: hubungkan lebih banyak PC ke WebSocket yang sama dan biarkan mereka membuat token",
+    "ja": "ヒント：同じ WebSocket に複数の PC をつないで、トークンを作らせましょう",
+    "it": "Consiglio: collega più PC allo stesso WebSocket e lascia che generino i token"
   },
   "game1.set.profilesLoading": {
     "en": "Settings profiles are loading, try again in a moment.",
@@ -2802,10 +2802,10 @@
     "tr": "Ayar profilleri yükleniyor, biraz sonra tekrar deneyin.",
     "pl": "Profile ustawień się wczytują, spróbuj za chwilę.",
     "nl": "Instellingenprofielen worden geladen, probeer het zo opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os perfis de configurações estão carregando, tente de novo daqui a pouco.",
+    "id": "Profil pengaturan sedang dimuat, coba lagi sebentar lagi.",
+    "ja": "設定プロファイルを読み込み中です。少ししてからもう一度お試しください。",
+    "it": "I profili delle impostazioni si stanno caricando, riprova tra poco."
   },
   "game1.set.unavailable": {
     "en": "(unavailable)",
@@ -2820,10 +2820,10 @@
     "tr": "(kullanılamıyor)",
     "pl": "(niedostępne)",
     "nl": "(niet beschikbaar)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "(indisponível)",
+    "id": "(tidak tersedia)",
+    "ja": "(利用不可)",
+    "it": "(non disponibile)"
   },
   "game1.set.universalChatOff": {
     "en": "Agar Tool universal chat is not available in this version",
@@ -2838,10 +2838,10 @@
     "tr": "Agar Tool evrensel sohbeti bu sürümde yok",
     "pl": "Uniwersalny czat Agar Tool jest niedostępny w tej wersji",
     "nl": "De universele Agar Tool-chat is niet beschikbaar in deze versie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O chat universal do Agar Tool não está disponível nesta versão",
+    "id": "Chat universal Agar Tool tidak tersedia di versi ini",
+    "ja": "このバージョンでは Agar Tool のユニバーサルチャットは使えません",
+    "it": "La chat universale di Agar Tool non è disponibile in questa versione"
   },
   "game1.set.directorLoading": {
     "en": "The spectator director is still loading. Try again in a moment.",
@@ -2854,34 +2854,34 @@
     "ru": "Режиссёр наблюдения ещё загружается. Попробуйте чуть позже.",
     "de": "Die Zuschauer-Regie lädt noch. Versuche es gleich noch einmal.",
     "tr": "İzleyici yönetmeni hâlâ yükleniyor. Biraz sonra tekrar deneyin.",
-    "pl": "Reżyser widza wciąż się wczytuje. Spróbuj za chwilę.",
-    "nl": "De toeschouwersregie wordt nog geladen. Probeer het zo opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pl": "Reżyser obserwacji wciąż się wczytuje. Spróbuj za chwilę.",
+    "nl": "De kijkregie wordt nog geladen. Probeer het zo opnieuw.",
+    "pt": "O diretor de espectador ainda está carregando. Tente de novo daqui a pouco.",
+    "id": "Sutradara spectator masih dimuat. Coba lagi sebentar lagi.",
+    "ja": "観戦ディレクターを読み込み中です。少ししてからもう一度お試しください。",
+    "it": "La regia della modalità spettatore si sta ancora caricando. Riprova tra poco."
   },
   "game1.set.lineSplitHelp": {
     "en": "<strong>Usage:</strong> assign \"Line split\" in Hotkeys, or to a mouse button under Controls. Point the cursor where the line should go and press it once: the aim locks on that line, the splits fire, and the aim stays locked for the time above. Press it again to cancel.",
-    "el": "<strong>Χρήση:</strong> ορίστε το «Line split» στα Πλήκτρα ή σε κουμπί ποντικιού στα Χειριστήρια. Στρέψτε τον κέρσορα εκεί που πρέπει να πάει η γραμμή και πατήστε το μία φορά: ο στόχος κλειδώνει σε αυτή τη γραμμή, γίνονται τα split και ο στόχος μένει κλειδωμένος για τον χρόνο παραπάνω. Πατήστε το ξανά για ακύρωση.",
-    "es": "<strong>Uso:</strong> asigna «Line split» en Teclas o a un botón del ratón en Controles. Apunta el cursor hacia donde debe ir la línea y púlsalo una vez: la puntería se fija en esa línea, se hacen los splits y sigue fijada durante el tiempo de arriba. Púlsalo de nuevo para cancelar.",
-    "bg": "<strong>Употреба:</strong> задайте „Line split“ в Клавиши или на бутон на мишката в Управление. Насочете курсора натам, където трябва да е линията, и натиснете веднъж: прицелът се заключва на линията, разделянията се изпълняват и прицелът остава заключен за времето отгоре. Натиснете отново за отказ.",
+    "el": "<strong>Χρήση:</strong> ορίστε το «Line split» στα Πλήκτρα συντόμευσης ή σε κουμπί ποντικιού στα Χειριστήρια. Στρέψτε τον κέρσορα εκεί που πρέπει να πάει η γραμμή και πατήστε το μία φορά: ο στόχος κλειδώνει σε αυτή τη γραμμή, γίνονται τα split και ο στόχος μένει κλειδωμένος για τον χρόνο παραπάνω. Πατήστε το ξανά για ακύρωση.",
+    "es": "<strong>Uso:</strong> asigna «Line split» en Teclas rápidas o a un botón del ratón en Controles. Apunta el cursor hacia donde debe ir la línea y púlsalo una vez: la puntería se fija en esa línea, se hacen los splits y sigue fijada durante el tiempo de arriba. Púlsalo de nuevo para cancelar.",
+    "bg": "<strong>Употреба:</strong> задайте „Line split“ в Бързи клавиши или на бутон на мишката в Управление. Насочете курсора натам, където трябва да е линията, и натиснете веднъж: прицелът се заключва на линията, сплитовете се изпълняват и прицелът остава заключен за времето отгоре. Натиснете отново за отказ.",
     "fr": "<strong>Utilisation :</strong> attribuez « Line split » dans Raccourcis, ou à un bouton de souris dans Contrôles. Pointez le curseur là où la ligne doit aller et appuyez une fois : la visée se verrouille sur cette ligne, les splits partent, et la visée reste verrouillée pendant le temps ci-dessus. Appuyez à nouveau pour annuler.",
     "ar": "<strong>الاستخدام:</strong> عيّن «Line split» في المفاتيح أو لزر فأرة في التحكم. وجّه المؤشر إلى حيث يجب أن يكون الخط واضغطه مرة: يثبت التصويب على ذلك الخط وتنطلق الانقسامات ويبقى التصويب مثبتًا للمدة المذكورة أعلاه. اضغطه مجددًا للإلغاء.",
     "zh": "<strong>用法：</strong>在快捷鍵中設定「Line split」，或在控制中指定給滑鼠按鍵。把游標指向線要去的方向並按一次：瞄準會鎖定在那條線上、執行分裂，並在上方設定的時間內保持鎖定。再按一次取消。",
-    "ru": "<strong>Использование:</strong> назначьте «Line split» в «Горячих клавишах» или на кнопку мыши в «Управлении». Наведите курсор туда, где должна быть линия, и нажмите один раз: прицел фиксируется на линии, выполняются разделения, и прицел остаётся зафиксированным на время выше. Нажмите ещё раз для отмены.",
+    "ru": "<strong>Использование:</strong> назначьте «Line split» в «Горячих клавишах» или на кнопку мыши в «Управлении». Наведите курсор туда, где должна быть линия, и нажмите один раз: прицел фиксируется на линии, выполняются сплиты, и прицел остаётся зафиксированным на время выше. Нажмите ещё раз для отмены.",
     "de": "<strong>Verwendung:</strong> Lege „Line split“ unter Tasten oder auf eine Maustaste unter Steuerung. Zeige mit dem Cursor dorthin, wo die Linie hin soll, und drücke einmal: Das Ziel rastet auf dieser Linie ein, die Splits werden ausgeführt, und das Ziel bleibt für die obige Zeit fixiert. Erneut drücken zum Abbrechen.",
-    "tr": "<strong>Kullanım:</strong> “Line split”i Kısayollar'da veya Kontroller'de bir fare tuşuna atayın. İmleci çizginin gideceği yere tutun ve bir kez basın: nişan o çizgiye kilitlenir, bölünmeler yapılır ve nişan yukarıdaki süre boyunca kilitli kalır. İptal için tekrar basın.",
-    "pl": "<strong>Użycie:</strong> przypisz „Line split” w Skrótach lub do przycisku myszy w Sterowaniu. Skieruj kursor tam, gdzie ma być linia, i naciśnij raz: celownik blokuje się na tej linii, wykonują się podziały, a celownik pozostaje zablokowany przez czas powyżej. Naciśnij ponownie, aby anulować.",
+    "tr": "<strong>Kullanım:</strong> “Line split”i Kısayollar'da veya Kontroller'de bir fare tuşuna atayın. İmleci çizginin gideceği yere tutun ve bir kez basın: nişan o çizgiye kilitlenir, splitler yapılır ve nişan yukarıdaki süre boyunca kilitli kalır. İptal için tekrar basın.",
+    "pl": "<strong>Użycie:</strong> przypisz „Line split” w Skrótach lub do przycisku myszy w Sterowaniu. Skieruj kursor tam, gdzie ma być linia, i naciśnij raz: celownik blokuje się na tej linii, wykonują się splity, a celownik pozostaje zablokowany przez czas powyżej. Naciśnij ponownie, aby anulować.",
     "nl": "<strong>Gebruik:</strong> wijs „Line split” toe in Sneltoetsen, of aan een muisknop onder Besturing. Richt de cursor waar de lijn moet komen en druk één keer: het richten vergrendelt op die lijn, de splits gaan af en het richten blijft vergrendeld voor de tijd hierboven. Druk opnieuw om te annuleren.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Como usar:</strong> defina \"Line split\" em Teclas de atalho, ou em um botão do mouse em Controles. Aponte o cursor para onde a linha deve ir e pressione uma vez: a mira trava nessa linha, os splits são feitos e a mira continua travada pelo tempo acima. Pressione de novo para cancelar.",
+    "id": "<strong>Cara pakai:</strong> pasang \"Line split\" di Hotkey, atau ke tombol mouse di Kontrol. Arahkan kursor ke tempat garis yang diinginkan lalu tekan sekali: bidikan terkunci di garis itu, split dijalankan, dan bidikan tetap terkunci selama waktu di atas. Tekan lagi untuk membatalkan.",
+    "ja": "<strong>使い方：</strong>「ショートカット」で「ライン分裂」を割り当てるか、操作設定でマウスボタンに割り当ててください。ラインを引きたい方向にカーソルを向けて1回押すと、照準がそのラインに固定されて分裂が発動し、上で設定した時間だけ照準が固定されたままになります。もう一度押すとキャンセルします。",
+    "it": "<strong>Come si usa:</strong> assegna \"Line split\" in Tasti rapidi, oppure a un tasto del mouse in Controlli. Punta il cursore dove deve andare la linea e premilo una volta: la mira si blocca su quella linea, parte lo split e la mira resta bloccata per il tempo indicato sopra. Premilo di nuovo per annullare."
   },
   "game1.set.gamepadLoading": {
     "en": "The gamepad script is still loading. Try again in a moment.",
-    "el": "Το σενάριο χειριστηρίου φορτώνει ακόμα. Δοκιμάστε ξανά σε λίγο.",
+    "el": "Το script του χειριστηρίου φορτώνει ακόμα. Δοκιμάστε ξανά σε λίγο.",
     "es": "El script del mando aún se está cargando. Inténtalo en un momento.",
     "bg": "Скриптът за геймпад още се зарежда. Опитайте след малко.",
     "fr": "Le script de la manette se charge encore. Réessayez dans un instant.",
@@ -2892,10 +2892,10 @@
     "tr": "Oyun kolu betiği hâlâ yükleniyor. Biraz sonra tekrar deneyin.",
     "pl": "Skrypt pada wciąż się wczytuje. Spróbuj za chwilę.",
     "nl": "Het gamepadscript wordt nog geladen. Probeer het zo opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O script do gamepad ainda está carregando. Tente de novo daqui a pouco.",
+    "id": "Script gamepad masih dimuat. Coba lagi sebentar lagi.",
+    "ja": "ゲームパッドのスクリプトを読み込み中です。少ししてからもう一度お試しください。",
+    "it": "Lo script del gamepad si sta ancora caricando. Riprova tra poco."
   },
   "game1.set.copyDebug": {
     "en": "Copy debug info",
@@ -2910,10 +2910,10 @@
     "tr": "Hata ayıklama bilgisini kopyala",
     "pl": "Kopiuj informacje diagnostyczne",
     "nl": "Debuginfo kopiëren",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Copiar info de depuração",
+    "id": "Salin info debug",
+    "ja": "デバッグ情報をコピー",
+    "it": "Copia info di debug"
   },
   "game1.set.debugCopied": {
     "en": "Debug info copied. Paste it into your bug report.",
@@ -2928,10 +2928,10 @@
     "tr": "Hata ayıklama bilgisi kopyalandı. Hata raporunuza yapıştırın.",
     "pl": "Skopiowano informacje. Wklej je do zgłoszenia błędu.",
     "nl": "Debuginfo gekopieerd. Plak het in je foutmelding.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Info de depuração copiada. Cole no seu relatório de bug.",
+    "id": "Info debug disalin. Tempel ke laporan bug kamu.",
+    "ja": "デバッグ情報をコピーしました。バグ報告に貼り付けてください。",
+    "it": "Info di debug copiate. Incollale nella tua segnalazione del bug."
   },
   "game1.set.debugCopyFailed": {
     "en": "Could not copy. Select the text in the console instead.",
@@ -2946,10 +2946,10 @@
     "tr": "Kopyalanamadı. Bunun yerine konsoldaki metni seçin.",
     "pl": "Nie udało się skopiować. Zaznacz tekst w konsoli.",
     "nl": "Kopiëren mislukt. Selecteer de tekst in de console.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível copiar. Selecione o texto no console.",
+    "id": "Gagal menyalin. Pilih teksnya di konsol saja.",
+    "ja": "コピーできませんでした。代わりにコンソールのテキストを選択してください。",
+    "it": "Impossibile copiare. Seleziona invece il testo nella console."
   },
   "game1.set.resetAsk": {
     "en": "Reset all game settings to the default? This cannot be undone.",
@@ -2964,10 +2964,10 @@
     "tr": "Tüm oyun ayarları varsayılana sıfırlansın mı? Bu geri alınamaz.",
     "pl": "Przywrócić wszystkie ustawienia gry do domyślnych? Tego nie można cofnąć.",
     "nl": "Alle spelinstellingen terugzetten naar standaard? Dit kan niet ongedaan worden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Redefinir todas as configurações do jogo para o padrão? Isso não pode ser desfeito.",
+    "id": "Kembalikan semua pengaturan game ke default? Ini tidak bisa dibatalkan.",
+    "ja": "ゲーム設定をすべて初期設定に戻しますか？元に戻すことはできません。",
+    "it": "Ripristinare tutte le impostazioni di gioco ai valori predefiniti? Non si può annullare."
   },
   "game1.menu.radio": {
     "en": "Radio",
@@ -2982,10 +2982,10 @@
     "tr": "Radyo",
     "pl": "Radio",
     "nl": "Radio",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Rádio",
+    "id": "Radio",
+    "ja": "ラジオ",
+    "it": "Radio"
   },
   "game1.menu.team": {
     "en": "Team",
@@ -3000,10 +3000,10 @@
     "tr": "Takım",
     "pl": "Drużyna",
     "nl": "Team",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Equipe",
+    "id": "Tim",
+    "ja": "チーム",
+    "it": "Squadra"
   },
   "game1.shop.notReady": {
     "en": "The skin shop is not ready.",
@@ -3015,13 +3015,13 @@
     "zh": "造型商店尚未就緒。",
     "ru": "Магазин скинов не готов.",
     "de": "Der Skin-Shop ist nicht bereit.",
-    "tr": "Kostüm mağazası hazır değil.",
+    "tr": "Skin mağazası hazır değil.",
     "pl": "Sklep ze skinami nie jest gotowy.",
     "nl": "De skinwinkel is niet klaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A loja de skins não está pronta.",
+    "id": "Toko skin belum siap.",
+    "ja": "スキンショップの準備ができていません。",
+    "it": "Il negozio delle skin non è pronto."
   },
   "game1.menu.worldSpectate": {
     "en": "World Spectate",
@@ -3030,16 +3030,16 @@
     "bg": "Наблюдение на света",
     "fr": "Observer le monde",
     "ar": "مشاهدة العالم",
-    "zh": "觀看全世界",
+    "zh": "全圖觀戰",
     "ru": "Наблюдать мир",
-    "de": "Welt beobachten",
+    "de": "Ganze Welt zuschauen",
     "tr": "Dünyayı izle",
     "pl": "Obserwuj świat",
     "nl": "Wereld bekijken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Espectar o mundo",
+    "id": "Spectate Dunia",
+    "ja": "ワールド観戦",
+    "it": "Guarda tutta la mappa"
   },
   "game1.skin.videoMarquee": {
     "en": "MP4, video skin",
@@ -3051,13 +3051,13 @@
     "zh": "MP4，影片造型",
     "ru": "MP4, видеоскин",
     "de": "MP4, Video-Skin",
-    "tr": "MP4, video kostüm",
+    "tr": "MP4, video skin",
     "pl": "MP4, skin wideo",
     "nl": "MP4, videoskin",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "MP4, skin de vídeo",
+    "id": "MP4, skin video",
+    "ja": "MP4、動画スキン",
+    "it": "MP4, skin video"
   },
   "game1.skin.loadFailed": {
     "en": "Skin could not load: the link is dead or its host blocks it (CORS)",
@@ -3069,17 +3069,17 @@
     "zh": "造型無法載入：連結失效或主機封鎖（CORS）",
     "ru": "Скин не загрузился: ссылка не работает или хостинг её блокирует (CORS)",
     "de": "Skin konnte nicht laden: Der Link ist tot oder der Host blockiert ihn (CORS)",
-    "tr": "Kostüm yüklenemedi: bağlantı ölü ya da sunucusu engelliyor (CORS)",
+    "tr": "Skin yüklenemedi: bağlantı ölü ya da sunucusu engelliyor (CORS)",
     "pl": "Nie udało się wczytać skina: link nie działa lub host go blokuje (CORS)",
     "nl": "Skin kon niet laden: de link werkt niet of de host blokkeert hem (CORS)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível carregar a skin: o link está quebrado ou o site bloqueia (CORS)",
+    "id": "Skin gagal dimuat: link mati atau host-nya memblokir (CORS)",
+    "ja": "スキンを読み込めませんでした：リンク切れか、ホスト側がブロックしています (CORS)",
+    "it": "Impossibile caricare la skin: il link non funziona o il suo host lo blocca (CORS)"
   },
   "game1.ps.closed": {
     "en": "Connection to the server closed!",
-    "el": "Η σύνδεση με τον διακομιστή έκλεισε!",
+    "el": "Η σύνδεση με τον server έκλεισε!",
     "es": "¡Conexión con el servidor cerrada!",
     "bg": "Връзката със сървъра е затворена!",
     "fr": "Connexion au serveur fermée !",
@@ -3090,14 +3090,14 @@
     "tr": "Sunucu bağlantısı kapatıldı!",
     "pl": "Zamknięto połączenie z serwerem!",
     "nl": "Verbinding met de server gesloten!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A conexão com o servidor foi encerrada!",
+    "id": "Koneksi ke server ditutup!",
+    "ja": "サーバーとの接続が切れました！",
+    "it": "Connessione al server chiusa!"
   },
   "game1.ps.toPrivate": {
     "en": "Switched to the private server!",
-    "el": "Αλλαγή στον ιδιωτικό διακομιστή!",
+    "el": "Αλλαγή στον ιδιωτικό server!",
     "es": "¡Cambiado al servidor privado!",
     "bg": "Превключено към частния сървър!",
     "fr": "Passage au serveur privé !",
@@ -3108,14 +3108,14 @@
     "tr": "Özel sunucuya geçildi!",
     "pl": "Przełączono na serwer prywatny!",
     "nl": "Overgeschakeld naar de privéserver!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você mudou para o servidor privado!",
+    "id": "Pindah ke server privat!",
+    "ja": "プライベートサーバーに切り替えました！",
+    "it": "Passato al server privato!"
   },
   "game1.ps.toPublic": {
     "en": "Switched to the public server!",
-    "el": "Αλλαγή στον δημόσιο διακομιστή!",
+    "el": "Αλλαγή στον δημόσιο server!",
     "es": "¡Cambiado al servidor público!",
     "bg": "Превключено към публичния сървър!",
     "fr": "Passage au serveur public !",
@@ -3126,10 +3126,10 @@
     "tr": "Herkese açık sunucuya geçildi!",
     "pl": "Przełączono na serwer publiczny!",
     "nl": "Overgeschakeld naar de openbare server!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você mudou para o servidor público!",
+    "id": "Pindah ke server publik!",
+    "ja": "公開サーバーに切り替えました！",
+    "it": "Passato al server pubblico!"
   },
   "game1.mb.rotation": {
     "en": "Rotation works only before the multi-viewports are created",
@@ -3144,10 +3144,10 @@
     "tr": "Döndürme yalnızca çoklu görünümler oluşturulmadan önce çalışır",
     "pl": "Obrót działa tylko przed utworzeniem wielu widoków",
     "nl": "Draaien werkt alleen voordat de multi-viewports gemaakt zijn",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A rotação só funciona antes de as multi-viewports serem criadas",
+    "id": "Rotasi hanya bisa sebelum multi-viewport dibuat",
+    "ja": "回転はマルチビューポートを作成する前にしか使えません",
+    "it": "La rotazione funziona solo prima che vengano create le multi-viewport"
   },
   "game1.buy.login": {
     "en": "Log in and wait until you are connected before buying.",
@@ -3162,10 +3162,10 @@
     "tr": "Satın almadan önce giriş yapın ve bağlanmayı bekleyin.",
     "pl": "Zaloguj się i poczekaj na połączenie przed zakupem.",
     "nl": "Log in en wacht tot je verbonden bent voordat je koopt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entre na sua conta e espere conectar antes de comprar.",
+    "id": "Masuk dan tunggu sampai terhubung sebelum membeli.",
+    "ja": "購入する前にログインして、接続されるまでお待ちください。",
+    "it": "Accedi e aspetta di essere connesso prima di acquistare."
   },
   "game1.buy.noId": {
     "en": "No purchase ID specified.",
@@ -3180,10 +3180,10 @@
     "tr": "Satın alma kimliği belirtilmedi.",
     "pl": "Nie podano ID zakupu.",
     "nl": "Geen aankoop-ID opgegeven.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nenhum ID de compra informado.",
+    "id": "ID pembelian tidak ditentukan.",
+    "ja": "購入 ID が指定されていません。",
+    "it": "Nessun ID di acquisto indicato."
   },
   "game1.buy.sent": {
     "en": "Purchase request sent for {0}...",
@@ -3198,10 +3198,10 @@
     "tr": "{0} için satın alma isteği gönderildi...",
     "pl": "Wysłano prośbę o zakup {0}...",
     "nl": "Aankoopverzoek verzonden voor {0}...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pedido de compra enviado para {0}...",
+    "id": "Permintaan pembelian {0} dikirim...",
+    "ja": "{0} の購入リクエストを送信しました...",
+    "it": "Richiesta di acquisto inviata per {0}..."
   },
   "game1.buy.notConnected": {
     "en": "Not connected. Play a game first.",
@@ -3216,10 +3216,10 @@
     "tr": "Bağlı değil. Önce bir oyun oynayın.",
     "pl": "Brak połączenia. Najpierw zagraj grę.",
     "nl": "Niet verbonden. Speel eerst een potje.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não conectado. Jogue uma partida antes.",
+    "id": "Belum terhubung. Main satu game dulu.",
+    "ja": "接続されていません。先に1回プレイしてください。",
+    "it": "Non sei connesso. Gioca prima una partita."
   },
   "game1.buy.encodeFailed": {
     "en": "Failed to encode purchase: {0}",
@@ -3234,10 +3234,10 @@
     "tr": "Satın alma kodlanamadı: {0}",
     "pl": "Nie udało się zakodować zakupu: {0}",
     "nl": "Aankoop coderen mislukt: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao codificar a compra: {0}",
+    "id": "Gagal menyandikan pembelian: {0}",
+    "ja": "購入データのエンコードに失敗しました：{0}",
+    "it": "Impossibile codificare l'acquisto: {0}"
   },
   "game1.buy.protocolRefresh": {
     "en": "Protocol not ready. Refresh and try again.",
@@ -3252,10 +3252,10 @@
     "tr": "Protokol hazır değil. Yenileyip tekrar deneyin.",
     "pl": "Protokół nie jest gotowy. Odśwież i spróbuj ponownie.",
     "nl": "Protocol niet klaar. Vernieuw en probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Protocolo não está pronto. Atualize a página e tente de novo.",
+    "id": "Protokol belum siap. Muat ulang lalu coba lagi.",
+    "ja": "プロトコルの準備ができていません。再読み込みしてもう一度お試しください。",
+    "it": "Protocollo non pronto. Ricarica la pagina e riprova."
   },
   "game1.buy.rewardLink": {
     "en": "Activating reward link...",
@@ -3270,10 +3270,10 @@
     "tr": "Ödül bağlantısı etkinleştiriliyor...",
     "pl": "Aktywowanie linku z nagrodą...",
     "nl": "Beloningslink wordt geactiveerd...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ativando o link de recompensa...",
+    "id": "Mengaktifkan link hadiah...",
+    "ja": "報酬リンクを有効化中...",
+    "it": "Attivazione del link della ricompensa..."
   },
   "game1.buy.protocol": {
     "en": "Protocol not ready.",
@@ -3288,10 +3288,10 @@
     "tr": "Protokol hazır değil.",
     "pl": "Protokół nie jest gotowy.",
     "nl": "Protocol niet klaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Protocolo não está pronto.",
+    "id": "Protokol belum siap.",
+    "ja": "プロトコルの準備ができていません。",
+    "it": "Protocollo non pronto."
   },
   "game1.buy.encodeError": {
     "en": "Encode error: {0}",
@@ -3306,10 +3306,10 @@
     "tr": "Kodlama hatası: {0}",
     "pl": "Błąd kodowania: {0}",
     "nl": "Coderingsfout: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Erro de codificação: {0}",
+    "id": "Error penyandian: {0}",
+    "ja": "エンコードエラー：{0}",
+    "it": "Errore di codifica: {0}"
   },
   "game1.skin.noData": {
     "en": "No image data is available.",
@@ -3324,10 +3324,10 @@
     "tr": "Resim verisi yok.",
     "pl": "Brak danych obrazu.",
     "nl": "Geen afbeeldingsgegevens beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não há dados de imagem disponíveis.",
+    "id": "Tidak ada data gambar.",
+    "ja": "画像データがありません。",
+    "it": "Nessun dato dell'immagine disponibile."
   },
   "game1.skin.tooBig": {
     "en": "Image is {0}KB. {1} disconnects uploads over about {2}KB.",
@@ -3342,10 +3342,10 @@
     "tr": "Resim {0}KB. {1} yaklaşık {2}KB üzerindeki yüklemeleri keser.",
     "pl": "Obraz ma {0} KB. {1} przerywa wysyłanie powyżej ok. {2} KB.",
     "nl": "De afbeelding is {0} KB. {1} verbreekt uploads boven ongeveer {2} KB.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A imagem tem {0}KB. O {1} desconecta envios acima de uns {2}KB.",
+    "id": "Gambar berukuran {0}KB. {1} memutus unggahan di atas sekitar {2}KB.",
+    "ja": "画像は {0}KB です。{1} は約 {2}KB を超えるアップロードで切断します。",
+    "it": "L'immagine pesa {0}KB. {1} interrompe i caricamenti oltre circa {2}KB."
   },
   "game1.skin.tooSmall": {
     "en": "Image data is too small to be a valid PNG ({0} bytes).",
@@ -3360,10 +3360,10 @@
     "tr": "Resim verisi geçerli bir PNG için çok küçük ({0} bayt).",
     "pl": "Dane obrazu są za małe na poprawny PNG ({0} bajtów).",
     "nl": "De afbeeldingsgegevens zijn te klein voor een geldige PNG ({0} bytes).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os dados da imagem são pequenos demais para um PNG válido ({0} bytes).",
+    "id": "Data gambar terlalu kecil untuk PNG yang valid ({0} byte).",
+    "ja": "画像データが小さすぎて、有効な PNG ではありません ({0} バイト)。",
+    "it": "I dati dell'immagine sono troppo pochi per un PNG valido ({0} byte)."
   },
   "game1.skin.notPng": {
     "en": "Encoded image is not a valid PNG file.",
@@ -3378,10 +3378,10 @@
     "tr": "Kodlanan resim geçerli bir PNG dosyası değil.",
     "pl": "Zakodowany obraz nie jest poprawnym plikiem PNG.",
     "nl": "De gecodeerde afbeelding is geen geldig PNG-bestand.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A imagem codificada não é um arquivo PNG válido.",
+    "id": "Gambar hasil encode bukan file PNG yang valid.",
+    "ja": "エンコードした画像は有効な PNG ファイルではありません。",
+    "it": "L'immagine codificata non è un file PNG valido."
   },
   "game1.skin.firstChunk": {
     "en": "PNG first chunk is '{0}' instead of IHDR — invalid PNG.",
@@ -3396,10 +3396,10 @@
     "tr": "PNG'nin ilk bloğu IHDR yerine '{0}' — geçersiz PNG.",
     "pl": "Pierwszy blok PNG to '{0}' zamiast IHDR — nieprawidłowy PNG.",
     "nl": "Het eerste PNG-blok is '{0}' in plaats van IHDR — ongeldige PNG.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O primeiro chunk do PNG é '{0}' em vez de IHDR — PNG inválido.",
+    "id": "Chunk pertama PNG adalah '{0}', bukan IHDR — PNG tidak valid.",
+    "ja": "PNG の最初のチャンクが IHDR ではなく '{0}' です — 無効な PNG です。",
+    "it": "Il primo chunk del PNG è '{0}' invece di IHDR: PNG non valido."
   },
   "game1.skin.size": {
     "en": "PNG dimensions are {0} — must be 512x512.",
@@ -3414,10 +3414,10 @@
     "tr": "PNG boyutu {0} — 512x512 olmalı.",
     "pl": "Wymiary PNG to {0} — muszą wynosić 512x512.",
     "nl": "De PNG is {0} — moet 512x512 zijn.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "As dimensões do PNG são {0} — precisam ser 512x512.",
+    "id": "Ukuran PNG {0} — harus 512x512.",
+    "ja": "PNG のサイズが {0} です — 512x512 にしてください。",
+    "it": "Il PNG misura {0}: deve essere 512x512."
   },
   "game1.skin.colorType": {
     "en": "PNG color type is {0} — Agar.io requires indexed PNG8 (color type 3). The UPNG encoder may have failed to quantize.",
@@ -3432,10 +3432,10 @@
     "tr": "PNG renk türü {0} — Agar.io indeksli PNG8 (renk türü 3) ister. UPNG kodlayıcı nicemlemeyi başaramamış olabilir.",
     "pl": "Typ koloru PNG to {0} — Agar.io wymaga indeksowanego PNG8 (typ 3). Koder UPNG mógł nie przeprowadzić kwantyzacji.",
     "nl": "Het PNG-kleurtype is {0} — Agar.io vereist geïndexeerde PNG8 (kleurtype 3). De UPNG-encoder kon mogelijk niet kwantiseren.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O tipo de cor do PNG é {0} — o Agar.io exige PNG8 indexado (tipo de cor 3). O codificador UPNG pode não ter conseguido reduzir as cores.",
+    "id": "Tipe warna PNG adalah {0} — Agar.io butuh PNG8 terindeks (tipe warna 3). Encoder UPNG mungkin gagal mengurangi warnanya.",
+    "ja": "PNG のカラータイプが {0} です — Agar.io ではインデックスカラーの PNG8 (カラータイプ 3) が必要です。UPNG エンコーダーの減色に失敗した可能性があります。",
+    "it": "Il tipo di colore del PNG è {0}: Agar.io richiede un PNG8 indicizzato (color type 3). Forse il codificatore UPNG non è riuscito a ridurre i colori."
   },
   "game1.skin.bitDepth": {
     "en": "PNG bit depth {0} is invalid for an indexed image.",
@@ -3450,10 +3450,10 @@
     "tr": "PNG bit derinliği {0} indeksli bir resim için geçersiz.",
     "pl": "Głębia bitowa PNG {0} jest nieprawidłowa dla obrazu indeksowanego.",
     "nl": "PNG-bitdiepte {0} is ongeldig voor een geïndexeerde afbeelding.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A profundidade de bits {0} do PNG é inválida para uma imagem indexada.",
+    "id": "Kedalaman bit PNG {0} tidak valid untuk gambar terindeks.",
+    "ja": "ビット深度 {0} はインデックスカラー画像として無効です。",
+    "it": "La profondità di bit {0} del PNG non è valida per un'immagine indicizzata."
   },
   "game1.skin.truncated": {
     "en": "PNG contains a truncated '{0}' chunk.",
@@ -3468,10 +3468,10 @@
     "tr": "PNG kesik bir '{0}' bloğu içeriyor.",
     "pl": "PNG zawiera ucięty blok '{0}'.",
     "nl": "De PNG bevat een afgekapt '{0}'-blok.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O PNG contém um chunk '{0}' truncado.",
+    "id": "PNG berisi chunk '{0}' yang terpotong.",
+    "ja": "PNG に途中で切れた '{0}' チャンクがあります。",
+    "it": "Il PNG contiene un chunk '{0}' troncato."
   },
   "game1.skin.palette": {
     "en": "PNG palette has {0} entries — must be 1–16 for Agar.io.",
@@ -3486,10 +3486,10 @@
     "tr": "PNG paletinde {0} renk var — Agar.io için 1–16 olmalı.",
     "pl": "Paleta PNG ma {0} kolorów — dla Agar.io musi mieć 1–16.",
     "nl": "Het PNG-palet heeft {0} kleuren — moet 1–16 zijn voor Agar.io.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A paleta do PNG tem {0} cores — precisa ter de 1 a 16 para o Agar.io.",
+    "id": "Palet PNG punya {0} warna — untuk Agar.io harus 1–16.",
+    "ja": "PNG のパレットが {0} 色です — Agar.io では 1～16 色にしてください。",
+    "it": "La palette del PNG ha {0} colori: per Agar.io devono essere da 1 a 16."
   },
   "game1.skin.loginUpload": {
     "en": "Log in and wait until you are connected before uploading.",
@@ -3504,10 +3504,10 @@
     "tr": "Yüklemeden önce giriş yapın ve bağlanmayı bekleyin.",
     "pl": "Zaloguj się i poczekaj na połączenie przed wysłaniem.",
     "nl": "Log in en wacht tot je verbonden bent voordat je uploadt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Entre na sua conta e espere conectar antes de enviar.",
+    "id": "Masuk dan tunggu sampai terhubung sebelum mengunggah.",
+    "ja": "アップロードする前にログインして、接続されるまでお待ちください。",
+    "it": "Accedi e aspetta di essere connesso prima di caricare."
   },
   "game1.skin.noProtocol": {
     "en": "Skin upload protocol is unavailable. Join a game first.",
@@ -3519,13 +3519,13 @@
     "zh": "造型上傳協定無法使用。請先加入遊戲。",
     "ru": "Протокол загрузки скинов недоступен. Сначала зайдите в игру.",
     "de": "Das Skin-Upload-Protokoll ist nicht verfügbar. Tritt zuerst einem Spiel bei.",
-    "tr": "Kostüm yükleme protokolü kullanılamıyor. Önce bir oyuna katılın.",
+    "tr": "Skin yükleme protokolü kullanılamıyor. Önce bir oyuna katılın.",
     "pl": "Protokół wysyłania skinów jest niedostępny. Najpierw dołącz do gry.",
     "nl": "Het skin-uploadprotocol is niet beschikbaar. Ga eerst een potje in.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O protocolo de envio de skin não está disponível. Entre em uma partida primeiro.",
+    "id": "Protokol unggah skin tidak tersedia. Masuk ke game dulu.",
+    "ja": "スキンのアップロード機能が利用できません。先にゲームに参加してください。",
+    "it": "Il protocollo di caricamento delle skin non è disponibile. Entra prima in una partita."
   },
   "game1.skin.tokenCost": {
     "en": "Skin token costs {0} {1}, but you only have {2}.",
@@ -3537,13 +3537,13 @@
     "zh": "造型代幣需要 {0} {1}，但你只有 {2}。",
     "ru": "Токен скина стоит {0} {1}, а у вас только {2}.",
     "de": "Ein Skin-Token kostet {0} {1}, du hast aber nur {2}.",
-    "tr": "Kostüm jetonu {0} {1} tutuyor, ama sizde yalnızca {2} var.",
+    "tr": "Skin jetonu {0} {1} tutuyor, ama sizde yalnızca {2} var.",
     "pl": "Token skina kosztuje {0} {1}, a masz tylko {2}.",
     "nl": "Een skintoken kost {0} {1}, maar je hebt er maar {2}.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O token de skin custa {0} {1}, mas você só tem {2}.",
+    "id": "Token skin seharga {0} {1}, tapi kamu hanya punya {2}.",
+    "ja": "スキントークンは {0} {1} ですが、所持数は {2} だけです。",
+    "it": "Il token skin costa {0} {1}, ma ne hai solo {2}."
   },
   "game1.skin.encodeFailed": {
     "en": "Failed to encode skin data: {0}",
@@ -3555,13 +3555,13 @@
     "zh": "造型資料編碼失敗：{0}",
     "ru": "Не удалось закодировать данные скина: {0}",
     "de": "Skin-Daten konnten nicht kodiert werden: {0}",
-    "tr": "Kostüm verisi kodlanamadı: {0}",
+    "tr": "Skin verisi kodlanamadı: {0}",
     "pl": "Nie udało się zakodować danych skina: {0}",
     "nl": "Skingegevens coderen mislukt: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao codificar os dados da skin: {0}",
+    "id": "Gagal menyandikan data skin: {0}",
+    "ja": "スキンデータのエンコードに失敗しました：{0}",
+    "it": "Impossibile codificare i dati della skin: {0}"
   },
   "game1.skin.uploadTooBig": {
     "en": "Upload would be {0}KB. {1} disconnects messages over about {2}KB. Use a simpler image or a shorter name.",
@@ -3576,10 +3576,10 @@
     "tr": "Yükleme {0}KB olurdu. {1} yaklaşık {2}KB üzerindeki mesajları keser. Daha basit bir resim veya daha kısa bir ad kullanın.",
     "pl": "Wysyłka miałaby {0} KB. {1} przerywa wiadomości powyżej ok. {2} KB. Użyj prostszego obrazu lub krótszej nazwy.",
     "nl": "De upload zou {0} KB zijn. {1} verbreekt berichten boven ongeveer {2} KB. Gebruik een eenvoudigere afbeelding of een kortere naam.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O envio teria {0}KB. O {1} desconecta mensagens acima de uns {2}KB. Use uma imagem mais simples ou um nome mais curto.",
+    "id": "Unggahan akan berukuran {0}KB. {1} memutus pesan di atas sekitar {2}KB. Pakai gambar yang lebih sederhana atau nama yang lebih pendek.",
+    "ja": "アップロードは {0}KB になります。{1} は約 {2}KB を超えるメッセージで切断します。もっとシンプルな画像か、短い名前を使ってください。",
+    "it": "Il caricamento sarebbe di {0}KB. {1} interrompe i messaggi oltre circa {2}KB. Usa un'immagine più semplice o un nome più corto."
   },
   "game1.skin.uploadPending": {
     "en": "A custom-skin upload is already pending.",
@@ -3591,13 +3591,13 @@
     "zh": "已有一個自訂造型上傳在處理中。",
     "ru": "Загрузка скина уже выполняется.",
     "de": "Ein Skin-Upload läuft bereits.",
-    "tr": "Bir kostüm yüklemesi zaten beklemede.",
+    "tr": "Bir skin yüklemesi zaten beklemede.",
     "pl": "Wysyłanie skina jest już w toku.",
     "nl": "Er loopt al een skin-upload.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Já há um envio de skin personalizada em andamento.",
+    "id": "Unggahan skin kustom masih diproses.",
+    "ja": "カスタムスキンのアップロードがすでに処理中です。",
+    "it": "C'è già un caricamento di skin personalizzata in corso."
   },
   "game1.skin.noAnswer": {
     "en": "Agar.io did not answer the skin upload within 30 seconds.",
@@ -3609,13 +3609,13 @@
     "zh": "Agar.io 在 30 秒內沒有回應造型上傳。",
     "ru": "Agar.io не ответил на загрузку скина за 30 секунд.",
     "de": "Agar.io hat innerhalb von 30 Sekunden nicht auf den Skin-Upload geantwortet.",
-    "tr": "Agar.io 30 saniye içinde kostüm yüklemesine yanıt vermedi.",
+    "tr": "Agar.io 30 saniye içinde skin yüklemesine yanıt vermedi.",
     "pl": "Agar.io nie odpowiedział na wysyłanie skina w ciągu 30 sekund.",
     "nl": "Agar.io heeft binnen 30 seconden niet op de skin-upload gereageerd.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Agar.io não respondeu ao envio da skin em 30 segundos.",
+    "id": "Agar.io tidak merespons unggahan skin dalam 30 detik.",
+    "ja": "Agar.io から30秒以内にスキンのアップロードへの応答がありませんでした。",
+    "it": "Agar.io non ha risposto al caricamento della skin entro 30 secondi."
   },
   "game1.skin.sent": {
     "en": "Skin upload sent. Waiting for Agar.io response...",
@@ -3627,13 +3627,13 @@
     "zh": "造型上傳已送出。正在等待 Agar.io 回應...",
     "ru": "Загрузка скина отправлена. Ждём ответа Agar.io...",
     "de": "Skin-Upload gesendet. Warte auf die Antwort von Agar.io...",
-    "tr": "Kostüm yüklemesi gönderildi. Agar.io yanıtı bekleniyor...",
+    "tr": "Skin yüklemesi gönderildi. Agar.io yanıtı bekleniyor...",
     "pl": "Wysłano skina. Czekam na odpowiedź Agar.io...",
     "nl": "Skin-upload verzonden. Wachten op antwoord van Agar.io...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skin enviada. Aguardando resposta do Agar.io...",
+    "id": "Unggahan skin dikirim. Menunggu respons Agar.io...",
+    "ja": "スキンのアップロードを送信しました。Agar.io の応答を待っています...",
+    "it": "Skin inviata. In attesa della risposta di Agar.io..."
   },
   "game1.skin.sendFailed": {
     "en": "Failed to send skin data: {0}",
@@ -3645,13 +3645,13 @@
     "zh": "造型資料傳送失敗：{0}",
     "ru": "Не удалось отправить данные скина: {0}",
     "de": "Skin-Daten konnten nicht gesendet werden: {0}",
-    "tr": "Kostüm verisi gönderilemedi: {0}",
+    "tr": "Skin verisi gönderilemedi: {0}",
     "pl": "Nie udało się wysłać danych skina: {0}",
     "nl": "Skingegevens verzenden mislukt: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha ao enviar os dados da skin: {0}",
+    "id": "Gagal mengirim data skin: {0}",
+    "ja": "スキンデータを送信できませんでした：{0}",
+    "it": "Impossibile inviare i dati della skin: {0}"
   },
   "game1.skin.tokenPending": {
     "en": "A skin-token purchase is already pending.",
@@ -3663,13 +3663,13 @@
     "zh": "已有一個造型代幣購買在處理中。",
     "ru": "Покупка токена скина уже выполняется.",
     "de": "Ein Skin-Token-Kauf läuft bereits.",
-    "tr": "Bir kostüm jetonu satın alımı zaten beklemede.",
+    "tr": "Bir skin jetonu satın alımı zaten beklemede.",
     "pl": "Zakup tokenu skina jest już w toku.",
     "nl": "Er loopt al een aankoop van een skintoken.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Já há uma compra de token de skin em andamento.",
+    "id": "Pembelian token skin masih diproses.",
+    "ja": "スキントークンの購入がすでに処理中です。",
+    "it": "C'è già un acquisto di token skin in corso."
   },
   "game1.skin.tokenBought": {
     "en": "Skin token purchased. Uploading skin...",
@@ -3681,13 +3681,13 @@
     "zh": "造型代幣已購買。正在上傳造型...",
     "ru": "Токен скина куплен. Загрузка скина...",
     "de": "Skin-Token gekauft. Skin wird hochgeladen...",
-    "tr": "Kostüm jetonu satın alındı. Kostüm yükleniyor...",
+    "tr": "Skin jetonu satın alındı. Skin yükleniyor...",
     "pl": "Kupiono token skina. Wysyłanie skina...",
     "nl": "Skintoken gekocht. Skin uploaden...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Token de skin comprado. Enviando a skin...",
+    "id": "Token skin dibeli. Mengunggah skin...",
+    "ja": "スキントークンを購入しました。スキンをアップロード中...",
+    "it": "Token skin acquistato. Caricamento della skin..."
   },
   "game1.skin.noUploader": {
     "en": "The custom-skin uploader is not available.",
@@ -3699,13 +3699,13 @@
     "zh": "自訂造型上傳工具無法使用。",
     "ru": "Загрузчик скинов недоступен.",
     "de": "Der Skin-Uploader ist nicht verfügbar.",
-    "tr": "Kostüm yükleyici kullanılamıyor.",
+    "tr": "Skin yükleyici kullanılamıyor.",
     "pl": "Narzędzie do wysyłania skinów jest niedostępne.",
     "nl": "De skin-uploader is niet beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O envio de skin personalizada não está disponível.",
+    "id": "Pengunggah skin kustom tidak tersedia.",
+    "ja": "カスタムスキンのアップローダーが利用できません。",
+    "it": "Il caricamento delle skin personalizzate non è disponibile."
   },
   "game1.region.private": {
     "en": "Private",
@@ -3720,14 +3720,14 @@
     "tr": "Özel",
     "pl": "Prywatny",
     "nl": "Privé",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Privado",
+    "id": "Privat",
+    "ja": "プライベート",
+    "it": "Privato"
   },
   "game1.sigmally.captcha": {
     "en": "This server currently requires a captcha, which Legend Mod cannot show. Spawning may not work; play it on sigmally.com.",
-    "el": "Αυτός ο διακομιστής ζητά τώρα captcha, που το Legend Mod δεν μπορεί να εμφανίσει. Η είσοδος στο παιχνίδι ίσως δεν λειτουργεί· παίξτε τον στο sigmally.com.",
+    "el": "Αυτός ο server ζητά τώρα captcha, που το Legend Mod δεν μπορεί να εμφανίσει. Η είσοδος στο παιχνίδι ίσως δεν λειτουργεί· παίξτε τον στο sigmally.com.",
     "es": "Este servidor pide ahora un captcha que Legend Mod no puede mostrar. Puede que no consigas aparecer; juégalo en sigmally.com.",
     "bg": "Този сървър в момента изисква captcha, която Legend Mod не може да покаже. Появяването може да не работи; играйте на sigmally.com.",
     "fr": "Ce serveur exige actuellement un captcha que Legend Mod ne peut pas afficher. L'apparition peut échouer ; jouez-y sur sigmally.com.",
@@ -3738,10 +3738,10 @@
     "tr": "Bu sunucu şu anda Legend Mod'un gösteremediği bir captcha istiyor. Doğma çalışmayabilir; sigmally.com'da oynayın.",
     "pl": "Ten serwer wymaga teraz captchy, której Legend Mod nie potrafi pokazać. Pojawienie się może nie działać; graj na sigmally.com.",
     "nl": "Deze server vraagt nu een captcha die Legend Mod niet kan tonen. Spawnen werkt misschien niet; speel hem op sigmally.com.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este servidor está pedindo um captcha, que o Legend Mod não consegue mostrar. Pode ser que você não consiga nascer; jogue em sigmally.com.",
+    "id": "Server ini sedang meminta captcha yang tidak bisa ditampilkan Legend Mod. Spawn mungkin tidak berhasil; mainkan di sigmally.com.",
+    "ja": "このサーバーは現在キャプチャが必要ですが、Legend Mod では表示できません。出現できない場合があるので、sigmally.com でプレイしてください。",
+    "it": "Questo server al momento richiede un captcha, che Legend Mod non può mostrare. Potresti non riuscire a entrare in gioco: gioca su sigmally.com."
   },
   "game1.senpa.noInit": {
     "en": "Senpa: the WASM module did not start, cannot connect.",
@@ -3756,10 +3756,10 @@
     "tr": "Senpa: WASM modülü başlamadı, bağlanılamıyor.",
     "pl": "Senpa: moduł WASM się nie uruchomił, nie można połączyć.",
     "nl": "Senpa: de WASM-module is niet gestart, verbinden lukt niet.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Senpa: o módulo WASM não iniciou, não é possível conectar.",
+    "id": "Senpa: modul WASM tidak berjalan, tidak bisa terhubung.",
+    "ja": "Senpa：WASM モジュールが起動しなかったため、接続できません。",
+    "it": "Senpa: il modulo WASM non è partito, impossibile connettersi."
   },
   "game1.senpa.noLoad": {
     "en": "Senpa: failed to load the WASM module, cannot connect.",
@@ -3774,10 +3774,10 @@
     "tr": "Senpa: WASM modülü yüklenemedi, bağlanılamıyor.",
     "pl": "Senpa: nie udało się wczytać modułu WASM, nie można połączyć.",
     "nl": "Senpa: de WASM-module laden mislukt, verbinden lukt niet.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Senpa: falha ao carregar o módulo WASM, não é possível conectar.",
+    "id": "Senpa: gagal memuat modul WASM, tidak bisa terhubung.",
+    "ja": "Senpa：WASM モジュールを読み込めなかったため、接続できません。",
+    "it": "Senpa: impossibile caricare il modulo WASM, connessione non possibile."
   },
   "game1.senpa.captcha": {
     "en": "Senpa requires a captcha that Legend Mod cannot solve. Spawning may be refused; use the official Senpa client.",
@@ -3792,14 +3792,14 @@
     "tr": "Senpa, Legend Mod'un çözemediği bir captcha istiyor. Doğma reddedilebilir; resmi Senpa istemcisini kullanın.",
     "pl": "Senpa wymaga captchy, której Legend Mod nie potrafi rozwiązać. Pojawienie się może zostać odrzucone; użyj oficjalnego klienta Senpa.",
     "nl": "Senpa vraagt een captcha die Legend Mod niet kan oplossen. Spawnen kan worden geweigerd; gebruik de officiële Senpa-client.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Senpa exige um captcha que o Legend Mod não consegue resolver. O spawn pode ser recusado; use o cliente oficial do Senpa.",
+    "id": "Senpa meminta captcha yang tidak bisa diselesaikan Legend Mod. Spawn mungkin ditolak; pakai klien resmi Senpa.",
+    "ja": "Senpa は Legend Mod では解けないキャプチャを要求します。出現を拒否される場合があるので、Senpa 公式クライアントを使ってください。",
+    "it": "Senpa richiede un captcha che Legend Mod non può risolvere. L'ingresso in gioco potrebbe essere rifiutato: usa il client ufficiale di Senpa."
   },
   "game1.conn.lost": {
     "en": "Connection to the server was lost. Press Play to reconnect.",
-    "el": "Η σύνδεση με τον διακομιστή χάθηκε. Πατήστε Παίξε για επανασύνδεση.",
+    "el": "Η σύνδεση με τον server χάθηκε. Πατήστε Παίξε για επανασύνδεση.",
     "es": "Se perdió la conexión con el servidor. Pulsa Jugar para volver a conectar.",
     "bg": "Връзката със сървъра прекъсна. Натиснете Играй, за да се свържете отново.",
     "fr": "La connexion au serveur a été perdue. Appuyez sur Jouer pour vous reconnecter.",
@@ -3810,10 +3810,10 @@
     "tr": "Sunucu bağlantısı koptu. Yeniden bağlanmak için Oyna'ya basın.",
     "pl": "Utracono połączenie z serwerem. Naciśnij Graj, aby połączyć ponownie.",
     "nl": "De verbinding met de server is verbroken. Druk op Spelen om opnieuw te verbinden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A conexão com o servidor caiu. Clique em Jogar para reconectar.",
+    "id": "Koneksi ke server terputus. Tekan Play untuk menyambung lagi.",
+    "ja": "サーバーとの接続が切れました。「プレイ」を押して再接続してください。",
+    "it": "Connessione al server persa. Premi Gioca per riconnetterti."
   },
   "game1.senpa.notConnected": {
     "en": "Senpa is not connected yet, please wait or reconnect.",
@@ -3828,10 +3828,10 @@
     "tr": "Senpa henüz bağlı değil, lütfen bekleyin ya da yeniden bağlanın.",
     "pl": "Senpa nie jest jeszcze połączony, poczekaj lub połącz ponownie.",
     "nl": "Senpa is nog niet verbonden, wacht of verbind opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Senpa ainda não está conectado, aguarde ou reconecte.",
+    "id": "Senpa belum terhubung, tunggu sebentar atau sambungkan ulang.",
+    "ja": "Senpa はまだ接続されていません。お待ちいただくか、再接続してください。",
+    "it": "Senpa non è ancora connesso, aspetta o riconnettiti."
   },
   "game1.conn.alreadyPlaying": {
     "en": "You are already playing!",
@@ -3846,10 +3846,10 @@
     "tr": "Zaten oynuyorsunuz!",
     "pl": "Już grasz!",
     "nl": "Je speelt al!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você já está jogando!",
+    "id": "Kamu sudah sedang bermain!",
+    "ja": "すでにプレイ中です！",
+    "it": "Stai già giocando!"
   },
   "game1.unit.d": {
     "en": "{0}d",
@@ -3864,10 +3864,10 @@
     "tr": "{0} g",
     "pl": "{0} d",
     "nl": "{0} d",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0}d",
+    "id": "{0}hr",
+    "ja": "{0}日",
+    "it": "{0}g"
   },
   "game1.unit.h": {
     "en": "{0}h",
@@ -3882,10 +3882,10 @@
     "tr": "{0} sa",
     "pl": "{0} godz.",
     "nl": "{0} u",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0}h",
+    "id": "{0}j",
+    "ja": "{0}時間",
+    "it": "{0}h"
   },
   "game1.unit.m": {
     "en": "{0}m",
@@ -3900,10 +3900,10 @@
     "tr": "{0} dk",
     "pl": "{0} min",
     "nl": "{0} min",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0}min",
+    "id": "{0}mnt",
+    "ja": "{0}分",
+    "it": "{0}m"
   },
   "game1.unit.s": {
     "en": "{0}s",
@@ -3918,10 +3918,10 @@
     "tr": "{0} sn",
     "pl": "{0} s",
     "nl": "{0} s",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0}s",
+    "id": "{0}dtk",
+    "ja": "{0}秒",
+    "it": "{0}s"
   },
   "game1.product.coins": {
     "en": "{0} Coins",
@@ -3933,13 +3933,13 @@
     "zh": "{0} 金幣",
     "ru": "{0} монет",
     "de": "{0} Münzen",
-    "tr": "{0} jeton",
+    "tr": "{0} altın",
     "pl": "{0} monet",
     "nl": "{0} munten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} moedas",
+    "id": "{0} Koin",
+    "ja": "{0} コイン",
+    "it": "{0} monete"
   },
   "game1.product.dna": {
     "en": "{0} DNA",
@@ -3954,10 +3954,10 @@
     "tr": "{0} DNA",
     "pl": "{0} DNA",
     "nl": "{0} DNA",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} DNA",
+    "id": "{0} DNA",
+    "ja": "{0} DNA",
+    "it": "{0} DNA"
   },
   "game1.product.mass": {
     "en": "Mass",
@@ -3985,14 +3985,14 @@
     "fr": "XP",
     "ar": "XP",
     "zh": "經驗值",
-    "ru": "Опыт",
-    "de": "EP",
+    "ru": "XP",
+    "de": "XP",
     "tr": "XP",
-    "pl": "PD",
+    "pl": "XP",
     "nl": "XP",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "XP",
+    "id": "XP",
+    "ja": "XP",
+    "it": "XP"
   }
 }

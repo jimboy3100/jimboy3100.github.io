@@ -13,7 +13,7 @@
 "site.skinrotator.theLegendModProject": "Το έργο Legend Mod",
 "site.skinrotator.mitLicence": "- Άδεια MIT -",
 "site.skinrotator.forRagaMod": "** Για το mod {0} (το βλέπουν όλοι οι χρήστες του Raga)",
-"site.skinrotator.generateNickname": "*** Δημιούργησε <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">ψευδώνυμο</b></a>",
+"site.skinrotator.generateNickname": "*** Δημιούργησε <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nick</b></a>",
 "site.skinrotator.newVersionHere": "[ΝΕΑ ΕΚΔΟΣΗ ΕΔΩ]",
 "site.skinrotator.destination": "Προορισμός",
 "site.skinrotator.codeOutdated": "Ο κώδικάς σου είναι παλιός, πήγαινε στον ιστότοπο SKIN ROTATOR για να τον ενημερώσεις."

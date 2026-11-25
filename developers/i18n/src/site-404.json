@@ -12,10 +12,10 @@
     "tr": "Sayfa bulunamadı",
     "pl": "Nie znaleziono strony",
     "nl": "Pagina niet gevonden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Página não encontrada",
+    "id": "Halaman Tidak Ditemukan",
+    "ja": "ページが見つかりません",
+    "it": "Pagina non trovata"
   },
   "site.404.thePageYouRe": {
     "en": "The page you're looking for doesn't exist or has been moved. But don't worry — Legend Mod is still here!",
@@ -30,10 +30,10 @@
     "tr": "Aradığın sayfa yok ya da taşınmış. Ama merak etme — Legend Mod hâlâ burada!",
     "pl": "Strona, której szukasz, nie istnieje lub została przeniesiona. Ale spokojnie — Legend Mod wciąż tu jest!",
     "nl": "De pagina die je zoekt bestaat niet of is verplaatst. Maar geen zorgen — Legend Mod is er nog steeds!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A página que você procura não existe ou foi movida. Mas fique tranquilo: o Legend Mod continua aqui!",
+    "id": "Halaman yang kamu cari tidak ada atau sudah dipindahkan. Tapi tenang — Legend Mod masih di sini!",
+    "ja": "お探しのページは存在しないか、移動しました。でも大丈夫 — Legend Mod はここにあります！",
+    "it": "La pagina che cerchi non esiste o è stata spostata. Ma niente paura: Legend Mod è ancora qui!"
   },
   "site.404.goHome": {
     "en": "Go Home",
@@ -48,10 +48,10 @@
     "tr": "Ana sayfa",
     "pl": "Strona główna",
     "nl": "Naar de startpagina",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Voltar ao início",
+    "id": "Ke Beranda",
+    "ja": "ホームへ戻る",
+    "it": "Torna alla home"
   },
   "site.404.playNow": {
     "en": "Play Now",

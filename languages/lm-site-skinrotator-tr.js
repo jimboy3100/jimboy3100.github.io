@@ -13,7 +13,7 @@
 "site.skinrotator.theLegendModProject": "Legend Mod Projesi",
 "site.skinrotator.mitLicence": "- MIT Lisansı -",
 "site.skinrotator.forRagaMod": "** {0} modu için (tüm Raga kullanıcıları görür)",
-"site.skinrotator.generateNickname": "*** <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">Takma ad</b></a> oluştur",
+"site.skinrotator.generateNickname": "*** <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">Nick</b></a> oluştur",
 "site.skinrotator.newVersionHere": "[YENİ SÜRÜM BURADA]",
 "site.skinrotator.destination": "Hedef",
 "site.skinrotator.codeOutdated": "Kodun güncel değil, güncellemek için SKIN ROTATOR sitesine git."

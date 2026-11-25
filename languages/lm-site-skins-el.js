@@ -2,7 +2,7 @@
  * Change the texts in developers/i18n/src and run: node developers/i18n/build.js */
 /* Greek (el, languagemod 2): 13 texts */
 (window._lmI18nQueue = window._lmI18nQueue || []).push(["el", "site-skins", {
-"site.skins.freeAgarIoSkins": "Δωρεάν skins Agar.io – 700+ προσαρμοσμένα skins, video skins, έλεγχος και εναλλαγή skins από το Legend Mod",
+"site.skins.freeAgarIoSkins": "Δωρεάν skins Agar.io – 700+ προσαρμοσμένα skins, skins βίντεο, έλεγχος και εναλλαγή skins από το Legend Mod",
 "site.skins.imgur": "Imgur",
 "site.skins.lowResMoreFps": "Χαμηλή ανάλυση - Περισσότερα FPS",
 "site.skins.vanilla": "Κανονικά",

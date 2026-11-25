@@ -13,7 +13,7 @@
 "site.skinrotator.theLegendModProject": "Het Legend Mod Project",
 "site.skinrotator.mitLicence": "- MIT-licentie -",
 "site.skinrotator.forRagaMod": "** Voor de {0} mod (zichtbaar voor alle Raga-gebruikers)",
-"site.skinrotator.generateNickname": "*** Genereer een <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nickname</b></a>",
+"site.skinrotator.generateNickname": "*** Genereer een <a target=\"_blank\" href=\"https://jimboy3100.github.io/nicks\" rel=\"noopener\"><b style=\"color:#FF0000\">nick</b></a>",
 "site.skinrotator.newVersionHere": "[NIEUWE VERSIE HIER]",
 "site.skinrotator.destination": "Bestemming",
 "site.skinrotator.codeOutdated": "Je code is verouderd, ga naar de SKIN ROTATOR website om hem bij te werken."

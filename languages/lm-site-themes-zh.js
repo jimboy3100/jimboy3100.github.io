@@ -7,7 +7,7 @@
 "site.themes.yourTheme": "你的主題",
 "site.themes.downloadTheme": "下載主題",
 "site.themes.deltaModUsersCan": "*Delta 模組使用者可以下載並另存為 .json 檔案，再從 Restore 分頁匯入該檔案",
-"site.themes.skinUrlCopiedTo": "已複製到剪貼簿 <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
+"site.themes.skinUrlCopiedTo": "已將造型網址複製到剪貼簿 <img src=\"https://jimboy3100.github.io/banners/checkmark.png\">",
 "site.themes.themePreview": "主題預覽",
 "site.themes.themeNumber": "主題 #{0}",
 "site.themes.copy": "複製",
