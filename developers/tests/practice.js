@@ -234,7 +234,10 @@ check('determinism: every exercise runs and repeats exactly', allEx);
         g.application = new Proxy({ teamPlayers: [], customSkinsMap: {}, deaths: 0 }, { get: (t, k) => k in t ? t[k] : (k === 'onPlayerDeath' ? () => { g.deaths = (g.deaths || 0) + 1; } : noop) });
         g.drawRender = new Proxy({}, { get: () => noop });
         g.userBots = { startedBots: false };
-        g.quickSwapDelete = (a, i) => { a[i] = a[a.length - 1]; a.pop(); };
+        /* the game's own array helpers, taken from the source: a hand-made stand-in missed
+           indexedPush, which then fell through to the no-op below and no cell was ever stored */
+        const helpers = cut('    function quickSwapDelete(arr, index, idxProp) {\n', '    var ogarCellPool');
+        if (!helpers || !/function indexedPush\(/.test(helpers)) check('array helpers found in ogario.v4.js', false);
         /* the cell object: what updateCells reads and writes, and removeCell as the game does it */
         g.ogarbasicassembly = function (id, x, y, size, color, isFood, isVirus) {
             Object.assign(this, { id, x, y, size, color, isFood, isVirus, targetX: x, targetY: y, targetSize: size, isPlayerCell: false });
@@ -248,6 +251,7 @@ check('determinism: every exercise runs and repeats exactly', allEx);
             };
         };
         vm.createContext(g);
+        if (helpers) vm.runInContext(helpers + '\nthis.quickSwapDelete = quickSwapDelete; this.indexedPush = indexedPush;', g);
         /* every other name the handler touches (EL effects, HUD hooks) resolves to a no-op */
         g.__h = null;
         g.__env = new Proxy({}, { has: (t, k) => typeof k === 'string' && !(k in g), get: (t, k) => k in t ? t[k] : noop }); /* implicit globals of the handler (cell, cellUpdateCells) keep their values */
