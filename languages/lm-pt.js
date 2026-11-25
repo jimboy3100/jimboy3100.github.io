@@ -2551,7 +2551,7 @@
 "settings.unblockPopups": "Desbloquear temporariamente",
 "settings.mass": "Massa",
 "settings.score": "Pontuação",
-"settings.leaderboard": "Classificação",
+"settings.leaderboard": "Ranking",
 "settings.user": "Usuário",
 "settings.userMuted": "O usuário %user% foi silenciado.",
 "settings.userUnmuted": "O usuário %user% não está mais silenciado.",

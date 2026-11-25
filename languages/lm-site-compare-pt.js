@@ -2,7 +2,7 @@
  * Change the texts in developers/i18n/src and run: node developers/i18n/build.js */
 /* Portuguese (pt, languagemod 13): 4 texts */
 (window._lmI18nQueue = window._lmI18nQueue || []).push(["pt", "site-compare", {
-"site.compare.autoRespawn": "Renascimento automático",
+"site.compare.autoRespawn": "Respawn automático",
 "site.compare.skinRotator": "Rotador de skins",
 "site.compare.performance": "Desempenho",
 "site.compare.teamChat": "Chat da equipe"

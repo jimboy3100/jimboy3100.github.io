@@ -432,7 +432,7 @@
 "lmx.ext.tryAgain": "Riprova",
 "lmx.ext.switchOff": "Per giocare ad agar.io senza mod, disattiva l'estensione nel suo popup.",
 "lmx.ext.logoAlt": "Logo Legend Express",
-"lmx.ext.description": "Legend Express carica Legend Mod su Agar.io: rendering WebGL fluido, skin, replay, chat di squadra, server Expanding Land e numerose macro e scorciatoie.",
+"lmx.ext.description": "Legend Express carica Legend Mod su Agar.io: rendering WebGL fluido, skin, replay, chat di squadra, server Expanding Land e tante macro e tasti rapidi.",
 "lmx.ext.enable": "Abilita estensione",
 "lmx.ext.reloadHint": "Ricarica la scheda agar.io per applicare.",
 "lmx.ext.playNow": "Gioca ora",

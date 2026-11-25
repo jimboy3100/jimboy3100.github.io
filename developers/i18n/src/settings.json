@@ -1147,7 +1147,7 @@
     "pl": "Makro feed (ms)",
     "nl": "Macro-feed (ms)",
     "pt": "Macro de feed (ms)",
-    "id": "Makro feed (ms)",
+    "id": "Macro feed (ms)",
     "ja": "質量放出マクロ（ms）",
     "it": "Macro feed (ms)"
   },
@@ -1165,7 +1165,7 @@
     "pl": "Opóźnienie makro splitu (ms)",
     "nl": "Macro-split-vertraging (ms)",
     "pt": "Atraso da macro de split (ms)",
-    "id": "Jeda makro split (ms)",
+    "id": "Jeda macro split (ms)",
     "ja": "分裂マクロの間隔（ms）",
     "it": "Ritardo macro split (ms)"
   },
@@ -5377,7 +5377,7 @@
     "pl": "Makro feed botów",
     "nl": "Bots macro-feed",
     "pt": "Macro feed dos bots",
-    "id": "Makro feed bot",
+    "id": "Macro feed bot",
     "ja": "ボットのマクロ質量放出",
     "it": "Macro feed dei bot"
   },
@@ -5413,7 +5413,7 @@
     "pl": "Szybki feed",
     "nl": "Macro-feed",
     "pt": "Macro feed",
-    "id": "Makro feed",
+    "id": "Macro feed",
     "ja": "マクロ質量放出",
     "it": "Macro feed"
   },
@@ -10869,7 +10869,7 @@
     "tr": "Sıralama",
     "pl": "Topka",
     "nl": "Klassement",
-    "pt": "Classificação",
+    "pt": "Ranking",
     "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifica"
@@ -11626,7 +11626,7 @@
     "pl": "Własne makra (split, feed, czekaj, ruch do myszy)",
     "nl": "Eigen macro's (split, feed, wachten, naar muis bewegen)",
     "pt": "Macros personalizadas (split, feed, esperar, ir até o mouse)",
-    "id": "Makro kustom (split, feed, tunggu, gerak ke mouse)",
+    "id": "Macro kustom (split, feed, tunggu, gerak ke mouse)",
     "ja": "カスタムマクロ（分裂、質量放出、待機、マウスへ移動）",
     "it": "Macro personalizzate (split, feed, attesa, vai verso il mouse)"
   },
@@ -11644,7 +11644,7 @@
     "pl": "Własne makro 1 (Ustawienia > Makro > Własne makra)",
     "nl": "Eigen macro 1 (Instellingen > Macro > Eigen macro's)",
     "pt": "Macro personalizada 1 (Configurações > Macro > Macros personalizadas)",
-    "id": "Makro kustom 1 (Pengaturan > Makro > Makro kustom)",
+    "id": "Macro kustom 1 (Pengaturan > Macro > Macro kustom)",
     "ja": "カスタムマクロ1（設定 > マクロ > カスタムマクロ）",
     "it": "Macro personalizzata 1 (Impostazioni > Macro > Macro personalizzate)"
   },
@@ -11662,7 +11662,7 @@
     "pl": "Własne makro 2 (Ustawienia > Makro > Własne makra)",
     "nl": "Eigen macro 2 (Instellingen > Macro > Eigen macro's)",
     "pt": "Macro personalizada 2 (Configurações > Macro > Macros personalizadas)",
-    "id": "Makro kustom 2 (Pengaturan > Makro > Makro kustom)",
+    "id": "Macro kustom 2 (Pengaturan > Macro > Macro kustom)",
     "ja": "カスタムマクロ2（設定 > マクロ > カスタムマクロ）",
     "it": "Macro personalizzata 2 (Impostazioni > Macro > Macro personalizzate)"
   },
@@ -11680,7 +11680,7 @@
     "pl": "Własne makro 3 (Ustawienia > Makro > Własne makra)",
     "nl": "Eigen macro 3 (Instellingen > Macro > Eigen macro's)",
     "pt": "Macro personalizada 3 (Configurações > Macro > Macros personalizadas)",
-    "id": "Makro kustom 3 (Pengaturan > Makro > Makro kustom)",
+    "id": "Macro kustom 3 (Pengaturan > Macro > Macro kustom)",
     "ja": "カスタムマクロ3（設定 > マクロ > カスタムマクロ）",
     "it": "Macro personalizzata 3 (Impostazioni > Macro > Macro personalizzate)"
   },

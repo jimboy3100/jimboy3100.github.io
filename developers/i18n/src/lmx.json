@@ -841,9 +841,9 @@
     "pl": "Legend Express wczytuje Legend Mod w Agar.io: płynne renderowanie WebGL, skiny, powtórki, czat drużynowy, serwery Expanding Land oraz wiele makr i skrótów klawiszowych.",
     "nl": "Legend Express laadt Legend Mod op Agar.io: vloeiende WebGL-weergave, skins, herhalingen, teamchat, Expanding Land-servers en veel macro's en sneltoetsen.",
     "pt": "O Legend Express carrega o Legend Mod no Agar.io: renderização WebGL fluida, skins, replays, chat de equipe, servidores Expanding Land e muitos macros e atalhos.",
-    "id": "Legend Express memuat Legend Mod di Agar.io: rendering WebGL lancar, skin, tayangan ulang, obrolan tim, server Expanding Land, serta banyak makro dan tombol pintas.",
+    "id": "Legend Express memuat Legend Mod di Agar.io: rendering WebGL lancar, skin, replay, chat tim, server Expanding Land, serta banyak macro dan hotkey.",
     "ja": "Legend ExpressはAgar.ioでLegend Modを読み込みます。滑らかなWebGL描画、スキン、リプレイ、チームチャット、Expanding Landサーバー、多数のマクロとショートカットを利用できます。",
-    "it": "Legend Express carica Legend Mod su Agar.io: rendering WebGL fluido, skin, replay, chat di squadra, server Expanding Land e numerose macro e scorciatoie."
+    "it": "Legend Express carica Legend Mod su Agar.io: rendering WebGL fluido, skin, replay, chat di squadra, server Expanding Land e tante macro e tasti rapidi."
   },
   "lmx.ext.enable": {
     "en": "Enable extension",
@@ -967,7 +967,7 @@
     "pl": "Najlepszy mod do agar.io — 60+ makr, własne skiny, więcej FPS, tricksplit, powtórki, czat drużynowy. Za darmo od ℄ Legend Clan.",
     "nl": "Beste agar.io-mod — 60+ macro's, eigen skins, meer FPS zonder lag, tricksplit, herhalingen, teamchat. Gratis van ℄ Legend Clan.",
     "pt": "Mod agar.io: 60+ macros, skins, FPS, tricksplit, replays e chat de equipe. Grátis, por ℄ Legend Clan.",
-    "id": "Mod agar.io: 60+ makro, skin, peningkatan FPS, tricksplit, tayangan ulang, obrolan tim. Gratis oleh ℄ Legend Clan.",
+    "id": "Mod agar.io: 60+ macro, skin, peningkatan FPS, tricksplit, replay, chat tim. Gratis oleh ℄ Legend Clan.",
     "ja": "agar.io用MOD。60以上のマクロ、スキン、FPS向上、トリックスプリット、リプレイ、チームチャット。℄ Legend Clanによる無料MOD。",
     "it": "Mod agar.io: 60+ macro, skin, più FPS, tricksplit, replay e chat di squadra. Gratis da ℄ Legend Clan."
   },
@@ -1183,7 +1183,7 @@
     "pl": "W tym rankingu nie ma jeszcze graczy.",
     "nl": "Nog geen spelers in dit klassement.",
     "pt": "Ainda não há jogadores neste ranking.",
-    "id": "Belum ada pemain di papan peringkat ini.",
+    "id": "Belum ada pemain di leaderboard ini.",
     "ja": "このランキングにはまだプレイヤーがいません。",
     "it": "Ancora nessun giocatore in questa classifica."
   },
@@ -1237,7 +1237,7 @@
     "pl": "Nie można pobrać danych rankingu.",
     "nl": "Klassementgegevens konden niet worden opgevraagd.",
     "pt": "Não foi possível solicitar os dados do ranking.",
-    "id": "Tidak bisa meminta data papan peringkat.",
+    "id": "Tidak bisa meminta data leaderboard.",
     "ja": "ランキングデータを取得できませんでした。",
     "it": "Impossibile richiedere i dati della classifica."
   },
@@ -1255,7 +1255,7 @@
     "pl": "Upłynął limit czasu żądania rankingu.",
     "nl": "Het opvragen van het klassement duurde te lang.",
     "pt": "A solicitação do ranking expirou.",
-    "id": "Permintaan papan peringkat habis waktu.",
+    "id": "Permintaan leaderboard habis waktu.",
     "ja": "ランキングの取得がタイムアウトしました。",
     "it": "La richiesta della classifica è scaduta."
   },
@@ -1273,7 +1273,7 @@
     "pl": "Nie można wyświetlić danych rankingu.",
     "nl": "Klassementgegevens konden niet worden getoond.",
     "pt": "Não foi possível mostrar os dados do ranking.",
-    "id": "Tidak bisa menampilkan data papan peringkat.",
+    "id": "Tidak bisa menampilkan data leaderboard.",
     "ja": "ランキングデータを表示できませんでした。",
     "it": "Impossibile mostrare i dati della classifica."
   },
@@ -1309,7 +1309,7 @@
     "pl": "Agar.io odpowiedziało, że nie ma danych rankingu dla tego konta.",
     "nl": "Agar.io meldt dat er geen klassementgegevens voor dit account zijn.",
     "pt": "O Agar.io respondeu que não tem dados de ranking para esta conta.",
-    "id": "Agar.io menjawab tidak ada data papan peringkat untuk akun ini.",
+    "id": "Agar.io menjawab tidak ada data leaderboard untuk akun ini.",
     "ja": "Agar.ioの応答によると、このアカウントのランキングデータはありません。",
     "it": "Agar.io ha risposto che non ha dati di classifica per questo account."
   },
@@ -1345,7 +1345,7 @@
     "pl": "Nie udało się ustalić bieżącego poziomu ligi tygodniowej z oficjalnej odpowiedzi.",
     "nl": "Het huidige weekcompetitieniveau kon niet uit het officiële antwoord worden bepaald.",
     "pt": "Não foi possível determinar o nível atual da liga semanal a partir da resposta oficial do ranking.",
-    "id": "Tingkat liga mingguan saat ini tidak bisa ditentukan dari respons papan peringkat resmi.",
+    "id": "Tingkat liga mingguan saat ini tidak bisa ditentukan dari respons leaderboard resmi.",
     "ja": "公式ランキングの応答から、現在のウィークリーリーグのランクを特定できませんでした。",
     "it": "Impossibile determinare il livello attuale della lega settimanale dalla risposta ufficiale della classifica."
   },
@@ -1381,7 +1381,7 @@
     "pl": "Agar.io nie zwróciło oficjalnych nagród dla tego rankingu.",
     "nl": "Agar.io gaf geen officiële prijzen voor dit klassement.",
     "pt": "O Agar.io não retornou prêmios oficiais para este ranking.",
-    "id": "Agar.io tidak mengirim hadiah resmi untuk papan peringkat ini.",
+    "id": "Agar.io tidak mengirim hadiah resmi untuk leaderboard ini.",
     "ja": "Agar.ioからこのランキングの公式賞品が返されませんでした。",
     "it": "Agar.io non ha restituito premi ufficiali per questa classifica."
   },
@@ -1651,7 +1651,7 @@
     "pl": "Brak wyników dla tego rankingu.",
     "nl": "Geen resultaten voor dit klassement.",
     "pt": "Não há resultados para este ranking.",
-    "id": "Tidak ada hasil untuk papan peringkat ini.",
+    "id": "Tidak ada hasil untuk leaderboard ini.",
     "ja": "このランキングの結果はありません。",
     "it": "Nessun risultato disponibile per questa classifica."
   },
@@ -1741,7 +1741,7 @@
     "pl": "<p>Trofea znajdziesz w Mystery Potions. Zbierz ich jak najwięcej, aby piąć się w rankingach.</p><p style=\"font-weight: 800; margin-top: 14px;\">Graj w dowolnym trybie, aby zbierać Mystery Potions.</p>",
     "nl": "<p>Trofeeën zitten in Mystery Potions. Verzamel er zoveel mogelijk om in de klassementen te stijgen.</p><p style=\"font-weight: 800; margin-top: 14px;\">Speel een willekeurige modus om Mystery Potions te verzamelen.</p>",
     "pt": "<p>Os troféus vêm dentro das Mystery Potions. Junte o máximo que puder para subir nos rankings.</p><p style=\"font-weight: 800; margin-top: 14px;\">Jogue qualquer modo para ganhar Mystery Potions.</p>",
-    "id": "<p>Trofi bisa ditemukan di dalam Mystery Potions. Kumpulkan sebanyak mungkin untuk naik di papan peringkat.</p><p style=\"font-weight: 800; margin-top: 14px;\">Mainkan mode apa saja untuk mengumpulkan Mystery Potions.</p>",
+    "id": "<p>Trofi bisa ditemukan di dalam Mystery Potions. Kumpulkan sebanyak mungkin untuk naik di leaderboard.</p><p style=\"font-weight: 800; margin-top: 14px;\">Mainkan mode apa saja untuk mengumpulkan Mystery Potions.</p>",
     "ja": "<p>トロフィーはMystery Potionsの中に入っています。できるだけ多く集めてランキングを駆け上がろう。</p><p style=\"font-weight: 800; margin-top: 14px;\">どのゲームモードでもMystery Potionsを集められます。</p>",
     "it": "<p>I trofei si trovano dentro le Mystery Potions. Raccoglierne il più possibile ti fa salire in classifica.</p><p style=\"font-weight: 800; margin-top: 14px;\">Gioca a qualsiasi modalità per raccogliere Mystery Potions.</p>"
   },
@@ -1975,7 +1975,7 @@
     "pl": "Wejdź do rankingu, aby wygrać Mystery Potions",
     "nl": "Kom in het klassement om Mystery Potions te winnen",
     "pt": "Entre no ranking para ganhar Mystery Potions",
-    "id": "Masuk papan peringkat untuk memenangkan Mystery Potions",
+    "id": "Masuk leaderboard untuk memenangkan Mystery Potions",
     "ja": "ランキング入りしてMystery Potionsを獲得しよう",
     "it": "Entra in classifica per vincere Mystery Potions"
   },
@@ -4009,7 +4009,7 @@
     "pl": "Osiągnij ustaloną pozycję w rankingu lub lepszą.",
     "nl": "Bereik de ingestelde klassementpositie of beter.",
     "pt": "Alcance a posição definida no ranking ou melhor.",
-    "id": "Capai posisi papan peringkat yang ditentukan atau lebih baik.",
+    "id": "Capai posisi leaderboard yang ditentukan atau lebih baik.",
     "ja": "設定されたランキング順位以上に到達する。",
     "it": "Raggiungi la posizione in classifica stabilita o migliore."
   },
@@ -4909,7 +4909,7 @@
     "pl": "Musisz być zalogowany, aby zobaczyć ranking znajomych.",
     "nl": "Je moet ingelogd zijn om het vriendenklassement te zien.",
     "pt": "Você precisa estar conectado para ver o ranking dos amigos.",
-    "id": "Kamu harus login untuk melihat papan peringkat Teman.",
+    "id": "Kamu harus login untuk melihat leaderboard Teman.",
     "ja": "フレンドランキングを見るにはログインが必要です。",
     "it": "Devi aver effettuato l'accesso per vedere la classifica degli amici."
   },
@@ -10471,7 +10471,7 @@
     "pl": "nazwy z rankingu",
     "nl": "namen op het scorebord",
     "pt": "nomes do ranking",
-    "id": "nama di papan peringkat",
+    "id": "nama di leaderboard",
     "ja": "ランキングの名前",
     "it": "nomi della classifica"
   },
@@ -10705,7 +10705,7 @@
     "pl": "Nie znaleziono serwera / rankingu.",
     "nl": "Server / scorebord niet gevonden.",
     "pt": "Servidor / ranking não encontrado.",
-    "id": "Server / papan peringkat tidak ditemukan.",
+    "id": "Server / leaderboard tidak ditemukan.",
     "ja": "サーバー / ランキングが見つかりません。",
     "it": "Server / classifica non trovati."
   },
@@ -11155,7 +11155,7 @@
     "pl": "Tekst logo rankingu",
     "nl": "Logotekst scorebord",
     "pt": "Texto do logo do ranking",
-    "id": "Teks logo papan peringkat",
+    "id": "Teks logo leaderboard",
     "ja": "ランキングのロゴテキスト",
     "it": "Testo del logo della classifica"
   },

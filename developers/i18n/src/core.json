@@ -661,7 +661,7 @@
     "pl": "Zdobądź #1 w rankingu w jednej z ostatnich 50 gier",
     "nl": "Bereik #1 op het scorebord in een van je laatste 50 potjes",
     "pt": "Chegue ao #1 do ranking em uma das suas últimas 50 partidas",
-    "id": "Raih #1 di papan peringkat dalam salah satu dari 50 permainan terakhirmu",
+    "id": "Raih #1 di leaderboard dalam salah satu dari 50 permainan terakhirmu",
     "ja": "直近50試合のいずれかでランキング1位になる",
     "it": "Arriva al #1 in classifica in una delle tue ultime 50 partite"
   },
@@ -787,7 +787,7 @@
     "pl": "{name} wyprzedził cię w rankingu światowym!",
     "nl": "{name} heeft je ingehaald in het Wereldklassement!",
     "pt": "{name} passou você no ranking mundial!",
-    "id": "{name} menyalipmu di papan peringkat Dunia!",
+    "id": "{name} menyalipmu di leaderboard Dunia!",
     "ja": "{name}がワールドランキングであなたを抜きました！",
     "it": "{name} ti ha superato nella classifica mondiale!"
   },
@@ -805,7 +805,7 @@
     "pl": "{name} wyprzedził cię w rankingu kraju!",
     "nl": "{name} heeft je ingehaald in het Landenklassement!",
     "pt": "{name} passou você no ranking do país!",
-    "id": "{name} menyalipmu di papan peringkat Negara!",
+    "id": "{name} menyalipmu di leaderboard Negara!",
     "ja": "{name}が国別ランキングであなたを抜きました！",
     "it": "{name} ti ha superato nella classifica nazionale!"
   },
@@ -841,7 +841,7 @@
     "pl": "{name} wyprzedził cię w rankingu znajomych!",
     "nl": "{name} heeft je ingehaald in het Vriendenklassement!",
     "pt": "{name} passou você no ranking de amigos!",
-    "id": "{name} menyalipmu di papan peringkat Teman!",
+    "id": "{name} menyalipmu di leaderboard Teman!",
     "ja": "{name}がフレンドランキングであなたを抜きました！",
     "it": "{name} ti ha superato nella classifica degli amici!"
   },
@@ -859,7 +859,7 @@
     "pl": "Wyprzedziłeś {name} w rankingu światowym!",
     "nl": "Je hebt {name} ingehaald in het Wereldklassement!",
     "pt": "Você passou {name} no ranking mundial!",
-    "id": "Kamu menyalip {name} di papan peringkat Dunia!",
+    "id": "Kamu menyalip {name} di leaderboard Dunia!",
     "ja": "ワールドランキングで{name}を抜きました！",
     "it": "Hai superato {name} nella classifica mondiale!"
   },
@@ -877,7 +877,7 @@
     "pl": "Wyprzedziłeś {name} w rankingu kraju!",
     "nl": "Je hebt {name} ingehaald in het Landenklassement!",
     "pt": "Você passou {name} no ranking do país!",
-    "id": "Kamu menyalip {name} di papan peringkat Negara!",
+    "id": "Kamu menyalip {name} di leaderboard Negara!",
     "ja": "国別ランキングで{name}を抜きました！",
     "it": "Hai superato {name} nella classifica nazionale!"
   },
@@ -913,7 +913,7 @@
     "pl": "Wyprzedziłeś {name} w rankingu znajomych!",
     "nl": "Je hebt {name} ingehaald in het Vriendenklassement!",
     "pt": "Você passou {name} no ranking de amigos!",
-    "id": "Kamu menyalip {name} di papan peringkat Teman!",
+    "id": "Kamu menyalip {name} di leaderboard Teman!",
     "ja": "フレンドランキングで{name}を抜きました！",
     "it": "Hai superato {name} nella classifica degli amici!"
   },
@@ -2029,7 +2029,7 @@
     "pl": "Wejdź do top {0} rankingu",
     "nl": "Haal de top {0} van het klassement",
     "pt": "Chegue ao top {0} do ranking",
-    "id": "Masuk top {0} papan peringkat",
+    "id": "Masuk top {0} leaderboard",
     "ja": "ランキングで上位{0}位に入る",
     "it": "Entra nella top {0} della classifica"
   },
@@ -3325,7 +3325,7 @@
     "pl": "Czas w rankingu",
     "nl": "Tijd in ranglijst",
     "pt": "Tempo no ranking",
-    "id": "Waktu di papan peringkat",
+    "id": "Waktu di leaderboard",
     "ja": "ランキング滞在時間",
     "it": "Tempo in classifica"
   },
