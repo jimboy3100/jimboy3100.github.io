@@ -28,65 +28,65 @@
     var MAX_SEEN = 100;
     var own = Object.prototype.hasOwnProperty;
 
+    /* texts from the language packs (developers/i18n/src) */
+    var P = 'modules.discovery.';
+    function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(P + k, vars) : k; }
+
     /* ═══ Server types and what works on them ═══ */
 
+    /* name: proper names (not translated); private servers have a text in the packs (type.private) */
     var SERVER_TYPES = [
-        { id: 'agario', en: 'agar.io' },
-        { id: 'expandingland', en: 'Expanding Land' },
-        { id: 'senpa', en: 'Senpa' },
-        { id: 'garix', en: 'Garix' },
-        { id: 'sigmally', en: 'Sigmally' },
-        { id: 'imsolo', en: 'Imsolo' },
-        { id: 'agar2', en: 'Agar2' },
-        { id: 'deltio', en: 'delt.io' },
-        { id: 'private', en: 'MultiOgar / private' }
+        { id: 'agario', name: 'agar.io' },
+        { id: 'expandingland', name: 'Expanding Land' },
+        // i18n-ok: server proper name
+        { id: 'senpa', name: 'Senpa' },
+        // i18n-ok: server proper name
+        { id: 'garix', name: 'Garix' },
+        { id: 'sigmally', name: 'Sigmally' },
+        { id: 'imsolo', name: 'Imsolo' },
+        // i18n-ok: server proper name
+        { id: 'agar2', name: 'Agar2' },
+        { id: 'deltio', name: 'delt.io' },
+        { id: 'private', name: '' }
     ];
-    /* v: y works, n does not, p partly (see the note), u not verified. Types not listed are n.
+    /* label: the text cap.<id> of the packs (a note: note.<key>).
+     * v: y works, n does not, p partly (see the note), u not verified. Types not listed are n.
      * Where in ogario.v4.js (or the module) the behaviour comes from is in the comment. */
     var CAPS = [
         /* recording is in _lmHandlePacket, called from handleMessage; Sigmally and Senpa packets are
          * decoded by their own paths in onMessage, which return before handleMessage */
-        { id: 'replays', en: 'Replays and Replay Studio', el: 'Επαναλήψεις και Replay Studio',
-            v: { agario: 'y', expandingland: 'y', garix: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
+        { id: 'replays', v: { agario: 'y', expandingland: 'y', garix: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
         /* spect.js: the extra unit sends only the classic 254/255 handshake (no Senpa / Sigmally login,
          * no Garix subprotocol) */
-        { id: 'multibox', en: 'Multibox (second unit)', el: 'Multibox (δεύτερη μονάδα)',
-            v: { agario: 'y', expandingland: 'y', imsolo: 'y', agar2: 'y', private: 'y', garix: 'u', deltio: 'u' } },
+        { id: 'multibox', v: { agario: 'y', expandingland: 'y', imsolo: 'y', agar2: 'y', private: 'y', garix: 'u', deltio: 'u' } },
         /* hudhelpers.js mergeFrame: LM.integrity && !LM.isLegendWorld (agar.io merge times) */
-        { id: 'mergeCountdown', en: 'Merge countdown on own cells', el: 'Αντίστροφη μέτρηση συγχώνευσης',
-            v: { agario: 'y' } },
+        { id: 'mergeCountdown', v: { agario: 'y' } },
         /* split prediction: LM.integrity && !LM.isLegendWorld */
-        { id: 'splitPrediction', en: 'Split prediction', el: 'Πρόβλεψη διαχωρισμού', v: { agario: 'y' } },
+        { id: 'splitPrediction', v: { agario: 'y' } },
         /* sendPlayerPosition / setParty have no server gate (relay, or ogarioWS on private) */
-        { id: 'teammates', en: 'Teammates on the minimap, team chat', el: 'Συμπαίκτες στον χάρτη, συνομιλία ομάδας',
-            v: { agario: 'y', expandingland: 'y', senpa: 'y', garix: 'y', sigmally: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
+        { id: 'teammates', v: { agario: 'y', expandingland: 'y', senpa: 'y', garix: 'y', sigmally: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
         /* chat opcode 99: !integrity && not Sigmally / Senpa && no clan tag; Expanding Land uses its team
          * chat (202) with a tag or in Teams */
-        { id: 'serverChat', en: 'Public server chat', el: 'Δημόσια συνομιλία διακομιστή',
-            v: { expandingland: 'p', garix: 'y', imsolo: 'y', agar2: 'y', private: 'y', deltio: 'u' },
-            note: { expandingland: { en: 'without a clan tag, outside Teams', el: 'χωρίς tag, εκτός Teams' } } },
+        { id: 'serverChat', v: { expandingland: 'p', garix: 'y', imsolo: 'y', agar2: 'y', private: 'y', deltio: 'u' },
+            note: { expandingland: 'noClanTag' } },
         /* doubleSplit / tripleSplit / split16: Senpa opcode 22, Imsolo / Agar2 / Garix / private 26-28;
          * the others send quick single splits */
-        { id: 'splitMacros', en: 'Double / triple / 16 split in one step', el: 'Διπλό / τριπλό / 16 split με μία κίνηση',
-            v: { senpa: 'y', garix: 'y', imsolo: 'y', agar2: 'y', private: 'y', agario: 'p', expandingland: 'p', sigmally: 'p', deltio: 'p' },
-            note: { '*': { en: 'sent as quick single splits', el: 'στέλνεται ως γρήγορα απλά split' } } },
+        { id: 'splitMacros', v: { senpa: 'y', garix: 'y', imsolo: 'y', agar2: 'y', private: 'y', agario: 'p', expandingland: 'p', sigmally: 'p', deltio: 'p' },
+            note: { '*': 'singleSplits' } },
         /* freeze: sendAction(32) only for the same four types */
-        { id: 'freeze', en: 'Freeze cells (hotkey)', el: 'Πάγωμα κυττάρων (πλήκτρο)', v: { garix: 'y', imsolo: 'y', agar2: 'y', private: 'y' } },
+        { id: 'freeze', v: { garix: 'y', imsolo: 'y', agar2: 'y', private: 'y' } },
         /* free spectate: Senpa and Sigmally have their own spectate paths, the others opcode 1 / 18 */
-        { id: 'spectate', en: 'Spectate and free spectate', el: 'Θέαση και ελεύθερη θέαση',
-            v: { agario: 'y', expandingland: 'y', senpa: 'y', garix: 'y', sigmally: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
+        { id: 'spectate', v: { agario: 'y', expandingland: 'y', senpa: 'y', garix: 'y', sigmally: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
         /* the World Spectate button is shown only for expandingland */
-        { id: 'worldSpectate', en: 'World Spectate (whole map)', el: 'World Spectate (όλος ο χάρτης)', v: { expandingland: 'y' } },
+        { id: 'worldSpectate', v: { expandingland: 'y' } },
         /* social login buttons enabled only for agario and expandingland; the token is sent to no other */
-        { id: 'login', en: 'Login, account skins, leagues', el: 'Σύνδεση, skins λογαριασμού, πρωταθλήματα',
-            v: { agario: 'y', expandingland: 'y' } },
+        { id: 'login', v: { agario: 'y', expandingland: 'y' } },
         /* agar.io parties go through the official API */
-        { id: 'party', en: 'agar.io party codes', el: 'Κωδικοί party του agar.io', v: { agario: 'y' } },
+        { id: 'party', v: { agario: 'y' } },
         /* server option 5003: wss://api.legendmod.ml/el-room/... */
-        { id: 'rooms', en: 'Private rooms', el: 'Ιδιωτικά δωμάτια', v: { expandingland: 'y' } },
+        { id: 'rooms', v: { expandingland: 'y' } },
         /* claimDailyChallenge, server events and the account match history need isLegendWorld */
-        { id: 'elAccount', en: 'Daily challenges, events, match history on the account', el: 'Ημερήσιες προκλήσεις, events, ιστορικό στον λογαριασμό',
-            v: { expandingland: 'y' } }
+        { id: 'elAccount', v: { expandingland: 'y' } }
     ];
     var TYPE_IDS = SERVER_TYPES.map(function (s) { return s.id; });
 
@@ -101,16 +101,17 @@
         var v = row && row.v && own.call(row.v, type) ? row.v[type] : 'n';
         return v === 'y' || v === 'p' || v === 'u' ? v : 'n';
     }
-    function capNote(row, type, lng) {
+    /* the note of a row that works partly on this type, in the chosen language ('' for none) */
+    function capNote(row, type) {
         if (!row || !row.note || capValue(row, type) !== 'p') return '';
         var n = own.call(row.note, type) ? row.note[type] : row.note['*'];
-        return n ? (n[lng] || n.en || '') : '';
+        return n ? t('note.' + n) : '';
     }
     /* the rows for one type: works first, then partly, not verified, does not */
-    function capsFor(type, lng) {
+    function capsFor(type) {
         var order = { y: 0, p: 1, u: 2, n: 3 };
         return CAPS.map(function (r, i) {
-            return { id: r.id, label: (lng && r[lng]) || r.en, v: capValue(r, type), note: capNote(r, type, lng || 'en'), i: i };
+            return { id: r.id, label: t('cap.' + r.id), v: capValue(r, type), note: capNote(r, type), i: i };
         }).sort(function (a, b) { return order[a.v] - order[b.v] || a.i - b.i; });
     }
 
@@ -167,7 +168,7 @@
 
     /* ═══ Feature cards ═══ */
 
-    /* opts: option keys (checkboxes of the settings menu); show: where a switched-on option appears;
+    /* name and text: card.<id> and card.<id>.desc in the packs; opts: option keys (checkboxes of the settings menu); show: where a switched-on option appears;
      * open: the window, avail: whether it can be opened here */
     function fn(path) {
         return function () {
@@ -181,63 +182,25 @@
         return { avail: function () { return !!get(); }, run: function () { var o = get(); if (o) o[name](arg); } };
     }
     var CARDS = [
-        { id: 'commandCentre', en: 'Command Centre', el: 'Κέντρο εντολών',
-            d: { en: 'Ctrl+K: search and run any setting, hotkey or window. Star favourites for a quick bar in game.', el: 'Ctrl+K: αναζήτηση και εκτέλεση κάθε ρύθμισης, πλήκτρου ή παραθύρου. Τα αγαπημένα μπαίνουν σε γρήγορη μπάρα.' },
-            opts: ['commandCentreBar'], show: { commandCentreBar: '#lm-cc-bar' }, win: opener('LMCommandCentre.open') },
-        { id: 'hudHelpers', en: 'HUD helpers', el: 'Βοηθοί HUD',
-            d: { en: 'Movement arrow, merge countdown, relative enemy mass, edge arrows to teammates and threats, a cell mass panel.', el: 'Βέλος κίνησης, αντίστροφη μέτρηση συγχώνευσης, σχετική μάζα, βέλη στις άκρες, πίνακας μάζας κυττάρων.' },
-            opts: ['hudMoveDir', 'hudMergeCountdown', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel'], show: { hudCellPanel: '#lm-hh-cells' } },
-        { id: 'replayStudio', en: 'Replay Studio', el: 'Replay Studio',
-            d: { en: 'Timeline, bookmarks, speed and a replay library for the games you recorded.', el: 'Χρονολόγιο, σελιδοδείκτες, ταχύτητα και βιβλιοθήκη για τα παιχνίδια που καταγράφηκαν.' },
-            opts: ['recordReplays'], win: opener('lmReplayStudio', 'open') },
-        { id: 'analytics', en: 'Analytics', el: 'Αναλύσεις',
-            d: { en: 'Your games over time: stats, heatmaps, a coach with tips and daily objectives. Kept in this browser.', el: 'Τα παιχνίδια σου: στατιστικά, χάρτες θερμότητας, προπονητής και ημερήσιοι στόχοι. Μένουν στον browser.' },
-            opts: ['analytics'], win: opener('LMAnalytics.open') },
-        { id: 'deathRecap', en: 'Death recap and kill feed', el: 'Ανασκόπηση θανάτου και ροή',
-            d: { en: 'The last 20 s before a death on the Game Over card, a small feed of your eats, alerts on big mass loss.', el: 'Τα τελευταία 20 δ πριν τον θάνατο στην κάρτα Game Over, ροή φαγωμάτων, ειδοποίηση για μεγάλη απώλεια.' },
-            opts: ['deathRecap', 'killFeed', 'massLossAlert'] },
-        { id: 'adaptivePerf', en: 'Adaptive performance', el: 'Προσαρμοστική απόδοση',
-            d: { en: 'While FPS stays low, costly effects go off for now and come back when it is fast again. Diagnostics window.', el: 'Όσο τα FPS μένουν χαμηλά, τα βαριά εφέ κλείνουν προσωρινά. Παράθυρο διαγνωστικών.' },
-            opts: ['adaptivePerf', 'netHistory'], win: opener('LMPerf.openDiag') },
-        { id: 'gamepad', en: 'Gamepad', el: 'Χειριστήριο',
-            d: { en: 'Play with a controller: button map, stick sensitivity, profiles and a live test.', el: 'Παίξε με χειριστήριο: αντιστοίχιση κουμπιών, ευαισθησία, προφίλ και δοκιμή.' },
-            opts: ['gamepadEnabled'], win: opener('LMGamepad.openWindow') },
-        { id: 'profiles', en: 'Settings profiles', el: 'Προφίλ ρυθμίσεων',
-            d: { en: 'Named sets of settings, theme and hotkeys, with backups and Undo; can switch by server.', el: 'Ονομασμένα σύνολα ρυθμίσεων, θέματος και πλήκτρων, με αντίγραφα και αναίρεση.' },
-            opts: [], win: opener('LMProfiles.open') },
-        { id: 'notifications', en: 'Notification centre', el: 'Κέντρο ειδοποιήσεων',
-            d: { en: 'A bell with the last messages you missed, and a sound mixer per channel.', el: 'Καμπανάκι με τα τελευταία μηνύματα και μίκτης ήχου ανά κανάλι.' },
-            opts: ['notificationCentre'], show: { notificationCentre: '#lm-notif-bell' }, win: opener('LMNotifications.open') },
-        { id: 'hudEditor', en: 'HUD editor', el: 'Επεξεργασία HUD',
-            d: { en: 'Move, resize, lock the HUD boxes and save layouts (also per settings profile).', el: 'Μετακίνηση, μέγεθος, κλείδωμα πλαισίων HUD και αποθήκευση διατάξεων.' },
-            opts: [], win: opener('LMHudEditor.open') },
-        { id: 'director', en: 'Spectator director', el: 'Σκηνοθέτης θέασης',
-            d: { en: 'For spectating: auto camera on the action, watchlist, camera bookmarks and a broadcast HUD.', el: 'Για θέαση: αυτόματη κάμερα, λίστα παρακολούθησης, σελιδοδείκτες κάμερας, HUD μετάδοσης.' },
-            opts: [], win: opener('LMDirector.open') },
-        { id: 'companion', en: 'Stream overlay', el: 'Επικάλυψη stream',
-            d: { en: 'A second screen or OBS source with mass, rank, minimap and leaderboard.', el: 'Δεύτερη οθόνη ή πηγή OBS με μάζα, θέση, χάρτη και κατάταξη.' },
-            opts: ['companionLive', 'companionChat'], win: opener('LMCompanion.open') },
-        { id: 'touchEditor', en: 'Touch control editor', el: 'Επεξεργασία κουμπιών αφής',
-            d: { en: 'Phones: move and resize the touch buttons and the joystick.', el: 'Κινητά: μετακίνηση και μέγεθος κουμπιών αφής και joystick.' },
-            opts: [], win: opener('_lmMobileHost.openEditor'), phoneOnly: true },
-        { id: 'practice', en: 'Practice arena', el: 'Αρένα εξάσκησης',
-            d: { en: 'Offline drills against bots, with personal bests and a ghost of your best run. No server involved.', el: 'Ασκήσεις εκτός σύνδεσης με bots, προσωπικά ρεκόρ και φάντασμα της καλύτερης προσπάθειας.' },
-            opts: [], win: opener('lmPractice', 'open') },
-        { id: 'macroEditor', en: 'Custom macros', el: 'Προσαρμοσμένα macro',
-            d: { en: 'Build your own key macros from steps: split, feed, wait, move to the mouse.', el: 'Φτιάξε δικά σου macro πλήκτρων από βήματα: split, feed, αναμονή, κίνηση στο ποντίκι.' },
-            opts: [], win: opener('lmMacroEditor', 'open') },
-        { id: 'themeWorkshop', en: 'Theme workshop', el: 'Εργαστήριο θεμάτων',
-            d: { en: 'Edit the colours of the menu, HUD and game with a live preview, and save or share themes.', el: 'Αλλαγή χρωμάτων μενού, HUD και παιχνιδιού με ζωντανή προεπισκόπηση, αποθήκευση και κοινή χρήση θεμάτων.' },
-            opts: [], win: opener('LMThemeWorkshop.open') },
-        { id: 'accessibility', en: 'Accessibility', el: 'Προσβασιμότητα',
-            d: { en: 'Larger menu and HUD text, size symbols on opponents, less motion. Colour-blind colours: the theme preset.', el: 'Μεγαλύτερο κείμενο μενού και HUD, σύμβολα μεγέθους στους αντιπάλους, λιγότερη κίνηση. Χρώματα αχρωματοψίας: το έτοιμο θέμα.' },
-            opts: ['a11yIndicators', 'reducedMotion'] },
-        { id: 'plugins', en: 'User Scripts', el: 'User Scripts',
-            d: { en: 'Add plugins from the catalogue or your own scripts, each in a slot you can turn on and off.', el: 'Πρόσθεσε plugins από τον κατάλογο ή δικά σου scripts, το καθένα σε θέση που ανοίγει και κλείνει.' },
-            opts: [], win: opener('LMPlugins.open', 'plugins') },
-        { id: 'lab', en: 'Lab (experimental)', el: 'Lab (πειραματικά)',
-            d: { en: 'Experiments you can try one by one; all are off until you turn them on.', el: 'Πειράματα που δοκιμάζεις ένα ένα· όλα κλειστά μέχρι να τα ανοίξεις.' },
-            opts: [], win: opener('LMLab.open') }
+        { id: 'commandCentre', opts: ['commandCentreBar'], show: { commandCentreBar: '#lm-cc-bar' }, win: opener('LMCommandCentre.open') },
+        { id: 'hudHelpers', opts: ['hudMoveDir', 'hudMergeCountdown', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel'], show: { hudCellPanel: '#lm-hh-cells' } },
+        { id: 'replayStudio', opts: ['recordReplays'], win: opener('lmReplayStudio', 'open') },
+        { id: 'analytics', opts: ['analytics'], win: opener('LMAnalytics.open') },
+        { id: 'deathRecap', opts: ['deathRecap', 'killFeed', 'massLossAlert'] },
+        { id: 'adaptivePerf', opts: ['adaptivePerf', 'netHistory'], win: opener('LMPerf.openDiag') },
+        { id: 'gamepad', opts: ['gamepadEnabled'], win: opener('LMGamepad.openWindow') },
+        { id: 'profiles', opts: [], win: opener('LMProfiles.open') },
+        { id: 'notifications', opts: ['notificationCentre'], show: { notificationCentre: '#lm-notif-bell' }, win: opener('LMNotifications.open') },
+        { id: 'hudEditor', opts: [], win: opener('LMHudEditor.open') },
+        { id: 'director', opts: [], win: opener('LMDirector.open') },
+        { id: 'companion', opts: ['companionLive', 'companionChat'], win: opener('LMCompanion.open') },
+        { id: 'touchEditor', opts: [], win: opener('_lmMobileHost.openEditor'), phoneOnly: true },
+        { id: 'practice', opts: [], win: opener('lmPractice', 'open') },
+        { id: 'macroEditor', opts: [], win: opener('lmMacroEditor', 'open') },
+        { id: 'themeWorkshop', opts: [], win: opener('LMThemeWorkshop.open') },
+        { id: 'accessibility', opts: ['a11yIndicators', 'reducedMotion'] },
+        { id: 'plugins', opts: [], win: opener('LMPlugins.open', 'plugins') },
+        { id: 'lab', opts: [], win: opener('LMLab.open') }
     ];
     var CARD_IDS = CARDS.map(function (c) { return c.id; });
 
@@ -261,45 +224,13 @@
         SERVER_TYPES: SERVER_TYPES, CAPS: CAPS, CARDS: CARDS, KEY: KEY, MAX_SEEN: MAX_SEEN,
         serverTypeOf: serverTypeOf, capValue: capValue, capNote: capNote, capsFor: capsFor,
         parseStore: parseStore, serializeStore: serializeStore, unseenIds: unseenIds, shouldAutoOpen: shouldAutoOpen, firstState: firstState,
-        seenKey: seenKey, markSeen: markSeen
+        seenKey: seenKey, markSeen: markSeen, t: t
     };
     var api = W.LMDiscovery = { core: core };
 
     var D = W.document;
     if (!D || typeof D.createElement !== 'function' || typeof D.addEventListener !== 'function') return;
 
-    /* ═══ Text ═══ */
-
-    var STR = {
-        title: { en: 'Discover features', el: 'Ανακάλυψε λειτουργίες' },
-        tabFeatures: { en: 'Features', el: 'Λειτουργίες' },
-        tabServer: { en: 'This server', el: 'Αυτός ο διακομιστής' },
-        intro: { en: 'Everything here is optional and off until you turn it on.', el: 'Όλα είναι προαιρετικά και κλειστά μέχρι να τα ανοίξεις.' },
-        open: { en: 'Open', el: 'Άνοιγμα' },
-        showMe: { en: 'Show in settings', el: 'Δείξε στις ρυθμίσεις' },
-        on: { en: 'ON', el: 'ΝΑΙ' },
-        off: { en: 'OFF', el: 'ΟΧΙ' },
-        look: { en: 'Turned on: it is highlighted on the screen.', el: 'Άνοιξε: φαίνεται τονισμένο στην οθόνη.' },
-        later: { en: 'Turned on: it shows while you play.', el: 'Άνοιξε: φαίνεται όταν παίζεις.' },
-        offNow: { en: 'Turned off.', el: 'Έκλεισε.' },
-        locked: { en: 'This setting cannot be changed now.', el: 'Αυτή η ρύθμιση δεν αλλάζει τώρα.' },
-        noMenu: { en: 'Open the settings once first.', el: 'Άνοιξε πρώτα μία φορά τις ρυθμίσεις.' },
-        autoShow: { en: 'Show after updates', el: 'Εμφάνιση μετά από ενημερώσεις' },
-        close: { en: 'Close', el: 'Κλείσιμο' },
-        serverTitle: { en: 'What works on this server', el: 'Τι λειτουργεί σε αυτόν τον διακομιστή' },
-        current: { en: 'Connected to: {s}', el: 'Συνδεδεμένος σε: {s}' },
-        notConnected: { en: 'Not connected: pick a server type.', el: 'Χωρίς σύνδεση: διάλεξε τύπο διακομιστή.' },
-        y: { en: 'works', el: 'λειτουργεί' },
-        p: { en: 'partly', el: 'εν μέρει' },
-        u: { en: 'not verified', el: 'δεν επιβεβαιώθηκε' },
-        n: { en: 'not here', el: 'όχι εδώ' },
-        serverHint: { en: 'Features not listed (HUD, themes, hotkeys, Analytics, overlays) work on every server.', el: 'Όσα δεν αναφέρονται (HUD, θέματα, πλήκτρα, αναλύσεις, επικαλύψεις) λειτουργούν παντού.' }
-    };
-    function lang() {
-        try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
-    }
-    function t(k) { var r = STR[k]; return r ? (r[lang()] || r.en) : k; }
-    function tr(o) { return o ? (o[lang()] || o.en) : ''; }
     function plain(s) {
         if (s == null) return '';
         return String(s).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
@@ -327,6 +258,7 @@
     /* ═══ Window ═══ */
 
     var root = null, body = null, tab = 'features', msgTimer = null, lastFocus = null, viewType = '';
+    var VKEYS = { y: 'works', p: 'partly', u: 'unverified', n: 'notHere' };
     function mk(tag, cls, text) {
         var e = D.createElement(tag);
         if (cls) e.className = cls;
@@ -341,6 +273,7 @@
             '#lm-dc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;' +
             'background:rgba(0,0,0,.55);padding:8px;box-sizing:border-box;font-family:inherit}' +
             '#lm-dc *{box-sizing:border-box}' +
+            // i18n-ok: CSS
             '#lm-dc .lm-dc-panel{width:760px;max-width:100%;max-height:100%;display:flex;flex-direction:column;background:var(--lm-pc,#1b1d22);color:var(--lm-tc,#e8e8e8);' +
             'border:1px solid var(--lm-pc2,#333);border-top:3px solid var(--dc-mc);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden}' +
             '#lm-dc .lm-dc-head{display:flex;align-items:center;gap:6px;padding:6px 6px 6px 12px;border-bottom:1px solid var(--lm-pc2,#333);background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%);flex:0 0 auto}' +
@@ -387,7 +320,6 @@
         root.id = 'lm-dc';
         root.setAttribute('role', 'dialog');
         root.setAttribute('aria-modal', 'true');
-        root.setAttribute('aria-label', t('title'));
         /* the game reads mouse buttons, the wheel and keys from window handlers */
         ['mousedown', 'mouseup', 'click', 'dblclick', 'contextmenu', 'wheel', 'pointerdown', 'pointerup', 'keyup', 'keypress'].forEach(function (ev) {
             root.addEventListener(ev, stop, false);
@@ -399,18 +331,16 @@
         root.addEventListener('click', function (e) { if (e.target === root) close(); }, false);
         var panel = mk('div', 'lm-dc-panel');
         var head = mk('div', 'lm-dc-head');
-        head.appendChild(mk('div', 'lm-dc-title', t('title')));
+        head.appendChild(mk('div', 'lm-dc-title'));
         ['features', 'server'].forEach(function (id) {
-            var b = mk('button', 'lm-dc-tab', t(id === 'features' ? 'tabFeatures' : 'tabServer'));
+            var b = mk('button', 'lm-dc-tab');
             b.type = 'button';
             b.setAttribute('data-tab', id);
             b.addEventListener('click', function () { show(id); });
             head.appendChild(b);
         });
-        var x = mk('button', 'lm-dc-x', '×');
+        var x = mk('button', 'lm-dc-x', '\u00d7');
         x.type = 'button';
-        x.title = t('close');
-        x.setAttribute('aria-label', t('close'));
         x.addEventListener('click', function () { close(); });
         head.appendChild(x);
         body = mk('div', 'lm-dc-body');
@@ -422,12 +352,25 @@
         cb.checked = !load().off;
         cb.addEventListener('change', function () { var st = load(); st.off = !cb.checked; st.v = ver(); save(st); });
         lab.appendChild(cb);
-        lab.appendChild(D.createTextNode(t('autoShow')));
+        lab.appendChild(mk('span', 'lm-dc-auto-l'));
         foot.appendChild(lab);
         panel.appendChild(head);
         panel.appendChild(body);
         panel.appendChild(foot);
         root.appendChild(panel);
+    }
+    /* the window's fixed texts (again after a language change); Arabic reads right to left */
+    function applyTexts() {
+        if (!root) return;
+        root.setAttribute('aria-label', t('title'));
+        try { root.setAttribute('dir', W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'); } catch (e) { }
+        root.querySelector('.lm-dc-title').textContent = t('title');
+        var tabs = root.querySelectorAll('.lm-dc-tab');
+        for (var i = 0; i < tabs.length; i++) tabs[i].textContent = t(tabs[i].getAttribute('data-tab') === 'features' ? 'tabFeatures' : 'tabServer');
+        var x = root.querySelector('.lm-dc-x');
+        x.title = t('close');
+        x.setAttribute('aria-label', t('close'));
+        root.querySelector('.lm-dc-auto-l').textContent = t('autoShow');
     }
 
     function checkbox(key) {
@@ -490,13 +433,13 @@
         visibleCards().forEach(function (c) {
             var card = mk('div', 'lm-dc-card');
             card.setAttribute('data-card', c.id);
-            var name = mk('div', 'lm-dc-name', tr(c) || c.en);
+            var name = mk('div', 'lm-dc-name', t('card.' + c.id));
             if (st.seen.indexOf(seenKey(c)) < 0) {
-                var cls = W.textLanguage && W.textLanguage.lmNewBadge;
-                name.appendChild(mk('span', 'lm-new-badge', plain(cls) || 'NEW'));
+                /* the settings' NEW badge text (core key lmNewBadge) */
+                name.appendChild(mk('span', 'lm-new-badge', plain(typeof W.lmT === 'function' ? W.lmT('lmNewBadge') : '')));
             }
             card.appendChild(name);
-            card.appendChild(mk('div', 'lm-dc-desc', tr(c.d)));
+            card.appendChild(mk('div', 'lm-dc-desc', t('card.' + c.id + '.desc')));
             if (c.opts.length) {
                 var sw = mk('div', 'lm-dc-sw');
                 c.opts.forEach(function (key) {
@@ -541,7 +484,7 @@
         body.appendChild(grid);
     }
     function typeName(id) {
-        for (var i = 0; i < SERVER_TYPES.length; i++) if (SERVER_TYPES[i].id === id) return SERVER_TYPES[i].en;
+        for (var i = 0; i < SERVER_TYPES.length; i++) if (SERVER_TYPES[i].id === id) return SERVER_TYPES[i].name || t('type.' + id);
         return id;
     }
     function renderServer() {
@@ -554,20 +497,20 @@
         var sel = mk('select');
         sel.id = 'lm-dc-type';
         SERVER_TYPES.forEach(function (s) {
-            var o = mk('option', null, s.en);
+            var o = mk('option', null, typeName(s.id));
             o.value = s.id;
             if (s.id === viewType) o.selected = true;
             sel.appendChild(o);
         });
         sel.addEventListener('change', function () { viewType = sel.value; renderServer(); });
         row.appendChild(sel);
-        row.appendChild(mk('span', 'lm-dc-note', connected && cur ? t('current').replace('{s}', typeName(cur)) : t('notConnected')));
+        row.appendChild(mk('span', 'lm-dc-note', connected && cur ? t('current', typeName(cur)) : t('notConnected')));
         body.appendChild(row);
         var ul = mk('ul', 'lm-dc-caps');
-        capsFor(viewType, lang()).forEach(function (r) {
+        capsFor(viewType).forEach(function (r) {
             var li = mk('li');
             li.setAttribute('data-cap', r.id);
-            li.appendChild(mk('span', 'lm-dc-v ' + r.v, t(r.v)));
+            li.appendChild(mk('span', 'lm-dc-v ' + r.v, t(VKEYS[r.v])));
             var txt = mk('span', null, r.label);
             if (r.note) txt.appendChild(mk('span', 'lm-dc-note', ' (' + r.note + ')'));
             li.appendChild(txt);
@@ -589,6 +532,7 @@
         if (!D.body) return;
         if (!root) build();
         root.style.setProperty('--dc-mc', mainColor());
+        applyTexts();
         viewType = '';
         if (!isOpen()) {
             lastFocus = D.activeElement;
@@ -646,10 +590,21 @@
         open('features');
     }, false);
 
+    /* another language: the open window is drawn again */
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') {
+        W.LMi18n.onChange(function () {
+            if (!isOpen()) return;
+            applyTexts();
+            var top = body.scrollTop;
+            show(tab);
+            body.scrollTop = top;
+        });
+    }
+
     api.open = open;
     api.close = close;
     api.isOpen = isOpen;
     api.openServer = function () { open('server'); };
     api.serverType = function () { return serverTypeOf(W.legendmod); };
-    api.capabilities = function (type) { return capsFor(type || serverTypeOf(W.legendmod) || 'agario', 'en'); };
+    api.capabilities = function (type) { return capsFor(type || serverTypeOf(W.legendmod) || 'agario'); };
 })();

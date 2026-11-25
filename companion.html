@@ -6,7 +6,7 @@
 <meta name="referrer" content="no-referrer">
 <!-- only this site's own files; images (watermark, skin) from https URLs; no network requests -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src https: data:; base-uri 'none'; form-action 'none'">
-<title>Legend Mod companion</title>
+<title data-i18n="modules.companion.page.title">Legend Mod companion</title>
 <style>
 :root { --accent: #01d9cc; --panel: rgba(4, 16, 28, 0.82); --text: #ffffff; --muted: rgba(255, 255, 255, 0.62); --line: rgba(255, 255, 255, 0.12); }
 * { box-sizing: border-box; }
@@ -52,6 +52,8 @@ canvas.map { display: block; width: 14em; height: 14em; }
 /* setup page */
 #setup { max-width: 60em; margin: 0 auto 1em; background: #10202f; border-radius: 0.4em; padding: 0.8em 1em; font-size: 0.92em; }
 #setup h1 { font-size: 1.25em; margin: 0 0 0.4em; color: var(--accent); }
+#setup .lang { float: right; margin: 0 0 0.4em 0.6em; }
+[dir=rtl] #setup .lang { float: left; margin: 0 0.6em 0.4em 0; }
 #setup h2 { font-size: 1em; margin: 0.9em 0 0.3em; color: var(--accent); }
 #setup p, #setup li { margin: 0.25em 0; color: #d8e3ec; }
 #setup code { background: rgba(255, 255, 255, 0.08); padding: 0 0.25em; border-radius: 0.2em; overflow-wrap: anywhere; }
@@ -65,62 +67,68 @@ canvas.map { display: block; width: 14em; height: 14em; }
 </head>
 <body>
 <div id="setup" hidden>
-  <h1>Legend Mod companion: stream overlay and second screen</h1>
-  <p>Shows your game live: mass, rank, time alive, minimap, leaderboard, events and (optionally) chat.
-     Nothing goes over the network: the game tab sends the data to this page inside your browser.</p>
-  <h2>1. Turn it on in the game</h2>
-  <p>Settings &rsaquo; HUD &rsaquo; <b>Stream overlay / second screen</b> (off by default). <b>Stream overlay: include chat lines</b> adds the chat.
-     The button <b>Open companion</b> under the option opens this page.</p>
-  <h2>2. Open this page on the game's own address</h2>
+  <div class="lang" data-lm-lang-picker></div>
+  <h1 data-i18n="modules.companion.page.h1">Legend Mod companion: stream overlay and second screen</h1>
+  <p data-i18n="modules.companion.page.intro">Shows your game live: mass, rank, time alive, minimap, leaderboard, events and (optionally) chat. Nothing goes over the network: the game tab sends the data to this page inside your browser.</p>
+  <h2 data-i18n="modules.companion.page.step1">1. Turn it on in the game</h2>
+  <p data-i18n-html="modules.companion.page.step1Text">Settings &rsaquo; HUD &rsaquo; <b>Stream overlay / second screen</b> (off by default). <b>Stream overlay: include chat lines</b> adds the chat. The button <b>Open companion</b> under the option opens this page.</p>
+  <h2 data-i18n="modules.companion.page.step2">2. Open this page on the game's own address</h2>
   <ul>
-    <li>The game and this page talk over a <code>BroadcastChannel</code>, which only reaches pages of the <b>same origin in the same browser</b>.</li>
-    <li>Game on <code>https://www.legendmod.ml/...</code>: open <code>https://www.legendmod.ml/companion.html</code>.</li>
-    <li>Game on <code>https://jimboy3100.github.io/...</code>: open <code>https://jimboy3100.github.io/companion.html</code>.</li>
-    <li>Game on agar.io (browser extension) or inside a frame (for example expanding.land): use the <b>Open companion</b> button in the game.
-        It opens this page and sends the data to that one window only. Keep both open; after reloading the game press the button again.</li>
+    <li data-i18n-html="modules.companion.page.step2a">The game and this page talk over a <code>BroadcastChannel</code>, which only reaches pages of the <b>same origin in the same browser</b>.</li>
+    <li data-i18n-html="modules.companion.page.step2b">Game on <code>https://www.legendmod.ml/...</code>: open <code>https://www.legendmod.ml/companion.html</code>.</li>
+    <li data-i18n-html="modules.companion.page.step2c">Game on <code>https://jimboy3100.github.io/...</code>: open <code>https://jimboy3100.github.io/companion.html</code>.</li>
+    <li data-i18n-html="modules.companion.page.step2d">Game on agar.io (browser extension) or inside a frame (for example expanding.land): use the <b>Open companion</b> button in the game. It opens this page and sends the data to that one window only. Keep both open; after reloading the game press the button again.</li>
   </ul>
-  <h2>3. OBS</h2>
+  <h2 data-i18n="modules.companion.page.step3">3. OBS</h2>
   <ul>
-    <li>An OBS <b>Browser Source</b> is its own browser: it only receives the data if the game runs in that same browser.</li>
-    <li>Works everywhere: open the companion link below in a normal browser window with background <b>green</b>, add it to OBS with
-        <b>Window Capture</b> and a <b>Chroma Key</b> filter.</li>
-    <li><code>bg=transparent</code> is for a source that shares the browser with the game. <code>demo=1</code> shows sample data to place the widgets.</li>
+    <li data-i18n-html="modules.companion.page.step3a">An OBS <b>Browser Source</b> is its own browser: it only receives the data if the game runs in that same browser.</li>
+    <li data-i18n-html="modules.companion.page.step3b">Works everywhere: open the companion link below in a normal browser window with background <b>green</b>, add it to OBS with <b>Window Capture</b> and a <b>Chroma Key</b> filter.</li>
+    <li data-i18n-html="modules.companion.page.step3c"><code>bg=transparent</code> is for a source that shares the browser with the game. <code>demo=1</code> shows sample data to place the widgets.</li>
   </ul>
-  <h2>Privacy</h2>
-  <p>Stream mode (the eye button in the menu) removes your nick, skin, server address and your teammates' nicks before anything is sent;
-     <b>Hide my country</b> and <b>hide skin URL</b> are respected too. Chat is only sent while its option is on.</p>
-  <h2>Phone or another computer</h2>
-  <p>Not supported yet: pairing two devices needs a WebRTC connection (and a way to exchange the connection offer), which this page does not do.
-     The companion only works next to the game in the same browser.</p>
+  <h2 data-i18n="modules.companion.page.privacy">Privacy</h2>
+  <p data-i18n-html="modules.companion.page.privacyText">Stream mode (the eye button in the menu) removes your nick, skin, server address and your teammates' nicks before anything is sent; <b>Hide my country</b> and <b>hide skin URL</b> are respected too. Chat is only sent while its option is on.</p>
+  <h2 data-i18n="modules.companion.page.phone">Phone or another computer</h2>
+  <p data-i18n="modules.companion.page.phoneText">Not supported yet: pairing two devices needs a WebRTC connection (and a way to exchange the connection offer), which this page does not do. The companion only works next to the game in the same browser.</p>
 
-  <h2>Build your overlay link</h2>
+  <h2 data-i18n="modules.companion.page.build">Build your overlay link</h2>
   <div class="grid" id="f-widgets"></div>
   <div class="grid">
-    <label>Layout <select id="f-layout"><option value="column">column</option><option value="row">row</option><option value="grid">grid</option></select></label>
-    <label>Background <select id="f-bg"><option value="dark">dark</option><option value="transparent">transparent</option><option value="green">green (chroma key)</option><option value="custom">colour...</option></select></label>
-    <label>Colour <input type="text" id="f-bgc" placeholder="#000000" maxlength="9"></label>
-    <label>Scale <input type="number" id="f-scale" min="0.5" max="3" step="0.1" value="1"></label>
-    <label>Accent <input type="text" id="f-accent" placeholder="#01d9cc" maxlength="9"></label>
-    <label>Watermark text <input type="text" id="f-wm" maxlength="60"></label>
-    <label>Watermark image (https) <input type="text" id="f-wmimg" maxlength="500"></label>
-    <label>Watermark corner <select id="f-wmpos"><option value="br">bottom right</option><option value="bl">bottom left</option><option value="tr">top right</option><option value="tl">top left</option></select></label>
-    <label>Chat lines <input type="number" id="f-lines" min="1" max="20" value="6"></label>
-    <label>Events shown <input type="number" id="f-feed" min="1" max="20" value="6"></label>
+    <label><span data-i18n="modules.companion.page.layout">Layout</span> <select id="f-layout"><option value="column" data-i18n="modules.companion.page.layoutColumn">column</option><option value="row" data-i18n="modules.companion.page.layoutRow">row</option><option value="grid" data-i18n="modules.companion.page.layoutGrid">grid</option></select></label>
+    <label><span data-i18n="modules.companion.page.background">Background</span> <select id="f-bg"><option value="dark" data-i18n="modules.companion.page.bgDark">dark</option><option value="transparent" data-i18n="modules.companion.page.bgTransparent">transparent</option><option value="green" data-i18n="modules.companion.page.bgGreen">green (chroma key)</option><option value="custom" data-i18n="modules.companion.page.bgCustom">colour...</option></select></label>
+    <label><span data-i18n="modules.companion.page.colour">Colour</span> <input type="text" id="f-bgc" placeholder="#000000" maxlength="9"></label>
+    <label><span data-i18n="modules.companion.page.scale">Scale</span> <input type="number" id="f-scale" min="0.5" max="3" step="0.1" value="1"></label>
+    <label><span data-i18n="modules.companion.page.accent">Accent</span> <input type="text" id="f-accent" placeholder="#01d9cc" maxlength="9"></label>
+    <label><span data-i18n="modules.companion.page.wm">Watermark text</span> <input type="text" id="f-wm" maxlength="60"></label>
+    <label><span data-i18n="modules.companion.page.wmImg">Watermark image (https)</span> <input type="text" id="f-wmimg" maxlength="500"></label>
+    <label><span data-i18n="modules.companion.page.wmPos">Watermark corner</span> <select id="f-wmpos"><option value="br" data-i18n="modules.companion.page.posBr">bottom right</option><option value="bl" data-i18n="modules.companion.page.posBl">bottom left</option><option value="tr" data-i18n="modules.companion.page.posTr">top right</option><option value="tl" data-i18n="modules.companion.page.posTl">top left</option></select></label>
+    <label><span data-i18n="modules.companion.page.lines">Chat lines</span> <input type="number" id="f-lines" min="1" max="20" value="6"></label>
+    <label><span data-i18n="modules.companion.page.feed">Events shown</span> <input type="number" id="f-feed" min="1" max="20" value="6"></label>
   </div>
-  <div class="link"><input type="text" id="f-link" readonly><button type="button" id="f-copy">Copy</button><a class="btn" id="f-open" target="_blank" rel="noopener">Open</a></div>
-  <p class="muted">Live preview of all widgets below.</p>
+  <div class="link"><input type="text" id="f-link" readonly><button type="button" id="f-copy" data-i18n="modules.companion.page.copy">Copy</button><a class="btn" id="f-open" target="_blank" rel="noopener" data-i18n="modules.companion.page.openLink">Open</a></div>
+  <p class="muted" data-i18n="modules.companion.page.preview">Live preview of all widgets below.</p>
 </div>
 <div id="root"><div id="wrap" class="wrap"></div></div>
 <div id="wm" hidden></div>
-<div id="status">Waiting for the game&hellip;</div>
+<div id="status" data-i18n="modules.companion.page.waiting">Waiting for the game&hellip;</div>
 <script>window.LMCompanionPage = true;</script>
+<!-- texts: the English pack first (the page runtime loads only the other languages), then the runtime
+     (language from the Theme Bridge #lm=, the one chosen in Legend Mod, or the browser) -->
+<script src="languages/lm-en.js" charset="utf-8"></script>
+<script src="lib/lm-i18n.js" data-areas="mod" charset="utf-8"></script>
 <script src="ogario/modules/companion.js"></script>
 <script>
 (function () {
     'use strict';
     var C = window.LMCompanion && window.LMCompanion.core;
     var statusEl = document.getElementById('status');
-    if (!C) { statusEl.textContent = 'Could not load ogario/modules/companion.js.'; return; }
+    var I18N = window.LMi18n;
+    /* texts from the language packs (developers/i18n/src, keys modules.companion.*) */
+    var P = 'modules.companion.';
+    function t(k, vars) { return typeof window.lmT === 'function' ? window.lmT(P + k, vars) : k; }
+    /* an element whose text follows the language: LMi18n.apply fills data-i18n again on a change */
+    function setText(e, k) { e.setAttribute('data-i18n', P + k); e.textContent = t(k); return e; }
+    if (I18N && I18N.apply) I18N.apply(document);
+    if (!C) { setText(statusEl, 'page.loadFail'); return; }
     var cfg = C.parseParams(location.search);
     var widgets = cfg.setup ? C.WIDGETS.slice() : cfg.widgets;
     var state = null, lastAt = 0, events = [], sess = { games: 0, best: 0 };
@@ -143,8 +151,8 @@ canvas.map { display: block; width: 14em; height: 14em; }
 
     /* ── widgets ── */
     var W = {};
-    function panel(id, title) { var p = el('div', 'w w-' + id); if (title) p.appendChild(el('h3', '', title)); wrap.appendChild(p); return p; }
-    function statBox(parent, cls, label) { var s = el('div', 'stat ' + cls); var v = el('div', 'big', '—'); s.appendChild(v); s.appendChild(el('div', 'lbl', label)); parent.appendChild(s); return v; }
+    function panel(id, title) { var p = el('div', 'w w-' + id); if (title) p.appendChild(setText(el('h3'), title)); wrap.appendChild(p); return p; }
+    function statBox(parent, cls, label) { var s = el('div', 'stat ' + cls); var v = el('div', 'big', '\u2014'); s.appendChild(v); s.appendChild(setText(el('div', 'lbl'), label)); parent.appendChild(s); return v; }
     widgets.forEach(function (id) {
         var p;
         if (id === 'card') {
@@ -159,28 +167,28 @@ canvas.map { display: block; width: 14em; height: 14em; }
             col.appendChild(row);
             c.appendChild(col);
             p.appendChild(c);
-            W.card = { avatar: av, nick: nick, mass: statBox(row, 'mass', 'Mass'), rank: statBox(row, 'rank', 'Rank'), time: statBox(row, 'time', 'Time alive') };
+            W.card = { avatar: av, nick: nick, mass: statBox(row, 'mass', 'w.mass'), rank: statBox(row, 'rank', 'w.rank'), time: statBox(row, 'time', 'w.time') };
         } else if (id === 'mass' || id === 'rank' || id === 'time') {
             p = panel(id);
-            W[id] = statBox(p, id, { mass: 'Mass', rank: 'Rank', time: 'Time alive' }[id]);
+            W[id] = statBox(p, id, 'w.' + id);
         } else if (id === 'minimap') {
-            p = panel(id, 'Minimap');
+            p = panel(id, 'w.minimap');
             W.minimap = el('canvas', 'map');
             p.appendChild(W.minimap);
         } else if (id === 'leaderboard') {
-            p = panel(id, 'Leaderboard');
+            p = panel(id, 'w.leaderboard');
             W.leaderboard = el('ol', 'lb');
             p.appendChild(W.leaderboard);
         } else if (id === 'stats') {
-            p = panel(id, 'Match');
+            p = panel(id, 'w.match');
             W.stats = el('table', 'stats');
             p.appendChild(W.stats);
         } else if (id === 'events') {
-            p = panel(id, 'Events');
+            p = panel(id, 'w.events');
             W.events = el('ul', 'list');
             p.appendChild(W.events);
         } else if (id === 'chat') {
-            p = panel(id, 'Chat');
+            p = panel(id, 'w.chat');
             W.chat = el('ul', 'list');
             p.appendChild(W.chat);
         }
@@ -190,7 +198,8 @@ canvas.map { display: block; width: 14em; height: 14em; }
         while (ul.firstChild) ul.removeChild(ul.firstChild);
         items.forEach(function (li) { ul.appendChild(li); });
     }
-    function rankText(r) { return r > 0 ? '#' + r : '—'; }
+    var NONE = '\u2014';
+    function rankText(r) { return r > 0 ? '#' + r : NONE; }
     function render() {
         var s = state || C.buildState({}, {});
         var alive = s.playing ? s.alive + (lastAt ? Math.min(Date.now() - lastAt, 1000) : 0) : 0;
@@ -199,36 +208,37 @@ canvas.map { display: block; width: 14em; height: 14em; }
             W.card.nick.style.display = s.nick ? '' : 'none';
             if (s.skin) { if (W.card.avatar.getAttribute('src') !== s.skin) W.card.avatar.src = s.skin; W.card.avatar.style.display = 'block'; }
             else W.card.avatar.style.display = 'none';
-            W.card.mass.textContent = s.playing ? C.fmtMass(s.mass) : '—';
-            W.card.rank.textContent = s.playing ? rankText(s.rank) : '—';
-            W.card.time.textContent = s.playing ? C.fmtTime(alive) : '—';
+            W.card.mass.textContent = s.playing ? C.fmtMass(s.mass) : NONE;
+            W.card.rank.textContent = s.playing ? rankText(s.rank) : NONE;
+            W.card.time.textContent = s.playing ? C.fmtTime(alive) : NONE;
         }
-        if (W.mass) W.mass.textContent = s.playing ? C.fmtMass(s.mass) : '—';
-        if (W.rank) W.rank.textContent = s.playing ? rankText(s.rank) : '—';
-        if (W.time) W.time.textContent = s.playing ? C.fmtTime(alive) : '—';
+        if (W.mass) W.mass.textContent = s.playing ? C.fmtMass(s.mass) : NONE;
+        if (W.rank) W.rank.textContent = s.playing ? rankText(s.rank) : NONE;
+        if (W.time) W.time.textContent = s.playing ? C.fmtTime(alive) : NONE;
         if (W.leaderboard) {
-            setList(W.leaderboard, s.lb.map(function (e) { var li = el('li', e.me ? 'me' : '', e.nick || (e.me ? 'You' : 'An unnamed cell')); return li; }));
+            setList(W.leaderboard, s.lb.map(function (e) { var li = el('li', e.me ? 'me' : '', e.nick || (e.me ? t('page.you') : t('page.unnamed'))); return li; }));
         }
         if (W.stats) {
             var rows = [
-                ['Best mass (this life)', s.playing ? C.fmtMass(s.best) : '—'],
-                ['Cells', s.playing ? String(s.cells) : '—'],
-                ['Players’ cells eaten', s.playing ? String(s.kills) : '—'],
-                ['Best rank', rankText(s.bestRank)],
-                ['Mode', s.mode || s.serverType || '—'],
-                ['Server', s.server || '—'],
-                ['Games here', String(sess.games)],
-                ['Best mass here', sess.best ? C.fmtMass(sess.best) : '—']
+                [t('st.best'), s.playing ? C.fmtMass(s.best) : NONE],
+                [t('st.cells'), s.playing ? String(s.cells) : NONE],
+                [t('st.kills'), s.playing ? String(s.kills) : NONE],
+                [t('st.bestRank'), rankText(s.bestRank)],
+                [t('st.mode'), s.mode || s.serverType || NONE],
+                [t('st.server'), s.server || NONE],
+                [t('st.games'), String(sess.games)],
+                [t('st.bestHere'), sess.best ? C.fmtMass(sess.best) : NONE]
             ];
             while (W.stats.firstChild) W.stats.removeChild(W.stats.firstChild);
             rows.forEach(function (r) { var tr = el('tr'); tr.appendChild(el('td', '', r[0])); tr.appendChild(el('td', '', r[1])); W.stats.appendChild(tr); });
         }
         if (W.chat) {
-            if (!s.chat) setList(W.chat, [el('li', 'muted', 'Chat is off: turn on "Stream overlay: include chat lines" in the game.')]);
+            if (!s.chat) setList(W.chat, [el('li', 'muted', t('page.chatOff'))]);
             else setList(W.chat, s.chat.slice(-cfg.lines).map(function (c) {
                 var li = el('li', c.cmd ? 'cmd' : '');
-                li.appendChild(el('span', 'n', (c.nick || (c.own ? 'You' : '?')) + ': '));
-                li.appendChild(document.createTextNode(c.text));
+                li.appendChild(el('span', 'n', (c.nick || (c.own ? t('page.you') : '?')) + ': '));
+                /* stream mode: the game sends '[redacted]' (a marker, not shown as it is) */
+                li.appendChild(document.createTextNode(s.stream && c.text === '[redacted]' ? t('page.redacted') : c.text));
                 return li;
             }));
         }
@@ -236,11 +246,18 @@ canvas.map { display: block; width: 14em; height: 14em; }
     }
     function eventLine(e) {
         var li = el('li', e.type);
-        if (e.type === 'spawn') li.textContent = 'Spawned';
-        else if (e.type === 'death') li.textContent = 'Died at ' + C.fmtMass(e.mass) + ' mass after ' + C.fmtTime(e.alive);
-        else if (e.type === 'best') li.textContent = 'New personal best: ' + [e.massRecord ? 'mass ' + C.fmtMass(e.mass) : '', e.timeRecord ? 'time alive ' + C.fmtTime(e.alive) : ''].filter(Boolean).join(' + ');
-        else if (e.type === 'kill') { li.appendChild(document.createTextNode('Ate ')); li.appendChild(el('span', 'n', e.nick || 'An unnamed cell')); if (e.mass) li.appendChild(document.createTextNode(' (' + C.fmtMass(e.mass) + ')')); }
-        else if (e.type === 'stats') li.textContent = 'Game over: ' + e.eaten + ' players eaten' + (e.top ? ', top #' + e.top : '');
+        if (e.type === 'spawn') li.textContent = t('ev.spawn');
+        else if (e.type === 'death') li.textContent = t('ev.death', [C.fmtMass(e.mass), C.fmtTime(e.alive)]);
+        else if (e.type === 'best') li.textContent = t('ev.best', [e.massRecord ? t('ev.bestMass', C.fmtMass(e.mass)) : '', e.timeRecord ? t('ev.bestTime', C.fmtTime(e.alive)) : ''].filter(Boolean).join(' + '));
+        else if (e.type === 'kill') {
+            /* "Ate {0}": the name goes in its own span, at {0} wherever the language puts it */
+            var parts = t('ev.kill').split('{0}');
+            li.appendChild(document.createTextNode(parts[0]));
+            li.appendChild(el('span', 'n', e.nick || t('page.unnamed')));
+            if (parts.length > 1) li.appendChild(document.createTextNode(parts.slice(1).join('')));
+            if (e.mass) li.appendChild(document.createTextNode(' (' + C.fmtMass(e.mass) + ')'));
+        }
+        else if (e.type === 'stats') li.textContent = e.top ? t('ev.statsTop', [e.eaten, e.top]) : t('ev.stats', e.eaten);
         return li;
     }
     function addEvent(e) {
@@ -323,7 +340,7 @@ canvas.map { display: block; width: 14em; height: 14em; }
         } else if (d.kind === 'bye') {
             lastAt = 0;
             statusEl.className = '';
-            statusEl.textContent = 'The game stopped sending (option off or tab closed).';
+            setText(statusEl, 'page.stopped');
         }
     }
     var bc = null;
@@ -342,7 +359,7 @@ canvas.map { display: block; width: 14em; height: 14em; }
         if (lastAt && Date.now() - lastAt > 5000) {
             lastAt = 0;
             statusEl.className = '';
-            statusEl.textContent = 'Waiting for the game…';
+            setText(statusEl, 'page.waiting');
             hello();
         }
         if (state && state.playing && lastAt) render();
@@ -359,6 +376,7 @@ canvas.map { display: block; width: 14em; height: 14em; }
                 nick: 'Streamer', serverType: 'agario', mode: 'FFA', server: 'demo.server',
                 lb: ['Alpha', 'Bravo', 'Streamer', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet'].map(function (n, i) { return { nick: n, me: i === 2 }; }),
                 map: { own: { x: 0.5 + 0.25 * Math.cos(a), y: 0.5 + 0.25 * Math.sin(a) }, team: [{ x: 0.3, y: 0.7, nick: 'Mate' }], ghosts: [{ x: 0.8, y: 0.2, r: 0.03 }], trail: [] },
+                // i18n-ok: demo sample data standing for player input (nicks and chat)
                 chat: [{ nick: 'Mate', text: 'gg', cmd: false }, { nick: 'Mate', text: 'Split into me!', cmd: true }]
             } });
             if (k % 8 === 1) accept({ v: C.PROTO, s: 'demo', n: ++k, kind: 'event', event: { type: 'kill', t: Date.now(), nick: 'Victim', mass: 320 } });
@@ -372,7 +390,6 @@ canvas.map { display: block; width: 14em; height: 14em; }
         var setup = document.getElementById('setup');
         setup.hidden = false;
         var $ = function (id) { return document.getElementById(id); };
-        var names = { card: 'Mass / rank / time card', mass: 'Mass only', rank: 'Rank only', time: 'Time alive only', minimap: 'Big minimap', leaderboard: 'Leaderboard', stats: 'Match stats', events: 'Events / kill feed', chat: 'Chat' };
         C.WIDGETS.forEach(function (w) {
             var lab = el('label');
             var cb = el('input');
@@ -380,7 +397,7 @@ canvas.map { display: block; width: 14em; height: 14em; }
             cb.value = w;
             cb.checked = C.DEFAULT_WIDGETS.indexOf(w) >= 0;
             lab.appendChild(cb);
-            lab.appendChild(document.createTextNode(names[w] || w));
+            lab.appendChild(setText(el('span'), 'names.' + w));
             $('f-widgets').appendChild(lab);
         });
         var build = function () {
@@ -406,12 +423,20 @@ canvas.map { display: block; width: 14em; height: 14em; }
         setup.addEventListener('change', build);
         $('f-copy').addEventListener('click', function () {
             var v = $('f-link').value;
-            try { navigator.clipboard.writeText(v).then(function () { $('f-copy').textContent = 'Copied'; }, function () { $('f-link').select(); }); }
+            try { navigator.clipboard.writeText(v).then(function () { setText($('f-copy'), 'page.copied'); }, function () { $('f-link').select(); }); }
             catch (e) { $('f-link').select(); }
         });
         build();
     }
     render();
+    /* another language: the texts built here are drawn again (data-i18n elements update by themselves) */
+    function redraw() {
+        render();
+        if (W.events) setList(W.events, events.slice(-cfg.feed).reverse().map(eventLine));
+    }
+    if (I18N && typeof I18N.onChange === 'function') I18N.onChange(redraw);
+    /* the chosen language's file may arrive after this ran (it came from the second host): draw again then */
+    if (I18N && typeof I18N.ready === 'function') I18N.ready(function () { if (I18N.lang() !== 'en') redraw(); });
 })();
 </script>
 </body>

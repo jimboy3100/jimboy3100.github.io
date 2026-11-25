@@ -45,7 +45,7 @@
     }
     /* plain text: no control or bidi override characters, trimmed and cut */
     function clip(v, max) {
-        return str(v).replace(/[\u0000-\u001f\u007f-\u009f‎‏‪-‮⁦-⁩]/g, '').trim().slice(0, max || 60);
+        return str(v).replace(/[\u0000-\u001f\u007f-\u009f\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '').trim().slice(0, max || 60);
     }
     function num(v, min, max, def) {
         v = Number(v);
@@ -332,24 +332,15 @@
 
     /* ═══ In the game ═══ */
 
-    var STR = {
-        open: { en: 'Open companion', el: 'Άνοιγμα companion' },
-        hideTeam: { en: 'Overlay: hide teammates', el: 'Επικάλυψη: απόκρυψη συμπαικτών' },
-        mapLabel: { en: 'Overlay minimap and own position:', el: 'Χάρτης και θέση στην επικάλυψη:' },
-        mapLive: { en: 'live', el: 'ζωντανά' },
-        mapDelay: { en: '30 s late', el: 'με 30 δ. καθυστέρηση' },
-        mapHide: { en: 'hidden', el: 'κρυφά' },
-        privTip: { en: 'Against stream sniping. Kept in this browser.', el: 'Κατά του stream sniping. Μένει σε αυτόν τον browser.' },
-        turnedOn: { en: 'Stream overlay turned on.', el: 'Η επικάλυψη stream ενεργοποιήθηκε.' },
-        popup: {
-            en: 'The game runs on {0}, where companion.html does not exist (or inside a frame), so the companion opens on www.legendmod.ml and only that window gets the data. Another tab or an OBS source can only listen when the game runs on www.legendmod.ml or jimboy3100.github.io in the same browser.',
-            el: 'Το παιχνίδι τρέχει στο {0}, όπου δεν υπάρχει το companion.html (ή μέσα σε πλαίσιο), οπότε το companion ανοίγει στο www.legendmod.ml και μόνο αυτό το παράθυρο παίρνει τα δεδομένα. Άλλη καρτέλα ή πηγή OBS ακούει μόνο όταν το παιχνίδι τρέχει στο www.legendmod.ml ή στο jimboy3100.github.io στον ίδιο browser.'
-        },
-        blocked: { en: 'The browser blocked the window. Allow pop-ups for this site, or open {0} yourself.', el: 'Ο browser μπλόκαρε το παράθυρο. Επίτρεψε τα pop-ups για αυτή τη σελίδα ή άνοιξε μόνος σου το {0}.' },
-        noBc: { en: 'This browser has no BroadcastChannel: only a companion opened with the button gets the data.', el: 'Αυτός ο browser δεν έχει BroadcastChannel: δεδομένα παίρνει μόνο ένα companion που άνοιξε με το κουμπί.' }
-    };
-    function lang() { try { return root.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; } }
-    function t(k) { var r = STR[k]; return r ? (r[lang()] || r.en) : k; }
+    /* texts from the language packs (developers/i18n/src) */
+    var P = 'modules.companion.';
+    function t(k, vars) { return typeof root.lmT === 'function' ? root.lmT(P + k, vars) : k; }
+    /* an element whose text follows the language (LMi18n.apply fills data-i18n on a change) */
+    function i18nText(el, k) {
+        el.setAttribute('data-i18n', P + k);
+        el.textContent = t(k);
+        return el;
+    }
     function settings() { return root.legendmod5 || root.defaultmapsettings || {}; }
     function toast(type, text) {
         if (!root.toastr || typeof root.toastr[type] !== 'function') return;
@@ -599,11 +590,11 @@
         var plan = openPlan(root.location, inFrame());
         var w = null;
         try { w = root.open(plan.url, 'lmCompanion'); } catch (e) { w = null; }
-        if (!w) { toast('warning', t('blocked').replace('{0}', plan.url)); return null; }
+        if (!w) { toast('warning', t('blocked', plan.url)); return null; }
         if (plan.mode === 'popup') {
             popup = w;
             try { popupOrigin = new URL(plan.url).origin; } catch (e) { popupOrigin = 'https://www.legendmod.ml'; }
-            toast('info', t('popup').replace('{0}', String(root.location && root.location.hostname || '?').slice(0, 60)));
+            toast('info', t('popup', String(root.location && root.location.hostname || '?').slice(0, 60)));
         } else if (typeof root.BroadcastChannel !== 'function') {
             popup = w;
             popupOrigin = root.location.origin;
@@ -628,7 +619,7 @@
                 el.type = 'button';
                 el.className = 'btn btn-xs btn-primary lm-companion-' + b[0];
                 el.style.cssText = 'min-height:26px;';
-                el.textContent = t(b[0]);
+                i18nText(el, b[0]);
                 el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); b[1](); });
                 row.appendChild(el);
             });
@@ -643,6 +634,7 @@
         var wrap = D.createElement('span');
         wrap.className = 'lm-companion-priv';
         wrap.title = t('privTip');
+        wrap.setAttribute('data-i18n-title', P + 'privTip');
         wrap.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;';
         var lab = D.createElement('label');
         lab.style.cssText = 'display:flex;align-items:center;gap:4px;margin:0;font-weight:400;cursor:pointer;';
@@ -652,18 +644,18 @@
         cb.checked = privacy.hideTeam;
         cb.addEventListener('change', function () { setPrivacy({ hideTeam: cb.checked }); });
         lab.appendChild(cb);
-        lab.appendChild(D.createTextNode(t('hideTeam')));
+        lab.appendChild(i18nText(D.createElement('span'), 'hideTeam'));
         wrap.appendChild(lab);
         var lab2 = D.createElement('label');
         lab2.style.cssText = 'display:flex;align-items:center;gap:4px;margin:0;font-weight:400;';
-        lab2.appendChild(D.createTextNode(t('mapLabel')));
+        lab2.appendChild(i18nText(D.createElement('span'), 'mapLabel'));
         var sel = D.createElement('select');
         sel.id = 'lm-companion-map';
         sel.style.cssText = 'min-height:24px;';
         [['live', 'mapLive'], ['delay', 'mapDelay'], ['hide', 'mapHide']].forEach(function (m) {
             var o = D.createElement('option');
             o.value = m[0];
-            o.textContent = t(m[1]);
+            i18nText(o, m[1]);
             sel.appendChild(o);
         });
         sel.value = privacy.map;

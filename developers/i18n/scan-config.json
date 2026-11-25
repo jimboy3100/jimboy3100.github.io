@@ -14,7 +14,12 @@
     "LMexpress/i18n.js",
     "languages/lm-i18n.js",
     "lib/lm-i18n.js",
-    "developers/i18n/runtime.js"
+    "developers/i18n/runtime.js",
+    "ogario/modules/commandcentre.js",
+    "ogario/modules/discovery.js",
+    "ogario/modules/companion.js",
+    "ogario/modules/notifications.js",
+    "companion.html"
   ],
   "groups": {
     "a: ogario/modules": [

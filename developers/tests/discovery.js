@@ -2,6 +2,7 @@
  * without a document (only the pure parts are defined) and checks the tables and the stored state.
  * node developers/tests/discovery.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const root = path.join(__dirname, '..', '..');
 const src = fs.readFileSync(path.join(root, 'ogario', 'modules', 'discovery.js'), 'utf8');
 
@@ -11,8 +12,12 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 const ctx = { JSON, Math, String, Array, Object, Number };
 ctx.window = ctx;
 vm.createContext(ctx);
+i18n(ctx);
 vm.runInContext(src, ctx);
 const api = ctx.LMDiscovery;
+/* a text of the packs in English and in Greek (both present, not the key) */
+const P = 'modules.discovery.';
+const inPacks = k => ctx.LMi18n.has(P + k, 'en') && i18n.t(P + k, null, 'el') !== P + k;
 check('LMDiscovery defined without a document', !!(api && api.core));
 check('no window functions without a document', typeof api.open === 'undefined');
 const C = api.core;
@@ -43,9 +48,10 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
 
 /* 3. capability rows */
 {
-  const ok = C.CAPS.every(r => typeof r.id === 'string' && typeof r.en === 'string' && r.en && typeof r.el === 'string' &&
-    Object.keys(r.v).every(k => C.SERVER_TYPES.some(s => s.id === k) && /^[ypun]$/.test(r.v[k])));
-  check('rows well formed (known types, y/p/u/n, en + el)', ok);
+  const ok = C.CAPS.every(r => typeof r.id === 'string' && inPacks('cap.' + r.id) &&
+    Object.keys(r.v).every(k => C.SERVER_TYPES.some(s => s.id === k) && /^[ypun]$/.test(r.v[k])) &&
+    (!r.note || Object.keys(r.note).every(k => inPacks('note.' + r.note[k]))));
+  check('rows well formed (known types, y/p/u/n, label and notes in the packs)', ok);
   check('row ids unique', new Set(C.CAPS.map(r => r.id)).size === C.CAPS.length);
   const row = id => C.CAPS.find(r => r.id === id);
   check('merge countdown only on agar.io', C.SERVER_TYPES.every(s => C.capValue(row('mergeCountdown'), s.id) === (s.id === 'agario' ? 'y' : 'n')));
@@ -53,14 +59,18 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
   check('replays not on Senpa / Sigmally', C.capValue(row('replays'), 'senpa') === 'n' && C.capValue(row('replays'), 'sigmally') === 'n' && C.capValue(row('replays'), 'imsolo') === 'y');
   check('login on agar.io and Expanding Land only', C.SERVER_TYPES.every(s => (C.capValue(row('login'), s.id) === 'y') === (s.id === 'agario' || s.id === 'expandingland')));
   check('unlisted type counts as no', C.capValue(row('rooms'), 'senpa') === 'n' && C.capValue(null, 'agario') === 'n');
-  check('note only for partly', C.capNote(row('serverChat'), 'expandingland', 'en').length > 0 && C.capNote(row('serverChat'), 'garix', 'en') === '');
-  check('wildcard note', C.capNote(row('splitMacros'), 'agario', 'en') === C.capNote(row('splitMacros'), 'deltio', 'en') && C.capNote(row('splitMacros'), 'agario', 'en') !== '');
-  check('Greek note', C.capNote(row('serverChat'), 'expandingland', 'el') !== C.capNote(row('serverChat'), 'expandingland', 'en'));
-  const list = C.capsFor('expandingland', 'en');
+  check('note only for partly', C.capNote(row('serverChat'), 'expandingland') === i18n.t(P + 'note.noClanTag') && C.capNote(row('serverChat'), 'garix') === '');
+  check('wildcard note', C.capNote(row('splitMacros'), 'agario') === C.capNote(row('splitMacros'), 'deltio') && C.capNote(row('splitMacros'), 'agario') !== '');
+  const enNote = C.capNote(row('serverChat'), 'expandingland'), enLabel = C.capsFor('agario')[0].label;
+  ctx.LMi18n.setLang('el', { save: false });
+  check('Greek note after a language change', C.capNote(row('serverChat'), 'expandingland') === i18n.t(P + 'note.noClanTag', null, 'el') && C.capNote(row('serverChat'), 'expandingland') !== enNote);
+  check('capsFor Greek labels', C.capsFor('agario')[0].label !== enLabel && C.capsFor('agario')[0].label === i18n.t(P + 'cap.' + C.capsFor('agario')[0].id, null, 'el'));
+  ctx.LMi18n.setLang('en', { save: false });
+  const list = C.capsFor('expandingland');
   const order = { y: 0, p: 1, u: 2, n: 3 };
   check('capsFor lists every row', list.length === C.CAPS.length);
   check('capsFor sorted works / partly / unverified / no', list.every((r, i) => i === 0 || order[list[i - 1].v] <= order[r.v]));
-  check('capsFor Greek labels', C.capsFor('agario', 'el')[0].label !== C.capsFor('agario', 'en')[0].label);
+  check('capsFor English labels from the packs', list.every(r => r.label === i18n.t(P + 'cap.' + r.id)));
 }
 
 /* 4. stored state */
@@ -101,7 +111,9 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
   const i = v4.indexOf('var defaultmapsettings = {');
   const dms = v4.slice(i, i + 200000);
   check('card ids unique and valid', new Set(C.CARDS.map(c => c.id)).size === C.CARDS.length && C.CARDS.every(c => /^[A-Za-z0-9_-]{1,40}$/.test(c.id)));
-  check('every card has en + el name and text', C.CARDS.every(c => c.en && c.el && c.d && c.d.en && c.d.el));
+  check('every card has a name and text in the packs (en + el)', C.CARDS.every(c => inPacks('card.' + c.id) && inPacks('card.' + c.id + '.desc')));
+  check('server types: proper names or a text in the packs', C.SERVER_TYPES.every(s => s.name || inPacks('type.' + s.id)));
+  check('core text helper', C.t('title') === i18n.t(P + 'title') && C.t('title') === 'Discover features');
   let missing = [];
   C.CARDS.forEach(c => c.opts.forEach(k => { if (!new RegExp('\\n\\s+' + k + ': (true|false),').test(dms)) missing.push(k); }));
   check('every card option is a boolean in defaultmapsettings' + (missing.length ? ' (missing ' + missing.join(', ') + ')' : ''), missing.length === 0);

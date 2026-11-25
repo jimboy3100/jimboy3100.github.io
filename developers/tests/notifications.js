@@ -2,6 +2,7 @@
  * with a stub toastr and localStorage (no DOM: the bell and panel are not built).
  * node developers/tests/notifications.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'notifications.js'), 'utf8');
 
 let fail = 0;
@@ -43,9 +44,20 @@ function boot(opts) {
   };
   ctx.window = ctx;
   vm.createContext(ctx);
+  i18n(ctx);
   vm.runInContext(src, ctx);
   const flush = () => { const q = timers.splice(0); q.forEach(f => f()); };
   return { ctx, api: ctx.LMNotifications, core: ctx.LMNotifications._core, shown, toastr, toastToken, flush };
+}
+
+/* 0. labels: the settings texts of the language packs, following a language change */
+{
+  const { core, ctx } = boot();
+  check('labels: category and type from the packs', core.catLabel('party') === i18n.t('settings.lmNotifCatParty') && core.typeLabel('error') === i18n.t('settings.lmNotifTypeError') && core.catLabel('party') !== 'settings.lmNotifCatParty');
+  check('labels: unknown category / type fall back to Other / Info', core.catLabel('nope') === i18n.t('settings.lmNotifCatOther') && core.typeLabel('nope') === i18n.t('settings.lmNotifTypeInfo'));
+  ctx.LMi18n.setLang('el', { save: false });
+  check('labels: Greek after a language change', core.catLabel('party') === i18n.t('settings.lmNotifCatParty', null, 'el') && core.catLabel('party') !== i18n.t('settings.lmNotifCatParty'));
+  ctx.LMi18n.setLang('en', { save: false });
 }
 
 /* 1. HTML stripping */
