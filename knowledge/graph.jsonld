@@ -44,7 +44,7 @@
       ],
       "gamePlatform": "Web browser",
       "operatingSystem": "Web browser",
-      "applicationCategory": "BrowserExtension",
+      "applicationCategory": "GameApplication",
       "featureList": [
         "Dynamic circular map",
         "FFA and Teams modes",

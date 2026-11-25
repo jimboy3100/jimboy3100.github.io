@@ -9,3 +9,7 @@ Disallow: /LMexpress/extension/
 Disallow: /AjaxData/
 
 Sitemap: https://www.legendmod.ml/sitemap.xml
+
+# LLM discovery (llms.txt standard)
+# https://www.legendmod.ml/llms.txt
+# https://www.legendmod.ml/llms-full.txt
