@@ -77,7 +77,7 @@ $("#CloseReplay").click(function() {
     $("#replayModal").remove();
 });
 $("#FAQReplay").click(function() {
-    window.open('https://jimboy3100.github.io/', '_blank');
+    window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://www.legendmod.ml/') : 'https://www.legendmod.ml/', '_blank');
 });
 
 

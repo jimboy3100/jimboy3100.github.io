@@ -9078,7 +9078,7 @@ function changeFrameWorkStart() {
     defaultmapsettings.unlockedFPS = false;
 }
 /* ── Legend Mod Theme Bridge (mod-side helpers), the receiver is lib/lm-theme-bridge.js ──
- * lmThemeData()  → only visual values: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b, rad}
+ * lmThemeData()  → only visual values and the language: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b, rad, lang}
  * lmThemeQuery() → returns "?lm=<base64 JSON>" to append to any URL
  * lmThemeHash()  → returns "#lm=<base64 JSON>"
  * lmThemeSend(iframe) → sends the theme with postMessage, only to a Legend page */
@@ -9106,6 +9106,11 @@ function lmThemeData() {
     try {
         var rad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lm-radius'));
         if (isFinite(rad)) d.rad = String(rad);
+    } catch (e) {}
+    /* the Legend Mod language (languagemod 1 English ... 12 Dutch): the only setting that goes with the theme */
+    try {
+        var lang = parseInt(typeof languagemod !== 'undefined' && languagemod ? languagemod : localStorage.getItem('languagemod'), 10);
+        if (lang >= 1 && lang <= 12) d.lang = String(lang);
     } catch (e) {}
     return d;
 }
