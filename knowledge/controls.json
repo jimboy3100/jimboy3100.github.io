@@ -1,0 +1,121 @@
+{
+  "entity": "https://expanding.land/#game",
+  "updated": "2026-11-25",
+  "controls": [
+    {
+      "input": "Mouse movement",
+      "action": "Move cell toward cursor",
+      "notes": "Smaller cells move faster"
+    },
+    {
+      "input": "Space",
+      "action": "Split",
+      "notes": "Divide cell into two halves, up to 16 fragments"
+    },
+    {
+      "input": "W",
+      "action": "Eject mass",
+      "notes": "Fire small pellet (~15-16 mass) toward cursor"
+    },
+    {
+      "input": "E",
+      "action": "Split macro (hold)",
+      "notes": "Rapid double/triple/16-split with configurable timing"
+    },
+    {
+      "input": "Q",
+      "action": "Double split",
+      "notes": "Quick double split"
+    },
+    {
+      "input": "Alt+Q",
+      "action": "Pop split",
+      "notes": "Split + virus pop technique"
+    },
+    {
+      "input": "Shift",
+      "action": "Split into 16",
+      "notes": "Maximum split"
+    },
+    {
+      "input": "Enter",
+      "action": "Chat message",
+      "notes": "Open/send chat"
+    },
+    {
+      "input": "Escape",
+      "action": "Menu / free spectate",
+      "notes": "Open menu or enter spectate"
+    },
+    {
+      "input": "Ctrl+K",
+      "action": "Command Centre",
+      "notes": "Fuzzy search palette for settings and commands"
+    },
+    {
+      "input": "T",
+      "action": "Toggle top 5 / team panel",
+      "notes": "Show/hide leaderboard panel"
+    },
+    {
+      "input": "A",
+      "action": "Toggle all skins",
+      "notes": "Show/hide skins"
+    },
+    {
+      "input": "S",
+      "action": "Toggle custom skins",
+      "notes": "Show/hide custom skins only"
+    },
+    {
+      "input": "M",
+      "action": "Toggle mass display",
+      "notes": "Show/hide mass numbers"
+    },
+    {
+      "input": "N",
+      "action": "Toggle names",
+      "notes": "Show/hide player names"
+    },
+    {
+      "input": "G",
+      "action": "Toggle grid",
+      "notes": "Show/hide grid lines"
+    },
+    {
+      "input": "V",
+      "action": "Toggle spectator mode",
+      "notes": "Enter/exit spectate"
+    },
+    {
+      "input": "R",
+      "action": "Pause cell movement",
+      "notes": "Freeze cell position"
+    },
+    {
+      "input": "Z",
+      "action": "Reset zoom (hold)",
+      "notes": "Return to default zoom level"
+    },
+    {
+      "input": "Mouse scroll",
+      "action": "Zoom in/out",
+      "notes": "Scroll wheel controls zoom"
+    },
+    {
+      "input": "Left click",
+      "action": "Macro feed (default)",
+      "notes": "Configurable mouse button binding"
+    },
+    {
+      "input": "Right click",
+      "action": "Split (default)",
+      "notes": "Configurable mouse button binding"
+    },
+    {
+      "input": "Middle click",
+      "action": "Multibox swap (default)",
+      "notes": "Configurable mouse button binding"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "updated": "2026-11-25",
+  "faq": [
+    {
+      "question": "What is Legend Mod?",
+      "answer": "Legend Mod is a browser client and Chrome extension that adds custom skins, themes, configurable controls, multiboxing, replays, and many other features to Agar.io-style cell games. It is not a game itself."
+    },
+    {
+      "question": "Is Legend Mod the same as Agar.io?",
+      "answer": "No. Legend Mod is a separate extension/client project. Agar.io is a game by Miniclip. Expanding Land is a separate independent game. These are three distinct entities."
+    },
+    {
+      "question": "Is Expanding Land the official Agar.io service?",
+      "answer": "No. Expanding Land is an independent multiplayer cell game built from scratch in C. It is not affiliated with Agar.io or Miniclip."
+    },
+    {
+      "question": "Does the Expanding Land map change?",
+      "answer": "Yes. The server controls expansion and contraction of the circular arena. The map scale ranges from 0.25x to 8x based on player activity."
+    },
+    {
+      "question": "Are all opponents in Expanding Land human?",
+      "answer": "Not necessarily. Human and server-controlled bot counts vary by arena. In-game counters distinguish the populations."
+    },
+    {
+      "question": "What is the maximum player count?",
+      "answer": "Expanding Land supports up to 3,840 concurrent real players per arena. Actual counts depend on server configuration."
+    },
+    {
+      "question": "How do I install Legend Mod?",
+      "answer": "Install the Legend Express Chrome extension from the Chrome Web Store, or visit legendmod.ml/play.html to use the web client directly."
+    },
+    {
+      "question": "What languages does Legend Mod support?",
+      "answer": "16 languages: Arabic, Bulgarian, German, Greek, English, Spanish, French, Indonesian (beta), Italian (beta), Japanese (beta), Dutch, Polish, Portuguese (beta), Russian, Turkish, and Traditional Chinese."
+    },
+    {
+      "question": "Is Legend Mod free?",
+      "answer": "Yes. Legend Mod and Expanding Land are free to use with no subscription required."
+    },
+    {
+      "question": "Does Legend Mod collect personal data?",
+      "answer": "The Chrome extension does NOT collect, store or transmit personal data externally. See the privacy policy at legendmod.ml/privacy.html."
+    },
+    {
+      "question": "What mods are compatible with Expanding Land?",
+      "answer": "Legend Mod (legendmod.ml), Delta Mod (deltio.pages.dev), and Agar2 (agar2.com) are compatible client mods."
+    },
+    {
+      "question": "How do I spectate in Expanding Land?",
+      "answer": "Press Escape while alive to enter free spectate. Up to 200+ spectator slots with free-roam camera. Click the minimap to move the camera."
+    },
+    {
+      "question": "What is the Command Centre?",
+      "answer": "A fuzzy-search palette (Ctrl+K) that lets you search and activate any setting, hotkey, theme option or window in Legend Mod."
+    },
+    {
+      "question": "What is the dynamic map?",
+      "answer": "Expanding Land's circular arena auto-resizes from 0.25x to 8x based on player count. The server controls expansion and contraction of the boundary."
+    },
+    {
+      "question": "What is a scan trick?",
+      "answer": "A movement technique where cursor position snaps to fixed directional increments (8-32 directions) for precise cell positioning."
+    }
+  ]
+}

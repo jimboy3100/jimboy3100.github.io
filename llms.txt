@@ -10,6 +10,8 @@
 - [Dynamic map](https://help.expanding.land/dynamic-map.html): expansion and contraction.
 - [Players and bots](https://help.expanding.land/no-bots.html): population distinctions.
 - [Project facts](https://www.legendmod.ml/knowledge/): entity identifiers.
+- [Controls](https://www.legendmod.ml/knowledge/controls.json): default keyboard and mouse bindings.
+- [FAQ](https://www.legendmod.ml/knowledge/faq.json): frequently asked questions.
 
-- [Consolidated documentation](https://www.legendmod.ml/llms-full.txt): verified core facts and links.
+- [Consolidated documentation](https://www.legendmod.ml/llms-full.txt): verified core facts, features, controls, FAQ and links.
 - [Knowledge API](https://www.legendmod.ml/knowledge/api.json): public read-only JSON resources.

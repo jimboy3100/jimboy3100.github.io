@@ -4,33 +4,71 @@
   "mechanics": [
     {
       "id": "dynamic-map",
-      "name": "Server-controlled circular arena that expands and contracts",
+      "name": "Dynamic circular arena",
+      "description": "Server-controlled circular boundary that expands and contracts based on player count. Scale ranges from 0.25x to 8x. During contraction, the outer ring becomes a Danger Zone with anti-teaming penalties.",
       "url": "https://help.expanding.land/dynamic-map.html"
     },
     {
       "id": "cell-growth",
-      "name": "Collect food and consume smaller cells to grow",
+      "name": "Cell growth",
+      "description": "Collect food pellets (+1 mass each) and consume smaller cells. Need approximately 1.3x a target's mass to eat them, so approximately 2.6x before splitting to split-kill.",
       "url": "https://help.expanding.land/guide.html"
     },
     {
       "id": "split",
-      "name": "Split cells as a gameplay technique",
+      "name": "Splitting",
+      "description": "Press Space to divide cell into two halves. Can split up to 16 fragments. Front half flies toward cursor at high speed. Used offensively and defensively.",
       "url": "https://help.expanding.land/guide.html#splitting"
     },
     {
       "id": "mass",
-      "name": "Mass management and ejection",
+      "name": "Mass ejection",
+      "description": "Press W to eject a small pellet (~15-16 mass) toward cursor. Used to feed teammates, shoot viruses (7 W-presses to launch, ~100-110 mass cost), or reduce mass for speed.",
       "url": "https://help.expanding.land/guide.html#mass"
     },
     {
+      "id": "decay",
+      "name": "Mass decay",
+      "description": "Cells lose approximately 0.8% of mass every 4 seconds. Bigger cells decay proportionally faster, making extreme size difficult to maintain."
+    },
+    {
+      "id": "virus",
+      "name": "Viruses",
+      "description": "Spiky green circles. Big cells that touch a virus pop into ~16 pieces. Small and medium cells pass through safely. Feed 7 W-presses to shoot a virus at another player.",
+      "url": "https://help.expanding.land/glossary.html"
+    },
+    {
+      "id": "merge",
+      "name": "Merge timer",
+      "description": "After splitting, cells rejoin after a timer based on mass. Bigger cells take longer to merge. Players are vulnerable until cells recombine."
+    },
+    {
+      "id": "ghost-cells",
+      "name": "Ghost cells",
+      "description": "Transparent cells appear at the location where you died. Expanding Land-exclusive feature. Visible on the minimap.",
+      "url": "https://help.expanding.land/glossary.html"
+    },
+    {
       "id": "bots",
-      "name": "Human and server-controlled bot populations vary by arena",
+      "name": "Server-controlled bots",
+      "description": "Arenas contain human players and server-controlled bots. In-game counters distinguish populations. Counts vary by arena and change during play.",
       "url": "https://help.expanding.land/no-bots.html"
     },
     {
       "id": "spectate",
       "name": "Spectator mode",
+      "description": "200+ spectator slots with free-roam camera. Press Escape to spectate. Minimap click moves the camera in World Spectate mode.",
       "url": "https://help.expanding.land/glossary.html"
+    },
+    {
+      "id": "anti-teaming",
+      "name": "Anti-teaming system",
+      "description": "Exponential multiplier decay (Delta Server-style): base_decay × pow(1.086, multiplier). Recovery via -0.005/cycle compensation. Excessive mass sharing triggers accelerated decay."
+    },
+    {
+      "id": "coordinate-scrambling",
+      "name": "Coordinate scrambling",
+      "description": "Anti-cheat system where each connected player receives different coordinate offsets from the server, preventing external tools from sharing exact positions."
     }
   ]
 }

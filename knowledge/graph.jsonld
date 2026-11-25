@@ -16,7 +16,7 @@
       "name": "Legend Mod",
       "url": "https://www.legendmod.ml/",
       "description": "Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.",
-      "applicationCategory": "BrowserExtension",
+      "applicationCategory": "GameApplication",
       "operatingSystem": "Web browser",
       "featureList": [
         "Custom skins",

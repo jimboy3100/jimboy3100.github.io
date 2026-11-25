@@ -5,12 +5,12 @@
     {
       "id": "ffa",
       "name": "Free-for-all",
-      "description": "Competitive individual play."
+      "description": "Competitive individual play. Every player is on their own. The leaderboard ranks players by current mass. Survive, grow, and reach the top."
     },
     {
       "id": "teams",
       "name": "Teams",
-      "description": "Team-based play on supported arenas."
+      "description": "Team-based play on supported arenas. Players are assigned to teams with shared colours. Cooperate with teammates to dominate the arena."
     }
   ]
 }

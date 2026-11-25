@@ -3,59 +3,128 @@
   "resources": [
     {
       "name": "Legend Mod",
+      "description": "Browser client and extension for Agar.io-style cell games with custom skins, themes, controls, multiboxing and replays.",
       "url": "https://www.legendmod.ml/"
     },
     {
       "name": "Play with Legend Mod",
+      "description": "Game page with the Legend Mod client built in. Play Expanding Land and other supported games.",
       "url": "https://www.legendmod.ml/play.html"
     },
     {
       "name": "Install Chrome extension",
+      "description": "Legend Express Chrome extension on the Chrome Web Store. Does NOT collect or transmit personal data externally.",
       "url": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja"
     },
     {
       "name": "Features",
+      "description": "Feature showcase: controls, skins, themes, multibox, replays, gamepad, Command Centre, performance tools.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "name": "FAQ",
+      "description": "Frequently asked questions about Legend Mod, Expanding Land and the Chrome extension.",
       "url": "https://www.legendmod.ml/faq.html"
     },
     {
       "name": "Release notes",
+      "description": "Legend Mod version history and changelogs.",
       "url": "https://www.legendmod.ml/changelog.html"
     },
     {
       "name": "Developers",
+      "description": "Developer resources including tests, scripts and documentation.",
       "url": "https://www.legendmod.ml/developers/"
     },
     {
+      "name": "Skins gallery",
+      "description": "Browse, preview and add custom cell skins. Includes skin checker and skin rotator tools.",
+      "url": "https://www.legendmod.ml/skins/"
+    },
+    {
+      "name": "Themes gallery",
+      "description": "Browse and apply visual themes and HUD customizations.",
+      "url": "https://www.legendmod.ml/themes/"
+    },
+    {
+      "name": "Companion guide",
+      "description": "Second-screen companion setup guide for multi-monitor and streaming setups.",
+      "url": "https://www.legendmod.ml/companion-guide.html"
+    },
+    {
+      "name": "Mobile controls",
+      "description": "Mobile touch controls guide for playing on phones and tablets.",
+      "url": "https://www.legendmod.ml/LMmobile/"
+    },
+    {
+      "name": "Privacy policy",
+      "description": "Privacy policy for Expanding Land, Legend Mod and Legend Express Chrome extension.",
+      "url": "https://www.legendmod.ml/privacy.html"
+    },
+    {
+      "name": "Terms of service",
+      "description": "Terms of service for Expanding Land, Legend Mod and Legend Express.",
+      "url": "https://www.legendmod.ml/terms.html"
+    },
+    {
       "name": "Expanding Land",
+      "description": "Free multiplayer browser cell game with dynamic circular arena, FFA/Teams modes, C-based server.",
       "url": "https://expanding.land/"
     },
     {
       "name": "Game help",
+      "description": "Official Expanding Land documentation hub: guides, glossary, mechanics, changelog.",
       "url": "https://help.expanding.land/"
     },
     {
-      "name": "Strategy",
+      "name": "Strategy guide",
+      "description": "How-to-play guide with 9 sections: controls, early game, splitting, viruses, mass, positioning, advanced techniques, EL-specific tips, common mistakes.",
       "url": "https://help.expanding.land/guide.html"
     },
     {
       "name": "Glossary",
+      "description": "40+ IO game terms defined across 7 categories: basics, controls, mechanics, techniques, strategy, community, and EL-specific terms.",
       "url": "https://help.expanding.land/glossary.html"
     },
     {
       "name": "Dynamic map",
+      "description": "Explanation of Expanding Land's unique dynamic circular arena that expands and contracts (0.25x to 8x scale).",
       "url": "https://help.expanding.land/dynamic-map.html"
     },
     {
       "name": "Bots and fair play",
+      "description": "Explanation of human vs server-controlled bot populations, in-game counters, and fair play policy.",
       "url": "https://help.expanding.land/no-bots.html"
     },
     {
       "name": "Game updates",
+      "description": "Expanding Land server and client changelog with technical details.",
       "url": "https://help.expanding.land/changelog.html"
+    },
+    {
+      "name": "Best IO games 2026",
+      "description": "Ranking of 15 best IO games in 2026 with comparison tables.",
+      "url": "https://help.expanding.land/best-io-games.html"
+    },
+    {
+      "name": "EL vs Agar.io",
+      "description": "Comparison between Expanding Land and Agar.io: map, server, players, features.",
+      "url": "https://help.expanding.land/alternative.html"
+    },
+    {
+      "name": "Embed widget",
+      "description": "Iframe embed code for webmasters in 4 sizes. No login required, 256 spectator slots, no ads.",
+      "url": "https://help.expanding.land/embed.html"
+    },
+    {
+      "name": "Browser guide",
+      "description": "Device and network guide for playing Expanding Land in various browser environments.",
+      "url": "https://help.expanding.land/unblocked.html"
+    },
+    {
+      "name": "Discord",
+      "description": "Official Discord community server.",
+      "url": "https://discord.com/invite/JUfpR9k"
     }
   ]
 }

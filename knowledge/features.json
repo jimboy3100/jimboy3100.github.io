@@ -5,52 +5,110 @@
     {
       "id": "controls",
       "name": "Configurable controls and hotkeys",
+      "description": "Fully rebindable keyboard, mouse and gamepad controls. Default: Space=split, W=eject, E=macro, Q=multibox swap, Ctrl+K=Command Centre. Mouse buttons and scroll wheel are configurable.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "skins",
       "name": "Custom skins, video skins and skin tools",
+      "description": "Apply custom image URLs (PNG, JPG, GIF, SVG) as cell skins. Video skins play MP4/WebM/OGV files. Skin collections organise skins into folders. Skin checker tests URL validity. IndexedDB cache with LRU eviction stores up to 1,000 skins.",
       "url": "https://www.legendmod.ml/skins/"
     },
     {
       "id": "themes",
       "name": "Themes and HUD customization",
+      "description": "Visual customization via CSS variables and theme presets. Configure background, cell, grid, border, food, virus and HUD colours. HUD blur, rainbow borders, virus effects, cell contours, and streamer preset included.",
       "url": "https://www.legendmod.ml/themes/"
     },
     {
       "id": "mobile",
       "name": "Mobile touch controls",
+      "description": "Dedicated on-screen touch buttons for split, feed and movement. PWA support with fullscreen landscape play and screen wake lock.",
       "url": "https://www.legendmod.ml/LMmobile/"
     },
     {
       "id": "gamepad",
       "name": "Gamepad support",
+      "description": "Full controller support with customizable button mapping, dead zone (0.05-0.5), response curve (0.5-3), zoom sensitivity, trigger threshold, axis inversion and haptic vibration on split and death.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "multibox",
       "name": "Multibox controls",
+      "description": "Control up to 4 game connections simultaneously. Colour-coded rings per player, middle camera view, auto-respawn, switch-after-death, freeze mode and camera smoothing.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "replays",
       "name": "Replay tools",
+      "description": "Record server packets for faithful replays. Instant replay hotkey plays the last 15-60 seconds. Match history stores last 50 lives with mass, time, killer and server. Personal bests tracked per browser. Replay Studio provides full playback controls.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "performance",
       "name": "WebGL rendering and performance diagnostics",
+      "description": "WebGL2 acceleration with Canvas2D fallback. High DPI rendering, FPS cap (0-240), menu FPS cap, performance mode (one-switch for weak devices), adaptive performance (auto-disable effects below target FPS), antialiasing, and real-time performance diagnostics window.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "profiles",
       "name": "Settings profiles",
+      "description": "Save and load up to 15 named settings profiles stored in localStorage. Each profile stores all gameplay and visual settings. Import/export available as JSON.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "companion",
       "name": "Second-screen companion",
+      "description": "Broadcast live game state (minimap, mass, cell positions, chat) to a second browser window or device via BroadcastChannel. Useful for streaming setups and multi-monitor play.",
       "url": "https://www.legendmod.ml/companion-guide.html"
+    },
+    {
+      "id": "commandcentre",
+      "name": "Command Centre",
+      "description": "Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme option and window. Multi-language search, favourites (up to 30), recent items (last 12), and optional quick bar during gameplay.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "chat",
+      "name": "Chat system",
+      "description": "In-game text chat with image/video sharing, emoticons, auto-translation, mention notifications, chat history (last 20 messages), word filter, sound mixer with 6 independent channels, and audio ducking.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "hud",
+      "name": "HUD helpers",
+      "description": "Split range circles, merge countdown, relative mass display, edge arrows for teammates and threats, cell mass panel, move direction arrow, and mass format modes (short/exact/12.3k/auto).",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "stats",
+      "name": "Stats and analytics",
+      "description": "Live stats HUD (mass, FPS, ping, PPS, jitter, server Hz). Kill feed, death recap, mass graph, mass loss alerts, analytics window, personal bests, match history, and notification centre.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "scantrick",
+      "name": "Scan trick and line split",
+      "description": "Scan trick: snap cursor to 8-32 fixed directional increments for precise cell positioning. Line split: straight-line rapid multi-split (x8 or x16) with configurable timing.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "accessibility",
+      "name": "Accessibility features",
+      "description": "Reduced motion (no death shake, particles, entrance spin). Adjustable menu and HUD text scale. Bigger/smaller indicators on opponent cells. Focus warning when input is not reaching the game.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "privacy",
+      "name": "Privacy and streamer mode",
+      "description": "Streamer preset for one-click privacy setup. Stream mode hides identifying details. Options to hide skin URL, own name, and country flag.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "i18n",
+      "name": "16-language support",
+      "description": "Translated into Arabic, Bulgarian, German, Greek, English, Spanish, French, Indonesian (beta), Italian (beta), Japanese (beta), Dutch, Polish, Portuguese (beta), Russian, Turkish, and Traditional Chinese. Over 2,000 strings per language.",
+      "url": "https://www.legendmod.ml/features.html"
     }
   ]
 }

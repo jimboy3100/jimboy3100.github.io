@@ -3,5 +3,17 @@
   "updated": "2026-11-25",
   "description": "Expanding Land is a free multiplayer browser cell game with a dynamic circular arena that expands and contracts, FFA and Teams modes, and a C-based server. Human and server-controlled bot populations vary by arena.",
   "officialWebsite": "https://expanding.land/",
-  "documentation": "https://help.expanding.land/"
+  "documentation": "https://help.expanding.land/",
+  "version": "2026",
+  "serverTechnology": "Pure C with OpenMP parallelisation (~5ms tick)",
+  "maxPlayersPerArena": 3840,
+  "spectatorSlots": "200+",
+  "mapScale": "0.25x to 8x (dynamic, server-controlled)",
+  "encryption": "WSS/TLS",
+  "antiCheat": "Coordinate scrambling (different offsets per player)",
+  "antiTeaming": "Delta-style exponential decay: base × pow(1.086, multiplier)",
+  "loginMethods": ["Discord OAuth", "Google Sign-In", "Guest (no login required)"],
+  "compatibleMods": ["Legend Mod (legendmod.ml)", "Delta Mod (deltio.pages.dev)", "Agar2 (agar2.com)"],
+  "platforms": ["Web browser (desktop)", "Web browser (mobile)", "Android APK", "PWA"],
+  "discord": "https://discord.com/invite/JUfpR9k"
 }

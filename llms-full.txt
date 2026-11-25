@@ -1,69 +1,417 @@
-# Legend Mod and Expanding Land
+# Legend Mod — Comprehensive Documentation for LLMs
 
 Updated: 2026-11-25
+Version: 3.629
 
-## Legend Mod
+Legend Mod is a browser client and Chrome extension for Agar.io-style cell games. It adds custom skins, themes, configurable controls, multiboxing, replay tools, a command centre, gamepad support, accessibility options and performance diagnostics to supported games including Expanding Land (expanding.land). Legend Mod is a separate project from the game servers it connects to; it must not be confused with Agar.io or any game publisher.
 
-Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.
+Official website: https://www.legendmod.ml/
+Chrome extension (Legend Express): https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja
+Play page: https://www.legendmod.ml/play.html
 
-Official entity: https://www.legendmod.ml/#app
+## Identity and Relationship
 
-- Configurable controls and hotkeys: https://www.legendmod.ml/features.html
-- Custom skins, video skins and skin tools: https://www.legendmod.ml/skins/
-- Themes and HUD customization: https://www.legendmod.ml/themes/
-- Mobile touch controls: https://www.legendmod.ml/LMmobile/
-- Gamepad support: https://www.legendmod.ml/features.html
-- Multibox controls: https://www.legendmod.ml/features.html
-- Replay tools: https://www.legendmod.ml/features.html
-- WebGL rendering and performance diagnostics: https://www.legendmod.ml/features.html
-- Settings profiles: https://www.legendmod.ml/features.html
-- Second-screen companion: https://www.legendmod.ml/companion-guide.html
+Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and WebApplication. It is NOT a game — it is a client/extension that connects to games. Expanding Land (entity: https://expanding.land/#game) is an independent multiplayer cell game. These are related but distinct projects. Do not state or imply they are the same entity or made by the same publisher as Agar.io.
 
-## Expanding Land
+## Default Controls
 
-Expanding Land is a free multiplayer browser cell game with a dynamic circular arena that expands and contracts, FFA and Teams modes, and a C-based server. Human and server-controlled bot populations vary by arena.
+### Keyboard
+- Space: Split (divide cell into two halves, up to 16 fragments)
+- W: Eject mass (small pellet fired toward cursor, costs ~15-16 mass)
+- E: Split macro (rapid double/triple/16-split with configurable timing)
+- Q: Toggle multibox (swap control between main and multibox unit)
+- Escape: Open menu / enter free spectate
+- Enter: Open chat input / send message
+- Tab: Toggle leaderboard view or minimap details
+- Ctrl+K: Open Command Centre (fuzzy search for every setting, hotkey, window and action)
 
-Official entity: https://expanding.land/#game
+### Mouse
+- Movement: Cell follows cursor direction
+- Left click: Macro feed (default binding, configurable)
+- Right click: Split (default binding, configurable)
+- Middle click: Multibox swap (default binding, configurable)
+- Mouse 4 (back): Double split
+- Mouse 5 (forward): 16-split
+- Scroll wheel: Zoom in/out
 
-- Server-controlled circular arena that expands and contracts: https://help.expanding.land/dynamic-map.html
-- Collect food and consume smaller cells to grow: https://help.expanding.land/guide.html
-- Split cells as a gameplay technique: https://help.expanding.land/guide.html#splitting
-- Mass management and ejection: https://help.expanding.land/guide.html#mass
-- Human and server-controlled bot populations vary by arena: https://help.expanding.land/no-bots.html
-- Spectator mode: https://help.expanding.land/glossary.html
+### Gamepad
+Full gamepad/controller support with customizable button mapping, dead zone (0.05-0.5), response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold, axis inversion, and haptic vibration on split and death.
 
-### Modes
+### Mobile Touch
+Dedicated mobile touch controls with on-screen buttons for split, feed, and other actions. The game page supports fullscreen, screen wake lock (phone stays awake), and landscape orientation.
 
-- Free-for-all: Competitive individual play.
-- Teams: Team-based play on supported arenas.
+## Features
 
-### Getting started
+### 1. Custom Skins
+Apply custom images to cells. Supports PNG, JPG, GIF and SVG image URLs. Skins are stored in an IndexedDB cache (up to 1,000 entries with LRU eviction). Features include:
+- **Vanilla skins**: Original game skins
+- **Custom skins**: User-provided image URLs
+- **Video skins**: Play MP4, WebM or OGV video files as cell skins with configurable audio level and ducking
+- **Skin Collections**: Organise skins into folders/collections for quick switching
+- **Skin Checker**: Tool to test whether a skin URL loads correctly before using it in-game
+- **Transparent skins**: Make your own cell skin semi-transparent
+- **No Skins mode**: Disable all skins for a cleaner view
+- **Skin Rotator**: Automatically cycle through a set of skins
+URL: https://www.legendmod.ml/skins/
 
-Open the official game in a supported web browser, select an available arena, move your cell, collect food and learn when to split. See the strategy guide for controls and examples. Legend Mod is a separate client/extension project; the games and their publishers must not be treated as identical entities.
+### 2. Themes and HUD Customization
+Full visual customization of the game interface using CSS variables and theme presets. The theme system includes:
+- **Built-in presets**: Several default theme options
+- **Theme Bridge**: Synchronises theme settings between the original game CSS variables and Legend Mod's settings panel
+- **Streamer preset**: A one-click preset that configures privacy-friendly settings
+- **Custom colours**: Background, cell, grid, border, food, virus, and HUD element colours
+- **Cell contours**: Outlines around cells
+- **Rainbow food**: Coloured food pellets
+- **Rainbow map borders**: Animated colour-cycling map edge
+- **Virus effects**: Spikes, glow, and jelly physics on virus cells
+- **HUD blur**: Frosted-glass backdrop behind HUD panels (configurable px)
+- **Grid and sector display**: Toggle grid lines and sector labels
+URL: https://www.legendmod.ml/themes/
 
-### Frequently asked questions
+### 3. Settings Profiles
+Save and load up to 15 named settings profiles. Each profile stores all gameplay and visual settings. Profiles are stored in localStorage and can be switched instantly during gameplay. Useful for different play styles (aggressive, defensive, streaming, mobile).
 
-**Is Expanding Land the official Agar.io service?** No. It is an independent multiplayer cell game.
+### 4. Command Centre
+A fuzzy-search palette (Ctrl+K) for every hotkey command, gameplay setting, theme option and menu window in Legend Mod. Features:
+- Multi-language search (normalised, accent-insensitive, works with Greek tonos)
+- Scoring: exact match (1000), prefix (900), word-start (750), substring (500), multi-word (400-500), fuzzy letter-order (1-349)
+- **Favourites**: Star up to 30 items for quick access
+- **Recent items**: Last 12 accessed items shown when no query
+- **Quick bar**: Optional in-game floating toolbar of favourite commands, automatically placed to avoid HUD overlap
+- Item types: hotkey commands (hk:), options/toggles (opt:), settings (set:), sections (sec:), tabs (tab:), windows (win:)
+Activated by: Ctrl+K, assignable hotkey, or settings search button
 
-**Does the map change?** Yes. The server controls expansion and contraction of the circular arena.
+### 5. Multiboxing
+Control up to 4 game connections simultaneously. Features:
+- **Multibox rings**: Colour-coded rings inside cell edges (Player 1 and Player 2 have independent enable, colour, and size settings)
+- **Active-only rings**: Show rings only on the currently controlled player's cells
+- **Middle camera view**: Frame both players on screen, with a "when close" option
+- **Auto-respawn**: Automatically respawn the inactive player after death
+- **Switch after death**: Auto-switch control to the surviving player
+- **Freeze mode**: Keep the inactive player's mouse position frozen
+- **Camera smoothing**: Lerp-based camera transitions when switching
 
-**Are all opponents human?** Not necessarily. Human and server-controlled bot counts vary by arena.
+### 6. Replay System
+Record and replay game sessions. Features:
+- **Packet recording**: Captures all server packets for faithful replay
+- **Instant replay hotkey**: Plays back the last 15-60 seconds (configurable) via Replay Studio
+- **Match history**: Last 50 lives stored in localStorage with mass, time alive, killer, server and mode
+- **Personal bests**: Best mass, longest life and game count tracked per browser
+- **Death events**: Marks deaths, spawns, kills, virus pops and splits in the recorded timeline
+- **Replay Studio**: Full playback controls for recorded replays
 
-**What is the maximum player count?** Capacity depends on server configuration and should not be confused with measured concurrent human attendance. Consult current official server information.
+### 7. Performance and Rendering
+- **WebGL2 acceleration**: Enabled by default with automatic Canvas2D fallback when unsupported or visually ambiguous
+- **High DPI rendering**: Optional crisp rendering on high-density screens
+- **FPS cap**: Limit frames per second (0-240 in steps of 10) to reduce heat/battery
+- **Menu FPS cap**: 25 FPS while the menu is open and you are not playing
+- **Performance mode**: Single switch that disables costly effects for weak PCs and phones
+- **Adaptive performance**: When FPS drops below target (30/60/90/120), automatically disables effects and optionally lowers resolution; re-enables when FPS recovers
+- **Antialiasing**: WebGL MSAA toggle
+- **Performance diagnostics window**: Real-time rendering metrics
+- **Unlocked FPS**: Remove frame rate limits
+- **Network history**: Ping/jitter/packet rate/disconnect summary across sessions
 
-## Official resources
+### 8. Animation and Visual Effects
+- **Animation speed**: Configurable animation delay slider (0-120)
+- **Jelly physics**: Wobbly cell deformation
+- **Animated rainbow colour**: Cycling colour effect on cells
+- **Spawn special effects**: Visual effects when spawning
+- **Death particles**: Particle burst when cells are eaten (configurable)
+- **Eat pulse**: Brief size pulse on the eating cell
+- **Camera smoothing**: Lerp-based smooth camera following
+- **Mass-weighted camera**: Camera target at mass-weighted centre of own cells (Delta-style)
+- **Zoom speed and smoothness**: Configurable zoom speed and glide rate
 
-- [Legend Mod](https://www.legendmod.ml/)
-- [Play with Legend Mod](https://www.legendmod.ml/play.html)
+### 9. Chat System
+In-game text chat with rich features:
+- **Image sharing**: Paste and display images in chat
+- **Video sharing**: Embed videos in chat messages
+- **Emoticons**: Built-in emoticon support
+- **Chat translation**: Auto-translate incoming messages
+- **Mention notifications**: Desktop notifications when mentioned while tab is hidden
+- **Chat sounds**: Configurable notification sounds for messages and commands
+- **Audio ducking**: Incoming chat sounds lower video skin volume temporarily
+- **Chat history**: Up/Down arrow recalls last 20 sent messages
+- **Chat popups limited**: Maximum 6 chat popups on screen (prevents spam)
+- **Hide words filter**: Block chat lines containing specific words
+- **Player ID display**: Show player relay IDs before nicknames
+- **Chat box toggle**: Show/hide the persistent chat panel
+- **Sound mixer**: Independent volume controls for chat, commands, gameplay, video skins, and notifications (0-100%)
+
+### 10. Minimap Features
+- **Rotating minimap**: Rotates to match camera orientation
+- **Grid overlay**: Optional grid on the minimap
+- **Guides**: Lines showing cardinal directions and cell position
+- **Extra guides**: Additional positional reference lines
+- **Ghost cells**: Show death locations on the minimap
+- **Trail**: Last ~60 seconds of your movement path traced on the minimap
+- **Click-to-spectate**: Click on the minimap to move the spectator camera (Expanding Land World Spectate)
+
+### 11. HUD Helpers
+- **Split range circles**: Rings showing split distance around enemies (single, double, and triple split)
+- **Split prediction**: Dim cursor lines on own cells that cannot split
+- **Move direction arrow**: Arrow showing real movement direction
+- **Merge countdown**: Seconds until each own cell can recombine
+- **Merge sound**: Audio cue when cells can merge
+- **Merge progress rings**: Visual progress rings on own cells
+- **Relative mass display**: Other players' mass shown as ratio to your biggest cell
+- **Edge teammates arrows**: Screen-edge indicators for off-screen teammates
+- **Edge threats arrows**: Screen-edge indicators for large cells that left the screen
+- **Cell mass panel**: Detailed panel showing each own cell's mass
+- **Mass format**: Short/exact/12.3k/auto mass display modes
+- **Virus range circles**: Rings showing virus ejection range
+- **Mass in tab title**: Browser tab shows current mass
+- **FPS/stats positioning**: FPS at top or centre of screen, configurable stats elements
+
+### 12. Leaderboard Features
+- **Configurable limit**: Show top 5-20 entries
+- **Top 5 skins**: Display skins of leaderboard leaders
+- **Centred leaderboard**: Position leaderboard at centre-right
+- **Hide bots**: Filter server-controlled bots from the leaderboard
+- **Pass toast**: Notification when climbing the leaderboard
+- **Click-to-spectate**: Click a leaderboard entry to follow that player in spectate
+
+### 13. Stats and Analytics
+- **Live stats HUD**: Mass, FPS, ping, PPS (packets per second), server Hz, jitter, alive time, world size, decay info
+- **Game Over card**: Displays session statistics after death
+- **Mass graph**: Graph of mass over your life on the Game Over card
+- **Kill feed**: Fading list of your kills and deaths, left of the leaderboard
+- **Death recap**: Last 20 seconds as summarised steps with mass sparkline
+- **Killer display**: "Eaten by: nick (mass)" on the Game Over card
+- **Mass loss alerts**: Notification when you lose a configurable percentage (10-90%) of mass within 2 seconds
+- **Analytics window**: Detailed game analytics stored in localStorage with caps
+- **Notification centre**: Bell icon with a scrollable list of recent toast notifications
+- **Network history**: Ping, jitter, packet rate and disconnect statistics across sessions
+
+### 14. Scan Trick and Line Split
+- **Scan trick**: Snap cursor movement to fixed directional increments (8-32 directions, configurable distance) for precise cell positioning
+- **Line split**: Straight-line rapid split (3 = x8, 4 = x16) with configurable delay and lock duration
+- **Guides**: Visual guide lines showing scan trick and line split directions
+
+### 15. Second-Screen Companion
+Broadcast live game state to a second browser window or device via BroadcastChannel. The companion page shows real-time minimap, mass, cell positions and optionally chat messages. Useful for streaming setups or multi-monitor play.
+URL: https://www.legendmod.ml/companion-guide.html
+
+### 16. Privacy and Streamer Mode
+- **Streamer preset**: One-click preset that hides personal information
+- **Stream mode**: Hides identifying details during gameplay
+- **Hide skin URL**: Remove the skin URL from the settings display
+- **Hide my name**: Remove your own name from cells
+- **Hide country flag**: Remove country flag from chat
+
+### 17. Accessibility
+- **Reduced motion**: Disables death screen shake, death particles, and entrance animations
+- **Text scale**: Adjust menu text size (a11yTextScale)
+- **HUD text scale**: Adjust in-game HUD text independently
+- **Indicators**: Bigger/smaller symbols on opponent cells for visibility
+- **Focus warning**: Toast notification when keyboard/mouse input is not reaching the game (e.g., after Alt+Tab)
+
+### 18. Food Display
+- **Rainbow food**: Coloured food pellets
+- **Auto-hide food**: Hide food below certain zoom levels
+- **Auto-hide food on zoom**: Hide food when zoomed out
+
+## Settings Categories
+
+Legend Mod organises its 300+ settings into the following categories accessible via the settings panel:
+- **Presets**: Quick setup options (Competitive, Casual, Streamer, Custom HUD)
+- **Animation**: Speed, jelly physics, death particles, eat pulse, camera smoothing, spawn effects
+- **Skins**: Custom skins, video skins, collections, transparency, vanilla skins, skin checker
+- **Food**: Rainbow food, auto-hide food, food opacity
+- **Performance and Network**: WebGL, High DPI, FPS cap, adaptive performance, performance mode, anti-aliasing, network history
+- **Minimap**: Show/rotate, grid, guides, ghost cells, trail, click-spectate
+- **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, cell panel, stats display
+- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter
+- **Leaderboard**: Limit, top 5 skins, centred, hide bots, click-spectate, pass toast
+- **Multibox**: Amount (2-4), rings (P1/P2 colour, size, active-only), freeze, auto-respawn, switch after death, camera view
+- **Scan Trick**: Enable, directions, distance, rounded, left-mouse-only, status display
+- **Line Split**: Count, delay, hold time, guide lines
+- **Sounds**: Sound mixer (master, chat, commands, gameplay, video, notifications), individual sound toggles
+- **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
+- **Gamepad**: Enable, dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate
+- **Privacy**: Streamer mode, hide skin URL, hide name, hide country
+- **Stats**: Game Over card stats, mass graph, kill feed, death recap, mass loss alerts, analytics, personal bests, match history
+- **Advanced**: Zoom speed, domination/dominated rate, border glow, virus spikes/glow, cell contours
+
+### Settings Profiles
+Up to 15 named profiles can be saved/loaded. Each stores all settings. Import/export is available as a JSON blob.
+
+## Supported Languages
+
+Legend Mod is translated into 16 languages:
+Arabic (ar), Bulgarian (bg), German (de), Greek (el), English (en), Spanish (es), French (fr), Indonesian (id, beta), Italian (it, beta), Japanese (ja, beta), Dutch (nl), Polish (pl), Portuguese (pt, beta), Russian (ru), Turkish (tr), Traditional Chinese (zh)
+
+The website pages (index, features, FAQ, changelog, skins, themes, privacy, terms, compare, nicknames, skin checker, skin rotator, 404) each have per-language translation files. The game client translations cover over 2,000 strings.
+
+## Technical Details
+
+- **Rendering**: WebGL2 with per-frame preflight and atomic Canvas2D fallback
+- **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin and audio caching (LRU eviction)
+- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus modular scripts: commandcentre.js, themebridge.js, accessibility.js, analytics.js, companion.js, deathrecap.js, gamepad.js, gamepad-ui.js, hudhelpers.js, notifications.js, replaystudio.js, smalltools.js
+- **PWA**: Progressive Web App with fullscreen game mode, manifest.json, and service worker support
+- **Extension**: Chrome extension "Legend Express" available on Chrome Web Store. Permissions are limited to game domains; the extension does NOT collect, store or transmit personal data externally.
+
+## Expanding Land (Game)
+
+Expanding Land (entity: https://expanding.land/#game) is a free multiplayer browser cell game. It is NOT Agar.io — it is an independent game built from scratch.
+
+### Core Mechanics
+- **Dynamic circular arena**: The server controls a circular map boundary that expands and contracts based on player count. Map scale ranges from 0.25× to 8×. Players must adapt to changing play space.
+- **Cell growth**: Collect food pellets (+1 mass each) and consume smaller cells to grow larger.
+- **Splitting**: Press Space to divide your cell into two halves (up to 16 fragments). Need approximately 2.6× target mass to split-kill.
+- **Mass ejection**: Press W to eject a small mass pellet toward the cursor (~15-16 mass cost per press).
+- **Mass decay**: Cells lose approximately 0.8% of mass every 4 seconds. Bigger cells decay faster.
+- **Viruses**: Spiky green circles. Big cells pop into ~16 pieces when hitting a virus. Feed 7 W-presses into a virus to shoot it at another player (~100-110 mass cost).
+- **Merge timer**: After splitting, cells rejoin after a timer (bigger cells take longer to merge).
+- **Ghost cells**: Transparent cells showing where you died (EL-exclusive feature).
+- **Spectator mode**: 200+ spectator slots with free-roam camera. Players can spectate without playing.
+
+### Game Modes
+- **Free-for-all (FFA)**: Competitive individual play. Every player for themselves.
+- **Teams**: Team-based play on supported arenas with assigned team colours.
+
+### Players and Bots
+Human and server-controlled bot populations vary by arena. In-game counters distinguish between human and bot counts. Server-controlled bots are distinct from external automation (automated third-party clients).
+
+### Anti-Teaming System
+Exponential multiplier decay system (ported from Delta Server): decay = base × pow(1.086, multiplier). Recovery via -0.005/cycle compensation. Configured per server via at_extra_decay_base, at_compensation, at_split_loss, at_eject_loss, at_virus_pop_loss, at_danger_loss parameters.
+
+### Danger Zone
+During arena contraction, the outer ring becomes a Danger Zone. Being in it adds +0.01 to the anti-teaming multiplier per cycle, discouraging camping at the edges.
+
+### Anti-Cheat
+Coordinate scrambling: each connected player receives different coordinate offsets, preventing external tools from sharing exact positions.
+
+### Server Technology
+- Written in pure C for maximum performance (~5ms tick, 8× faster than typical Node.js implementations)
+- Supports up to 3,840 concurrent real players per arena
+- Encrypted WebSocket connections (WSS/TLS)
+- OpenMP parallelised for multi-core scaling
+- Live /status endpoint showing player count, spectators, uptime and map scale
+- Server at ffa.legendmod.ml:8080
+
+### Session Stats
+Tracked per life: time alive, highest mass, food eaten, players eaten.
+
+### Compatible Mods
+- Legend Mod (legendmod.ml) — skins, themes, controls, multibox, replays
+- Delta Mod (deltio.pages.dev)
+- Agar2 (agar2.com)
+
+### Multiboxing Limit
+Up to 4 simultaneous accounts per player in Expanding Land.
+
+### Login
+Discord OAuth login supported. Google Sign-In for account features. Guest play requires no login.
+
+### Mobile and Android
+PWA support with fullscreen landscape play. Android APK available for direct install. Mobile touch controls for split, feed and movement.
+
+Official website: https://expanding.land/
+Help and documentation: https://help.expanding.land/
+Strategy guide: https://help.expanding.land/guide.html
+Glossary: https://help.expanding.land/glossary.html
+Dynamic map guide: https://help.expanding.land/dynamic-map.html
+Bots and fair play: https://help.expanding.land/no-bots.html
+Game changelog: https://help.expanding.land/changelog.html
+Discord: https://discord.com/invite/JUfpR9k
+
+## Frequently Asked Questions
+
+**What is Legend Mod?**
+Legend Mod is a browser client and Chrome extension that adds custom skins, themes, configurable controls, multiboxing, replays, and many other features to Agar.io-style cell games. It is not a game itself.
+
+**Is Legend Mod the same as Agar.io?**
+No. Legend Mod is a separate extension/client project. Agar.io is a game by Miniclip. Expanding Land is a separate independent game. These are three distinct entities.
+
+**Is Expanding Land the official Agar.io service?**
+No. Expanding Land is an independent multiplayer cell game built from scratch in C. It is not affiliated with Agar.io or Miniclip.
+
+**Does the Expanding Land map change?**
+Yes. The server controls expansion and contraction of the circular arena. The map scale ranges from 0.25× to 8× based on player activity.
+
+**Are all opponents in Expanding Land human?**
+Not necessarily. Human and server-controlled bot counts vary by arena. In-game counters distinguish the populations.
+
+**What is the maximum player count?**
+Expanding Land supports up to 3,840 concurrent real players per arena. Actual counts depend on server configuration and should not be confused with measured concurrent human attendance.
+
+**How do I install Legend Mod?**
+Install the "Legend Express" Chrome extension from the Chrome Web Store, or visit the play page at legendmod.ml/play.html to use the web client directly.
+
+**What languages does Legend Mod support?**
+16 languages: Arabic, Bulgarian, German, Greek, English, Spanish, French, Indonesian (beta), Italian (beta), Japanese (beta), Dutch, Polish, Portuguese (beta), Russian, Turkish, and Traditional Chinese.
+
+**Is Legend Mod free?**
+Yes. Legend Mod and Expanding Land are free to use with no subscription required.
+
+**Does Legend Mod collect personal data?**
+The Chrome extension does NOT collect, store or transmit personal data externally. See the privacy policy at legendmod.ml/privacy.html.
+
+**What is the Command Centre?**
+A fuzzy-search palette (Ctrl+K) that lets you search and activate any setting, hotkey, theme option or window in Legend Mod. It supports multi-language queries and can be pinned as a quick bar during gameplay.
+
+**What is a scan trick?**
+A movement technique where cursor position snaps to fixed directional increments (8-32 directions). This allows precise cell positioning for split tricks and other advanced gameplay.
+
+**What is line split?**
+A rapid multi-split technique (x8 or x16) in a straight line toward the cursor. Configurable timing (delay between splits) and lock duration.
+
+**What is the companion second screen?**
+A feature that broadcasts live game state (minimap, mass, cell positions, chat) to a second browser window or device via BroadcastChannel. Useful for multi-monitor setups or streaming.
+
+**What is the death recap?**
+A Game Over card feature showing the last 20 seconds of your life as summarised steps with a mass sparkline, plus the killer's name and mass.
+
+## Glossary of Key Terms
+
+- **Cell**: The circular blob each player controls, also called blob/player/ball
+- **Mass**: Cell size/weight, displayed as a number; decays ~0.8% every 4 seconds
+- **Food/Pellets**: Small coloured dots worth +1 mass each
+- **Split**: Dividing your cell into two halves (Space key), up to 16 fragments
+- **Eject mass (W)**: Firing a small pellet toward cursor, costs ~15-16 mass
+- **Virus**: Spiky green circle that pops big cells into ~16 pieces; shoot with 7 W-presses
+- **Merge/Recombine**: Split cells rejoin after a timer (bigger = longer)
+- **Decay**: Automatic mass loss (~0.8% every 4 seconds)
+- **Ghost cell**: Transparent cell showing death location (Expanding Land feature)
+- **Dynamic map**: Arena that auto-resizes (0.25× to 8×) based on player count
+- **Danger zone**: Outer ring during map contraction; anti-teaming penalty area
+- **Tricksplit**: Rapid double/triple split for extended range
+- **Popsplit**: Intentional virus pop combined with split
+- **Cannon/Self-feed**: Rapid W between own split cells for mass transfer
+- **Line split**: Straight-line rapid multi-split for maximum distance
+- **Scan trick**: Cursor snapping to fixed directional increments
+- **Teaming**: Two or more players cooperating; EL has anti-teaming system
+- **Multiboxing**: Controlling multiple game connections simultaneously (up to 4 in EL)
+- **Spectator**: 200+ slots with free-roam camera in Expanding Land
+- **Coordinate scrambling**: Anti-cheat system giving different position offsets per player
+
+## Official Resources
+
+- [Legend Mod](https://www.legendmod.ml/) — browser client and extension
+- [Play with Legend Mod](https://www.legendmod.ml/play.html) — game page
 - [Install Chrome extension](https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja)
-- [Features](https://www.legendmod.ml/features.html)
-- [FAQ](https://www.legendmod.ml/faq.html)
-- [Release notes](https://www.legendmod.ml/changelog.html)
-- [Developers](https://www.legendmod.ml/developers/)
-- [Expanding Land](https://expanding.land/)
-- [Game help](https://help.expanding.land/)
-- [Strategy](https://help.expanding.land/guide.html)
-- [Glossary](https://help.expanding.land/glossary.html)
-- [Dynamic map](https://help.expanding.land/dynamic-map.html)
-- [Bots and fair play](https://help.expanding.land/no-bots.html)
-- [Game updates](https://help.expanding.land/changelog.html)
+- [Features](https://www.legendmod.ml/features.html) — feature showcase
+- [FAQ](https://www.legendmod.ml/faq.html) — frequently asked questions
+- [Release notes](https://www.legendmod.ml/changelog.html) — version history
+- [Developers](https://www.legendmod.ml/developers/) — developer resources
+- [Skins gallery](https://www.legendmod.ml/skins/) — custom skin browser
+- [Themes gallery](https://www.legendmod.ml/themes/) — theme browser
+- [Companion guide](https://www.legendmod.ml/companion-guide.html) — second screen setup
+- [Mobile](https://www.legendmod.ml/LMmobile/) — mobile touch controls
+- [Privacy policy](https://www.legendmod.ml/privacy.html)
+- [Terms of service](https://www.legendmod.ml/terms.html)
+- [Expanding Land](https://expanding.land/) — the game
+- [Game help](https://help.expanding.land/) — documentation
+- [Strategy guide](https://help.expanding.land/guide.html) — how to play
+- [Glossary](https://help.expanding.land/glossary.html) — 40+ game terms
+- [Dynamic map](https://help.expanding.land/dynamic-map.html) — map mechanics
+- [Bots and fair play](https://help.expanding.land/no-bots.html) — player vs bot info
+- [Game updates](https://help.expanding.land/changelog.html) — EL changelog
+- [Best IO games 2026](https://help.expanding.land/best-io-games.html) — IO games ranking
+- [EL vs Agar.io](https://help.expanding.land/alternative.html) — comparison
+- [Embed widget](https://help.expanding.land/embed.html) — embed the game
+- [Knowledge API](https://www.legendmod.ml/knowledge/api.json) — public read-only JSON resources
+- [Knowledge graph (JSON-LD)](https://www.legendmod.ml/knowledge/graph.jsonld) — structured data
+- [Discord](https://discord.com/invite/JUfpR9k)
