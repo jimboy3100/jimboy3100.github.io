@@ -1,0 +1,58 @@
+{
+  "site.404.pageNotFound": {
+    "en": "Page Not Found",
+    "el": "Η σελίδα δεν βρέθηκε",
+    "es": "Página no encontrada",
+    "bg": "Страницата не е намерена",
+    "fr": "Page introuvable",
+    "ar": "الصفحة غير موجودة",
+    "zh": "找不到頁面",
+    "ru": "Страница не найдена",
+    "de": "Seite nicht gefunden",
+    "tr": "Sayfa bulunamadı",
+    "pl": "Nie znaleziono strony",
+    "nl": "Pagina niet gevonden"
+  },
+  "site.404.thePageYouRe": {
+    "en": "The page you're looking for doesn't exist or has been moved. But don't worry — Legend Mod is still here!",
+    "el": "Η σελίδα που ζητάς δεν υπάρχει ή έχει μετακινηθεί. Μην ανησυχείς όμως — το Legend Mod είναι ακόμα εδώ!",
+    "es": "La página que buscas no existe o se ha movido. Pero no te preocupes: ¡Legend Mod sigue aquí!",
+    "bg": "Страницата, която търсиш, не съществува или е преместена. Но не се притеснявай — Legend Mod все още е тук!",
+    "fr": "La page que tu cherches n'existe pas ou a été déplacée. Mais pas de panique — Legend Mod est toujours là !",
+    "ar": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها. لكن لا تقلق — Legend Mod ما زال هنا!",
+    "zh": "你要找的頁面不存在或已被移動。不過別擔心 — Legend Mod 還在這裡！",
+    "ru": "Страница, которую ты ищешь, не существует или была перемещена. Но не переживай — Legend Mod всё ещё здесь!",
+    "de": "Die Seite, die du suchst, existiert nicht oder wurde verschoben. Aber keine Sorge — Legend Mod ist immer noch da!",
+    "tr": "Aradığın sayfa yok ya da taşınmış. Ama merak etme — Legend Mod hâlâ burada!",
+    "pl": "Strona, której szukasz, nie istnieje lub została przeniesiona. Ale spokojnie — Legend Mod wciąż tu jest!",
+    "nl": "De pagina die je zoekt bestaat niet of is verplaatst. Maar geen zorgen — Legend Mod is er nog steeds!"
+  },
+  "site.404.goHome": {
+    "en": "Go Home",
+    "el": "Αρχική σελίδα",
+    "es": "Ir al inicio",
+    "bg": "Към началото",
+    "fr": "Accueil",
+    "ar": "الصفحة الرئيسية",
+    "zh": "回到首頁",
+    "ru": "На главную",
+    "de": "Zur Startseite",
+    "tr": "Ana sayfa",
+    "pl": "Strona główna",
+    "nl": "Naar de startpagina"
+  },
+  "site.404.playNow": {
+    "en": "Play Now",
+    "el": "Παίξε τώρα",
+    "es": "Jugar ahora",
+    "bg": "Играй сега",
+    "fr": "Jouer maintenant",
+    "ar": "العب الآن",
+    "zh": "立即遊玩",
+    "ru": "Играть",
+    "de": "Jetzt spielen",
+    "tr": "Hemen oyna",
+    "pl": "Graj teraz",
+    "nl": "Nu spelen"
+  }
+}

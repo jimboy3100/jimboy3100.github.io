@@ -195,24 +195,27 @@
     html.lm-themed-root #nav .active, #nav .active:hover { color: var(--lm-btn-tc) !important; background-color: var(--lm-mc) !important; border-color: var(--lm-mc) !important; }
     html.lm-themed-root ::selection { color: var(--lm-pc) !important; background-color: var(--lm-mc) !important; }
 </style>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-skins" charset="utf-8"></script>
 </head>
 
 <body>
     <!-- SEO: H1 (visually hidden) -->
-    <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Free Agar.io Skins – 700+ Custom Skins, Video Skins, Skin Checker & Rotator by Legend Mod</h1>
+    <h1 data-i18n="site.skins.freeAgarIoSkins" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Free Agar.io Skins – 700+ Custom Skins, Video Skins, Skin Checker & Rotator by Legend Mod</h1>
         <div id="customskins">
     <div id="navbar">
         <div id="nav">
             <ul>
 				
-                <li><a href="#imgur" class="active">Imgur</a></li>
-				<li><a href="#lowres">Low Res-More FPS</a></li>
-				<li><a href="#vanillaskins">Vanilla</a></li>	
-				<li><a href="#videoSkins">Video</a></li>					
-		<li><a href="https://jimboy3100.github.io/skins/skinchecker.html" class="link">Checker</a></li>    
-		<li><a href="https://jimboy3100.github.io/skinrotator.html" class="link">Rotator</a></li>  		
-                <li><input type="text" id="skin-url" placeholder="Skin URL" readonly></li>
-		<li><a id="PosttoNonIframe" class="link">Copy</a></li>
+                <li><a data-i18n="site.skins.imgur" href="#imgur" class="active">Imgur</a></li>
+				<li><a data-i18n="site.skins.lowResMoreFps" href="#lowres">Low Res-More FPS</a></li>
+				<li><a data-i18n="site.skins.vanilla" href="#vanillaskins">Vanilla</a></li>	
+				<li><a data-i18n="site.skins.video" href="#videoSkins">Video</a></li>					
+		<li><a data-i18n="site.skins.checker" href="https://jimboy3100.github.io/skins/skinchecker.html" class="link">Checker</a></li>    
+		<li><a data-i18n="site.skins.rotator" href="https://jimboy3100.github.io/skinrotator.html" class="link">Rotator</a></li>  		
+                <li><input data-i18n-placeholder="site.skins.skinUrl" type="text" id="skin-url" placeholder="Skin URL" readonly></li>
+		<li><a data-i18n="site.skins.copy" id="PosttoNonIframe" class="link">Copy</a></li>
+		<li><span data-lm-lang-picker class="lm-lang-li"></span></li>
 		    </ul>
         </div>
     </div>

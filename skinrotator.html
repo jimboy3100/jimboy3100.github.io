@@ -374,13 +374,16 @@ cursor:pointer;
 </style>
 <!-- opened from Legend Mod: the theme and language come with the link (#lm=...); direct visitors keep this page as it is -->
 <script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8" data-lm-css="site"></script>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-skinrotator" charset="utf-8"></script>
 </head>
 <body>
 <script src="https://apis.google.com/js/platform.js"></script>
 <center>
 <div class="button">
-<h1>Agar.io SKIN ROTATOR<br>The Legend Mod Project</h1>
+<h1 data-i18n-html="site.skinrotator.agarIoSkinRotator">Agar.io SKIN ROTATOR<br>The Legend Mod Project</h1>
 </div>
+<div style="margin:6px 0"><span data-lm-lang-picker></span></div>
 
   <br><img class='img' id="preview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
   <br>
@@ -388,20 +391,20 @@ cursor:pointer;
   <input style="width:250px" value="500" id="speed" type="range" min="10" max="1000">
 </div>
 </center>
- <div class="topright">* For vanilla game (visible to actual user)
- <br>** For <img src="https://jimboy3100.github.io/banners/iconMinions.png" alt="" width="25" height="20"><a target="_blank" href="https://chrome.google.com/webstore/detail/raga-minions/dbcocnmfmbpgfgffogfckoljdjcefgko" rel="noopener"><font color="#FF0000"><b>Raga</font><b></a> mod (visible to all Raga users)
- <br>*** Generate <a target="_blank" href="https://jimboy3100.github.io/nicks" rel="noopener"><font color="#FF0000"><b>nickname</font><b></a></div>
+ <div class="topright"><span data-i18n="site.skinrotator.forVanillaGameVisible">* For vanilla game (visible to actual user)</span>
+ <br><span data-i18n-html="site.skinrotator.forRagaMod" data-i18n-vars="{&quot;0&quot;:&quot;<img src=\&quot;https://jimboy3100.github.io/banners/iconMinions.png\&quot; alt=\&quot;\&quot; width=\&quot;25\&quot; height=\&quot;20\&quot;><a target=\&quot;_blank\&quot; href=\&quot;https://chrome.google.com/webstore/detail/raga-minions/dbcocnmfmbpgfgffogfckoljdjcefgko\&quot; rel=\&quot;noopener\&quot;><b style=\&quot;color:#FF0000\&quot;>Raga</b></a>&quot;}">** For <img src="https://jimboy3100.github.io/banners/iconMinions.png" alt="" width="25" height="20"><a target="_blank" href="https://chrome.google.com/webstore/detail/raga-minions/dbcocnmfmbpgfgffogfckoljdjcefgko" rel="noopener"><b style="color:#FF0000">Raga</b></a> mod (visible to all Raga users)</span>
+ <br><span data-i18n-html="site.skinrotator.generateNickname">*** Generate <a target="_blank" href="https://jimboy3100.github.io/nicks" rel="noopener"><b style="color:#FF0000">nickname</b></a></span></div>
 <div id="tab" style="width:100%">
-<color="red" style="display:inline; font-size: 25px;">Version: <select id="ss-select-agarVersionDestinations" onchange="changeFunction()" class="form-control" required="" style="display:inline; width: 160px; margin-top: -30px;font-size: 25px;"></select></color>
-<a class="tabActive" id="wc" href="javascript:void(0);">&nbsp;Web console [F12]&nbsp;</a>
-<a class="tab" id="tm" href="javascript:void(0);">&nbsp; Tampermonkey | Greasemonkey&nbsp;</a>
+<span data-i18n="site.skinrotator.version" style="display:inline; font-size: 25px;">Version:</span> <select id="ss-select-agarVersionDestinations" onchange="changeFunction()" class="form-control" required="" style="display:inline; width: 160px; margin-top: -30px;font-size: 25px;"></select>
+<a data-i18n="site.skinrotator.webConsoleF12" class="tabActive" id="wc" href="javascript:void(0);">&nbsp;Web console [F12]&nbsp;</a>
+<a data-i18n="site.skinrotator.tampermonkeyGreasemonkey" class="tab" id="tm" href="javascript:void(0);">&nbsp; Tampermonkey | Greasemonkey&nbsp;</a>
 </div>
 <div id="btn">
-<div id="copy">Copy</div><div id="clear">Clear</div></div><div id="social">
+<div data-i18n="site.skinrotator.copy" id="copy">Copy</div><div data-i18n="site.skinrotator.clear" id="clear">Clear</div></div><div id="social">
 </div>
 <textarea id="textarea" onclick="sA('textarea')" readonly></textarea><br>
 <div class="page"></div>
-<div id="result"><a target="_blank" href="https://www.legendmod.ml/" rel="noopener"><font size="5" color="#FF0000"><b>[NEW VERSION HERE]</b></font></a></div>
+<div id="result"><a target="_blank" href="https://www.legendmod.ml/" rel="noopener"><font size="5" color="#FF0000"><b data-i18n="site.skinrotator.newVersionHere">[NEW VERSION HERE]</b></font></a></div>
 
 <div class="page"></div>
 <script>
@@ -541,7 +544,7 @@ function AgarVersionDestinations2(custom) {
 		
 		startProject()   
 		window.started = true
-		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank" rel="noopener">' + 'Destination' + '</a> -<br></div>'
+		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank" rel="noopener" data-i18n="site.skinrotator.destination">' + lmT('site.skinrotator.destination') + '</a> -<br></div>'
     } catch (e) { }
 }
 		
@@ -560,7 +563,7 @@ setTimeout(function() {
 		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
 
 		startProject()    
-		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank" rel="noopener">' + 'Destination' + '</a> -<br></div>'
+		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank" rel="noopener" data-i18n="site.skinrotator.destination">' + lmT('site.skinrotator.destination') + '</a> -<br></div>'
    }
 }, 5000);
 
@@ -677,17 +680,9 @@ ec="`; elem.appendChild(script); } }, 100)";showCode();
   }
   function showCode() {
     var t = new Date().getTime();
-	var em="Your code is outdated, go to the SKIN ROTATOR website to update it.";
-	/* opened from Legend Mod: its language first (lm-theme-bridge.js) */
-	var lg= (window.lmThemeBridge && lmThemeBridge.getLang()) || navigator.language || navigator.userLanguage || navigator.browserLanguage;
-    if(lg.match(/fr/)){em='Votre code est obsolète, allez sur le site SKIN ROTATOR pour le mettre à jour.';}
-    if(lg.match(/es/)){em='Su código no está actualizado, vaya al sitio web SKIN ROTATOR para actualizarlo.';}
-    if(lg.match(/it/)){em='Il tuo codice è obsoleto, vai al sito Web SKIN ROTATOR per aggiornarlo.';}
-    if(lg.match(/pt/)){em='Seu código está desatualizado, vá para o site SKIN ROTATOR para atualizá-lo.';}
-    if(lg.match(/ar/)){em='رمزك عفا عليها الزمن، انتقل إلى SKIN ROTATOR الموقع لتحديثه.';}
-    if(lg.match(/ru/)){em='Ваш код устарел, перейдите на скин SKIN ROTATOR, чтобы обновить его.';}
-	if(lg.match(/jp/)){em='あなたのコードは古くなっていますので、SKIN ROTATORのスキンに行って更新してください。';}
-	if(lg.match(/zh/)){em='您的代码已过时，请转至SKIN ROTATOR皮肤以更新它。';}
+	/* shown by the generated code on agar.io when it is outdated: in the language chosen here
+	 * (it goes inside a "..." string of that code, so quotes and backslashes are taken out) */
+	var em=lmT('site.skinrotator.codeOutdated').replace(/["\\\n]/g, ' ');
     document.getElementById("textarea").innerHTML = "";
 		sa = "";
         si = "";
@@ -873,8 +868,8 @@ document.getElementById(i).src= 'https://jimboy3100.github.io/banners/iconImageN
 
 <br> 
   <div id="knownIssues2"><br></div>
-  - <a id="knownIssues" target="_blank" href="https://jimboy3100.github.io/skins/skinrotator.txt" rel="noopener">Known issues</a> -
-  <br>© <year></year> <a target="_blank" href="https://www.legendmod.ml/" rel="noopener">The Legend Mod Project</a> - MIT Licence -</center>
+  - <a data-i18n="site.skinrotator.knownIssues" id="knownIssues" target="_blank" href="https://jimboy3100.github.io/skins/skinrotator.txt" rel="noopener">Known issues</a> -
+  <br>© <year></year> <a data-i18n="site.skinrotator.theLegendModProject" target="_blank" href="https://www.legendmod.ml/" rel="noopener">The Legend Mod Project</a> <span data-i18n="site.skinrotator.mitLicence">- MIT Licence -</span></center>
 <script>
 function year(){var d=new Date();var y=d.getFullYear();if(document.getElementsByTagName("year").length>0){document.getElementsByTagName("year")[0].innerHTML=y}}year();
 </script>

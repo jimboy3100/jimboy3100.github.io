@@ -72,6 +72,7 @@
         .topbar { background: #01d9cc; color: #111; padding: 10px 20px; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
         .topbar a { color: #111; text-decoration: none; font-size: 14px; font-weight: 400; opacity: .75; }
         .topbar a:hover { opacity: 1; }
+        .topbar .lang { margin-inline-start: auto; font-size: 14px; font-weight: 400; }
 
         /* ── Layout ── */
         .app { max-width: 920px; margin: 24px auto; padding: 0 16px; display: flex; flex-wrap: wrap; gap: 20px; }
@@ -138,58 +139,62 @@
         html.lm-themed-root .btn.primary:disabled { background: color-mix(in srgb, var(--lm-btn1) 40%, transparent); color: color-mix(in srgb, var(--lm-btn-tc) 50%, transparent); }
     </style>
     </head>
+        <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-skins-skinchecker" charset="utf-8"></script>
+</head>
     <body>
         <div class="topbar">
-            Skin Checker &amp; Editor
-            <a href="https://www.legendmod.ml/skins/">Custom Skins</a>
+            <span data-i18n="site.skins.skinchecker.title">Skin Checker &amp; Editor</span>
+            <a data-i18n="site.skins.skinchecker.customSkins" href="https://www.legendmod.ml/skins/">Custom Skins</a>
             <a href="https://www.legendmod.ml/">Legend Mod</a>
+            <span class="lang" data-lm-lang-picker></span>
         </div>
 
         <div class="app">
             <div class="col-left">
                 <canvas id="editor-canvas"></canvas>
-                <div id="status" class="status">Load an image (URL or file) to get started</div>
+                <div data-i18n="site.skins.skinchecker.loadAnImageUrl" id="status" class="status">Load an image (URL or file) to get started</div>
             </div>
             <div class="col-right">
-                <div class="note">
+                <div data-i18n="site.skins.skinchecker.localPreviewOnlyImages" class="note">
                     Local preview only: images loaded here are shown only to you. To use as a custom skin, download the PNG, host it (e.g. imgur.com) and paste the link in Legend Mod's skin URL field.
                 </div>
 
                 <div class="card">
                     <div class="row">
-                        <input type="url" id="url-input" placeholder="Image URL (https://...)" autocomplete="off">
-                        <button class="btn" id="load-btn">Load</button>
+                        <input data-i18n-placeholder="site.skins.skinchecker.imageUrlHttps" type="url" id="url-input" placeholder="Image URL (https://...)" autocomplete="off">
+                        <button data-i18n="site.skins.skinchecker.load" class="btn" id="load-btn">Load</button>
                         <input type="file" id="file-input" accept="image/*">
-                        <button class="btn" id="file-btn">File…</button>
+                        <button data-i18n="site.skins.skinchecker.file" class="btn" id="file-btn">File…</button>
                     </div>
                     <div class="row">
-                        <label>Zoom</label>
+                        <label data-i18n="site.skins.skinchecker.zoom">Zoom</label>
                         <input type="range" id="zoom-range" min="20" max="800" value="100" step="1">
                     </div>
                     <div class="row">
-                        <label>Rotate</label>
+                        <label data-i18n="site.skins.skinchecker.rotate">Rotate</label>
                         <input type="range" id="rot-range" min="-180" max="180" value="0" step="1">
-                        <button class="btn" id="rot-left" title="Rotate left 90°">↺</button>
-                        <button class="btn" id="rot-right" title="Rotate right 90°">↻</button>
-                        <button class="btn" id="reset-btn">Reset</button>
+                        <button data-i18n-title="site.skins.skinchecker.rotateLeft90" class="btn" id="rot-left" title="Rotate left 90°">↺</button>
+                        <button data-i18n-title="site.skins.skinchecker.rotateRight90" class="btn" id="rot-right" title="Rotate right 90°">↻</button>
+                        <button data-i18n="site.skins.skinchecker.reset" class="btn" id="reset-btn">Reset</button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="sub">Preview</div>
+                    <div data-i18n="site.skins.skinchecker.preview" class="sub">Preview</div>
                     <div class="row">
-                        <input type="text" id="name-input" placeholder="Cell name" value="Skinchecker" maxlength="30">
+                        <input data-i18n-placeholder="site.skins.skinchecker.cellName" type="text" id="name-input" placeholder="Cell name" value="Skinchecker" maxlength="30">
                     </div>
                     <div class="row">
-                        <label>Color</label>
+                        <label data-i18n="site.skins.skinchecker.color">Color</label>
                         <select id="color-select">
-                            <option value="">None</option>
-                            <option value="#01d9cc" selected>Teal</option>
-                            <option value="#32cd32">Green</option>
-                            <option value="#4169e1">Blue</option>
-                            <option value="#ffd700">Yellow</option>
-                            <option value="#ff4444">Red</option>
-                            <option value="#ff8c00">Orange</option>
+                            <option data-i18n="site.skins.skinchecker.colorNone" value="">None</option>
+                            <option data-i18n="site.skins.skinchecker.colorTeal" value="#01d9cc" selected>Teal</option>
+                            <option data-i18n="site.skins.skinchecker.colorGreen" value="#32cd32">Green</option>
+                            <option data-i18n="site.skins.skinchecker.colorBlue" value="#4169e1">Blue</option>
+                            <option data-i18n="site.skins.skinchecker.colorYellow" value="#ffd700">Yellow</option>
+                            <option data-i18n="site.skins.skinchecker.colorRed" value="#ff4444">Red</option>
+                            <option data-i18n="site.skins.skinchecker.colorOrange" value="#ff8c00">Orange</option>
                         </select>
                     </div>
                     <canvas id="preview-canvas"></canvas>
@@ -197,16 +202,16 @@
 
                 <div class="card">
                     <div class="row">
-                        <button class="btn primary" id="download-btn" disabled>Download PNG</button>
-                        <button class="btn" id="keep-btn" disabled>Keep in browser</button>
-                        <button class="btn" id="copy-btn" disabled>Copy data URL</button>
+                        <button data-i18n="site.skins.skinchecker.downloadPng" class="btn primary" id="download-btn" disabled>Download PNG</button>
+                        <button data-i18n="site.skins.skinchecker.keepInBrowser" class="btn" id="keep-btn" disabled>Keep in browser</button>
+                        <button data-i18n="site.skins.skinchecker.copyDataUrl" class="btn" id="copy-btn" disabled>Copy data URL</button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="sub">Kept in this browser (local only)</div>
+                    <div data-i18n="site.skins.skinchecker.keptInThisBrowser" class="sub">Kept in this browser (local only)</div>
                     <div id="saved-list" class="saved-list">
-                        <div class="status">Nothing kept yet.</div>
+                        <div data-i18n="site.skins.skinchecker.nothingKeptYet" class="status">Nothing kept yet.</div>
                     </div>
                 </div>
             </div>
@@ -324,8 +329,18 @@
         var h = window.innerHeight || 500, w = window.innerWidth || 920;
         return Math.max(180, Math.min(340, h - 160, w - 40));
     }
-    function setStatus(text, warn) {
-        statusEl.textContent = text || '';
+    /* key: a text of the language packs (site.skins.skinchecker.<key>); it stays on the element, so a
+     * language switch (LMi18n.apply) shows the same message in the new language */
+    function setStatus(key, warn, vars) {
+        if (key) {
+            statusEl.setAttribute('data-i18n', 'site.skins.skinchecker.' + key);
+            if (vars) statusEl.setAttribute('data-i18n-vars', JSON.stringify(vars)); else statusEl.removeAttribute('data-i18n-vars');
+            statusEl.textContent = lmT('site.skins.skinchecker.' + key, vars); /* i18n-ok: the keys are the setStatus calls below */
+        } else {
+            statusEl.removeAttribute('data-i18n');
+            statusEl.removeAttribute('data-i18n-vars');
+            statusEl.textContent = '';
+        }
         statusEl.className = 'status' + (warn ? ' warn' : '');
     }
 
@@ -381,7 +396,7 @@
             ctx.fillStyle = 'rgba(255,255,255,.55)';
             ctx.font = '14px Segoe UI, Ubuntu, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('Load an image (URL or file)', css / 2, css / 2);
+            ctx.fillText(lmT('site.skins.skinchecker.canvasHint'), css / 2, css / 2);
         }
         ctx.beginPath();
         ctx.arc(css / 2, css / 2, dia / 2, 0, Math.PI * 2);
@@ -481,10 +496,8 @@
         tainted = checkTaint(im);
         state = cleanState();
         syncControls();
-        setStatus(tainted
-            ? 'This site does not allow its images to be exported. The preview works; to export, save the image and open it as a file.'
-            : ((im.naturalWidth || im.width) + ' × ' + (im.naturalHeight || im.height) + ' · Drag the image to place it; wheel or two fingers to zoom.'),
-            tainted);
+        if (tainted) setStatus('tainted', true);
+        else setStatus('loaded', false, [(im.naturalWidth || im.width) + ' × ' + (im.naturalHeight || im.height)]);
         redraw(true);
     }
     function loadSrc(src) {
@@ -497,7 +510,7 @@
             im.onerror = function () {
                 if (seq !== loadSeq) return;
                 if (cors) tryLoad(false);
-                else { setStatus('The image could not be loaded.', true); }
+                else { setStatus('loadFailed', true); }
             };
             im.src = src;
         };
@@ -505,13 +518,13 @@
     }
     function loadUrl() {
         var u = validSrc(urlIn.value);
-        if (!u) { setStatus('Enter an image link that starts with https://', true); return; }
+        if (!u) { setStatus('needHttps', true); return; }
         loadSrc(u);
     }
     function loadFile(f) {
         if (!f) return;
-        if (!/^image\//.test(f.type || '')) { setStatus('That file is not an image.', true); return; }
-        if (f.size > MAX_FILE) { setStatus('The file is too large (20 MB at most).', true); return; }
+        if (!/^image\//.test(f.type || '')) { setStatus('notAnImage', true); return; }
+        if (f.size > MAX_FILE) { setStatus('fileTooLarge', true); return; }
         try { if (objUrl) URL.revokeObjectURL(objUrl); } catch (e) { }
         objUrl = URL.createObjectURL(f);
         loadSrc(objUrl);
@@ -533,7 +546,7 @@
         try {
             if (c.toBlob) c.toBlob(function (b) { if (b) save(URL.createObjectURL(b), true); else save(c.toDataURL('image/png')); }, 'image/png');
             else save(c.toDataURL('image/png'));
-        } catch (e) { setStatus('Export failed — the image may be tainted.', true); }
+        } catch (e) { setStatus('exportFailedTainted', true); }
     }
     function smallDataUrl() {
         for (var i = 0; i < SAVE_SIZES.length; i++) {
@@ -545,19 +558,19 @@
     function keep() {
         if (!img || tainted) return;
         var d = '';
-        try { d = smallDataUrl(); } catch (e) { setStatus('Export failed — the image may be tainted.', true); return; }
-        if (!d) { setStatus('Browser storage is full or blocked.', true); return; }
-        var list = addToList(loadList(), { n: nameIn.value || 'Skin', d: d, t: Date.now() });
-        if (storeList(list)) { setStatus('Kept in this browser. Only you see it, only here.'); }
-        else { setStatus('Browser storage is full or blocked.', true); }
+        try { d = smallDataUrl(); } catch (e) { setStatus('exportFailedTainted', true); return; }
+        if (!d) { setStatus('storageFull', true); return; }
+        var list = addToList(loadList(), { n: nameIn.value || lmT('site.skins.skinchecker.defaultName'), d: d, t: Date.now() });
+        if (storeList(list)) { setStatus('kept'); }
+        else { setStatus('storageFull', true); }
         renderList();
     }
     function copyDataUrl() {
         if (!img || tainted) return;
         var d = '';
-        try { d = smallDataUrl(); } catch (e) { setStatus('Export failed.', true); return; }
-        var ok = function () { setStatus('Data URL copied. It works only on this device; the skin field needs a hosted https link.'); };
-        var bad = function () { setStatus('Copying is blocked in this browser.', true); };
+        try { d = smallDataUrl(); } catch (e) { setStatus('exportFailed', true); return; }
+        var ok = function () { setStatus('dataUrlCopied'); };
+        var bad = function () { setStatus('copyBlocked', true); };
         try {
             if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(d).then(ok, bad);
             else bad();
@@ -572,7 +585,8 @@
         if (!list.length) {
             var empty = document.createElement('div');
             empty.className = 'status';
-            empty.textContent = 'Nothing kept yet.';
+            empty.setAttribute('data-i18n', 'site.skins.skinchecker.nothingKeptYet');
+            empty.textContent = lmT('site.skins.skinchecker.nothingKeptYet');
             listEl.appendChild(empty);
             return;
         }
@@ -580,7 +594,7 @@
             var it = document.createElement('div');
             it.className = 'saved-item';
             var im = document.createElement('img');
-            im.alt = e.n; im.title = 'Open in editor'; im.src = e.d;
+            im.alt = e.n; im.setAttribute('data-i18n-title', 'site.skins.skinchecker.openInEditor'); im.title = lmT('site.skins.skinchecker.openInEditor'); im.src = e.d;
             im.addEventListener('click', function () { nameIn.value = e.n; loadSrc(e.d); });
             it.appendChild(im);
             var sp = document.createElement('span');
@@ -588,7 +602,8 @@
             it.appendChild(sp);
             var del = document.createElement('button');
             del.className = 'btn';
-            del.textContent = 'Delete';
+            del.setAttribute('data-i18n', 'site.skins.skinchecker.delete');
+            del.textContent = lmT('site.skins.skinchecker.delete');
             del.style.fontSize = '11px';
             del.style.padding = '2px 6px';
             del.style.minHeight = '24px';
@@ -667,6 +682,8 @@
     copyBtn.addEventListener('click', copyDataUrl);
 
     window.addEventListener('resize', function () { redraw(false); });
+    /* the hint drawn on the empty editor follows the language */
+    if (window.LMi18n) LMi18n.onChange(function () { redraw(false); });
 
     /* ═══ URL param: ?skin=... preloads ═══ */
     try {

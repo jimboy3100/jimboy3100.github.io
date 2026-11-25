@@ -56,6 +56,9 @@
             padding-bottom: 10px;
             margin-top: 30px;
         }
+        /* the note that the English text is the binding one: only shown in the other languages */
+        html[lang="en"] .lm-binding { display: none; }
+        .lm-binding { font-style: italic; opacity: .85; }
     </style>
     <script type="application/ld+json">
     {
@@ -87,61 +90,65 @@
         ]
     }
     </script>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-privacy" charset="utf-8"></script>
 </head>
 
 <body>
-    <h1>Privacy Policy</h1>
-    <p>Last updated: March 18, 2026</p>
+    <div class="lm-lang-row" style="text-align:end;margin:0 0 .6rem"><span data-lm-lang-picker></span></div>
+    <h1 data-i18n="site.privacy.privacyPolicy">Privacy Policy</h1>
+    <p data-i18n="site.privacy.lastUpdatedMarch18">Last updated: March 18, 2026</p>
+    <p class="lm-binding" data-i18n="site.privacy.bindingNote">This is a translation for your convenience. The English version of this policy is the binding one.</p>
 
-    <h2>1. Introduction</h2>
-    <p>This privacy policy covers the following services operated by the Legend Mod project:</p>
+    <h2 data-i18n="site.privacy.introduction">1. Introduction</h2>
+    <p data-i18n="site.privacy.thisPrivacyPolicyCovers">This privacy policy covers the following services operated by the Legend Mod project:</p>
     <ul>
-        <li><strong>Expanding Land</strong> (<a href="https://expanding.land">expanding.land</a>) — an online multiplayer game.</li>
-        <li><strong>Legend Mod</strong> (<a href="https://legendmod.ml">legendmod.ml</a>) — an online multiplayer game.</li>
-        <li><strong>Legend Express</strong> — a Chrome extension for Agar.io.</li>
+        <li data-i18n-html="site.privacy.expandingLandExpandingLand"><strong>Expanding Land</strong> (<a href="https://expanding.land">expanding.land</a>) — an online multiplayer game.</li>
+        <li data-i18n-html="site.privacy.legendModLegendmodMl"><strong>Legend Mod</strong> (<a href="https://legendmod.ml">legendmod.ml</a>) — an online multiplayer game.</li>
+        <li data-i18n-html="site.privacy.legendExpressAChrome"><strong>Legend Express</strong> — a Chrome extension for Agar.io.</li>
     </ul>
-    <p>We are committed to protecting your privacy.</p>
+    <p data-i18n="site.privacy.weAreCommittedTo">We are committed to protecting your privacy.</p>
 
-    <h2>2. Google Sign-In</h2>
-    <p>When you sign in with Google on Expanding Land or Legend Mod, we receive:</p>
+    <h2 data-i18n="site.privacy.googleSignIn">2. Google Sign-In</h2>
+    <p data-i18n="site.privacy.whenYouSignIn">When you sign in with Google on Expanding Land or Legend Mod, we receive:</p>
     <ul>
-        <li><strong>Profile information:</strong> Your name, email address, and profile picture from your Google account.</li>
-        <li><strong>Google User ID:</strong> A unique identifier used to save your game progress and display your profile.</li>
+        <li data-i18n-html="site.privacy.profileInformationYourName"><strong>Profile information:</strong> Your name, email address, and profile picture from your Google account.</li>
+        <li data-i18n-html="site.privacy.googleUserIdA"><strong>Google User ID:</strong> A unique identifier used to save your game progress and display your profile.</li>
     </ul>
-    <p>We use this information solely to authenticate you and provide game functionality (saving progress, displaying your name and picture in-game, and maintaining leaderboards).</p>
-    <p>We do <strong>not</strong> sell, trade, or transfer your personal information to third parties.</p>
+    <p data-i18n="site.privacy.weUseThisInformation">We use this information solely to authenticate you and provide game functionality (saving progress, displaying your name and picture in-game, and maintaining leaderboards).</p>
+    <p data-i18n-html="site.privacy.weDoNotSell">We do <strong>not</strong> sell, trade, or transfer your personal information to third parties.</p>
 
-    <h2>3. Data Storage</h2>
-    <p>Your login session and game preferences are stored locally in your browser using cookies and localStorage.
+    <h2 data-i18n="site.privacy.dataStorage">3. Data Storage</h2>
+    <p data-i18n="site.privacy.yourLoginSessionAnd">Your login session and game preferences are stored locally in your browser using cookies and localStorage.
     Game data (scores, leaderboard entries) is stored on our game server for the duration of your session.</p>
 
-    <h2>4. Chrome Extension (Legend Express)</h2>
-    <p>Legend Express <strong>does not collect, store, or transmit any personal user data</strong> to external servers.
+    <h2 data-i18n="site.privacy.chromeExtensionLegendExpress">4. Chrome Extension (Legend Express)</h2>
+    <p data-i18n-html="site.privacy.legendExpressDoesNot">Legend Express <strong>does not collect, store, or transmit any personal user data</strong> to external servers.
         All extension settings and game preferences are stored locally in your browser using the Chrome Storage API.</p>
     <ul>
-        <li><strong>Storage:</strong> Used solely to save your mod configurations and hotkeys locally.</li>
-        <li><strong>Host Permissions:</strong> Used to fetch mod components and assets from jimboy3100.github.io to
+        <li data-i18n-html="site.privacy.storageUsedSolelyTo"><strong>Storage:</strong> Used solely to save your mod configurations and hotkeys locally.</li>
+        <li data-i18n-html="site.privacy.hostPermissionsUsedTo"><strong>Host Permissions:</strong> Used to fetch mod components and assets from jimboy3100.github.io to
             enable the modded gameplay experience.</li>
     </ul>
 
-    <h2>5. Third-Party Services</h2>
-    <p>We use Google Sign-In for authentication. Google's privacy policy applies to the data they collect:
+    <h2 data-i18n="site.privacy.thirdPartyServices">5. Third-Party Services</h2>
+    <p data-i18n-html="site.privacy.weUseGoogleSign">We use Google Sign-In for authentication. Google's privacy policy applies to the data they collect:
     <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>.</p>
-    <p>The extension may load modded scripts (Legend Mod, Ogario) from the official jimboy3100.github.io repository.
+    <p data-i18n="site.privacy.theExtensionMayLoad">The extension may load modded scripts (Legend Mod, Ogario) from the official jimboy3100.github.io repository.
         These scripts are community-maintained and used to modify the gameplay interface.</p>
 
-    <h2>6. Data Deletion</h2>
-    <p>You can delete your local data by clearing your browser's cookies and localStorage.
+    <h2 data-i18n="site.privacy.dataDeletion">6. Data Deletion</h2>
+    <p data-i18n="site.privacy.youCanDeleteYour">You can delete your local data by clearing your browser's cookies and localStorage.
     To request deletion of server-side data, contact us at the email below.</p>
 
-    <h2>7. Changes to the Policy</h2>
-    <p>We may update this policy if technical changes require it. Updates will be posted on this page.</p>
+    <h2 data-i18n="site.privacy.changesToThePolicy">7. Changes to the Policy</h2>
+    <p data-i18n="site.privacy.weMayUpdateThis">We may update this policy if technical changes require it. Updates will be posted on this page.</p>
 
-    <h2>8. Contact</h2>
-    <p>If you have questions, contact: <a href="mailto:jimboy3100@gmail.com">jimboy3100@gmail.com</a>
+    <h2 data-i18n="site.privacy.contact">8. Contact</h2>
+    <p data-i18n-html="site.privacy.ifYouHaveQuestions">If you have questions, contact: <a href="mailto:jimboy3100@gmail.com">jimboy3100@gmail.com</a>
     or via GitHub: <a href="https://github.com/jimboy3100">github.com/jimboy3100</a></p>
 
-    <p><a href="/">← Back to Expanding Land</a></p>
+    <p><a data-i18n="site.privacy.backToExpandingLand" href="/">← Back to Expanding Land</a></p>
 </body>
 
 </html>

@@ -122,15 +122,18 @@
         }
     }
     </script>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-404" charset="utf-8"></script>
 </head>
 <body>
     <div class="container">
+        <div class="lm-lang-row" style="text-align:end;margin:0 0 .6rem"><span data-lm-lang-picker></span></div>
         <h1>404</h1>
-        <h2>Page Not Found</h2>
-        <p>The page you're looking for doesn't exist or has been moved. But don't worry — Legend Mod is still here!</p>
+        <h2 data-i18n="site.404.pageNotFound">Page Not Found</h2>
+        <p data-i18n="site.404.thePageYouRe">The page you're looking for doesn't exist or has been moved. But don't worry — Legend Mod is still here!</p>
         <div class="links">
-            <a href="/" class="btn">Go Home</a>
-            <a href="/play.html" class="btn btn-secondary">Play Now</a>
+            <a data-i18n="site.404.goHome" href="/" class="btn">Go Home</a>
+            <a data-i18n="site.404.playNow" href="/play.html" class="btn btn-secondary">Play Now</a>
         </div>
     </div>
 </body>

@@ -66,17 +66,20 @@
         ]
     }
     </script>
-	</head>
+	    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-nicks" charset="utf-8"></script>
+</head>
     <body>
 <div class="modal fade in" id="myModal" style="display: block; padding-right: 17px;" align="middle">
     <div class="modal-dialog">
         <div class="modal-content">
-			<button onclick="generateWordComboName()">Combo Name</button>
-			<button onclick="generateNameWithUrbanWord()">Urban Name</button>			
+			<button data-i18n="site.nicks.comboName" onclick="generateWordComboName()">Combo Name</button>
+			<button data-i18n="site.nicks.urbanName" onclick="generateNameWithUrbanWord()">Urban Name</button>			
             <div class="modal-header">
+                <span data-lm-lang-picker></span>
             </div>
             <div class="modal-body">
-			<input type="text" class="form-control" id="nick_generator" placeholder="Start typing your Nick..." style="text-align: center;">
+			<input data-i18n-placeholder="site.nicks.startTypingYourNick" type="text" class="form-control" id="nick_generator" placeholder="Start typing your Nick..." style="text-align: center;">
 <div class="container">
     <div id="emojis">
     </div>
@@ -255,7 +258,6 @@
         for (i = 0; i < r.length; i++) a.innerHTML += "<p>" + r[i] + "</p>";
         return !0
     }
-    "http://agar.io/" === document.referrer && (document.querySelector("a#link_install_script").innerHTML = "Реинсталировать скрипт");
     var nickGenerator = {
         input: document.querySelector("#nick_generator"),
         selStart: 0,
@@ -1813,7 +1815,7 @@ async function generateWordComboName() {
 	generateNameWithUrbanWord();
 	}	
   } else {
-    document.getElementById("gamerName").innerHTML = "Failed to generate name";
+    document.getElementById("nick_generator_result").textContent = lmT('site.nicks.failedToGenerateName');
   }
 }
 
@@ -1832,7 +1834,7 @@ async function generateNameWithUrbanWord() {
 	generateNameWithUrbanWord();
 	}
   } else {
-    document.getElementById("gamerName").innerHTML = "Failed to generate name";
+    document.getElementById("nick_generator_result").textContent = lmT('site.nicks.failedToGenerateName');
   }
 }
 
