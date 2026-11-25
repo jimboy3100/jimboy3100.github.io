@@ -7584,7 +7584,10 @@ function initializeLM(modVersion) {
     });
 
     $("#SHOSHOBtn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
+        var wasPressed = $(this).attr('aria-pressed') === 'true';
+        var checked = !wasPressed;
+        $(this).attr('aria-pressed', String(checked));
+        $(this).toggleClass('active', checked);
         if (checked) {
             localStorage.setItem("SHOSHOBtn", true);
             $("#shortcuts-hud").show();
@@ -7604,7 +7607,12 @@ function initializeLM(modVersion) {
         }
     });
     $("#MAINBTBtn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
+        /* Toggle state manually: do NOT rely on Bootstrap's button.js toggling
+         * aria-pressed, because agar.io may not load the button plugin. */
+        var wasPressed = $(this).attr('aria-pressed') === 'true';
+        var checked = !wasPressed;
+        $(this).attr('aria-pressed', String(checked));
+        $(this).toggleClass('active', checked);
         if (checked) {
             localStorage.setItem("MAINBTBtn", true);
             var headID = document.getElementsByTagName("head")[0];
@@ -7634,7 +7642,10 @@ function initializeLM(modVersion) {
 
 
     $("#TIMEcalBtn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
+        var wasPressed = $(this).attr('aria-pressed') === 'true';
+        var checked = !wasPressed;
+        $(this).attr('aria-pressed', String(checked));
+        $(this).toggleClass('active', checked);
         if (checked) {
             localStorage.setItem("TIMEcalBtn", true);
             $("#timertools-hud").show();
@@ -7648,7 +7659,10 @@ function initializeLM(modVersion) {
         }
     });
     $("#HideAllBthn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
+        var wasPressed = $(this).attr('aria-pressed') === 'true';
+        var checked = !wasPressed;
+        $(this).attr('aria-pressed', String(checked));
+        $(this).toggleClass('active', checked);
         /* un-hiding showed every HUD, also the ones turned off in the settings (minimap, top 5,
          * targeting, stats), and never the clock: remember what was shown */
         var _lmHudSel = "#shortcuts-hud,#exp-bar,#time-hud,#leaderboard-hud,#minimap-hud,#stats-hud,#top5-hud,#target-hud,#target-panel-hud";
