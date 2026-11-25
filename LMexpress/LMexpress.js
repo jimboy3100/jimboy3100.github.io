@@ -9178,7 +9178,15 @@ function lmPromoChrome(sel) {
             '.modal.lm-promo .modal-header .close+.close{right:auto;left:10px;font-size:14px;font-weight:700}' +
             '.modal.lm-promo .modal-header .close:hover{color:var(--lm-tc,#fff);background:rgba(255,255,255,.12)}' +
             '.modal.lm-promo iframe{display:block;max-width:100%;max-height:calc(100vh - 100px);border:0;background:var(--lm-pc,#00243e)}' +
-            '.modal.lm-promo .modal-body .form-control{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}';
+            '.modal.lm-promo .modal-body .form-control{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}' +
+            '.modal.lm-promo .modal-body{background:transparent;color:var(--lm-tc,#fff);padding:12px 15px}' +
+            '.modal.lm-promo .modal-body button:not(.btn){background:var(--lm-pc2,#002f52);color:var(--lm-tc,#fff);border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:4px 12px;cursor:pointer}' +
+            '.modal.lm-promo .modal-body button:not(.btn):hover{background:rgba(255,255,255,.12)}' +
+            '.modal.lm-promo .modal-body select.form-control{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}' +
+            '.modal.lm-promo .modal-body input[type="number"]{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-radius:3px;padding:3px 6px}' +
+            '.modal.lm-promo .modal-body input[type="file"]{color:var(--lm-tc2,#8096a7)}' +
+            '.modal.lm-promo .modal-body input[type="text"]{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}' +
+            '.modal.lm-promo .modal-footer{background:var(--lm-pc2,#002f52);border-top:1px solid rgba(255,255,255,.08);padding:10px 15px}';
         (document.head || document.documentElement).appendChild(st);
     }
     /* it stays next to #helloContainer (inside #overlays, under the HUD): the HUD controls

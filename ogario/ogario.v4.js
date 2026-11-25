@@ -84957,6 +84957,16 @@ function openhelper() {
     var s = document.createElement("script");
     s.type = "text/javascript";
     s.src = "https://www.legendmod.ml/extras/legendhelper.js";
+    s.onerror = function () {
+        /* legendmod.ml may be blocked or slow: try the GitHub mirror */
+        var s2 = document.createElement("script");
+        s2.type = "text/javascript";
+        s2.src = "https://jimboy3100.github.io/extras/legendhelper.js";
+        s2.onerror = function () {
+            if (window.toastr) toastr.error('Could not load Mod Info & Templates.');
+        };
+        document.body.appendChild(s2);
+    };
     $("body").append(s);
 }
 
