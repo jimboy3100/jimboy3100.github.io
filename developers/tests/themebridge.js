@@ -14,25 +14,27 @@ function page(opts) {
     opts = opts || {};
     const props = {}, listeners = {}, classes = new Set(), bodyClasses = new Set(), styles = [];
     const style = { setProperty: (k, v) => { props[k] = String(v); }, removeProperty: k => { delete props[k]; } };
-    const de = { style, classList: { add: c => classes.add(c) }, appendChild: n => styles.push(n) };
+    const de = { style, classList: { add: c => classes.add(c), remove: c => classes.delete(c) }, appendChild: n => styles.push(n) };
+    const docListeners = {};
     const document = {
         documentElement: de, head: { appendChild: n => styles.push(n) },
         body: { classList: { add: c => bodyClasses.add(c) } },
         getElementById: id => styles.find(s => s.id === id) || null,
         createElement: () => ({ id: '', textContent: '' }),
-        addEventListener: () => {}
+        addEventListener: (t, fn) => { docListeners[t] = fn; },
+        currentScript: opts.mode ? { getAttribute: k => k === 'data-lm-css' ? opts.mode : null } : null
     };
     const parent = {}, opener = opts.opener || null;
     const window = {
-        location: { hash: opts.hash || '', search: opts.search || '', origin: opts.origin || 'https://www.legendmod.ml' },
+        location: { hash: opts.hash || '', search: opts.search || '', origin: opts.origin || 'https://www.legendmod.ml', href: 'https://www.legendmod.ml/index.html' },
         addEventListener: (t, fn) => { listeners[t] = fn; },
         parent, opener
     };
     window.window = window;
-    const ctx = { window, document, atob: s => Buffer.from(s, 'base64').toString('latin1'), JSON, console };
+    const ctx = { window, document, atob: s => Buffer.from(s, 'base64').toString('latin1'), btoa: s => Buffer.from(s, 'latin1').toString('base64'), JSON, console, URL };
     vm.createContext(ctx);
     vm.runInContext(src, ctx);
-    return { ctx, props, listeners, classes, bodyClasses, styles, parent, opener, api: window.lmThemeBridge,
+    return { ctx, docListeners, props, listeners, classes, bodyClasses, styles, parent, opener, api: window.lmThemeBridge,
         send: (data, origin, source) => listeners.message({ data, origin, source }) };
 }
 const enc = o => Buffer.from(JSON.stringify(o), 'latin1').toString('base64');
@@ -87,6 +89,20 @@ check('only https images pass', bad.bg === '' && C({ bg: 'http://x.com/a.png' })
 check('opacity out of range falls back, radius out of range is dropped', bad.op === '0.96' && bad.rad === '' && C({ op: 0.3 }).op === '0.3' && C({ rad: 10 }).rad === '10');
 check('unknown keys (account data) are dropped', !('pass' in bad) && !('token' in bad));
 check('a non-object is not a theme', C(null) === null && C('x') === null && p.api.apply(42) === false);
+
+/* ---- website pages ---- */
+const sp = page({ hash: '#lm=' + enc(T), mode: 'site' });
+check('site mode: the page variables are mapped, not the generic stylesheet', sp.styles[0].textContent.includes('--accent: var(--lm-mc)') && !sp.styles[0].textContent.includes('.btn-primary') && sp.styles[0].textContent.includes('html.lm-themed-root'));
+check('site mode: the corner choice sets lm-radius-set', sp.classes.has('lm-radius-set'));
+const U = sp.api.url;
+const dec = u => JSON.parse(Buffer.from(decodeURIComponent(u.split('lm=')[1]), 'base64').toString('latin1'));
+check('links to Legend pages keep the theme', U('/faq.html').startsWith('https://www.legendmod.ml/faq.html#lm=') && dec(U('/faq.html')).mc === '#ff0000');
+check('a hash tab stays first and an old theme is replaced', /#Changelog&lm=/.test(U('https://www.legendmod.ml/#Changelog&lm=AAAA')) && U('https://www.legendmod.ml/#Changelog&lm=AAAA').split('lm=').length === 2);
+check('other sites, files and the game page get no theme', U('https://github.com/x') === 'https://github.com/x' && U('/lib/a.js') === '/lib/a.js' && U('https://www.legendmod.ml/play.html') === 'https://www.legendmod.ml/play.html');
+check('no theme: links are left alone', page().api.url('/faq.html') === '/faq.html');
+const a = { href: '', getAttribute: () => '/features.html' };
+sp.docListeners.click({ target: { closest: () => a } });
+check('clicking a link adds the theme', /features.html#lm=/.test(a.href));
 
 /* ---- sender: lmThemeOrigins from LMexpress.js ---- */
 const lm = fs.readFileSync(path.join(root, 'LMexpress', 'LMexpress.js'), 'utf8');

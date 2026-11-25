@@ -86784,7 +86784,7 @@ function LMadvertisement2020() {
         $("#LMPromo").remove();
     });
     $("#FAQLMPromo").click(function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://www.legendmod.ml/') : 'https://www.legendmod.ml/', '_blank');
     });
 }
 

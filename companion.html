@@ -62,6 +62,15 @@ canvas.map { display: block; width: 14em; height: 14em; }
 #setup .link input { flex: 1 1 20em; }
 #setup button, #setup a.btn { background: var(--accent); color: #002; border: 0; border-radius: 0.25em; padding: 0.4em 0.9em; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; min-height: 2em; }
 </style>
+<!-- same origin like companion.js; opened from Legend Mod: the page follows the player's menu theme (#lm=...); direct visitors keep this design -->
+<script src="lib/lm-theme-bridge.js" charset="utf-8" data-lm-css="site"></script>
+<style>
+/* only when opened from Legend Mod with a theme (html.lm-themed-root): the setup page in theme colours */
+html.lm-themed-root #setup { background: var(--lm-pc2); border-radius: var(--lm-radius, 0.4em); }
+html.lm-themed-root #setup p, html.lm-themed-root #setup li, html.lm-themed-root #setup label { color: var(--lm-tc); }
+html.lm-themed-root #setup input[type=text], html.lm-themed-root #setup input[type=number], html.lm-themed-root #setup select { background: var(--lm-pc); color: var(--lm-tc); border-color: var(--line); }
+html.lm-themed-root #setup button, html.lm-themed-root #setup a.btn { background: var(--lm-btn1); color: var(--lm-btn-tc); }
+</style>
 </head>
 <body>
 <div id="setup" hidden>
@@ -127,9 +136,13 @@ canvas.map { display: block; width: 14em; height: 14em; }
     var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
     /* ── look ── */
+    /* no accent in the link: the menu theme's accent when the mod opened this page (#lm=...) */
+    var lmTheme = window.lmThemeBridge && window.lmThemeBridge.getTheme();
+    if (lmTheme && !/[?&]accent=/.test(location.search)) cfg.accent = lmTheme.mc;
     document.documentElement.style.setProperty('--accent', cfg.accent);
     if (cfg.bg === 'transparent') document.body.classList.add('bg-transparent');
     else if (cfg.bg !== 'dark') document.body.style.background = cfg.bg;
+    else if (lmTheme) document.body.style.background = lmTheme.pc; /* the theme's text colours need its panel colour */
     document.body.style.fontSize = (16 * cfg.scale) + 'px';
     var wrap = document.getElementById('wrap');
     wrap.className = 'wrap layout-' + cfg.layout;

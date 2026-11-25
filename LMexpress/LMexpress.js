@@ -8935,7 +8935,7 @@ function BannedUIDS() {
                 $("#BannedUIDSModal").remove();
             });
             $("#FAQBannedUIDS").click(function () {
-                window.open('https://www.legendmod.ml/LMexpress/olddeals.html', '_blank');
+                window.open(lmThemeUrl('https://www.legendmod.ml/LMexpress/olddeals.html'), '_blank');
             });
             $("#AddBannedUID").click(function () {
                 var temp = $("#Bannedagario_uid_input").val()
@@ -9117,6 +9117,35 @@ function lmThemeHash() {
     try { return '#lm=' + btoa(JSON.stringify(lmThemeData())); }
     catch (e) { return ''; }
 }
+/* The one navigation helper: a Legend page that the mod opens gets the theme in its URL (#lm=...),
+ * replacing an older one; files, the game page and other sites are returned unchanged. */
+function lmThemeUrl(url) {
+    try {
+        var u = new URL(url, location.href);
+        if (!/^((www\.)?legendmod\.ml|jimboy3100\.github\.io)$/.test(u.hostname)) return url;
+        if (/\.(js|css|json|png|jpe?g|gif|webp|svg|ico|mp3|txt|zip|xml|pdf)$/i.test(u.pathname) || /\/play\.html$/.test(u.pathname)) return url;
+        var h = lmThemeHash();
+        if (!h) return url;
+        var keep = u.hash.replace(/^#/, '').split('&').filter(function (p) { return p && p.indexOf('lm=') !== 0; });
+        keep.push(h.slice(1));
+        u.hash = keep.join('&');
+        return u.href;
+    } catch (e) { return url; }
+}
+/* every link the mod shows (menu footer, quick menu, More skins, More FPS, promo windows, notices)
+ * gets the theme when it is clicked, so it is the current one */
+(function () {
+    function onLink(ev) {
+        var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (!href || href.charAt(0) === '#' || /^(javascript|mailto|tel):/i.test(href)) return;
+        var to = lmThemeUrl(href);
+        if (to !== href) a.setAttribute('href', to);
+    }
+    document.addEventListener('click', onLink, true);
+    document.addEventListener('auxclick', onLink, true);
+})();
 /* The origins a Legend page can have: jimboy3100.github.io redirects to www.legendmod.ml,
  * so a frame opened on one of them may be on the other. Empty for any other site. */
 function lmThemeOrigins(url) {
@@ -9244,7 +9273,7 @@ function LMnoBotsPromo() {
     });
 
     $("#FAQNoBotsPromo").on("click", function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 
@@ -9290,7 +9319,7 @@ function LMLegendFFAPromo() {
     });
 
     $("#FAQLegendFFAPromo").on("click", function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 
@@ -9337,7 +9366,7 @@ function LMrewardDay() {
     });
 
     $("#FAQLMPromo").on("click", function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 
@@ -9359,7 +9388,7 @@ function VideoSkinsPromo() {
         $("#LMPromo").remove();
     });
     $("#FAQLMPromo").click(function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 //2. Administration Tools
@@ -9465,7 +9494,7 @@ function disconnectnow() {
     window.open('https://analytics.google.com/analytics/web/?hl=el&pli=1#realtime/rt-content/a92655864w165988480p166491055/', '_blank');
 }*/
 function showstatsphp2() {
-    window.open('https://www.legendmod.ml/monitor/', '_blank');
+    window.open(lmThemeUrl('https://www.legendmod.ml/monitor/'), '_blank');
 }
 function dosendadmincommand() {
     if (AdminRights == 1) {
@@ -9503,6 +9532,6 @@ function LMadvertisementMegaFFA() {
         $("#LMPromo").remove();
     });
     $("#FAQLMPromo").click(function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }

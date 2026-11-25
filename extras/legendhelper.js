@@ -113,7 +113,7 @@ $("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="https://jimboy3
 //$('#TemplatesBtn').hide();	
 }
 function manualytemplatesIframe(){
-window.open('https://jimboy3100.github.io/themes/' + (typeof lmThemeHash === 'function' ? lmThemeHash() : ''),'_blank');
+window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://www.legendmod.ml/themes/') : 'https://www.legendmod.ml/themes/','_blank');
 }
 
 /* A theme template must not replace the player's own profiles (nicks, tags, skins), hotkeys and

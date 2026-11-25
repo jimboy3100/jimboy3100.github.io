@@ -598,7 +598,9 @@
         }
         var plan = openPlan(root.location, inFrame());
         var w = null;
-        try { w = root.open(plan.url, 'lmCompanion'); } catch (e) { w = null; }
+        /* the page follows the menu theme (#lm=..., see lmThemeUrl in LMexpress.js) */
+        var href = typeof root.lmThemeUrl === 'function' ? root.lmThemeUrl(plan.url) : plan.url;
+        try { w = root.open(href, 'lmCompanion'); } catch (e) { w = null; }
         if (!w) { toast('warning', t('blocked').replace('{0}', plan.url)); return null; }
         if (plan.mode === 'popup') {
             popup = w;
