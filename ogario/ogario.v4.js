@@ -1537,23 +1537,34 @@ function _lmMbGridRecycle(bucket) {
     bucket.length = 0;
     _lmMbGridPool.push(bucket);
 }
+/* A main-connection cell can only be hidden behind a unit's own cell (_lmMbIsPreferredTwin:
+ * another connection, so a unit, and not drawn instead unless own). Those few cells also go
+ * into this grid, in the same order, so main cells scan it instead of every cell nearby
+ * (same first match; crowded buckets made the full scan quadratic). */
+var _lmMbOwnGridMap = new Map();
+function _lmMbGridAdd(grid, key, c) {
+    var bucket = grid.get(key);
+    if (bucket) bucket.push(c);
+    else {
+        bucket = _lmMbGridPool.length ? _lmMbGridPool.pop() : [];
+        bucket.push(c);
+        grid.set(key, bucket);
+    }
+}
 function _lmMbBuildGrid() {
     var LM = window.legendmod;
-    var grid = _lmMbGridMap;
+    var grid = _lmMbGridMap, own = _lmMbOwnGridMap;
     grid.forEach(_lmMbGridRecycle);
     grid.clear();
+    own.forEach(_lmMbGridRecycle);
+    own.clear();
     var cells = LM && LM.cells;
     for (var i = 0; cells && i < cells.length; i++) {
         var c = cells[i];
         if (!c || c.removed || c.isFood || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
         var key = Math.floor(c.x / 256) * 65536 + Math.floor(c.y / 256);
-        var bucket = grid.get(key);
-        if (bucket) bucket.push(c);
-        else {
-            bucket = _lmMbGridPool.length ? _lmMbGridPool.pop() : [];
-            bucket.push(c);
-            grid.set(key, bucket);
-        }
+        _lmMbGridAdd(grid, key, c);
+        if (c.spectator > 0 && c.isPlayerCellMulti) _lmMbGridAdd(own, key, c);
     }
     return grid;
 }
@@ -1596,13 +1607,16 @@ function lmMultiboxPositionTwin(cell) {
         _lmMbGrid = _lmMbBuildGrid();
         _lmMbGridTime = LM.time;
     }
+    /* main-connection cell: only units' own cells can match (see _lmMbOwnGridMap) */
+    var grid = cell.spectator > 0 ? _lmMbGrid : _lmMbOwnGridMap;
+    if (!grid.size) return null;
     var gx = Math.floor(cell.x / 256), gy = Math.floor(cell.y / 256);
     /* as many 256-unit buckets as the match distance in _lmMbIsPreferredTwin reaches: one
      * bucket each way missed copies of big cells (radius 300: up to 360 apart) */
     var reach = Math.max(1, Math.ceil(Math.max(1.2 * radius, 60) / 256));
     for (var ox = -reach; ox <= reach; ox++) {
         for (var oy = -reach; oy <= reach; oy++) {
-            var bucket = _lmMbGrid.get((gx + ox) * 65536 + gy + oy);
+            var bucket = grid.get((gx + ox) * 65536 + gy + oy);
             for (var i = 0; bucket && i < bucket.length; i++) {
                 if (_lmMbIsPreferredTwin(cell, bucket[i], radius)) {
                     cell._lmMbTwin = bucket[i];

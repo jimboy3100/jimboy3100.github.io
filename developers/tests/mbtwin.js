@@ -119,6 +119,96 @@ for (const order of ['main first', 'unit first']) {
     check('big cell copies 300 apart: drawn once', !a.invisible && b.invisible);
 }
 
+/* 10. Same twins as a scan of every cell nearby (the search before the own-cell grid), frame by
+ * frame, on seeded crowded scenes with 3 connections, own cells, viruses, ejected mass, hidden
+ * and removed cells; and main-connection cells no longer test every crowded neighbour. */
+{
+    let s = 4242;
+    const rnd = () => { s = (Math.imul(s, 48271) % 2147483647 + 2147483647) % 2147483647; return (s - 1) / 2147483646; };
+    const cols = ['#ff0000', '#00ff00', '#0000ff', '#ffff00'];
+    function scene(n, crowd, own) {
+        const cs = [];
+        const add = (o) => { cs.push(cell(o)); return cs[cs.length - 1]; };
+        for (let i = 0; i < n; i++) {
+            const x = (rnd() - 0.5) * 3000, y = (rnd() - 0.5) * 2000, z = 20 + rnd() * 250, col = cols[(rnd() * 4) | 0];
+            const kind = rnd(), nick = rnd() < 0.5 ? 'n' + ((rnd() * 5) | 0) : '';
+            const o = { x, y, size: z, targetSize: z, color: col, targetNick: nick, isVirus: kind < 0.1, isEjected: kind > 0.9 };
+            const conns = 1 + ((rnd() * 3) | 0);
+            for (let k = 0; k < conns; k++) add(Object.assign({}, o, { spectator: k, x: x + (rnd() - 0.5) * 40, y: y + (rnd() - 0.5) * 40, invisible: rnd() < 0.03, removed: rnd() < 0.02 }));
+        }
+        for (let i = 0; i < crowd; i++) {
+            const x = 50 + rnd() * 200, y = 50 + rnd() * 200;
+            for (let k = 0; k < 2; k++) add({ spectator: k, x: x + rnd() * 4, y: y + rnd() * 4, size: 38, targetSize: 38, color: '#00ff00', isEjected: true });
+        }
+        for (let i = 0; i < own; i++) {
+            const x = (rnd() - 0.5) * 600, y = (rnd() - 0.5) * 600, z = 40 + rnd() * 80;
+            const unit = 1 + ((rnd() * 2) | 0);
+            add({ spectator: unit, isPlayerCellMulti: true, x, y, size: z, targetSize: z, color: '#abcdef' });
+            add({ spectator: 0, x: x + 5, y: y - 5, size: z, targetSize: z, color: '#abcdef' });
+            if (rnd() < 0.5) add({ spectator: unit === 1 ? 2 : 1, x: x - 5, y, size: z, targetSize: z, color: '#abcdef' });
+            add({ spectator: 0, isPlayerCell: true, x: -x, y: -y, size: z, targetSize: z, color: '#fedcba' });
+            add({ spectator: 1, x: -x + 4, y: -y, size: z, targetSize: z, color: '#fedcba' });
+        }
+        return cs;
+    }
+    /* the scan of every cell in reach, with the real match rule */
+    function scanAll(ctx, cells, c) {
+        const pref = vm.runInContext('_lmMbIsPreferredTwin', ctx), rad = vm.runInContext('_lmMbCellRadius', ctx);
+        if (!c || c.removed || c.isFood) return null;
+        if (c.spectator > 0 ? c.isPlayerCellMulti : c.isPlayerCell) return null;
+        if (!Number.isFinite(c.x) || !Number.isFinite(c.y)) return null;
+        const r = rad(c);
+        if (!r) return null;
+        if (c._refTwin && pref(c, c._refTwin, r)) return c._refTwin;
+        c._refTwin = null;
+        const g = new Map();
+        for (const o of cells) {
+            if (!o || o.removed || o.isFood || !Number.isFinite(o.x) || !Number.isFinite(o.y)) continue;
+            const k = Math.floor(o.x / 256) * 65536 + Math.floor(o.y / 256);
+            if (!g.has(k)) g.set(k, []);
+            g.get(k).push(o);
+        }
+        const gx = Math.floor(c.x / 256), gy = Math.floor(c.y / 256), reach = Math.max(1, Math.ceil(Math.max(1.2 * r, 60) / 256));
+        for (let ox = -reach; ox <= reach; ox++) for (let oy = -reach; oy <= reach; oy++) {
+            const b = g.get((gx + ox) * 65536 + gy + oy) || [];
+            for (const o of b) if (pref(c, o, r)) { c._refTwin = o; return o; }
+        }
+        return null;
+    }
+    let frames = 0, diff = 0, found = 0;
+    for (const [n, crowd, own] of [[300, 0, 0], [300, 0, 12], [200, 150, 0], [200, 150, 10], [600, 60, 20]]) {
+        const cells = scene(n, crowd, own);
+        const ctx = vm.createContext({ window: { legendmod: { cells: cells, time: 0 }, spects: [{}, {}] }, Number, Math, Map });
+        vm.runInContext(code, ctx);
+        const twin = vm.runInContext('lmMultiboxPositionTwin', ctx);
+        for (let f = 0; f < 4; f++) {
+            ctx.window.legendmod.time++;
+            for (const c of cells) if (!c.isPlayerCell && !c.isPlayerCellMulti) { c.x += (rnd() - 0.5) * 30; c.y += (rnd() - 0.5) * 30; }
+            /* reference first (no side effects), then the real search, for every cell as drawn so far */
+            for (const c of cells) {
+                if (c._lmMbPosDup) { c._lmMbPosDup = false; c.invisible = false; }
+                if (c.invisible || c.isFood) continue;
+                const want = scanAll(ctx, cells, c), got = twin(c);
+                if (want !== got) diff++;
+                if (got) { found++; c._lmMbPosDup = true; c.invisible = true; }
+            }
+            frames++;
+        }
+    }
+    check('twins identical to a scan of every cell nearby (' + frames + ' frames, ' + found + ' twins)', diff === 0 && found > 100);
+
+    /* candidate tests per frame in a crowded bucket: 300 ejected blobs on 2 connections */
+    const cells = scene(0, 300, 0);
+    const ctx = vm.createContext({ window: { legendmod: { cells: cells, time: 0 }, spects: [{}] }, Number, Math, Map });
+    vm.runInContext(code, ctx);
+    vm.runInContext('var _lmTests = 0; var _lmPref0 = _lmMbIsPreferredTwin; _lmMbIsPreferredTwin = function (a, b, r) { _lmTests++; return _lmPref0(a, b, r); };', ctx);
+    for (let f = 0; f < 3; f++) frame(ctx, cells);
+    vm.runInContext('_lmTests = 0', ctx);
+    frame(ctx, cells);
+    const tests = vm.runInContext('_lmTests', ctx);
+    check('crowded bucket, no own cells: main copies test no candidates (' + tests + ' tests for ' + cells.length + ' cells)', tests <= cells.length);
+}
+
 if (failed) {
     console.log(failed + ' check(s) failed');
     process.exit(1);
