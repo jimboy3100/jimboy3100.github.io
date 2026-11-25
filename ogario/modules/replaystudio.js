@@ -283,7 +283,7 @@
         var out = {
             id: r.id,
             v: 1,
-            name: cleanText(r.name, 80) || 'Replay',
+            name: cleanText(r.name, 80) || 'Replay', // i18n-ok: stored default name of a library entry (data, not UI)
             tags: [],
             date: r.date,
             server: cleanText(r.server, 200),
@@ -423,78 +423,25 @@
     /* ------------------------------------------------------------------ */
     /* Text                                                                */
     /* ------------------------------------------------------------------ */
-    var GR = false;
-    try { GR = localStorage.getItem('languagemod') === '2'; } catch (e) { }
-    var TXT = {
-        title: ['Replay Studio', 'Replay Studio'],
-        player: ['Player', 'Αναπαραγωγή'],
-        library: ['Library', 'Βιβλιοθήκη'],
-        close: ['Close', 'Κλείσιμο'],
-        minimize: ['Minimize', 'Ελαχιστοποίηση'],
-        noRec: ['No recording yet. Play a game with "Record replays" on.', 'Καμία εγγραφή ακόμα. Παίξε με ενεργή την «Καταγραφή επαναλήψεων».'],
-        play: ['Play', 'Αναπαραγωγή'],
-        pause: ['Pause', 'Παύση'],
-        stepB: ['Previous packet', 'Προηγούμενο πακέτο'],
-        stepF: ['Next packet', 'Επόμενο πακέτο'],
-        back5: ['Back 5 s', 'Πίσω 5 δ'],
-        fwd5: ['Forward 5 s', 'Μπροστά 5 δ'],
-        toStart: ['To the start', 'Στην αρχή'],
-        speed: ['Speed', 'Ταχύτητα'],
-        inPt: ['In', 'Αρχή'],
-        outPt: ['Out', 'Τέλος'],
-        inTitle: ['Clip start here', 'Αρχή κλιπ εδώ'],
-        outTitle: ['Clip end here', 'Τέλος κλιπ εδώ'],
-        clipX: ['Export clip', 'Εξαγωγή κλιπ'],
-        clipL: ['Clip to library', 'Κλιπ στη βιβλιοθήκη'],
-        save: ['Save to library', 'Αποθήκευση'],
-        instant: ['Instant replay', 'Άμεση επανάληψη'],
-        backGame: ['Back to game', 'Πίσω στο παιχνίδι'],
-        cursor: ['Cursor', 'Κέρσορας'],
-        splits: ['Splits', 'Διασπάσεις'],
-        compact: ['Small clips', 'Μικρά κλιπ'],
-        compactT: ['Small clips leave out old cell updates (names seen only long before may be missing). Off: the clip keeps everything from the last world reset.', 'Τα μικρά κλιπ παραλείπουν παλιές ενημερώσεις κυττάρων (ονόματα που φάνηκαν πολύ πριν μπορεί να λείπουν).'],
-        est: ['times estimated (older recording)', 'εκτιμώμενοι χρόνοι (παλιά εγγραφή)'],
-        live: ['recording', 'εγγράφεται'],
-        seeking: ['Seeking', 'Αναζήτηση'],
-        leave: ['Watching leaves the current game. Press again to watch.', 'Η αναπαραγωγή βγάζει από το τρέχον παιχνίδι. Πάτα ξανά για να συνεχίσεις.'],
-        armed: ['Instant replay opens when you die (press again to cancel).', 'Η άμεση επανάληψη ανοίγει όταν πεθάνεις (πάτα ξανά για ακύρωση).'],
-        disarmed: ['Instant replay cancelled.', 'Η άμεση επανάληψη ακυρώθηκε.'],
-        recOff: ['Turn on "Record replays" in Settings first.', 'Ενεργοποίησε πρώτα την «Καταγραφή επαναλήψεων» στις Ρυθμίσεις.'],
-        nothing: ['Nothing recorded on this server yet.', 'Δεν έχει καταγραφεί τίποτα ακόμα σε αυτόν τον server.'],
-        search: ['Search name, server, #tag', 'Αναζήτηση ονόματος, server, #ετικέτας'],
-        import: ['Import .lm', 'Εισαγωγή .lm'],
-        export: ['Export .lm', 'Εξαγωγή .lm'],
-        rename: ['Rename', 'Μετονομασία'],
-        tags: ['Tags', 'Ετικέτες'],
-        del: ['Delete', 'Διαγραφή'],
-        delSure: ['Tap again to delete', 'Πάτα ξανά για διαγραφή'],
-        inMem: ['Recordings in memory (lost on reload)', 'Εγγραφές στη μνήμη (χάνονται με ανανέωση)'],
-        saved: ['Saved', 'Αποθηκεύτηκε'],
-        noLib: ['The replay library is not available in this browser (storage blocked).', 'Η βιβλιοθήκη δεν είναι διαθέσιμη σε αυτόν τον browser (αποκλεισμένη αποθήκευση).'],
-        quota: ['Not enough storage for this replay. Delete old replays first.', 'Δεν υπάρχει αρκετός χώρος. Διάγραψε πρώτα παλιές επαναλήψεις.'],
-        empty: ['No saved replays yet.', 'Καμία αποθηκευμένη επανάληψη.'],
-        badFile: ['This replay file could not be read.', 'Το αρχείο επανάληψης δεν διαβάζεται.'],
-        needIO: ['Set In and Out on the timeline first.', 'Όρισε πρώτα Αρχή και Τέλος στη γραμμή χρόνου.'],
-        sortNew: ['Newest', 'Νεότερα'], sortOld: ['Oldest', 'Παλαιότερα'], sortName: ['Name', 'Όνομα'],
-        sortDur: ['Longest', 'Μεγαλύτερα'], sortMass: ['Peak mass', 'Μέγιστη μάζα'], sortSize: ['Size', 'Μέγεθος'],
-        death: ['Death', 'Θάνατος'], kill: ['Kill', 'Φάγωμα'], virus: ['Virus pop', 'Σκάσιμο ιού'], split: ['Split', 'Διάσπαση'],
-        top1: ['1st place', '1η θέση'], loss: ['Mass loss', 'Απώλεια μάζας'], gain: ['Mass gain', 'Κέρδος μάζας'],
-        secs: ['s', 'δ'],
-        peak: ['peak', 'μέγιστη'],
-        clip: ['clip', 'κλιπ'],
-        storage: ['Storage', 'Χώρος']
-    };
-    function T(k) { var v = TXT[k]; return v ? v[GR ? 1 : 0] : k; }
+    /* texts come from the language packs (developers/i18n/src/modules*.json) */
+    var TK = 'modules.replaystudio.';
+    function T(k, v) { return typeof window.lmT === 'function' ? window.lmT(TK + k, v) : k; }
+    /* K('play'): a label read again after a language change (see relabels) */
+    function K(k) { return function () { return T(k); }; }
+    function dirNow() { return window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr'; }
+    /* setters of the window's fixed labels, run again when the language changes */
+    var relabels = [];
+    function L(fn) { relabels.push(fn); fn(); }
     var KIND = {
-        death: { c: '#ff4d4d', s: '✖' }, kill: { c: '#ffb020', s: '●' }, virus: { c: '#3ddc84', s: '✹' },
-        split: { c: '#4da3ff', s: '↔' }, top1: { c: '#ffd700', s: '★' }, loss: { c: '#ff7ab6', s: '▼' },
-        gain: { c: '#c792ea', s: '▲' }
+        death: { c: '#ff4d4d', s: '\u2716' }, kill: { c: '#ffb020', s: '\u25cf' }, virus: { c: '#3ddc84', s: '\u2739' },
+        split: { c: '#4da3ff', s: '\u2194' }, top1: { c: '#ffd700', s: '\u2605' }, loss: { c: '#ff7ab6', s: '\u25bc' },
+        gain: { c: '#c792ea', s: '\u25b2' }
     };
     function markLabel(m) {
         var l = T(m.k);
-        if (m.k === 'kill') l += (m.n > 1 ? ' ×' + m.n : '') + ' +' + fmtMass(m.v);
-        else if (m.k === 'virus' && m.n > 1) l += ' ×' + m.n;
-        else if (m.k === 'split') l += ' ×' + m.n;
+        if (m.k === 'kill') l += (m.n > 1 ? ' \u00d7' + m.n : '') + ' +' + fmtMass(m.v);
+        else if (m.k === 'virus' && m.n > 1) l += ' \u00d7' + m.n;
+        else if (m.k === 'split') l += ' \u00d7' + m.n;
         else if (m.k === 'death') l += ' (' + fmtMass(m.v) + ')';
         else if (m.k === 'loss') l += ' -' + fmtMass(m.v);
         else if (m.k === 'gain') l += ' +' + fmtMass(m.v);
@@ -691,7 +638,7 @@
             /* P1 fix #39: always reset the world when seeking backward, even when
              * jumping to a checkpoint > 0. Without this, cells from the abandoned
              * position persist as ghosts because the replay engine only adds/updates
-             * cells going forward — it never removes ones from future packets. */
+             * cells going forward - it never removes ones from future packets. */
             if (window.lmReplayResetWorld) window.lmReplayResetWorld();
             setPos(c > 0 && target > 0 ? c : 0);
         }
@@ -848,7 +795,7 @@
         deathTimer = setTimeout(function () {
             deathTimer = 0;
             if (!armed || inReplay()) return;
-            /* P0 fix: verify freshness — liveKey() must still match the death's key */
+            /* P0 fix: verify freshness - liveKey() must still match the death's key */
             if (liveKey() !== key) return;
             /* abort if the player has already respawned or is spawning */
             var l = LM();
@@ -964,7 +911,7 @@
                 ctx.font = 'bold ' + Math.round(16 * dpr) + 'px sans-serif';
                 ctx.fillStyle = KIND.split.c;
                 ctx.textAlign = 'center';
-                ctx.fillText('SPLIT' + (side.e[j * 3 + 2] > 1 ? ' ×' + side.e[j * 3 + 2] : ''), sx(cx), sy(cy) - (cs * dr.scale * k) - 28 * dpr);
+                ctx.fillText(T('splitOv') + (side.e[j * 3 + 2] > 1 ? ' \u00d7' + side.e[j * 3 + 2] : ''), sx(cx), sy(cy) - (cs * dr.scale * k) - 28 * dpr);
                 ctx.globalAlpha = 1;
                 break;
             }
@@ -1223,8 +1170,14 @@
         if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
         return e;
     }
+    /* label and title: text, or a function (K) for labels that follow the language; only the
+     * window built once uses functions (list rows are rebuilt and use plain text) */
+    function val(v) { return typeof v === 'function' ? v() : v; }
     function btn(label, title, fn, css) {
-        var b = el('button', css || '', label, { type: 'button', title: title || label, 'class': 'lm-rs-b' });
+        var b = el('button', css || '', null, { type: 'button', 'class': 'lm-rs-b' });
+        var setL = function () { var l = val(label); b.textContent = l; b.setAttribute('title', val(title) || l); };
+        if (typeof label === 'function' || typeof title === 'function') relabels.push(setL);
+        setL();
         b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fn(e); });
         return b;
     }
@@ -1236,14 +1189,14 @@
         /* above the phone controls (LMmobile z-index 100000-100004) so its buttons take the taps */
         var st = el('style');
         st.textContent =
-            '#lm-rs{position:fixed;left:50%;transform:translateX(-50%);bottom:30px;width:min(760px,calc(100vw - 12px));max-height:calc(100vh - 40px);' +
+            '#lm-rs{position:fixed;left:50%;transform:translateX(-50%);bottom:30px;width:min(760px,calc(100vw - 12px));max-height:calc(100vh - 40px);' + // i18n-ok: CSS
             'z-index:100005;display:flex;flex-direction:column;background:var(--lm-pc,rgba(14,17,23,.95));color:var(--lm-tc,#e8e8e8);font-size:12px;line-height:1.3;font-family:inherit;overflow:hidden;' +
-            'border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid ' + cssMc() + ';border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);touch-action:manipulation;user-select:none;-webkit-user-select:none;}' +
+            'border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid ' + cssMc() + ';border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);touch-action:manipulation;user-select:none;-webkit-user-select:none;}' + // i18n-ok: CSS
             '#lm-rs *{box-sizing:border-box;}' +
             '#lm-rs .lm-rs-hd{border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.15));background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%);}' +
             '#lm-rs .lm-rs-b{min-height:30px;min-width:30px;padding:2px 8px;margin:0 3px 0 0;border:1px solid var(--lm-pc2,rgba(255,255,255,.18));border-radius:5px;background:rgba(255,255,255,.05);color:var(--lm-tc,#eee);font:inherit;cursor:pointer;white-space:nowrap;flex:0 0 auto;}' +
             '#lm-rs .lm-rs-b:hover{background:rgba(255,255,255,.16);}' +
-            '#lm-rs .lm-rs-b.on{border-color:' + cssMc() + ';color:' + cssMc() + ';}' +
+            '#lm-rs .lm-rs-b.on{border-color:' + cssMc() + ';color:' + cssMc() + ';}' + // i18n-ok: CSS
             '#lm-rs .lm-rs-b:disabled{opacity:.4;cursor:default;}' +
             '#lm-rs .lm-rs-row{display:flex;align-items:center;padding:3px 8px;gap:2px;}' +
             '#lm-rs .lm-rs-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}' +
@@ -1262,7 +1215,8 @@
             '#lm-rs.min .lm-rs-full{display:none!important;}' +
             '@media (max-height:460px){#lm-rs{bottom:4px;max-height:calc(100vh - 8px);font-size:11px;}#lm-rs .lm-rs-b{min-height:28px;}}';
         document.head.appendChild(st);
-        W = el('div', '', null, { id: 'lm-rs', role: 'dialog', 'aria-label': T('title') });
+        W = el('div', '', null, { id: 'lm-rs', role: 'dialog' });
+        L(function () { W.setAttribute('aria-label', T('title')); W.dir = dirNow(); });
         /* clicks and taps on the window are not game input */
         ['mousedown', 'mouseup', 'pointerdown', 'touchstart', 'touchend', 'wheel', 'contextmenu', 'dblclick'].forEach(function (t) {
             W.addEventListener(t, function (e) { e.stopPropagation(); }, { passive: true });
@@ -1282,16 +1236,19 @@
             if (P.driving && BLOCK_KEYS[e.key]) { e.stopImmediatePropagation(); e.preventDefault(); }
         }, true);
         /* header */
-        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 4px 10px;gap:4px;', null, { 'class': 'lm-rs-hd' });
-        head.appendChild(el('b', 'margin-right:6px;color:' + cssMc() + ';white-space:nowrap;text-transform:uppercase;letter-spacing:1px;', T('title')));
-        W.tabP = btn(T('player'), '', function () { setTab('player'); });
-        W.tabL = btn(T('library'), '', function () { setTab('library'); });
+        /* header, timeline and transport stay left-to-right in Arabic too (close button on the right) */
+        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 4px 10px;gap:4px;', null, { 'class': 'lm-rs-hd', dir: 'ltr' });
+        var hb = el('b', 'margin-right:6px;color:' + cssMc() + ';white-space:nowrap;text-transform:uppercase;letter-spacing:1px;');
+        L(function () { hb.textContent = T('title'); });
+        head.appendChild(hb);
+        W.tabP = btn(K('player'), '', function () { setTab('player'); });
+        W.tabL = btn(K('library'), '', function () { setTab('library'); });
         W.tabP.classList.add('lm-rs-full'); W.tabL.classList.add('lm-rs-full');
         head.appendChild(W.tabP); head.appendChild(W.tabL);
         head.appendChild(el('span', 'flex:1 1 auto;'));
-        W.minB = btn('▁', T('minimize'), function () { W.classList.toggle('min'); });
+        W.minB = btn('\u2581', K('minimize'), function () { W.classList.toggle('min'); });
         head.appendChild(W.minB);
-        head.appendChild(btn('✕', T('close'), close, 'min-width:38px;font-size:15px;color:var(--lm-tc2,#eee);'));
+        head.appendChild(btn('\u2715', K('close'), close, 'min-width:38px;font-size:15px;color:var(--lm-tc2,#eee);'));
         W.appendChild(head);
         /* player */
         var pv = W.pv = el('div', 'display:flex;flex-direction:column;min-height:0;');
@@ -1303,7 +1260,7 @@
         r1.appendChild(W.info);
         pv.appendChild(r1);
         /* timeline */
-        var tr = W.track = el('div', '', null, { 'class': 'lm-rs-track' });
+        var tr = W.track = el('div', '', null, { 'class': 'lm-rs-track', dir: 'ltr' });
         W.io = el('div', 'display:none;', null, { 'class': 'lm-rs-io' });
         W.fill = el('div', '', null, { 'class': 'lm-rs-fill' });
         W.marks = el('div', 'position:absolute;inset:0;');
@@ -1324,38 +1281,43 @@
         W.isDragging = function () { return dragging; };
         pv.appendChild(tr);
         /* controls */
-        var r2 = el('div', '', null, { 'class': 'lm-rs-row lm-rs-scroll' });
+        var r2 = el('div', '', null, { 'class': 'lm-rs-row lm-rs-scroll', dir: 'ltr' });
         W.time = el('span', 'min-width:84px;margin-right:4px;font-variant-numeric:tabular-nums;white-space:nowrap;');
         r2.appendChild(W.time);
-        r2.appendChild(btn('⏮', T('toStart'), function () { seekTo(REC ? REC.side.start || 0 : 0); }));
-        r2.appendChild(btn('-5', T('back5'), function () { seekTime(tAt(P.pos) - 5000); }));
-        r2.appendChild(btn('◀|', T('stepB'), function () { stepPacket(-1); }));
-        W.playB = btn('▶', T('play'), function () { if (P.playing || (P.ff && P.ff.resume)) pause(); else play(); }, 'min-width:42px;');
+        r2.appendChild(btn('\u23ee', K('toStart'), function () { seekTo(REC ? REC.side.start || 0 : 0); }));
+        r2.appendChild(btn('-5', K('back5'), function () { seekTime(tAt(P.pos) - 5000); }));
+        r2.appendChild(btn('\u25c0|', K('stepB'), function () { stepPacket(-1); }));
+        W.playB = btn('\u25b6', K('play'), function () { if (P.playing || (P.ff && P.ff.resume)) pause(); else play(); }, 'min-width:42px;');
         r2.appendChild(W.playB);
-        r2.appendChild(btn('|▶', T('stepF'), function () { stepPacket(1); }));
-        r2.appendChild(btn('+5', T('fwd5'), function () { seekTime(tAt(P.pos) + 5000); }));
-        W.spd = el('select', 'margin-right:3px;', null, { title: T('speed') });
+        r2.appendChild(btn('|\u25b6', K('stepF'), function () { stepPacket(1); }));
+        r2.appendChild(btn('+5', K('fwd5'), function () { seekTime(tAt(P.pos) + 5000); }));
+        W.spd = el('select', 'margin-right:3px;');
+        L(function () { W.spd.title = T('speed'); });
         SPEEDS.forEach(function (v) { var o = el('option', '', v + 'x'); o.value = String(v); W.spd.appendChild(o); });
         W.spd.addEventListener('change', function () { setSpeed(+W.spd.value); });
         r2.appendChild(W.spd);
         var full = function (b) { b.classList.add('lm-rs-full'); return b; };
-        r2.appendChild(full(btn('[ ' + T('inPt'), T('inTitle'), function () { P.inMs = tAt(P.pos); if (P.outMs != null && P.outMs <= P.inMs) P.outMs = null; ui(); })));
-        r2.appendChild(full(btn(T('outPt') + ' ]', T('outTitle'), function () { P.outMs = tAt(P.pos); if (P.inMs != null && P.inMs >= P.outMs) P.inMs = null; ui(); })));
-        r2.appendChild(full(btn('✕[]', '', function () { P.inMs = P.outMs = null; ui(); })));
-        r2.appendChild(full(btn(T('clipX'), '', function () { var c = makeClip(); if (c) download(lmFileParts(c.packets, c.spec, c.side), c.name); })));
-        r2.appendChild(full(btn(T('clipL'), '', function () {
+        r2.appendChild(full(btn(function () { return '[ ' + T('inPt'); }, K('inTitle'), function () { P.inMs = tAt(P.pos); if (P.outMs != null && P.outMs <= P.inMs) P.outMs = null; ui(); })));
+        r2.appendChild(full(btn(function () { return T('outPt') + ' ]'; }, K('outTitle'), function () { P.outMs = tAt(P.pos); if (P.inMs != null && P.inMs >= P.outMs) P.inMs = null; ui(); })));
+        r2.appendChild(full(btn('\u2715[]', '', function () { P.inMs = P.outMs = null; ui(); })));
+        r2.appendChild(full(btn(K('clipX'), '', function () { var c = makeClip(); if (c) download(lmFileParts(c.packets, c.spec, c.side), c.name); })));
+        r2.appendChild(full(btn(K('clipL'), '', function () {
             var c = makeClip();
             if (!c) return;
             var entry = buildEntry({ packets: c.packets, spec: c.spec, side: c.side, key: REC.key, name: c.name, tags: ['clip'], clip: true });
             libPut(entry.meta, entry.data).then(function (m) { toast('success', T('saved') + ': ' + m.name); refreshLibrary(); }, libError);
         })));
-        W.saveB = full(btn(T('save'), '', function () { if (REC) saveMemory(REC.key); }));
+        W.saveB = full(btn(K('save'), '', function () { if (REC) saveMemory(REC.key); }));
         r2.appendChild(W.saveB);
-        r2.appendChild(full(btn(T('export'), '', function () { if (REC) exportMemory(REC.key); })));
-        r2.appendChild(full(btn(T('instant'), '', function () { instant(); })));
-        W.secs = el('select', 'margin-right:3px;', null, { title: T('instant') });
+        r2.appendChild(full(btn(K('export'), '', function () { if (REC) exportMemory(REC.key); })));
+        r2.appendChild(full(btn(K('instant'), '', function () { instant(); })));
+        W.secs = el('select', 'margin-right:3px;');
         W.secs.classList.add('lm-rs-full');
-        [15, 30, 45, 60].forEach(function (v) { var o = el('option', '', v + ' ' + T('secs')); o.value = String(v); W.secs.appendChild(o); });
+        [15, 30, 45, 60].forEach(function (v) { var o = el('option'); o.value = String(v); W.secs.appendChild(o); });
+        L(function () {
+            W.secs.title = T('instant');
+            for (var i = 0; i < W.secs.options.length; i++) W.secs.options[i].textContent = T('secsN', [W.secs.options[i].value]);
+        });
         W.secs.addEventListener('change', function () {
             var d = dms();
             d.instantReplaySecs = +W.secs.value;
@@ -1365,21 +1327,22 @@
         r2.appendChild(W.secs);
         /* P1 fix #46: stopDriving() clears P.driving and restores skins before
          * leaving the replay server. pause() alone left P.driving = true. */
-        W.backB = btn(T('backGame'), '', function () { stopDriving(); if (window._lmJoinPrevServer) window._lmJoinPrevServer(); });
+        W.backB = btn(K('backGame'), '', function () { stopDriving(); if (window._lmJoinPrevServer) window._lmJoinPrevServer(); });
         r2.appendChild(W.backB);
         pv.appendChild(r2);
         /* overlay toggles + bookmark chips */
         var r3 = el('div', '', null, { 'class': 'lm-rs-row lm-rs-scroll lm-rs-full' });
         var chk = function (key, label, title) {
-            var lb = el('label', '', null, { title: title || label }), c = el('input', '', null, { type: 'checkbox' });
+            var lb = el('label'), c = el('input', '', null, { type: 'checkbox' }), tn = document.createTextNode('');
             c.checked = !!OPT[key];
             c.addEventListener('change', function () { OPT[key] = c.checked; saveOpt(); if (key !== 'compact') { overlayClear(); overlayOn(); } });
-            lb.appendChild(c); lb.appendChild(document.createTextNode(label));
+            lb.appendChild(c); lb.appendChild(tn);
+            L(function () { tn.nodeValue = T(label); lb.title = T(title || label); });
             return lb;
         };
-        r3.appendChild(chk('cur', T('cursor')));
-        r3.appendChild(chk('spl', T('splits')));
-        r3.appendChild(chk('compact', T('compact'), T('compactT')));
+        r3.appendChild(chk('cur', 'cursor'));
+        r3.appendChild(chk('spl', 'splits'));
+        r3.appendChild(chk('compact', 'compact', 'compactT'));
         W.chips = el('div', 'display:flex;flex:1 1 auto;');
         r3.appendChild(W.chips);
         pv.appendChild(r3);
@@ -1387,12 +1350,14 @@
         /* library */
         var lv = W.lv = el('div', 'display:none;flex-direction:column;min-height:0;flex:1 1 auto;', null, { 'class': 'lm-rs-full' });
         var l1 = el('div', '', null, { 'class': 'lm-rs-row' });
-        W.q = el('input', 'flex:1 1 auto;min-width:60px;', null, { type: 'search', placeholder: T('search') });
+        W.q = el('input', 'flex:1 1 auto;min-width:60px;', null, { type: 'search' });
+        L(function () { W.q.setAttribute('placeholder', T('search')); });
         W.q.addEventListener('input', drawLibrary);
         l1.appendChild(W.q);
         W.sort = el('select', 'margin:0 3px;');
         [['new', 'sortNew'], ['old', 'sortOld'], ['name', 'sortName'], ['duration', 'sortDur'], ['mass', 'sortMass'], ['size', 'sortSize']].forEach(function (s) {
-            var o = el('option', '', T(s[1])); o.value = s[0]; W.sort.appendChild(o);
+            var o = el('option'); o.value = s[0]; W.sort.appendChild(o);
+            L(function () { o.textContent = T(s[1]); });
         });
         W.sort.value = OPT.sort;
         W.sort.addEventListener('change', function () { OPT.sort = W.sort.value; saveOpt(); drawLibrary(); });
@@ -1400,7 +1365,7 @@
         var file = el('input', 'display:none;', null, { type: 'file', accept: '.lm,text/plain' });
         file.addEventListener('change', function () { importFile(file.files && file.files[0]); file.value = ''; });
         l1.appendChild(file);
-        l1.appendChild(btn(T('import'), '', function () { file.click(); }));
+        l1.appendChild(btn(K('import'), '', function () { file.click(); }));
         lv.appendChild(l1);
         W.mem = el('div', 'padding:0 8px 4px;');
         lv.appendChild(W.mem);
@@ -1445,7 +1410,7 @@
     function close() {
         if (W) W.style.display = 'none';
         if (uiTimer) { clearInterval(uiTimer); uiTimer = 0; }
-        /* P0 fix: stop playback, driving and overlay — not just hide the dialog */
+        /* P0 fix: stop playback, driving and overlay - not just hide the dialog */
         if (P.playing) { P.playing = false; clearTimeout(P.timer); P.timer = 0; }
         if (P.driving) stopDriving();
         cancelDeathTimer();
@@ -1463,7 +1428,7 @@
             keys.forEach(function (k) {
                 var sp = (window.RecordedArenasSpecifications || {})[k] || [], d0 = +sp[0] > 0 ? new Date(+sp[0]) : null;
                 var hm = d0 ? d0.getHours() + ':' + (d0.getMinutes() < 10 ? '0' : '') + d0.getMinutes() + ' ' : '';
-                var o = el('option', '', hm + serverLabel(k) + (k === liveKey() ? ' ●' : ''));
+                var o = el('option', '', hm + serverLabel(k) + (k === liveKey() ? ' \u25cf' : ''));
                 o.value = k;
                 W.sel.appendChild(o);
             });
@@ -1485,9 +1450,9 @@
         refreshRec();
         W.playB.disabled = false;
         var spec = REC.spec, d = +spec[0] > 0 ? new Date(+spec[0]) : null;
-        W.info.textContent = (d ? d.toLocaleString() + ' · ' : '') + serverLabel(REC.key) + (typeof spec[3] === 'string' && spec[3] ? ' · ' + spec[3] : '') +
-            ' · ' + REC.n + ' pk' + (REC.side.est ? ' · ' + T('est') : '') + (REC.key === liveKey() ? ' · ' + T('live') : '') +
-            (REC.arr._lmLib ? ' · ' + T('saved') : '');
+        W.info.textContent = (d ? d.toLocaleString() + ' \u00b7 ' : '') + serverLabel(REC.key) + (typeof spec[3] === 'string' && spec[3] ? ' \u00b7 ' + spec[3] : '') +
+            ' \u00b7 ' + T('packets', [REC.n]) + (REC.side.est ? ' \u00b7 ' + T('est') : '') + (REC.key === liveKey() ? ' \u00b7 ' + T('live') : '') +
+            (REC.arr._lmLib ? ' \u00b7 ' + T('saved') : '');
         var total = Math.max(1, REC.endT);
         var cur = tAt(P.pos);
         if (!(W.isDragging && W.isDragging())) {
@@ -1502,7 +1467,7 @@
             W.io.style.width = Math.max(0, (b - a) / total * 100) + '%';
         } else W.io.style.display = 'none';
         var playing = P.playing || !!(P.ff && P.ff.resume);
-        W.playB.textContent = playing ? '❚❚' : '▶';
+        W.playB.textContent = playing ? '\u275a\u275a' : '\u25b6';
         W.playB.title = playing ? T('pause') : T('play');
         if (String(P.speed) !== W.spd.value) W.spd.value = String(P.speed);
         if (String(instantSecs()) !== W.secs.value) W.secs.value = String(instantSecs());
@@ -1527,7 +1492,7 @@
                 W.marks.appendChild(mk);
                 var chip = el('span', '', null, { 'class': 'lm-rs-chip', title: label });
                 chip.appendChild(el('b', 'color:' + k.c + ';', k.s));
-                chip.appendChild(document.createTextNode(markLabel(m) + ' · ' + fmtTime(m.t)));
+                chip.appendChild(document.createTextNode(markLabel(m) + ' \u00b7 ' + fmtTime(m.t)));
                 chip.addEventListener('click', jump);
                 W.chips.appendChild(chip);
             });
@@ -1555,14 +1520,14 @@
             W.mem.appendChild(el('div', 'margin:2px 0;', T('inMem'), { 'class': 'lm-rs-dim' }));
             var row = el('div', 'display:flex;', null, { 'class': 'lm-rs-scroll' });
             unsaved.forEach(function (k) {
-                row.appendChild(btn('⬇ ' + serverLabel(k) + (k === liveKey() ? ' ●' : ''), T('save'), function () { saveMemory(k); }));
+                row.appendChild(btn('\u2b07 ' + serverLabel(k) + (k === liveKey() ? ' \u25cf' : ''), T('save'), function () { saveMemory(k); }));
             });
             W.mem.appendChild(row);
         }
         W.list.textContent = '';
         if (libState === 'error') { W.list.appendChild(el('div', 'padding:10px 8px;', T('noLib'))); return; }
         var list = sortRecords(searchRecords(libCache, W.q.value), W.sort.value);
-        if (!list.length) { W.list.appendChild(el('div', 'padding:10px 8px;', libState === 'loading' ? '…' : T('empty'), { 'class': 'lm-rs-dim' })); return; }
+        if (!list.length) { W.list.appendChild(el('div', 'padding:10px 8px;', libState === 'loading' ? '\u2026' : T('empty'), { 'class': 'lm-rs-dim' })); return; }
         list.forEach(function (m) { W.list.appendChild(libItem(m)); });
     }
     function libItem(m) {
@@ -1570,7 +1535,7 @@
         var top = el('div', 'display:flex;align-items:center;gap:4px;');
         var name = el('b', 'flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', m.name);
         top.appendChild(name);
-        top.appendChild(btn('▶', T('play'), function () {
+        top.appendChild(btn('\u25b6', T('play'), function () {
             libGet(m.id).then(function (o) {
                 if (!o.meta || !o.data) { toast('error', T('badFile')); return; }
                 var key = materialize(o.meta, o.data);
@@ -1580,11 +1545,11 @@
                 play();
             }, libError);
         }));
-        top.appendChild(btn('✎', T('rename'), function () { editField(it, m, 'name'); }));
+        top.appendChild(btn('\u270e', T('rename'), function () { editField(it, m, 'name'); }));
         top.appendChild(btn('#', T('tags'), function () { editField(it, m, 'tags'); }));
-        top.appendChild(btn('⬇', T('export'), function () { exportLibrary(m); }));
-        var del = btn('✖', T('del'), function () {
-            if (delArm !== m.id) { delArm = m.id; del.textContent = T('delSure'); setTimeout(function () { if (delArm === m.id) { delArm = null; del.textContent = '✖'; } }, 3000); return; }
+        top.appendChild(btn('\u2b07', T('export'), function () { exportLibrary(m); }));
+        var del = btn('\u2716', T('del'), function () {
+            if (delArm !== m.id) { delArm = m.id; del.textContent = T('delSure'); setTimeout(function () { if (delArm === m.id) { delArm = null; del.textContent = '\u2716'; } }, 3000); return; }
             delArm = null;
             libDelete(m.id).then(function () {
                 (window.RecordedProtocolArenas || []).forEach(function (k) { var a = recArr(k); if (a && a._lmLib === m.id) delete a._lmLib; });
@@ -1595,8 +1560,8 @@
         it.appendChild(top);
         var sub = el('div', 'margin-top:2px;', null, { 'class': 'lm-rs-dim' });
         m.tags.forEach(function (t) { sub.appendChild(el('span', '', '#' + t, { 'class': 'lm-rs-tag' })); });
-        sub.appendChild(document.createTextNode(new Date(m.date).toLocaleString() + ' · ' + m.server + (m.nick ? ' · ' + m.nick : '') + ' · ' + fmtTime(m.duration) +
-            (m.est ? '~' : '') + (m.peakMass ? ' · ' + T('peak') + ' ' + fmtMass(m.peakMass) : '') + ' · ' + fmtBytes(m.bytes) + (m.marks ? ' · ' + m.marks + ' ⚑' : '')));
+        sub.appendChild(document.createTextNode(new Date(m.date).toLocaleString() + ' \u00b7 ' + m.server + (m.nick ? ' \u00b7 ' + m.nick : '') + ' \u00b7 ' + fmtTime(m.duration) +
+            (m.est ? '~' : '') + (m.peakMass ? ' \u00b7 ' + T('peak') + ' ' + fmtMass(m.peakMass) : '') + ' \u00b7 ' + fmtBytes(m.bytes) + (m.marks ? ' \u00b7 ' + m.marks + ' \u2691' : '')));
         it.appendChild(sub);
         return it;
     }
@@ -1615,11 +1580,19 @@
         inp.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') done(true); else if (e.key === 'Escape') done(false); });
         inp.addEventListener('keyup', function (e) { e.stopPropagation(); });
         box.appendChild(inp);
-        box.appendChild(btn('✓', '', function () { done(true); }));
-        box.appendChild(btn('✕', '', function () { done(false); }));
+        box.appendChild(btn('\u2713', '', function () { done(true); }));
+        box.appendChild(btn('\u2715', '', function () { done(false); }));
         it.appendChild(box);
         inp.focus();
     }
+
+    /* a language change: the fixed labels, then everything ui() and the library draw */
+    if (window.LMi18n && window.LMi18n.onChange) window.LMi18n.onChange(function () {
+        if (!W) return;
+        relabels.forEach(function (f) { try { f(); } catch (e) { } });
+        W.marksSig = '';
+        if (isOpen()) { ui(); if (tab === 'library') refreshLibrary(); }
+    });
 
     /* entry point used by ogario.v4.js (window.lmReplayStudio) and the hotkeys */
     RS.run = function (action, arg) {

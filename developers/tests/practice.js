@@ -3,6 +3,7 @@
  * (handleMessage + updateCells taken from ogario/ogario.v4.js, run in a vm with stubs).
  * node developers/tests/practice.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const root = path.join(__dirname, '..', '..');
 const simSrc = fs.readFileSync(path.join(root, 'ogario', 'modules', 'practice-sim.js'), 'utf8');
 let fail = 0;
@@ -13,6 +14,8 @@ const near = (a, b, e) => Math.abs(a - b) <= (e || 1e-6);
 const ctx = { Math, JSON, Date, ArrayBuffer, Uint8Array, DataView, Map, Set, Object, Array, Number, String, isFinite, escape, unescape, encodeURIComponent, decodeURIComponent };
 ctx.window = ctx;
 vm.createContext(ctx);
+/* the page's translation runtime (cell names come from the language packs) */
+i18n(ctx);
 const before = new Set(Object.keys(ctx));
 vm.runInContext(simSrc, ctx);
 const S = ctx.LMPracticeSim;
@@ -180,7 +183,15 @@ check('determinism: every exercise runs and repeats exactly', allEx);
     const byId = new Map(w.cells.map(c => [c.id, c]));
     const okCells = u.cells.every(c => { const s = byId.get(c.id); return s && c.x === Math.round(s.x) && c.y === Math.round(s.y) && c.size === Math.round(s.r) && c.food === (s.k === S.K_FOOD) && c.virus === (s.k === S.K_VIRUS) && c.ejected === (s.k === S.K_EJECT); });
     check('update: every cell matches the world (position, size, food/virus/ejected)', okCells && u.cells.length > 50);
-    check('update: food, viruses and named players present', u.cells.some(c => c.food) && u.cells.some(c => c.virus) && u.cells.some(c => c.name === 'Bot 1' || c.name === 'You'));
+    check('update: food, viruses and named players present', u.cells.some(c => c.food) && u.cells.some(c => c.virus) && u.cells.some(c => c.name === i18n.t('modules.practicesim.bot', [1]) || c.name === i18n.t('modules.practicesim.you')));
+    {
+        /* the names follow the chosen language */
+        ctx.LMi18n.setLang('el', { save: false });
+        const wg = S.createWorld(S.sanitizeConfig({ exercise: 'free', bots: 2, seed: 5 }));
+        const names = wg.players.map(p => p.name);
+        ctx.LMi18n.setLang('en', { save: false });
+        check('cell names in the chosen language (Greek)', names.includes(i18n.t('modules.practicesim.you', null, 'el')) && names.includes(i18n.t('modules.practicesim.bot', [1], 'el')) && !names.includes(i18n.t('modules.practicesim.you')));
+    }
     /* the client's table built from the packets stays equal to the visible world */
     const table = new Map(u.cells.map(c => [c.id, c]));
     let same = true, sawEat = false, sawRemove = false;
@@ -397,6 +408,7 @@ S.SPLIT_MODES.forEach(mode => {
     };
     w.window = w;
     vm.createContext(w);
+    i18n(w);
     vm.runInContext(simSrc, w);
     vm.runInContext(uiSrc, w);
     const P = w.LMPractice;
@@ -406,6 +418,7 @@ S.SPLIT_MODES.forEach(mode => {
     let r;
     try { r = P.start({}); } catch (e) { r = 'threw: ' + e.message; }
     check('practice: a live multibox unit asks before leaving (' + r + ')', r === false && toasts.length === 1);
+    check('practice: the question comes from the language pack', toasts[0] === i18n.t('modules.practice.leave'));
     try { if (P.on) P.stop(); } catch (e) { }
     toasts.length = 0;
     w.spects = [{ number: 2, active: false }];
