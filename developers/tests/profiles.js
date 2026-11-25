@@ -144,7 +144,7 @@ check('rules: no match -> null; disabled -> null', C.pickRule(rules, { serverTyp
 const zbSet = C.cleanBundle({ s: { showMass: true }, zb: [1, 2, 3] });
 check('zoom bookmarks: kept by the validation', !!zbSet && J(zbSet.zb) === J([1, 2, 3]) && zbSet.s.showMass === true);
 check('zoom bookmarks: an unsaved slot (0) is kept', J((C.cleanBundle({ zb: [0, 2.5, 0] }) || {}).zb) === J([0, 2.5, 0]));
-check('zoom bookmarks: wrong length, type or range dropped as a whole', [[1, 2], [1, '2', 3], [1, 99, 1], [1, NaN, 1], [0, 0, 0], { 0: 1 }, 'x'].every(z => !('zb' in (C.cleanBundle({ s: { showMass: true }, zb: z }) || {}))));
+check('zoom bookmarks: wrong length, type or range dropped as a whole', [[1, 2], [1, '2', 3], [1, 99, 1], [1, NaN, 1], { 0: 1 }, 'x'].every(z => !('zb' in (C.cleanBundle({ s: { showMass: true }, zb: z }) || {}))));
 check('zoom bookmarks: a difference is listed', C.diffBundles(C.cleanBundle({ s: { showMass: true }, zb: [1, 2, 3] }), C.cleanBundle({ s: { showMass: true }, zb: [1, 2, 4] })).some(r => r.part === 'zb'));
 
 // ── gamepad buttons and phone control layouts are compared too
@@ -276,6 +276,44 @@ function bootApply() {
   check('HUD-only switch: Undo goes back to the layout before', e.HE.active() === 'B');
   e.P.applyById('p3');
   check('a profile without a link keeps the current layout', e.HE.active() === 'B');
+}
+check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of a state without bookmarks)', J((C.cleanBundle({ zb: [0, 0, 0] }) || {}).zb) === J([0, 0, 0]));
+{
+  // ChatGPT 3.599 re-verification (1): Undo of a profile with bookmarks when there were none
+  const e = bootApply();
+  e.ls.removeItem('lm-zoom-bookmarks');
+  e.P.applySet({ zb: [1, 2, 3] }, 'first');
+  check('zoom bookmarks: applied where there were none', e.ls.getItem('lm-zoom-bookmarks') === J([1, 2, 3]));
+  e.P.undo();
+  check('zoom bookmarks: Undo removes them again (none before)', e.ls.getItem('lm-zoom-bookmarks') === null);
+}
+{
+  // the same for gamepad buttons and phone control layouts that did not exist before
+  const e = bootApply();
+  e.ls.removeItem('lmGamepad'); e.ls.removeItem('lm-mobile-layouts');
+  e.P.applySet({ gp: { v: 1, map: ['feed'] }, ml: { v: 1, active: 'thumb' } }, 'pad+phone');
+  check('gamepad + phone layout: applied where there were none', JSON.parse(e.ls.getItem('lmGamepad') || 'null').map[0] === 'feed' && JSON.parse(e.ls.getItem('lm-mobile-layouts') || 'null').active === 'thumb');
+  e.calls.length = 0;
+  e.P.undo();
+  check('gamepad + phone layout: Undo removes them again and reloads both', e.ls.getItem('lmGamepad') === null && e.ls.getItem('lm-mobile-layouts') === null && e.calls.indexOf('gp-reload') >= 0 && e.calls.indexOf('ml-reload') >= 0);
+  e.P.applySet({ s: { showMass: !e.S.showMass } }, 'plain');
+  const bk = JSON.parse(e.ls.getItem('lmSettingsBackups') || '[]');
+  check('backup of a state without them: says none (restoring it removes them)', bk.length > 0 && J(bk[0].data.zb) === J([0, 0, 0]) && bk[0].data.gp && bk[0].data.gp._lmAbsent === 1);
+  const cap = e.P.core.captureCurrent();
+  check('a plain snapshot (profiles) still leaves missing parts out', !!cap && !('zb' in cap) && !('gp' in cap) && !('ml' in cap));
+}
+{
+  // ChatGPT 3.599 re-verification (2): the same settings, only the Performance mode copy differs
+  const e = bootApply();
+  e.S.performanceMode = true; e.S.jellyPhisycs = false; e.els.performanceMode.checked = true;
+  e.ls.setItem('lmPerfBackup', J({ jellyPhisycs: true }));
+  const r = e.P.applySet({ s: { performanceMode: true, jellyPhisycs: false }, pb: { jellyPhisycs: false } }, 'backup-only');
+  check('performance mode copy only: a difference, applied', !!r && r.length === 1 && r[0].part === 'pb' && e.ls.getItem('lmPerfBackup') === J({ jellyPhisycs: false }));
+  e.P.undo();
+  check('performance mode copy only: Undo puts the copy back', e.ls.getItem('lmPerfBackup') === J({ jellyPhisycs: true }));
+  e.ls.setItem('lmPerfBackup', J({ jellyPhisycs: false }));
+  const r2 = e.P.applySet({ s: { performanceMode: true, jellyPhisycs: false }, pb: { jellyPhisycs: false } }, 'same');
+  check('performance mode: the same copy is no difference', !!r2 && r2.length === 0);
 }
 {
   // Performance mode on in both profiles: the copy of the effect settings is the new profile's

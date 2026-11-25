@@ -139,11 +139,13 @@
         partZB: ['Zoom bookmarks', 'Σελιδοδείκτες ζουμ'],
         partML: ['Phone control layout', 'Διάταξη χειριστηρίων κινητού'],
         partGP: ['Gamepad buttons', 'Κουμπιά χειριστηρίου'],
+        partPB: ['Performance mode backup', 'Αντίγραφο λειτουργίας απόδοσης'],
         defaultHud: ['Default HUD', 'Προεπιλεγμένο HUD'],
         cntHL: ['HUD layout {0}', 'διάταξη HUD {0}'],
         cntZB: ['zoom bookmarks', 'σελιδοδείκτες ζουμ'],
         cntML: ['phone control layout', 'διάταξη χειριστηρίων κινητού'],
         cntGP: ['gamepad buttons', 'κουμπιά χειριστηρίου'],
+        cntPB: ['Performance mode backup', 'αντίγραφο της λειτουργίας απόδοσης'],
         autoLater: ['Auto ({0}): "{1}" is applied when this life ends.', 'Αυτόματα ({0}): το "{1}" εφαρμόζεται όταν τελειώσει αυτή η ζωή.'],
         applyNow: ['Apply now', 'Εφαρμογή τώρα'],
         perfBackupFail: ['The browser storage is full: Performance mode could not keep the effect settings of this profile.', 'Ο χώρος αποθήκευσης είναι γεμάτος: η Λειτουργία απόδοσης δεν κράτησε τις ρυθμίσεις εφέ αυτού του προφίλ.']
@@ -225,17 +227,37 @@
     function cleanHotkeys(o) { return cleanMap(o, hotkeyValue, 600); }
     function cleanMobile(o) { return cleanMap(o, mobileValue); }
     /* the zoom bookmarks of hudhelpers.js: 3 zoom levels, 0 = not saved (its own range check);
-     * anything else and the part is dropped as a whole */
+     * anything else and the part is dropped as a whole. [0, 0, 0] = explicitly none (the Undo and
+     * the backups of a state without bookmarks: restoring it removes them) */
     function cleanZoomMarks(a) {
         if (!Array.isArray(a) || a.length !== 3) return null;
         var out = [], any = false;
         for (var i = 0; i < 3; i++) {
             var v = a[i];
             if (typeof v !== 'number' || !isFinite(v) || (v !== 0 && (v < 0.01 || v > 40))) return null;
-            if (v) any = true;
             out.push(v);
         }
-        return any ? out : null;
+        return out;
+    }
+    function noZoomMarks(v) { return Array.isArray(v) && v.length === 3 && !v[0] && !v[1] && !v[2]; }
+    /* A part that did not exist (no gamepad buttons / phone control layout saved yet). Only the
+     * Undo and the backups hold it: restoring them removes what was added since, where a missing
+     * part would leave it (a profile without the part still leaves it as it is). */
+    function absentPart() { return { _lmAbsent: 1 }; }
+    function isAbsent(v) { return isObj(v) && v._lmAbsent === 1; }
+    /* the explicit "none" of the parts that are missing in a state captured for the Undo or a backup */
+    function markMissing(data, withM) {
+        if (withM) {
+            if (!isObj(data.ml)) data.ml = absentPart();
+            if (!isObj(data.gp)) data.gp = absentPart();
+        }
+        if (!cleanZoomMarks(data.zb)) data.zb = [0, 0, 0];
+        return data;
+    }
+    /* sorted keys: the same map written in another order is the same */
+    function stableJSON(v) {
+        if (!isObj(v)) return JSON.stringify(v === undefined ? null : v);
+        return '{' + Object.keys(v).sort().map(function (k) { return JSON.stringify(k) + ':' + stableJSON(v[k]); }).join(',') + '}';
     }
     /* the name of a HUD layout (hudeditor.js), '' for the normal HUD */
     function cleanLayoutName(v) {
@@ -397,6 +419,13 @@
             var ha = has(a, p);
             if (!ha || JSON.stringify(a[p]) !== JSON.stringify(b[p])) rows.push({ part: p, key: p, label: labelFn(p, p), a: ha ? a[p] : null, b: b[p] });
         });
+        /* Performance mode's copy of the effect settings it turned off: with the mode on in both,
+         * the same settings with another copy are still a change (turning the mode off later puts
+         * the copy back); a set without a copy removes the current one */
+        if (isObj(a.s) && isObj(b.s) && a.s.performanceMode === true && b.s.performanceMode === true) {
+            var pa = isObj(a.pb) ? a.pb : null, pbb = isObj(b.pb) ? b.pb : null;
+            if (stableJSON(pa) !== stableJSON(pbb)) rows.push({ part: 'pb', key: 'pb', label: labelFn('pb', 'pb'), a: pa, b: pbb });
+        }
         return rows;
     }
     var EXTRA_PARTS = ['hl', 'zb', 'ml', 'gp'];
@@ -408,7 +437,7 @@
         return out;
     }
     function countParts(rows) {
-        var c = { s: 0, t: 0, h: 0, m: 0, hl: 0, zb: 0, ml: 0, gp: 0 };
+        var c = { s: 0, t: 0, h: 0, m: 0, hl: 0, zb: 0, ml: 0, gp: 0, pb: 0 };
         rows.forEach(function (r) { c[r.part] = (c[r.part] || 0) + 1; });
         return c;
     }
@@ -583,6 +612,8 @@
             try { if (HE && typeof HE.active === 'function') data.hl = HE.active() || ''; } catch (e) { }
         }
         if (sData && sData.performanceMode === true) data.pb = readJSON('lmPerfBackup');
+        if (parts.explicit) markMissing(data, parts.m !== false);
+        else if (noZoomMarks(cleanZoomMarks(data.zb))) delete data.zb;
         return cleanBundle(data);
     }
     /* the saved settings (what a reload would load): the state before a change that is being saved */
@@ -594,7 +625,7 @@
         var t = readJSON('ogarioThemeSettings');
         if (!t || !Object.keys(t).length) t = window.LM_THEME_DEFAULTS;
         var hud = readJSON('lmHudLayouts');
-        return cleanBundle({
+        return cleanBundle(markMissing({
             s: s,
             t: t,
             h: readJSON('ogarioHotkeys'),
@@ -606,10 +637,10 @@
             zb: readJSON('lm-zoom-bookmarks'),
             hl: window.LMHudEditor ? (isObj(hud) && typeof hud.active === 'string' ? hud.active : '') : undefined,
             pb: s && s.performanceMode === true ? readJSON('lmPerfBackup') : null
-        });
+        }, true));
     }
     function label(part, key) {
-        if (EXTRA_PARTS.indexOf(part) >= 0) return tx(PART_NAMES[part]);
+        if (EXTRA_PARTS.indexOf(part) >= 0 || part === 'pb') return tx(PART_NAMES[part]);
         var tl = window.textLanguage || {};
         if (part === 's' || part === 't') return stripTags(tl[key]) || key;
         if (part === 'm') return TEXT['m_' + key] ? tx('m_' + key) : key;
@@ -627,7 +658,7 @@
         if (v === false) return tx('off');
         if (part === 'h' && v === '') return tx('unbound');
         if (part === 'hl') return v ? String(v) : tx('defaultHud');
-        if (v == null) return tx('none');
+        if (v == null || isAbsent(v) || noZoomMarks(v)) return tx('none');
         var s = Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : String(v);
         return s.length > 60 ? s.slice(0, 57) + '...' : s;
     }
@@ -651,6 +682,7 @@
         if (c.zb) parts.push(tx('cntZB'));
         if (c.ml) parts.push(tx('cntML'));
         if (c.gp) parts.push(tx('cntGP'));
+        if (c.pb) parts.push(tx('cntPB'));
         return parts.join(', ');
     }
 
@@ -729,7 +761,7 @@
         /* a Theme Workshop preview ends first (its theme back): otherwise the preview's theme would
          * be captured as the current one, and its timer would later roll this profile's theme back */
         try { if (window.LMThemeWorkshop && typeof window.LMThemeWorkshop.settle === 'function') window.LMThemeWorkshop.settle(); } catch (e) { }
-        var cur = captureCurrent();
+        var cur = captureCurrent({ explicit: true });
         var rows = diffBundles(cur, data, label);
         var c = countParts(rows);
         var name = opts.name || '';
@@ -751,10 +783,10 @@
         if (c.h) entries.push({ key: 'ogarioHotkeys', text: JSON.stringify(data.h) });
         if (c.m) entries.push({ key: 'lm-mobile-prefs', text: JSON.stringify(isRestore ? Object.assign({}, data.m) : Object.assign({}, cur.m || {}, data.m)) });
         /* P0 fix: write mobile layouts and gamepad config when present in the profile */
-        if (c.ml) entries.push({ key: 'lm-mobile-layouts', text: JSON.stringify(data.ml) });
-        if (c.gp) entries.push({ key: 'lmGamepad', text: JSON.stringify(data.gp) });
+        if (c.ml) entries.push({ key: 'lm-mobile-layouts', text: isAbsent(data.ml) ? null : JSON.stringify(data.ml) });
+        if (c.gp) entries.push({ key: 'lmGamepad', text: isAbsent(data.gp) ? null : JSON.stringify(data.gp) });
         /* P2 fix #97: restore zoom bookmarks when present in the profile */
-        if (c.zb) entries.push({ key: 'lm-zoom-bookmarks', text: JSON.stringify(data.zb) });
+        if (c.zb) entries.push({ key: 'lm-zoom-bookmarks', text: noZoomMarks(data.zb) ? null : JSON.stringify(data.zb) });
         /* the HUD layout is part of the same transaction (and so of the backup and the Undo) */
         if (c.hl) entries.push({ key: 'lmHudLayouts', text: HE.storeText(data.hl) });
         /* Performance mode keeps a copy of the effect settings it turned off: a set with the mode
@@ -1210,7 +1242,7 @@
         var b = loadBackups().filter(function (x) { return String(x.t) === m[2]; })[0];
         return b ? { name: tx('backupOf', when(b.t)), data: b.data } : null;
     }
-    var PART_NAMES = { s: 'partS', t: 'partT', h: 'partH', m: 'partM', hl: 'partHL', zb: 'partZB', ml: 'partML', gp: 'partGP' };
+    var PART_NAMES = { s: 'partS', t: 'partT', h: 'partH', m: 'partM', hl: 'partHL', zb: 'partZB', ml: 'partML', gp: 'partGP', pb: 'partPB' };
     function renderCompare(body) {
         var $ = jq();
         var r = $('<div class="lm-sp-row"></div>').appendTo(body);
