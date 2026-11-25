@@ -17,7 +17,7 @@ const legendPage = 'https://www.legendmod.ml/play.html?' + pageVersion;
 const captchaPage = 'https://www.legendmod.ml/ogario/captcha.html';
 const modVersion = chrome.runtime.getManifest().version;
 /* The texts (texts.js, generated from developers/i18n/src) in the language chosen in Legend Mod
- * (agar.io's localStorage languagemod, 1 English ... 12 Dutch); never chosen: the browser's, else English. */
+ * (agar.io's localStorage languagemod, 1 English ... 16 Italian); never chosen: the browser's, else English. */
 let chosenLanguage = null;
 try { chosenLanguage = localStorage.getItem('languagemod'); } catch (e) { }
 const lang = lmxExtLang(chosenLanguage);
@@ -150,7 +150,7 @@ function showLoading() {
 
 /* agar.io's page is already gone, so say what failed instead of leaving a blank tab */
 function showLoadError(url, problem) {
-    const page = '<!DOCTYPE html><html lang="' + LMX_EXT_CODES[lang - 1] + '"' + (lang === 6 ? ' dir="rtl"' : '') + '><head><meta charset="utf-8"><title>Legend Express</title></head>' +
+    const page = '<!DOCTYPE html><html lang="' + (lang === 13 ? 'pt-BR' : lang === 7 ? 'zh-Hant' : LMX_EXT_CODES[lang - 1]) + '"' + (lang === 6 ? ' dir="rtl"' : '') + '><head><meta charset="utf-8"><title>Legend Express</title></head>' +
         '<body style="background:#111;color:#eee;font:16px sans-serif;padding:40px;">' +
         '<h2>' + escapeHtml(text('lmx.ext.couldNotLoad')) + '</h2>' +
         '<p>' + escapeHtml(url) + ' (' + escapeHtml(problem) + ')</p>' +

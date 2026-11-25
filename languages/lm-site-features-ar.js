@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "إعدادات مسبقة: تنافسي وتوفير البطارية والبث المباشر وواجهة نظيفة وتقليل الحركة (مع إمكانية التراجع)",
 "site.features.newBadgesAndA": "شارات <b>جديد</b> ومرشّح <i>عرض الخيارات الجديدة</i>",
 "site.features.boundKeysListIn": "قائمة المفاتيح المعيّنة في مفاتيح الاختصار",
-"site.features.settingsThemeAndHotkey": "تسميات الإعدادات والسمات ومفاتيح الاختصار بـ 12 لغة",
+"site.features.settingsThemeAndHotkey": "تسميات الإعدادات والسمات ومفاتيح الاختصار بـ 16 لغة",
 "site.features.downloadLoadSettingsFiles": "تنزيل / تحميل ملفات الإعدادات والمزامنة السحابية برمز مزامنة",
 "site.features.accessibilityNew": "إمكانية الوصول <span class=\"badge badge-new\">جديد</span>",
 "site.features.comfortableToLookAt": "مريح للعين للجميع.",

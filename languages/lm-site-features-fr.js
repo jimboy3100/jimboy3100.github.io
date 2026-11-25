@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Préréglages : Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (avec Annuler)",
 "site.features.newBadgesAndA": "Badges <b>NEW</b> et filtre <i>Show new options</i>",
 "site.features.boundKeysListIn": "Liste des touches assignées dans Raccourcis",
-"site.features.settingsThemeAndHotkey": "Libellés des paramètres, du thème et des raccourcis en 12 langues",
+"site.features.settingsThemeAndHotkey": "Libellés des paramètres, du thème et des raccourcis en 16 langues",
 "site.features.downloadLoadSettingsFiles": "Téléchargement / chargement de fichiers de paramètres et synchronisation cloud avec un code",
 "site.features.accessibilityNew": "Accessibilité <span class=\"badge badge-new\">Nouveau</span>",
 "site.features.comfortableToLookAt": "Confortable à regarder pour tout le monde.",

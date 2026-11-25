@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Ön ayarlar: Rekabetçi, Pil tasarrufu, Yayıncı, Sade HUD, Azaltılmış hareket (Geri Al ile)",
 "site.features.newBadgesAndA": "<b>YENİ</b> rozetleri ve <i>Yeni seçenekleri göster</i> filtresi",
 "site.features.boundKeysListIn": "Kısayol Tuşları bölümünde atanmış tuşlar listesi",
-"site.features.settingsThemeAndHotkey": "12 dilde ayar, tema ve kısayol etiketleri",
+"site.features.settingsThemeAndHotkey": "16 dilde ayar, tema ve kısayol etiketleri",
 "site.features.downloadLoadSettingsFiles": "Ayar dosyalarını indirme / yükleme ve senkronizasyon koduyla bulut senkronizasyonu",
 "site.features.accessibilityNew": "Erişilebilirlik <span class=\"badge badge-new\">Yeni</span>",
 "site.features.comfortableToLookAt": "Herkes için göz yormayan bir görünüm.",

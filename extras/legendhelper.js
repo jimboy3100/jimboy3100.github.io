@@ -103,7 +103,7 @@ $("#Userscriptshud3").html('<div id="tutorial10" style="display:block;" width="8
 	$('#legendlanguages2').val(languagemod);
 }
 
-/* the Choose Language list: every language by its own name, value = languagemod (1 English ... 12 Dutch) */
+/* the Choose Language list: every language by its own name, value = languagemod (1 English ... 16 Italian) */
 function _lmLangOptions() {
     var names = (window.LMi18n && window.LMi18n.names) || ['English'], out = '';
     for (var i = 0; i < names.length; i++) out += '<option value="' + (i + 1) + '">' + names[i] + '</option>';

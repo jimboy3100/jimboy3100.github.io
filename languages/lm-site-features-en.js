@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (with Undo)",
 "site.features.newBadgesAndA": "<b>NEW</b> badges and a <i>Show new options</i> filter",
 "site.features.boundKeysListIn": "Bound keys list in Hotkeys",
-"site.features.settingsThemeAndHotkey": "Settings, theme and hotkey labels in 12 languages",
+"site.features.settingsThemeAndHotkey": "Settings, theme and hotkey labels in 16 languages",
 "site.features.downloadLoadSettingsFiles": "Download / load settings files and cloud sync with a sync code",
 "site.features.accessibilityNew": "Accessibility <span class=\"badge badge-new\">New</span>",
 "site.features.comfortableToLookAt": "Comfortable to look at for everyone.",

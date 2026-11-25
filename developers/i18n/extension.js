@@ -47,8 +47,10 @@ function build() {
         'function lmxExtLang(chosen) {\n' +
         '    var n = parseInt(chosen, 10);\n' +
         '    if (n >= 1 && n <= LMX_EXT_CODES.length) return n;\n' +
-        "    var i = LMX_EXT_CODES.indexOf(String((navigator && navigator.language) || '').slice(0, 2).toLowerCase());\n" +
-        '    return i >= 0 && i < 12 ? i + 1 : 1;\n' +
+        "    var two = String((navigator && navigator.language) || '').slice(0, 2).toLowerCase();\n" +
+        '    /* older Android WebViews report Indonesian with the old code "in" */\n' +
+        "    var i = LMX_EXT_CODES.indexOf(two === 'in' ? 'id' : two);\n" +
+        '    return i >= 0 ? i + 1 : 1;\n' +
         '}\n' +
         '/* the text of key in language n (1..16), English when that language has none */\n' +
         'function lmxExtText(key, n) {\n' +

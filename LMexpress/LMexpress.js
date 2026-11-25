@@ -9,7 +9,7 @@ function _lmxT(k, v) { return window.lmT ? window.lmT(k, v) : String(k); }
 function _lmxE(k, v) { return String(_lmxT(k, v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 /* Choose Language: every language under its own name (the same in every language), value = languagemod number */
 function _lmxLanguageOptions() {
-    var names = (window.LMi18n && window.LMi18n.names) || ['English', 'Greek', 'Spanish', 'Bulgarian', 'French', 'Arabic', 'Chinese', 'Russian', 'German', 'Turkish', 'Polish', 'Dutch', 'Portuguese (Brazil) - Beta', 'Indonesian - Beta', 'Japanese - Beta', 'Italian - Beta'];
+    var names = (window.LMi18n && window.LMi18n.names) || ['English', 'Greek', 'Spanish', 'Bulgarian', 'French', 'Arabic', 'Chinese', 'Russian', 'German', 'Turkish', 'Polish', 'Dutch', 'Portuguese (Brazil)', 'Indonesian', 'Japanese', 'Italian'];
     var html = '';
     for (var i = 0; i < names.length; i++) html += '<option value="' + (i + 1) + '" data-itr=""' + (i === 0 ? ' selected' : '') + '>' + String(names[i]).replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</option>';
     return html;

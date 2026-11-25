@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Preset: Competitivo, Risparmio batteria, Streamer, HUD pulito, Movimento ridotto (con Annulla)",
 "site.features.newBadgesAndA": "Badge <b>NUOVO</b> e filtro <i>Mostra nuove opzioni</i>",
 "site.features.boundKeysListIn": "Elenco dei tasti assegnati in Tasti rapidi",
-"site.features.settingsThemeAndHotkey": "Etichette di impostazioni, tema e tasti rapidi in 12 lingue",
+"site.features.settingsThemeAndHotkey": "Etichette di impostazioni, tema e tasti rapidi in 16 lingue",
 "site.features.downloadLoadSettingsFiles": "Scarica / carica file di impostazioni e sincronizzazione cloud con un codice di sincronizzazione",
 "site.features.accessibilityNew": "Accessibilità <span class=\"badge badge-new\">Nuovo</span>",
 "site.features.comfortableToLookAt": "Comoda da guardare per tutti.",

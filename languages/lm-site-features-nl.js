@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Presets: Competitief, Batterij sparen, Streamer, Schone HUD, Minder beweging (met Ongedaan maken)",
 "site.features.newBadgesAndA": "<b>NIEUW</b>-badges en een filter <i>Nieuwe opties tonen</i>",
 "site.features.boundKeysListIn": "Lijst met toegewezen toetsen in Sneltoetsen",
-"site.features.settingsThemeAndHotkey": "Labels voor instellingen, thema en sneltoetsen in 12 talen",
+"site.features.settingsThemeAndHotkey": "Labels voor instellingen, thema en sneltoetsen in 16 talen",
 "site.features.downloadLoadSettingsFiles": "Instellingenbestanden downloaden / laden en cloudsync met een synccode",
 "site.features.accessibilityNew": "Toegankelijkheid <span class=\"badge badge-new\">Nieuw</span>",
 "site.features.comfortableToLookAt": "Prettig om naar te kijken voor iedereen.",

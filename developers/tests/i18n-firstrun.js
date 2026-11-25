@@ -2,6 +2,8 @@
 // 1. fresh profile, Greek browser: the mod starts in Greek without saving it, the one-time language
 //    window appears with Greek picked and Greek texts; OK saves languagemod 2 and it never comes again.
 // 2. fresh profile, Greek browser, languagemod 1 stored: English, and the window never appears.
+// 3. fresh profile, pt-BR / id / ja / it browser: that language everywhere (loading screen, mod, window,
+//    website), the 16 languages listed without Beta, OK saves it.
 // Usage: node developers/tests/i18n-firstrun.js [--secs N]
 'use strict';
 const { spawnSync } = require('child_process');
@@ -12,7 +14,9 @@ const here = __dirname;
 const repo = path.resolve(here, '..', '..');
 const args = process.argv.slice(2);
 const secs = Number((args.indexOf('--secs') >= 0 && args[args.indexOf('--secs') + 1]) || 12);
-const el = JSON.parse(fs.readFileSync(path.join(repo, 'developers', 'i18n', 'src', 'core.json'), 'utf8'))['core.langFirstTitle'].el;
+const I = require(path.join(repo, 'developers', 'i18n', 'lib'));
+const src = I.readAll();
+const el = src.core['core.langFirstTitle'].el;
 
 function run(name, env, probe) {
     const out = path.join(here, 'out', 'firstrun-' + name + '-' + Date.now());
@@ -62,6 +66,61 @@ const probeFirst = `(async () => {
   return { fail: fail, info: info };
 })()`;
 
+/* 3. fresh profile, a pt-BR / Indonesian / Japanese / Italian browser (languages 13-16): the loading screen,
+ * the mod and the one-time window are in that language, the window lists the 16 languages under their own
+ * names (no Beta), and the website (index.html in a same-origin frame, before anything is saved) follows
+ * the same browser language. OK saves the number. */
+function probeNew(code) {
+    const n = I.CODES.indexOf(code) + 1;
+    const exp = {
+        n: String(n), code, htmlLang: code === 'pt' ? 'pt-BR' : code, name: I.NAMES[code],
+        names: I.CODES.map((c) => I.NAMES[c]),
+        title: src.core['core.langFirstTitle'][code], showMass: src.settings['settings.showMass'][code],
+        features: src.site['site.features'][code], about: src['site-index']['site.index.about'][code]
+    };
+    return `(async () => {
+  var fail = [], info = {}, E = ${JSON.stringify(exp)};
+  function need(n, ok) { if (!ok) fail.push(n); }
+  var wait = async function (c, ms) { var t0 = Date.now(); while (!c() && Date.now() - t0 < ms) await new Promise(function (r) { setTimeout(r, 100); }); return c(); };
+  info.navigator = navigator.language;
+  await wait(function () { return $('#legendlanguages').length > 0; }, 20000);
+  need('loading screen in the browser language', window._lmBootLang === +E.n);
+  need('mod in the browser language', window.LMi18n && LMi18n.lang() === E.code && LMi18n.num() === E.n);
+  need('not saved', localStorage.getItem('languagemod') == null);
+  need('Choose Language list shows ' + E.n, $('#legendlanguages').val() === E.n);
+  need('Choose Language list: own name, no Beta', $('#legendlanguages option[value="' + E.n + '"]').text() === E.name && !/Beta/.test($('#legendlanguages').text()));
+  need('settings labels translated', textLanguage.showMass === E.showMass);
+  need('window shown', await wait(function () { return !!document.getElementById('lm-lang-first'); }, 15000));
+  var box = document.getElementById('lm-lang-first');
+  if (!box) return { fail: fail, info: info };
+  var sel = box.querySelector('select.lm-lang-select');
+  need('browser language picked', sel && sel.value === E.n);
+  var names = sel ? Array.prototype.map.call(sel.options, function (o) { return o.textContent; }) : [];
+  need('16 languages under their own names, no Beta', names.join('|') === E.names.join('|'));
+  need('title translated', box.querySelector('.modal-title').textContent === E.title);
+  /* the website with the same browser, nothing saved yet */
+  var fr = document.createElement('iframe');
+  fr.style.cssText = 'position:fixed;left:0;top:0;width:800px;height:600px;opacity:0;pointer-events:none';
+  fr.src = 'https://www.legendmod.ml/index.html';
+  document.body.appendChild(fr);
+  var site = function () { try { return fr.contentWindow.LMi18n && fr.contentDocument.querySelector('[data-i18n="site.index.about"]'); } catch (e) { return null; } };
+  await wait(function () { var a = site(); return a && a.textContent === E.about; }, 20000);
+  try {
+    var d = fr.contentDocument, L = fr.contentWindow.LMi18n;
+    info.site = L ? L.lang() + ' ' + d.documentElement.getAttribute('lang') : 'no runtime';
+    need('website in the browser language', L && L.lang() === E.code && d.documentElement.getAttribute('lang') === E.htmlLang);
+    need('website texts translated', d.querySelector('[data-i18n="site.features"]').textContent === E.features && d.querySelector('[data-i18n="site.index.about"]').textContent === E.about);
+    var ps = d.querySelector('[data-lm-lang-picker] select');
+    need('website picker: 16 own names, browser language picked', ps && ps.value === E.n && Array.prototype.map.call(ps.options, function (o) { return o.textContent; }).join('|') === E.names.join('|'));
+    need('website did not save the browser language', localStorage.getItem('languagemod') == null);
+  } catch (e) { fail.push('website: ' + e.message); }
+  fr.remove();
+  box.querySelector('.lm-lang-first-ok').click();
+  need('saved ' + E.n + ' by OK', localStorage.getItem('languagemod') === E.n && localStorage.getItem('lmLangAsked') === '1');
+  return { fail: fail, info: info };
+})()`;
+}
+
 const probeStored = `(async () => {
   var fail = [], info = {};
   function need(n, ok) { if (!ok) fail.push(n); }
@@ -77,15 +136,22 @@ const probeStored = `(async () => {
 
 let failed = 0, skipped = false;
 [['greek', { SMOKE_FIRSTRUN: '1', SMOKE_LANG: 'el-GR' }, probeFirst],
+    ['pt-BR', { SMOKE_FIRSTRUN: '1', SMOKE_LANG: 'pt-BR' }, probeNew('pt')],
+    ['id', { SMOKE_FIRSTRUN: '1', SMOKE_LANG: 'id-ID' }, probeNew('id')],
+    ['ja', { SMOKE_FIRSTRUN: '1', SMOKE_LANG: 'ja-JP' }, probeNew('ja')],
+    ['it', { SMOKE_FIRSTRUN: '1', SMOKE_LANG: 'it-IT' }, probeNew('it')],
     ['stored', { SMOKE_FIRSTRUN: '1', SMOKE_LANG: 'el-GR', SMOKE_STORAGE: '{"languagemod":"1"}' }, probeStored]].forEach(([name, env, probe]) => {
     if (skipped) return;
+    /* FIRSTRUN_ONLY=ja,it runs only those cases */
+    if (process.env.FIRSTRUN_ONLY && process.env.FIRSTRUN_ONLY.split(',').indexOf(name) < 0) return;
     const res = run(name, env, probe);
     if (res.skipped) { skipped = true; return; }
     let p = null;
     try { p = typeof res.probe === 'string' ? JSON.parse(res.probe) : res.probe; } catch (e) { }
     const problems = [];
     if (res.err) problems.push(res.err);
-    if (!p) problems.push('no probe result: ' + JSON.stringify(res.probe).slice(0, 300));
+    /* an empty result (the probe threw or the page went away) is not a pass */
+    if (!p || !Array.isArray(p.fail)) problems.push('no probe result: ' + JSON.stringify(res.probe).slice(0, 300));
     else (p.fail || []).forEach((f) => problems.push(f));
     if (res.errorCount) problems.push('page errors: ' + res.errors.slice(0, 3).join(' / '));
     console.log(name + ': ' + (problems.length ? 'FAIL ' + problems.join('; ') : 'ok') + (p && p.info ? ' ' + JSON.stringify(p.info) : ''));

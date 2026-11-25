@@ -75,7 +75,7 @@
             /* i18n:boot-end */
             var langN = 0;
             try { langN = parseInt(localStorage.getItem('languagemod'), 10) || 0; } catch (e) { }
-            if (!(langN >= 1 && langN <= LANG_TEXT.length)) langN = { en: 1, el: 2, es: 3, bg: 4, fr: 5, ar: 6, zh: 7, ru: 8, de: 9, tr: 10, pl: 11, nl: 12 }[(navigator.language || '').slice(0, 2).toLowerCase()] || 1;
+            if (!(langN >= 1 && langN <= LANG_TEXT.length)) langN = { en: 1, el: 2, es: 3, bg: 4, fr: 5, ar: 6, zh: 7, ru: 8, de: 9, tr: 10, pl: 11, nl: 12, pt: 13, id: 14, 'in': 14, ja: 15, it: 16 }[(navigator.language || '').slice(0, 2).toLowerCase()] || 1;
             text.textContent = LANG_TEXT[langN - 1];
             if (langN === 6) text.dir = 'rtl';
             window._lmBootLang = langN;

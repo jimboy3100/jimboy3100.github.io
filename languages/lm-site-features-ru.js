@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Пресеты: Соревновательный, Экономия батареи, Стример, Чистый HUD, Меньше движения (с отменой)",
 "site.features.newBadgesAndA": "Значки <b>НОВОЕ</b> и фильтр <i>Показать новые опции</i>",
 "site.features.boundKeysListIn": "Список назначенных клавиш в Горячих клавишах",
-"site.features.settingsThemeAndHotkey": "Настройки, темы и подписи клавиш на 12 языках",
+"site.features.settingsThemeAndHotkey": "Настройки, темы и подписи клавиш на 16 языках",
 "site.features.downloadLoadSettingsFiles": "Скачивание / загрузка файлов настроек и облачная синхронизация по коду",
 "site.features.accessibilityNew": "Доступность <span class=\"badge badge-new\">Новое</span>",
 "site.features.comfortableToLookAt": "Комфортно для глаз каждого.",

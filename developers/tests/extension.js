@@ -68,8 +68,31 @@ for (const [i, c] of ['pt', 'id', 'ja', 'it'].entries()) {
     const r2 = run('/', { languagemod: String(n) }, true);
     check(c + ': stored language accepted', r2.ctx.lmxExtLang(String(n)) === n);
     check(c + ': actual loading translation', r2.ctx.lmxExtText('boot.loading', n) !== r2.ctx.lmxExtText('boot.loading', 1));
-    r2.ctx.navigator.language = c + '-XX';
-    check(c + ': no automatic preview selection', r2.ctx.lmxExtLang(null) === 1);
+    r2.ctx.navigator.language = c === 'pt' ? 'pt-BR' : c + '-XX';
+    check(c + ': a browser in this language gets it (no stored language)', r2.ctx.lmxExtLang(null) === n);
+    /* Chrome's own locale folder (store page, chrome://extensions) */
+    const loc = { pt: 'pt_BR', id: 'id', ja: 'ja', it: 'it' }[c];
+    const msg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'LMexpress', 'extension', '_locales', loc, 'messages.json'), 'utf8'));
+    check(c + ': _locales/' + loc + ' description', !!(msg.description && msg.description.message));
+}
+r = run('/', {}, true);
+r.ctx.navigator.language = 'in-ID';
+check('old Indonesian code "in": Indonesian', r.ctx.lmxExtLang(null) === 14);
+r.ctx.navigator.language = 'el-GR';
+check('the first twelve unchanged: Greek browser -> 2', r.ctx.lmxExtLang(null) === 2 && r.ctx.lmxExtLang('12') === 12);
+r.ctx.navigator.language = 'sv-SE';
+check('an unsupported browser language: English', r.ctx.lmxExtLang(null) === 1);
+
+/* the userscript loader (Tampermonkey): its own language pick, run as written */
+const us = fs.readFileSync(path.join(__dirname, '..', '..', 'LMexpress', 'LMexpress.user.js'), 'utf8');
+const usLang = /var lmxLang = \(function \(\) \{[\s\S]*?\r?\n\}\)\(\);/.exec(us);
+check('userscript: lmxLang found', !!usLang);
+const pick = (nav, stored) => vm.runInNewContext(usLang[0] + ';lmxLang', {
+    navigator: { language: nav }, localStorage: { getItem: (k) => (k === 'languagemod' ? stored : null) }, parseInt, String
+});
+if (usLang) {
+    check('userscript: pt-BR / id / ja / it browsers get 13-16', pick('pt-BR', null) === 13 && pick('id-ID', null) === 14 && pick('ja-JP', null) === 15 && pick('it-IT', null) === 16);
+    check('userscript: "in" is Indonesian, unknown is English, stored wins', pick('in', null) === 14 && pick('sv', null) === 1 && pick('ja-JP', '2') === 2 && pick('fr-FR', null) === 5);
 }
 console.log(fail ? fail + ' FAILED' : 'all extension checks passed');
 process.exit(fail ? 1 : 0);

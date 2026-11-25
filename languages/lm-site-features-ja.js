@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "プリセット：競技、省電力、配信者、シンプルHUD、モーション軽減（元に戻す機能付き）",
 "site.features.newBadgesAndA": "<b>NEW</b>バッジと<i>新しいオプションを表示</i>フィルター",
 "site.features.boundKeysListIn": "ショートカットに割り当て済みキーの一覧",
-"site.features.settingsThemeAndHotkey": "設定、テーマ、ショートカットキーの表示は12言語に対応",
+"site.features.settingsThemeAndHotkey": "設定、テーマ、ショートカットキーの表示は16言語に対応",
 "site.features.downloadLoadSettingsFiles": "設定ファイルのダウンロード/読み込みと、同期コードによるクラウド同期",
 "site.features.accessibilityNew": "アクセシビリティ <span class=\"badge badge-new\">新機能</span>",
 "site.features.comfortableToLookAt": "誰にとっても見やすい画面。",

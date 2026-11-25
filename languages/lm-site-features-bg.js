@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Готови настройки: Състезателна, Пестене на батерия, Стриймър, Чист HUD, Намалено движение (с Отмяна)",
 "site.features.newBadgesAndA": "Значки <b>НОВО</b> и филтър <i>Покажи новите опции</i>",
 "site.features.boundKeysListIn": "Списък със зададените клавиши в Клавиши",
-"site.features.settingsThemeAndHotkey": "Настройки, теми и надписи на клавиши на 12 езика",
+"site.features.settingsThemeAndHotkey": "Настройки, теми и надписи на клавиши на 16 езика",
 "site.features.downloadLoadSettingsFiles": "Изтегляне / зареждане на файлове с настройки и облачна синхронизация с код за синхронизиране",
 "site.features.accessibilityNew": "Достъпност <span class=\"badge badge-new\">Ново</span>",
 "site.features.comfortableToLookAt": "Приятно за гледане за всеки.",

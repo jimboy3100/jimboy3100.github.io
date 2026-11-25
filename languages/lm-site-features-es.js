@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Preajustes: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (con Deshacer)",
 "site.features.newBadgesAndA": "Insignias <b>NEW</b> y filtro <i>Show new options</i>",
 "site.features.boundKeysListIn": "Lista de teclas asignadas en Atajos de teclado",
-"site.features.settingsThemeAndHotkey": "Etiquetas de ajustes, temas y atajos en 12 idiomas",
+"site.features.settingsThemeAndHotkey": "Etiquetas de ajustes, temas y atajos en 16 idiomas",
 "site.features.downloadLoadSettingsFiles": "Descarga / carga de archivos de ajustes y sincronización en la nube con un código",
 "site.features.accessibilityNew": "Accesibilidad <span class=\"badge badge-new\">Nuevo</span>",
 "site.features.comfortableToLookAt": "Cómodo a la vista para todos.",

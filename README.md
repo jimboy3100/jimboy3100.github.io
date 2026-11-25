@@ -86,7 +86,7 @@
 - 📱 Mobile touch controls
 - ⌨️ Command Centre (Ctrl+K) — search 220+ settings
 - 👤 Settings profiles — auto-switch per server/game mode
-- 🌐 12 language packs
+- 🌐 16 language packs (English, Greek, Spanish, Bulgarian, French, Arabic, Traditional Chinese, Russian, German, Turkish, Polish, Dutch, Brazilian Portuguese, Indonesian, Japanese, Italian)
 - 📊 Network quality history
 
 ---

@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Presety: Rywalizacja, Oszczędzanie baterii, Streamer, Czysty HUD, Ograniczony ruch (z cofnięciem)",
 "site.features.newBadgesAndA": "Odznaki <b>NOWOŚĆ</b> i filtr <i>Pokaż nowe opcje</i>",
 "site.features.boundKeysListIn": "Lista przypisanych klawiszy w Skrótach klawiszowych",
-"site.features.settingsThemeAndHotkey": "Ustawienia, motywy i etykiety skrótów w 12 językach",
+"site.features.settingsThemeAndHotkey": "Ustawienia, motywy i etykiety skrótów w 16 językach",
 "site.features.downloadLoadSettingsFiles": "Pobieranie / wczytywanie plików ustawień i synchronizacja w chmurze z kodem synchronizacji",
 "site.features.accessibilityNew": "Dostępność <span class=\"badge badge-new\">Nowość</span>",
 "site.features.comfortableToLookAt": "Wygodne dla oczu każdego.",

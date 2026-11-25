@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Predefinições: Competitivo, Economia de bateria, Streamer, HUD limpo, Movimento reduzido (com Desfazer)",
 "site.features.newBadgesAndA": "Selos <b>NOVO</b> e um filtro <i>Mostrar opções novas</i>",
 "site.features.boundKeysListIn": "Lista das teclas configuradas em Atalhos",
-"site.features.settingsThemeAndHotkey": "Configurações, tema e nomes dos atalhos em 12 idiomas",
+"site.features.settingsThemeAndHotkey": "Configurações, tema e nomes dos atalhos em 16 idiomas",
 "site.features.downloadLoadSettingsFiles": "Baixe / carregue arquivos de configurações e sincronize na nuvem com um código de sincronização",
 "site.features.accessibilityNew": "Acessibilidade <span class=\"badge badge-new\">Novo</span>",
 "site.features.comfortableToLookAt": "Confortável de ver para todo mundo.",

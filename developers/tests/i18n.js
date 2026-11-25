@@ -1,6 +1,7 @@
 // Translations: the language packs (developers/i18n/src), the generated files, the runtime
 // (languages/lm-i18n.js, lib/lm-i18n.js), the old globals and the hard-coded text scanner.
-// Usage: node developers/tests/i18n.js
+// Usage: node developers/tests/i18n.js   (--require-complete is accepted for old scripts: completeness
+// of all 16 languages is always required now)
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -29,7 +30,8 @@ Object.keys(all).forEach((area) => {
         ok(k.indexOf(I.areaPrefix(area)) === 0 || (area === 'core' && /^[A-Za-z][A-Za-z0-9_]*$/.test(k)), k + ': key must start with ' + I.areaPrefix(area));
         I.CODES.forEach((c) => {
             ok(typeof e[c] === 'string', k + ': ' + c + ' missing');
-            if (!e.allowEmpty && (I.PREVIEW_CODES.indexOf(c) < 0 || process.argv.includes('--require-complete'))) ok(typeof e[c] === 'string' && e[c].trim() !== '', k + ': ' + c + ' empty');
+            /* all 16 languages are released: an empty text fails in every one of them */
+            if (!e.allowEmpty) ok(typeof e[c] === 'string' && e[c].trim() !== '', k + ': ' + c + ' empty');
         });
         const p = I.placeholders(e.en).join('|');
         I.CODES.forEach((c) => {
@@ -241,25 +243,25 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
             ok(w.lmT('modules.discovery.card.replayStudio') === w.lmT('modules.replaystudio.title'), code + ': Discover Replay Studio title');
         }
     }
-    /* New locale IDs are append-only. Incomplete previews must be explicit, not automatic. */
+    /* Locale IDs are append-only. The four added last (13-16) are released like the first twelve:
+     * picked from the browser, listed under their own name only, saved and kept on reload. */
     {
         ok(I.CODES.slice(0, 12).join(',') === 'en,el,es,bg,fr,ar,zh,ru,de,tr,pl,nl', 'existing saved IDs unchanged');
         ok(I.CODES.slice(12).join(',') === 'pt,id,ja,it', 'new locale IDs 13-16');
-        for (const code of I.PREVIEW_CODES) {
-            const w = page({ navLang: code + '-XX' });
+        for (const code of I.CODES.slice(12)) {
+            const w = page({ navLang: (code === 'pt' ? 'pt-BR' : code + '-XX') });
             w.run('languages/lm-i18n.js');
             w.run('languages/lm-en.js');
-            ok(w.LMi18n.lang() === 'en', code + ': preview is opt-in');
+            ok(w.LMi18n.lang() === code && w.LMi18n.num() === String(I.CODES.indexOf(code) + 1) && !('languagemod' in w.store), code + ': the browser language is used (not saved)');
+            ok(w.Languageletter0 === all.packs['pack.home'][code], code + ': old globals follow the browser language');
             await new Promise(resolve => w.LMi18n.setLang(code, resolve));
             ok(w.LMi18n.lang() === code && w.store.languagemod === String(I.CODES.indexOf(code) + 1), code + ': selection persists');
             ok(w.lmT('boot.loading') === all.boot['boot.loading'][code], code + ': translated loading text');
-            ok(/Beta/.test(w.LMi18n.names[I.CODES.indexOf(code)]), code + ': preview label');
+            ok(w.LMi18n.names[I.CODES.indexOf(code)] === I.NAMES[code], code + ': listed under its own name, no Beta label');
             const reload = page({ storage: w.store });
             reload.run('languages/lm-i18n.js');
             reload.run('languages/lm-en.js');
             ok(reload.LMi18n.lang() === code && reload.lmT('boot.loading') === all.boot['boot.loading'][code], code + ': persisted selection works on reload');
-            const missing = Object.entries(all.core).find(([k, e]) => !e[code] && e.en);
-            if (missing) ok(w.lmT(missing[0]) === missing[1].en, code + ': untranslated text falls back to English');
             const theme = Buffer.from(JSON.stringify({ lang: I.CODES.indexOf(code) + 1 })).toString('base64');
             const label = makeEl('span', { 'data-i18n': 'site.home' }, 'Home');
             const site = page({ hash: '#lm=' + theme, body: [label] });
@@ -268,9 +270,27 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
             for (let i = 0; i < 20 && label.textContent === 'Home'; i++) await tick();
             ok(site.LMi18n.lang() === code && label.textContent === all.site['site.home'][code] && site.document.documentElement.attrs.lang === (code === 'pt' ? 'pt-BR' : code), code + ': website receives language from game link');
         }
-        for (const code of I.PREVIEW_CODES) {
-            const missing = Object.values(all).flatMap(Object.values).filter(e => !e.allowEmpty && !e[code]).length;
-            console.log('PREVIEW ' + code + ': ' + missing + ' entries still untranslated');
+        /* the website without a chosen language: a browser in one of the four gets it */
+        for (const code of I.CODES.slice(12)) {
+            const label = makeEl('span', { 'data-i18n': 'site.home' }, 'Home');
+            const site = page({ navLang: code === 'pt' ? 'pt-BR' : code + '-XX', body: [label] });
+            site.run('lib/lm-i18n.js');
+            site.ready();
+            for (let i = 0; i < 20 && label.textContent === 'Home'; i++) await tick();
+            ok(site.LMi18n.lang() === code && label.textContent === all.site['site.home'][code] && !('languagemod' in site.store), code + ': website follows the browser language');
+        }
+        /* old Android WebViews report Indonesian as "in"; pt-PT still gets the Portuguese pack */
+        const wi = page({ navLang: 'in-ID' });
+        wi.run('languages/lm-i18n.js');
+        ok(wi.LMi18n.lang() === 'id', 'in-ID browser -> Indonesian');
+        const wp = page({ navLang: 'pt-PT' });
+        wp.run('languages/lm-i18n.js');
+        ok(wp.LMi18n.lang() === 'pt', 'pt-PT browser -> Portuguese');
+        /* the twelve keep their browser detection */
+        for (const code of I.CODES.slice(0, 12)) {
+            const wb = page({ navLang: code + '-XX' });
+            wb.run('languages/lm-i18n.js');
+            ok(wb.LMi18n.lang() === code, code + ': browser language still detected');
         }
     }
     /* ---------- 4. the mod without a stored language: English, nothing written ---------- */

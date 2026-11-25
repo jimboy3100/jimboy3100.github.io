@@ -11,7 +11,6 @@ const SRC = path.join(__dirname, 'src');
 
 /* Index + 1 = the number Legend Mod stores in localStorage 'languagemod' (Choose Language list). */
 const CODES = ['en', 'el', 'es', 'bg', 'fr', 'ar', 'zh', 'ru', 'de', 'tr', 'pl', 'nl', 'pt', 'id', 'ja', 'it'];
-const PREVIEW_CODES = ['pt', 'id', 'ja', 'it'];
 const NAMES = {
     en: 'English', el: 'Ελληνικά', es: 'Español', bg: 'Български', fr: 'Français', ar: 'العربية',
     zh: '繁體中文', ru: 'Русский', de: 'Deutsch', tr: 'Türkçe', pl: 'Polski', nl: 'Nederlands', pt: 'Português (Brasil)', id: 'Bahasa Indonesia', ja: '日本語', it: 'Italiano'
@@ -85,4 +84,4 @@ function placeholders(s) {
     return out.sort();
 }
 
-module.exports = { ROOT, SRC, CODES, PREVIEW_CODES, NAMES, PACK_NAMES, slug, isLang, orderEntry, areaFiles, readAll, serializeArea, writeArea, isSiteArea, areaPrefix, placeholders };
+module.exports = { ROOT, SRC, CODES, NAMES, PACK_NAMES, slug, isLang, orderEntry, areaFiles, readAll, serializeArea, writeArea, isSiteArea, areaPrefix, placeholders };

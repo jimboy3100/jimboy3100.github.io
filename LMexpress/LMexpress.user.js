@@ -67,8 +67,10 @@ var lmxLang = (function () {
     try { n = parseInt(localStorage.getItem('languagemod'), 10) || 0; } catch (e) { }
     if (n >= 1 && n <= 16) return n;
     var codes = ['en', 'el', 'es', 'bg', 'fr', 'ar', 'zh', 'ru', 'de', 'tr', 'pl', 'nl', 'pt', 'id', 'ja', 'it'];
-    var i = codes.indexOf(String(navigator.language || '').slice(0, 2).toLowerCase());
-    return i >= 0 && i < 12 ? i + 1 : 1;
+    var two = String(navigator.language || '').slice(0, 2).toLowerCase();
+    /* older Android WebViews report Indonesian with the old code "in" */
+    var i = codes.indexOf(two === 'in' ? 'id' : two);
+    return i >= 0 ? i + 1 : 1;
 })();
 /* the text of key in the chosen language (English when it has none); {0} {1} take vars[0] vars[1] */
 function lmxText(key, vars) {

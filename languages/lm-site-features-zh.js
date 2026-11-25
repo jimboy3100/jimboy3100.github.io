@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "預設組合：競技、省電、直播、簡潔 HUD、減少動態效果（可復原）",
 "site.features.newBadgesAndA": "<b>新</b>徽章與<i>顯示新選項</i>篩選器",
 "site.features.boundKeysListIn": "快速鍵中的已綁定按鍵清單",
-"site.features.settingsThemeAndHotkey": "設定、主題與快速鍵標籤支援 12 種語言",
+"site.features.settingsThemeAndHotkey": "設定、主題與快速鍵標籤支援 16 種語言",
 "site.features.downloadLoadSettingsFiles": "下載 / 載入設定檔，並可透過同步碼進行雲端同步",
 "site.features.accessibilityNew": "無障礙功能 <span class=\"badge badge-new\">新功能</span>",
 "site.features.comfortableToLookAt": "讓每個人看起來都舒適。",

@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Preset: Kompetitif, Hemat baterai, Streamer, HUD bersih, Kurangi gerakan (dengan Undo)",
 "site.features.newBadgesAndA": "Lencana <b>BARU</b> dan filter <i>Tampilkan opsi baru</i>",
 "site.features.boundKeysListIn": "Daftar tombol yang sudah dipakai di menu Hotkey",
-"site.features.settingsThemeAndHotkey": "Label pengaturan, tema, dan hotkey dalam 12 bahasa",
+"site.features.settingsThemeAndHotkey": "Label pengaturan, tema, dan hotkey dalam 16 bahasa",
 "site.features.downloadLoadSettingsFiles": "Unduh / muat file pengaturan dan sinkronisasi cloud dengan kode sinkronisasi",
 "site.features.accessibilityNew": "Aksesibilitas <span class=\"badge badge-new\">Baru</span>",
 "site.features.comfortableToLookAt": "Nyaman dilihat untuk semua orang.",

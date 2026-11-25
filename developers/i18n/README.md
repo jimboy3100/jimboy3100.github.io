@@ -3,9 +3,9 @@
 Every text a player sees comes from the language packs, in the language chosen in Legend Mod's
 **Choose Language** list (localStorage `languagemod`: 1 English, 2 Greek, 3 Spanish, 4 Bulgarian,
 5 French, 6 Arabic, 7 Traditional Chinese, 8 Russian, 9 German, 10 Turkish, 11 Polish, 12 Dutch, 13 Brazilian Portuguese, 14 Indonesian, 15 Japanese, 16 Italian).
-The last four are explicitly marked Beta and opt-in until complete. Missing texts use English, and
-`node developers/tests/i18n.js --require-complete` is the release gate; do not remove Beta labels
-or enable automatic detection for these locales until that gate passes.
+All 16 are released: every text must exist in every language (`node developers/tests/i18n.js` fails
+on an empty one), and a browser in any of them gets its language on the first visit.
+The numbers are append-only: a new language gets the next number, existing ones never move.
 The web pages on www.legendmod.ml use the same packs.
 
 ## Files
@@ -131,12 +131,14 @@ get `#lm=` with the language and theme (LMexpress.js `lmThemeHash`), iframes get
 
 ## Tests
 
-- `node developers/tests/i18n.js`: released packs complete (same placeholders/tags); preview gaps reported, key names,
+- `node developers/tests/i18n.js`: all 16 packs complete (same placeholders/tags), key names,
   generated files up to date, old globals, lmT fallbacks, apply(), switching, the page runtime, the
   scanner (strict files must have 0 findings).
 - `developers/tests/probes/zzzz-i18n.js` (in `run.js`): live switch to Greek and Arabic in the game page.
 - `node developers/tests/i18n-firstrun.js`: headless first visit with a Greek browser (window shown,
-  Greek picked, OK saves, never again) and with English stored (never shown). The smoke test pins the
+  Greek picked, OK saves, never again), with a pt-BR, Indonesian, Japanese and Italian browser (that
+  language on screen and picked in the window, the list without Beta), the website with each of those
+  four browsers, and with English stored (never shown). The smoke test pins the
   browser to English and hides the first-visit window (`SMOKE_LANG`, `SMOKE_FIRSTRUN`, `SMOKE_STORAGE`).
 
 ## Hard-coded text scanner
@@ -164,7 +166,8 @@ reason on the line (or on a comment line just above), or an entry in `scan-confi
   `https://www.legendmod.ml/` URLs, `charset="utf-8"`, and fall back to jimboy3100.github.io.
 - Which language: the mod and the pages use (1) a language passed with the Theme Bridge (`#lm=`), saved,
   (2) localStorage `languagemod` (Choose Language), (3) the browser's language when it is one of the
-  twelve, not saved (it keeps following the browser until the player picks one), (4) English.
+  16 (only the first two letters count: pt-PT also gets Brazilian Portuguese; the old code `in` is
+  Indonesian), not saved (it keeps following the browser until the player picks one), (4) English.
 - First visit (nothing stored, `lmLangAsked` not set): LMexpress.js shows a small window once on the
   main menu (`_lmShowLanguageChooser`, the runtime's `data-lm-lang-picker="manual"` list, the
   browser's language picked). OK = the Choose Language path (saves `languagemod`); the cross / Esc keep

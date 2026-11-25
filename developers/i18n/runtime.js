@@ -23,7 +23,7 @@
     var CODES = ['en', 'el', 'es', 'bg', 'fr', 'ar', 'zh', 'ru', 'de', 'tr', 'pl', 'nl', 'pt', 'id', 'ja', 'it'];
     var NAMES = ['English', '\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac', 'Espa\u00f1ol', '\u0411\u044a\u043b\u0433\u0430\u0440\u0441\u043a\u0438',
         'Fran\u00e7ais', '\u0627\u0644\u0639\u0631\u0628\u064a\u0629', '\u7e41\u9ad4\u4e2d\u6587', '\u0420\u0443\u0441\u0441\u043a\u0438\u0439',
-        'Deutsch', 'T\u00fcrk\u00e7e', 'Polski', 'Nederlands', 'Portugu\u00eas (Brasil) - Beta', 'Bahasa Indonesia - Beta', '\u65e5\u672c\u8a9e - Beta', 'Italiano - Beta'];
+        'Deutsch', 'T\u00fcrk\u00e7e', 'Polski', 'Nederlands', 'Portugu\u00eas (Brasil)', 'Bahasa Indonesia', '\u65e5\u672c\u8a9e', 'Italiano'];
     var HOSTS = ['https://www.legendmod.ml/', 'https://jimboy3100.github.io/'];
     var BUNDLE = SITE ? 'site' : 'mod';
     var dicts = {};      /* code -> { key: text } */
@@ -68,9 +68,9 @@
      * as play.html's loading screen) */
     function browserLang() {
         var nav = W.navigator || {};
-        var code = toCode(String(nav.language || nav.userLanguage || '').slice(0, 2));
-        /* Preview languages are opt-in until all entries are translated. */
-        return CODES.indexOf(code) >= 12 ? null : code;
+        var two = String(nav.language || nav.userLanguage || '').slice(0, 2).toLowerCase();
+        /* older Android WebViews report Indonesian with the old code "in" */
+        return toCode(two === 'in' ? 'id' : two);
     }
     function own(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
 

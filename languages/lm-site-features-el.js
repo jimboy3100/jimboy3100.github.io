@@ -95,7 +95,7 @@
 "site.features.presetsCompetitiveBatterySaver": "Προρρυθμίσεις: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (με Αναίρεση)",
 "site.features.newBadgesAndA": "Σήματα <b>NEW</b> και φίλτρο <i>Show new options</i>",
 "site.features.boundKeysListIn": "Λίστα δεσμευμένων πλήκτρων στα Πλήκτρα συντόμευσης",
-"site.features.settingsThemeAndHotkey": "Ετικέτες ρυθμίσεων, θέματος και πλήκτρων σε 12 γλώσσες",
+"site.features.settingsThemeAndHotkey": "Ετικέτες ρυθμίσεων, θέματος και πλήκτρων σε 16 γλώσσες",
 "site.features.downloadLoadSettingsFiles": "Λήψη / φόρτωση αρχείων ρυθμίσεων και συγχρονισμός cloud με κωδικό συγχρονισμού",
 "site.features.accessibilityNew": "Προσβασιμότητα <span class=\"badge badge-new\">Νέο</span>",
 "site.features.comfortableToLookAt": "Άνετο στο μάτι για όλους.",
