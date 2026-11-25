@@ -116,22 +116,34 @@
 				/* the lazyload plugin stays on jQuery after the window is closed: load it once */
 				(window.jQuery && jQuery.fn.lazyload ? '' : '<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>') +
 				'<style>' +
-				'#LMShop #navbar { position: relative !important; width: 100% !important; height: auto !important; top: auto !important; left: auto !important; right: auto !important; margin: 0 !important; padding: 8px 12px !important; background: #f1f3f5 !important; border-bottom: 1px solid #dee2e6 !important; z-index: 1052 !important; }' +
+				/* the shop follows the user theme (--lm-* colours) and has the standard Legend window header */
+				'#LMShop .modal-content { background: var(--lm-pc,#00243e) !important; color: var(--lm-tc,#fff) !important; border: 1px solid var(--lm-pc2,#002f52) !important; border-top: 3px solid var(--lm-mc,#01d9cc) !important; border-radius: 6px !important; box-shadow: 0 8px 32px rgba(0,0,0,.5) !important; }' +
+				'#LMShop .modal-header { min-height: 0 !important; padding: 10px 52px 8px !important; text-align: center !important; background: linear-gradient(180deg, var(--lm-pc2,#002f52) 0%, var(--lm-pc,#00243e) 100%) !important; color: var(--lm-tc,#fff) !important; border-bottom: 1px solid var(--lm-pc2,#002f52) !important; position: relative !important; z-index: 1060 !important; }' +
+				'#LMShop .modal-title { color: var(--lm-mc,#01d9cc) !important; font-size: 16px !important; font-weight: 700 !important; letter-spacing: 1px !important; text-transform: uppercase !important; line-height: 1.4 !important; margin: 0 !important; }' +
+				'#LMShop .modal-header .close { position: absolute !important; top: 6px !important; right: 10px !important; float: none !important; margin: 0 !important; padding: 0 !important; min-width: 28px !important; min-height: 28px !important; display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 4px !important; background: rgba(255,255,255,.05) !important; color: var(--lm-tc2,#8096a7) !important; opacity: 1 !important; text-shadow: none !important; font-size: 18px !important; line-height: 1 !important; cursor: pointer !important; border: none !important; outline: none !important; z-index: 1061 !important; }' +
+				'#LMShop .modal-header .close + .close { right: auto !important; left: 10px !important; font-size: 14px !important; }' +
+				'#LMShop .modal-header .close:hover { color: var(--lm-tc,#fff) !important; background: rgba(255,255,255,.12) !important; }' +
+				'#LMShop #navbar { position: relative !important; width: 100% !important; height: auto !important; top: auto !important; left: auto !important; right: auto !important; margin: 0 !important; padding: 8px 12px !important; background: rgba(0,0,0,.2) !important; border-bottom: 1px solid var(--lm-pc2,#002f52) !important; z-index: 1052 !important; }' +
 				'#LMShop #nav ul { margin: 0 !important; padding: 0 !important; float: none !important; display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 6px !important; }' +
 				'#LMShop #nav ul li { float: none !important; margin: 0 !important; list-style: none !important; }' +
-				'#LMShop #nav a { display: inline-block !important; margin-top: 0 !important; padding: 5px 12px !important; font-size: 13px !important; border-radius: 6px !important; font-weight: 600 !important; text-decoration: none !important; }' +
-				'#LMShop #skin-url { margin-top: 0 !important; height: 30px !important; font-size: 12px !important; padding: 4px 8px !important; width: 140px !important; border-radius: 6px !important; }' +
-				'#LMShop .modal-header { padding: 12px 16px !important; background: #1a1d24 !important; color: #fff !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; position: relative !important; z-index: 1060 !important; }' +
-				'#LMShop .modal-header .close { opacity: 0.85 !important; color: #fff !important; font-size: 22px !important; margin-left: 8px !important; float: right !important; cursor: pointer !important; position: relative !important; z-index: 1061 !important; background: transparent !important; border: none !important; outline: none !important; }' +
-				'#LMShop .modal-header .close:hover { opacity: 1 !important; color: #ff5252 !important; }' +
+				'#LMShop #nav a { display: inline-block !important; margin-top: 0 !important; padding: 5px 12px !important; font-size: 13px !important; border-radius: 4px !important; font-weight: 700 !important; text-decoration: none !important; cursor: pointer !important; color: var(--lm-tc2,#8096a7) !important; border: 1px solid var(--lm-pc2,#002f52) !important; background: rgba(255,255,255,.05) !important; }' +
+				'#LMShop #nav a:hover { color: var(--lm-mc,#01d9cc) !important; border-color: var(--lm-mc,#01d9cc) !important; }' +
+				'#LMShop #nav a.active { color: var(--lm-btn-tc,var(--lm-btc,#fff)) !important; background: var(--lm-btn1,var(--lm-b1,#018cf6)) !important; border-color: var(--lm-btn1,var(--lm-b1,#018cf6)) !important; }' +
+				'#LMShop #nav #UseEffect { color: var(--lm-btn-tc,var(--lm-btc,#fff)) !important; background: var(--lm-btn2,var(--lm-b2,#00b9e8)) !important; border-color: var(--lm-btn2,var(--lm-b2,#00b9e8)) !important; }' +
+				'#LMShop #nav #UseEffect2 { color: var(--lm-btn-tc,var(--lm-btc,#fff)) !important; background: var(--lm-btn4,var(--lm-b4,#bf00aa)) !important; border-color: var(--lm-btn4,var(--lm-b4,#bf00aa)) !important; }' +
+				'#LMShop #nav #UseEffect:hover, #LMShop #nav #UseEffect2:hover { filter: brightness(1.12); }' +
+				'#LMShop #skin-url { margin-top: 0 !important; height: 30px !important; font-size: 12px !important; padding: 4px 8px !important; width: 140px !important; border-radius: 4px !important; background: rgba(0,0,0,.25) !important; color: var(--lm-tc,#fff) !important; border: 1px solid var(--lm-pc2,#002f52) !important; }' +
+				'#LMShop #skin-url::placeholder { color: var(--lm-tc2,#8096a7) !important; }' +
+				'#LMShop #customskins .skin-box img { background: rgba(255,255,255,.06); }' +
+				'#LMShop #LMShop3::-webkit-scrollbar { width: 8px; } #LMShop #LMShop3::-webkit-scrollbar-thumb { background: var(--lm-pc2,#002f52); border-radius: 4px; }' +
 				'</style>' +
 				'<div class="modal-backdrop fade in" style="z-index: 1040;"></div>' +
 				'<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; max-height: 85vh; margin: 0; z-index: 1050;">' +
-                '<div class="modal-content" style="background: #fff; color: #333; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative; z-index: 1051; max-height: 85vh; display: flex; flex-direction: column;">' +
+                '<div class="modal-content" style="overflow: hidden; position: relative; z-index: 1051; max-height: 85vh; display: flex; flex-direction: column;">' +
                 '<div id="CloseLMShop2" class="modal-header">' +
                 '<button id="CloseLMShop" type="button" class="close" data-dismiss="modal" title="Close" onclick="jQuery(\'#LMShop\').remove(); jQuery(\'.modal-backdrop\').remove(); jQuery(\'body\').removeClass(\'modal-open\');"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
                 '<button id="FAQLMShop" type="button" class="close" title="Help" onclick="window.open(\'https://jimboy3100.github.io/LMexpress/olddeals.html\', \'_blank\');"><span aria-hidden="true">&#x2753;</span><span class="sr-only">Help</span></button>' +
-                '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; color: #4fc3f7; font-weight: 700; margin: 0;"><i class="fa fa-shopping-cart"></i> Shop</h4>' +
+                '<h4 class="modal-title"><i class="fa fa-shopping-cart"></i> Shop</h4>' +
                 '</div>' +
 				
 				'<div id="LMShop3" style="overflow-y: auto; max-height: 70vh;">' +
