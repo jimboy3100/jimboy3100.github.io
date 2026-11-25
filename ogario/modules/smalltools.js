@@ -343,7 +343,7 @@
             '#lm-shot-chip div{cursor:pointer;min-width:34px;height:34px;line-height:34px;padding:0 10px;border-radius:17px;text-align:center;background:rgba(0,0,0,0.55);color:#fff;border:1px solid rgba(255,255,255,0.35);box-sizing:border-box;}' +
             '#lm-shot-chip.idle{opacity:.18;}' +
             '#lm-radial{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483500;cursor:crosshair;touch-action:none;}' +
-            '#lm-radial .lm-rd-item{position:absolute;transform:translate(-50%,-50%);max-width:120px;padding:4px 8px;border-radius:12px;background:rgba(0,0,0,0.72);color:#fff;font:600 12px sans-serif;text-align:center;border:2px solid rgba(255,255,255,0.25);white-space:normal;line-height:1.25;pointer-events:none;}' +
+            '#lm-radial .lm-rd-item{position:absolute;transform:translate(-50%,-50%);max-width:120px;padding:4px 8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.72);color:#fff;font:600 12px sans-serif;text-align:center;border:2px solid rgba(255,255,255,0.25);white-space:normal;line-height:1.25;pointer-events:none;}' +
             '#lm-radial .lm-rd-item.on{background:' + c.mc + ';color:' + c.pc + ';border-color:#fff;}' +
             '#lm-radial .lm-rd-ring{position:absolute;border-radius:50%;border:2px dashed rgba(255,255,255,0.35);pointer-events:none;box-sizing:border-box;}' +
             '#lm-radial .lm-rd-dot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;pointer-events:none;}' +

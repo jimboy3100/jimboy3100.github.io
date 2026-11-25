@@ -75,7 +75,7 @@
         'width:40px;height:40px;font-size:16px;' + /* was 36px */
         'background:rgba(0,36,62,.50);background:color-mix(in srgb,var(--lm-pc,#00243e) 50%,transparent);border:1.5px solid rgba(1,217,204,.22);border:1.5px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 22%,transparent);' +
         'box-shadow:0 0 6px rgba(1,217,204,.06);box-shadow:0 0 6px color-mix(in srgb,var(--lm-mc,#01d9cc) 6%,transparent);' +
-        'color:rgba(255,255,255,.8);font-family:Ubuntu,Roboto,sans-serif;' +
+        'color:rgba(255,255,255,.8);font-family:var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
         'font-weight:700;transition:transform .1s,background .15s}' +
         '.lm-d.p{transform:scale(.88);background:rgba(1,217,204,.20);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 20%,transparent)}' +
         '.lm-d.lm-active{background:rgba(1,217,204,.18)!important;background:color-mix(in srgb,var(--lm-mc,#01d9cc) 18%,transparent)!important;border-color:rgba(1,217,204,.55)!important;border-color:color-mix(in srgb,var(--lm-mc,#01d9cc) 55%,transparent)!important}' +
@@ -100,7 +100,7 @@
         'box-shadow:0 0 8px rgba(1,217,204,.08);box-shadow:0 0 8px color-mix(in srgb,var(--lm-mc,#01d9cc) 8%,transparent);' +
         'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);' +
         'transition:transform .1s,background .15s,border-color .15s,box-shadow .15s;' +
-        'color:rgba(255,255,255,.85);font-family:Ubuntu,Roboto,sans-serif;' +
+        'color:rgba(255,255,255,.85);font-family:var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
         'font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.4)}' +
 
         '.lm-b.p{transform:scale(.88);background:rgba(1,217,204,.25);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 25%,transparent);' +
@@ -131,13 +131,13 @@
 
         /* ── Settings panel ── */
         '#lm-sp{background:rgba(0,36,62,.92);background:color-mix(in srgb,var(--lm-pc,#00243e) 92%,transparent);border:1px solid rgba(1,217,204,.35);border:1px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 35%,transparent);' +
-        'border-radius:12px;padding:14px 16px;width:200px;' +
+        'border-radius:var(--lm-radius,6px);padding:14px 16px;width:200px;' +
         'max-height:50vh;overflow-y:auto;' +
         'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
         'pointer-events:auto;user-select:none;-webkit-user-select:none;' +
         'display:none;flex-direction:column;gap:10px}' +
         '#lm-sp.on{display:flex}' +
-        '#lm-sp label{color:rgba(255,255,255,.75);font:600 11px/1.2 Ubuntu,Roboto,sans-serif;' +
+        '#lm-sp label{color:rgba(255,255,255,.75);font:600 11px/1.2 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
         'letter-spacing:.5px;text-transform:uppercase;display:flex;' +
         'justify-content:space-between;align-items:center}' +
         '#lm-sp label span{color:var(--lm-mc,#01d9cc);font-weight:700}' +
@@ -145,8 +145,8 @@
         '#lm-sp label span.lm-t{color:inherit;font-weight:inherit}' +
         '#lm-sp input[type=range]{-webkit-appearance:none;width:100%;height:4px;' +
         'background:rgba(1,217,204,.25);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 25%,transparent);border-radius:2px;outline:none;margin-top:4px}' +
-        '#lm-sp #lm-ed-open{min-height:40px;border-radius:8px;border:1.5px solid rgba(1,217,204,.55);border:1.5px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 55%,transparent);' +
-        'background:rgba(1,217,204,.16);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 16%,transparent);color:#fff;font:700 12px/1 Ubuntu,Roboto,sans-serif;cursor:pointer}' +
+        '#lm-sp #lm-ed-open{min-height:40px;border-radius:var(--lm-radius,6px);border:1.5px solid rgba(1,217,204,.55);border:1.5px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 55%,transparent);' +
+        'background:rgba(1,217,204,.16);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 16%,transparent);color:#fff;font:700 12px/1 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);cursor:pointer}' +
         '#lm-sp input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;' +
         'width:18px;height:18px;border-radius:50%;background:var(--lm-mc,#01d9cc);cursor:pointer;' +
         'box-shadow:0 0 6px rgba(1,217,204,.4);box-shadow:0 0 6px color-mix(in srgb,var(--lm-mc,#01d9cc) 40%,transparent)}' +
@@ -162,7 +162,7 @@
 
         '.lm-z{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
         'background:rgba(0,36,62,.82);background:color-mix(in srgb,var(--lm-pc,#00243e) 82%,transparent);border:1px solid rgba(1,217,204,.45);border:1px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 45%,transparent);' +
-        'color:var(--lm-mc,#01d9cc);font:700 14px/1 Ubuntu,Roboto,sans-serif;' +
+        'color:var(--lm-mc,#01d9cc);font:700 14px/1 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
         'padding:6px 18px;border-radius:20px;pointer-events:none;z-index:100001;' +
         'opacity:0;transition:opacity .2s}.lm-z.on{opacity:1}' +
 
@@ -193,7 +193,7 @@
         /* portrait orientation prompt */
         '#lm-orient-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
         'background:rgba(0,36,62,.95);background:color-mix(in srgb,var(--lm-pc,#00243e) 95%,transparent);border:2px solid rgba(1,217,204,.5);border:2px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 50%,transparent);' +
-        'color:var(--lm-mc,#01d9cc);font:600 16px/1.6 Ubuntu,Roboto,sans-serif;' +
+        'color:var(--lm-mc,#01d9cc);font:600 16px/1.6 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
         'padding:20px 28px;border-radius:16px;z-index:100004;text-align:center;' +
         'opacity:0;transition:opacity .5s;pointer-events:none}' +
         '#lm-orient-toast.on{opacity:1}' +
@@ -201,7 +201,7 @@
         /* ── Persistent portrait overlay (blocks gameplay in portrait) ── */
         '#lm-portrait-ov{position:fixed;top:0;left:0;width:100%;height:100%;z-index:200000;' +
         'background:rgba(0,20,40,.92);display:none;align-items:center;justify-content:center;' +
-        'flex-direction:column;gap:16px;color:var(--lm-mc,#01d9cc);font:600 18px/1.5 Ubuntu,Roboto,sans-serif;' +
+        'flex-direction:column;gap:16px;color:var(--lm-mc,#01d9cc);font:600 18px/1.5 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
         'text-align:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}' +
         '#lm-portrait-ov.on{display:flex}' +
         '#lm-portrait-ov .icon{font-size:60px;animation:lm-rotate 2s ease-in-out infinite}' +
@@ -236,7 +236,7 @@
 
         /* ── Compact mobile stats overlay ── */
         '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
-        'font:600 12px/1 Ubuntu,Roboto,sans-serif;color:rgba(255,255,255,.85);' +
+        'font:600 12px/1 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);color:rgba(255,255,255,.85);' +
         'text-shadow:0 1px 3px rgba(0,0,0,.6);pointer-events:auto;' +
         'user-select:none;-webkit-user-select:none;cursor:pointer}' +
         '#time-hud{position:fixed!important;right:4px!important;' +
@@ -248,7 +248,7 @@
         /* fullscreen prompt toast */
         '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
         'background:rgba(0,36,62,.92);background:color-mix(in srgb,var(--lm-pc,#00243e) 92%,transparent);border:1px solid rgba(1,217,204,.45);border:1px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 45%,transparent);' +
-        'color:var(--lm-mc,#01d9cc);font:600 14px/1.4 Ubuntu,Roboto,sans-serif;' +
+        'color:var(--lm-mc,#01d9cc);font:600 14px/1.4 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
         'padding:10px 20px;border-radius:24px;z-index:100003;' +
         'opacity:0;transition:opacity .4s;pointer-events:none;text-align:center}' +
         '#lm-fs-toast.on{opacity:1}';
@@ -750,7 +750,7 @@
                 var it = mk('div');
                 it.innerHTML = d[3] + ' ' + tx(d[4]);
                 it.style.cssText = 'position:absolute;transform:translate(-50%,-50%);left:' + (d[1] * 64) + 'px;top:' + (d[2] * 46) + 'px;' +
-                    'white-space:nowrap;padding:6px 10px;border-radius:14px;font:700 13px Ubuntu,Roboto,sans-serif;color:#fff;' +
+                    'white-space:nowrap;padding:6px 10px;border-radius:14px;font:700 13px var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);color:var(--lm-tc,#fff);' +
                     'background:rgba(0,36,62,.88);background:color-mix(in srgb,var(--lm-pc,#00243e) 88%,transparent);border:1.5px solid rgba(1,217,204,.35);border:1.5px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 35%,transparent)';
                 rad.appendChild(it);
                 return it;

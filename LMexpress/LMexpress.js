@@ -4,7 +4,8 @@
 var semimodVersion = "30"; // the version 1.1-> 1.11
 
 /* Texts shown to the player come from the language packs (developers/i18n/src/lmx.json, keys "lmx.ex.*"):
- * _lmxT gives the text in the chosen language, _lmxE the same escaped for HTML and attributes. */
+ * _lmxT gives the text in the chosen language, _lmxE the same escaped for HTML and attributes. *
+/
 function _lmxT(k, v) { return window.lmT ? window.lmT(k, v) : String(k); }
 function _lmxE(k, v) { return String(_lmxT(k, v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 /* Choose Language: every language under its own name (the same in every language), value = languagemod number */
@@ -541,10 +542,10 @@ function PremiumUsers() {
                         toastr
                             .warning(
                                 _lmxT('lmx.ex.giveawayUntil', [expDateText.slice(0, 4) +
-                                "/" +
-                                expDateText.slice(4, 6) +
-                                "/" +
-                                expDateText.slice(6, 8)])
+                                    "/" +
+                                    expDateText.slice(4, 6) +
+                                    "/" +
+                                    expDateText.slice(6, 8)])
                             )
                             .css("width", "350px");
                     }
@@ -614,7 +615,7 @@ var serverTokenWaitId = 0;
 
 function whenServerTokenReady(callback, options) {
     if (typeof callback !== "function") {
-        return function () {};
+        return function () { };
     }
 
     options = options || {};
@@ -643,7 +644,7 @@ function whenServerTokenReady(callback, options) {
         )
     ) {
         callback(currentValue);
-        return function () {};
+        return function () { };
     }
 
     var active = true;
@@ -1684,19 +1685,19 @@ function LegendSettingsfirst() {
 }
 
 function LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch) {
-        if (switcheryLegendSwitch.isChecked()) {
-            try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); return; }
-            parseLegendJSONAPI(LegendJSON);
-            var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
-            document.getElementById("export-settings").value = LegendJSONnice;
-        } else {
-            try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); return; }
-            parseLegendJSONAPI(LegendJSON);
-            delete LegendJSON.legendSettings;
-            var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
-            document.getElementById("export-settings").value = LegendJSONnice;
-        }
-        return LegendJSON;
+    if (switcheryLegendSwitch.isChecked()) {
+        try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); return; }
+        parseLegendJSONAPI(LegendJSON);
+        var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
+        document.getElementById("export-settings").value = LegendJSONnice;
+    } else {
+        try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); return; }
+        parseLegendJSONAPI(LegendJSON);
+        delete LegendJSON.legendSettings;
+        var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
+        document.getElementById("export-settings").value = LegendJSONnice;
+    }
+    return LegendJSON;
 }
 
 function parseLegendJSONAPI(LegendJSON) {
@@ -2701,7 +2702,7 @@ function universalchat() {
             return;
         }
         /* Use MutationObserver instead of escalating setTimeout polling */
-        var _obs = new MutationObserver(function(m, obs) {
+        var _obs = new MutationObserver(function (m, obs) {
             if (document.getElementById("top5-hud")) {
                 obs.disconnect();
                 initialize();
@@ -3096,7 +3097,7 @@ function universalchat() {
                 stat.atSocket.onerror = null;
                 stat.atSocket.onclose = null;
                 stat.atSocket.close();
-            } catch (e) {}
+            } catch (e) { }
             stat.atSocket = null;
         }
     };
@@ -3314,7 +3315,7 @@ function universalchat() {
     // Legacy compat aliases
     my.connect = my.atConnect;
     my.disconnect = my.atDisconnect;
-    my.minimap_connect = function () {}; // no-op, handled by atOnConnect
+    my.minimap_connect = function () { }; // no-op, handled by atOnConnect
     my.minimap_disconnect = my.atDisconnect;
     // ====  Agar Tool Communication processing / processing  ====
     my.minimap_command = function (cmd) {
@@ -4618,7 +4619,7 @@ function StartEditGameNames() {
                 }
             };
             document.getElementsByTagName("head")[0].insertAdjacentHTML("beforeend", t.u.fonts()), document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", t.u.html());
-            
+
             document
                 .getElementById("tcm")
                 .addEventListener(
@@ -4646,7 +4647,7 @@ function StartEditGameNames() {
                         );
                     }
                 );
-                
+
             o.addEventListener("keydown", t.f.hotkeys), t.f.filltext_override()
         } else o.setTimeout(function () {
             e(o)
@@ -5052,9 +5053,9 @@ function triggerLMbtns() {
     if (
         PanelImageSrc !== "" &&
         PanelImageSrc !==
-            "https://cdn.ogario.ovh/static/img/pattern.png" &&
+        "https://cdn.ogario.ovh/static/img/pattern.png" &&
         PanelImageSrc !==
-            "https://www.legendmod.ml/banners/static/img/pattern.png"
+        "https://www.legendmod.ml/banners/static/img/pattern.png"
     ) {
         $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
     }
@@ -5062,9 +5063,9 @@ function triggerLMbtns() {
         if (
             PanelImageSrc !== "" &&
             PanelImageSrc !==
-                "https://cdn.ogario.ovh/static/img/pattern.png" &&
+            "https://cdn.ogario.ovh/static/img/pattern.png" &&
             PanelImageSrc !==
-                "https://www.legendmod.ml/banners/static/img/pattern.png"
+            "https://www.legendmod.ml/banners/static/img/pattern.png"
         ) {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
@@ -5073,9 +5074,9 @@ function triggerLMbtns() {
         if (
             PanelImageSrc !== "" &&
             PanelImageSrc !==
-                "https://cdn.ogario.ovh/static/img/pattern.png" &&
+            "https://cdn.ogario.ovh/static/img/pattern.png" &&
             PanelImageSrc !==
-                "https://www.legendmod.ml/banners/static/img/pattern.png"
+            "https://www.legendmod.ml/banners/static/img/pattern.png"
         ) {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
@@ -5084,9 +5085,9 @@ function triggerLMbtns() {
         if (
             PanelImageSrc !== "" &&
             PanelImageSrc !==
-                "https://cdn.ogario.ovh/static/img/pattern.png" &&
+            "https://cdn.ogario.ovh/static/img/pattern.png" &&
             PanelImageSrc !==
-                "https://www.legendmod.ml/banners/static/img/pattern.png"
+            "https://www.legendmod.ml/banners/static/img/pattern.png"
         ) {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
@@ -5095,9 +5096,9 @@ function triggerLMbtns() {
         if (
             PanelImageSrc !== "" &&
             PanelImageSrc !==
-                "https://cdn.ogario.ovh/static/img/pattern.png" &&
+            "https://cdn.ogario.ovh/static/img/pattern.png" &&
             PanelImageSrc !==
-                "https://www.legendmod.ml/banners/static/img/pattern.png"
+            "https://www.legendmod.ml/banners/static/img/pattern.png"
         ) {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
@@ -5616,7 +5617,7 @@ function emphasischat() {
             return;
         }
         /* Use MutationObserver instead of escalating setTimeout polling */
-        var _obs = new MutationObserver(function(m, obs) {
+        var _obs = new MutationObserver(function (m, obs) {
             if (document.getElementById("top5-hud")) {
                 obs.disconnect();
                 initialize();
@@ -6206,7 +6207,7 @@ function parseSnezPlayerRecord(player) {
         player.extra &&
         player.extra.ip_info &&
         typeof player.extra.ip_info.country ===
-            "string" &&
+        "string" &&
         /^[A-Za-z]{2}$/.test(
             player.extra.ip_info.country
         )
@@ -6417,7 +6418,7 @@ function getSNEZServers(ifcalled) {
             return (
                 activeSnezClient === client &&
                 client.generation ===
-                    snezClientGeneration
+                snezClientGeneration
             );
         },
 
@@ -6482,7 +6483,7 @@ function getSNEZServers(ifcalled) {
                     if (
                         client.isCurrent() &&
                         typeof client.onCloseCallback ===
-                            "function"
+                        "function"
                     ) {
                         client.onCloseCallback();
                     }
@@ -6544,7 +6545,7 @@ function getSNEZServers(ifcalled) {
                 !client.isCurrent() ||
                 !event ||
                 typeof event.data !==
-                    "string"
+                "string"
             ) {
                 return;
             }
@@ -6567,7 +6568,7 @@ function getSNEZServers(ifcalled) {
             if (
                 !packet ||
                 typeof packet.type !==
-                    "string"
+                "string"
             ) {
                 return;
             }
@@ -6662,7 +6663,7 @@ function getSNEZServers(ifcalled) {
                 if (
                     !player ||
                     typeof player !==
-                        "object"
+                    "object"
                 ) {
                     continue;
                 }
@@ -6767,7 +6768,7 @@ function getSNEZServers(ifcalled) {
                 !client.isCurrent() ||
                 !client.ws ||
                 client.ws.readyState !==
-                    WebSocket.OPEN
+                WebSocket.OPEN
             ) {
                 return;
             }
@@ -6803,7 +6804,7 @@ function showonceusers3returner(showonceusers3) {
 function init(modVersion) {
     if (!document.getElementById("message-box")) {
         /* Use MutationObserver instead of 200ms polling */
-        var _obs = new MutationObserver(function(m, obs) {
+        var _obs = new MutationObserver(function (m, obs) {
             if (document.getElementById("message-box")) {
                 obs.disconnect();
                 startLM(modVersion);
@@ -7785,7 +7786,7 @@ function initializeLM(modVersion) {
     if (
         window.core &&
         typeof window.core.disconnect ===
-            "function" &&
+        "function" &&
         !window.core.disconnect
             ._lmExpressWrapped
     ) {
@@ -7926,7 +7927,7 @@ function initializeLM(modVersion) {
     }
 
     /* Observe toast notifications (toastr success messages) */
-    var _chatToastObs = new MutationObserver(function(mutations) {
+    var _chatToastObs = new MutationObserver(function (mutations) {
         _processChatEmbeds(mutations, '.toast.toast-success');
     });
     /* toastr removes #toast-container when its last toast closes and creates a new
@@ -7948,7 +7949,7 @@ function initializeLM(modVersion) {
     /* Observe chat box content changes */
     var _chatBoxEl = document.getElementById('chat-box');
     if (_chatBoxEl) {
-        new MutationObserver(function(mutations) { _processChatEmbeds(mutations, '.message'); }).observe(_chatBoxEl, { childList: true, subtree: true, characterData: true });
+        new MutationObserver(function (mutations) { _processChatEmbeds(mutations, '.message'); }).observe(_chatBoxEl, { childList: true, subtree: true, characterData: true });
     }
 }
 
@@ -7992,7 +7993,7 @@ function joinSIPonstart() {
 
         /* Listen for server-token to be set — retry up to 2 times */
         var _sipRetries = 0;
-        var _sipHandler = function() {
+        var _sipHandler = function () {
             if (sipTarget == $("#server-token").val()) return; /* matched */
             _sipRetries++;
             if (_sipRetries >= 2) {
@@ -8013,7 +8014,7 @@ function joinSIPonstart() {
         }
 
         /* Safety timeout — stop listening after 5s */
-        setTimeout(function() {
+        setTimeout(function () {
             $(document).off('lm:serverTokenReady', _sipHandler);
         }, 5000);
 
@@ -8272,11 +8273,11 @@ function joinSERVERfindinfo() {
                     stateObj,
                     "page 2",
                     "?sip=" +
-                        currentIP +
-                        "&r=" +
-                        maxRegion +
-                        "&m=" +
-                        maxMode
+                    currentIP +
+                    "&r=" +
+                    maxRegion +
+                    "&m=" +
+                    maxMode
                 );
             } else {
                 history.pushState(
@@ -8290,9 +8291,9 @@ function joinSERVERfindinfo() {
 
             if (
                 $("#region").val() !==
-                    maxRegion ||
+                maxRegion ||
                 $("#gamemode").val() !==
-                    maxMode
+                maxMode
             ) {
                 var finalText =
                     "<font color='yellow'>" +
@@ -8364,7 +8365,7 @@ function ytFrame() {
         if (!_initYT()) {
             /* YT API not ready yet — hook into its callback */
             var _origCb = window.onYouTubeIframeAPIReady;
-            window.onYouTubeIframeAPIReady = function() {
+            window.onYouTubeIframeAPIReady = function () {
                 if (_origCb) _origCb();
                 _initYT();
             };
@@ -8431,7 +8432,7 @@ function BeforeSpecialDeals(tab) {
     } else {
         var fallbackUserId =
             appUser.userId !== undefined &&
-            appUser.userId !== null
+                appUser.userId !== null
                 ? String(
                     appUser.userId
                 ).trim()
@@ -8448,9 +8449,9 @@ function BeforeSpecialDeals(tab) {
                     fallbackUserId &&
                     fallbackUserId !== '0' &&
                     normalizedFallbackUserId !==
-                        'null' &&
+                    'null' &&
                     normalizedFallbackUserId !==
-                        'undefined'
+                    'undefined'
                 )
             );
     }
@@ -8466,7 +8467,7 @@ function BeforeSpecialDeals(tab) {
     } else {
         var fallbackUID =
             typeof window.agarioUID ===
-            'string'
+                'string'
                 ? window.agarioUID.trim()
                 : '';
 
@@ -8479,12 +8480,12 @@ function BeforeSpecialDeals(tab) {
                 fallbackUID &&
                 fallbackUID.length >= 8 &&
                 fallbackUID.indexOf('$') ===
-                    -1 &&
+                -1 &&
                 fallbackUID !== '0' &&
                 normalizedFallbackUID !==
-                    'null' &&
+                'null' &&
                 normalizedFallbackUID !==
-                    'undefined'
+                'undefined'
             );
     }
 
@@ -8584,7 +8585,7 @@ function BeforeSpecialDeals(tab) {
     SpecialDealsJS.type = "text/javascript";
     SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/skinsAndDeals.js?v=" + (window.OgVer || "");
 
-    SpecialDealsJS.onload = function() {
+    SpecialDealsJS.onload = function () {
         window._specialDealsScriptLoading = false;
 
         var pendingTab = window._pendingShopTab || targetTab;
@@ -8594,7 +8595,7 @@ function BeforeSpecialDeals(tab) {
         }
     };
 
-    SpecialDealsJS.onerror = function() {
+    SpecialDealsJS.onerror = function () {
         window._specialDealsScriptLoading = false;
 
         if (SpecialDealsJS.parentNode) {
@@ -9087,28 +9088,28 @@ function changeFrameWorkStart() {
 function lmThemeData() {
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
     var d = {
-        pc:  ds.menuPanelColor   || $('#menuPanelColor').val()  || '#00243e',
-        pc2: ds.menuPanelColor2  || $('#menuPanelColor2').val() || '#002f52',
-        mc:  ds.menuMainColor    || $('#hudMainColor').val()    || '#01d9cc',
-        tc:  ds.menuTextColor    || '#ffffff',
-        tc2: ds.menuTextColor2   || '#8096a7',
-        bg:  ds.menuBg           || $('#menuBg').val()          || '',
-        op:  String(ds.menuOpacity != null ? ds.menuOpacity : '0.96'),
+        pc: ds.menuPanelColor || $('#menuPanelColor').val() || '#00243e',
+        pc2: ds.menuPanelColor2 || $('#menuPanelColor2').val() || '#002f52',
+        mc: ds.menuMainColor || $('#hudMainColor').val() || '#01d9cc',
+        tc: ds.menuTextColor || '#ffffff',
+        tc2: ds.menuTextColor2 || '#8096a7',
+        bg: ds.menuBg || $('#menuBg').val() || '',
+        op: String(ds.menuOpacity != null ? ds.menuOpacity : '0.96'),
         btc: ds.menuBtnTextColor || '#ffffff',
-        b1:  ds.btn1Color        || '#018cf6',
-        b2:  ds.btn2Color        || '#00b9e8',
-        b3:  ds.btn3Color        || '#8d5fe6',
-        b4:  ds.btn4Color        || '#bf00aa',
-        b1b: ds.btn1Color2       || '#0176ce',
-        b2b: ds.btn2Color2       || '#0099c0',
-        b3b: ds.btn3Color2       || '#814ee3',
-        b4b: ds.btn4Color2       || '#a80096'
+        b1: ds.btn1Color || '#018cf6',
+        b2: ds.btn2Color || '#00b9e8',
+        b3: ds.btn3Color || '#8d5fe6',
+        b4: ds.btn4Color || '#bf00aa',
+        b1b: ds.btn1Color2 || '#0176ce',
+        b2b: ds.btn2Color2 || '#0099c0',
+        b3b: ds.btn3Color2 || '#814ee3',
+        b4b: ds.btn4Color2 || '#a80096'
     };
     /* the corners of Rounded / Square HUD, when the player chose one */
     try {
         var rad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lm-radius'));
         if (isFinite(rad)) d.rad = String(rad);
-    } catch (e) {}
+    } catch (e) { }
     /* the Legend Mod language (languagemod 1 English ... 12 Dutch): the only setting that goes with the theme.
      * The language on screen (LMi18n.num()) first: a first-time player's browser language is not saved yet. */
     try {
@@ -9163,7 +9164,7 @@ function lmThemeOrigins(url) {
         var o = new URL(url, location.href).origin;
         if (/^https:\/\/((www\.)?legendmod\.ml|jimboy3100\.github\.io)$/.test(o)) return LEGEND;
         if (o === location.origin) return [o];
-    } catch (e) {}
+    } catch (e) { }
     return [];
 }
 function lmThemeSend(iframeEl) {
@@ -9173,7 +9174,7 @@ function lmThemeSend(iframeEl) {
     if (!to.length) return;
     var msg = { type: 'lm-theme', theme: lmThemeData() };
     to.forEach(function (o) {
-        try { iframeEl.contentWindow.postMessage(msg, o); } catch (e) {}
+        try { iframeEl.contentWindow.postMessage(msg, o); } catch (e) { }
     });
 }
 /* After any lm-promo modal is built, send theme to its iframes */
@@ -9195,7 +9196,7 @@ function _lmSyncThemeVars() {
     try {
         var _td = lmThemeData(), _r = document.documentElement.style;
         ['pc', 'pc2', 'mc', 'tc', 'tc2'].forEach(function (k) { _r.setProperty('--lm-' + k, _td[k]); });
-    } catch (e) {}
+    } catch (e) { }
 }
 /* Defer slightly so ogario has parsed ogarioThemeSettings from localStorage */
 setTimeout(_lmSyncThemeVars, 500);
@@ -9223,7 +9224,7 @@ function lmPromoChrome(sel) {
             '.modal.lm-promo .modal-body button:not(.btn){background:var(--lm-pc2,#002f52);color:var(--lm-tc,#fff);border:1px solid rgba(255,255,255,.12);border-radius:var(--lm-radius-s,4px);padding:4px 12px;cursor:pointer}' +
             '.modal.lm-promo .modal-body button:not(.btn):hover{background:rgba(255,255,255,.12)}' +
             '.modal.lm-promo .modal-body select.form-control{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}' +
-            '.modal.lm-promo .modal-body input[type="number"]{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-radius:3px;padding:3px 6px}' +
+            '.modal.lm-promo .modal-body input[type="number"]{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-radius:var(--lm-radius-s,4px);padding:3px 6px}' +
             '.modal.lm-promo .modal-body input[type="file"]{color:var(--lm-tc2,#8096a7)}' +
             '.modal.lm-promo .modal-body input[type="text"]{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}' +
             '.modal.lm-promo .modal-footer{background:var(--lm-pc2,#002f52);border-top:1px solid rgba(255,255,255,.08);padding:10px 15px}';

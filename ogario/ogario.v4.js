@@ -197,7 +197,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.618;
+window.OgVer = 3.619;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -307,7 +307,7 @@ function _lmEventBanner(data) {
         if (!document.body) return;
         el = document.createElement('div');
         el.id = 'lm-event-banner';
-        el.style.cssText = 'position:fixed;top:28px;left:50%;transform:translateX(-50%);z-index:150;pointer-events:none;max-width:calc(100% - 32px);box-sizing:border-box;padding:3px 12px;border-radius:12px;background:rgba(0,0,0,.55);color:#ffd54a;font:bold 13px Ubuntu,Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px #000;';
+        el.style.cssText = 'position:fixed;top:28px;left:50%;transform:translateX(-50%);z-index:150;pointer-events:none;max-width:calc(100% - 32px);box-sizing:border-box;padding:3px 12px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,.55);color:#ffd54a;font:bold 13px Ubuntu,Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px #000;';
         document.body.appendChild(el);
     }
     el.textContent = lines.join('  \u00b7  ');
@@ -387,14 +387,14 @@ function _lmMatchHistoryOpen() {
     var fmtTime = function (ms) { var s = Math.max(0, Math.round((+ms || 0) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); s = s % 60; return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s; };
     var md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:620px;max-width:calc(100vw - 32px);max-height:80vh;' +
         'display:flex;flex-direction:column;z-index:2147483647;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
-        'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:12px;overflow:hidden;');
+        'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:12px;overflow:hidden;');
     md.id = 'lm-mh-modal';
     var head = el('div', 'padding:10px 44px 8px 80px;text-align:center;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
     head.appendChild(el('div', 'font-size:16px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', _lmMhT('matchHistory', 'Match history')));
-    var x = el('div', 'position:absolute;top:8px;right:12px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.05);', '✕');
+    var x = el('div', 'position:absolute;top:8px;right:12px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', '✕');
     x.id = 'lm-mh-close';
     x.title = _lmMhT('close', 'Close');
-    var clr = el('div', 'position:absolute;top:8px;left:12px;cursor:pointer;font-size:11px;color:' + tc2 + ';line-height:24px;height:24px;padding:0 8px;border-radius:4px;background:rgba(255,255,255,0.05);', _lmMhT('mhClear', 'Clear'));
+    var clr = el('div', 'position:absolute;top:8px;left:12px;cursor:pointer;font-size:11px;color:' + tc2 + ';line-height:24px;height:24px;padding:0 8px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', _lmMhT('mhClear', 'Clear'));
     clr.id = 'lm-mh-clear';
     head.appendChild(x);
     head.appendChild(clr);
@@ -405,7 +405,7 @@ function _lmMatchHistoryOpen() {
         tabs = el('div', 'display:flex;gap:6px;justify-content:center;padding:6px 10px 0;');
         tabs.id = 'lm-mh-tabs';
         [['local', _lmMhT('mhThisDevice', 'This device')], ['server', _lmMhT('mhAccount', 'Account (server)')]].forEach(function (t) {
-            var b = el('div', 'cursor:pointer;font-size:11px;padding:3px 10px;border-radius:4px;border:1px solid ' + pc2 + ';', t[1]);
+            var b = el('div', 'cursor:pointer;font-size:11px;padding:3px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + pc2 + ';', t[1]);
             b.id = 'lm-mh-tab-' + t[0];
             b.addEventListener('click', function (e) { e.stopPropagation(); if (view === t[0]) return; view = t[0]; paint(); });
             tabs.appendChild(b);
@@ -664,7 +664,7 @@ function _lmBadgesRender(m, earned) {
         box = document.createElement('button');
         box.type = 'button';
         box.id = 'lm-badges';
-        box.style.cssText = 'display:inline-block;vertical-align:top;margin:6px 0 0 6px;cursor:pointer;font:inherit;font-size:11px;min-height:26px;padding:3px 10px;border-radius:4px;' +
+        box.style.cssText = 'display:inline-block;vertical-align:top;margin:6px 0 0 6px;cursor:pointer;font:inherit;font-size:11px;min-height:26px;padding:3px 10px;border-radius:var(--lm-radius-s,4px);' +
             'border:1px solid var(--lm-pc2,rgba(255,255,255,0.15));background:rgba(255,255,255,0.06);color:inherit;touch-action:manipulation;';
         box.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); _lmBadgesOpen(); });
         host.appendChild(box);
@@ -684,8 +684,8 @@ function _lmBadgesOpen() {
     var list = '';
     shown.forEach(function (d) {
         var on = earned.indexOf(d.id) !== -1;
-        list += '<div class="lm-badge' + (on ? ' lm-badge-on' : '') + '" data-badge="' + d.id + '" style="display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px;background:rgba(0,0,0,0.18);' + (on ? '' : 'opacity:0.45;') + '">' +
-            '<span style="position:relative;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;font-size:16px;border-radius:6px;box-sizing:border-box;' +
+        list += '<div class="lm-badge' + (on ? ' lm-badge-on' : '') + '" data-badge="' + d.id + '" style="display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.18);' + (on ? '' : 'opacity:0.45;') + '">' +
+            '<span style="position:relative;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;font-size:16px;border-radius:var(--lm-radius,6px);box-sizing:border-box;' +
             (on ? 'border:2px solid ' + d.col + ';background:rgba(255,255,255,0.08);' : 'border:2px solid rgba(255,255,255,0.15);filter:grayscale(100%);') + '">' + d.icon +
             (d.tier ? '<span style="position:absolute;right:1px;bottom:0;font-size:8px;font-weight:700;color:' + (on ? d.col : '#fff') + ';text-shadow:0 0 2px #000;">' + d.tier + '</span>' : '') + '</span>' +
             '<span style="min-width:0;font-size:11px;line-height:1.3;"><b>' + _lmBdgEsc(_lmBdgName(d)) + '</b><br><span style="opacity:0.75;">' + _lmBdgEsc(_lmBdgTip(d).slice(_lmBdgName(d).length + 2)) + '</span></span></div>';
@@ -996,16 +996,16 @@ function _lmRoomOpen(tab, code) {
     var mc = V('mc', ds.menuMainColor, '#01d9cc'), pc = V('pc', ds.menuPanelColor, '#00243e'), pc2 = V('pc2', ds.menuPanelColor2, '#002f52');
     var tc = V('tc', ds.menuTextColor, '#ffffff'), tc2 = V('tc2', ds.menuTextColor2, '#8096a7');
     var el = function (tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text !== undefined) e.textContent = text; return e; };
-    var inCss = 'box-sizing:border-box;width:100%;min-height:34px;padding:6px 8px;font-size:15px;color:' + tc + ';background:rgba(0,0,0,0.25);border:1px solid ' + pc2 + ';border-radius:4px;outline:none;font-family:inherit;';
-    var btnCss = 'min-height:36px;padding:6px 14px;border:none;border-radius:4px;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:' + mc + ';color:' + pc + ';';
-    var btn2Css = 'min-height:32px;padding:4px 10px;border:1px solid ' + pc2 + ';border-radius:4px;cursor:pointer;font-size:12px;font-family:inherit;background:rgba(255,255,255,0.05);color:' + tc + ';';
+    var inCss = 'box-sizing:border-box;width:100%;min-height:34px;padding:6px 8px;font-size:15px;color:' + tc + ';background:rgba(0,0,0,0.25);border:1px solid ' + pc2 + ';border-radius:var(--lm-radius-s,4px);outline:none;font-family:inherit;';
+    var btnCss = 'min-height:36px;padding:6px 14px;border:none;border-radius:var(--lm-radius-s,4px);cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:' + mc + ';color:' + pc + ';';
+    var btn2Css = 'min-height:32px;padding:4px 10px;border:1px solid ' + pc2 + ';border-radius:var(--lm-radius-s,4px);cursor:pointer;font-size:12px;font-family:inherit;background:rgba(255,255,255,0.05);color:' + tc + ';';
     var md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:460px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
         'display:flex;flex-direction:column;z-index:2147483647;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
-        'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:13px;overflow:hidden;box-sizing:border-box;');
+        'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:13px;overflow:hidden;box-sizing:border-box;');
     md.id = 'lm-room-modal';
     var head = el('div', 'flex:none;padding:10px 52px 8px 52px;text-align:center;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
     head.appendChild(el('div', 'font-size:16px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', '🔒 ' + _lmMhT('room', 'Private room')));
-    var x = el('div', 'position:absolute;top:6px;right:10px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.05);', '✕');
+    var x = el('div', 'position:absolute;top:6px;right:10px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', '✕');
     x.id = 'lm-room-close';
     x.title = _lmMhT('close', 'Close');
     head.appendChild(x);
@@ -1013,7 +1013,7 @@ function _lmRoomOpen(tab, code) {
     var scroll = el('div', 'flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 12px 12px;');
     md.appendChild(scroll);
     /* current room: code, share link, Rejoin */
-    var cur = el('div', 'display:none;text-align:center;padding:8px;margin-bottom:8px;border:1px solid ' + pc2 + ';border-radius:6px;background:rgba(0,0,0,0.15);');
+    var cur = el('div', 'display:none;text-align:center;padding:8px;margin-bottom:8px;border:1px solid ' + pc2 + ';border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.15);');
     cur.id = 'lm-room-cur';
     var curName = el('div', 'font-size:12px;color:' + tc2 + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;');
     curName.id = 'lm-room-curname';
@@ -1052,7 +1052,7 @@ function _lmRoomOpen(tab, code) {
     cur.appendChild(bRejoin);
     scroll.appendChild(cur);
     /* owner only: Close room (with a confirm step) */
-    var own = el('div', 'display:none;text-align:center;padding:6px 8px;margin-bottom:8px;border:1px solid rgba(255,90,90,0.35);border-radius:6px;background:rgba(0,0,0,0.15);');
+    var own = el('div', 'display:none;text-align:center;padding:6px 8px;margin-bottom:8px;border:1px solid rgba(255,90,90,0.35);border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.15);');
     own.id = 'lm-room-own';
     var ownName = el('div', 'font-size:12px;color:' + tc2 + ';margin-bottom:4px;');
     ownName.id = 'lm-room-ownname';
@@ -1076,7 +1076,7 @@ function _lmRoomOpen(tab, code) {
     own.appendChild(bCloseRoom);
     own.appendChild(ask);
     scroll.appendChild(own);
-    var msg = el('div', 'display:none;padding:6px 8px;margin-bottom:8px;border-radius:4px;font-size:12px;background:rgba(0,0,0,0.2);');
+    var msg = el('div', 'display:none;padding:6px 8px;margin-bottom:8px;border-radius:var(--lm-radius-s,4px);font-size:12px;background:rgba(0,0,0,0.2);');
     msg.id = 'lm-room-msg';
     msg.setAttribute('role', 'alert');
     scroll.appendChild(msg);
@@ -1086,7 +1086,7 @@ function _lmRoomOpen(tab, code) {
     var panes = {};
     var view = tab === 'join' || tab === 'list' || tab === 'create' ? tab : (tab === 'rejoin' || code ? 'join' : 'create');
     [['create', _lmMhT('roomCreate', 'Create')], ['join', _lmMhT('roomJoin', 'Join')], ['list', _lmMhT('roomPublic', 'Public rooms')]].forEach(function (t) {
-        var b = el('div', 'cursor:pointer;font-size:12px;padding:6px 12px;border-radius:4px;border:1px solid ' + pc2 + ';', t[1]);
+        var b = el('div', 'cursor:pointer;font-size:12px;padding:6px 12px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + pc2 + ';', t[1]);
         b.id = 'lm-room-tab-' + t[0];
         b.addEventListener('click', function (e) { e.stopPropagation(); view = t[0]; paint(); if (view === 'list' && !listLoaded) loadList(); });
         tabs.appendChild(b);
@@ -3076,7 +3076,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             style.id = 'lw-login-notif-css';
             style.textContent =
                 '#lw-login-notif{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);' + /* i18n-ok: CSS of the login notice */
-                'z-index:99999;background:linear-gradient(135deg,#4285f4,#356ac3);border-radius:8px;' +
+                'z-index:99999;background:linear-gradient(135deg,#4285f4,#356ac3);border-radius:var(--lm-radius,6px);' +
                 'padding:14px 28px;box-shadow:0 4px 24px rgba(66,133,244,.45);display:flex;align-items:center;gap:12px;' +
                 'font-family:"Inter","Segoe UI",sans-serif;color:#fff;opacity:0;' +
                 'transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .5s ease;}' +
@@ -24689,7 +24689,7 @@ function thelegendmodproject() {
             // i18n-ok: the bots panel below: "Repl.it VPS" is a product name, every other text comes from the packs
             $(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>									
 					<h5 id="botsAuthor" class="main-color">${_lmG1s('game1.bots.title')}</h5>
-					<div id="botClient" style="margin-left:15px; margin-right:15px; font-family: Tahoma; color: rgb(255, 255, 255); z-index: 9999; border-radius: 5px; min-height: 16px; min-width: 200px; background-color: rgba(2, 0, 0, 0.4);">
+					<div id="botClient" style="margin-left:15px; margin-right:15px; font-family: Tahoma; color: rgb(255, 255, 255); z-index: 9999; border-radius: var(--lm-radius,6px); min-height: 16px; min-width: 200px; background-color: rgba(2, 0, 0, 0.4);">
 					<div><b>${_lmG1s('game1.bots.count')}</b>: <span id="botCount" class="label label-info pull-right">${_lmG1e(lmT('game1.bots.waiting'))}</span></div>
 					<b><div><b>${_lmG1s('game1.bots.slots')}</b>: <span id="slots" class="label label-info pull-right">${_lmG1e(lmT('game1.bots.waiting'))}</span></div>
 					<b><div><b>${_lmG1s('game1.bots.tokens')}</b>: <span id="captchatokens" class="label label-info pull-right">0</span></div>
@@ -24942,11 +24942,11 @@ function thelegendmodproject() {
                     st2.id = 'lm-presets-style';
                     st2.textContent = '.lm-presets-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:5px}' +
                         '.lm-presets-row .lm-presets-title{font-size:11px;opacity:.8;margin-right:2px}' +
-                        '.lm-presets-row .btn{padding:1px 6px;font-size:11px;line-height:1.5;background:rgba(127,127,127,.15);color:inherit;border:1px solid rgba(127,127,127,.35);border-radius:3px}' +
+                        '.lm-presets-row .btn{padding:1px 6px;font-size:11px;line-height:1.5;background:rgba(127,127,127,.15);color:inherit;border:1px solid rgba(127,127,127,.35);border-radius:var(--lm-radius-s,4px)}' +
                         '.lm-presets-row .btn:hover{background:rgba(127,127,127,.3)}' +
                         '.lm-presets-row .lm-preset-undo{border-color:#e6a23c}' +
                         '.lm-presets-row .lm-new-toggle.active{background:#e74c3c;border-color:#e74c3c;color:#fff}' +
-                        '.lm-new-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:3px;vertical-align:middle;letter-spacing:.3px}';
+                        '.lm-new-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:var(--lm-radius-s,4px);vertical-align:middle;letter-spacing:.3px}';
                     document.head.appendChild(st2);
                 }
             })();
@@ -46663,7 +46663,7 @@ function thelegendmodproject() {
                     '@keyframes lmGoSlideIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}' +
                     '@keyframes lmGoSlideOut{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(0.92)}}' +
                     '@keyframes lmGoRowIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}' +
-                    /* i18n-ok: CSS */ '.lm-go-row{display:flex;align-items:center;padding:4px 4px;border-radius:4px;' +
+                    /* i18n-ok: CSS */ '.lm-go-row{display:flex;align-items:center;padding:4px 4px;border-radius:var(--lm-radius-s,4px);' +
                     'animation:lmGoRowIn 0.35s ease forwards;opacity:0;transition:background 0.15s}' +
                     '.lm-go-row:hover{background:rgba(255,255,255,0.05)}' +
                     '.lm-go-icon{font-size:14px;width:24px;text-align:center;flex-shrink:0}' +
@@ -49979,7 +49979,7 @@ function thelegendmodproject() {
                 el = document.createElement('div');
                 el.id = 'lm-spec-follow';
                 el.className = 'hud';
-                el.style.cssText = 'position:fixed;left:50%;top:56px;transform:translateX(-50%);padding:3px 10px;border-radius:4px;font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
+                el.style.cssText = 'position:fixed;left:50%;top:56px;transform:translateX(-50%);padding:3px 10px;border-radius:var(--lm-radius-s,4px);font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
                 document.body.appendChild(el);
             }
             this._lmSpecFollowTop(el);
@@ -50093,7 +50093,7 @@ function thelegendmodproject() {
                 el = document.createElement('div');
                 el.id = 'lm-spec-follow';
                 el.className = 'hud';
-                el.style.cssText = 'position:fixed;left:50%;top:56px;transform:translateX(-50%);padding:3px 10px;border-radius:4px;font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
+                el.style.cssText = 'position:fixed;left:50%;top:56px;transform:translateX(-50%);padding:3px 10px;border-radius:var(--lm-radius-s,4px);font-size:13px;z-index:15;pointer-events:none;white-space:nowrap;';
                 document.body.appendChild(el);
             }
             this._lmSpecFollowTop(el);
@@ -54091,7 +54091,7 @@ function thelegendmodproject() {
             if (this.hudEl || !document.body) return;
             var el = document.createElement('div');
             el.id = 'client-profiler-hud';
-            el.style.cssText = 'position:fixed;top:12px;left:12px;z-index:999999;background:rgba(15,15,25,0.88);color:#00ffcc;font-family:Consolas,monospace;font-size:11px;line-height:1.4;padding:8px 12px;border-radius:6px;border:1px solid rgba(0,255,204,0.4);pointer-events:none;box-shadow:0 4px 15px rgba(0,0,0,0.5);min-width:210px;';
+            el.style.cssText = 'position:fixed;top:12px;left:12px;z-index:999999;background:rgba(15,15,25,0.88);color:#00ffcc;font-family:Consolas,monospace;font-size:11px;line-height:1.4;padding:8px 12px;border-radius:var(--lm-radius,6px);border:1px solid rgba(0,255,204,0.4);pointer-events:none;box-shadow:0 4px 15px rgba(0,0,0,0.5);min-width:210px;';
             document.body.appendChild(el);
             this.hudEl = el;
             this._updateHUD();
@@ -59087,14 +59087,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /* The Facebook friend arrow is stroked on the main Canvas2D (below the
-             * GL cell layer), starting inside the own cell. */
-            if (
+             * GL cell layer), starting inside the own cell. When GL is active,
+             * draw it on the overlay canvas so it stays visible above cells. */
+            this._glFbArrowActive =
                 defaultmapsettings.FBTracking &&
                 LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible &&
-                (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length))
-            ) {
-                return false;
-            }
+                (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length));
 
 
             /*
@@ -59195,29 +59193,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ) {
                     continue;
                 }
-                if (_glChatMap && cell.nick && !(cell.size <= 40)) {
-                    var _glChat = _glChatMap.get(cell.nick);
-                    if (_glChat && _glChat.message && LM.time - _glChat.time >= 0 && LM.time - _glChat.time < 15000) {
-                        return false;
-                    }
-                }
-                /* Same rule as the teammate indicator in cell.draw() */
-                if (
-                    (_glTeamNicks || _glTeamList) &&
-                    cell.targetNick &&
-                    !cell.isPlayerCell &&
-                    cell.size <= 800 &&
-                    (_glTeamNicks ? _glTeamNicks.has(cell.targetNick) : _glTeamList.includes(cell.targetNick))
-                ) {
-                    return false;
-                }
-                if (
-                    _glFbSkins &&
-                    cell.targetNick &&
-                    _glFbSkins[cell.targetNick + "facebookskin"]
-                ) {
-                    return false;
-                }
+                /* ── HYBRID RENDERER (step 3) ──
+                 * Chat bubbles, teammate indicators, and FB skins no longer
+                 * force the entire frame to Canvas2D.
+                 *
+                 * Chat bubbles: cell.draw() already draws them on Canvas2D
+                 * for WebGL cells (line ~37747-37762), so the overlay works.
+                 *
+                 * Teammate indicators: drawn outside the WebGL/Canvas2D
+                 * branch (line ~37706-37710), so they work regardless.
+                 *
+                 * FB skin images: the per-cell skin overlay is a Canvas2D
+                 * drawImage inside the non-WebGL branch; for WebGL cells
+                 * the skin is uploaded as a texture. FB skin lookup in
+                 * the skin resolver already maps these. The small FB badge
+                 * image that appears above the cell body is now drawn on
+                 * the overlay canvas by the post-cell overlay pass.
+                 */
+                /* (chat, teammate, FB-skin checks removed — overlays stay) */
 
 
                 /*
@@ -77162,7 +77155,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
                 }
                 if (defaultmapsettings.FBTracking && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) {
-                    this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
+                    /* When WebGL drew the cells, the main canvas is below the GL layer:
+                     * draw the FB arrow on the overlay canvas so it stays visible. */
+                    var _fbCtx = (this._glFbArrowActive && this._gpuSceneActive && this.overlayCtx)
+                        ? this.overlayCtx : this.ctx;
+                    this.drawFBTracking(_fbCtx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
                 }
             }
             if (LM.lineSplitActive && defaultmapsettings.lineSplitGuide) {
@@ -82193,7 +82190,7 @@ window.lmToggleNetGraph = function () {
     var cv = document.createElement('canvas');
     cv.id = 'lm-net-graph';
     cv.width = 180; cv.height = 64;
-    cv.style.cssText = 'position:fixed;left:10px;top:45%;z-index:150;pointer-events:none;background:rgba(0,0,0,0.45);border-radius:4px;';
+    cv.style.cssText = 'position:fixed;left:10px;top:45%;z-index:150;pointer-events:none;background:rgba(0,0,0,0.45);border-radius:var(--lm-radius-s,4px);';
     document.body.appendChild(cv);
     g = window._lmNetGraph = { cv: cv, fps: [], ping: [], timer: 0 };
     /* FPS counting was paused with the FPS stat off: start a fresh second */
@@ -84457,7 +84454,7 @@ function lmReplayBarTick() {
         bar.title = lmT('game2.replaySeekTip');
         bar.setAttribute('data-i18n-title', 'game2.replaySeekTip');
         bar.style.cssText = 'position:fixed;left:30%;width:40%;bottom:14px;height:10px;z-index:200;cursor:pointer;' +
-            'background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.25);border-radius:5px;overflow:hidden;pointer-events:auto;';
+            'background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.25);border-radius:var(--lm-radius,6px);overflow:hidden;pointer-events:auto;';
         bar.innerHTML = '<div class="lm-rb-fill" style="height:100%;width:0;background:var(--lm-mc,' + ((window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc') + ');"></div>' +
             '<span class="lm-rb-txt" style="position:absolute;right:6px;top:-16px;font-size:10px;color:#fff;text-shadow:0 0 3px #000;pointer-events:none;"></span>';
         bar.addEventListener('mousedown', function (e) {

@@ -239,23 +239,23 @@
         /* game actions take no taps while the main menu is open (as their usual groups) */
         '.lm-menu .lm-ed-act,.lm-menu .lm-ed-act *{pointer-events:none!important}' +
         '#lm-ed{position:fixed;left:0;top:0;width:100%;height:100%;z-index:200001;touch-action:none;' +
-        'background:rgba(0,12,24,.55);user-select:none;-webkit-user-select:none;font:600 12px/1.2 Ubuntu,Roboto,sans-serif;color:#fff}' +
+        'background:rgba(0,12,24,.55);user-select:none;-webkit-user-select:none;font:600 12px/1.2 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);color:#fff}' +
         '#lm-ed.grid{background-image:linear-gradient(rgba(1,217,204,.07) 1px,transparent 1px),;background-image:linear-gradient(color-mix(in srgb,var(--lm-mc,#01d9cc) 7%,transparent) 1px,transparent 1px),' + /* i18n-ok: CSS */
         'linear-gradient(90deg,rgba(1,217,204,.07) 1px,transparent 1px);background-size:' + GRID + 'px ' + GRID + 'px}' + /* i18n-ok: CSS */
         '.lm-ed-px{position:absolute;z-index:3;box-sizing:border-box;border-radius:50%;display:flex;align-items:center;' +
         'justify-content:center;background:rgba(0,36,62,.85);background:color-mix(in srgb,var(--lm-pc,#00243e) 85%,transparent);border:2px solid rgba(1,217,204,.7);border:2px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 70%,transparent);color:#fff;' +
-        'font:700 18px/1 Ubuntu,Roboto,sans-serif;touch-action:none}' +
+        'font:700 18px/1 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);touch-action:none}' +
         '.lm-ed-px.sel{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35)}' +
         '.lm-ed-px.bad{border-color:#ff4d4d;box-shadow:0 0 10px rgba(255,77,77,.7)}' +
         '.lm-ed-px.hid{border-style:dashed;background:rgba(0,36,62,.35);background:color-mix(in srgb,var(--lm-pc,#00243e) 35%,transparent);color:rgba(255,255,255,.45)}' +
-        '.lm-ed-px.hid:after{content:attr(data-hid);position:absolute;bottom:-15px;font:600 10px Ubuntu,sans-serif;color:#ffb347}' +
+        '.lm-ed-px.hid:after{content:attr(data-hid);position:absolute;bottom:-15px;font:600 10px var(--lm-hud-font,Ubuntu\,sans-serif);color:#ffb347}' +
         '.lm-ed-zone{position:absolute;z-index:1;box-sizing:border-box;border:2px dashed rgba(255,213,79,.65);' +
         'background:rgba(255,213,79,.05);pointer-events:none}' +
         '.lm-ed-zone.sel{border-color:#ffd54f;background:rgba(255,213,79,.10)}' +
         '.lm-ed-ztab{position:absolute;z-index:2;transform:translate(-50%,-50%);padding:9px 12px;border-radius:16px;' +
         'background:rgba(60,48,0,.85);border:1.5px solid #ffd54f;color:#ffd54f;white-space:nowrap;touch-action:none}' +
         '.lm-ed-zh{position:absolute;z-index:2;width:30px;height:30px;border-radius:6px;background:#ffd54f;color:#3c3000;' +
-        'display:flex;align-items:center;justify-content:center;font:700 16px/1 sans-serif;touch-action:none}' +
+        'display:flex;align-items:center;justify-content:center;font:700 16px/1 var(--lm-hud-font,sans-serif);touch-action:none}' +
         '.lm-ed-fix{position:absolute;z-index:0;box-sizing:border-box;border:1px dashed rgba(255,255,255,.3);pointer-events:none}' +
         /* width:max-content: with left:50% the bar could only use half the screen and wrapped longer texts (Greek) */
         '#lm-ed-bar{position:absolute;z-index:5;left:50%;transform:translateX(-50%);top:4px;width:max-content;max-width:calc(100% - 16px);' +
@@ -265,7 +265,7 @@
         '#lm-ed.drag #lm-ed-bar{opacity:.25;pointer-events:none}' +
         '#lm-ed-bar .row{display:flex;flex-wrap:wrap;align-items:center;gap:4px}' +
         '#lm-ed button,#lm-ed select{min-height:36px;min-width:36px;padding:0 9px;border-radius:7px;box-sizing:border-box;' +
-        'border:1px solid rgba(1,217,204,.45);border:1px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 45%,transparent);background:rgba(1,217,204,.12);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 12%,transparent);color:#fff;font:700 12px/1 Ubuntu,Roboto,sans-serif}' +
+        'border:1px solid rgba(1,217,204,.45);border:1px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 45%,transparent);background:rgba(1,217,204,.12);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 12%,transparent);color:#fff;font:700 12px/1 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif)}' +
         '#lm-ed select{max-width:130px}#lm-ed select option{color:#000}' +
         '#lm-ed button.pri{background:rgba(1,217,204,.4);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 40%,transparent)}' +
         '#lm-ed button:disabled{opacity:.35}' +

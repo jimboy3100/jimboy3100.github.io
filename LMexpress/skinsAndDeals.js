@@ -230,12 +230,12 @@ function SpecialDeals(defaultTab) {
         var styleEl = document.createElement('style');
         styleEl.id = 'skinShopStyles';
         styleEl.textContent = [
-            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid ' + pc2 + ' !important; border-top: 3px solid ' + mc + ' !important; border-radius: 6px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; resize: both; overflow: hidden; min-width: 340px; min-height: 300px; }', // i18n-ok: CSS
+            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid ' + pc2 + ' !important; border-top: 3px solid ' + mc + ' !important; border-radius:var(--lm-radius,6px) !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; resize: both; overflow: hidden; min-width: 340px; min-height: 300px; }', // i18n-ok: CSS
             /* header laid out like every other Legend window (lmPromoChrome): centred title, close at the top right, help at the top left */
             '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; min-height: 0; padding: 10px 52px 8px; text-align: center; position: relative; background: linear-gradient(180deg, ' + pc2 + ' 0%, ' + pc + ' 100%); }', // i18n-ok: CSS
-            '#CloseSpecialDeals { position: absolute; top: 6px; right: 10px; float: none; margin: 0 !important; z-index: 1050; opacity: 1; color: ' + tc2 + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 0; border: none; background: rgba(255,255,255,.05); transition: all 0.2s; outline: none; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 400; }', // i18n-ok: CSS
+            '#CloseSpecialDeals { position: absolute; top: 6px; right: 10px; float: none; margin: 0 !important; z-index: 1050; opacity: 1; color: ' + tc2 + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 0; border: none; background: rgba(255,255,255,.05); transition: all 0.2s; outline: none; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius:var(--lm-radius,6px); font-weight: 400; }', // i18n-ok: CSS
             '#CloseSpecialDeals:hover { color: ' + tc + ' !important; background: rgba(255,255,255,.12); }', // i18n-ok: CSS
-            '#FAQSpecialDeals { position: absolute; top: 6px; left: 10px; float: none; margin: 0 !important; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: rgba(255,255,255,.05) !important; font-size: 14px !important; z-index: 1050; opacity: 0.85; color: ' + mc + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 8px; border: none; transition: all 0.2s; outline: none; }', // i18n-ok: CSS
+            '#FAQSpecialDeals { position: absolute; top: 6px; left: 10px; float: none; margin: 0 !important; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius:var(--lm-radius,6px); background: rgba(255,255,255,.05) !important; font-size: 14px !important; z-index: 1050; opacity: 0.85; color: ' + mc + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 8px; border: none; transition: all 0.2s; outline: none; }', // i18n-ok: CSS
             '#FAQSpecialDeals:hover { opacity: 1; color: ' + mc + ' !important; transform: scale(1.15); filter: brightness(1.3); }', // i18n-ok: CSS
             '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid ' + pc2 + '; margin: 0 -15px; padding: 0 15px; background: rgba(0,0,0,0.2); }',
             '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: ' + tc2 + ' !important; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
@@ -243,14 +243,14 @@ function SpecialDeals(defaultTab) {
             '#specialShopModal .shop-tab.active { color: ' + mc + ' !important; border-bottom-color: ' + mc + ' !important; background: rgba(0,0,0,0.1); }',
             '#specialShopModal .tab-pane { display: none; }',
             '#specialShopModal .tab-pane.active { display: block; }',
-            '.active-skin-banner { display: flex; align-items: center; background: ' + pc2 + '; border: 1px solid ' + mc + '; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }',
+            '.active-skin-banner { display: flex; align-items: center; background: ' + pc2 + '; border: 1px solid ' + mc + '; border-radius:var(--lm-radius,6px); padding: 8px 12px; margin-bottom: 10px; }',
             '.active-skin-banner img { width: 44px; height: 44px; border-radius: 50%; margin-right: 12px; border: 2px solid ' + mc + '; object-fit: cover; background: ' + pc + '; }',
             '.active-skin-banner .info { flex: 1; }',
             '.active-skin-banner .info .title { font-size: 10px; color: ' + mc + '; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }',
             '.active-skin-banner .info .name { font-size: 14px; font-weight: 700; color: ' + tc + '; font-family: "Roboto Condensed", sans-serif; }',
-            '.active-skin-banner .unequip-btn { background: rgba(255,87,34,0.2); border: 1px solid ' + b4 + '; color: ' + b4 + '; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; }',
+            '.active-skin-banner .unequip-btn { background: rgba(255,87,34,0.2); border: 1px solid ' + b4 + '; color: ' + b4 + '; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius:var(--lm-radius,6px); cursor: pointer; }',
             '.active-skin-banner .unequip-btn:hover { background: ' + b4 + '; color: ' + btc + '; }',
-            '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 10px; border: 1px solid ' + pc2 + '; border-radius: 4px; background: rgba(0,0,0,0.4); color: ' + tc + '; font-size: 14px; outline: none; box-sizing: border-box; }',
+            '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 10px; border: 1px solid ' + pc2 + '; border-radius:var(--lm-radius-s,4px); background: rgba(0,0,0,0.4); color: ' + tc + '; font-size: 14px; outline: none; box-sizing: border-box; }',
             '#skinSearchBar:focus { border-color: ' + mc + '; box-shadow: 0 0 5px ' + mc + '44; }',
             '#skinSearchBar::placeholder { color: ' + tc2 + '; }',
             '.skin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 50vh; overflow-y: auto; padding: 4px; }',
@@ -260,15 +260,15 @@ function SpecialDeals(defaultTab) {
             '#specialShopModal .modal-content { max-height: calc(100vh - 16px); overflow-y: auto; min-width: min(340px, 100%); }',
             '.skin-grid { max-height: min(50vh, max(160px, calc(100vh - 400px))); }',
             '@media (max-width: 480px) { .skin-filter-bar { flex-wrap: wrap; } .skin-filter-btn { white-space: normal; min-width: 0; } .shop-tab { letter-spacing: 0; font-size: 12px; } }',
-            '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
-            '.skin-grid::-webkit-scrollbar-thumb { background: ' + pc2 + '; border-radius: 3px; }',
+            '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius:var(--lm-radius-s,4px); }',
+            '.skin-grid::-webkit-scrollbar-thumb { background: ' + pc2 + '; border-radius:var(--lm-radius-s,4px); }',
             '.skin-grid::-webkit-scrollbar-thumb:hover { background: ' + tc2 + '; }',
-            '.skin-card { position: relative; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; height: 115px; box-sizing: border-box; }',
+            '.skin-card { position: relative; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.1); border-radius:var(--lm-radius,6px); padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; height: 115px; box-sizing: border-box; }',
             '.skin-card:hover { border-color: ' + mc + '; transform: translateY(-2px); box-shadow: 0 4px 12px ' + mc + '33; }',
             '.skin-card.equipped { border-color: ' + b2 + ' !important; background: ' + b2 + '1e !important; box-shadow: 0 0 10px ' + b2 + '4d !important; }',
             '.skin-card.owned-card { border-color: ' + b3 + '66; background: ' + b3 + '0f; }',
-            '.skin-card .equipped-badge { position: absolute; top: 4px; left: 4px; background: ' + b2 + '; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
-            '.skin-card .owned-badge { position: absolute; top: 4px; left: 4px; background: ' + b3 + '; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
+            '.skin-card .equipped-badge { position: absolute; top: 4px; left: 4px; background: ' + b2 + '; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius:var(--lm-radius,6px); text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
+            '.skin-card .owned-badge { position: absolute; top: 4px; left: 4px; background: ' + b3 + '; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius:var(--lm-radius,6px); text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
             '.skin-card .skin-cell-wrap { position: relative; width: 64px; height: 64px; margin: 2px auto; }',
             '.skin-card .skin-color { width: 64px; height: 64px; border-radius: 50%; position: absolute; top: 0; left: 0; border: 2px solid rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }',
             '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; position: absolute; top: 2px; left: 2px; z-index: 1; }',
@@ -284,10 +284,10 @@ function SpecialDeals(defaultTab) {
             '.skin-btn-owned { flex: 1; background: ' + b3 + '33; color: ' + b3 + '; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: default; text-transform: uppercase; }',
             '.skin-stats { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 6px 0; border-top: 1px solid ' + pc2 + '; font-size: 12px; color: ' + tc2 + '; font-family: "Roboto Condensed", sans-serif; }',
             '.skin-stats span { color: ' + mc + '; font-weight: 700; }',
-            '.skin-load-more { width: 100%; padding: 8px; margin-top: 8px; background: ' + b1 + '26; border: 1px solid ' + b1 + '4d; border-radius: 4px; color: ' + b1 + '; font-family: "Roboto Condensed", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }',
+            '.skin-load-more { width: 100%; padding: 8px; margin-top: 8px; background: ' + b1 + '26; border: 1px solid ' + b1 + '4d; border-radius:var(--lm-radius-s,4px); color: ' + b1 + '; font-family: "Roboto Condensed", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }',
             '.skin-load-more:hover { background: ' + b1 + '40; color: ' + mc + '; }',
             '#specialShopModal input.form-control, #specialShopModal select.form-control { background: ' + pc2 + ' !important; color: ' + tc + ' !important; border: 1px solid ' + pc2 + ' !important; }',
-            '#specialShopModal #buy_starterpack { background: rgba(0,0,0,0.3); border: 1px solid ' + pc2 + '; border-left: 4px solid ' + mc + '; padding: 10px; border-radius: 4px; color: ' + tc + '; }',
+            '#specialShopModal #buy_starterpack { background: rgba(0,0,0,0.3); border: 1px solid ' + pc2 + '; border-left: 4px solid ' + mc + '; padding: 10px; border-radius:var(--lm-radius,6px); color: ' + tc + '; }',
             '#specialShopModal #buy_starterpack:hover { background: ' + mc + '26; border-color: ' + mc + '; }',
             '#specialShopModal #buy_starterpack h4, #specialShopModal #buy_starterpack h5 { color: ' + mc + '; }',
             '#specialShopModal #buy_starterpack:hover h4 { color: ' + mc + '; filter: brightness(1.3); }',
@@ -296,16 +296,16 @@ function SpecialDeals(defaultTab) {
             '.skin-grid-loading .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid ' + mc + '4d; border-top-color: ' + mc + '; border-radius: 50%; animation: skinSpin 0.8s linear infinite; margin-bottom: 8px; }',
             '@keyframes skinSpin { to { transform: rotate(360deg); } }',
             // Drag-and-drop zone
-            '.upload-drop-zone { border: 2px dashed ' + pc2 + '; border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: all 0.2s; background: rgba(0,0,0,0.2); }',
+            '.upload-drop-zone { border: 2px dashed ' + pc2 + '; border-radius:var(--lm-radius,6px); padding: 8px; margin-bottom: 8px; transition: all 0.2s; background: rgba(0,0,0,0.2); }',
             '.upload-drop-zone.drag-over { border-color: ' + mc + '; background: ' + mc + '14; }',
-            '.upload-clear-btn { background: ' + b4 + '33; border: 1px solid ' + b4 + '; color: ' + b4 + '; padding: 3px 12px; font-size: 10px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 6px; }',
+            '.upload-clear-btn { background: ' + b4 + '33; border: 1px solid ' + b4 + '; color: ' + b4 + '; padding: 3px 12px; font-size: 10px; font-weight: 700; border-radius:var(--lm-radius-s,4px); cursor: pointer; margin-top: 6px; }',
             '.upload-clear-btn:hover { background: ' + b4 + '; color: ' + btc + '; }',
             // Deal cards
             '.deal-card:hover { border-color: ' + mc + ' !important; background: ' + mc + '14 !important; }',
             '.deal-buy-btn:hover { background: ' + b1h + ' !important; transform: scale(1.05); }',
             '#dealsGrid::-webkit-scrollbar { width: 6px; }',
-            '#dealsGrid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
-            '#dealsGrid::-webkit-scrollbar-thumb { background: ' + pc2 + '; border-radius: 3px; }',
+            '#dealsGrid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius:var(--lm-radius,6px); }',
+            '#dealsGrid::-webkit-scrollbar-thumb { background: ' + pc2 + '; border-radius:var(--lm-radius,6px); }',
             '#dealsGrid::-webkit-scrollbar-thumb:hover { background: ' + tc2 + '; }',
             '#claimFreeCoinsBtn:hover { background: ' + b2 + ' !important; transform: scale(1.05); }',
         ].join('\n');
@@ -363,10 +363,10 @@ function SpecialDeals(defaultTab) {
             '</div>' +
 
             '<div class="skin-filter-bar" style="display: flex; gap: 6px; margin-bottom: 10px;">' +
-            '<button class="btn btn-xs skin-filter-btn active" data-filter="all" style="flex: 1; background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; padding: 6px 0; border-radius: 4px;">' + _lmsdE('lmx.sd.allSkinsN', ['955+']) + '</button>' +
-            '<button class="btn btn-xs skin-filter-btn" data-filter="owned" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x2B50; ' + _lmsdE('lmx.sd.ownedSkins') + '</button>' +
-            '<button class="btn btn-xs skin-filter-btn" data-filter="new"' + lmShopAttr('title', 'lmx.sd.newSkinsTip') + ' style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x1F195; ' + _lmsdE('lmx.sd.newSkins') + '</button>' +
-            '<button class="btn btn-xs" id="checkForOffersBtn" onclick="window._lmCheckForOffersManual()"' + lmShopAttr('title', 'lmx.sd.offersTip') + ' style="flex: 0 0 auto; background: #ff9800; color: #fff; font-weight: 700; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">&#x1F514; ' + lmShopSpan('lmx.sd.offers') + '</button>' +
+            '<button class="btn btn-xs skin-filter-btn active" data-filter="all" style="flex: 1; background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; padding: 6px 0; border-radius:var(--lm-radius-s,4px);">' + _lmsdE('lmx.sd.allSkinsN', ['955+']) + '</button>' +
+            '<button class="btn btn-xs skin-filter-btn" data-filter="owned" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius:var(--lm-radius-s,4px);">&#x2B50; ' + _lmsdE('lmx.sd.ownedSkins') + '</button>' +
+            '<button class="btn btn-xs skin-filter-btn" data-filter="new"' + lmShopAttr('title', 'lmx.sd.newSkinsTip') + ' style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius:var(--lm-radius-s,4px);">&#x1F195; ' + _lmsdE('lmx.sd.newSkins') + '</button>' +
+            '<button class="btn btn-xs" id="checkForOffersBtn" onclick="window._lmCheckForOffersManual()"' + lmShopAttr('title', 'lmx.sd.offersTip') + ' style="flex: 0 0 auto; background: #ff9800; color: #fff; font-weight: 700; border: none; padding: 6px 10px; border-radius:var(--lm-radius-s,4px); font-size: 11px; cursor: pointer;">&#x1F514; ' + lmShopSpan('lmx.sd.offers') + '</button>' +
             '</div>' +
             '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; ' + _lmsdE('lmx.sd.search') + '">' +
             '<div class="skin-grid" id="skinGrid"></div>' +
@@ -379,7 +379,7 @@ function SpecialDeals(defaultTab) {
             '<div class="' + uploadPaneClass + '" id="tab-upload">' +
             '<div class="modal-body" style="text-align: center;">' +
             '<h5 style="color: ' + mc + '; font-weight: 700; margin-top: 0;">' + lmShopSpan('lmx.sd.uploadTitle') + '</h5>' +
-            '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid ' + mc + '4d;">🧬 ' + lmShopSpan('lmx.sd.dnaLabel') + ' <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 ' + lmShopSpan('lmx.sd.coinsLabel') + ' <span id="coinsCountModal">0</span></div>' +
+            '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius:var(--lm-radius,6px); border: 1px solid ' + mc + '4d;">🧬 ' + lmShopSpan('lmx.sd.dnaLabel') + ' <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 ' + lmShopSpan('lmx.sd.coinsLabel') + ' <span id="coinsCountModal">0</span></div>' +
             '<div class="upload-drop-zone" id="uploadDropZone">' +
 
             '<p style="color: ' + tc2 + '; font-size: 11px; margin-bottom: 12px;">' + lmShopSpan('lmx.sd.uploadInfo') + '</p>' +
@@ -387,19 +387,19 @@ function SpecialDeals(defaultTab) {
             '<input id="legendSkinNameModal" class="form-control"' + lmShopAttr('placeholder', 'lmx.sd.skinNamePh') + ' style="width: 70%;" maxlength="15" required aria-required="true" autocomplete="off">' +
             '<div class="input-group legendSkinColor-picker" style="width: 30%;">' +
             '<input id="legendSkinColorModal" type="hidden" value="#FFFF00">' +
-            '<span class="input-group-addon" style="cursor:pointer; background: ' + pc + '; border: 1px solid ' + pc2 + '; border-radius: 4px;"><i style="background-color: #FFFF00;"></i></span>' +
+            '<span class="input-group-addon" style="cursor:pointer; background: ' + pc + '; border: 1px solid ' + pc2 + '; border-radius:var(--lm-radius-s,4px);"><i style="background-color: #FFFF00;"></i></span>' +
             '</div>' +
             '</div>' +
             '<div style="text-align: center; margin-bottom: 12px;">' +
             '<canvas id="legendCanvasModal" width="512" height="512" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid ' + mc + '; background-color: #000; box-shadow: 0 0 12px ' + mc + '4d;"></canvas>' +
             '</div>' +
-            '<label for="legendUploadInputModal" class="btn" id="legendChooseFileBtn" style="background: ' + b2 + '; color: ' + btc + '; margin-bottom: 8px; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s; display: inline-block;">&#x1F4C2; ' + lmShopSpan('lmx.sd.chooseFile') + '</label>' +
+            '<label for="legendUploadInputModal" class="btn" id="legendChooseFileBtn" style="background: ' + b2 + '; color: ' + btc + '; margin-bottom: 8px; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius:var(--lm-radius,6px); padding: 8px 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s; display: inline-block;">&#x1F4C2; ' + lmShopSpan('lmx.sd.chooseFile') + '</label>' +
             '<input type="file" id="legendUploadInputModal" accept="image/*" style="display:none;" />' +
             '<div style="display: flex; gap: 4px; max-width: 320px; margin: 0 auto 8px; align-items: center;">' +
             '<input type="text" id="legendSkinUrlInput" class="form-control"' + lmShopAttr('placeholder', 'lmx.sd.urlPh') + ' style="flex: 1; height: 32px; font-size: 11px; border: 1px solid ' + pc2 + '; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
-            '<button id="legendLoadUrlBtn" class="btn" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 800; font-size: 11px; border: none; border-radius: 6px; padding: 6px 14px; white-space: nowrap; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">' + lmShopSpan('lmx.sd.load') + '</button>' +
+            '<button id="legendLoadUrlBtn" class="btn" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 800; font-size: 11px; border: none; border-radius:var(--lm-radius,6px); padding: 6px 14px; white-space: nowrap; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">' + lmShopSpan('lmx.sd.load') + '</button>' +
             '</div>' +
-            '<button id="legendSaveBtnModal" class="btn" disabled style="background: ' + b2 + '; color: ' + btc + '; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius: 6px; padding: 8px 16px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">' + (typeof window.getSkinUploadButtonLabel === 'function' ? window.getSkinUploadButtonLabel().replace(/&/g, '&amp;') : _lmsdE('lmx.sd.uploadBuy')) + '</button>' +
+            '<button id="legendSaveBtnModal" class="btn" disabled style="background: ' + b2 + '; color: ' + btc + '; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius:var(--lm-radius,6px); padding: 8px 16px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">' + (typeof window.getSkinUploadButtonLabel === 'function' ? window.getSkinUploadButtonLabel().replace(/&/g, '&amp;') : _lmsdE('lmx.sd.uploadBuy')) + '</button>' +
             '<br><button id="legendClearBtn" class="upload-clear-btn" style="display:none;">&#x2716; ' + lmShopSpan('lmx.sd.clearImage') + '</button>' +
             '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: ' + tc2 + ';">' + _lmsdE('lmx.sd.uploadHint') + '</div>' +
             '</div>' + // close drop zone
@@ -411,7 +411,7 @@ function SpecialDeals(defaultTab) {
             '<div class="modal-body">' +
 
             // Balance display
-            '<div id="dealsBalanceBar" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 10px; background: rgba(0,0,0,0.3); text-align: center; padding: 5px 12px; border-radius: 12px; border: 1px solid ' + mc + '4d;">' +
+            '<div id="dealsBalanceBar" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 10px; background: rgba(0,0,0,0.3); text-align: center; padding: 5px 12px; border-radius:var(--lm-radius,6px); border: 1px solid ' + mc + '4d;">' +
             '🧬 ' + lmShopSpan('lmx.sd.dnaLabel') + ' <span id="dealsDnaCount">0</span> &nbsp;|&nbsp; 💰 ' + lmShopSpan('lmx.sd.coinsLabel') + ' <span id="dealsCoinsCount">0</span></div>' +
 
             // Deal cards container
@@ -431,7 +431,7 @@ function SpecialDeals(defaultTab) {
             '<span style="color: ' + tc2 + '; font-size: 11px; line-height: 34px;">' + Premadeletter117 + '</span>' +
             '</div>' +
             '<input type="text" class="form-control" id="GameConfigurationUrl" value="' + window.MiniclipConfigDestination + '" placeholder="GameConfiguration.json URL" style="width: 100%; margin-bottom: 6px;">' +
-            '<p class="alert-warning text-center" style="font-size: 11px; padding: 6px; border-radius: 4px;">' + Premadeletter116 + '<br>UID: <span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font></p>' + // i18n-ok: "UID" is the same technical term in every language
+            '<p class="alert-warning text-center" style="font-size: 11px; padding: 6px; border-radius:var(--lm-radius-s,4px);">' + Premadeletter116 + '<br>UID: <span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font></p>' + // i18n-ok: "UID" is the same technical term in every language
             '</div>' +
             '</details>' +
 
@@ -790,7 +790,7 @@ function SpecialDeals(defaultTab) {
                 if (dropZone) {
                     uploadBanner = document.createElement('div');
                     uploadBanner.id = 'uploadLoginBanner';
-                    uploadBanner.style.cssText = 'display:none; text-align: center; padding: 8px 14px; margin-bottom: 10px; border-radius: 8px; background: rgba(255,152,0,0.15); border: 1px solid rgba(255,152,0,0.4); font-size: 11px; font-weight: 600; color: #ffb74d; font-family: "Roboto Condensed", sans-serif;';
+                    uploadBanner.style.cssText = 'display:none; text-align: center; padding: 8px 14px; margin-bottom: 10px; border-radius:var(--lm-radius,6px); background: rgba(255,152,0,0.15); border: 1px solid rgba(255,152,0,0.4); font-size: 11px; font-weight: 600; color: #ffb74d; font-family: "Roboto Condensed", sans-serif;';
                     dropZone.insertBefore(uploadBanner, dropZone.firstChild);
                 }
             }
@@ -815,7 +815,7 @@ function SpecialDeals(defaultTab) {
                 if (grid) {
                     loginBanner = document.createElement('div');
                     loginBanner.id = 'shopLoginBanner';
-                    loginBanner.style.cssText = 'display:none; grid-column: 1/-1; text-align: center; padding: 10px 16px; margin-bottom: 8px; border-radius: 8px; background: rgba(255,152,0,0.15); border: 1px solid rgba(255,152,0,0.4); font-size: 12px; font-weight: 600; color: #ffb74d; font-family: "Roboto Condensed", sans-serif;';
+                    loginBanner.style.cssText = 'display:none; grid-column: 1/-1; text-align: center; padding: 10px 16px; margin-bottom: 8px; border-radius:var(--lm-radius,6px); background: rgba(255,152,0,0.15); border: 1px solid rgba(255,152,0,0.4); font-size: 12px; font-weight: 600; color: #ffb74d; font-family: "Roboto Condensed", sans-serif;';
                     grid.parentNode.insertBefore(loginBanner, grid);
                 }
             }
@@ -2817,7 +2817,7 @@ function showPotionProductSelector() {
         activePotions.forEach(function(p) {
             var name = p.type.replace(/_/g, ' ').toUpperCase();
             html += `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.05); border-radius:var(--lm-radius,6px); border: 1px solid rgba(255,255,255,0.08);">
                     <div>
                         <div style="font-weight: 700; color: ${t.tc}; font-size: 13px;">${_lmsdE('lmx.sd.potionSlot', [name, p.slot])}</div>
                         <div style="font-size: 11px; color: ${t.tc2};">${_sdEscHtml(p.status)}</div>
@@ -2831,7 +2831,7 @@ function showPotionProductSelector() {
     html += `<div style="font-weight: 700; margin: 12px 0 8px 0; color: ${t.tc}; font-size: 12px;">${_lmsdE('lmx.sd.standardPotions')}</div>`;
     defaultPotions.forEach(function(p) {
         html += `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.03); border-radius:var(--lm-radius,6px); border: 1px solid rgba(255,255,255,0.05);">
                 <div style="font-weight: 600; color: ${t.tc}; font-size: 13px;">${p.name}</div>
                 <button class="btn btn-sm btn-primary" style="font-weight: 700; padding: 4px 12px;" onclick="if(window.application && window.application.openPotionForProduct) window.application.openPotionForProduct('${p.type}'); document.getElementById('lm-potion-selector-modal').remove();">${_lmsdE('lmx.sd.open')}</button>
             </div>
@@ -3022,14 +3022,14 @@ function _showSkinPacksModal(skinName, productId) {
     var rows = '';
     for (var i = 0; i < packs.length; i++) {
         var p = packs[i];
-        rows += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; text-align: left;">';
+        rows += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius:var(--lm-radius,6px); padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; text-align: left;">';
         rows += '<div style="flex: 1; min-width: 0;">';
         rows += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + _sdEscHtml(p.desc) + '</div>';
         rows += renderDealSkinMiniIcons(p.bundleId, 8);
         rows += '</div>';
         rows += '<div style="text-align: right; min-width: 70px;">';
         rows += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + _sdEscHtml(p.price) + '</div>';
-        rows += '<button type="button" class="btn btn-xs deal-buy-btn" data-pack-index="' + i + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
+        rows += '<button type="button" class="btn btn-xs deal-buy-btn" data-pack-index="' + i + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius:var(--lm-radius,6px); padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
         rows += '</div>';
         rows += '</div>';
     }
@@ -3039,13 +3039,13 @@ function _showSkinPacksModal(skinName, productId) {
     modal.className = 'lm-modal-overlay';
     modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML =
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 420px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 420px; max-width: calc(100vw - 32px); text-align: center; border-radius:var(--lm-radius,6px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' + // i18n-ok: CSS
                 '&#x1F381; ' + _lmsdE('lmx.sd.packsWith', [skinName]) +
             '</div>' +
             '<div style="padding: 14px 16px; max-height: 60vh; overflow-y: auto;">' + rows + '</div>' +
             '<div style="display: flex; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="skin-packs-close" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('close') + '</button>' +
+                '<button id="skin-packs-close" type="button" style="flex: 1; padding: 10px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('close') + '</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(modal);
@@ -3397,16 +3397,16 @@ function _showMobileSkinBundlesModal(skinName, productId) {
             else if (c.productId.indexOf('potion') !== -1) pname = '🧪 ' + _lmsdT('lmx.sd.potionN', [c.productId.replace(/_/g, ' ').replace('potion ', '')]);
             else if (c.productId.indexOf('skin_') !== -1) pname = '🎨 ' + c.productId.replace('skin_', '').replace(/_/g, ' ');
             else pname = c.quantity + 'x ' + pname;
-            contentsHtml += '<span style="display: inline-block; background: rgba(255,255,255,0.06); border-radius: 4px; padding: 2px 6px; margin: 2px; font-size: 10px;">' + _sdEscHtml(pname) + '</span>';
+            contentsHtml += '<span style="display: inline-block; background: rgba(255,255,255,0.06); border-radius:var(--lm-radius-s,4px); padding: 2px 6px; margin: 2px; font-size: 10px;">' + _sdEscHtml(pname) + '</span>';
         }
-        rows += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; text-align: left;">';
+        rows += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius:var(--lm-radius,6px); padding: 10px; margin-bottom: 8px; text-align: left;">';
         rows += '<div style="display: flex; align-items: center; gap: 10px;">';
         rows += '<div style="flex: 1; min-width: 0;">';
         rows += '<div style="font-weight: 700; font-size: 12px; color: ' + t.tc + '; margin-bottom: 4px;">' + contentsHtml + '</div>';
         rows += '</div>';
         rows += '<div style="text-align: right; min-width: 70px;">';
         rows += '<div style="font-size: 14px; font-weight: 700; color: #4caf50;">' + _sdEscHtml(txn.priceLabel) + '</div>';
-        rows += '<button type="button" class="btn btn-xs mobile-bundle-buy" data-purchase-id="' + _sdEscHtml(txn.purchaseId) + '" data-txn-id="' + _sdEscHtml(txn.id) + '" style="background: #4caf50; color: #fff; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
+        rows += '<button type="button" class="btn btn-xs mobile-bundle-buy" data-purchase-id="' + _sdEscHtml(txn.purchaseId) + '" data-txn-id="' + _sdEscHtml(txn.id) + '" style="background: #4caf50; color: #fff; font-weight: 700; border: none; border-radius:var(--lm-radius,6px); padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
         rows += '</div></div></div>';
     }
 
@@ -3415,7 +3415,7 @@ function _showMobileSkinBundlesModal(skinName, productId) {
     modal.className = 'lm-modal-overlay';
     modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML =
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 460px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 460px; max-width: calc(100vw - 32px); text-align: center; border-radius:var(--lm-radius,6px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: #ff9800; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
                 '&#x1F3AF; ' + _lmsdE('lmx.sd.promoBundlesFor', [skinName]) +
             '</div>' +
@@ -3424,7 +3424,7 @@ function _showMobileSkinBundlesModal(skinName, productId) {
             '</div>' +
             '<div style="padding: 14px 16px; max-height: 50vh; overflow-y: auto;">' + rows + '</div>' +
             '<div style="display: flex; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="mobile-bundles-close" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('close') + '</button>' +
+                '<button id="mobile-bundles-close" type="button" style="flex: 1; padding: 10px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('close') + '</button>' +
             '</div>' +
         '</div>';
 
@@ -3637,7 +3637,7 @@ function populateDealsGrid() {
 
         // Show resolved skin names first (proper titles from config)
         for (var rs2 = 0; rs2 < resolvedSkins.length; rs2++) {
-            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">🎨 ' + _sdEscHtml(resolvedSkins[rs2].name) + '</span> ';
+            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius:var(--lm-radius-s,4px); margin: 1px;">🎨 ' + _sdEscHtml(resolvedSkins[rs2].name) + '</span> ';
         }
 
         // Show non-skin products (coins, DNA, boosts, etc.)
@@ -3653,7 +3653,7 @@ function populateDealsGrid() {
             else if (pid.indexOf('skin') !== -1) label = '🎨 ' + cleanPid.replace(/_/g, ' ');
             else if (pid.indexOf('boost') !== -1) label = '🚀 ' + pid.replace(/_/g, ' ');
             else label = qty + 'x ' + label;
-            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + _sdEscHtml(label) + '</span> ';
+            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius:var(--lm-radius-s,4px); margin: 1px;">' + _sdEscHtml(label) + '</span> ';
         }
         if (!contentText) contentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">' + _lmsdE('lmx.sd.bundle') + '</span>';
 
@@ -3686,7 +3686,7 @@ function populateDealsGrid() {
             iconHtml += '<div style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">💎</div>';
         }
 
-        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: border-color 0.2s;">';
+        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius:var(--lm-radius,6px); padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: border-color 0.2s;">';
         html += iconHtml;
         html += '<div style="flex: 1; min-width: 0;">';
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + _sdEscHtml(desc) + '</div>';
@@ -3694,7 +3694,7 @@ function populateDealsGrid() {
         html += '</div>';
         html += '<div style="text-align: right; min-width: 70px;">';
         html += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + price + '</div>';
-        html += '<button class="btn btn-xs deal-buy-btn" data-deal-id="' + _sdEscHtml(deal.id) + '" data-deal-desc="' + _sdEscHtml(desc) + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
+        html += '<button class="btn btn-xs deal-buy-btn" data-deal-id="' + _sdEscHtml(deal.id) + '" data-deal-desc="' + _sdEscHtml(desc) + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius:var(--lm-radius,6px); padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
         html += '</div>';
         html += '</div>';
     }
@@ -3719,13 +3719,13 @@ function populateDealsGrid() {
         var dealIcon = isBoostPurchase ? '🚀' : '🛒';
         var dealBorder = isBoostPurchase ? t.mc : t.b3;
 
-        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius:var(--lm-radius,6px); padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
         html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + dealBorder + ';">' + dealIcon + '</div>';
         html += '<div style="flex: 1; min-width: 0;">';
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + dealBorder + ';">' + spDesc + '</div>';
         html += '<div style="font-size: 11px; color: ' + t.tc2 + ';">' + currIcon + ' ' + currAmount.toLocaleString() + ' ' + currType + '</div>';
         html += '</div>';
-        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: ' + dealBorder + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
+        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: ' + dealBorder + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius:var(--lm-radius,6px); padding: 4px 14px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
         html += '</div>';
     }
 
@@ -3736,13 +3736,13 @@ function populateDealsGrid() {
         if (pid.indexOf('boost') !== -1 && boostSrc[pid] > 0 && /^[\w.+\-]+$/.test(pid)) {
             var bQty = Number(boostSrc[pid]) || 0;
             var bName = pid.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-            boostHtml += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.mc + '44; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+            boostHtml += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.mc + '44; border-radius:var(--lm-radius,6px); padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
             boostHtml += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.mc + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">🚀</div>';
             boostHtml += '<div style="flex: 1; min-width: 0;">';
             boostHtml += '<div style="font-weight: 700; font-size: 13px; color: ' + t.mc + ';">' + _sdEscHtml(bName) + '</div>';
             boostHtml += '<div style="font-size: 11px; color: ' + t.tc2 + ';">' + _lmsdE('lmx.sd.ownedQty', [bQty]) + '</div>';
             boostHtml += '</div>';
-            boostHtml += '<button class="btn btn-xs" onclick="activateBoost(\'' + pid + '\')" style="background: ' + t.mc + '; color: #000; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.activate') + '</button>';
+            boostHtml += '<button class="btn btn-xs" onclick="activateBoost(\'' + pid + '\')" style="background: ' + t.mc + '; color: #000; font-weight: 700; border: none; border-radius:var(--lm-radius-s,4px); padding: 4px 14px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.activate') + '</button>';
             boostHtml += '</div>';
         }
     }
@@ -3786,14 +3786,14 @@ function populateDealsGrid() {
         var obFromDate = new Date(ob.availableFrom).toLocaleDateString();
         var obToDate = new Date(ob.availableTo).toLocaleDateString();
 
-        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + obBorder + '44; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + obBorder + '44; border-radius:var(--lm-radius,6px); padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
         html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + obBorder + ';">' + obIcon + '</div>';
         html += '<div style="flex: 1; min-width: 0;">';
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + obBorder + ';">' + _sdEscHtml(obDesc) + '</div>';
         html += '<div style="font-size: 10px; color: ' + t.tc2 + ';">' + obFromDate + ' — ' + obToDate + '</div>';
         html += obWarning;
         html += '</div>';
-        html += '<button class="btn btn-xs deal-offer-btn" data-offer-bundle-id="' + _sdEscHtml(ob.bundleId) + '" data-offer-desc="' + _sdEscHtml(obDesc) + '" style="background: ' + obBorder + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">' + obLabel + '</button>';
+        html += '<button class="btn btn-xs deal-offer-btn" data-offer-bundle-id="' + _sdEscHtml(ob.bundleId) + '" data-offer-desc="' + _sdEscHtml(obDesc) + '" style="background: ' + obBorder + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius:var(--lm-radius,6px); padding: 4px 14px; font-size: 11px; cursor: pointer;">' + obLabel + '</button>';
         html += '</div>';
     }
 
@@ -4035,7 +4035,7 @@ function renderDealSkinMiniIcons(bundleId, maxIcons) {
                 'height:22px;' +
                 'min-width:22px;' +
                 'padding:0 6px;' +
-                'border-radius:11px;' +
+                'border-radius:var(--lm-radius,6px);' +
                 'font-size:10px;' +
                 'font-weight:700;' +
                 'background:rgba(255,255,255,0.08);' +
@@ -4066,7 +4066,7 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm, headerText)
     modal.className = 'lm-modal-overlay';
     modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML = 
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; max-width: calc(100vw - 32px); text-align: center; border-radius:var(--lm-radius,6px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' + // i18n-ok: CSS
                 (headerText ? _sdEscHtml(headerText) : '🛒 ' + _lmsdE('lmx.sd.purchaseConfirm')) +
             '</div>' +
@@ -4076,8 +4076,8 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm, headerText)
                 '<div style="font-size: 11px; color: ' + t.tc2 + ';">' + _lmsdE('lmx.sd.sureProceed') + '</div>' +
             '</div>' +
             '<div style="display: flex; gap: 10px; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="deal-confirm-cancel" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('agario.page_menu_shop_cancel') + '</button>' +
-                '<button id="deal-confirm-buy" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none;">' + _lmsdE('lmx.sd.confirm') + '</button>' +
+                '<button id="deal-confirm-cancel" type="button" style="flex: 1; padding: 10px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('agario.page_menu_shop_cancel') + '</button>' +
+                '<button id="deal-confirm-buy" type="button" style="flex: 1; padding: 10px; border-radius:var(--lm-radius,6px); font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none;">' + _lmsdE('lmx.sd.confirm') + '</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(modal);
@@ -4244,7 +4244,7 @@ function _showIAPBetaRiskModal(
             'border:2px solid #ff5252;' +
             'width:460px;' +
             'max-width:calc(100vw - 30px);' +
-            'border-radius:12px;' +
+            'border-radius:var(--lm-radius,6px);' +
             'overflow:hidden;' +
             'box-shadow:0 14px 40px rgba(0,0,0,0.65);' +
             'font-family:\'Roboto Condensed\',sans-serif;' +
@@ -4285,7 +4285,7 @@ function _showIAPBetaRiskModal(
                 '<div style="' +
                     'background:rgba(255,82,82,0.12);' +
                     'border:1px solid rgba(255,82,82,0.55);' +
-                    'border-radius:8px;' +
+                    'border-radius:var(--lm-radius,6px);' +
                     'padding:12px;' +
                     'margin-bottom:14px;' +
                 '">' +
@@ -4318,7 +4318,7 @@ function _showIAPBetaRiskModal(
                 '<button id="iap-beta-disagree" type="button" style="' +
                     'flex:1;' +
                     'padding:11px;' +
-                    'border-radius:8px;' +
+                    'border-radius:var(--lm-radius,6px);' +
                     'font-weight:900;' +
                     'font-size:13px;' +
                     'cursor:pointer;' +
@@ -4332,7 +4332,7 @@ function _showIAPBetaRiskModal(
                 '<button id="iap-beta-agree" type="button" disabled style="' +
                     'flex:1;' +
                     'padding:11px;' +
-                    'border-radius:8px;' +
+                    'border-radius:var(--lm-radius,6px);' +
                     'font-weight:900;' +
                     'font-size:13px;' +
                     'cursor:not-allowed;' +
@@ -8659,7 +8659,7 @@ function buySkin(productId) {
      */
     modal.innerHTML =
         '<div id="skin-confirm-panel" ' +
-            'style="border-radius:14px;width:340px;' +
+            'style="border-radius:var(--lm-radius,6px);width:340px;' +
             'box-shadow:0 20px 60px rgba(0,0,0,0.6);' +
             'overflow:hidden;font-family:\'Roboto Condensed\',sans-serif;">' +
 
@@ -8689,7 +8689,7 @@ function buySkin(productId) {
                 '</div>' +
 
                 '<div id="skin-confirm-cost-box" ' +
-                    'style="padding:10px 16px;border-radius:8px;' +
+                    'style="padding:10px 16px;border-radius:var(--lm-radius,6px);' +
                     'background:rgba(255,255,255,0.05);' +
                     'border:1px solid rgba(255,255,255,0.08);' +
                     'margin-bottom:8px;">' +
@@ -8706,7 +8706,7 @@ function buySkin(productId) {
                 '<div id="skin-confirm-warning" ' +
                     'style="display:none;color:#ff9800;font-size:12px;' +
                     'font-weight:700;margin-top:8px;padding:6px 12px;' +
-                    'border-radius:6px;background:rgba(255,152,0,0.12);' +
+                    'border-radius:var(--lm-radius,6px);background:rgba(255,152,0,0.12);' +
                     'border:1px solid rgba(255,152,0,0.3);">' +
                 '</div>' +
             '</div>' +
@@ -8716,7 +8716,7 @@ function buySkin(productId) {
                 'border-top:1px solid rgba(255,255,255,0.1);">' +
 
                 '<button id="skin-confirm-cancel" type="button" ' +
-                    'style="flex:1;padding:10px;border-radius:8px;' +
+                    'style="flex:1;padding:10px;border-radius:var(--lm-radius,6px);' +
                     'font-weight:800;font-size:14px;cursor:pointer;' +
                     'background:rgba(255,255,255,0.08);' +
                     'border:1px solid rgba(255,255,255,0.15);">' +
@@ -8724,7 +8724,7 @@ function buySkin(productId) {
                 '</button>' +
 
                 '<button id="skin-confirm-buy" type="button" ' +
-                    'style="flex:1;padding:10px;border-radius:8px;' +
+                    'style="flex:1;padding:10px;border-radius:var(--lm-radius,6px);' +
                     'font-weight:900;font-size:14px;border:none;">' +
                     _lmsdE('lmx.sd.buyNow') +
                 '</button>' +

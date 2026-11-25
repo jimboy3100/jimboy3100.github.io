@@ -34,7 +34,7 @@ for (var i=1;i<window.RecordPlayers.length;i++){
 				'<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/css/specialeffects.css">' +
 				'<div class="modal-backdrop fade in" style="z-index: 1040;"></div>' +
 				'<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1000px; max-height: 85vh; margin: 0; z-index: 1050;">' +
-                '<div class="modal-content" style="background: #fff; color: #333; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative; z-index: 1051; max-height: 85vh; display: flex; flex-direction: column;">' +
+                '<div class="modal-content" style="background: #fff; color: #333; border-radius: var(--lm-radius,6px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative; z-index: 1051; max-height: 85vh; display: flex; flex-direction: column;">' +
                 '<div id="CloseUserLeaguesInfo2" class="modal-header"><button id="CloseUserLeaguesInfo" type="button" class="close" data-dismiss="modal" title="' + _lmlgE('close') + '"><span aria-hidden="true">×</span><span class="sr-only">' + _lmlgE('pack.close2') + '</span></button> <button id="FAQUserLeaguesInfo" type="button" class="close" title="' + _lmlgE('help') + '"><span aria-hidden="true">?</span><span class="sr-only">' + _lmlgE('help') + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + _lmlgE('lmx.lg.title') + '</h4>' +
                 '</div>' +

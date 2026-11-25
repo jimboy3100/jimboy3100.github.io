@@ -236,14 +236,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 width: 620px;
                 max-width: 94vw;
                 max-height: 85vh;
-                border-radius: 6px !important;
+                border-radius:var(--lm-radius,6px) !important;
                 box-shadow: 0 8px 32px rgba(0,0,0,0.5);
                 border: 1px solid var(--lm-pc2, rgba(255,255,255,0.12)) !important;
                 border-top: 3px solid var(--lm-mc, #01d9cc) !important;
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
-                font-family: 'Ubuntu', 'Inter', sans-serif;
+                font-family: var(--lm-hud-font, 'Ubuntu', 'Inter', sans-serif);
             }
             .lm-modal-header {
                 padding: 10px 20px 8px;
@@ -268,7 +268,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 border: none;
                 color: var(--lm-tc2, #8096a7);
                 width: 28px; height: 28px;
-                border-radius: 4px;
+                border-radius:var(--lm-radius-s,4px);
                 font-size: 18px;
                 cursor: pointer;
                 transition: all 0.2s;
@@ -286,7 +286,15 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 flex: 1;
             }
             .lm-modal-body::-webkit-scrollbar { width: 6px; }
-            .lm-modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+            .lm-modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius:var(--lm-radius,6px); }
+            .lm-modal-footer {
+                padding: 10px 20px;
+                border-top: 1px solid var(--lm-pc2, rgba(255,255,255,0.1));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
 
             /* Leagues List Styling */
             .lm-league-card {
@@ -295,7 +303,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 justify-content: space-between;
                 padding: 12px 16px;
                 margin-bottom: 8px;
-                border-radius: 8px;
+                border-radius:var(--lm-radius,6px);
                 background: rgba(255,255,255,0.04);
                 border: 1px solid rgba(255,255,255,0.06);
                 transition: transform 0.15s, background 0.15s;
@@ -322,7 +330,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 justify-content: space-between;
                 padding: 12px 16px;
                 margin-bottom: 8px;
-                border-radius: 8px;
+                border-radius:var(--lm-radius,6px);
                 background: rgba(255,255,255,0.04);
                 border: 1px solid rgba(255,255,255,0.06);
             }
@@ -368,7 +376,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             }
             .lm-stat-card {
                 padding: 16px;
-                border-radius: 10px;
+                border-radius:var(--lm-radius,6px);
                 background: rgba(255,255,255,0.04);
                 border: 1px solid rgba(255,255,255,0.08);
                 display: flex;
@@ -1951,7 +1959,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     '<span class="flag-icon flag-icon-' +
                     userCountry
                         .toLowerCase() +
-                    '" style="border-radius: 3px;"></span>',
+                    '" style="border-radius:var(--lm-radius-s,4px);"></span>',
 
                 prizes:
                     officialPrizeSummary
@@ -1991,7 +1999,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         // Top Banner Card
         html += `
-            <div style="background: ${cfg.gradient}; border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: #fff;">
+            <div style="background: ${cfg.gradient}; border-radius:var(--lm-radius,6px); padding: 14px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: #fff;">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <div style="font-size: 32px; background: rgba(255,255,255,0.15); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);">
                         ${cfg.icon}
@@ -2003,12 +2011,12 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-size: 11px; text-align: center;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius:var(--lm-radius,6px); border: 1px solid rgba(255,255,255,0.2); font-size: 11px; text-align: center;">
                         <div style="opacity: 0.8; margin-bottom: 2px;">${_lmUE('lmx.ui.top3Prizes')}</div>
                         <div style="font-weight: 800; color: #ffd700;">${cfg.prizes}</div>
                     </div>
-                    <button class="btn" onclick="window.showMorePrizesModal(${tabType});" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">${_lmUE('lmx.ui.morePrizes')}</button>
-                    <button class="btn" onclick="window.showLastWeekResultsModal(${tabType});" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">${_lmUE('lmx.ui.lastWeekResults')}</button>
+                    <button class="btn" onclick="window.showMorePrizesModal(${tabType});" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">${_lmUE('lmx.ui.morePrizes')}</button>
+                    <button class="btn" onclick="window.showLastWeekResultsModal(${tabType});" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">${_lmUE('lmx.ui.lastWeekResults')}</button>
                     <button class="btn" onclick="window.showLeaguesInfoModal();" style="background: rgba(255,255,255,0.2); color: #fff; font-weight: 900; font-size: 15px; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">?</button>
                 </div>
             </div>
@@ -2251,7 +2259,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 } else if (rankNum === 3) {
                     rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ff8a65, #d84315); color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">3</div>`;
                 } else {
-                    rankBadge = `<div style="padding: 3px 8px; border-radius: 6px; background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 12px;">#${rankNum}</div>`;
+                    rankBadge = `<div style="padding: 3px 8px; border-radius:var(--lm-radius,6px); background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 12px;">#${rankNum}</div>`;
                 }
 
                 var name = entry.displayName || entry.id || _lmUR('lmx.ui.playerN', [rankNum]);
@@ -2268,12 +2276,12 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 var rowBg = isUser ? 'background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676;' : 'background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);';
 
                 html += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius: 8px; ${rowBg} transition: transform 0.15s;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius:var(--lm-radius,6px); ${rowBg} transition: transform 0.15s;">
                         <div style="width: 70px;">${rankBadge}</div>
                         <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
                             <img src="${icon}" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src='https://jimboy3100.github.io/banners/profilepic_guest.png';">
                             <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${level}</span>
-                            <span class="country-icon flag-icon flag-icon-${country}" style="border-radius: 2px;"></span>
+                            <span class="country-icon flag-icon flag-icon-${country}" style="border-radius:var(--lm-radius-s,4px);"></span>
                             <span style="font-weight: 700; color: ${isUser ? '#00e676' : t.tc}; font-size: 13px;">${isUser ? _lmUE('lmx.ui.nameYou', [name]) : window._escapeLeagueHtmlText(name)}</span>
                         </div>
                         <div style="width: 140px; text-align: right; font-weight: 800; color: ${t.tc}; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
@@ -2310,14 +2318,14 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             );
         if (!userFoundInList && hasUserSummary) {
             html += `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 10px; border-radius: 8px; background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676; box-shadow: 0 0 12px rgba(0,230,118,0.2);">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 10px; border-radius:var(--lm-radius,6px); background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676; box-shadow: 0 0 12px rgba(0,230,118,0.2);">
                     <div style="width: 70px;">
-                        <div style="padding: 4px 8px; border-radius: 6px; background: #00e676; color: #000; font-weight: 900; font-size: 12px; text-align: center;">${currentUserRank}</div>
+                        <div style="padding: 4px 8px; border-radius:var(--lm-radius,6px); background: #00e676; color: #000; font-weight: 900; font-size: 12px; text-align: center;">${currentUserRank}</div>
                     </div>
                     <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
                         <img src="${currentUserAvatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #00e676;" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
                         <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${currentUserLevel}</span>
-                        <span class="country-icon flag-icon flag-icon-${currentUserCountry.toLowerCase()}" style="border-radius: 2px;"></span>
+                        <span class="country-icon flag-icon flag-icon-${currentUserCountry.toLowerCase()}" style="border-radius:var(--lm-radius-s,4px);"></span>
                         <span style="font-weight: 800; color: #00e676; font-size: 14px;">${_lmUE('lmx.ui.nameYou', [currentUserName])}</span>
                     </div>
                     <div style="width: 140px; text-align: right; font-weight: 800; color: #00e676; font-size: 14px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
@@ -2377,7 +2385,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         if (!listContainer) return;
         var t = getTheme();
         var retryHtml = withRetry
-            ? `<div style="margin-top: 14px;"><button class="btn" onclick="window.retryCurrentLeaguesRequest();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">${_lmUE('retry')}</button></div>`
+            ? `<div style="margin-top: 14px;"><button class="btn" onclick="window.retryCurrentLeaguesRequest();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">${_lmUE('retry')}</button></div>`
             : '';
         listContainer.innerHTML = `
             <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 14px; font-weight: 600;">
@@ -2637,16 +2645,16 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 <div class="lm-modal-body" style="padding: 16px;">
                     <!-- 3 Leaderboard Tabs -->
                     <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 1 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius:var(--lm-radius,6px); font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 1 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             ⭐ ${_lmUE('lmx.ui.myLeague')}
                         </button>
-                        <button id="lm-tab-4" class="lm-tab-btn ${window.currentLeagueTab === 4 ? 'active' : ''}" onclick="window.switchLeagueTab(4);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 4 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 4 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 4 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-4" class="lm-tab-btn ${window.currentLeagueTab === 4 ? 'active' : ''}" onclick="window.switchLeagueTab(4);" style="flex: 1; padding: 8px 12px; border-radius:var(--lm-radius,6px); font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 4 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 4 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 4 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             👥 ${_lmUE('friends')}
                         </button>
-                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 2 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius:var(--lm-radius,6px); font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 2 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             🇺🇸 ${_lmUE('lmx.ui.country')}
                         </button>
-                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 3 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius:var(--lm-radius,6px); font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 3 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             🌎 ${_lmUE('lmx.ui.world')}
                         </button>
                     </div>
@@ -2796,7 +2804,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     <div style="text-align: center; padding: 40px 20px; color: ${lt.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
                         <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
                         ${_lmUE('lmx.ui.noWeeklyResults')}
-                        <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${lt.b1}; color: ${lt.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">${_lmUE('retry')}</button></div>
+                        <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${lt.b1}; color: ${lt.btc}; font-weight: 800; padding: 6px 20px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">${_lmUE('retry')}</button></div>
                     </div>
                 `;
             }
@@ -3154,7 +3162,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     'justify-content:space-between;' +
                     'padding:12px 20px;' +
                     'margin-bottom:6px;' +
-                    'border-radius:8px;' +
+                    'border-radius:var(--lm-radius,6px);' +
                     'background:rgba(255,255,255,0.05);' +
                     'border:1px solid rgba(255,255,255,0.08);' +
                 '">' +
@@ -3276,7 +3284,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                             ';' +
                             'font-weight:800;' +
                             'padding:8px 24px;' +
-                            'border-radius:6px;' +
+                            'border-radius:var(--lm-radius,6px);' +
                             'border:none;' +
                             'cursor:pointer;' +
                         '"' +
@@ -3382,7 +3390,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 </div>
 
                 <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <button class="btn" onclick="document.getElementById('lm-lastweek-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">${_lmUE('close')}</button>
+                    <button class="btn" onclick="document.getElementById('lm-lastweek-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">${_lmUE('close')}</button>
                 </div>
             </div>
         `;
@@ -3463,7 +3471,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
                             <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
                             ${_lmUE('lmx.ui.weeklyResultsFailed')}
-                            <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius: 6px; border: none; cursor: pointer;">${_lmUE('retry')}</button></div>
+                            <div style="margin-top: 14px;"><button class="btn" onclick="window.showLastWeekResultsModal(window._lastWeekLeagueTab);" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 6px 20px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">${_lmUE('retry')}</button></div>
                         </div>
                     `;
                 }
@@ -3690,17 +3698,17 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             } else if (rankNum === 3) {
                 rankBadge = '<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ff8a65, #d84315); color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">3</div>';
             } else {
-                rankBadge = '<div style="padding: 3px 8px; border-radius: 6px; background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; font-size: 12px;">#' + rankNum + '</div>';
+                rankBadge = '<div style="padding: 3px 8px; border-radius:var(--lm-radius,6px); background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; font-size: 12px;">#' + rankNum + '</div>';
             }
 
             var rowBg = isUser ? 'background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676;' : 'background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);';
 
-            html += '<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius: 8px; ' + rowBg + '">';
+            html += '<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius:var(--lm-radius,6px); ' + rowBg + '">';
             html += '<div style="width: 60px;">' + rankBadge + '</div>';
             html += '<div style="flex: 1; display: flex; align-items: center; gap: 10px;">';
             html += '<img src="' + icon + '" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src=\'https://jimboy3100.github.io/banners/profilepic_guest.png\';">';
             html += '<span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">' + level + '</span>';
-            html += '<span class="country-icon flag-icon flag-icon-' + country + '" style="border-radius: 2px;"></span>';
+            html += '<span class="country-icon flag-icon flag-icon-' + country + '" style="border-radius:var(--lm-radius-s,4px);"></span>';
             html += '<span style="font-weight: 700; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px;">' + window._escapeLeagueHtmlText(name) + '</span>';
             html += '</div>';
             html += '<div style="width: 100px; text-align: right; font-weight: 800; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">' + score + ' <i class="fa fa-trophy" style="color: ' + t.mc + ';"></i></div>';
@@ -3737,15 +3745,15 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 </div>
 
                 <div style="display: flex; padding: 12px 20px 0 20px; gap: 8px;">
-                    <button id="lm-info-tab-rules" onclick="window._switchLeaguesInfoTab('rules')" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; border: 2px solid ${t.b1}; background: ${t.b1}; color: ${t.btc};">${_lmUE('lmx.ui.rules')}</button>
-                    <button id="lm-info-tab-trophies" onclick="window._switchLeaguesInfoTab('trophies')" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; border: 2px solid ${t.b2}; background: transparent; color: ${t.tc};">${_lmUE('lmx.ui.trophies')}</button>
+                    <button id="lm-info-tab-rules" onclick="window._switchLeaguesInfoTab('rules')" style="flex: 1; padding: 10px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 14px; cursor: pointer; border: 2px solid ${t.b1}; background: ${t.b1}; color: ${t.btc};">${_lmUE('lmx.ui.rules')}</button>
+                    <button id="lm-info-tab-trophies" onclick="window._switchLeaguesInfoTab('trophies')" style="flex: 1; padding: 10px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 14px; cursor: pointer; border: 2px solid ${t.b2}; background: transparent; color: ${t.tc};">${_lmUE('lmx.ui.trophies')}</button>
                 </div>
 
                 <div id="lm-info-content" class="lm-modal-body" style="padding: 24px 30px; min-height: 180px; text-align: center;">
                 </div>
 
                 <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <button class="btn" onclick="document.getElementById('lm-leaguesinfo-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">${_lmUE('close')}</button>
+                    <button class="btn" onclick="document.getElementById('lm-leaguesinfo-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">${_lmUE('close')}</button>
                 </div>
             </div>
         `;
@@ -3823,8 +3831,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     '</div>' +
                 '</div>' +
                 '<div style="padding: 12px 20px; text-align: center; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px; justify-content: center;">' +
-                    '<button id="lm-friends-refresh-btn" onclick="window._refreshFriendsList();" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 8px 20px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px;">🔄 ' + _lmUE('roomRefresh') + '</button>' +
-                    '<button onclick="document.getElementById(\'lm-friends-modal\').remove();" style="background: rgba(255,255,255,0.08); color: ' + t.tc + '; font-weight: 800; padding: 8px 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer; font-size: 12px;">' + _lmUE('close') + '</button>' +
+                    '<button id="lm-friends-refresh-btn" onclick="window._refreshFriendsList();" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 8px 20px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer; font-size: 12px;">🔄 ' + _lmUE('roomRefresh') + '</button>' +
+                    '<button onclick="document.getElementById(\'lm-friends-modal\').remove();" style="background: rgba(255,255,255,0.08); color: ' + t.tc + '; font-weight: 800; padding: 8px 20px; border-radius:var(--lm-radius,6px); border: 1px solid rgba(255,255,255,0.15); cursor: pointer; font-size: 12px;">' + _lmUE('close') + '</button>' +
                 '</div>' +
             '</div>';
 
@@ -3965,7 +3973,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             // party code (realmId is a Facebook/Google account id).
             var actionHtml = '';
 
-            html += '<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,' + (isOnline ? '0.06' : '0.02') + '); border: 1px solid rgba(255,255,255,' + (isOnline ? '0.1' : '0.04') + '); margin-bottom: 6px;' + (isOnline ? '' : ' opacity: 0.7;') + '">' +
+            html += '<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius:var(--lm-radius,6px); background: rgba(255,255,255,' + (isOnline ? '0.06' : '0.02') + '); border: 1px solid rgba(255,255,255,' + (isOnline ? '0.1' : '0.04') + '); margin-bottom: 6px;' + (isOnline ? '' : ' opacity: 0.7;') + '">' +
                 avatarHtml +
                 '<div style="flex: 1; min-width: 0;">' +
                     '<div style="display: flex; align-items: center; gap: 6px;">' +
@@ -4130,25 +4138,25 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
                 return `
                     <div style="display: flex; gap: 16px; padding: 10px;">
-                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius:var(--lm-radius,6px); padding: 16px;">
                             <div style="font-weight: 800; font-size: 14px; color: ${t.mc}; margin-bottom: 12px;">🏆 ${_lmUE('lmx.ui.lbWinPotions')}</div>
                             <div style="font-size: 12px; color: ${t.tc}; line-height: 1.8;">
                                 <div>${_lmUR('lmx.ui.ruleFfa', [minPosFFA, minTimeFFA])}</div>
                                 <div>${_lmUR('lmx.ui.ruleTeams')}</div>
                                 <div>${_lmUR('lmx.ui.ruleBrRush')}</div>
                             </div>
-                            <div style="margin-top: 14px; font-size: 11px; color: #ffd700; font-weight: 700; background: rgba(255,215,0,0.1); padding: 8px; border-radius: 6px;">
+                            <div style="margin-top: 14px; font-size: 11px; color: #ffd700; font-weight: 700; background: rgba(255,215,0,0.1); padding: 8px; border-radius:var(--lm-radius,6px);">
                                 💡 ${_lmUE('lmx.ui.rankHigher')}
                             </div>
                         </div>
-                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius:var(--lm-radius,6px); padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
                             <div>
                                 <div style="font-weight: 800; font-size: 14px; color: ${t.mc}; margin-bottom: 12px;">🛍️ ${_lmUE('lmx.ui.buyPremiumPotions')}</div>
                                 <div style="font-size: 12px; color: ${t.tc2}; margin-bottom: 16px;">
                                     ${_lmUE('lmx.ui.premiumPotionsInfo')}
                                 </div>
                             </div>
-                            <button class="btn" onclick="document.getElementById('lm-potions-help-modal').remove(); if(window.openShop) window.openShop('potions');" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; padding: 10px; border-radius: 8px; border: none; cursor: pointer;">
+                            <button class="btn" onclick="document.getElementById('lm-potions-help-modal').remove(); if(window.openShop) window.openShop('potions');" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; padding: 10px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">
                                 ${_lmUE('lmx.ui.openShop')}
                             </button>
                         </div>
@@ -4157,13 +4165,13 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             } else if (tab === 'mystery') {
                 return `
                     <div style="display: flex; gap: 16px; padding: 10px;">
-                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius:var(--lm-radius,6px); padding: 16px;">
                             <div style="font-weight: 800; font-size: 14px; color: #00e676; margin-bottom: 8px;">🔓 ${_lmUE('lmx.ui.unlockSkins')}</div>
                             <div style="font-size: 12px; color: ${t.tc}; line-height: 1.6;">
                                 ${_lmUE('lmx.ui.unlockSkinsInfo')}
                             </div>
                         </div>
-                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius:var(--lm-radius,6px); padding: 16px;">
                             <div style="font-weight: 800; font-size: 14px; color: #ffd700; margin-bottom: 8px;">⭐ ${_lmUE('lmx.ui.upgradeSkins')}</div>
                             <div style="font-size: 12px; color: ${t.tc}; line-height: 1.6;">
                                 ${_lmUE('lmx.ui.upgradeSkinsInfo')}
@@ -4204,7 +4212,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                             var specText = (ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ` <span style="font-size: 10px; color: ${tObj.color}; font-weight: 800;">${_lmUE('lmx.ui.atLeastSpecial', [ph.minSpecialPieces])}</span>` : '';
                             var coinVal = (ph.coinText && ph.coinText !== 'na') ? ('💰 ' + window._lmEconomyEscape(ph.coinText)) : tObj.coins;
                             rowsHtml += `
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius:var(--lm-radius,6px);">
                                     <div style="width: 120px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${tObj.color}; font-size: 13px;">
                                         🧪 ${tObj.name}
                                     </div>
@@ -4232,7 +4240,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         var tier = officialTiers[ot];
                         var specHtml = tier.spec ? ` <span style="font-size: 10px; color: ${tier.color}; font-weight: 800;">${tier.spec}</span>` : '';
                         rowsHtml += `
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius:var(--lm-radius,6px);">
                                 <div style="width: 120px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${tier.color}; font-size: 13px;">🧪 ${tier.name}</div>
                                 <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">${tier.skin}${specHtml}</div>
                                 <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">${tier.coins}</div>
@@ -4281,9 +4289,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 </div>
 
                 <div style="display: flex; gap: 10px; padding: 12px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05); justify-content: center;">
-                    <button id="lm-tab-howto" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='howto'?t.b2:'transparent'}; color: ${currentTab==='howto'?t.btc:t.tc};">${_lmUE('lmx.ui.howToGetPotions')}</button>
-                    <button id="lm-tab-rewards" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='rewards'?t.b2:'transparent'}; color: ${currentTab==='rewards'?t.btc:t.tc};">${_lmUE('lmx.ui.rewards')}</button>
-                    <button id="lm-tab-mystery" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='mystery'?t.b2:'transparent'}; color: ${currentTab==='mystery'?t.btc:t.tc};">${_lmUE('lmx.ui.mysterySkins')}</button>
+                    <button id="lm-tab-howto" class="btn" style="flex: 1; padding: 8px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='howto'?t.b2:'transparent'}; color: ${currentTab==='howto'?t.btc:t.tc};">${_lmUE('lmx.ui.howToGetPotions')}</button>
+                    <button id="lm-tab-rewards" class="btn" style="flex: 1; padding: 8px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='rewards'?t.b2:'transparent'}; color: ${currentTab==='rewards'?t.btc:t.tc};">${_lmUE('lmx.ui.rewards')}</button>
+                    <button id="lm-tab-mystery" class="btn" style="flex: 1; padding: 8px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='mystery'?t.b2:'transparent'}; color: ${currentTab==='mystery'?t.btc:t.tc};">${_lmUE('lmx.ui.mysterySkins')}</button>
                 </div>
 
                 <div id="lm-potions-help-body" class="lm-modal-body" style="padding: 16px;">
@@ -4291,7 +4299,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 </div>
 
                 <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <button class="btn" onclick="document.getElementById('lm-potions-help-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">${_lmUE('close')}</button>
+                    <button class="btn" onclick="document.getElementById('lm-potions-help-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius:var(--lm-radius,6px); border: none; cursor: pointer;">${_lmUE('close')}</button>
                 </div>
             </div>
         `;
@@ -5297,7 +5305,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         categories.forEach(function(cat) {
             var badgeEl = cat.badge ? `<div style="position: absolute; bottom: 8px; right: 12px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${cat.badge}</div>` : '';
             gridHtml += `
-                <div id="shop-card-${cat.id}" onclick="window.onShopCategoryClick('${cat.id}');" style="position: relative; height: 135px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.3); background: ${cat.bgGraphic}; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
+                <div id="shop-card-${cat.id}" onclick="window.onShopCategoryClick('${cat.id}');" style="position: relative; height: 135px; border-radius:var(--lm-radius,6px); overflow: hidden; border: 2px solid rgba(255,255,255,0.3); background: ${cat.bgGraphic}; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
                     <div style="flex: 1; display: flex; align-items: center; justify-content: center; font-size: 48px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">
                         ${cat.icon}
                     </div>
@@ -5315,7 +5323,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         };
 
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-radius: 12px; width: 660px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid ${t.pc2}; border-top: 3px solid ${t.mc};">
+            <div class="lm-modal-container" style="background: ${t.pc}; border-radius:var(--lm-radius,6px); width: 660px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid ${t.pc2}; border-top: 3px solid ${t.mc};">
                 <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid ${t.pc2}; background: linear-gradient(180deg, ${t.pc2} 0%, ${t.pc} 100%);">
                     <div style="font-size: 20px; font-weight: 900; color: ${t.mc}; letter-spacing: 1px; text-transform: uppercase;">${_lmUE('shop')}</div>
                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -5327,7 +5335,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                             <span>💰 ${coinsBalance.toLocaleString()}</span>
                             <span role="button" title="${_lmUE('lmx.ui.getMore')}" onclick="var m=document.getElementById('lm-main-shop-modal'); if (m) m.remove(); if (window.openShop) window.openShop('coins');" style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
                         </div>
-                        <button onclick="document.getElementById('lm-main-shop-modal').remove();" style="background: rgba(255,255,255,0.05); border: none; font-size: 22px; color: ${t.tc2}; cursor: pointer; font-weight: 400; margin-left: 8px; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;">&times;</button>
+                        <button onclick="document.getElementById('lm-main-shop-modal').remove();" style="background: rgba(255,255,255,0.05); border: none; font-size: 22px; color: ${t.tc2}; cursor: pointer; font-weight: 400; margin-left: 8px; width: 28px; height: 28px; border-radius:var(--lm-radius,6px); display: flex; align-items: center; justify-content: center;">&times;</button>
                     </div>
                 </div>
 
@@ -5395,17 +5403,17 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         modal.addEventListener('click', function (e) { if (e.target === modal) modal.remove(); });
 
         var specialHtml = specialPiecesText
-            ? '<div style="background:' + t.pc2 + ';border-radius:12px;padding:10px 16px;margin-bottom:12px;border:1px solid rgba(255,255,255,.1);text-align:center;">' +
+            ? '<div style="background:' + t.pc2 + ';border-radius:var(--lm-radius,6px);padding:10px 16px;margin-bottom:12px;border:1px solid rgba(255,255,255,.1);text-align:center;">' +
                 '<div style="font-size:11px;font-weight:700;color:' + t.tc2 + ';text-transform:uppercase;margin-bottom:4px;">' + _lmUE('lmx.ui.atLeast') + '</div>' +
                 '<div style="font-size:16px;font-weight:900;color:#f57f17;display:flex;align-items:center;justify-content:center;gap:8px;">' +
                     '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:3px solid #ffb300;background:rgba(255,179,0,0.15);"></span>' +
                     '<span>' + specialPiecesText + '</span></div></div>' : '';
 
         modal.innerHTML =
-            '<div class="lm-modal-container" style="background:' + t.pc + ';border-radius:12px;width:440px;padding:24px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.5);text-align:center;border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';">' + // i18n-ok: CSS, not text
-                '<button type="button" onclick="document.getElementById(\'lm-potion-detail-modal\').remove();" style="position:absolute;right:16px;top:16px;background:rgba(255,255,255,.05);border:none;font-size:22px;color:' + t.tc2 + ';cursor:pointer;font-weight:400;width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;">&times;</button>' +
+            '<div class="lm-modal-container" style="background:' + t.pc + ';border-radius:var(--lm-radius,6px);width:440px;padding:24px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.5);text-align:center;border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';">' + // i18n-ok: CSS, not text
+                '<button type="button" onclick="document.getElementById(\'lm-potion-detail-modal\').remove();" style="position:absolute;right:16px;top:16px;background:rgba(255,255,255,.05);border:none;font-size:22px;color:' + t.tc2 + ';cursor:pointer;font-weight:400;width:28px;height:28px;border-radius:var(--lm-radius,6px);display:flex;align-items:center;justify-content:center;">&times;</button>' +
                 '<div style="font-size:22px;font-weight:900;color:' + t.mc + ';margin-bottom:16px;">' + name + '</div>' +
-                '<div style="background:' + t.pc2 + ';border-radius:14px;padding:20px;margin-bottom:18px;">' +
+                '<div style="background:' + t.pc2 + ';border-radius:var(--lm-radius,6px);padding:20px;margin-bottom:18px;">' +
                     '<div style="width:90px;height:90px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:42px;background:radial-gradient(circle,' + potionColor + '22,' + potionColor + '44);border:3px solid ' + potionColor + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' + // i18n-ok: emoji icon and CSS; the texts come from the packs
                     '<div style="display:flex;justify-content:center;gap:20px;margin-bottom:12px;">' +
                         '<div style="text-align:center;"><div style="font-size:11px;font-weight:700;color:' + t.tc2 + ';text-transform:uppercase;">' + _lmUE('lmx.ui.coins') + '</div><div style="font-size:16px;font-weight:900;color:' + t.tc + ';">' + coinText + '</div></div>' +
@@ -5462,7 +5470,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 '</div>' +
             '</div>';
 
-        var infoBarHtml = '<div style="margin:16px 20px 0;background:' + t.panelBg + ';border-radius:10px;padding:12px;text-align:center;font-size:13px;font-weight:700;color:' + t.tc2 + ';">' + _lmUE('lmx.ui.potionsOpenNow') + '</div>';
+        var infoBarHtml = '<div style="margin:16px 20px 0;background:' + t.panelBg + ';border-radius:var(--lm-radius,6px);padding:12px;text-align:center;font-size:13px;font-weight:700;color:' + t.tc2 + ';">' + _lmUE('lmx.ui.potionsOpenNow') + '</div>';
 
         var cardsHtml = '';
 
@@ -5492,17 +5500,17 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         : '');
 
                 cardsHtml +=
-                    '<div style="position:relative;flex:1;min-width:140px;max-width:180px;border-radius:14px;padding:16px 12px;border:2px solid ' + colors.border + ';background:' + colors.bg + ';display:flex;flex-direction:column;align-items:center;text-align:center;">' +
+                    '<div style="position:relative;flex:1;min-width:140px;max-width:180px;border-radius:var(--lm-radius,6px);padding:16px 12px;border:2px solid ' + colors.border + ';background:' + colors.bg + ';display:flex;flex-direction:column;align-items:center;text-align:center;">' +
                         '<button class="lm-premium-potion-info" data-product-id="' + window._lmEconomyEscape(pid) + '" style="position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:#00d3ff;color:#fff;border:none;font-weight:900;cursor:pointer;font-size:12px;" title="' + _lmUE('lmx.ui.potionInfo') + '">?</button>' +
                         '<div style="width:80px;height:80px;border-radius:50%;margin:8px 0 10px;display:flex;align-items:center;justify-content:center;font-size:38px;background:radial-gradient(circle,' + colors.border + '22,' + colors.border + '44);border:3px solid ' + colors.border + ';box-shadow:0 4px 12px rgba(0,0,0,.12);">\uD83E\uDDEA</div>' + // i18n-ok: emoji icon and CSS; the texts come from the packs
                         '<div style="font-size:15px;font-weight:900;color:' + t.tc + ';margin-bottom:4px;">' + window._lmEconomyEscape(baseName) + '</div>' +
-                        '<button class="btn lm-buy-premium-potion" data-product-id="' + window._lmEconomyEscape(pid) + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:8px;border:none;' + (buyDisabled ? 'opacity:.45;cursor:not-allowed;filter:grayscale(40%);' : 'cursor:pointer;') + 'width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
+                        '<button class="btn lm-buy-premium-potion" data-product-id="' + window._lmEconomyEscape(pid) + '" style="background:' + colors.gradient + ';color:#fff;font-weight:900;font-size:14px;padding:10px 0;border-radius:var(--lm-radius,6px);border:none;' + (buyDisabled ? 'opacity:.45;cursor:not-allowed;filter:grayscale(40%);' : 'cursor:pointer;') + 'width:100%;margin-top:auto;box-shadow:0 3px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:6px;"' + buyDisabled + '>' + priceText + '</button>' +
                     '</div>';
             });
         }
 
         modal.innerHTML =
-            '<div class="lm-modal-container" style="background:' + t.bg + ';border-radius:6px;width:720px;max-width:94vw;padding:0;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);border:1px solid ' + t.border + ';border-top:3px solid ' + t.mc + ';">' + // i18n-ok: CSS, not text
+            '<div class="lm-modal-container" style="background:' + t.bg + ';border-radius:var(--lm-radius,6px);width:720px;max-width:94vw;padding:0;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);border:1px solid ' + t.border + ';border-top:3px solid ' + t.mc + ';">' + // i18n-ok: CSS, not text
                 headerHtml + infoBarHtml +
                 '<div style="padding:20px;display:flex;gap:14px;background:' + t.bg + ';flex-wrap:wrap;justify-content:center;">' +
                     cardsHtml +
@@ -5775,7 +5783,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     var card = document.createElement('div');
                     card.style.cssText =
                         'position:relative;background:' + t.cardBg + ';' +
-                        'border-radius:14px;padding:17px;' +
+                        'border-radius:var(--lm-radius,6px);padding:17px;' +
                         'border:1px solid ' + t.border + ';' +
                         'display:flex;flex-direction:column;min-height:215px;';
 
@@ -5792,7 +5800,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         bestTag.style.cssText =
                             'position:absolute;top:10px;left:10px;' +
                             'background:#ff9800;color:#fff;padding:3px 7px;' +
-                            'border-radius:12px;font-size:9px;font-weight:900;';
+                            'border-radius:var(--lm-radius,6px);font-size:9px;font-weight:900;';
                         card.appendChild(bestTag);
                     }
 
@@ -5837,7 +5845,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     var buyBtn = document.createElement('button');
                     buyBtn.type = 'button';
                     buyBtn.style.cssText =
-                        'border:0;border-radius:8px;padding:8px 6px;font-size:12px;' +
+                        'border:0;border-radius:var(--lm-radius,6px);padding:8px 6px;font-size:12px;' +
                         'font-weight:900;cursor:pointer;' +
                         'background:linear-gradient(180deg,#8bc34a,#689f38);color:#fff;';
                     buyBtn.textContent = _lmUR('lmx.ui.buyPrice', [priceText]);
@@ -5881,7 +5889,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     var useBtn = document.createElement('button');
                     useBtn.type = 'button';
                     useBtn.style.cssText =
-                        'border:0;border-radius:8px;padding:8px 6px;font-size:12px;' +
+                        'border:0;border-radius:var(--lm-radius,6px);padding:8px 6px;font-size:12px;' +
                         'font-weight:900;cursor:pointer;' +
                         'background:linear-gradient(180deg,#29b6f6,#0288d1);color:#fff;';
                     useBtn.textContent = _lmUR('lmx.ui.use');
@@ -6081,7 +6089,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     var card = document.createElement('div');
                     card.style.cssText =
                         'position:relative;background:' + t.cardBg + ';' +
-                        'border-radius:14px;padding:17px;' +
+                        'border-radius:var(--lm-radius,6px);padding:17px;' +
                         'border:1px solid ' + t.border + ';' +
                         'display:flex;flex-direction:column;min-height:190px;';
 
@@ -6121,7 +6129,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     var buyRush = document.createElement('button');
                     buyRush.type = 'button';
                     buyRush.style.cssText =
-                        'border:0;border-radius:8px;padding:10px 6px;font-size:13px;' +
+                        'border:0;border-radius:var(--lm-radius,6px);padding:10px 6px;font-size:13px;' +
                         'font-weight:900;cursor:pointer;width:100%;margin-top:auto;' +
                         'background:linear-gradient(180deg,#ff7043,#d84315);color:#fff;';
                     buyRush.textContent = _lmUR('lmx.ui.buyPrice', [priceText]);
@@ -6493,7 +6501,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 if (partyToken) {
                     var btn = document.createElement('button');
                     btn.className = 'btn';
-                    btn.style.cssText = 'background: ' + t.b1 + '; color: ' + t.btc + '; padding: 4px 12px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer;';
+                    btn.style.cssText = 'background: ' + t.b1 + '; color: ' + t.btc + '; padding: 4px 12px; border-radius:var(--lm-radius,6px); font-weight: 700; border: none; cursor: pointer;';
                     btn.textContent = '🎮 ' + _lmUR('lmx.ui.joinParty');
                     btn.onclick = function () {
                         /* Prefer centralized official Party path */
@@ -6517,7 +6525,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     /* Config-driven official short invite copy */
                     var copyInviteBtn = document.createElement('button');
                     copyInviteBtn.className = 'btn';
-                    copyInviteBtn.style.cssText = 'background:' + t.b3 + ';color:' + t.btc + ';padding:4px 10px;border-radius:6px;font-weight:700;border:none;cursor:pointer;font-size:11px;';
+                    copyInviteBtn.style.cssText = 'background:' + t.b3 + ';color:' + t.btc + ';padding:4px 10px;border-radius:var(--lm-radius,6px);font-weight:700;border:none;cursor:pointer;font-size:11px;';
                     copyInviteBtn.textContent = '\uD83D\uDD17 ' + _lmUR('lmx.ui.copy');
                     copyInviteBtn.title = _lmUR('lmx.ui.copyPartyLinkTitle');
                     copyInviteBtn.onclick = function (event) {
@@ -9515,7 +9523,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                     'style="font-size:8px;padding:2px 5px;background:' +
                                         window._lmEconomyEscape(theme.b3) + ';color:' +
                                         window._lmEconomyEscape(theme.btc) +
-                                        ';border:0;border-radius:4px;white-space:nowrap;margin-top:2px;cursor:pointer;"' +
+                                        ';border:0;border-radius:var(--lm-radius-s,4px);white-space:nowrap;margin-top:2px;cursor:pointer;"' +
                                 '>' + _lmUE('skipOwned') + '</button>';
                         } else if (ppInfo && ppInfo.purchaseId &&
                             ppInfo.currentPrice !== null && ppInfo.currentPrice !== undefined) {
@@ -9533,7 +9541,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                     'style="font-size:8px;padding:2px 5px;background:' +
                                         window._lmEconomyEscape(theme.b3) + ';color:' +
                                         window._lmEconomyEscape(theme.btc) +
-                                        ';border:0;border-radius:4px;white-space:nowrap;margin-top:2px;cursor:pointer;"' +
+                                        ';border:0;border-radius:var(--lm-radius-s,4px);white-space:nowrap;margin-top:2px;cursor:pointer;"' +
                                 '>' + _lmUE('skip') + ' ' + window._lmEconomyEscape(ppPriceText) + '</button>';
                         }
                     }
@@ -9585,7 +9593,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 html +=
                     '<div class="' + pActionClass.trim() + '"' + pActionAttr + ' style="' +
                         'flex:1;display:flex;flex-direction:column;align-items:center;' +
-                        'padding:5px 2px 4px;border-radius:8px;' +
+                        'padding:5px 2px 4px;border-radius:var(--lm-radius,6px);' +
                         'border:1px solid ' + pBorder + ';' +
                         'background:' + pBg + ';' +
                         'box-shadow:' + pGlow + ';' +
@@ -10389,7 +10397,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             var card = document.createElement('div');
             card.style.cssText =
                 'display:flex;align-items:center;gap:12px;padding:10px 14px;' +
-                'border-radius:10px;border:1px solid ' + pres.color + '33;' +
+                'border-radius:var(--lm-radius,6px);border:1px solid ' + pres.color + '33;' +
                 'background:' + pres.color + '12;' +
                 'animation:lm-reward-pop .4s ease ' + (i * 0.15) + 's both;';
 
@@ -10414,7 +10422,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         var closeBtn = document.createElement('button');
         closeBtn.className = 'btn';
         closeBtn.style.cssText =
-            'margin:0 20px 16px;padding:8px 24px;border-radius:8px;font-weight:700;' +
+            'margin:0 20px 16px;padding:8px 24px;border-radius:var(--lm-radius,6px);font-weight:700;' +
             'background:linear-gradient(135deg,' + t.b1 + ',' + t.b2 + ');color:#fff;border:none;cursor:pointer;';
         closeBtn.textContent = _lmUR('lmx.ui.nice');
         closeBtn.onclick = function () { modal.remove(); };
@@ -10511,7 +10519,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         var section = document.createElement('div');
         section.id = 'lm-daily-challenges';
-        section.style.cssText = 'margin-bottom:18px;border:1px solid rgba(255,215,0,.25);border-radius:10px;overflow:hidden;';
+        section.style.cssText = 'margin-bottom:18px;border:1px solid rgba(255,215,0,.25);border-radius:var(--lm-radius,6px);overflow:hidden;';
 
         var head = document.createElement('div');
         head.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,215,0,.08);border-bottom:1px solid rgba(255,255,255,.06);';
@@ -10552,9 +10560,9 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             text.appendChild(reward);
 
             var bar = document.createElement('div');
-            bar.style.cssText = 'width:80px;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;flex-shrink:0;';
+            bar.style.cssText = 'width:80px;height:6px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,.08);overflow:hidden;flex-shrink:0;';
             var fill = document.createElement('div');
-            fill.style.cssText = 'height:100%;border-radius:3px;width:' + Math.round(pr.ratio * 100) + '%;background:' +
+            fill.style.cssText = 'height:100%;border-radius:var(--lm-radius-s,4px);width:' + Math.round(pr.ratio * 100) + '%;background:' +
                 (done ? 'linear-gradient(90deg,#4caf50,#66bb6a)' : 'linear-gradient(90deg,' + t.b1 + ',' + t.b2 + ')') + ';';
             bar.appendChild(fill);
 
@@ -10570,7 +10578,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             } else if (done) {
                 var btn = document.createElement('button');
                 btn.className = 'btn lm-daily-claim';
-                btn.style.cssText = 'background:' + t.b1 + ';color:' + t.btc + ';font-weight:800;font-size:11px;padding:4px 12px;border-radius:6px;border:none;cursor:pointer;';
+                btn.style.cssText = 'background:' + t.b1 + ';color:' + t.btc + ';font-weight:800;font-size:11px;padding:4px 12px;border-radius:var(--lm-radius,6px);border:none;cursor:pointer;';
                 btn.textContent = _lmUR('chClaim');
                 btn.onclick = function () {
                     btn.disabled = true;
@@ -10694,7 +10702,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             /* Show a banner when config exists but no game data yet */
             if (!hasGameData) {
                 var noDataBanner = document.createElement('div');
-                noDataBanner.style.cssText = 'text-align:center;padding:14px 20px;margin-bottom:12px;border-radius:8px;background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.2);';
+                noDataBanner.style.cssText = 'text-align:center;padding:14px 20px;margin-bottom:12px;border-radius:var(--lm-radius,6px);background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.2);';
                 noDataBanner.innerHTML =
                     '<div style="font-size:13px;font-weight:700;color:#ffd54f;">\uD83C\uDFAE ' + _lmUE('lmx.ui.playToSeeProgress') + '</div>' + // i18n-ok: emoji icon and CSS; the texts come from the packs
                     '<div style="font-size:10px;color:' + t.tc2 + ';margin-top:4px;">' + _lmUE('lmx.ui.challengesEvaluated') + '</div>';
@@ -10710,7 +10718,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
                 /* Type section */
                 var section = document.createElement('div');
-                section.style.cssText = 'margin-bottom:18px;border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;';
+                section.style.cssText = 'margin-bottom:18px;border:1px solid rgba(255,255,255,.08);border-radius:var(--lm-radius,6px);overflow:hidden;';
 
                 /* Type header */
                 var typeHeader = document.createElement('div');
@@ -10784,10 +10792,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
                     /* Progress bar */
                     var progressWrap = document.createElement('div');
-                    progressWrap.style.cssText = 'width:100px;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;flex-shrink:0;';
+                    progressWrap.style.cssText = 'width:100px;height:6px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,.08);overflow:hidden;flex-shrink:0;';
                     var progressFill = document.createElement('div');
                     var pct = Math.round(progress * 100);
-                    progressFill.style.cssText = 'height:100%;border-radius:3px;transition:width .3s;width:' + pct + '%;background:' +
+                    progressFill.style.cssText = 'height:100%;border-radius:var(--lm-radius-s,4px);transition:width .3s;width:' + pct + '%;background:' +
                         (met ? 'linear-gradient(90deg,#4caf50,#66bb6a)' : 'linear-gradient(90deg,' + t.b1 + ',' + t.b2 + ')') + ';';
                     progressWrap.appendChild(progressFill);
 
@@ -11456,7 +11464,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         if (!bannerEl) {
             bannerEl = document.createElement('div');
             bannerEl.id = 'lm-promo-reward-banner';
-            bannerEl.style.cssText = 'margin: 10px 0; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.5); text-align: center; padding: 6px; clear: both; width: 100%; box-sizing: border-box; transition: transform 0.2s ease-in-out;';
+            bannerEl.style.cssText = 'margin: 10px 0; border-radius:var(--lm-radius,6px); overflow: hidden; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.5); text-align: center; padding: 6px; clear: both; width: 100%; box-sizing: border-box; transition: transform 0.2s ease-in-out;';
             
             if (targetContainer.find('#lm-extended-menu-btns').length) {
                 targetContainer.find('#lm-extended-menu-btns').after(bannerEl);
