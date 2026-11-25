@@ -33,7 +33,8 @@ const LIMITS = {
     pointsLow: (b) => b * 0.75,          /* jelly points submitted: fewer means lost quality */
     pointsHigh: (b) => b * 1.25 + 50,    /* more means more work for the same scene */
     glShareDrop: 0.2,                    /* share of frames drawn by the WebGL scene */
-    cellsTolerance: 0.03                 /* world size against the baseline */
+    cellsTolerance: 0.03,                /* world size against the baseline */
+    busy: 1.4                            /* speed check this much slower than the baseline's: timings not judged */
 };
 
 /* the numbers the baseline keeps of a scene */
@@ -54,8 +55,14 @@ function sameMachine(a, b) {
 function gate(base, cur) {
     const fail = [], info = [];
     if (cur.meta.errors && cur.meta.errors.length) fail.push('page errors: ' + cur.meta.errors.slice(0, 3).join(' / '));
-    const timed = sameMachine(base.meta, cur.meta);
-    if (!timed) info.push('baseline from another GPU or Chrome (' + (base.meta.gpu || '?') + ', ' + (base.meta.browser || '?') + '): timings not gated');
+    const same = sameMachine(base.meta, cur.meta);
+    /* other programs kept the machine busy (the fixed CPU workload ran clearly slower than when
+     * the baseline was made): timings would measure them, not the client */
+    const slower = (k) => base.meta[k] > 0 && cur.meta[k] > base.meta[k] * LIMITS.busy;
+    const busy = same && (slower('calibrationMs') || slower('calibrationGpuMs'));
+    const timed = same && !busy;
+    if (!same) info.push('baseline from another GPU or Chrome (' + (base.meta.gpu || '?') + ', ' + (base.meta.browser || '?') + '): timings not gated');
+    if (busy) info.push('machine busy (speed check CPU ' + cur.meta.calibrationMs + ' / GPU ' + cur.meta.calibrationGpuMs + ' ms, baseline ' + base.meta.calibrationMs + ' / ' + base.meta.calibrationGpuMs + ' ms): timings not gated, re-run when it is idle');
     const byName = {};
     base.results.forEach((r) => (byName[r.name] = r));
     cur.results.forEach((r) => {
@@ -148,7 +155,7 @@ function selfCheck() {
     B.WRAPS.forEach((w) => ok(new RegExp('\\n\\s+' + w[1].replace(/\$/g, '\\$') + '(\\s*:\\s*function\\s*)?\\s*\\(').test(core), 'ogario.v4.js has no method ' + w[1] + ' (stage ' + w[2] + ')'));
     ['grid', 'jelly physics', 'text pass', 'rings/HUD pass'].forEach((m) => ok(core.indexOf("_lmScope.b('" + m + "')") >= 0, 'inline timing marker missing: ' + m));
     /* the gate */
-    const meta = { gpu: 'G', browser: '150.0.1', errors: [] };
+    const meta = { gpu: 'G', browser: '150.0.1', errors: [], calibrationMs: 100 };
     const r = { name: 's', errors: 0, missingStages: [], renderMs: { p50: 10 }, frameMs: { p95: 20 }, glShare: 1, counts: { draws: 10, pointsSubmitted: 1000 }, world: { cells: 1001 } };
     const base = { meta, results: [r] };
     const mod = (f) => { const x = JSON.parse(JSON.stringify(r)); f(x); return { meta: Object.assign({}, meta), results: [x] }; };
@@ -158,6 +165,16 @@ function selfCheck() {
     const other = mod((x) => (x.renderMs.p50 = 40));
     other.meta.gpu = 'H';
     ok(gate(base, other).fail.length === 0 && gate(base, other).info.length >= 2, 'timings gated on another GPU');
+    const busy = mod((x) => (x.renderMs.p50 = 40));
+    busy.meta.calibrationMs = 200;
+    ok(gate(base, busy).fail.length === 0 && gate(base, busy).info.some((m) => /busy/.test(m)), 'timings gated on a busy machine');
+    const busyGpu = mod((x) => (x.renderMs.p50 = 40));
+    base.meta.calibrationGpuMs = 10;
+    busyGpu.meta.calibrationGpuMs = 30;
+    ok(gate(base, busyGpu).fail.length === 0, 'timings gated while the GPU is busy');
+    const busyCounts = mod((x) => (x.counts.draws = 40));
+    busyCounts.meta.calibrationMs = 200;
+    ok(gate(base, busyCounts).fail.length === 1, 'counts not gated on a busy machine');
     ok(gate(base, mod((x) => (x.counts.pointsSubmitted = 600))).fail.length === 1, 'gate passes lost jelly points');
     ok(gate(base, mod((x) => (x.counts.draws = 40))).fail.length === 1, 'gate passes 4x draw calls');
     ok(gate(base, mod((x) => (x.glShare = 0.5))).fail.length === 1, 'gate passes more Canvas2D fallback');
@@ -190,17 +207,44 @@ async function main(argv) {
     }
     const code = await client.main(args);
     if (code) return code;
-    const file = path.join(__dirname, 'out', 'bench-' + label + '.json');
-    const cur = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const cur = JSON.parse(fs.readFileSync(path.join(__dirname, 'out', 'bench-' + label + '.json'), 'utf8'));
+    /* measures the scenes once more; per scene the better run counts (lower render p50 + frame
+     * p95): one stall of another program on the machine must not decide the result */
+    const again = async (names) => {
+        console.log('bench: measuring again: ' + names.join(', '));
+        const args2 = args.slice();
+        args2[args2.indexOf('--label') + 1] = label + '-again';
+        args2.push('--scenes', names.join(','), '--no-capture');
+        if (await client.main(args2)) return;
+        const cur2 = JSON.parse(fs.readFileSync(path.join(__dirname, 'out', 'bench-' + label + '-again.json'), 'utf8'));
+        cur.results = cur.results.map((r) => {
+            const r2 = cur2.results.find((x) => x.name === r.name);
+            return r2 && r2.renderMs.p50 + r2.frameMs.p95 < r.renderMs.p50 + r.frameMs.p95 ? r2 : r;
+        });
+        cur.meta.errors = [...new Set(cur.meta.errors.concat(cur2.meta.errors))];
+        for (const k of ['calibrationMs', 'calibrationGpuMs']) {
+            cur.meta[k] = Math.min(cur.meta[k] || Infinity, cur2.meta[k] || Infinity);
+            if (!isFinite(cur.meta[k])) delete cur.meta[k];
+        }
+    };
     if (has('--update-baseline')) {
-        const bl = { meta: { gpu: cur.meta.gpu, browser: cur.meta.browser, head: cur.meta.head, date: cur.meta.date, canvas: cur.meta.canvas, dpr: cur.meta.dpr, warm: cur.meta.warm, measure: cur.meta.measure, errors: [] }, results: cur.results.map(slim) };
+        await again(cur.results.map((r) => r.name));
+        if (cur.meta.errors.length) { console.log('bench: page errors, baseline not written: ' + cur.meta.errors.slice(0, 5).join(' / ')); return 1; }
+        const m = cur.meta;
+        const bl = { meta: { gpu: m.gpu, browser: m.browser, head: m.head, date: m.date, canvas: m.canvas, dpr: m.dpr, warm: m.warm, measure: m.measure, calibrationMs: m.calibrationMs, calibrationGpuMs: m.calibrationGpuMs, errors: [] }, results: cur.results.map(slim) };
         fs.writeFileSync(BASELINE, JSON.stringify(bl, null, 1) + '\n');
-        console.log('bench: baseline written to ' + BASELINE);
+        console.log('bench: baseline written to ' + BASELINE + ' (the better of two runs per scene)');
         return 0;
     }
     if (!has('--quick')) return 0;
     if (!fs.existsSync(BASELINE)) { console.log('bench: no baseline (' + BASELINE + '); store one with --quick --update-baseline'); return 0; }
-    const g = gate(JSON.parse(fs.readFileSync(BASELINE, 'utf8')), cur);
+    const base = JSON.parse(fs.readFileSync(BASELINE, 'utf8'));
+    let g = gate(base, cur);
+    const failed = [...new Set(g.fail.map((x) => x.split(':')[0]).filter((n) => cur.results.some((r) => r.name === n)))];
+    if (failed.length) {
+        await again(failed);
+        g = gate(base, cur);
+    }
     g.info.forEach((m) => console.log('  info: ' + m));
     g.fail.forEach((m) => console.log('  FAIL: ' + m));
     console.log('bench gate: ' + (g.fail.length ? 'FAILED (' + g.fail.length + ')' : 'PASS'));

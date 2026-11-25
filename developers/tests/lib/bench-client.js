@@ -77,6 +77,7 @@ function summaryMd(meta, results, prevByName) {
     L.push('- checkout: ' + meta.repo + (meta.head ? ' at ' + meta.head : ''));
     L.push('- Chrome ' + meta.browser + ', GPU: ' + meta.gpu + ', canvas ' + meta.canvas + ' at DPR ' + meta.dpr + ', zoom ' + meta.scale + (meta.vsync ? ', vsync' : ', unthrottled frames'));
     L.push('- ' + meta.warm + ' ms warm-up, ' + meta.measure + ' ms measured per scene' + (meta.repeat > 1 ? ', median of ' + meta.repeat + ' runs' : '') + (meta.compare ? '; deltas against ' + meta.compare : ''));
+    L.push('- machine speed check: CPU ' + meta.calibrationMs + ' ms, GPU ' + meta.calibrationGpuMs + ' ms (fixed workloads in the page; higher while other programs keep the machine busy)');
     L.push('- page errors: ' + meta.errors.length, '');
     L.push('| scene | FPS | frame p50/p95/p99 ms | render p50/p95 ms | GL share | packets ms/s | jelly prep/build/move ms | food ms | text ms | GL upload ms / label rasters | GL draws | jelly points sub/idx | cells/food | heap MB | frame diff max / px |');
     L.push('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
@@ -199,6 +200,8 @@ async function main(argv) {
         /* fonts, skins list, first frames */
         await sleep(+opt('--boot', 5000));
         await evalJs(benchSrc + '\n;true');
+        const speed = "[LMBenchDense.calibrate(function () { return performance.now(); }), LMBenchDense.calibrateGpu()]";
+        const calib = [await evalJs(speed)];
         const browser = String(ver.Browser || '').replace(/^HeadlessChrome\//, '');
         let head = '';
         try { head = require('child_process').execSync('git -C "' + repo + '" rev-parse --short HEAD', { encoding: 'utf8' }).trim(); } catch (e) { }
@@ -242,7 +245,12 @@ async function main(argv) {
             console.log(fmtRow(r, prevByName[r.name]));
         }
         await evalJs('LMBenchDense.stop(), true');
-        const meta = { label, repo, head, browser, gpu, canvas, dpr, scale: B.VIEW.scale, warm, measure, repeat, vsync, compare: cmp || null, errors: [...new Set(errors)], date: new Date().toISOString() };
+        calib.push(await evalJs(speed));
+        /* CPU: the slower of before and after, how busy the machine was during the run; GPU: after
+         * only (before, the page is still uploading skins and fonts: 15-30x slower) */
+        const calibrationMs = Math.max(calib[0][0], calib[1][0]), calibrationGpuMs = calib[1][1];
+        console.log('bench: machine speed check CPU ' + calib[0][0] + ' / ' + calib[1][0] + ' ms, GPU ' + calib[0][1] + ' / ' + calib[1][1] + ' ms (fixed workloads before / after; lower is faster)');
+        const meta = { label, repo, head, browser, gpu, canvas, dpr, scale: B.VIEW.scale, warm, measure, repeat, vsync, compare: cmp || null, errors: [...new Set(errors)], date: new Date().toISOString(), calibrationMs, calibrationGpuMs };
         fs.writeFileSync(path.join(outRoot, 'bench-' + label + '.json'), JSON.stringify({ meta, results }, null, 1));
         fs.writeFileSync(path.join(outRoot, 'bench-' + label + '.md'), summaryMd(meta, results, prev ? prevByName : null));
         console.log('bench: wrote ' + path.join(outRoot, 'bench-' + label + '.json') + ' and .md');

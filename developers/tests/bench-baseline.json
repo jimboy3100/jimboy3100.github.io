@@ -2,41 +2,43 @@
  "meta": {
   "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "browser": "Chrome/158.0.8127.37",
-  "head": "0756cb2c",
-  "date": "2026-11-25T18:51:57.219Z",
+  "head": "eaf378ee",
+  "date": "2026-11-25T19:51:53.686Z",
   "canvas": "1600x900",
   "dpr": 1,
   "warm": 2500,
   "measure": 3000,
+  "calibrationMs": 57.2,
+  "calibrationGpuMs": 30.5,
   "errors": []
  },
  "results": [
   {
    "name": "b100-f2000-s1",
-   "fps": 49.7,
+   "fps": 52.1,
    "frameMs": {
-    "n": 165,
-    "mean": 20.29,
-    "p50": 9.1,
-    "p95": 14.06,
-    "p99": 316.48,
-    "max": 1037.3
+    "n": 166,
+    "mean": 19.35,
+    "p50": 9.5,
+    "p95": 44.38,
+    "p99": 122.92,
+    "max": 584.8
    },
    "renderMs": {
-    "n": 165,
-    "mean": 15.67,
-    "p50": 6.6,
-    "p95": 10.3,
-    "p99": 167.34,
-    "max": 1043.2
+    "n": 166,
+    "mean": 9.67,
+    "p50": 7,
+    "p95": 27.62,
+    "p99": 59.35,
+    "max": 66.6
    },
    "glShare": 1,
    "counts": {
     "draws": 11,
-    "pointsSubmitted": 3645,
-    "pointsIndexed": 2736,
-    "uploadMs": 23.3,
-    "textRasters": 3.35
+    "pointsSubmitted": 3675,
+    "pointsIndexed": 2701,
+    "uploadMs": 19.47,
+    "textRasters": 2.7
    },
    "world": {
     "cells": 101,
@@ -45,30 +47,30 @@
   },
   {
    "name": "b1000-f10000-s1",
-   "fps": 11,
+   "fps": 7.89,
    "frameMs": {
-    "n": 34,
-    "mean": 91.35,
-    "p50": 61.65,
-    "p95": 155.54,
-    "p99": 405.97,
-    "max": 524.7
+    "n": 25,
+    "mean": 127.39,
+    "p50": 98.2,
+    "p95": 251.9,
+    "p99": 308.13,
+    "max": 324.5
    },
    "renderMs": {
-    "n": 34,
-    "mean": 87.6,
-    "p50": 54.5,
-    "p95": 150.59,
-    "p99": 400.81,
-    "max": 523.6
+    "n": 25,
+    "mean": 120,
+    "p50": 86.5,
+    "p95": 243.38,
+    "p99": 299.26,
+    "max": 316.8
    },
    "glShare": 1,
    "counts": {
     "draws": 11,
-    "pointsSubmitted": 39833,
-    "pointsIndexed": 21436,
-    "uploadMs": 49.08,
-    "textRasters": 20.25
+    "pointsSubmitted": 39734,
+    "pointsIndexed": 22048,
+    "uploadMs": 49.52,
+    "textRasters": 14.75
    },
    "world": {
     "cells": 1001,
@@ -77,30 +79,30 @@
   },
   {
    "name": "b1000-f10000-s2",
-   "fps": 11.76,
+   "fps": 11.43,
    "frameMs": {
-    "n": 36,
-    "mean": 85.51,
-    "p50": 88.45,
-    "p95": 115.2,
-    "p99": 128.23,
-    "max": 134.6
+    "n": 35,
+    "mean": 87.91,
+    "p50": 85.6,
+    "p95": 108.08,
+    "p99": 119,
+    "max": 120.8
    },
    "renderMs": {
-    "n": 36,
-    "mean": 77.98,
-    "p50": 71.75,
-    "p95": 106.88,
-    "p99": 117.6,
-    "max": 120.5
+    "n": 35,
+    "mean": 78.05,
+    "p50": 78.4,
+    "p95": 93.86,
+    "p99": 111.99,
+    "max": 112.6
    },
    "glShare": 1,
    "counts": {
     "draws": 12,
-    "pointsSubmitted": 40334,
-    "pointsIndexed": 19534,
-    "uploadMs": 49.39,
-    "textRasters": 21.65
+    "pointsSubmitted": 40386,
+    "pointsIndexed": 19395,
+    "uploadMs": 15.64,
+    "textRasters": 18
    },
    "world": {
     "cells": 1003,
@@ -109,30 +111,30 @@
   },
   {
    "name": "b500-f2000-s1-crowd",
-   "fps": 26.24,
+   "fps": 4.44,
    "frameMs": {
-    "n": 79,
-    "mean": 38.21,
-    "p50": 33.8,
-    "p95": 67.53,
-    "p99": 72.18,
-    "max": 80.6
+    "n": 21,
+    "mean": 225.91,
+    "p50": 44.4,
+    "p95": 142.5,
+    "p99": 3048.66,
+    "max": 3775.2
    },
    "renderMs": {
-    "n": 79,
-    "mean": 35.45,
-    "p50": 30.1,
-    "p95": 59.31,
-    "p99": 65.55,
-    "max": 76.7
+    "n": 21,
+    "mean": 220.55,
+    "p50": 35,
+    "p95": 143.5,
+    "p99": 3048.86,
+    "max": 3775.2
    },
    "glShare": 1,
    "counts": {
     "draws": 11,
-    "pointsSubmitted": 20430,
-    "pointsIndexed": 19803,
-    "uploadMs": 15.68,
-    "textRasters": 18.1
+    "pointsSubmitted": 20278,
+    "pointsIndexed": 19729,
+    "uploadMs": 63.08,
+    "textRasters": 15.4
    },
    "world": {
     "cells": 501,

@@ -127,8 +127,12 @@ frame `<scene>.png` for pixel comparisons.
 `bench-baseline.json`. The limits are generous so it does not flake: GL draw calls, jelly points
 (fewer points means less jelly detail), the WebGL frame share and the world size always count;
 render p50 / frame p95 only when the baseline comes from the same GPU and Chrome major version
-(otherwise they are printed as info). Store a new baseline with `--update-baseline` when a change is
-meant to alter these numbers, and say why in the commit. Without Chrome it is skipped.
+and the machine is not busy (fixed CPU and GPU workloads in the page, run around the scenes, are
+at most 1.4x slower than for the baseline); otherwise they are printed as info. A scene that fails
+is measured once more and the better run counts. Other programs using the GPU (for example other
+headless Chrome tests) still slow every timing down: run it, and store a baseline, on an idle
+machine. Store a new baseline with `--update-baseline` when a change is meant to alter these
+numbers, and say why in the commit. Without Chrome it is skipped.
 The same scenes run from the browser console of the game page: see the top of `lib/bench-scene.js`.
 
 ## WebGL batching check and benchmark

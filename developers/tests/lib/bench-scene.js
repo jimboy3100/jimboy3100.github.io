@@ -272,10 +272,27 @@
         ['application', 'displayStats', 'stats HUD']
     ];
 
+    /* Speed of the machine right now: the median ms of a fixed CPU workload (seeded fill, sort,
+     * sum). Other programs busy on the same machine make it slower; the gate then does not judge
+     * timings (bench.js). */
+    function calibrate(clock) {
+        clock = clock || Date.now;
+        var a = new Float64Array(200000), times = [], sink = 0;
+        for (var k = 0; k < 7; k++) {
+            var rnd = makeRng(99), t0 = clock();
+            for (var i = 0; i < a.length; i++) a[i] = rnd();
+            a.sort();
+            for (i = 0; i < a.length; i += 7) sink += a[i];
+            times.push(clock() - t0);
+        }
+        times.sort(function (x, y) { return x - y; });
+        return sink > 0 ? Math.round(times[3] * 100) / 100 : 0;
+    }
+
     var pure = {
         VERSION: VERSION, VIEW: VIEW, TICK_MS: TICK_MS, makeRng: makeRng, scene: scene, matrix: matrix, createWorld: createWorld, step: step,
         encodeUpdate: encodeUpdate, encodeClear: encodeClear, encodeBorder: encodeBorder, encodeAddOwn: encodeAddOwn, sees: sees,
-        percentile: percentile, dist: dist, createScopes: createScopes, STAGES: STAGES, WRAPS: WRAPS
+        percentile: percentile, dist: dist, createScopes: createScopes, STAGES: STAGES, WRAPS: WRAPS, calibrate: calibrate
     };
     if (typeof module === 'object' && module.exports && typeof window === 'undefined') { module.exports = pure; return; }
     if (root.LMBenchDense && root.LMBenchDense.VERSION >= VERSION) return;
@@ -593,6 +610,38 @@
         });
     }
 
+    /* Speed of the GPU right now: the median ms of a fixed fill workload on a context of its own,
+     * waited for with a 1-pixel read. Other programs drawing on the same GPU make it slower. */
+    function calibrateGpu() {
+        var c = document.createElement('canvas');
+        c.width = 1024; c.height = 1024;
+        var g = c.getContext('webgl2', { antialias: false });
+        if (!g) return 0;
+        function sh(t, s) { var x = g.createShader(t); g.shaderSource(x, s); g.compileShader(x); return x; }
+        var p = g.createProgram();
+        g.attachShader(p, sh(g.VERTEX_SHADER, '#version 300 es\nin vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }'));
+        g.attachShader(p, sh(g.FRAGMENT_SHADER, '#version 300 es\nprecision highp float; uniform float u; out vec4 o;\n' +
+            'void main() { vec2 q = gl_FragCoord.xy * 0.001 + u; float s = 0.0; for (int i = 0; i < 64; i++) { s += sin(q.x * float(i)) * cos(q.y + s); } o = vec4(fract(s), 0.0, 0.0, 1.0); }'));
+        g.linkProgram(p);
+        g.useProgram(p);
+        var b = g.createBuffer();
+        g.bindBuffer(g.ARRAY_BUFFER, b);
+        g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), g.STATIC_DRAW);
+        g.enableVertexAttribArray(0);
+        g.vertexAttribPointer(0, 2, g.FLOAT, false, 0, 0);
+        var u = g.getUniformLocation(p, 'u'), px = new Uint8Array(4), times = [];
+        for (var k = 0; k < 7; k++) {
+            var t0 = now();
+            for (var d = 0; d < 6; d++) { g.uniform1f(u, k + d * 0.1); g.drawArrays(g.TRIANGLE_STRIP, 0, 4); }
+            g.readPixels(0, 0, 1, 1, g.RGBA, g.UNSIGNED_BYTE, px);
+            times.push(now() - t0);
+        }
+        var ext = g.getExtension('WEBGL_lose_context');
+        if (ext) ext.loseContext();
+        times.sort(function (x, y) { return x - y; });
+        return r2(times[3]);
+    }
+
     function gpuName() {
         try {
             var gl = DR().gl;
@@ -725,6 +774,7 @@
 
     var api = {};
     Object.keys(pure).forEach(function (k) { api[k] = pure[k]; });
+    api.calibrateGpu = calibrateGpu;
     api.run = run; api.runAll = runAll; api.capture = capture; api.stop = teardown; api.diffImages = diffImages; api.summary = summary;
     api.state = function () { return ses ? { on: true, name: ses.spec.name, tick: ses.w.tick, errors: ses.errors, units: ses.units.length } : { on: false }; };
     api.pause = function (p) { if (ses) { ses.paused = p !== false; ses.last = now(); } };
