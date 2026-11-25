@@ -1163,3 +1163,422 @@ it reads better (clantag, partycode, streamermodus).
 | guest | gast | |
 | account | account | |
 | language | taal | |
+
+---
+
+## pt: Brazilian Portuguese
+
+Style: Brazilian Portuguese, informal você (Pressione, Escolha, Entre), never the European forms
+(ecrã, registo, utilizador). Buttons use the infinitive (Salvar, Cancelar, Importar), toggle labels
+are short nouns. Sentence case. Brazilian agar.io players use many English words and make verbs of
+them ("dar split", "dar feed", "respawnar"), so keep the loan word and build the sentence around it.
+
+| English | Use | Notes |
+| --- | --- | --- |
+| cell | célula | |
+| mass | massa | |
+| split | split | EN, masculine: o split. In sentences dar split. packs: Dividir: replace all |
+| double split | double split | EN |
+| triple split | triple split | EN |
+| trick split | tricksplit | EN |
+| feed / eject mass | feed | EN. packs: Alimentar. In sentences ejetar massa / dar feed |
+| virus | vírus | |
+| pop (on a virus) | estourar | verify |
+| food / pellet | comida / bolinhas | |
+| skin | skin (pl. skins) | EN, feminine: a skin (packs agree) |
+| custom skin | skin personalizada | |
+| nickname | nick | EN. packs: Apelido |
+| clan tag | tag do clã | |
+| team | equipe | verify: time is also common in chat |
+| teammate | aliado | verify: parceiro |
+| party | party | EN, feminine: a party. packs: grupo |
+| party token | código da party | |
+| leaderboard | ranking | EN-based. packs: Classificação |
+| teamboard | ranking da equipe | |
+| minimap | minimapa | |
+| sector | setor | |
+| server | servidor | |
+| region | região | |
+| ping / lag / FPS | ping / lag / FPS | EN |
+| zoom | zoom | |
+| spectate | espectar | modo espectador in labels where there is room. packs: Observar. verify |
+| free spectate | espectar livre | |
+| multibox / bot / macro | multibox / bot / macro | EN |
+| hotkey | atalho | section: Teclas de atalho (packs agree) |
+| replay | replay | EN |
+| respawn | respawn | EN. In sentences renascer / respawnar. packs: Renascimento |
+| game over | Game Over | EN on the card, fim de jogo in sentences |
+| death recap | resumo da morte | |
+| mass graph | gráfico de massa | |
+| killer | quem te comeu | field label |
+| jelly physics | física de gelatina | |
+| HUD | HUD | EN |
+| theme | tema | |
+| preset | predefinição | verify: preset is also used |
+| profile / settings profile | perfil / perfil de configurações | |
+| import / export | importar / exportar | |
+| upload / download | enviar / baixar | |
+| cloud | nuvem | |
+| reset | redefinir | |
+| restore defaults | restaurar padrão | |
+| toggle | ativar/desativar | |
+| show / hide | mostrar / ocultar | |
+| enable / disable | ativar / desativar | |
+| on / off | Ligado / Desligado | toggle states (packs agree). In sentences ativado / desativado |
+| overlay | overlay | EN. verify |
+| cursor | cursor | |
+| background | fundo | |
+| panel | painel | |
+| menu | menu | |
+| settings | configurações | |
+| chat | chat | EN |
+| chat bubble | balão de chat | |
+| emoji | emoji | |
+| mute | silenciar | |
+| streamer mode | modo streamer | |
+| user scripts | scripts | |
+| plugins | plugins | |
+| editor | editor | |
+| workshop | oficina | |
+| gallery | galeria | |
+| command centre | central de comandos | |
+| notification | notificação | |
+| adaptive performance | desempenho adaptativo | |
+| performance mode | modo desempenho | |
+| diagnostics | diagnóstico | |
+| accessibility | acessibilidade | |
+| Rounded / Square HUD | Arredondado / Quadrado | |
+| save / cancel / close / delete / apply | Salvar / Cancelar / Fechar / Excluir / Aplicar | never Gravar / Eliminar (European) |
+| coins | moedas | |
+| DNA | DNA | |
+| offer / deal | oferta | |
+| purchase / buy | comprar | |
+| equip / unequip | equipar / desequipar | |
+| owned | adquirido | short label: Seu. verify |
+| potion | poção | |
+| boost | boost | EN |
+| quest | missão | |
+| level | nível | |
+| XP | XP | |
+| reward | recompensa | |
+| daily | diária | Missão diária |
+| league | liga | |
+| login / logout | entrar / sair | |
+| guest | convidado | |
+| account | conta | |
+| language | idioma | |
+
+---
+
+## id: Indonesian
+
+Style: short imperatives without a pronoun (Tekan, Pilih, Simpan). Where a pronoun is needed use
+the casual kamu of Indonesian games; keep Anda only in legal and account text. Sentence case.
+Indonesian players keep almost every English gaming word (split, feed, skin, leaderboard, hotkey,
+respawn), so do not translate those into dictionary Indonesian (membelah, beri makan, tombol pintas).
+English verbs work in sentences as they are: "untuk split", "jangan feed".
+
+| English | Use | Notes |
+| --- | --- | --- |
+| cell | sel | |
+| mass | massa | |
+| split | split | EN. packs: Membelah: replace all |
+| double split | double split | EN |
+| triple split | triple split | EN |
+| trick split | tricksplit | EN |
+| feed / eject mass | feed | EN. packs: Beri makan. In sentences keluarkan massa |
+| virus | virus | |
+| pop (on a virus) | pecah | verify |
+| food / pellet | makanan / pelet | |
+| skin | skin | EN (packs agree) |
+| custom skin | skin kustom | |
+| nickname | nick | EN. packs: Nama panggilan |
+| clan tag | tag klan | |
+| team | tim | |
+| teammate | rekan tim | |
+| party | party | EN. packs: grup |
+| party token | kode party | |
+| leaderboard | leaderboard | EN. packs: Papan peringkat. verify: peringkat is also understood |
+| teamboard | leaderboard tim | |
+| minimap | minimap | EN. packs: Peta mini |
+| sector | sektor | |
+| server | server | EN (packs agree) |
+| region | region | EN. verify: wilayah |
+| ping / lag / FPS | ping / lag / FPS | EN |
+| zoom | zoom | |
+| spectate | spectate | EN in labels, menonton in sentences. packs: Menonton |
+| free spectate | spectate bebas | |
+| multibox / bot / macro | multibox / bot / macro | EN. packs: Makro |
+| hotkey | hotkey | EN. packs: Tombol pintas |
+| replay | replay | EN. packs: Tayangan ulang |
+| respawn | respawn | EN. packs: Muncul kembali |
+| game over | Game Over | EN |
+| death recap | ringkasan kematian | |
+| mass graph | grafik massa | |
+| killer | dimakan oleh | field label |
+| jelly physics | fisika jelly | |
+| HUD | HUD | EN |
+| theme | tema | |
+| preset | preset | EN |
+| profile / settings profile | profil / profil pengaturan | |
+| import / export | impor / ekspor | |
+| upload / download | unggah / unduh | |
+| cloud | cloud | EN |
+| reset | reset | EN |
+| restore defaults | kembalikan default | |
+| toggle | aktifkan/nonaktifkan | |
+| show / hide | tampilkan / sembunyikan | |
+| enable / disable | aktifkan / nonaktifkan | |
+| on / off | Aktif / Nonaktif | toggle states (packs agree). verify: ON / OFF is also common |
+| overlay | overlay | EN |
+| cursor | kursor | |
+| background | latar belakang | |
+| panel | panel | |
+| menu | menu | |
+| settings | pengaturan | |
+| chat | chat | EN. packs: Obrolan |
+| chat bubble | bubble chat | |
+| emoji | emoji | |
+| mute | bisukan | |
+| streamer mode | mode streamer | |
+| user scripts | script | |
+| plugins | plugin | |
+| editor | editor | |
+| workshop | workshop | EN |
+| gallery | galeri | |
+| command centre | pusat komando | |
+| notification | notifikasi | |
+| adaptive performance | performa adaptif | |
+| performance mode | mode performa | |
+| diagnostics | diagnostik | |
+| accessibility | aksesibilitas | |
+| Rounded / Square HUD | Bulat / Kotak | |
+| save / cancel / close / delete / apply | Simpan / Batal / Tutup / Hapus / Terapkan | |
+| coins | koin | |
+| DNA | DNA | |
+| offer / deal | penawaran | |
+| purchase / buy | beli | |
+| equip / unequip | pakai / lepas | |
+| owned | dimiliki | |
+| potion | ramuan | |
+| boost | boost | EN |
+| quest | misi | |
+| level | level | |
+| XP | XP | |
+| reward | hadiah | |
+| daily | harian | Misi harian |
+| league | liga | |
+| login / logout | masuk / keluar | |
+| guest | tamu | |
+| account | akun | |
+| language | bahasa | |
+
+---
+
+## ja: Japanese
+
+Style: short noun labels (設定, 保存, 自動リスポーン); sentences in plain polite form (〜します,
+〜してください), never stiff keigo. Full-width punctuation (、。), no spaces between Japanese words, a
+space is fine around Latin words and numbers. Katakana loan words take the long vowel mark
+(サーバー, パーティー, エディター). Japanese agar.io players use katakana loan words for most terms,
+but split is 分裂 and ejecting mass is W / 質量放出 in that community. Latin letters stay for HUD,
+FPS, Ping, XP, DNA and key names.
+
+| English | Use | Notes |
+| --- | --- | --- |
+| cell | セル | |
+| mass | 質量 | packs agree. verify: マス is also seen |
+| split | 分裂 | packs agree |
+| double split | ダブル分裂 | verify: 2連分裂 |
+| triple split | トリプル分裂 | verify |
+| trick split | トリックスプリット | verify |
+| feed / eject mass | 質量放出 | packs: エサを与える (literal feeding): replace. Players say W / エサ |
+| virus | ウイルス | |
+| pop (on a virus) | 破裂 | verify |
+| food / pellet | エサ | |
+| skin | スキン | |
+| custom skin | カスタムスキン | |
+| nickname | ニックネーム | 名前 where space is short |
+| clan tag | クランタグ | |
+| team | チーム | |
+| teammate | 味方 | |
+| party | パーティー | |
+| party token | パーティーコード | |
+| leaderboard | ランキング | packs agree |
+| teamboard | チームランキング | |
+| minimap | ミニマップ | |
+| sector | セクター | |
+| server | サーバー | never サーバ |
+| region | 地域 | verify: リージョン |
+| ping / lag / FPS | Ping / ラグ / FPS | |
+| zoom | ズーム | |
+| spectate | 観戦 | |
+| free spectate | 自由観戦 | |
+| multibox / bot / macro | マルチボックス / ボット / マクロ | |
+| hotkey | ショートカットキー | section: ショートカット (packs agree). verify: ホットキー |
+| replay | リプレイ | |
+| respawn | リスポーン | |
+| game over | ゲームオーバー | |
+| death recap | 死亡レポート | verify |
+| mass graph | 質量グラフ | |
+| killer | 食べた相手 | field label. In sentences あなたを食べたプレイヤー |
+| jelly physics | ゼリー物理 | |
+| HUD | HUD | EN |
+| theme | テーマ | |
+| preset | プリセット | |
+| profile / settings profile | プロフィール / 設定プロファイル | プロフィール for a player, プロファイル for saved settings |
+| import / export | インポート / エクスポート | |
+| upload / download | アップロード / ダウンロード | |
+| cloud | クラウド | |
+| reset | リセット | |
+| restore defaults | 初期設定に戻す | |
+| toggle | オン/オフ切り替え | |
+| show / hide | 表示 / 非表示 | |
+| enable / disable | 有効 / 無効 | as a verb: 有効にする / 無効にする |
+| on / off | オン / オフ | toggle states (packs agree) |
+| overlay | オーバーレイ | |
+| cursor | カーソル | |
+| background | 背景 | |
+| panel | パネル | |
+| menu | メニュー | |
+| settings | 設定 | |
+| chat | チャット | |
+| chat bubble | チャット吹き出し | |
+| emoji | 絵文字 | |
+| mute | ミュート | |
+| streamer mode | 配信者モード | verify: ストリーマーモード |
+| user scripts | スクリプト | |
+| plugins | プラグイン | |
+| editor | エディター | |
+| workshop | ワークショップ | |
+| gallery | ギャラリー | |
+| command centre | コマンドセンター | |
+| notification | 通知 | |
+| adaptive performance | 自動パフォーマンス調整 | verify |
+| performance mode | パフォーマンスモード | |
+| diagnostics | 診断 | |
+| accessibility | アクセシビリティ | |
+| Rounded / Square HUD | 角丸 / 四角 | |
+| save / cancel / close / delete / apply | 保存 / キャンセル / 閉じる / 削除 / 適用 | |
+| coins | コイン | |
+| DNA | DNA | EN |
+| offer / deal | オファー | |
+| purchase / buy | 購入 | |
+| equip / unequip | 装備 / 外す | |
+| owned | 所持済み | |
+| potion | ポーション | |
+| boost | ブースト | |
+| quest | クエスト | |
+| level | レベル | |
+| XP | XP | 経験値 in sentences |
+| reward | 報酬 | |
+| daily | デイリー | デイリークエスト |
+| league | リーグ | |
+| login / logout | ログイン / ログアウト | |
+| guest | ゲスト | |
+| account | アカウント | |
+| language | 言語 | |
+
+---
+
+## it: Italian
+
+Style: informal tu (Premi, Scegli, Accedi). Buttons use the imperative (Salva, Annulla, Importa),
+toggle labels are short nouns. Sentence case, not Title Case. Italian players keep many English
+gaming words and make verbs of them (splittare, feedare, respawnare); in UI labels write the English
+noun, in sentences the Italian verb form is fine.
+
+| English | Use | Notes |
+| --- | --- | --- |
+| cell | cellula | |
+| mass | massa | |
+| split | split | EN, masculine: lo split. In sentences splittare. packs: Dividi: replace all |
+| double split | double split | EN |
+| triple split | triple split | EN |
+| trick split | tricksplit | EN |
+| feed / eject mass | feed | EN. packs: Nutri (literal). In sentences espellere massa |
+| virus | virus | |
+| pop (on a virus) | scoppio | verify |
+| food / pellet | cibo / palline | |
+| skin | skin (pl. skin) | EN, feminine: la skin (packs agree) |
+| custom skin | skin personalizzata | |
+| nickname | nick | EN. Nickname is fine where there is room |
+| clan tag | tag del clan | |
+| team | squadra | |
+| teammate | compagno di squadra | |
+| party | party | EN. packs: gruppo |
+| party token | codice party | |
+| leaderboard | classifica | packs agree |
+| teamboard | classifica squadra | |
+| minimap | minimappa | |
+| sector | settore | |
+| server | server | EN |
+| region | regione | |
+| ping / lag / FPS | ping / lag / FPS | EN |
+| zoom | zoom | |
+| spectate | spettatore | modalità spettatore. In sentences guardare |
+| free spectate | spettatore libero | |
+| multibox / bot / macro | multibox / bot / macro | EN |
+| hotkey | tasto rapido | section: Tasti rapidi. packs: Scorciatoie |
+| replay | replay | EN |
+| respawn | respawn | EN (packs agree) |
+| game over | Game Over | EN |
+| death recap | riepilogo morte | |
+| mass graph | grafico della massa | |
+| killer | chi ti ha mangiato | field label |
+| jelly physics | fisica gelatina | |
+| HUD | HUD | EN |
+| theme | tema | |
+| preset | preset | EN |
+| profile / settings profile | profilo / profilo impostazioni | |
+| import / export | importa / esporta | |
+| upload / download | carica / scarica | |
+| cloud | cloud | EN |
+| reset | ripristina | |
+| restore defaults | ripristina predefiniti | |
+| toggle | attiva/disattiva | |
+| show / hide | mostra / nascondi | |
+| enable / disable | attiva / disattiva | |
+| on / off | Attivo / Disattivo | toggle states (packs agree). verify: ON / OFF is also common |
+| overlay | overlay | EN |
+| cursor | cursore | |
+| background | sfondo | |
+| panel | pannello | |
+| menu | menu | |
+| settings | impostazioni | |
+| chat | chat | EN |
+| chat bubble | fumetto chat | |
+| emoji | emoji | |
+| mute | silenzia | |
+| streamer mode | modalità streamer | |
+| user scripts | script | |
+| plugins | plugin | |
+| editor | editor | |
+| workshop | workshop | EN |
+| gallery | galleria | |
+| command centre | centro comandi | |
+| notification | notifica | |
+| adaptive performance | prestazioni adattive | |
+| performance mode | modalità prestazioni | |
+| diagnostics | diagnostica | |
+| accessibility | accessibilità | |
+| Rounded / Square HUD | Arrotondato / Quadrato | |
+| save / cancel / close / delete / apply | Salva / Annulla / Chiudi / Elimina / Applica | |
+| coins | monete | |
+| DNA | DNA | |
+| offer / deal | offerta | |
+| purchase / buy | acquista | |
+| equip / unequip | equipaggia / rimuovi | |
+| owned | posseduto | short label: Tuo. verify |
+| potion | pozione | |
+| boost | boost | EN |
+| quest | missione | |
+| level | livello | |
+| XP | XP | |
+| reward | ricompensa | |
+| daily | giornaliera | Missione giornaliera |
+| league | lega | |
+| login / logout | accedi / esci | |
+| guest | ospite | |
+| account | account | |
+| language | lingua | |
