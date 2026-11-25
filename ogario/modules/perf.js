@@ -358,13 +358,16 @@
      * (the browser stops frames there: not a stall). sinceVisible: ms from the tab being shown
      * again to the end of the gap (-1: not known). Returns '' (normal), 'background',
      * 'pause' (over 10 s: sleep or suspend), 'return' (a slow frame right after the tab came
-     * back: listed, not counted), 'stall' (100-250 ms) or 'freeze' (250 ms - 10 s). */
-    function classifyGap(g, background, sinceVisible) {
+     * back: listed, not counted), 'unfocused' (100 ms - 10 s while the browser window was not in
+     * front: Chrome slows or stops the frames of a covered window, e.g. behind an editor; listed,
+     * not counted), 'stall' (100-250 ms) or 'freeze' (250 ms - 10 s). */
+    function classifyGap(g, background, sinceVisible, unfocused) {
         if (!(g > 0)) return '';
         if (background) return 'background';
         if (g > PAUSE_MS) return 'pause';
         if (g < STALL_MS) return '';
         if (sinceVisible >= 0 && sinceVisible <= RETURN_GRACE) return 'return';
+        if (unfocused) return 'unfocused';
         return g >= FREEZE_MS ? 'freeze' : 'stall';
     }
 
@@ -727,6 +730,8 @@
         rafPrev: 0, rafMax: 0, rafSeen: false, lastT1: 0, lastRt: 0,
         /* the last time the tab was hidden or shown, and shown */
         visAt: 0, visibleAt: 0,
+        /* the last time the browser window lost / got the focus; gaps while it was not in front */
+        blurAt: 0, focusAt: 0, ufN: 0, ufTotal: 0,
         stallCount: 0, stallMax: 0, stallLast: 0,
         frzN: 0, frzMax: 0, frzTotal: 0, frzLast: 0,
         capped: 0, bgGaps: 0, renderErrors: 0, ltN: 0, ltMax: 0, renderer: ''
@@ -893,12 +898,23 @@
 
     /* the tab was hidden, or hidden / shown, during the gap ending at t */
     function inBackground(t, g) { return !!document.hidden || (fr.visAt > 0 && fr.visAt >= t - g); }
+    /* the browser window was not in front for (part of) the gap ending at t: it lost the focus and
+     * has not got it back, or lost / got it during the gap. Only after a real blur event: a window
+     * that never had the focus (headless, a second screen) is not counted as away. */
+    function windowAway(t, g) {
+        return (fr.blurAt > 0 && fr.blurAt > fr.focusAt) || (fr.blurAt > 0 && fr.blurAt >= t - g) || (fr.focusAt > 0 && fr.focusAt >= t - g);
+    }
 
     /* a gap between two frame callbacks ending at t: counts stalls and freezes */
     function noteGap(t, g) {
-        var kind = classifyGap(g, inBackground(t, g), fr.visibleAt ? t - fr.visibleAt : -1);
+        var kind = classifyGap(g, inBackground(t, g), fr.visibleAt ? t - fr.visibleAt : -1, g >= STALL_MS && windowAway(t, g));
         if (!kind) return kind;
         if (kind === 'background') { fr.bgGaps++; return kind; }
+        if (kind === 'unfocused') {
+            fr.ufN++; fr.ufTotal += g;
+            if (g >= FREEZE_MS) pushEvent('freeze', g, 'window not in front (not counted)');
+            return kind;
+        }
         if (kind === 'stall' || kind === 'freeze') {
             fr.stallCount++;
             fr.stallLast = g;
@@ -958,7 +974,8 @@
         fr.rafSeen = false; fr.rafMax = 0;
         /* Diagnostics: every frame in the foreground, long ones too (they are the freezes);
          * a gap in which the tab was hidden or the device slept is not a frame time */
-        if (!hidden && dt > 0 && dt <= PAUSE_MS && !(prev && fr.visAt >= prev)) {
+        /* nor one in which the browser window left or came back to the front */
+        if (!hidden && dt > 0 && dt <= PAUSE_MS && !(prev && fr.visAt >= prev) && !(prev && dt >= STALL_MS && windowAway(t0, dt))) {
             fr.iv[fr.at] = dt; fr.rt[fr.at] = rt; fr.sg[fr.at] = sg;
             fr.at = (fr.at + 1) % RING;
             if (fr.n < RING) fr.n++;
@@ -1248,6 +1265,9 @@
         if (!document.hidden) fr.visibleAt = t;
         pushEvent('visibility', 0, document.hidden ? 'hidden' : 'visible');
     });
+    /* the browser window in front or not (another program over it): its frame gaps are not freezes */
+    window.addEventListener('blur', function () { fr.blurAt = now(); pushEvent('window', 0, 'not in front'); });
+    window.addEventListener('focus', function () { fr.focusAt = now(); pushEvent('window', 0, 'in front'); });
 
     /* ---------- diagnostics window ---------- */
 
@@ -1360,7 +1380,8 @@
         return (long ? 'Freezes (≥' + FREEZE_MS + ' ms, foreground): ' : T('lmPerfFreezes', 'Freezes') + ' (≥' + FREEZE_MS + ' ms): ') + fr.frzN +
             (fr.frzN ? ', ' + T('lmPerfWorst', 'worst') + ' ' + Math.round(fr.frzMax) + ' ms, ' + T('lmPerfTotal', 'total') + ' ' + Math.round(fr.frzTotal) + ' ms' +
                 (t ? ', ' + T('lmPerfLast', 'last') + ' ' + pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds()) : '') : '') +
-            (long && fr.bgGaps ? ' (' + fr.bgGaps + ' background gaps not counted)' : '');
+            (long && fr.bgGaps ? ' (' + fr.bgGaps + ' background gaps not counted)' : '') +
+            (fr.ufN ? (long ? ' (' : ' · ') + fr.ufN + ' ' + T('lmPerfNotFront', 'while the window was not in front') + (long ? ', ' + Math.round(fr.ufTotal) + ' ms, not counted)' : '') : '');
     }
 
     function fmtDur(ms) {
