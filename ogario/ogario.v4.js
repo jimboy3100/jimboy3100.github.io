@@ -36107,9 +36107,9 @@ function thelegendmodproject() {
             } catch (e) { }
         };
         /* The labels the Canvas2D text block of draw() shows on this cell: bit 2 the nick, bit 1
-         * the mass (the merge timer and chat bubble only come with it); 0 = no text block.
-         * node = its custom skin (hideTeammatesNames). Shared with the WebGL cells so a chat
-         * bubble shows on exactly the same cells in both renderers. */
+         * the mass (the merge timer only comes with it); 0 = no text block.
+         * node = its custom skin (hideTeammatesNames). Shared with the WebGL cells so the
+         * merge timer shows on exactly the same cells in both renderers. */
         this.lmLabels = function (y, node) {
             var ms = defaultmapsettings;
             if (ms.noNames && !ms.showMass || this._lmDrawNoText) return 0;
@@ -36136,16 +36136,40 @@ function thelegendmodproject() {
             if (!img || img._failed || !(img.naturalWidth > 0 || img.width > 0)) return null;
             return app.getCustomSkin(this.targetNick, this.color, this.skin) ? img : null;
         };
-        this.drawChat = function (context) {
-            if (this.chatCanvas && !(this.size <= 40) && this.nick !== "") {
-                /* O(1) lookup via prebuilt _chatMap instead of O(N) chat/command loops */
-                var _chatMap = drawRender._chatLookup;
-                if (!_chatMap) return;
-                var _ce = _chatMap.get(this.nick);
-                if (!_ce) return;
+        /* The live chat line this cell shows as a bubble, or null. Only showChat (and
+         * showChatMyOwn, applied when the lookup is built) decide it, not the nick or mass
+         * labels. Keyed by targetNick: this.nick is only refreshed where a nick is laid out.
+         * Removed cells drawn without text (_lmDrawNoText) show none. */
+        this.lmChatLine = function () {
+            var map = defaultmapsettings.showChat ? drawRender._chatLookup : null;
+            if (!map || !map.size || this._lmDrawNoText || !(this.size > 40) || !this.targetNick) return null;
+            var ce = map.get(this.targetNick);
+            if (!ce || !ce.message) return null;
+            var age = LM.time - ce.time;
+            return age >= 0 && age < 15000 ? ce : null;
+        };
+        /* Draws the bubble of chat line ce, last of the cell's text (as before). Placed from the
+         * nick layout whether or not the nick is shown, so hiding names does not move it.
+         * ready: the text block already ran in this draw (sizes set, textAlpha applied);
+         * nickDone: it laid out the nick. */
+        this.lmChatBubble = function (ctx, ce, ready, nickDone) {
+            if (!ready) {
+                this.setDrawing();
+                this.setDrawingScale();
+                if (defaultSettings.textAlpha != 1) ctx.globalAlpha *= defaultSettings.textAlpha;
+            }
+            if (!nickDone) {
+                this.margin = 0;
+                if (this.setNick(this.targetNick)) this.layoutNick();
+            }
+            this.drawChat(ctx, ce);
+        };
+        this.drawChat = function (context, ce) {
+            var _ce = ce || this.lmChatLine();
+            if (_ce) {
+                if (!this.chatCanvas) this.chatCanvas = new irenderfromagario();
                 var customTxt = _ce.message;
                 var temp = LM.time - _ce.time;
-                if (!customTxt || temp < 0 || temp >= 15000) return;
                 var chatCanvas = this.chatCanvas;
                 chatCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
                 chatCanvas.setFontSize(this.massSize / 2);
@@ -37898,7 +37922,11 @@ function thelegendmodproject() {
                     /* Skip Canvas2D nick/mass text for WebGL-rendered cells — text is now drawn
                      * as WebGL textured quads with depth testing for correct z-order.
                      * Chat bubbles and merge timers still render on Canvas2D (overlay effects). */
+                    /* the chat bubble has its own setting: drawn whether or not the nick and
+                     * mass are (it used to need the mass label) */
+                    var _chatCe = cellMoved ? null : this.lmChatLine();
                     if (!_wasWebGL) {
+                        var _txtReady = false, _nickDone = false;
                         if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved || this._lmDrawNoText) {
                             //return;
                         }
@@ -37910,9 +37938,11 @@ function thelegendmodproject() {
                                 if (defaultSettings.textAlpha != 1) {
                                     style.globalAlpha *= defaultSettings.textAlpha;
                                 }
+                                _txtReady = true;
                                 if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
                                     if (this.setNick(this.targetNick)) {
                                         this.drawNick(style);
+                                        _nickDone = true;
                                     }
                                 }
                                 if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
@@ -37922,49 +37952,37 @@ function thelegendmodproject() {
                                         if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
                                             this.drawMerge(style);
                                         }
-                                        if (defaultmapsettings.showChat) {
-                                            this.drawChat(style);
-                                        }
                                     }
                                 }
                             }
 
                         }
+                        if (_chatCe) this.lmChatBubble(style, _chatCe, _txtReady, _nickDone);
                     } else {
-                        /* WebGL cell: its nick and mass are GPU labels. The merge timer and chat
-                         * bubble the Canvas2D branch draws after them go on the overlay canvas,
-                         * on the same cells (lmLabels), at the same place (this.margin from the
-                         * nick layout) and with the same alpha (textAlpha). Only cells with a
-                         * live chat line get this far. */
-                        var _cm = defaultmapsettings.showChat ? drawRender._chatLookup : null;
-                        if (_cm && !(_cm.size && (_cm.has(this.targetNick) || _cm.has(this.nick)))) _cm = null;
+                        /* WebGL cell: its nick and mass are GPU labels. The merge timer (on the
+                         * cells lmLabels gives a mass) and the chat bubble the Canvas2D branch
+                         * draws after them go on the overlay canvas, at the same place
+                         * (this.margin from the nick layout) and with the same alpha (textAlpha). */
                         var _mergeOn = !!(window.ExternalScripts && !window.legendmod5.optimizedMass);
-                        if (_cm || _mergeOn) {
-                            var _lab = cellMoved ? 0 : this.lmLabels(y,
-                                (defaultmapsettings.hideTeammatesNames && defaultmapsettings.customSkins && LM.showCustomSkins && !this.isEjected)
-                                    ? application.getCustomSkin(this.targetNick, this.color, this.skin) : null);
-                            var _ce = null;
-                            if (_cm && (_lab & 1)) {
-                                var _cn = (_lab & 2) ? this.targetNick : this.nick;
-                                _ce = _cn ? _cm.get(_cn) : null;
-                                if (_ce && !(_ce.message && LM.time - _ce.time >= 0 && LM.time - _ce.time < 15000)) _ce = null;
-                            }
-                            if ((_lab & 1) && (_ce || _mergeOn)) {
-                                this.setDrawing();
-                                this.setDrawingScale();
-                                if ((_lab & 2) && this.setNick(this.targetNick)) this.layoutNick();
-                                if (this.setMass(this.size)) {
-                                    var _fg2 = drawRender._lmFgFor(style), _c2 = _fg2 || style;
-                                    var _a2 = _c2.globalAlpha;
-                                    try {
-                                        if (defaultSettings.textAlpha != 1) _c2.globalAlpha = _a2 * defaultSettings.textAlpha;
-                                        if (_mergeOn) this.drawMerge(_c2);
-                                        if (_ce) this.drawChat(_c2);
-                                    } finally {
-                                        if (_fg2) _fg2.restore();
-                                        else _c2.globalAlpha = _a2;
-                                    }
-                                }
+                        var _lab = _mergeOn && !cellMoved ? this.lmLabels(y,
+                            (defaultmapsettings.hideTeammatesNames && defaultmapsettings.customSkins && LM.showCustomSkins && !this.isEjected)
+                                ? application.getCustomSkin(this.targetNick, this.color, this.skin) : null) : 0;
+                        if (!(_lab & 1)) _mergeOn = false;
+                        if (_chatCe || _mergeOn) {
+                            this.setDrawing();
+                            this.setDrawingScale();
+                            var _glNick = !!(_lab & 2) && this.setNick(this.targetNick);
+                            if (_glNick) this.layoutNick();
+                            if (_mergeOn) _mergeOn = this.setMass(this.size);
+                            var _fg2 = drawRender._lmFgFor(style), _c2 = _fg2 || style;
+                            var _a2 = _c2.globalAlpha;
+                            try {
+                                if (defaultSettings.textAlpha != 1) _c2.globalAlpha = _a2 * defaultSettings.textAlpha;
+                                if (_mergeOn) this.drawMerge(_c2);
+                                if (_chatCe) this.lmChatBubble(_c2, _chatCe, true, _glNick);
+                            } finally {
+                                if (_fg2) _fg2.restore();
+                                else _c2.globalAlpha = _a2;
                             }
                         }
                     }
@@ -59606,21 +59624,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
             /* chat bubble: drawn after the cell's own labels, so only later cells matter */
-            if (chatMap && cell.size > 40 && cell.lmLabels && (chatMap.has(nick) || chatMap.has(cell.nick))) {
-                var lab = cell.lmLabels(cell.size,
-                    (defaultmapsettings.hideTeammatesNames && defaultmapsettings.customSkins && LM.showCustomSkins && !cell.isEjected)
-                        ? application.getCustomSkin(nick, cell.color, cell.skin) : null);
-                if (lab & 1) {
-                    var cn = (lab & 2) ? nick : cell.nick;
-                    var ce = cn ? chatMap.get(cn) : null;
-                    if (ce && ce.message && LM.time - ce.time >= 0 && LM.time - ce.time < 15000) {
-                        /* its size is known once Canvas2D has drawn this line */
-                        if (cell._lmChatAt !== ce.time) return -1;
-                        /* (1 unit or less: drawChat draws nothing) */
-                        if (cell._lmChatW > 1 && cell._lmChatH > 1) {
-                            var cw = cell._lmChatW * 0.55 + 4, cy0 = cell.y + cell._lmChatDy;
-                            n = this._lmFxPush(n, cell.x - cw, cy0 - 0.1 * cell._lmChatH, cell.x + cw, cy0 + 1.1 * cell._lmChatH);
-                        }
+            if (chatMap && nick && cell.lmChatLine && chatMap.has(nick)) {
+                /* the same line cell.draw shows (lmChatLine) */
+                var ce = cell.lmChatLine();
+                if (ce) {
+                    /* its size is known once Canvas2D has drawn this line */
+                    if (cell._lmChatAt !== ce.time) return -1;
+                    /* (1 unit or less: drawChat draws nothing) */
+                    if (cell._lmChatW > 1 && cell._lmChatH > 1) {
+                        var cw = cell._lmChatW * 0.55 + 4, cy0 = cell.y + cell._lmChatDy;
+                        n = this._lmFxPush(n, cell.x - cw, cy0 - 0.1 * cell._lmChatH, cell.x + cw, cy0 + 1.1 * cell._lmChatH);
                     }
                 }
             }
@@ -75064,10 +75077,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _myNick = this._cachedNick;
             var _lastSentNick = application.lastSentNick;
             var _showOwn = defaultmapsettings.showChatMyOwn;
+            /* the bubbles (cell.lmChatLine, canUseWebGLScene) are its only readers and both
+             * need showChat: no scan without it. The histories are in arrival order (Date.now
+             * stamps), so the newest-first scans stop at the first line past the 15 s. */
+            var _chOn = defaultmapsettings.showChat;
             var _ch = application.chatHistory;
-            for (var _ci = _ch.length - 1; _ci >= 0; _ci--) {
+            for (var _ci = _chOn ? _ch.length - 1 : -1; _ci >= 0; _ci--) {
                 var _ce = _ch[_ci];
-                if (_now - _ce.time < 15000 && _ce.nick && !_chatMap.has(_ce.nick)) {
+                if (!(_now - _ce.time < 15000)) break;
+                if (_ce.nick && !_chatMap.has(_ce.nick)) {
                     var _msg = _ce.message;
                     if (_msg && !_msg.includes('emoticon') && !_msg.includes('<img src') &&
                         !_msg.includes('DosAttack') && !_msg.includes('DosFight') &&
@@ -75080,9 +75098,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
             var _cmd = application.commandHistory;
-            for (var _ci2 = _cmd.length - 1; _ci2 >= 0; _ci2--) {
+            for (var _ci2 = _chOn ? _cmd.length - 1 : -1; _ci2 >= 0; _ci2--) {
                 var _ce2 = _cmd[_ci2];
-                if (_now - _ce2.time < 15000 && _ce2.nick) {
+                if (!(_now - _ce2.time < 15000)) break;
+                if (_ce2.nick) {
                     var _isSelf2 = (_ce2.nick === _myNick || _ce2.nick === _lastSentNick);
                     if (!_isSelf2 || _showOwn) {
                         var _existing = _chatMap.get(_ce2.nick);

@@ -162,7 +162,7 @@ function cellMethod(name) {
     const at = src.indexOf('function', m.index);
     return block(src, at);
 }
-const CELL_METHODS = ['draw', 'drawChat', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick', 'lmLabels', 'lmFbBadge',
+const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick', 'lmLabels', 'lmFbBadge',
     'setNick', 'setMass', 'setDrawing', 'setDrawingScale', 'setScale', 'setFontSize', 'setStrokeSize'];
 const haveMethods = CELL_METHODS.filter((n) => cellMethod(n));
 const frameA = src.indexOf('/* read by the net graph (renderer label) */');
@@ -289,8 +289,10 @@ function paintCellCanvas(c, ctx) {
         if (ds.textAlpha != 1) ctx.globalAlpha *= ds.textAlpha;
         if (fl.nick && c.setNick(c.targetNick)) c.drawNick(nullCtx);
         paintLabels(ctx, c, fl);
-        if (fl.mass && c.setMass(c.size) && ms.showChat) c.drawChat(ctx);
     }
+    /* the chat bubble last, on its own setting (not tied to the labels) */
+    const ce = c.lmChatLine();
+    if (ce) c.lmChatBubble(ctx, ce, fl.on, !!(fl.on && fl.nick && c.targetNick && !c.isVirus));
     ctx.restore();
 }
 function worldTransform(ctx, s) {
@@ -393,7 +395,13 @@ r = frame(S1);
 check('chat with textAlpha 0.6: same alpha as Canvas2D', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
 setSettings({ map: { showMass: false } });
 r = frame(S1);
-check('chat with mass labels off: no bubble in either renderer, WebGL, equal', r.gl && marked(r.out, chatCol) === 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+check('chat with mass labels off: the bubble stays (its own setting), WebGL, equal', r.gl && marked(r.out, chatCol) > 0 && r.d.n === 0, 'gl ' + r.gl + ' chat px ' + marked(r.out, chatCol) + ' ' + r.d.n + ' px');
+setSettings({ map: { showMass: false, noNames: true } });
+r = frame(S1);
+check('chat with names and mass off: the bubble stays, WebGL, equal', r.gl && marked(r.out, chatCol) > 0 && r.d.n === 0, 'gl ' + r.gl + ' chat px ' + marked(r.out, chatCol) + ' ' + r.d.n + ' px');
+setSettings({ map: { showChat: false } });
+r = frame(S1);
+check('showChat off: no bubble in either renderer, WebGL, equal', r.gl && marked(r.out, chatCol) === 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
 
 /* ---- FB friend badge ---- */
 reset(); setSettings({ map: { FBTracking: true } });
@@ -493,6 +501,144 @@ check('context lost: Canvas2D, overlay hidden, equal', !r.gl && !r.shown && r.d.
 R._webglDisabledUntil = 0;
 r = frame(S1);
 check('context back: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+
+/* ---- the real cell.draw, both branches: the chat bubble follows showChat only ----
+ * Here cell.draw also runs its Canvas2D branch (bodies fall back to a no-op fill), on a
+ * canvas that records every drawImage of the cell's chat raster. */
+window.drawRender = R;
+if (!R.cellsColored) R.cellsColored = {};
+R.preDrawCellsColors = function () { };
+globalThis.lmMultiboxRing = () => null;
+class RecCtx extends SoftCtx {
+    constructor(c) { super(c); this.calls = []; }
+    drawImage(im, x, y, w, h) { this.calls.push({ im: im, x: x, y: y, w: w, h: h, a: this.globalAlpha }); return super.drawImage.apply(this, arguments); }
+}
+const recCv = new SoftCanvas(240, 160, 'rec'), recCtx = new RecCtx(recCv);
+recCv._ctx = recCtx;
+const errLog = console.error;
+let drawErrors = 0;
+console.error = function () { drawErrors++; errLog.apply(console, arguments); };
+/* one draw of cell c (gl: its WebGL branch), the chat bubble draws it made */
+function drawReal(c, gl, zoom, moved) {
+    const s = Object.assign({}, S1, { zoom: zoom });
+    ogario.viewScale = zoom; R.scale = zoom; window.LM_DPR = 1; R._foregroundCtx = null;
+    recCtx.setTransform(1, 0, 0, 1, 0, 0); recCtx.clearRect(0, 0, 240, 160); recCtx.calls.length = 0;
+    worldTransform(recCtx, s);
+    c._webglRendered = gl;
+    c.draw(recCtx, moved);
+    return recCtx.calls.filter((k) => c.chatCanvas && k.im === c.chatCanvas.txtCanvas);
+}
+const variants = [
+    ['names and mass shown', {}],
+    ['names off', { noNames: true }],
+    ['mass off', { showMass: false }],
+    ['names and mass off', { noNames: true, showMass: false }],
+    ['own name and mass hidden', { hideMyName: true, hideMyMass: true }],
+    ['enemy mass hidden', { hideEnemiesMass: true }],
+    ['auto-hide names and mass', { autoHideNames: true, autoHideMass: true }]
+];
+let mtxOk = true, mtxInfo = '', mtxN = 0;
+for (const own of [false, true]) {
+    for (const zoom of [1, 0.4]) {
+        const who = (own ? 'own' : 'enemy') + ' cell, zoom ' + zoom;
+        const c = makeCell({ x: 5, y: 8, size: 60, targetNick: 'talk', isPlayerCell: own });
+        let ref = null;
+        for (const sc of [true, false]) {
+            for (const [vn, vmap] of variants) {
+                for (const gl of [false, true]) {
+                    reset(); chat('talk');
+                    setSettings({ map: Object.assign({ showChat: sc }, vmap), set: { textAlpha: 0.8 } });
+                    LM.cells = [c];
+                    const b = drawReal(c, gl, zoom);
+                    mtxN++;
+                    const tag = who + ', showChat ' + sc + ', ' + vn + ', ' + (gl ? 'WebGL' : 'Canvas2D');
+                    if (!sc) { if (b.length) { mtxOk = false; mtxInfo += ' [' + tag + ': ' + b.length + ' bubbles]'; } continue; }
+                    if (b.length !== 1) { mtxOk = false; mtxInfo += ' [' + tag + ': ' + b.length + ' bubbles]'; continue; }
+                    const k = b[0], key = [k.x, k.y, k.w, k.h, k.a.toFixed(6)].join(',');
+                    if (ref === null) ref = key;
+                    else if (key !== ref) { mtxOk = false; mtxInfo += ' [' + tag + ': ' + key + ' vs ' + ref + ']'; }
+                }
+            }
+        }
+    }
+}
+check('real cell.draw, ' + mtxN + ' cases: showChat on = one bubble, off = none, same place and alpha whatever names/mass show (own/enemy, zoom 1/0.4, Canvas2D/WebGL)', mtxOk, mtxInfo);
+reset(); chat('talk'); setSettings({ map: { noNames: true, showMass: false } });
+{
+    const c = makeCell({ x: 5, y: 8, size: 60, targetNick: 'talk', nick: 'stale' });
+    LM.cells = [c];
+    const b = drawReal(c, false, 1);
+    check('names off with a stale this.nick: the bubble of targetNick', b.length === 1, b.length + ' bubbles');
+    const ref = drawReal(makeCell({ x: 5, y: 8, size: 60, targetNick: 'talk' }), false, 1);
+    check('  placed above where the nick would be (not on the cell centre)', b.length === 1 && ref.length === 1 && b[0].y === ref[0].y && b[0].y < c.y, b.length && (b[0].y + ' vs ' + (ref[0] && ref[0].y)));
+    c._lmDrawNoText = true;
+    const n1 = drawReal(c, false, 1).length, n2 = drawReal(c, true, 1).length;
+    c._lmDrawNoText = false;
+    check('removed cell drawn without text (_lmDrawNoText): no bubble in either branch', n1 === 0 && n2 === 0, n1 + '/' + n2);
+    c.moveCell = function () { };
+    const n3 = drawReal(c, false, 1, true).length;
+    check('cell drawn with cellMoved: no bubble', n3 === 0, n3);
+    const sm = makeCell({ x: 5, y: 8, size: 40, targetNick: 'talk' });
+    const n4 = drawReal(sm, false, 1).length + drawReal(sm, true, 1).length;
+    check('cell of size 40 or less: no bubble (as before)', n4 === 0, n4);
+}
+check('real cell.draw: no draw errors', drawErrors === 0, drawErrors);
+console.error = errLog;
+
+/* frames with names and mass hidden: one bubble per frame, equal to Canvas2D, zoom changes */
+reset(); chat('talk'); setSettings({ map: { noNames: true, showMass: false } });
+{
+    const t2 = makeCell({ x: 10, y: -10, size: 60, targetNick: 'talk' });
+    scene([t2, makeCell({ x: -90, y: 40, size: 30, targetNick: 'b' })]);
+    frame(S1);
+    t2.chatCanvas.txtCanvas.name = 'chatTxt';
+    let ok = true, info = '';
+    for (const zoom of [1, 0.7, 1.3]) {
+        const fr = frame(Object.assign({}, S1, { zoom: zoom }));
+        const fr2 = frame(Object.assign({}, S1, { zoom: zoom }));
+        const n = fr2.ops.filter((o) => /^(main|overlay):draw:chatTxt$/.test(o)).length;
+        if (!(fr.d.n === 0 && fr2.d.n === 0 && fr2.gl && n === 1)) { ok = false; info += ' [zoom ' + zoom + ': gl ' + fr2.gl + ' ' + fr.d.n + '/' + fr2.d.n + ' px, ' + n + ' bubbles]'; }
+    }
+    check('names and mass off, zoom 1/0.7/1.3: WebGL, exactly one bubble per frame, equal to Canvas2D', ok, info);
+    scene([t2, makeCell({ x: 15, y: 40, size: 90, targetNick: 'cover' })]);
+    frame(S1);
+    r = frame(S1);
+    check('names and mass off, later bigger cell over the bubble: Canvas2D, equal', !r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+}
+
+/* ---- the per-frame chat lookup (renderFrame): built only for showChat, stops at expiry ---- */
+const lookA = src.indexOf('/* Build chat/command lookup map once per frame');
+const lookSrc = src.slice(lookA, src.indexOf('/* Precompute per-frame constants for cell draw', lookA));
+const runLookup = new Function('LM', 'application', 'defaultmapsettings', '$', 'drawRender', lookSrc);
+let histReads = 0;
+/* counts the lines read */
+function history(lines) {
+    return new Proxy(lines, { get(t, k) { if (typeof k === 'string' && /^\d+$/.test(k)) histReads++; return t[k]; } });
+}
+function lookup(mapOver, chatLines, cmdLines, myNick) {
+    setSettings({ map: mapOver });
+    const app = { chatHistory: history(chatLines), commandHistory: history(cmdLines), lastSentNick: null };
+    const jq = () => ({ val: () => myNick || '', on() { } });
+    const host = { _chatLookup: null };
+    histReads = 0;
+    runLookup.call(host, LM, app, ms, jq, host);
+    return host._chatLookup;
+}
+{
+    const now = LM.time, old = [];
+    for (let i = 0; i < 2000; i++) old.push({ nick: 'p' + (i % 50), message: 'old ' + i, time: now - 600000 + i });
+    const live = [{ nick: 'a', message: 'hi', time: now - 9000 }, { nick: 'me', message: 'mine', time: now - 5000 }, { nick: 'a', message: 'newer', time: now - 1000 }];
+    const cmds = [{ nick: 'p1', message: 'old cmd', time: now - 60000 }, { nick: 'b', message: 'cmd', time: now - 2000 }];
+    let m = lookup({ showChat: false }, old.concat(live), cmds, 'me');
+    check('chat lookup with showChat off: empty, no history line read', m.size === 0 && histReads === 0, m.size + ' entries, ' + histReads + ' reads');
+    m = lookup({ showChat: true, showChatMyOwn: false }, old.concat(live), cmds, 'me');
+    check('chat lookup: live lines only, newest per nick, own line left out (showChatMyOwn off)', m.size === 2 && m.get('a').message === 'newer' && m.get('b').message === 'cmd' && !m.has('me'), [...m.keys()].join(','));
+    check('  the scans stop at the first expired line (not at 2000 old ones)', histReads <= live.length + cmds.length + 2, histReads + ' reads');
+    m = lookup({ showChat: true, showChatMyOwn: true }, old.concat(live), cmds, 'me');
+    check('chat lookup with showChatMyOwn on: own line in', m.has('me') && m.get('me').message === 'mine', [...m.keys()].join(','));
+    m = lookup({ showChat: true }, [{ nick: 'a', message: 'chat', time: now - 3000 }], [{ nick: 'a', message: 'cmd later', time: now - 1000 }], 'me');
+    check('chat lookup: a later command line replaces the chat line of that nick', m.get('a').message === 'cmd later', m.get('a') && m.get('a').message);
+}
 
 console.log(failed ? failed + ' overlay check(s) FAILED' : 'overlayfx ok');
 process.exit(failed ? 1 : 0);
