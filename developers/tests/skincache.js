@@ -112,5 +112,12 @@ const all = C.lmSkinQueueTrim(q, 0);
 check('server change: every waiting normal task dropped, priority ones kept', all.length === 195 && q.length === 5 && q.every(t => t.prio));
 check('under the cap: nothing dropped', C.lmSkinQueueTrim([{ prio: false }], 200).length === 0);
 
+/* one skin lookup: the WebGL cell batch asks application.customSkinKey (the lookup of getCustomSkin,
+ * which follows loadSkin's URL aliases and a cell's own skin URL) instead of a copy of its own,
+ * which drew chat-socket skins only in frames that fell back to Canvas2D */
+check('WebGL batch uses the shared skin lookup', src.indexOf('var skinUrl = application.customSkinKey(cell.targetNick, cell.color, cell.skin);') > 0);
+check('no second copy of the nick lookup in the batch', src.indexOf("skinUrl = application.customSkinsMap[mode] ||") < 0);
+check('getCustomSkin goes through customSkinKey', /getCustomSkin\(nick, color, skinKey, nameOnly\) \{\s*var key = this\.customSkinKey\(nick, color, skinKey, nameOnly\);/.test(src));
+
 console.log(failed ? failed + ' check(s) failed' : 'all skin cache checks passed');
 process.exit(failed ? 1 : 0);

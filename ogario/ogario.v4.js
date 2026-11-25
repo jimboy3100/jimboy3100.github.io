@@ -31283,6 +31283,17 @@ function thelegendmodproject() {
          * the last skin seen with that name.
          */
         getCustomSkin(nick, color, skinKey, nameOnly) {
+            var key = this.customSkinKey(nick, color, skinKey, nameOnly);
+            return key ? this.getCachedSkin(this.customSkinsCache, key) : null;
+        },
+        /* The customSkinsCache key of a cell's skin (its URL, or the address loadSkin really
+         * fetched it from), starting the download when needed; null = no skin. Shared by
+         * getCustomSkin (Canvas, teamboard) and the WebGL cell batch: the batch had its own
+         * copy of the lookup that did not follow the loadSkin aliases (jimboy3100.github.io
+         * asked on www.legendmod.ml, mirror fallbacks) nor a cell's own skin URL, so such skins
+         * (often the ones teammates send over the chat socket) were drawn only in the frames
+         * that fell back to Canvas, e.g. while two cells overlap. */
+        customSkinKey(nick, color, skinKey, nameOnly) {
             /* A player without a name shows no skin at all (custom, vanilla or server skin). */
             if (!nick || !String(nick).trim()) return null;
             /* the cell's own URL wins, even while it loads (no flash of another skin) */
@@ -31337,7 +31348,7 @@ function thelegendmodproject() {
             if (!this.customSkinsCache.hasOwnProperty(skinKeyUrl)) {
                 this.loadSkin(this.customSkinsCache, skinUrl, undefined, true);
             }
-            return this.getCachedSkin(this.customSkinsCache, skinKeyUrl);
+            return skinKeyUrl;
         },
         /* ─── §4.10 Minimap & HUD ─── */
         calculateMapSector(t, xgh2, closeExpr = false) {
@@ -76354,33 +76365,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     cell.targetNick &&
                     String(cell.targetNick).trim()
                 ) {
-                    /* Chat socket skins (nick-based) take priority over vanilla skins */
-                    var skinUrl = null;
-                    if (cell.targetNick) {
-                        var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
-                        /* Cached per targetNick: avoids a regex + 2 strings per frame. */
-                        if (cell._skinCleanNickFrom !== cell.targetNick) {
-                            cell._skinCleanNick = cell.targetNick.replace(/\[.*?\]/g, '').trim();
-                            cell._skinCleanNickFrom = cell.targetNick;
-                        }
-                        var cleanNick = cell._skinCleanNick;
-                        skinUrl = application.customSkinsMap[mode] ||
-                            application.customSkinsMap[cell.targetNick] ||
-                            application.customSkinsMap[cell.targetNick + '#000000'] ||
-                            (cleanNick ? (
-                                application.customSkinsMap[cleanNick] ||
-                                application.customSkinsMap[cleanNick + '#000000'] ||
-                                application.customSkinsMap[cleanNick + cell.color]
-                            ) : null);
-                    }
-                    if (!skinUrl && cell.skin) {
-                        skinUrl = application.customSkinsMap[cell.skin] ||
-                            (window.VanillaSkinUrlMap ? (
-                                window.VanillaSkinUrlMap[cell.skin] ||
-                                window.VanillaSkinUrlMap['%' + cell.skin] ||
-                                window.VanillaSkinUrlMap[cell.skin.toLowerCase()]
-                            ) : null);
-                    }
+                    /* The same lookup as Canvas2D and the teamboard (getCustomSkin): chat socket
+                     * skins first, then the cell's own URL and vanilla skins, and the cache key
+                     * loadSkin really used. This copy had its own lookup that missed those, so
+                     * such skins showed only in frames drawn by Canvas2D. */
+                    var skinUrl = application.customSkinKey(cell.targetNick, cell.color, cell.skin);
                     if (skinUrl) {
                         /* A video URL found through an alternate skin-map key must
                          * also force the complete batch to Canvas2D. */
