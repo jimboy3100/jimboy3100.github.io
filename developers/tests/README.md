@@ -93,6 +93,44 @@ e.g. an older version from `git show`), `--json`. Without `--bench` it runs a qu
 `jelly.js` checks the collision index against a direct scan and whole frames against the
 previous code.
 
+## Dense-world acceptance benchmark (whole client)
+
+```
+node developers/tests/bench.js                     # self-check in Node, no browser (also run with the other tests)
+node developers/tests/bench.js --quick             # regression gate against bench-baseline.json
+node developers/tests/bench.js --quick --update-baseline
+node developers/tests/bench.js --run               # the full table (17 scenes)
+```
+
+Loads `play.html` in headless Chrome (every www.legendmod.ml request from this checkout, as
+smoke.js), leaves the live server like the Practice arena does and feeds seeded worlds to the real
+client through a stand-in socket (private-server packets for the main connection, the unit layout
+for a real multibox unit): 100/500/1000/2000 bodies (players of 1-8 pieces, viruses, coincident
+pieces, some off screen; 3% grow or shrink every tick so mass texts change), 2k/10k food with
+churn, 1 or 2 sockets, crowded and wide layouts. Every scene has the same settings, 1600x900 at
+DPR 1, zoom 0.4, camera fixed, jelly on (the default) unless the name says `nojelly`. Per scene:
+frame time p50/p95/p99 and FPS (frames unthrottled), renderFrame CPU p50/p95, CPU self time per
+frame of the timed parts (the Performance diagnostics scope names plus jelly prepare / build /
+move, food, eligibility), the share of frames drawn by the WebGL scene (renderer fallback), and
+from a separate untimed pass the WebGL draw calls, time inside GL upload calls (a GPU wait shows
+there), label rasters, jelly points submitted / indexed, cells / food and the JS heap. It writes
+`out/bench-<label>.json` (every number) and `.md` (a table), and per scene a deterministic world
+frame `<scene>.png` for pixel comparisons.
+
+`--run` takes the options of `lib/bench-client.js`: `--preset quick|default|full`, `--scenes a,b`,
+`--repo DIR` (serve another checkout, e.g. a `git worktree` of an older commit, for an A/B),
+`--compare LABEL` (deltas and a pixel diff of the world frames against an earlier run),
+`--warm MS` / `--measure MS`, `--repeat N`, `--profile` (top functions by CPU self time),
+`--eval FILE` (an expression evaluated in the page after each scene), `--vsync`, `--no-capture`.
+
+`--quick` runs 4 scenes (about a minute after the page has loaded) and compares them with
+`bench-baseline.json`. The limits are generous so it does not flake: GL draw calls, jelly points
+(fewer points means less jelly detail), the WebGL frame share and the world size always count;
+render p50 / frame p95 only when the baseline comes from the same GPU and Chrome major version
+(otherwise they are printed as info). Store a new baseline with `--update-baseline` when a change is
+meant to alter these numbers, and say why in the commit. Without Chrome it is skipped.
+The same scenes run from the browser console of the game page: see the top of `lib/bench-scene.js`.
+
 ## WebGL batching check and benchmark
 
 ```
@@ -108,6 +146,8 @@ mass) with both: jelly on/off, labels on/off, transparency, zoomed in, hidden ow
 Prints the max/mean pixel difference per case. `--bench` adds a table for 100/500/1000/2000 bodies
 with labels on (`--bodies`, `--frames`, `--repeat`); `on*` rows change the point counts in every
 frame. `--profile N` prints the CPU self time of the working copy's frames.
+It also checks the label atlas uploads: each label's atlas slot must hold exactly the texels its
+own texture would get, and no `texSubImage3D` may read a canvas (that read waits for the GPU).
 Skipped (exit 0) without Chrome. `renderbatch.js` checks the index lists and the jelly batch against
 a recording stub WebGL context in Node, over many frames of a changing world.
 
