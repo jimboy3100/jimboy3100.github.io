@@ -1,218 +1,325 @@
 /*
- * wasm_quadtree.js — JS glue for WASM flat-memory PointQuadTree
+ * wasm_quadtree.js — collision index for jelly physics (global name WasmQuadTree kept, the
+ * game code looks it up by that name)
  *
- * Replaces the JS PointQuadTree with a WASM-backed version that uses
- * pre-allocated linear memory (zero GC pressure per frame).
+ * Every frame LM.updateQuadtree() puts the perimeter points of all jelly cells in here and
+ * movePoints() then asks, for each of its own points, "is a point of another cell within
+ * 5 units?". The points are kept in one packed Float32Array sorted into a row-major grid of
+ * buckets (at least 10 units wide), so one question reads 1-2 contiguous runs (the bucket
+ * columns of a row are next to each other) and stops at the first point that really touches.
+ * Consecutive points of a cell are close together, so consecutive questions read memory that
+ * is already in the cache.
+ *
+ * This used to wrap quadtree.wasm. That module held at most 32768 points and returned at
+ * most 4096 results per query, so on crowded screens some cells silently lost their
+ * collisions, and every query called back into JS for each point it found. Positions are
+ * stored as float32 and the query boxes are rounded exactly as the module rounded them, so
+ * the answers are the ones it gave, without its limits.
  *
  * Usage:
- *   await WasmQuadTree.init();
- *   WasmQuadTree.rebuild(x, y, w, h, cells);  // cells = [{points: [{x,y},...]}]
- *   var hit = WasmQuadTree.some({x, y, w, h}, function(pointId) { return true; });
+ *   WasmQuadTree.rebuild(x, y, w, h, cells);   // cells = [{points: [{x,y},...]}], viewport box
+ *   var ord = WasmQuadTree.beginCell(cell);    // before a cell changes its points (movePoints)
+ *   WasmQuadTree.touches(px, py, ord);         // a point of another cell within 5 units?
+ *   WasmQuadTree.anyForeign(x, y, w, h, ord);  // any point of another cell in the box?
+ *   WasmQuadTree.some({x, y, w, h}, test);     // like PointQuadTree.some
  */
 
 var WasmQuadTree = (function () {
     'use strict';
 
-    var instance = null;
-    var memory = null;
-    var ready = false;
-    var resultBufPtr = 0;
+    var fround = Math.fround;
+    var MIN_STEP = 10;        /* a 10x10 query box then covers at most 2x2 buckets */
+    var MIN_BUCKETS = 65536;  /* bucket table size allowed regardless of the point count */
 
-    /* Point reference map: WASM point ID -> original JS point object */
-    var pointRefs = [];
+    /* Point storage, grown by doubling and reused every frame (no per-frame allocation).
+     * px/py/own/bucketOf/refs: insertion order. Sorted by bucket: packed (float32 x, y and the
+     * owner per point, read by every question), exact (the float64 x, y at build time) and
+     * sortedRef (index into refs). Sorting indexes instead of the point objects saves a second
+     * object-reference write per point. */
+    var cap = 0;
+    var px = null, py = null, own = null, bucketOf = null;
+    var packed = null, exact = null;
+    var refs = [];
+    var sortedRef = null;
+    var count = 0;
 
-    /* Pre-allocated Float32Array for bulk insert */
-    var bulkBuf = null;
-    var bulkBufPtr = 0;
-    var BULK_BUF_MAX = 32768; /* max points per frame */
-    var MAX_RESULTS = 4096; /* quadtree.c MAX_RESULTS: qt_query never returns more */
+    /* moved[ord] = 1 once that cell's movePoints() started this frame (beginCell): its points
+     * then have new positions and are read from the point objects. Until then the build-time
+     * position is the current one, read from `exact` without touching the scattered objects. */
+    var moved = new Uint8Array(256);
 
-    /* Typed-array views are reused (made again only if the WASM memory grows and
-     * detaches the old buffer); some() runs once per jelly point per frame. */
-    var floatViewCache = null;
-    var resultViewCache = null;
-    function getFloatView() {
-        if (!floatViewCache || floatViewCache.buffer !== memory.buffer) {
-            floatViewCache = new Float32Array(memory.buffer, bulkBufPtr, BULK_BUF_MAX * 3);
-        }
-        return floatViewCache;
-    }
-    function getResultView() {
-        if (!resultViewCache || resultViewCache.buffer !== memory.buffer) {
-            resultViewCache = new Int32Array(memory.buffer, resultBufPtr, MAX_RESULTS);
-        }
-        return resultViewCache;
-    }
+    /* start[b] .. start[b + 1] are the sorted points of bucket b = row * cols + col. */
+    var start = null;
+    var cols = 0, rows = 0, inv = 0.1;
+    var originX = 0, originY = 0;
 
-    async function init() {
-        if (ready) return;
+    /* Each rebuild gets a new number; a cell's ordinal is valid only for the build that set it. */
+    var buildId = 0;
+    var cellCount = 0;
 
-        try {
-            var wasmUrl = 'https://cdn.jsdelivr.net/gh/jimboy3100/jimboy3100.github.io@master/wasm/quadtree.wasm';
-            var importObject = {
-                env: {
-                    memory: new WebAssembly.Memory({ initial: 32 }) /* 2MB */
-                },
-                wasi_snapshot_preview1: {
-                    proc_exit: function () { },
-                    fd_close: function () { return 0; },
-                    fd_write: function () { return 0; },
-                    fd_seek: function () { return 0; }
-                }
-            };
-
-            /* own host first (CORS *, always the current build); jsDelivr's cached @master copy
-             * answered 403 at times and lagged behind updates - kept as the fallback */
-            var response = null;
-            try {
-                response = await fetch('https://www.legendmod.ml/wasm/quadtree.wasm');
-                if (!response.ok) response = null;
-            } catch (e) { response = null; }
-            if (!response) response = await fetch(wasmUrl);
-            if (!response.ok) throw new Error('quadtree.wasm HTTP ' + response.status);
-            var bytes = await response.arrayBuffer();
-            var result = await WebAssembly.instantiate(bytes, importObject);
-            instance = result.instance;
-            memory = instance.exports.memory || importObject.env.memory;
-
-            /* quadtree.wasm builds before layout version 2 assumed each leaf's points were
-             * contiguous and returned other leaves' points (jelly collisions were missed).
-             * Only use a module that reports the fixed layout; otherwise the JS quadtree runs. */
-            if (typeof instance.exports.qt_version !== 'function' || instance.exports.qt_version() < 2) {
-                instance = null;
-                ready = false;
-                console.warn('[WASM QuadTree] quadtree.wasm is an old build (contiguous leaf ranges), using the JS quadtree');
-                return;
-            }
-
-            resultBufPtr = instance.exports.get_result_buf();
-
-            /* Allocate bulk insert buffer at the end of WASM memory */
-            bulkBufPtr = memory.buffer.byteLength - (BULK_BUF_MAX * 12); /* 3 floats × 4 bytes */
-
-            ready = true;
-            console.log('%c[WASM QuadTree]%c Initialized (quadtree.wasm loaded)',
-                'color: #0ff; font-weight: bold', 'color: inherit');
-        } catch (e) {
-            console.warn('[WASM QuadTree] Failed to load, falling back to JS:', e);
-            ready = false;
-        }
+    function ensureCapacity(n) {
+        if (n <= cap) return;
+        var c = cap || 4096;
+        while (c < n) c *= 2;
+        px = new Float64Array(c); py = new Float64Array(c);
+        own = new Int32Array(c); bucketOf = new Int32Array(c);
+        packed = new Float32Array(c * 3);
+        exact = new Float64Array(c * 2);
+        sortedRef = new Int32Array(c);
+        /* Point references grow by push: setting a large length or writing far past the end
+         * would turn the arrays into slow dictionary storage. */
+        while (refs.length < c) refs.push(null);
+        cap = c;
     }
 
     /**
-     * Rebuild the quadtree for the current viewport.
-     *
-     * @param {number} x - viewport left
-     * @param {number} y - viewport top
-     * @param {number} w - viewport width
-     * @param {number} h - viewport height
-     * @param {Array} cells - array of cell objects with .points[] arrays
+     * Rebuild the index for the current viewport.
+     * Same cells and points as before: cells that are not removed, not food, with at least
+     * 3 points; finite points inside the viewport box (compared in float32 like the WASM
+     * module did). Always complete.
      */
     function rebuild(x, y, w, h, cells) {
-        if (!ready || !instance) return false;
+        buildId++;
+        cellCount = 0;
+        var rootX0 = fround(x), rootY0 = fround(y);
+        var rootX1 = fround(rootX0 + fround(w)), rootY1 = fround(rootY0 + fround(h));
 
-        instance.exports.qt_init(x, y, w, h);
-        pointRefs.length = 0;
+        var total = 0;
+        for (var i = 0; i < cells.length; i++) {
+            var c = cells[i];
+            if (c && c.points) total += c.points.length;
+        }
+        ensureCapacity(total);
+        var previous = count;
 
-        /* Collect all points into bulk insert buffer */
-        var floatView = getFloatView();
-        var count = 0;
-
-        for (var i = 0; i < cells.length && count < BULK_BUF_MAX; i++) {
-            var cell = cells[i];
-            /* Same filtering as the JS PointQuadTree path */
+        var n = 0;
+        var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (var ci = 0; ci < cells.length; ci++) {
+            var cell = cells[ci];
             if (!cell || cell.removed || cell.isFood || !cell.points || cell.points.length < 3) continue;
+            /* The same cell object listed twice keeps one ordinal, so its points never count
+             * as another cell's (movePoints compared item.parent !== self). */
+            var ord;
+            if (cell._lmJellyQtBuild === buildId) ord = cell._lmJellyQtOrd;
+            else { ord = cellCount++; cell._lmJellyQtBuild = buildId; cell._lmJellyQtOrd = ord; }
             var pts = cell.points;
-            for (var n = 0; n < pts.length && count < BULK_BUF_MAX; n++) {
-                var pt = pts[n];
+            for (var k = 0; k < pts.length; k++) {
+                var pt = pts[k];
                 if (!pt || !isFinite(pt.x) || !isFinite(pt.y)) continue;
-                /* movePoints() filters collisions with item.parent !== self */
-                pt.parent = cell;
-                var idx = count * 3;
-                floatView[idx] = pt.x;
-                floatView[idx + 1] = pt.y;
-                floatView[idx + 2] = count; /* point ID = index into pointRefs */
-                pointRefs.push(pt);
-                count++;
+                /* movePoints() of the JS fallback filters collisions with item.parent !== self
+                 * (points are made with it; reasserted for points of a recycled cell) */
+                if (pt.parent !== cell) pt.parent = cell;
+                var fx = fround(pt.x), fy = fround(pt.y);
+                if (fx < rootX0 || fx > rootX1 || fy < rootY0 || fy > rootY1) continue;
+                px[n] = pt.x; py[n] = pt.y; own[n] = ord; refs[n] = pt;
+                if (fx < minX) minX = fx;
+                if (fx > maxX) maxX = fx;
+                if (fy < minY) minY = fy;
+                if (fy > maxY) maxY = fy;
+                n++;
             }
         }
+        count = n;
+        if (moved.length < cellCount) moved = new Uint8Array(Math.max(cellCount, moved.length * 2));
+        else moved.fill(0, 0, cellCount);
+        /* Do not keep last frame's extra points (and their cells) alive. */
+        for (var r = n; r < previous; r++) refs[r] = null;
+        if (n === 0) { cols = rows = 0; return true; }
 
-        if (count > 0) {
-            instance.exports.qt_bulk_insert(bulkBufPtr, count);
+        /* Buckets span the indexed points. 10 units wide when that fits the table budget,
+         * wider when zoomed far out (a query box then covers fewer, fuller buckets; the
+         * answers are the same, only the bucket a point is in changes). */
+        originX = minX; originY = minY;
+        var spanX = maxX - minX, spanY = maxY - minY;
+        var budget = Math.max(MIN_BUCKETS, n * 2);
+        var step = MIN_STEP;
+        inv = 1 / step;
+        while ((Math.floor(spanX * inv) + 1) * (Math.floor(spanY * inv) + 1) > budget) {
+            step *= 1.25;
+            inv = 1 / step;
         }
+        cols = Math.floor(spanX * inv) + 1;
+        rows = Math.floor(spanY * inv) + 1;
+        var buckets = cols * rows;
+        if (!start || start.length < buckets + 1) start = new Int32Array(Math.max(buckets + 1, MIN_BUCKETS + 1));
+        else start.fill(0, 0, buckets + 1);
 
+        /* Counting sort by bucket into contiguous runs. */
+        for (var j = 0; j < n; j++) {
+            var b = Math.floor((fround(px[j]) - originX) * inv) + Math.floor((fround(py[j]) - originY) * inv) * cols;
+            bucketOf[j] = b;
+            start[b + 1]++;
+        }
+        for (var t = 0; t < buckets; t++) start[t + 1] += start[t];
+        /* start[b] is now the first slot of bucket b; fill moving it as a cursor, then shift
+         * back (each start[b] ends where bucket b + 1 begins). */
+        for (var q = 0; q < n; q++) {
+            var slot = start[bucketOf[q]]++;
+            var o = slot * 3;
+            /* the Float32Array rounds like fround() */
+            packed[o] = px[q]; packed[o + 1] = py[q]; packed[o + 2] = own[q];
+            exact[slot * 2] = px[q]; exact[slot * 2 + 1] = py[q];
+            sortedRef[slot] = q;
+        }
+        for (var u = buckets; u > 0; u--) start[u] = start[u - 1];
+        start[0] = 0;
         return true;
     }
 
+    /** The cell's number in the current index, -1 when it is not in it. */
+    function ordOf(cell) {
+        return cell && cell._lmJellyQtBuild === buildId ? cell._lmJellyQtOrd : -1;
+    }
+
     /**
-     * Test if any point in the AABB satisfies the test callback.
-     * Mimics PointQuadTree.some(aabb, test).
-     *
-     * @param {object} aabb - {x, y, w, h}
-     * @param {function} test - function(point) → boolean
-     * @returns {boolean}
+     * movePoints() calls this before it changes any of its points: from now on questions read
+     * this cell's positions from its point objects. Returns ordOf(cell).
      */
-    function some(aabb, test) {
-        if (!ready || !instance) return false;
+    function beginCell(cell) {
+        var ord = ordOf(cell);
+        if (ord >= 0) moved[ord] = 1;
+        return ord;
+    }
 
-        /* Get all points in AABB from WASM */
-        var count = instance.exports.qt_query(aabb.x, aabb.y, aabb.w, aabb.h);
-
+    /**
+     * movePoints() collision question for one perimeter point at (x, y): is there a point of
+     * another cell whose indexed position lies in the 10x10 box around (x, y) and whose current
+     * position is within 5 units? (The old quadtree.some(box, test) with the same box and test,
+     * stopping at the first point that passes the test, not the first point in the box.)
+     */
+    function touches(x, y, ord) {
         if (count === 0) return false;
-
-        /* Read result IDs */
-        var resultView = getResultView();
-        if (count > MAX_RESULTS) count = MAX_RESULTS;
-
-        for (var i = 0; i < count; i++) {
-            var pointId = resultView[i];
-            if (pointId >= 0 && pointId < pointRefs.length) {
-                var pt = pointRefs[pointId];
-                if (test(pt)) return true;
+        var ax = fround(x - 5), ay = fround(y - 5);
+        var axe = fround(ax + 10), aye = fround(ay + 10);
+        var c0 = Math.floor((ax - originX) * inv), c1 = Math.floor((axe - originX) * inv);
+        var r0 = Math.floor((ay - originY) * inv), r1 = Math.floor((aye - originY) * inv);
+        if (c0 < 0) c0 = 0;
+        if (c1 >= cols) c1 = cols - 1;
+        if (r0 < 0) r0 = 0;
+        if (r1 >= rows) r1 = rows - 1;
+        /* box beside all points (or NaN): start[] past the last bucket is not this frame's */
+        if (!(c0 <= c1)) return false;
+        for (var row = r0; row <= r1; row++) {
+            var base = row * cols;
+            /* columns c0..c1 of one row are one contiguous run */
+            for (var k = start[base + c0], e = start[base + c1 + 1]; k < e; k++) {
+                var o = k * 3;
+                var owner = packed[o + 2];
+                if (owner === ord) continue;
+                var qx = packed[o];
+                if (qx < ax || qx > axe) continue;
+                var qy = packed[o + 1];
+                if (qy < ay || qy > aye) continue;
+                /* distance from the point's current position */
+                var dx, dy;
+                if (moved[owner] === 1) {
+                    var it = refs[sortedRef[k]];
+                    dx = it.x - x; dy = it.y - y;
+                } else {
+                    dx = exact[k * 2] - x; dy = exact[k * 2 + 1] - y;
+                }
+                if (dx * dx + dy * dy <= 25) return true;
             }
         }
-
         return false;
     }
 
     /**
-     * Query all points within an AABB.
-     *
-     * @param {object} aabb - {x, y, w, h}
-     * @returns {Array} array of point objects
+     * Broad phase of movePoints(): is there any point of another cell (indexed position) in the
+     * box x, y, w, h? Reads one contiguous run per bucket row and only the packed array.
      */
-    function query(aabb) {
-        if (!ready || !instance) return [];
-
-        var count = instance.exports.qt_query(aabb.x, aabb.y, aabb.w, aabb.h);
-        if (count === 0) return [];
-
-        var resultView = getResultView();
-        if (count > MAX_RESULTS) count = MAX_RESULTS;
-        var results = [];
-        for (var i = 0; i < count; i++) {
-            var pid = resultView[i];
-            if (pid >= 0 && pid < pointRefs.length) {
-                results.push(pointRefs[pid]);
+    function anyForeign(x, y, w, h, ord) {
+        if (count === 0) return false;
+        var ax = fround(x), ay = fround(y);
+        var axe = fround(ax + fround(w)), aye = fround(ay + fround(h));
+        var c0 = Math.floor((ax - originX) * inv), c1 = Math.floor((axe - originX) * inv);
+        var r0 = Math.floor((ay - originY) * inv), r1 = Math.floor((aye - originY) * inv);
+        if (c0 < 0) c0 = 0;
+        if (c1 >= cols) c1 = cols - 1;
+        if (r0 < 0) r0 = 0;
+        if (r1 >= rows) r1 = rows - 1;
+        /* box beside all points (or NaN): start[] past the last bucket is not this frame's */
+        if (!(c0 <= c1)) return false;
+        for (var row = r0; row <= r1; row++) {
+            var base = row * cols;
+            for (var k = start[base + c0], e = start[base + c1 + 1]; k < e; k++) {
+                var o = k * 3;
+                if (packed[o + 2] === ord) continue;
+                var qx = packed[o], qy = packed[o + 1];
+                if (qx >= ax && qx <= axe && qy >= ay && qy <= aye) return true;
             }
         }
+        return false;
+    }
+
+    /* Points in the box; visit(point) returning true stops the walk. A box covering more
+     * buckets than there are points is answered by scanning all points (same result). */
+    function walkBox(aabb, visit) {
+        if (count === 0) return false;
+        var ax = fround(aabb.x), ay = fround(aabb.y);
+        var axe = fround(ax + fround(aabb.w)), aye = fround(ay + fround(aabb.h));
+        var k, e, o;
+        var c0 = Math.floor((ax - originX) * inv), c1 = Math.floor((axe - originX) * inv);
+        var r0 = Math.floor((ay - originY) * inv), r1 = Math.floor((aye - originY) * inv);
+        if (c0 < 0) c0 = 0;
+        if (c1 >= cols) c1 = cols - 1;
+        if (r0 < 0) r0 = 0;
+        if (r1 >= rows) r1 = rows - 1;
+        if (!(c1 >= c0) || !(r1 >= r0)) return false;
+        if ((c1 - c0 + 1) * (r1 - r0 + 1) > count) {
+            for (k = 0; k < count; k++) {
+                o = k * 3;
+                if (packed[o] >= ax && packed[o] <= axe && packed[o + 1] >= ay && packed[o + 1] <= aye && visit(refs[sortedRef[k]])) return true;
+            }
+            return false;
+        }
+        for (var row = r0; row <= r1; row++) {
+            var base = row * cols;
+            for (k = start[base + c0], e = start[base + c1 + 1]; k < e; k++) {
+                o = k * 3;
+                if (packed[o] >= ax && packed[o] <= axe && packed[o + 1] >= ay && packed[o + 1] <= aye && visit(refs[sortedRef[k]])) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Test if any point in the AABB satisfies the test callback (PointQuadTree.some API;
+     * complete, no result limit).
+     */
+    function some(aabb, test) {
+        return walkBox(aabb, test);
+    }
+
+    /**
+     * All points within an AABB (complete, no result limit).
+     */
+    function query(aabb) {
+        var results = [];
+        walkBox(aabb, function (pt) { results.push(pt); return false; });
         return results;
     }
 
     function stats() {
-        if (!ready || !instance) return { nodes: 0, points: 0 };
-        return {
-            nodes: instance.exports.qt_node_count(),
-            points: instance.exports.qt_point_count()
-        };
+        return { nodes: cols * rows, points: count, cells: cellCount };
+    }
+
+    /* Kept for the loader in ogario.v4.js; nothing to download any more. */
+    function init() {
+        return Promise.resolve();
     }
 
     return {
         init: init,
         rebuild: rebuild,
+        ordOf: ordOf,
+        beginCell: beginCell,
+        touches: touches,
+        anyForeign: anyForeign,
         some: some,
         query: query,
         stats: stats,
-        get ready() { return ready; }
+        get size() { return count; },
+        get ready() { return true; }
     };
 })();

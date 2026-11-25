@@ -37923,31 +37923,62 @@ function thelegendmodproject() {
             var self =
                 this;
 
-            var collisionProbe = { x: 0, y: 0, w: 10, h: 10 };
+            /*
+             * Collision index of this frame. The jelly point grid (WasmQuadTree in
+             * wasm_quadtree.js) answers the per-point question itself: is a point of
+             * another cell within 5 units? It reads a few packed buckets and stops at
+             * the first point that passes, with no callback per point found. The JS
+             * PointQuadTree (used only when wasm_quadtree.js did not load) keeps the
+             * generic some(box, test) path below.
+             */
+            var collisionIndex =
+                LM.quadtree;
+            var collisionGrid =
+                collisionIndex &&
+                typeof collisionIndex.touches === "function"
+                    ? collisionIndex
+                    : null;
+            /* beginCell() before any point of this cell moves: later questions of
+             * other cells then read this cell's new positions. */
+            var collisionOrd =
+                collisionGrid
+                    ? collisionGrid.beginCell(this)
+                    : -1;
+
+            var collisionProbe = null;
             var collisionPoint = null;
-            var collisionTest = function (item) {
-                return (
-                    item &&
-                    item.parent !== self &&
-                    self.sqDist(item, collisionPoint) <= 25
-                );
-            };
+            var collisionTest = null;
 
             /*
              * Broad phase: one query over the bounding box of all this cell's
              * points, widened past the +-5 per-point probe so it contains every
-             * per-point probe (also after float32 rounding in the WASM tree).
-             * If it holds no point of another cell, no per-point query below can
-             * find one and they are skipped (affected stays false). A hit, a
-             * non-finite point, or a WASM query that may have stopped at its
-             * 4096-result limit runs the per-point loop unchanged. A cell that was
-             * touching another one last frame goes straight to the per-point loop
-             * (the broad query would only hit again).
+             * per-point probe (also after float32 rounding in the grid). If it
+             * holds no point of another cell, no per-point query below can find one
+             * and they are skipped (affected stays false). A hit or a non-finite
+             * point runs the per-point loop unchanged. A cell that was touching
+             * another one last frame goes straight to the per-point loop (the broad
+             * query would only hit again). The grid answers it from its packed
+             * arrays (anyForeign), the PointQuadTree with some(box, test); neither
+             * has a result limit any more (quadtree.wasm stopped at 4096, so a
+             * full answer had to be checked for).
              */
             var skipCollisionQueries = false;
             var anyAffected = false;
             if (
-                LM.quadtree &&
+                collisionIndex &&
+                !collisionGrid
+            ) {
+                collisionProbe = { x: 0, y: 0, w: 10, h: 10 };
+                collisionTest = function (item) {
+                    return (
+                        item &&
+                        item.parent !== self &&
+                        self.sqDist(item, collisionPoint) <= 25
+                    );
+                };
+            }
+            if (
+                collisionIndex &&
                 !this._lmJellyTouching
             ) {
                 var broadMinX = Infinity, broadMinY = Infinity, broadMaxX = -Infinity, broadMaxY = -Infinity;
@@ -37961,10 +37992,18 @@ function thelegendmodproject() {
                     if (broadY < broadMinY) broadMinY = broadY;
                     if (broadY > broadMaxY) broadMaxY = broadY;
                 }
-                if (broadOk) {
-                    var broadCalls = 0;
+                if (broadOk && collisionGrid) {
+                    skipCollisionQueries =
+                        !collisionGrid.anyForeign(
+                            broadMinX - 6,
+                            broadMinY - 6,
+                            broadMaxX - broadMinX + 12,
+                            broadMaxY - broadMinY + 12,
+                            collisionOrd
+                        );
+                }
+                else if (broadOk) {
                     var broadTest = function (item) {
-                        broadCalls++;
                         return !!item && item.parent !== self;
                     };
                     collisionProbe.x = broadMinX - 6;
@@ -37972,11 +38011,24 @@ function thelegendmodproject() {
                     collisionProbe.w = broadMaxX - broadMinX + 12;
                     collisionProbe.h = broadMaxY - broadMinY + 12;
                     skipCollisionQueries =
-                        !LM.quadtree.some(collisionProbe, broadTest) &&
-                        broadCalls < 4096;
+                        !collisionIndex.some(collisionProbe, broadTest);
                     collisionProbe.w = 10;
                     collisionProbe.h = 10;
                 }
+            }
+
+            /* cos/sin of 2*PI*i/len from a table per point count (same expression, so the
+             * same values): 2 trig calls per point per frame for every jelly cell before.
+             * Looked up once per cell, not once per point. */
+            var _lmTrig = window._lmJellyTrig && window._lmJellyTrig[len];
+            if (!_lmTrig) {
+                window._lmJellyTrig = window._lmJellyTrig || {};
+                _lmTrig = { c: new Float64Array(len), s: new Float64Array(len) };
+                for (var _lmTi = 0; _lmTi < len; _lmTi++) {
+                    _lmTrig.c[_lmTi] = Math.cos(2 * Math.PI * _lmTi / len);
+                    _lmTrig.s[_lmTi] = Math.sin(2 * Math.PI * _lmTi / len);
+                }
+                window._lmJellyTrig[len] = _lmTrig;
             }
 
             for (
@@ -38020,7 +38072,18 @@ function thelegendmodproject() {
                     false;
 
                 if (
-                    LM.quadtree &&
+                    collisionGrid &&
+                    !skipCollisionQueries
+                ) {
+                    affected =
+                        collisionGrid.touches(
+                            curP.x,
+                            curP.y,
+                            collisionOrd
+                        );
+                }
+                else if (
+                    collisionIndex &&
                     !skipCollisionQueries
                 ) {
                     // Reuse one probe rect and predicate (no per-point allocations).
@@ -38029,7 +38092,7 @@ function thelegendmodproject() {
                     collisionPoint = curP;
 
                     affected =
-                        LM.quadtree.some(
+                        collisionIndex.some(
                             collisionProbe,
                             collisionTest
                         );
@@ -38102,20 +38165,6 @@ function thelegendmodproject() {
                         curRl
                     ) /
                     10;
-
-
-                /* cos/sin of 2*PI*i/len from a table per point count (same expression, so the
-                 * same values): 2 trig calls per point per frame for every jelly cell before */
-                var _lmTrig = window._lmJellyTrig && window._lmJellyTrig[len];
-                if (!_lmTrig) {
-                    window._lmJellyTrig = window._lmJellyTrig || {};
-                    _lmTrig = { c: new Float64Array(len), s: new Float64Array(len) };
-                    for (var _lmTi = 0; _lmTi < len; _lmTi++) {
-                        _lmTrig.c[_lmTi] = Math.cos(2 * Math.PI * _lmTi / len);
-                        _lmTrig.s[_lmTi] = Math.sin(2 * Math.PI * _lmTi / len);
-                    }
-                    window._lmJellyTrig[len] = _lmTrig;
-                }
 
 
                 var renderRadius =
@@ -40637,6 +40686,112 @@ function thelegendmodproject() {
     var LM = {
         integrity: true,
         quadtree: null,
+        /*
+         * ═══════════════════════════════════════════════════════════
+         * JELLY PHYSICS — FRAME PREPARATION (pass 1 of the frame)
+         * ═══════════════════════════════════════════════════════════
+         *
+         * Build/resize the perimeter of every jelly cell in view and
+         * collect them in out (reused array) for updateQuadtree() and
+         * movePoints().
+         */
+        prepareJellyCells: function (
+            cells,
+            out
+        ) {
+            out.length = 0;
+
+            for (
+                var i = 0;
+                i < cells.length;
+                i++
+            ) {
+                var cell =
+                    cells[i];
+
+                if (
+                    !cell ||
+                    cell.removed ||
+                    cell.isFood ||
+                    typeof cell
+                        .updateNumPoints !==
+                        "function"
+                ) {
+                    continue;
+                }
+
+                var inView =
+                    true;
+
+                if (
+                    typeof cell
+                        .isInView ===
+                        "function"
+                ) {
+                    try {
+                        inView =
+                            cell
+                                .isInView();
+                    }
+                    catch (
+                        jellyViewError
+                    ) {
+                        /*
+                         * Rendering must not die merely because one
+                         * visibility helper threw.
+                         */
+                        inView =
+                            true;
+                    }
+                }
+
+                if (
+                    !inView
+                ) {
+                    continue;
+                }
+
+
+                try {
+                    cell
+                        .updateNumPoints();
+                }
+                catch (
+                    jellyPointCountError
+                ) {
+                    console.error(
+                        "[JELLY PHYSICS] updateNumPoints failed:",
+                        cell.id,
+                        jellyPointCountError
+                    );
+
+                    continue;
+                }
+
+
+                /*
+                 * Only valid current-frame point sets participate.
+                 *
+                 * Viruses ARE included.
+                 *
+                 * updateNumPoints() forces viruses to 100 points.
+                 */
+                if (
+                    cell.points &&
+                    cell.points.length >=
+                        3 &&
+                    cell.pointsVel &&
+                    cell.pointsVel.length ===
+                        cell.points.length
+                ) {
+                    out.push(
+                        cell
+                    );
+                }
+            }
+
+            return out;
+        },
         updateQuadtree: function (
             cells
         ) {
@@ -40752,8 +40907,11 @@ function thelegendmodproject() {
 
             /*
              * ═══════════════════════════════════════════════════════════
-             * WASM FAST PATH
+             * POINT GRID FAST PATH (wasm_quadtree.js)
              * ═══════════════════════════════════════════════════════════
+             *
+             * Packed typed-array grid, complete (no point or result limit);
+             * movePoints() asks it LM.quadtree.touches(x, y, ord) per point.
              */
             if (
                 typeof WasmQuadTree !==
@@ -40778,25 +40936,12 @@ function thelegendmodproject() {
                         )
                     ) {
                         /*
-                         * Keep the API expected by movePoints():
-                         *
-                         *      LM.quadtree.some(aabb, callback)
+                         * The grid itself is the index: it has both
+                         * LM.quadtree.some(aabb, callback) and the
+                         * touches()/ordOf() questions movePoints() uses.
                          */
-                        /* One wrapper for the session, not a new object and closure every frame. */
                         this.quadtree =
-                            this._wasmQuadtreeWrapper ||
-                            (this._wasmQuadtreeWrapper = {
-                                some: function (
-                                    aabb,
-                                    test
-                                ) {
-                                    return WasmQuadTree
-                                        .some(
-                                            aabb,
-                                            test
-                                        );
-                                }
-                            });
+                            WasmQuadTree;
 
                         return;
                     }
@@ -78170,112 +78315,24 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         .jellyPhisycs
                 ) {
                     /*
+                     * Timed as one part (diagnostics "jelly physics" and the
+                     * client profiler): preparing the points and building the
+                     * collision index are part of the jelly cost too.
+                     */
+                    var _tPhys =
+                        performance.now();
+                    var _lmScPhys = window._lmScope ? window._lmScope.b('jelly physics') : -1;
+
+                    /*
                      * ───────────────────────────────────────────────────
                      * PASS 1
                      * Build/resize every visible jelly perimeter.
                      * ───────────────────────────────────────────────────
                      */
-                    for (
-                        var jellyPrepareIndex = 0;
-                        jellyPrepareIndex <
-                            LM.cells.length;
-                        jellyPrepareIndex++
-                    ) {
-                        var jellyPrepareCell =
-                            LM.cells[
-                                jellyPrepareIndex
-                            ];
-
-                        if (
-                            !jellyPrepareCell ||
-                            jellyPrepareCell.removed ||
-                            jellyPrepareCell.isFood ||
-                            typeof jellyPrepareCell
-                                .updateNumPoints !==
-                                "function"
-                        ) {
-                            continue;
-                        }
-
-
-                        var jellyInView =
-                            true;
-
-                        if (
-                            typeof jellyPrepareCell
-                                .isInView ===
-                                "function"
-                        ) {
-                            try {
-                                jellyInView =
-                                    jellyPrepareCell
-                                        .isInView();
-                            }
-                            catch (
-                                jellyViewError
-                            ) {
-                                /*
-                                 * Rendering must not die merely because one
-                                 * visibility helper threw.
-                                 */
-                                jellyInView =
-                                    true;
-                            }
-                        }
-
-
-                        if (
-                            !jellyInView
-                        ) {
-                            continue;
-                        }
-
-
-                        try {
-                            jellyPrepareCell
-                                .updateNumPoints();
-                        }
-                        catch (
-                            jellyPointCountError
-                        ) {
-                            console.error(
-                                "[JELLY PHYSICS] updateNumPoints failed:",
-                                jellyPrepareCell.id,
-                                jellyPointCountError
-                            );
-
-                            continue;
-                        }
-
-
-                        /*
-                         * Only valid current-frame point sets participate.
-                         *
-                         * Viruses ARE included.
-                         *
-                         * updateNumPoints() forces viruses to 100 points.
-                         */
-                        if (
-                            jellyPrepareCell
-                                .points &&
-                            jellyPrepareCell
-                                .points
-                                .length >=
-                                3 &&
-                            jellyPrepareCell
-                                .pointsVel &&
-                            jellyPrepareCell
-                                .pointsVel
-                                .length ===
-                                jellyPrepareCell
-                                    .points
-                                    .length
-                        ) {
-                            _jellyCells.push(
-                                jellyPrepareCell
-                            );
-                        }
-                    }
+                    LM.prepareJellyCells(
+                        LM.cells,
+                        _jellyCells
+                    );
 
 
                     /*
@@ -78320,9 +78377,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * Simulate each perimeter exactly once.
                      * ───────────────────────────────────────────────────
                      */
-                    var _tPhys =
-                        performance.now();
-                    var _lmScPhys = window._lmScope ? window._lmScope.b('jelly physics') : -1;
 
                     for (
                         var jellyMoveIndex = 0;
