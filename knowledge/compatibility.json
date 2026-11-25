@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Legend Mod — Game Compatibility",
+  "description": "Which games and platforms Legend Mod supports, and what features work on each.",
+  "supportedGames": [
+    {
+      "name": "Agar.io",
+      "url": "https://agar.io/",
+      "status": "primary",
+      "support": "full",
+      "note": "Original target game. All features supported.",
+      "features": ["skins", "themes", "controls", "multibox", "replays", "chat", "gamepad", "companion", "command-centre", "performance"]
+    },
+    {
+      "name": "Expanding Land",
+      "url": "https://expanding.land/",
+      "status": "primary",
+      "support": "full",
+      "note": "Official partner game by the same developer. Full integration with Legend Mod client.",
+      "features": ["skins", "themes", "controls", "chat", "gamepad", "companion", "command-centre", "performance"],
+      "exclusiveFeatures": ["dynamic-circular-map", "ghost-cells", "server-status-bar"]
+    },
+    {
+      "name": "Sigmally",
+      "url": "https://sigmally.com/",
+      "status": "community",
+      "support": "partial",
+      "note": "Community-supported. Core features work but some game-specific features may not apply.",
+      "features": ["skins", "themes", "controls", "performance"]
+    },
+    {
+      "name": "Senpa.io",
+      "url": "https://senpa.io/",
+      "status": "community",
+      "support": "partial",
+      "note": "Community-supported.",
+      "features": ["skins", "themes", "controls", "performance"]
+    }
+  ],
+  "platforms": [
+    {
+      "name": "Chrome",
+      "type": "browser",
+      "support": "full",
+      "extensionAvailable": true,
+      "extensionName": "Legend Express",
+      "extensionManifest": "v3"
+    },
+    {
+      "name": "Edge",
+      "type": "browser",
+      "support": "full",
+      "extensionAvailable": true,
+      "note": "Uses Chrome extension via Chromium compatibility"
+    },
+    {
+      "name": "Opera",
+      "type": "browser",
+      "support": "full",
+      "extensionAvailable": true,
+      "note": "Uses Chrome extension via Chromium compatibility"
+    },
+    {
+      "name": "Brave",
+      "type": "browser",
+      "support": "full",
+      "extensionAvailable": true,
+      "note": "Uses Chrome extension via Chromium compatibility"
+    },
+    {
+      "name": "Firefox",
+      "type": "browser",
+      "support": "userscript",
+      "extensionAvailable": false,
+      "note": "Use via Tampermonkey/Greasemonkey userscript"
+    },
+    {
+      "name": "Android",
+      "type": "mobile",
+      "support": "app",
+      "note": "Expanding Land APK available for direct download",
+      "downloadUrl": "https://github.com/jimboy3100/jimboy3100.github.io/raw/refs/heads/master/LMexpress/mobileApp/ExpandingLand-v2.apk"
+    }
+  ],
+  "featureMatrix": {
+    "skins": {
+      "description": "Custom cell skins (image, animated, video)",
+      "games": ["agar.io", "expanding-land", "sigmally", "senpa.io"]
+    },
+    "themes": {
+      "description": "Full UI theming with 20+ presets",
+      "games": ["agar.io", "expanding-land", "sigmally", "senpa.io"]
+    },
+    "controls": {
+      "description": "68 configurable hotkey bindings",
+      "games": ["agar.io", "expanding-land", "sigmally", "senpa.io"]
+    },
+    "multibox": {
+      "description": "Multi-tab cell control",
+      "games": ["agar.io"]
+    },
+    "replays": {
+      "description": "Record and replay gameplay",
+      "games": ["agar.io"]
+    },
+    "gamepad": {
+      "description": "Controller support with analog movement",
+      "games": ["agar.io", "expanding-land"]
+    },
+    "chat": {
+      "description": "In-game text chat",
+      "games": ["agar.io", "expanding-land"]
+    },
+    "companion": {
+      "description": "AI assistant overlay",
+      "games": ["agar.io", "expanding-land"]
+    },
+    "command-centre": {
+      "description": "Central settings and macro management",
+      "games": ["agar.io", "expanding-land"]
+    },
+    "performance": {
+      "description": "FPS optimization and anti-lag",
+      "games": ["agar.io", "expanding-land", "sigmally", "senpa.io"]
+    }
+  }
+}

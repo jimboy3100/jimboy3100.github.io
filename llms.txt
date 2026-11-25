@@ -23,6 +23,8 @@
 - [Presets (JSON)](https://www.legendmod.ml/knowledge/presets.json): theme and settings presets.
 - [Changelog (JSON)](https://www.legendmod.ml/knowledge/changelog.json): server changelog highlights.
 - [Modules (JSON)](https://www.legendmod.ml/knowledge/modules.json): 23 modular script files with line counts.
+- [Languages (JSON)](https://www.legendmod.ml/knowledge/languages.json): 16 supported languages with translation status.
+- [Compatibility (JSON)](https://www.legendmod.ml/knowledge/compatibility.json): supported games, platforms, and feature matrix.
 
 - [Consolidated documentation](https://www.legendmod.ml/llms-full.txt): verified core facts, features, controls, FAQ and links.
 - [Knowledge API](https://www.legendmod.ml/knowledge/api.json): public read-only JSON resources.

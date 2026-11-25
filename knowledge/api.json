@@ -55,6 +55,12 @@
     },
     {
       "url": "https://www.legendmod.ml/knowledge/modules.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/languages.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/compatibility.json"
     }
   ]
 }

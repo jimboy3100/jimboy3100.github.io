@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Legend Mod — Supported Languages",
+  "description": "All languages supported by Legend Mod, including translation status and coverage.",
+  "totalLanguages": 16,
+  "defaultLanguage": "en",
+  "translationSystem": "lm-i18n.js with JSON language packs in developers/i18n/",
+  "languages": [
+    {
+      "code": "en",
+      "name": "English",
+      "nativeName": "English",
+      "status": "stable",
+      "coverage": "100%",
+      "note": "Default language, always complete"
+    },
+    {
+      "code": "ar",
+      "name": "Arabic",
+      "nativeName": "العربية",
+      "status": "stable",
+      "direction": "rtl"
+    },
+    {
+      "code": "bg",
+      "name": "Bulgarian",
+      "nativeName": "Български",
+      "status": "stable"
+    },
+    {
+      "code": "de",
+      "name": "German",
+      "nativeName": "Deutsch",
+      "status": "stable"
+    },
+    {
+      "code": "el",
+      "name": "Greek",
+      "nativeName": "Ελληνικά",
+      "status": "stable"
+    },
+    {
+      "code": "es",
+      "name": "Spanish",
+      "nativeName": "Español",
+      "status": "stable"
+    },
+    {
+      "code": "fr",
+      "name": "French",
+      "nativeName": "Français",
+      "status": "stable"
+    },
+    {
+      "code": "id",
+      "name": "Indonesian",
+      "nativeName": "Bahasa Indonesia",
+      "status": "beta"
+    },
+    {
+      "code": "it",
+      "name": "Italian",
+      "nativeName": "Italiano",
+      "status": "beta"
+    },
+    {
+      "code": "ja",
+      "name": "Japanese",
+      "nativeName": "日本語",
+      "status": "beta"
+    },
+    {
+      "code": "nl",
+      "name": "Dutch",
+      "nativeName": "Nederlands",
+      "status": "stable"
+    },
+    {
+      "code": "pl",
+      "name": "Polish",
+      "nativeName": "Polski",
+      "status": "stable"
+    },
+    {
+      "code": "pt",
+      "name": "Portuguese",
+      "nativeName": "Português",
+      "status": "beta"
+    },
+    {
+      "code": "ru",
+      "name": "Russian",
+      "nativeName": "Русский",
+      "status": "stable"
+    },
+    {
+      "code": "tr",
+      "name": "Turkish",
+      "nativeName": "Türkçe",
+      "status": "stable"
+    },
+    {
+      "code": "zh",
+      "name": "Chinese",
+      "nativeName": "中文",
+      "status": "stable"
+    }
+  ],
+  "stableCount": 12,
+  "betaCount": 4,
+  "betaLanguages": ["id", "it", "ja", "pt"],
+  "rtlLanguages": ["ar"],
+  "i18nAreas": [
+    "site-404",
+    "site-knowledge",
+    "site-expandingland",
+    "site-expandingland-404",
+    "site-help",
+    "site-help-404"
+  ]
+}
