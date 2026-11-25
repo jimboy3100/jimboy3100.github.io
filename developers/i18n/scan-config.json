@@ -215,7 +215,8 @@
     ],
     "skinrotator.html": [
       "/clearInterval\\(tamp\\)|var exp = 0; var d = |skinWrapper\"\\)\\[0\\]\\.children/",
-      "/^\";var speed=$|^;var images=\\[$|^\\]; var skins=\\[$/",
+      "/^\";var speed=$|^;var images=\\[$|^\\]; var skins=\\[$/"
+    ],
     "Lc/articles/announcement-29a-12-2025.html": [
       "alt=\"Legend Clan\""
     ]
