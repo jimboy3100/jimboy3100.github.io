@@ -762,7 +762,7 @@
 "pack.easterEgg3Activated": "Easter Egg 3 Activado",
 "pack.videoWorksBetterOn": "El vídeo funciona mejor en vanilla, visita:",
 "pack.notesFacebookCompatibilityIs": "Notas: <b>Facebook</b> compatibilidad es mejor que <b>Google Plus</b>.",
-"pack.notesAgarIoCan": "Notas: Agar.io solo puede conectar a Google Plus en eventos cargados. Si cierra sesión, recarga Agar.io o usa <b>Facebook</b>.",
+"pack.notesAgarIoCan": "Notas: Agar.io solo puede conectar con <b>Google Plus</b> al cargar la página. Si se cierra la sesión, vuelve a entrar en Agar.io o usa <b>Facebook</b>.",
 "pack.ifLogoutOccursOn": "Si cierra sesión en eventos cargados, borra cookies de Chrome desde",
 "pack.disconnectedFromServer": "Desconectado del servidor :(",
 "pack.youWereBannedRestart": "Has sido baneado, reinicia tu router",

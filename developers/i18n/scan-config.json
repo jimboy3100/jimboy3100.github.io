@@ -14,7 +14,10 @@
     "LMexpress/i18n.js",
     "languages/lm-i18n.js",
     "lib/lm-i18n.js",
-    "developers/i18n/runtime.js"
+    "developers/i18n/runtime.js",
+    "index.html",
+    "features.html",
+    "faq.html"
   ],
   "groups": {
     "a: ogario/modules": [
