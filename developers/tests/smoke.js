@@ -1,6 +1,8 @@
 // Smoke test: load play.html in headless Chrome with every request to
 // jimboy3100.github.io / www.legendmod.ml served from the local repo.
 // Usage: node smoke.js <repoDir> <outDir> [seconds] [url] [mobile]
+// Env: SMOKE_LANG (browser language, default en-US), SMOKE_STORAGE (JSON of localStorage values set
+// before the page runs), SMOKE_FIRSTRUN=1 (show the one-time language window; hidden otherwise).
 // Needs Node 22+ (global fetch and WebSocket) and Chrome/Chromium.
 // Chrome: env CHROME_PATH, otherwise the usual install locations are tried.
 // If <outDir>/probe.js exists it is evaluated in the page after [seconds].
@@ -43,6 +45,8 @@ const types = { '.js': 'application/javascript', '.css': 'text/css', '.html': 't
 
 const proc = spawn(chrome, ['--headless=new', '--remote-debugging-port=' + port, '--user-data-dir=' + profile,
   '--no-first-run', '--no-default-browser-check', '--window-size=1600,900', '--autoplay-policy=no-user-gesture-required',
+  /* the browser language: English unless SMOKE_LANG says otherwise (the mod follows it when no language is chosen) */
+  '--lang=' + (process.env.SMOKE_LANG || 'en-US'),
   ...(process.platform === 'linux' ? ['--no-sandbox', '--disable-dev-shm-usage', '--enable-unsafe-swiftshader'] : []),
   'about:blank'], { stdio: 'ignore' });
 proc.on('error', e => { console.log('chrome failed to start:', e.message); process.exit(2); });
@@ -95,6 +99,13 @@ let served = 0, missing = [], probeValue;
   };
   await new Promise(r => ws.onopen = r);
   await send('Runtime.enable'); await send('Log.enable'); await send('Page.enable');
+  await send('Emulation.setUserAgentOverride', { userAgent: ver['User-Agent'] || '', acceptLanguage: process.env.SMOKE_LANG || 'en-US' });
+  await send('Emulation.setLocaleOverride', { locale: process.env.SMOKE_LANG || 'en-US' });
+  /* SMOKE_STORAGE='{"key":"value"}': localStorage set before the page's scripts run (only where it is empty) */
+  if (process.env.SMOKE_STORAGE) await send('Page.addScriptToEvaluateOnNewDocument', { source: 'try { var o = ' + process.env.SMOKE_STORAGE + '; for (var k in o) if (localStorage.getItem(k) == null) localStorage.setItem(k, o[k]); } catch (e) { }' });
+  /* like --no-first-run: the one-time language window stays away unless SMOKE_FIRSTRUN asks for it
+   * (developers/tests/i18n-firstrun.js); the probes test it on purpose */
+  if (!process.env.SMOKE_FIRSTRUN) await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { if (!localStorage.getItem('lmLangAsked')) localStorage.setItem('lmLangAsked', '1'); } catch (e) { }" });
   await send('Fetch.enable', { patterns: [{ urlPattern: '*://jimboy3100.github.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }, { urlPattern: '*://legendmod.ml/*' }] });
   if (mobile) {
     await send('Emulation.setDeviceMetricsOverride', { width: 915, height: 412, deviceScaleFactor: 2.6, mobile: true });

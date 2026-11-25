@@ -750,6 +750,8 @@
         .cta-primary { padding: 16px 24px !important; font-size: 0.95rem !important; width: 100% !important; justify-content: center; }
     }
     </style>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-index" charset="utf-8"></script>
 </head>
 
 <body>
@@ -817,34 +819,35 @@
         //# sourceURL=pen.js
     </script>
     <section style="text-align: center;color: black;" itemscope itemtype="https://schema.org/WebPage">
-        <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Legend Mod – The Best Agar.io Extension with 60+ Macros, Custom Skins, and Anti-Lag</h1>
-        <section
+        <h1 data-i18n="site.index.legendModTheBest" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Legend Mod – The Best Agar.io Extension with 60+ Macros, Custom Skins, and Anti-Lag</h1>
+        <section data-i18n-aria-label="site.index.legendModHero"
             style="background-image: url(https://jimboy3100.github.io/banners/iconmod3.png);background-repeat: no-repeat; background-position: center; background-size: 70%; object-fit: fill; color: black;text-align: center;"
             role="banner" aria-label="Legend Mod Hero">
             <div class="hero-banner-wrap">
                 <div class="flex-center">
-                    <a target="_blank" href="https://www.youtube.com/watch?v=CN5-RFGsqcY&list=PL5ieCNyP97uduCS_zVmr9BWiwm48zxg0Y" aria-label="Legend Mod YouTube Channel" rel="noopener"><i id="legendyoutube" class="fab fa-youtube fa-3x icon-3d"></i></a>
-                    <a target="_blank" href="https://github.com/jimboy3100/jimboy3100.github.io/" rel="noopener" aria-label="Legend Mod GitHub Repository"><i id="legendgithub" class="fab fa-github fa-3x icon-3d"></i></a>
-                    <a target="_blank" href="https://greasyfork.org/el/users/128990-iamlegend" rel="noopener" aria-label="Legend Mod on Greasy Fork"><i id="legendgreasyfork" class="fas fa-code-branch fa-3x icon-3d"></i></a>
-                    <a target="_blank" href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja" rel="noopener" aria-label="Legend Mod on Chrome Web Store" title="Chrome Web Store"><i id="legendchromestore" class="fab fa-chrome fa-3x icon-3d"></i></a>
-                    <a target="_blank" href="https://www.facebook.com/Lcclan/" rel="noopener" aria-label="Legend Clan Facebook Page"><i id="legendfacebook" class="fab fa-facebook fa-3x icon-3d"></i></a>
-                    <a target="_blank" href="https://discord.com/invite/JUfpR9k" rel="noopener" aria-label="Legend Clan Discord Server"><i id="legenddiscord" class="fab fa-discord fa-3x icon-3d" title="℄ Legend Clan Discord"></i></a>
-                    <a target="_blank" href="https://www.buymeacoffee.com/legendmod" rel="noopener" aria-label="Donate to Legend Mod" data-toggle="tooltip" style="color: transparent;" title="Donate"><i id="legendpaypal" class="fab fa-cc-paypal fa-3x icon-3d"></i></a>
+                    <a data-i18n-aria-label="site.index.legendModYoutubeChannel" target="_blank" href="https://www.youtube.com/watch?v=CN5-RFGsqcY&list=PL5ieCNyP97uduCS_zVmr9BWiwm48zxg0Y" aria-label="Legend Mod YouTube Channel" rel="noopener"><i id="legendyoutube" class="fab fa-youtube fa-3x icon-3d"></i></a>
+                    <a data-i18n-aria-label="site.index.legendModGithubRepository" target="_blank" href="https://github.com/jimboy3100/jimboy3100.github.io/" rel="noopener" aria-label="Legend Mod GitHub Repository"><i id="legendgithub" class="fab fa-github fa-3x icon-3d"></i></a>
+                    <a data-i18n-aria-label="site.index.legendModOnGreasy" target="_blank" href="https://greasyfork.org/el/users/128990-iamlegend" rel="noopener" aria-label="Legend Mod on Greasy Fork"><i id="legendgreasyfork" class="fas fa-code-branch fa-3x icon-3d"></i></a>
+                    <a data-i18n-aria-label="site.index.legendModOnChrome" data-i18n-title="site.index.chromeWebStore" target="_blank" href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja" rel="noopener" aria-label="Legend Mod on Chrome Web Store" title="Chrome Web Store"><i id="legendchromestore" class="fab fa-chrome fa-3x icon-3d"></i></a>
+                    <a data-i18n-aria-label="site.index.legendClanFacebookPage" target="_blank" href="https://www.facebook.com/Lcclan/" rel="noopener" aria-label="Legend Clan Facebook Page"><i id="legendfacebook" class="fab fa-facebook fa-3x icon-3d"></i></a>
+                    <a data-i18n-aria-label="site.index.legendClanDiscordServer" target="_blank" href="https://discord.com/invite/JUfpR9k" rel="noopener" aria-label="Legend Clan Discord Server"><i data-i18n-title="site.index.legendClanDiscord" id="legenddiscord" class="fab fa-discord fa-3x icon-3d" title="℄ Legend Clan Discord"></i></a>
+                    <a data-i18n-aria-label="site.index.donateToLegendMod" data-i18n-title="site.index.donate" target="_blank" href="https://www.buymeacoffee.com/legendmod" rel="noopener" aria-label="Donate to Legend Mod" data-toggle="tooltip" style="color: transparent;" title="Donate"><i id="legendpaypal" class="fab fa-cc-paypal fa-3x icon-3d"></i></a>
                 </div>
             </div>
         </section>
         <div id="navbar">
             <div id="nav">
                 <ul>
-                    <li><a name="Scripts" href="#Scripts" class="active">Scripts</a></li>
-                    <li><a name="About" href="#About">About</a></li>
-                    <li><a name="Features" href="#Features">Features</a></li>
-                    <li><a name="Changelog" href="#Changelog">News</a></li>
+                    <li><a data-i18n="site.index.scripts" name="Scripts" href="#Scripts" class="active">Scripts</a></li>
+                    <li><a data-i18n="site.index.about" name="About" href="#About">About</a></li>
+                    <li><a data-i18n="site.features" name="Features" href="#Features">Features</a></li>
+                    <li><a data-i18n="site.index.news" name="Changelog" href="#Changelog">News</a></li>
                     <li><a name="FPS" href="#FPS">FPS</a></li>
-                    <li><a name="Developers" href="#Developers">Devs</a></li>
-                    <li><a name="LMmobile" href="#LMmobile" style="display: none;">LMmobile</a></li>
+                    <li><a data-i18n="site.index.devs" name="Developers" href="#Developers">Devs</a></li>
+                    <li data-lm-lang-picker title="Language" data-i18n-title="site.language"></li>
+                    <li><a data-i18n="site.index.lmmobile" name="LMmobile" href="#LMmobile" style="display: none;">LMmobile</a></li>
                     <li>
-                        <button id="theme-toggle" class="theme-toggle" title="Toggle Theme">
+                        <button data-i18n-title="site.index.toggleTheme" id="theme-toggle" class="theme-toggle" title="Toggle Theme">
                             <i class="fas fa-sun light-theme-icon"></i>
                             <i class="fas fa-moon dark-theme-icon"></i>
                         </button>
@@ -863,7 +866,7 @@
             ">
                 <!-- Ad label -->
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <span style="font-size:0.65rem;font-weight:700;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;background:var(--bg-subtle);border:1px solid var(--border);border-radius:4px;padding:2px 8px;opacity:0.7;">Advertisement</span>
+                    <span data-i18n="site.index.advertisement" style="font-size:0.65rem;font-weight:700;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;background:var(--bg-subtle);border:1px solid var(--border);border-radius:4px;padding:2px 8px;opacity:0.7;">Advertisement</span>
                 </div>
                 <!-- Animated background particles -->
                 <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0.6;">
@@ -883,16 +886,16 @@
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;animation:elSlideUp 0.6s ease both;">
                     <span id="el-status-badge" style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:#ef4444;letter-spacing:0.05em;text-transform:uppercase;transition:all .4s ease;">
                         <span id="el-status-dot" style="width:7px;height:7px;border-radius:50%;background:#ef4444;transition:all .4s ease;"></span>
-                        <span id="el-status-text">OFFLINE</span>
+                        <span data-i18n="site.index.offline" id="el-status-text">OFFLINE</span>
                     </span>
-                    <span style="font-size:0.78rem;color:var(--text-secondary);font-weight:600;">New Game by Legend Clan</span>
+                    <span data-i18n="site.index.newGameByLegend" style="font-size:0.78rem;color:var(--text-secondary);font-weight:600;">New Game by Legend Clan</span>
                 </div>
 
                 <!-- Game title -->
-                <h2 style="font-family:var(--font) !important;font-size:1.6rem !important;font-weight:800 !important;color:var(--text) !important;margin:8px 0 4px !important;padding:0 !important;border:none !important;letter-spacing:-0.03em;line-height:1.2;animation:elSlideUp 0.6s ease 0.1s both;">
+                <h2 data-i18n="site.index.expandingLand" style="font-family:var(--font) !important;font-size:1.6rem !important;font-weight:800 !important;color:var(--text) !important;margin:8px 0 4px !important;padding:0 !important;border:none !important;letter-spacing:-0.03em;line-height:1.2;animation:elSlideUp 0.6s ease 0.1s both;">
                     🌍 Expanding Land
                 </h2>
-                <p style="color:var(--text-secondary);font-size:0.9rem;margin:0 auto 16px;line-height:1.5;max-width:560px;animation:elSlideUp 0.6s ease 0.2s both;">
+                <p data-i18n="site.index.theUltimateAgarIo" style="color:var(--text-secondary);font-size:0.9rem;margin:0 auto 16px;line-height:1.5;max-width:560px;animation:elSlideUp 0.6s ease 0.2s both;">
                     The ultimate agar.io private server experience — massive maps that grow with you.
                 </p>
 
@@ -900,34 +903,34 @@
                 <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;animation:elSlideUp 0.6s ease 0.3s both;">
                     <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center;box-shadow:var(--shadow-xs);">
                         <div id="el-alive" style="font-size:1.35rem;font-weight:800;color:var(--accent);line-height:1;animation:elCount 0.8s ease 0.5s both;">—</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Playing</div>
+                        <div data-i18n="site.index.playing" style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Playing</div>
                     </div>
                     <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center;box-shadow:var(--shadow-xs);">
                         <div id="el-spectators" style="font-size:1.35rem;font-weight:800;color:var(--teal);line-height:1;animation:elCount 0.8s ease 0.6s both;">—</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Spectators</div>
+                        <div data-i18n="site.index.spectators" style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Spectators</div>
                     </div>
                     <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center;box-shadow:var(--shadow-xs);">
                         <div id="el-uptime" style="font-size:1.35rem;font-weight:800;color:#eab308;line-height:1;animation:elCount 0.8s ease 0.7s both;">—</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Uptime</div>
+                        <div data-i18n="site.index.uptime" style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Uptime</div>
                     </div>
                     <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
                         <div id="el-map" style="font-size:1.35rem;font-weight:800;color:#f472b6;line-height:1;animation:elCount 0.8s ease 0.8s both;">—</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Map (up to 1024×)</div>
+                        <div data-i18n="site.index.mapUpTo1024" style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Map (up to 1024×)</div>
                     </div>
                 </div>
 
                 <!-- Feature pills -->
                 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;animation:elSlideUp 0.6s ease 0.35s both;">
-                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:var(--accent);">
+                    <span data-i18n-html="site.index.dynamicMap" style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:var(--accent);">
                         <i class="fas fa-expand-arrows-alt" style="font-size:0.65rem;"></i> Dynamic Map
                     </span>
-                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:var(--teal);">
+                    <span data-i18n-html="site.index.potions" style="display:inline-flex;align-items:center;gap:6px;background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:var(--teal);">
                         <i class="fas fa-flask" style="font-size:0.65rem;"></i> Potions
                     </span>
-                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:#ca8a04;">
+                    <span data-i18n-html="site.index.realPlayers" style="display:inline-flex;align-items:center;gap:6px;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:#ca8a04;">
                         <i class="fas fa-users" style="font-size:0.65rem;"></i> 1024 Real Players
                     </span>
-                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:#dc2626;">
+                    <span data-i18n-html="site.index.antiTeam" style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:#dc2626;">
                         <i class="fas fa-shield-alt" style="font-size:0.65rem;"></i> Anti-Team
                     </span>
                 </div>
@@ -946,7 +949,7 @@
                     " onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 6px 20px rgba(124,58,237,0.4)';"
                        onmouseout="this.style.transform='';this.style.boxShadow='0 4px 15px rgba(124,58,237,0.3)';" rel="noopener">
                         <i class="fas fa-play" style="font-size:0.85rem;"></i>
-                        <span style="color:#fff !important;">Play Now</span>
+                        <span data-i18n="site.index.playNow" style="color:#fff !important;">Play Now</span>
                     </a>
                     <a href="https://github.com/jimboy3100/jimboy3100.github.io/raw/refs/heads/master/LMexpress/mobileApp/ExpandingLand-v2.apk" target="_blank" style="
                         display:inline-flex;align-items:center;gap:10px;
@@ -960,7 +963,7 @@
                     " onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 6px 20px rgba(16,185,129,0.4)';"
                        onmouseout="this.style.transform='';this.style.boxShadow='0 4px 15px rgba(16,185,129,0.3)';" rel="noopener">
                         <i class="fab fa-android" style="font-size:0.95rem;"></i>
-                        <span style="color:#fff !important;">Android App</span>
+                        <span data-i18n="site.index.androidApp" style="color:#fff !important;">Android App</span>
                     </a>
                     <a href="https://help.expanding.land/" target="_blank" style="
                         display:inline-flex;align-items:center;gap:10px;
@@ -973,7 +976,7 @@
                     " onmouseover="this.style.transform='translateY(-2px)';this.style.background='var(--bg-subtle)';this.style.borderColor='var(--accent-light)';"
                        onmouseout="this.style.transform='';this.style.background='var(--btn-bg)';this.style.borderColor='var(--btn-border)';" rel="noopener">
                         <i class="fas fa-book-open" style="font-size:0.8rem;color:var(--text-muted);"></i>
-                        <span style="color:var(--text) !important;">Game Info & Help</span>
+                        <span data-i18n="site.index.gameInfoHelp" style="color:var(--text) !important;">Game Info & Help</span>
                     </a>
                     <a href="https://www.youtube.com/watch?v=fWlrAHVtZHc" target="_blank" style="
                         display:inline-flex;align-items:center;gap:10px;
@@ -986,7 +989,7 @@
                     " onmouseover="this.style.transform='translateY(-2px)';this.style.background='var(--bg-subtle)';this.style.borderColor='var(--accent-light)';"
                        onmouseout="this.style.transform='';this.style.background='var(--btn-bg)';this.style.borderColor='var(--btn-border)';" rel="noopener">
                         <i class="fab fa-youtube" style="font-size:0.9rem;color:#ef4444;"></i>
-                        <span style="color:var(--text) !important;">Promo Video</span>
+                        <span data-i18n="site.index.promoVideo" style="color:var(--text) !important;">Promo Video</span>
                     </a>
                     <a href="https://www.mediafire.com/file/gc6nuy6j6z1o8ou/ExpandingLand-Bots.exe/file" target="_blank" style="
                         display:inline-flex;align-items:center;gap:10px;
@@ -999,18 +1002,18 @@
                     " onmouseover="this.style.transform='translateY(-2px)';this.style.background='var(--bg-subtle)';this.style.borderColor='var(--accent-light)';"
                        onmouseout="this.style.transform='';this.style.background='var(--btn-bg)';this.style.borderColor='var(--btn-border)';" rel="noopener">
                         <i class="fas fa-robot" style="font-size:0.85rem;color:var(--text-muted);"></i>
-                        <span style="color:var(--text) !important;">50 temp EL Bots</span>
+                        <span data-i18n="site.index.tempElBots" style="color:var(--text) !important;">50 temp EL Bots</span>
                     </a>
                 </div>
             </div>
-            <span>LM <a href="https://github.com/jimboy3100/jimboy3100.github.io/"
+            <span data-i18n-html="site.index.lmGithubIs100">LM <a href="https://github.com/jimboy3100/jimboy3100.github.io/"
                     target="_blank" rel="noopener"><b>Github</b></a> is 100% open source. <a
                     href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/server-side"
                     target="_blank" rel="noopener"><b>Server side</b></a> directory added.
                 <br>Visit Devs section. Feel free to make your <a
                     href="https://jimboy3100.github.io/developers/index.html" target="_blank" rel="noopener"><b>own mod</b></a></span>.
-            <h2 class="project-tagline">Step 1, Install Script Manager (Tampermonkey)</h2>
-                <div>
+            <h2 data-i18n="site.index.step1InstallScript" class="project-tagline">Step 1, Install Script Manager (Tampermonkey)</h2>
+                <div data-i18n-html="site.index.forChromeVivaldiTampermonkey">
                     <span>
                         For
                         <img title="Chrome" src="/banners/iconbrowserchrome16.png" alt="Chrome">
@@ -1070,47 +1073,47 @@
                     </a> (Open agar.io on desktop mode)
                 </div>
                 <h2 class="project-tagline">
-                    Step 2, Install Script
-                    <font size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font>
+                    <span data-i18n="site.index.step2InstallScript">Step 2, Install Script</span>
+                    <font data-i18n-html="site.index.disableOtherMainTampermonkey" size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font>
                 </h2>
                 <a align="center" style="cursor:pointer; max-width: 50%; min-width: 15%;" class="btn"
                     onclick="JoinLcPartyMode()">
-                    <span style="position: relative;"><img title="Chrome"
+                    <span data-i18n-html="site.index.legendExpressV18" style="position: relative;"><img title="Chrome"
                             src="/banners/icon32croped.ico.gif" alt="LM"
                             style="float: left; position: relative">
                         Legend Express v1.8
                     </span>
                 </a>
                 <h2 class="project-tagline">
-                    Step 3, Open extensions menu
-                    <font size="3"><br>chrome://extensions/</font>
-                    <font size="3"><br>Enable: Developer Mode (upper right corner)</font>
+                    <span data-i18n="site.index.step3OpenExtensions">Step 3, Open extensions menu</span>
+                    <font data-i18n-html="site.index.chromeExtensions" size="3"><br>chrome://extensions/</font>
+                    <font data-i18n-html="site.index.enableDeveloperModeUpper" size="3"><br>Enable: Developer Mode (upper right corner)</font>
                 </h2>
                 <span style="color: black;"></span>
-                <br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY"
-                    target="_blank" rel="noopener"><b>Watch video</b></a>
+                <br><span data-i18n="site.index.cannotInstall" style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY"
+                    target="_blank" rel="noopener"><b data-i18n="site.index.watchVideo">Watch video</b></a>
 
             <hr>
 
-            <button class="fallback-toggle" onclick="this.classList.toggle('open'); document.getElementById('fallbackSteps').classList.toggle('open');">
+            <button data-i18n-html="site.index.preferAChromeExtension" class="fallback-toggle" onclick="this.classList.toggle('open'); document.getElementById('fallbackSteps').classList.toggle('open');">
                 <i class="fas fa-chevron-down"></i> Prefer a Chrome Extension instead?
             </button>
             <div id="fallbackSteps" class="fallback-content">
-                <h3 class="project-tagline">Install Chrome Extension</h3>
+                <h3 data-i18n="site.index.installChromeExtension" class="project-tagline">Install Chrome Extension</h3>
                 <div style="margin: 16px 0;">
                     <a class="cta-primary" style="background: linear-gradient(135deg, #7c3aed, #9333ea, #7c3aed) !important; color: #fff !important; background-image: linear-gradient(135deg, #7c3aed, #9333ea, #7c3aed) !important; background-size: 100% 100% !important;" href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja" target="_blank" rel="noopener">
-                        <img title="Legend Express" src="/banners/icon32croped.ico.gif" alt="LM">
-                        <span style="color: #fff !important;">Add Legend Express to Chrome</span>
+                        <img data-i18n-title="site.index.legendExpress" title="Legend Express" src="/banners/icon32croped.ico.gif" alt="LM">
+                        <span data-i18n="site.index.addLegendExpressTo" style="color: #fff !important;">Add Legend Express to Chrome</span>
                     </a>
-                    <span class="cta-subtitle">Works on Chrome, Edge, Vivaldi, Brave & other Chromium browsers</span>
-                    <div class="cta-badge"><i class="fas fa-shield-alt"></i> Verified on Chrome Web Store</div>
+                    <span data-i18n="site.index.worksOnChromeEdge" class="cta-subtitle">Works on Chrome, Edge, Vivaldi, Brave & other Chromium browsers</span>
+                    <div data-i18n-html="site.index.verifiedOnChromeWeb" class="cta-badge"><i class="fas fa-shield-alt"></i> Verified on Chrome Web Store</div>
                 </div>
             </div>
             <hr>
             <hr>
-            <h2 class="project-tagline">Legend mod addon for Delta mod</h2>
+            <h2 data-i18n="site.index.legendModAddonFor" class="project-tagline">Legend mod addon for Delta mod</h2>
             <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
-                href="https://greasyfork.org/en/scripts/559441-lmaddonfordelta" target="_blank" rel="noopener"><span
+                href="https://greasyfork.org/en/scripts/559441-lmaddonfordelta" target="_blank" rel="noopener"><span data-i18n-html="site.index.deltaAddon"
                     style="position: relative;"><img title="Chrome"
                         src="/banners/icontinyAddon.png" height="26" width="26" alt="Agario"
                         style="float: left; position: relative"><img title="Chrome"
@@ -1123,92 +1126,92 @@
             <!--            <span style="color: black;"></span>-->
             <hr>
             <hr>
-            <h2 class="project-tagline">Other Main Products</h2>
+            <h2 data-i18n="site.index.otherMainProducts" class="project-tagline">Other Main Products</h2>
             <span></span> <a align="center"
                 style="max-width: 50%; min-width: 15%;" class="btn"
-                href="https://jimboy3100.github.io/ExampleScripts/LMTiny.user.js" target="_blank" rel="noopener"><span
+                href="https://jimboy3100.github.io/ExampleScripts/LMTiny.user.js" target="_blank" rel="noopener"><span data-i18n-html="site.index.lmTinyOpensource"
                     style="position: relative;"><img title="Chrome"
                         src="/banners/favicon-32x32.png" alt="LM"
-                        style="float: left; position: relative">LM Tiny OpenSource</span></a> <span>(A tiny Open Source Script)</span>
+                        style="float: left; position: relative">LM Tiny OpenSource</span></a> <span data-i18n="site.index.aTinyOpenSource">(A tiny Open Source Script)</span>
             <br> <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
                 href="https://greasyfork.org/en/scripts/472009-skin-rotator-similar-to-legends-mod-for-deltaagario"
-                target="_blank" rel="noopener"><span style="float: left;position: relative;color: black;"><img title="Chrome"
+                target="_blank" rel="noopener"><span data-i18n-html="site.index.skinForDeltaagario" style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/icontinyAddon.png" height="26" width="26" alt="Agario"
                         style="float: left; position: relative"><img title="Chrome"
                         src="/banners/icontinyDelta.png" height="26" width="26" alt="Agario"
                         style="float: left; position: relative">Skin for DeltaAgario</span></a><span
                 style="color: black;"></span>
             <hr>
-            <h2 class="project-tagline"> Manual Skins / Templates</h2>
+            <h2 data-i18n="site.index.manualSkinsTemplates" class="project-tagline"> Manual Skins / Templates</h2>
             <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://jimboy3100.github.io/skins/" target="_blank" rel="noopener"><span
+                href="https://jimboy3100.github.io/skins/" target="_blank" rel="noopener"><span data-i18n-html="site.index.skins"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/icon32croped.ico.gif" alt="Agario"
                         style="float: left; position: relative">Skins</span></a> <span style="color: black;"></span>
             <span style="color: black;"></span> <a align="center"
                 style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://jimboy3100.github.io/themes/" target="_blank" rel="noopener"><span
+                href="https://jimboy3100.github.io/themes/" target="_blank" rel="noopener"><span data-i18n-html="site.index.templates"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/icon32croped.ico.gif" alt="LM"
                         style="float: left; position: relative">Templates</span></a> <span style="color: black;"></span>
             <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://jimboy3100.github.io/skinrotator.html" target="_blank" rel="noopener"><span
+                href="https://jimboy3100.github.io/skinrotator.html" target="_blank" rel="noopener"><span data-i18n-html="site.index.skinsRotator"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/favicon-32x32.png" alt="Agario"
                         style="float: left; position: relative">Skins Rotator</span></a> <span
                 style="color: black;"></span>
             <span style="color: black;"></span> <a align="center"
                 style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://jimboy3100.github.io/skins/skinchecker.html" target="_blank" rel="noopener"><span
+                href="https://jimboy3100.github.io/skins/skinchecker.html" target="_blank" rel="noopener"><span data-i18n-html="site.index.skinChecker"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/icon32croped.ico.gif" alt="LM"
                         style="float: left; position: relative">Skin Checker</span></a> <span
                 style="color: black;"></span>
             <hr>
-            <h2 class="project-tagline">Small Open Source Scripts
+            <h2 data-i18n="site.index.smallOpenSourceScripts" class="project-tagline">Small Open Source Scripts
             </h2>
             <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://jimboy3100.github.io/agarscripts/VidMod.user.js" target="_blank" rel="noopener"><span
+                href="https://jimboy3100.github.io/agarscripts/VidMod.user.js" target="_blank" rel="noopener"><span data-i18n-html="site.index.videoSkins"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/favicon-32x32.png" alt="Agario"
                         style="float: left; position: relative">Video Skins</span></a> <span style="color: black;"><a
-                    href="https://www.youtube.com/watch?v=-OHbflAMDiU" target="_blank" rel="noopener"><b>Watch video</b></a></span>
+                    href="https://www.youtube.com/watch?v=-OHbflAMDiU" target="_blank" rel="noopener"><b data-i18n="site.index.watchVideo">Watch video</b></a></span>
             <span style="color: black;"></span>
             <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
                 href="https://greasyfork.org/el/scripts/31353-agario-voice-chat-rooms" target="_blank" rel="noopener">
-                <span style="float: left;position: relative;color: black;"><img title="Chrome"
+                <span data-i18n-html="site.index.voiceAndCameraCompatibility" style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/favicon-32x32.png" alt="LM"
                         style="float: left; position: relative">
                     Voice and Camera compatibility for other mods with LM</span></a> 
             <br>
             <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://greasyfork.org/el/scripts/30289-simple-multiplayer-ip-agario-script" target="_blank" rel="noopener"><span
+                href="https://greasyfork.org/el/scripts/30289-simple-multiplayer-ip-agario-script" target="_blank" rel="noopener"><span data-i18n-html="site.index.simpleMultiplayerAgarioScript"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/favicon-32x32.png" alt="Agario"
                         style="float: left; position: relative">Simple multiplayer agario Script</span></a> 
             <span style="color: black;"></span> <a align="center"
                 style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://greasyfork.org/el/scripts/30292-send-agario-sip-to-discord" target="_blank" rel="noopener"><span
+                href="https://greasyfork.org/el/scripts/30292-send-agario-sip-to-discord" target="_blank" rel="noopener"><span data-i18n-html="site.index.sendSipToDiscord"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/favicon-32x32.png" alt="LM"
                         style="float: left; position: relative">Send SIP to Discord</span></a> 
             <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://jimboy3100.github.io/ExampleScripts/BleedingMod.user.js" target="_blank" rel="noopener"><span
+                href="https://jimboy3100.github.io/ExampleScripts/BleedingMod.user.js" target="_blank" rel="noopener"><span data-i18n-html="site.index.cancerScript"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/favicon-32x32.png" alt="Agario"
                         style="float: left; position: relative">Cancer Script</span></a> <span style="color: black;"><a
-                    href="https://www.youtube.com/watch?v=cAGjWeDaVX8" target="_blank" rel="noopener"><b>Watch video</b></a></span>
+                    href="https://www.youtube.com/watch?v=cAGjWeDaVX8" target="_blank" rel="noopener"><b data-i18n="site.index.watchVideo">Watch video</b></a></span>
             <span style="color: black;"></span> <a align="center"
                 style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://greasyfork.org/el/scripts/30406-agar-io-legend-mod-translations" target="_blank" rel="noopener"><span
+                href="https://greasyfork.org/el/scripts/30406-agar-io-legend-mod-translations" target="_blank" rel="noopener"><span data-i18n-html="site.index.legendModTranslations"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/icon32croped.ico.gif" alt="LM"
-                        style="float: left; position: relative">Legend mod Translations</span></a> <span
+                        style="float: left; position: relative">Legend mod Translations</span></a> <span data-i18n="site.index.contributeByTranslatingLm"
                 style="color: black;">(Contribute by translating LM)</span>
             <hr>
-            <h2 class="project-tagline">Fun</h2>
+            <h2 data-i18n="site.index.fun" class="project-tagline">Fun</h2>
             <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
-                href="https://jimboy3100.github.io/extras/website/gamble.html" target="_blank" rel="noopener"><span
+                href="https://jimboy3100.github.io/extras/website/gamble.html" target="_blank" rel="noopener"><span data-i18n-html="site.index.agarioGamble"
                     style="float: left;position: relative;color: black;"><img title="Chrome"
                         src="/banners/icon32croped.ico.gif" alt="Agario"
                         style="float: left; position: relative">Agario Gamble</span></a> <span
@@ -1220,44 +1223,44 @@
     </section>
     <div id="About" class="skins-wrapper" style="display: none;">
         <section style="text-align: center;">
-            <strong>Mod for Agar.io multiplayer action browsergame</strong>
-            <h2 class="project-tagline">About Mod</h2>
+            <strong data-i18n="site.index.modForAgarIo">Mod for Agar.io multiplayer action browsergame</strong>
+            <h2 data-i18n="site.index.aboutMod" class="project-tagline">About Mod</h2>
             <div class="yt-wrap"><iframe loading="lazy" src="https://www.youtube.com/embed/-OHbflAMDiU"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe></div>
             <br>
-            Author: <a href="https://github.com/kyriakidisdimitrios" target="_blank" rel="noopener noreferrer">Jimboy3100</a>
-            <br>This mod combines many scripts for agario game. It is based on ogario.ovh platform with all features,
-            <br>and uses script codes such as auto-respawn, kitty insist reconnects for ffa/exp tokens and plenty
-            <br>of other scripts that can be found on greasefork website. It works only as javascript / jquery
-            <br>design palette script that works on the users terminal, using dynamic libraries from cloud,
-            <br>but not sending any user information to the web. It also does not use any cheat codes,
-            <br>but provides mathematical / programming scripts that help users play with comfort.
-            <br>It also provides better ogario.ovh syncing support with the game and some basic game bug fixes to the
-            game itself
-            <br>It also:
-            <br>Auto Updates
-            <br>Provides many features shown on the feature section
-            <br>Is encoded
-            <br>Has the best scripts and features than any other mod for agar.io (as far as i know)
-            <br>Provides vanilla-like framework with one button click, for users who are used to vanilla game
+            <span data-i18n="site.index.author">Author:</span> <a href="https://github.com/kyriakidisdimitrios" target="_blank" rel="noopener noreferrer">Jimboy3100</a>
+            <br><span data-i18n="site.index.thisModCombinesMany">This mod combines many scripts for agario game. It is based on ogario.ovh platform with all features,</span>
+            <br><span data-i18n="site.index.andUsesScriptCodes">and uses script codes such as auto-respawn, kitty insist reconnects for ffa/exp tokens and plenty</span>
+            <br><span data-i18n="site.index.ofOtherScriptsThat">of other scripts that can be found on greasefork website. It works only as javascript / jquery</span>
+            <br><span data-i18n="site.index.designPaletteScriptThat">design palette script that works on the users terminal, using dynamic libraries from cloud,</span>
+            <br><span data-i18n="site.index.butNotSendingAny">but not sending any user information to the web. It also does not use any cheat codes,</span>
+            <br><span data-i18n="site.index.butProvidesMathematicalProgramming">but provides mathematical / programming scripts that help users play with comfort.</span>
+            <br><span data-i18n="site.index.itAlsoProvidesBetter">It also provides better ogario.ovh syncing support with the game and some basic game bug fixes to the
+            game itself</span>
+            <br><span data-i18n="site.index.itAlso">It also:</span>
+            <br><span data-i18n="site.index.autoUpdates">Auto Updates</span>
+            <br><span data-i18n="site.index.providesManyFeaturesShown">Provides many features shown on the feature section</span>
+            <br><span data-i18n="site.index.isEncoded">Is encoded</span>
+            <br><span data-i18n="site.index.hasTheBestScripts">Has the best scripts and features than any other mod for agar.io (as far as i know)</span>
+            <br><span data-i18n="site.index.providesVanillaLikeFramework">Provides vanilla-like framework with one button click, for users who are used to vanilla game</span>
             <h2><img loading="lazy" style="display: block; margin-left: auto; margin-right: auto;"
                     src="/banners/icon128croped.gif" alt=""></h2>
-            <h2 class="project-tagline">Who we are</h2>
-            We are a clan named <a title="Legend Clan Website" href="https://www.legendmod.ml/Lc/Lc.html" target="_blank"
+            <h2 data-i18n="site.index.whoWeAre" class="project-tagline">Who we are</h2>
+            <span data-i18n="site.index.weAreAClan">We are a clan named</span> <a data-i18n-title="site.index.legendClanWebsite" title="Legend Clan Website" href="https://www.legendmod.ml/Lc/Lc.html" target="_blank"
                 rel="noopener noreferrer"><span style="text-decoration: underline;">℄ＬＥＧＥＮＤ</span></a>,
-            <br>we use ℄ symbol to be recognised. We love agar.io. We are an active elite clan.
-            <br>Communication is over <span style="text-decoration: underline;"><a
+            <br><span data-i18n="site.index.weUseSymbolTo">we use ℄ symbol to be recognised. We love agar.io. We are an active elite clan.</span>
+            <br><span data-i18n="site.index.communicationIsOver">Communication is over</span> <span style="text-decoration: underline;"><a
                     href="https://discord.gg/JUfpR9k" target="_blank"
                     rel="noopener noreferrer">discord</a></span>.
-            <br>We share&nbsp;ours&nbsp;scripts with everyone
-            <h2 class="project-tagline">We need</h2>
-            Modders, people who are used to scripting <em>javascript / jquery</em> or programming <em>vb / asp.net</em>
-            <br>Translators, we can offer the mod to any language, with one button click
-            <br>Player design settings, share your game settings with everyone
-            <br>Testers for the new beta versions
-            <h2 class="project-tagline">Support</h2>
-            If you like, please support the mod with any donation
+            <br><span data-i18n="site.index.weShareOursScripts">We share&nbsp;ours&nbsp;scripts with everyone</span>
+            <h2 data-i18n="site.index.weNeed" class="project-tagline">We need</h2>
+            <span data-i18n="site.index.moddersPeopleWhoAre">Modders, people who are used to scripting</span> <em data-i18n="site.index.javascriptJquery">javascript / jquery</em> <span data-i18n="site.index.orProgramming">or programming</span> <em data-i18n="site.index.vbAspNet">vb / asp.net</em>
+            <br><span data-i18n="site.index.translatorsWeCanOffer">Translators, we can offer the mod to any language, with one button click</span>
+            <br><span data-i18n="site.index.playerDesignSettingsShare">Player design settings, share your game settings with everyone</span>
+            <br><span data-i18n="site.index.testersForTheNew">Testers for the new beta versions</span>
+            <h2 data-i18n="site.index.support" class="project-tagline">Support</h2>
+            <span data-i18n="site.index.ifYouLikePlease">If you like, please support the mod with any donation</span>
             <br>
             <a href="https://www.buymeacoffee.com/legendmod"><img
                     src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=legendmod&button_colour=714b4b&font_colour=ffffff&font_family=Lato&outline_colour=ffffff&coffee_colour=FFDD00" /></a>
@@ -1265,104 +1268,104 @@
     </div>
     <div id="Features" class="skins-wrapper" style="display: none;">
         <section style="text-align: center;">
-            <strong>LME is the biggest and quickest mod for agario</strong>
+            <strong data-i18n="site.index.lmeIsTheBiggest">LME is the biggest and quickest mod for agario</strong>
             <br>
             <br>
             <div class="yt-wrap"><iframe loading="lazy" src="https://www.youtube.com/embed/CN5-RFGsqcY"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe></div>
-            <h2 class="project-tagline">Legend Mod Express Features</h2>
-            Auto Updates
-            <br><b>Unlimited FPS</b>&nbsp;unlocked (<i>quicker than Vanilla</i>)
-            <br>Old Skins (<i>needs LME Expansion Pack</i>)
-            <br>Animated Skins (<i>Not ready yet</i>)
-            <br>UserScripts Manager (<i>URL or pasted</i>)
-            <br>Language Packs
-            <br>Direct&nbsp;<b>PARTY / FFA / EXP / TEAM</b>&nbsp;server by using tokens / sips or connector
-            <br>Search engine for player name / clan / tag / leaderboard / ip / token
-            <br>Integrated Chat, minimap and teamboard. Chat rooms per server/per team password(<i>or public</i>)
-            <br>New Template / skins / animations / zoom / respawn / helpers / hud controls and many extras
-            <br>Themes for quite all textures and map (<i>Basic / Menu / Hud / chat / minimap / graphics and cursor</i>)
-            <br>Banners for many clans (<i>Email me your symbol and weblink for updates</i>)
-            <br>60++ Macros / Events / Hotkeys (<i>Script does many calculations</i>)
-            <br>Tools for quests / youtubers / timers / coin auto digger / youtube video player
-            <br>Send message pictures, videos and also various message commands directly to teammate's script
-            <br>Change various textures, add photos on huds and clan's pictures and url links
-            <br>Discord webhook handler's for sending IP, and many more...
-            <br><i>No profile libraries, no Private Servers support, vanilla skins and other libraries are not
+            <h2 data-i18n="site.index.legendModExpressFeatures" class="project-tagline">Legend Mod Express Features</h2>
+            <span data-i18n="site.index.autoUpdates">Auto Updates</span>
+            <br><b data-i18n="site.index.unlimitedFps">Unlimited FPS</b><span data-i18n="site.index.unlocked">&nbsp;unlocked (</span><i data-i18n="site.index.quickerThanVanilla">quicker than Vanilla</i>)
+            <br><span data-i18n="site.index.oldSkins">Old Skins (</span><i data-i18n="site.index.needsLmeExpansionPack">needs LME Expansion Pack</i>)
+            <br><span data-i18n="site.index.animatedSkins">Animated Skins (</span><i data-i18n="site.index.notReadyYet">Not ready yet</i>)
+            <br><span data-i18n="site.index.userscriptsManager">UserScripts Manager (</span><i data-i18n="site.index.urlOrPasted">URL or pasted</i>)
+            <br><span data-i18n="site.index.languagePacks">Language Packs</span>
+            <br><span data-i18n="site.index.direct">Direct&nbsp;</span><b data-i18n="site.index.partyFfaExpTeam">PARTY / FFA / EXP / TEAM</b><span data-i18n="site.index.serverByUsingTokens">&nbsp;server by using tokens / sips or connector</span>
+            <br><span data-i18n="site.index.searchEngineForPlayer">Search engine for player name / clan / tag / leaderboard / ip / token</span>
+            <br><span data-i18n="site.index.integratedChatMinimapAnd">Integrated Chat, minimap and teamboard. Chat rooms per server/per team password(</span><i data-i18n="site.index.orPublic">or public</i>)
+            <br><span data-i18n="site.index.newTemplateSkinsAnimations">New Template / skins / animations / zoom / respawn / helpers / hud controls and many extras</span>
+            <br><span data-i18n="site.index.themesForQuiteAll">Themes for quite all textures and map (</span><i data-i18n="site.index.basicMenuHudChat">Basic / Menu / Hud / chat / minimap / graphics and cursor</i>)
+            <br><span data-i18n="site.index.bannersForManyClans">Banners for many clans (</span><i data-i18n="site.index.emailMeYourSymbol">Email me your symbol and weblink for updates</i>)
+            <br><span data-i18n="site.index.macrosEventsHotkeys">60++ Macros / Events / Hotkeys (</span><i data-i18n="site.index.scriptDoesManyCalculations">Script does many calculations</i>)
+            <br><span data-i18n="site.index.toolsForQuestsYoutubers">Tools for quests / youtubers / timers / coin auto digger / youtube video player</span>
+            <br><span data-i18n="site.index.sendMessagePicturesVideos">Send message pictures, videos and also various message commands directly to teammate's script</span>
+            <br><span data-i18n="site.index.changeVariousTexturesAdd">Change various textures, add photos on huds and clan's pictures and url links</span>
+            <br><span data-i18n="site.index.discordWebhookHandlerS">Discord webhook handler's for sending IP, and many more...</span>
+            <br><i data-i18n="site.index.noProfileLibrariesNo">No profile libraries, no Private Servers support, vanilla skins and other libraries are not
                 loaded</i>
-            <h2 class="project-tagline">Legend Mod Mobile Features</h2>
-            Pure Agario with 2 buttons to split and W for mobiles / tablets to play PC Agario
-            <h2 class="project-tagline">LME Chat&nbsp;Commands</h2>
-            1. “Send a new agario server” -&nbsp;send your agario server link to users and suggest them to join
-            <br>Message format: [srv]agario URL[/srv]<br>Example 1: To send this server:&nbsp;http://agar.io/#2DUZJJ
-            <br>put in the message: [srv]http://agar.io/#2DUZJJ[/srv]&nbsp;</p>
-            <br>Example 2: To send this server: http://agar.io/?sip=live-arena-1dzn7sm.agar.io&amp;?r=EU-London&amp;?m=
-            <br>put in the message:
-            [srv]http://agar.io/?sip=live-arena-1dzn7sm.agar.io&amp;?r=EU-London&amp;?m=[/srv]&nbsp;
+            <h2 data-i18n="site.index.legendModMobileFeatures" class="project-tagline">Legend Mod Mobile Features</h2>
+            <span data-i18n="site.index.pureAgarioWith2">Pure Agario with 2 buttons to split and W for mobiles / tablets to play PC Agario</span>
+            <h2 data-i18n="site.index.lmeChatCommands" class="project-tagline">LME Chat&nbsp;Commands</h2>
+            <span data-i18n="site.index.sendANewAgario">1. “Send a new agario server” -&nbsp;send your agario server link to users and suggest them to join</span>
+            <br><span data-i18n="site.index.messageFormatSrvAgario">Message format: [srv]agario URL[/srv]</span><br><span data-i18n="site.index.example1ToSend">Example 1: To send this server:&nbsp;http://agar.io/#2DUZJJ</span>
+            <br><span data-i18n="site.index.putInTheMessage">put in the message: [srv]http://agar.io/#2DUZJJ[/srv]&nbsp;</span></p>
+            <br><span data-i18n="site.index.example2ToSend">Example 2: To send this server: http://agar.io/?sip=live-arena-1dzn7sm.agar.io&amp;?r=EU-London&amp;?m=</span>
+            <br><span data-i18n="site.index.putInTheMessage2">put in the message:
+            [srv]http://agar.io/?sip=live-arena-1dzn7sm.agar.io&amp;?r=EU-London&amp;?m=[/srv]&nbsp;</span>
             </p>
-            <br>and to embed password "mypassword":
-            [srv]http://agar.io/?sip=live-arena-1rdujzy.agar.io&amp;?pass=mypassword&amp;?r=EU-London&amp;m=[/srv]
+            <br><span data-i18n="site.index.andToEmbedPassword">and to embed password "mypassword":
+            [srv]http://agar.io/?sip=live-arena-1rdujzy.agar.io&amp;?pass=mypassword&amp;?r=EU-London&amp;m=[/srv]</span>
             </p>
-            <br><em>*Due to limit of 60 chars on chat texts, users&nbsp;may experience less chars on the box, command
+            <br><em data-i18n="site.index.dueToLimitOf">*Due to limit of 60 chars on chat texts, users&nbsp;may experience less chars on the box, command
                 still works</em></p>
-            <br>2. “Show a URL on chat” -&nbsp;send your url link that users can visit on a new tab.<br>Message format:
-            [url]URL[/url]
-            <br>Example: To send this hyperlink: http://google.com<br>put in the message: [url]http://google.com[/url]
+            <br><span data-i18n="site.index.showAUrlOn">2. “Show a URL on chat” -&nbsp;send your url link that users can visit on a new tab.</span><br><span data-i18n="site.index.messageFormatUrlUrl">Message format:
+            [url]URL[/url]</span>
+            <br><span data-i18n="site.index.exampleToSendThis">Example: To send this hyperlink: http://google.com</span><br><span data-i18n="site.index.putInTheMessage3">put in the message: [url]http://google.com[/url]</span>
             </p>
-            <br>3. “Suggest a video on chat” - send a youtube video on chat and suggest users to use it on mod
-            <br>Message format: [yut]URL[/yut]<br>To&nbsp;suggest this video:
-            https://www.youtube.com/watch?v=dQw4w9WgXcQ
-            <br>put in the message: [yut]https://www.youtube.com/watch?v=dQw4w9WgXcQ[/yut]
+            <br><span data-i18n="site.index.suggestAVideoOn">3. “Suggest a video on chat” - send a youtube video on chat and suggest users to use it on mod</span>
+            <br><span data-i18n="site.index.messageFormatYutUrl">Message format: [yut]URL[/yut]</span><br><span data-i18n="site.index.toSuggestThisVideo">To&nbsp;suggest this video:
+            https://www.youtube.com/watch?v=dQw4w9WgXcQ</span>
+            <br><span data-i18n="site.index.putInTheMessage4">put in the message: [yut]https://www.youtube.com/watch?v=dQw4w9WgXcQ[/yut]</span>
             </p>
-            <br>4. “Show images on chat” - enables images from imgur.com or hizliresim.com<br>Message format:
-            [img]URL[/img]
-            <br>To send this image: http://i.imgur.com/mO44ZE3.jpg<br>put in the message:
-            [img]http://i.imgur.com/mO44ZE3.jpg[/img]
+            <br><span data-i18n="site.index.showImagesOnChat">4. “Show images on chat” - enables images from imgur.com or hizliresim.com</span><br><span data-i18n="site.index.messageFormatImgUrl">Message format:
+            [img]URL[/img]</span>
+            <br><span data-i18n="site.index.toSendThisImage">To send this image: http://i.imgur.com/mO44ZE3.jpg</span><br><span data-i18n="site.index.putInTheMessage5">put in the message:
+            [img]http://i.imgur.com/mO44ZE3.jpg[/img]</span>
             </p>
-            <br>5. “Show videos on chat” - enables youtube videos.<br>Message format: [yt]ID[/yt] <br>To send this
-            video: https://www.youtube.com/watch?v=dQw4w9WgXcQ<br>put in the message: [yt]dQw4w9WgXcQ[/yt]</p>
-            <br>6.&nbsp;“Suggest a Discord clan / group on chat” -&nbsp;suggest users to join the Discord&nbsp;server
-            that you are in<br>Message format: [discord]Invite URL[/discord]<br>To&nbsp;suggest
-            our Discord server:&nbsp;https://discord.com/invite/JUfpR9k<br>put
-            in the message: [discord]https://discord.com/invite/JUfpR9k[/discord]
+            <br><span data-i18n="site.index.showVideosOnChat">5. “Show videos on chat” - enables youtube videos.</span><br><span data-i18n="site.index.messageFormatYtId">Message format: [yt]ID[/yt]</span> <br><span data-i18n="site.index.toSendThisVideo">To send this
+            video: https://www.youtube.com/watch?v=dQw4w9WgXcQ</span><br><span data-i18n="site.index.putInTheMessage6">put in the message: [yt]dQw4w9WgXcQ[/yt]</span></p>
+            <br><span data-i18n="site.index.suggestADiscordClan">6.&nbsp;“Suggest a Discord clan / group on chat” -&nbsp;suggest users to join the Discord&nbsp;server
+            that you are in</span><br><span data-i18n="site.index.messageFormatDiscordInvite">Message format: [discord]Invite URL[/discord]</span><br><span data-i18n="site.index.toSuggestOurDiscord">To&nbsp;suggest
+            our Discord server:&nbsp;https://discord.com/invite/JUfpR9k</span><br><span data-i18n="site.index.putInTheMessage7">put
+            in the message: [discord]https://discord.com/invite/JUfpR9k[/discord]</span>
             </p>
-            <br><em>*Abusing players or inappropriate use (spamming) will lead to user's permanent&nbsp;ban from usage
+            <br><em data-i18n="site.index.abusingPlayersOrInappropriate">*Abusing players or inappropriate use (spamming) will lead to user's permanent&nbsp;ban from usage
                 of&nbsp;LM extensions</em>
             <br>&nbsp;
-            <h2 class="project-tagline">Easter Eggs</h2>
-            1. Use name EasterEgg1 or EasterEgg2 and you will see! (not work&nbsp;on Legend Express)
-            <h2 class="project-tagline">Other Features</h2>
-            1. If uploaded your settings from LM, you can find them on this cloud: <span
-                style="text-decoration: underline;"><a href="https://jimboy3100.github.io/themes/" target="_blank"
-                    rel="noopener noreferrer">jimboy3100.github.io/themes/</a></span>&nbsp; ("your themes" section) by
-            inserting your Social ID
-            <br>2. Automatically closes <span style="text-decoration: underline;"><a
+            <h2 data-i18n="site.index.easterEggs" class="project-tagline">Easter Eggs</h2>
+            <span data-i18n="site.index.useNameEasteregg1Or">1. Use name EasterEgg1 or EasterEgg2 and you will see! (not work&nbsp;on Legend Express)</span>
+            <h2 data-i18n="site.index.otherFeatures" class="project-tagline">Other Features</h2>
+            <span data-i18n="site.index.ifUploadedYourSettings">1. If uploaded your settings from LM, you can find them on this cloud:</span> <span
+                style="text-decoration: underline;"><a data-i18n="site.index.jimboy3100GithubIoThemes" href="https://jimboy3100.github.io/themes/" target="_blank"
+                    rel="noopener noreferrer">jimboy3100.github.io/themes/</a></span><span data-i18n="site.index.yourThemesSectionBy">&nbsp; ("your themes" section) by
+            inserting your Social ID</span>
+            <br><span data-i18n="site.index.automaticallyCloses">2. Automatically closes</span> <span style="text-decoration: underline;"><a data-i18n="site.index.playGoogleComStore"
                     href="https://play.google.com/store" target="_blank"
-                    rel="noopener noreferrer">play.google.com/store</a></span>&nbsp;if opened from agar.io (or this
-            page)
-            <br>3. <span style="text-decoration: underline;"><strong><a
+                    rel="noopener noreferrer">play.google.com/store</a></span><span data-i18n="site.index.ifOpenedFromAgar">&nbsp;if opened from agar.io (or this
+            page)</span>
+            <br>3. <span style="text-decoration: underline;"><strong><a data-i18n="site.index.agarioVoiceChatRooms"
                         href="https://greasyfork.org/el/scripts/31353-agario-voice-chat-rooms">Agario Voice Chat
-                        Rooms</a></strong></span>&nbsp;script (other mods and vanilla) for Voice Rooms to be enabled and
-            compatible with Legend Mod. [Don't install if using Legend Mod]&nbsp;
-            <br>4. LM Project is combined multiscripts all working together from <span
-                style="text-decoration: underline;"><a href="https://github.com/jimboy3100/jimboy3100.github.io"
+                        Rooms</a></strong></span><span data-i18n="site.index.scriptOtherModsAnd">&nbsp;script (other mods and vanilla) for Voice Rooms to be enabled and
+            compatible with Legend Mod. [Don't install if using Legend Mod]&nbsp;</span>
+            <br><span data-i18n="site.index.lmProjectIsCombined">4. LM Project is combined multiscripts all working together from</span> <span
+                style="text-decoration: underline;"><a data-i18n="site.index.lmProjectLibrary" href="https://github.com/jimboy3100/jimboy3100.github.io"
                     target="_blank" rel="noopener noreferrer">LM Project Library</a></span>
-            <br>5. Quick explanation on how to <span style="text-decoration: underline;"><a
+            <br><span data-i18n="site.index.quickExplanationOnHow">5. Quick explanation on how to</span> <span style="text-decoration: underline;"><a data-i18n="site.index.makeVideoSkins"
                     href="https://jimboy3100.github.io/developers/videoskins.html" target="_blank"
-                    rel="noopener noreferrer">make video skins</a></span>, <span style="text-decoration: underline;"><a
+                    rel="noopener noreferrer">make video skins</a></span>, <span style="text-decoration: underline;"><a data-i18n="site.index.sampleDirectory"
                     href="https://github.com/dkyriak/dkyriak.github.io" target="_blank" rel="noopener noreferrer">sample
                     directory</a>
             </span>
-            <h2 class="project-tagline"><span id="result_box" class="short_text" lang="en"><span class="">User
+            <h2 class="project-tagline"><span id="result_box" class="short_text" lang="en"><span data-i18n="site.index.userComments" class="">User
                         comments</span></span>
             </h2>
             <blockquote>
-                <em>Best mod i ever used, simple and great!!!</em>
-                <br><small><cite>teodor bob</cite></small>
+                <em data-i18n="site.index.bestModIEver">Best mod i ever used, simple and great!!!</em>
+                <br><small><cite data-i18n="site.index.teodorBob">teodor bob</cite></small>
             </blockquote>
             <blockquote>
-                <em>I was playing Agario for months without any mods but eventually decided to give them a try. I used
+                <em data-i18n="site.index.iWasPlayingAgario">I was playing Agario for months without any mods but eventually decided to give them a try. I used
                     several, including&nbsp; agarinfinity, ogario and several others. By far, your mod excels on every
                     level with its exclusive, wide ranging features. It has made Agario playing undeniably the most
                     satisfying and interesting. Thank you for your time and effort in creating such a distinctive
@@ -1375,105 +1378,105 @@
     </div>
     <div id="Changelog" class="skins-wrapper" style="display: none;">
         <section style="text-align: center;">
-            <strong>Stay up-to-date</strong>
+            <strong data-i18n="site.index.stayUpToDate">Stay up-to-date</strong>
             <br>
             <iframe loading="lazy" id="animatedpromosIframe4" style="border: none;"
                 src="https://jimboy3100.github.io/extras/banneranimated3.html" width="100%" height="320"
                 frameborder="0"
                 allowfullscreen></iframe>
-            <h2 class="project-tagline">Updates</h2>
-            <h3 class="project-tagline">November 2026 (build 3.547)</h3>
+            <h2 data-i18n="site.index.updates" class="project-tagline">Updates</h2>
+            <h3 data-i18n="site.index.november2026Build3" class="project-tagline">November 2026 (build 3.547)</h3>
             <div style="text-align: left; display: inline-block; max-width: 760px;">
                 <ul>
-                    <li><b>Multibox and page fixes</b>: an enemy cell or a virus over your multibox unit is no longer hidden, the Zoom glide speed slider works again, the player 1 multibox ring is off by default, the page loads the patched jQuery 3.7.1 and Bootstrap 3.4.1 again with fresh files after each update, and the Vanilla, OGARio and Delta loader links show an info page again.</li>
-                    <li><b>Expanding Land Teams uses WebGL</b>: Teams frames are drawn by the faster WebGL renderer (it was always Canvas), with the same team colours, no skins and the team pie on top; agar.io Teams stays on Canvas.</li>
-                    <li><b>Server list fixes</b> (agar.io): servers that closed or never answer leave the list after three failed counts in a row (also when matchmaking still hands them out) and are forgotten once scans stop finding them, a server that comes back keeps its number, and a scan no longer counts the same server again and again.</li>
-                    <li><b>Private rooms</b> (Expanding Land): pick <i>Private room</i> in the Private list to create your own FFA or Teams room (bots, map size, max players, optional password, public or hidden) and share its code or link, join a friend's room by code, or pick one from the public rooms list. Rooms save nothing (no shop or rewards there).</li>
-                    <li><b>Fixes with the WebGL renderer</b>: agar.io custom skins show again (that frame is drawn by Canvas), "Show grid" works without WebGL2, split guide, merge rings, death particles, spawn burst and team pings show above cells, the virus shot sound plays, and the gamepad LB button only swaps between existing multibox units.</li>
-                    <li><b>Net graph</b> (hotkey) shows which renderer drew the frame: WebGL or Canvas (Canvas off = WebGL turned off in settings, Canvas reset = waiting after a GPU reset).</li>
-                    <li><b>Gamepad stick dead zone</b> slider (Mouse settings, next to Gamepad support): how far the stick must move before the cell follows it; 0.2 as before.</li>
-                    <li><b>Expanding Land Teams</b>: Teams mode (pie, team colours, leaderboard) no longer switches off when you press Play, come back to the tab or the map grows; the pie fits phone screens.</li>
-                    <li><b>Expanding Land Teams leaderboard</b>: the Leaderboard box lists the teams with their share of the map, biggest first, your team highlighted.</li>
-                    <li><b>Private rooms</b>: a Share button in the room window opens your phone's share sheet (WhatsApp, Discord, ...) with the room link.</li>
-                    <li><b>Game Over card</b>: a Share button (phone share sheet, or a tweet) with your mass and time alive. New hotkey <b>Reconnect to the previous server</b> (unbound; the last 10 servers are remembered, not replays or private room tickets). <b>Show the player id (#id) before chat nicks</b> (chat settings, off by default).</li>
-                    <li><b>Badges</b>: the profile stats (click your profile picture) show badges earned from your account stats (games played, highest mass, mass consumed, time alive, level; on Expanding Land also #1 and players eaten in your last 50 games), with a toast when you unlock a new one. Hover or tap a badge to see what it needs.</li>
-                    <li><b>Expanding Land</b>: in Teams, team chat (Enter and the phone quick chat buttons) reaches your team mates without a clan tag; the Game Over card's "Eaten by" row has a <b>Watch killer</b> button that spectates and follows the cell that ate you.</li>
-                    <li><b>Leagues</b>: the Leaderboards window counts down to the weekly reset ("Resets in 2d 5h"), Player Profile Stats show your Average Mass, and the "passed you" toast says which leaderboard (World, Country, your League or Friends).</li>
-                    <li><b>Direction on touch</b> (mobile, gear panel, off by default): like agar.io, the cell moves toward where your finger touches instead of using the joystick; drag to steer, lift to keep going.</li>
-                    <li><b>Split prediction</b> (agar.io, Helpers, off by default): with Cursor tracking on, the split lines of cells that will not split on your next split (16-cell limit, under 35 mass) are dimmed. <b>Triple split range</b> (Helpers, off by default): rings around enemies 8x your mass or more, who can triple-split onto you.</li>
-                    <li><b>HUD helpers</b> (each off by default): a <b>movement direction</b> arrow from how your cells really move (also multibox), a <b>merge countdown</b> in seconds on your cells with an optional sound when they can merge (agar.io, an estimate), <b>enemy mass as a ratio</b> to your biggest cell (1.75x, =), screen-edge arrows to <b>teammates</b> and to <b>big threats</b> that just left the screen, a <b>cell panel</b> (masses, count/16, largest, smallest, total) and a <b>Mass format</b> slider (exact, 12.3k, auto). New hotkeys without default keys: hold for precision zoom, three zoom bookmarks, camera lock while spectating.</li>
-                    <li><b>Phones</b>: the Split, Feed, 4x and 16x buttons on the right stay visible again while the menu is open (they only ignore taps there, so the menu still works).</li>
-                    <li><b>Close room</b>: the player who created a private room can close it for everyone (room window, Close room, then confirm), also after reloading the page on the same device.</li>
-                    <li><b>Chat translation</b> works again: the translation service it used was shut down; it now uses the translator built into the browser (Chrome 138+, on your device, nothing is sent anywhere). Turn it on in the chat settings.</li>
-                    <li><b>Private room fixes</b>: friends in the same room now share team chat and the minimap, Copy in a room copies the room link, older room links open the room window, Reconnect and server search skip <i>Private room</i>, the room window shows when you are in (it closes after Join), no double join while connecting, and a full room right after a drop asks you to try again in a few seconds.</li>
-                    <li><b>Expanding Land Teams</b>: new server in the Private list. Three teams (red, green, blue), team mates cannot eat each other, and the leaderboard shows the teams pie. Log in as usual; Teams keeps its own progress, separate from FFA.</li>
-                    <li><b>Daily challenges</b> on Expanding Land: two new challenges each day (eat players, survive, reach the top, eat viruses), each met in one life, with progress and a Claim button in Challenges and Claim All.</li>
-                    <li><b>Team pings</b>: new hotkeys (no default key) mark <i>Help</i>, <i>Danger</i>, <i>Go here</i> or <i>Virus here</i> at your cursor for teammates, on the map and minimap (Delta players see a wave).</li>
-                    <li><b>On phones</b>: optional team ping button (tap = Go here, hold and slide for Help, Danger or Virus here) and net graph in the touch settings (gear), replay pause and seek buttons with a bigger touch replay bar, and windows that fit short landscape screens with bigger close buttons.</li>
-                    <li><b>Spectating</b>: optional "click a player cell to follow it" in free spectate (click empty space to stop), and on Expanding Land World Spectate an optional "click the minimap to move the camera there" (both off by default, in the HUD options).</li>
-                    <li><b>Accessibility</b>: a "Colour-blind safe (high contrast)" theme preset, a "Reduced motion" option and settings preset (no screen shake, death particles or join spin), and in free spectate you can follow a leaderboard player: turn on "click a leaderboard mass to follow" or bind "follow next leaderboard player".</li>
-                    <li><b>Settings presets</b> (Competitive, Battery saver, Streamer, Clean HUD) next to the settings search, with Undo, plus <b>NEW</b> badges and a "Show new options" filter for recently added options.</li>
-                    <li><b>Expanding Land events</b>: when the server runs an event (Double XP, potion rain, golden food, virus storm), a small countdown appears at the top of the screen ("Double XP: 05:10 left"); hide it with "Hide the server event countdown" in the stats options.</li>
-                    <li><b>User scripts</b> can now react to spawn, death, chat, server, mass and leaderboard events with <code>window.LMEvents</code> instead of patching the mod (<a href="https://jimboy3100.github.io/developers/LMEvents.md" target="_blank" rel="noopener">how to use it</a>).</li>
-                    <li><b>Settings in your language</b>: settings, theme and hotkey labels now follow the language you pick in the Legend Mod language menu: Greek, Spanish, Bulgarian, French, Arabic, Chinese, Russian, German, Turkish and Dutch, not only English and Polish. Labels without a translation stay in English.</li>
-                    <li><b>Match history</b> on Expanding Land: when you are logged in, the window has an <i>Account (server)</i> tab with your last 50 games stored by the server, so your history follows your account to every device.</li>
-                    <li><b>Smoother FPS</b> in busy servers: a skin that is still loading (or broken) no longer drops every cell to the slow renderer.</li>
-                    <li><b>Same camera and zoom speed</b> on 60, 144 and 240 Hz screens.</li>
-                    <li><b>Line lock</b> (Limit position) now aims straight up, down, left and right too.</li>
-                    <li><b>Feed macro</b> keeps the speed you set (it fed about 30/s at 60 FPS when set to 50/s).</li>
-                    <li><b>Merge ring</b> and merge timer now show the same time.</li>
-                    <li><b>Google sign-in</b> on legendmod.ml and in Expanding Land now uses Google's current sign-in (the old one was blocked there).</li>
-                    <li><b>Faster reconnect</b> (first retry after about 1 second) with a message if the server stays down.</li>
-                    <li>New setting <b>Record replays</b> (turn it off to save memory).</li>
-                    <li>Faster loading: no redirect per file, a much smaller jQuery UI, updated jQuery and Bootstrap with security fixes.</li>
-                    <li>Settings: split-macro delays, Performance mode, Anti-aliasing, Download/Load settings files, Copy debug info, last private server remembered.</li>
-                    <li>Expanding Land: clear messages when a login or purchase fails, quest timers count down, the Game Over card no longer blocks the mouse.</li>
-                    <li>Mobile: the settings panel opens (gear button), the joystick aims at the right angle, fast split taps are no longer dropped.</li>
-                    <li>Replay links (<i>?replay=</i>) to files on this website load again, and skipping in a replay is fast.</li>
-                    <li>Chat: no more false advert blocking of normal words, the chat only scrolls when you are at the bottom, muted players stay muted after a reconnect.</li>
-                    <li>Server, party and login messages in your language; logging out of Google lets you pick another account.</li>
-                    <li>Hotkeys: holding a key while setting a hotkey no longer breaks it, permanent feed stops when you die, HUD buttons no longer split or feed when clicked.</li>
-                    <li>Auto respawn: no menu flash while respawning, and a quick death right after spawning is handled (it could leave you stuck).</li>
-                    <li>Multibox: your main cell no longer freezes when the second unit disconnects or reconnects.</li>
-                    <li>Theme templates (Legend Helper) keep your profiles, hotkeys and chat commands; exports include hidden profiles.</li>
-                    <li>Expanding Land: Esc closes only the top window, potion buttons cannot be pressed twice, logout closes all shop windows.</li>
-                    <li><b>New:</b> settings search box, a <b>Bound keys</b> list in Hotkeys, a session summary under the menu, an optional <b>FPS limit</b> (saves battery), and a hotkey to toggle Performance mode.</li>
-                    <li><b>New options</b> (off by default): time alive in the stats, mass in the tab title, desktop notification when someone mentions you, rainbow map borders, HUD blur, clock format, merge rings on/off. Server and party boxes now suggest your last 5 joins.</li>
-                    <li><b>Expanding Land:</b> hotkeys for Leagues, Shop, Challenges, Potions and Claim All; Claim All shows when something is ready; optional reminder bell. <b>Mobile:</b> optional quick chat buttons, multibox button, and vibration settings.</li>
-                    <li><b>New:</b> replay pause, speed and seek hotkeys; multibox view and ring hotkeys; optional sounds for 16 pieces and viruses; optional trail of your path on the minimap; a copy button on the Game Over card. Replays no longer jump to the end at Start.</li>
-                    <li><b>New:</b> replay progress bar (click to seek), hotkey to enlarge the minimap. <b>New options</b> (off by default): collapse repeated bot names on the leaderboard, a toast when you move up the leaderboard, a mass graph on the Game Over card. Virus sounds now work on every server.</li>
-                    <li><b>New:</b> Up/Down in the chat box recalls your last messages; game brightness and saturation, zoom glide speed and rainbow border speed sliders; custom symbol for background sectors. <b>New options</b> (off by default): camera on the centre of mass, NO FOCUS warning, stats at the bottom centre. Pasting a party link in search no longer leaves a dark overlay.</li>
-                    <li><b>New options</b> (off by default): all-time personal bests with a New best! badge on the Game Over card, ping jitter next to PING, 25 FPS while the menu is open, mobile Stop on release. Hotkey to copy the server link.</li>
-                    <li><b>New option</b> (off by default): <b>Match history</b>, your last 50 games (mass, time alive, who ate you, server, mode) in a window under the menu.</li>
-                    <li>Grid no longer shimmers or shakes while moving; the multibox camera follows your unit smoothly.</li>
-                    <li>Scan Trick: the hotkey is called "Hold Scan Trick" and the game tells you when no key is set. Cloud settings are protected with a sync code.</li>
-                    <li><b>New option</b> (off by default): <b>Gamepad / controller support</b> in Mouse control. Left stick moves, A split, B feed (hold), X double split, Y respawn, RB 16 split, LB multibox swap, Start menu, right stick zoom.</li>
+                    <li data-i18n-html="site.index.multiboxAndPageFixes"><b>Multibox and page fixes</b>: an enemy cell or a virus over your multibox unit is no longer hidden, the Zoom glide speed slider works again, the player 1 multibox ring is off by default, the page loads the patched jQuery 3.7.1 and Bootstrap 3.4.1 again with fresh files after each update, and the Vanilla, OGARio and Delta loader links show an info page again.</li>
+                    <li data-i18n-html="site.index.expandingLandTeamsUses"><b>Expanding Land Teams uses WebGL</b>: Teams frames are drawn by the faster WebGL renderer (it was always Canvas), with the same team colours, no skins and the team pie on top; agar.io Teams stays on Canvas.</li>
+                    <li data-i18n-html="site.index.serverListFixesAgar"><b>Server list fixes</b> (agar.io): servers that closed or never answer leave the list after three failed counts in a row (also when matchmaking still hands them out) and are forgotten once scans stop finding them, a server that comes back keeps its number, and a scan no longer counts the same server again and again.</li>
+                    <li data-i18n-html="site.index.privateRoomsExpandingLand"><b>Private rooms</b> (Expanding Land): pick <i>Private room</i> in the Private list to create your own FFA or Teams room (bots, map size, max players, optional password, public or hidden) and share its code or link, join a friend's room by code, or pick one from the public rooms list. Rooms save nothing (no shop or rewards there).</li>
+                    <li data-i18n-html="site.index.fixesWithTheWebgl"><b>Fixes with the WebGL renderer</b>: agar.io custom skins show again (that frame is drawn by Canvas), "Show grid" works without WebGL2, split guide, merge rings, death particles, spawn burst and team pings show above cells, the virus shot sound plays, and the gamepad LB button only swaps between existing multibox units.</li>
+                    <li data-i18n-html="site.index.netGraphHotkeyShows"><b>Net graph</b> (hotkey) shows which renderer drew the frame: WebGL or Canvas (Canvas off = WebGL turned off in settings, Canvas reset = waiting after a GPU reset).</li>
+                    <li data-i18n-html="site.index.gamepadStickDeadZone"><b>Gamepad stick dead zone</b> slider (Mouse settings, next to Gamepad support): how far the stick must move before the cell follows it; 0.2 as before.</li>
+                    <li data-i18n-html="site.index.expandingLandTeamsTeams"><b>Expanding Land Teams</b>: Teams mode (pie, team colours, leaderboard) no longer switches off when you press Play, come back to the tab or the map grows; the pie fits phone screens.</li>
+                    <li data-i18n-html="site.index.expandingLandTeamsLeaderboard"><b>Expanding Land Teams leaderboard</b>: the Leaderboard box lists the teams with their share of the map, biggest first, your team highlighted.</li>
+                    <li data-i18n-html="site.index.privateRoomsAShare"><b>Private rooms</b>: a Share button in the room window opens your phone's share sheet (WhatsApp, Discord, ...) with the room link.</li>
+                    <li data-i18n-html="site.index.gameOverCardA"><b>Game Over card</b>: a Share button (phone share sheet, or a tweet) with your mass and time alive. New hotkey <b>Reconnect to the previous server</b> (unbound; the last 10 servers are remembered, not replays or private room tickets). <b>Show the player id (#id) before chat nicks</b> (chat settings, off by default).</li>
+                    <li><b data-i18n="site.index.badges">Badges</b><span data-i18n="site.index.theProfileStatsClick">: the profile stats (click your profile picture) show badges earned from your account stats (games played, highest mass, mass consumed, time alive, level; on Expanding Land also #1 and players eaten in your last 50 games), with a toast when you unlock a new one. Hover or tap a badge to see what it needs.</span></li>
+                    <li data-i18n-html="site.index.expandingLandInTeams"><b>Expanding Land</b>: in Teams, team chat (Enter and the phone quick chat buttons) reaches your team mates without a clan tag; the Game Over card's "Eaten by" row has a <b>Watch killer</b> button that spectates and follows the cell that ate you.</li>
+                    <li data-i18n-html="site.index.leaguesTheLeaderboardsWindow"><b>Leagues</b>: the Leaderboards window counts down to the weekly reset ("Resets in 2d 5h"), Player Profile Stats show your Average Mass, and the "passed you" toast says which leaderboard (World, Country, your League or Friends).</li>
+                    <li data-i18n-html="site.index.directionOnTouchMobile"><b>Direction on touch</b> (mobile, gear panel, off by default): like agar.io, the cell moves toward where your finger touches instead of using the joystick; drag to steer, lift to keep going.</li>
+                    <li data-i18n-html="site.index.splitPredictionAgarIo"><b>Split prediction</b> (agar.io, Helpers, off by default): with Cursor tracking on, the split lines of cells that will not split on your next split (16-cell limit, under 35 mass) are dimmed. <b>Triple split range</b> (Helpers, off by default): rings around enemies 8x your mass or more, who can triple-split onto you.</li>
+                    <li data-i18n-html="site.index.hudHelpersEachOff"><b>HUD helpers</b> (each off by default): a <b>movement direction</b> arrow from how your cells really move (also multibox), a <b>merge countdown</b> in seconds on your cells with an optional sound when they can merge (agar.io, an estimate), <b>enemy mass as a ratio</b> to your biggest cell (1.75x, =), screen-edge arrows to <b>teammates</b> and to <b>big threats</b> that just left the screen, a <b>cell panel</b> (masses, count/16, largest, smallest, total) and a <b>Mass format</b> slider (exact, 12.3k, auto). New hotkeys without default keys: hold for precision zoom, three zoom bookmarks, camera lock while spectating.</li>
+                    <li data-i18n-html="site.index.phonesTheSplitFeed"><b>Phones</b>: the Split, Feed, 4x and 16x buttons on the right stay visible again while the menu is open (they only ignore taps there, so the menu still works).</li>
+                    <li data-i18n-html="site.index.closeRoomThePlayer"><b>Close room</b>: the player who created a private room can close it for everyone (room window, Close room, then confirm), also after reloading the page on the same device.</li>
+                    <li data-i18n-html="site.index.chatTranslationWorksAgain"><b>Chat translation</b> works again: the translation service it used was shut down; it now uses the translator built into the browser (Chrome 138+, on your device, nothing is sent anywhere). Turn it on in the chat settings.</li>
+                    <li data-i18n-html="site.index.privateRoomFixesFriends"><b>Private room fixes</b>: friends in the same room now share team chat and the minimap, Copy in a room copies the room link, older room links open the room window, Reconnect and server search skip <i>Private room</i>, the room window shows when you are in (it closes after Join), no double join while connecting, and a full room right after a drop asks you to try again in a few seconds.</li>
+                    <li data-i18n-html="site.index.expandingLandTeamsNew"><b>Expanding Land Teams</b>: new server in the Private list. Three teams (red, green, blue), team mates cannot eat each other, and the leaderboard shows the teams pie. Log in as usual; Teams keeps its own progress, separate from FFA.</li>
+                    <li data-i18n-html="site.index.dailyChallengesOnExpanding"><b>Daily challenges</b> on Expanding Land: two new challenges each day (eat players, survive, reach the top, eat viruses), each met in one life, with progress and a Claim button in Challenges and Claim All.</li>
+                    <li data-i18n-html="site.index.teamPingsNewHotkeys"><b>Team pings</b>: new hotkeys (no default key) mark <i>Help</i>, <i>Danger</i>, <i>Go here</i> or <i>Virus here</i> at your cursor for teammates, on the map and minimap (Delta players see a wave).</li>
+                    <li data-i18n-html="site.index.onPhonesOptionalTeam"><b>On phones</b>: optional team ping button (tap = Go here, hold and slide for Help, Danger or Virus here) and net graph in the touch settings (gear), replay pause and seek buttons with a bigger touch replay bar, and windows that fit short landscape screens with bigger close buttons.</li>
+                    <li data-i18n-html="site.index.spectatingOptionalClickA"><b>Spectating</b>: optional "click a player cell to follow it" in free spectate (click empty space to stop), and on Expanding Land World Spectate an optional "click the minimap to move the camera there" (both off by default, in the HUD options).</li>
+                    <li data-i18n-html="site.index.accessibilityAColourBlind"><b>Accessibility</b>: a "Colour-blind safe (high contrast)" theme preset, a "Reduced motion" option and settings preset (no screen shake, death particles or join spin), and in free spectate you can follow a leaderboard player: turn on "click a leaderboard mass to follow" or bind "follow next leaderboard player".</li>
+                    <li data-i18n-html="site.index.settingsPresetsCompetitiveBattery"><b>Settings presets</b> (Competitive, Battery saver, Streamer, Clean HUD) next to the settings search, with Undo, plus <b>NEW</b> badges and a "Show new options" filter for recently added options.</li>
+                    <li data-i18n-html="site.index.expandingLandEventsWhen"><b>Expanding Land events</b>: when the server runs an event (Double XP, potion rain, golden food, virus storm), a small countdown appears at the top of the screen ("Double XP: 05:10 left"); hide it with "Hide the server event countdown" in the stats options.</li>
+                    <li data-i18n-html="site.index.userScriptsCanNow"><b>User scripts</b> can now react to spawn, death, chat, server, mass and leaderboard events with <code>window.LMEvents</code> instead of patching the mod (<a href="https://jimboy3100.github.io/developers/LMEvents.md" target="_blank" rel="noopener">how to use it</a>).</li>
+                    <li data-i18n-html="site.index.settingsInYourLanguage"><b>Settings in your language</b>: settings, theme and hotkey labels now follow the language you pick in the Legend Mod language menu: Greek, Spanish, Bulgarian, French, Arabic, Chinese, Russian, German, Turkish and Dutch, not only English and Polish. Labels without a translation stay in English.</li>
+                    <li data-i18n-html="site.index.matchHistoryOnExpanding"><b>Match history</b> on Expanding Land: when you are logged in, the window has an <i>Account (server)</i> tab with your last 50 games stored by the server, so your history follows your account to every device.</li>
+                    <li data-i18n-html="site.index.smootherFpsInBusy"><b>Smoother FPS</b> in busy servers: a skin that is still loading (or broken) no longer drops every cell to the slow renderer.</li>
+                    <li data-i18n-html="site.index.sameCameraAndZoom"><b>Same camera and zoom speed</b> on 60, 144 and 240 Hz screens.</li>
+                    <li data-i18n-html="site.index.lineLockLimitPosition"><b>Line lock</b> (Limit position) now aims straight up, down, left and right too.</li>
+                    <li data-i18n-html="site.index.feedMacroKeepsThe"><b>Feed macro</b> keeps the speed you set (it fed about 30/s at 60 FPS when set to 50/s).</li>
+                    <li data-i18n-html="site.index.mergeRingAndMerge"><b>Merge ring</b> and merge timer now show the same time.</li>
+                    <li data-i18n-html="site.index.googleSignInOn"><b>Google sign-in</b> on legendmod.ml and in Expanding Land now uses Google's current sign-in (the old one was blocked there).</li>
+                    <li data-i18n-html="site.index.fasterReconnectFirstRetry"><b>Faster reconnect</b> (first retry after about 1 second) with a message if the server stays down.</li>
+                    <li data-i18n-html="site.index.newSettingRecordReplays">New setting <b>Record replays</b> (turn it off to save memory).</li>
+                    <li data-i18n="site.index.fasterLoadingNoRedirect">Faster loading: no redirect per file, a much smaller jQuery UI, updated jQuery and Bootstrap with security fixes.</li>
+                    <li data-i18n="site.index.settingsSplitMacroDelays">Settings: split-macro delays, Performance mode, Anti-aliasing, Download/Load settings files, Copy debug info, last private server remembered.</li>
+                    <li data-i18n="site.index.expandingLandClearMessages">Expanding Land: clear messages when a login or purchase fails, quest timers count down, the Game Over card no longer blocks the mouse.</li>
+                    <li data-i18n="site.index.mobileTheSettingsPanel">Mobile: the settings panel opens (gear button), the joystick aims at the right angle, fast split taps are no longer dropped.</li>
+                    <li data-i18n-html="site.index.replayLinksReplayTo">Replay links (<i>?replay=</i>) to files on this website load again, and skipping in a replay is fast.</li>
+                    <li data-i18n="site.index.chatNoMoreFalse">Chat: no more false advert blocking of normal words, the chat only scrolls when you are at the bottom, muted players stay muted after a reconnect.</li>
+                    <li data-i18n="site.index.serverPartyAndLogin">Server, party and login messages in your language; logging out of Google lets you pick another account.</li>
+                    <li data-i18n="site.index.hotkeysHoldingAKey">Hotkeys: holding a key while setting a hotkey no longer breaks it, permanent feed stops when you die, HUD buttons no longer split or feed when clicked.</li>
+                    <li data-i18n="site.index.autoRespawnNoMenu">Auto respawn: no menu flash while respawning, and a quick death right after spawning is handled (it could leave you stuck).</li>
+                    <li data-i18n="site.index.multiboxYourMainCell">Multibox: your main cell no longer freezes when the second unit disconnects or reconnects.</li>
+                    <li data-i18n="site.index.themeTemplatesLegendHelper">Theme templates (Legend Helper) keep your profiles, hotkeys and chat commands; exports include hidden profiles.</li>
+                    <li data-i18n="site.index.expandingLandEscCloses">Expanding Land: Esc closes only the top window, potion buttons cannot be pressed twice, logout closes all shop windows.</li>
+                    <li data-i18n-html="site.index.newSettingsSearchBox"><b>New:</b> settings search box, a <b>Bound keys</b> list in Hotkeys, a session summary under the menu, an optional <b>FPS limit</b> (saves battery), and a hotkey to toggle Performance mode.</li>
+                    <li data-i18n-html="site.index.newOptionsOffBy"><b>New options</b> (off by default): time alive in the stats, mass in the tab title, desktop notification when someone mentions you, rainbow map borders, HUD blur, clock format, merge rings on/off. Server and party boxes now suggest your last 5 joins.</li>
+                    <li data-i18n-html="site.index.expandingLandHotkeysFor"><b>Expanding Land:</b> hotkeys for Leagues, Shop, Challenges, Potions and Claim All; Claim All shows when something is ready; optional reminder bell. <b>Mobile:</b> optional quick chat buttons, multibox button, and vibration settings.</li>
+                    <li><b data-i18n="site.index.new">New:</b> <span data-i18n="site.index.replayPauseSpeedAnd">replay pause, speed and seek hotkeys; multibox view and ring hotkeys; optional sounds for 16 pieces and viruses; optional trail of your path on the minimap; a copy button on the Game Over card. Replays no longer jump to the end at Start.</span></li>
+                    <li data-i18n-html="site.index.newReplayProgressBar"><b>New:</b> replay progress bar (click to seek), hotkey to enlarge the minimap. <b>New options</b> (off by default): collapse repeated bot names on the leaderboard, a toast when you move up the leaderboard, a mass graph on the Game Over card. Virus sounds now work on every server.</li>
+                    <li data-i18n-html="site.index.newUpDownIn"><b>New:</b> Up/Down in the chat box recalls your last messages; game brightness and saturation, zoom glide speed and rainbow border speed sliders; custom symbol for background sectors. <b>New options</b> (off by default): camera on the centre of mass, NO FOCUS warning, stats at the bottom centre. Pasting a party link in search no longer leaves a dark overlay.</li>
+                    <li data-i18n-html="site.index.newOptionsOffBy2"><b>New options</b> (off by default): all-time personal bests with a New best! badge on the Game Over card, ping jitter next to PING, 25 FPS while the menu is open, mobile Stop on release. Hotkey to copy the server link.</li>
+                    <li data-i18n-html="site.index.newOptionOffBy"><b>New option</b> (off by default): <b>Match history</b>, your last 50 games (mass, time alive, who ate you, server, mode) in a window under the menu.</li>
+                    <li data-i18n="site.index.gridNoLongerShimmers">Grid no longer shimmers or shakes while moving; the multibox camera follows your unit smoothly.</li>
+                    <li data-i18n="site.index.scanTrickTheHotkey">Scan Trick: the hotkey is called "Hold Scan Trick" and the game tells you when no key is set. Cloud settings are protected with a sync code.</li>
+                    <li data-i18n-html="site.index.newOptionOffBy2"><b>New option</b> (off by default): <b>Gamepad / controller support</b> in Mouse control. Left stick moves, A split, B feed (hold), X double split, Y respawn, RB 16 split, LB multibox swap, Start menu, right stick zoom.</li>
                 </ul>
             </div>
             <br>
-            <h3 class="project-tagline">Making replay iframes</h3>
-            Save your replay and upload it as file or as raw .lm on the web
-            <br>(If you want to use github see this repo: <a href="https://github.com/dkyriak/dkyriak.github.io"
+            <h3 data-i18n="site.index.makingReplayIframes" class="project-tagline">Making replay iframes</h3>
+            <span data-i18n="site.index.saveYourReplayAnd">Save your replay and upload it as file or as raw .lm on the web</span>
+            <br><span data-i18n="site.index.ifYouWantTo">(If you want to use github see this repo:</span> <a href="https://github.com/dkyriak/dkyriak.github.io"
                 target="_blank" rel="noopener">https://github.com/dkyriak/dkyriak.github.io</a>)
-            <br>Use <i>https://jimboy3100.github.io/play?replay=</i> and then your file url
-            <br><br><b>Url examples:</b>
+            <br><span data-i18n="site.index.use">Use</span> <i>https://jimboy3100.github.io/play?replay=</i> <span data-i18n="site.index.andThenYourFile">and then your file url</span>
+            <br><br><b data-i18n="site.index.urlExamples">Url examples:</b>
             <br><textarea rows="1"
                 cols="80">https://jimboy3100.github.io/play?replay=https://jimboy3100.github.io/extras/jim.lm</textarea>
             <br><textarea rows="2"
                 cols="80">https://jimboy3100.github.io/play?replay=https://jimboy3100.github.io/extras/jim.lm&?replayStart=100&?replayEnd=1000</textarea>
-            <br><b>Iframe example:</b>
+            <br><b data-i18n="site.index.iframeExample">Iframe example:</b>
             <br><textarea rows="2"
                 cols="80"><iframe id="LMFrame" width="50%" height="50%" src="https://jimboy3100.github.io/play?replay=https://jimboy3100.github.io/extras/jim.lm" frameborder="0" allowfullscreen=""></iframe></textarea>
-            <br><br><button id="LMiframeBtn" class="btn-link" data-toggle="tooltip"
+            <br><br><button data-i18n="site.index.startIframe" data-i18n-data-original-title="site.index.clickToStartIframe" id="LMiframeBtn" class="btn-link" data-toggle="tooltip"
                 data-original-title="Click to start iframe">Start iframe</button>
             <br>
-            <h3 class="project-tagline">Mega FFA promo</h3>
+            <h3 data-i18n="site.index.megaFfaPromo" class="project-tagline">Mega FFA promo</h3>
             <br><iframe loading="lazy" id="customskinsIframe2" src="https://jimboy3100.github.io/extras/2020.html" width="60%"
                 height="490"></iframe>
             <br>
             <br>
-            <h3 class="project-tagline">Make your own server</h3>
-            <img loading="lazy" width="60%" height="40%" alt="MultiOgar private server" src="/banners/MultiOgarExp.png">
+            <h3 data-i18n="site.index.makeYourOwnServer" class="project-tagline">Make your own server</h3>
+            <img data-i18n-alt="site.index.multiogarPrivateServer" loading="lazy" width="60%" height="40%" alt="MultiOgar private server" src="/banners/MultiOgarExp.png">
             <br>
             <br><div class="yt-wrap"><iframe loading="lazy" src="https://www.youtube.com/embed/vpjfGYrKqO8"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1484,156 +1487,156 @@
     </div>
     <div id="FPS" class="skins-wrapper" style="display: none;">
         <section style="background-image: url();background-size: 100%; text-align: center;">
-            <span style="color:#ff4444;font-size:1.1rem;font-weight:900;letter-spacing:1px;text-shadow:0 0 8px rgba(255,68,68,0.5);">⚠️ READ AND APPLY! THESE ARE IMPORTANT ⚠️</span>
+            <span data-i18n="site.index.readAndApplyThese" style="color:#ff4444;font-size:1.1rem;font-weight:900;letter-spacing:1px;text-shadow:0 0 8px rgba(255,68,68,0.5);">⚠️ READ AND APPLY! THESE ARE IMPORTANT ⚠️</span>
             <br>
-            <h2 class="project-tagline">Best Performance values</h2>
-            <strong>Settings -> Frames per seconds -> Limited Rate + 4ms delay (suggested)</strong>
-            <br>More FPS do not always mean better rendering.
-            <br>Limited FPS delay is suggestred from the Video "<i>window.requestAnimationFrame(drawRender.render)</i>"
-            <br>Unlimited FPS delay is 1-15ms (average 4.5ms on Chromium) "<i>setTimeout(function()
-                {drawRender.render()}, 0)</i>" - <a href="https://johnresig.com/blog/analyzing-timer-performance"
+            <h2 data-i18n="site.index.bestPerformanceValues" class="project-tagline">Best Performance values</h2>
+            <strong data-i18n="site.index.settingsFramesPerSeconds">Settings -> Frames per seconds -> Limited Rate + 4ms delay (suggested)</strong>
+            <br><span data-i18n="site.index.moreFpsDoNot">More FPS do not always mean better rendering.</span>
+            <br><span data-i18n="site.index.limitedFpsDelayIs">Limited FPS delay is suggestred from the Video "</span><i>window.requestAnimationFrame(drawRender.render)</i>"
+            <br><span data-i18n="site.index.unlimitedFpsDelayIs">Unlimited FPS delay is 1-15ms (average 4.5ms on Chromium) "</span><i>setTimeout(function()
+                {drawRender.render()}, 0)</i>" - <a data-i18n="site.index.readMore" href="https://johnresig.com/blog/analyzing-timer-performance"
                 target="_blank" rel="noopener">read more</a>
-            <br>Slow PC need "Limited Rate + 8ms delay" (Reason: Javascript runs some functions asynchronously)
+            <br><span data-i18n="site.index.slowPcNeedLimited">Slow PC need "Limited Rate + 8ms delay" (Reason: Javascript runs some functions asynchronously)</span>
 
-            <h3 class="project-tagline">The Preliminary:</h3>
-            <b>Reducing Graphics.</br> Themes -> Graphics/Cursors -> Graphics significantly change the performance
+            <h3 data-i18n="site.index.thePreliminary" class="project-tagline">The Preliminary:</h3>
+            <b><span data-i18n="site.index.reducingGraphics">Reducing Graphics.</span></br> <span data-i18n="site.index.themesGraphicsCursorsGraphics">Themes -> Graphics/Cursors -> Graphics significantly change the performance</span>
                 <br>
-                <span style="display:inline-block;background:#ff4444;color:#fff;padding:2px 10px;border-radius:6px;font-weight:900;font-size:0.8rem;margin-right:6px;">SUPER IMPORTANT:</span><b>Ethernet</b> cable internet has the most important
-                role on connection Ping, prefer Ethernet than WIFI
+                <span data-i18n="site.index.superImportant" style="display:inline-block;background:#ff4444;color:#fff;padding:2px 10px;border-radius:6px;font-weight:900;font-size:0.8rem;margin-right:6px;">SUPER IMPORTANT:</span><b data-i18n="site.index.ethernet">Ethernet</b> <span data-i18n="site.index.cableInternetHasThe">cable internet has the most important
+                role on connection Ping, prefer Ethernet than WIFI</span>
                 <br>
-                <span style="display:inline-block;background:#ff4444;color:#fff;padding:2px 10px;border-radius:6px;font-weight:900;font-size:0.8rem;margin-right:6px;">SUPER IMPORTANT:</span>Call to provider and refer to enable “fast pack”,
-                mention that you play internet game, it is a free service. Gamers need quick response (<i>PING</i>)
+                <span data-i18n="site.index.superImportant" style="display:inline-block;background:#ff4444;color:#fff;padding:2px 10px;border-radius:6px;font-weight:900;font-size:0.8rem;margin-right:6px;">SUPER IMPORTANT:</span><span data-i18n="site.index.callToProviderAnd">Call to provider and refer to enable “fast pack”,
+                mention that you play internet game, it is a free service. Gamers need quick response (</span><i>PING</i>)
                 <br>
-                <span style="display:inline-block;background:#ff4444;color:#fff;padding:2px 10px;border-radius:6px;font-weight:900;font-size:0.8rem;margin-right:6px;">SUPER IMPORTANT:</span>Go to chrome://settings/system , ensure the <b>Use
-                    hardware acceleration</b> when available checkbox is checked (<i>you'll need to relaunch Chrome for
+                <span data-i18n="site.index.superImportant" style="display:inline-block;background:#ff4444;color:#fff;padding:2px 10px;border-radius:6px;font-weight:900;font-size:0.8rem;margin-right:6px;">SUPER IMPORTANT:</span><span data-i18n="site.index.goToChromeSettings">Go to chrome://settings/system , ensure the</span> <b data-i18n="site.index.useHardwareAcceleration">Use
+                    hardware acceleration</b> <span data-i18n="site.index.whenAvailableCheckboxIs">when available checkbox is checked (</span><i data-i18n="site.index.youLlNeedTo">you'll need to relaunch Chrome for
                     any changes to take effect</i>)
-                <br>Go to chrome://flags/ , ensure that <b>Override software rendering list</b> is "Enabled" (<i>you'll
+                <br><span data-i18n="site.index.goToChromeFlags">Go to chrome://flags/ , ensure that</span> <b data-i18n="site.index.overrideSoftwareRenderingList">Override software rendering list</b> <span data-i18n="site.index.isEnabled">is "Enabled" (</span><i data-i18n="site.index.youLlNeedTo">you'll
                     need
                     to relaunch Chrome for any changes to take effect</i>)
-                <br>Update Chrome to latest version: chrome://settings/help
-                <br>Prefer <a href="https://www.opera.com/gx">Opera GX</a>
-                <br>Go to chrome://flags, Ensure that Disable WebGL is not activated (<i>you'll need to relaunch Chrome
+                <br><span data-i18n="site.index.updateChromeToLatest">Update Chrome to latest version: chrome://settings/help</span>
+                <br><span data-i18n="site.index.prefer">Prefer</span> <a data-i18n="site.index.operaGx" href="https://www.opera.com/gx">Opera GX</a>
+                <br><span data-i18n="site.index.goToChromeFlags2">Go to chrome://flags, Ensure that Disable WebGL is not activated (</span><i data-i18n="site.index.youLlNeedTo">you'll need to relaunch Chrome
                     for
-                    any changes to take effect</i>). This feature might not be shown, as already been enabled on new
-                Chrome Updates
-                <br>Update Legend Mod to latest version from <a
+                    any changes to take effect</i><span data-i18n="site.index.thisFeatureMightNot">). This feature might not be shown, as already been enabled on new
+                Chrome Updates</span>
+                <br><span data-i18n="site.index.updateLegendModTo">Update Legend Mod to latest version from</span> <a
                     href="https://jimboy3100.github.io">jimboy3100.github.io</a>
-                <h3 class="project-tagline">Conflicts:</h3>
-                Some players experience conflicts that cause great FPS drop, bugs or even crash.Top reasons:
-                <br>Ad blockers, (<i>Must be disabled</i>)
-                <br>Sometimes Chrome enables its own Ad blocker that disables cookies. You must even disable all blocks
-                to other cookies (<i>youtube, miniclip, xsolla, etc</i>) because they affect agario
-                <br>Cookie blockers, (<i>Must be disabled</i>)
-                <br>Chrome Extensions, chrome://extensions/ , Other extensions rather than Tampermonkey, AgarioScripts
-                must be disabled. Not both Tampermonkey and AgarioScripts Userscript managers used
-                <br>Other Tampermonkey (<i>top right button->dashboard</i>) or AgarioScript Userscripts. Use 1
-                Userscript at a time
-                <h3 class="project-tagline">Performance notes:</h3>
-                Top performance killers which should be OFF on a low-end PC:
-                <br>Ghost Cells
-                <br>Skins
-                <br>Jelly Physics
-                <br>Skins on teamboard
-                <br>Background sectors
-                <br>Background grid
-                <br>Rainbow food
-                <br>Names (<i>disable names or use “Auto hide name” option</i>)
-                <h3 class="project-tagline">Some tips to get more stable FPS:</h3>
-                Use “Optimized names” and “Optimized mass” option
-                <br>Use “Auto hide mass” option
-                <br>Use “Short mass” option
-                <br>Disable auto zoom
-                <br>Choose agar.io servers that are close to you
-                <br>Do not use any kind of helpers if you don’t need them. Less to draw means better performance
-                <br><b>Try different browsers (Chrome, Opera, Vivaldi)</b>
-                <h3 class="project-tagline">Also prefer using:</h3>
-                talky.io/ voice chat tools, from the game itself (“Voice and Camera Chat” button).
-                <br>It makes chat rooms per IP/token, per password tag. This way we get rid of the extra information
-                that Discord/raidcall/teamspeak voice rooms send
-                <br>Users of other mods or Vanilla, can use the utility and be compatible, if they use this script:
-                <br><a title="Agario Voice Chat Rooms" href="https://jimboy3100.github.io/agarscripts/Voicechat.user.js"
-                    target="_blank" rel="noopener noreferrer">https://jimboy3100.github.io/agarscripts/Voicechat.user.js</a> or <a
+                <h3 data-i18n="site.index.conflicts" class="project-tagline">Conflicts:</h3>
+                <span data-i18n="site.index.somePlayersExperienceConflicts">Some players experience conflicts that cause great FPS drop, bugs or even crash.Top reasons:</span>
+                <br><span data-i18n="site.index.adBlockers">Ad blockers, (</span><i data-i18n="site.index.mustBeDisabled">Must be disabled</i>)
+                <br><span data-i18n="site.index.sometimesChromeEnablesIts">Sometimes Chrome enables its own Ad blocker that disables cookies. You must even disable all blocks
+                to other cookies (</span><i data-i18n="site.index.youtubeMiniclipXsollaEtc">youtube, miniclip, xsolla, etc</i><span data-i18n="site.index.becauseTheyAffectAgario">) because they affect agario</span>
+                <br><span data-i18n="site.index.cookieBlockers">Cookie blockers, (</span><i data-i18n="site.index.mustBeDisabled">Must be disabled</i>)
+                <br><span data-i18n="site.index.chromeExtensionsChromeExtensions">Chrome Extensions, chrome://extensions/ , Other extensions rather than Tampermonkey, AgarioScripts
+                must be disabled. Not both Tampermonkey and AgarioScripts Userscript managers used</span>
+                <br><span data-i18n="site.index.otherTampermonkey">Other Tampermonkey (</span><i data-i18n="site.index.topRightButtonDashboard">top right button->dashboard</i><span data-i18n="site.index.orAgarioscriptUserscriptsUse">) or AgarioScript Userscripts. Use 1
+                Userscript at a time</span>
+                <h3 data-i18n="site.index.performanceNotes" class="project-tagline">Performance notes:</h3>
+                <span data-i18n="site.index.topPerformanceKillersWhich">Top performance killers which should be OFF on a low-end PC:</span>
+                <br><span data-i18n="site.index.ghostCells">Ghost Cells</span>
+                <br><span data-i18n="site.skins">Skins</span>
+                <br><span data-i18n="site.index.jellyPhysics">Jelly Physics</span>
+                <br><span data-i18n="site.index.skinsOnTeamboard">Skins on teamboard</span>
+                <br><span data-i18n="site.index.backgroundSectors">Background sectors</span>
+                <br><span data-i18n="site.index.backgroundGrid">Background grid</span>
+                <br><span data-i18n="site.index.rainbowFood">Rainbow food</span>
+                <br><span data-i18n="site.index.names">Names (</span><i data-i18n="site.index.disableNamesOrUse">disable names or use “Auto hide name” option</i>)
+                <h3 data-i18n="site.index.someTipsToGet" class="project-tagline">Some tips to get more stable FPS:</h3>
+                <span data-i18n="site.index.useOptimizedNamesAnd">Use “Optimized names” and “Optimized mass” option</span>
+                <br><span data-i18n="site.index.useAutoHideMass">Use “Auto hide mass” option</span>
+                <br><span data-i18n="site.index.useShortMassOption">Use “Short mass” option</span>
+                <br><span data-i18n="site.index.disableAutoZoom">Disable auto zoom</span>
+                <br><span data-i18n="site.index.chooseAgarIoServers">Choose agar.io servers that are close to you</span>
+                <br><span data-i18n="site.index.doNotUseAny">Do not use any kind of helpers if you don’t need them. Less to draw means better performance</span>
+                <br><b data-i18n="site.index.tryDifferentBrowsersChrome">Try different browsers (Chrome, Opera, Vivaldi)</b>
+                <h3 data-i18n="site.index.alsoPreferUsing" class="project-tagline">Also prefer using:</h3>
+                <span data-i18n="site.index.talkyIoVoiceChat">talky.io/ voice chat tools, from the game itself (“Voice and Camera Chat” button).</span>
+                <br><span data-i18n="site.index.itMakesChatRooms">It makes chat rooms per IP/token, per password tag. This way we get rid of the extra information
+                that Discord/raidcall/teamspeak voice rooms send</span>
+                <br><span data-i18n="site.index.usersOfOtherMods">Users of other mods or Vanilla, can use the utility and be compatible, if they use this script:</span>
+                <br><a data-i18n-title="site.index.agarioVoiceChatRooms" title="Agario Voice Chat Rooms" href="https://jimboy3100.github.io/agarscripts/Voicechat.user.js"
+                    target="_blank" rel="noopener noreferrer">https://jimboy3100.github.io/agarscripts/Voicechat.user.js</a> or <a data-i18n="site.index.agarioVoiceChatRooms3" data-i18n-title="site.index.agarioVoiceChatRooms2"
                     title="Agario Voice Chat rooms"
                     href="https://greasyfork.org/el/scripts/31353-agario-voice-chat-rooms" target="_blank"
                     rel="noopener noreferrer">Agario Voice Chat rooms - GreaseFork</a>
                 <br>
-                <br>*Please avoid asking me questions about the mod, there are so many requests
+                <br><span data-i18n="site.index.pleaseAvoidAskingMe">*Please avoid asking me questions about the mod, there are so many requests</span>
         </section>
     </div>
     <div id="Developers" class="skins-wrapper" style="display: none;">
         <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
-            <strong>Do more...</strong>
+            <strong data-i18n="site.index.doMore">Do more...</strong>
             <br>
             <br>
             <div class="yt-wrap"><iframe loading="lazy" src="https://www.youtube.com/embed/B87655tH0Lg"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe></div>
-            <h3 class="project-tagline">Legend mod Devs</h3>
-            <b>We need:</b>
-            <br>1. <a href="https://jimboy3100.github.io/skins/">Skins</a> or <a
+            <h3 data-i18n="site.index.legendModDevs" class="project-tagline">Legend mod Devs</h3>
+            <b data-i18n="site.index.weNeed2">We need:</b>
+            <br>1. <a data-i18n="site.skins" href="https://jimboy3100.github.io/skins/">Skins</a> or <a data-i18n="site.themes"
                 href="https://jimboy3100.github.io/themes/">Themes</a>
-            <br>2. Testers
-            <br>3. Modifications any <a href="https://github.com/jimboy3100/jimboy3100.github.io">LM Project</a> or <a
-                href="https://greasyfork.org/en/scripts?q=agar&sort=updated">Greasyfork</a> Script
-            <br>4. Make your own <a href="https://jimboy3100.github.io/developers/index.html">OGARio mod or become
+            <br><span data-i18n="site.index.testers">2. Testers</span>
+            <br><span data-i18n="site.index.modificationsAny">3. Modifications any</span> <a data-i18n="site.index.lmProject" href="https://github.com/jimboy3100/jimboy3100.github.io">LM Project</a> or <a data-i18n="site.index.greasyfork"
+                href="https://greasyfork.org/en/scripts?q=agar&sort=updated">Greasyfork</a> <span data-i18n="site.index.script">Script</span>
+            <br><span data-i18n="site.index.makeYourOwn">4. Make your own</span> <a data-i18n="site.index.ogarioModOrBecome" href="https://jimboy3100.github.io/developers/index.html">OGARio mod or become
                 Legend mod
                 developer</a>
-            <br>5. Support Legend Mod developing by contributing translation for your language:
+            <br><span data-i18n="site.index.supportLegendModDeveloping">5. Support Legend Mod developing by contributing translation for your language:</span>
             <br><a href="https://jimboy3100.github.io/languages/LanguagePackEnglish.js"
                 target="_blank" rel="noopener">https://jimboy3100.github.io/languages/LanguagePackEnglish.js</a>
-            <br>example: <a href="https://jimboy3100.github.io/languages/LanguagePackGreek.js"
+            <br><span data-i18n="site.index.example">example:</span> <a href="https://jimboy3100.github.io/languages/LanguagePackGreek.js"
                 target="_blank" rel="noopener">https://jimboy3100.github.io/languages/LanguagePackGreek.js</a>
             <br>
-            <h3 class="project-tagline">Developering Scripts</h3>
-            <a title="Agario Github Library" href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank"
+            <h3 data-i18n="site.index.developeringScripts" class="project-tagline">Developering Scripts</h3>
+            <a data-i18n="site.index.agarioLegendModGithub" data-i18n-title="site.index.agarioGithubLibrary" title="Agario Github Library" href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank"
                 rel="noopener noreferrer">Agario Legend Mod Github Library</a>
-            <br><a title="Greasefork Legend Mod Project Library" href="https://greasyfork.org/el/users/128990-iamlegend"
+            <br><a data-i18n="site.index.greaseforkLegendModProject" data-i18n-title="site.index.greaseforkLegendModProject" title="Greasefork Legend Mod Project Library" href="https://greasyfork.org/el/users/128990-iamlegend"
                 target="_blank" rel="noopener noreferrer">Greasefork Legend Mod Project Library</a>
-            <br>Other Clients for Agario:
-            <br><a href="https://github.com/CigarProject/Cigar" target="_blank"
-                rel="noopener noreferrer">Cigar</a>&nbsp;(recommends <a
+            <br><span data-i18n="site.index.otherClientsForAgario">Other Clients for Agario:</span>
+            <br><a data-i18n="site.index.cigar" href="https://github.com/CigarProject/Cigar" target="_blank"
+                rel="noopener noreferrer">Cigar</a><span data-i18n="site.index.recommends">&nbsp;(recommends</span> <a data-i18n="site.index.multiogarEdited"
                 href="https://github.com/Megabyte918/MultiOgar-Edited" target="_blank"
-                rel="noopener noreferrer">MultiOgar-Edited</a>&nbsp;for
-            Private Servers)
-            <br>Open sourse agar.io (imsolo.pro) <a href="https://github.com/jimboy3100/imsolo-client" target="_blank"
+                rel="noopener noreferrer">MultiOgar-Edited</a><span data-i18n="site.index.forPrivateServers">&nbsp;for
+            Private Servers)</span>
+            <br><span data-i18n="site.index.openSourseAgarIo">Open sourse agar.io (imsolo.pro)</span> <a href="https://github.com/jimboy3100/imsolo-client" target="_blank"
                 rel="noopener noreferrer">client</a> side
-            <br>Open sourse agar.io (imsolo.pro) <a href="https://github.com/jimboy3100/imsolo-servers" target="_blank"
+            <br><span data-i18n="site.index.openSourseAgarIo">Open sourse agar.io (imsolo.pro)</span> <a href="https://github.com/jimboy3100/imsolo-servers" target="_blank"
                 rel="noopener noreferrer">server</a> side
 
-            <h3 class="project-tagline">Websockets</h3>
-            Game&nbsp;uses Server-client Application as <a href="https://www.facebook.com/mvaladaress" target="_blank"
-                rel="noopener noreferrer">author</a>&nbsp;(don't disturb asking questions) of Agar.io describes on the
+            <h3 data-i18n="site.index.websockets" class="project-tagline">Websockets</h3>
+            <span data-i18n="site.index.gameUsesServerClient">Game&nbsp;uses Server-client Application as</span> <a href="https://www.facebook.com/mvaladaress" target="_blank"
+                rel="noopener noreferrer">author</a><span data-i18n="site.index.donTDisturbAsking">&nbsp;(don't disturb asking questions) of Agar.io describes on the</span>
             <a href="https://news.ycombinator.com/item?id=13267285">article</a>
-            <br>The protocol of each server (communication, etc)&nbsp; is passed through&nbsp;ws:// (e.g
-            ws://live-arena-18qspzk.agar.io:80 )&nbsp; websocket masked&nbsp;by&nbsp;<a
+            <br><span data-i18n="site.index.theProtocolOfEach">The protocol of each server (communication, etc)&nbsp; is passed through&nbsp;ws:// (e.g
+            ws://live-arena-18qspzk.agar.io:80 )&nbsp; websocket masked&nbsp;by&nbsp;</span><a data-i18n="site.index.cloudfare"
                 href="https://www.cloudflare.com/website-optimization/web-sockets/" target="_blank"
-                rel="noopener noreferrer">Cloudfare</a>, and handled by <a href="https://nodejs.org/" target="_blank"
+                rel="noopener noreferrer">Cloudfare</a><span data-i18n="site.index.andHandledBy">, and handled by</span> <a href="https://nodejs.org/" target="_blank"
                 rel="noopener noreferrer">node.js</a>
-            <br>MultiOgar&nbsp;uses&nbsp;<a href="https://github.com/uNetworking/uWebSockets" target="_blank"
-                rel="noopener noreferrer">uWebSockets</a>&nbsp;(other socket that can be used: <a
-                href="https://socket.io/" target="_blank" rel="noopener noreferrer">socket.io</a>&nbsp;).
-            Barbosik implied UwebSockets on <a href="https://github.com/Barbosik/MultiOgar" target="_blank"
+            <br><span data-i18n="site.index.multiogarUses">MultiOgar&nbsp;uses&nbsp;</span><a data-i18n="site.index.uwebsockets" href="https://github.com/uNetworking/uWebSockets" target="_blank"
+                rel="noopener noreferrer">uWebSockets</a><span data-i18n="site.index.otherSocketThatCan">&nbsp;(other socket that can be used:</span> <a
+                href="https://socket.io/" target="_blank" rel="noopener noreferrer">socket.io</a><span data-i18n="site.index.barbosikImpliedUwebsocketsOn">&nbsp;).
+            Barbosik implied UwebSockets on</span> <a data-i18n="site.index.barbosikMultiogar" href="https://github.com/Barbosik/MultiOgar" target="_blank"
                 rel="noopener noreferrer">Barbosik/MultiOgar</a>
-            <br>Latest decryptions of the agar.io
-                protocol by <a href="https://github.com/NuclearC/agar.io-protocol" target="_blank"
+            <br><span data-i18n="site.index.latestDecryptionsOfThe">Latest decryptions of the agar.io
+                protocol by</span> <a data-i18n="site.index.nuclearc" href="https://github.com/NuclearC/agar.io-protocol" target="_blank"
                     rel="noopener noreferrer">NuclearC</a>&nbsp;and <a
                     href="https://github.com/issy123/agario-protocol/issues/19" target="_blank"
-                    rel="noopener noreferrer">issy123</a>&nbsp;github libraries. <a
+                    rel="noopener noreferrer">issy123</a><span data-i18n="site.index.githubLibraries">&nbsp;github libraries.</span> <a data-i18n="site.index.example2"
                     href="https://github.com/jimboy3100/jimboy3100.github.io/blob/master/ExampleScripts/AgarPacketSniffer/AgarPacketSniffer.user.js"
-                    target="_blank" rel="noopener noreferrer">Example</a> of watching protocol
+                    target="_blank" rel="noopener noreferrer">Example</a> <span data-i18n="site.index.ofWatchingProtocol">of watching protocol</span>
         </section>
     </div>
     <div id="LMmobile" class="skins-wrapper" style="display: none;">
         <section height="10%" style="background-image: url();background-size: 100%; color: black;text-align: center;">
-            <strong>Play Agario on tablet / mobile</strong>
+            <strong data-i18n="site.index.playAgarioOnTablet">Play Agario on tablet / mobile</strong>
             <br>
             <br>
             <div class="yt-wrap"><iframe loading="lazy" src="https://www.youtube.com/embed/JOAPoEXXRYw"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe></div>
-            <h3 class="project-tagline">Agario Mobile</h3>
-            On a phone or tablet, open <a href="https://www.legendmod.ml/play.html">www.legendmod.ml/play.html</a>:
-            the touch controls (joystick, split, feed) load automatically.
+            <h3 data-i18n="site.index.agarioMobile" class="project-tagline">Agario Mobile</h3>
+            <span data-i18n="site.index.onAPhoneOr">On a phone or tablet, open</span> <a href="https://www.legendmod.ml/play.html">www.legendmod.ml/play.html</a><span data-i18n="site.index.theTouchControlsJoystick">:
+            the touch controls (joystick, split, feed) load automatically.</span>
         </section>
     </div>
     <script>
@@ -1643,7 +1646,8 @@
                 $("#LMCloseiframeBtn").show()
             }
             else {
-                $("#LMiframeBtn").after('<br><button id="LMCloseiframeBtn" class="btn-link" data-toggle="tooltip" data-original-title="Click to start iframe">Close</button>')
+                $("#LMiframeBtn").after('<br><button id="LMCloseiframeBtn" class="btn-link" data-toggle="tooltip" data-original-title="Click to start iframe" data-i18n="site.close" data-i18n-data-original-title="site.index.clickToStartIframe">Close</button>');
+                if (window.LMi18n) LMi18n.apply(document.getElementById('LMCloseiframeBtn'))
                 $("#LMCloseiframeBtn").click(function () {
                     $("#LMFrame").remove();
                     $("#LMiframeBtn").show();
@@ -1756,7 +1760,9 @@
         var lmTab = /^#(\w+)$/.exec(location.hash);
         if (lmTab) $('#nav a[name="' + lmTab[1] + '"]').trigger('click');
         // Inject footer
-        $('body').append('<div class="lm-footer">© 2026 Legend Mod Project · <a href="/features.html">Features</a> · <a href="/faq.html">FAQ</a> · <a href="/compare.html">Compare</a> · <a href="/skins/">Skins</a> · <a href="/themes/">Themes</a> · <a href="/skinrotator.html">Skin Rotator</a> · <a href="/changelog.html">Changelog</a> · <a href="/developers/">Developers</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="https://github.com/jimboy3100" target="_blank" rel="noopener">GitHub</a></div>');
+        $('body').append('<div class="lm-footer"><span data-i18n="site.footerProject">© 2026 Legend Mod Project</span> · <a href="/features.html" data-i18n="site.features">Features</a> · <a href="/faq.html">FAQ</a> · <a href="/compare.html" data-i18n="site.compare">Compare</a> · <a href="/skins/" data-i18n="site.skins">Skins</a> · <a href="/themes/" data-i18n="site.themes">Themes</a> · <a href="/skinrotator.html" data-i18n="site.skinRotator">Skin Rotator</a> · <a href="/changelog.html" data-i18n="site.changelog">Changelog</a> · <a href="/developers/" data-i18n="site.developers">Developers</a> · <a href="/privacy.html" data-i18n="site.privacy">Privacy</a> · <a href="/terms.html" data-i18n="site.terms">Terms</a> · <a href="https://github.com/jimboy3100" target="_blank" rel="noopener">GitHub</a></div>');
+        /* the footer is built here: its data-i18n texts get the visitor's language */
+        if (window.LMi18n) LMi18n.apply(document.querySelector('.lm-footer'));
     </script>
     <script>
     /* ── Expanding Land server status ─────────────────────────── */
@@ -1793,7 +1799,7 @@
         badge.style.color = '#22c55e';
         dot.style.background = '#22c55e';
         dot.style.animation = 'elPulse 1.5s ease-in-out infinite';
-        text.textContent = 'LIVE';
+        text.textContent = lmT('site.index.live');
         alive.textContent = d.alive || '0';
         specs.textContent = d.spectators || '0';
         upt.textContent = fmtUptime(d.uptime || 0);
@@ -1806,7 +1812,7 @@
         badge.style.color = '#ef4444';
         dot.style.background = '#ef4444';
         dot.style.animation = 'none';
-        text.textContent = 'OFFLINE';
+        text.textContent = lmT('site.index.offline');
         alive.textContent = '—';
         specs.textContent = '—';
         upt.textContent = '—';
@@ -1840,8 +1846,9 @@
             'background:linear-gradient(135deg,#01d9cc,#7c3aed);color:#fff;text-align:center;' +
             'padding:10px 20px;font-family:"Segoe UI",Arial,sans-serif;font-size:14px;font-weight:600;' +
             'animation:lmRefSlide 0.4s ease;cursor:pointer;';
-          banner.innerHTML = '🎮 Invited by <strong>' + ref.replace(/[<>"'&]/g, '') + '</strong> — Welcome to Legend Mod!';
-          banner.title = 'Click to dismiss';
+          /* the name goes in as text (not HTML): the pack text has a {name} place for it */
+          banner.innerHTML = lmT('site.index.invitedBy', { name: '<strong>' + ref.replace(/[<>"'&]/g, '') + '</strong>' });
+          banner.title = lmT('site.index.clickToDismiss');
           banner.onclick = function() { banner.remove(); };
           document.body.appendChild(banner);
           /* Auto-hide after 8 seconds */

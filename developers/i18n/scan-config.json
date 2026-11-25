@@ -51,7 +51,10 @@
     "LMexpress/extension/popup.js",
     "LMexpress/extension/background.js",
     "LMexpress/extension/popup.html",
-    "LMexpress/extension/texts.js"
+    "LMexpress/extension/texts.js",
+    "index.html",
+    "features.html",
+    "faq.html"
   ],
   "groups": {
     "a: ogario/modules": [

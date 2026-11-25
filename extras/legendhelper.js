@@ -144,7 +144,6 @@ $("#import-settings-btn").attr('class', 'btn btn-success');document.getElementBy
 	window.history.pushState(null, null, window.location.pathname);
 	_lmTemplateKeepPersonal();
 	$('#import-settings-btn').click();
-}		
 }	
 
 

@@ -167,7 +167,8 @@ function page(settings, stored, extra) {
         application: { setAnimatedRainbowColor() { calls.push('rainbow'); }, applyHudBlur() { calls.push('blur'); }, saveSettings(o, n) { store[n] = JSON.stringify(o); } },
         drawRender: { dpr: 1, resizeCanvas() { calls.push('resize:' + ctx._lmAdaptiveScale); } },
         legendmod: { cells: [], pps: 0, ping: 0, isSocketOpen: () => false },
-        addEventListener() { }, devicePixelRatio: 1, innerWidth: 915, innerHeight: 412, navigator: {}
+        /* window listeners (blur / focus for the window-not-in-front gaps) */
+        addEventListener(t, f) { listeners['win:' + t] = f; }, devicePixelRatio: 1, innerWidth: 915, innerHeight: 412, navigator: {}
     };
     ctx.window = ctx;
     ctx.legendmod5 = settings;
@@ -271,6 +272,8 @@ check('network history off: timer stopped', nt.timers.filter(Boolean).length ===
 check('gap kinds', P.classifyGap(16.7, false, -1) === '' && P.classifyGap(150, false, -1) === 'stall' && P.classifyGap(1500, false, -1) === 'freeze' &&
     P.classifyGap(1500, true, -1) === 'background' && P.classifyGap(20000, false, -1) === 'pause' && P.classifyGap(1500, false, 200) === 'return' &&
     P.classifyGap(1500, false, 5000) === 'freeze' && P.classifyGap(0, false, -1) === '');
+check('gap kinds: window not in front', P.classifyGap(1500, false, -1, true) === 'unfocused' && P.classifyGap(150, false, -1, true) === 'unfocused' &&
+    P.classifyGap(50, false, -1, true) === '' && P.classifyGap(1500, true, -1, true) === 'background' && P.classifyGap(20000, false, -1, true) === 'pause');
 check('host only: path, query and user:password dropped', P.hostOf('wss://user:pw@srv.example.com:443/ws?token=secret') === 'srv.example.com' &&
     P.hostOf('ws://1.2.3.4:8080/?key=abc') === '1.2.3.4' && P.hostOf('wss://[::1]:443/x') === '[::1]' && P.hostOf('token=abc') === '' && P.hostOf(null) === '');
 const ring = P.createEventRing(200);
@@ -338,6 +341,19 @@ check('a freeze right after the tab came back is listed as such, not counted', /
 /* sleep / suspend over 10 s */
 pr.t += 20000; pr.frame(16.7, 2);
 check('a 20 s gap is a pause, not a freeze', pr.ctx.LMPerf.events().pop().type === 'pause' && /Freezes \(≥250 ms, foreground\): 0/.test(pr.ctx.LMPerf.report()));
+/* the browser window not in front (an editor over it): its gaps are listed, not counted */
+pr = rec(); pr.ctx.LMPerf.keepRecording(true);
+for (let i = 0; i < 30; i++) pr.frame(16.7, 2);
+pr.ctx._now = pr.t; pr.listeners['win:blur']();
+pr.frame(1500, 2); pr.frame(800, 2);
+for (let i = 0; i < 10; i++) pr.frame(16.7, 2);
+evs = pr.ctx.LMPerf.events(); rep = pr.ctx.LMPerf.report();
+check('window not in front: gaps listed as such, not freezes', evs.filter(e => e.type === 'freeze').length === 2 && evs.filter(e => e.type === 'freeze').every(e => /window not in front/.test(e.info)) && /Freezes \(≥250 ms, foreground\): 0/.test(rep) && /2 while the window was not in front, 2300 ms, not counted/.test(rep));
+check('window not in front: no stall, not frame times', !/stalls ≥100ms/.test(rep) && /0 recent, 0 measured in total/.test(rep));
+pr.ctx._now = pr.t; pr.listeners['win:focus']();
+pr.frame(16.7, 2);
+pr.frame(1500, 2);
+check('back in front: such a gap is a freeze again', /Freezes \(≥250 ms, foreground\): 1, worst 1500 ms/.test(pr.ctx.LMPerf.report()));
 
 /* ---- the real render loop of ogario.v4.js: callback times before the FPS limit, timing in a finally ---- */
 const v4 = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');

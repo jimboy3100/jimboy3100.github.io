@@ -25,29 +25,58 @@ const text = (key) => lmxExtText(key, lang);
 /* the popup cannot read agar.io's storage: it shows the language saved here */
 try { chrome.storage.local.set({ languagemod: lang }); } catch (e) { }
 
-// Check enabled state before proceeding
+/*
+ * agar.io's own page must be stopped at once: the on/off switch (chrome.storage) only answers
+ * asynchronously, and the page download goes through the background worker. Meanwhile the
+ * browser went on parsing agar.io's page and started its game (agario.core.js), so a slow
+ * worker or download left the player in the vanilla game. The switch is mirrored in agar.io's
+ * localStorage (ENABLED_KEY) so the decision is made synchronously here; when the mirror was
+ * out of date, the page is reloaded once with the right state.
+ */
+const ENABLED_KEY = 'lmExpressEnabled';
+const path = location.pathname.toLowerCase();
+const isLegendPath = path === '/' || path.startsWith('/legendmod');
+const isCaptchaPath = path === '/captcha' || path === '/captcha/';
+let mirroredOn = true;
+try { mirroredOn = localStorage.getItem(ENABLED_KEY) !== '0'; } catch (e) { }
+let stopped = false;
+if ((isLegendPath || isCaptchaPath) && mirroredOn) {
+    stopAgario();
+    if (isLegendPath) showLoading();
+}
+
 chrome.storage.local.get({ enabled: true }, (result) => {
     const isEnabled = result.enabled !== false;
     console.log('[Legend Express] Extension status:', isEnabled ? 'Enabled' : 'Disabled');
-
-    const path = location.pathname.toLowerCase();
+    try { localStorage.setItem(ENABLED_KEY, isEnabled ? '1' : '0'); } catch (e) { }
 
     if (!isEnabled) {
         // If we are on a mod-redirected page but extension is disabled, go back to vanilla agar.io
         if (path.startsWith('/legendmod')) {
             console.log('[Legend Express] Redirecting to vanilla agar.io...');
             location.href = 'https://agar.io/' + location.hash;
+        } else if (stopped) {
+            /* stopped on an out-of-date "on": agar.io's page again, now left alone */
+            location.reload();
         }
         return;
     }
 
-    if (path === '/' || path.startsWith('/legendmod')) {
+    if (isLegendPath) {
         loadLegendPage();
-    } else if (path === '/captcha' || path === '/captcha/') {
+    } else if (isCaptchaPath) {
         /* The bots open agar.io/captcha and expect the captcha helper page there. */
         loadPage(captchaPage, false);
     }
 });
+
+/* Stop agar.io's page: no more parsing, no more of its scripts (the fetched page replaces it) */
+function stopAgario() {
+    if (stopped) return;
+    stopped = true;
+    try { window.stop(); } catch (e) { }
+    try { document.documentElement.innerHTML = ''; } catch (e) { }
+}
 
 function loadLegendPage() {
     /*
@@ -65,10 +94,11 @@ function loadLegendPage() {
 
 /* Fetch a page through background.js and write it over agar.io */
 function loadPage(pageUrl, isLegendPage) {
-    /* Stop agar.io's own page; the fetched page replaces it */
-    document.documentElement.innerHTML = '';
+    /* Stop agar.io's own page (already done at document_start unless the switch was just turned on) */
+    const wasStopped = stopped;
+    stopAgario();
     /* the tab stayed white while the page was fetched; play.html shows its own loading screen next */
-    if (isLegendPage) showLoading();
+    if (isLegendPage && !wasStopped) showLoading();
 
     chrome.runtime.sendMessage({ type: 'fetch', url: pageUrl }, (response) => {
         /* lastError: the background worker could not answer (e.g. the extension was just reloaded) */
