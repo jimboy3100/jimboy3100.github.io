@@ -1,0 +1,17 @@
+{
+  "boot.loading": {
+    "note": "play.html loading screen, shown before any script: build.js writes it into play.html",
+    "en": "Loading... please wait",
+    "el": "Φόρτωση... παρακαλώ περιμένετε",
+    "es": "Cargando... por favor espere",
+    "bg": "Зареждане... моля, изчакайте",
+    "fr": "Chargement... veuillez patienter",
+    "ar": "جارٍ التحميل... يرجى الانتظار",
+    "zh": "載入中... 請稍候",
+    "ru": "Загрузка... пожалуйста, подождите",
+    "de": "Wird geladen... bitte warten",
+    "tr": "Yükleniyor... lütfen bekleyin",
+    "pl": "Ładowanie... proszę czekać",
+    "nl": "Laden... even geduld"
+  }
+}

@@ -66,10 +66,9 @@
             /* the language chosen in Legend Mod (localStorage languagemod: 1 English, 2 Greek ... 12 Dutch,
              * as in the Choose Language list); never chosen: the browser's language, else English.
              * The Legend Express extension's loading screen (LMexpress/extension/content.js) has the same list. */
-            var LANG_TEXT = ['Loading... please wait', 'Φόρτωση... παρακαλώ περιμένετε', 'Cargando... por favor espere',
-                'Зареждане... моля, изчакайте', 'Chargement... veuillez patienter', 'جارٍ التحميل... يرجى الانتظار',
-                '載入中... 請稍候', 'Загрузка... пожалуйста, подождите', 'Wird geladen... bitte warten',
-                'Yükleniyor... lütfen bekleyin', 'Ładowanie... proszę czekać', 'Laden... even geduld'];
+            /* i18n:boot-start */ /* GENERATED from developers/i18n/src (boot.loading) by build.js */
+            var LANG_TEXT = ["Loading... please wait", "\u03a6\u03cc\u03c1\u03c4\u03c9\u03c3\u03b7... \u03c0\u03b1\u03c1\u03b1\u03ba\u03b1\u03bb\u03ce \u03c0\u03b5\u03c1\u03b9\u03bc\u03ad\u03bd\u03b5\u03c4\u03b5", "Cargando... por favor espere", "\u0417\u0430\u0440\u0435\u0436\u0434\u0430\u043d\u0435... \u043c\u043e\u043b\u044f, \u0438\u0437\u0447\u0430\u043a\u0430\u0439\u0442\u0435", "Chargement... veuillez patienter", "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644... \u064a\u0631\u062c\u0649 \u0627\u0644\u0627\u0646\u062a\u0638\u0627\u0631", "\u8f09\u5165\u4e2d... \u8acb\u7a0d\u5019", "\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430... \u043f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u043f\u043e\u0434\u043e\u0436\u0434\u0438\u0442\u0435", "Wird geladen... bitte warten", "Y\u00fckleniyor... l\u00fctfen bekleyin", "\u0141adowanie... prosz\u0119 czeka\u0107", "Laden... even geduld"];
+            /* i18n:boot-end */
             var langN = 0;
             try { langN = parseInt(localStorage.getItem('languagemod'), 10) || 0; } catch (e) { }
             if (!(langN >= 1 && langN <= 12)) langN = { en: 1, el: 2, es: 3, bg: 4, fr: 5, ar: 6, zh: 7, ru: 8, de: 9, tr: 10, pl: 11, nl: 12 }[(navigator.language || '').slice(0, 2).toLowerCase()] || 1;
@@ -204,7 +203,35 @@
     <script src="https://www.legendmod.ml/lib/Youtubeiframe_api.js?v=3.603"></script>
     <script src="https://www.legendmod.ml/extras/key-event.js?v=3.603"></script>
     <script src="https://www.legendmod.ml/extras/foggy.js?v=3.603"></script>
-    <script src="https://www.legendmod.ml/languages/LanguagePackEnglish.js?v=3.603"></script>
+    <!-- Texts in the language chosen in Legend Mod (built from developers/i18n/src): lm-i18n.js writes the
+         chosen language's file right after itself; English (lm-en.js) is the fallback for missing texts. -->
+    <script src="https://www.legendmod.ml/languages/lm-i18n.js?v=3.603" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/languages/lm-en.js?v=3.603" charset="utf-8"></script>
+    <script>
+        /* On agar.io this page is written with document.write and Chrome may refuse such scripts: then the
+         * texts come synchronously (the mod reads them while it starts). Nothing happens when they are there. */
+        (function () {
+            var en = document.querySelector('script[src*="/languages/lm-en.js"]');
+            var q = en ? (/\?v=[^&#]+/.exec(en.src) || [''])[0] : '';
+            var need = function (file) {
+                try {
+                    var x = new XMLHttpRequest();
+                    x.open('GET', 'https://www.legendmod.ml/languages/' + file + q, false);
+                    x.send();
+                    if (x.status !== 200) return;
+                    var s = document.createElement('script');
+                    s.text = x.responseText;
+                    (document.head || document.documentElement).appendChild(s);
+                } catch (e) { }
+            };
+            if (!window.LMi18n) need('lm-i18n.js');
+            var L = window.LMi18n;
+            if (!L) return;
+            if (!L.loaded('en')) need('lm-en.js');
+            var c = L.lang();
+            if (c !== 'en' && !L.loaded(c)) need('lm-' + c + '.js');
+        })();
+    </script>
     <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff2.js?v=3.603"></script>
     <script src="https://www.legendmod.ml/LMexpress/i18n.js?v=3.603"></script>
     <script src="https://www.legendmod.ml/LMexpress/proto.decoder.js?v=3.603"></script>
