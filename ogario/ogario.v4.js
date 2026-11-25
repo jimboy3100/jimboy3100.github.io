@@ -80134,7 +80134,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 previousAlpha;
         },
         drawViewPorts(ctx) {
-            this.drawViewport(this.ctx, '1', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor || '#ffffff', 15);
+            /* the server's view of the player (food box, calMinMax). It drew LM.camMin/Max, which since
+             * the per-frame culling bounds (3.477) is the screen itself, so the box was never visible. */
+            if (Number.isFinite(LM.viewMinX)) this.drawViewport(this.ctx, '1', LM.viewMinX, LM.viewMinY, LM.viewMaxX, LM.viewMaxY, defaultSettings.bordersColor || '#ffffff', 15);
             if (legendmod.multiBoxPlayerExists && typeof spects !== "undefined" && spects) {
                 var neededSpects = (defaultmapsettings.multiboxAmount || 2) - 1;
                 var viewScale = this.scale || 1;
@@ -81001,10 +81003,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * stopped updating while Canvas2D still filled the body from it: the
              * cell colour froze in place while skin and name moved on.
              */
-            var minX = Number.isFinite(LM.camMinX) ? Math.min(tempX, LM.camMinX) : tempX;
-            var maxX = Number.isFinite(LM.camMaxX) ? Math.max(tempX, LM.camMaxX) : tempX;
-            var minY = Number.isFinite(LM.camMinY) ? Math.min(tempY, LM.camMinY) : tempY;
-            var maxY = Number.isFinite(LM.camMaxY) ? Math.max(tempY, LM.camMaxY) : tempY;
+            /* the food box alone first: it is the area the server sends, i.e. the server's view of the
+             * player, which the "show viewports" button draws (LM.viewMin/Max). The camera box is grown
+             * by it afterwards, as before. */
+            var minX = tempX, maxX = tempX, minY = tempY, maxY = tempY;
             var foodOffset = 10 + defaultSettings.foodSize;
             var len = food.length;
 
@@ -81042,6 +81044,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (y < minY) minY = y; if (y > maxY) maxY = y;
                 }
             }
+            LM.viewMinX = minX; LM.viewMaxX = maxX;
+            LM.viewMinY = minY; LM.viewMaxY = maxY;
+            if (Number.isFinite(LM.camMinX)) { minX = Math.min(minX, LM.camMinX); maxX = Math.max(maxX, LM.camMaxX); minY = Math.min(minY, LM.camMinY); maxY = Math.max(maxY, LM.camMaxY); }
             LM.camMinX = minX; LM.camMaxX = maxX;
             LM.camMinY = minY; LM.camMaxY = maxY;
         },
