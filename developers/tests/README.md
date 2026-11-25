@@ -75,3 +75,20 @@ Legend Mod), `--secs N`, `--until-freezes N` (0: only the time limit), `--no-gpu
 The same freeze breakdown is in the game: Performance diagnostics (button in Animation, or its
 hotkey), then "Keep recording when closed" and Copy report. Each freeze line there looks like
 `287 ms freeze 22:41:10.384 · WebGL2 · skin texture upload 241 ms, cells update 21 ms, render 17 ms · LoAF ... · network normal · probable contributor: ...`.
+
+## Dense-scene jelly benchmark
+
+```
+node developers/tests/bench-dense.js --bench
+```
+
+Loads the real jelly physics code (Cell.updateNumPoints / movePoints, LM.prepareJellyCells,
+LM.updateQuadtree, ogario/wasm_quadtree.js) into Node, builds a seeded world of 100/500/1000/2000
+bodies (viruses, overlapping clusters, coincident cells, some off screen) with 2k/10k food and
+prints p50/p95 ms per frame for each phase: point preparation, index build, the collision queries
+on their own, movePoints and a triangle-fan vertex fill, plus points prepared / indexed.
+Options: `--frames N`, `--bodies a,b`, `--food a,b`, `--engine wasm|js|both` (the WasmQuadTree index
+or the JS PointQuadTree fallback), `--src file` / `--qt file` (another ogario.v4.js / wasm_quadtree.js,
+e.g. an older version from `git show`), `--json`. Without `--bench` it runs a quick self-check.
+`jelly.js` checks the collision index against a direct scan and whole frames against the
+previous code.
