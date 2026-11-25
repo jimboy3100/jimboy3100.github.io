@@ -397,6 +397,38 @@
     <schema:dataset>
       <rdf:Description>
         <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>Game</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/game.json"/>
+        <schema:encodingFormat>application/json</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>Mechanics</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/mechanics.json"/>
+        <schema:encodingFormat>application/json</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>Controls</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/controls.json"/>
+        <schema:encodingFormat>application/json</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>FAQ</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/faq.json"/>
+        <schema:encodingFormat>application/json</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
         <schema:name>Glossary</schema:name>
         <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/glossary.json"/>
         <schema:encodingFormat>application/json</schema:encodingFormat>
@@ -429,6 +461,14 @@
     <schema:dataset>
       <rdf:Description>
         <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>Presets</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/presets.json"/>
+        <schema:encodingFormat>application/json</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
         <schema:name>Changelog</schema:name>
         <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/changelog.json"/>
         <schema:encodingFormat>application/json</schema:encodingFormat>
@@ -445,9 +485,41 @@
     <schema:dataset>
       <rdf:Description>
         <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>Resources</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/resources.json"/>
+        <schema:encodingFormat>application/json</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>Knowledge Graph</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/graph.jsonld"/>
+        <schema:encodingFormat>application/ld+json</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
         <schema:name>Consolidated Documentation</schema:name>
         <schema:contentUrl rdf:resource="https://www.legendmod.ml/llms-full.txt"/>
         <schema:encodingFormat>text/plain</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>Languages</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/languages.json"/>
+        <schema:encodingFormat>application/json</schema:encodingFormat>
+      </rdf:Description>
+    </schema:dataset>
+    <schema:dataset>
+      <rdf:Description>
+        <rdf:type rdf:resource="https://schema.org/DataDownload"/>
+        <schema:name>Compatibility</schema:name>
+        <schema:contentUrl rdf:resource="https://www.legendmod.ml/knowledge/compatibility.json"/>
+        <schema:encodingFormat>application/json</schema:encodingFormat>
       </rdf:Description>
     </schema:dataset>
   </rdf:Description>

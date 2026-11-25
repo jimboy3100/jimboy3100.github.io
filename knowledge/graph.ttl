@@ -214,7 +214,11 @@
   ], [
     a schema:DataDownload ; schema:name "Game" ; schema:contentUrl <https://www.legendmod.ml/knowledge/game.json> ; schema:encodingFormat "application/json"
   ], [
+    a schema:DataDownload ; schema:name "Mechanics" ; schema:contentUrl <https://www.legendmod.ml/knowledge/mechanics.json> ; schema:encodingFormat "application/json"
+  ], [
     a schema:DataDownload ; schema:name "Controls" ; schema:contentUrl <https://www.legendmod.ml/knowledge/controls.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "FAQ" ; schema:contentUrl <https://www.legendmod.ml/knowledge/faq.json> ; schema:encodingFormat "application/json"
   ], [
     a schema:DataDownload ; schema:name "Glossary" ; schema:contentUrl <https://www.legendmod.ml/knowledge/glossary.json> ; schema:encodingFormat "application/json"
   ], [
@@ -229,6 +233,12 @@
     a schema:DataDownload ; schema:name "Changelog" ; schema:contentUrl <https://www.legendmod.ml/knowledge/changelog.json> ; schema:encodingFormat "application/json"
   ], [
     a schema:DataDownload ; schema:name "Modules" ; schema:contentUrl <https://www.legendmod.ml/knowledge/modules.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Resources" ; schema:contentUrl <https://www.legendmod.ml/knowledge/resources.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Languages" ; schema:contentUrl <https://www.legendmod.ml/knowledge/languages.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Compatibility" ; schema:contentUrl <https://www.legendmod.ml/knowledge/compatibility.json> ; schema:encodingFormat "application/json"
   ], [
     a schema:DataDownload ; schema:name "Knowledge Graph" ; schema:contentUrl <https://www.legendmod.ml/knowledge/graph.jsonld> ; schema:encodingFormat "application/ld+json"
   ], [

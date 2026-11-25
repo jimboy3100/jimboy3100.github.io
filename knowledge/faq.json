@@ -104,6 +104,30 @@
     {
       "question": "How is Expanding Land different from Agar.io?",
       "answer": "Expanding Land has a dynamic circular arena (not fixed square), is built from scratch in C (~5ms tick), supports 3,840 players per arena, has 200+ spectator slots, anti-teaming and coordinate scrambling anti-cheat, and is by an independent developer (not Miniclip)."
+    },
+    {
+      "question": "How do I use a gamepad?",
+      "answer": "Connect any standard gamepad (Xbox, PlayStation, etc.) and Legend Mod auto-detects it. Go to Settings → Controls → Gamepad to customise mapping, dead zone, response curve and vibration. The left stick controls movement and buttons map to split, feed and macro actions."
+    },
+    {
+      "question": "What is the Theme Bridge?",
+      "answer": "The Theme Bridge (lm-theme-bridge.js) lets standalone pages (skins gallery, features, FAQ, monitor) share Legend Mod's active theme. It reads the user's saved theme from localStorage and applies it, so every page matches the in-game look."
+    },
+    {
+      "question": "How do I export or import settings?",
+      "answer": "Open Settings → Profiles → Export to save all your settings, themes and skin collections as a JSON file. Use Import to load them on another device. Settings Profiles (up to 30) can also auto-switch per server type, game mode or input device."
+    },
+    {
+      "question": "What is the LMEvents API?",
+      "answer": "LMEvents is a JavaScript event bus that user scripts and plugins can use to listen for game events (cell eaten, mass changed, game over, server switch, etc.) and react without modifying core code. See the developers documentation for the full event list."
+    },
+    {
+      "question": "How do I multibox?",
+      "answer": "Enable multiboxing in Settings → Connections. You can run up to 4 connections with colour-coded cell rings. Use the tab key (default) to switch active connections. A middle-camera view shows the averaged position of all your cells."
+    },
+    {
+      "question": "What games does Legend Express support?",
+      "answer": "Legend Express (the Chrome extension) works with Agar.io, Expanding Land, Agarix.com, and Cellcraft.io. The web client at legendmod.ml/play.html connects directly to Expanding Land servers."
     }
   ]
 }

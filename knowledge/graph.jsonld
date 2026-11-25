@@ -653,6 +653,18 @@
           "name": "Consolidated Documentation",
           "contentUrl": "https://www.legendmod.ml/llms-full.txt",
           "encodingFormat": "text/plain"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Languages",
+          "contentUrl": "https://www.legendmod.ml/knowledge/languages.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Compatibility",
+          "contentUrl": "https://www.legendmod.ml/knowledge/compatibility.json",
+          "encodingFormat": "application/json"
         }
       ]
     }
