@@ -383,8 +383,7 @@
             'background:' + c.pc + ';border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
             'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
         root.id = id;
-        root.className = 'lm-modal-container';
-        root.className = 'lm-st-win';
+        root.className = 'lm-modal-container lm-st-win';
         root.dir = langDir();
         var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:4px 6px 4px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
         head.appendChild(el('div', 'flex:1;min-width:0;font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', title));
@@ -930,7 +929,7 @@
         var c = colors();
         var p = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:999997;background:rgba(0,0,0,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;box-sizing:border-box;color:#fff;font:12px sans-serif;');
         p.id = 'lm-st-shot-preview';
-        p.className = 'lm-st-win';
+        p.className = 'lm-modal-container lm-st-win';
         p.dir = langDir();
         var img = el('img', 'max-width:100%;max-height:calc(100% - 60px);object-fit:contain;border:1px solid rgba(255,255,255,0.3);');
         img.src = url;

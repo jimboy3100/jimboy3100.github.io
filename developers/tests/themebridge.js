@@ -127,7 +127,7 @@ const sctx = { location: { href: 'https://agar.io/', origin: 'https://agar.io' }
 vm.createContext(sctx);
 vm.runInContext(body, sctx);
 const O = sctx.lmThemeOrigins;
-check('sender: a Legend page gets both Legend origins (github.io redirects)', O('https://jimboy3100.github.io/extras/helper.html').join() === 'https://www.legendmod.ml,https://jimboy3100.github.io' && O('https://www.legendmod.ml/x').length === 2);
+check('sender: a Legend page gets all Legend origins (github.io redirects)', O('https://jimboy3100.github.io/extras/helper.html').join() === 'https://www.legendmod.ml,https://legendmod.ml,https://jimboy3100.github.io' && O('https://www.legendmod.ml/x').length === 3 && O('https://legendmod.ml/x').length === 3);
 check('sender: a third-party frame gets nothing', O('https://www.youtube.com/embed/x').length === 0 && O('https://legendmod.ml.evil.com/').length === 0 && O('').length === 1 && O('javascript:1').length === 0);
 check('sender: never "*"', !/postMessage\(msg, '\*'\)/.test(lm));
 

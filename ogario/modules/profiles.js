@@ -1284,7 +1284,7 @@
             var tid = $('#lm-sp-tpl').val();
             if (!has(TEMPLATES, tid)) return;
             var inc2 = includes();
-            var cur = captureCurrent({ t: inc2.t, h: inc2.h, m: inc2.m, hl: false });
+            var cur = captureCurrent({ t: inc2.t, h: inc2.h, m: inc2.m, g: inc2.g, hl: false });
             var res = applyTemplate(cur, tid);
             if (!res.data) return;
             var changed = diffBundles(cur, res.data).length;
@@ -1298,7 +1298,7 @@
             applyProfile(p);
         } else if (a === 'update' && p) {
             if (!window.confirm(tx('confirmUpdate', p.name))) return;
-            p.data = captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!p.data.m, g: !!p.data.gp, hl: false }) || p.data;
+            p.data = captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!(p.data.m || p.data.ml), g: !!p.data.gp, hl: false }) || p.data;
             p.updated = now;
             if (saveProfiles(list)) toast('success', esc(tx('saved', p.name)));
         } else if (a === 'rename' && p) {

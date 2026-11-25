@@ -300,6 +300,15 @@ var WasmQuadTree = (function () {
         return results;
     }
 
+    /** Release point references and reset counts (disconnect/jelly disabled/empty scene). */
+    function clear() {
+        for (var i = 0; i < count; i++) refs[i] = null;
+        count = 0;
+        cellCount = 0;
+        cols = rows = 0;
+        buildId++;
+    }
+
     function stats() {
         return { nodes: cols * rows, points: count, cells: cellCount };
     }
@@ -312,6 +321,7 @@ var WasmQuadTree = (function () {
     return {
         init: init,
         rebuild: rebuild,
+        clear: clear,
         ordOf: ordOf,
         beginCell: beginCell,
         touches: touches,

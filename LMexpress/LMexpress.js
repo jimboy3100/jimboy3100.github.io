@@ -9076,6 +9076,11 @@ function changeFrameWorkStart() {
  * lmThemeSend(iframe) → sends the theme with postMessage, only to a Legend page
  * lang: the Choose Language number (1 English .. 12 Dutch): the web pages (lib/lm-i18n.js) show
  * that language; on agar.io the site cannot read the mod's localStorage. */
+/* UTF-8 safe base64 encode (btoa only handles Latin-1; Unicode bg URLs would throw) */
+function _lmUtf8ToBase64(str) {
+    try { return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (_, p) { return String.fromCharCode(parseInt(p, 16)); })); }
+    catch (e) { return ''; }
+}
 function lmThemeData() {
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
     var d = {
@@ -9111,11 +9116,11 @@ function lmThemeData() {
     return d;
 }
 function lmThemeQuery() {
-    try { return '?lm=' + btoa(JSON.stringify(lmThemeData())); }
+    try { return '?lm=' + _lmUtf8ToBase64(JSON.stringify(lmThemeData())); }
     catch (e) { return ''; }
 }
 function lmThemeHash() {
-    try { return '#lm=' + btoa(JSON.stringify(lmThemeData())); }
+    try { return '#lm=' + _lmUtf8ToBase64(JSON.stringify(lmThemeData())); }
     catch (e) { return ''; }
 }
 /* The one navigation helper: a Legend page that the mod opens gets the theme in its URL (#lm=...),
@@ -9150,7 +9155,7 @@ function lmThemeUrl(url) {
 /* The origins a Legend page can have: jimboy3100.github.io redirects to www.legendmod.ml,
  * so a frame opened on one of them may be on the other. Empty for any other site. */
 function lmThemeOrigins(url) {
-    var LEGEND = ['https://www.legendmod.ml', 'https://jimboy3100.github.io'];
+    var LEGEND = ['https://www.legendmod.ml', 'https://legendmod.ml', 'https://jimboy3100.github.io'];
     try {
         var o = new URL(url, location.href).origin;
         if (/^https:\/\/((www\.)?legendmod\.ml|jimboy3100\.github\.io)$/.test(o)) return LEGEND;

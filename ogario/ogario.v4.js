@@ -197,7 +197,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.623;
+window.OgVer = 3.624;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -35390,8 +35390,9 @@ function thelegendmodproject() {
              */
             if (
                 this.isVirus ||
-                defaultmapsettings
-                    .virusesRange
+                (defaultmapsettings
+                    .virusesRange &&
+                    this._virusIdx >= 0)
             ) {
                 var virIdx = this._virusIdx;
 
@@ -52700,16 +52701,23 @@ function thelegendmodproject() {
                      * that, so a list with holes keeps the insertion sort */
                     var holes = false;
                     for (var k = 0; k < len; k++) if (!a[k]) { holes = true; break; }
-                    if (!holes) { a.sort(this._lmCellOrder); return; }
+                    if (!holes) { a.sort(this._lmCellOrder); this._lmRebuildCellsIdx(a); return; }
                     budget = Infinity;
                 }
             }
+            this._lmRebuildCellsIdx(a);
         },
         /* draw order of sortCells: smaller first, equal sizes by id */
         _lmCellOrder(p, q) {
             if (p.size > q.size || (p.size === q.size && p.id > q.id)) return 1;
             if (q.size > p.size || (q.size === p.size && q.id > p.id)) return -1;
             return 0;
+        },
+        /* Rebuild _cellsIdx for every element after sort/dedup/compaction reorders LM.cells */
+        _lmRebuildCellsIdx(a) {
+            for (var i = 0, len = a.length; i < len; i++) {
+                if (a[i]) a[i]._cellsIdx = i;
+            }
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -74579,6 +74587,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var _w = 0;
                     _dedupMap.forEach(function(v) { LM.cells[_w++] = v; });
                     LM.cells.length = _w;
+                    LM._lmRebuildCellsIdx(LM.cells);
                     if (!this._lastDedupLog || _now - this._lastDedupLog > 5000) {
                         console.warn('[DIAGNOSTIC] Pruned', _cellsBefore - _w, 'duplicate cells. Active:', _w);
                         this._lastDedupLog = _now;
@@ -75857,6 +75866,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ) {
                     LM.cells.length =
                         _cW;
+                    LM._lmRebuildCellsIdx(LM.cells);
                 }
 
 
@@ -75951,14 +75961,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             );
                         }
                         else {
-                            LM.quadtree =
+                            if (LM.quadtree && typeof LM.quadtree.clear === 'function') LM.quadtree.clear();
+                            else LM.quadtree =
                                 null;
                         }
                     }
                     catch (
                         jellyQuadtreeError
                     ) {
-                        LM.quadtree =
+                        if (LM.quadtree && typeof LM.quadtree.clear === 'function') LM.quadtree.clear();
+                        else LM.quadtree =
                             null;
 
                         console.error(
@@ -76033,7 +76045,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * Never retain a collision field belonging to a previous
                      * jelly frame.
                      */
-                    LM.quadtree =
+                    if (LM.quadtree && typeof LM.quadtree.clear === 'function') LM.quadtree.clear();
+                    else LM.quadtree =
                         null;
                 }
 
@@ -76452,6 +76465,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 /* read by the net graph (renderer label) */
                 this._lmFrameGL = unifiedWebGLWorldOK;
+                /* per-cell overlay draws (chat/teammate/FB/effects) need the right context */
+                this._gpuSceneActive = unifiedWebGLWorldOK;
+                this._foregroundCtx = (unifiedWebGLWorldOK && this.overlayCtx) ? this.overlayCtx : this.ctx;
                 /*
                  * ═══════════════════════════════════════════════════════════
                  * CELL DRAW PASS
@@ -76532,10 +76548,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _lmFxCtx = this.ctx;
                 if (unifiedWebGLWorldOK && this.overlayCanvas && this.overlayCtx &&
                     typeof this.ctx.getTransform === 'function' &&
-                    !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active) &&
-                    (((LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) && defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) ||
-                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length) ||
-                        (window.LMHudHelpers && window.LMHudHelpers.worldActive(LM)))) {
+                    !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active)) {
                     _lmFxCtx = this.overlayCtx;
                     _lmFxCtx.setTransform(1, 0, 0, 1, 0, 0);
                     _lmFxCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
@@ -76728,8 +76741,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var oPW = Math.round(oW * oDpr);
                     var oPH = Math.round(oH * oDpr);
                     if (Math.abs(this.overlayCanvas.width - oPW) > 1 || Math.abs(this.overlayCanvas.height - oPH) > 1) {
-                        this.overlayCanvas.width = oPW;
-                        this.overlayCanvas.height = oPH;
+                        /* resize clears the backing store: only resize when no overlay draws
+                         * were done this frame (otherwise defer until the next non-overlay frame) */
+                        if (!this._lmOverlayFxFrame) {
+                            this.overlayCanvas.width = oPW;
+                            this.overlayCanvas.height = oPH;
+                        }
                     }
                     oCtx.setTransform(1, 0, 0, 1, 0, 0);
                     /* already cleared this frame when it holds the above-cell effects */
