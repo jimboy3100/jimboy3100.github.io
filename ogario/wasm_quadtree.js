@@ -90,7 +90,6 @@ var WasmQuadTree = (function () {
             if (c && c.points) total += c.points.length;
         }
         ensureCapacity(total);
-        var previous = count;
 
         var n = 0;
         var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -123,7 +122,8 @@ var WasmQuadTree = (function () {
         if (moved.length < cellCount) moved = new Uint8Array(Math.max(cellCount, moved.length * 2));
         else moved.fill(0, 0, cellCount);
         /* Do not keep last frame's extra points (and their cells) alive. */
-        for (var r = n; r < previous; r++) refs[r] = null;
+        /* (to the first empty slot, not only to the old count: also after a build that threw) */
+        for (var r = n; r < refs.length && refs[r] !== null; r++) refs[r] = null;
         if (n === 0) { cols = rows = 0; return true; }
 
         /* Buckets span the indexed points. 10 units wide when that fits the table budget,
@@ -302,7 +302,9 @@ var WasmQuadTree = (function () {
 
     /** Release point references and reset counts (disconnect/jelly disabled/empty scene). */
     function clear() {
-        for (var i = 0; i < count; i++) refs[i] = null;
+        /* refs is always filled from 0 without gaps, but a rebuild that threw half way leaves
+         * count from the build before: walk to the first empty slot instead of to count. */
+        for (var i = 0; i < refs.length && refs[i] !== null; i++) refs[i] = null;
         count = 0;
         cellCount = 0;
         cols = rows = 0;

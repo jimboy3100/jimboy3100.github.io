@@ -38071,14 +38071,15 @@ function thelegendmodproject() {
 
 
             /*
-             * Empty frame = no jelly collision structure.
+             * Empty frame = no jelly collision structure. Also empty the
+             * global point grid: nulling the pointer alone left it holding
+             * the last scene's points (and through them their cells).
              */
             if (
                 !cells ||
                 !cells.length
             ) {
-                this.quadtree =
-                    null;
+                this.clearJellyIndex();
 
                 return;
             }
@@ -38122,6 +38123,8 @@ function thelegendmodproject() {
                         this.quadtree =
                             WasmQuadTree;
 
+                        if (!this._lmJellyVisHook) this.hookJellyIndexHidden();
+
                         return;
                     }
                 }
@@ -38130,7 +38133,10 @@ function thelegendmodproject() {
                 ) {
                     /*
                      * The JS PointQuadTree fallback remains authoritative.
+                     * A rebuild that threw half way still holds points of
+                     * this and the previous scene: let them go.
                      */
+                    try { WasmQuadTree.clear(); } catch (e) { }
                 }
             }
 
@@ -38238,6 +38244,31 @@ function thelegendmodproject() {
                         );
                 }
             }
+        },
+        /* The point grid (WasmQuadTree) is one global object that keeps references to the
+         * points it indexed, and through point.parent to their cells. Empty it whenever no
+         * jelly frame will rebuild it soon (world flushed, empty scene, jelly off, failed
+         * build, hidden tab), also when LM.quadtree already points elsewhere or is null.
+         * Its typed buffers stay allocated for the next build. */
+        clearJellyIndex: function () {
+            if (typeof WasmQuadTree !== "undefined" && WasmQuadTree && typeof WasmQuadTree.clear === "function") {
+                try { WasmQuadTree.clear(); } catch (e) { }
+            }
+            this.quadtree = null;
+        },
+        /* A hidden tab gets no animation frames, so the last scene would stay indexed until
+         * the tab is shown again. Every jelly frame rebuilds the grid before using it, so
+         * emptying it here changes nothing visible. Installed once, on the first grid build. */
+        hookJellyIndexHidden: function () {
+            this._lmJellyVisHook = true;
+            if (typeof document === "undefined" || !document || typeof document.addEventListener !== "function") return;
+            var self = this;
+            document.addEventListener("visibilitychange", function () {
+                if (!document.hidden) return;
+                self.clearJellyIndex();
+                /* the frame's jelly list is refilled at the start of every jelly frame */
+                if (typeof drawRender !== "undefined" && drawRender && drawRender._jellyCellsScratch) drawRender._jellyCellsScratch.length = 0;
+            });
         },
         isFreeSpectate: false,
         isSpectateEnabled: false,
@@ -50173,6 +50204,10 @@ function thelegendmodproject() {
             }
             this.indexedCells = {};
             this.cells = [];
+            /* the jelly point grid (and the frame's jelly list) still hold the old world's
+             * cells; a tab that is hidden or disconnected may not draw another frame */
+            if (typeof this.clearJellyIndex === 'function') this.clearJellyIndex();
+            if (typeof drawRender !== 'undefined' && drawRender && drawRender._jellyCellsScratch) drawRender._jellyCellsScratch.length = 0;
             this.playerCells = [];
             this.playerCellsMulti = []; //for multi fix
             this.playerCellIDs = [];
@@ -75987,17 +76022,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             );
                         }
                         else {
-                            if (LM.quadtree && typeof LM.quadtree.clear === 'function') LM.quadtree.clear();
-                            else LM.quadtree =
-                                null;
+                            LM.clearJellyIndex();
                         }
                     }
                     catch (
                         jellyQuadtreeError
                     ) {
-                        if (LM.quadtree && typeof LM.quadtree.clear === 'function') LM.quadtree.clear();
-                        else LM.quadtree =
-                            null;
+                        LM.clearJellyIndex();
 
                         console.error(
                             "[JELLY PHYSICS] quadtree rebuild failed:",
@@ -76071,9 +76102,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * Never retain a collision field belonging to a previous
                      * jelly frame.
                      */
-                    if (LM.quadtree && typeof LM.quadtree.clear === 'function') LM.quadtree.clear();
-                    else LM.quadtree =
-                        null;
+                    LM.clearJellyIndex();
                 }
 
 
