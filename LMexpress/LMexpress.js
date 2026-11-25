@@ -5690,50 +5690,63 @@ function IdfromLegendmod() {
         localStorage.setItem("userid", window.userid);
     }
 }
-/* Cloud settings were stored under (user id, "LMSettings"): anyone who knew the id could read or
- * overwrite them. Each browser now adds a random sync code to the password, so the record key
- * cannot be guessed. The same code entered on another device loads the same record. The server
- * is unchanged; old records (no code) can still be loaded once to move them over. */
-function _lmCloudCode(create) {
-    var c = '';
-    try { c = localStorage.getItem('lmCloudSyncCode') || ''; } catch (e) { }
-    if (!c && create) {
-        var a = new Uint8Array(12);
-        try { crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
-        c = Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
-        try { localStorage.setItem('lmCloudSyncCode', c); } catch (e) { }
-    }
-    return c;
+/* Cloud settings belong to the Google / Facebook account that is logged in: the request carries
+ * the login token (header lm-auth) and the settings server checks it with Google / Facebook, so
+ * only that account can read or write its record. No password, no sync code.
+ * Before: the record key was (user id, "LMSettings"), readable and writable by anyone who knew
+ * the id, and then (user id, "LMSettings:" + a per-browser sync code) that every other device had
+ * to type in. Both old records are still read when the account has none yet, and the first upload
+ * moves the settings to the account and blanks them. */
+function _lmCloudCode() {
+    try { return localStorage.getItem('lmCloudSyncCode') || ''; } catch (e) { return ''; }
 }
 function _lmCloudPass(code) { return code ? 'LMSettings:' + code : 'LMSettings'; }
-function SNEZOgarUpload() {
-    //$("#export-settings-btn").click();
-    //postSNEZ("https://lmsettings.snez.org/", "test", "test1234", "{ a: 1, b: 2, d: 4}");
-    IdfromLegendmod()
-    if (userid == "" || userid == null) {
-        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
-    }
-    else {
-        //postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", $('#export-settings').val());
-        var _lmCode = _lmCloudCode(true);
+/* { user, auth } of the logged-in account, or null (not logged in this session) */
+function _lmCloudLogin() {
+    var m = window.master;
+    if (!m || !m.accessToken || (m.context !== 'google' && m.context !== 'facebook')) return null;
+    var user = String(userid || '');
+    if (m.context === 'google') {
+        /* the account of the token itself (userid can still be an earlier account's) */
         try {
-            var _lmUp = new XMLHttpRequest();
-            _lmUp.open("POST", "https://api.legendmod.ml/lm-settings", true);
-            _lmUp.setRequestHeader("username", userid);
-            _lmUp.setRequestHeader("password", _lmCloudPass(_lmCode));
-            _lmUp.onload = function () {
-                /* the old record (no code) could still be read by anyone who knows the id:
-                 * blank it once the settings are stored under the code */
-                if (_lmUp.status === 200) postSNEZ("https://api.legendmod.ml/lm-settings", userid, _lmCloudPass(''), '{}');
-                else toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (' + _lmUp.status + ').');
-            };
-            _lmUp.onerror = function () { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (network).'); };
-            _lmUp.send(encodeURIComponent($('#export-settings').val()));
-        } catch (eUp) { }
-        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter129 + ". " + Languageletter363 + ": <font color='yellow'><b>" + $('<div>').text(userid).html() + "</b></font>" +
-            "<br>Sync code for your other devices: <font color='yellow'><b>" + _lmCode + "</b></font>" +
-            "<br><small>On another device: Shift+click Download to enter this code.</small>", "", { timeOut: 20000, extendedTimeOut: 20000 });
+            var part = String(m.accessToken).split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            var p = JSON.parse(atob(part + '==='.slice((part.length + 3) % 4)));
+            if (p && p.sub) user = String(p.sub);
+        } catch (e) { }
     }
+    if (!user) return null;
+    return { user: user, auth: m.context + ':' + m.accessToken };
+}
+function _lmCloudRequest(method, headers, body, cb) {
+    try {
+        var x = new XMLHttpRequest();
+        x.open(method, 'https://api.legendmod.ml/lm-settings', true);
+        for (var h in headers) x.setRequestHeader(h, headers[h]);
+        x.onload = function () { cb(x); };
+        x.onerror = function () { cb(null); };
+        x.send(body == null ? null : body);
+    } catch (e) { cb(null); }
+}
+function _lmCloudNeedLogin(expired) {
+    toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + (expired
+        ? 'Your login has expired. Log in with Google or Facebook again, then try once more.'
+        : 'Log in with Google or Facebook to keep your settings in the cloud.'));
+}
+function SNEZOgarUpload() {
+    IdfromLegendmod();
+    var login = _lmCloudLogin();
+    if (!login) { _lmCloudNeedLogin(false); return; }
+    _lmCloudRequest('POST', { username: login.user, 'lm-auth': login.auth }, encodeURIComponent($('#export-settings').val()), function (x) {
+        if (!x) { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (network).'); return; }
+        if (x.status === 401) { _lmCloudNeedLogin(true); return; }
+        if (x.status !== 200) { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (' + x.status + ').'); return; }
+        /* the old records could be read by anyone who knew the id (or the sync code): blank them */
+        postSNEZ("https://api.legendmod.ml/lm-settings", login.user, _lmCloudPass(''), '{}');
+        var code = _lmCloudCode();
+        if (code) postSNEZ("https://api.legendmod.ml/lm-settings", login.user, _lmCloudPass(code), '{}');
+        toastr.info('<b>[' + Premadeletter123 + ']:</b> Settings saved to the cloud for your ' +
+            (login.auth.indexOf('google:') === 0 ? 'Google' : 'Facebook') + ' account. Log in with it on any device and press Download.');
+    });
 }
 
 /* Cloud settings are keyed only by the user id, so a download may hold values
@@ -5767,61 +5780,40 @@ function _lmCloudSettingsFilter(text) {
     return JSON.stringify(json, null, 4);
 }
 
-function SNEZOgarDownload(ev) {
-    IdfromLegendmod()
-    if (userid == "" || userid == null) {
-        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
-    }
-    else {
-        var _lmCode = _lmCloudCode(false);
-        var _lmTypedNew = false;
-        if (ev && ev.shiftKey) {
-            /* use the code of another device (this one may already have its own) */
-            var _lmOther = window.prompt('Sync code from your other device:', _lmCode || '');
-            if (_lmOther === null) return;
-            _lmOther = String(_lmOther).trim().toLowerCase();
-            if (!/^[0-9a-f]{24}$/.test(_lmOther)) {
-                toastr.error('<b>[' + Premadeletter123 + ']:</b> That is not a sync code (24 characters, 0-9 and a-f).');
-                return;
-            }
-            if (_lmOther !== _lmCode) { _lmCode = _lmOther; _lmTypedNew = true; }
-        }
-        if (!_lmCode) {
-            /* new browser: the code shown when the settings were uploaded on another device */
-            var _lmTyped = String(window.prompt('Enter the sync code shown when you uploaded your settings on another device.\n\nLeave it empty to load settings uploaded before sync codes existed.') || '').trim().toLowerCase();
-            if (_lmTyped && !/^[0-9a-f]{24}$/.test(_lmTyped)) {
-                toastr.error('<b>[' + Premadeletter123 + ']:</b> That is not a sync code (24 characters, 0-9 and a-f).');
-                return;
-            }
-            if (_lmTyped) { _lmCode = _lmTyped; _lmTypedNew = true; }
-        }
-        var _lmLoad = function (pass, fallback) {
-            getSNEZ("https://api.legendmod.ml/lm-settings", userid, pass, function (xhttp) {
-                if (!xhttp) return;
-                var _lmBody = String(xhttp.response || '').trim();
-                /* a blanked old record ('{}') counts as missing */
-                if (xhttp.status === 404 || (xhttp.status === 200 && (_lmBody === '' || _lmBody === '{}' || _lmBody === '%7B%7D'))) {
-                    if (fallback) return fallback();
-                    toastr.warning('<b>[' + Premadeletter123 + ']:</b> No cloud settings found for this id.');
-                    return;
-                }
-                if (xhttp.status !== 200) {
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud settings could not be loaded.');
-                    return;
-                }
-                var responseSNEZ = xhttp.response;
-                /* a typed code is kept only once its record was found (a typo was stored for good) */
-                if (_lmTypedNew && pass === _lmCloudPass(_lmCode)) { try { localStorage.setItem('lmCloudSyncCode', _lmCode); } catch (e) { } }
-                /* try decodeURIComponent first (new uploads); fall back to unescape for legacy records */
-                var _decoded;
-                try { _decoded = decodeURIComponent(responseSNEZ); } catch (_e) { _decoded = unescape(responseSNEZ); }
-                $('#import-settings').val(_lmCloudSettingsFilter(_decoded));
-                $("#import-settings-btn2").click();
-            });
-        };
-        /* with a code: its record; nothing there yet = the old record (moved over on the next upload) */
-        _lmLoad(_lmCloudPass(_lmCode), _lmCode ? function () { _lmLoad(_lmCloudPass(''), null); } : null);
-    }
+function SNEZOgarDownload() {
+    IdfromLegendmod();
+    var login = _lmCloudLogin();
+    if (!login) { _lmCloudNeedLogin(false); return; }
+    var empty = function (x) {
+        var b = String(x.response || '').trim();
+        return x.status === 404 || (x.status === 200 && (b === '' || b === '{}' || b === '%7B%7D'));
+    };
+    var apply = function (x) {
+        var _decoded;
+        /* decodeURIComponent first (new uploads); unescape for legacy records */
+        try { _decoded = decodeURIComponent(x.response); } catch (_e) { _decoded = unescape(x.response); }
+        $('#import-settings').val(_lmCloudSettingsFilter(_decoded));
+        $("#import-settings-btn2").click();
+    };
+    /* records from before (no account check): this browser's sync code record, then the plain one */
+    var legacy = [];
+    var code = _lmCloudCode();
+    if (code) legacy.push(_lmCloudPass(code));
+    legacy.push(_lmCloudPass(''));
+    var nextLegacy = function () {
+        if (!legacy.length) { toastr.warning('<b>[' + Premadeletter123 + ']:</b> No cloud settings found for this account.'); return; }
+        _lmCloudRequest('GET', { username: login.user, password: legacy.shift() }, null, function (x) {
+            if (!x || x.status !== 200 || empty(x)) return nextLegacy();
+            apply(x);
+        });
+    };
+    _lmCloudRequest('GET', { username: login.user, 'lm-auth': login.auth }, null, function (x) {
+        if (!x) { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud settings could not be loaded (network).'); return; }
+        if (x.status === 401) { _lmCloudNeedLogin(true); return; }
+        if (empty(x)) return nextLegacy();
+        if (x.status !== 200) { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud settings could not be loaded.'); return; }
+        apply(x);
+    });
 }
 
 
