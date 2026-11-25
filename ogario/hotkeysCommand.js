@@ -16,7 +16,7 @@
                 var L = window.legendmod;
                 var onEl = !!(L && (L.isLegendWorld || L.serverType === 'expandingland'));
                 if (!onEl) {
-                    if (window.toastr) toastr.info('Expanding Land only: join an Expanding Land server first.');
+                    if (window.toastr) toastr.info(lmT('game2.hkElOnly'));
                     return;
                 }
                 if (modalId) {
@@ -25,7 +25,7 @@
                 }
                 var btn = document.getElementById('lm-leagues-btn');
                 if (!btn || btn.disabled) {
-                    if (window.toastr) toastr.info((window._lmLoginHint && window._lmLoginHint()) || 'Log in and play a game session first');
+                    if (window.toastr) toastr.info((window._lmLoginHint && window._lmLoginHint()) || lmT('game2.hkLoginFirst'));
                     return;
                 }
                 open();
@@ -33,7 +33,7 @@
         };
         hotkeysCommand = {
             'hk-feed': {
-                label: textLanguage['hk-feed'],
+                get label() { return lmT('settings.hk-feed'); },
                 defaultKey: 'W',
                 keyDown() {
                     application && application.feed();
@@ -42,7 +42,7 @@
                 type: 'normal'
             },
             'hk-macroFeed': {
-                label: textLanguage['hk-macroFeed'],
+                get label() { return lmT('settings.hk-macroFeed'); },
                 defaultKey: 'E',
                 keyDown() {
                     application && application.macroFeed(!0);
@@ -53,7 +53,7 @@
                 type: 'normal'
             },
             'hk-macroFeedPerm': {
-                label: textLanguage['hk-macroFeedPerm'],
+                get label() { return lmT('settings.hk-macroFeedPerm'); },
                 defaultKey: 'CTRL+E',
                 keyDown() {;
                     application && application.macroFeedPerm(!0);
@@ -61,7 +61,7 @@
                 type: 'normal'
             },			
             'hk-split': {
-                label: textLanguage['hk-split'],
+                get label() { return lmT('settings.hk-split'); },
                 defaultKey: 'SPACE',
                 keyDown() {
                     application && application.split();
@@ -70,7 +70,7 @@
                 type: 'normal'
             },		
             'hk-doubleSplit': {
-                label: textLanguage['hk-doubleSplit'],
+                get label() { return lmT('settings.hk-doubleSplit'); },
                 defaultKey: 'Q',
                 keyDown() {
                     application && application.doubleSplit();
@@ -81,7 +81,7 @@
             /* opens the Analytics window (ogario/modules/analytics.js); no default key */
             'hk-analytics': {
                 get label() {
-                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-analytics']) || 'Open Analytics';
+                    return lmT('settings.hk-analytics');
                 },
                 defaultKey: '',
                 keyDown() {
@@ -94,7 +94,7 @@
                 type: 'normal'
             },
             'hk-tripleSplit': {
-                label: textLanguage['hk-tripleSplit'],
+                get label() { return lmT('settings.hk-tripleSplit'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.tripleSplit();
@@ -103,7 +103,7 @@
                 type: 'normal'
             },			
             'hk-popSplit': {
-                label: 'Popsplit',
+                get label() { return lmT('game2.hkPopSplit'); },
                 defaultKey: 'ALT+Q',
                 keyDown() {
                     application && application.popSplit();
@@ -112,7 +112,7 @@
                 type: 'normal'
             },
             'hk-split16': {
-                label: textLanguage['hk-split16'],
+                get label() { return lmT('settings.hk-split16'); },
                 defaultKey: 'SHIFT',
                 keyDown() {
                     application && application.split16();
@@ -121,7 +121,7 @@
                 type: 'normal'
             },
             'hk-crazyDoubleSplit': {
-                label: textLanguage['hk-crazyDoubleSplit'],
+                get label() { return lmT('settings.hk-crazyDoubleSplit'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.crazyDoubleSplit();
@@ -133,7 +133,7 @@
              * No default key: E, the old standalone script's key, is macro feed here. */
             'hk-lineSplit': {
                 get label() {
-                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-lineSplit']) || 'Line split';
+                    return lmT('settings.hk-lineSplit');
                 },
                 defaultKey: '',
                 keyDown() {
@@ -149,7 +149,7 @@
              * made in Settings > Macro > Custom macros); no default key */
             'hk-customMacro1': {
                 get label() {
-                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-customMacro1']) || 'Custom macro 1 (Settings > Macro > Custom macros)';
+                    return lmT('settings.hk-customMacro1');
                 },
                 defaultKey: '',
                 keyDown() {
@@ -160,7 +160,7 @@
             },
             'hk-customMacro2': {
                 get label() {
-                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-customMacro2']) || 'Custom macro 2 (Settings > Macro > Custom macros)';
+                    return lmT('settings.hk-customMacro2');
                 },
                 defaultKey: '',
                 keyDown() {
@@ -171,7 +171,7 @@
             },
             'hk-customMacro3': {
                 get label() {
-                    return (typeof textLanguage !== 'undefined' && textLanguage['hk-customMacro3']) || 'Custom macro 3 (Settings > Macro > Custom macros)';
+                    return lmT('settings.hk-customMacro3');
                 },
                 defaultKey: '',
                 keyDown() {
@@ -181,7 +181,7 @@
                 type: 'normal'
             },		
             'hk-pause': {
-                label: textLanguage['hk-pause'],
+                get label() { return lmT('settings.hk-pause'); },
                 defaultKey: 'R',
                 keyDown() {
                     application && application.setPause();
@@ -190,7 +190,7 @@
                 type: 'normal'
             },
 			'hk-dance': {
-				label: textLanguage['hk-dance'],
+				get label() { return lmT('settings.hk-dance'); },
 				defaultKey: 'ALT+R',
 				keyDown() {
 				application && application.dance(true);
@@ -204,7 +204,7 @@
 			 * settings switch so its backup/restore of the effect settings runs exactly once. */
 			'hk-performanceMode': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-performanceMode']) || 'Toggle performance mode';
+					return lmT('settings.hk-performanceMode');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -222,7 +222,7 @@
 			},
 			'hk-mergeRings': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-mergeRings']) || 'Show/hide merge rings';
+					return lmT('settings.hk-mergeRings');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -235,7 +235,7 @@
 			},
 			'hk-elLeagues': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elLeagues']) || 'Expanding Land: Leagues';
+					return lmT('settings.hk-elLeagues');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -246,7 +246,7 @@
 			},
 			'hk-elShop': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elShop']) || 'Expanding Land: Shop';
+					return lmT('settings.hk-elShop');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -257,7 +257,7 @@
 			},
 			'hk-elChallenges': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elChallenges']) || 'Expanding Land: Challenges';
+					return lmT('settings.hk-elChallenges');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -268,7 +268,7 @@
 			},
 			'hk-elPotions': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elPotions']) || 'Expanding Land: Potions help';
+					return lmT('settings.hk-elPotions');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -279,7 +279,7 @@
 			},
 			'hk-elClaimAll': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-elClaimAll']) || 'Expanding Land: Claim All';
+					return lmT('settings.hk-elClaimAll');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -290,7 +290,7 @@
 			},
 			'hk-replayPause': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayPause']) || 'Replay: pause/resume';
+					return lmT('settings.hk-replayPause');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -301,7 +301,7 @@
 			},
 			'hk-replayFaster': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayFaster']) || 'Replay: faster';
+					return lmT('settings.hk-replayFaster');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -312,7 +312,7 @@
 			},
 			'hk-replaySlower': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replaySlower']) || 'Replay: slower';
+					return lmT('settings.hk-replaySlower');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -323,7 +323,7 @@
 			},
 			'hk-replayFwd': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayFwd']) || 'Replay: forward 250 packets';
+					return lmT('settings.hk-replayFwd');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -334,7 +334,7 @@
 			},
 			'hk-replayBack': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayBack']) || 'Replay: back 250 packets';
+					return lmT('settings.hk-replayBack');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -345,7 +345,7 @@
 			},
 			'hk-replayStudio': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-replayStudio']) || 'Open Replay Studio';
+					return lmT('settings.hk-replayStudio');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -356,7 +356,7 @@
 			},
 			'hk-instantReplay': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-instantReplay']) || 'Instant replay (last seconds; opens after you die)';
+					return lmT('settings.hk-instantReplay');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -369,7 +369,7 @@
 			/* opens the practice arena window (ogario/modules/practice.js); no default key */
 			'hk-practice': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-practice']) || 'Open the practice arena';
+					return lmT('settings.hk-practice');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -380,7 +380,7 @@
 			},
 			'hk-middleMultiView': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-middleMultiView']) || 'Toggle multibox middle view';
+					return lmT('settings.hk-middleMultiView');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -393,7 +393,7 @@
 			},
 			'hk-mbRings': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-mbRings']) || 'Show/hide multibox rings';
+					return lmT('settings.hk-mbRings');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -412,7 +412,7 @@
 			},
 			'hk-bigMinimap': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-bigMinimap']) || 'Enlarge / restore minimap';
+					return lmT('settings.hk-bigMinimap');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -423,7 +423,7 @@
 			},
 			'hk-gamepadWindow': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-gamepadWindow']) || 'Open / close the Gamepad window';
+					return lmT('settings.hk-gamepadWindow');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -436,7 +436,7 @@
 			/* Settings profiles (ogario/modules/profiles.js): no default keys */
 			'hk-lmProfilesWindow': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmProfilesWindow']) || 'Settings profiles: open / close window';
+					return lmT('settings.hk-lmProfilesWindow');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -447,7 +447,7 @@
 			},
 			'hk-lmProfileNext': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmProfileNext']) || 'Settings profiles: apply the next profile';
+					return lmT('settings.hk-lmProfileNext');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -458,7 +458,7 @@
 			},
 			'hk-lmProfilePrev': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmProfilePrev']) || 'Settings profiles: apply the previous profile';
+					return lmT('settings.hk-lmProfilePrev');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -469,7 +469,7 @@
 			},
 			'hk-lmProfileUndo': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmProfileUndo']) || 'Settings profiles: undo the last profile change';
+					return lmT('settings.hk-lmProfileUndo');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -481,7 +481,7 @@
 			/* Theme workshop window (ogario/modules/themeworkshop.js): no default key */
 			'hk-lmThemeWorkshop': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmThemeWorkshop']) || 'Theme workshop: open / close window';
+					return lmT('settings.hk-lmThemeWorkshop');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -492,7 +492,7 @@
 			},
 			'hk-copyServerLink': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-copyServerLink']) || 'Copy server link + password (TK&PW)';
+					return lmT('settings.hk-copyServerLink');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -503,16 +503,16 @@
 						/* the copy selects a hidden input: give the keys back to the game */
 						var ae = document.activeElement;
 						if (ae && ae.id === 'tempCopy') ae.blur();
-						if (window.toastr) { if (String($('#server-token').val() || '').trim()) toastr.info('Server link copied.'); else toastr.info('Server link: not available yet.'); }
+						if (window.toastr) { if (String($('#server-token').val() || '').trim()) toastr.info(lmT('game2.hkLinkCopied')); else toastr.info(lmT('game2.hkLinkNotYet')); }
 					}
-					else if (window.toastr) toastr.info('Server link: not available yet.');
+					else if (window.toastr) toastr.info(lmT('game2.hkLinkNotYet'));
 				},
 				keyUp: null,
 				type: 'normal'
 			},
 			'hk-netGraph': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-netGraph']) || 'Show / hide net graph (FPS, ping)';
+					return lmT('settings.hk-netGraph');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -523,7 +523,7 @@
 			},
 			'hk-perfDiag': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-perfDiag']) || 'Show / hide performance diagnostics';
+					return lmT('settings.hk-perfDiag');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -534,7 +534,7 @@
 			},
 			'hk-chatSounds': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-chatSounds']) || 'Mute / unmute chat sounds';
+					return lmT('settings.hk-chatSounds');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -543,14 +543,14 @@
 					defaultmapsettings.chatSounds = !defaultmapsettings.chatSounds;
 					if (typeof application.setChatSoundsBtn === 'function') application.setChatSoundsBtn();
 					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('chatSounds');
-					if (window.toastr) toastr.info('Chat sounds ' + (defaultmapsettings.chatSounds ? 'on' : 'off'));
+					if (window.toastr) toastr.info(defaultmapsettings.chatSounds ? lmT('game2.hkChatSoundsOn') : lmT('game2.hkChatSoundsOff'));
 				},
 				keyUp: null,
 				type: 'normal'
 			},
 			'hk-notifCentre': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-notifCentre']) || 'Open the notification centre';
+					return lmT('settings.hk-notifCentre');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -562,7 +562,7 @@
 			},
 			'hk-pingHelp': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingHelp']) || 'Team ping: Help';
+					return lmT('settings.hk-pingHelp');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -574,7 +574,7 @@
 			},
 			'hk-pingDanger': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingDanger']) || 'Team ping: Danger';
+					return lmT('settings.hk-pingDanger');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -586,7 +586,7 @@
 			},
 			'hk-pingGoHere': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingGoHere']) || 'Team ping: Go here';
+					return lmT('settings.hk-pingGoHere');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -598,7 +598,7 @@
 			},
 			'hk-pingVirus': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-pingVirus']) || 'Team ping: Virus here';
+					return lmT('settings.hk-pingVirus');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -610,7 +610,7 @@
 			},
 			'hk-specNextTop': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-specNextTop']) || 'Free spectate: follow next leaderboard player';
+					return lmT('settings.hk-specNextTop');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -619,7 +619,7 @@
 					var lm = window.legendmod;
 					if (!lm || lm.play) return;
 					if (!lm.isFreeSpectate) {
-						if (window.toastr) toastr.info('Free spectate first');
+						if (window.toastr) toastr.info(lmT('game2.hkFreeSpecFirst'));
 						return;
 					}
 					var n = lm.ghostCells ? lm.ghostCells.length : 0;
@@ -627,7 +627,7 @@
 					lm._lmSpecLb = lm._lmSpecLb == null ? 0 : (lm._lmSpecLb + 1) % n;
 					lm._lmSpecCell = null; /* one follow at a time */
 					lm._lmSpecLbHud && lm._lmSpecLbHud();
-					var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
+					var label = lmT('settings.lmSpecFollowing');
 					if (window.toastr) toastr.info(label + ' #' + (lm._lmSpecLb + 1));
 				},
 				keyUp: null,
@@ -636,7 +636,7 @@
 			/* Spectator director (ogario/modules/director.js): only while spectating, never while playing */
 			'hk-director': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-director']) || 'Spectator director: open / close the panel';
+					return lmT('settings.hk-director');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -647,7 +647,7 @@
 			},
 			'hk-dirAuto': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirAuto']) || 'Spectator director: auto camera on / off';
+					return lmT('settings.hk-dirAuto');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -658,7 +658,7 @@
 			},
 			'hk-dirBroadcast': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirBroadcast']) || 'Spectator director: broadcast HUD on / off';
+					return lmT('settings.hk-dirBroadcast');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -669,7 +669,7 @@
 			},
 			'hk-dirWatchNext': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirWatchNext']) || 'Spectator director: next watched player';
+					return lmT('settings.hk-dirWatchNext');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -680,7 +680,7 @@
 			},
 			'hk-dirWatchPrev': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirWatchPrev']) || 'Spectator director: previous watched player';
+					return lmT('settings.hk-dirWatchPrev');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -691,7 +691,7 @@
 			},
 			'hk-dirWatchAdd': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirWatchAdd']) || 'Spectator director: watch the player under the mouse';
+					return lmT('settings.hk-dirWatchAdd');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -702,7 +702,7 @@
 			},
 			'hk-dirMarkSave': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMarkSave']) || 'Spectator director: save a camera bookmark';
+					return lmT('settings.hk-dirMarkSave');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -713,7 +713,7 @@
 			},
 			'hk-dirMark1': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark1']) || 'Spectator director: go to camera bookmark 1';
+					return lmT('settings.hk-dirMark1');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -724,7 +724,7 @@
 			},
 			'hk-dirMark2': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark2']) || 'Spectator director: go to camera bookmark 2';
+					return lmT('settings.hk-dirMark2');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -735,7 +735,7 @@
 			},
 			'hk-dirMark3': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark3']) || 'Spectator director: go to camera bookmark 3';
+					return lmT('settings.hk-dirMark3');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -746,7 +746,7 @@
 			},
 			'hk-dirMark4': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark4']) || 'Spectator director: go to camera bookmark 4';
+					return lmT('settings.hk-dirMark4');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -757,7 +757,7 @@
 			},
 			'hk-dirMark5': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-dirMark5']) || 'Spectator director: go to camera bookmark 5';
+					return lmT('settings.hk-dirMark5');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -768,7 +768,7 @@
 			},
 			'hk-prevServer': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-prevServer']) || 'Reconnect to the previous server';
+					return lmT('settings.hk-prevServer');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -780,7 +780,7 @@
 			},
 			'hk-scanTrick': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
+					return lmT('settings.hk-scanTrick');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -800,7 +800,7 @@
 			/* Command Centre search box (ogario/modules/commandcentre.js); Ctrl+K opens it too */
 			'hk-commandCentre': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-commandCentre']) || 'Command Centre';
+					return lmT('settings.hk-commandCentre');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -812,7 +812,7 @@
 			/* Small tools (ogario/modules/smalltools.js), no default keys. Radial menu: hold, point, release */
 			'hk-radialMenu': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-radialMenu']) || 'Radial command menu (hold)';
+					return lmT('settings.hk-radialMenu');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -825,7 +825,7 @@
 			},
 			'hk-radialEditor': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-radialEditor']) || 'Radial menu: choose commands';
+					return lmT('settings.hk-radialEditor');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -837,7 +837,7 @@
 			/* User Scripts panel with its plugin views (ogario/modules/plugins.js) and the Lab (lab.js) */
 			'hk-lmPlugins': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmPlugins']) || 'Open User Scripts (plugins, catalogue)';
+					return lmT('settings.hk-lmPlugins');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -848,7 +848,7 @@
 			},
 			'hk-lmLab': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-lmLab']) || 'Open the Lab (experimental features)';
+					return lmT('settings.hk-lmLab');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -860,7 +860,7 @@
 			/* HUD editor (ogario/modules/hudeditor.js): opens / closes the frames over the HUD boxes */
 			'hk-hudEditor': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-hudEditor']) || 'Edit HUD';
+					return lmT('settings.hk-hudEditor');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -871,7 +871,7 @@
 			},
 			'hk-hotkeyConflicts': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-hotkeyConflicts']) || 'Hotkey conflicts';
+					return lmT('settings.hk-hotkeyConflicts');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -882,7 +882,7 @@
 			},
 			'hk-screenshotMode': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-screenshotMode']) || 'Screenshot mode (hide the HUD)';
+					return lmT('settings.hk-screenshotMode');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -893,7 +893,7 @@
 			},
 			'hk-screenshotCapture': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-screenshotCapture']) || 'Capture screenshot (PNG)';
+					return lmT('settings.hk-screenshotCapture');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -904,7 +904,7 @@
 			},
 			'hk-screenshotTool': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-screenshotTool']) || 'Screenshot window';
+					return lmT('settings.hk-screenshotTool');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -915,7 +915,7 @@
 			},
 			'hk-skinCollections': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-skinCollections']) || 'Skin collections';
+					return lmT('settings.hk-skinCollections');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -926,7 +926,7 @@
 			},
 			'hk-limitposition': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-limitposition']) || 'Limit Position';
+					return lmT('settings.hk-limitposition');
 				},
 				defaultKey: '',
 				keyDown() {
@@ -938,7 +938,7 @@
 				type: 'normal'
 			},			
             'hk-multiboxswap': {
-                label: textLanguage['hk-multiboxswap'],
+                get label() { return lmT('settings.hk-multiboxswap'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.multiboxswap();
@@ -948,7 +948,7 @@
             },
             /*
             'hk-multiboxback': {
-                label: textLanguage['hk-multiboxback'],
+                get label() { return lmT('settings.hk-multiboxback'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.multiboxback();
@@ -958,7 +958,7 @@
             },
             */	
             'hk-multiboxFollowMouse': {
-                label: textLanguage['hk-multiboxFollowMouse'],
+                get label() { return lmT('settings.hk-multiboxFollowMouse'); },
                 defaultKey: 'TILDE',
                 keyDown() {
                     application && application.multiboxFollowMouse();
@@ -967,7 +967,7 @@
                 type: 'normal'
             },				
             'hk-showTop5': {
-                label: textLanguage['hk-showTop5'],
+                get label() { return lmT('settings.hk-showTop5'); },
                 defaultKey: 'T',
                 keyDown() {
                     application && application.setShowTop5();
@@ -976,7 +976,7 @@
                 type: 'normal'
             },
             'hk-showTime': {
-                label: textLanguage['hk-showTime'],
+                get label() { return lmT('settings.hk-showTime'); },
                 defaultKey: 'ALT+T',
                 keyDown() {
                     application && application.setShowTime();
@@ -985,7 +985,7 @@
                 type: 'normal'
             },
             'hk-showSplitRange': {
-                label: textLanguage['hk-showSplitRange'],
+                get label() { return lmT('settings.hk-showSplitRange'); },
                 defaultKey: 'U',
                 keyDown() {
                     application && application.setShowSplitRange();
@@ -994,7 +994,7 @@
                 type: 'normal'
             },
             'hk-showSplitInd': {
-                label: textLanguage['hk-showSplitInd'],
+                get label() { return lmT('settings.hk-showSplitInd'); },
                 defaultKey: 'I',
                 keyDown() {
                     application && application.setShowSplitInd();
@@ -1003,7 +1003,7 @@
                 type: 'normal'
             },
             'hk-showTeammatesInd': {
-                label: textLanguage['hk-showTeammatesInd'],
+                get label() { return lmT('settings.hk-showTeammatesInd'); },
                 defaultKey: 'ALT+I',
                 keyDown() {
                     application && application.setShowTeammatesInd();
@@ -1012,7 +1012,7 @@
                 type: 'normal'
             },
             'hk-showOppColors': {
-                label: textLanguage['hk-showOppColors'],
+                get label() { return lmT('settings.hk-showOppColors'); },
                 defaultKey: 'O',
                 keyDown() {
                     application && application.setShowOppColors();
@@ -1021,7 +1021,7 @@
                 type: 'normal'
             },
             'hk-toggleSkins': {
-                label: textLanguage['hk-toggleSkins'],
+                get label() { return lmT('settings.hk-toggleSkins'); },
                 defaultKey: 'A',
                 keyDown() {
                     application && application.toggleSkins();
@@ -1030,10 +1030,10 @@
                 type: 'normal'
             },
             'hk-transparentSkins': {
-                label:
-                    textLanguage[
-                        'hk-transparentSkins'
-                    ],
+                get label() { return lmT('settings.hk-transparentSkins'); },
+                    
+                        
+                    
 
                 defaultKey: '',
 
@@ -1050,7 +1050,7 @@
 
 
             'hk-showSkins': {
-                label: textLanguage['hk-showSkins'],
+                get label() { return lmT('settings.hk-showSkins'); },
                 defaultKey: 'S',
                 keyDown() {
                     application && application.setShowSkins();
@@ -1059,7 +1059,7 @@
                 type: 'normal'
             },
             'hk-showStats': {
-                label: textLanguage['hk-showStats'],
+                get label() { return lmT('settings.hk-showStats'); },
                 defaultKey: 'ALT+S',
                 keyDown() {
                     application && application.setShowStats();
@@ -1068,7 +1068,7 @@
                 type: 'normal'
             },
             'hk-toggleCells': {
-                label: textLanguage['hk-toggleCells'],
+                get label() { return lmT('settings.hk-toggleCells'); },
                 defaultKey: 'D',
                 keyDown() {
                     application && application.toggleCells();
@@ -1077,7 +1077,7 @@
                 type: 'normal'
             },
             'hk-showFood': {
-                label: textLanguage['hk-showFood'],
+                get label() { return lmT('settings.hk-showFood'); },
                 defaultKey: 'F',
                 keyDown() {
                     application && application.setShowFood();
@@ -1086,7 +1086,7 @@
                 type: 'normal'
             },
             'hk-showGrid': {
-                label: textLanguage['hk-showGrid'],
+                get label() { return lmT('settings.hk-showGrid'); },
                 defaultKey: 'G',
                 keyDown() {
                     application && application.setShowGrid();
@@ -1095,7 +1095,7 @@
                 type: 'normal'
             },
             'hk-showMiniMapGuides': {
-                label: textLanguage['hk-showMiniMapGuides'],
+                get label() { return lmT('settings.hk-showMiniMapGuides'); },
                 defaultKey: 'ALT+G',
                 keyDown() {
                     application && application.setShowMiniMapGuides();
@@ -1104,7 +1104,7 @@
                 type: 'normal'
             },
             'hk-hideChat': {
-                label: textLanguage['hk-hideChat'],
+                get label() { return lmT('settings.hk-hideChat'); },
                 defaultKey: 'H',
                 keyDown() {
                     application && application.hideChat();
@@ -1113,7 +1113,7 @@
                 type: 'normal'
             },
             'hk-showHUD': {
-                label: textLanguage['hk-showHUD'],
+                get label() { return lmT('settings.hk-showHUD'); },
                 defaultKey: 'ALT+H',
                 keyDown() {
                     application && application.setShowHUD();
@@ -1122,7 +1122,7 @@
                 type: 'normal'
             },
             'hk-copyLb': {
-                label: textLanguage['hk-copyLb'],
+                get label() { return lmT('settings.hk-copyLb'); },
                 defaultKey: 'L',
                 keyDown() {
                     application && application.copyLb();
@@ -1131,7 +1131,7 @@
                 type: 'normal'
             },
             'hk-showLb': {
-                label: textLanguage['hk-showLb'],
+                get label() { return lmT('settings.hk-showLb'); },
                 defaultKey: 'ALT+L',
                 keyDown() {
                     application && application.setShowLb();
@@ -1140,7 +1140,7 @@
                 type: 'normal'
             },
             'hk-toggleAutoZoom': {
-                label: textLanguage['hk-toggleAutoZoom'],
+                get label() { return lmT('settings.hk-toggleAutoZoom'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.toggleAutoZoom();
@@ -1149,7 +1149,7 @@
                 type: 'normal'
             },
             'hk-resetZoom': {
-                label: textLanguage['hk-resetZoom'],
+                get label() { return lmT('settings.hk-resetZoom'); },
                 defaultKey: 'Z',
                 keyDown() {
                     application && application.resetZoom(!0);
@@ -1160,7 +1160,7 @@
                 type: 'normal'
             },
             'hk-toggleDeath': {
-                label: textLanguage['hk-toggleDeath'],
+                get label() { return lmT('settings.hk-toggleDeath'); },
                 defaultKey: 'X',
                 keyDown() {
                     application && application.toggleDeath();
@@ -1169,7 +1169,7 @@
                 type: 'normal'
             },
             'hk-clearChat': {
-                label: textLanguage['hk-clearChat'],
+                get label() { return lmT('settings.hk-clearChat'); },
                 defaultKey: 'C',
                 keyDown() {
                     application && application.displayChatHistory(!0);
@@ -1180,7 +1180,7 @@
                 type: 'normal'
             },
             'hk-showBgSectors': {
-                label: textLanguage['hk-showBgSectors'],
+                get label() { return lmT('settings.hk-showBgSectors'); },
                 defaultKey: 'B',
                 keyDown() {
                     application && application.setShowBgSectors();
@@ -1189,7 +1189,7 @@
                 type: 'normal'
             },
             'hk-hideBots': {
-                label: textLanguage['hk-hideBots'],
+                get label() { return lmT('settings.hk-hideBots'); },
                 defaultKey: 'ALT+B',
                 keyDown() {
                     application && application.setHideSmallBots();
@@ -1198,7 +1198,7 @@
                 type: 'normal'
             },
             'hk-showNames': {
-                label: textLanguage['hk-showNames'],
+                get label() { return lmT('settings.hk-showNames'); },
                 defaultKey: 'N',
                 keyDown() {
                     application && application.setShowNames();
@@ -1207,7 +1207,7 @@
                 type: 'normal'
             },
             'hk-hideTeammatesNames': {
-                label: textLanguage['hk-hideTeammatesNames'],
+                get label() { return lmT('settings.hk-hideTeammatesNames'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.setHideTeammatesNames();
@@ -1216,7 +1216,7 @@
                 type: 'normal'
             },
             'hk-showMass': {
-                label: textLanguage['hk-showMass'],
+                get label() { return lmT('settings.hk-showMass'); },
                 defaultKey: 'M',
                 keyDown() {
                     application && application.setShowMass();
@@ -1225,7 +1225,7 @@
                 type: 'normal'
             },
             'hk-showMiniMap': {
-                label: textLanguage['hk-showMiniMap'],
+                get label() { return lmT('settings.hk-showMiniMap'); },
                 defaultKey: 'ALT+M',
                 keyDown() {
                     application && application.setShowMiniMap();
@@ -1234,7 +1234,7 @@
                 type: 'normal'
             },
             'hk-chatMessage': {
-                label: textLanguage['hk-chatMessage'],
+                get label() { return lmT('settings.hk-chatMessage'); },
                 defaultKey: 'ENTER',
                 keyDown() {
                     application && application.enterChatMessage();
@@ -1243,7 +1243,7 @@
                 type: 'special'
             },
             'hk-quickResp': {
-                label: textLanguage['hk-quickResp'],
+                get label() { return lmT('settings.hk-quickResp'); },
                 defaultKey: 'Y',
                 keyDown() {
                     application && application.quickResp();
@@ -1252,7 +1252,7 @@
                 type: 'normal'
             },
             'hk-autoResp': {
-                label: textLanguage['hk-autoResp'],
+                get label() { return lmT('settings.hk-autoResp'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.toggleAutoResp();
@@ -1261,7 +1261,7 @@
                 type: 'normal'
             },
             'hk-quitGame': {
-                label: textLanguage['hk-quitGame'] || 'Quit game (Expanding Land)',
+                get label() { return lmT('settings.hk-quitGame'); },
                 defaultKey: '+',
                 keyDown() {
                     application && application.quitGame();
@@ -1270,7 +1270,7 @@
                 type: 'normal'
             },
             'hk-wave': {
-                label: textLanguage['hk-wave'] || 'Send wave to teammates (Delta compatible)',
+                get label() { return lmT('settings.hk-wave'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.sendTeamWave && application.sendTeamWave();
@@ -1279,7 +1279,7 @@
                 type: 'normal'
             },
             'hk-zoom1': {
-                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 1'; },
+                get label() { return lmT('settings.hk-zoomLevel') + ' 1'; },
                 defaultKey: 'ALT+1',
                 keyDown() {
                     application && application.setZoom(0.5);
@@ -1288,7 +1288,7 @@
                 type: 'normal'
             },
             'hk-zoom2': {
-                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 2'; },
+                get label() { return lmT('settings.hk-zoomLevel') + ' 2'; },
                 defaultKey: 'ALT+2',
                 keyDown() {
                     application && application.setZoom(0.25);
@@ -1297,7 +1297,7 @@
                 type: 'normal'
             },
             'hk-zoom3': {
-                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 3'; },
+                get label() { return lmT('settings.hk-zoomLevel') + ' 3'; },
                 defaultKey: 'ALT+3',
                 keyDown() {
                     application && application.setZoom(0.125);
@@ -1306,7 +1306,7 @@
                 type: 'normal'
             },
             'hk-zoom4': {
-                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 4'; },
+                get label() { return lmT('settings.hk-zoomLevel') + ' 4'; },
                 defaultKey: 'ALT+4',
                 keyDown() {
                     application && application.setZoom(0.075);
@@ -1315,7 +1315,7 @@
                 type: 'normal'
             },
             'hk-zoom5': {
-                get label() { return (textLanguage['hk-zoomLevel'] || 'Zoom level') + ' 5'; },
+                get label() { return lmT('settings.hk-zoomLevel') + ' 5'; },
                 defaultKey: 'ALT+5',
                 keyDown() {
                     application && application.setZoom(0.05);
@@ -1325,7 +1325,7 @@
             },
             /* HUD helpers (ogario/modules/hudhelpers.js); no default keys */
             'hk-precisionZoom': {
-                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-precisionZoom']) || 'Hold: precision zoom (zooms in, release to go back)'; },
+                get label() { return lmT('settings.hk-precisionZoom'); },
                 defaultKey: '',
                 keyDown() {
                     window.LMHudHelpers && window.LMHudHelpers.precisionZoom(true);
@@ -1336,7 +1336,7 @@
                 type: 'normal'
             },
             'hk-zoomSave1': {
-                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomSave1']) || 'Save zoom bookmark 1'; },
+                get label() { return lmT('settings.hk-zoomSave1'); },
                 defaultKey: '',
                 keyDown() {
                     window.LMHudHelpers && window.LMHudHelpers.zoomSave(1);
@@ -1345,7 +1345,7 @@
                 type: 'normal'
             },
             'hk-zoomSave2': {
-                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomSave2']) || 'Save zoom bookmark 2'; },
+                get label() { return lmT('settings.hk-zoomSave2'); },
                 defaultKey: '',
                 keyDown() {
                     window.LMHudHelpers && window.LMHudHelpers.zoomSave(2);
@@ -1354,7 +1354,7 @@
                 type: 'normal'
             },
             'hk-zoomSave3': {
-                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomSave3']) || 'Save zoom bookmark 3'; },
+                get label() { return lmT('settings.hk-zoomSave3'); },
                 defaultKey: '',
                 keyDown() {
                     window.LMHudHelpers && window.LMHudHelpers.zoomSave(3);
@@ -1363,7 +1363,7 @@
                 type: 'normal'
             },
             'hk-zoomRecall1': {
-                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomRecall1']) || 'Go to zoom bookmark 1'; },
+                get label() { return lmT('settings.hk-zoomRecall1'); },
                 defaultKey: '',
                 keyDown() {
                     window.LMHudHelpers && window.LMHudHelpers.zoomRecall(1);
@@ -1372,7 +1372,7 @@
                 type: 'normal'
             },
             'hk-zoomRecall2': {
-                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomRecall2']) || 'Go to zoom bookmark 2'; },
+                get label() { return lmT('settings.hk-zoomRecall2'); },
                 defaultKey: '',
                 keyDown() {
                     window.LMHudHelpers && window.LMHudHelpers.zoomRecall(2);
@@ -1381,7 +1381,7 @@
                 type: 'normal'
             },
             'hk-zoomRecall3': {
-                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-zoomRecall3']) || 'Go to zoom bookmark 3'; },
+                get label() { return lmT('settings.hk-zoomRecall3'); },
                 defaultKey: '',
                 keyDown() {
                     window.LMHudHelpers && window.LMHudHelpers.zoomRecall(3);
@@ -1390,7 +1390,7 @@
                 type: 'normal'
             },
             'hk-cameraLock': {
-                get label() { return (typeof textLanguage !== 'undefined' && textLanguage['hk-cameraLock']) || 'Spectate: lock / unlock the camera'; },
+                get label() { return lmT('settings.hk-cameraLock'); },
                 defaultKey: '',
                 keyDown() {
                     window.LMHudHelpers && window.LMHudHelpers.toggleCamLock();
@@ -1399,7 +1399,7 @@
                 type: 'normal'
             },
             'hk-voiceChat': {
-                label: textLanguage['hk-voiceChat'],
+                get label() { return lmT('settings.hk-voiceChat'); },
                 defaultKey: '=',
                 keyDown() {
                     //application && application.enterChatMessage();
@@ -1411,7 +1411,7 @@
                 type: 'special'
             },
             'hk-GhostCellsInfo': {
-                label: textLanguage['hk-GhostCellsInfo'],
+                get label() { return lmT('settings.hk-GhostCellsInfo'); },
                 defaultKey: 'K',
                 keyDown() {
                     application && application.setShowGhostCellsInfo();
@@ -1420,7 +1420,7 @@
                 type: 'special'
             },
             'hk-Autoplay': {
-                label: textLanguage['hk-Autoplay'],
+                get label() { return lmT('settings.hk-Autoplay'); },
                 defaultKey: 'J',
                 keyDown() {
                     application && application.setAutoPlay();
@@ -1429,7 +1429,7 @@
                 type: 'special'
             },
             'hk-switchServerMode': {
-                label: textLanguage['hk-switchServerMode'],
+                get label() { return lmT('settings.hk-switchServerMode'); },
                 defaultKey: '-',
                 keyDown() {
                     application && application.switchServerMode();
@@ -1438,7 +1438,7 @@
                 type: 'normal'
             },
             'hk-showTargeting': {
-                label: textLanguage['hk-showTargeting'],
+                get label() { return lmT('settings.hk-showTargeting'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.setShowTargeting();
@@ -1447,7 +1447,7 @@
                 type: 'normal'
             },
             'hk-setTargeting': {
-                label: textLanguage['hk-setTargeting'],
+                get label() { return lmT('settings.hk-setTargeting'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.setTargeting();
@@ -1456,7 +1456,7 @@
                 type: 'normal'
             },
             'hk-cancelTargeting': {
-                label: textLanguage['hk-cancelTargeting'],
+                get label() { return lmT('settings.hk-cancelTargeting'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.cancelTargeting();
@@ -1465,7 +1465,7 @@
                 type: 'normal'
             },
             'hk-changeTarget': {
-                label: textLanguage['hk-changeTarget'],
+                get label() { return lmT('settings.hk-changeTarget'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.changeTarget();
@@ -1474,7 +1474,7 @@
                 type: 'normal'
             },
             'hk-privateMiniMap': {
-                label: textLanguage['hk-privateMiniMap'],
+                get label() { return lmT('settings.hk-privateMiniMap'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.setPrivateMiniMap();
@@ -1483,7 +1483,7 @@
                 type: 'normal'
             },
             'hk-showQuest': {
-                label: textLanguage['hk-showQuest'],
+                get label() { return lmT('settings.hk-showQuest'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.setShowQuest();
@@ -1492,7 +1492,7 @@
                 type: 'normal'
             },
             'hk-showSpectator': {
-                label: textLanguage['hk-showSpectator'],
+                get label() { return lmT('settings.hk-showSpectator'); },
                 defaultKey: 'V',
                 keyDown() {
                     application && application.setShowFullSpectator();
@@ -1501,7 +1501,7 @@
                 type: 'normal'
             },
             'hk-showIngameSpectator': {
-                label: textLanguage['hk-showIngameSpectator'],
+                get label() { return lmT('settings.hk-showIngameSpectator'); },
                 defaultKey: '',
                 keyDown() {
                     application && application.setShowIngameSpectator();
@@ -1510,7 +1510,7 @@
                 type: 'normal'
             },	/*
             'hk-bots-ai': {
-                label: textLanguage['hk-bots-ai'],
+                get label() { return lmT('settings.hk-bots-ai'); },
                 defaultKey: 'P',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) {
@@ -1532,7 +1532,7 @@
             },*/
             /* (second, identical 'hk-macroFeed' entry removed: duplicate key, the first one stays) */
             'hk-bots-macrofeed': {
-                label: textLanguage['hk-bots-macrofeed'],
+                get label() { return lmT('settings.hk-bots-macrofeed'); },
                 defaultKey: '',
                 keyDown() {
                     //if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
@@ -1547,7 +1547,7 @@
                 type: 'normal'
             },				
             'hk-bots-feed': {
-                label: textLanguage['hk-bots-feed'],
+                get label() { return lmT('settings.hk-bots-feed'); },
                 defaultKey: '', // 'L' is already the Copy LB default; a later duplicate overwrote it
                 keyDown() {
                     if (window.userBots && window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
@@ -1557,7 +1557,7 @@
                 type: 'normal'
             },			
             'hk-bots-split': {
-                label: textLanguage['hk-bots-split'],
+                get label() { return lmT('settings.hk-bots-split'); },
                 defaultKey: '', // 'M' is already the Show mass default
                 keyDown() {
                     if (window.userBots && window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
@@ -1567,7 +1567,7 @@
                 type: 'normal'
             },					
             'hk-doubleBotSplit': {
-                label: textLanguage['hk-doubleBotSplit'],
+                get label() { return lmT('settings.hk-doubleBotSplit'); },
                 defaultKey: '',
                 keyDown() {
                     if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.doubleBotSplit();
@@ -1576,7 +1576,7 @@
                 type: 'normal'
             },		
             'hk-popBotSplit': {
-                label: 'Bots Popsplit (Private servers)',
+                get label() { return lmT('game2.hkPopBotSplit'); },
                 defaultKey: '',
                 keyDown() {
                     if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.popBotSplit();
@@ -1585,7 +1585,7 @@
                 type: 'normal'
             },
             'hk-splitBot16': {
-                label: textLanguage['hk-splitBot16'],
+                get label() { return lmT('settings.hk-splitBot16'); },
                 defaultKey: '',
                 keyDown() {
                     if (window.legendmod && legendmod.ws && legendmod.ws.includes("imsolo.pro") && application) application.splitBot16();
@@ -1685,7 +1685,7 @@
             },
             'hk-comm10': {
                 label: chatCommand['comm10'],
-                defaultKey: 'MOUSE WHEEL',
+                defaultKey: 'MOUSE WHEEL', // i18n-ok: a key name, stored in the hotkey settings
                 keyDown() {
                     application && application.sendCommand(10);
                 },

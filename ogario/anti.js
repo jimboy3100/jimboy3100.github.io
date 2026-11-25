@@ -10,6 +10,7 @@ mybiggercell.mass = 0;
 mysmallercell.mass = 25000;
 var _antiTimerInterval = null;
 var _antiPauseResetTimer = null;
+var _antiPauseText = ''; /* the text we put in #pause-hud, in the chosen language */
 
 function CellTimerTrigger() {
     if (_antiTimerInterval) return; // already running
@@ -85,12 +86,13 @@ function celltimer() {
                     if (tempshow < 10 && tempshow > 0.1) {
                         // Cancel previous reset timer before setting new one
                         if (_antiPauseResetTimer) clearTimeout(_antiPauseResetTimer);
-                        $('#pause-hud').text("PAUSE! Anti beat:: " + tempshow.toFixed(5) + "%");
+                        _antiPauseText = lmT('game2.antiBeat', [tempshow.toFixed(5)]);
+                        $('#pause-hud').text(_antiPauseText);
                         _antiPauseResetTimer = setTimeout(function() {
                             /* only undo our own text: it overwrote the replay's "Loading..." and
-                             * the translated pause text with a hard-coded English "PAUSE!" */
-                            if ($('#pause-hud').text().indexOf("PAUSE! Anti beat") === 0) {
-                                $('#pause-hud').text((typeof textLanguage !== 'undefined' && textLanguage.pause) || "PAUSE!");
+                             * the translated pause text with a hard-coded English one */
+                            if ($('#pause-hud').text() === _antiPauseText) {
+                                $('#pause-hud').text(lmT('settings.pause'));
                             }
                             _antiPauseResetTimer = null;
                         }, 3000);

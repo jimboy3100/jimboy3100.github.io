@@ -19,6 +19,10 @@ function block(start) {
 const score = block('        megaFFAscore() {'), flush = block('        flushMegaFFAscore() {');
 if (!score) { console.log('FAIL megaFFAscore not found'); process.exit(1); }
 
+/* lmT with the English texts of the language packs (developers/i18n/src), as on the page */
+const lmEn = {};
+fs.readdirSync(path.join(__dirname, '..', 'i18n', 'src')).forEach((f) => { const a = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'i18n', 'src', f), 'utf8')); Object.keys(a).forEach((k) => { lmEn[k] = a[k].en; }); });
+const lmT = (k, v) => (k in lmEn ? String(lmEn[k]).replace(/{([A-Za-z0-9_]+)}/g, (m, n) => (v != null && typeof v !== 'object' ? (n === '0' ? String(v) : m) : (v && v[n] != null ? String(v[n]) : m))) : k);
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) failed++; };
 
@@ -33,7 +37,8 @@ function boot(ws) {
             setItem: (k, v) => { data[k] = String(v); writes.push(k); }
         },
         toastr: { warning() { return { css() { } }; } },
-        Premadeletter123: 'Legend Mod'
+        Premadeletter123: 'Legend Mod',
+        lmT
     };
     ctx.window = ctx;
     vm.createContext(ctx);

@@ -96,7 +96,17 @@
     "extras/LcHistory/LcHistoryBanner.js",
     "nicks/nicknamechars.js",
     "nicks/emoji/DisMojiPicker[1].js",
-    "languages/LanguagePackHandler.js"
+    "languages/LanguagePackHandler.js",
+    "ogario/hotkeysCommand.js",
+    "ogario/spect.js",
+    "ogario/gamepad.js",
+    "ogario/fullzoom.js",
+    "ogario/mergetimer.js",
+    "ogario/autoplay.js",
+    "ogario/captcha.js",
+    "ogario/anti.js",
+    "ogario/ogario.v4.static.js",
+    "ogario/senpa_module.js"
   ],
   "groups": {
     "a: ogario/modules": [

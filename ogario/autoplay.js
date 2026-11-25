@@ -128,7 +128,7 @@ function calcTarget() {
 
                     if (performance.now() >= window._cooldownVirusUntil) {
                         window._cooldownVirusUntil = performance.now() + 1000;
-                        $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>Virus</font> is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                        $('#pause-hud').html(lmT('game2.apVirusClose', { c: _apEsc(PlayerCell.color), x: parseInt(window.DistanceX[PlayerCell.id]), y: parseInt(window.DistanceY[PlayerCell.id]) }));
                     }
                     if (window.DistanceX[PlayerCell.id] > 0) {
                         target2.x = legendmod.mapMinX;
@@ -155,7 +155,7 @@ function calcTarget() {
                         doFeed = true;
                     }
                     //}
-                    $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>" + _apEsc(PlayerCell.nick) + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                    $('#pause-hud').html(lmT('game2.apTeammate', { c: _apEsc(PlayerCell.color), name: _apEsc(PlayerCell.nick), mass: PlayerCell.mass, x: parseInt(window.DistanceX[PlayerCell.id]), y: parseInt(window.DistanceY[PlayerCell.id]) }));
                 }
                 //window.legendmod.cells[0].isPlayerCell is our cell		
                 else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercell.mass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercell.mass * 1.25)) { //avoid danger cells
@@ -196,7 +196,7 @@ function calcTarget() {
 
                         if (performance.now() >= window._cooldownBiggerUntil) {
                             window._cooldownBiggerUntil = performance.now() + 1000;
-                            $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>" + _apEsc(PlayerCell.nick) + "</font> (mass: " + PlayerCell.mass + ") is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                            $('#pause-hud').html(lmT('game2.apClose', { c: _apEsc(PlayerCell.color), name: _apEsc(PlayerCell.nick), mass: PlayerCell.mass, x: parseInt(window.DistanceX[PlayerCell.id]), y: parseInt(window.DistanceY[PlayerCell.id]) }));
                         }
 
                         if (window.SandwichCellCase != null) {
@@ -231,7 +231,7 @@ function calcTarget() {
 
                         if (performance.now() >= window._cooldownSmallerUntil) {
                             window._cooldownSmallerUntil = performance.now() + 1000;
-                            $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>" + _apEsc(PlayerCell.nick) + "</font> (mass: " + PlayerCell.mass + ") is close and will be eaten by split. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                            $('#pause-hud').html(lmT('game2.apSplitEat', { c: _apEsc(PlayerCell.color), name: _apEsc(PlayerCell.nick), mass: PlayerCell.mass, x: parseInt(window.DistanceX[PlayerCell.id]), y: parseInt(window.DistanceY[PlayerCell.id]) }));
                         }
                         target2.x = PlayerCell.x;
                         target2.y = PlayerCell.y;
@@ -243,7 +243,7 @@ function calcTarget() {
 
                         if (performance.now() >= window._cooldownSmallerUntil) {
                             window._cooldownSmallerUntil = performance.now() + 1000;
-                            $('#pause-hud').html("<font color='" + _apEsc(PlayerCell.color) + "'>" + _apEsc(PlayerCell.nick) + "</font> (mass: " + PlayerCell.mass + ") is close, AI follows... X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                            $('#pause-hud').html(lmT('game2.apFollow', { c: _apEsc(PlayerCell.color), name: _apEsc(PlayerCell.nick), mass: PlayerCell.mass, x: parseInt(window.DistanceX[PlayerCell.id]), y: parseInt(window.DistanceY[PlayerCell.id]) }));
                         }
                         target2.x = PlayerCell.x;
                         target2.y = PlayerCell.y;
@@ -414,7 +414,7 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
             }
             defineCornercaseX = "left";
             distanceCornerX = PlayerCell.x - legendmod.mapMinX;
-            $('#pause-hud').html("Avoiding corners X- " + PlayerCell.x);
+            $('#pause-hud').html(lmT('game2.apCorner', ['X-', PlayerCell.x]));
         }
         if (PlayerCell.y < legendmod.mapMinY + 760) {
             if (biggercell.x < PlayerCell.x) { //if i am more left
@@ -424,7 +424,7 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
             }
             defineCornercaseY = "up";
             distanceCornerY = PlayerCell.y - legendmod.mapMinY;
-            $('#pause-hud').html("Avoiding corners Y- " + PlayerCell.y);
+            $('#pause-hud').html(lmT('game2.apCorner', ['Y-', PlayerCell.y]));
         }
         if (PlayerCell.x > legendmod.mapMaxX - 760) {
             if (biggercell.y < PlayerCell.y) { //if i am more up
@@ -436,7 +436,7 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
             /* distance to the RIGHT wall (it measured from the left wall, so the
              * "closest wall" choice below was wrong near the right side) */
             distanceCornerX = legendmod.mapMaxX - PlayerCell.x;
-            $('#pause-hud').html("Avoiding corners X+ " + PlayerCell.x);
+            $('#pause-hud').html(lmT('game2.apCorner', ['X+', PlayerCell.x]));
         }
         if (PlayerCell.y > legendmod.mapMaxY - 760) {
             if (biggercell.x < PlayerCell.x) { //if i am more left
@@ -447,7 +447,7 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
             defineCornercaseY = "down";
             /* distance to the BOTTOM wall (it measured from the top wall) */
             distanceCornerY = legendmod.mapMaxY - PlayerCell.y;
-            $('#pause-hud').html("Avoiding corners Y+ " + PlayerCell.x);
+            $('#pause-hud').html(lmT('game2.apCorner', ['Y+', PlayerCell.x]));
         }
         //min are up left, max are down right
 
@@ -490,9 +490,9 @@ function calcDistVirus(x, y, vx, vx) {
 }
 
 function AnnounceDangerCellOpposite(x, y) {
-    $('#pause-hud').html("<font color='red'>Danger: <font> " + _apEsc(x) + " and " + _apEsc(y) + " are diametral");
+    $('#pause-hud').html(lmT('game2.apDanger', [_apEsc(x), _apEsc(y)]));
 }
 
 function AnnounceBadCellShooting(vx, vy, name, x, y) {
-    $('#pause-hud').html("<font color='yellow'>Shooting: <font> " + _apEsc(name) + "(" + parseInt(x) + " , " + parseInt(y) + ")" + "from virus " + parseInt(vx) + "," + parseInt(vy));
+    $('#pause-hud').html(lmT('game2.apShooting', { name: _apEsc(name), x: parseInt(x), y: parseInt(y), vx: parseInt(vx), vy: parseInt(vy) }));
 }

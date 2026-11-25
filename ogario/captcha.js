@@ -33,7 +33,7 @@ function CaptchaRouter(arg) {
             _tries = (_tries || 0) + 1;
             if (_tries > 15) {
                 console.warn("[Captcha] reCAPTCHA v3 did not load; request dropped");
-                if (window.toastr) toastr.error("The captcha could not load. Check your connection or ad blocker, then press Play again.");
+                if (window.toastr) toastr.error(lmT('game2.captchaLoadFailed'));
                 lmReopenMenu();
                 return;
             }
@@ -60,7 +60,7 @@ function CaptchaRouter(arg) {
             if (!_retried) {
                 setTimeout(function () { requestCaptchaV3(t, e, 0, true); }, 500);
             } else if (window.toastr) {
-                toastr.error("The captcha check failed. Press Play again.");
+                toastr.error(lmT('game2.captchaFailed'));
             }
             if (_retried) lmReopenMenu();
         }

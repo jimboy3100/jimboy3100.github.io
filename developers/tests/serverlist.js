@@ -12,7 +12,11 @@ function grab(name) {
         else if (src[k] === '}' && !--d) return src.slice(i, k + 1);
     }
 }
-const ctx = { TextDecoder };
+/* lmT with the English texts of the language packs (developers/i18n/src), as on the page */
+const lmEn = {};
+fs.readdirSync(path.join(__dirname, '..', 'i18n', 'src')).forEach((f) => { const a = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'i18n', 'src', f), 'utf8')); Object.keys(a).forEach((k) => { lmEn[k] = a[k].en; }); });
+const lmT = (k, v) => (k in lmEn ? String(lmEn[k]).replace(/{([A-Za-z0-9_]+)}/g, (m, n) => (v != null && typeof v !== 'object' ? (n === '0' ? String(v) : m) : (v && v[n] != null ? String(v[n]) : m))) : k);
+const ctx = { TextDecoder, lmT };
 vm.createContext(ctx);
 vm.runInContext(['sbPlayers', 'sbPopulationText', 'sbSplitBots', 'sbReadCString', 'sbReadLeaderboardNicks', 'sbReadPopulation', 'sbNameSet', 'sbSameArena'].map(grab).join('\n'), ctx);
 const enc = s => Array.from(Buffer.from(s, 'utf8'));
