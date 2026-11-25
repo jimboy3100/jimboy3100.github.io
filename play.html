@@ -47,6 +47,65 @@
             document.head.appendChild(manifest);
         })();
     </script>
+    <!-- Loading screen: the page was white until every script below had loaded. It names the file
+         being loaded, shows the progress and goes away when the menu is there. Clicks pass through. -->
+    <div id="lm-boot" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;pointer-events:none;background:#00243e;color:#fff;font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;align-items:center;justify-content:center;transition:opacity .4s;">
+        <div style="width:min(360px,80vw);text-align:center;">
+            <div style="font-size:26px;font-weight:700;letter-spacing:1px;">Legend Mod</div>
+            <div id="lm-boot-text" style="margin:10px 0 12px;opacity:.85;">Loading...</div>
+            <div style="height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;">
+                <div id="lm-boot-bar" style="height:100%;width:3%;border-radius:3px;background:#01d9cc;transition:width .25s;"></div>
+            </div>
+            <div id="lm-boot-file" style="margin-top:8px;font-size:12px;opacity:.6;min-height:18px;word-break:break-all;"></div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var boot = document.getElementById('lm-boot'), bar = document.getElementById('lm-boot-bar');
+            var text = document.getElementById('lm-boot-text'), file = document.getElementById('lm-boot-file');
+            var el = (navigator.language || '').slice(0, 2) === 'el';
+            text.textContent = el ? 'Φόρτωση... παρακαλώ περιμένετε' : 'Loading... please wait';
+            /* the player's own menu colours, when saved */
+            try {
+                var th = JSON.parse(localStorage.getItem('ogarioThemeSettings') || '{}');
+                if (/^#[0-9a-f]{3,8}$/i.test(th.menuPanelColor || '')) boot.style.background = th.menuPanelColor;
+                if (/^#[0-9a-f]{3,8}$/i.test(th.menuMainColor || '')) bar.style.background = th.menuMainColor;
+            } catch (e) { }
+            /* the number of scripts the last load had (the first load guesses) */
+            var total = 40, done = 0, failed = 0, gone = false;
+            try { total = +localStorage.getItem('lmBootScripts') || 40; } catch (e) { }
+            var name = function (src) { return String(src || '').split(/[?#]/)[0].split('/').pop(); };
+            var onLoad = function (e) {
+                var t = e.target;
+                if (gone || !t || t.tagName !== 'SCRIPT' || !t.src) return;
+                done++;
+                if (e.type === 'error') failed++;
+                bar.style.width = Math.min(95, 3 + 92 * done / total) + '%';
+                file.textContent = (e.type === 'error' ? '! ' : '') + name(t.src) + ' (' + done + ')';
+            };
+            document.addEventListener('load', onLoad, true);
+            document.addEventListener('error', onLoad, true);
+            var hide = function () {
+                if (gone) return;
+                gone = true;
+                document.removeEventListener('load', onLoad, true);
+                document.removeEventListener('error', onLoad, true);
+                bar.style.width = '100%';
+                boot.style.opacity = '0';
+                setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 450);
+            };
+            window._lmBootHide = hide;
+            /* every script of the page has run: wait for the menu (the mod builds it), at most 15 s */
+            document.addEventListener('DOMContentLoaded', function () {
+                try { if (done > 5 && !failed) localStorage.setItem('lmBootScripts', String(done)); } catch (e) { }
+                var tries = 0, wait = setInterval(function () {
+                    if (document.getElementById('main-menu') || ++tries > 150) { clearInterval(wait); hide(); }
+                }, 100);
+            });
+            /* never stays for good (a stuck load still shows what the page has) */
+            setTimeout(hide, 90000);
+        })();
+    </script>
     <!-- No service worker: /lib/sw.js could only control /lib/ (GitHub Pages cannot widen its scope),
          so it never cached play.html's requests and only pre-fetched assets on every version. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

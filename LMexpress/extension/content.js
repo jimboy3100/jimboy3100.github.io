@@ -59,6 +59,8 @@ function loadLegendPage() {
 function loadPage(pageUrl, isLegendPage) {
     /* Stop agar.io's own page; the fetched page replaces it */
     document.documentElement.innerHTML = '';
+    /* the tab stayed white while the page was fetched; play.html shows its own loading screen next */
+    if (isLegendPage) showLoading();
 
     chrome.runtime.sendMessage({ type: 'fetch', url: pageUrl }, (response) => {
         /* lastError: the background worker could not answer (e.g. the extension was just reloaded) */
@@ -91,6 +93,20 @@ function addInitCall(html) {
         return html + call;
     }
     return html.slice(0, bodyEnd) + call + html.slice(bodyEnd);
+}
+
+/* Same look as play.html's loading screen (#lm-boot), shown until the page is written */
+function showLoading() {
+    try {
+        const box = document.createElement('div');
+        box.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#00243e;color:#fff;' +
+            'font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;';
+        const greek = (navigator.language || '').slice(0, 2) === 'el';
+        box.innerHTML = '<div><div style="font-size:26px;font-weight:700;letter-spacing:1px;">Legend Mod</div>' +
+            '<div style="margin-top:10px;opacity:.85;"></div></div>';
+        box.firstChild.lastChild.textContent = greek ? 'Φόρτωση... παρακαλώ περιμένετε' : 'Loading... please wait';
+        document.documentElement.appendChild(box);
+    } catch (e) { }
 }
 
 /* agar.io's page is already gone, so say what failed instead of leaving a blank tab */
