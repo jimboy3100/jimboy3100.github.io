@@ -39029,6 +39029,9 @@ function thelegendmodproject() {
             this._questActivationSent = {};
             this.connectionOpened = false;
             this.mapOffsetFixed = false;
+            /* a new connection has no border yet: never re-apply the previous server's one */
+            this._lmServerBorder = null;
+            this._lmBorderTraceAdd('connect', 0);
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
 
@@ -39443,7 +39446,10 @@ function thelegendmodproject() {
                 }
                 try { window._lmSrvHistAdd && window._lmSrvHistAdd(url); } catch (e) { }
             };
+            /* a message still queued from a replaced socket (map border, cells) is not this server's */
+            var _lmSock = this.socket;
             this.socket.onmessage = function (t) {
+                if (app.socket !== _lmSock) return;
                 app.onMessage(t);
             };
             this.socket.onerror = function (t) {
@@ -40377,6 +40383,9 @@ function thelegendmodproject() {
             this.flushCellsData();
             if (typeof celltimerstop === 'function') celltimerstop();
             if (typeof stopMergeTimer === 'function') stopMergeTimer();
+            /* the closed socket's border must not outlive it (beacon / tab-return restore) */
+            this._lmServerBorder = null;
+            this._lmBorderTraceAdd('close', 0);
             this.isLegendWorld = false;
             LM.isLegendWorld = false;
             this.elPlayerCount = null;
@@ -44084,15 +44093,9 @@ function thelegendmodproject() {
                         console.warn('[Protocol] Ignoring truncated opcode 64 packet:', data.byteLength);
                         break;
                     }
-                    //var message = new LMbuffer(data['buffer'])						
-                    var message = new window.buffer.Buffer(data.buffer)
-                    this.viewMinX = message.readDoubleLE(s);
-                    s += 8;
-                    this.viewMinY = message.readDoubleLE(s);
-                    s += 8;
-                    this.viewMaxX = message.readDoubleLE(s);
-                    s += 8;
-                    this.viewMaxY = message.readDoubleLE(s);
+                    /* read into locals: the border is stored only after it is checked (_lmOnServerBorder) */
+                    var _lmBMinX = data.getFloat64(s, true), _lmBMinY = data.getFloat64(s + 8, true);
+                    var _lmBMaxX = data.getFloat64(s + 16, true), _lmBMaxY = data.getFloat64(s + 24, true);
 
                     /* Expanding Land gameType (see _lmElTeamsActive); other servers are not affected */
                     var _lmElWasTeams = _lmElTeamsActive(this);
@@ -44106,13 +44109,7 @@ function thelegendmodproject() {
                     if (_lmElTeamsActive(this)) this.gameMode = ':teams';
                     else if (_lmElWasTeams) this.gameMode = ':expandingland';
 
-                    this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-
-                    if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
-                        window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
-                        window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
-                    }
-
+                    this._lmOnServerBorder(_lmBMinX, _lmBMinY, _lmBMaxX, _lmBMaxY, 'packet');
                     break;
                 //2020 jimboy3100
 
@@ -44193,23 +44190,11 @@ function thelegendmodproject() {
                          * beacon. Reapply the already received border now that
                          * setMapOffset() knows to use centered Expanding Land
                          * coordinates instead of generic private-server offsets.
+                         * Only this connection's own border packet: a beacon before
+                         * any border (or after a reconnect) must not re-apply the
+                         * previous server's one.
                          */
-                        if (
-                            Number.isFinite(this.viewMinX) &&
-                            Number.isFinite(this.viewMinY) &&
-                            Number.isFinite(this.viewMaxX) &&
-                            Number.isFinite(this.viewMaxY) &&
-                            this.viewMaxX > this.viewMinX &&
-                            this.viewMaxY > this.viewMinY
-                        ) {
-                            this.mapOffsetFixed = false;
-                            this.setMapOffset(
-                                this.viewMinX,
-                                this.viewMinY,
-                                this.viewMaxX,
-                                this.viewMaxY
-                            );
-                        }
+                        this._lmReapplyServerBorder('beacon', true);
 
                         /* [Expanding Land] Connected (silent) */
                         /* New connection = no clan tag on the server yet. */
@@ -49938,19 +49923,9 @@ function thelegendmodproject() {
                     if (window.clientProfiler) window.clientProfiler.recordPacket(performance.now() - _tPkt);
                     break;
                 case 64:
-                    this.viewMinX = message.readDoubleLE(e);
-                    e += 8;
-                    this.viewMinY = message.readDoubleLE(e);
-                    e += 8;
-                    this.viewMaxX = message.readDoubleLE(e);
-                    e += 8;
-                    this.viewMaxY = message.readDoubleLE(e);
-                    this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-
-                    if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
-                        window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2;
-                        window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2;
-                    }
+                    /* a cut-short border is dropped whole instead of half-stored */
+                    if (message.length < e + 32) break;
+                    this._lmOnServerBorder(message.readDoubleLE(e), message.readDoubleLE(e + 8), message.readDoubleLE(e + 16), message.readDoubleLE(e + 24), 'compressed');
                     break;
                 default:
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown sub opcode:', message.readUInt8(0));
@@ -50472,7 +50447,79 @@ function thelegendmodproject() {
             window.multiboxPlayerEnabled = null;
             window.multiboxPlayerEnabledSaved = null;
         },
+        /* A map border is four finite numbers with max above min on both axes. */
+        _lmBorderValid(minX, minY, maxX, maxY) {
+            return Number.isFinite(minX) && Number.isFinite(minY) && Number.isFinite(maxX) && Number.isFinite(maxY) &&
+                maxX - minX >= 1 && maxY - minY >= 1;
+        },
+        /* Opcode 64 (map border), plain and compressed. The server's raw border is kept as a frozen
+         * snapshot of this connection (_lmServerBorder, epoch = connect sequence); the beacon and the
+         * tab-return restore re-apply only that, never a box derived from food, camera or viewport.
+         * A NaN, infinite, reversed or empty border is dropped before mapSize or the tier change. */
+        _lmOnServerBorder(minX, minY, maxX, maxY, src) {
+            if (!this._lmBorderValid(minX, minY, maxX, maxY)) {
+                this._lmBorderTraceAdd('reject-' + src, 0, minX, minY, maxX, maxY);
+                if (!(this._lmBorderWarnAt > Date.now() - 5000)) {
+                    this._lmBorderWarnAt = Date.now();
+                    console.warn('[Protocol] Ignoring an invalid map border:', minX, minY, maxX, maxY);
+                }
+                return false;
+            }
+            this.viewMinX = minX; this.viewMinY = minY; this.viewMaxX = maxX; this.viewMaxY = maxY;
+            this._lmServerBorder = Object.freeze({ minX: minX, minY: minY, maxX: maxX, maxY: maxY, epoch: this._connectSeq || 0 });
+            this.setMapOffset(minX, minY, maxX, maxY);
+            if (~~(maxX - minX) === LM.mapSize && ~~(maxY - minY) === LM.mapSize && window.userBots) {
+                window.userBots.offsetX = (minX + maxX) / 2;
+                window.userBots.offsetY = (minY + maxY) / 2;
+            }
+            this._lmBorderTraceAdd(src, 0, minX, minY, maxX, maxY);
+            return true;
+        },
+        /* this connection's last valid border, or null (none yet, or from an earlier socket) */
+        _lmServerBorderNow() {
+            var b = this._lmServerBorder;
+            return b && b.epoch === (this._connectSeq || 0) ? b : null;
+        },
+        /* Re-derive the map from the snapshot. always=false: only when the map no longer matches it
+         * (offset, size or bounds), so a normal tab return leaves the camera and map alone. */
+        _lmReapplyServerBorder(why, always) {
+            var b = this._lmServerBorderNow();
+            if (!b) { this._lmBorderTraceAdd(why + '-none', 0); return false; }
+            if (!always && this.mapOffset === 0 && this.mapSize === ~~(b.maxX - b.minX) &&
+                this.mapMinX === b.minX && this.mapMinY === b.minY && this.mapMaxX === b.maxX && this.mapMaxY === b.maxY) return false;
+            this.mapOffsetFixed = false;
+            this.setMapOffset(b.minX, b.minY, b.maxX, b.maxY);
+            this._lmBorderTraceAdd(why, 0, b.minX, b.minY, b.maxX, b.maxY);
+            return true;
+        },
+        /* Map border trace for the diagnostics report (LMPerf.report): last 64 border events with the
+         * socket epoch, raw packet bounds, the map that came of it, the food box and the camera/DPR.
+         * No server address or token. Not drawn and not per frame: border packets and tab returns only. */
+        _lmBorderTraceAdd(ev, n, a, b, c, d) {
+            var t = this._lmBorderTrace || (this._lmBorderTrace = []);
+            var dr = typeof drawRender !== 'undefined' ? drawRender : null;
+            t.push({
+                t: Date.now(), ev: ev, n: n, epoch: this._connectSeq || 0, lw: !!LM.isLegendWorld,
+                raw: arguments.length > 2 ? [a, b, c, d] : null,
+                map: [this.mapMinX, this.mapMinY, this.mapMaxX, this.mapMaxY], size: this.mapSize, offset: this.mapOffset, tier: LM.mapTier,
+                food: [LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY],
+                cam: [this.viewX, this.viewY, dr ? dr.scale : undefined], dpr: window.devicePixelRatio,
+                canvas: dr ? [dr.canvasWidth, dr.canvasHeight] : null
+            });
+            if (t.length > 64) t.shift();
+        },
+        borderTrace() {
+            var r = function (v) { return Number.isFinite(v) ? Math.round(v * 100) / 100 : String(v); };
+            var box = function (q) { return q ? q.map(r).join(',') : '-'; };
+            return (this._lmBorderTrace || []).map(function (e) {
+                return new Date(e.t).toISOString().slice(11, 23) + ' ' + e.ev + (e.n ? ' ' + Math.round(e.n) + 'ms' : '') + ' epoch ' + e.epoch + (e.lw ? ' EL' : '') +
+                    ' raw ' + box(e.raw) + ' map ' + box(e.map) + ' size ' + r(e.size) + ' offset ' + r(e.offset) + ' tier ' + e.tier +
+                    ' food ' + box(e.food) + ' cam ' + box(e.cam) + ' dpr ' + r(e.dpr) + ' canvas ' + box(e.canvas);
+            });
+        },
         setMapOffset(left, top, right, bottom) {
+            /* a NaN, infinite, reversed or empty border changes nothing (see _lmOnServerBorder) */
+            if (!this._lmBorderValid(left, top, right, bottom)) return;
             /* LMEvents 'connectionReady': once per connection, at its first map border (it comes
              * right after the handshake on every server type), sent after this packet is read:
              * { server: host, mode: game mode, session: lmSessionType() } */
@@ -50571,7 +50618,19 @@ function thelegendmodproject() {
                         (pWidth >= (this.mapSize - 500)));
 
             if (!this.mapOffsetFixed || isFullPacket) {
-                if ((this.connectionIntegrity && this.serverType !== 'deltio') || temp2) {
+                if (LM.isLegendWorld) {
+                    /* Expanding Land: centred coordinates, every border packet taken as it is, so the
+                     * map grows and shrinks with the server. Kept apart from the agar.io branch below,
+                     * whose offset math with mapOffset 0 gives min = max (an EL replay with a
+                     * 7-character token, or an EL socket counted as integrity). The minimap omits
+                     * LM.mapOffset for EL. */
+                    this.mapOffsetX = this.mapSize / 2;
+                    this.mapOffsetY = this.mapSize / 2;
+                    this.mapMinX = left;
+                    this.mapMinY = top;
+                    this.mapMaxX = right;
+                    this.mapMaxY = bottom;
+                } else if ((this.connectionIntegrity && this.serverType !== 'deltio') || temp2) {
                     this.mapOffsetX = this.mapOffset - right;
                     this.mapOffsetY = this.mapOffset - bottom;
 
@@ -50591,29 +50650,19 @@ function thelegendmodproject() {
                         pWidth >= currentWidth
                     ) {
                         /*
-                         * Expanding Land uses centered coordinates while its
-                         * minimap intentionally omits LM.mapOffset.
-                         *
-                         * Other private servers must derive their origin from
-                         * the actual border packet. Their minimap adds
-                         * LM.mapOffset, so hardcoding another half-map here
-                         * double-shifts coordinates toward the lower-right.
+                         * Private servers derive their origin from the actual
+                         * border packet. Their minimap adds LM.mapOffset, so
+                         * hardcoding another half-map here double-shifts
+                         * coordinates toward the lower-right.
+                         * Centre each axis on its own midpoint. Same value as
+                         * mapOffset - right/bottom for the axis equal to mapSize,
+                         * but a shorter axis of a non-square border was
+                         * bottom-aligned before.
                          */
-                        if (LM.isLegendWorld) {
-                            this.mapOffsetX =
-                                this.mapSize / 2;
-                            this.mapOffsetY =
-                                this.mapSize / 2;
-                        } else {
-                            /* Centre each axis on its own midpoint. Same value as
-                             * mapOffset - right/bottom for the axis equal to mapSize,
-                             * but a shorter axis of a non-square border was
-                             * bottom-aligned before. */
-                            this.mapOffsetX =
-                                -(left + right) / 2;
-                            this.mapOffsetY =
-                                -(top + bottom) / 2;
-                        }
+                        this.mapOffsetX =
+                            -(left + right) / 2;
+                        this.mapOffsetY =
+                            -(top + bottom) / 2;
 
                         this.mapMinX = left;
                         this.mapMinY = top;
@@ -80553,24 +80602,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  *      Date.now() compute wildly wrong interpolation when the
                  *      tab was hidden for seconds/minutes.
                  *
-                 * Fix: if we're (still) on an Expanding Land server, force
-                 * re-derive the map geometry from the stored border values.
+                 * Fix: if we're (still) on an Expanding Land server, re-derive
+                 * the map geometry from this connection's last border packet
+                 * (_lmServerBorder), and only when the map no longer matches it.
                  */
-                if (
-                    LM.isLegendWorld &&
-                    Number.isFinite(LM.viewMinX) &&
-                    Number.isFinite(LM.viewMaxX) &&
-                    LM.viewMaxX > LM.viewMinX
-                ) {
-                    LM.mapOffsetFixed = false;
-                    if (typeof ogario !== 'undefined') ogario.mapOffsetFixed = false;
-                    LM.setMapOffset(
-                        LM.viewMinX,
-                        LM.viewMinY,
-                        LM.viewMaxX,
-                        LM.viewMaxY
-                    );
-                }
+                LM._lmBorderTraceAdd('visible', hiddenMs);
+                if (LM.isLegendWorld) LM._lmReapplyServerBorder('resume', false);
             });
         }
 

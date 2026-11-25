@@ -1407,6 +1407,12 @@
         net.closes.slice(-5).forEach(function (c) {
             lines.push('  closed ' + new Date(c.t).toLocaleTimeString() + ': code ' + c.code + (c.reason ? ' "' + c.reason + '"' : '') + (c.clean ? '' : ' (not clean)') + (c.openMs ? ', open ' + Math.round(c.openMs / 1000) + ' s' : ''));
         });
+        /* map border events (opcode 64, beacon, tab return, connect/close): raw bounds, map, food box, camera, DPR */
+        var bt = lm && typeof lm.borderTrace === 'function' ? lm.borderTrace() : [];
+        if (bt.length) {
+            lines.push('Map border (last ' + Math.min(bt.length, 20) + ' of ' + bt.length + '):');
+            bt.slice(-20).forEach(function (l) { lines.push('  ' + l); });
+        }
         var ev = events.list(), ll = loafs.list(), lopt = loafOpts();
         lines.push('Events (' + ev.length + ', last ' + EVENTS_MAX + ' kept' + (keepRec ? ', recording also with the window closed' : '') + '):');
         ev.forEach(function (e) {
