@@ -20079,12 +20079,22 @@ var escapeChar = {
 /* ═══════════════════════════════════════════════════════════════════════════════
  * §3  DEFAULT SETTINGS
  * ═══════════════════════════════════════════════════════════════════════════════ */
-/* Theme values as CSS custom properties (--lm-mc, --lm-pc, ...): windows and modules use
- * var(--lm-x, fallback) so they follow the menu theme and update live when it changes.
+/* Theme values as CSS custom properties: windows and modules use var(--lm-x, fallback) so they
+ * follow the theme and update live when it changes. This is the one set, all on :root, written by
+ * the Settings setters below (setMenu..., setHud...):
+ *   menu: --lm-mc accent, --lm-pc / --lm-pc2 panels, --lm-tc / --lm-tc2 text, --lm-op opacity,
+ *         --lm-menu-bg image, --lm-btn-tc button text, --lm-btn1..4 buttons, --lm-btn1b..4b hover
+ *   HUD:  --lm-hud-mc, --lm-hud-bg, --lm-hud-tc, --lm-hud-font, --lm-hud-fw, --lm-hud-scale, --lm-hud-fs
+ *   --lm-radius comes from Rounded / Square HUD (LMexpress.js), unset when neither was chosen.
+ * lib/lm-theme-bridge.js uses the same names on Legend web pages.
  * Values come from imported settings, so only colour characters pass. */
 function _lmCssVal(v, d) {
     var s = String(v == null ? '' : v).replace(/[^#a-zA-Z0-9(),.%\s+-]/g, '').trim();
     return s || d;
+}
+function _lmCssNum(v, lo, hi, d) {
+    var n = parseFloat(v);
+    return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d;
 }
 function _lmCssUrl(u) {
     var s = String(u == null ? '' : u).replace(/["'\\()\s<>]/g, '');
@@ -24324,7 +24334,9 @@ function thelegendmodproject() {
                 '#hotkeys-cfg .custom-key-in:placeholder-shown{background-color:var(--lm-pc2,#002f52);border-color:var(--lm-tc2,#8096a7)}' +
                 /* window title like the other LM windows; narrow screens need the row for the buttons */
                 '#lm-hk-title{position:absolute;top:0;left:0;padding:26px 16px;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1;z-index:1002;pointer-events:none}' +
-                '@media (max-width:1100px){#lm-hk-title{display:none}}');
+                '@media (max-width:1100px){#lm-hk-title{display:none}}' +
+                /* windows and pages that fade with the menu read the opacity from here */
+                ':root{--lm-op:' + _lmCssNum(defaultSettings.menuOpacity, 0.1, 1, 0.96) + '}');
         },
         setMenuMainColor() {
             var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
@@ -24400,6 +24412,9 @@ function thelegendmodproject() {
                 'font-family': defaultSettings.hudFontFamily,
                 'font-weight': defaultSettings.hudFontWeight
             });
+            /* HUD parts outside #overlays-hud (bell, kill feed, command bar...) read the font from here */
+            var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
+            this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}');
         },
         setHudScale() {
             /* Issue #8: clamp hudScale to the slider max so saved values from bigger screens don't overflow */
@@ -24417,6 +24432,8 @@ function thelegendmodproject() {
             var r = Math.floor(20 * defaultSettings.hudScale);
 
             $('#overlays-hud').css('font-size', t + 'px');
+            /* HUD parts outside #overlays-hud scale with these */
+            this.addCustomCSS('hudScaleVarCSS', ':root{--lm-hud-scale:' + _lmCssNum(defaultSettings.hudScale, 0.3, 2, 1) + ';--lm-hud-fs:' + t + 'px}');
             $('#time-hud').width(e);
             $('#leaderboard-hud').css('transform', 'scale(' + defaultSettings.hudScale + ')');
             $('#top5-hud').css('transform', 'scale(' + defaultSettings.hudScale + ')');
@@ -31233,6 +31250,11 @@ function thelegendmodproject() {
                 delete this.customSkinsMap[keys[k]];
             }
         },
+        /* A teammate's skin from the team list (lmTeamSkinMap, rebuilt per leaderboard): exact
+         * nick first in every renderer; loose (nick without symbols) only after the name map. */
+        teamSkinUrl(nick, loose) {
+            return lmTeamSkinFor(window._lmTeamSkins, nick, loose, this._lmLooseNickMemo || (this._lmLooseNickMemo = new Map()));
+        },
         cacheCustomSkin(nick, color, skinUrl) {
             if (!skinUrl) return;
             skinUrl = this.checkSkinURL(skinUrl);
@@ -31318,7 +31340,7 @@ function thelegendmodproject() {
              * for both and could switch skin whenever a frame changed renderer). */
             var partyUrl = (nick && color && typeof LM !== 'undefined' && LM && LM.gameMode === ':party') ?
                 (this.customSkinsMap[_k.nc] || this.customSkinsMap[_k.nh]) : null;
-            var skinUrl = ownUrl || partyUrl ||
+            var skinUrl = ownUrl || partyUrl || this.teamSkinUrl(nick) ||
                 (nick ? (
                     this.customSkinsMap[nick] ||
                     this.customSkinsMap[_k.nh] ||
@@ -31329,6 +31351,7 @@ function thelegendmodproject() {
                         this.customSkinsMap[_k.ch]
                     ) : null)
                 ) : null) ||
+                this.teamSkinUrl(nick, true) ||
                 (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null) ||
                 (nameOnly && this.nickSkinSeen ? (this.nickSkinSeen[nick] || this.nickSkinSeen[nick + hexColor]) : null);
 
@@ -52717,6 +52740,8 @@ Most cells eaten   : ${mostCellsEaten}
             }
             /* Set copy for the per-cell, per-frame teammate check; the array stays for its other readers */
             window._lmTeammateNickSet = new Set(window.teammatenicks);
+            /* teammates' cells draw the skin their team list row shows (application.teamSkinUrl) */
+            window._lmTeamSkins = lmTeamSkinMap(application.top5, function (u) { return application.checkSkinURL(u); }, window._lmBlankSkins);
             let text = '';
             let teamText = '';
 
@@ -53530,7 +53555,13 @@ Most cells eaten   : ${mostCellsEaten}
 
                 if (skinUrl) {
                     if (fromName) {
-                        /* the name decides this skin: same for everyone with that name */
+                        /* the name decides this skin: same for everyone with that name. It never
+                         * replaces a skin already set for the name (a teammate "bait" with a Legend
+                         * custom skin showed the "bait" flag once his cell came with a skin id). */
+                        if (y && application.customSkinsMap[y]) {
+                            seen[playerKey] = application.customSkinsMap[y];
+                            return;
+                        }
                         if (y) {
                             window.lastusednameforskin = y;
                             core.registerSkin(y, null, skinUrl, isAnimated);
@@ -73893,7 +73924,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     cell._skinCleanNick;
 
 
+                /* a teammate's team list skin as in getCustomSkin (party: nick+colour first) */
                 skinUrl =
+                    (isParty ? application.customSkinsMap[mode] : null) ||
+                    application.teamSkinUrl(cell.targetNick) ||
+
                     application
                         .customSkinsMap[
                             mode
@@ -73931,7 +73966,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                     ]
                             )
                             : null
-                    );
+                    ) ||
+                    application.teamSkinUrl(cell.targetNick, true);
             }
 
 
@@ -84944,6 +84980,43 @@ function Socket3updateTeamPlayerSpfc(Socket3data) {
     }
 }
 
+/* Teammates' skins as the team list shows them (top5: .skinURL or .skin), by nick, for their
+ * cells. The nick entries of customSkinsMap can lose them while the team list still has them:
+ * a name skin (flag "bait") took the entry, or the map was flushed. loose: the nick without
+ * spaces and symbols, kept only when no two teammates share it. Built once per leaderboard. */
+function lmLooseNick(nick) {
+    return String(nick).replace(/[^\p{L}\p{N}]+/gu, '');
+}
+function lmTeamSkinMap(top5, check, blank) {
+    var team = { exact: new Map(), loose: new Map() };
+    for (var i = 0; top5 && i < top5.length; i++) {
+        var p = top5[i];
+        if (!p || typeof p.nick !== 'string' || !p.nick.trim()) continue;
+        var u = p.skinURL || p.skin;
+        if (typeof u !== 'string' || !u) continue;
+        if (check) u = check(u);
+        if (!/^https?:\/\/[^/]+\.[^/]+/i.test(u) || (blank && blank[u])) continue;
+        if (!team.exact.has(p.nick)) team.exact.set(p.nick, u);
+        var k = lmLooseNick(p.nick);
+        if (k) team.loose.set(k, team.loose.has(k) && team.loose.get(k) !== u ? '' : u);
+    }
+    return team;
+}
+/* the skin of a teammate's cell from lmTeamSkinMap; memo: nick -> loose nick */
+function lmTeamSkinFor(team, nick, loose, memo) {
+    if (!team || !nick) return null;
+    if (!loose) return team.exact.get(nick) || null;
+    if (!team.loose.size) return null;
+    var k = memo ? memo.get(nick) : undefined;
+    if (k === undefined) {
+        k = lmLooseNick(nick);
+        if (memo) {
+            if (memo.size >= 2000) memo.clear();
+            memo.set(nick, k);
+        }
+    }
+    return k ? (team.loose.get(k) || null) : null;
+}
 /* Temporary (socket 3) teammates on the teamboard with skins. They carry no updateTime, so
  * updateTeamPlayers never expires them; one whose last update is over 6 s old has left.
  * The test used to be lastUpdatedTime - now < 6000, true for every past update, so each
