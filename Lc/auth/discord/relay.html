@@ -59,20 +59,22 @@
     <meta name="twitter:title" content="Discord Login - Completing...">
     <meta name="twitter:description" content="Closing this window...">
     <meta name="twitter:image" content="https://jimboy3100.github.io/banners/agario1200x630.png">
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-lc-auth" charset="utf-8"></script>
 </head>
 <body>
   <div class="card">
-    <img src="https://jimboy3100.github.io/banners/icon128croped.gif" alt="LegendMod" style="width:64px;height:64px;margin-bottom:16px;border-radius:12px;">
+    <img data-i18n-alt="site.lc.auth.legendmod" src="https://jimboy3100.github.io/banners/icon128croped.gif" alt="LegendMod" style="width:64px;height:64px;margin-bottom:16px;border-radius:12px;">
     <div id="success">
-      <h2>✅ Discord Linked!</h2>
-      <p class="status">Closing this window...</p>
-      <p class="info">If this window doesn't close, <a href="javascript:window.close()" class="btn" style="padding:8px 16px;font-size:0.9em">Close Window</a></p>
+      <h2 data-i18n="site.lc.auth.discordLinked">✅ Discord Linked!</h2>
+      <p data-i18n="site.lc.auth.closingThisWindow" class="status">Closing this window...</p>
+      <p data-i18n-html="site.lc.auth.ifThisWindowDoesn" class="info">If this window doesn't close, <a href="javascript:window.close()" class="btn" style="padding:8px 16px;font-size:0.9em">Close Window</a></p>
     </div>
     <div id="error-msg" style="display:none">
-      <h2 class="error">Login Failed</h2>
+      <h2 data-i18n="site.lc.auth.loginFailed" class="error">Login Failed</h2>
       <p class="status" id="error-text"></p>
       <br>
-      <a href="https://expanding.land" class="btn">Back to Game</a>
+      <a data-i18n="site.lc.auth.backToGame" href="https://expanding.land" class="btn">Back to Game</a>
     </div>
     <div id="debug"></div>
   </div>
@@ -91,7 +93,7 @@
       if (!code) {
         document.getElementById('success').style.display = 'none';
         document.getElementById('error-msg').style.display = 'block';
-        document.getElementById('error-text').textContent = 'No authorization code received.';
+        document.getElementById('error-text').textContent = window.lmT ? lmT('site.lc.auth.noCode') : 'No authorization code received.'; // i18n-ok: English when the language file could not load
         return;
       }
 

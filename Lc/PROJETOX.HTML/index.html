@@ -33,6 +33,8 @@
     <link rel="icon" href="logo.png" />
   
     <meta name="robots" content="noindex, nofollow">
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-lc-projetox" charset="utf-8"></script>
 </head>
 
   <body>
@@ -44,30 +46,28 @@
     <!-- ================= HEADER ================= -->
     <header id="header2">
       <canvas class="webcanvas" id="webcanvas"></canvas>
-      <img src="logo.png" alt="Legend Clan Logo" class="logo neon" />
+      <img data-i18n-alt="site.lc.projetox.legendClanLogo" src="logo.png" alt="Legend Clan Logo" class="logo neon" />
       <div class="menutoggle" id="menuToggle">☰</div>
       <nav class="menu" id="menu">
-        <a href="#">Início</a>
-        <a href="#members">Membros</a>
-        <a href="#policies">Sobre</a>
-        <a href="#midia">Mídias</a>
-        <a href="#informacoes">Informações</a>
-        <a href="#server">Projetos</a>
-        <a href="#Atualizações">Atualizações</a>
+        <a data-i18n="site.lc.projetox.home" href="#">Home</a>
+        <a data-i18n="site.lc.projetox.members" href="#members">Members</a>
+        <a data-i18n="site.lc.projetox.about" href="#policies">About</a>
+        <a data-i18n="site.lc.projetox.media" href="#midia">Media</a>
+        <a data-i18n="site.lc.projetox.information" href="#informacoes">Information</a>
+        <a data-i18n="site.lc.projetox.projects" href="#server">Projects</a>
+        <a data-i18n="site.lc.projetox.updates" href="#Atualizações">Updates</a>
+        <span data-lm-lang-picker></span>
       </nav>
     </header>
     <!-- ================= MAIN ================= -->
     <main>
       <section id="clan" class="section">
-        <h1>LEGEND OFICIAL CLAN ℄C</h1>
-        <p>Clan oficial de Agar.io</p>
+        <h1 data-i18n="site.lc.projetox.officialClanTitle">LEGEND OFFICIAL CLAN ℄C</h1>
+        <p data-i18n="site.lc.projetox.officialAgarClan">Official Agar.io clan</p>
       </section>
 
       <section id="members" class="section-dark">
-        <h1>
-          Membros Online<br />
-          Discord
-        </h1>
+        <h1 data-i18n-html="site.lc.projetox.membersOnlineDiscord">Members online<br /> Discord</h1>
         <div>
           <div class="rolo-row">
             <iframe
@@ -80,14 +80,14 @@
             ></iframe>
 
             <aside class="divRec info-box">
-              <p class="pTitrec"><b>COMO UTILIZAR O SITE</b></p>
+              <p class="pTitrec"><b data-i18n="site.lc.projetox.howToUseSite">HOW TO USE THE SITE</b></p>
 
               <div class="video-container">
                 <iframe
                   width="560"
                   height="315"
                   src="https://www.youtube.com/embed/mX9Zp8MW7Go"
-                  title="Como Utilizar o Site"
+                  data-i18n-title="site.lc.projetox.howToUseSiteTitle" title="How to use the site"
                   frameborder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowfullscreen
@@ -95,7 +95,7 @@
                 </iframe>
               </div>
               <a href="https://youtu.be/mX9Zp8MW7Go?si=McsDXCSiyNQnjV7v"
-                ><button class="tutorialB">Clique Aqui</button></a
+                ><button data-i18n="site.lc.projetox.clickHere" class="tutorialB">Click here</button></a
               >
             </aside>
           </div>
@@ -131,54 +131,28 @@
       </section> -->
 
       <section id="policies" class="section">
-        <h1>Sobre Nós</h1>
+        <h1 data-i18n="site.lc.projetox.aboutUs">About us</h1>
 
-        <h2>Clan Legend Sobre Nós 🔥</h2>
+        <h2 data-i18n="site.lc.projetox.aboutTitle">Legend Clan — About us 🔥</h2>
 
-        <p>
-          Este é o espaço oficial dedicado às Redes Sociais e Anúncios do Legend
-          Clan LC.
-        </p>
+        <p data-i18n="site.lc.projetox.aboutText1">This is the official space for Legend Clan LC's social networks and announcements.</p>
         <br />
-        <p>
-          >Aqui você encontra todas as informações essenciais sobre o clã >,
-          incluindo comunicados oficiais, regras internas, eventos, conquistas e
-          registros históricos que marcam nossa trajetória.
-        </p>
+        <p data-i18n="site.lc.projetox.aboutText2">Here you will find all the essential information about the clan, including official announcements, internal rules, events, achievements and the historical records of our journey.</p>
         <br />
-        <p>
-          📜 Histórico e Arquivos Acompanhe a evolução do Legend Clan LC por
-          meio de nossos arquivos públicos, onde reunimos artigos, guias,
-          cronologias e conteúdos exclusivos.
-        </p>
+        <p data-i18n="site.lc.projetox.aboutHistory">📜 History and archives: follow the evolution of Legend Clan LC through our public archives, where we gather articles, guides, timelines and exclusive content.</p>
         <br />
-        <p>Os links estão sempre disponíveis nas postagens correspondentes.</p>
-        <p>
-          ⚔️ Regras e Ética Prezamos pelo respeito, lealdade e espírito de
-          equipe.
-        </p>
+        <p data-i18n="site.lc.projetox.aboutLinks">The links are always available in the matching posts.</p>
+        <p data-i18n="site.lc.projetox.aboutRules">⚔️ Rules and ethics: we value respect, loyalty and team spirit.</p>
         <br />
-        <p>
-          O jogo limpo é obrigatório para todos os membros. Qualquer violação às
-          regras poderá resultar em advertências ou, em casos mais graves, na
-          expulsão do clã.
-        </p>
+        <p data-i18n="site.lc.projetox.aboutFairPlay">Fair play is mandatory for all members. Any breach of the rules can lead to warnings or, in more serious cases, expulsion from the clan.</p>
         <br />
-        <p>
-          📢 Comunicados e Eventos Fique atento aos anúncios oficiais para não
-          perder eventos, atualizações importantes e decisões administrativas do
-          clã.
-        </p>
+        <p data-i18n="site.lc.projetox.aboutAnnouncements">📢 Announcements and events: watch the official announcements so you don't miss events, important updates and the clan's administrative decisions.</p>
         <br />
-        <p>
-          💬 Contato e Suporte Para dúvidas, suporte ou assuntos
-          administrativos, entre em contato através do nosso Discord oficial ou
-          envie uma mensagem diretamente aos administradores.
-        </p>
+        <p data-i18n="site.lc.projetox.aboutContact">💬 Contact and support: for questions, support or administrative matters, contact us on our official Discord or send a message directly to the administrators.</p>
       </section>
 
       <section id="midia" class="section dark">
-        <h2>Fotos GameplaY</h2>
+        <h2 data-i18n="site.lc.projetox.gameplayPhotos">Gameplay photos</h2>
 
         <div class="custom first span6">
           <p>
@@ -202,30 +176,29 @@
       </section>
 
       <section id="informacoes" class="section">
-        <h2>Informações</h2>
+        <h2 data-i18n="site.lc.projetox.information">Information</h2>
         <div>
           <p>
-            <a
+            <a data-i18n="site.lc.projetox.contractedPlayers"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/elite-players.html"
-            >
-              Perfil de Jogadores Que Realizamos O Contrato</a
+            >Profiles of the players we have signed</a
             >
           </p>
           <br />
           <p>
-            <a
+            <a data-i18n="site.lc.projetox.assistants"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/assistants.html"
-              >Assistentes</a
+              >Assistants</a
             >
           </p>
           <br />
           <p>
-            <a
+            <a data-i18n="site.lc.projetox.moddersDevelopers"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/modders.html"
-              >Modders e Desenvolvedores</a
+              >Modders and developers</a
             >
           </p>
           <br />
@@ -233,12 +206,10 @@
       </section>
 
       <section id="server" class="section dark">
-        <h2>Projetos</h2>
+        <h2 data-i18n="site.lc.projetox.projects">Projects</h2>
         <div class="pGeral">
           <p>
-            <a class="magic-btn" href="http://jimboy3100.github.io/">
-              Clique aqui para visualizar os projetos
-            </a>
+            <a data-i18n="site.lc.projetox.clickToViewProjects" class="magic-btn" href="http://jimboy3100.github.io/">Click here to view the projects</a>
           </p>
         </div>
       </section>
@@ -246,99 +217,99 @@
       <section id="Atualizações" class="section">
         <!-- div imagem das ultimas atualizações -->
         <div class="aIM">
-          <h2>Atualizações</h2>
-          <img
+          <h2 data-i18n="site.lc.projetox.updates">Updates</h2>
+          <img data-i18n-alt="site.lc.projetox.redFireImage"
             src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc5.jpg"
-            alt="Imagem Fogo Vermelho"
+            alt="Red fire image"
           />
         </div>
 
         <div class="aRG">
           <!-- div promoção novos membros -->
           <div>
-            <p>promoção novos membros</p>
+            <p data-i18n="site.lc.projetox.newMemberPromotion">New member promotion</p>
             <p>27/12/2025</p>
-            <a
+            <a data-i18n="site.lc.projetox.clickToSeeMore"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/announcement-27-12-2025.html"
-              >Clique aqui para ver mais</a
+              >Click here to see more</a
             >
           </div>
           <!-- div lealdade -->
           <div>
-            <p>Lealdade do Clan</p>
+            <p data-i18n="site.lc.projetox.clanLoyalty">Clan loyalty</p>
             <p>24/02/2018</p>
-            <a
+            <a data-i18n="site.lc.projetox.clickToSeeMore"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/announcement-24-2-2018.html"
-              >Clique aqui para ver mais</a
+              >Click here to see more</a
             >
           </div>
           <!-- div Regra Senpai -->
           <div>
-            <p>Regra Senpai</p>
+            <p data-i18n="site.lc.projetox.senpaiRule">Senpai rule</p>
             <p>01/02/2018</p>
-            <a
+            <a data-i18n="site.lc.projetox.clickToSeeMore"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/announcement-1-2-2018.html"
-              >Clique aqui para ver mais</a
+              >Click here to see more</a
             >
           </div>
           <!-- div Regras Sobre O Clan -->
           <div>
-            <p>Regras Sobre O Clan</p>
+            <p data-i18n="site.lc.projetox.clanRules">Rules about the clan</p>
             <p>12/04/2017</p>
-            <a
+            <a data-i18n="site.lc.projetox.clickToSeeMore"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/announcement-4-12-2017.html"
-              >Clique aqui para ver mais</a
+              >Click here to see more</a
             >
           </div>
           <!-- div Regras LC -->
           <div>
-            <p>Regras LC</p>
+            <p data-i18n="site.lc.projetox.lcRules">LC rules</p>
             <p>11/04/2017</p>
-            <a
+            <a data-i18n="site.lc.projetox.clickToSeeMore"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/announcement4-11-2017.html"
-              >Clique aqui para ver mais</a
+              >Click here to see more</a
             >
           </div>
           <!-- div atualizações estrategicas -->
           <div>
-            <p>Dicas de estrategicas</p>
+            <p data-i18n="site.lc.projetox.strategyTips">Strategy tips</p>
             <p>26/10/2017</p>
-            <a
+            <a data-i18n="site.lc.projetox.clickToSeeMore"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/announcement-26-10-2017.html"
-              >Clique aqui para ver mais</a
+              >Click here to see more</a
             >
           </div>
           <!-- div Agradecimentos -->
           <div>
-            <p>Agradecimentos</p>
+            <p data-i18n="site.lc.projetox.thanks">Acknowledgements</p>
             <p>18/10/2017</p>
-            <a
+            <a data-i18n="site.lc.projetox.clickToSeeMore"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/announcement-18-10-2017.html"
-              >clique aqui para ver mais</a
+              >Click here to see more</a
             >
           </div>
           <!-- div Regras Para Membros da LC -->
           <div>
-            <p>Regras Para Membros da LC</p>
+            <p data-i18n="site.lc.projetox.lcMemberRules">Rules for LC members</p>
             <p>05/10/2017</p>
-            <a
+            <a data-i18n="site.lc.projetox.clickToSeeMore"
               class="magic-btn"
               href="https://www.legendmod.ml/Lc/articles/announcement-5-10-2017.html"
-              >clique aqui para ver mais</a
+              >Click here to see more</a
             >
           </div>
         </div>
       </section>
 
       <section id="sec" class="section-form">
-        <h2>Formulario</h2>
+        <h2 data-i18n="site.lc.projetox.form">Form</h2>
 
         <form
           id="contactForm"
@@ -347,8 +318,8 @@
           enctype="multipart/form-data"
         >
           <div class="input-group">
-            <label>Nome</label>
-            <input
+            <label data-i18n="site.lc.projetox.name">Name</label>
+            <input data-i18n-placeholder="site.lc.projetox.nuclearain"
               type="text"
               name="nome"
               required
@@ -357,8 +328,8 @@
           </div>
 
           <div class="input-group">
-            <label>Email</label>
-            <input
+            <label data-i18n="site.lc.projetox.email">Email</label>
+            <input data-i18n-placeholder="site.lc.projetox.legendclanGmailCom"
               type="email"
               name="email"
               required
@@ -367,24 +338,22 @@
           </div>
 
           <div class="input-group">
-            <label>Mensagem</label>
+            <label data-i18n="site.lc.projetox.message">Message</label>
             <textarea
               name="mensagem"
               required
-              placeholder="Digite sua mensagem..."
+              data-i18n-placeholder="site.lc.projetox.messagePlaceholder" placeholder="Type your message..."
             ></textarea>
           </div>
 
           <!-- Botão de arquivo -->
-          <label for="Arquivo" class="arquivo-custom">
-            📁 Escolher arquivo
-          </label>
+          <label data-i18n="site.lc.projetox.chooseFile" for="Arquivo" class="arquivo-custom">📁 Choose file</label>
           <input type="file" id="Arquivo" name="arquivo" />
 
-          <div id="nome-arquivo">Nenhum arquivo escolhido</div>
+          <div data-i18n="site.lc.projetox.noFileChosen" id="nome-arquivo">No file chosen</div>
 
-          <button type="submit">Enviar</button>
-          <button type="reset">Deletar</button>
+          <button data-i18n="site.lc.projetox.send" type="submit">Send</button>
+          <button data-i18n="site.lc.projetox.delete" type="reset">Delete</button>
         </form>
       </section>
     </main>
@@ -392,26 +361,26 @@
     <footer class="main_footer container">
       <div class="content">
         <div class="colfooter">
-          <h3 class="titleFooter">Menu</h3>
+          <h3 data-i18n="site.lc.projetox.menu" class="titleFooter">Menu</h3>
 
           <ul>
             <li>
-              <a href="#" title="Página Inícial">Inicio</a>
+              <a data-i18n="site.lc.projetox.home" data-i18n-title="site.lc.projetox.homePage" href="#" title="Home page">Home</a>
             </li>
             <li>
-              <a href="#members" title="Membros">Membros</a>
+              <a data-i18n="site.lc.projetox.members" data-i18n-title="site.lc.projetox.members" href="#members" title="Members">Members</a>
             </li>
-            <li><a href="#policies" title="Sobre a Empresa">Sobre Nós</a></li>
-            <li><a href="#midia" title="Galeria de Fotos">Midias</a></li>
-            <li><a href="#informacoes" title="Infomações">Infomações</a></li>
-            <li><a href="#server" title="Projetos">Projetos</a></li>
+            <li><a data-i18n="site.lc.projetox.aboutUs" data-i18n-title="site.lc.projetox.aboutUs" href="#policies" title="About us">About us</a></li>
+            <li><a data-i18n="site.lc.projetox.media" data-i18n-title="site.lc.projetox.photoGallery" href="#midia" title="Photo gallery">Media</a></li>
+            <li><a data-i18n="site.lc.projetox.information" data-i18n-title="site.lc.projetox.information" href="#informacoes" title="Information">Information</a></li>
+            <li><a data-i18n="site.lc.projetox.projects" data-i18n-title="site.lc.projetox.projects" href="#server" title="Projects">Projects</a></li>
             <li>
-              <a href="#Atualizações" title="Atualizações">Atualizações</a>
+              <a data-i18n="site.lc.projetox.updates" data-i18n-title="site.lc.projetox.updates" href="#Atualizações" title="Updates">Updates</a>
             </li>
 
             <li>
-              <a href="https://discord.gg/2n9Hvcw9c3" title="Fale Conosco"
-                >Fale Conosco</a
+              <a data-i18n="site.lc.projetox.contactUs" data-i18n-title="site.lc.projetox.contactUs" href="https://discord.gg/2n9Hvcw9c3" title="Contact us"
+                >Contact us</a
               >
             </li>
           </ul>
@@ -419,22 +388,22 @@
         <!--Col Footer 1-->
 
         <div class="colfooter">
-          <h3 class="titleFooter">Email</h3>
-          <p><i class="icon icon-mail"></i>legendclanOficial@Gmail.com</p>
+          <h3 data-i18n="site.lc.projetox.email" class="titleFooter">Email</h3>
+          <p data-i18n-html="site.lc.projetox.legendclanoficialGmailCom"><i class="icon icon-mail"></i>legendclanOficial@Gmail.com</p>
           <!-- <p><i class="icon icon-phone"></i> 21 90000-0000</p>
           <p><i class="icon icon-whatsapp"></i> 21 90000-0000</p> -->
         </div>
         <!--Col Footer 2-->
 
         <div class="colfooter">
-          <h3 class="titleFooter">Redes Sociais</h3>
+          <h3 data-i18n="site.lc.projetox.socialNetworks" class="titleFooter">Social networks</h3>
 
           <a href="https://www.facebook.com/Lcclan/" class="botao"
             ><span> <i class="icon icon-facebook"></i>facebook</span></a
           >
 
           <a href="https://www.instagram.com/legendclanmod/" class="botao"
-            ><span><i class="icon icon-instagram"></i>Instagram</span></a
+            ><span data-i18n-html="site.lc.projetox.instagram"><i class="icon icon-instagram"></i>Instagram</span></a
           >
 
           <a href="https://discord.gg/2n9Hvcw9c3" class="botao"
@@ -462,15 +431,8 @@
       <!--Contant-->
 
       <div class="main_footer_copy">
-        <p class="m-b-footer">
-          The Legend Clan LC Agario - 2025, todos os direitos reservados.
-        </p>
-        <p class="by">
-          <i class="icon icon-heart-3"></i> Desenvolvedor:
-          <a href="https://www.youtube.com/@Junior_devTI" title="Developer">
-            <span class="dev-name">Júnior devTI</span>💎</a
-          >
-        </p>
+        <p data-i18n="site.lc.projetox.copyright" class="m-b-footer">The Legend Clan LC Agario - 2025, all rights reserved.</p>
+        <p data-i18n-html="site.lc.projetox.developer" class="by"><i class="icon icon-heart-3"></i> Developer: <a href="https://www.youtube.com/@Junior_devTI" title="Developer"> <span class="dev-name">Júnior devTI</span>💎</a ></p>
       </div>
     </footer>
 
