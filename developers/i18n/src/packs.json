@@ -412,8 +412,8 @@
     "tr": "İzle",
     "pl": "Oglądaj",
     "nl": "Kijken",
-    "pt": "Observar",
-    "id": "Menonton",
+    "pt": "Espectar",
+    "id": "Spectate",
     "ja": "観戦",
     "it": "Spettatore"
   },
@@ -6872,7 +6872,7 @@
     "tr": "Sıralama",
     "pl": "Tablica liderów",
     "nl": "Ranglijst",
-    "pt": "Classificação",
+    "pt": "Ranking",
     "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifica"
@@ -7594,7 +7594,7 @@
     "tr": "Sıralama",
     "pl": "Rankingi",
     "nl": "Ranglijsten",
-    "pt": "Classificações",
+    "pt": "Rankings",
     "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifiche"
@@ -8202,8 +8202,8 @@
     "tr": "İZLE",
     "pl": "OGLĄDAJ",
     "nl": "KIJKEN",
-    "pt": "Observar",
-    "id": "Menonton",
+    "pt": "Espectar",
+    "id": "Spectate",
     "ja": "観戦",
     "it": "Spettatore"
   },
@@ -10843,10 +10843,10 @@
     "tr": "Parti Modu",
     "pl": "Partia",
     "nl": "Party Modus",
-    "pt": "Modo grupo",
-    "id": "Mode grup",
+    "pt": "Modo party",
+    "id": "Mode party",
     "ja": "パーティーモード",
-    "it": "Modalità gruppo"
+    "it": "Modalità party"
   },
   "pack.languages": {
     "global": "Externalletter0a",

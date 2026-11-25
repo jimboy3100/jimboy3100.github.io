@@ -9750,8 +9750,8 @@
     "tr": "Takma ad",
     "pl": "Nick",
     "nl": "Bijnaam",
-    "pt": "Apelido",
-    "id": "Nama panggilan",
+    "pt": "Nick",
+    "id": "Nick",
     "ja": "ニックネーム",
     "it": "Nickname"
   },
@@ -10237,7 +10237,7 @@
     "pl": "czat",
     "nl": "chat",
     "pt": "Chat",
-    "id": "Obrolan",
+    "id": "Chat",
     "ja": "チャット",
     "it": "Chat"
   },

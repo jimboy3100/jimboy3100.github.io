@@ -6,7 +6,7 @@
 "site.home": "Beranda",
 "site.features": "Fitur",
 "site.compare": "Bandingkan",
-"site.macroGuide": "Panduan makro",
+"site.macroGuide": "Panduan macro",
 "site.changelog": "Catatan perubahan",
 "site.skins": "Skin",
 "site.themes": "Tema",

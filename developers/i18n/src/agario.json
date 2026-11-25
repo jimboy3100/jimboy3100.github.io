@@ -174,10 +174,10 @@
     "tr": "Parti oluşturuluyor...",
     "pl": "Tworzenie party...",
     "nl": "Party aanmaken...",
-    "pt": "Criando grupo...",
-    "id": "Membuat grup...",
+    "pt": "Criando party...",
+    "id": "Membuat party...",
     "ja": "パーティー作成中...",
-    "it": "Creazione gruppo..."
+    "it": "Creazione party..."
   },
   "agario.page_fb_matchresults_description": {
     "en": "Can you do better? Come and play!",
@@ -534,10 +534,10 @@
     "tr": "Bölünmek için <b>Boşluk</b> tuşuna bas",
     "pl": "Naciśnij <b>Spację</b>, aby się podzielić",
     "nl": "Druk op <b>Spatie</b> om te splitsen",
-    "pt": "Pressione <b>Espaço</b> para dividir",
-    "id": "Tekan <b>Spasi</b> untuk membelah",
+    "pt": "Pressione <b>Espaço</b> para dar split",
+    "id": "Tekan <b>Spasi</b> untuk split",
     "ja": "<b>Space</b>キーで分裂",
-    "it": "Premi <b>Spazio</b> per dividerti"
+    "it": "Premi <b>Spazio</b> per splittare"
   },
   "agario.page_instructions_w": {
     "en": "Press <b>W</b> to eject some mass",
@@ -660,10 +660,10 @@
     "tr": "Partiye katılınıyor...",
     "pl": "Dołączanie do party...",
     "nl": "Deelnemen aan party...",
-    "pt": "Entrando no grupo...",
-    "id": "Bergabung ke grup...",
+    "pt": "Entrando na party...",
+    "id": "Bergabung ke party...",
     "ja": "パーティー参加中...",
-    "it": "Accesso al gruppo..."
+    "it": "Accesso al party..."
   },
   "agario.page_last_match_results": {
     "en": "Last match results",
@@ -696,8 +696,8 @@
     "tr": "Sıralama",
     "pl": "Ranking",
     "nl": "Klassement",
-    "pt": "Classificação",
-    "id": "Papan peringkat",
+    "pt": "Ranking",
+    "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifica"
   },
@@ -714,8 +714,8 @@
     "tr": "Sıralamada Kalma Süresi",
     "pl": "Czas w rankingu",
     "nl": "Tijd in klassement",
-    "pt": "Tempo na classificação",
-    "id": "Waktu di papan peringkat",
+    "pt": "Tempo no ranking",
+    "id": "Waktu di leaderboard",
     "ja": "ランキング滞在時間",
     "it": "Tempo in classifica"
   },
@@ -732,10 +732,10 @@
     "tr": "Partiden Ayrıl",
     "pl": "Opuść party",
     "nl": "Party verlaten",
-    "pt": "Sair do grupo",
-    "id": "Keluar dari grup",
+    "pt": "Sair da party",
+    "id": "Keluar dari party",
     "ja": "パーティー退出",
-    "it": "Lascia gruppo"
+    "it": "Lascia il party"
   },
   "agario.page_login_and_play": {
     "en": "Login and play",
@@ -1146,10 +1146,10 @@
     "tr": "Parti Modu",
     "pl": "Tryb party",
     "nl": "Partymodus",
-    "pt": "Modo grupo",
-    "id": "Mode grup",
+    "pt": "Modo party",
+    "id": "Mode party",
     "ja": "パーティーモード",
-    "it": "Modalità gruppo"
+    "it": "Modalità party"
   },
   "agario.page_party_description": {
     "en": "Play with your friends in the same arena",
@@ -1920,8 +1920,8 @@
     "tr": "İzle",
     "pl": "Obserwuj",
     "nl": "Kijken",
-    "pt": "Observar",
-    "id": "Menonton",
+    "pt": "Espectar",
+    "id": "Spectate",
     "ja": "観戦",
     "it": "Spettatore"
   },
@@ -2010,8 +2010,8 @@
     "tr": "sıralama süresi",
     "pl": "czas w rankingu",
     "nl": "tijd in klassement",
-    "pt": "Tempo na classificação",
-    "id": "Waktu di papan peringkat",
+    "pt": "Tempo no ranking",
+    "id": "Waktu di leaderboard",
     "ja": "ランキング滞在時間",
     "it": "Tempo in classifica"
   },

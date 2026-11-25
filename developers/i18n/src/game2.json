@@ -2406,8 +2406,8 @@
     "tr": "Lider tablosu",
     "pl": "Ranking",
     "nl": "Ranglijst",
-    "pt": "Classificação",
-    "id": "Papan peringkat",
+    "pt": "Ranking",
+    "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifica"
   },
@@ -4098,10 +4098,10 @@
     "tr": "Bölün",
     "pl": "Podział",
     "nl": "Splitsen",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "Split",
+    "id": "Split",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "Split"
   },
   "game2.gpFeed": {
     "en": "Feed (hold = macro feed)",

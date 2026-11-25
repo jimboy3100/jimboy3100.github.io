@@ -2,9 +2,9 @@
  * Change the texts in developers/i18n/src and run: node developers/i18n/build.js */
 /* Indonesian (id, languagemod 14): 4 texts */
 (window._lmI18nQueue = window._lmI18nQueue || []).push(["id", "site-compare", {
-"site.compare.autoRespawn": "Muncul kembali otomatis",
+"site.compare.autoRespawn": "Respawn otomatis",
 "site.compare.skinRotator": "Rotator skin",
 "site.compare.performance": "Performa",
-"site.compare.teamChat": "Obrolan tim"
+"site.compare.teamChat": "Chat tim"
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();

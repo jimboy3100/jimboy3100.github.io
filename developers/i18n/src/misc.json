@@ -768,10 +768,10 @@
     "tr": "BÖLÜN",
     "pl": "PODZIAŁ",
     "nl": "SPLITS",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "SPLIT",
+    "id": "SPLIT",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "SPLIT"
   },
   "misc.mobile.feed": {
     "en": "FEED",
@@ -786,10 +786,10 @@
     "tr": "BESLE",
     "pl": "KARM",
     "nl": "VOER",
-    "pt": "Alimentar",
-    "id": "Beri makan",
-    "ja": "エサを与える",
-    "it": "Nutri"
+    "pt": "FEED",
+    "id": "FEED",
+    "ja": "質量放出",
+    "it": "FEED"
   },
   "misc.mobile.pingHelp": {
     "en": "Help",
@@ -912,10 +912,10 @@
     "tr": "Bölünme",
     "pl": "Podział",
     "nl": "Splitsen",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "Split",
+    "id": "Split",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "Split"
   },
   "misc.editor.ctlFeed": {
     "en": "Feed",
@@ -930,10 +930,10 @@
     "tr": "Besleme",
     "pl": "Karmienie",
     "nl": "Voeren",
-    "pt": "Alimentar",
-    "id": "Beri makan",
-    "ja": "エサを与える",
-    "it": "Nutri"
+    "pt": "Feed",
+    "id": "Feed",
+    "ja": "質量放出",
+    "it": "Feed"
   },
   "misc.editor.ctlX4": {
     "en": "4x split",
@@ -1039,7 +1039,7 @@
     "pl": "Minimapa",
     "nl": "Minikaart",
     "pt": "Minimapa",
-    "id": "Peta mini",
+    "id": "Minimap",
     "ja": "ミニマップ",
     "it": "Minimappa"
   },

@@ -391,7 +391,7 @@
     "pl": "Powtórki",
     "nl": "Herhalingen",
     "pt": "Replays",
-    "id": "Tayangan ulang",
+    "id": "Replay",
     "ja": "リプレイ",
     "it": "Replay"
   },
@@ -1435,7 +1435,7 @@
     "pl": "Studio powtórek",
     "nl": "Replaystudio",
     "pt": "Estúdio de replays",
-    "id": "Studio tayangan ulang",
+    "id": "Replay Studio",
     "ja": "リプレイスタジオ",
     "it": "Studio replay"
   },
@@ -3217,7 +3217,7 @@
     "pl": "Minimapa",
     "nl": "Minimap",
     "pt": "Minimapa",
-    "id": "Peta mini",
+    "id": "Minimap",
     "ja": "ミニマップ",
     "it": "Minimappa"
   },
@@ -3234,8 +3234,8 @@
     "tr": "Liderlik tablosu",
     "pl": "Ranking",
     "nl": "Ranglijst",
-    "pt": "Classificação",
-    "id": "Papan peringkat",
+    "pt": "Ranking",
+    "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifica"
   },
@@ -3289,7 +3289,7 @@
     "pl": "Czat",
     "nl": "Chat",
     "pt": "Chat",
-    "id": "Obrolan",
+    "id": "Chat",
     "ja": "チャット",
     "it": "Chat"
   },
@@ -3684,8 +3684,8 @@
     "tr": "Liderlik tablosu",
     "pl": "Ranking",
     "nl": "Ranglijst",
-    "pt": "Classificação",
-    "id": "Papan peringkat",
+    "pt": "Ranking",
+    "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifica"
   },
@@ -3739,7 +3739,7 @@
     "pl": "Czat",
     "nl": "Chat",
     "pt": "Chat",
-    "id": "Obrolan",
+    "id": "Chat",
     "ja": "チャット",
     "it": "Chat"
   },
@@ -3973,9 +3973,9 @@
     "pl": "Skróty klawiszowe",
     "nl": "Sneltoetsen",
     "pt": "Atalhos",
-    "id": "Tombol pintas",
+    "id": "Hotkey",
     "ja": "ショートカット",
-    "it": "Scorciatoie"
+    "it": "Tasti rapidi"
   },
   "modules.profiles.partM": {
     "en": "Phone controls",
@@ -7734,8 +7734,8 @@
     "tr": "Liderlik tablosu",
     "pl": "Ranking",
     "nl": "Ranglijst",
-    "pt": "Classificação",
-    "id": "Papan peringkat",
+    "pt": "Ranking",
+    "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifica"
   },
@@ -7753,7 +7753,7 @@
     "pl": "Minimapa",
     "nl": "Minikaart",
     "pt": "Minimapa",
-    "id": "Peta mini",
+    "id": "Minimap",
     "ja": "ミニマップ",
     "it": "Minimappa"
   },
@@ -10686,10 +10686,10 @@
     "tr": "bölünme",
     "pl": "split",
     "nl": "split",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "Split",
+    "id": "Split",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "Split"
   },
   "modules.director.change": {
     "en": "mass change",
@@ -12001,7 +12001,7 @@
     "pl": "Studio powtórek",
     "nl": "Replaystudio",
     "pt": "Estúdio de replays",
-    "id": "Studio tayangan ulang",
+    "id": "Replay Studio",
     "ja": "リプレイスタジオ",
     "it": "Studio replay"
   },
@@ -13044,10 +13044,10 @@
     "tr": "Bölünme",
     "pl": "Podział",
     "nl": "Split",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "Split",
+    "id": "Split",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "Split"
   },
   "modules.replaystudio.top1": {
     "en": "1st place",
@@ -13206,10 +13206,10 @@
     "tr": "BÖLÜN",
     "pl": "PODZIAŁ",
     "nl": "SPLIT",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "SPLIT",
+    "id": "SPLIT",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "SPLIT"
   },
   "modules.practice.title": {
     "en": "Practice arena",
@@ -13908,10 +13908,10 @@
     "tr": "Bölünme",
     "pl": "Podział",
     "nl": "Split",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "Split",
+    "id": "Split",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "Split"
   },
   "modules.practice.lv1": {
     "en": "Easy",
@@ -19542,10 +19542,10 @@
     "tr": "Split",
     "pl": "Split",
     "nl": "Split",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "Split",
+    "id": "Split",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "Split"
   },
   "modules.macroeditor.feed": {
     "en": "Feed",
@@ -19560,10 +19560,10 @@
     "tr": "Feed",
     "pl": "Feed",
     "nl": "Feed",
-    "pt": "Alimentar",
-    "id": "Beri makan",
-    "ja": "エサを与える",
-    "it": "Nutri"
+    "pt": "Feed",
+    "id": "Feed",
+    "ja": "質量放出",
+    "it": "Feed"
   },
   "modules.macroeditor.wait": {
     "en": "Wait",
@@ -20191,9 +20191,9 @@
     "pl": "Skroty klawiszowe",
     "nl": "Sneltoetsen",
     "pt": "Atalhos",
-    "id": "Tombol pintas",
+    "id": "Hotkey",
     "ja": "ショートカット",
-    "it": "Scorciatoie"
+    "it": "Tasti rapidi"
   },
   "modules.gamepadui.unknown": {
     "en": "Unknown command: {0}",
@@ -20928,10 +20928,10 @@
     "tr": "Split",
     "pl": "Split",
     "nl": "Split",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "Split",
+    "id": "Split",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "Split"
   },
   "modules.gamepadui.actFeed": {
     "en": "Feed (hold = macro feed)",

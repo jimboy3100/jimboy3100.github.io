@@ -265,7 +265,7 @@
     "pl": "Automatyczny respawn",
     "nl": "Automatisch respawnen",
     "pt": "Renascimento automático",
-    "id": "Muncul kembali otomatis",
+    "id": "Respawn otomatis",
     "ja": "自動リスポーン",
     "it": "Respawn automatico"
   },
@@ -841,7 +841,7 @@
     "pl": "Czat drużynowy",
     "nl": "Teamchat",
     "pt": "Chat da equipe",
-    "id": "Obrolan tim",
+    "id": "Chat tim",
     "ja": "チームチャット",
     "it": "Chat di squadra"
   },
