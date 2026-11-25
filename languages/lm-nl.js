@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Doorgaan",
 "modules.themeworkshop.cancel": "Annuleren",
 "modules.themeworkshop.galleryNote": "Thema's die bij Legend Mod horen. Bekijk er een of installeer het in Mijn thema's.",
-"modules.themeworkshop.publishNote": "Publiceer je eigen thema: exporteer het naar een bestand (Importeren / exporteren) en deel het bestand, bijv. op Discord. Er is geen uploaddienst: er wordt niets verstuurd.",
+"modules.themeworkshop.publishNote": "Een thema delen met andere spelers: pas het toe en exporteer het daarna via Instellingen > Exporteren / Importeren (Thema aan).",
 "modules.themeworkshop.galleryLoading": "Galerij laden...",
 "modules.themeworkshop.builtinTitle": "Ingebouwde presets",
 "modules.themeworkshop.builtinNote": "Een spelpreset stelt de kleuren, lettertypen en groottes van het spel in, een menupreset de menukleuren; de rest blijft zoals het is. Toepassen houdt hem meteen, Voorbeeld toont hem 15 s.",

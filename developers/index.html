@@ -63,6 +63,12 @@
         ]
     }
     </script>
+    <!-- opened from Legend Mod: the page follows the player's menu theme (#lm=...); direct visitors keep this design -->
+    <script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8"></script>
+    <style>
+        /* only when opened from Legend Mod with a theme (html.lm-themed-root) */
+        html.lm-themed-root .main-content, html.lm-themed-root .page-header { color: var(--lm-tc) !important; }
+    </style>
     </head>
     <body>
         <section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">

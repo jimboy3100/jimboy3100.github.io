@@ -752,6 +752,9 @@
     </style>
     <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
     <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-index" charset="utf-8"></script>
+<!-- opened from Legend Mod: the page follows the player's menu theme (#lm=...); direct visitors keep this design -->
+<script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8" data-lm-css="site"></script>
+<style>/* opened from Legend Mod: the purple glow in the theme accent, and the older inline black text readable (like the dark mode) */ html.lm-themed-root body { background-image: radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--lm-mc) 8%, transparent) 0%, transparent 50%) !important; } html.lm-themed-root [style*="color: black"], html.lm-themed-root [style*="color:black"] { color: var(--lm-tc) !important; }</style>
 </head>
 
 <body>
@@ -1757,7 +1760,7 @@
             }
         });
         // Open the tab named in the URL hash (/#Changelog, /#Features from the FAQ/Features pages)
-        var lmTab = /^#(\w+)$/.exec(location.hash);
+        var lmTab = /^#(\w+)(&|$)/.exec(location.hash); /* "&lm=..." can follow: the theme from Legend Mod */
         if (lmTab) $('#nav a[name="' + lmTab[1] + '"]').trigger('click');
         // Inject footer
         $('body').append('<div class="lm-footer"><span data-i18n="site.footerProject">© 2026 Legend Mod Project</span> · <a href="/features.html" data-i18n="site.features">Features</a> · <a href="/faq.html">FAQ</a> · <a href="/compare.html" data-i18n="site.compare">Compare</a> · <a href="/skins/" data-i18n="site.skins">Skins</a> · <a href="/themes/" data-i18n="site.themes">Themes</a> · <a href="/skinrotator.html" data-i18n="site.skinRotator">Skin Rotator</a> · <a href="/changelog.html" data-i18n="site.changelog">Changelog</a> · <a href="/developers/" data-i18n="site.developers">Developers</a> · <a href="/privacy.html" data-i18n="site.privacy">Privacy</a> · <a href="/terms.html" data-i18n="site.terms">Terms</a> · <a href="https://github.com/jimboy3100" target="_blank" rel="noopener">GitHub</a></div>');

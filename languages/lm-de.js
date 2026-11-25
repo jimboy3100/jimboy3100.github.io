@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Weiter",
 "modules.themeworkshop.cancel": "Abbrechen",
 "modules.themeworkshop.galleryNote": "Themes, die mit Legend Mod kommen. Sieh dir eines an oder installiere es in Meine Themes.",
-"modules.themeworkshop.publishNote": "Veröffentliche dein eigenes: Exportiere es in eine Datei (Import / Export) und teile die Datei, z. B. auf Discord. Es gibt keinen Upload-Dienst: Nichts wird irgendwohin gesendet.",
+"modules.themeworkshop.publishNote": "Um ein Theme mit anderen Spielern zu teilen: wende es an und exportiere es dann unter Einstellungen > Export / Import (Theme eingeschaltet).",
 "modules.themeworkshop.galleryLoading": "Galerie wird geladen...",
 "modules.themeworkshop.builtinTitle": "Eingebaute Vorlagen",
 "modules.themeworkshop.builtinNote": "Eine Spielvorlage legt Farben, Schriften und Größen im Spiel fest, eine Menüvorlage die Menüfarben; alles andere bleibt, wie es ist. Anwenden behält sie sofort, Vorschau zeigt sie 15 s lang.",

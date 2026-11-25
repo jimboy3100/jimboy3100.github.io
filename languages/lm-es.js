@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Continuar",
 "modules.themeworkshop.cancel": "Cancelar",
 "modules.themeworkshop.galleryNote": "Temas incluidos con Legend Mod. Prueba uno o instálalo en Mis temas.",
-"modules.themeworkshop.publishNote": "Publica el tuyo: expórtalo a un archivo (Importar / exportar) y comparte el archivo, p. ej. en Discord. No hay servicio de subida: no se envía nada a ningún sitio.",
+"modules.themeworkshop.publishNote": "Para compartir un tema con otros jugadores: aplícalo y luego expórtalo en Ajustes > Exportar / Importar (con Tema activado).",
 "modules.themeworkshop.galleryLoading": "Cargando la galería...",
 "modules.themeworkshop.builtinTitle": "Ajustes predefinidos",
 "modules.themeworkshop.builtinNote": "Un ajuste de juego cambia los colores, fuentes y tamaños del juego; uno de menú, los colores del menú; todo lo demás se queda igual. Aplicar lo conserva al instante, Probar lo muestra durante 15 s.",

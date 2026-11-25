@@ -9,6 +9,11 @@ function _lmHT(key, vars) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 function _lmHTx(key) { return '<span data-i18n="' + key + '">' + _lmHT(key) + '</span>'; }
+/* the Information page with the menu theme in its URL (see lmThemeUrl in LMexpress.js) */
+function _lmHelperSrc() {
+    var u = 'https://www.legendmod.ml/extras/helper.html';
+    return typeof lmThemeUrl === 'function' ? lmThemeUrl(u) : u;
+}
 
 $("#main-menu").hide();
 $("#skins-panel").hide();
@@ -28,7 +33,7 @@ $('body').append(
 
     '<div id="Userscriptshud2" style="padding:10px;">' +
     '<div id="Userscriptshud3">' +
-    '<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/extras/helper.html" width="920" height="490" style="border:0;max-width:100%;display:block;"></iframe>' +
+    '<iframe id="customskinsIframe2" src="' + _lmHelperSrc() + '" width="920" height="490" style="border:0;max-width:100%;display:block;"></iframe>' +
     '</div>' +
     '</div>' +
 
@@ -70,31 +75,31 @@ function closeLegendHelper(event) {
 function templatesIframe(){
 
 $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="820" height="490">'+
-	'<p style="color:white; font-size:24px"; align="middle"><b>' + _lmHTx('pack.chooseYourTemplate') + '</b></p>'+	
+	'<p style="color:var(--lm-mc,#fff); font-size:15px; margin:6px 0;" align="middle"><b>' + _lmHTx('pack.chooseYourTemplate') + '</b></p>'+	
 	'<div id="settingbanners"><img src="https://jimboy3100.github.io/banners/iconagario.png" alt="' + _lmHT('misc.helper.agarioWhite') + '" id= "searchicon" onclick="agariowhitesettings(); return false" class="img-rounded" width=20% height="50">' +
-	'<u style="color:white; font-size:22px"; align="left" onclick="agariowhitesettings(); return false">' + _lmHTx('misc.helper.agarioWhite') + '</u><br>'+	
+	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="left" onclick="agariowhitesettings(); return false">' + _lmHTx('misc.helper.agarioWhite') + '</u><br>'+	
 	'<img src="https://jimboy3100.github.io/banners/iconnosoup.png" alt="' + _lmHT('misc.helper.noSoups') + '" id = "legendclanbanner" class="img-rounded"  width=20% height="50" onclick="nosoups(); return false" > '+
-	'<u style="color:white; font-size:22px"; align="right" onclick="nosoups(); return false">' + _lmHTx('misc.helper.noSoups') + '</u><br>'+
+	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="nosoups(); return false">' + _lmHTx('misc.helper.noSoups') + '</u><br>'+
 	'<img src="https://jimboy3100.github.io/banners/vanillapic.jpg" alt="' + _lmHT('misc.helper.vanillaBetter') + '" id = "vanillaset" onclick="vanillabetter(); return false" class="img-rounded" width=20% height="50" >' +
-	'<u style="color:white; font-size:22px"; align="right" onclick="vanillabetter(); return false">' + _lmHTx('misc.helper.vanillaBetter') + '</u><br>'+	
+	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="vanillabetter(); return false">' + _lmHTx('misc.helper.vanillaBetter') + '</u><br>'+	
 	'<img src="https://jimboy3100.github.io/banners/galaxybanner.jpg" alt="' + _lmHT('misc.helper.galaxy') + '" id = "galaxyset" onclick="galaxysettings(); return false" class="img-rounded"  return false" width=20%" height="50"  >' +
-	'<u style="color:white; font-size:22px"; align="left" onclick="galaxysettings(); return false">' + _lmHTx('misc.helper.galaxy') + '</u><br>'+	
+	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="left" onclick="galaxysettings(); return false">' + _lmHTx('misc.helper.galaxy') + '</u><br>'+	
 	'<img src="https://jimboy3100.github.io/banners/iconmod.png" alt="' + _lmHT('misc.helper.legendDefault') + '" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="legenddefaultsettings(); return false" > '+
-	'<u style="color:white; font-size:22px"; align="right" onclick="legenddefaultsettings(); return false">' + _lmHTx('misc.helper.legendDefault') + '</u><br>'+
+	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="legenddefaultsettings(); return false">' + _lmHTx('misc.helper.legendDefault') + '</u><br>'+
 	'<img src="https://jimboy3100.github.io/banners/iconvanilla.jpg" alt="' + _lmHT('misc.helper.vanillaLike') + '" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
-	'<u style="color:white; font-size:22px"; align="right" onclick="vanillalike(); return false">' + _lmHTx('misc.helper.vanillaLike') + '</u><br>'+
-	'<p style="color:white; font-size:24px"; align="middle"><b>' + _lmHTx('pack.orChooseAnExpansion') + '</b></p></div>'+
+	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="vanillalike(); return false">' + _lmHTx('misc.helper.vanillaLike') + '</u><br>'+
+	'<p style="color:var(--lm-mc,#fff); font-size:15px; margin:6px 0;" align="middle"><b>' + _lmHTx('pack.orChooseAnExpansion') + '</b></p></div>'+
 	/* i18n-ok: Dying Light is the game's name */
-	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a><u style="color:white; font-size:22px"; align="right" onclick="opendyinglight(); return false">Dying Light</u></div>'+	   
+	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a><u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="opendyinglight(); return false">Dying Light</u></div>'+	   
 	'<br><br></div></div>');
 //$('#TemplatesBtn').hide();	
 }
 
 function LanguagesTempIframe(){
 $("#Userscriptshud3").html('<div id="tutorial10" style="display:block;" width="820" height="490">'+
-	'<p id="chooselangtext1" style="color:white; font-size:24px"; align="middle"><b>' + _lmHTx('pack.chooseALanguage') + '</b></p>'+
+	'<p id="chooselangtext1" style="color:var(--lm-mc,#fff); font-size:15px; margin:6px 0;" align="middle"><b>' + _lmHTx('pack.chooseALanguage') + '</b></p>'+
 	'<br><br><select id="legendlanguages2" class="form-control" onchange="changeModLanguage2();" required="" data-original-title="" title="" style="display:inline; width: 50%">' + _lmLangOptions() + '</select>'+
-	'<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><br><br>');
+	'</div>');
 	$('#legendlanguages2').val(languagemod);
 }
 
@@ -107,13 +112,13 @@ function _lmLangOptions() {
 
 function Infobtn11(){
 
-$("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/extras/helper.html" width="920" height="490" style="border:0;max-width:100%;display:block;">'+
+$("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="' + _lmHelperSrc() + '" width="920" height="490" style="border:0;max-width:100%;display:block;">'+
     '<p>' + _lmHTx('misc.noIframes') + '</p>'+
 	'</iframe>');
 //$('#TemplatesBtn').hide();	
 }
 function manualytemplatesIframe(){
-window.open('https://jimboy3100.github.io/themes/' + (typeof lmThemeHash === 'function' ? lmThemeHash() : ''),'_blank');
+window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://www.legendmod.ml/themes/') : 'https://www.legendmod.ml/themes/','_blank');
 }
 
 /* A theme template must not replace the player's own profiles (nicks, tags, skins), hotkeys and

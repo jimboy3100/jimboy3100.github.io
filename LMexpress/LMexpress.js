@@ -1267,9 +1267,9 @@ function ReportFakesSkin() {
 
         '<div id="SkinChangerhud" style="display:block; padding: 10px;">' +
         '<div id="SkinChangertoolshud1" align="middle">' +
-        '<p style="color:white; font-size:12px; margin-bottom: -4px;" align="middle">' + Premadeletter120 +
+        '<p style="color:var(--lm-tc,#fff); font-size:12px; margin-bottom: -4px;" align="middle">' + Premadeletter120 +
         //'<br><br><font id= "Leadboardlet1" style="color:white; size:12px; margin-right: 70px;">' + Temporaryletter2 + '</font><font id= "Teamboardlet1" style="color:white; size:12px; margin-left: 70px;">' + Temporaryletter1 + '</font></p><br>' +
-        '<br><br><font id= "Leadboardlet1" style="color:white; size:12px; ">' + Temporaryletter2 + '</p><br>' +
+        '<br><br><font id= "Leadboardlet1" style="color:var(--lm-tc,#fff); size:12px; ">' + Temporaryletter2 + '</p><br>' +
         '<input id="LeaderboardInput1" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline; " " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         //' <input id="TeamboardInput1" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         '<input id="LeaderboardInput2" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
@@ -1290,7 +1290,7 @@ function ReportFakesSkin() {
         // ' <input id="TeamboardInput9" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         '<input id="LeaderboardInput10" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         //' <input id="TeamboardInput10" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '</div><p style="color:white; font-size:12px";" align="middle">' + Premadeletter121 + '<br>' + Premadeletter122 + '</u></p>' +
+        '</div><p style="color:var(--lm-tc2,#fff); font-size:12px" align="middle">' + Premadeletter121 + '<br>' + Premadeletter122 + '</u></p>' +
         '</div>' +
         '</div></div></div></div>');
     $('#LeaderboardInput1').css('width', '60%');
@@ -8935,7 +8935,7 @@ function BannedUIDS() {
                 $("#BannedUIDSModal").remove();
             });
             $("#FAQBannedUIDS").click(function () {
-                window.open('https://www.legendmod.ml/LMexpress/olddeals.html', '_blank');
+                window.open(lmThemeUrl('https://www.legendmod.ml/LMexpress/olddeals.html'), '_blank');
             });
             $("#AddBannedUID").click(function () {
                 var temp = $("#Bannedagario_uid_input").val()
@@ -9078,7 +9078,7 @@ function changeFrameWorkStart() {
     defaultmapsettings.unlockedFPS = false;
 }
 /* ── Legend Mod Theme Bridge (mod-side helpers), the receiver is lib/lm-theme-bridge.js ──
- * lmThemeData()  → only visual values: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b, rad} and lang
+ * lmThemeData()  → only visual values and the language: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b, rad, lang}
  * lmThemeQuery() → returns "?lm=<base64 JSON>" to append to any URL
  * lmThemeHash()  → returns "#lm=<base64 JSON>"
  * lmThemeSend(iframe) → sends the theme with postMessage, only to a Legend page
@@ -9087,7 +9087,6 @@ function changeFrameWorkStart() {
 function lmThemeData() {
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
     var d = {
-        lang: (window.LMi18n && window.LMi18n.num()) || '1',
         pc:  ds.menuPanelColor   || $('#menuPanelColor').val()  || '#00243e',
         pc2: ds.menuPanelColor2  || $('#menuPanelColor2').val() || '#002f52',
         mc:  ds.menuMainColor    || $('#hudMainColor').val()    || '#01d9cc',
@@ -9110,6 +9109,13 @@ function lmThemeData() {
         var rad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lm-radius'));
         if (isFinite(rad)) d.rad = String(rad);
     } catch (e) {}
+    /* the Legend Mod language (languagemod 1 English ... 12 Dutch): the only setting that goes with the theme.
+     * The language on screen (LMi18n.num()) first: a first-time player's browser language is not saved yet. */
+    try {
+        var lang = parseInt((window.LMi18n && window.LMi18n.num()) ||
+            (typeof languagemod !== 'undefined' && languagemod ? languagemod : localStorage.getItem('languagemod')), 10);
+        d.lang = lang >= 1 && lang <= 12 ? String(lang) : '1';
+    } catch (e) { d.lang = '1'; }
     return d;
 }
 function lmThemeQuery() {
@@ -9120,6 +9126,35 @@ function lmThemeHash() {
     try { return '#lm=' + btoa(JSON.stringify(lmThemeData())); }
     catch (e) { return ''; }
 }
+/* The one navigation helper: a Legend page that the mod opens gets the theme in its URL (#lm=...),
+ * replacing an older one; files, the game page and other sites are returned unchanged. */
+function lmThemeUrl(url) {
+    try {
+        var u = new URL(url, location.href);
+        if (!/^((www\.)?legendmod\.ml|jimboy3100\.github\.io)$/.test(u.hostname)) return url;
+        if (/\.(js|css|json|png|jpe?g|gif|webp|svg|ico|mp3|txt|zip|xml|pdf)$/i.test(u.pathname) || /\/play\.html$/.test(u.pathname)) return url;
+        var h = lmThemeHash();
+        if (!h) return url;
+        var keep = u.hash.replace(/^#/, '').split('&').filter(function (p) { return p && p.indexOf('lm=') !== 0; });
+        keep.push(h.slice(1));
+        u.hash = keep.join('&');
+        return u.href;
+    } catch (e) { return url; }
+}
+/* every link the mod shows (menu footer, quick menu, More skins, More FPS, promo windows, notices)
+ * gets the theme when it is clicked, so it is the current one */
+(function () {
+    function onLink(ev) {
+        var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (!href || href.charAt(0) === '#' || /^(javascript|mailto|tel):/i.test(href)) return;
+        var to = lmThemeUrl(href);
+        if (to !== href) a.setAttribute('href', to);
+    }
+    document.addEventListener('click', onLink, true);
+    document.addEventListener('auxclick', onLink, true);
+})();
 /* The origins a Legend page can have: jimboy3100.github.io redirects to www.legendmod.ml,
  * so a frame opened on one of them may be on the other. Empty for any other site. */
 function lmThemeOrigins(url) {
@@ -9152,17 +9187,6 @@ function lmThemeSendToModalIframes(sel) {
         });
     }, 200);
 }
-/* Links from the mod to Legend Mod's web pages carry the language (and the theme) in #lm=...:
- * on agar.io the pages cannot read the mod's localStorage. On www.legendmod.ml itself they share it,
- * and a link that has its own # is left alone. */
-document.addEventListener('click', function (ev) {
-    var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
-    if (!a || location.hostname === 'www.legendmod.ml') return;
-    var href = a.getAttribute('href') || '';
-    if (!/^https:\/\/(www\.legendmod\.ml|jimboy3100\.github\.io)\/[^#]*\.html(\?[^#]*)?$/.test(href)) return;
-    if (/\/play\.html/.test(href)) return;
-    a.setAttribute('href', href + lmThemeHash());
-}, true);
 
 /* The theme's CSS custom properties are set by the theme setters in ogario.v4.js (setMenu..., setHud...),
  * on :root and, for the menu colours, inline. This copies the menu colours inline again for windows built
@@ -9258,7 +9282,7 @@ function LMnoBotsPromo() {
     });
 
     $("#FAQNoBotsPromo").on("click", function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 
@@ -9304,7 +9328,7 @@ function LMLegendFFAPromo() {
     });
 
     $("#FAQLegendFFAPromo").on("click", function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 
@@ -9351,7 +9375,7 @@ function LMrewardDay() {
     });
 
     $("#FAQLMPromo").on("click", function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 
@@ -9373,7 +9397,7 @@ function VideoSkinsPromo() {
         $("#LMPromo").remove();
     });
     $("#FAQLMPromo").click(function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 //2. Administration Tools
@@ -9479,7 +9503,7 @@ function disconnectnow() {
     window.open('https://analytics.google.com/analytics/web/?hl=el&pli=1#realtime/rt-content/a92655864w165988480p166491055/', '_blank');
 }*/
 function showstatsphp2() {
-    window.open('https://www.legendmod.ml/monitor/', '_blank');
+    window.open(lmThemeUrl('https://www.legendmod.ml/monitor/'), '_blank');
 }
 function dosendadmincommand() {
     if (AdminRights == 1) {
@@ -9517,6 +9541,6 @@ function LMadvertisementMegaFFA() {
         $("#LMPromo").remove();
     });
     $("#FAQLMPromo").click(function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }

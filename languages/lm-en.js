@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Continue",
 "modules.themeworkshop.cancel": "Cancel",
 "modules.themeworkshop.galleryNote": "Themes shipped with Legend Mod. Preview one or install it into My themes.",
-"modules.themeworkshop.publishNote": "Publish your own: export it to a file (Import / export) and share the file, e.g. on Discord. There is no upload service: nothing is sent anywhere.",
+"modules.themeworkshop.publishNote": "To share a theme with other players: apply it, then export it in Settings > Export / Import (Theme switch on).",
 "modules.themeworkshop.galleryLoading": "Loading the gallery...",
 "modules.themeworkshop.builtinTitle": "Built-in presets",
 "modules.themeworkshop.builtinNote": "A game preset sets the game colours, fonts and sizes, a menu preset the menu colours; everything else stays as it is. Apply keeps it at once, Preview shows it for 15 s.",

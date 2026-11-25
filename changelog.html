@@ -155,6 +155,16 @@
             .version-date { margin-left: 0; }
         }
     </style>
+<!-- opened from Legend Mod: the page follows the player's menu theme (#lm=...); direct visitors keep this design -->
+<script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8"></script>
+<style>
+    /* only when opened from Legend Mod with a theme (html.lm-themed-root) */
+    html.lm-themed-root .version { background: var(--lm-pc2) !important; border-color: color-mix(in srgb, var(--lm-tc2) 30%, transparent) !important; border-radius: var(--lm-radius, 12px) !important; }
+    html.lm-themed-root .version:hover { border-color: var(--lm-mc) !important; }
+    html.lm-themed-root .version-number, .subtitle a, .back-link, .version li::before { color: var(--lm-mc) !important; }
+    html.lm-themed-root .version-title, .version li { color: var(--lm-tc) !important; }
+    html.lm-themed-root .subtitle, .version-date { color: var(--lm-tc2) !important; }
+</style>
 </head>
 
 <body>

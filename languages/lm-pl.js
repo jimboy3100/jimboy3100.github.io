@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Dalej",
 "modules.themeworkshop.cancel": "Anuluj",
 "modules.themeworkshop.galleryNote": "Motywy dołączone do Legend Mod. Obejrzyj jeden lub zainstaluj go w Moich motywach.",
-"modules.themeworkshop.publishNote": "Opublikuj własny: wyeksportuj go do pliku (Import / eksport) i udostępnij plik, np. na Discordzie. Nie ma usługi przesyłania: nic nie jest nigdzie wysyłane.",
+"modules.themeworkshop.publishNote": "Aby udostępnić motyw innym graczom: zastosuj go, a potem wyeksportuj w Ustawienia > Eksport / Import (z włączonym Motywem).",
 "modules.themeworkshop.galleryLoading": "Wczytywanie galerii...",
 "modules.themeworkshop.builtinTitle": "Wbudowane presety",
 "modules.themeworkshop.builtinNote": "Preset gry ustawia kolory, czcionki i rozmiary w grze, preset menu kolory menu; wszystko inne zostaje bez zmian. Zastosuj zachowuje go od razu, Podgląd pokazuje go przez 15 s.",

@@ -1,8 +1,9 @@
 /* Legend Mod theme workshop.
  * My themes (save the current theme, rename, copy, delete, the last 5 saved versions of each),
- * live preview (Keep / Revert, back by itself after 15 s), import from a file or pasted text,
- * export to a file, comparison of any two themes and a gallery of themes shipped in the repo
- * (ogario/themes/catalogue.json). Opened from the Theme tab, a hotkey (no default key) or the
+ * live preview (Keep / Revert, back by itself after 15 s), comparison of any two themes and a gallery
+ * of themes shipped in the repo (ogario/themes/catalogue.json). No import / export tab of its own
+ * (it confused players next to Settings > Export / Import, which also carries the theme);
+ * importText stays for the tests. Opened from the Theme tab, a hotkey (no default key) or the
  * Command Centre. Nothing runs until the window is opened.
  *
  * A theme package is data only:
@@ -698,8 +699,8 @@
     }
 
     /* ═══ Window ═══ */
-    var TABS = { mine: 'tabMine', gallery: 'tabGallery', io: 'tabIo', compare: 'tabCompare' };
-    var tab = 'mine', openHist = {}, pending = null, gallery = null, galleryState = '', cmpA = 'cur', cmpB = '', ioText = '';
+    var TABS = { mine: 'tabMine', gallery: 'tabGallery', compare: 'tabCompare' };
+    var tab = 'mine', openHist = {}, pending = null, gallery = null, galleryState = '', cmpA = 'cur', cmpB = '';
     function frame() { return D.getElementById('lm-tw'); }
     function isOpen() { return !!frame(); }
     function css() {
@@ -816,7 +817,7 @@
             if (fld === 'cmpA') cmpA = this.value;
             else if (fld === 'cmpB') cmpB = this.value;
             if (fld === 'cmpA' || fld === 'cmpB') render();
-        }).on('change', 'input[type=file]', function () { importFile(this); });
+        });
         win.on('keydown', function (e) { if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); close(); } });
         shield(f[0]);
         $('body').append(f);
@@ -902,7 +903,6 @@
         var body = f.find('.lm-tw-body').empty();
         if (pending) renderPending(body);
         if (tab === 'gallery') renderGallery(body);
-        else if (tab === 'io') renderIo(body);
         else if (tab === 'compare') renderCompare(body);
         else renderMine(body);
     }
@@ -939,7 +939,6 @@
             btn(tx('update'), 'update', e.id).appendTo(acts);
             btn(tx('rename'), 'rename', e.id).appendTo(acts);
             btn(tx('duplicate'), 'dup', e.id).appendTo(acts);
-            btn(tx('exportBtn'), 'export', e.id).appendTo(acts);
             btn(tx('compare'), 'cmp', 'm:' + e.id).appendTo(acts);
             btn(tx('history', e.history.length), 'hist', e.id).appendTo(acts);
             btn(tx('del'), 'del', e.id, 'lm-tw-warn').appendTo(acts);
@@ -1004,24 +1003,6 @@
             btn(inst ? tx('installed') : tx('install'), 'ginstall', g.gid).prop('disabled', inst).appendTo(acts);
             btn(tx('compare'), 'cmp', 'g:' + g.gid).appendTo(acts);
         });
-    }
-    function renderIo(body) {
-        var $ = jq(), list = loadStore().themes;
-        $('<h6></h6>').text(tx('importTitle')).appendTo(body);
-        $('<textarea id="lm-tw-text" spellcheck="false"></textarea>').attr('placeholder', tx('importPh')).val(ioText).appendTo(body);
-        var r1 = $('<div class="lm-tw-row"></div>').appendTo(body);
-        btn(tx('importBtn'), 'import', null, 'lm-tw-go').appendTo(r1);
-        var fl = $('<label class="lm-tw-btn" style="margin:0;display:inline-flex;align-items:center"></label>').text(tx('importFile')).appendTo(r1);
-        $('<input type="file" accept=".json,application/json,text/plain" style="display:none">').appendTo(fl);
-        $('<h6></h6>').text(tx('exportTitle')).appendTo(body);
-        var r2 = $('<div class="lm-tw-row"></div>').appendTo(body);
-        var sel = $('<select id="lm-tw-exp"></select>').appendTo(r2);
-        $('<option value="cur"></option>').text(tx('currentTheme')).appendTo(sel);
-        list.forEach(function (e) { $('<option></option>').val('m:' + e.id).text(e.name).appendTo(sel); });
-        btn(tx('download'), 'xdl').appendTo(r2);
-        btn(tx('showJson'), 'xshow').appendTo(r2);
-        btn(tx('copy'), 'xcopy').appendTo(r2);
-        $('<div class="lm-tw-note"></div>').text(tx('publishNote')).appendTo(body);
     }
     function sources() {
         var out = [{ v: 'cur', name: tx('currentTheme') }];
@@ -1128,20 +1109,9 @@
         if (r.dropped.length) msg += tx('importedDropped', r.dropped.length);
         if (r.urls.length) msg += tx('importedUrls', r.urls.map(function (u) { return hostOf(u.url); }).filter(function (h, i, a) { return a.indexOf(h) === i; }).join(', '));
         toast('success', esc(msg));
-        ioText = '';
         tab = 'mine';
         render();
         return e;
-    }
-    function importFile(input) {
-        var file = input.files && input.files[0];
-        input.value = '';
-        if (!file) return;
-        if (file.size > MAX_PACKAGE_CHARS) { toast('error', esc(tx('e_tooBig'))); return; }
-        var fr = new W.FileReader();
-        fr.onload = function () { importText(String(fr.result || '')); };
-        fr.onerror = function () { toast('error', esc(tx('e_notJson'))); };
-        fr.readAsText(file);
     }
     function exportEntry(v) {
         if (v === 'cur') return { name: tx('currentTheme'), author: '', description: '', created: Date.now(), body: captureBody() };
@@ -1149,27 +1119,6 @@
         return m ? loadStore().themes.filter(function (x) { return x.id === m[1]; })[0] || null : null;
     }
     function exportText(e) { return JSON.stringify(toPackage(e), null, 2); }
-    function download(e) {
-        var name = 'lm-theme-' + slug(e.name) + '.json';
-        try {
-            var blob = new W.Blob([exportText(e)], { type: 'application/json' });
-            var url = W.URL.createObjectURL(blob);
-            var a = D.createElement('a');
-            a.href = url;
-            a.download = name;
-            a.style.display = 'none';
-            D.body.appendChild(a);
-            a.click();
-            setTimeout(function () { try { W.URL.revokeObjectURL(url); a.parentNode.removeChild(a); } catch (er) { } }, 1000);
-            toast('success', esc(tx('exported', name)));
-        } catch (err) {
-            /* no downloads (some embedded browsers): the text to copy instead */
-            ioText = exportText(e);
-            tab = 'io';
-            render();
-        }
-    }
-
     /* ═══ Actions ═══ */
     function cleanName(n) { return cleanText(n, NAME_MAX); }
     function requestPreview(body, name) {
@@ -1224,9 +1173,6 @@
             if (!W.confirm(tx('confirmDelete', e.name))) return;
             list.splice(i, 1);
             save();
-        } else if (a === 'export' && e) {
-            download(e);
-            return;
         } else if (a === 'hist' && e) {
             openHist[e.id] = !openHist[e.id];
         } else if (a === 'hpv' && e) {
@@ -1257,25 +1203,6 @@
             if (list.length >= MAX_THEMES) { toast('error', esc(tx('tooMany'))); return; }
             list.unshift({ id: newId(), name: uniqueName(g.pkg.name, list), author: g.pkg.author, description: g.pkg.description, created: g.pkg.created, updated: now, src: 'g:' + g.gid, body: clone(g.pkg.body), history: [] });
             save(tx('installedMsg', g.pkg.name));
-        } else if (a === 'import') {
-            ioText = String($('#lm-tw-text').val() || '');
-            importText(ioText);
-            return;
-        } else if (a === 'xdl' || a === 'xshow' || a === 'xcopy') {
-            var ex = exportEntry($('#lm-tw-exp').val());
-            if (!ex) return;
-            if (a === 'xdl') { download(ex); return; }
-            ioText = exportText(ex);
-            $('#lm-tw-text').val(ioText);
-            if (a === 'xcopy') {
-                var ta = D.getElementById('lm-tw-text');
-                var copied = false;
-                try { ta.focus(); ta.select(); copied = D.execCommand('copy'); } catch (er) { }
-                if (!copied && W.navigator && W.navigator.clipboard) {
-                    W.navigator.clipboard.writeText(ioText).then(function () { toast('success', esc(tx('copied'))); }, function () { });
-                } else if (copied) toast('success', esc(tx('copied')));
-            }
-            return;
         }
         render();
     }

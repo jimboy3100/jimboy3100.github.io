@@ -2560,7 +2560,7 @@ function SpecialDeals(defaultTab) {
         });
         $("#FAQSpecialDeals").off('click').on('click', function(e) {
             if (e) e.stopPropagation();
-            window.open('https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
+            window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://jimboy3100.github.io/LMexpress/olddeals.html') : 'https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
         });
         $(".xpmt-buy-content").click(function() {
             toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 + ' v0.5<br>' + _lmsdE('lmx.sd.betaWarnShort') + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button></div>', "", {

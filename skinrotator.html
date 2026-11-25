@@ -372,6 +372,8 @@ cursor:pointer;
 }
 
 </style>
+<!-- opened from Legend Mod: the theme and language come with the link (#lm=...); direct visitors keep this page as it is -->
+<script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8" data-lm-css="site"></script>
 </head>
 <body>
 <script src="https://apis.google.com/js/platform.js"></script>
@@ -676,7 +678,8 @@ ec="`; elem.appendChild(script); } }, 100)";showCode();
   function showCode() {
     var t = new Date().getTime();
 	var em="Your code is outdated, go to the SKIN ROTATOR website to update it.";
-	var lg= navigator.language || navigator.userLanguage || navigator.browserLanguage;
+	/* opened from Legend Mod: its language first (lm-theme-bridge.js) */
+	var lg= (window.lmThemeBridge && lmThemeBridge.getLang()) || navigator.language || navigator.userLanguage || navigator.browserLanguage;
     if(lg.match(/fr/)){em='Votre code est obsolète, allez sur le site SKIN ROTATOR pour le mettre à jour.';}
     if(lg.match(/es/)){em='Su código no está actualizado, vaya al sitio web SKIN ROTATOR para actualizarlo.';}
     if(lg.match(/it/)){em='Il tuo codice è obsoleto, vai al sito Web SKIN ROTATOR per aggiornarlo.';}

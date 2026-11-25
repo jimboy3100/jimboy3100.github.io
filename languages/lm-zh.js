@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "繼續",
 "modules.themeworkshop.cancel": "取消",
 "modules.themeworkshop.galleryNote": "Legend Mod 內建的主題。可預覽，或安裝到「我的主題」。",
-"modules.themeworkshop.publishNote": "發布你自己的主題：匯出成檔案（匯入 / 匯出）並分享檔案，例如在 Discord 上。沒有上傳服務：不會傳送任何資料。",
+"modules.themeworkshop.publishNote": "要與其他玩家分享主題：先套用它，然後在 設定 > 匯出 / 匯入 中匯出（開啟「主題」）。",
 "modules.themeworkshop.galleryLoading": "正在載入圖庫...",
 "modules.themeworkshop.builtinTitle": "內建預設",
 "modules.themeworkshop.builtinNote": "遊戲預設會設定遊戲的顏色、字型與大小，選單預設會設定選單顏色；其他一切維持不變。「套用」會立即保留，「預覽」會顯示 15 秒。",

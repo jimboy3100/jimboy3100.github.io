@@ -5292,18 +5292,18 @@
     "nl": "Thema's die bij Legend Mod horen. Bekijk er een of installeer het in Mijn thema's."
   },
   "modules.themeworkshop.publishNote": {
-    "en": "Publish your own: export it to a file (Import / export) and share the file, e.g. on Discord. There is no upload service: nothing is sent anywhere.",
-    "el": "Δημοσίευσε το δικό σου: κάνε εξαγωγή σε αρχείο (Εισαγωγή / εξαγωγή) και μοιράσου το αρχείο, π.χ. στο Discord. Δεν υπάρχει υπηρεσία ανεβάσματος: τίποτα δεν στέλνεται πουθενά.",
-    "es": "Publica el tuyo: expórtalo a un archivo (Importar / exportar) y comparte el archivo, p. ej. en Discord. No hay servicio de subida: no se envía nada a ningún sitio.",
-    "bg": "Публикувай своя: експортирай я във файл (Импорт / експорт) и сподели файла, напр. в Discord. Няма услуга за качване: нищо не се изпраща никъде.",
-    "fr": "Publie le tien : exporte-le dans un fichier (Importer / exporter) et partage le fichier, par ex. sur Discord. Il n'y a pas de service d'envoi : rien n'est envoyé nulle part.",
-    "ar": "انشر سمتك: صدّرها إلى ملف (استيراد / تصدير) وشارك الملف، مثلًا على Discord. لا توجد خدمة رفع: لا يُرسل أي شيء إلى أي مكان.",
-    "zh": "發布你自己的主題：匯出成檔案（匯入 / 匯出）並分享檔案，例如在 Discord 上。沒有上傳服務：不會傳送任何資料。",
-    "ru": "Опубликуйте свою: экспортируйте её в файл («Импорт / экспорт») и поделитесь файлом, например в Discord. Сервиса загрузки нет: ничего никуда не отправляется.",
-    "de": "Veröffentliche dein eigenes: Exportiere es in eine Datei (Import / Export) und teile die Datei, z. B. auf Discord. Es gibt keinen Upload-Dienst: Nichts wird irgendwohin gesendet.",
-    "tr": "Kendi temanı yayımla: bir dosyaya dışa aktar (İçe / dışa aktar) ve dosyayı paylaş, ör. Discord'da. Yükleme hizmeti yok: hiçbir şey bir yere gönderilmez.",
-    "pl": "Opublikuj własny: wyeksportuj go do pliku (Import / eksport) i udostępnij plik, np. na Discordzie. Nie ma usługi przesyłania: nic nie jest nigdzie wysyłane.",
-    "nl": "Publiceer je eigen thema: exporteer het naar een bestand (Importeren / exporteren) en deel het bestand, bijv. op Discord. Er is geen uploaddienst: er wordt niets verstuurd."
+    "en": "To share a theme with other players: apply it, then export it in Settings > Export / Import (Theme switch on).",
+    "el": "Για να μοιραστείς ένα θέμα: εφάρμοσέ το και μετά κάνε εξαγωγή από Ρυθμίσεις > Εξαγωγή / Εισαγωγή (με ενεργό το Θέμα).",
+    "es": "Para compartir un tema con otros jugadores: aplícalo y luego expórtalo en Ajustes > Exportar / Importar (con Tema activado).",
+    "bg": "За да споделиш тема с други играчи: приложи я, после я експортирай от Настройки > Експорт / Импорт (с включена Тема).",
+    "fr": "Pour partager un thème avec d'autres joueurs : applique-le, puis exporte-le dans Paramètres > Exporter / Importer (Thème activé).",
+    "ar": "لمشاركة سمة مع لاعبين آخرين: طبّقها، ثم صدّرها من الإعدادات > تصدير / استيراد (مع تفعيل السمة).",
+    "zh": "要與其他玩家分享主題：先套用它，然後在 設定 > 匯出 / 匯入 中匯出（開啟「主題」）。",
+    "ru": "Чтобы поделиться темой с другими игроками: примените её, затем экспортируйте в Настройки > Экспорт / Импорт (с включённой Темой).",
+    "de": "Um ein Theme mit anderen Spielern zu teilen: wende es an und exportiere es dann unter Einstellungen > Export / Import (Theme eingeschaltet).",
+    "tr": "Bir temayı diğer oyuncularla paylaşmak için: uygula, sonra Ayarlar > Dışa / İçe Aktar bölümünden dışa aktar (Tema açık).",
+    "pl": "Aby udostępnić motyw innym graczom: zastosuj go, a potem wyeksportuj w Ustawienia > Eksport / Import (z włączonym Motywem).",
+    "nl": "Een thema delen met andere spelers: pas het toe en exporteer het daarna via Instellingen > Exporteren / Importeren (Thema aan)."
   },
   "modules.themeworkshop.galleryLoading": {
     "en": "Loading the gallery...",

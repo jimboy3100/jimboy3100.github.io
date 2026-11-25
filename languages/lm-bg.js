@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Продължи",
 "modules.themeworkshop.cancel": "Отказ",
 "modules.themeworkshop.galleryNote": "Теми, които идват с Legend Mod. Прегледай някоя или я инсталирай в Моите теми.",
-"modules.themeworkshop.publishNote": "Публикувай своя: експортирай я във файл (Импорт / експорт) и сподели файла, напр. в Discord. Няма услуга за качване: нищо не се изпраща никъде.",
+"modules.themeworkshop.publishNote": "За да споделиш тема с други играчи: приложи я, после я експортирай от Настройки > Експорт / Импорт (с включена Тема).",
 "modules.themeworkshop.galleryLoading": "Галерията се зарежда...",
 "modules.themeworkshop.builtinTitle": "Вградени теми",
 "modules.themeworkshop.builtinNote": "Тема за играта задава цветовете, шрифтовете и размерите в играта, тема за менюто – цветовете на менюто; всичко останало остава същото. Приложи я запазва веднага, Преглед я показва за 15 s.",

@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Devam",
 "modules.themeworkshop.cancel": "İptal",
 "modules.themeworkshop.galleryNote": "Legend Mod ile gelen temalar. Birini önizle veya Temalarım'a kur.",
-"modules.themeworkshop.publishNote": "Kendi temanı yayımla: bir dosyaya dışa aktar (İçe / dışa aktar) ve dosyayı paylaş, ör. Discord'da. Yükleme hizmeti yok: hiçbir şey bir yere gönderilmez.",
+"modules.themeworkshop.publishNote": "Bir temayı diğer oyuncularla paylaşmak için: uygula, sonra Ayarlar > Dışa / İçe Aktar bölümünden dışa aktar (Tema açık).",
 "modules.themeworkshop.galleryLoading": "Galeri yükleniyor...",
 "modules.themeworkshop.builtinTitle": "Yerleşik hazır ayarlar",
 "modules.themeworkshop.builtinNote": "Oyun hazır ayarı oyunun renklerini, yazı tiplerini ve boyutlarını, menü hazır ayarı menü renklerini belirler; geri kalan her şey aynı kalır. Uygula hemen korur, Önizle 15 sn gösterir.",

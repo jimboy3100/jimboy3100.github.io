@@ -197,7 +197,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.613;
+window.OgVer = 3.614;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
@@ -21350,7 +21350,10 @@ function thelegendmodproject() {
             });
             /* HUD parts outside #overlays-hud (bell, kill feed, command bar...) read the font from here */
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
-            this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}');
+            this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
+                /* the newer in-game parts are added to body, not #overlays-hud: same HUD font
+                 * (bell, quick command bar, cell panel, kill feed, broadcast, practice HUD, radial menu, screenshot chip) */
+                '#lm-notif-bell,#lm-notif-panel,#lm-cc-bar,#lm-hh-cells,#lm-hh-edge,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important}');
         },
         setHudScale() {
             /* Issue #8: clamp hudScale to the slider max so saved values from bigger screens don't overflow */
@@ -46558,14 +46561,14 @@ function thelegendmodproject() {
 
             var html = '<div id="lm-gameover-modal" style="' +
                 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
-                'width:300px;z-index:2147483647;pointer-events:auto;' +
+                'width:300px;max-width:calc(100vw - 16px);box-sizing:border-box;z-index:2147483647;pointer-events:auto;' +
                 'animation:lmGoSlideIn 0.4s cubic-bezier(.22,1,.36,1) forwards;' +
                 'opacity:0;font-family:inherit;">' +
 
                 /* Card */
                 '<div class="lm-go-card" style="' +
                 'background:' + pc + ';border:1px solid ' + pc2 + ';' +
-                'border-top:3px solid ' + mc + ';border-radius:6px;' +
+                'border-top:3px solid ' + mc + ';border-radius:var(--lm-radius,6px);' +
                 'box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;">' +
 
                 /* Header with close button */
@@ -46578,7 +46581,7 @@ function thelegendmodproject() {
                 'font-size:18px;color:' + tc2 + ';line-height:1;' +
                 'transition:color 0.15s;width:24px;height:24px;' +
                 'display:flex;align-items:center;justify-content:center;' +
-                'border-radius:4px;background:rgba(255,255,255,0.05);"' +
+                'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);"' +
                 ' onmouseover="this.style.color=\'' + mc + '\';this.style.background=\'rgba(255,255,255,0.1)\'"' +
                 ' onmouseout="this.style.color=\'' + tc2 + '\';this.style.background=\'rgba(255,255,255,0.05)\'"' +
                 '>✕</div>' +
@@ -46586,31 +46589,31 @@ function thelegendmodproject() {
                 'position:absolute;top:8px;left:12px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
-                'border-radius:4px;background:rgba(255,255,255,0.05);">📋</div>' +
+                'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">📋</div>' +
                 '<div id="lm-go-share" title="' + _lmTH('shareStats', '') + '" style="' +
                 'position:absolute;top:8px;left:40px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
-                'border-radius:4px;background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' + // i18n-ok: an icon
+                'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' + // i18n-ok: an icon
                 '<div id="lm-go-dlcard" title="' + _lmTH('game2.downloadCard', '') + '" style="' +
                 'position:absolute;top:8px;left:68px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
-                'border-radius:4px;background:rgba(255,255,255,0.05);">📸</div>' +
+                'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">📸</div>' +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
                 '☠️ ' + _lmTH('gameOver', '') + '</div>' +
                 '</div>' +
 
                 /* Stats */
                 '<div style="padding:8px 12px 12px;">' + rows + '</div>' +
-                (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:#fff;border:0;border-radius:4px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f ' + _lmTH('watchKiller', '') + '</button></div>' : '') + // i18n-ok: an icon before the translated label
-                (_lmGraph ? '<div style="padding:0 12px 12px;"><canvas id="lm-go-graph" width="276" height="60" style="width:276px;height:60px;display:block;border-radius:4px;background:rgba(0,0,0,0.2);"></canvas></div>' : '') +
+                (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:var(--lm-btn-tc,#fff);border:0;border-radius:var(--lm-radius-s,4px);padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f ' + _lmTH('watchKiller', '') + '</button></div>' : '') + // i18n-ok: an icon before the translated label
+                (_lmGraph ? '<div style="padding:0 12px 12px;"><canvas id="lm-go-graph" width="276" height="60" style="width:276px;height:60px;display:block;max-width:100%;border-radius:var(--lm-radius-s,4px);background:rgba(0,0,0,0.2);"></canvas></div>' : '') +
 
                 /* Share match card button + referral link (hidden on very small viewports to keep card compact) */
                 '<div class="lm-go-extra">' +
                 '<div style="padding:0 12px 12px;text-align:center;">' +
                 '<button id="lm-go-sharecard" type="button" style="' +
-                'background:linear-gradient(135deg,' + mc + ',#7c3aed);color:#fff;border:0;border-radius:6px;' +
+                'background:linear-gradient(135deg,' + mc + ',var(--lm-btn3,#7c3aed));color:var(--lm-btn-tc,#fff);border:0;border-radius:var(--lm-radius-s,6px);' +
                 'padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;width:100%;' +
                 'letter-spacing:0.5px;transition:opacity 0.2s;' +
                 '" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">' +
@@ -46620,7 +46623,7 @@ function thelegendmodproject() {
                 '<div style="padding:0 12px 10px;text-align:center;">' +
                 '<div id="lm-go-reflink" style="' +
                 'display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.2);' +
-                'border-radius:6px;padding:4px 8px;cursor:pointer;' +
+                'border-radius:var(--lm-radius-s,6px);padding:4px 8px;cursor:pointer;' +
                 'transition:background 0.15s;" ' +
                 'onmouseover="this.style.background=\'rgba(0,0,0,0.35)\'" ' +
                 'onmouseout="this.style.background=\'rgba(0,0,0,0.2)\'">' +
@@ -77569,7 +77572,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 previousAlpha;
         },
         drawViewPorts(ctx) {
-            this.drawViewport(this.ctx, '1', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor || '#ffffff', 15);
+            /* the server's view of the player (food box, calMinMax). It drew LM.camMin/Max, which since
+             * the per-frame culling bounds (3.477) is the screen itself, so the box was never visible. */
+            if (Number.isFinite(LM.viewMinX)) this.drawViewport(this.ctx, '1', LM.viewMinX, LM.viewMinY, LM.viewMaxX, LM.viewMaxY, defaultSettings.bordersColor || '#ffffff', 15);
             if (legendmod.multiBoxPlayerExists && typeof spects !== "undefined" && spects) {
                 var neededSpects = (defaultmapsettings.multiboxAmount || 2) - 1;
                 var viewScale = this.scale || 1;
@@ -78436,10 +78441,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * stopped updating while Canvas2D still filled the body from it: the
              * cell colour froze in place while skin and name moved on.
              */
-            var minX = Number.isFinite(LM.camMinX) ? Math.min(tempX, LM.camMinX) : tempX;
-            var maxX = Number.isFinite(LM.camMaxX) ? Math.max(tempX, LM.camMaxX) : tempX;
-            var minY = Number.isFinite(LM.camMinY) ? Math.min(tempY, LM.camMinY) : tempY;
-            var maxY = Number.isFinite(LM.camMaxY) ? Math.max(tempY, LM.camMaxY) : tempY;
+            /* the food box alone first: it is the area the server sends, i.e. the server's view of the
+             * player, which the "show viewports" button draws (LM.viewMin/Max). The camera box is grown
+             * by it afterwards, as before. */
+            var minX = tempX, maxX = tempX, minY = tempY, maxY = tempY;
             var foodOffset = 10 + defaultSettings.foodSize;
             var len = food.length;
 
@@ -78477,6 +78482,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (y < minY) minY = y; if (y > maxY) maxY = y;
                 }
             }
+            LM.viewMinX = minX; LM.viewMaxX = maxX;
+            LM.viewMinY = minY; LM.viewMaxY = maxY;
+            if (Number.isFinite(LM.camMinX)) { minX = Math.min(minX, LM.camMinX); maxX = Math.max(maxX, LM.camMaxX); minY = Math.min(minY, LM.camMinY); maxY = Math.max(maxY, LM.camMaxY); }
             LM.camMinX = minX; LM.camMaxX = maxX;
             LM.camMinY = minY; LM.camMaxY = maxY;
         },
@@ -84232,7 +84240,7 @@ function LMadvertisement2020() {
         $("#LMPromo").remove();
     });
     $("#FAQLMPromo").click(function () {
-        window.open('https://www.legendmod.ml/', '_blank');
+        window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://www.legendmod.ml/') : 'https://www.legendmod.ml/', '_blank');
     });
 }
 

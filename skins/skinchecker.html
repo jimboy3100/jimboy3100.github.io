@@ -120,6 +120,23 @@
             .col-right { min-width: 0; width: 100%; }
         }
     </style>
+    <!-- opened from Legend Mod: the page follows the player's menu theme (#lm=...); direct visitors keep this design -->
+    <script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8" data-lm-css="site"></script>
+    <style>
+        /* only when opened from Legend Mod with a theme (html.lm-themed-root) */
+        html.lm-themed-root, html.lm-themed-root body { background: var(--lm-pc); color: var(--lm-tc); }
+        html.lm-themed-root a, html.lm-themed-root .sub { color: var(--lm-mc); }
+        html.lm-themed-root .topbar { background: var(--lm-mc); color: var(--lm-pc); }
+        html.lm-themed-root .topbar a { color: var(--lm-pc); }
+        html.lm-themed-root .card { background: color-mix(in srgb, var(--lm-pc2) calc(var(--lm-op, 1) * 100%), transparent); border-color: color-mix(in srgb, var(--lm-tc2) 30%, transparent); border-radius: var(--lm-radius, 8px); }
+        html.lm-themed-root input[type=text], html.lm-themed-root input[type=url], html.lm-themed-root select { background: var(--lm-pc2); color: var(--lm-tc); border-color: color-mix(in srgb, var(--lm-tc2) 45%, transparent); }
+        html.lm-themed-root input[type=range] { accent-color: var(--lm-mc); }
+        html.lm-themed-root .btn { color: var(--lm-tc); border-radius: var(--lm-radius-s, 4px); }
+        html.lm-themed-root .btn.primary { background: var(--lm-btn1); color: var(--lm-btn-tc); border-color: var(--lm-btn1); }
+        html.lm-themed-root .btn.primary:hover { background: var(--lm-btn1b); }
+        html.lm-themed-root .note { color: var(--lm-tc); }
+        html.lm-themed-root .btn.primary:disabled { background: color-mix(in srgb, var(--lm-btn1) 40%, transparent); color: color-mix(in srgb, var(--lm-btn-tc) 50%, transparent); }
+    </style>
     </head>
     <body>
         <div class="topbar">

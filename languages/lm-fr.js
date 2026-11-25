@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Continuer",
 "modules.themeworkshop.cancel": "Annuler",
 "modules.themeworkshop.galleryNote": "Thèmes fournis avec Legend Mod. Fais un aperçu ou installe-le dans Mes thèmes.",
-"modules.themeworkshop.publishNote": "Publie le tien : exporte-le dans un fichier (Importer / exporter) et partage le fichier, par ex. sur Discord. Il n'y a pas de service d'envoi : rien n'est envoyé nulle part.",
+"modules.themeworkshop.publishNote": "Pour partager un thème avec d'autres joueurs : applique-le, puis exporte-le dans Paramètres > Exporter / Importer (Thème activé).",
 "modules.themeworkshop.galleryLoading": "Chargement de la galerie...",
 "modules.themeworkshop.builtinTitle": "Préréglages intégrés",
 "modules.themeworkshop.builtinNote": "Un préréglage de jeu définit les couleurs, polices et tailles du jeu, un préréglage de menu les couleurs du menu ; tout le reste ne change pas. Appliquer le garde aussitôt, Aperçu le montre pendant 15 s.",

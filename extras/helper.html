@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <style>html,body{background:transparent;margin:0;padding:8px;}</style>
 <script src="https://jimboy3100.github.io/lib/lm-theme-bridge.js"></script>
+<style>
+/* compact: the window is about 920px wide, the old 24px / 18px text and fixed 880px frames overflowed */
+#tutorial1 p[style*="24px"] { font-size: 16px !important; margin: 14px 0 4px; letter-spacing: .5px; }
+#tutorial1 p[style*="18px"], #tutorial1 .input-box, #tutorial1 u[style*="18px"] { font-size: 13px !important; line-height: 1.55; margin: 4px 0; }
+#tutorial1 iframe { max-width: 100%; }
+/* the menu theme from Legend Mod wins over the inline white text */
+html.lm-themed-root #tutorial1 p, html.lm-themed-root #tutorial1 u { color: var(--lm-tc) !important; }
+html.lm-themed-root #tutorial1 p[style*="24px"] { color: var(--lm-mc) !important; }
+html.lm-themed-root #tutorial1 a u { color: var(--lm-mc) !important; }
+</style>
     <!-- ═══ SEO: Auto-added metadata ═══ -->
     <meta name="description" content="Welcome and licence information for Legend Mod.">
     <meta name="robots" content="noindex, nofollow">

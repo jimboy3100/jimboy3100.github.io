@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "متابعة",
 "modules.themeworkshop.cancel": "إلغاء",
 "modules.themeworkshop.galleryNote": "سمات مرفقة مع Legend Mod. عاين واحدة أو ثبّتها في سماتي.",
-"modules.themeworkshop.publishNote": "انشر سمتك: صدّرها إلى ملف (استيراد / تصدير) وشارك الملف، مثلًا على Discord. لا توجد خدمة رفع: لا يُرسل أي شيء إلى أي مكان.",
+"modules.themeworkshop.publishNote": "لمشاركة سمة مع لاعبين آخرين: طبّقها، ثم صدّرها من الإعدادات > تصدير / استيراد (مع تفعيل السمة).",
 "modules.themeworkshop.galleryLoading": "جارٍ تحميل المعرض...",
 "modules.themeworkshop.builtinTitle": "السمات المدمجة",
 "modules.themeworkshop.builtinNote": "الإعداد المسبق للعبة يحدد ألوانها وخطوطها وأحجامها، وإعداد القائمة يحدد ألوان القائمة؛ ويبقى كل شيء آخر كما هو. «تطبيق» يحتفظ به فورًا، و«معاينة» تعرضه لمدة 15 ث.",

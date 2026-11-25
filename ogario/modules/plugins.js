@@ -580,7 +580,8 @@
             '.lm-us-acts{display:flex;flex-wrap:wrap;align-items:center;gap:4px}' +
             /* the menu theme draws plain buttons white on white here */
             '.lm-us-btn{min-height:28px;padding:3px 10px !important;color:var(--lm-tc,#fff) !important;background:rgba(255,255,255,.08) !important;border:1px solid var(--lm-pc2,rgba(255,255,255,.35)) !important;border-radius:var(--lm-radius-s,4px)}' +
-            '.lm-us-btn.btn-success{background:rgba(60,158,90,.55) !important;border-color:#3c9e5a !important}' +
+            /* the player's button colour 2 (success), not a fixed green */
+            '.lm-us-btn.btn-success{background:rgba(60,158,90,.55) !important;background:color-mix(in srgb,var(--lm-btn2,#3c9e5a) 55%,transparent) !important;border-color:var(--lm-btn2,#3c9e5a) !important}' +
             '.lm-us-btn:disabled{opacity:.5}' +
             'label.lm-us-tg{display:inline-flex;align-items:center;gap:4px;margin:0;font-weight:normal;cursor:pointer;min-height:28px;color:var(--lm-tc,#fff)}' +
             'label.lm-us-tg input{width:18px;height:18px;margin:0}' +

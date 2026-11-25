@@ -2014,7 +2014,7 @@
 "modules.themeworkshop.go": "Продолжить",
 "modules.themeworkshop.cancel": "Отмена",
 "modules.themeworkshop.galleryNote": "Темы, поставляемые с Legend Mod. Посмотрите тему или установите её в «Мои темы».",
-"modules.themeworkshop.publishNote": "Опубликуйте свою: экспортируйте её в файл («Импорт / экспорт») и поделитесь файлом, например в Discord. Сервиса загрузки нет: ничего никуда не отправляется.",
+"modules.themeworkshop.publishNote": "Чтобы поделиться темой с другими игроками: примените её, затем экспортируйте в Настройки > Экспорт / Импорт (с включённой Темой).",
 "modules.themeworkshop.galleryLoading": "Загрузка галереи...",
 "modules.themeworkshop.builtinTitle": "Встроенные пресеты",
 "modules.themeworkshop.builtinNote": "Игровой пресет задаёт цвета, шрифты и размеры игры, пресет меню — цвета меню; всё остальное не меняется. «Применить» сразу сохраняет его, «Просмотр» показывает на 15 с.",
