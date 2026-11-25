@@ -1269,9 +1269,9 @@ function ReportFakesSkin() {
 
         '<div id="SkinChangerhud" style="display:block; padding: 10px;">' +
         '<div id="SkinChangertoolshud1" align="middle">' +
-        '<p style="color:white; font-size:12px; margin-bottom: -4px;" align="middle">' + Premadeletter120 +
+        '<p style="color:var(--lm-tc,#fff); font-size:12px; margin-bottom: -4px;" align="middle">' + Premadeletter120 +
         //'<br><br><font id= "Leadboardlet1" style="color:white; size:12px; margin-right: 70px;">' + Temporaryletter2 + '</font><font id= "Teamboardlet1" style="color:white; size:12px; margin-left: 70px;">' + Temporaryletter1 + '</font></p><br>' +
-        '<br><br><font id= "Leadboardlet1" style="color:white; size:12px; ">' + Temporaryletter2 + '</p><br>' +
+        '<br><br><font id= "Leadboardlet1" style="color:var(--lm-tc,#fff); size:12px; ">' + Temporaryletter2 + '</p><br>' +
         '<input id="LeaderboardInput1" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline; " " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         //' <input id="TeamboardInput1" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         '<input id="LeaderboardInput2" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
@@ -1292,7 +1292,7 @@ function ReportFakesSkin() {
         // ' <input id="TeamboardInput9" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         '<input id="LeaderboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         //' <input id="TeamboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '</div><p style="color:white; font-size:12px";" align="middle">' + Premadeletter121 + '<br>' + Premadeletter122 + '</u></p>' +
+        '</div><p style="color:var(--lm-tc2,#fff); font-size:12px" align="middle">' + Premadeletter121 + '<br>' + Premadeletter122 + '</u></p>' +
         '</div>' +
         '</div></div></div></div>');
     $('#LeaderboardInput1').css('width', '60%');
