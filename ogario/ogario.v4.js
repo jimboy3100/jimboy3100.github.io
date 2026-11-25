@@ -31233,6 +31233,11 @@ function thelegendmodproject() {
                 delete this.customSkinsMap[keys[k]];
             }
         },
+        /* A teammate's skin from the team list (lmTeamSkinMap, rebuilt per leaderboard): exact
+         * nick first in every renderer; loose (nick without symbols) only after the name map. */
+        teamSkinUrl(nick, loose) {
+            return lmTeamSkinFor(window._lmTeamSkins, nick, loose, this._lmLooseNickMemo || (this._lmLooseNickMemo = new Map()));
+        },
         cacheCustomSkin(nick, color, skinUrl) {
             if (!skinUrl) return;
             skinUrl = this.checkSkinURL(skinUrl);
@@ -31307,7 +31312,7 @@ function thelegendmodproject() {
              * for both and could switch skin whenever a frame changed renderer). */
             var partyUrl = (nick && color && typeof LM !== 'undefined' && LM && LM.gameMode === ':party') ?
                 (this.customSkinsMap[_k.nc] || this.customSkinsMap[_k.nh]) : null;
-            var skinUrl = ownUrl || partyUrl ||
+            var skinUrl = ownUrl || partyUrl || this.teamSkinUrl(nick) ||
                 (nick ? (
                     this.customSkinsMap[nick] ||
                     this.customSkinsMap[_k.nh] ||
@@ -31318,6 +31323,7 @@ function thelegendmodproject() {
                         this.customSkinsMap[_k.ch]
                     ) : null)
                 ) : null) ||
+                this.teamSkinUrl(nick, true) ||
                 (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null) ||
                 (nameOnly && this.nickSkinSeen ? (this.nickSkinSeen[nick] || this.nickSkinSeen[nick + hexColor]) : null);
 
@@ -52706,6 +52712,8 @@ Most cells eaten   : ${mostCellsEaten}
             }
             /* Set copy for the per-cell, per-frame teammate check; the array stays for its other readers */
             window._lmTeammateNickSet = new Set(window.teammatenicks);
+            /* teammates' cells draw the skin their team list row shows (application.teamSkinUrl) */
+            window._lmTeamSkins = lmTeamSkinMap(application.top5, function (u) { return application.checkSkinURL(u); }, window._lmBlankSkins);
             let text = '';
             let teamText = '';
 
@@ -53519,7 +53527,13 @@ Most cells eaten   : ${mostCellsEaten}
 
                 if (skinUrl) {
                     if (fromName) {
-                        /* the name decides this skin: same for everyone with that name */
+                        /* the name decides this skin: same for everyone with that name. It never
+                         * replaces a skin already set for the name (a teammate "bait" with a Legend
+                         * custom skin showed the "bait" flag once his cell came with a skin id). */
+                        if (y && application.customSkinsMap[y]) {
+                            seen[playerKey] = application.customSkinsMap[y];
+                            return;
+                        }
                         if (y) {
                             window.lastusednameforskin = y;
                             core.registerSkin(y, null, skinUrl, isAnimated);
@@ -73882,7 +73896,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     cell._skinCleanNick;
 
 
+                /* a teammate's team list skin as in getCustomSkin (party: nick+colour first) */
                 skinUrl =
+                    (isParty ? application.customSkinsMap[mode] : null) ||
+                    application.teamSkinUrl(cell.targetNick) ||
+
                     application
                         .customSkinsMap[
                             mode
@@ -73920,7 +73938,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                     ]
                             )
                             : null
-                    );
+                    ) ||
+                    application.teamSkinUrl(cell.targetNick, true);
             }
 
 
@@ -76364,14 +76383,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             cell._skinCleanNickFrom = cell.targetNick;
                         }
                         var cleanNick = cell._skinCleanNick;
-                        skinUrl = application.customSkinsMap[mode] ||
+                        /* a teammate's team list skin as in getCustomSkin (party: nick+colour first) */
+                        skinUrl = (_isParty ? application.customSkinsMap[mode] : null) ||
+                            application.teamSkinUrl(cell.targetNick) ||
+                            application.customSkinsMap[mode] ||
                             application.customSkinsMap[cell.targetNick] ||
                             application.customSkinsMap[cell.targetNick + '#000000'] ||
                             (cleanNick ? (
                                 application.customSkinsMap[cleanNick] ||
                                 application.customSkinsMap[cleanNick + '#000000'] ||
                                 application.customSkinsMap[cleanNick + cell.color]
-                            ) : null);
+                            ) : null) ||
+                            application.teamSkinUrl(cell.targetNick, true);
                     }
                     if (!skinUrl && cell.skin) {
                         skinUrl = application.customSkinsMap[cell.skin] ||
@@ -84955,6 +84978,43 @@ function Socket3updateTeamPlayerSpfc(Socket3data) {
     }
 }
 
+/* Teammates' skins as the team list shows them (top5: .skinURL or .skin), by nick, for their
+ * cells. The nick entries of customSkinsMap can lose them while the team list still has them:
+ * a name skin (flag "bait") took the entry, or the map was flushed. loose: the nick without
+ * spaces and symbols, kept only when no two teammates share it. Built once per leaderboard. */
+function lmLooseNick(nick) {
+    return String(nick).replace(/[^\p{L}\p{N}]+/gu, '');
+}
+function lmTeamSkinMap(top5, check, blank) {
+    var team = { exact: new Map(), loose: new Map() };
+    for (var i = 0; top5 && i < top5.length; i++) {
+        var p = top5[i];
+        if (!p || typeof p.nick !== 'string' || !p.nick.trim()) continue;
+        var u = p.skinURL || p.skin;
+        if (typeof u !== 'string' || !u) continue;
+        if (check) u = check(u);
+        if (!/^https?:\/\/[^/]+\.[^/]+/i.test(u) || (blank && blank[u])) continue;
+        if (!team.exact.has(p.nick)) team.exact.set(p.nick, u);
+        var k = lmLooseNick(p.nick);
+        if (k) team.loose.set(k, team.loose.has(k) && team.loose.get(k) !== u ? '' : u);
+    }
+    return team;
+}
+/* the skin of a teammate's cell from lmTeamSkinMap; memo: nick -> loose nick */
+function lmTeamSkinFor(team, nick, loose, memo) {
+    if (!team || !nick) return null;
+    if (!loose) return team.exact.get(nick) || null;
+    if (!team.loose.size) return null;
+    var k = memo ? memo.get(nick) : undefined;
+    if (k === undefined) {
+        k = lmLooseNick(nick);
+        if (memo) {
+            if (memo.size >= 2000) memo.clear();
+            memo.set(nick, k);
+        }
+    }
+    return k ? (team.loose.get(k) || null) : null;
+}
 /* Temporary (socket 3) teammates on the teamboard with skins. They carry no updateTime, so
  * updateTeamPlayers never expires them; one whose last update is over 6 s old has left.
  * The test used to be lastUpdatedTime - now < 6000, true for every past update, so each
