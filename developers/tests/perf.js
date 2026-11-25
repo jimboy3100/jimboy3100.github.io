@@ -269,6 +269,23 @@ const h = JSON.parse(nt.store.lmNetHistory);
 check('session summary saved with ping, jitter, disconnects', h.length === 1 && h[0].pingAvg > 0 && h[0].jitter > 0 && h[0].disc === 1 && h[0].reconn === 1 && h[0].ppsAvg === 25);
 check('host only (no token) is kept', h[0].hosts.length === 1 && h[0].hosts[0] === 'srv.example');
 check('report text is built', /FPS:/.test(nt.ctx.LMPerf.report()) && /disconnects 1/.test(nt.ctx.LMPerf.report()));
+/* frames by renderer and Canvas2D reason: drawRender counts them (GLW_IDS of ogario.v4.js) */
+{
+    const idsM = /\n        GLW_IDS: (\[[^\]]*\]),/.exec(fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n'));
+    const ids = idsM ? new Function('return ' + idsM[1])() : null;
+    check('reason names found in ogario.v4.js', !!ids && ids[0] === 'webgl');
+    if (ids) {
+        const dr = nt.ctx.drawRender, c = new Uint32Array(32);
+        check('no renderer line before any frame is counted', !/Renderer frames/.test(nt.ctx.LMPerf.report()) && nt.ctx.LMPerf.rendererFrames() === null);
+        c[0] = 900; c[ids.indexOf('coveredEffect')] = 80; c[ids.indexOf('chatNew')] = 20;
+        dr._lmGlWhyN = c; dr.GLW_IDS = ids;
+        const rf = nt.ctx.LMPerf.rendererFrames();
+        check('rendererFrames: total, WebGL and the Canvas2D reasons, most first', rf.total === 1000 && rf.webgl === 900 && rf.canvas.length === 2 &&
+            rf.canvas[0][0] === 'coveredEffect' && rf.canvas[0][1] === 80 && rf.canvas[1][0] === 'chatNew');
+        check('report: renderer frames line', nt.ctx.LMPerf.report().indexOf('Renderer frames since load: 1000, WebGL 900 (90.0%), Canvas2D: coveredEffect 80, chatNew 20') >= 0);
+        delete dr._lmGlWhyN; delete dr.GLW_IDS;
+    }
+}
 nt.ctx.legendmod5.netHistory = false; nt.ctx.LMPerf.configChanged();
 check('network history off: timer stopped', nt.timers.filter(Boolean).length === 0);
 

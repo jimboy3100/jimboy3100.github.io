@@ -1351,6 +1351,22 @@
         return 'Canvas2D';
     }
 
+    /* Frames since the page loaded by renderer: WebGL, or Canvas2D with the reason the
+     * renderer gives (window.drawRender._lmGlWhyN by GLW_IDS, counted in renderFrame).
+     * { total, webgl, canvas: [[reason, frames]...] most first }, or null before a frame. */
+    function rendererFrames() {
+        var dr = window.drawRender, c = dr && dr._lmGlWhyN, ids = dr && dr.GLW_IDS;
+        if (!c || !ids) return null;
+        var total = 0, canvas = [], i;
+        for (i = 0; i < c.length; i++) {
+            total += c[i];
+            if (i > 0 && c[i]) canvas.push([ids[i] || ('reason' + i), c[i]]);
+        }
+        if (!total) return null;
+        canvas.sort(function (a, b) { return b[1] - a[1]; });
+        return { total: total, webgl: c[0], canvas: canvas };
+    }
+
     function frameStats() {
         var n = fr.n, iv = [], rt = [], i, si = 0, sr = 0, longN = 0;
         for (i = 0; i < n; i++) {
@@ -1397,6 +1413,11 @@
         if (fr.renderErrors) lines.push('Frames that failed to draw: ' + fr.renderErrors);
         lines.push('Render ' + f1(st.render) + ' ms, other ' + f1(st.other) + ' ms per frame');
         lines.push('Cells: ' + cells + ', renderer: ' + rendererName());
+        var rf = rendererFrames();
+        if (rf) {
+            lines.push('Renderer frames since load: ' + rf.total + ', WebGL ' + rf.webgl + ' (' + f1(100 * rf.webgl / rf.total) + '%)' +
+                (rf.canvas.length ? ', Canvas2D: ' + rf.canvas.map(function (p) { return p[0] + ' ' + p[1]; }).join(', ') : ''));
+        }
         lines.push('devicePixelRatio: ' + (window.devicePixelRatio || 1) + ', render scale: ' + (dr && dr.dpr ? f1(dr.dpr) : '-') +
             ', screen ' + window.innerWidth + 'x' + window.innerHeight + (fr.refreshHz ? ', refresh ~' + fr.refreshHz + ' Hz' : ''));
         lines.push('Adaptive performance: ' + (adaptiveOn ? 'on, level ' + ctl.level + '/' + MAX_LEVEL + ', target ' + snapTarget(s.adaptivePerfTarget) +
@@ -1825,6 +1846,8 @@
         /* the value the player set (not a lowered one) */
         userValue: function (k) { var s = dms(); return overrides ? overrides.userValue(k) : (s ? s[k] : undefined); },
         level: function () { return adaptiveOn ? ctl.level : 0; },
+        /* frames by renderer and Canvas2D reason (see rendererFrames) */
+        rendererFrames: rendererFrames,
         report: function () { return reportLines().join('\n'); },
         /* an event for the diagnostics list (packet gaps from the freeze detector); nothing
          * is kept while measuring is off */

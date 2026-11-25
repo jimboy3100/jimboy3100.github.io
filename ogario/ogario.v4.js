@@ -36866,12 +36866,15 @@ function thelegendmodproject() {
                             style.restore();
                         }
                         /* The FB friend badge and the special effects (hats, crowns, smoke...), in
-                         * the order of the Canvas2D branch. There they sit under the cell's own
-                         * labels, which an overlay cannot do: canUseWebGLScene keeps the frames
-                         * with one of them on screen on Canvas2D, so this only draws them for
-                         * cells it did not check (outside the frame). */
+                         * the order of the Canvas2D branch, on the overlay. There they sit under
+                         * the cell's own multibox ring and labels: for the cells canUseWebGLScene
+                         * checked (_lmLabelsOnFg) those follow on the overlay too, below, and the
+                         * GL ring and text passes skipped them. */
                         var _fbImg = defaultmapsettings.FBTracking ? this.lmFbBadge() : null;
-                        var _spFx = typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers[this.targetNick];
+                        /* (Canvas2D draws the effects only with custom skins on) */
+                        var _spFx = defaultmapsettings.customSkins && LM.showCustomSkins &&
+                            typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers[this.targetNick];
+                        var _onFg = drawRender._lmLabelsOnFg(this);
                         if (_fbImg || _spFx) {
                             var _fg1 = drawRender._lmFgFor(style), _c1 = _fg1 || style;
                             try {
@@ -36890,6 +36893,17 @@ function thelegendmodproject() {
                                 if (_spFx) this.drawSpecialSkin(_c1, y);
                             } finally {
                                 if (_fg1) _fg1.restore();
+                            }
+                        }
+                        var _mbRingFg = _onFg ? lmMultiboxRing(this, y, drawRender.scale) : null;
+                        if (_mbRingFg) {
+                            var _fgR = drawRender._lmFgFor(style);
+                            if (_fgR) {
+                                try {
+                                    drawRender.strokeMultiboxRing(_fgR, this.x, this.y, y, _mbRingFg);
+                                } finally {
+                                    _fgR.restore();
+                                }
                             }
                         }
                     } else {
@@ -37970,11 +37984,19 @@ function thelegendmodproject() {
 
                     /* Skip Canvas2D nick/mass text for WebGL-rendered cells — text is now drawn
                      * as WebGL textured quads with depth testing for correct z-order.
-                     * Chat bubbles and merge timers still render on Canvas2D (overlay effects). */
+                     * Chat bubbles and merge timers still render on Canvas2D (overlay effects).
+                     * A WebGL cell of _lmLabelsOnFg (FB badge, special effect) gets this Canvas2D
+                     * text on the overlay instead, over its badge / effect as in Canvas2D. */
                     /* the chat bubble has its own setting: drawn whether or not the nick and
                      * mass are (it used to need the mass label) */
                     var _chatCe = cellMoved ? null : this.lmChatLine();
-                    if (!_wasWebGL) {
+                    var _fgN = _wasWebGL && _onFg ? drawRender._lmFgFor(style) : null;
+                    if (!_wasWebGL || _fgN) {
+                        var _tc = _fgN || style;
+                        if (_fgN) {
+                            node = defaultmapsettings.customSkins && LM.showCustomSkins && !this.isEjected
+                                ? application.getCustomSkin(this.targetNick, this.color, this.skin) : null;
+                        }
                         var _txtReady = false, _nickDone = false;
                         if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved || this._lmDrawNoText) {
                             //return;
@@ -37985,28 +38007,28 @@ function thelegendmodproject() {
                                 this.setDrawing();
                                 this.setDrawingScale();
                                 if (defaultSettings.textAlpha != 1) {
-                                    style.globalAlpha *= defaultSettings.textAlpha;
+                                    _tc.globalAlpha *= defaultSettings.textAlpha;
                                 }
                                 _txtReady = true;
                                 if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
                                     if (this.setNick(this.targetNick)) {
-                                        this.drawNick(style);
+                                        this.drawNick(_tc);
                                         _nickDone = true;
                                     }
                                 }
                                 if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
                                     if (this.setMass(this.size)) {
 
-                                        this.drawMass(style);
+                                        this.drawMass(_tc);
                                         if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
-                                            this.drawMerge(style);
+                                            this.drawMerge(_tc);
                                         }
                                     }
                                 }
                             }
 
                         }
-                        if (_chatCe) this.lmChatBubble(style, _chatCe, _txtReady, _nickDone);
+                        if (_chatCe) this.lmChatBubble(_tc, _chatCe, _txtReady, _nickDone);
                     } else {
                         /* WebGL cell: its nick and mass are GPU labels. The merge timer (on the
                          * cells lmLabels gives a mass) and the chat bubble the Canvas2D branch
@@ -38038,6 +38060,8 @@ function thelegendmodproject() {
                 } catch (eCellDraw) {
                     console.error('[OGARIO CELL DRAW ERROR] Failed drawing cell ID ' + this.id + ' (nick: "' + (this.targetNick || '') + '", skin: "' + (this.skin || '') + '"):', eCellDraw);
                 } finally {
+                    /* the overlay state of the WebGL text above */
+                    if (_fgN) _fgN.restore();
                     style.restore();
                 }
             }
@@ -59160,6 +59184,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this._lmFgFxN = 0;
             /* why this frame stays on Canvas2D, for the checks below that name one */
             this._lmGlFallback = '';
+            /* set again by the first rule that keeps this frame on Canvas2D */
+            this._lmGlWhy = this.GLW.WEBGL;
 
             /*
              * ================================================================
@@ -59205,7 +59231,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     .webgl2Acceleration ===
                 false
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.OFF);
             }
 
 
@@ -59217,7 +59243,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 Date.now() <
                     this._webglDisabledUntil
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.RESET);
             }
 
 
@@ -59249,7 +59275,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     )
                 )
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.SEL_RING);
             }
 
 
@@ -59272,7 +59298,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !this.glTextProgram ||
                 !this.overlayCtx
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.NOT_READY);
             }
 
 
@@ -59280,7 +59306,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !cellsArray ||
                 !cellsArray.length
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.NO_CELLS);
             }
 
 
@@ -59308,7 +59334,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     !this.glJellyStrokeVAO ||
                     !this.glJellyStrokeVBO
                 ) {
-                    return false;
+                    return this._lmNoGL(this.GLW.NOT_READY);
                 }
             }
             else {
@@ -59318,7 +59344,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (
                     !this.glCellProgram
                 ) {
-                    return false;
+                    return this._lmNoGL(this.GLW.NOT_READY);
                 }
             }
 
@@ -59333,7 +59359,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 defaultmapsettings
                     .cellContours
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.CONTOURS);
             }
 
 
@@ -59350,7 +59376,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ':teams' &&
                 !_lmElTeamsActive(LM)
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.TEAMS);
             }
 
 
@@ -59381,7 +59407,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         .cellsAlpha <
                         0.999
                 ) {
-                    return false;
+                    return this._lmNoGL(this.GLW.ALPHA);
                 }
 
 
@@ -59392,7 +59418,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         .skinsAlpha <
                         0.999
                 ) {
-                    return false;
+                    return this._lmNoGL(this.GLW.ALPHA);
                 }
 
 
@@ -59403,7 +59429,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         .skinsAlpha <
                         0.999
                 ) {
-                    return false;
+                    return this._lmNoGL(this.GLW.ALPHA);
                 }
             }
 
@@ -59426,7 +59452,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         .replayHueRotate
                 )
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.REPLAY);
             }
 
 
@@ -59441,13 +59467,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 defaultmapsettings
                     .spawnSpecialEffects
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.BODY_FX);
             }
 
 
-            /* Teammate indicators and the Facebook friend marker are Canvas-only:
-             * fall back only when a visible cell needs one (checked per cell
-             * below), not on every frame just because the option is on. */
+            /* Teammate indicators and the Facebook friend marker go on the overlay
+             * canvas: checked per visible cell below, not per frame just because the
+             * option is on. */
             var _glTeamNicks =
                 (defaultmapsettings.teammatesInd && window.teammatenicks)
                     ? (window._lmTeammateNickSet || null) : null;
@@ -59480,7 +59506,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 LM.playerCellsMulti
                     .length
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.MB_SHADOW);
             }
             /* No ring program (failed to build): Canvas2D draws the rings. */
             if (
@@ -59488,7 +59514,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 LM.multiBoxPlayerExists &&
                 (defaultmapsettings.mbRingsP1 || defaultmapsettings.mbRingsP2)
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.MB_RING_PROG);
             }
 
 
@@ -59508,7 +59534,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     .legendmod5
                     .optimizedMass
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.MERGE);
             }
 
 
@@ -59537,11 +59563,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * later (bigger) cell and its labels cover them: keep WebGL only while no
              * later cell comes near a mark (boxes in this._lmFxBoxes, conservative).
              * Marks that sit under the cell's own labels in Canvas2D (FB friend badge,
-             * special effects) cannot be ordered like that, so their frames stay on
-             * Canvas2D. Nothing of this runs while those options are off.
+             * special effects) take that cell's labels (and multibox ring) onto the
+             * overlay with them, in the Canvas2D order (_lmLabelsOnFg).
              */
-            var _glSpFx = (typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers) ? SpecialEffectPlayers : null;
-            var _glFxCheck = !!(_glTeamNicks || _glTeamList || _glFbSkins || _glChatMap || _glSpFx);
+            var _glSpFx = (defaultmapsettings.customSkins && LM.showCustomSkins &&
+                typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers) ? SpecialEffectPlayers : null;
+            var _glFxCheck = !!(_glTeamNicks || _glTeamList || _glChatMap);
+            var _glFgCheck = !!(_glFbSkins || _glSpFx);
             var _glFxN = 0;
             /* Cell shadows are the Canvas2D drop shadow of cell.draw and the GPU batch has no
              * shadow pass, so a frame with a shadowed cell on screen stays on Canvas2D (food
@@ -59580,8 +59608,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
 
                 /* drawn after the cells with marks so far: it must not reach one */
-                if (_glFxN && this._lmFxCovered(cell, _glFxN)) {
-                    return false;
+                var _glCov = _glFxN ? this._lmFxCovered(cell, _glFxN) : 0;
+                if (_glCov) {
+                    return this._lmNoGL(_glCov);
+                }
+
+                /* badges / effects of cells off screen too: an effect can reach in */
+                if (_glFgCheck) {
+                    _glFxN = this._lmCellFg(cell, _glFxN, _glSpFx);
                 }
 
                 if (
@@ -59596,12 +59630,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 if (_glShadows && !cell.isEjected) {
                     this._lmGlFallback = 'cellShadows';
-                    return false;
+                    return this._lmNoGL(this.GLW.SHADOWS);
                 }
 
                 if (_glFxCheck) {
                     _glFxN = this._lmCellFx(cell, _glFxN, _glTeamNicks, _glTeamList, _glChatMap, _glSpFx);
                     if (_glFxN < 0) {
+                        /* _lmCellFx set the reason */
                         return false;
                     }
                 }
@@ -59632,14 +59667,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 visibleBodyCount ===
                 0
             ) {
-                return false;
+                return this._lmNoGL(this.GLW.NO_BODIES);
             }
 
             /* the join entrance and the death cinematic keep the overlay for themselves
              * (renderFrame does not prepare it then): marks need Canvas2D */
             if (_glFxN && ((LM._elWorldEntrance && LM._elWorldEntrance.active) ||
                 (typeof _elDeathVisual !== 'undefined' && _elDeathVisual && _elDeathVisual.active))) {
-                return false;
+                return this._lmNoGL(this.GLW.CINEMATIC);
+            }
+            /* renderFrame needs the main transform to set up the overlay */
+            if (_glFxN && (!this.overlayCanvas || !this.ctx || typeof this.ctx.getTransform !== 'function')) {
+                return this._lmNoGL(this.GLW.NOT_READY);
             }
             /* renderFrame prepares the overlay before the cell pass when this is > 0 */
             this._lmFgFxN = _glFxN;
@@ -59657,13 +59696,41 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return true;
         },
 
+        /* Why a frame is not drawn by WebGL. canUseWebGLScene leaves one of these in
+         * _lmGlWhy (WEBGL: it may be), renderFrame counts every frame by it in _lmGlWhyN
+         * (BATCH: allowed but drawWebGLCellBatch failed; NO_GL / LOST: no context) for the
+         * Performance diagnostics report (perf.js). COVER_*: a later cell may cover that
+         * overlay mark (COVER_LABELS: the ring / labels moved onto the overlay with a badge
+         * or effect). GLW_IDS[n] names reason n. */
+        GLW: {
+            WEBGL: 0, OFF: 1, RESET: 2, NOT_READY: 3, SEL_RING: 4, NO_CELLS: 5, CONTOURS: 6, TEAMS: 7,
+            ALPHA: 8, REPLAY: 9, BODY_FX: 10, MB_SHADOW: 11, MB_RING_PROG: 12, MERGE: 13, COVERED: 14,
+            CHAT_NEW: 15, OWN_LABEL: 16, NO_BODIES: 17, CINEMATIC: 18, BATCH: 19, NO_GL: 20, LOST: 21,
+            COVER_TEAM: 22, COVER_CHAT: 23, COVER_FB: 24, COVER_FX: 25, COVER_LABELS: 26, SHADOWS: 27
+        },
+        GLW_IDS: ['webgl', 'off', 'reset', 'notReady', 'selRing', 'noCells', 'contours', 'teams',
+            'alpha', 'replay', 'bodyFx', 'mbShadow', 'mbRingProg', 'merge', 'covered',
+            'chatNew', 'ownLabel', 'noBodies', 'cinematic', 'batch', 'noContext', 'contextLost',
+            'coveredTeammate', 'coveredChat', 'coveredFbBadge', 'coveredEffect', 'coveredLabels', 'cellShadows'],
+        _lmNoGL(why) {
+            this._lmGlWhy = why;
+            return false;
+        },
+        /* one frame, drawn by WebGL (GLW.WEBGL) or kept on Canvas2D for that reason */
+        _lmGlCount(why) {
+            var c = this._lmGlWhyN || (this._lmGlWhyN = new Uint32Array(32));
+            c[why >= 0 && why < 31 ? why : 31]++;
+        },
+
         /* canUseWebGLScene: the overlay marks of one on-screen cell. Returns the new box
-         * count (4 numbers per box in this._lmFxBoxes), or -1 when the frame needs Canvas2D. */
+         * count (4 numbers per box in this._lmFxBoxes), or -1 (reason in _lmGlWhy) when the
+         * frame needs Canvas2D. */
         _lmCellFx(cell, n, teamSet, teamList, chatMap, spFx) {
-            var nick = cell.targetNick;
-            /* under the cell's own labels in Canvas2D */
-            if (spFx && nick && spFx[nick]) return -1;
-            if (defaultmapsettings.FBTracking && cell.lmFbBadge && cell.lmFbBadge()) return -1;
+            var nick = cell.targetNick, x = cell.x, y = cell.y;
+            /* the eat pulse may draw the cell up to that much bigger */
+            var r = cell.size * (1 + _EAT_PULSE_MAGNITUDE);
+            /* its labels follow on the overlay (_lmCellFg ran first) */
+            var onFg = cell._lmFgLab === this._glSkinFrame;
             /* teammate indicator (same rule and image as cell.draw / drawTeammatesInd) */
             if ((teamSet || teamList) && nick && !cell.isPlayerCell && cell.size <= 800 && this.indicator &&
                 (teamSet ? teamSet.has(nick) : teamList.includes(nick))) {
@@ -59672,15 +59739,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 else if (ind === "heart") { img = this.heartIndicator; dx = -25; dy = -90; }
                 else if (ind === "smile") { img = this.smileIndicator; dx = -55; dy = -150; }
                 if (img && img.width > 0 && img.height > 0) {
-                    var tx = cell.x + dx;
-                    /* the eat pulse may draw the cell up to that much bigger */
-                    var ty0 = cell.y - cell.size * (1 + _EAT_PULSE_MAGNITUDE) + dy;
-                    var ty1 = cell.y - cell.size + dy + img.height;
-                    /* drawn before the cell's own labels in Canvas2D: they must not meet */
-                    this._lmLabelExt(cell);
-                    if (this._lmExtW > 0 && tx < cell.x + this._lmExtW && tx + img.width > cell.x - this._lmExtW &&
-                        ty0 < cell.y + this._lmExtH && ty1 > cell.y - this._lmExtH) return -1;
-                    n = this._lmFxPush(n, tx, ty0, tx + img.width, ty1);
+                    var tx = x + dx;
+                    var ty0 = y - r + dy;
+                    var ty1 = y - cell.size + dy + img.height;
+                    /* drawn before the cell's own labels in Canvas2D: they must not meet,
+                     * unless those labels are on the overlay too (after it) */
+                    if (!onFg) {
+                        this._lmLabelExt(cell);
+                        if (this._lmExtW > 0 && tx < x + this._lmExtW && tx + img.width > x - this._lmExtW &&
+                            ty0 < y + this._lmExtH && ty1 > y - this._lmExtH) return this._lmFxFail(this.GLW.OWN_LABEL);
+                    }
+                    n = this._lmFxPush(n, tx, ty0, tx + img.width, ty1, this.GLW.COVER_TEAM);
                 }
             }
             /* chat bubble: drawn after the cell's own labels, so only later cells matter */
@@ -59689,66 +59758,230 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var ce = cell.lmChatLine();
                 if (ce) {
                     /* its size is known once Canvas2D has drawn this line */
-                    if (cell._lmChatAt !== ce.time) return -1;
+                    if (cell._lmChatAt !== ce.time) return this._lmFxFail(this.GLW.CHAT_NEW);
                     /* (1 unit or less: drawChat draws nothing) */
                     if (cell._lmChatW > 1 && cell._lmChatH > 1) {
-                        var cw = cell._lmChatW * 0.55 + 4, cy0 = cell.y + cell._lmChatDy;
-                        n = this._lmFxPush(n, cell.x - cw, cy0 - 0.1 * cell._lmChatH, cell.x + cw, cy0 + 1.1 * cell._lmChatH);
+                        var cw = cell._lmChatW * 0.55 + 4, cy0 = y + cell._lmChatDy;
+                        n = this._lmFxPush(n, x - cw, cy0 - 0.1 * cell._lmChatH, x + cw, cy0 + 1.1 * cell._lmChatH, this.GLW.COVER_CHAT);
                     }
                 }
             }
             return n;
         },
-        _lmFxPush(n, x0, y0, x1, y1) {
+        _lmFxFail(why) {
+            this._lmGlWhy = why;
+            return -1;
+        },
+        /* true when cell.draw puts this WebGL cell's nick, mass and multibox ring on the
+         * overlay this frame (above its FB badge / special effect): the GL passes skip them */
+        _lmLabelsOnFg(cell) {
+            /* (never true for a cell no frame marked, nor before the first frame) */
+            return this._glSkinFrame > 0 && cell._lmFgLab === this._glSkinFrame;
+        },
+        /* How far from the cell centre, in drawn radii, drawSpecialSkin may draw this effect
+         * string: 2.5 holds every effect image (Santa hat, Splash, USA reach furthest), the
+         * White Arrow grows to 11.5 when it starts. */
+        _lmSpFxReach(raw) {
+            return typeof raw === 'string' && !window.testAnimatCells && raw.indexOf('WhiteArrow') !== -1 ? 12 : 2.5;
+        },
+        /* canUseWebGLScene: the FB friend badge and special effect (hats, crowns, smoke...)
+         * of a cell, on screen or not (an effect reaches 2.5 radii out). In Canvas2D they
+         * sit over the cell's skin and under its multibox ring and labels: on the overlay,
+         * those then come after them there too (_lmLabelsOnFg: cell.draw draws them, the GL
+         * ring and text passes skip the cell). Same box rules as _lmCellFx. */
+        _lmCellFg(cell, n, spFx) {
+            var nick = cell.targetNick, x = cell.x, y = cell.y, ms = defaultmapsettings;
+            var r = cell.size * (1 + _EAT_PULSE_MAGNITUDE), on = false;
+            if (ms.FBTracking && cell.lmFbBadge && cell.lmFbBadge()) {
+                n = this._lmFxPush(n, x - 0.5 * r, y - r, x + 0.5 * r, y, this.GLW.COVER_FB);
+                on = true;
+            }
+            /* drawSpecialSkin runs with custom skins on, as in the Canvas2D branch */
+            if (spFx && nick && spFx[nick] && ms.customSkins && LM.showCustomSkins) {
+                var k = this._lmSpFxReach(spFx[nick]) * r;
+                n = this._lmFxPush(n, x - k, y - k, x + k, y + k, this.GLW.COVER_FX);
+                on = true;
+            }
+            if (on) {
+                /* the ring lies inside the body */
+                if (LM.multiBoxPlayerExists && lmMultiboxRingPlayer(cell)) n = this._lmFxPush(n, x - r, y - r, x + r, y + r, this.GLW.COVER_LABELS);
+                this._lmLabelExt2D(cell);
+                if (this._lmExtW > 0) n = this._lmFxPush(n, x - this._lmExtW, y - this._lmExtH, x + this._lmExtW, y + this._lmExtH, this.GLW.COVER_LABELS);
+                cell._lmFgLab = this._glSkinFrame;
+            }
+            return n;
+        },
+        /* a mark box; why: the GLW reason a later cell reaching it gives (COVER_*) */
+        _lmFxPush(n, x0, y0, x1, y1, why) {
             var b = this._lmFxBoxes;
             if (!b || n + 4 > b.length) {
                 var nb = new Float64Array(Math.max(64, b ? b.length * 2 : 0));
-                if (b) nb.set(b);
+                var nk = new Uint8Array(nb.length >> 2);
+                if (b) { nb.set(b); nk.set(this._lmFxKinds); }
                 this._lmFxBoxes = b = nb;
+                this._lmFxKinds = nk;
             }
             /* a few world units of slack */
             b[n] = x0 - 4;
             b[n + 1] = y0 - 4;
             b[n + 2] = x1 + 4;
             b[n + 3] = y1 + 4;
+            this._lmFxKinds[n >> 2] = why || this.GLW.COVERED;
             return n + 4;
         },
-        /* true when this cell's body or labels may reach a mark box. Bodies: jelly can bulge
-         * and the eat pulse grows them, hence 1.15. */
+        /* The GLW reason of the first mark box this cell's body (a disc: jelly can bulge and
+         * the eat pulse grows it, hence 1.15) or its labels (a box) may reach, else 0. */
         _lmFxCovered(cell, n) {
-            var hw = cell.size * 1.15 + 4, hh = hw;
+            var rb = cell.size * 1.15 + 4, x = cell.x, y = cell.y, b = this._lmFxBoxes;
             this._lmLabelExt(cell);
-            if (this._lmExtW > hw) hw = this._lmExtW;
-            if (this._lmExtH > hh) hh = this._lmExtH;
-            var b = this._lmFxBoxes, x = cell.x, y = cell.y;
+            var lw = this._lmExtW, lh = this._lmExtH;
             for (var k = 0; k < n; k += 4) {
-                if (x - hw < b[k + 2] && x + hw > b[k] && y - hh < b[k + 3] && y + hh > b[k + 1]) return true;
+                var x0 = b[k], y0 = b[k + 1], x1 = b[k + 2], y1 = b[k + 3];
+                var hit = lw > 0 && x - lw < x1 && x + lw > x0 && y - lh < y1 && y + lh > y0;
+                if (!hit) {
+                    var ddx = x < x0 ? x0 - x : x > x1 ? x - x1 : 0;
+                    var ddy = y < y0 ? y0 - y : y > y1 ? y - y1 : 0;
+                    hit = ddx * ddx + ddy * ddy < rb * rb;
+                }
+                if (hit) return this._lmFxKinds[k >> 2] || this.GLW.COVERED;
             }
-            return false;
+            return 0;
         },
         /* Half width/height (world units, around the cell centre) the WebGL nick and mass of
-         * a cell can take (drawWebGLCellText sizes): an upper bound, 1 em per UTF-16 unit is
-         * wider than any glyph. Into this._lmExtW/_lmExtH (0 = no labels). */
+         * a cell can take, as drawWebGLCellText sizes and places them (nick centred, 1.4 em
+         * high, mass under it). Into this._lmExtW/_lmExtH (0 = no labels). Widths come from
+         * the measured text (_lmNickEm, _lmMassEm) with room for the raster rounding (the
+         * nick raster is 6 px or more, in 1.125 steps) and the stroke; 1 em per character
+         * without a text canvas or for HUD mass formats. */
         _lmLabelExt(cell) {
             var ms = defaultmapsettings, ds = defaultSettings, w = 0, h = 0;
-            if (!cell.isFood && !cell.isEjected && (cell.targetNick || cell.size > 40) && !(ms.noNames && !ms.showMass)) {
-                var f = Math.max(cell.size * 0.3, 26) * (ds.namesScale || 1);
-                var mf = 0;
-                if (ms.showMass && cell.size > 40) {
-                    mf = cell.isVirus ? 26 * Math.max(0, Number(ds.virMassScale) || 3) : f * 0.85 * Math.max(0, Number(ds.massScale) || 1) / 3;
-                    /* up to 10 characters (HUD mass formats included) */
-                    w = 5 * mf + mf;
-                    h = 1.6 * mf;
+            var size = cell.size || 10;
+            if (!cell.isFood && !cell.isEjected && (cell.targetNick || size > 40) && !(ms.noNames && !ms.showMass)) {
+                /* auto-hide as drawWebGLCellText (not for player cells and viruses) */
+                var hide = !cell.isPlayerCell && !cell.isVirus && application.setAutoHideCellInfo(size);
+                var f = Math.max(size * 0.3, 26) * (ds.namesScale || 1);
+                var showNick = !cell.isVirus && cell.targetNick && !ms.noNames && !(hide && ms.autoHideNames);
+                var showMass = ms.showMass && size > 40 && !(hide && ms.autoHideMass);
+                if (showMass) {
+                    var mf = cell.isVirus ? 26 * Math.max(0, Number(ds.virMassScale) || 3) : f * 0.85 * Math.max(0, Number(ds.massScale) || 1) / 3;
+                    var mEm = this._lmMassEm(), mw;
+                    if (mEm < 0 || (!cell.isVirus && (ms.massFormat || ms.hudRelativeMass))) {
+                        /* up to 10 characters */
+                        mw = 5 * mf + mf;
+                    } else {
+                        /* the mass text has at most as many characters as digits ("12.4k") */
+                        var v = ~~(size * size / 100), len = 1;
+                        while (v >= 10 && len < 12) { v = ~~(v / 10); len++; }
+                        if (cell.isVirus && len < 2) len = 2;
+                        var mPad = ms.massStroke ? Math.max(1, Math.round(10 * (ds.strokeScale || 1))) : 1;
+                        /* 100 px raster: (text + 2 pads + rounding) / 140 px for 1.4 mf */
+                        mw = 0.5 * mf * (len * mEm * 1.05 + (2 * mPad + 2) / 100);
+                    }
+                    if (mw > w) w = mw;
+                    h = 1.4 * mf;
                 }
-                if (!cell.isVirus && cell.targetNick && !ms.noNames) {
-                    var nw = 0.5 * cell.targetNick.length * f + f;
+                if (showNick) {
+                    var em = this._lmNickEm(cell), nw;
+                    if (em < 0) {
+                        nw = 0.5 * cell.targetNick.length * f + f;
+                    } else {
+                        var px = Math.max(6, f * (this.scale || 1) / 1.0607 - 0.5);
+                        nw = 0.5 * f * (1.1 * em + (ms.namesStroke ? 0.2 * (ds.strokeScale || 1) : 0) + (0.6 * cell.targetNick.length + 3) / px);
+                    }
                     if (nw > w) w = nw;
-                    h += 0.9 * f;
+                    h += 0.7 * f;
+                } else if (h > 0) {
+                    /* the mass alone is centred */
+                    h *= 0.5;
                 }
-                h += 0.2 * f;
+                if (w > 0) h += 1;
             }
             this._lmExtW = w;
             this._lmExtH = h;
+        },
+        /* The same for the Canvas2D nick and mass of cell.draw (drawn on the overlay for the
+         * cells of _lmLabelsOnFg): whole screen pixels there (the nick 6 or more; with
+         * optimizedNames its raster may be 5% off the current size), 1.4 em high, at least
+         * 1 em per character (more for a wider measured nick), the mass under the nick
+         * (this.margin) or centred. */
+        _lmLabelExt2D(cell) {
+            var ms = defaultmapsettings, ds = defaultSettings, w = 0, h = 0;
+            if (!(ms.noNames && !ms.showMass) && !cell.isVirus) {
+                var s = ogario.viewScale || 1, ss = ds.strokeScale || 1;
+                var np = 1.06 * Math.max(6, Math.max(cell.size * 0.3, 26) * s * (ds.namesScale || 1) + 0.5);
+                var nh = 0, nw = 0, mh = 0, mw = 0;
+                if (cell.targetNick && !ms.noNames) {
+                    var em = this._lmNickEm(cell), len = cell.targetNick.length;
+                    if (em * 1.1 > len) len = em * 1.1;
+                    nh = 1.4 * np / s + 1;
+                    nw = (np * len + 0.2 * np * ss + 2) / s * 0.5 + 1;
+                }
+                if (ms.showMass && cell.size > 40) {
+                    var conf = Number(ds.massScale);
+                    if (!isFinite(conf)) conf = 3;
+                    var mp = Math.max(1, np * 0.85 * Math.max(0, conf) / 3 + 0.5);
+                    mh = 1.4 * mp / s + 1;
+                    /* up to 10 characters */
+                    mw = (mp * 10 + 0.2 * mp * ss + 2) / s * 0.5 + 1;
+                }
+                w = Math.max(nw, mw);
+                h = nh > 0 ? 0.5 * nh + mh : 0.5 * mh;
+            }
+            this._lmExtW = w;
+            this._lmExtH = h;
+        },
+        /* Text width / font size of the cell's nick in the WebGL nick font: measured once
+         * per nick (on the cell), again after a font setting change or a web font load (then
+         * the larger value is kept: older rasters may still be cached). -1 without a text canvas. */
+        _lmNickEm(cell) {
+            var tc = this._textCtx;
+            if (!tc) return -1;
+            this._lmEmCheck();
+            if (cell._lmEmGen !== this._lmEmGen || cell._lmEmNick !== cell.targetNick) {
+                tc.font = this._lmEmFont;
+                var em = tc.measureText(cell.targetNick).width / 100;
+                var keep = cell._lmEmNick === cell.targetNick && cell._lmEmFont === this._lmEmFont && cell._lmEm > em;
+                cell._lmEm = keep ? cell._lmEm : em;
+                cell._lmEmNick = cell.targetNick;
+                cell._lmEmFont = this._lmEmFont;
+                cell._lmEmGen = this._lmEmGen;
+            }
+            return cell._lmEm;
+        },
+        /* the widest character of a mass text ("0"-"9", ".", "k") per font size, the same way */
+        _lmMassEm() {
+            var tc = this._textCtx;
+            if (!tc) return -1;
+            this._lmEmCheck();
+            if (this._lmMassEmGen !== this._lmEmGen) {
+                tc.font = this._lmMassEmFont;
+                var m = 0, ch = '0123456789.k';
+                for (var i = 0; i < ch.length; i++) {
+                    var cw = tc.measureText(ch.charAt(i)).width / 100;
+                    if (cw > m) m = cw;
+                }
+                this._lmMassEmW = this._lmMassEmFor === this._lmMassEmFont ? Math.max(m, this._lmMassEmW) : m;
+                this._lmMassEmFor = this._lmMassEmFont;
+                this._lmMassEmGen = this._lmEmGen;
+            }
+            return this._lmMassEmW;
+        },
+        /* a new generation of measured widths when the label fonts change or web fonts load */
+        _lmEmCheck() {
+            var ds = defaultSettings;
+            var fam = ds.namesFontFamily || 'Ubuntu', wt = ds.namesFontWeight || 'bold';
+            var mfam = ds.massFontFamily || fam, mwt = ds.massFontWeight || wt;
+            var fst = typeof document !== 'undefined' && document && document.fonts ? document.fonts.status : '';
+            if (this._lmEmFam !== fam || this._lmEmWt !== wt || this._lmEmMFam !== mfam || this._lmEmMWt !== mwt || this._lmEmFs !== fst) {
+                if (this._lmEmFam !== fam || this._lmEmWt !== wt) this._lmEmFont = wt + ' 100px ' + fam;
+                if (this._lmEmMFam !== mfam || this._lmEmMWt !== mwt) this._lmMassEmFont = mwt + ' 100px ' + mfam;
+                this._lmEmFam = fam;
+                this._lmEmWt = wt;
+                this._lmEmMFam = mfam;
+                this._lmEmMWt = mwt;
+                this._lmEmFs = fst;
+                this._lmEmGen = (this._lmEmGen || 0) + 1;
+            }
         },
         /* The prepared overlay context for a mark of a WebGL cell, set to that cell's transform
          * (style may carry a per-cell offset) and alpha; null when this frame has none. The
@@ -60084,6 +60317,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         e.preventDefault();
                         console.warn('[LegendMod WebGL] Context lost — falling back to Canvas2D');
                         _self.gl = null;
+                        /* counted as "contextLost" until a context is back */
+                        _self._lmGlLost = true;
                     }, false);
                     this.glCanvas.addEventListener('webglcontextrestored', function () {
                         console.log('[LegendMod WebGL] Context restored — re-initializing');
@@ -68024,6 +68259,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 for (var i = 0; i < list.length && count < max; i++) {
                     var cell = list[i];
                     if (!cell || !cell._webglRendered || cell.invisible === true) continue;
+                    /* cell.draw strokes it on the overlay this frame, over its badge / effect */
+                    if (this._lmLabelsOnFg(cell)) continue;
                     var radius = cell.size;
                     var ring = lmMultiboxRing(cell, radius, scale);
                     if (!ring) continue;
@@ -69548,6 +69785,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 for (var i = 0; i < cells.length; i++) {
                     var cell = cells[i];
                     if (!cell || !cell._webglRendered) continue;
+                    /* its labels are on the overlay this frame (FB badge / special effect) */
+                    if (this._lmLabelsOnFg(cell)) continue;
                     try {
                         this.drawWebGLCellText(cell);
                     } catch (e) {
@@ -76720,6 +76959,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  *
                  * It does NOT choose another renderer.
                  */
+                /* the reason when canUseWebGLScene is not reached (it sets its own) */
+                this._lmGlWhy = this.gl ? this.GLW.NOT_READY :
+                    defaultmapsettings.webgl2Acceleration === false ? this.GLW.OFF :
+                        this._lmGlLost ? this.GLW.LOST : this.GLW.NO_GL;
+                if (this.gl) this._lmGlLost = false;
                 var unifiedWebGLAllowed =
                     !!(
                         this.gl &&
@@ -76970,6 +77214,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         );
                     }
                 }
+                /* frames by renderer and Canvas2D reason, for the Performance diagnostics */
+                this._lmGlCount(unifiedWebGLWorldOK ? this.GLW.WEBGL : unifiedWebGLAllowed ? this.GLW.BATCH : this._lmGlWhy);
 
 
                 /* read by the net graph (renderer label) */
