@@ -124,9 +124,31 @@
         if (two) { drawTri(ctx, x - s * 0.55, y, s, up); drawTri(ctx, x + s * 0.55, y, s, up); }
         else drawTri(ctx, x, y, s, up);
     }
-    function indFrame() {
+    /* Drawn with the game's frames: the core calls api.frame() where it draws the HUD helpers
+     * (after its FPS limit, nothing while it does not draw). Until the first such call (an older
+     * cached core) a requestAnimationFrame loop stands in; it stops by itself once the core calls.
+     * Without frames for a while (menu, paused drawing) the symbols are cleared. */
+    function coreFrame() {
         if (!ind) return;
-        ind.raf = requestAnimationFrame(indFrame);
+        ind.core = Date.now();
+        if (ind.raf) { cancelAnimationFrame(ind.raf); ind.raf = 0; }
+        drawInd();
+    }
+    function rafFrame() {
+        if (!ind) return;
+        ind.raf = 0;
+        if (ind.core) return;
+        ind.raf = requestAnimationFrame(rafFrame);
+        drawInd();
+    }
+    function staleCheck() {
+        if (ind && ind.core && ind.drawn && Date.now() - ind.core > 500) {
+            ind.ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ind.ctx.clearRect(0, 0, ind.c.width, ind.c.height);
+            ind.drawn = false;
+        }
+    }
+    function drawInd() {
         var c = ind.c, ctx = ind.ctx, lm = W.legendmod, dr = W.drawRender, s = settings();
         var dpr = Math.min(2, W.devicePixelRatio || 1), vw = W.innerWidth, vh = W.innerHeight;
         if (c.width !== Math.round(vw * dpr) || c.height !== Math.round(vh * dpr)) {
@@ -177,10 +199,12 @@
             });
             c.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:' + z + ';';
             if (last && last.parentNode) last.parentNode.insertBefore(c, last.nextSibling); else D.body.appendChild(c);
-            ind = { c: c, ctx: c.getContext('2d'), raf: 0, drawn: false };
-            ind.raf = requestAnimationFrame(indFrame);
+            ind = { c: c, ctx: c.getContext('2d'), raf: 0, drawn: false, core: 0 };
+            ind.raf = requestAnimationFrame(rafFrame);
+            ind.stale = setInterval(staleCheck, 500);
         } else if (!on && ind) {
-            cancelAnimationFrame(ind.raf);
+            if (ind.raf) cancelAnimationFrame(ind.raf);
+            clearInterval(ind.stale);
             if (ind.c.parentNode) ind.c.parentNode.removeChild(ind.c);
             ind = null;
         }
@@ -196,6 +220,8 @@
     api.sync = sync;
     api.remeasure = function () { sync(true); };
     api.drawSymbol = drawSymbol;
+    /* called by the core once per drawn frame (does nothing while the symbols are off) */
+    api.frame = coreFrame;
 
     /* the sliders have no callback in the menu: follow their input here */
     D.addEventListener('input', function (e) {

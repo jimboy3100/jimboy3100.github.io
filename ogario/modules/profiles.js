@@ -88,7 +88,7 @@
         cntS: ['{0} settings', '{0} ρυθμίσεις'],
         cntT: ['{0} theme options', '{0} επιλογές θέματος'],
         cntH: ['{0} hotkeys', '{0} πλήκτρα'],
-        cntM: ['{0} phone controls (after a reload)', '{0} χειριστήρια κινητού (μετά από επαναφόρτωση)'],
+        cntM: ['{0} phone controls', '{0} χειριστήρια κινητού'],
         reloadSome: ['Some changes apply after a reload.', 'Κάποιες αλλαγές ισχύουν μετά από επαναφόρτωση.'],
         current: ['Current settings', 'Τρέχουσες ρυθμίσεις'],
         backupOf: ['Backup {0}', 'Αντίγραφο {0}'],
@@ -246,11 +246,13 @@
     function absentPart() { return { _lmAbsent: 1 }; }
     function isAbsent(v) { return isObj(v) && v._lmAbsent === 1; }
     /* the explicit "none" of the parts that are missing in a state captured for the Undo or a backup */
-    function markMissing(data, withM) {
+    function markMissing(data, withM, withG) {
+        if (withG === undefined) withG = withM;
         if (withM) {
+            if (!isObj(data.m)) data.m = absentPart();
             if (!isObj(data.ml)) data.ml = absentPart();
-            if (!isObj(data.gp)) data.gp = absentPart();
         }
+        if (withG && !isObj(data.gp)) data.gp = absentPart();
         if (!cleanZoomMarks(data.zb)) data.zb = [0, 0, 0];
         return data;
     }
@@ -280,6 +282,8 @@
             if (c) { out[p] = c; any = true; }
         }
         if (out.h) { var k = cleanKnown(b.k); if (k) out.k = k; }
+        /* phone preferences that did not exist (Undo / backups): restoring them removes the store */
+        if (isAbsent(b.m)) { out.m = absentPart(); any = true; }
         /* P0 fix: pass through mobile layouts (ml) and gamepad config (gp) without
          * a validator — they are opaque blobs validated by their own modules on load.
          * cleanBundle used to silently strip them because PART_FNS only knew s/t/h/m. */
@@ -389,13 +393,20 @@
         if (!a || !b) return rows;
         labelFn = typeof labelFn === 'function' ? labelFn : function (p, k) { return k; };
         ['s', 't', 'm'].forEach(function (p) {
-            if (!isObj(a[p]) || !isObj(b[p])) return;
+            if (p === 'm' && isAbsent(b.m)) {
+                /* back to "no phone preferences saved": a change only when some are saved now */
+                if (isObj(a.m) && !isAbsent(a.m) && Object.keys(a.m).length) rows.push({ part: 'm', key: 'm', label: labelFn('m', 'm'), a: a.m, b: null });
+                return;
+            }
+            /* phone preferences never saved on this device yet: every value of the set is new */
+            var ap = p === 'm' && (!isObj(a.m) || isAbsent(a.m)) ? {} : a[p];
+            if (!isObj(ap) || !isObj(b[p])) return;
             var part = [];
             for (var k in b[p]) {
                 if (!own.call(b[p], k)) continue;
                 /* P1 fix: include keys that exist in the profile but not in current settings —
                  * new profile options should be applied, not silently skipped */
-                var av = own.call(a[p], k) ? a[p][k] : undefined;
+                var av = own.call(ap, k) ? ap[k] : undefined;
                 if (!same(av, b[p][k])) part.push({ part: p, key: k, label: labelFn(p, k), a: av, b: b[p][k] });
             }
             part.sort(function (x, y) { return String(x.label).localeCompare(String(y.label)); });
@@ -603,7 +614,7 @@
         }
         if (parts.m !== false) data.m = readJSON('lm-mobile-prefs');
         if (parts.m !== false) data.ml = readJSON('lm-mobile-layouts');
-        if (parts.m !== false) data.gp = readJSON('lmGamepad');
+        if (parts.g !== false) data.gp = readJSON('lmGamepad');
         /* P2 fix #97: include zoom bookmarks in the profile snapshot */
         data.zb = readJSON('lm-zoom-bookmarks');
         /* the active HUD layout (backups and Undo; a profile brings one only through its link) */
@@ -612,7 +623,7 @@
             try { if (HE && typeof HE.active === 'function') data.hl = HE.active() || ''; } catch (e) { }
         }
         if (sData && sData.performanceMode === true) data.pb = readJSON('lmPerfBackup');
-        if (parts.explicit) markMissing(data, parts.m !== false);
+        if (parts.explicit) markMissing(data, parts.m !== false, parts.g !== false);
         else if (noZoomMarks(cleanZoomMarks(data.zb))) delete data.zb;
         return cleanBundle(data);
     }
@@ -781,7 +792,8 @@
         if (c.s) entries.push({ key: 'ogarioSettings', text: JSON.stringify(isRestore ? Object.assign({}, data.s) : Object.assign({}, cur.s, data.s)) });
         if (c.t) entries.push({ key: 'ogarioThemeSettings', text: JSON.stringify(isRestore ? Object.assign({}, data.t) : Object.assign({}, cur.t, data.t)) });
         if (c.h) entries.push({ key: 'ogarioHotkeys', text: JSON.stringify(data.h) });
-        if (c.m) entries.push({ key: 'lm-mobile-prefs', text: JSON.stringify(isRestore ? Object.assign({}, data.m) : Object.assign({}, cur.m || {}, data.m)) });
+        var curM = isObj(cur.m) && !isAbsent(cur.m) ? cur.m : {};
+        if (c.m) entries.push({ key: 'lm-mobile-prefs', text: isAbsent(data.m) ? null : JSON.stringify(isRestore ? Object.assign({}, data.m) : Object.assign({}, curM, data.m)) });
         /* P0 fix: write mobile layouts and gamepad config when present in the profile */
         if (c.ml) entries.push({ key: 'lm-mobile-layouts', text: isAbsent(data.ml) ? null : JSON.stringify(data.ml) });
         if (c.gp) entries.push({ key: 'lmGamepad', text: isAbsent(data.gp) ? null : JSON.stringify(data.gp) });
@@ -870,6 +882,13 @@
             if (c.gp && window.LMGamepad) {
                 var G = window.LMGamepad;
                 try { if (typeof G.release === 'function') G.release(); if (typeof G._reload === 'function') G._reload(); else reload = true; } catch (e) { reload = true; }
+            }
+            /* phone preferences: the phone controls read them again and apply them now (an older
+             * cached LMmobile.js without that call: from the next load) */
+            if (c.m) {
+                var MH = window._lmMobileHost;
+                if (MH && typeof MH.reloadPrefs === 'function') { try { MH.reloadPrefs(); } catch (e) { reload = true; } }
+                else if (MH) reload = true;
             }
             /* phone control layout: placed again by the control editor; without it loaded (no
              * layout before) it is used from the next load */
@@ -1164,7 +1183,7 @@
     }
     var includeOpts = null;
     function includes() {
-        if (!includeOpts) includeOpts = { t: true, h: true, m: !!readJSON('lm-mobile-prefs') };
+        if (!includeOpts) includeOpts = { t: true, h: true, m: !!readJSON('lm-mobile-prefs'), g: !!readJSON('lmGamepad') };
         return includeOpts;
     }
     function render() {
@@ -1192,7 +1211,7 @@
         btn(tx('saveCurrent'), 'save', null, 'lm-sp-go').appendTo(r1);
         var r2 = $('<div class="lm-sp-row"></div>').appendTo(body);
         $('<span></span>').text(tx('include')).appendTo(r2);
-        [['t', 'partT'], ['h', 'partH'], ['m', 'partM']].forEach(function (p) {
+        [['t', 'partT'], ['h', 'partH'], ['m', 'partM'], ['g', 'partGP']].forEach(function (p) {
             var l = $('<label></label>').appendTo(r2);
             $('<input type="checkbox">').attr('data-inc', p[0]).prop('checked', !!inc[p[0]]).appendTo(l);
             l.append(document.createTextNode(tx(p[1])));
@@ -1352,7 +1371,7 @@
             var name = cleanName($('#lm-sp-name').val());
             if (!name) { toast('info', esc(tx('needName'))); $('#lm-sp-name').focus(); return; }
             var inc = includes();
-            var data = captureCurrent({ t: inc.t, h: inc.h, m: inc.m, hl: false });
+            var data = captureCurrent({ t: inc.t, h: inc.h, m: inc.m, g: inc.g, hl: false });
             if (!data) return;
             var np = { id: newId(), name: uniqueName(name, list), created: now, updated: now, data: data };
             list.push(np);
@@ -1375,7 +1394,7 @@
             applyProfile(p);
         } else if (a === 'update' && p) {
             if (!window.confirm(tx('confirmUpdate', p.name))) return;
-            p.data = captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!p.data.m, hl: false }) || p.data;
+            p.data = captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!p.data.m, g: !!p.data.gp, hl: false }) || p.data;
             p.updated = now;
             if (saveProfiles(list)) toast('success', esc(tx('saved', p.name)));
         } else if (a === 'rename' && p) {

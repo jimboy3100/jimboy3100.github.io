@@ -508,30 +508,38 @@
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
         var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false };
-        try {
-            var saved = JSON.parse(localStorage.getItem(PREF_KEY));
-            if (saved) {
-                /* numbers within their slider's range (a settings import can bring these too):
-                 * a string or NaN here broke the button layout */
-                var num = function (v, min, max, def) {
-                    v = typeof v === 'string' && v.trim() !== '' ? Number(v) : v;
-                    return typeof v === 'number' && isFinite(v) ? Math.min(max, Math.max(min, v)) : def;
-                };
-                if (saved.jsSensitivity !== undefined) prefs.jsSensitivity = num(saved.jsSensitivity, 100, 600, prefs.jsSensitivity);
-                if (saved.btnOpacity !== undefined) prefs.btnOpacity = num(saved.btnOpacity, 0.2, 1, prefs.btnOpacity);
-                if (saved.btnScale !== undefined) prefs.btnScale = num(saved.btnScale, 0.5, 1.5, prefs.btnScale);
-                if (saved.hudFade !== undefined) prefs.hudFade = num(saved.hudFade, 0, 1, prefs.hudFade);
-                if (saved.targetMode !== undefined) prefs.targetMode = !!saved.targetMode;
-                if (saved.swipeSplit !== undefined) prefs.swipeSplit = !!saved.swipeSplit;
-                if (saved.muteVibration !== undefined) prefs.muteVibration = !!saved.muteVibration;
-                if (saved.tapHaptic !== undefined) prefs.tapHaptic = !!saved.tapHaptic;
-                if (saved.quickCmds !== undefined) prefs.quickCmds = !!saved.quickCmds;
-                if (saved.mbButton !== undefined) prefs.mbButton = !!saved.mbButton;
-                if (saved.stopOnRelease !== undefined) prefs.stopOnRelease = !!saved.stopOnRelease;
-                if (saved.pingBtn !== undefined) prefs.pingBtn = !!saved.pingBtn;
-                if (saved.netGraph !== undefined) prefs.netGraph = !!saved.netGraph;
-            }
-        } catch (e) { }
+        /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
+         * settings profile or its Undo that removed the store) falls back to its default */
+        var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
+        /* reads lm-mobile-prefs into the same prefs object (the host API hands it out) */
+        function readPrefs() {
+            for (var dk in PREF_DEFAULTS) if (Object.prototype.hasOwnProperty.call(PREF_DEFAULTS, dk)) prefs[dk] = PREF_DEFAULTS[dk];
+            try {
+                var saved = JSON.parse(localStorage.getItem(PREF_KEY));
+                if (saved) {
+                    /* numbers within their slider's range (a settings import can bring these too):
+                     * a string or NaN here broke the button layout */
+                    var num = function (v, min, max, def) {
+                        v = typeof v === 'string' && v.trim() !== '' ? Number(v) : v;
+                        return typeof v === 'number' && isFinite(v) ? Math.min(max, Math.max(min, v)) : def;
+                    };
+                    if (saved.jsSensitivity !== undefined) prefs.jsSensitivity = num(saved.jsSensitivity, 100, 600, prefs.jsSensitivity);
+                    if (saved.btnOpacity !== undefined) prefs.btnOpacity = num(saved.btnOpacity, 0.2, 1, prefs.btnOpacity);
+                    if (saved.btnScale !== undefined) prefs.btnScale = num(saved.btnScale, 0.5, 1.5, prefs.btnScale);
+                    if (saved.hudFade !== undefined) prefs.hudFade = num(saved.hudFade, 0, 1, prefs.hudFade);
+                    if (saved.targetMode !== undefined) prefs.targetMode = !!saved.targetMode;
+                    if (saved.swipeSplit !== undefined) prefs.swipeSplit = !!saved.swipeSplit;
+                    if (saved.muteVibration !== undefined) prefs.muteVibration = !!saved.muteVibration;
+                    if (saved.tapHaptic !== undefined) prefs.tapHaptic = !!saved.tapHaptic;
+                    if (saved.quickCmds !== undefined) prefs.quickCmds = !!saved.quickCmds;
+                    if (saved.mbButton !== undefined) prefs.mbButton = !!saved.mbButton;
+                    if (saved.stopOnRelease !== undefined) prefs.stopOnRelease = !!saved.stopOnRelease;
+                    if (saved.pingBtn !== undefined) prefs.pingBtn = !!saved.pingBtn;
+                    if (saved.netGraph !== undefined) prefs.netGraph = !!saved.netGraph;
+                }
+            } catch (e) { }
+        }
+        readPrefs();
         function savePrefs() {
             try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) { }
         }
@@ -825,6 +833,27 @@
 
         /* apply initial prefs */
         applyPrefs();
+        /* lm-mobile-prefs changed from outside (settings profile, its Undo, an import): read it
+         * again and apply all of it at once, including the switches of this panel */
+        function reloadPrefs() {
+            readPrefs();
+            var q = function (id) { return sp.querySelector('#' + id); };
+            var setRange = function (id, v, label) { var el = q(id); if (el) el.value = v; var l = q(id + '-v'); if (l) l.textContent = label; };
+            setRange('lm-js', prefs.jsSensitivity, String(prefs.jsSensitivity));
+            setRange('lm-op', Math.round(prefs.btnOpacity * 100), Math.round(prefs.btnOpacity * 100) + '%');
+            setRange('lm-bs', Math.round(prefs.btnScale * 100), Math.round(prefs.btnScale * 100) + '%');
+            [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
+                ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode']
+            ].forEach(function (c) { var el = q(c[0]); if (el) el.checked = !!prefs[c[1]]; });
+            bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
+            if (prefs.targetMode) jHide();
+            buildQuickCmds();
+            buildMbButton();
+            buildPingButton();
+            syncNetGraph();
+            applyPrefs();
+            repositionButtons();
+        }
 
         /* ── Press effects ── */
         [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus, bRwd, bFwd].forEach(function (b) {
@@ -1658,6 +1687,8 @@
             setJoyZone: function (z) { joyZone = z || null; },
             setHook: function (fn) { layoutHook = typeof fn === 'function' ? fn : null; },
             reposition: function () { repositionButtons(); },
+            /* settings profiles: the stored preferences changed, apply them now */
+            reloadPrefs: function () { reloadPrefs(); },
             /* the editor covers the screen: no held feed, no joystick, the cell stops */
             pauseInput: function () {
                 feedStop();
