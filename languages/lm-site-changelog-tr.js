@@ -27,7 +27,7 @@
 "site.changelog.newEnemyMassRatio": "<span class=\"tag tag-new\">Yeni</span> <strong>Düşman kütle oranı</strong>, en büyük hücrene göre",
 "site.changelog.newScreenEdgeArrows": "<span class=\"tag tag-new\">Yeni</span> <strong>Ekran kenarı okları</strong> — ekrandan çıkan takım arkadaşlarını ve tehditleri gösterir",
 "site.changelog.newCellPanelMasses": "<span class=\"tag tag-new\">Yeni</span> <strong>Hücre paneli</strong> — kütleler, sayı/16, en büyük, en küçük, toplam",
-"site.changelog.newSettingsProfilesNamed": "<span class=\"tag tag-new\">Yeni</span> <strong>Ayar profilleri</strong> — şablonlu (FFA, Teams, Multibox, Streaming, Mobile, Competitive) adlandırılmış setler, sunucu türüne göre otomatik geçiş",
+"site.changelog.newSettingsProfilesNamed": "<span class=\"tag tag-new\">Yeni</span> <strong>Ayar profilleri</strong> — şablonlu (FFA, Takımlar, Multibox, Yayın, Mobil, Rekabetçi) adlandırılmış setler, sunucu türüne göre otomatik geçiş",
 "site.changelog.newAnalyticsDashboardGames": "<span class=\"tag tag-new\">Yeni</span> <strong>İstatistik paneli</strong> — oyunlar, en yüksek kütle, top-10 oranı, kütle/dk, ısı haritaları, puanlar ve önerilerle koçluk raporu",
 "site.changelog.newDailyObjectivesFrom": "<span class=\"tag tag-new\">Yeni</span> <strong>Günlük hedefler</strong> geçmişine göre, ilerleme çubukları ve tamamlama bildirimleriyle",
 "site.changelog.gamepadCustomizationBadges": "Gamepad özelleştirme ve rozetler",

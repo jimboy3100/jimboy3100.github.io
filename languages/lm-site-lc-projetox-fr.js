@@ -30,7 +30,7 @@
 "site.lc.projetox.assistants": "Assistants",
 "site.lc.projetox.moddersDevelopers": "Moddeurs et développeurs",
 "site.lc.projetox.clickToViewProjects": "Cliquez ici pour voir les projets",
-"site.lc.projetox.redFireImage": "Image de feu rouge",
+"site.lc.projetox.redFireImage": "Image de flammes rouges",
 "site.lc.projetox.newMemberPromotion": "Promotion de nouveaux membres",
 "site.lc.projetox.clickToSeeMore": "Cliquez ici pour en savoir plus",
 "site.lc.projetox.clanLoyalty": "Loyauté envers le clan",

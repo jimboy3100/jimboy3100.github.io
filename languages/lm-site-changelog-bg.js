@@ -27,7 +27,7 @@
 "site.changelog.newEnemyMassRatio": "<span class=\"tag tag-new\">Ново</span> <strong>Съотношение на масата на враговете</strong> спрямо най-голямата ти клетка",
 "site.changelog.newScreenEdgeArrows": "<span class=\"tag tag-new\">Ново</span> <strong>Стрелки в края на екрана</strong> към съотборници и заплахи, излезли от екрана",
 "site.changelog.newCellPanelMasses": "<span class=\"tag tag-new\">Ново</span> <strong>Панел на клетките</strong> — маси, брой/16, най-голяма, най-малка, общо",
-"site.changelog.newSettingsProfilesNamed": "<span class=\"tag tag-new\">Ново</span> <strong>Профили с настройки</strong> — именувани набори с шаблони (FFA, Teams, Multibox, Streaming, Mobile, Competitive), автоматично превключване според типа сървър",
+"site.changelog.newSettingsProfilesNamed": "<span class=\"tag tag-new\">Ново</span> <strong>Профили с настройки</strong> — именувани набори с шаблони (FFA, Отбори, Multibox, Стрийминг, Мобилно, Състезателно), автоматично превключване според типа сървър",
 "site.changelog.newAnalyticsDashboardGames": "<span class=\"tag tag-new\">Ново</span> <strong>Табло със статистика</strong> — игри, максимална маса, процент в топ 10, маса/мин, топлинни карти, треньорски отчет с оценки и съвети",
 "site.changelog.newDailyObjectivesFrom": "<span class=\"tag tag-new\">Ново</span> <strong>Дневни задачи</strong> според историята ти, с ленти за напредък и известия при изпълнение",
 "site.changelog.gamepadCustomizationBadges": "Персонализиране на геймпада и значки",

@@ -5,7 +5,7 @@
 "site.faq.answersToTheMost": "關於 Legend Mod 最常見問題的解答：安裝、巨集、造型、疑難排解等。",
 "site.faq.gettingStarted": "🚀 快速入門",
 "site.faq.whatIsLegendMod": "什麼是 Legend Mod？它如何提升 agar.io 的遊戲體驗？",
-"site.faq.legendModIsThe": "Legend Mod 是功能最豐富的免費 agar.io 擴充功能。它新增了 <strong>60 多種巨集</strong>（tricksplit、doublesplit、popsplit、快速餵食、cannon split、凍結細胞）、支援動畫/影片的<strong>自訂造型</strong>、搭配 WASM 加速的<strong>防延遲 FPS 提升</strong>、隊伍聊天、小地圖、多開（multibox）、遊戲手把支援等更多功能。可在 Chrome、Edge、Firefox、Opera、Brave 以及行動瀏覽器上使用。",
+"site.faq.legendModIsThe": "Legend Mod 是功能最豐富的免費 agar.io 擴充功能。它新增了 <strong>60 多種巨集</strong>（tricksplit、doublesplit、popsplit、快速吐球、cannon split、凍結細胞）、支援動畫/影片的<strong>自訂造型</strong>、搭配 WASM 加速的<strong>防延遲 FPS 提升</strong>、隊伍聊天、小地圖、多開（multibox）、遊戲手把支援等更多功能。可在 Chrome、Edge、Firefox、Opera、Brave 以及行動瀏覽器上使用。",
 "site.faq.howDoIInstall": "如何安裝 Legend Mod？",
 "site.faq.forChromeEdgeBrave": "<strong>Chrome/Edge/Brave</strong>：從 Chrome 線上應用程式商店安裝 <a href=\"https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja\">「Legend Express」</a>。<strong>Firefox/Opera</strong>：先安裝 Tampermonkey，再加入 Legend Mod 使用者腳本。<strong>行動裝置</strong>：用手機開啟 <a href=\"https://www.legendmod.ml/play.html\">www.legendmod.ml/play.html</a>（觸控操作會自動載入），或在 Android 版 Firefox 或 Orion（iOS）上搭配 Tampermonkey 使用。",
 "site.faq.isLegendModFree": "Legend Mod 是免費的嗎？",
@@ -14,11 +14,11 @@
 "site.faq.yesLegendModIs2": "是的，Legend Mod 完全安全。它<strong>100% 開源</strong>，完整原始碼都在 GitHub 上。它透過官方 Chrome 線上應用程式商店發佈，商店會掃描擴充功能是否含有惡意軟體。Legend Mod 不會收集個人資料、不會插入廣告，也不會更改你的瀏覽器設定。",
 "site.faq.macrosControls": "🎮 巨集與操作",
 "site.faq.whatMacrosDoesLegend": "Legend Mod 支援哪些巨集？",
-"site.faq.legendModSupports60": "Legend Mod 支援 <strong>60 多種巨集</strong>，包括：Tricksplit、Doublesplit、Popsplit、Cannon Split、快速餵食（連按 W）、凍結細胞、自動重生、自動領金幣、反向移動、Line Split 等等。所有巨集都可以自訂，你可以在「設定 → 快速鍵」中重新綁定任何按鍵。",
+"site.faq.legendModSupports60": "Legend Mod 支援 <strong>60 多種巨集</strong>，包括：Tricksplit、Doublesplit、Popsplit、Cannon Split、快速吐球（連按 W）、凍結細胞、自動重生、自動領金幣、反向移動、Line Split 等等。所有巨集都可以自訂，你可以在「設定 → 快速鍵」中重新綁定任何按鍵。",
 "site.faq.howDoIUse": "如何在 Legend Mod 中使用多開（multibox）？",
-"site.faq.multiboxGivesYouA": "多開功能讓你在同一個分頁中擁有第二個單位。在「設定 → 快速鍵」中為 <strong>Multibox Toggle Next</strong> 設定一個按鍵：按下後會啟動第二個單位，之後可在兩個細胞之間切換控制。MultiBox 選項可以讓視角顯示兩個單位的中間位置、在單位周圍畫出圓環並凍結未使用的單位，而且每個單位都能使用自己的造型設定檔。",
+"site.faq.multiboxGivesYouA": "多開功能讓你在同一個分頁中擁有第二個單位。在「設定 → 快速鍵」中為 <strong>Multibox 切換下一個</strong> 設定一個按鍵：按下後會啟動第二個單位，之後可在兩個細胞之間切換控制。MultiBox 選項可以讓視角顯示兩個單位的中間位置、在單位周圍畫出圓環並凍結未使用的單位，而且每個單位都能使用自己的造型設定檔。",
 "site.faq.doesLegendModSupport": "Legend Mod 支援遊戲手把嗎？",
-"site.faq.yesLegendModIs3": "支援！Legend Mod 是唯一具備<strong>遊戲手把支援</strong>的 agar.io 擴充功能。在滑鼠控制設定中開啟 <strong>Gamepad / controller support</strong>（預設為關閉），再連接 Xbox、PlayStation 或其他瀏覽器以標準配置辨識的手把即可。左搖桿移動、右搖桿縮放、A 分裂、X 雙重分裂、RB 分裂 16 次、B 餵食（按住）、Y 重生、LB 切換多開單位，Start 開啟選單。",
+"site.faq.yesLegendModIs3": "支援！Legend Mod 是唯一具備<strong>遊戲手把支援</strong>的 agar.io 擴充功能。在滑鼠控制設定中開啟 <strong>遊戲手把 / 控制器支援</strong>（預設為關閉），再連接 Xbox、PlayStation 或其他瀏覽器以標準配置辨識的手把即可。左搖桿移動、右搖桿縮放、A 分裂、X 雙重分裂、RB 分裂 16 次、B 吐球（按住）、Y 重生、LB 切換多開單位，Start 開啟選單。",
 "site.faq.skinsVisuals": "🎨 造型與視覺",
 "site.faq.howDoIAdd": "如何新增自訂造型？",
 "site.faq.openTheLegendMod": "開啟 Legend Mod 設定 → 造型分頁。你可以：1) 貼上任何圖片網址作為造型。2) 上傳自己的圖片檔。3) 使用<strong>造型輪播器</strong>循環切換多個造型。4) 新增 GIF 動畫或影片造型（Legend Mod 獨家）。5) 到 <a href=\"/skins/\">legendmod.ml/skins</a> 瀏覽社群造型。",
@@ -26,11 +26,11 @@
 "site.faq.whyIsLegendMod": "為什麼 agar.io 更新後 Legend Mod 無法運作？",
 "site.faq.whenAgarIoUpdates": "agar.io 更新用戶端時，Legend Mod 可能需要相容性更新。請嘗試：1) 在 <code>chrome://extensions</code> 檢查擴充功能更新。2) 清除瀏覽器快取（Ctrl+Shift+Delete）。3) 停用後再重新啟用擴充功能。4) 從 Chrome 線上應用程式商店重新安裝。更新通常會在 24 小時內推出。",
 "site.faq.howDoIFix": "如何解決 agar.io 的延遲問題？",
-"site.faq.legendModHasBuilt": "Legend Mod 內建防延遲功能：1) 在設定中開啟「Performance mode (weak PCs/phones)」，或在設定搜尋框旁選擇 <strong>Battery saver</strong> 預設。2) 停用動畫與影片造型。3) 設定 FPS 上限，並開啟「25 FPS while the menu is open」，以減少發熱並節省電量。4) 使用顯示/隱藏食物快速鍵或自動隱藏食物選項隱藏食物。5) WASM 加速與 WebGL 繪製預設為開啟。6) 關閉其他瀏覽器分頁。7) 使用有線網路而非 Wi-Fi。",
+"site.faq.legendModHasBuilt": "Legend Mod 內建防延遲功能：1) 在設定中開啟「效能模式（低階電腦/手機）」，或在設定搜尋框旁選擇 <strong>省電</strong> 預設。2) 停用動畫與影片造型。3) 設定 FPS 上限，並開啟「選單開啟時 25 FPS」，以減少發熱並節省電量。4) 使用顯示/隱藏食物快速鍵或自動隱藏食物選項隱藏食物。5) WASM 加速與 WebGL 繪製預設為開啟。6) 關閉其他瀏覽器分頁。7) 使用有線網路而非 Wi-Fi。",
 "site.faq.servers": "🌐 伺服器",
 "site.faq.doesLegendModWork": "Legend Mod 能在 Sigmally 和 Senpa.io 上使用嗎？",
 "site.faq.yesLegendModIs4": "可以！Legend Mod 是<strong>唯一支援多個遊戲伺服器的 agar.io 擴充功能</strong>：官方 agar.io、Sigmally 和 Senpa.io。所有巨集、造型與功能在所有支援的伺服器上都能使用。你也可以在 <strong>Expanding Land</strong> 上遊玩，這是 Legend Mod 自己的私人伺服器，最多可容納 720 名玩家，網址為 <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>。",
 "site.faq.whatIsExpandingLand": "什麼是 Expanding Land？",
-"site.faq.expandingLandIsAn": "Expanding Land 是獨立的多人瀏覽器細胞遊戲，圓形地圖會擴張與收縮。真人玩家與伺服器機器人的數量因競技場而異。 <a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>."
+"site.faq.expandingLandIsAn": "Expanding Land 是獨立的多人瀏覽器細胞遊戲，圓形地圖會擴張與收縮。真人玩家與伺服器機器人的數量因競技場而異。<a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>。"
 }]);
 if (window.LMi18n && window.LMi18n._drain) window.LMi18n._drain();

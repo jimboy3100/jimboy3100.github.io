@@ -13,10 +13,10 @@
     "tr": "LegendMod",
     "pl": "LegendMod",
     "nl": "LegendMod",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "LegendMod",
+    "id": "LegendMod",
+    "ja": "LegendMod",
+    "it": "LegendMod"
   },
   "site.lc.auth.discordLinked": {
     "en": "✅ Discord Linked!",
@@ -31,10 +31,10 @@
     "tr": "✅ Discord Bağlandı!",
     "pl": "✅ Discord połączony!",
     "nl": "✅ Discord gekoppeld!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "✅ Discord vinculado!",
+    "id": "✅ Discord berhasil terhubung!",
+    "ja": "✅ Discordとの連携が完了しました！",
+    "it": "✅ Discord collegato!"
   },
   "site.lc.auth.closingThisWindow": {
     "en": "Closing this window...",
@@ -49,10 +49,10 @@
     "tr": "Bu pencere kapatılıyor...",
     "pl": "Zamykanie okna...",
     "nl": "Dit venster wordt gesloten...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Fechando esta janela...",
+    "id": "Menutup jendela ini...",
+    "ja": "このウィンドウを閉じています…",
+    "it": "Chiusura della finestra in corso..."
   },
   "site.lc.auth.ifThisWindowDoesn": {
     "en": "If this window doesn't close, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Close Window</a>",
@@ -66,11 +66,11 @@
     "de": "Falls sich dieses Fenster nicht schließt: <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Fenster schließen</a>",
     "tr": "Bu pencere kapanmazsa: <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Pencereyi Kapat</a>",
     "pl": "Jeśli to okno się nie zamknie, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Zamknij okno</a>",
-    "nl": "Sluit dit venster niet vanzelf, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">sluit venster</a>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Gaat dit venster niet vanzelf dicht? <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Venster sluiten</a>",
+    "pt": "Se esta janela não fechar, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Fechar janela</a>",
+    "id": "Kalau jendela ini tidak tertutup sendiri, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Tutup Jendela</a>",
+    "ja": "このウィンドウが閉じない場合は、こちらをクリックしてください：<a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">ウィンドウを閉じる</a>",
+    "it": "Se questa finestra non si chiude, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Chiudi finestra</a>"
   },
   "site.lc.auth.loginFailed": {
     "en": "Login Failed",
@@ -85,10 +85,10 @@
     "tr": "Giriş Başarısız",
     "pl": "Logowanie nie powiodło się",
     "nl": "Inloggen mislukt",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha no login",
+    "id": "Gagal masuk",
+    "ja": "ログインに失敗しました",
+    "it": "Accesso non riuscito"
   },
   "site.lc.auth.backToGame": {
     "en": "Back to Game",
@@ -103,10 +103,10 @@
     "tr": "Oyuna Dön",
     "pl": "Wróć do gry",
     "nl": "Terug naar de game",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Voltar ao jogo",
+    "id": "Kembali ke Game",
+    "ja": "ゲームに戻る",
+    "it": "Torna al gioco"
   },
   "site.lc.auth.noCode": {
     "en": "No authorization code received.",
@@ -121,9 +121,9 @@
     "tr": "Yetkilendirme kodu alınmadı.",
     "pl": "Nie otrzymano kodu autoryzacji.",
     "nl": "Geen autorisatiecode ontvangen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nenhum código de autorização recebido.",
+    "id": "Kode otorisasi tidak diterima.",
+    "ja": "認証コードを受け取れませんでした。",
+    "it": "Nessun codice di autorizzazione ricevuto."
   }
 }

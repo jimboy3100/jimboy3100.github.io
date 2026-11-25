@@ -27,7 +27,7 @@
 "site.changelog.newEnemyMassRatio": "<span class=\"tag tag-new\">Nowość</span> <strong>Stosunek masy wrogów</strong> względem twojej największej komórki",
 "site.changelog.newScreenEdgeArrows": "<span class=\"tag tag-new\">Nowość</span> <strong>Strzałki na krawędzi ekranu</strong> wskazujące członków drużyny i zagrożenia, które zniknęły z ekranu",
 "site.changelog.newCellPanelMasses": "<span class=\"tag tag-new\">Nowość</span> <strong>Panel komórek</strong> — masy, liczba/16, największa, najmniejsza, suma",
-"site.changelog.newSettingsProfilesNamed": "<span class=\"tag tag-new\">Nowość</span> <strong>Profile ustawień</strong> — nazwane zestawy z szablonami (FFA, Teams, Multibox, Streaming, Mobile, Competitive), automatyczne przełączanie według typu serwera",
+"site.changelog.newSettingsProfilesNamed": "<span class=\"tag tag-new\">Nowość</span> <strong>Profile ustawień</strong> — nazwane zestawy z szablonami (FFA, Drużyny, Multibox, Streaming, Mobilny, Rywalizacja), automatyczne przełączanie według typu serwera",
 "site.changelog.newAnalyticsDashboardGames": "<span class=\"tag tag-new\">Nowość</span> <strong>Panel statystyk</strong> — gry, maksymalna masa, odsetek top-10, masa/min, mapy cieplne, raport trenerski z ocenami i wskazówkami",
 "site.changelog.newDailyObjectivesFrom": "<span class=\"tag tag-new\">Nowość</span> <strong>Codzienne cele</strong> na podstawie twojej historii, z paskami postępu i powiadomieniami o ukończeniu",
 "site.changelog.gamepadCustomizationBadges": "Personalizacja pada i odznaki",

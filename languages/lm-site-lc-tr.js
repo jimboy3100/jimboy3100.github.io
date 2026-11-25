@@ -374,7 +374,7 @@
 "site.lc.playersBetween20008000": "2000-8000 arası oyuncular split ile düşmanı yemeli, virüse split atıp küçük takım arkadaşlarına mass vermeli ve çok küçüklere W atmalı.",
 "site.lc.theyAlsoHaveTo": "Ayrıca en büyük hücreyle değil, kendi parçalarıyla merge olmalılar. 8000'den büyük mass'a sahip oyuncular küçüklere W atmamalı ve çok küçükleri beslememeli.",
 "site.lc.ifTheyAreSpit": "Bir virüs atıcı tarafından patlatılırlarsa küçük parçalarını bir takım arkadaşına verirler.",
-"site.lc.theVeryMassivePlayers": "Çok büyük oyuncular, 16'ya split atmadan önce \"önce\" split atılacak bir düşman bulmaya çalışsın.",
+"site.lc.theVeryMassivePlayers": "Çok büyük oyuncular, 16'ya split atmadan önce split atılacak bir düşman bulmayı \"denesin\".",
 "site.lc.tryNotToGet": "ANTI yememeye ve klanın mass'ını kaybetmemeye çalış. Anti-Team, hücrenin küçülmeye başlamasıdır.",
 "site.lc.theseAreCommonMistakes": "Oyuncuları Anti'ye sokan yaygın hatalar şunlar:",
 "site.lc.splittingTooQuicklyFfa": "1. Çok hızlı split atmak. FFA yavaş oyun için tasarlanmıştır. Split atıp takım arkadaşına merge olup çok sık tekrar split atarsan Anti yersin.",

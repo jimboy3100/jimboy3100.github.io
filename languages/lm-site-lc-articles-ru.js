@@ -177,7 +177,7 @@
 "site.lc.articles.existanceIsDueTo": "℄ существует благодаря нашим героям",
 "site.lc.articles.andHereWeAre": "И вот мы здесь!",
 "site.lc.articles.legendClanFacebook": "Facebook Legend clan",
-"site.lc.articles.joinPartyModeLegend": "Вступайте в Legend clan режима Party",
+"site.lc.articles.joinPartyModeLegend": "Вступайте в Legend clan в режиме Party",
 "site.lc.articles.addLiveJan3828": "Добавьте <b>live:jan_3828</b> в SKYPE, чтобы сразу вступить",
 "site.lc.articles.legendClanFacebookWww": "Facebook Legend Clan: <br> <a href=\"https://www.facebook.com/Lcclan/\" target=\"_blank\" id= \"TermsOfUseLicence\" class=\"title\" style=\"\" rel=\"noopener\"><br> <u style=\"color:black; font-size:22px\"><i>www.facebook.com/Lcclan/</i></u></a>",
 "site.lc.articles.legendClanWebsiteWww": "Сайт Legend Clan: <br> <a href=\"http://legendclan.ml\" target=\"_blank\" id= \"TermsOfUseLicence\" class=\"title\" style=\"\" rel=\"noopener\"><br> <u style=\"color:black; font-size:22px\"><i>www.legendclan.ml</i></u></a>",

@@ -12,10 +12,10 @@
     "tr": "Tüm <span class=\"accent\">Legend Mod</span> Özellikleri",
     "pl": "Wszystkie funkcje <span class=\"accent\">Legend Mod</span>",
     "nl": "Alle functies van <span class=\"accent\">Legend Mod</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Todos os recursos do <span class=\"accent\">Legend Mod</span>",
+    "id": "Semua Fitur <span class=\"accent\">Legend Mod</span>",
+    "ja": "<span class=\"accent\">Legend Mod</span>の全機能",
+    "it": "Tutte le funzioni di <span class=\"accent\">Legend Mod</span>"
   },
   "site.features.theMostFeatureRich": {
     "en": "The most feature-rich agar.io extension. Every tool a competitive player needs — macros, skins, performance, teamwork, and multi-server support.",
@@ -30,17 +30,17 @@
     "tr": "En çok özelliğe sahip agar.io eklentisi. Rekabetçi bir oyuncunun ihtiyaç duyduğu her araç: makrolar, skinler, performans, takım çalışması ve çoklu sunucu desteği.",
     "pl": "Najbogatsze w funkcje rozszerzenie do agar.io. Każde narzędzie, którego potrzebuje gracz rywalizujący — makra, skiny, wydajność, gra zespołowa i obsługa wielu serwerów.",
     "nl": "De agar.io-extensie met de meeste functies. Elke tool die een competitieve speler nodig heeft — macro's, skins, prestaties, teamwork en ondersteuning voor meerdere servers.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A extensão de agar.io com mais recursos. Todas as ferramentas que um jogador competitivo precisa: macros, skins, desempenho, trabalho em equipe e suporte a vários servidores.",
+    "id": "Ekstensi agar.io dengan fitur terlengkap. Semua yang dibutuhkan pemain kompetitif ada di sini — macro, skin, performa, kerja sama tim, dan dukungan banyak server.",
+    "ja": "最も機能が充実したagar.io拡張機能。マクロ、スキン、パフォーマンス、チームプレイ、複数サーバー対応など、ガチ勢に必要なツールがすべてそろっています。",
+    "it": "L'estensione per agar.io con più funzioni in assoluto. Tutto ciò che serve a un giocatore competitivo: macro, skin, prestazioni, gioco di squadra e supporto multi-server."
   },
   "site.features.macrosHotkeys": {
     "en": "60+ Macros & Hotkeys",
-    "el": "60+ Macros & Hotkeys",
-    "es": "Más de 60 macros y hotkeys",
+    "el": "60+ macros & πλήκτρα συντόμευσης",
+    "es": "Más de 60 macros y atajos",
     "bg": "60+ макроса и клавиши",
-    "fr": "Plus de 60 macros et hotkeys",
+    "fr": "Plus de 60 macros et raccourcis",
     "ar": "أكثر من 60 ماكرو ومفتاح اختصار",
     "zh": "60 多種巨集與快速鍵",
     "ru": "60+ макросов и горячих клавиш",
@@ -48,10 +48,10 @@
     "tr": "60+ Makro ve Kısayol Tuşu",
     "pl": "60+ makr i skrótów klawiszowych",
     "nl": "60+ macro's & sneltoetsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Mais de 60 macros e atalhos",
+    "id": "60+ Macro & Hotkey",
+    "ja": "60種類以上のマクロとショートカットキー",
+    "it": "Oltre 60 macro e tasti rapidi"
   },
   "site.features.everyCompetitiveMoveAt": {
     "en": "Every competitive move at your fingertips. Fully customizable keybinds.",
@@ -66,10 +66,10 @@
     "tr": "Her rekabetçi hamle parmaklarınızın ucunda. Tamamen özelleştirilebilir tuş atamaları.",
     "pl": "Każdy ruch na wyciągnięcie ręki. W pełni konfigurowalne klawisze.",
     "nl": "Elke competitieve move binnen handbereik. Volledig aanpasbare toetsen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Todas as jogadas competitivas na ponta dos dedos. Teclas totalmente personalizáveis.",
+    "id": "Semua gerakan kompetitif ada di ujung jarimu. Tombol bisa diatur sesukamu.",
+    "ja": "対戦で使うテクニックをすべて指先ひとつで。キー割り当ては自由にカスタマイズできます。",
+    "it": "Ogni mossa competitiva a portata di dita. Tasti completamente personalizzabili."
   },
   "site.features.tricksplitDoublesplitPopsplit": {
     "en": "Tricksplit, Doublesplit, Popsplit",
@@ -84,10 +84,10 @@
     "tr": "Tricksplit, Doublesplit, Popsplit",
     "pl": "Tricksplit, Doublesplit, Popsplit",
     "nl": "Tricksplit, Doublesplit, Popsplit",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tricksplit, Doublesplit, Popsplit",
+    "id": "Tricksplit, Double split, Popsplit",
+    "ja": "トリックスプリット、ダブル分裂、ポップスプリット",
+    "it": "Tricksplit, Doublesplit, Popsplit"
   },
   "site.features.cannonSplitLineSplit": {
     "en": "Cannon Split, Line Split",
@@ -102,46 +102,46 @@
     "tr": "Cannon Split, Line Split",
     "pl": "Cannon Split, Line Split",
     "nl": "Cannon Split, Line Split",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Cannon Split, Line Split",
+    "id": "Cannon Split, Line Split",
+    "ja": "キャノンスプリット、ラインスプリット",
+    "it": "Cannon Split, Line Split"
   },
   "site.features.quickFeedingWSpam": {
     "en": "Quick Feeding (W spam)",
-    "el": "Γρήγορο τάισμα (W spam)",
-    "es": "Alimentación rápida (W spam)",
+    "el": "Γρήγορο feed (W spam)",
+    "es": "Feed rápido (W spam)",
     "bg": "Бързо хранене (W spam)",
-    "fr": "Nourrissage rapide (W spam)",
+    "fr": "Feed rapide (W spam)",
     "ar": "التغذية السريعة (تكرار W)",
-    "zh": "快速餵食（連按 W)",
+    "zh": "快速吐球（連按 W）",
     "ru": "Быстрое кормление (W spam)",
-    "de": "Quick Feeding (W-Spam)",
+    "de": "Schnelles Feeden (W-Spam)",
     "tr": "Hızlı Besleme (W spam)",
     "pl": "Szybkie karmienie (W spam)",
     "nl": "Quick Feeding (W-spam)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Feed rápido (spam de W)",
+    "id": "Feed Cepat (spam W)",
+    "ja": "高速質量放出（W連打）",
+    "it": "Feed rapido (spam di W)"
   },
   "site.features.freezeCellAutoRespawn": {
     "en": "Freeze Cell, Auto Respawn",
-    "el": "Πάγωμα κελιού, Αυτόματο respawn",
+    "el": "Πάγωμα κυττάρου, Αυτόματο respawn",
     "es": "Congelar célula, reaparición automática",
     "bg": "Замразяване на клетка, автоматично възраждане",
     "fr": "Gel de cellule, respawn automatique",
-    "ar": "تجميد الخلية والإحياء التلقائي",
+    "ar": "تجميد الخلية وإعادة الظهور التلقائية",
     "zh": "凍結細胞、自動重生",
     "ru": "Заморозка клетки, автовозрождение",
-    "de": "Freeze Cell, Auto Respawn",
+    "de": "Zelle einfrieren, Auto-Respawn",
     "tr": "Hücre Dondurma, Otomatik Yeniden Doğma",
     "pl": "Zamrożenie komórki, automatyczne odrodzenie",
-    "nl": "Freeze Cell, Auto Respawn",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Cel bevriezen, automatische respawn",
+    "pt": "Congelar célula, Auto Respawn",
+    "id": "Bekukan Sel, Auto Respawn",
+    "ja": "セルの固定、自動リスポーン",
+    "it": "Blocca cellula, respawn automatico"
   },
   "site.features.reverseMovement": {
     "en": "Reverse Movement",
@@ -152,14 +152,14 @@
     "ar": "الحركة العكسية",
     "zh": "反向移動",
     "ru": "Обратное движение",
-    "de": "Reverse Movement",
+    "de": "Umgekehrte Bewegung",
     "tr": "Ters Hareket",
     "pl": "Odwrócony ruch",
-    "nl": "Reverse Movement",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Omgekeerde beweging",
+    "pt": "Movimento invertido",
+    "id": "Gerakan Terbalik",
+    "ja": "逆方向移動",
+    "it": "Movimento inverso"
   },
   "site.features.autoCoinsCustomPatterns": {
     "en": "Auto Coins, Custom Patterns",
@@ -170,14 +170,14 @@
     "ar": "جمع العملات التلقائي وأنماط مخصصة",
     "zh": "自動領金幣、自訂模式",
     "ru": "Автомонеты, свои шаблоны",
-    "de": "Auto Coins, eigene Muster",
+    "de": "Auto-Münzen, eigene Muster",
     "tr": "Otomatik Coin, Özel Desenler",
     "pl": "Automatyczne monety, własne wzorce",
     "nl": "Auto Coins, eigen patronen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Moedas automáticas, padrões personalizados",
+    "id": "Auto Koin, Pola Kustom",
+    "ja": "自動コイン、カスタムパターン",
+    "it": "Monete automatiche, pattern personalizzati"
   },
   "site.features.customAnimatedSkinsExclusive": {
     "en": "Custom & Animated Skins <span class=\"badge badge-exclusive\">Exclusive</span>",
@@ -192,10 +192,10 @@
     "tr": "Özel ve Animasyonlu Skinler <span class=\"badge badge-exclusive\">Özel</span>",
     "pl": "Własne i animowane skiny <span class=\"badge badge-exclusive\">Ekskluzywne</span>",
     "nl": "Eigen & geanimeerde skins <span class=\"badge badge-exclusive\">Exclusief</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins personalizadas e animadas <span class=\"badge badge-exclusive\">Exclusivo</span>",
+    "id": "Skin Kustom & Animasi <span class=\"badge badge-exclusive\">Eksklusif</span>",
+    "ja": "カスタムスキンとアニメーションスキン <span class=\"badge badge-exclusive\">独自機能</span>",
+    "it": "Skin personalizzate e animate <span class=\"badge badge-exclusive\">Esclusiva</span>"
   },
   "site.features.expressYourselfWithUnique": {
     "en": "Express yourself with unique skins no other mod supports.",
@@ -210,10 +210,10 @@
     "tr": "Başka hiçbir modun desteklemediği benzersiz skinlerle kendinizi ifade edin.",
     "pl": "Wyraź siebie unikalnymi skinami, których nie obsługuje żaden inny mod.",
     "nl": "Laat jezelf zien met unieke skins die geen andere mod ondersteunt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Mostre o seu estilo com skins únicas que nenhum outro mod suporta.",
+    "id": "Tunjukkan gayamu dengan skin unik yang tidak didukung mod lain.",
+    "ja": "ほかのModでは使えない個性的なスキンで、自分らしさを表現しましょう。",
+    "it": "Esprimi te stesso con skin uniche che nessun'altra mod supporta."
   },
   "site.features.imageUrlSkins": {
     "en": "Image URL skins",
@@ -228,10 +228,10 @@
     "tr": "Görsel URL'si skinleri",
     "pl": "Skiny z URL obrazka",
     "nl": "Skins via afbeeldings-URL",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins por URL de imagem",
+    "id": "Skin dari URL gambar",
+    "ja": "画像URLのスキン",
+    "it": "Skin da URL di immagini"
   },
   "site.features.animatedGifSkins": {
     "en": "Animated GIF skins",
@@ -246,10 +246,10 @@
     "tr": "Animasyonlu GIF skinler",
     "pl": "Animowane skiny GIF",
     "nl": "Geanimeerde GIF-skins",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins animadas em GIF",
+    "id": "Skin GIF animasi",
+    "ja": "GIFアニメーションスキン",
+    "it": "Skin GIF animate"
   },
   "site.features.videoSkinsMp4Webm": {
     "en": "Video skins (MP4/WebM)",
@@ -258,16 +258,16 @@
     "bg": "Видео скинове (MP4/WebM)",
     "fr": "Skins vidéo (MP4/WebM)",
     "ar": "سكنات فيديو (MP4/WebM)",
-    "zh": "影片造型（MP4/WebM)",
+    "zh": "影片造型（MP4/WebM）",
     "ru": "Видеоскины (MP4/WebM)",
     "de": "Video-Skins (MP4/WebM)",
     "tr": "Video skinler (MP4/WebM)",
     "pl": "Skiny wideo (MP4/WebM)",
     "nl": "Videoskins (MP4/WebM)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins em vídeo (MP4/WebM)",
+    "id": "Skin video (MP4/WebM)",
+    "ja": "動画スキン（MP4/WebM）",
+    "it": "Skin video (MP4/WebM)"
   },
   "site.features.skinRotatorCycleAutomatically": {
     "en": "Skin Rotator — cycle automatically",
@@ -282,10 +282,10 @@
     "tr": "Skin Rotator: otomatik geçiş",
     "pl": "Skin Rotator — automatyczna zmiana",
     "nl": "Skin Rotator — wisselt automatisch",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Rotador de skins: troca automática",
+    "id": "Skin Rotator — ganti skin otomatis secara bergiliran",
+    "ja": "スキンローテーター：自動で順番に切り替え",
+    "it": "Skin Rotator: cambia skin in automatico"
   },
   "site.features.communitySkinGallery": {
     "en": "Community skin gallery",
@@ -300,10 +300,10 @@
     "tr": "Topluluk skin galerisi",
     "pl": "Galeria skinów społeczności",
     "nl": "Skingalerij van de community",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Galeria de skins da comunidade",
+    "id": "Galeri skin komunitas",
+    "ja": "コミュニティのスキンギャラリー",
+    "it": "Galleria di skin della community"
   },
   "site.features.antiLagFpsBoost": {
     "en": "Anti-Lag & FPS Boost",
@@ -318,10 +318,10 @@
     "tr": "Anti-Lag ve FPS Artışı",
     "pl": "Anti-Lag i wzrost FPS",
     "nl": "Anti-lag & FPS-boost",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Anti-lag e boost de FPS",
+    "id": "Anti-Lag & Boost FPS",
+    "ja": "ラグ対策とFPS向上",
+    "it": "Anti-lag e boost FPS"
   },
   "site.features.smoothGameplayEvenOn": {
     "en": "Smooth gameplay even on low-end hardware.",
@@ -336,10 +336,10 @@
     "tr": "Düşük donanımlarda bile akıcı oyun.",
     "pl": "Płynna rozgrywka nawet na słabym sprzęcie.",
     "nl": "Soepele gameplay, zelfs op zwakke hardware.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Jogo fluido até em hardware fraco.",
+    "id": "Gameplay tetap mulus, bahkan di perangkat dengan spek rendah.",
+    "ja": "低スペックな環境でもスムーズにプレイできます。",
+    "it": "Gioco fluido anche su hardware poco potente."
   },
   "site.features.builtInAntiLag": {
     "en": "Built-in anti-lag system",
@@ -354,14 +354,14 @@
     "tr": "Yerleşik anti-lag sistemi",
     "pl": "Wbudowany system anti-lag",
     "nl": "Ingebouwd anti-lagsysteem",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sistema anti-lag embutido",
+    "id": "Sistem anti-lag bawaan",
+    "ja": "ラグ対策機能を内蔵",
+    "it": "Sistema anti-lag integrato"
   },
   "site.features.webglGpuCellRendering": {
     "en": "WebGL GPU cell rendering, on by default",
-    "el": "Απόδοση κελιών με WebGL στην GPU, ενεργή από προεπιλογή",
+    "el": "Απόδοση κυττάρων με WebGL στην GPU, ενεργή από προεπιλογή",
     "es": "Renderizado de células por GPU con WebGL, activado por defecto",
     "bg": "WebGL рендериране на клетките с GPU, включено по подразбиране",
     "fr": "Rendu des cellules par le GPU via WebGL, activé par défaut",
@@ -372,10 +372,10 @@
     "tr": "WebGL GPU hücre işleme, varsayılan olarak açık",
     "pl": "Renderowanie komórek WebGL na GPU, domyślnie włączone",
     "nl": "WebGL GPU-rendering van cellen, standaard aan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Renderização das células na GPU com WebGL, ativada por padrão",
+    "id": "Rendering sel dengan GPU lewat WebGL, aktif secara default",
+    "ja": "WebGLによるGPUでのセル描画（初期設定でオン）",
+    "it": "Rendering delle cellule via GPU con WebGL, attivo di default"
   },
   "site.features.wasmAccelerationNew": {
     "en": "WASM acceleration <span class=\"badge badge-new\">New</span>",
@@ -390,10 +390,10 @@
     "tr": "WASM hızlandırma <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Akceleracja WASM <span class=\"badge badge-new\">Nowość</span>",
     "nl": "WASM-versnelling <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aceleração WASM <span class=\"badge badge-new\">Novo</span>",
+    "id": "Akselerasi WASM <span class=\"badge badge-new\">Baru</span>",
+    "ja": "WASMによる高速化 <span class=\"badge badge-new\">新機能</span>",
+    "it": "Accelerazione WASM <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.performanceModeSwitchFor": {
     "en": "Performance mode switch for weak PCs and phones",
@@ -408,10 +408,10 @@
     "tr": "Zayıf PC'ler ve telefonlar için performans modu anahtarı",
     "pl": "Przełącznik trybu wydajności dla słabych PC i telefonów",
     "nl": "Schakelaar voor prestatiemodus voor zwakke pc's en telefoons",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Modo desempenho para PCs fracos e celulares",
+    "id": "Switch mode performa untuk PC dan HP lemah",
+    "ja": "低スペックPCやスマホ向けのパフォーマンスモード切り替え",
+    "it": "Interruttore modalità prestazioni per PC e telefoni poco potenti"
   },
   "site.features.optionalFpsLimitAnd": {
     "en": "Optional FPS limit and 25 FPS while the menu is open (saves battery)",
@@ -420,20 +420,20 @@
     "bg": "Незадължително ограничение на FPS и 25 FPS, докато менюто е отворено (пести батерия)",
     "fr": "Limite de FPS optionnelle et 25 FPS quand le menu est ouvert (économise la batterie)",
     "ar": "سقف اختياري للـ FPS و25 FPS أثناء فتح القائمة (يوفّر البطارية)",
-    "zh": "可選的 FPS 上限，以及開啟選單時降為 25 FPS（節省電量)",
+    "zh": "可選的 FPS 上限，以及開啟選單時降為 25 FPS（節省電量）",
     "ru": "Ограничение FPS по желанию и 25 FPS, пока открыто меню (экономит батарею)",
     "de": "Optionales FPS-Limit und 25 FPS bei offenem Menü (spart Akku)",
     "tr": "İsteğe bağlı FPS sınırı ve menü açıkken 25 FPS (pil tasarrufu)",
     "pl": "Opcjonalny limit FPS i 25 FPS przy otwartym menu (oszczędza baterię)",
     "nl": "Optionele FPS-limiet en 25 FPS zolang het menu open is (spaart batterij)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Limite de FPS opcional e 25 FPS com o menu aberto (economiza bateria)",
+    "id": "Batas FPS opsional dan 25 FPS saat menu terbuka (hemat baterai)",
+    "ja": "FPS上限の設定と、メニュー表示中の25 FPS制限（任意、バッテリー節約）",
+    "it": "Limite FPS opzionale e 25 FPS con il menu aperto (risparmia batteria)"
   },
   "site.features.autoHideFoodOption": {
     "en": "Auto-hide food option",
-    "el": "Επιλογή αυτόματης απόκρυψης φαγητού",
+    "el": "Επιλογή αυτόματης απόκρυψης τροφής",
     "es": "Opción de ocultar la comida automáticamente",
     "bg": "Опция за автоматично скриване на храната",
     "fr": "Option de masquage automatique de la nourriture",
@@ -444,10 +444,10 @@
     "tr": "Yemi otomatik gizleme seçeneği",
     "pl": "Opcja automatycznego ukrywania jedzenia",
     "nl": "Optie om voedsel automatisch te verbergen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Opção de ocultar comida automaticamente",
+    "id": "Opsi sembunyikan makanan otomatis",
+    "ja": "エサの自動非表示オプション",
+    "it": "Opzione per nascondere il cibo automaticamente"
   },
   "site.features.multiServerSupportExclusive": {
     "en": "Multi-Server Support <span class=\"badge badge-exclusive\">Exclusive</span>",
@@ -462,10 +462,10 @@
     "tr": "Çoklu Sunucu Desteği <span class=\"badge badge-exclusive\">Özel</span>",
     "pl": "Obsługa wielu serwerów <span class=\"badge badge-exclusive\">Ekskluzywne</span>",
     "nl": "Ondersteuning voor meerdere servers <span class=\"badge badge-exclusive\">Exclusief</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Suporte a vários servidores <span class=\"badge badge-exclusive\">Exclusivo</span>",
+    "id": "Dukungan Banyak Server <span class=\"badge badge-exclusive\">Eksklusif</span>",
+    "ja": "複数サーバー対応 <span class=\"badge badge-exclusive\">独自機能</span>",
+    "it": "Supporto multi-server <span class=\"badge badge-exclusive\">Esclusiva</span>"
   },
   "site.features.theOnlyModThat": {
     "en": "The only mod that works on multiple game servers.",
@@ -480,10 +480,10 @@
     "tr": "Birden çok oyun sunucusunda çalışan tek mod.",
     "pl": "Jedyny mod, który działa na wielu serwerach gry.",
     "nl": "De enige mod die op meerdere gameservers werkt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O único mod que funciona em vários servidores de jogo.",
+    "id": "Satu-satunya mod yang bisa dipakai di banyak server game.",
+    "ja": "複数のゲームサーバーで使える唯一のModです。",
+    "it": "L'unica mod che funziona su più server di gioco."
   },
   "site.features.officialAgarIo": {
     "en": "Official Agar.io",
@@ -498,10 +498,10 @@
     "tr": "Resmi Agar.io",
     "pl": "Oficjalne Agar.io",
     "nl": "Officieel Agar.io",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Agar.io oficial",
+    "id": "Agar.io resmi",
+    "ja": "公式Agar.io",
+    "it": "Agar.io ufficiale"
   },
   "site.features.new": {
     "en": "New",
@@ -516,10 +516,10 @@
     "tr": "Yeni",
     "pl": "Nowość",
     "nl": "Nieuw",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Novo",
+    "id": "Baru",
+    "ja": "新機能",
+    "it": "Nuovo"
   },
   "site.features.expandingLandOwnServer": {
     "en": "Expanding Land (own server)",
@@ -528,16 +528,16 @@
     "bg": "Expanding Land (собствен сървър)",
     "fr": "Expanding Land (notre serveur)",
     "ar": "Expanding Land (خادمنا الخاص)",
-    "zh": "Expanding Land（自有伺服器)",
+    "zh": "Expanding Land（自有伺服器）",
     "ru": "Expanding Land (свой сервер)",
     "de": "Expanding Land (eigener Server)",
     "tr": "Expanding Land (kendi sunucumuz)",
     "pl": "Expanding Land (własny serwer)",
     "nl": "Expanding Land (eigen server)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Expanding Land (servidor próprio)",
+    "id": "Expanding Land (server sendiri)",
+    "ja": "Expanding Land（独自サーバー）",
+    "it": "Expanding Land (server proprio)"
   },
   "site.features.allFeaturesWorkEverywhere": {
     "en": "All features work everywhere",
@@ -552,17 +552,17 @@
     "tr": "Tüm özellikler her yerde çalışır",
     "pl": "Wszystkie funkcje działają wszędzie",
     "nl": "Alle functies werken overal",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Todos os recursos funcionam em qualquer lugar",
+    "id": "Semua fitur berfungsi di mana saja",
+    "ja": "すべての機能がどこでも使えます",
+    "it": "Tutte le funzioni vanno ovunque"
   },
   "site.features.teamChatMinimap": {
     "en": "Team Chat & Minimap",
     "el": "Ομαδικό chat & Minimap",
     "es": "Chat de equipo y minimapa",
     "bg": "Отборен чат и миникарта",
-    "fr": "Chat d'équipe et minimap",
+    "fr": "Chat d'équipe et mini-carte",
     "ar": "دردشة الفريق والخريطة المصغرة",
     "zh": "隊伍聊天與小地圖",
     "ru": "Командный чат и миникарта",
@@ -570,10 +570,10 @@
     "tr": "Takım Sohbeti ve Mini Harita",
     "pl": "Czat drużynowy i minimapa",
     "nl": "Teamchat & minimap",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Chat da equipe e minimapa",
+    "id": "Chat Tim & Minimap",
+    "ja": "チームチャットとミニマップ",
+    "it": "Chat di squadra e minimappa"
   },
   "site.features.coordinateWithYourTeam": {
     "en": "Coordinate with your team in real time.",
@@ -588,10 +588,10 @@
     "tr": "Takımınızla gerçek zamanlı koordinasyon kurun.",
     "pl": "Koordynuj działania z drużyną w czasie rzeczywistym.",
     "nl": "Werk in realtime samen met je team.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Jogue em sintonia com a sua equipe em tempo real.",
+    "id": "Koordinasi dengan tim kamu secara real time.",
+    "ja": "チームとリアルタイムで連携できます。",
+    "it": "Coordinati con la tua squadra in tempo reale."
   },
   "site.features.inGameTeamChat": {
     "en": "In-game team chat",
@@ -606,17 +606,17 @@
     "tr": "Oyun içi takım sohbeti",
     "pl": "Czat drużynowy w grze",
     "nl": "Teamchat in de game",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Chat da equipe dentro do jogo",
+    "id": "Chat tim di dalam game",
+    "ja": "ゲーム内チームチャット",
+    "it": "Chat di squadra in gioco"
   },
   "site.features.minimapWithTeammatePositions": {
     "en": "Minimap with teammate positions",
     "el": "Minimap με τις θέσεις των συμπαικτών",
     "es": "Minimapa con las posiciones de tus compañeros",
     "bg": "Миникарта с позициите на съотборниците",
-    "fr": "Minimap avec la position des coéquipiers",
+    "fr": "Mini-carte avec la position des coéquipiers",
     "ar": "خريطة مصغرة تعرض مواقع زملاء الفريق",
     "zh": "顯示隊友位置的小地圖",
     "ru": "Миникарта с позициями союзников",
@@ -624,10 +624,10 @@
     "tr": "Takım arkadaşlarının konumlarını gösteren mini harita",
     "pl": "Minimapa z pozycjami członków drużyny",
     "nl": "Minimap met posities van teamgenoten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Minimapa com a posição dos aliados",
+    "id": "Minimap dengan posisi rekan tim",
+    "ja": "味方の位置を表示するミニマップ",
+    "it": "Minimappa con le posizioni dei compagni di squadra"
   },
   "site.features.teamQuadrantSystem": {
     "en": "Team quadrant system",
@@ -642,17 +642,17 @@
     "tr": "Takım çeyrek sistemi",
     "pl": "System ćwiartek drużyny",
     "nl": "Kwadrantensysteem voor teams",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sistema de quadrantes da equipe",
+    "id": "Sistem kuadran tim",
+    "ja": "チームのエリア分担システム",
+    "it": "Sistema a quadranti per la squadra"
   },
   "site.features.nickDisplayOnMinimap": {
     "en": "Nick display on minimap",
     "el": "Εμφάνιση nick στο minimap",
     "es": "Nicks visibles en el minimapa",
     "bg": "Показване на никове на миникартата",
-    "fr": "Affichage des pseudos sur la minimap",
+    "fr": "Affichage des pseudos sur la mini-carte",
     "ar": "عرض الأسماء على الخريطة المصغرة",
     "zh": "在小地圖上顯示暱稱",
     "ru": "Ники на миникарте",
@@ -660,10 +660,10 @@
     "tr": "Mini haritada nick gösterimi",
     "pl": "Wyświetlanie nicków na minimapie",
     "nl": "Nicknames op de minimap",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nicks no minimapa",
+    "id": "Nick ditampilkan di minimap",
+    "ja": "ミニマップにニックネームを表示",
+    "it": "Nick visibili sulla minimappa"
   },
   "site.features.smoothPositionInterpolation": {
     "en": "Smooth position interpolation",
@@ -678,14 +678,14 @@
     "tr": "Akıcı konum enterpolasyonu",
     "pl": "Płynna interpolacja pozycji",
     "nl": "Vloeiende interpolatie van posities",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Interpolação suave das posições",
+    "id": "Interpolasi posisi yang mulus",
+    "ja": "なめらかな位置補間",
+    "it": "Interpolazione fluida delle posizioni"
   },
   "site.features.teamPingsNew": {
     "en": "Team Pings <span class=\"badge badge-new\">New</span>",
-    "el": "Team Pings <span class=\"badge badge-new\">Νέο</span>",
+    "el": "Pings ομάδας <span class=\"badge badge-new\">Νέο</span>",
     "es": "Pings de equipo <span class=\"badge badge-new\">Nuevo</span>",
     "bg": "Отборни сигнали <span class=\"badge badge-new\">Ново</span>",
     "fr": "Pings d'équipe <span class=\"badge badge-new\">Nouveau</span>",
@@ -696,10 +696,10 @@
     "tr": "Takım Pingleri <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Pingi drużynowe <span class=\"badge badge-new\">Nowość</span>",
     "nl": "Teampings <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pings da equipe <span class=\"badge badge-new\">Novo</span>",
+    "id": "Ping Tim <span class=\"badge badge-new\">Baru</span>",
+    "ja": "チームPing <span class=\"badge badge-new\">新機能</span>",
+    "it": "Ping di squadra <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.markASpotFor": {
     "en": "Mark a spot for your team in one key press.",
@@ -714,10 +714,10 @@
     "tr": "Tek tuşla takımınız için bir noktayı işaretleyin.",
     "pl": "Oznacz miejsce dla drużyny jednym naciśnięciem klawisza.",
     "nl": "Markeer met één toetsdruk een plek voor je team.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Marque um ponto para a sua equipe com uma tecla só.",
+    "id": "Tandai lokasi untuk tim kamu cukup dengan satu tombol.",
+    "ja": "キーひとつでチームに場所を知らせられます。",
+    "it": "Segna un punto per la tua squadra con un solo tasto."
   },
   "site.features.helpDangerGoHere": {
     "en": "<i>Help</i>, <i>Danger</i>, <i>Go here</i> and <i>Virus here</i> at your cursor",
@@ -728,21 +728,21 @@
     "ar": "<i>مساعدة</i> و<i>خطر</i> و<i>اذهب إلى هنا</i> و<i>فيروس هنا</i> عند المؤشر",
     "zh": "在游標位置標記<i>求救</i>、<i>危險</i>、<i>到這裡</i>和<i>這裡有病毒</i>",
     "ru": "<i>Помощь</i>, <i>Опасность</i>, <i>Иди сюда</i> и <i>Здесь вирус</i> у курсора",
-    "de": "<i>Help</i>, <i>Danger</i>, <i>Go here</i> und <i>Virus here</i> an deinem Cursor",
+    "de": "<i>Hilfe</i>, <i>Gefahr</i>, <i>Hierhin</i> und <i>Virus hier</i> an deinem Cursor",
     "tr": "İmlecinizin olduğu yerde <i>Yardım</i>, <i>Tehlike</i>, <i>Buraya git</i> ve <i>Burada virüs</i>",
     "pl": "<i>Pomocy</i>, <i>Niebezpieczeństwo</i>, <i>Idź tutaj</i> i <i>Tu wirus</i> przy kursorze",
-    "nl": "<i>Help</i>, <i>Danger</i>, <i>Go here</i> en <i>Virus here</i> op je cursor",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "<i>Help</i>, <i>Gevaar</i>, <i>Ga hierheen</i> en <i>Virus hier</i> op je cursor",
+    "pt": "<i>Ajuda</i>, <i>Perigo</i>, <i>Vem aqui</i> e <i>Vírus aqui</i> na posição do seu cursor",
+    "id": "<i>Bantuan</i>, <i>Bahaya</i>, <i>Ke sini</i>, dan <i>Ada virus</i> di posisi kursor kamu",
+    "ja": "カーソルの位置に<i>助けて</i>、<i>危険</i>、<i>ここへ行け</i>、<i>ここにウイルス</i>を表示",
+    "it": "<i>Aiuto</i>, <i>Pericolo</i>, <i>Vai qui</i> e <i>Virus qui</i> nel punto del cursore"
   },
   "site.features.shownToTeammatesOn": {
     "en": "Shown to teammates on the map and the minimap",
     "el": "Εμφανίζονται στους συμπαίκτες στον χάρτη και στο minimap",
     "es": "Visibles para tus compañeros en el mapa y en el minimapa",
     "bg": "Показват се на съотборниците на картата и миникартата",
-    "fr": "Affichés aux coéquipiers sur la carte et la minimap",
+    "fr": "Affichés aux coéquipiers sur la carte et la mini-carte",
     "ar": "تظهر لزملاء الفريق على الخريطة والخريطة المصغرة",
     "zh": "顯示在隊友的地圖與小地圖上",
     "ru": "Видны союзникам на карте и миникарте",
@@ -750,28 +750,28 @@
     "tr": "Takım arkadaşlarına haritada ve mini haritada gösterilir",
     "pl": "Widoczne dla drużyny na mapie i minimapie",
     "nl": "Zichtbaar voor teamgenoten op de map en de minimap",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aparece para os aliados no mapa e no minimapa",
+    "id": "Tampil untuk rekan tim di peta dan minimap",
+    "ja": "味方のマップとミニマップに表示されます",
+    "it": "Visibili ai compagni di squadra sulla mappa e sulla minimappa"
   },
   "site.features.hotkeysWithNoDefault": {
     "en": "Hotkeys with no default key: pick your own in Hotkeys",
-    "el": "Hotkeys χωρίς προεπιλεγμένο πλήκτρο: διαλέξτε τα δικά σας στα Hotkeys",
-    "es": "Hotkeys sin tecla predeterminada: elige las tuyas en Hotkeys",
+    "el": "Πλήκτρα συντόμευσης χωρίς προεπιλογή: διαλέξτε τα δικά σας στα Πλήκτρα συντόμευσης",
+    "es": "Atajos sin tecla predeterminada: elige los tuyos en Atajos de teclado",
     "bg": "Клавиши без клавиш по подразбиране: изберете свой в Клавиши",
-    "fr": "Hotkeys sans touche par défaut : choisissez les vôtres dans Hotkeys",
-    "ar": "مفاتيح اختصار بلا مفتاح افتراضي: اختر مفتاحك في Hotkeys",
+    "fr": "Raccourcis sans touche par défaut : choisissez les vôtres dans Raccourcis",
+    "ar": "مفاتيح اختصار بلا مفتاح افتراضي: اختر مفتاحك في مفاتيح الاختصار",
     "zh": "快速鍵沒有預設按鍵：請在快速鍵中自行選擇",
     "ru": "Горячие клавиши без клавиши по умолчанию: выберите свою в Горячих клавишах",
     "de": "Hotkeys ohne Standardtaste: Wähl deine eigene unter Hotkeys",
     "tr": "Varsayılan tuşu olmayan kısayollar: Kısayol Tuşları bölümünden kendiniz seçin",
     "pl": "Skróty bez domyślnego klawisza: wybierz własny w Skrótach klawiszowych",
-    "nl": "Sneltoetsen zonder standaardtoets: kies je eigen toets in Hotkeys",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Sneltoetsen zonder standaardtoets: kies je eigen toets in Sneltoetsen",
+    "pt": "Atalhos sem tecla padrão: escolha as suas em Atalhos",
+    "id": "Hotkey tanpa tombol default: pilih sendiri di menu Hotkey",
+    "ja": "初期キーは未設定：ショートカットで好きなキーを割り当ててください",
+    "it": "Tasti rapidi senza tasto predefinito: scegli il tuo in Tasti rapidi"
   },
   "site.features.deltaPlayersOnThe": {
     "en": "Delta players on the same team see a wave",
@@ -786,10 +786,10 @@
     "tr": "Aynı takımdaki Delta oyuncuları bir dalga görür",
     "pl": "Gracze Delta w tej samej drużynie widzą falę",
     "nl": "Delta-spelers in hetzelfde team zien een golf",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Jogadores do Delta na mesma equipe veem uma onda",
+    "id": "Pemain Delta di tim yang sama melihat gelombang",
+    "ja": "同じチームのDeltaプレイヤーにはウェーブが表示されます",
+    "it": "I giocatori Delta nella stessa squadra vedono un'onda"
   },
   "site.features.optionalPingButtonOn": {
     "en": "Optional ping button on phones",
@@ -804,10 +804,10 @@
     "tr": "Telefonlarda isteğe bağlı ping düğmesi",
     "pl": "Opcjonalny przycisk pingu na telefonach",
     "nl": "Optionele pingknop op telefoons",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botão de ping opcional no celular",
+    "id": "Tombol ping opsional di HP",
+    "ja": "スマホではPingボタンも使えます（任意）",
+    "it": "Pulsante ping opzionale sui telefoni"
   },
   "site.features.multibox": {
     "en": "Multibox",
@@ -829,7 +829,7 @@
   },
   "site.features.playTwoCellsAt": {
     "en": "Play two cells at once from one tab.",
-    "el": "Παίξτε με δύο κελιά ταυτόχρονα από μία καρτέλα.",
+    "el": "Παίξτε με δύο κύτταρα ταυτόχρονα από μία καρτέλα.",
     "es": "Juega con dos células a la vez desde una sola pestaña.",
     "bg": "Играйте с две клетки едновременно от един раздел.",
     "fr": "Jouez deux cellules à la fois depuis un seul onglet.",
@@ -840,14 +840,14 @@
     "tr": "Tek sekmeden aynı anda iki hücre oynayın.",
     "pl": "Graj dwiema komórkami naraz z jednej karty.",
     "nl": "Speel met twee cellen tegelijk vanuit één tabblad.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Jogue com duas células ao mesmo tempo em uma aba só.",
+    "id": "Mainkan dua sel sekaligus dari satu tab.",
+    "ja": "1つのタブで2つのセルを同時に操作できます。",
+    "it": "Gioca con due cellule insieme da una sola scheda."
   },
   "site.features.aSecondUnitNext": {
     "en": "A second unit next to your main cell",
-    "el": "Μια δεύτερη μονάδα δίπλα στο κύριο κελί σας",
+    "el": "Μια δεύτερη μονάδα δίπλα στο κύριο κύτταρό σας",
     "es": "Una segunda unidad junto a tu célula principal",
     "bg": "Втора единица до основната ви клетка",
     "fr": "Une deuxième unité à côté de votre cellule principale",
@@ -858,17 +858,17 @@
     "tr": "Ana hücrenizin yanında ikinci bir birim",
     "pl": "Druga jednostka obok twojej głównej komórki",
     "nl": "Een tweede unit naast je hoofdcel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Uma segunda unidade ao lado da sua célula principal",
+    "id": "Unit kedua di samping sel utamamu",
+    "ja": "メインのセルの隣に2体目のユニット",
+    "it": "Una seconda unità accanto alla tua cellula principale"
   },
   "site.features.nextBackSwapAnd": {
     "en": "Next / back swap and follow-mouse hotkeys",
-    "el": "Hotkeys επόμενης / προηγούμενης εναλλαγής και ακολουθίας ποντικιού",
-    "es": "Hotkeys de cambio siguiente / anterior y de seguir el ratón",
+    "el": "Πλήκτρα για εναλλαγή επόμενης / προηγούμενης μονάδας και ακολούθηση του ποντικιού",
+    "es": "Atajos de cambio siguiente / anterior y de seguir el ratón",
     "bg": "Клавиши за напред / назад смяна и следване на мишката",
-    "fr": "Hotkeys de bascule suivant / précédent et de suivi de la souris",
+    "fr": "Raccourcis de bascule suivant / précédent et de suivi de la souris",
     "ar": "مفاتيح التبديل التالي / السابق واتباع الفأرة",
     "zh": "下一個 / 上一個切換與跟隨滑鼠快速鍵",
     "ru": "Горячие клавиши переключения вперёд / назад и следования за мышью",
@@ -876,10 +876,10 @@
     "tr": "İleri / geri değiştirme ve fareyi takip etme kısayolları",
     "pl": "Skróty przełączania dalej / wstecz i podążania za myszą",
     "nl": "Sneltoetsen voor volgende / vorige wisselen en muis volgen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atalhos para trocar para a próxima / anterior e para seguir o mouse",
+    "id": "Hotkey ganti unit maju / mundur dan ikuti mouse",
+    "ja": "次へ/前へ切り替え、マウス追従のショートカットキー",
+    "it": "Tasti rapidi per passare all'unità successiva / precedente e per seguire il mouse"
   },
   "site.features.optionalViewOnThe": {
     "en": "Optional view on the middle of both units",
@@ -894,10 +894,10 @@
     "tr": "İsteğe bağlı olarak iki birimin ortasına odaklanan görünüm",
     "pl": "Opcjonalny widok na środek między obiema jednostkami",
     "nl": "Optioneel beeld op het midden van beide units",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Visão opcional centralizada entre as duas unidades",
+    "id": "Tampilan opsional di titik tengah kedua unit",
+    "ja": "両ユニットの中心に視点を合わせる表示（任意）",
+    "it": "Visuale opzionale centrata tra le due unità"
   },
   "site.features.optionalUnitRingsAnd": {
     "en": "Optional unit rings and freeze for the inactive unit",
@@ -912,10 +912,10 @@
     "tr": "İsteğe bağlı birim halkaları ve aktif olmayan birimi dondurma",
     "pl": "Opcjonalne pierścienie jednostek i zamrożenie nieaktywnej jednostki",
     "nl": "Optionele ringen om units en bevriezen van de inactieve unit",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Anéis nas unidades e congelamento da unidade inativa (opcionais)",
+    "id": "Lingkaran unit opsional dan bekukan unit yang tidak aktif",
+    "ja": "ユニットのリング表示と、操作していないユニットの固定（任意）",
+    "it": "Anelli opzionali sulle unità e blocco dell'unità inattiva"
   },
   "site.features.itsOwnSkinProfile": {
     "en": "Its own skin profile for each unit",
@@ -930,10 +930,10 @@
     "tr": "Her birim için ayrı skin profili",
     "pl": "Własny profil skinów dla każdej jednostki",
     "nl": "Een eigen skinprofiel voor elke unit",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Perfil de skin próprio para cada unidade",
+    "id": "Profil skin sendiri untuk tiap unit",
+    "ja": "ユニットごとに専用のスキンプロファイル",
+    "it": "Un profilo skin diverso per ogni unità"
   },
   "site.features.gamepadControllerExclusive": {
     "en": "Gamepad & Controller <span class=\"badge badge-exclusive\">Exclusive</span>",
@@ -948,10 +948,10 @@
     "tr": "Gamepad ve Kontrolcü <span class=\"badge badge-exclusive\">Özel</span>",
     "pl": "Gamepad i kontroler <span class=\"badge badge-exclusive\">Ekskluzywne</span>",
     "nl": "Gamepad & controller <span class=\"badge badge-exclusive\">Exclusief</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Gamepad e controle <span class=\"badge badge-exclusive\">Exclusivo</span>",
+    "id": "Gamepad & Controller <span class=\"badge badge-exclusive\">Eksklusif</span>",
+    "ja": "ゲームパッドとコントローラー <span class=\"badge badge-exclusive\">独自機能</span>",
+    "it": "Gamepad e controller <span class=\"badge badge-exclusive\">Esclusiva</span>"
   },
   "site.features.playWithAController": {
     "en": "Play with a controller (optional: turn on <i>Gamepad / controller support</i> in Mouse control).",
@@ -959,17 +959,17 @@
     "es": "Juega con mando (opcional: activa <i>Gamepad / controller support</i> en Control del ratón).",
     "bg": "Играйте с контролер (по желание: включете <i>Поддръжка на геймпад / контролер</i> в Управление с мишката).",
     "fr": "Jouez à la manette (optionnel : activez <i>Gamepad / controller support</i> dans Contrôle de la souris).",
-    "ar": "العب بوحدة تحكم (اختياري: فعّل <i>Gamepad / controller support</i> في Mouse control).",
-    "zh": "使用控制器遊玩（選用：在滑鼠控制中開啟 <i>Gamepad / controller support</i>）。",
+    "ar": "العب بوحدة تحكم (اختياري: فعّل <i>دعم ذراع التحكم / وحدة التحكم</i> في التحكم بالفأرة).",
+    "zh": "使用控制器遊玩（選用：在滑鼠控制中開啟 <i>遊戲手把 / 控制器支援</i>）。",
     "ru": "Играйте с контроллером (по желанию: включите <i>Поддержка геймпада / контроллера</i> в Управлении мышью).",
-    "de": "Spiel mit einem Controller (optional: Aktiviere <i>Gamepad / controller support</i> unter Mouse control).",
-    "tr": "Kontrolcüyle oynayın (isteğe bağlı: Mouse control bölümünde <i>Gamepad / controller support</i> seçeneğini açın).",
+    "de": "Spiel mit einem Controller (optional: Aktiviere <i>Gamepad / controller support</i> unter Maussteuerung).",
+    "tr": "Kontrolcüyle oynayın (isteğe bağlı: Fare kontrolü bölümünde <i>Gamepad / kontrolcü desteği</i> seçeneğini açın).",
     "pl": "Graj kontrolerem (opcjonalnie: włącz <i>Obsługa gamepada / kontrolera</i> w Sterowaniu myszą).",
-    "nl": "Speel met een controller (optioneel: zet <i>Gamepad / controller support</i> aan in Mouse control).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Speel met een controller (optioneel: zet <i>Gamepad- / controllerondersteuning</i> aan in Muisbesturing).",
+    "pt": "Jogue com controle (opcional: ative <i>Suporte a gamepad / controle</i> em Controle do mouse).",
+    "id": "Main pakai controller (opsional: aktifkan <i>Dukungan gamepad / controller</i> di Kontrol mouse).",
+    "ja": "コントローラーでプレイできます（任意：マウス操作で<i>ゲームパッド/コントローラー対応</i>をオンにしてください）。",
+    "it": "Gioca con un controller (opzionale: attiva <i>Supporto gamepad / controller</i> in Controllo mouse)."
   },
   "site.features.leftStickMovesRight": {
     "en": "Left stick moves, right stick zooms",
@@ -984,10 +984,10 @@
     "tr": "Sol çubuk hareket ettirir, sağ çubuk yakınlaştırır",
     "pl": "Lewy drążek porusza, prawy drążek przybliża",
     "nl": "Linkerstick beweegt, rechterstick zoomt",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Analógico esquerdo move, analógico direito dá zoom",
+    "id": "Stik kiri untuk bergerak, stik kanan untuk zoom",
+    "ja": "左スティックで移動、右スティックでズーム",
+    "it": "Lo stick sinistro muove, lo stick destro fa lo zoom"
   },
   "site.features.aSplitXDouble": {
     "en": "A split, X double split, RB 16 split",
@@ -1002,28 +1002,28 @@
     "tr": "A bölünme, X çift bölünme, RB 16'lı bölünme",
     "pl": "A podział, X podwójny podział, RB podział na 16",
     "nl": "A split, X double split, RB 16 split",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A dá split, X dá double split, RB dá 16 splits",
+    "id": "A untuk split, X untuk double split, RB untuk 16 split",
+    "ja": "Aで分裂、Xでダブル分裂、RBで16分裂",
+    "it": "A split, X double split, RB split da 16"
   },
   "site.features.bFeedHoldY": {
     "en": "B feed (hold), Y respawn, Start menu",
-    "el": "B τάισμα (κρατημένο), Y respawn, Start μενού",
-    "es": "B alimentar (mantener), Y reaparecer, Start menú",
+    "el": "B feed (κρατημένο), Y respawn, Start μενού",
+    "es": "B feed (mantener), Y reaparecer, Start menú",
     "bg": "B хранене (задържане), Y възраждане, Start меню",
-    "fr": "B nourrir (maintenir), Y respawn, Start menu",
-    "ar": "B للتغذية (مع الضغط المستمر)، وY لإعادة الإحياء، وStart للقائمة",
-    "zh": "B 餵食（按住）、Y 重生、Start 選單",
+    "fr": "B feed (maintenir), Y respawn, Start menu",
+    "ar": "B للتغذية (مع الضغط المستمر)، وY لإعادة الظهور، وStart للقائمة",
+    "zh": "B 吐球（按住）、Y 重生、Start 選單",
     "ru": "B — кормление (удерживать), Y — возрождение, Start — меню",
-    "de": "B Füttern (halten), Y Respawn, Start Menü",
+    "de": "B Feed (halten), Y Respawn, Start Menü",
     "tr": "B besleme (basılı tut), Y yeniden doğma, Start menü",
     "pl": "B karmienie (przytrzymaj), Y odrodzenie, Start menu",
-    "nl": "B voeren (ingedrukt houden), Y respawn, Start menu",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "B feed (ingedrukt houden), Y respawn, Start menu",
+    "pt": "B dá feed (segurando), Y faz respawn, Start abre o menu",
+    "id": "B untuk feed (tahan), Y untuk respawn, Start untuk menu",
+    "ja": "B（長押し）で質量放出、Yでリスポーン、Startでメニュー",
+    "it": "B feed (tieni premuto), Y respawn, Start menu"
   },
   "site.features.lbSwapsTheMultibox": {
     "en": "LB swaps the multibox unit",
@@ -1038,10 +1038,10 @@
     "tr": "LB multibox birimini değiştirir",
     "pl": "LB przełącza jednostkę multiboxa",
     "nl": "LB wisselt de multibox-unit",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "LB troca a unidade do multibox",
+    "id": "LB untuk ganti unit multibox",
+    "ja": "LBでマルチボックスのユニットを切り替え",
+    "it": "LB cambia unità del multibox"
   },
   "site.features.xboxPlaystationAndOther": {
     "en": "Xbox, PlayStation and other pads with the standard browser layout",
@@ -1056,10 +1056,10 @@
     "tr": "Standart tarayıcı düzenine sahip Xbox, PlayStation ve diğer kontrolcüler",
     "pl": "Xbox, PlayStation i inne pady ze standardowym układem przeglądarki",
     "nl": "Xbox, PlayStation en andere pads met de standaard browserindeling",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Controles de Xbox, PlayStation e outros com o layout padrão do navegador",
+    "id": "Xbox, PlayStation, dan controller lain dengan layout browser standar",
+    "ja": "Xbox、PlayStation、そのほかブラウザの標準レイアウトに対応したパッド",
+    "it": "Xbox, PlayStation e altri pad con il layout standard del browser"
   },
   "site.features.replaysNew": {
     "en": "Replays <span class=\"badge badge-new\">New</span>",
@@ -1074,10 +1074,10 @@
     "tr": "Tekrarlar <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Powtórki <span class=\"badge badge-new\">Nowość</span>",
     "nl": "Replays <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Replays <span class=\"badge badge-new\">Novo</span>",
+    "id": "Replay <span class=\"badge badge-new\">Baru</span>",
+    "ja": "リプレイ <span class=\"badge badge-new\">新機能</span>",
+    "it": "Replay <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.watchYourGamesBack": {
     "en": "Watch your games back and share them.",
@@ -1092,10 +1092,10 @@
     "tr": "Oyunlarınızı yeniden izleyin ve paylaşın.",
     "pl": "Oglądaj swoje gry ponownie i udostępniaj je.",
     "nl": "Kijk je games terug en deel ze.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Assista às suas partidas de novo e compartilhe.",
+    "id": "Tonton ulang game kamu dan bagikan ke teman.",
+    "ja": "自分のプレイを見返して、共有できます。",
+    "it": "Rivedi le tue partite e condividile."
   },
   "site.features.recordsYourGamesTurn": {
     "en": "Records your games (turn off <i>Record replays</i> to save memory)",
@@ -1103,24 +1103,24 @@
     "es": "Graba tus partidas (desactiva <i>Record replays</i> para ahorrar memoria)",
     "bg": "Записва игрите ви (изключете <i>Записване на повторения</i>, за да пестите памет)",
     "fr": "Enregistre vos parties (désactivez <i>Record replays</i> pour économiser la mémoire)",
-    "ar": "يسجّل مبارياتك (عطّل <i>Record replays</i> لتوفير الذاكرة)",
-    "zh": "錄製你的對局（關閉 <i>Record replays</i> 可節省記憶體)",
+    "ar": "يسجّل مبارياتك (عطّل <i>تسجيل الإعادات</i> لتوفير الذاكرة)",
+    "zh": "錄製你的對局（關閉 <i>錄製重播</i> 可節省記憶體）",
     "ru": "Записывает ваши игры (выключите <i>Запись повторов</i>, чтобы сэкономить память)",
     "de": "Zeichnet deine Spiele auf (deaktiviere <i>Record replays</i>, um Speicher zu sparen)",
-    "tr": "Oyunlarınızı kaydeder (bellek tasarrufu için <i>Record replays</i> seçeneğini kapatın)",
+    "tr": "Oyunlarınızı kaydeder (bellek tasarrufu için <i>Tekrarları kaydet</i> seçeneğini kapatın)",
     "pl": "Nagrywa twoje gry (wyłącz <i>Nagrywanie powtórek</i>, aby oszczędzać pamięć)",
-    "nl": "Neemt je games op (zet <i>Record replays</i> uit om geheugen te sparen)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Neemt je games op (zet <i>Replays opnemen</i> uit om geheugen te sparen)",
+    "pt": "Grava as suas partidas (desative <i>Gravar replays</i> para economizar memória)",
+    "id": "Merekam game kamu (nonaktifkan <i>Rekam replay</i> untuk menghemat memori)",
+    "ja": "プレイを自動で録画（メモリを節約したい場合は<i>リプレイを録画</i>をオフに）",
+    "it": "Registra le tue partite (disattiva <i>Registra replay</i> per risparmiare memoria)"
   },
   "site.features.pauseFasterSlowerAnd": {
     "en": "Pause, faster / slower and seek hotkeys",
-    "el": "Hotkeys παύσης, γρηγορότερα / πιο αργά και μετάβασης",
-    "es": "Hotkeys de pausa, más rápido / más lento y salto",
+    "el": "Πλήκτρα παύσης, γρηγορότερα / πιο αργά και μετάβασης",
+    "es": "Atajos de pausa, más rápido / más lento y salto",
     "bg": "Клавиши за пауза, по-бързо / по-бавно и превъртане",
-    "fr": "Hotkeys de pause, accéléré / ralenti et navigation",
+    "fr": "Raccourcis de pause, accéléré / ralenti et navigation",
     "ar": "مفاتيح الإيقاف المؤقت والتسريع / الإبطاء والتنقل",
     "zh": "暫停、加速 / 減速與跳轉快速鍵",
     "ru": "Горячие клавиши паузы, ускорения / замедления и перемотки",
@@ -1128,10 +1128,10 @@
     "tr": "Duraklatma, hızlandırma / yavaşlatma ve sarma kısayolları",
     "pl": "Skróty pauzy, przyspieszania / zwalniania i przewijania",
     "nl": "Sneltoetsen voor pauze, sneller / langzamer en spoelen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atalhos para pausar, acelerar / desacelerar e avançar ou voltar",
+    "id": "Hotkey jeda, percepat / perlambat, dan lompat ke waktu tertentu",
+    "ja": "一時停止、早送り/スロー、シークのショートカットキー",
+    "it": "Tasti rapidi per pausa, più veloce / più lento e per spostarti nel replay"
   },
   "site.features.progressBarWhileA": {
     "en": "Progress bar while a replay plays: click to seek",
@@ -1146,10 +1146,10 @@
     "tr": "Tekrar oynatılırken ilerleme çubuğu: sarmak için tıklayın",
     "pl": "Pasek postępu podczas powtórki: kliknij, aby przewinąć",
     "nl": "Voortgangsbalk tijdens het afspelen van een replay: klik om te spoelen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Barra de progresso durante o replay: clique para pular para um ponto",
+    "id": "Progress bar saat replay diputar: klik untuk lompat ke bagian tertentu",
+    "ja": "リプレイ再生中のプログレスバー：クリックでシーク",
+    "it": "Barra di avanzamento durante il replay: clicca per spostarti"
   },
   "site.features.shareReplaysWithReplay": {
     "en": "Share replays with <i>?replay=</i> links and iframes",
@@ -1164,10 +1164,10 @@
     "tr": "Tekrarları <i>?replay=</i> bağlantıları ve iframe'lerle paylaşın",
     "pl": "Udostępniaj powtórki za pomocą linków <i>?replay=</i> i iframe",
     "nl": "Deel replays met <i>?replay=</i>-links en iframes",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Compartilhe replays com links <i>?replay=</i> e iframes",
+    "id": "Bagikan replay dengan link <i>?replay=</i> dan iframe",
+    "ja": "<i>?replay=</i>リンクやiframeでリプレイを共有",
+    "it": "Condividi i replay con link <i>?replay=</i> e iframe"
   },
   "site.features.pauseAndSeekButtons": {
     "en": "Pause and seek buttons and a touch replay bar on phones",
@@ -1182,10 +1182,10 @@
     "tr": "Telefonlarda duraklatma ve sarma düğmeleri ile dokunmatik tekrar çubuğu",
     "pl": "Przyciski pauzy i przewijania oraz dotykowy pasek powtórek na telefonach",
     "nl": "Knoppen voor pauze en spoelen en een touch-replaybalk op telefoons",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botões de pausar e avançar e uma barra de replay por toque no celular",
+    "id": "Tombol jeda dan lompat, plus bar replay sentuh di HP",
+    "ja": "一時停止・シークボタンと、スマホ用のタッチ式リプレイバー",
+    "it": "Pulsanti di pausa e avanzamento e barra replay touch sui telefoni"
   },
   "site.features.gameOverCardMatch": {
     "en": "Game Over Card & Match History <span class=\"badge badge-new\">New</span>",
@@ -1200,10 +1200,10 @@
     "tr": "Oyun Sonu Kartı ve Maç Geçmişi <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Karta Game Over i historia meczów <span class=\"badge badge-new\">Nowość</span>",
     "nl": "Game Over-kaart & wedstrijdgeschiedenis <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Card de Game Over e histórico de partidas <span class=\"badge badge-new\">Novo</span>",
+    "id": "Kartu Game Over & Riwayat Pertandingan <span class=\"badge badge-new\">Baru</span>",
+    "ja": "ゲームオーバーカードと対戦履歴 <span class=\"badge badge-new\">新機能</span>",
+    "it": "Schermata di Game Over e cronologia partite <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.seeHowYourLast": {
     "en": "See how your last life went.",
@@ -1218,10 +1218,10 @@
     "tr": "Son canınızın nasıl geçtiğini görün.",
     "pl": "Zobacz, jak poszło ci ostatnie życie.",
     "nl": "Zie hoe je laatste leven ging.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Veja como foi a sua última vida.",
+    "id": "Lihat bagaimana jalannya nyawa terakhirmu.",
+    "ja": "直前のライフの結果を確認できます。",
+    "it": "Guarda com'è andata la tua ultima vita."
   },
   "site.features.copyStatsButtonOn": {
     "en": "Copy stats button on the Game Over card",
@@ -1236,10 +1236,10 @@
     "tr": "Oyun Sonu kartında istatistikleri kopyalama düğmesi",
     "pl": "Przycisk kopiowania statystyk na karcie Game Over",
     "nl": "Knop om stats te kopiëren op de Game Over-kaart",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botão de copiar estatísticas no card de Game Over",
+    "id": "Tombol salin statistik di kartu Game Over",
+    "ja": "ゲームオーバーカードに統計コピーボタン",
+    "it": "Pulsante per copiare le statistiche nella schermata di Game Over"
   },
   "site.features.optionalMassGraphOf": {
     "en": "Optional mass graph of your life",
@@ -1254,10 +1254,10 @@
     "tr": "Canınız boyunca isteğe bağlı kütle grafiği",
     "pl": "Opcjonalny wykres masy z twojego życia",
     "nl": "Optionele massagrafiek van je leven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Gráfico de massa opcional da sua vida",
+    "id": "Grafik massa opsional selama kamu hidup",
+    "ja": "ライフ中の質量グラフ（任意）",
+    "it": "Grafico della massa opzionale per la tua vita"
   },
   "site.features.optionalAllTimePersonal": {
     "en": "Optional all-time personal bests with a <i>New best!</i> badge",
@@ -1265,17 +1265,17 @@
     "es": "Récords personales históricos opcionales con la insignia <i>¡Nuevo récord!</i>",
     "bg": "Незадължителни лични рекорди за всички времена със значка <i>Нов рекорд!</i>",
     "fr": "Records personnels absolus optionnels avec un badge <i>Nouveau record !</i>",
-    "ar": "أفضل أرقامك الشخصية على الإطلاق (اختياري) مع شارة <i>New best!</i>",
-    "zh": "可選的歷史個人最佳紀錄，並附 <i>New best!</i> 徽章",
+    "ar": "أفضل أرقامك الشخصية على الإطلاق (اختياري) مع شارة <i>رقم قياسي جديد!</i>",
+    "zh": "可選的歷史個人最佳紀錄，並附 <i>新紀錄！</i> 徽章",
     "ru": "Личные рекорды за всё время со значком <i>Новый рекорд!</i> по желанию",
-    "de": "Optionale persönliche Allzeit-Bestwerte mit <i>New best!</i>-Badge",
+    "de": "Optionale persönliche Allzeit-Bestwerte mit <i>Neuer Rekord!</i>-Badge",
     "tr": "<i>Yeni rekor!</i> rozetiyle isteğe bağlı tüm zamanların kişisel rekorları",
     "pl": "Opcjonalne rekordy wszech czasów z odznaką <i>Nowy rekord!</i>",
-    "nl": "Optionele persoonlijke records aller tijden met een <i>New best!</i>-badge",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Optionele persoonlijke records aller tijden met een <i>Nieuw record!</i>-badge",
+    "pt": "Recordes pessoais de todos os tempos opcionais, com o selo <i>Novo recorde!</i>",
+    "id": "Rekor pribadi sepanjang masa (opsional) dengan lencana <i>Rekor baru!</i>",
+    "ja": "歴代の自己ベストと<i>自己ベスト更新！</i>バッジ（任意）",
+    "it": "Record personali di sempre opzionali con il badge <i>Nuovo record!</i>"
   },
   "site.features.optionalEatenByRow": {
     "en": "Optional <i>Eaten by</i> row with the nick and mass that ate you",
@@ -1283,17 +1283,17 @@
     "es": "Fila opcional <i>Comido por</i> con el nick y la masa de quien te comió",
     "bg": "Незадължителен ред <i>Изяден от</i> с ника и масата на този, който ви е изял",
     "fr": "Ligne <i>Mangé par</i> optionnelle avec le pseudo et la masse de celui qui vous a mangé",
-    "ar": "سطر <i>Eaten by</i> اختياري يعرض اسم وكتلة من أكلك",
-    "zh": "可選的 <i>Eaten by</i> 列，顯示吃掉你的玩家暱稱與質量",
+    "ar": "سطر <i>أكلك</i> اختياري يعرض اسم وكتلة من أكلك",
+    "zh": "可選的 <i>被吃掉</i> 列，顯示吃掉你的玩家暱稱與質量",
     "ru": "Строка <i>Съеден игроком</i> с ником и массой того, кто вас съел, по желанию",
-    "de": "Optionale Zeile <i>Eaten by</i> mit Nick und Masse dessen, der dich gefressen hat",
+    "de": "Optionale Zeile <i>Gefressen von</i> mit Nick und Masse dessen, der dich gefressen hat",
     "tr": "Sizi yiyen oyuncunun nick'i ve kütlesiyle isteğe bağlı <i>Yiyen</i> satırı",
     "pl": "Opcjonalny wiersz <i>Zjedzony przez</i> z nickiem i masą gracza, który cię zjadł",
-    "nl": "Optionele <i>Eaten by</i>-regel met de nick en massa van wie je opat",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Optionele <i>Opgegeten door</i>-regel met de nick en massa van wie jou opat",
+    "pt": "Linha opcional <i>Comido por</i> com o nick e a massa de quem te comeu",
+    "id": "Baris <i>Dimakan oleh</i> (opsional) berisi nick dan massa pemain yang memakanmu",
+    "ja": "あなたを食べた相手のニックネームと質量を示す<i>食べた相手</i>の行（任意）",
+    "it": "Riga opzionale <i>Mangiato da</i> con il nick e la massa di chi ti ha mangiato"
   },
   "site.features.optionalMatchHistoryYour": {
     "en": "Optional match history: your last 50 games in a window under the menu",
@@ -1308,10 +1308,10 @@
     "tr": "İsteğe bağlı maç geçmişi: menünün altındaki pencerede son 50 oyununuz",
     "pl": "Opcjonalna historia meczów: twoje ostatnie 50 gier w oknie pod menu",
     "nl": "Optionele wedstrijdgeschiedenis: je laatste 50 games in een venster onder het menu",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Histórico de partidas opcional: as suas últimas 50 partidas numa janela abaixo do menu",
+    "id": "Riwayat pertandingan opsional: 50 game terakhirmu di jendela di bawah menu",
+    "ja": "対戦履歴：メニューの下のウィンドウに直近50試合を表示（任意）",
+    "it": "Cronologia partite opzionale: le tue ultime 50 partite in una finestra sotto il menu"
   },
   "site.features.sessionSummaryUnderThe": {
     "en": "Session summary under the menu",
@@ -1326,10 +1326,10 @@
     "tr": "Menünün altında oturum özeti",
     "pl": "Podsumowanie sesji pod menu",
     "nl": "Sessieoverzicht onder het menu",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Resumo da sessão abaixo do menu",
+    "id": "Ringkasan sesi di bawah menu",
+    "ja": "メニューの下にセッションのまとめを表示",
+    "it": "Riepilogo della sessione sotto il menu"
   },
   "site.features.spectatingNew": {
     "en": "Spectating <span class=\"badge badge-new\">New</span>",
@@ -1344,10 +1344,10 @@
     "tr": "İzleme <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Obserwowanie <span class=\"badge badge-new\">Nowość</span>",
     "nl": "Toeschouwen <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Modo espectador <span class=\"badge badge-new\">Novo</span>",
+    "id": "Spectate <span class=\"badge badge-new\">Baru</span>",
+    "ja": "観戦 <span class=\"badge badge-new\">新機能</span>",
+    "it": "Modalità spettatore <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.followTheActionIn": {
     "en": "Follow the action in free spectate.",
@@ -1362,32 +1362,32 @@
     "tr": "Serbest izleme modunda aksiyonu takip edin.",
     "pl": "Śledź akcję w trybie swobodnej obserwacji.",
     "nl": "Volg de actie in vrije toeschouwersmodus.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Acompanhe a ação no espectar livre.",
+    "id": "Ikuti keseruannya lewat spectate bebas.",
+    "ja": "自由観戦で戦いを追いかけられます。",
+    "it": "Segui l'azione in modalità spettatore libero."
   },
   "site.features.followALeaderboardPlayer": {
     "en": "Follow a leaderboard player: click a leaderboard mass (optional) or use the <i>follow next leaderboard player</i> hotkey",
-    "el": "Ακολουθήστε έναν παίκτη του leaderboard: κάντε κλικ σε μια μάζα του leaderboard (προαιρετικό) ή χρησιμοποιήστε το hotkey <i>ακολούθησε τον επόμενο παίκτη του leaderboard</i>",
-    "es": "Sigue a un jugador del leaderboard: haz clic en una masa del leaderboard (opcional) o usa la hotkey <i>seguir al siguiente jugador del leaderboard</i>",
+    "el": "Ακολουθήστε έναν παίκτη της κατάταξης: κάντε κλικ σε μια μάζα της κατάταξης (προαιρετικό) ή χρησιμοποιήστε το πλήκτρο <i>ακολούθησε τον επόμενο παίκτη της κατάταξης</i>",
+    "es": "Sigue a un jugador de la clasificación: haz clic en una masa de la clasificación (opcional) o usa el atajo <i>seguir al siguiente jugador de la clasificación</i>",
     "bg": "Следвайте играч от класацията: щракнете върху маса в класацията (по желание) или използвайте клавиша <i>следвай следващия играч от класацията</i>",
-    "fr": "Suivez un joueur du leaderboard : cliquez sur une masse du leaderboard (optionnel) ou utilisez la hotkey <i>suivre le joueur suivant du leaderboard</i>",
-    "ar": "تابع لاعبًا من لوحة الصدارة: انقر على كتلة في لوحة الصدارة (اختياري) أو استخدم مفتاح <i>follow next leaderboard player</i>",
-    "zh": "跟隨排行榜玩家：點擊排行榜上的質量（選用），或使用 <i>follow next leaderboard player</i> 快速鍵",
+    "fr": "Suivez un joueur du classement : cliquez sur une masse du classement (optionnel) ou utilisez le raccourci <i>suivre le joueur suivant du classement</i>",
+    "ar": "تابع لاعبًا من لوحة الصدارة: انقر على كتلة في لوحة الصدارة (اختياري) أو استخدم مفتاح <i>متابعة اللاعب التالي في لوحة الصدارة</i>",
+    "zh": "跟隨排行榜玩家：點擊排行榜上的質量（選用），或使用 <i>跟隨排行榜上的下一位玩家</i> 快速鍵",
     "ru": "Следите за игроком из таблицы лидеров: щёлкните по массе в таблице лидеров (по желанию) или используйте горячую клавишу <i>следить за следующим игроком из таблицы лидеров</i>",
-    "de": "Folge einem Spieler aus der Rangliste: Klick auf eine Masse in der Rangliste (optional) oder nutze den Hotkey <i>follow next leaderboard player</i>",
+    "de": "Folge einem Spieler aus der Bestenliste: Klick auf eine Masse in der Bestenliste (optional) oder nutze den Hotkey <i>nächstem Spieler der Bestenliste folgen</i>",
     "tr": "Liderlik tablosundaki bir oyuncuyu takip edin: liderlik tablosundaki bir kütleye tıklayın (isteğe bağlı) veya <i>sonraki liderlik tablosu oyuncusunu takip et</i> kısayolunu kullanın",
     "pl": "Śledź gracza z rankingu: kliknij masę w rankingu (opcjonalnie) albo użyj skrótu <i>śledź następnego gracza z rankingu</i>",
-    "nl": "Volg een speler uit het leaderboard: klik op een massa in het leaderboard (optioneel) of gebruik de sneltoets <i>follow next leaderboard player</i>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Volg een speler uit het leaderboard: klik op een massa in het leaderboard (optioneel) of gebruik de sneltoets <i>volgende speler uit het klassement volgen</i>",
+    "pt": "Siga um jogador do ranking: clique numa massa do ranking (opcional) ou use o atalho <i>seguir o próximo jogador do ranking</i>",
+    "id": "Ikuti pemain di leaderboard: klik massa di leaderboard (opsional) atau pakai hotkey <i>ikuti pemain leaderboard berikutnya</i>",
+    "ja": "ランキングのプレイヤーを追従：ランキングの質量をクリック（任意）するか、<i>次のランキングプレイヤーを追従</i>ショートカットキーを使います",
+    "it": "Segui un giocatore della classifica: clicca su una massa in classifica (opzionale) oppure usa il tasto rapido <i>segui il prossimo giocatore in classifica</i>"
   },
   "site.features.optionalClickAPlayer": {
     "en": "Optional: click a player cell to follow it, click empty space to stop",
-    "el": "Προαιρετικό: κάντε κλικ σε κελί παίκτη για να το ακολουθήσετε, κλικ σε κενό σημείο για διακοπή",
+    "el": "Προαιρετικό: κάντε κλικ στο κύτταρο ενός παίκτη για να το ακολουθήσετε, κλικ σε κενό σημείο για διακοπή",
     "es": "Opcional: haz clic en la célula de un jugador para seguirla y en un espacio vacío para dejar de hacerlo",
     "bg": "По желание: щракнете върху клетка на играч, за да я следвате, щракнете в празно място, за да спрете",
     "fr": "Optionnel : cliquez sur la cellule d'un joueur pour la suivre, cliquez dans le vide pour arrêter",
@@ -1398,35 +1398,35 @@
     "tr": "İsteğe bağlı: takip etmek için bir oyuncu hücresine tıklayın, durdurmak için boş alana tıklayın",
     "pl": "Opcjonalnie: kliknij komórkę gracza, aby ją śledzić, kliknij puste miejsce, aby przestać",
     "nl": "Optioneel: klik op een spelercel om die te volgen, klik op lege ruimte om te stoppen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Opcional: clique na célula de um jogador para segui-la e clique num espaço vazio para parar",
+    "id": "Opsional: klik sel pemain untuk mengikutinya, klik area kosong untuk berhenti",
+    "ja": "任意：プレイヤーのセルをクリックすると追従、何もない場所をクリックすると停止",
+    "it": "Opzionale: clicca sulla cellula di un giocatore per seguirlo, clicca su uno spazio vuoto per smettere"
   },
   "site.features.expandingLandWorldSpectate": {
     "en": "Expanding Land World Spectate: optional minimap click moves the camera there",
     "el": "Expanding Land World Spectate: προαιρετικά, κλικ στο minimap μεταφέρει την κάμερα εκεί",
     "es": "World Spectate de Expanding Land: opcionalmente, un clic en el minimapa mueve la cámara allí",
     "bg": "Expanding Land World Spectate: по желание щракване върху миникартата премества камерата там",
-    "fr": "World Spectate d'Expanding Land : en option, un clic sur la minimap y déplace la caméra",
+    "fr": "World Spectate d'Expanding Land : en option, un clic sur la mini-carte y déplace la caméra",
     "ar": "المشاهدة العالمية في Expanding Land: النقر على الخريطة المصغرة (اختياري) ينقل الكاميرا إلى هناك",
     "zh": "Expanding Land 世界觀戰：可選擇點擊小地圖將鏡頭移到該處",
     "ru": "Expanding Land World Spectate: по желанию щелчок по миникарте перемещает туда камеру",
     "de": "Expanding Land World Spectate: Optional bewegt ein Klick auf die Minimap die Kamera dorthin",
     "tr": "Expanding Land World Spectate: isteğe bağlı olarak mini haritaya tıklamak kamerayı oraya taşır",
     "pl": "Expanding Land World Spectate: opcjonalnie kliknięcie minimapy przenosi tam kamerę",
-    "nl": "Expanding Land World Spectate: een optionele klik op de minimap verplaatst de camera daarheen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Wereld bekijken in Expanding Land: een optionele klik op de minimap verplaatst de camera daarheen",
+    "pt": "World Spectate do Expanding Land: clicar no minimapa leva a câmera até lá (opcional)",
+    "id": "Spectate Dunia Expanding Land: klik minimap (opsional) untuk memindahkan kamera ke sana",
+    "ja": "Expanding Landのワールド観戦：ミニマップをクリックするとカメラがその場所へ移動（任意）",
+    "it": "Expanding Land World Spectate: con un clic opzionale sulla minimappa sposti lì la visuale"
   },
   "site.features.hotkeyToEnlargeThe": {
     "en": "Hotkey to enlarge the minimap",
-    "el": "Hotkey για μεγέθυνση του minimap",
-    "es": "Hotkey para ampliar el minimapa",
+    "el": "Πλήκτρο για μεγέθυνση του minimap",
+    "es": "Atajo para ampliar el minimapa",
     "bg": "Клавиш за уголемяване на миникартата",
-    "fr": "Hotkey pour agrandir la minimap",
+    "fr": "Raccourci pour agrandir la mini-carte",
     "ar": "مفتاح اختصار لتكبير الخريطة المصغرة",
     "zh": "放大小地圖的快速鍵",
     "ru": "Горячая клавиша для увеличения миникарты",
@@ -1434,10 +1434,10 @@
     "tr": "Mini haritayı büyütmek için kısayol tuşu",
     "pl": "Skrót do powiększenia minimapy",
     "nl": "Sneltoets om de minimap te vergroten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atalho para aumentar o minimapa",
+    "id": "Hotkey untuk memperbesar minimap",
+    "ja": "ミニマップを拡大するショートカットキー",
+    "it": "Tasto rapido per ingrandire la minimappa"
   },
   "site.features.chatToolsNew": {
     "en": "Chat Tools <span class=\"badge badge-new\">New</span>",
@@ -1452,10 +1452,10 @@
     "tr": "Sohbet Araçları <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Narzędzia czatu <span class=\"badge badge-new\">Nowość</span>",
     "nl": "Chattools <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ferramentas de chat <span class=\"badge badge-new\">Novo</span>",
+    "id": "Alat Chat <span class=\"badge badge-new\">Baru</span>",
+    "ja": "チャットツール <span class=\"badge badge-new\">新機能</span>",
+    "it": "Strumenti chat <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.aFasterCleanerChat": {
     "en": "A faster, cleaner chat.",
@@ -1470,10 +1470,10 @@
     "tr": "Daha hızlı, daha temiz bir sohbet.",
     "pl": "Szybszy i czytelniejszy czat.",
     "nl": "Een snellere, overzichtelijkere chat.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Um chat mais rápido e mais limpo.",
+    "id": "Chat yang lebih cepat dan lebih rapi.",
+    "ja": "より速く、すっきりしたチャット。",
+    "it": "Una chat più veloce e più pulita."
   },
   "site.features.upDownInThe": {
     "en": "Up / Down in the chat box recalls your last messages",
@@ -1488,10 +1488,10 @@
     "tr": "Sohbet kutusunda Yukarı / Aşağı son mesajlarınızı geri getirir",
     "pl": "Strzałki w górę / w dół w polu czatu przywołują twoje ostatnie wiadomości",
     "nl": "Omhoog / omlaag in het chatvak haalt je laatste berichten terug",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Cima / Baixo na caixa do chat traz de volta as suas últimas mensagens",
+    "id": "Tombol Up / Down di kotak chat memanggil kembali pesan terakhirmu",
+    "ja": "チャット欄で↑/↓を押すと、最近送ったメッセージを呼び出せます",
+    "it": "Su / Giù nel box della chat richiamano i tuoi ultimi messaggi"
   },
   "site.features.clickANickIn": {
     "en": "Click a nick in the chat to put it into your message",
@@ -1506,10 +1506,10 @@
     "tr": "Mesajınıza eklemek için sohbetteki bir nick'e tıklayın",
     "pl": "Kliknij nick w czacie, aby wstawić go do wiadomości",
     "nl": "Klik op een nick in de chat om die in je bericht te zetten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Clique num nick no chat para colocá-lo na sua mensagem",
+    "id": "Klik nick di chat untuk memasukkannya ke pesanmu",
+    "ja": "チャットのニックネームをクリックすると、メッセージに挿入されます",
+    "it": "Clicca su un nick nella chat per inserirlo nel tuo messaggio"
   },
   "site.features.optionalWordFilterHides": {
     "en": "Optional word filter hides lines with words you choose",
@@ -1524,10 +1524,10 @@
     "tr": "İsteğe bağlı kelime filtresi, seçtiğiniz kelimeleri içeren satırları gizler",
     "pl": "Opcjonalny filtr słów ukrywa wiersze z wybranymi przez ciebie słowami",
     "nl": "Optioneel woordfilter verbergt regels met woorden die jij kiest",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Filtro de palavras opcional que esconde as linhas com as palavras que você escolher",
+    "id": "Filter kata opsional menyembunyikan baris yang berisi kata pilihanmu",
+    "ja": "指定した単語を含む行を隠すワードフィルター（任意）",
+    "it": "Filtro parole opzionale che nasconde le righe con le parole che scegli tu"
   },
   "site.features.optionalDesktopNotificationWhen": {
     "en": "Optional desktop notification when someone mentions you",
@@ -1542,17 +1542,17 @@
     "tr": "Biri sizden bahsettiğinde isteğe bağlı masaüstü bildirimi",
     "pl": "Opcjonalne powiadomienie na pulpicie, gdy ktoś cię wspomni",
     "nl": "Optionele bureaubladmelding als iemand je noemt",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Notificação opcional na área de trabalho quando alguém te menciona",
+    "id": "Notifikasi desktop opsional saat ada yang menyebut namamu",
+    "ja": "誰かにメンションされたときのデスクトップ通知（任意）",
+    "it": "Notifica desktop opzionale quando qualcuno ti menziona"
   },
   "site.features.hotkeyToMuteUnmute": {
     "en": "Hotkey to mute / unmute chat sounds",
-    "el": "Hotkey για σίγαση / κατάργηση σίγασης ήχων chat",
-    "es": "Hotkey para silenciar / activar los sonidos del chat",
+    "el": "Πλήκτρο για σίγαση / κατάργηση σίγασης ήχων chat",
+    "es": "Atajo para silenciar / activar los sonidos del chat",
     "bg": "Клавиш за изключване / включване на звуците на чата",
-    "fr": "Hotkey pour couper / rétablir les sons du chat",
+    "fr": "Raccourci pour couper / rétablir les sons du chat",
     "ar": "مفتاح اختصار لكتم / تشغيل أصوات الدردشة",
     "zh": "將聊天音效靜音 / 取消靜音的快速鍵",
     "ru": "Горячая клавиша для выключения / включения звуков чата",
@@ -1560,10 +1560,10 @@
     "tr": "Sohbet seslerini kapatıp açmak için kısayol tuşu",
     "pl": "Skrót do wyciszania / włączania dźwięków czatu",
     "nl": "Sneltoets om chatgeluiden te dempen / aan te zetten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atalho para silenciar / ativar os sons do chat",
+    "id": "Hotkey untuk bisukan / bunyikan suara chat",
+    "ja": "チャットの音をミュート/ミュート解除するショートカットキー",
+    "it": "Tasto rapido per silenziare / riattivare i suoni della chat"
   },
   "site.features.smartSettingsNew": {
     "en": "Smart Settings <span class=\"badge badge-new\">New</span>",
@@ -1578,10 +1578,10 @@
     "tr": "Akıllı Ayarlar <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Inteligentne ustawienia <span class=\"badge badge-new\">Nowość</span>",
     "nl": "Slimme instellingen <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Configurações inteligentes <span class=\"badge badge-new\">Novo</span>",
+    "id": "Pengaturan Pintar <span class=\"badge badge-new\">Baru</span>",
+    "ja": "スマート設定 <span class=\"badge badge-new\">新機能</span>",
+    "it": "Impostazioni intelligenti <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.findAndSetUp": {
     "en": "Find and set up options in seconds.",
@@ -1596,10 +1596,10 @@
     "tr": "Seçenekleri saniyeler içinde bulun ve ayarlayın.",
     "pl": "Znajdź i skonfiguruj opcje w kilka sekund.",
     "nl": "Vind en stel opties in binnen enkele seconden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Encontre e ajuste opções em segundos.",
+    "id": "Temukan dan atur opsi dalam hitungan detik.",
+    "ja": "オプションを数秒で見つけて設定できます。",
+    "it": "Trova e configura le opzioni in pochi secondi."
   },
   "site.features.searchBoxForEvery": {
     "en": "Search box for every option",
@@ -1614,28 +1614,28 @@
     "tr": "Her seçenek için arama kutusu",
     "pl": "Wyszukiwarka wszystkich opcji",
     "nl": "Zoekvak voor elke optie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Caixa de busca para todas as opções",
+    "id": "Kolom pencarian untuk semua opsi",
+    "ja": "すべてのオプションを検索できる検索ボックス",
+    "it": "Casella di ricerca per ogni opzione"
   },
   "site.features.presetsCompetitiveBatterySaver": {
     "en": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (with Undo)",
     "el": "Προρρυθμίσεις: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (με Αναίρεση)",
-    "es": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (con Deshacer)",
+    "es": "Preajustes: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (con Deshacer)",
     "bg": "Готови настройки: Състезателна, Пестене на батерия, Стриймър, Чист HUD, Намалено движение (с Отмяна)",
     "fr": "Préréglages : Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (avec Annuler)",
-    "ar": "إعدادات مسبقة: Competitive وBattery saver وStreamer وClean HUD وReduced motion (مع إمكانية التراجع)",
-    "zh": "預設組合：Competitive、Battery saver、Streamer、Clean HUD、Reduced motion（可復原)",
+    "ar": "إعدادات مسبقة: تنافسي وتوفير البطارية والبث المباشر وواجهة نظيفة وتقليل الحركة (مع إمكانية التراجع)",
+    "zh": "預設組合：競技、省電、直播、簡潔 HUD、減少動態效果（可復原）",
     "ru": "Пресеты: Соревновательный, Экономия батареи, Стример, Чистый HUD, Меньше движения (с отменой)",
-    "de": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (mit Rückgängig)",
-    "tr": "Ön ayarlar: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (Geri Al ile)",
+    "de": "Voreinstellungen: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (mit Rückgängig)",
+    "tr": "Ön ayarlar: Rekabetçi, Pil tasarrufu, Yayıncı, Sade HUD, Azaltılmış hareket (Geri Al ile)",
     "pl": "Presety: Rywalizacja, Oszczędzanie baterii, Streamer, Czysty HUD, Ograniczony ruch (z cofnięciem)",
-    "nl": "Presets: Competitive, Battery saver, Streamer, Clean HUD, Reduced motion (met Undo)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Presets: Competitief, Batterij sparen, Streamer, Schone HUD, Minder beweging (met Ongedaan maken)",
+    "pt": "Predefinições: Competitivo, Economia de bateria, Streamer, HUD limpo, Movimento reduzido (com Desfazer)",
+    "id": "Preset: Kompetitif, Hemat baterai, Streamer, HUD bersih, Kurangi gerakan (dengan Undo)",
+    "ja": "プリセット：競技、省電力、配信者、シンプルHUD、モーション軽減（元に戻す機能付き）",
+    "it": "Preset: Competitivo, Risparmio batteria, Streamer, HUD pulito, Movimento ridotto (con Annulla)"
   },
   "site.features.newBadgesAndA": {
     "en": "<b>NEW</b> badges and a <i>Show new options</i> filter",
@@ -1643,42 +1643,42 @@
     "es": "Insignias <b>NEW</b> y filtro <i>Show new options</i>",
     "bg": "Значки <b>НОВО</b> и филтър <i>Покажи новите опции</i>",
     "fr": "Badges <b>NEW</b> et filtre <i>Show new options</i>",
-    "ar": "شارات <b>NEW</b> ومرشّح <i>Show new options</i>",
-    "zh": "<b>NEW</b> 徽章與 <i>Show new options</i> 篩選器",
+    "ar": "شارات <b>جديد</b> ومرشّح <i>عرض الخيارات الجديدة</i>",
+    "zh": "<b>新</b>徽章與<i>顯示新選項</i>篩選器",
     "ru": "Значки <b>НОВОЕ</b> и фильтр <i>Показать новые опции</i>",
     "de": "<b>NEU</b>-Badges und ein Filter <i>Show new options</i>",
-    "tr": "<b>YENİ</b> rozetleri ve <i>Show new options</i> filtresi",
+    "tr": "<b>YENİ</b> rozetleri ve <i>Yeni seçenekleri göster</i> filtresi",
     "pl": "Odznaki <b>NOWOŚĆ</b> i filtr <i>Pokaż nowe opcje</i>",
-    "nl": "<b>NEW</b>-badges en een filter <i>Show new options</i>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "<b>NIEUW</b>-badges en een filter <i>Nieuwe opties tonen</i>",
+    "pt": "Selos <b>NOVO</b> e um filtro <i>Mostrar opções novas</i>",
+    "id": "Lencana <b>BARU</b> dan filter <i>Tampilkan opsi baru</i>",
+    "ja": "<b>NEW</b>バッジと<i>新しいオプションを表示</i>フィルター",
+    "it": "Badge <b>NUOVO</b> e filtro <i>Mostra nuove opzioni</i>"
   },
   "site.features.boundKeysListIn": {
     "en": "Bound keys list in Hotkeys",
-    "el": "Λίστα δεσμευμένων πλήκτρων στα Hotkeys",
-    "es": "Lista de teclas asignadas en Hotkeys",
+    "el": "Λίστα δεσμευμένων πλήκτρων στα Πλήκτρα συντόμευσης",
+    "es": "Lista de teclas asignadas en Atajos de teclado",
     "bg": "Списък със зададените клавиши в Клавиши",
-    "fr": "Liste des touches assignées dans Hotkeys",
-    "ar": "قائمة المفاتيح المعيّنة في Hotkeys",
+    "fr": "Liste des touches assignées dans Raccourcis",
+    "ar": "قائمة المفاتيح المعيّنة في مفاتيح الاختصار",
     "zh": "快速鍵中的已綁定按鍵清單",
     "ru": "Список назначенных клавиш в Горячих клавишах",
     "de": "Liste der belegten Tasten unter Hotkeys",
     "tr": "Kısayol Tuşları bölümünde atanmış tuşlar listesi",
     "pl": "Lista przypisanych klawiszy w Skrótach klawiszowych",
-    "nl": "Lijst met toegewezen toetsen in Hotkeys",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Lijst met toegewezen toetsen in Sneltoetsen",
+    "pt": "Lista das teclas configuradas em Atalhos",
+    "id": "Daftar tombol yang sudah dipakai di menu Hotkey",
+    "ja": "ショートカットに割り当て済みキーの一覧",
+    "it": "Elenco dei tasti assegnati in Tasti rapidi"
   },
   "site.features.settingsThemeAndHotkey": {
     "en": "Settings, theme and hotkey labels in 12 languages",
-    "el": "Ετικέτες ρυθμίσεων, θέματος και hotkeys σε 12 γλώσσες",
-    "es": "Etiquetas de ajustes, temas y hotkeys en 12 idiomas",
+    "el": "Ετικέτες ρυθμίσεων, θέματος και πλήκτρων σε 12 γλώσσες",
+    "es": "Etiquetas de ajustes, temas y atajos en 12 idiomas",
     "bg": "Настройки, теми и надписи на клавиши на 12 езика",
-    "fr": "Libellés des paramètres, du thème et des hotkeys en 12 langues",
+    "fr": "Libellés des paramètres, du thème et des raccourcis en 12 langues",
     "ar": "تسميات الإعدادات والسمات ومفاتيح الاختصار بـ 12 لغة",
     "zh": "設定、主題與快速鍵標籤支援 12 種語言",
     "ru": "Настройки, темы и подписи клавиш на 12 языках",
@@ -1686,10 +1686,10 @@
     "tr": "12 dilde ayar, tema ve kısayol etiketleri",
     "pl": "Ustawienia, motywy i etykiety skrótów w 12 językach",
     "nl": "Labels voor instellingen, thema en sneltoetsen in 12 talen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Configurações, tema e nomes dos atalhos em 12 idiomas",
+    "id": "Label pengaturan, tema, dan hotkey dalam 12 bahasa",
+    "ja": "設定、テーマ、ショートカットキーの表示は12言語に対応",
+    "it": "Etichette di impostazioni, tema e tasti rapidi in 12 lingue"
   },
   "site.features.downloadLoadSettingsFiles": {
     "en": "Download / load settings files and cloud sync with a sync code",
@@ -1704,10 +1704,10 @@
     "tr": "Ayar dosyalarını indirme / yükleme ve senkronizasyon koduyla bulut senkronizasyonu",
     "pl": "Pobieranie / wczytywanie plików ustawień i synchronizacja w chmurze z kodem synchronizacji",
     "nl": "Instellingenbestanden downloaden / laden en cloudsync met een synccode",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Baixe / carregue arquivos de configurações e sincronize na nuvem com um código de sincronização",
+    "id": "Unduh / muat file pengaturan dan sinkronisasi cloud dengan kode sinkronisasi",
+    "ja": "設定ファイルのダウンロード/読み込みと、同期コードによるクラウド同期",
+    "it": "Scarica / carica file di impostazioni e sincronizzazione cloud con un codice di sincronizzazione"
   },
   "site.features.accessibilityNew": {
     "en": "Accessibility <span class=\"badge badge-new\">New</span>",
@@ -1722,10 +1722,10 @@
     "tr": "Erişilebilirlik <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Dostępność <span class=\"badge badge-new\">Nowość</span>",
     "nl": "Toegankelijkheid <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Acessibilidade <span class=\"badge badge-new\">Novo</span>",
+    "id": "Aksesibilitas <span class=\"badge badge-new\">Baru</span>",
+    "ja": "アクセシビリティ <span class=\"badge badge-new\">新機能</span>",
+    "it": "Accessibilità <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.comfortableToLookAt": {
     "en": "Comfortable to look at for everyone.",
@@ -1740,28 +1740,28 @@
     "tr": "Herkes için göz yormayan bir görünüm.",
     "pl": "Wygodne dla oczu każdego.",
     "nl": "Prettig om naar te kijken voor iedereen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Confortável de ver para todo mundo.",
+    "id": "Nyaman dilihat untuk semua orang.",
+    "ja": "誰にとっても見やすい画面。",
+    "it": "Comoda da guardare per tutti."
   },
   "site.features.colourBlindSafeHigh": {
     "en": "<i>Colour-blind safe (high contrast)</i> theme preset",
     "el": "Προρρύθμιση θέματος <i>Colour-blind safe (high contrast)</i>",
-    "es": "Preset de tema <i>Colour-blind safe (high contrast)</i>",
+    "es": "Preajuste de tema <i>Colour-blind safe (high contrast)</i>",
     "bg": "Готова тема <i>Безопасна за далтонисти (висок контраст)</i>",
     "fr": "Préréglage de thème <i>Colour-blind safe (high contrast)</i>",
-    "ar": "إعداد سمة <i>Colour-blind safe (high contrast)</i> المسبق",
-    "zh": "<i>Colour-blind safe (high contrast)</i> 主題預設",
+    "ar": "إعداد سمة <i>مناسب لعمى الألوان (تباين عالٍ)</i> المسبق",
+    "zh": "<i>色盲友善（高對比）</i>主題預設",
     "ru": "Пресет темы <i>Для дальтоников (высокий контраст)</i>",
-    "de": "Theme-Preset <i>Colour-blind safe (high contrast)</i>",
-    "tr": "<i>Colour-blind safe (high contrast)</i> tema ön ayarı",
+    "de": "Theme-Voreinstellung <i>Colour-blind safe (high contrast)</i>",
+    "tr": "<i>Renk körlüğüne uygun (yüksek kontrast)</i> tema ön ayarı",
     "pl": "Preset motywu <i>Bezpieczny dla daltonistów (wysoki kontrast)</i>",
-    "nl": "Themapreset <i>Colour-blind safe (high contrast)</i>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Themapreset <i>Kleurenblindvriendelijk (hoog contrast)</i>",
+    "pt": "Predefinição de tema <i>Seguro para daltônicos (alto contraste)</i>",
+    "id": "Preset tema <i>Ramah buta warna (kontras tinggi)</i>",
+    "ja": "<i>色覚多様性対応（ハイコントラスト）</i>テーマプリセット",
+    "it": "Preset del tema <i>Adatto ai daltonici (alto contrasto)</i>"
   },
   "site.features.optionalReducedMotionNo": {
     "en": "Optional reduced motion: no screen shake, death particles or Expanding Land join spin",
@@ -1776,10 +1776,10 @@
     "tr": "İsteğe bağlı azaltılmış hareket: ekran sarsıntısı, ölüm parçacıkları veya Expanding Land katılma dönüşü yok",
     "pl": "Opcjonalnie ograniczony ruch: bez trzęsienia ekranu, cząsteczek śmierci i obrotu przy dołączaniu do Expanding Land",
     "nl": "Optioneel minder beweging: geen schermschudden, doodsdeeltjes of de draai bij het joinen van Expanding Land",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Movimento reduzido opcional: sem tremor de tela, sem partículas de morte e sem o giro de entrada do Expanding Land",
+    "id": "Opsi kurangi gerakan: tanpa guncangan layar, partikel kematian, atau putaran saat masuk Expanding Land",
+    "ja": "モーション軽減（任意）：画面の揺れ、死亡時のパーティクル、Expanding Land参加時の回転演出をなくします",
+    "it": "Movimento ridotto opzionale: niente tremolio dello schermo, particelle alla morte o rotazione d'ingresso in Expanding Land"
   },
   "site.features.gameBrightnessAndSaturation": {
     "en": "Game brightness and saturation sliders",
@@ -1794,10 +1794,10 @@
     "tr": "Oyun parlaklığı ve doygunluğu kaydırıcıları",
     "pl": "Suwaki jasności i nasycenia gry",
     "nl": "Schuifregelaars voor helderheid en verzadiging van de game",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Controles de brilho e saturação do jogo",
+    "id": "Slider kecerahan dan saturasi game",
+    "ja": "ゲームの明るさと彩度のスライダー",
+    "it": "Cursori per luminosità e saturazione del gioco"
   },
   "site.features.zoomGlideSpeedSlider": {
     "en": "Zoom glide speed slider",
@@ -1812,10 +1812,10 @@
     "tr": "Yakınlaştırma kayma hızı kaydırıcısı",
     "pl": "Suwak szybkości płynnego przybliżania",
     "nl": "Schuifregelaar voor de glijsnelheid van de zoom",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Controle da velocidade de deslize do zoom",
+    "id": "Slider kecepatan transisi zoom",
+    "ja": "ズームのなめらかさ（速度）のスライダー",
+    "it": "Cursore per la velocità di scorrimento dello zoom"
   },
   "site.features.labelsInYourLanguage": {
     "en": "Labels in your language from the language menu",
@@ -1830,10 +1830,10 @@
     "tr": "Dil menüsünden kendi dilinizde etiketler",
     "pl": "Etykiety w twoim języku z menu języka",
     "nl": "Labels in jouw taal via het taalmenu",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Textos no seu idioma pelo menu de idiomas",
+    "id": "Label dalam bahasamu lewat menu bahasa",
+    "ja": "言語メニューから表示をあなたの言語に",
+    "it": "Etichette nella tua lingua dal menu delle lingue"
   },
   "site.features.mobileTouchControlsNew": {
     "en": "Mobile Touch Controls <span class=\"badge badge-new\">New</span>",
@@ -1848,10 +1848,10 @@
     "tr": "Mobil Dokunmatik Kontroller <span class=\"badge badge-new\">Yeni</span>",
     "pl": "Mobilne sterowanie dotykowe <span class=\"badge badge-new\">Nowość</span>",
     "nl": "Mobiele touchbediening <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Controles de toque para celular <span class=\"badge badge-new\">Novo</span>",
+    "id": "Kontrol Sentuh HP <span class=\"badge badge-new\">Baru</span>",
+    "ja": "モバイル用タッチ操作 <span class=\"badge badge-new\">新機能</span>",
+    "it": "Controlli touch per mobile <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.playOnYourPhone": {
     "en": "Play on your phone or tablet.",
@@ -1866,64 +1866,64 @@
     "tr": "Telefonunuzda veya tabletinizde oynayın.",
     "pl": "Graj na telefonie lub tablecie.",
     "nl": "Speel op je telefoon of tablet.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Jogue no seu celular ou tablet.",
+    "id": "Main di HP atau tablet kamu.",
+    "ja": "スマホやタブレットでプレイできます。",
+    "it": "Gioca sul telefono o sul tablet."
   },
   "site.features.touchJoystickWithSplit": {
     "en": "Touch joystick with split and feed buttons",
-    "el": "Joystick αφής με κουμπιά split και ταΐσματος",
-    "es": "Joystick táctil con botones de split y alimentar",
+    "el": "Joystick αφής με κουμπιά split και feed",
+    "es": "Joystick táctil con botones de split y feed",
     "bg": "Сензорен джойстик с бутони за разделяне и хранене",
-    "fr": "Joystick tactile avec boutons split et nourrir",
+    "fr": "Joystick tactile avec boutons split et feed",
     "ar": "عصا تحكم باللمس مع زرّي الانقسام والتغذية",
-    "zh": "具備分裂與餵食按鈕的觸控搖桿",
+    "zh": "具備分裂與吐球按鈕的觸控搖桿",
     "ru": "Сенсорный джойстик с кнопками сплита и кормления",
-    "de": "Touch-Joystick mit Split- und Füttern-Buttons",
+    "de": "Touch-Joystick mit Split- und Feed-Buttons",
     "tr": "Bölünme ve besleme düğmeli dokunmatik joystick",
     "pl": "Dotykowy joystick z przyciskami podziału i karmienia",
-    "nl": "Touchjoystick met knoppen voor splitsen en voeren",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Touchjoystick met split- en feedknoppen",
+    "pt": "Joystick de toque com botões de split e feed",
+    "id": "Joystick sentuh dengan tombol split dan feed",
+    "ja": "分裂ボタンと質量放出ボタン付きのタッチジョイスティック",
+    "it": "Joystick touch con pulsanti per split e feed"
   },
   "site.features.optionalTeamPingButton": {
     "en": "Optional team ping button: tap for <i>Go here</i>, hold and slide for Help, Danger or Virus here",
-    "el": "Προαιρετικό κουμπί team ping: πατήστε για <i>Πήγαινε εδώ</i>, κρατήστε και σύρετε για Βοήθεια, Κίνδυνο ή Ιό εδώ",
+    "el": "Προαιρετικό κουμπί ping ομάδας: πατήστε για <i>Πήγαινε εδώ</i>, κρατήστε και σύρετε για Βοήθεια, Κίνδυνο ή Ιό εδώ",
     "es": "Botón opcional de ping de equipo: toca para <i>Ve aquí</i>, mantén y desliza para Ayuda, Peligro o Virus aquí",
     "bg": "Незадължителен бутон за отборен сигнал: докоснете за <i>Ела тук</i>, задръжте и плъзнете за Помощ, Опасност или Вирус тук",
     "fr": "Bouton de ping d'équipe optionnel : appuyez pour <i>Va ici</i>, maintenez et glissez pour Aide, Danger ou Virus ici",
     "ar": "زر إشارة فريق اختياري: انقر لـ <i>اذهب إلى هنا</i>، واضغط مطولًا واسحب لـ مساعدة أو خطر أو فيروس هنا",
     "zh": "可選的隊伍標記按鈕：點一下標記<i>到這裡</i>，按住並滑動可標記求救、危險或這裡有病毒",
     "ru": "Кнопка командных меток по желанию: нажмите для <i>Иди сюда</i>, удерживайте и проведите для Помощь, Опасность или Здесь вирус",
-    "de": "Optionaler Team-Ping-Button: Tippen für <i>Go here</i>, halten und wischen für Help, Danger oder Virus here",
+    "de": "Optionaler Team-Ping-Button: Tippen für <i>Hierhin</i>, halten und wischen für Hilfe, Gefahr oder Virus hier",
     "tr": "İsteğe bağlı takım ping düğmesi: <i>Buraya git</i> için dokunun, Yardım, Tehlike veya Burada virüs için basılı tutup kaydırın",
     "pl": "Opcjonalny przycisk pingu drużynowego: stuknij dla <i>Idź tutaj</i>, przytrzymaj i przesuń dla Pomocy, Niebezpieczeństwa lub Tu wirus",
-    "nl": "Optionele teampingknop: tik voor <i>Go here</i>, houd vast en schuif voor Help, Danger of Virus here",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Optionele teampingknop: tik voor <i>Ga hierheen</i>, houd vast en schuif voor Help, Gevaar of Virus hier",
+    "pt": "Botão de ping da equipe opcional: toque para <i>Vem aqui</i>, segure e deslize para Ajuda, Perigo ou Vírus aqui",
+    "id": "Tombol ping tim opsional: ketuk untuk <i>Ke sini</i>, tahan lalu geser untuk Bantuan, Bahaya, atau Ada virus",
+    "ja": "チームPingボタン（任意）：タップで<i>ここへ行け</i>、長押ししてスライドで「助けて」「危険」「ここにウイルス」",
+    "it": "Pulsante ping di squadra opzionale: tocca per <i>Vai qui</i>, tieni premuto e scorri per Aiuto, Pericolo o Virus qui"
   },
   "site.features.optionalStopOnRelease": {
     "en": "Optional <i>Stop on release</i>",
-    "el": "Προαιρετικό <i>Stop on release</i>",
-    "es": "<i>Stop on release</i> opcional",
+    "el": "Προαιρετικό <i>Στάση όταν αφήνεις</i>",
+    "es": "<i>Parar al soltar</i> opcional",
     "bg": "Незадължително <i>Спиране при пускане</i>",
-    "fr": "<i>Stop on release</i> optionnel",
-    "ar": "خيار <i>Stop on release</i> الاختياري",
-    "zh": "可選的 <i>Stop on release</i>",
+    "fr": "<i>Arrêt au relâchement</i> optionnel",
+    "ar": "خيار <i>التوقف عند الإفلات</i> الاختياري",
+    "zh": "可選的 <i>放開即停止</i>",
     "ru": "<i>Остановка при отпускании</i> по желанию",
-    "de": "Optional <i>Stop on release</i>",
+    "de": "Optional <i>Stopp beim Loslassen</i>",
     "tr": "İsteğe bağlı <i>Bırakınca dur</i>",
     "pl": "Opcjonalne <i>Zatrzymanie po puszczeniu</i>",
-    "nl": "Optioneel <i>Stop on release</i>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Optioneel <i>Stoppen bij loslaten</i>",
+    "pt": "<i>Parar ao soltar</i> opcional",
+    "id": "Opsi <i>Berhenti saat dilepas</i>",
+    "ja": "<i>指を離すと停止</i>（任意）",
+    "it": "<i>Fermati al rilascio</i> opzionale"
   },
   "site.features.optionalQuickChatButtons": {
     "en": "Optional quick chat buttons, multibox button and vibration settings",
@@ -1938,10 +1938,10 @@
     "tr": "İsteğe bağlı hızlı sohbet düğmeleri, multibox düğmesi ve titreşim ayarları",
     "pl": "Opcjonalne przyciski szybkiego czatu, przycisk multiboxa i ustawienia wibracji",
     "nl": "Optionele snelchatknoppen, multiboxknop en trilinstellingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botões de chat rápido, botão de multibox e configurações de vibração opcionais",
+    "id": "Tombol chat cepat opsional, tombol multibox, dan pengaturan getaran",
+    "ja": "クイックチャットボタン、マルチボックスボタン、振動の設定（任意）",
+    "it": "Pulsanti opzionali per la chat rapida, pulsante multibox e impostazioni di vibrazione"
   },
   "site.features.replayPauseAndSeek": {
     "en": "Replay pause and seek buttons, net graph in the touch settings",
@@ -1956,10 +1956,10 @@
     "tr": "Dokunmatik ayarlarda tekrar duraklatma ve sarma düğmeleri, ağ grafiği",
     "pl": "Przyciski pauzy i przewijania powtórek, wykres sieci w ustawieniach dotyku",
     "nl": "Knoppen voor pauze en spoelen in replays, netgrafiek in de touchinstellingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botões de pausar e avançar o replay e gráfico de rede nas configurações de toque",
+    "id": "Tombol jeda dan lompat replay, grafik jaringan di pengaturan sentuh",
+    "ja": "タッチ設定にリプレイの一時停止・シークボタンとネットグラフ",
+    "it": "Pulsanti di pausa e avanzamento del replay, grafico di rete nelle impostazioni touch"
   },
   "site.features.extraFeaturesOnOur": {
     "en": "Extra features on our own server.",
@@ -1974,10 +1974,10 @@
     "tr": "Kendi sunucumuzda ekstra özellikler.",
     "pl": "Dodatkowe funkcje na naszym własnym serwerze.",
     "nl": "Extra functies op onze eigen server.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recursos extras no nosso próprio servidor.",
+    "id": "Fitur tambahan di server kami sendiri.",
+    "ja": "独自サーバーならではの追加機能。",
+    "it": "Funzioni extra sul nostro server."
   },
   "site.features.dailyChallengesTwoNew": {
     "en": "Daily challenges, two new ones each day, with Claim and Claim All",
@@ -1985,35 +1985,35 @@
     "es": "Retos diarios, dos nuevos cada día, con Claim y Claim All",
     "bg": "Дневни предизвикателства, по две нови всеки ден, с Вземи и Вземи всички",
     "fr": "Défis quotidiens, deux nouveaux chaque jour, avec Claim et Claim All",
-    "ar": "تحديات يومية، اثنان جديدان كل يوم، مع Claim وClaim All",
+    "ar": "تحديات يومية، اثنان جديدان كل يوم، مع استلام واستلام الكل",
     "zh": "每日挑戰，每天兩個新挑戰，可使用領取與全部領取",
     "ru": "Ежедневные задания, по два новых каждый день, с кнопками Забрать и Забрать всё",
     "de": "Tägliche Challenges, jeden Tag zwei neue, mit Claim und Claim All",
-    "tr": "Her gün iki yeni günlük görev, Claim ve Claim All ile",
+    "tr": "Her gün iki yeni günlük görev, Al ve Hepsini al ile",
     "pl": "Codzienne wyzwania, dwa nowe każdego dnia, z przyciskami Odbierz i Odbierz wszystko",
-    "nl": "Dagelijkse uitdagingen, elke dag twee nieuwe, met Claim en Claim All",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Dagelijkse uitdagingen, elke dag twee nieuwe, met Ophalen en Alles ophalen",
+    "pt": "Desafios diários, dois novos por dia, com Resgatar e Resgatar tudo",
+    "id": "Tantangan harian, dua tantangan baru setiap hari, dengan Klaim dan Klaim semua",
+    "ja": "毎日2つずつ追加されるデイリーチャレンジ。「受け取る」と「すべて受け取る」に対応",
+    "it": "Sfide giornaliere, due nuove ogni giorno, con Riscatta e Riscatta tutto"
   },
   "site.features.serverEventCountdownDouble": {
     "en": "Server event countdown (Double XP, potion rain, golden food, virus storm)",
-    "el": "Αντίστροφη μέτρηση events του server (Double XP, βροχή φίλτρων, χρυσό φαγητό, καταιγίδα ιών)",
+    "el": "Αντίστροφη μέτρηση events του server (Double XP, βροχή φίλτρων, χρυσή τροφή, καταιγίδα ιών)",
     "es": "Cuenta atrás de eventos del servidor (Double XP, lluvia de pociones, comida dorada, tormenta de virus)",
     "bg": "Обратно броене за събития на сървъра (двоен XP, дъжд от отвари, златна храна, вирусна буря)",
     "fr": "Compte à rebours des événements du serveur (Double XP, pluie de potions, nourriture dorée, tempête de virus)",
     "ar": "عدّ تنازلي لأحداث الخادم (Double XP، مطر الجرعات، الطعام الذهبي، عاصفة الفيروسات)",
-    "zh": "伺服器活動倒數（雙倍 XP、藥水雨、黃金食物、病毒風暴)",
+    "zh": "伺服器活動倒數（雙倍 XP、藥水雨、黃金食物、病毒風暴）",
     "ru": "Обратный отсчёт до событий сервера (двойной XP, дождь зелий, золотая еда, вирусный шторм)",
     "de": "Countdown für Server-Events (Double XP, Trankregen, goldenes Futter, Virussturm)",
     "tr": "Sunucu etkinliği geri sayımı (Double XP, iksir yağmuru, altın yem, virüs fırtınası)",
     "pl": "Odliczanie do wydarzeń serwera (podwójne XP, deszcz mikstur, złote jedzenie, burza wirusów)",
-    "nl": "Aftellen naar serverevents (Double XP, potion-regen, gouden voedsel, virusstorm)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Aftellen naar serverevents (Double XP, drankjesregen, gouden voedsel, virusstorm)",
+    "pt": "Contagem regressiva dos eventos do servidor (XP em dobro, chuva de poções, comida dourada, tempestade de vírus)",
+    "id": "Hitung mundur event server (Double XP, hujan ramuan, makanan emas, badai virus)",
+    "ja": "サーバーイベントのカウントダウン（XP 2倍、ポーションの雨、黄金のエサ、ウイルスストーム）",
+    "it": "Conto alla rovescia per gli eventi del server (Doppia XP, pioggia di pozioni, cibo d'oro, tempesta di virus)"
   },
   "site.features.leaguesWithLastWeek": {
     "en": "Leagues with last week's results",
@@ -2027,29 +2027,29 @@
     "de": "Ligen mit den Ergebnissen der letzten Woche",
     "tr": "Geçen haftanın sonuçlarıyla ligler",
     "pl": "Ligi z wynikami z zeszłego tygodnia",
-    "nl": "Leagues met de resultaten van vorige week",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Competities met de resultaten van vorige week",
+    "pt": "Ligas com os resultados da semana passada",
+    "id": "Liga dengan hasil minggu lalu",
+    "ja": "先週の結果を確認できるリーグ",
+    "it": "Leghe con i risultati della settimana scorsa"
   },
   "site.features.eatenByUsesThe": {
     "en": "<i>Eaten by</i> uses the killer the server sends",
-    "el": "Το <i>Σε έφαγε</i> χρησιμοποιεί τον δολοφόνο που στέλνει ο server",
-    "es": "<i>Comido por</i> usa el asesino que envía el servidor",
+    "el": "Το <i>Σε έφαγε</i> χρησιμοποιεί τον παίκτη που σας έφαγε, όπως τον στέλνει ο server",
+    "es": "<i>Comido por</i> usa los datos del servidor sobre quién te comió",
     "bg": "<i>Изяден от</i> използва убиеца, изпратен от сървъра",
     "fr": "<i>Mangé par</i> utilise le tueur envoyé par le serveur",
-    "ar": "<i>Eaten by</i> يستخدم القاتل الذي يرسله الخادم",
-    "zh": "<i>Eaten by</i> 使用伺服器傳送的擊殺者資訊",
+    "ar": "سطر <i>أكلك</i> يستخدم القاتل الذي يرسله الخادم",
+    "zh": "<i>被吃掉</i> 使用伺服器傳送的擊殺者資訊",
     "ru": "<i>Съеден игроком</i> использует убийцу, которого присылает сервер",
-    "de": "<i>Eaten by</i> nutzt den Killer, den der Server meldet",
+    "de": "<i>Gefressen von</i> nutzt den Killer, den der Server meldet",
     "tr": "<i>Yiyen</i>, sunucunun gönderdiği katil bilgisini kullanır",
     "pl": "<i>Zjedzony przez</i> korzysta z zabójcy przesłanego przez serwer",
-    "nl": "<i>Eaten by</i> gebruikt de killer die de server doorgeeft",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "<i>Opgegeten door</i> gebruikt de killer die de server doorgeeft",
+    "pt": "<i>Comido por</i> usa quem te comeu segundo o servidor",
+    "id": "<i>Dimakan oleh</i> memakai data pemakan yang dikirim server",
+    "ja": "<i>食べた相手</i>にはサーバーから送られた情報を使用",
+    "it": "<i>Mangiato da</i> usa il killer comunicato dal server"
   },
   "site.features.matchHistoryOnYour": {
     "en": "Match history on your account, on every device",
@@ -2064,28 +2064,28 @@
     "tr": "Maç geçmişi hesabınızda, her cihazda",
     "pl": "Historia meczów na twoim koncie, na każdym urządzeniu",
     "nl": "Wedstrijdgeschiedenis op je account, op elk apparaat",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Histórico de partidas na sua conta, em qualquer dispositivo",
+    "id": "Riwayat pertandingan tersimpan di akunmu, di semua perangkat",
+    "ja": "対戦履歴をアカウントに保存し、どの端末からでも確認可能",
+    "it": "Cronologia partite sul tuo account, su ogni dispositivo"
   },
   "site.features.hotkeysForLeaguesShop": {
     "en": "Hotkeys for Leagues, Shop, Challenges, Potions and Claim All",
-    "el": "Hotkeys για Πρωταθλήματα, Κατάστημα, Προκλήσεις, Φίλτρα και Claim All",
-    "es": "Hotkeys para Ligas, Tienda, Retos, Pociones y Claim All",
+    "el": "Πλήκτρα για Πρωταθλήματα, Κατάστημα, Προκλήσεις, Φίλτρα και Claim All",
+    "es": "Atajos para Ligas, Tienda, Retos, Pociones y Claim All",
     "bg": "Клавиши за Лиги, Магазин, Предизвикателства, Отвари и Вземи всички",
-    "fr": "Hotkeys pour Ligues, Boutique, Défis, Potions et Claim All",
-    "ar": "مفاتيح اختصار للدوريات والمتجر والتحديات والجرعات وClaim All",
+    "fr": "Raccourcis pour Ligues, Boutique, Défis, Potions et Claim All",
+    "ar": "مفاتيح اختصار للدوريات والمتجر والتحديات والجرعات واستلام الكل",
     "zh": "聯賽、商店、挑戰、藥水與全部領取的快速鍵",
     "ru": "Горячие клавиши для Лиг, Магазина, Заданий, Зелий и Забрать всё",
     "de": "Hotkeys für Ligen, Shop, Challenges, Tränke und Claim All",
-    "tr": "Ligler, Mağaza, Görevler, İksirler ve Claim All için kısayol tuşları",
+    "tr": "Ligler, Mağaza, Görevler, İksirler ve Hepsini al için kısayol tuşları",
     "pl": "Skróty do Lig, Sklepu, Wyzwań, Mikstur i Odbierz wszystko",
-    "nl": "Sneltoetsen voor Leagues, Shop, Challenges, Potions en Claim All",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Sneltoetsen voor Competities, Winkel, Uitdagingen, Drankjes en Alles ophalen",
+    "pt": "Atalhos para Ligas, Loja, Desafios, Poções e Resgatar tudo",
+    "id": "Hotkey untuk Liga, Toko, Tantangan, Ramuan, dan Klaim semua",
+    "ja": "リーグ、ショップ、チャレンジ、ポーション、すべて受け取るのショートカットキー",
+    "it": "Tasti rapidi per Leghe, Negozio, Sfide, Pozioni e Riscatta tutto"
   },
   "site.features.userScriptApiNew": {
     "en": "User Script API <span class=\"badge badge-new\">New</span>",
@@ -2100,10 +2100,10 @@
     "tr": "Kullanıcı Betiği API'si <span class=\"badge badge-new\">Yeni</span>",
     "pl": "User Script API <span class=\"badge badge-new\">Nowość</span>",
     "nl": "User Script API <span class=\"badge badge-new\">Nieuw</span>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "API de scripts <span class=\"badge badge-new\">Novo</span>",
+    "id": "API User Script <span class=\"badge badge-new\">Baru</span>",
+    "ja": "ユーザースクリプトAPI <span class=\"badge badge-new\">新機能</span>",
+    "it": "User Script API <span class=\"badge badge-new\">Nuovo</span>"
   },
   "site.features.writeYourOwnAdd": {
     "en": "Write your own add-ons without patching the mod.",
@@ -2118,10 +2118,10 @@
     "tr": "Modu yamalamadan kendi eklentilerinizi yazın.",
     "pl": "Pisz własne dodatki bez modyfikowania moda.",
     "nl": "Schrijf je eigen add-ons zonder de mod aan te passen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Crie os seus próprios complementos sem modificar o mod.",
+    "id": "Bikin add-on sendiri tanpa perlu mengutak-atik mod.",
+    "ja": "Modを改造しなくても、自分でアドオンを作れます。",
+    "it": "Scrivi i tuoi add-on senza modificare la mod."
   },
   "site.features.upTo5User": {
     "en": "Up to 5 user scripts (URL or pasted code)",
@@ -2130,16 +2130,16 @@
     "bg": "До 5 потребителски скрипта (URL или поставен код)",
     "fr": "Jusqu'à 5 user scripts (URL ou code collé)",
     "ar": "ما يصل إلى 5 سكربتات مستخدم (رابط أو شيفرة ملصوقة)",
-    "zh": "最多 5 個使用者腳本（網址或貼上的程式碼)",
+    "zh": "最多 5 個使用者腳本（網址或貼上的程式碼）",
     "ru": "До 5 пользовательских скриптов (URL или вставленный код)",
     "de": "Bis zu 5 User-Scripts (URL oder eingefügter Code)",
     "tr": "En fazla 5 kullanıcı betiği (URL veya yapıştırılmış kod)",
     "pl": "Do 5 skryptów użytkownika (URL lub wklejony kod)",
     "nl": "Tot 5 userscripts (URL of geplakte code)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Até 5 scripts (URL ou código colado)",
+    "id": "Hingga 5 user script (URL atau kode yang ditempel)",
+    "ja": "最大5つのユーザースクリプト（URLまたはコードの貼り付け）",
+    "it": "Fino a 5 script utente (URL o codice incollato)"
   },
   "site.features.windowLmeventsSpawnDeath": {
     "en": "<code>window.LMEvents</code>: spawn, death, chat, server change, mass and leaderboard events",
@@ -2150,14 +2150,14 @@
     "ar": "<code>window.LMEvents</code>: أحداث الظهور والموت والدردشة وتغيير الخادم والكتلة ولوحة الصدارة",
     "zh": "<code>window.LMEvents</code>：出生、死亡、聊天、伺服器變更、質量與排行榜事件",
     "ru": "<code>window.LMEvents</code>: события появления, смерти, чата, смены сервера, массы и таблицы лидеров",
-    "de": "<code>window.LMEvents</code>: Events für Spawn, Tod, Chat, Serverwechsel, Masse und Rangliste",
+    "de": "<code>window.LMEvents</code>: Events für Spawn, Tod, Chat, Serverwechsel, Masse und Bestenliste",
     "tr": "<code>window.LMEvents</code>: doğma, ölüm, sohbet, sunucu değişimi, kütle ve liderlik tablosu olayları",
     "pl": "<code>window.LMEvents</code>: zdarzenia odrodzenia, śmierci, czatu, zmiany serwera, masy i rankingu",
     "nl": "<code>window.LMEvents</code>: events voor spawn, dood, chat, serverwissel, massa en leaderboard",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<code>window.LMEvents</code>: eventos de spawn, morte, chat, troca de servidor, massa e ranking",
+    "id": "<code>window.LMEvents</code>: event spawn, mati, chat, ganti server, massa, dan leaderboard",
+    "ja": "<code>window.LMEvents</code>：スポーン、死亡、チャット、サーバー変更、質量、ランキングのイベント",
+    "it": "<code>window.LMEvents</code>: eventi di spawn, morte, chat, cambio server, massa e classifica"
   },
   "site.features.helpersMassPositionPlaying": {
     "en": "Helpers: mass, position, playing state, server type, chat and toasts",
@@ -2172,10 +2172,10 @@
     "tr": "Yardımcılar: kütle, konum, oyun durumu, sunucu türü, sohbet ve bildirimler",
     "pl": "Funkcje pomocnicze: masa, pozycja, stan gry, typ serwera, czat i powiadomienia",
     "nl": "Helpers: massa, positie, speelstatus, servertype, chat en toasts",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Funções auxiliares: massa, posição, estado de jogo, tipo de servidor, chat e avisos",
+    "id": "Helper: massa, posisi, status bermain, tipe server, chat, dan toast",
+    "ja": "ヘルパー：質量、位置、プレイ中かどうか、サーバーの種類、チャット、トースト通知",
+    "it": "Helper: massa, posizione, stato di gioco, tipo di server, chat e avvisi"
   },
   "site.features.aFailingScriptNever": {
     "en": "A failing script never breaks the game",
@@ -2190,10 +2190,10 @@
     "tr": "Hata veren bir betik oyunu asla bozmaz",
     "pl": "Wadliwy skrypt nigdy nie psuje gry",
     "nl": "Een script dat faalt, breekt de game nooit",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Um script com erro nunca quebra o jogo",
+    "id": "Script yang error tidak akan merusak game",
+    "ja": "スクリプトがエラーになってもゲームは壊れません",
+    "it": "Uno script che va in errore non blocca mai il gioco"
   },
   "site.features.readTheLmeventsGuide": {
     "en": "Read the LMEvents guide",
@@ -2208,10 +2208,10 @@
     "tr": "LMEvents rehberini okuyun",
     "pl": "Przeczytaj przewodnik po LMEvents",
     "nl": "Lees de LMEvents-handleiding",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Leia o guia do LMEvents",
+    "id": "Baca panduan LMEvents",
+    "ja": "LMEventsガイドを読む",
+    "it": "Leggi la guida di LMEvents"
   },
   "site.features.mapRotation": {
     "en": "Map Rotation",
@@ -2226,10 +2226,10 @@
     "tr": "Harita Döndürme",
     "pl": "Obrót mapy",
     "nl": "Maprotatie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Rotação do mapa",
+    "id": "Rotasi Peta",
+    "ja": "マップ回転",
+    "it": "Rotazione della mappa"
   },
   "site.features.uniqueMapRotationSystem": {
     "en": "Unique map rotation system for tactical advantage.",
@@ -2244,10 +2244,10 @@
     "tr": "Taktik avantaj için benzersiz harita döndürme sistemi.",
     "pl": "Unikalny system obrotu mapy dający przewagę taktyczną.",
     "nl": "Uniek maprotatiesysteem voor tactisch voordeel.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sistema único de rotação do mapa para vantagem tática.",
+    "id": "Sistem rotasi peta unik untuk keunggulan taktis.",
+    "ja": "戦術面で有利になる独自のマップ回転システム。",
+    "it": "Un sistema unico di rotazione della mappa per un vantaggio tattico."
   },
   "site.features.rotateTheEntireGame": {
     "en": "Rotate the entire game map",
@@ -2262,10 +2262,10 @@
     "tr": "Tüm oyun haritasını döndürün",
     "pl": "Obracaj całą mapę gry",
     "nl": "Draai de hele gamemap",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Gire o mapa inteiro do jogo",
+    "id": "Putar seluruh peta game",
+    "ja": "ゲームのマップ全体を回転",
+    "it": "Ruota l'intera mappa di gioco"
   },
   "site.features.flipAxesForMirrored": {
     "en": "Flip axes for mirrored view",
@@ -2280,10 +2280,10 @@
     "tr": "Ayna görünümü için eksenleri çevirin",
     "pl": "Odwracaj osie dla widoku lustrzanego",
     "nl": "Spiegel de assen voor een gespiegeld beeld",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Inverta os eixos para uma visão espelhada",
+    "id": "Balik sumbu untuk tampilan cermin",
+    "ja": "軸を反転して鏡像表示",
+    "it": "Inverti gli assi per una visuale a specchio"
   },
   "site.features.smoothCoordinateTranslation": {
     "en": "Smooth coordinate translation",
@@ -2298,10 +2298,10 @@
     "tr": "Akıcı koordinat dönüşümü",
     "pl": "Płynne przeliczanie współrzędnych",
     "nl": "Vloeiende omrekening van coördinaten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Conversão suave de coordenadas",
+    "id": "Konversi koordinat yang mulus",
+    "ja": "なめらかな座標変換",
+    "it": "Conversione fluida delle coordinate"
   },
   "site.features.worksWithAllOverlays": {
     "en": "Works with all overlays",
@@ -2316,10 +2316,10 @@
     "tr": "Tüm katmanlarla çalışır",
     "pl": "Działa ze wszystkimi nakładkami",
     "nl": "Werkt met alle overlays",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Funciona com todos os overlays",
+    "id": "Berfungsi dengan semua overlay",
+    "ja": "すべてのオーバーレイに対応",
+    "it": "Funziona con tutti gli overlay"
   },
   "site.features.freeOpenSource": {
     "en": "100% Free & Open Source",
@@ -2334,10 +2334,10 @@
     "tr": "%100 Ücretsiz ve Açık Kaynak",
     "pl": "100% darmowy i open source",
     "nl": "100% gratis & open source",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "100% grátis e open source",
+    "id": "100% Gratis & Open Source",
+    "ja": "100%無料のオープンソース",
+    "it": "Gratis e open source al 100%"
   },
   "site.features.noPremiumTierNo": {
     "en": "No premium tier, no ads, no tracking.",
@@ -2352,10 +2352,10 @@
     "tr": "Premium paket yok, reklam yok, takip yok.",
     "pl": "Bez wersji premium, bez reklam, bez śledzenia.",
     "nl": "Geen premiumversie, geen advertenties, geen tracking.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sem plano premium, sem anúncios, sem rastreamento.",
+    "id": "Tanpa versi premium, tanpa iklan, tanpa pelacakan.",
+    "ja": "有料プランなし、広告なし、トラッキングなし。",
+    "it": "Niente versione premium, niente pubblicità, niente tracciamento."
   },
   "site.features.freeForeverNoHidden": {
     "en": "Free forever — no hidden fees",
@@ -2370,10 +2370,10 @@
     "tr": "Sonsuza dek ücretsiz, gizli ücret yok",
     "pl": "Darmowy na zawsze — bez ukrytych opłat",
     "nl": "Voor altijd gratis — geen verborgen kosten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Grátis para sempre, sem taxas escondidas",
+    "id": "Gratis selamanya — tanpa biaya tersembunyi",
+    "ja": "ずっと無料。隠れた料金はありません",
+    "it": "Gratis per sempre, senza costi nascosti"
   },
   "site.features.fullSourceCodeOn": {
     "en": "Full source code on GitHub",
@@ -2388,10 +2388,10 @@
     "tr": "Kaynak kodunun tamamı GitHub'da",
     "pl": "Pełny kod źródłowy na GitHub",
     "nl": "Volledige broncode op GitHub",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Código-fonte completo no GitHub",
+    "id": "Kode sumber lengkap di GitHub",
+    "ja": "ソースコードはすべてGitHubで公開",
+    "it": "Tutto il codice sorgente su GitHub"
   },
   "site.features.communityDrivenDevelopment": {
     "en": "Community-driven development",
@@ -2406,10 +2406,10 @@
     "tr": "Topluluk odaklı geliştirme",
     "pl": "Rozwój napędzany przez społeczność",
     "nl": "Ontwikkeling gedreven door de community",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Desenvolvimento feito pela comunidade",
+    "id": "Pengembangan berbasis komunitas",
+    "ja": "コミュニティ主導の開発",
+    "it": "Sviluppo guidato dalla community"
   },
   "site.features.chromeEdgeFirefoxMobile": {
     "en": "Chrome, Edge, Firefox, mobile",
@@ -2424,10 +2424,10 @@
     "tr": "Chrome, Edge, Firefox, mobil",
     "pl": "Chrome, Edge, Firefox, telefony",
     "nl": "Chrome, Edge, Firefox, mobiel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Chrome, Edge, Firefox, celular",
+    "id": "Chrome, Edge, Firefox, HP",
+    "ja": "Chrome、Edge、Firefox、モバイル",
+    "it": "Chrome, Edge, Firefox, mobile"
   },
   "site.features.regularUpdates": {
     "en": "Regular updates",
@@ -2442,9 +2442,9 @@
     "tr": "Düzenli güncellemeler",
     "pl": "Regularne aktualizacje",
     "nl": "Regelmatige updates",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atualizações frequentes",
+    "id": "Update rutin",
+    "ja": "定期的なアップデート",
+    "it": "Aggiornamenti regolari"
   }
 }

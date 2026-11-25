@@ -109,7 +109,7 @@
 "site.lc.articles.youtubers": "YouTuber：",
 "site.lc.articles.postYoutubeVideosFor": "為戰隊發布 YouTube 影片。",
 "site.lc.articles.eaTensions": "EA 關係緊張",
-"site.lc.articles.dueToLackOf": "2017/2/7 - 由於與 ℄ 缺乏溝通，曾是我們盟友的 ✵ΕΛ✵ 已不再是中立戰隊。",
+"site.lc.articles.dueToLackOf": "2017/2/7 - 由於與 ℄ 缺乏溝通，曾是我們盟友的 ✵ΕΛ✵ 現在成為中立戰隊。",
 "site.lc.articles.thisMeansWeAvoid": "這代表我們會避開他們的伺服器，舊朋友可以在同一個伺服器上玩，但也可能發生區域性的戰爭，因此組隊或開戰都不算 ℄ 的事務。重要的是，如果一名 ℄ 玩家看到另一名 ℄ 玩家被吃，他有義務全力支援 ℄。這類問題會被嚴格討論和審查，因為戰隊優先。",
 "site.lc.articles.weNeedToMention": "*必須一提的是，✵ΕΛ✵ 過去在所有重大戰隊戰中都支援過我們，我們也同樣支援過他們。",
 "site.lc.articles.weHighlySuggestAnd": "**我們強烈建議並提醒玩家，不要辱罵任何戰隊或玩家。",

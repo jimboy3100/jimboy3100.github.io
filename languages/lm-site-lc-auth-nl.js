@@ -5,7 +5,7 @@
 "site.lc.auth.legendmod": "LegendMod",
 "site.lc.auth.discordLinked": "✅ Discord gekoppeld!",
 "site.lc.auth.closingThisWindow": "Dit venster wordt gesloten...",
-"site.lc.auth.ifThisWindowDoesn": "Sluit dit venster niet vanzelf, <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">sluit venster</a>",
+"site.lc.auth.ifThisWindowDoesn": "Gaat dit venster niet vanzelf dicht? <a href=\"javascript:window.close()\" class=\"btn\" style=\"padding:8px 16px;font-size:0.9em\">Venster sluiten</a>",
 "site.lc.auth.loginFailed": "Inloggen mislukt",
 "site.lc.auth.backToGame": "Terug naar de game",
 "site.lc.auth.noCode": "Geen autorisatiecode ontvangen."

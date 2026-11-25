@@ -12,10 +12,10 @@
     "tr": "Hizmet Şartları",
     "pl": "Warunki korzystania",
     "nl": "Gebruiksvoorwaarden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Termos de Serviço",
+    "id": "Ketentuan Layanan",
+    "ja": "利用規約",
+    "it": "Termini di servizio"
   },
   "site.terms.lastUpdatedMarch18": {
     "en": "Last updated: March 18, 2026",
@@ -30,10 +30,10 @@
     "tr": "Son güncelleme: 18 Mart 2026",
     "pl": "Ostatnia aktualizacja: 18 marca 2026",
     "nl": "Laatst bijgewerkt: 18 maart 2026",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Última atualização: 18 de março de 2026",
+    "id": "Terakhir diperbarui: 18 Maret 2026",
+    "ja": "最終更新日：2026年3月18日",
+    "it": "Ultimo aggiornamento: 18 marzo 2026"
   },
   "site.terms.acceptanceOfTerms": {
     "en": "1. Acceptance of Terms",
@@ -48,10 +48,10 @@
     "tr": "1. Şartların kabulü",
     "pl": "1. Akceptacja warunków",
     "nl": "1. Aanvaarding van de voorwaarden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "1. Aceitação dos termos",
+    "id": "1. Penerimaan Ketentuan",
+    "ja": "1. 規約への同意",
+    "it": "1. Accettazione dei termini"
   },
   "site.terms.byAccessingOrUsing": {
     "en": "By accessing or using Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>), or the Legend Express Chrome extension, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.",
@@ -66,10 +66,10 @@
     "tr": "Expanding Land'e (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod'a (<a href=\"https://legendmod.ml\">legendmod.ml</a>) veya Legend Express Chrome eklentisine erişerek ya da bunları kullanarak bu Hizmet Şartları ile bağlı olmayı kabul edersin. Kabul etmiyorsan lütfen hizmetlerimizi kullanma.",
     "pl": "Uzyskując dostęp do Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>) lub rozszerzenia Chrome Legend Express albo korzystając z nich, zgadzasz się przestrzegać niniejszych Warunków korzystania. Jeśli się nie zgadzasz, nie korzystaj z naszych usług.",
     "nl": "Door Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>) of de Chrome-extensie Legend Express te openen of te gebruiken, ga je ermee akkoord gebonden te zijn aan deze Gebruiksvoorwaarden. Als je niet akkoord gaat, gebruik onze diensten dan niet.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ao acessar ou usar o Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), o Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>) ou a extensão do Chrome Legend Express, você concorda em ficar vinculado a estes Termos de Serviço. Se não concordar, não use os nossos serviços.",
+    "id": "Dengan mengakses atau menggunakan Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>), atau ekstensi Chrome Legend Express, Anda setuju untuk terikat oleh Ketentuan Layanan ini. Jika Anda tidak setuju, mohon jangan gunakan layanan kami.",
+    "ja": "Expanding Land（<a href=\"https://expanding.land\">expanding.land</a>）、Legend Mod（<a href=\"https://legendmod.ml\">legendmod.ml</a>）、またはChrome拡張機能Legend Expressにアクセスまたは利用することで、あなたは本利用規約に拘束されることに同意したものとみなされます。同意しない場合は、私たちのサービスを利用しないでください。",
+    "it": "Accedendo a o utilizzando Expanding Land (<a href=\"https://expanding.land\">expanding.land</a>), Legend Mod (<a href=\"https://legendmod.ml\">legendmod.ml</a>) o l'estensione di Chrome Legend Express, accetti di essere vincolato dai presenti Termini di servizio. Se non li accetti, non usare i nostri servizi."
   },
   "site.terms.descriptionOfService": {
     "en": "2. Description of Service",
@@ -84,10 +84,10 @@
     "tr": "2. Hizmetin tanımı",
     "pl": "2. Opis usługi",
     "nl": "2. Beschrijving van de dienst",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "2. Descrição do serviço",
+    "id": "2. Deskripsi Layanan",
+    "ja": "2. サービスの内容",
+    "it": "2. Descrizione del servizio"
   },
   "site.terms.weProvide": {
     "en": "We provide:",
@@ -102,10 +102,10 @@
     "tr": "Sunduklarımız:",
     "pl": "Zapewniamy:",
     "nl": "Wij bieden:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Oferecemos:",
+    "id": "Kami menyediakan:",
+    "ja": "私たちは以下を提供します。",
+    "it": "Offriamo:"
   },
   "site.terms.expandingLandAnOnline": {
     "en": "<strong>Expanding Land</strong> — an online multiplayer browser game.",
@@ -120,10 +120,10 @@
     "tr": "<strong>Expanding Land</strong> — çevrim içi çok oyunculu bir tarayıcı oyunu.",
     "pl": "<strong>Expanding Land</strong> — wieloosobowa gra przeglądarkowa online.",
     "nl": "<strong>Expanding Land</strong> — een online multiplayer-browsergame.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Expanding Land</strong> — um jogo multiplayer online para navegador.",
+    "id": "<strong>Expanding Land</strong> — game browser multiplayer online.",
+    "ja": "<strong>Expanding Land</strong> — オンラインマルチプレイヤーのブラウザゲーム。",
+    "it": "<strong>Expanding Land</strong> — un gioco multiplayer online per browser."
   },
   "site.terms.legendModAnOnline": {
     "en": "<strong>Legend Mod</strong> — an online multiplayer browser game and modding platform.",
@@ -138,10 +138,10 @@
     "tr": "<strong>Legend Mod</strong> — çevrim içi çok oyunculu bir tarayıcı oyunu ve modding platformu.",
     "pl": "<strong>Legend Mod</strong> — wieloosobowa gra przeglądarkowa online i platforma do modowania.",
     "nl": "<strong>Legend Mod</strong> — een online multiplayer-browsergame en moddingplatform.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Legend Mod</strong> — um jogo multiplayer online para navegador e uma plataforma de mods.",
+    "id": "<strong>Legend Mod</strong> — game browser multiplayer online sekaligus platform modding.",
+    "ja": "<strong>Legend Mod</strong> — オンラインマルチプレイヤーのブラウザゲームおよびMod制作プラットフォーム。",
+    "it": "<strong>Legend Mod</strong> — un gioco multiplayer online per browser e una piattaforma di modding."
   },
   "site.terms.legendExpressAChrome": {
     "en": "<strong>Legend Express</strong> — a Chrome extension that enhances the Agar.io gameplay experience.",
@@ -156,10 +156,10 @@
     "tr": "<strong>Legend Express</strong> — Agar.io oyun deneyimini geliştiren bir Chrome eklentisi.",
     "pl": "<strong>Legend Express</strong> — rozszerzenie Chrome, które ulepsza rozgrywkę w Agar.io.",
     "nl": "<strong>Legend Express</strong> — een Chrome-extensie die de spelervaring van Agar.io verbetert.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Legend Express</strong> — uma extensão do Chrome que melhora a experiência de jogo no Agar.io.",
+    "id": "<strong>Legend Express</strong> — ekstensi Chrome yang meningkatkan pengalaman bermain Agar.io.",
+    "ja": "<strong>Legend Express</strong> — Agar.ioのゲーム体験を向上させるChrome拡張機能。",
+    "it": "<strong>Legend Express</strong> — un'estensione di Chrome che migliora l'esperienza di gioco su Agar.io."
   },
   "site.terms.ourServicesAreProvided": {
     "en": "Our services are provided free of charge and on an \"as-is\" basis.",
@@ -174,10 +174,10 @@
     "tr": "Hizmetlerimiz ücretsiz ve “olduğu gibi” esasıyla sunulur.",
     "pl": "Nasze usługi są świadczone bezpłatnie i w stanie „takim, jakie są”.",
     "nl": "Onze diensten worden gratis en \"in de staat waarin ze zich bevinden\" (as-is) aangeboden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os nossos serviços são oferecidos gratuitamente e \"no estado em que se encontram\".",
+    "id": "Layanan kami disediakan secara gratis dan atas dasar \"sebagaimana adanya\".",
+    "ja": "私たちのサービスは無料で、「現状のまま」提供されます。",
+    "it": "I nostri servizi sono forniti gratuitamente e \"così come sono\"."
   },
   "site.terms.userConduct": {
     "en": "3. User Conduct",
@@ -192,10 +192,10 @@
     "tr": "3. Kullanıcı davranışı",
     "pl": "3. Zachowanie użytkowników",
     "nl": "3. Gedrag van gebruikers",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "3. Conduta do usuário",
+    "id": "3. Perilaku Pengguna",
+    "ja": "3. ユーザーの行為",
+    "it": "3. Comportamento degli utenti"
   },
   "site.terms.youAgreeNotTo": {
     "en": "You agree not to:",
@@ -210,10 +210,10 @@
     "tr": "Şunları yapmamayı kabul edersin:",
     "pl": "Zgadzasz się, że nie będziesz:",
     "nl": "Je gaat ermee akkoord dat je niet:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você concorda em não:",
+    "id": "Anda setuju untuk tidak:",
+    "ja": "あなたは以下の行為を行わないことに同意します。",
+    "it": "Accetti di non:"
   },
   "site.terms.useCheatsHacksExploits": {
     "en": "Use cheats, hacks, exploits, or unauthorized third-party software to gain an unfair advantage.",
@@ -228,10 +228,10 @@
     "tr": "Haksız avantaj elde etmek için hile, hack, exploit veya yetkisiz üçüncü taraf yazılımları kullanmak.",
     "pl": "Używać cheatów, hacków, exploitów ani nieautoryzowanego oprogramowania stron trzecich w celu uzyskania nieuczciwej przewagi.",
     "nl": "Cheats, hacks, exploits of niet-geautoriseerde software van derden gebruikt om een oneerlijk voordeel te behalen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Usar cheats, hacks, exploits ou softwares de terceiros não autorizados para obter vantagem injusta.",
+    "id": "Menggunakan cheat, hack, exploit, atau perangkat lunak pihak ketiga yang tidak diizinkan untuk mendapatkan keuntungan yang tidak adil.",
+    "ja": "不当に有利になるために、チート、ハック、不具合の悪用、または許可されていない第三者のソフトウェアを使用すること。",
+    "it": "Usare cheat, hack, exploit o software di terze parti non autorizzati per ottenere un vantaggio sleale."
   },
   "site.terms.harassAbuseOrThreaten": {
     "en": "Harass, abuse, or threaten other players through in-game chat or any related communication channel.",
@@ -246,14 +246,14 @@
     "tr": "Oyun içi sohbet veya ilgili herhangi bir iletişim kanalı üzerinden diğer oyuncuları taciz etmek, onlara hakaret etmek veya onları tehdit etmek.",
     "pl": "Nękać, obrażać ani zastraszać innych graczy za pośrednictwem czatu w grze lub dowolnego powiązanego kanału komunikacji.",
     "nl": "Andere spelers lastigvalt, beledigt of bedreigt via de chat in het spel of een ander gerelateerd communicatiekanaal.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Assediar, ofender ou ameaçar outros jogadores pelo chat do jogo ou por qualquer canal de comunicação relacionado.",
+    "id": "Melecehkan, menyalahgunakan, atau mengancam pemain lain melalui chat di dalam game atau saluran komunikasi terkait lainnya.",
+    "ja": "ゲーム内チャットや関連するあらゆる連絡手段を通じて、ほかのプレイヤーへの嫌がらせ、暴言、脅迫を行うこと。",
+    "it": "Molestare, insultare o minacciare altri giocatori tramite la chat di gioco o qualsiasi altro canale di comunicazione collegato."
   },
   "site.terms.attemptToDisruptOverload": {
     "en": "Attempt to disrupt, overload, or interfere with our game servers or infrastructure.",
-    "el": "Επιχειρείς να διαταράξεις, να υπερφορτώσεις ή να παρέμβεις στους διακομιστές ή στην υποδομή του παιχνιδιού μας.",
+    "el": "Επιχειρείς να διαταράξεις, να υπερφορτώσεις ή να παρέμβεις στους servers ή στην υποδομή του παιχνιδιού μας.",
     "es": "Intentar interrumpir, sobrecargar o interferir con nuestros servidores de juego o nuestra infraestructura.",
     "bg": "Опитваш да нарушиш работата, да претовариш или да се намесиш в нашите игрови сървъри или инфраструктура.",
     "fr": "Tenter de perturber, de surcharger nos serveurs de jeu ou notre infrastructure, ou d'interférer avec eux.",
@@ -264,10 +264,10 @@
     "tr": "Oyun sunucularımızı veya altyapımızı aksatmaya, aşırı yüklemeye veya bunlara müdahale etmeye çalışmak.",
     "pl": "Próbować zakłócać działania, przeciążać ani w inny sposób ingerować w nasze serwery gry lub infrastrukturę.",
     "nl": "Probeert onze spelservers of infrastructuur te verstoren, te overbelasten of te hinderen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tentar interromper, sobrecarregar ou interferir nos nossos servidores de jogo ou na nossa infraestrutura.",
+    "id": "Mencoba mengganggu, membebani secara berlebihan, atau mengintervensi server game atau infrastruktur kami.",
+    "ja": "私たちのゲームサーバーやインフラの妨害、過負荷、干渉を試みること。",
+    "it": "Tentare di interrompere, sovraccaricare o disturbare i nostri server di gioco o la nostra infrastruttura."
   },
   "site.terms.impersonateOtherPlayersModerators": {
     "en": "Impersonate other players, moderators, or administrators.",
@@ -282,10 +282,10 @@
     "tr": "Diğer oyuncuların, moderatörlerin veya yöneticilerin kimliğine bürünmek.",
     "pl": "Podszywać się pod innych graczy, moderatorów lub administratorów.",
     "nl": "Je voordoet als andere spelers, moderators of beheerders.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Se passar por outros jogadores, moderadores ou administradores.",
+    "id": "Menyamar sebagai pemain lain, moderator, atau administrator.",
+    "ja": "ほかのプレイヤー、モデレーター、管理者になりすますこと。",
+    "it": "Spacciarti per altri giocatori, moderatori o amministratori."
   },
   "site.terms.useOurServicesFor": {
     "en": "Use our services for any illegal or unauthorized purpose.",
@@ -300,10 +300,10 @@
     "tr": "Hizmetlerimizi yasa dışı veya yetkisiz herhangi bir amaçla kullanmak.",
     "pl": "Korzystać z naszych usług w jakimkolwiek nielegalnym lub nieautoryzowanym celu.",
     "nl": "Onze diensten gebruikt voor illegale of niet-geautoriseerde doeleinden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Usar os nossos serviços para qualquer finalidade ilegal ou não autorizada.",
+    "id": "Menggunakan layanan kami untuk tujuan apa pun yang ilegal atau tidak sah.",
+    "ja": "違法または許可されていない目的で私たちのサービスを利用すること。",
+    "it": "Usare i nostri servizi per scopi illegali o non autorizzati."
   },
   "site.terms.accounts": {
     "en": "4. Accounts",
@@ -318,10 +318,10 @@
     "tr": "4. Hesaplar",
     "pl": "4. Konta",
     "nl": "4. Accounts",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "4. Contas",
+    "id": "4. Akun",
+    "ja": "4. アカウント",
+    "it": "4. Account"
   },
   "site.terms.youMaySignIn": {
     "en": "You may sign in using Google OAuth. You are responsible for maintaining the security of your account. We reserve the right to suspend or terminate accounts that violate these terms.",
@@ -336,10 +336,10 @@
     "tr": "Google OAuth ile oturum açabilirsin. Hesabının güvenliğini korumaktan sen sorumlusun. Bu şartları ihlal eden hesapları askıya alma veya kapatma hakkımızı saklı tutarız.",
     "pl": "Możesz zalogować się przez Google OAuth. Odpowiadasz za utrzymanie bezpieczeństwa swojego konta. Zastrzegamy sobie prawo do zawieszenia lub usunięcia kont naruszających niniejsze warunki.",
     "nl": "Je kunt inloggen via Google OAuth. Je bent zelf verantwoordelijk voor de beveiliging van je account. We behouden ons het recht voor accounts die deze voorwaarden schenden te schorsen of te beëindigen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você pode entrar usando o Google OAuth. Você é responsável por manter a segurança da sua conta. Reservamo-nos o direito de suspender ou encerrar contas que violem estes termos.",
+    "id": "Anda dapat masuk menggunakan Google OAuth. Anda bertanggung jawab untuk menjaga keamanan akun Anda. Kami berhak menangguhkan atau menghentikan akun yang melanggar ketentuan ini.",
+    "ja": "Google OAuthを使ってログインできます。アカウントのセキュリティを維持する責任はあなたにあります。私たちは、本規約に違反したアカウントを停止または削除する権利を有します。",
+    "it": "Puoi accedere tramite Google OAuth. Sei responsabile della sicurezza del tuo account. Ci riserviamo il diritto di sospendere o chiudere gli account che violano questi termini."
   },
   "site.terms.intellectualProperty": {
     "en": "5. Intellectual Property",
@@ -354,10 +354,10 @@
     "tr": "5. Fikrî mülkiyet",
     "pl": "5. Własność intelektualna",
     "nl": "5. Intellectueel eigendom",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "5. Propriedade intelectual",
+    "id": "5. Hak Kekayaan Intelektual",
+    "ja": "5. 知的財産",
+    "it": "5. Proprietà intellettuale"
   },
   "site.terms.allGameAssetsCode": {
     "en": "All game assets, code, and content associated with Expanding Land, Legend Mod, and Legend Express are the property of their respective creators. You may not copy, modify, distribute, or reverse-engineer our software without permission.",
@@ -372,10 +372,10 @@
     "tr": "Expanding Land, Legend Mod ve Legend Express ile ilişkili tüm oyun varlıkları, kodlar ve içerikler ilgili yaratıcılarının mülkiyetindedir. Yazılımımızı izin almadan kopyalayamaz, değiştiremez, dağıtamaz veya ona tersine mühendislik uygulayamazsın.",
     "pl": "Wszystkie zasoby gry, kod i treści związane z Expanding Land, Legend Mod i Legend Express są własnością ich odpowiednich twórców. Nie możesz kopiować, modyfikować, rozpowszechniać ani poddawać inżynierii wstecznej naszego oprogramowania bez zgody.",
     "nl": "Alle spelbestanden, code en content die verband houden met Expanding Land, Legend Mod en Legend Express zijn eigendom van hun respectieve makers. Je mag onze software niet kopiëren, wijzigen, verspreiden of reverse-engineeren zonder toestemming.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Todos os recursos de jogo, códigos e conteúdos associados ao Expanding Land, ao Legend Mod e ao Legend Express são propriedade de seus respectivos criadores. Você não pode copiar, modificar, distribuir nem fazer engenharia reversa do nosso software sem permissão.",
+    "id": "Semua aset game, kode, dan konten yang terkait dengan Expanding Land, Legend Mod, dan Legend Express adalah milik masing-masing pembuatnya. Anda tidak boleh menyalin, memodifikasi, mendistribusikan, atau melakukan rekayasa balik (reverse-engineering) terhadap perangkat lunak kami tanpa izin.",
+    "ja": "Expanding Land、Legend Mod、Legend Expressに関連するすべてのゲームアセット、コード、コンテンツは、それぞれの制作者に帰属します。許可なく私たちのソフトウェアをコピー、改変、配布、またはリバースエンジニアリングすることはできません。",
+    "it": "Tutte le risorse di gioco, il codice e i contenuti relativi a Expanding Land, Legend Mod e Legend Express sono di proprietà dei rispettivi creatori. Non puoi copiare, modificare, distribuire o decompilare (reverse engineering) il nostro software senza autorizzazione."
   },
   "site.terms.moderationBans": {
     "en": "6. Moderation & Bans",
@@ -390,10 +390,10 @@
     "tr": "6. Moderasyon ve yasaklamalar",
     "pl": "6. Moderacja i bany",
     "nl": "6. Moderatie & bans",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "6. Moderação e banimentos",
+    "id": "6. Moderasi & Ban",
+    "ja": "6. モデレーションとBAN",
+    "it": "6. Moderazione e ban"
   },
   "site.terms.weReserveTheRight": {
     "en": "We reserve the right to moderate in-game chat, mute or ban players, and take any action necessary to maintain a fair and enjoyable experience for all users. Bans may be issued for violations of these terms or at the discretion of our moderation team.",
@@ -408,10 +408,10 @@
     "tr": "Oyun içi sohbeti denetleme, oyuncuları susturma veya yasaklama ve tüm kullanıcılar için adil ve keyifli bir deneyim sağlamak üzere gereken her türlü önlemi alma hakkımızı saklı tutarız. Yasaklamalar bu şartların ihlali nedeniyle veya moderasyon ekibimizin takdirine bağlı olarak uygulanabilir.",
     "pl": "Zastrzegamy sobie prawo do moderowania czatu w grze, wyciszania lub banowania graczy oraz podejmowania wszelkich działań niezbędnych do zapewnienia uczciwej i przyjemnej rozgrywki wszystkim użytkownikom. Bany mogą być nakładane za naruszenia niniejszych warunków lub według uznania naszego zespołu moderatorów.",
     "nl": "We behouden ons het recht voor de chat in het spel te modereren, spelers te dempen of te bannen en alle maatregelen te nemen die nodig zijn om een eerlijke en plezierige ervaring voor alle gebruikers te behouden. Bans kunnen worden opgelegd bij schendingen van deze voorwaarden of naar eigen inzicht van ons moderatieteam.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Reservamo-nos o direito de moderar o chat do jogo, silenciar ou banir jogadores e tomar qualquer medida necessária para manter uma experiência justa e agradável para todos os usuários. Banimentos podem ser aplicados por violação destes termos ou a critério da nossa equipe de moderação.",
+    "id": "Kami berhak memoderasi chat di dalam game, membisukan (mute) atau memblokir (ban) pemain, dan mengambil tindakan apa pun yang diperlukan untuk menjaga pengalaman yang adil dan menyenangkan bagi semua pengguna. Ban dapat dijatuhkan karena pelanggaran terhadap ketentuan ini atau atas kebijakan tim moderasi kami.",
+    "ja": "私たちは、すべてのユーザーにとって公平で楽しい環境を保つため、ゲーム内チャットのモデレーション、プレイヤーのミュートやBAN、その他必要なあらゆる措置を行う権利を有します。BANは、本規約への違反があった場合、またはモデレーションチームの判断により行われることがあります。",
+    "it": "Ci riserviamo il diritto di moderare la chat di gioco, silenziare o bannare giocatori e intraprendere qualsiasi azione necessaria per garantire un'esperienza corretta e piacevole a tutti gli utenti. I ban possono essere applicati per violazioni di questi termini o a discrezione del nostro team di moderazione."
   },
   "site.terms.disclaimerOfWarranties": {
     "en": "7. Disclaimer of Warranties",
@@ -426,10 +426,10 @@
     "tr": "7. Garanti reddi",
     "pl": "7. Wyłączenie gwarancji",
     "nl": "7. Uitsluiting van garanties",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "7. Isenção de garantias",
+    "id": "7. Penafian Jaminan",
+    "ja": "7. 保証の否認",
+    "it": "7. Esclusione di garanzie"
   },
   "site.terms.ourServicesAreProvided2": {
     "en": "Our services are provided \"as is\" without warranties of any kind, either express or implied. We do not guarantee that the services will be uninterrupted, error-free, or free of harmful components.",
@@ -444,10 +444,10 @@
     "tr": "Hizmetlerimiz, açık veya zımni hiçbir garanti olmaksızın “olduğu gibi” sunulur. Hizmetlerin kesintisiz, hatasız veya zararlı bileşenlerden arınmış olacağını garanti etmeyiz.",
     "pl": "Nasze usługi są świadczone w stanie „takim, jakie są”, bez jakichkolwiek gwarancji, wyraźnych ani dorozumianych. Nie gwarantujemy, że usługi będą działać bez przerw i bez błędów ani że będą wolne od szkodliwych komponentów.",
     "nl": "Onze diensten worden aangeboden \"in de staat waarin ze zich bevinden\" (as is), zonder enige garantie, uitdrukkelijk of stilzwijgend. We garanderen niet dat de diensten ononderbroken, foutloos of vrij van schadelijke componenten zijn.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os nossos serviços são oferecidos \"no estado em que se encontram\", sem garantias de qualquer tipo, expressas ou implícitas. Não garantimos que os serviços funcionarão sem interrupções, sem erros ou livres de componentes nocivos.",
+    "id": "Layanan kami disediakan \"sebagaimana adanya\" tanpa jaminan dalam bentuk apa pun, baik tersurat maupun tersirat. Kami tidak menjamin bahwa layanan akan berjalan tanpa gangguan, bebas dari kesalahan, atau bebas dari komponen berbahaya.",
+    "ja": "私たちのサービスは「現状のまま」提供され、明示または黙示を問わず、いかなる保証もありません。サービスが中断しないこと、エラーがないこと、有害な要素を含まないことは保証しません。",
+    "it": "I nostri servizi sono forniti \"così come sono\", senza garanzie di alcun tipo, espresse o implicite. Non garantiamo che i servizi siano ininterrotti, privi di errori o privi di componenti dannosi."
   },
   "site.terms.limitationOfLiability": {
     "en": "8. Limitation of Liability",
@@ -462,10 +462,10 @@
     "tr": "8. Sorumluluğun sınırlandırılması",
     "pl": "8. Ograniczenie odpowiedzialności",
     "nl": "8. Beperking van aansprakelijkheid",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "8. Limitação de responsabilidade",
+    "id": "8. Batasan Tanggung Jawab",
+    "ja": "8. 責任の制限",
+    "it": "8. Limitazione di responsabilità"
   },
   "site.terms.inNoEventShall": {
     "en": "In no event shall we be liable for any indirect, incidental, special, or consequential damages arising out of or in connection with your use of our services.",
@@ -480,10 +480,10 @@
     "tr": "Hizmetlerimizi kullanmandan kaynaklanan veya bununla bağlantılı olarak ortaya çıkan dolaylı, arızi, özel veya sonuç olarak doğan zararlardan hiçbir durumda sorumlu değiliz.",
     "pl": "W żadnym wypadku nie ponosimy odpowiedzialności za jakiekolwiek szkody pośrednie, przypadkowe, szczególne lub wtórne wynikające z korzystania z naszych usług lub z nim związane.",
     "nl": "In geen geval zijn wij aansprakelijk voor indirecte, incidentele, bijzondere of gevolgschade die voortvloeit uit of verband houdt met je gebruik van onze diensten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Em nenhuma hipótese seremos responsáveis por quaisquer danos indiretos, incidentais, especiais ou consequentes decorrentes do uso dos nossos serviços ou relacionados a ele.",
+    "id": "Dalam keadaan apa pun, kami tidak bertanggung jawab atas kerugian tidak langsung, insidental, khusus, atau konsekuensial yang timbul dari atau sehubungan dengan penggunaan layanan kami oleh Anda.",
+    "ja": "いかなる場合も、私たちは、あなたによる私たちのサービスの利用から、またはそれに関連して生じた間接的、付随的、特別、または結果的な損害について責任を負いません。",
+    "it": "In nessun caso saremo responsabili per danni indiretti, incidentali, speciali o consequenziali derivanti dall'uso dei nostri servizi o a esso connessi."
   },
   "site.terms.changesToTerms": {
     "en": "9. Changes to Terms",
@@ -498,10 +498,10 @@
     "tr": "9. Şartlarda değişiklik",
     "pl": "9. Zmiany warunków",
     "nl": "9. Wijzigingen in de voorwaarden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "9. Alterações nos termos",
+    "id": "9. Perubahan Ketentuan",
+    "ja": "9. 規約の変更",
+    "it": "9. Modifiche ai termini"
   },
   "site.terms.weMayUpdateThese": {
     "en": "We may update these Terms of Service at any time. Changes will be posted on this page with an updated revision date. Continued use of our services after changes constitutes acceptance of the new terms.",
@@ -516,10 +516,10 @@
     "tr": "Bu Hizmet Şartlarını istediğimiz zaman güncelleyebiliriz. Değişiklikler, güncellenmiş bir revizyon tarihiyle bu sayfada yayımlanır. Değişikliklerden sonra hizmetlerimizi kullanmaya devam etmen, yeni şartları kabul ettiğin anlamına gelir.",
     "pl": "Możemy w dowolnym momencie zaktualizować niniejsze Warunki korzystania. Zmiany będą publikowane na tej stronie wraz ze zaktualizowaną datą wersji. Dalsze korzystanie z naszych usług po wprowadzeniu zmian oznacza akceptację nowych warunków.",
     "nl": "We kunnen deze Gebruiksvoorwaarden op elk moment bijwerken. Wijzigingen worden op deze pagina gepubliceerd met een bijgewerkte revisiedatum. Als je onze diensten na wijzigingen blijft gebruiken, geldt dat als aanvaarding van de nieuwe voorwaarden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Podemos atualizar estes Termos de Serviço a qualquer momento. As alterações serão publicadas nesta página com a data de revisão atualizada. Continuar usando os nossos serviços após as alterações significa que você aceita os novos termos.",
+    "id": "Kami dapat memperbarui Ketentuan Layanan ini sewaktu-waktu. Perubahan akan dipublikasikan di halaman ini beserta tanggal revisi terbaru. Dengan tetap menggunakan layanan kami setelah perubahan, Anda dianggap menerima ketentuan yang baru.",
+    "ja": "私たちは、本利用規約をいつでも更新することがあります。変更内容は、改定日を更新したうえでこのページに掲載します。変更後もサービスを利用し続けた場合、新しい規約に同意したものとみなされます。",
+    "it": "Possiamo aggiornare questi Termini di servizio in qualsiasi momento. Le modifiche saranno pubblicate su questa pagina con una data di revisione aggiornata. Continuare a usare i nostri servizi dopo le modifiche significa accettare i nuovi termini."
   },
   "site.terms.contact": {
     "en": "10. Contact",
@@ -534,10 +534,10 @@
     "tr": "10. İletişim",
     "pl": "10. Kontakt",
     "nl": "10. Contact",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "10. Contato",
+    "id": "10. Kontak",
+    "ja": "10. お問い合わせ",
+    "it": "10. Contatti"
   },
   "site.terms.ifYouHaveQuestions": {
     "en": "If you have questions about these Terms, contact: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> or via GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
@@ -552,10 +552,10 @@
     "tr": "Bu Şartlarla ilgili soruların varsa iletişim: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> veya GitHub üzerinden: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
     "pl": "Jeśli masz pytania dotyczące niniejszych Warunków, napisz: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> lub przez GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
     "nl": "Heb je vragen over deze Voorwaarden, neem dan contact op: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> of via GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Em caso de dúvidas sobre estes Termos, entre em contato: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> ou pelo GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
+    "id": "Jika Anda memiliki pertanyaan tentang Ketentuan ini, hubungi: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> atau melalui GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
+    "ja": "本規約についてご質問がある場合は、<a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a>、またはGitHub（<a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>）までご連絡ください。",
+    "it": "Per domande su questi Termini, contatta: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> oppure tramite GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>"
   },
   "site.terms.backToExpandingLand": {
     "en": "← Back to Expanding Land",
@@ -570,10 +570,10 @@
     "tr": "← Expanding Land'e dön",
     "pl": "← Powrót do Expanding Land",
     "nl": "← Terug naar Expanding Land",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "← Voltar ao Expanding Land",
+    "id": "← Kembali ke Expanding Land",
+    "ja": "← Expanding Landに戻る",
+    "it": "← Torna a Expanding Land"
   },
   "site.terms.privacyPolicy": {
     "en": "Privacy Policy",
@@ -607,9 +607,9 @@
     "tr": "Bu çeviri kolaylık olsun diye sunulmuştur. Bu Şartların bağlayıcı olan sürümü İngilizce sürümüdür.",
     "pl": "To tłumaczenie ma ci jedynie ułatwić lekturę. Wiążąca jest angielska wersja niniejszych Warunków.",
     "nl": "Dit is een vertaling voor je gemak. De Engelse versie van deze Voorwaarden is bindend.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta tradução é oferecida para a sua conveniência. A versão em inglês destes Termos é a que tem valor legal.",
+    "id": "Ini adalah terjemahan untuk memudahkan Anda. Versi bahasa Inggris dari Ketentuan ini adalah versi yang mengikat.",
+    "ja": "この翻訳は便宜上のものです。本規約は英語版が正式なものとなります。",
+    "it": "Questa traduzione è fornita per tua comodità. La versione inglese di questi Termini è quella vincolante."
   }
 }

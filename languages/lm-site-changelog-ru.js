@@ -27,7 +27,7 @@
 "site.changelog.newEnemyMassRatio": "<span class=\"tag tag-new\">Новое</span> <strong>Соотношение массы врагов</strong> относительно твоей самой большой клетки",
 "site.changelog.newScreenEdgeArrows": "<span class=\"tag tag-new\">Новое</span> <strong>Стрелки у края экрана</strong> к тиммейтам и угрозам, ушедшим за экран",
 "site.changelog.newCellPanelMasses": "<span class=\"tag tag-new\">Новое</span> <strong>Панель клеток</strong> — массы, количество/16, самая большая, самая маленькая, всего",
-"site.changelog.newSettingsProfilesNamed": "<span class=\"tag tag-new\">Новое</span> <strong>Профили настроек</strong> — именованные наборы с шаблонами (FFA, Teams, Multibox, Streaming, Mobile, Competitive), автопереключение по типу сервера",
+"site.changelog.newSettingsProfilesNamed": "<span class=\"tag tag-new\">Новое</span> <strong>Профили настроек</strong> — именованные наборы с шаблонами (FFA, Команды, Multibox, Стриминг, Мобильный, Соревновательный), автопереключение по типу сервера",
 "site.changelog.newAnalyticsDashboardGames": "<span class=\"tag tag-new\">Новое</span> <strong>Панель статистики</strong> — игры, пиковая масса, доля попаданий в топ-10, масса/мин, тепловые карты, тренерский отчёт с оценками и советами",
 "site.changelog.newDailyObjectivesFrom": "<span class=\"tag tag-new\">Новое</span> <strong>Ежедневные задания</strong> по твоей истории, с полосами прогресса и уведомлениями о выполнении",
 "site.changelog.gamepadCustomizationBadges": "Настройка геймпада и значки",

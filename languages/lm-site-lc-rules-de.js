@@ -2,7 +2,7 @@
  * Change the texts in developers/i18n/src and run: node developers/i18n/build.js */
 /* German (de, languagemod 9): 14 texts */
 (window._lmI18nQueue = window._lmI18nQueue || []).push(["de", "site-lc-rules", {
-"site.lc.rules.theOriginal": "Der originale",
+"site.lc.rules.theOriginal": "Das Original",
 "site.lc.rules.legendAgarIoClan": "Legend agar.io Clan",
 "site.lc.rules.theseAreTheGolden": "Das sind die goldenen Regeln von Lc",
 "site.lc.rules.timeWasUsedAs": "Die Zeit diente als Filter, um zu zeigen, wer echt ist – sie sind unsere Helden. <s>Wer Lc einmal verlassen hat</s><sup>Die echten Lc sind geblieben und haben gekämpft</sup>, für den gibt es kein Zurück. Wir nennen sie „Verräter“ und haben uns für immer verabschiedet.",

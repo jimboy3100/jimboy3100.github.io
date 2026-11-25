@@ -58,7 +58,7 @@
 "site.lc.projetox.socialNetworks": "Sociale netwerken",
 "site.lc.projetox.instagram": "<i class=\"icon icon-instagram\"></i>Instagram",
 "site.lc.projetox.copyright": "The Legend Clan LC Agario - 2025, alle rechten voorbehouden.",
-"site.lc.projetox.developer": "<i class=\"icon icon-heart-3\"></i> Developer: <a href=\"https://www.youtube.com/@Junior_devTI\" title=\"Developer\"> <span class=\"dev-name\">Júnior devTI</span>💎</a >",
+"site.lc.projetox.developer": "<i class=\"icon icon-heart-3\"></i> Ontwikkelaar: <a href=\"https://www.youtube.com/@Junior_devTI\" title=\"Developer\"> <span class=\"dev-name\">Júnior devTI</span>💎</a >",
 "site.lc.projetox.howToUseSiteTitle": "Zo gebruik je de site",
 "site.lc.projetox.messagePlaceholder": "Typ je bericht...",
 "site.lc.projetox.messageSent": "Bericht verstuurd!",

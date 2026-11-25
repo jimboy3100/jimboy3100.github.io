@@ -30,10 +30,10 @@
     "tr": "Son güncelleme: 18 Mart 2026",
     "pl": "Ostatnia aktualizacja: 18 marca 2026",
     "nl": "Laatst bijgewerkt: 18 maart 2026",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Última atualização: 18 de março de 2026",
+    "id": "Terakhir diperbarui: 18 Maret 2026",
+    "ja": "最終更新日：2026年3月18日",
+    "it": "Ultimo aggiornamento: 18 marzo 2026"
   },
   "site.privacy.introduction": {
     "en": "1. Introduction",
@@ -48,10 +48,10 @@
     "tr": "1. Giriş",
     "pl": "1. Wprowadzenie",
     "nl": "1. Inleiding",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "1. Introdução",
+    "id": "1. Pendahuluan",
+    "ja": "1. はじめに",
+    "it": "1. Introduzione"
   },
   "site.privacy.thisPrivacyPolicyCovers": {
     "en": "This privacy policy covers the following services operated by the Legend Mod project:",
@@ -66,10 +66,10 @@
     "tr": "Bu gizlilik politikası, Legend Mod projesi tarafından işletilen aşağıdaki hizmetleri kapsar:",
     "pl": "Niniejsza polityka prywatności obejmuje następujące usługi prowadzone przez projekt Legend Mod:",
     "nl": "Dit privacybeleid geldt voor de volgende diensten die worden beheerd door het Legend Mod project:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta política de privacidade abrange os seguintes serviços operados pelo projeto Legend Mod:",
+    "id": "Kebijakan privasi ini berlaku untuk layanan berikut yang dikelola oleh proyek Legend Mod:",
+    "ja": "このプライバシーポリシーは、Legend Modプロジェクトが運営する以下のサービスを対象とします。",
+    "it": "La presente informativa sulla privacy riguarda i seguenti servizi gestiti dal progetto Legend Mod:"
   },
   "site.privacy.expandingLandExpandingLand": {
     "en": "<strong>Expanding Land</strong> (<a href=\"https://expanding.land\">expanding.land</a>) — an online multiplayer game.",
@@ -84,10 +84,10 @@
     "tr": "<strong>Expanding Land</strong> (<a href=\"https://expanding.land\">expanding.land</a>) — çevrim içi çok oyunculu bir oyun.",
     "pl": "<strong>Expanding Land</strong> (<a href=\"https://expanding.land\">expanding.land</a>) — wieloosobowa gra online.",
     "nl": "<strong>Expanding Land</strong> (<a href=\"https://expanding.land\">expanding.land</a>) — een online multiplayergame.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Expanding Land</strong> (<a href=\"https://expanding.land\">expanding.land</a>) — um jogo multiplayer online.",
+    "id": "<strong>Expanding Land</strong> (<a href=\"https://expanding.land\">expanding.land</a>) — game multiplayer online.",
+    "ja": "<strong>Expanding Land</strong>（<a href=\"https://expanding.land\">expanding.land</a>）— オンラインマルチプレイヤーゲーム。",
+    "it": "<strong>Expanding Land</strong> (<a href=\"https://expanding.land\">expanding.land</a>) — un gioco multiplayer online."
   },
   "site.privacy.legendModLegendmodMl": {
     "en": "<strong>Legend Mod</strong> (<a href=\"https://legendmod.ml\">legendmod.ml</a>) — an online multiplayer game.",
@@ -102,10 +102,10 @@
     "tr": "<strong>Legend Mod</strong> (<a href=\"https://legendmod.ml\">legendmod.ml</a>) — çevrim içi çok oyunculu bir oyun.",
     "pl": "<strong>Legend Mod</strong> (<a href=\"https://legendmod.ml\">legendmod.ml</a>) — wieloosobowa gra online.",
     "nl": "<strong>Legend Mod</strong> (<a href=\"https://legendmod.ml\">legendmod.ml</a>) — een online multiplayergame.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Legend Mod</strong> (<a href=\"https://legendmod.ml\">legendmod.ml</a>) — um jogo multiplayer online.",
+    "id": "<strong>Legend Mod</strong> (<a href=\"https://legendmod.ml\">legendmod.ml</a>) — game multiplayer online.",
+    "ja": "<strong>Legend Mod</strong>（<a href=\"https://legendmod.ml\">legendmod.ml</a>）— オンラインマルチプレイヤーゲーム。",
+    "it": "<strong>Legend Mod</strong> (<a href=\"https://legendmod.ml\">legendmod.ml</a>) — un gioco multiplayer online."
   },
   "site.privacy.legendExpressAChrome": {
     "en": "<strong>Legend Express</strong> — a Chrome extension for Agar.io.",
@@ -120,10 +120,10 @@
     "tr": "<strong>Legend Express</strong> — Agar.io için bir Chrome eklentisi.",
     "pl": "<strong>Legend Express</strong> — rozszerzenie Chrome do Agar.io.",
     "nl": "<strong>Legend Express</strong> — een Chrome-extensie voor Agar.io.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Legend Express</strong> — uma extensão do Chrome para Agar.io.",
+    "id": "<strong>Legend Express</strong> — ekstensi Chrome untuk Agar.io.",
+    "ja": "<strong>Legend Express</strong> — Agar.io用のChrome拡張機能。",
+    "it": "<strong>Legend Express</strong> — un'estensione di Chrome per Agar.io."
   },
   "site.privacy.weAreCommittedTo": {
     "en": "We are committed to protecting your privacy.",
@@ -138,10 +138,10 @@
     "tr": "Gizliliğini korumayı taahhüt ediyoruz.",
     "pl": "Zobowiązujemy się chronić twoją prywatność.",
     "nl": "We zetten ons in om je privacy te beschermen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Temos o compromisso de proteger a sua privacidade.",
+    "id": "Kami berkomitmen untuk melindungi privasi Anda.",
+    "ja": "私たちは、あなたのプライバシーの保護に努めます。",
+    "it": "Ci impegniamo a proteggere la tua privacy."
   },
   "site.privacy.googleSignIn": {
     "en": "2. Google Sign-In",
@@ -156,10 +156,10 @@
     "tr": "2. Google ile oturum açma",
     "pl": "2. Logowanie przez Google",
     "nl": "2. Inloggen met Google",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "2. Login com o Google",
+    "id": "2. Masuk dengan Google",
+    "ja": "2. Googleログイン",
+    "it": "2. Accesso con Google"
   },
   "site.privacy.whenYouSignIn": {
     "en": "When you sign in with Google on Expanding Land or Legend Mod, we receive:",
@@ -174,10 +174,10 @@
     "tr": "Expanding Land'de veya Legend Mod'da Google ile oturum açtığında şunları alırız:",
     "pl": "Gdy logujesz się przez Google w Expanding Land lub Legend Mod, otrzymujemy:",
     "nl": "Wanneer je op Expanding Land of Legend Mod inlogt met Google, ontvangen we:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Quando você entra com o Google no Expanding Land ou no Legend Mod, recebemos:",
+    "id": "Saat Anda masuk dengan Google di Expanding Land atau Legend Mod, kami menerima:",
+    "ja": "Expanding LandまたはLegend ModでGoogleアカウントを使ってログインすると、私たちは以下の情報を受け取ります。",
+    "it": "Quando accedi con Google su Expanding Land o Legend Mod, riceviamo:"
   },
   "site.privacy.profileInformationYourName": {
     "en": "<strong>Profile information:</strong> Your name, email address, and profile picture from your Google account.",
@@ -192,10 +192,10 @@
     "tr": "<strong>Profil bilgileri:</strong> Google hesabındaki adın, e-posta adresin ve profil fotoğrafın.",
     "pl": "<strong>Informacje o profilu:</strong> Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe z twojego konta Google.",
     "nl": "<strong>Profielgegevens:</strong> Je naam, e-mailadres en profielfoto uit je Google-account.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Informações do perfil:</strong> seu nome, endereço de e-mail e foto de perfil da sua conta Google.",
+    "id": "<strong>Informasi profil:</strong> Nama, alamat email, dan foto profil dari akun Google Anda.",
+    "ja": "<strong>プロフィール情報：</strong>Googleアカウントに登録されている名前、メールアドレス、プロフィール写真。",
+    "it": "<strong>Informazioni del profilo:</strong> il tuo nome, il tuo indirizzo email e la tua immagine del profilo dal tuo account Google."
   },
   "site.privacy.googleUserIdA": {
     "en": "<strong>Google User ID:</strong> A unique identifier used to save your game progress and display your profile.",
@@ -210,10 +210,10 @@
     "tr": "<strong>Google Kullanıcı Kimliği:</strong> Oyundaki ilerlemeni kaydetmek ve profilini göstermek için kullanılan benzersiz bir tanımlayıcı.",
     "pl": "<strong>Identyfikator użytkownika Google:</strong> Unikalny identyfikator służący do zapisywania twoich postępów w grze i wyświetlania twojego profilu.",
     "nl": "<strong>Google-gebruikers-ID:</strong> Een unieke identificatiecode die wordt gebruikt om je spelvoortgang op te slaan en je profiel weer te geven.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>ID de usuário do Google:</strong> um identificador único usado para salvar o seu progresso no jogo e exibir o seu perfil.",
+    "id": "<strong>ID Pengguna Google:</strong> Pengenal unik yang digunakan untuk menyimpan progres game Anda dan menampilkan profil Anda.",
+    "ja": "<strong>GoogleユーザーID：</strong>ゲームの進行状況の保存とプロフィールの表示に使用する一意の識別子。",
+    "it": "<strong>ID utente Google:</strong> un identificativo univoco usato per salvare i tuoi progressi di gioco e mostrare il tuo profilo."
   },
   "site.privacy.weUseThisInformation": {
     "en": "We use this information solely to authenticate you and provide game functionality (saving progress, displaying your name and picture in-game, and maintaining leaderboards).",
@@ -221,17 +221,17 @@
     "es": "Usamos esta información únicamente para autenticarte y ofrecer las funciones del juego (guardar el progreso, mostrar tu nombre y tu foto en el juego y mantener las clasificaciones).",
     "bg": "Използваме тази информация единствено за да те удостоверим и да осигурим функциите на играта (запазване на напредъка, показване на името и снимката ти в играта и поддържане на класации).",
     "fr": "Nous utilisons ces informations uniquement pour t'authentifier et fournir les fonctionnalités du jeu (sauvegarde de la progression, affichage de ton nom et de ta photo en jeu, et gestion des classements).",
-    "ar": "نستخدم هذه المعلومات فقط للتحقق من هويتك وتوفير وظائف اللعبة (حفظ التقدم، وعرض اسمك وصورتك داخل اللعبة، والحفاظ على لوحات المتصدرين).",
+    "ar": "نستخدم هذه المعلومات فقط للتحقق من هويتك وتوفير وظائف اللعبة (حفظ التقدم، وعرض اسمك وصورتك داخل اللعبة، والحفاظ على لوحات الصدارة).",
     "zh": "我們僅將這些資訊用於驗證你的身分並提供遊戲功能（儲存進度、在遊戲中顯示你的名稱與照片，以及維護排行榜）。",
     "ru": "Мы используем эту информацию исключительно для твоей аутентификации и обеспечения игровых функций (сохранение прогресса, отображение твоего имени и фото в игре и ведение таблиц лидеров).",
     "de": "Wir verwenden diese Informationen ausschließlich, um dich zu authentifizieren und die Spielfunktionen bereitzustellen (Speichern des Fortschritts, Anzeige deines Namens und Bildes im Spiel und Pflege der Bestenlisten).",
     "tr": "Bu bilgileri yalnızca kimliğini doğrulamak ve oyun işlevlerini sağlamak (ilerlemeyi kaydetmek, adını ve fotoğrafını oyun içinde göstermek ve liderlik tablolarını sürdürmek) için kullanırız.",
     "pl": "Wykorzystujemy te informacje wyłącznie do uwierzytelnienia cię i zapewnienia funkcji gry (zapisywanie postępów, wyświetlanie twojej nazwy i zdjęcia w grze oraz prowadzenie rankingów).",
-    "nl": "We gebruiken deze gegevens uitsluitend om je te authenticeren en de spelfuncties te leveren (voortgang opslaan, je naam en foto in het spel tonen en klassementen bijhouden).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "We gebruiken deze gegevens uitsluitend om je te authenticeren en de spelfuncties te leveren (voortgang opslaan, je naam en foto in het spel tonen en ranglijsten bijhouden).",
+    "pt": "Usamos essas informações exclusivamente para autenticar você e oferecer as funções do jogo (salvar o progresso, exibir seu nome e sua foto no jogo e manter os rankings).",
+    "id": "Kami menggunakan informasi ini semata-mata untuk mengautentikasi Anda dan menyediakan fungsi game (menyimpan progres, menampilkan nama dan foto Anda di dalam game, serta mengelola leaderboard).",
+    "ja": "これらの情報は、あなたの認証と、ゲーム機能の提供（進行状況の保存、ゲーム内での名前と写真の表示、ランキングの管理）のためだけに使用します。",
+    "it": "Usiamo queste informazioni esclusivamente per autenticarti e fornire le funzioni di gioco (salvataggio dei progressi, visualizzazione del tuo nome e della tua immagine in gioco e gestione delle classifiche)."
   },
   "site.privacy.weDoNotSell": {
     "en": "We do <strong>not</strong> sell, trade, or transfer your personal information to third parties.",
@@ -246,10 +246,10 @@
     "tr": "Kişisel bilgilerini üçüncü taraflara <strong>satmayız, takas etmeyiz veya aktarmayız</strong>.",
     "pl": "<strong>Nie</strong> sprzedajemy, nie wymieniamy ani nie przekazujemy twoich danych osobowych stronom trzecim.",
     "nl": "We verkopen, verhandelen of dragen je persoonsgegevens <strong>niet</strong> over aan derden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Não</strong> vendemos, trocamos nem transferimos as suas informações pessoais a terceiros.",
+    "id": "Kami <strong>tidak</strong> menjual, memperdagangkan, atau mengalihkan informasi pribadi Anda kepada pihak ketiga.",
+    "ja": "私たちは、あなたの個人情報を第三者に販売、交換、譲渡することは<strong>ありません</strong>。",
+    "it": "<strong>Non</strong> vendiamo, scambiamo né trasferiamo i tuoi dati personali a terzi."
   },
   "site.privacy.dataStorage": {
     "en": "3. Data Storage",
@@ -264,28 +264,28 @@
     "tr": "3. Veri depolama",
     "pl": "3. Przechowywanie danych",
     "nl": "3. Gegevensopslag",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "3. Armazenamento de dados",
+    "id": "3. Penyimpanan Data",
+    "ja": "3. データの保存",
+    "it": "3. Conservazione dei dati"
   },
   "site.privacy.yourLoginSessionAnd": {
     "en": "Your login session and game preferences are stored locally in your browser using cookies and localStorage. Game data (scores, leaderboard entries) is stored on our game server for the duration of your session.",
-    "el": "Η συνεδρία σύνδεσής σου και οι προτιμήσεις παιχνιδιού αποθηκεύονται τοπικά στον browser σου με cookies και localStorage. Τα δεδομένα παιχνιδιού (σκορ, καταχωρίσεις στον πίνακα κατάταξης) αποθηκεύονται στον διακομιστή του παιχνιδιού για όσο διαρκεί η συνεδρία σου.",
+    "el": "Η συνεδρία σύνδεσής σου και οι προτιμήσεις παιχνιδιού αποθηκεύονται τοπικά στον browser σου με cookies και localStorage. Τα δεδομένα παιχνιδιού (σκορ, καταχωρίσεις στον πίνακα κατάταξης) αποθηκεύονται στον server του παιχνιδιού για όσο διαρκεί η συνεδρία σου.",
     "es": "Tu sesión de inicio y tus preferencias de juego se guardan localmente en tu navegador mediante cookies y localStorage. Los datos de juego (puntuaciones, entradas en la clasificación) se guardan en nuestro servidor de juego mientras dure tu sesión.",
     "bg": "Сесията ти за вход и предпочитанията ти за играта се съхраняват локално в браузъра ти чрез бисквитки (cookies) и localStorage. Данните от играта (резултати, записи в класацията) се съхраняват на нашия сървър за играта за времето на сесията ти.",
     "fr": "Ta session de connexion et tes préférences de jeu sont stockées localement dans ton navigateur à l'aide de cookies et du localStorage. Les données de jeu (scores, entrées du classement) sont stockées sur notre serveur de jeu pendant la durée de ta session.",
-    "ar": "تُخزَّن جلسة تسجيل دخولك وتفضيلات اللعب محليًا في متصفحك باستخدام ملفات تعريف الارتباط (cookies) وlocalStorage. وتُخزَّن بيانات اللعب (النتائج، وإدخالات لوحة المتصدرين) على خادم اللعبة طوال مدة جلستك.",
+    "ar": "تُخزَّن جلسة تسجيل دخولك وتفضيلات اللعب محليًا في متصفحك باستخدام ملفات تعريف الارتباط (cookies) وlocalStorage. وتُخزَّن بيانات اللعب (النتائج، وإدخالات لوحة الصدارة) على خادم اللعبة طوال مدة جلستك.",
     "zh": "你的登入工作階段與遊戲偏好設定會使用 cookies 與 localStorage 儲存在你瀏覽器的本機。遊戲資料（分數、排行榜紀錄）會在你的工作階段期間儲存在我們的遊戲伺服器上。",
     "ru": "Твоя сессия входа и игровые настройки хранятся локально в твоём браузере с помощью cookies и localStorage. Игровые данные (очки, записи в таблице лидеров) хранятся на нашем игровом сервере в течение твоей сессии.",
     "de": "Deine Anmeldesitzung und deine Spieleinstellungen werden lokal in deinem Browser mithilfe von Cookies und localStorage gespeichert. Spieldaten (Punktestände, Einträge in der Bestenliste) werden für die Dauer deiner Sitzung auf unserem Spielserver gespeichert.",
     "tr": "Giriş oturumun ve oyun tercihlerin, çerezler ve localStorage kullanılarak tarayıcında yerel olarak saklanır. Oyun verileri (skorlar, liderlik tablosu kayıtları) oturumun süresince oyun sunucumuzda saklanır.",
     "pl": "Twoja sesja logowania i preferencje gry są przechowywane lokalnie w twojej przeglądarce za pomocą plików cookie i localStorage. Dane gry (wyniki, wpisy w rankingu) są przechowywane na naszym serwerze gry przez czas trwania twojej sesji.",
-    "nl": "Je inlogsessie en spelvoorkeuren worden lokaal in je browser opgeslagen met cookies en localStorage. Spelgegevens (scores, vermeldingen in het klassement) worden voor de duur van je sessie op onze spelserver opgeslagen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Je inlogsessie en spelvoorkeuren worden lokaal in je browser opgeslagen met cookies en localStorage. Spelgegevens (scores, vermeldingen in de ranglijst) worden voor de duur van je sessie op onze spelserver opgeslagen.",
+    "pt": "A sua sessão de login e as suas preferências de jogo ficam armazenadas localmente no seu navegador, por meio de cookies e localStorage. Os dados de jogo (pontuações, entradas no ranking) ficam armazenados no nosso servidor de jogo durante a sua sessão.",
+    "id": "Sesi login dan preferensi game Anda disimpan secara lokal di browser Anda menggunakan cookie dan localStorage. Data game (skor, entri leaderboard) disimpan di server game kami selama sesi Anda berlangsung.",
+    "ja": "ログインセッションとゲームの設定は、CookieとlocalStorageを使ってお使いのブラウザ内にローカルに保存されます。ゲームデータ（スコア、ランキングの記録）は、セッションの間、私たちのゲームサーバーに保存されます。",
+    "it": "La tua sessione di accesso e le tue preferenze di gioco sono salvate localmente nel tuo browser tramite cookie e localStorage. I dati di gioco (punteggi, voci in classifica) sono conservati sul nostro server di gioco per la durata della tua sessione."
   },
   "site.privacy.chromeExtensionLegendExpress": {
     "en": "4. Chrome Extension (Legend Express)",
@@ -300,14 +300,14 @@
     "tr": "4. Chrome eklentisi (Legend Express)",
     "pl": "4. Rozszerzenie Chrome (Legend Express)",
     "nl": "4. Chrome-extensie (Legend Express)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "4. Extensão do Chrome (Legend Express)",
+    "id": "4. Ekstensi Chrome (Legend Express)",
+    "ja": "4. Chrome拡張機能（Legend Express）",
+    "it": "4. Estensione di Chrome (Legend Express)"
   },
   "site.privacy.legendExpressDoesNot": {
     "en": "Legend Express <strong>does not collect, store, or transmit any personal user data</strong> to external servers. All extension settings and game preferences are stored locally in your browser using the Chrome Storage API.",
-    "el": "Το Legend Express <strong>δεν συλλέγει, δεν αποθηκεύει και δεν μεταδίδει κανένα προσωπικό δεδομένο χρήστη</strong> σε εξωτερικούς διακομιστές. Όλες οι ρυθμίσεις της επέκτασης και οι προτιμήσεις παιχνιδιού αποθηκεύονται τοπικά στον browser σου μέσω του Chrome Storage API.",
+    "el": "Το Legend Express <strong>δεν συλλέγει, δεν αποθηκεύει και δεν μεταδίδει κανένα προσωπικό δεδομένο χρήστη</strong> σε εξωτερικούς servers. Όλες οι ρυθμίσεις της επέκτασης και οι προτιμήσεις παιχνιδιού αποθηκεύονται τοπικά στον browser σου μέσω του Chrome Storage API.",
     "es": "Legend Express <strong>no recopila, almacena ni transmite ningún dato personal del usuario</strong> a servidores externos. Todos los ajustes de la extensión y las preferencias de juego se guardan localmente en tu navegador mediante la API Chrome Storage.",
     "bg": "Legend Express <strong>не събира, не съхранява и не предава никакви лични потребителски данни</strong> към външни сървъри. Всички настройки на разширението и предпочитания за играта се съхраняват локално в браузъра ти чрез Chrome Storage API.",
     "fr": "Legend Express <strong>ne collecte, ne stocke et ne transmet aucune donnée personnelle des utilisateurs</strong> à des serveurs externes. Tous les réglages de l'extension et les préférences de jeu sont stockés localement dans ton navigateur via l'API Chrome Storage.",
@@ -318,10 +318,10 @@
     "tr": "Legend Express, harici sunuculara <strong>hiçbir kişisel kullanıcı verisi toplamaz, saklamaz veya iletmez</strong>. Tüm eklenti ayarları ve oyun tercihleri, Chrome Storage API kullanılarak tarayıcında yerel olarak saklanır.",
     "pl": "Legend Express <strong>nie zbiera, nie przechowuje ani nie przesyła żadnych danych osobowych użytkownika</strong> na zewnętrzne serwery. Wszystkie ustawienia rozszerzenia i preferencje gry są przechowywane lokalnie w twojej przeglądarce za pomocą Chrome Storage API.",
     "nl": "Legend Express <strong>verzamelt, bewaart of verstuurt geen enkele persoonlijke gebruikersgegevens</strong> naar externe servers. Alle instellingen van de extensie en spelvoorkeuren worden lokaal in je browser opgeslagen via de Chrome Storage API.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Legend Express <strong>não coleta, não armazena e não transmite nenhum dado pessoal do usuário</strong> para servidores externos. Todas as configurações da extensão e preferências de jogo ficam armazenadas localmente no seu navegador por meio da Chrome Storage API.",
+    "id": "Legend Express <strong>tidak mengumpulkan, menyimpan, atau mengirimkan data pribadi pengguna apa pun</strong> ke server eksternal. Semua pengaturan ekstensi dan preferensi game disimpan secara lokal di browser Anda menggunakan Chrome Storage API.",
+    "ja": "Legend Expressは、<strong>ユーザーの個人データを一切収集、保存せず、外部サーバーへ送信することもありません</strong>。拡張機能の設定とゲームの設定はすべて、Chrome Storage APIを使ってお使いのブラウザ内にローカルに保存されます。",
+    "it": "Legend Express <strong>non raccoglie, non conserva e non trasmette alcun dato personale degli utenti</strong> a server esterni. Tutte le impostazioni dell'estensione e le preferenze di gioco sono salvate localmente nel tuo browser tramite la Chrome Storage API."
   },
   "site.privacy.storageUsedSolelyTo": {
     "en": "<strong>Storage:</strong> Used solely to save your mod configurations and hotkeys locally.",
@@ -336,10 +336,10 @@
     "tr": "<strong>Depolama:</strong> Yalnızca mod yapılandırmalarını ve kısayollarını yerel olarak kaydetmek için kullanılır.",
     "pl": "<strong>Pamięć (Storage):</strong> Używana wyłącznie do lokalnego zapisywania konfiguracji moda i skrótów klawiszowych.",
     "nl": "<strong>Opslag:</strong> Wordt uitsluitend gebruikt om je modconfiguraties en sneltoetsen lokaal op te slaan.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Armazenamento:</strong> usado exclusivamente para salvar localmente as configurações do mod e os atalhos.",
+    "id": "<strong>Penyimpanan:</strong> Digunakan semata-mata untuk menyimpan konfigurasi mod dan hotkey Anda secara lokal.",
+    "ja": "<strong>ストレージ：</strong>Modの設定とショートカットキーをローカルに保存するためだけに使用します。",
+    "it": "<strong>Archiviazione (storage):</strong> usata esclusivamente per salvare localmente le configurazioni della mod e i tasti rapidi."
   },
   "site.privacy.hostPermissionsUsedTo": {
     "en": "<strong>Host Permissions:</strong> Used to fetch mod components and assets from jimboy3100.github.io to enable the modded gameplay experience.",
@@ -354,10 +354,10 @@
     "tr": "<strong>Ana makine izinleri (host permissions):</strong> Modlu oyun deneyimini mümkün kılmak amacıyla jimboy3100.github.io adresinden mod bileşenlerini ve dosyalarını almak için kullanılır.",
     "pl": "<strong>Uprawnienia hosta:</strong> Używane do pobierania komponentów i zasobów moda z jimboy3100.github.io, aby umożliwić zmodyfikowaną rozgrywkę.",
     "nl": "<strong>Hostmachtigingen:</strong> Worden gebruikt om modonderdelen en bestanden op te halen van jimboy3100.github.io, zodat de gemodde spelervaring werkt.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Permissões de host:</strong> usadas para buscar componentes e recursos do mod em jimboy3100.github.io, para habilitar a experiência de jogo com o mod.",
+    "id": "<strong>Izin Host:</strong> Digunakan untuk mengambil komponen dan aset mod dari jimboy3100.github.io agar pengalaman bermain dengan mod dapat berjalan.",
+    "ja": "<strong>ホスト権限：</strong>Modを適用したゲームプレイを可能にするため、jimboy3100.github.ioからModのコンポーネントやアセットを取得するのに使用します。",
+    "it": "<strong>Autorizzazioni host:</strong> usate per scaricare i componenti e le risorse della mod da jimboy3100.github.io, così da rendere possibile l'esperienza di gioco con la mod."
   },
   "site.privacy.thirdPartyServices": {
     "en": "5. Third-Party Services",
@@ -372,10 +372,10 @@
     "tr": "5. Üçüncü taraf hizmetleri",
     "pl": "5. Usługi stron trzecich",
     "nl": "5. Diensten van derden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "5. Serviços de terceiros",
+    "id": "5. Layanan Pihak Ketiga",
+    "ja": "5. 第三者のサービス",
+    "it": "5. Servizi di terze parti"
   },
   "site.privacy.weUseGoogleSign": {
     "en": "We use Google Sign-In for authentication. Google's privacy policy applies to the data they collect: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener\">Google Privacy Policy</a>.",
@@ -390,10 +390,10 @@
     "tr": "Kimlik doğrulama için Google ile oturum açmayı kullanırız. Google'ın topladığı veriler için Google'ın gizlilik politikası geçerlidir: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener\">Google Gizlilik Politikası</a>.",
     "pl": "Do uwierzytelniania używamy logowania przez Google. Do danych zbieranych przez Google ma zastosowanie polityka prywatności Google: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener\">Polityka prywatności Google</a>.",
     "nl": "We gebruiken Inloggen met Google voor authenticatie. Op de gegevens die Google verzamelt is het privacybeleid van Google van toepassing: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener\">Privacybeleid van Google</a>.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Usamos o Login com o Google para autenticação. A política de privacidade do Google se aplica aos dados que ele coleta: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener\">Política de Privacidade do Google</a>.",
+    "id": "Kami menggunakan Masuk dengan Google untuk autentikasi. Kebijakan privasi Google berlaku untuk data yang dikumpulkan oleh Google: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener\">Kebijakan Privasi Google</a>.",
+    "ja": "認証にはGoogleログインを使用しています。Googleが収集するデータには、Googleのプライバシーポリシーが適用されます：<a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener\">Googleプライバシーポリシー</a>。",
+    "it": "Per l'autenticazione usiamo l'accesso con Google. Ai dati raccolti da Google si applica l'informativa sulla privacy di Google: <a href=\"https://policies.google.com/privacy\" target=\"_blank\" rel=\"noopener\">Norme sulla privacy di Google</a>."
   },
   "site.privacy.theExtensionMayLoad": {
     "en": "The extension may load modded scripts (Legend Mod, Ogario) from the official jimboy3100.github.io repository. These scripts are community-maintained and used to modify the gameplay interface.",
@@ -408,10 +408,10 @@
     "tr": "Eklenti, resmî jimboy3100.github.io deposundan modlu betikleri (Legend Mod, Ogario) yükleyebilir. Bu betikler topluluk tarafından sürdürülür ve oyun arayüzünü değiştirmek için kullanılır.",
     "pl": "Rozszerzenie może ładować zmodyfikowane skrypty (Legend Mod, Ogario) z oficjalnego repozytorium jimboy3100.github.io. Skrypty te są utrzymywane przez społeczność i służą do modyfikowania interfejsu rozgrywki.",
     "nl": "De extensie kan gemodde scripts (Legend Mod, Ogario) laden uit de officiële repository jimboy3100.github.io. Deze scripts worden door de community onderhouden en worden gebruikt om de spelinterface aan te passen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A extensão pode carregar scripts de mod (Legend Mod, Ogario) a partir do repositório oficial jimboy3100.github.io. Esses scripts são mantidos pela comunidade e usados para modificar a interface de jogo.",
+    "id": "Ekstensi ini dapat memuat script mod (Legend Mod, Ogario) dari repositori resmi jimboy3100.github.io. Script ini dikelola oleh komunitas dan digunakan untuk mengubah antarmuka permainan.",
+    "ja": "この拡張機能は、公式のjimboy3100.github.ioリポジトリからModのスクリプト（Legend Mod、Ogario）を読み込むことがあります。これらのスクリプトはコミュニティによって管理されており、ゲームプレイの画面を変更するために使われます。",
+    "it": "L'estensione può caricare script modificati (Legend Mod, Ogario) dal repository ufficiale jimboy3100.github.io. Questi script sono mantenuti dalla community e servono a modificare l'interfaccia di gioco."
   },
   "site.privacy.dataDeletion": {
     "en": "6. Data Deletion",
@@ -426,14 +426,14 @@
     "tr": "6. Verilerin silinmesi",
     "pl": "6. Usuwanie danych",
     "nl": "6. Verwijderen van gegevens",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "6. Exclusão de dados",
+    "id": "6. Penghapusan Data",
+    "ja": "6. データの削除",
+    "it": "6. Cancellazione dei dati"
   },
   "site.privacy.youCanDeleteYour": {
     "en": "You can delete your local data by clearing your browser's cookies and localStorage. To request deletion of server-side data, contact us at the email below.",
-    "el": "Μπορείς να διαγράψεις τα τοπικά σου δεδομένα καθαρίζοντας τα cookies και το localStorage του browser σου. Για να ζητήσεις διαγραφή δεδομένων από τον διακομιστή, επικοινώνησε μαζί μας στο email παρακάτω.",
+    "el": "Μπορείς να διαγράψεις τα τοπικά σου δεδομένα καθαρίζοντας τα cookies και το localStorage του browser σου. Για να ζητήσεις διαγραφή δεδομένων από τον server, επικοινώνησε μαζί μας στο email παρακάτω.",
     "es": "Puedes eliminar tus datos locales borrando las cookies y el localStorage de tu navegador. Para solicitar la eliminación de los datos del servidor, contáctanos en el correo electrónico que aparece abajo.",
     "bg": "Можеш да изтриеш локалните си данни, като изчистиш бисквитките (cookies) и localStorage на браузъра си. За да поискаш изтриване на данните на сървъра, свържи се с нас на имейла по-долу.",
     "fr": "Tu peux supprimer tes données locales en effaçant les cookies et le localStorage de ton navigateur. Pour demander la suppression des données côté serveur, contacte-nous à l'adresse e-mail ci-dessous.",
@@ -444,10 +444,10 @@
     "tr": "Tarayıcının çerezlerini ve localStorage'ını temizleyerek yerel verilerini silebilirsin. Sunucu tarafındaki verilerin silinmesini talep etmek için aşağıdaki e-posta adresinden bize ulaş.",
     "pl": "Możesz usunąć swoje dane lokalne, czyszcząc pliki cookie i localStorage w swojej przeglądarce. Aby poprosić o usunięcie danych przechowywanych na serwerze, skontaktuj się z nami pod adresem e-mail podanym poniżej.",
     "nl": "Je kunt je lokale gegevens verwijderen door de cookies en de localStorage van je browser te wissen. Om verwijdering van gegevens op de server aan te vragen, neem je contact met ons op via het e-mailadres hieronder.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você pode excluir os seus dados locais limpando os cookies e o localStorage do seu navegador. Para solicitar a exclusão dos dados armazenados no servidor, entre em contato conosco pelo e-mail abaixo.",
+    "id": "Anda dapat menghapus data lokal Anda dengan membersihkan cookie dan localStorage di browser Anda. Untuk meminta penghapusan data di sisi server, hubungi kami melalui email di bawah ini.",
+    "ja": "ローカルのデータは、ブラウザのCookieとlocalStorageを消去することで削除できます。サーバー側のデータの削除を希望する場合は、下記のメールアドレスまでご連絡ください。",
+    "it": "Puoi cancellare i tuoi dati locali eliminando i cookie e il localStorage del tuo browser. Per chiedere la cancellazione dei dati conservati sul server, contattaci all'indirizzo email qui sotto."
   },
   "site.privacy.changesToThePolicy": {
     "en": "7. Changes to the Policy",
@@ -462,10 +462,10 @@
     "tr": "7. Politikadaki değişiklikler",
     "pl": "7. Zmiany polityki",
     "nl": "7. Wijzigingen in het beleid",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "7. Alterações nesta política",
+    "id": "7. Perubahan Kebijakan",
+    "ja": "7. ポリシーの変更",
+    "it": "7. Modifiche all'informativa"
   },
   "site.privacy.weMayUpdateThis": {
     "en": "We may update this policy if technical changes require it. Updates will be posted on this page.",
@@ -480,10 +480,10 @@
     "tr": "Teknik değişiklikler gerektirirse bu politikayı güncelleyebiliriz. Güncellemeler bu sayfada yayımlanır.",
     "pl": "Możemy zaktualizować tę politykę, jeśli będą tego wymagać zmiany techniczne. Aktualizacje będą publikowane na tej stronie.",
     "nl": "We kunnen dit beleid bijwerken als technische wijzigingen dat vereisen. Updates worden op deze pagina gepubliceerd.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Podemos atualizar esta política se mudanças técnicas exigirem. As atualizações serão publicadas nesta página.",
+    "id": "Kami dapat memperbarui kebijakan ini jika diperlukan karena perubahan teknis. Pembaruan akan dipublikasikan di halaman ini.",
+    "ja": "技術的な変更が必要になった場合、このポリシーを更新することがあります。更新内容はこのページに掲載します。",
+    "it": "Potremmo aggiornare questa informativa se modifiche tecniche lo rendono necessario. Gli aggiornamenti saranno pubblicati su questa pagina."
   },
   "site.privacy.contact": {
     "en": "8. Contact",
@@ -498,10 +498,10 @@
     "tr": "8. İletişim",
     "pl": "8. Kontakt",
     "nl": "8. Contact",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "8. Contato",
+    "id": "8. Kontak",
+    "ja": "8. お問い合わせ",
+    "it": "8. Contatti"
   },
   "site.privacy.ifYouHaveQuestions": {
     "en": "If you have questions, contact: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> or via GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
@@ -516,10 +516,10 @@
     "tr": "Soruların varsa iletişim: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> veya GitHub üzerinden: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
     "pl": "Jeśli masz pytania, napisz: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> lub przez GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
     "nl": "Heb je vragen, neem dan contact op: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> of via GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Em caso de dúvidas, entre em contato: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> ou pelo GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
+    "id": "Jika Anda memiliki pertanyaan, hubungi: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> atau melalui GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>",
+    "ja": "ご質問がある場合は、<a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a>、またはGitHub（<a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>）までご連絡ください。",
+    "it": "Per qualsiasi domanda, contatta: <a href=\"mailto:jimboy3100@gmail.com\">jimboy3100@gmail.com</a> oppure tramite GitHub: <a href=\"https://github.com/jimboy3100\">github.com/jimboy3100</a>"
   },
   "site.privacy.backToExpandingLand": {
     "en": "← Back to Expanding Land",
@@ -534,10 +534,10 @@
     "tr": "← Expanding Land'e dön",
     "pl": "← Powrót do Expanding Land",
     "nl": "← Terug naar Expanding Land",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "← Voltar ao Expanding Land",
+    "id": "← Kembali ke Expanding Land",
+    "ja": "← Expanding Landに戻る",
+    "it": "← Torna a Expanding Land"
   },
   "site.privacy.bindingNote": {
     "note": "only shown when the page is not in English",
@@ -553,9 +553,9 @@
     "tr": "Bu çeviri kolaylık olsun diye sunulmuştur. Bu politikanın bağlayıcı olan sürümü İngilizce sürümüdür.",
     "pl": "To tłumaczenie ma ci jedynie ułatwić lekturę. Wiążąca jest angielska wersja tej polityki.",
     "nl": "Dit is een vertaling voor je gemak. De Engelse versie van dit beleid is bindend.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta tradução é oferecida para a sua conveniência. A versão em inglês desta política é a que tem valor legal.",
+    "id": "Ini adalah terjemahan untuk memudahkan Anda. Versi bahasa Inggris dari kebijakan ini adalah versi yang mengikat.",
+    "ja": "この翻訳は便宜上のものです。このポリシーは英語版が正式なものとなります。",
+    "it": "Questa traduzione è fornita per tua comodità. La versione inglese di questa informativa è quella vincolante."
   }
 }

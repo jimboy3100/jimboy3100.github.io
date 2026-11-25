@@ -11,7 +11,7 @@
 "site.changelog.newKillFeedLive": "<span class=\"tag tag-new\">Nuevo</span> <strong>Registro de bajas</strong>: registro en directo de lo que comes y de tus muertes, a la izquierda de la clasificación",
 "site.changelog.newMassLossAlert": "<span class=\"tag tag-new\">Nuevo</span> <strong>Alerta de pérdida de masa</strong> con control deslizante de umbral configurable",
 "site.changelog.newStepsLinkTo": "<span class=\"tag tag-new\">Nuevo</span> Los pasos enlazan a ese momento del replay cuando la vida se ha grabado",
-"site.changelog.newExactNamesFrom": "<span class=\"tag tag-new\">Nuevo</span> Nombres exactos a partir de los eventos de comer y de la información del asesino de Expanding Land",
+"site.changelog.newExactNamesFrom": "<span class=\"tag tag-new\">Nuevo</span> Nombres exactos a partir de los eventos de comer y de la información de Expanding Land sobre quién te comió",
 "site.changelog.adaptivePerformanceNetworkDiagnostics": "Rendimiento adaptativo y diagnóstico de red",
 "site.changelog.perfAdaptivePerformanceAuto": "<span class=\"tag tag-perf\">Rendimiento</span> <strong>Rendimiento adaptativo</strong>: optimiza automáticamente cuando bajan los FPS: efectos → física de gelatina → resolución, y lo restaura cuando se estabiliza",
 "site.changelog.newPerformanceDiagnosticsWindow": "<span class=\"tag tag-new\">Nuevo</span> <strong>Ventana de diagnóstico de rendimiento</strong>: gráfico de tiempo por fotograma, p50/p95/p99, fotogramas lentos, tiempo de renderizado frente al resto, copiar informe",

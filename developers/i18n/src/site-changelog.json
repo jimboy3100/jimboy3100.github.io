@@ -12,10 +12,10 @@
     "tr": "← Legend Mod'a dön",
     "pl": "← Powrót do Legend Mod",
     "nl": "← Terug naar Legend Mod",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "← Voltar ao Legend Mod",
+    "id": "← Kembali ke Legend Mod",
+    "ja": "← Legend Modに戻る",
+    "it": "← Torna a Legend Mod"
   },
   "site.changelog.changelog": {
     "en": "📋 Changelog",
@@ -30,10 +30,10 @@
     "tr": "📋 Değişiklik günlüğü",
     "pl": "📋 Lista zmian",
     "nl": "📋 Changelog",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "📋 Changelog",
+    "id": "📋 Catatan Perubahan",
+    "ja": "📋 更新履歴",
+    "it": "📋 Changelog"
   },
   "site.changelog.allLegendModUpdates": {
     "en": "All Legend Mod updates — latest on top. <a href=\"/rss.xml\" class=\"rss-link\">📡 RSS Feed</a>",
@@ -47,11 +47,11 @@
     "de": "Alle Legend Mod Updates — die neuesten oben. <a href=\"/rss.xml\" class=\"rss-link\">📡 RSS-Feed</a>",
     "tr": "Tüm Legend Mod güncellemeleri — en yenisi en üstte. <a href=\"/rss.xml\" class=\"rss-link\">📡 RSS akışı</a>",
     "pl": "Wszystkie aktualizacje Legend Mod — najnowsze na górze. <a href=\"/rss.xml\" class=\"rss-link\">📡 Kanał RSS</a>",
-    "nl": "Alle Legend Mod updates — de nieuwste bovenaan. <a href=\"/rss.xml\" class=\"rss-link\">📡 RSS-feed</a>",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Alle Legend Mod-updates — de nieuwste bovenaan. <a href=\"/rss.xml\" class=\"rss-link\">📡 RSS-feed</a>",
+    "pt": "Todas as atualizações do Legend Mod, das mais recentes para as mais antigas. <a href=\"/rss.xml\" class=\"rss-link\">📡 Feed RSS</a>",
+    "id": "Semua update Legend Mod — yang terbaru di atas. <a href=\"/rss.xml\" class=\"rss-link\">📡 Feed RSS</a>",
+    "ja": "Legend Modのすべてのアップデートです（新しい順）。<a href=\"/rss.xml\" class=\"rss-link\">📡 RSSフィード</a>",
+    "it": "Tutti gli aggiornamenti di Legend Mod, dal più recente. <a href=\"/rss.xml\" class=\"rss-link\">📡 Feed RSS</a>"
   },
   "site.changelog.deathRecapKillFeed": {
     "en": "Death Recap, Kill Feed & Mass-Loss Alert",
@@ -66,10 +66,10 @@
     "tr": "Ölüm özeti, kill feed ve kütle kaybı uyarısı",
     "pl": "Podsumowanie śmierci, kill feed i alert utraty masy",
     "nl": "Doodsoverzicht, kill feed & massaverlies-melding",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Resumo da morte, kill feed e alerta de perda de massa",
+    "id": "Ringkasan Kematian, Kill Feed & Peringatan Kehilangan Massa",
+    "ja": "死亡レポート、キルフィード、質量減少アラート",
+    "it": "Riepilogo morte, kill feed e avviso perdita di massa"
   },
   "site.changelog.november2026": {
     "en": "November 2026",
@@ -84,28 +84,28 @@
     "tr": "Kasım 2026",
     "pl": "Listopad 2026",
     "nl": "November 2026",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Novembro de 2026",
+    "id": "November 2026",
+    "ja": "2026年11月",
+    "it": "Novembre 2026"
   },
   "site.changelog.newDeathRecapOn": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Death recap</strong> on the Game Over card — the last 20 seconds as 3-6 steps: mass &amp; cells, splits, viruses, merges, quick mass losses, who ate you — with a mass sparkline",
-    "el": "<span class=\"tag tag-new\">Νέο</span> <strong>Ανασκόπηση θανάτου</strong> στην κάρτα Game Over — τα τελευταία 20 δευτερόλεπτα σε 3-6 βήματα: μάζα &amp; κύτταρα, διασπάσεις, ιοί, συγχωνεύσεις, γρήγορες απώλειες μάζας, ποιος σε έφαγε — με γράφημα μάζας",
+    "el": "<span class=\"tag tag-new\">Νέο</span> <strong>Ανασκόπηση θανάτου</strong> στην κάρτα Game Over — τα τελευταία 20 δευτερόλεπτα σε 3-6 βήματα: μάζα &amp; κύτταρα, splits, ιοί, συγχωνεύσεις, γρήγορες απώλειες μάζας, ποιος σε έφαγε — με γράφημα μάζας",
     "es": "<span class=\"tag tag-new\">Nuevo</span> <strong>Resumen de muerte</strong> en la tarjeta de Game Over: los últimos 20 segundos en 3-6 pasos: masa &amp; células, splits, virus, fusiones, pérdidas rápidas de masa, quién te comió, con un minigráfico de masa",
     "bg": "<span class=\"tag tag-new\">Ново</span> <strong>Обобщение на смъртта</strong> в картата Game Over — последните 20 секунди в 3-6 стъпки: маса &amp; клетки, сплитове, вируси, сливания, бързи загуби на маса, кой те изяде — с графика на масата",
     "fr": "<span class=\"tag tag-new\">Nouveau</span> <strong>Récap de mort</strong> sur la carte Game Over — les 20 dernières secondes en 3 à 6 étapes : masse &amp; cellules, splits, virus, fusions, pertes de masse rapides, qui t'a mangé — avec un mini-graphique de la masse",
-    "ar": "<span class=\"tag tag-new\">جديد</span> <strong>ملخص الموت</strong> على بطاقة Game Over — آخر 20 ثانية في 3-6 خطوات: الكتلة &amp; الخلايا، الانقسامات، الفيروسات، الاندماجات، خسائر الكتلة السريعة، من أكلك — مع رسم بياني صغير للكتلة",
-    "zh": "<span class=\"tag tag-new\">新功能</span> Game Over 卡片上的<strong>死亡回顧</strong> — 用 3-6 個步驟呈現最後 20 秒：質量 &amp; 細胞、分裂、病毒、合併、快速質量流失、誰吃了你 — 並附質量走勢圖",
+    "ar": "<span class=\"tag tag-new\">جديد</span> <strong>ملخص الموت</strong> على بطاقة نهاية اللعبة — آخر 20 ثانية في 3-6 خطوات: الكتلة &amp; الخلايا، الانقسامات، الفيروسات، الاندماجات، خسائر الكتلة السريعة، من أكلك — مع رسم بياني صغير للكتلة",
+    "zh": "<span class=\"tag tag-new\">新功能</span> 遊戲結束卡片上的<strong>死亡回顧</strong> — 用 3-6 個步驟呈現最後 20 秒：質量 &amp; 細胞、分裂、病毒、合併、快速質量流失、誰吃了你 — 並附質量走勢圖",
     "ru": "<span class=\"tag tag-new\">Новое</span> <strong>Разбор смерти</strong> на карточке Game Over — последние 20 секунд в 3-6 шагах: масса &amp; клетки, сплиты, вирусы, слияния, быстрые потери массы, кто тебя съел — с графиком массы",
     "de": "<span class=\"tag tag-new\">Neu</span> <strong>Todesrückblick</strong> auf der Game-Over-Karte — die letzten 20 Sekunden in 3-6 Schritten: Masse &amp; Zellen, Splits, Viren, Merges, schnelle Massenverluste, wer dich gefressen hat — mit Massen-Sparkline",
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Ölüm özeti</strong> Game Over kartında — son 20 saniye 3-6 adımda: kütle &amp; hücreler, bölünmeler, virüsler, birleşmeler, hızlı kütle kayıpları, seni kimin yediği — kütle grafiğiyle birlikte",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Podsumowanie śmierci</strong> na karcie Game Over — ostatnie 20 sekund w 3-6 krokach: masa &amp; komórki, podziały, wirusy, scalenia, szybkie utraty masy, kto cię zjadł — z wykresem masy",
-    "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Doodsoverzicht</strong> op de Game Over-kaart — de laatste 20 seconden in 3-6 stappen: massa &amp; cellen, splits, virussen, merges, snel massaverlies, wie je opat — met een massa-sparkline",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Doodsoverzicht</strong> op de Game Over-kaart — de laatste 20 seconden in 3-6 stappen: massa &amp; cellen, splits, virussen, merges, snel massaverlies, wie jou opat — met een massa-sparkline",
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Resumo da morte</strong> no card de Game Over: os últimos 20 segundos em 3 a 6 etapas (massa &amp; células, splits, vírus, fusões, perdas rápidas de massa, quem te comeu), com um minigráfico de massa",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Ringkasan kematian</strong> di kartu Game Over — 20 detik terakhir dalam 3-6 langkah: massa &amp; sel, split, virus, merge, kehilangan massa mendadak, siapa yang memakanmu — lengkap dengan sparkline massa",
+    "ja": "<span class=\"tag tag-new\">新機能</span> ゲームオーバーカードに<strong>死亡レポート</strong>を追加。最後の20秒間を3〜6ステップで表示します：質量とセル、分裂、ウイルス、合体、急な質量減少、あなたを食べたプレイヤー。質量のスパークラインも付いています",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Riepilogo morte</strong> nella schermata di Game Over: gli ultimi 20 secondi in 3-6 passaggi (massa e cellule, split, virus, fusioni, perdite rapide di massa, chi ti ha mangiato) con un mini grafico della massa"
   },
   "site.changelog.newKillFeedLive": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Kill feed</strong> — live log of your eats and deaths, left of the leaderboard",
@@ -113,17 +113,17 @@
     "es": "<span class=\"tag tag-new\">Nuevo</span> <strong>Registro de bajas</strong>: registro en directo de lo que comes y de tus muertes, a la izquierda de la clasificación",
     "bg": "<span class=\"tag tag-new\">Ново</span> <strong>Лента с убийства</strong> — дневник на живо с това, което изяждаш, и смъртите ти, вляво от класацията",
     "fr": "<span class=\"tag tag-new\">Nouveau</span> <strong>Fil des éliminations</strong> — journal en direct de ce que tu manges et de tes morts, à gauche du classement",
-    "ar": "<span class=\"tag tag-new\">جديد</span> <strong>سجل القتل</strong> — سجل مباشر لما تأكله ولموتك، على يسار لوحة المتصدرين",
+    "ar": "<span class=\"tag tag-new\">جديد</span> <strong>سجل القتل</strong> — سجل مباشر لما تأكله ولموتك، على يسار لوحة الصدارة",
     "zh": "<span class=\"tag tag-new\">新功能</span> <strong>擊殺動態</strong> — 即時記錄你吃掉的對象與你的死亡，位於排行榜左側",
     "ru": "<span class=\"tag tag-new\">Новое</span> <strong>Лента убийств</strong> — живой журнал того, кого ты съел и как погиб, слева от таблицы лидеров",
     "de": "<span class=\"tag tag-new\">Neu</span> <strong>Kill-Feed</strong> — Live-Protokoll deiner Fressereien und Tode, links neben der Bestenliste",
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Kill feed</strong> — yediklerinin ve ölümlerinin canlı kaydı, liderlik tablosunun solunda",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Kill feed</strong> — bieżący dziennik tego, co zjadasz, i twoich śmierci, na lewo od rankingu",
-    "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Kill feed</strong> — live logboek van wat je opeet en van je doden, links van het klassement",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Kill feed</strong> — live logboek van wat je opeet en wanneer je doodgaat, links van de ranglijst",
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Kill feed</strong>: registro ao vivo de quem você comeu e das suas mortes, à esquerda do ranking",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Kill feed</strong> — catatan langsung saat kamu memakan dan dimakan, di sebelah kiri leaderboard",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>キルフィード</strong>：自分が食べた記録と死亡をリアルタイムで表示するログ。ランキングの左側に表示されます",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Kill feed</strong>: registro in tempo reale di chi mangi e di quando muori, a sinistra della classifica"
   },
   "site.changelog.newMassLossAlert": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Mass-loss alert</strong> with configurable threshold slider",
@@ -138,10 +138,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Kütle kaybı uyarısı</strong>, eşiği kaydırıcıyla ayarlanabilir",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Alert utraty masy</strong> z regulowanym progiem (suwak)",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Massaverlies-melding</strong> met instelbare drempelschuif",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Alerta de perda de massa</strong> com controle deslizante para ajustar o limite",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Peringatan kehilangan massa</strong> dengan slider batas yang bisa diatur",
+    "ja": "<span class=\"tag tag-new\">新機能</span> しきい値をスライダーで調整できる<strong>質量減少アラート</strong>",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Avviso perdita di massa</strong> con cursore per regolare la soglia"
   },
   "site.changelog.newStepsLinkTo": {
     "en": "<span class=\"tag tag-new\">New</span> Steps link to that moment in the replay when the life was recorded",
@@ -156,15 +156,15 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> O can kaydedildiyse adımlar tekrar oynatmada o âna götürür",
     "pl": "<span class=\"tag tag-new\">Nowość</span> Kroki prowadzą do tego momentu w powtórce, jeśli życie zostało nagrane",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> Stappen linken naar dat moment in de replay als het leven is opgenomen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> As etapas levam ao momento exato no replay, quando a vida foi gravada",
+    "id": "<span class=\"tag tag-new\">Baru</span> Langkah-langkahnya terhubung ke momen tersebut di replay kalau nyawa itu terekam",
+    "ja": "<span class=\"tag tag-new\">新機能</span> そのライフが録画されていた場合、各ステップからリプレイのその場面へ移動できるように",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> I passaggi portano a quel momento nel replay, se la vita è stata registrata"
   },
   "site.changelog.newExactNamesFrom": {
     "en": "<span class=\"tag tag-new\">New</span> Exact names from eat events and the Expanding Land killer info",
-    "el": "<span class=\"tag tag-new\">Νέο</span> Ακριβή ονόματα από τα συμβάντα φαγώματος και τις πληροφορίες δολοφόνου του Expanding Land",
-    "es": "<span class=\"tag tag-new\">Nuevo</span> Nombres exactos a partir de los eventos de comer y de la información del asesino de Expanding Land",
+    "el": "<span class=\"tag tag-new\">Νέο</span> Ακριβή ονόματα από τα συμβάντα φαγώματος και τις πληροφορίες του Expanding Land για το ποιος σε έφαγε",
+    "es": "<span class=\"tag tag-new\">Nuevo</span> Nombres exactos a partir de los eventos de comer y de la información de Expanding Land sobre quién te comió",
     "bg": "<span class=\"tag tag-new\">Ново</span> Точни имена от събитията при изяждане и информацията за убиеца от Expanding Land",
     "fr": "<span class=\"tag tag-new\">Nouveau</span> Noms exacts issus des événements de capture et des infos sur le tueur d'Expanding Land",
     "ar": "<span class=\"tag tag-new\">جديد</span> أسماء دقيقة من أحداث الأكل ومن معلومات القاتل في Expanding Land",
@@ -174,10 +174,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> Yeme olaylarından ve Expanding Land'in katil bilgisinden tam isimler",
     "pl": "<span class=\"tag tag-new\">Nowość</span> Dokładne nazwy ze zdarzeń zjedzenia i z informacji o zabójcy w Expanding Land",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> Exacte namen uit eet-events en de killer-info van Expanding Land",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> Nomes exatos a partir dos eventos de comer e das informações de quem te comeu no Expanding Land",
+    "id": "<span class=\"tag tag-new\">Baru</span> Nama yang akurat dari event makan dan info pemakan dari Expanding Land",
+    "ja": "<span class=\"tag tag-new\">新機能</span> 捕食イベントとExpanding Landの「食べた相手」情報から正確な名前を表示",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> Nomi esatti presi dagli eventi di mangiata e dalle info su chi ti ha mangiato in Expanding Land"
   },
   "site.changelog.adaptivePerformanceNetworkDiagnostics": {
     "en": "Adaptive Performance & Network Diagnostics",
@@ -192,10 +192,10 @@
     "tr": "Uyarlanabilir performans ve ağ teşhisi",
     "pl": "Adaptacyjna wydajność i diagnostyka sieci",
     "nl": "Adaptieve prestaties & netwerkdiagnose",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Desempenho adaptativo e diagnóstico de rede",
+    "id": "Performa Adaptif & Diagnostik Jaringan",
+    "ja": "自動パフォーマンス調整とネットワーク診断",
+    "it": "Prestazioni adattive e diagnostica di rete"
   },
   "site.changelog.perfAdaptivePerformanceAuto": {
     "en": "<span class=\"tag tag-perf\">Perf</span> <strong>Adaptive performance</strong> — auto-optimizes when FPS drops: effects → jelly physics → resolution, restores when stable",
@@ -203,17 +203,17 @@
     "es": "<span class=\"tag tag-perf\">Rendimiento</span> <strong>Rendimiento adaptativo</strong>: optimiza automáticamente cuando bajan los FPS: efectos → física de gelatina → resolución, y lo restaura cuando se estabiliza",
     "bg": "<span class=\"tag tag-perf\">Производителност</span> <strong>Адаптивна производителност</strong> — автоматична оптимизация при спад на FPS: ефекти → желе физика → резолюция, връща всичко, когато е стабилно",
     "fr": "<span class=\"tag tag-perf\">Perf</span> <strong>Performances adaptatives</strong> — optimise automatiquement quand les FPS chutent : effets → physique gélatine → résolution, et rétablit le tout une fois stable",
-    "ar": "<span class=\"tag tag-perf\">أداء</span> <strong>أداء متكيف</strong> — تحسين تلقائي عند انخفاض FPS: التأثيرات → فيزياء الهلام → الدقة، ويعيدها عند الاستقرار",
-    "zh": "<span class=\"tag tag-perf\">效能</span> <strong>自適應效能</strong> — FPS 下降時自動最佳化：特效 → 果凍物理 → 解析度，穩定後恢復",
+    "ar": "<span class=\"tag tag-perf\">أداء</span> <strong>أداء متكيف</strong> — تحسين تلقائي عند انخفاض FPS: التأثيرات → فيزياء الجيلي → الدقة، ويعيدها عند الاستقرار",
+    "zh": "<span class=\"tag tag-perf\">效能</span> <strong>自適應效能</strong> — FPS 下降時自動最佳化：特效 → 果凍效果 → 解析度，穩定後恢復",
     "ru": "<span class=\"tag tag-perf\">Производительность</span> <strong>Адаптивная производительность</strong> — автоматическая оптимизация при падении FPS: эффекты → физика желе → разрешение, всё возвращается, когда FPS стабилен",
     "de": "<span class=\"tag tag-perf\">Leistung</span> <strong>Adaptive Leistung</strong> — optimiert automatisch, wenn die FPS fallen: Effekte → Jelly-Physik → Auflösung, und stellt alles wieder her, sobald es stabil läuft",
     "tr": "<span class=\"tag tag-perf\">Performans</span> <strong>Uyarlanabilir performans</strong> — FPS düştüğünde otomatik optimize eder: efektler → jöle fiziği → çözünürlük; durum düzelince geri yükler",
     "pl": "<span class=\"tag tag-perf\">Wydajność</span> <strong>Adaptacyjna wydajność</strong> — automatycznie optymalizuje, gdy spadają FPS: efekty → fizyka galaretki → rozdzielczość, i przywraca je, gdy jest stabilnie",
     "nl": "<span class=\"tag tag-perf\">Prestaties</span> <strong>Adaptieve prestaties</strong> — optimaliseert automatisch als de FPS zakt: effecten → jelly-fysica → resolutie, en zet alles terug zodra het stabiel is",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-perf\">Desempenho</span> <strong>Desempenho adaptativo</strong>: otimiza automaticamente quando o FPS cai (efeitos → física de gelatina → resolução) e restaura quando estabiliza",
+    "id": "<span class=\"tag tag-perf\">Performa</span> <strong>Performa adaptif</strong> — optimasi otomatis saat FPS turun: efek → fisika jelly → resolusi, lalu dikembalikan saat sudah stabil",
+    "ja": "<span class=\"tag tag-perf\">パフォーマンス</span> <strong>自動パフォーマンス調整</strong>：FPSが下がると自動で最適化（エフェクト → ゼリー物理 → 解像度の順）し、安定すると元に戻します",
+    "it": "<span class=\"tag tag-perf\">Prestazioni</span> <strong>Prestazioni adattive</strong>: ottimizza da sola quando gli FPS calano (effetti → fisica gelatina → risoluzione) e ripristina tutto quando la situazione è stabile"
   },
   "site.changelog.newPerformanceDiagnosticsWindow": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Performance diagnostics window</strong> — frame time graph, p50/p95/p99, long frames, render vs other time, copy report",
@@ -228,10 +228,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Performans teşhis penceresi</strong> — kare süresi grafiği, p50/p95/p99, uzun kareler, çizim süresi ile diğer süreler, raporu kopyalama",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Okno diagnostyki wydajności</strong> — wykres czasu klatki, p50/p95/p99, długie klatki, czas renderowania vs pozostały czas, kopiowanie raportu",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Venster voor prestatiediagnose</strong> — frametijdgrafiek, p50/p95/p99, lange frames, render- vs. overige tijd, rapport kopiëren",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Janela de diagnóstico de desempenho</strong>: gráfico do tempo de frame, p50/p95/p99, frames longos, tempo de renderização vs. outros, copiar relatório",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Jendela diagnostik performa</strong> — grafik waktu frame, p50/p95/p99, frame panjang, waktu render vs lainnya, salin laporan",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>パフォーマンス診断ウィンドウ</strong>：フレーム時間のグラフ、p50/p95/p99、長いフレーム、描画とその他の処理時間の比較、レポートのコピー",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Finestra di diagnostica prestazioni</strong>: grafico dei tempi di frame, p50/p95/p99, frame lunghi, tempo di rendering rispetto al resto, copia del report"
   },
   "site.changelog.newNetworkQualityHistory": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Network quality history</strong> — ping, jitter, packets/s and disconnects across sessions",
@@ -242,14 +242,14 @@
     "ar": "<span class=\"tag tag-new\">جديد</span> <strong>سجل جودة الشبكة</strong> — ping وjitter والحزم/ث وحالات الانقطاع عبر الجلسات",
     "zh": "<span class=\"tag tag-new\">新功能</span> <strong>網路品質歷史</strong> — 跨工作階段的 ping、jitter、封包/秒與斷線次數",
     "ru": "<span class=\"tag tag-new\">Новое</span> <strong>История качества сети</strong> — пинг, джиттер, пакеты/с и разрывы соединения по сессиям",
-    "de": "<span class=\"tag tag-new\">Neu</span> <strong>Verlauf der Netzwerkqualität</strong> — ping, jitter, Pakete/s und Verbindungsabbrüche über mehrere Sitzungen",
+    "de": "<span class=\"tag tag-new\">Neu</span> <strong>Verlauf der Netzwerkqualität</strong> — Ping, Jitter, Pakete/s und Verbindungsabbrüche über mehrere Sitzungen",
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Ağ kalitesi geçmişi</strong> — oturumlar boyunca ping, jitter, paket/sn ve bağlantı kopmaları",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Historia jakości sieci</strong> — ping, jitter, pakiety/s i rozłączenia z wielu sesji",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Geschiedenis van netwerkkwaliteit</strong> — ping, jitter, pakketten/s en verbroken verbindingen over sessies heen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Histórico da qualidade da rede</strong>: ping, jitter, pacotes/s e desconexões entre as sessões",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Riwayat kualitas jaringan</strong> — ping, jitter, paket/detik, dan putus koneksi di setiap sesi",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>ネットワーク品質の履歴</strong>：セッションをまたいだPing、ジッター、パケット/秒、切断の記録",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Cronologia della qualità di rete</strong>: ping, jitter, pacchetti/s e disconnessioni tra una sessione e l'altra"
   },
   "site.changelog.commandCentreNotificationsSound": {
     "en": "Command Centre, Notifications & Sound Mixer",
@@ -260,14 +260,14 @@
     "ar": "مركز الأوامر، الإشعارات ومازج الصوت",
     "zh": "指令中心、通知與混音器",
     "ru": "Центр команд, уведомления и микшер звука",
-    "de": "Befehlszentrale, Benachrichtigungen & Sound-Mixer",
+    "de": "Kommandozentrale, Benachrichtigungen & Sound-Mixer",
     "tr": "Komut merkezi, bildirimler ve ses mikseri",
     "pl": "Centrum poleceń, powiadomienia i mikser dźwięku",
     "nl": "Commandocentrum, meldingen & geluidsmixer",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Central de comandos, notificações e mixer de som",
+    "id": "Pusat Komando, Notifikasi & Mixer Suara",
+    "ja": "コマンドセンター、通知、サウンドミキサー",
+    "it": "Centro comandi, notifiche e mixer audio"
   },
   "site.changelog.newCommandCentreCtrl": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Command Centre (Ctrl+K)</strong> — search every hotkey, switch, slider, theme setting and menu window; recent &amp; starred items",
@@ -278,14 +278,14 @@
     "ar": "<span class=\"tag tag-new\">جديد</span> <strong>مركز الأوامر (Ctrl+K)</strong> — ابحث في كل اختصار ومفتاح تبديل وشريط تمرير وإعداد سمة ونافذة قائمة؛ العناصر الأخيرة &amp; المميزة بنجمة",
     "zh": "<span class=\"tag tag-new\">新功能</span> <strong>指令中心 (Ctrl+K)</strong> — 搜尋每個快捷鍵、開關、滑桿、主題設定與選單視窗；最近使用 &amp; 已加星號的項目",
     "ru": "<span class=\"tag tag-new\">Новое</span> <strong>Центр команд (Ctrl+K)</strong> — поиск по всем горячим клавишам, переключателям, ползункам, настройкам темы и окнам меню; недавние &amp; избранные",
-    "de": "<span class=\"tag tag-new\">Neu</span> <strong>Befehlszentrale (Ctrl+K)</strong> — durchsuche jeden Hotkey, Schalter, Regler, jede Theme-Einstellung und jedes Menüfenster; zuletzt genutzte &amp; markierte Einträge",
+    "de": "<span class=\"tag tag-new\">Neu</span> <strong>Kommandozentrale (Ctrl+K)</strong> — durchsuche jeden Hotkey, Schalter, Regler, jede Theme-Einstellung und jedes Menüfenster; zuletzt genutzte &amp; markierte Einträge",
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Komut merkezi (Ctrl+K)</strong> — her kısayolu, anahtarı, kaydırıcıyı, tema ayarını ve menü penceresini ara; son kullanılanlar &amp; yıldızlılar",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Centrum poleceń (Ctrl+K)</strong> — szukaj każdego skrótu, przełącznika, suwaka, ustawienia motywu i okna menu; ostatnie &amp; oznaczone gwiazdką",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Commandocentrum (Ctrl+K)</strong> — doorzoek elke sneltoets, schakelaar, schuif, thema-instelling en elk menuvenster; recente &amp; gemarkeerde items",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Central de comandos (Ctrl+K)</strong>: busque qualquer atalho, chave, controle deslizante, configuração de tema e janela do menu; itens recentes &amp; favoritos",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Pusat Komando (Ctrl+K)</strong> — cari semua hotkey, switch, slider, pengaturan tema, dan jendela menu; item terbaru &amp; berbintang",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>コマンドセンター（Ctrl+K）</strong>：すべてのショートカットキー、スイッチ、スライダー、テーマ設定、メニューウィンドウを検索。最近使った項目とお気に入りにも対応",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Centro comandi (Ctrl+K)</strong>: cerca ogni tasto rapido, interruttore, cursore, impostazione del tema e finestra del menu; elementi recenti e preferiti"
   },
   "site.changelog.newQuickBarStarred": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Quick bar</strong> — starred commands shown in-game (optional)",
@@ -300,10 +300,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Hızlı çubuk</strong> — yıldızlı komutlar oyun içinde gösterilir (isteğe bağlı)",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Szybki pasek</strong> — polecenia oznaczone gwiazdką widoczne w grze (opcjonalnie)",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Snelbalk</strong> — gemarkeerde commando's in het spel getoond (optioneel)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Barra rápida</strong>: comandos favoritos exibidos no jogo (opcional)",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Quick bar</strong> — perintah berbintang ditampilkan di dalam game (opsional)",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>クイックバー</strong>：お気に入りのコマンドをゲーム内に表示（任意）",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Barra rapida</strong>: i comandi preferiti mostrati in gioco (opzionale)"
   },
   "site.changelog.newNotificationCentreLast": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Notification centre</strong> — last 200 toasts with filters, mark read, clear and per-category toast control",
@@ -318,10 +318,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Bildirim merkezi</strong> — filtreler, okundu işaretleme, temizleme ve kategori bazında bildirim kontrolüyle son 200 bildirim",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Centrum powiadomień</strong> — ostatnie 200 powiadomień z filtrami, oznaczaniem jako przeczytane, czyszczeniem i kontrolą powiadomień dla każdej kategorii",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Meldingencentrum</strong> — de laatste 200 meldingen met filters, als gelezen markeren, wissen en meldingsbeheer per categorie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Central de notificações</strong>: os últimos 200 avisos com filtros, marcar como lido, limpar e controle de avisos por categoria",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Pusat notifikasi</strong> — 200 toast terakhir dengan filter, tandai sudah dibaca, hapus, dan kontrol toast per kategori",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>通知センター</strong>：直近200件のトースト通知をフィルター付きで表示。既読にする、消去、カテゴリーごとのトースト設定に対応",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Centro notifiche</strong>: gli ultimi 200 avvisi con filtri, segna come letto, cancella e gestione degli avvisi per categoria"
   },
   "site.changelog.newSoundMixerMaster": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Sound mixer</strong> — master + per-channel volumes (chat, commands, gameplay, video skins) with audio ducking",
@@ -336,10 +336,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Ses mikseri</strong> — ana ses + kanal başına ses seviyeleri (sohbet, komutlar, oynanış, video skinler), otomatik ses kısma (ducking) ile",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Mikser dźwięku</strong> — głośność główna + głośność każdego kanału (czat, polecenia, rozgrywka, video skiny) z automatycznym ściszaniem (ducking)",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Geluidsmixer</strong> — hoofdvolume + volume per kanaal (chat, commando's, gameplay, videoskins) met audio ducking",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Mixer de som</strong>: volume geral + volume por canal (chat, comandos, jogabilidade, skins em vídeo) com redução automática do áudio",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Mixer suara</strong> — volume master + volume per channel (chat, perintah, gameplay, skin video) dengan audio ducking",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>サウンドミキサー</strong>：マスター音量とチャンネルごとの音量（チャット、コマンド、ゲームプレイ、動画スキン）、オーディオダッキング付き",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Mixer audio</strong>: volume generale + volume per canale (chat, comandi, gameplay, skin video) con audio ducking"
   },
   "site.changelog.hudHelpersSettingsProfiles": {
     "en": "HUD Helpers & Settings Profiles",
@@ -354,10 +354,10 @@
     "tr": "HUD yardımcıları ve ayar profilleri",
     "pl": "Pomocniki HUD i profile ustawień",
     "nl": "HUD-hulpmiddelen & instellingenprofielen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ajudas no HUD e perfis de configurações",
+    "id": "Bantuan HUD & Profil Pengaturan",
+    "ja": "HUD補助機能と設定プロファイル",
+    "it": "Aiuti HUD e profili impostazioni"
   },
   "site.changelog.newMovementDirectionArrow": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Movement direction arrow</strong> from how your cells really move (also multibox)",
@@ -372,10 +372,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Hareket yönü oku</strong>, hücrelerinin gerçekte nasıl hareket ettiğine göre (multibox'ta da)",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Strzałka kierunku ruchu</strong> na podstawie tego, jak naprawdę poruszają się twoje komórki (także w multibox)",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Pijl voor bewegingsrichting</strong> op basis van hoe je cellen echt bewegen (ook bij multibox)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Seta de direção do movimento</strong> baseada em como as suas células realmente se movem (também no multibox)",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Panah arah gerakan</strong> berdasarkan gerakan sel kamu yang sebenarnya (juga untuk multibox)",
+    "ja": "<span class=\"tag tag-new\">新機能</span> セルの実際の動きから算出する<strong>移動方向の矢印</strong>（マルチボックスにも対応）",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Freccia della direzione di movimento</strong> basata su come si muovono davvero le tue cellule (anche in multibox)"
   },
   "site.changelog.newMergeCountdownIn": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Merge countdown</strong> in seconds on your cells with optional sound",
@@ -390,10 +390,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Birleşme geri sayımı</strong> hücrelerinin üzerinde saniye cinsinden, isteğe bağlı sesle",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Odliczanie do scalenia</strong> w sekundach na twoich komórkach, z opcjonalnym dźwiękiem",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Merge-aftelling</strong> in seconden op je cellen, met optioneel geluid",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Contagem regressiva da fusão</strong> em segundos nas suas células, com som opcional",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Hitung mundur merge</strong> dalam detik di sel kamu, dengan suara opsional",
+    "ja": "<span class=\"tag tag-new\">新機能</span> 自分のセル上に秒数で表示する<strong>合体カウントダウン</strong>（サウンドも設定可能）",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Conto alla rovescia per la fusione</strong> in secondi sulle tue cellule, con suono opzionale"
   },
   "site.changelog.newEnemyMassRatio": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Enemy mass ratio</strong> relative to your biggest cell",
@@ -408,10 +408,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Düşman kütle oranı</strong>, en büyük hücrene göre",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Stosunek masy wrogów</strong> względem twojej największej komórki",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Massaverhouding van vijanden</strong> ten opzichte van je grootste cel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Proporção de massa do inimigo</strong> em relação à sua maior célula",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Rasio massa musuh</strong> dibandingkan sel terbesarmu",
+    "ja": "<span class=\"tag tag-new\">新機能</span> 自分の最大セルを基準にした<strong>敵の質量比</strong>",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Rapporto di massa dei nemici</strong> rispetto alla tua cellula più grande"
   },
   "site.changelog.newScreenEdgeArrows": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Screen-edge arrows</strong> to teammates and threats that left the screen",
@@ -426,14 +426,14 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Ekran kenarı okları</strong> — ekrandan çıkan takım arkadaşlarını ve tehditleri gösterir",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Strzałki na krawędzi ekranu</strong> wskazujące członków drużyny i zagrożenia, które zniknęły z ekranu",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Pijlen aan de schermrand</strong> naar teamgenoten en dreigingen die van het scherm zijn verdwenen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Setas na borda da tela</strong> apontando para aliados e ameaças que saíram da tela",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Panah di tepi layar</strong> yang menunjuk ke rekan tim dan ancaman di luar layar",
+    "ja": "<span class=\"tag tag-new\">新機能</span> 画面外に出た味方や脅威を示す<strong>画面端の矢印</strong>",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Frecce ai bordi dello schermo</strong> verso compagni di squadra e minacce uscite dallo schermo"
   },
   "site.changelog.newCellPanelMasses": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Cell panel</strong> — masses, count/16, largest, smallest, total",
-    "el": "<span class=\"tag tag-new\">Νέο</span> <strong>Πίνακας κυττάρων</strong> — μάζες, πλήθος/16, μεγαλύτερο, μικρότερο, σύνολο",
+    "el": "<span class=\"tag tag-new\">Νέο</span> <strong>Πάνελ κυττάρων</strong> — μάζες, πλήθος/16, μεγαλύτερο, μικρότερο, σύνολο",
     "es": "<span class=\"tag tag-new\">Nuevo</span> <strong>Panel de células</strong>: masas, número/16, la más grande, la más pequeña, total",
     "bg": "<span class=\"tag tag-new\">Ново</span> <strong>Панел на клетките</strong> — маси, брой/16, най-голяма, най-малка, общо",
     "fr": "<span class=\"tag tag-new\">Nouveau</span> <strong>Panneau des cellules</strong> — masses, nombre/16, la plus grosse, la plus petite, total",
@@ -444,28 +444,28 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Hücre paneli</strong> — kütleler, sayı/16, en büyük, en küçük, toplam",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Panel komórek</strong> — masy, liczba/16, największa, najmniejsza, suma",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Celpaneel</strong> — massa's, aantal/16, grootste, kleinste, totaal",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Painel de células</strong>: massas, quantidade/16, maior, menor, total",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Panel sel</strong> — massa, jumlah/16, terbesar, terkecil, total",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>セルパネル</strong>：各質量、セル数/16、最大、最小、合計",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Pannello cellule</strong>: masse, numero/16, la più grande, la più piccola, totale"
   },
   "site.changelog.newSettingsProfilesNamed": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Settings profiles</strong> — named sets with templates (FFA, Teams, Multibox, Streaming, Mobile, Competitive), auto-switching per server type",
-    "el": "<span class=\"tag tag-new\">Νέο</span> <strong>Προφίλ ρυθμίσεων</strong> — σετ με όνομα και πρότυπα (FFA, Teams, Multibox, Streaming, Mobile, Competitive), αυτόματη εναλλαγή ανά τύπο διακομιστή",
+    "el": "<span class=\"tag tag-new\">Νέο</span> <strong>Προφίλ ρυθμίσεων</strong> — σετ με όνομα και πρότυπα (FFA, Teams, Multibox, Streaming, Mobile, Competitive), αυτόματη εναλλαγή ανά τύπο server",
     "es": "<span class=\"tag tag-new\">Nuevo</span> <strong>Perfiles de ajustes</strong>: conjuntos con nombre y plantillas (FFA, Teams, Multibox, Streaming, Mobile, Competitive), cambio automático según el tipo de servidor",
-    "bg": "<span class=\"tag tag-new\">Ново</span> <strong>Профили с настройки</strong> — именувани набори с шаблони (FFA, Teams, Multibox, Streaming, Mobile, Competitive), автоматично превключване според типа сървър",
+    "bg": "<span class=\"tag tag-new\">Ново</span> <strong>Профили с настройки</strong> — именувани набори с шаблони (FFA, Отбори, Multibox, Стрийминг, Мобилно, Състезателно), автоматично превключване според типа сървър",
     "fr": "<span class=\"tag tag-new\">Nouveau</span> <strong>Profils de réglages</strong> — ensembles nommés avec modèles (FFA, Teams, Multibox, Streaming, Mobile, Competitive), changement automatique selon le type de serveur",
-    "ar": "<span class=\"tag tag-new\">جديد</span> <strong>ملفات الإعدادات</strong> — مجموعات بأسماء مع قوالب (FFA، Teams، Multibox، Streaming، Mobile، Competitive)، وتبديل تلقائي حسب نوع الخادم",
-    "zh": "<span class=\"tag tag-new\">新功能</span> <strong>設定檔</strong> — 具名設定組與範本（FFA、Teams、Multibox、Streaming、Mobile、Competitive），依伺服器類型自動切換",
-    "ru": "<span class=\"tag tag-new\">Новое</span> <strong>Профили настроек</strong> — именованные наборы с шаблонами (FFA, Teams, Multibox, Streaming, Mobile, Competitive), автопереключение по типу сервера",
+    "ar": "<span class=\"tag tag-new\">جديد</span> <strong>ملفات الإعدادات</strong> — مجموعات بأسماء مع قوالب (FFA، الفرق، Multibox، بث مباشر، الهاتف، تنافسي)، وتبديل تلقائي حسب نوع الخادم",
+    "zh": "<span class=\"tag tag-new\">新功能</span> <strong>設定檔</strong> — 具名設定組與範本（FFA、組隊、Multibox、直播、手機、競技），依伺服器類型自動切換",
+    "ru": "<span class=\"tag tag-new\">Новое</span> <strong>Профили настроек</strong> — именованные наборы с шаблонами (FFA, Команды, Multibox, Стриминг, Мобильный, Соревновательный), автопереключение по типу сервера",
     "de": "<span class=\"tag tag-new\">Neu</span> <strong>Einstellungsprofile</strong> — benannte Sets mit Vorlagen (FFA, Teams, Multibox, Streaming, Mobile, Competitive), automatischer Wechsel je nach Servertyp",
-    "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Ayar profilleri</strong> — şablonlu (FFA, Teams, Multibox, Streaming, Mobile, Competitive) adlandırılmış setler, sunucu türüne göre otomatik geçiş",
-    "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Profile ustawień</strong> — nazwane zestawy z szablonami (FFA, Teams, Multibox, Streaming, Mobile, Competitive), automatyczne przełączanie według typu serwera",
-    "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Instellingenprofielen</strong> — sets met een naam en sjablonen (FFA, Teams, Multibox, Streaming, Mobile, Competitive), automatisch wisselen per servertype",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Ayar profilleri</strong> — şablonlu (FFA, Takımlar, Multibox, Yayın, Mobil, Rekabetçi) adlandırılmış setler, sunucu türüne göre otomatik geçiş",
+    "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Profile ustawień</strong> — nazwane zestawy z szablonami (FFA, Drużyny, Multibox, Streaming, Mobilny, Rywalizacja), automatyczne przełączanie według typu serwera",
+    "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Instellingenprofielen</strong> — sets met een naam en sjablonen (FFA, Teams, Multibox, Streaming, Mobiel, Competitief), automatisch wisselen per servertype",
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Perfis de configurações</strong>: conjuntos com nome e modelos (FFA, Equipes, Multibox, Streaming, Celular, Competitivo), com troca automática por tipo de servidor",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Profil pengaturan</strong> — set bernama dengan template (FFA, Teams, Multibox, Streaming, HP, Kompetitif), berganti otomatis sesuai tipe server",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>設定プロファイル</strong>：テンプレート（FFA、Teams、マルチボックス、配信、モバイル、競技）付きで名前を付けて保存でき、サーバーの種類ごとに自動で切り替わります",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Profili impostazioni</strong>: set con nome e modelli (FFA, Teams, Multibox, Streaming, Mobile, Competitivo), con cambio automatico in base al tipo di server"
   },
   "site.changelog.newAnalyticsDashboardGames": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Analytics dashboard</strong> — games, peak mass, top-10 rate, mass/min, heatmaps, coaching report with scores and suggestions",
@@ -480,10 +480,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>İstatistik paneli</strong> — oyunlar, en yüksek kütle, top-10 oranı, kütle/dk, ısı haritaları, puanlar ve önerilerle koçluk raporu",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Panel statystyk</strong> — gry, maksymalna masa, odsetek top-10, masa/min, mapy cieplne, raport trenerski z ocenami i wskazówkami",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Statistiekendashboard</strong> — potjes, piekmassa, top-10-percentage, massa/min, heatmaps, coachingrapport met scores en tips",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Painel de estatísticas</strong>: partidas, massa máxima, taxa de top 10, massa/min, mapas de calor, relatório de treino com notas e sugestões",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Dashboard analitik</strong> — jumlah game, massa puncak, rasio top-10, massa/menit, heatmap, laporan coaching dengan skor dan saran",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>分析ダッシュボード</strong>：ゲーム数、最大質量、トップ10率、質量/分、ヒートマップ、スコアとアドバイス付きのコーチングレポート",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Dashboard statistiche</strong>: partite, massa massima, percentuale di top 10, massa/min, mappe di calore, report da coach con punteggi e consigli"
   },
   "site.changelog.newDailyObjectivesFrom": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Daily objectives</strong> from your history with progress bars and completion toasts",
@@ -498,10 +498,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Günlük hedefler</strong> geçmişine göre, ilerleme çubukları ve tamamlama bildirimleriyle",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Codzienne cele</strong> na podstawie twojej historii, z paskami postępu i powiadomieniami o ukończeniu",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Dagelijkse doelen</strong> op basis van je geschiedenis, met voortgangsbalken en voltooiingsmeldingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Objetivos diários</strong> baseados no seu histórico, com barras de progresso e avisos de conclusão",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Misi harian</strong> berdasarkan riwayat kamu, dengan progress bar dan toast saat selesai",
+    "ja": "<span class=\"tag tag-new\">新機能</span> プレイ履歴から作られる<strong>デイリー目標</strong>。進捗バーと達成時のトースト通知付き",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Obiettivi giornalieri</strong> basati sulla tua cronologia, con barre di avanzamento e avvisi al completamento"
   },
   "site.changelog.gamepadCustomizationBadges": {
     "en": "Gamepad Customization & Badges",
@@ -516,10 +516,10 @@
     "tr": "Gamepad özelleştirme ve rozetler",
     "pl": "Personalizacja pada i odznaki",
     "nl": "Gamepad-aanpassing & badges",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Personalização do gamepad e emblemas",
+    "id": "Kustomisasi Gamepad & Lencana",
+    "ja": "ゲームパッドのカスタマイズとバッジ",
+    "it": "Personalizzazione gamepad e badge"
   },
   "site.changelog.newGamepadButtonMapping": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Gamepad button mapping</strong> — any pad button can run any hotkey command; hold commands stay held",
@@ -534,14 +534,14 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Gamepad tuş eşleme</strong> — her tuş herhangi bir kısayol komutunu çalıştırabilir; basılı tutma komutları basılı kalır",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Mapowanie przycisków pada</strong> — każdy przycisk pada może uruchomić dowolne polecenie skrótu; polecenia przytrzymania pozostają przytrzymane",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Gamepad-knoptoewijzing</strong> — elke padknop kan elk sneltoetscommando uitvoeren; vasthoud-commando's blijven vastgehouden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Mapeamento dos botões do gamepad</strong>: qualquer botão do controle pode executar qualquer comando de atalho; comandos de segurar continuam pressionados",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Pemetaan tombol gamepad</strong> — tombol pad apa pun bisa menjalankan perintah hotkey apa pun; perintah tahan tetap tertahan",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>ゲームパッドのボタン割り当て</strong>：どのボタンにもどのショートカットキーのコマンドでも割り当て可能。長押し系のコマンドは押している間ずっと有効です",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Mappatura dei tasti del gamepad</strong>: qualsiasi tasto del pad può eseguire qualsiasi comando dei tasti rapidi; i comandi da tenere premuti restano attivi finché tieni premuto"
   },
   "site.changelog.newMovementRangeCurve": {
     "en": "<span class=\"tag tag-new\">New</span> Movement range, curve tuning, LT/RT threshold, inverted axes, vibration on split/death",
-    "el": "<span class=\"tag tag-new\">Νέο</span> Εύρος κίνησης, ρύθμιση καμπύλης, όριο LT/RT, αντεστραμμένοι άξονες, δόνηση σε διάσπαση/θάνατο",
+    "el": "<span class=\"tag tag-new\">Νέο</span> Εύρος κίνησης, ρύθμιση καμπύλης, όριο LT/RT, αντεστραμμένοι άξονες, δόνηση σε split/θάνατο",
     "es": "<span class=\"tag tag-new\">Nuevo</span> Rango de movimiento, ajuste de curva, umbral de LT/RT, ejes invertidos, vibración al hacer split/morir",
     "bg": "<span class=\"tag tag-new\">Ново</span> Обхват на движението, настройка на кривата, праг за LT/RT, обърнати оси, вибрация при сплит/смърт",
     "fr": "<span class=\"tag tag-new\">Nouveau</span> Amplitude de mouvement, réglage de la courbe, seuil LT/RT, axes inversés, vibration au split/à la mort",
@@ -552,10 +552,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> Hareket menzili, eğri ayarı, LT/RT eşiği, ters eksenler, bölünme/ölümde titreşim",
     "pl": "<span class=\"tag tag-new\">Nowość</span> Zakres ruchu, strojenie krzywej, próg LT/RT, odwrócone osie, wibracje przy podziale/śmierci",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> Bewegingsbereik, curve-afstelling, LT/RT-drempel, omgekeerde assen, trillen bij split/dood",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> Alcance do movimento, ajuste de curva, limite do LT/RT, eixos invertidos, vibração no split/na morte",
+    "id": "<span class=\"tag tag-new\">Baru</span> Jangkauan gerakan, penyetelan kurva, batas LT/RT, sumbu terbalik, getaran saat split/mati",
+    "ja": "<span class=\"tag tag-new\">新機能</span> 移動範囲、カーブ調整、LT/RTのしきい値、軸の反転、分裂時/死亡時の振動",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> Raggio di movimento, regolazione della curva, soglia LT/RT, assi invertiti, vibrazione allo split e alla morte"
   },
   "site.changelog.newNamedGamepadProfiles": {
     "en": "<span class=\"tag tag-new\">New</span> Named gamepad profiles with live stick test and drift measurement",
@@ -570,10 +570,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> Canlı analog çubuk testi ve kayma ölçümüyle adlandırılmış gamepad profilleri",
     "pl": "<span class=\"tag tag-new\">Nowość</span> Nazwane profile pada z testem gałki na żywo i pomiarem dryfu",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> Gamepadprofielen met een naam, met live sticktest en driftmeting",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> Perfis de gamepad com nome, com teste dos analógicos ao vivo e medição de drift",
+    "id": "<span class=\"tag tag-new\">Baru</span> Profil gamepad bernama dengan tes stik langsung dan pengukuran drift",
+    "ja": "<span class=\"tag tag-new\">新機能</span> 名前付きのゲームパッドプロファイル。スティックのリアルタイムテストとドリフト測定付き",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> Profili gamepad con nome, con test degli stick in tempo reale e misurazione del drift"
   },
   "site.changelog.new18AchievementBadges": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>18 achievement badges</strong> with tiers from your account stats",
@@ -588,10 +588,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>18 başarı rozeti</strong>, hesap istatistiklerine göre kademeli",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>18 odznak osiągnięć</strong> z poziomami na podstawie statystyk twojego konta",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>18 prestatiebadges</strong> met niveaus op basis van je accountstatistieken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>18 emblemas de conquista</strong> com níveis baseados nas estatísticas da sua conta",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>18 lencana pencapaian</strong> dengan tingkatan berdasarkan statistik akun kamu",
+    "ja": "<span class=\"tag tag-new\">新機能</span> アカウントの統計に応じてランクが上がる<strong>18種類の実績バッジ</strong>",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>18 badge obiettivo</strong> a più livelli, basati sulle statistiche del tuo account"
   },
   "site.changelog.newShareButtonOn": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Share button</strong> on Game Over card",
@@ -599,21 +599,21 @@
     "es": "<span class=\"tag tag-new\">Nuevo</span> <strong>Botón de compartir</strong> en la tarjeta de Game Over",
     "bg": "<span class=\"tag tag-new\">Ново</span> <strong>Бутон за споделяне</strong> в картата Game Over",
     "fr": "<span class=\"tag tag-new\">Nouveau</span> <strong>Bouton de partage</strong> sur la carte Game Over",
-    "ar": "<span class=\"tag tag-new\">جديد</span> <strong>زر المشاركة</strong> على بطاقة Game Over",
-    "zh": "<span class=\"tag tag-new\">新功能</span> Game Over 卡片上的<strong>分享按鈕</strong>",
+    "ar": "<span class=\"tag tag-new\">جديد</span> <strong>زر المشاركة</strong> على بطاقة نهاية اللعبة",
+    "zh": "<span class=\"tag tag-new\">新功能</span> 遊戲結束卡片上的<strong>分享按鈕</strong>",
     "ru": "<span class=\"tag tag-new\">Новое</span> <strong>Кнопка «Поделиться»</strong> на карточке Game Over",
     "de": "<span class=\"tag tag-new\">Neu</span> <strong>Teilen-Button</strong> auf der Game-Over-Karte",
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Paylaş düğmesi</strong> Game Over kartında",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Przycisk udostępniania</strong> na karcie Game Over",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Deelknop</strong> op de Game Over-kaart",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Botão de compartilhar</strong> no card de Game Over",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Tombol bagikan</strong> di kartu Game Over",
+    "ja": "<span class=\"tag tag-new\">新機能</span> ゲームオーバーカードに<strong>共有ボタン</strong>",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Pulsante Condividi</strong> nella schermata di Game Over"
   },
   "site.changelog.newHotkeyToReconnect": {
     "en": "<span class=\"tag tag-new\">New</span> Hotkey to reconnect to previous server (last 10 remembered)",
-    "el": "<span class=\"tag tag-new\">Νέο</span> Πλήκτρο συντόμευσης για επανασύνδεση στον προηγούμενο διακομιστή (θυμάται τους 10 τελευταίους)",
+    "el": "<span class=\"tag tag-new\">Νέο</span> Πλήκτρο συντόμευσης για επανασύνδεση στον προηγούμενο server (θυμάται τους 10 τελευταίους)",
     "es": "<span class=\"tag tag-new\">Nuevo</span> Atajo para reconectar al servidor anterior (recuerda los últimos 10)",
     "bg": "<span class=\"tag tag-new\">Ново</span> Клавиш за повторно свързване към предишния сървър (помни последните 10)",
     "fr": "<span class=\"tag tag-new\">Nouveau</span> Raccourci pour se reconnecter au serveur précédent (garde en mémoire les 10 derniers)",
@@ -624,10 +624,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> Önceki sunucuya yeniden bağlanma kısayolu (son 10 sunucu hatırlanır)",
     "pl": "<span class=\"tag tag-new\">Nowość</span> Skrót do ponownego połączenia z poprzednim serwerem (zapamiętuje 10 ostatnich)",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> Sneltoets om opnieuw te verbinden met de vorige server (de laatste 10 worden onthouden)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> Atalho para reconectar ao servidor anterior (os últimos 10 ficam salvos)",
+    "id": "<span class=\"tag tag-new\">Baru</span> Hotkey untuk menyambung ulang ke server sebelumnya (10 terakhir diingat)",
+    "ja": "<span class=\"tag tag-new\">新機能</span> 前のサーバーに再接続するショートカットキー（直近10件を記憶）",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> Tasto rapido per riconnetterti al server precedente (ricorda gli ultimi 10)"
   },
   "site.changelog.newDirectionOnTouch": {
     "en": "<span class=\"tag tag-new\">New</span> <strong>Direction on touch</strong> — cell moves toward your finger instead of joystick",
@@ -642,10 +642,10 @@
     "tr": "<span class=\"tag tag-new\">Yeni</span> <strong>Dokunarak yön</strong> — hücre joystick yerine parmağına doğru hareket eder",
     "pl": "<span class=\"tag tag-new\">Nowość</span> <strong>Kierunek dotykiem</strong> — komórka porusza się w stronę twojego palca zamiast joysticka",
     "nl": "<span class=\"tag tag-new\">Nieuw</span> <strong>Richting via aanraking</strong> — de cel beweegt naar je vinger in plaats van via een joystick",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-new\">Novo</span> <strong>Direção pelo toque</strong>: a célula vai em direção ao seu dedo em vez de usar o joystick",
+    "id": "<span class=\"tag tag-new\">Baru</span> <strong>Arah sesuai sentuhan</strong> — sel bergerak ke arah jarimu, bukan pakai joystick",
+    "ja": "<span class=\"tag tag-new\">新機能</span> <strong>タッチ方向移動</strong>：ジョイスティックではなく、指の方向へセルが移動します",
+    "it": "<span class=\"tag tag-new\">Nuovo</span> <strong>Direzione al tocco</strong>: la cellula si muove verso il tuo dito invece di usare il joystick"
   },
   "site.changelog.protocolHardeningBugFixes": {
     "en": "Protocol Hardening & Bug Fixes",
@@ -660,10 +660,10 @@
     "tr": "Protokol güçlendirme ve hata düzeltmeleri",
     "pl": "Wzmocnienie protokołu i poprawki błędów",
     "nl": "Protocolversterking & bugfixes",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Protocolo mais robusto e correções de bugs",
+    "id": "Penguatan Protokol & Perbaikan Bug",
+    "ja": "プロトコルの強化とバグ修正",
+    "it": "Protocollo più robusto e correzioni di bug"
   },
   "site.changelog.fixTruncatedPacketsDropped": {
     "en": "<span class=\"tag tag-fix\">Fix</span> Truncated packets dropped with a warning instead of uncaught RangeError",
@@ -678,10 +678,10 @@
     "tr": "<span class=\"tag tag-fix\">Düzeltme</span> Kesik paketler yakalanmamış RangeError yerine bir uyarıyla atılıyor",
     "pl": "<span class=\"tag tag-fix\">Poprawka</span> Ucięte pakiety są odrzucane z ostrzeżeniem zamiast nieobsłużonego RangeError",
     "nl": "<span class=\"tag tag-fix\">Fix</span> Afgekapte pakketten worden met een waarschuwing genegeerd in plaats van een onafgevangen RangeError",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-fix\">Correção</span> Pacotes truncados são descartados com um aviso, em vez de gerar um RangeError não tratado",
+    "id": "<span class=\"tag tag-fix\">Perbaikan</span> Paket yang terpotong dibuang dengan peringatan, bukan memicu RangeError yang tidak tertangani",
+    "ja": "<span class=\"tag tag-fix\">修正</span> 途中で切れたパケットは、捕捉されないRangeErrorを起こさずに警告を出して破棄するように",
+    "it": "<span class=\"tag tag-fix\">Fix</span> I pacchetti troncati vengono scartati con un avviso invece di causare un RangeError non gestito"
   },
   "site.changelog.fixFriendListLeaderboard": {
     "en": "<span class=\"tag tag-fix\">Fix</span> Friend list, leaderboard, and private leaderboard bounds checking",
@@ -689,35 +689,35 @@
     "es": "<span class=\"tag tag-fix\">Corrección</span> Comprobación de límites en la lista de amigos, la clasificación y la clasificación privada",
     "bg": "<span class=\"tag tag-fix\">Поправка</span> Проверка на границите в списъка с приятели, класацията и частната класация",
     "fr": "<span class=\"tag tag-fix\">Correctif</span> Vérification des limites dans la liste d'amis, le classement et le classement privé",
-    "ar": "<span class=\"tag tag-fix\">إصلاح</span> فحص الحدود في قائمة الأصدقاء ولوحة المتصدرين ولوحة المتصدرين الخاصة",
+    "ar": "<span class=\"tag tag-fix\">إصلاح</span> فحص الحدود في قائمة الأصدقاء ولوحة الصدارة ولوحة الصدارة الخاصة",
     "zh": "<span class=\"tag tag-fix\">修正</span> 好友名單、排行榜與私人排行榜的邊界檢查",
     "ru": "<span class=\"tag tag-fix\">Исправление</span> Проверка границ в списке друзей, таблице лидеров и приватной таблице лидеров",
     "de": "<span class=\"tag tag-fix\">Fix</span> Grenzprüfung für Freundesliste, Bestenliste und private Bestenliste",
     "tr": "<span class=\"tag tag-fix\">Düzeltme</span> Arkadaş listesi, liderlik tablosu ve özel liderlik tablosunda sınır denetimi",
     "pl": "<span class=\"tag tag-fix\">Poprawka</span> Sprawdzanie granic w liście znajomych, rankingu i prywatnym rankingu",
-    "nl": "<span class=\"tag tag-fix\">Fix</span> Grenscontrole voor vriendenlijst, klassement en privéklassement",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "<span class=\"tag tag-fix\">Fix</span> Grenscontrole voor vriendenlijst, ranglijst en privéranglijst",
+    "pt": "<span class=\"tag tag-fix\">Correção</span> Verificação de limites na lista de amigos, no ranking e no ranking privado",
+    "id": "<span class=\"tag tag-fix\">Perbaikan</span> Pengecekan batas data untuk daftar teman, leaderboard, dan leaderboard privat",
+    "ja": "<span class=\"tag tag-fix\">修正</span> フレンドリスト、ランキング、プライベートランキングの範囲チェック",
+    "it": "<span class=\"tag tag-fix\">Fix</span> Controllo dei limiti per lista amici, classifica e classifica privata"
   },
   "site.changelog.fixSettingsExportPerformance": {
     "en": "<span class=\"tag tag-fix\">Fix</span> Settings export: Performance mode backup and preset undo scoped correctly",
-    "el": "<span class=\"tag tag-fix\">Διόρθωση</span> Εξαγωγή ρυθμίσεων: σωστό εύρος για το αντίγραφο της λειτουργίας απόδοσης και την αναίρεση προεπιλογών",
+    "el": "<span class=\"tag tag-fix\">Διόρθωση</span> Εξαγωγή ρυθμίσεων: σωστό εύρος για το αντίγραφο της λειτουργίας απόδοσης και την αναίρεση προρυθμίσεων",
     "es": "<span class=\"tag tag-fix\">Corrección</span> Exportación de ajustes: la copia del modo rendimiento y el deshacer de preajustes tienen el alcance correcto",
     "bg": "<span class=\"tag tag-fix\">Поправка</span> Експорт на настройки: резервното копие на режима за производителност и отмяната на пресет вече действат в правилния обхват",
     "fr": "<span class=\"tag tag-fix\">Correctif</span> Export des réglages : sauvegarde du mode performance et annulation des préréglages correctement délimitées",
     "ar": "<span class=\"tag tag-fix\">إصلاح</span> تصدير الإعدادات: نطاق صحيح لنسخة وضع الأداء الاحتياطية وللتراجع عن الإعداد المسبق",
     "zh": "<span class=\"tag tag-fix\">修正</span> 設定匯出：效能模式備份與預設復原的範圍已正確",
     "ru": "<span class=\"tag tag-fix\">Исправление</span> Экспорт настроек: резервная копия режима производительности и отмена пресета теперь работают в правильных рамках",
-    "de": "<span class=\"tag tag-fix\">Fix</span> Einstellungsexport: Backup des Leistungsmodus und Rückgängigmachen von Presets korrekt abgegrenzt",
+    "de": "<span class=\"tag tag-fix\">Fix</span> Einstellungsexport: Backup des Leistungsmodus und Rückgängigmachen von Voreinstellungen korrekt abgegrenzt",
     "tr": "<span class=\"tag tag-fix\">Düzeltme</span> Ayarları dışa aktarma: performans modu yedeği ve ön ayar geri alma artık doğru kapsamda",
     "pl": "<span class=\"tag tag-fix\">Poprawka</span> Eksport ustawień: kopia trybu wydajności i cofanie presetu mają teraz poprawny zakres",
     "nl": "<span class=\"tag tag-fix\">Fix</span> Instellingenexport: back-up van de prestatiemodus en het ongedaan maken van presets correct afgebakend",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-fix\">Correção</span> Exportação de configurações: backup do Modo desempenho e desfazer predefinição com o escopo correto",
+    "id": "<span class=\"tag tag-fix\">Perbaikan</span> Ekspor pengaturan: cadangan Mode performa dan undo preset kini mencakup bagian yang tepat",
+    "ja": "<span class=\"tag tag-fix\">修正</span> 設定のエクスポート：パフォーマンスモードのバックアップとプリセットの取り消しが正しい範囲で動作するように",
+    "it": "<span class=\"tag tag-fix\">Fix</span> Esportazione impostazioni: backup della modalità prestazioni e annullamento del preset ora con l'ambito corretto"
   },
   "site.changelog.fixPhoneControlsNow": {
     "en": "<span class=\"tag tag-fix\">Fix</span> Phone controls now included in settings export/import",
@@ -732,10 +732,10 @@
     "tr": "<span class=\"tag tag-fix\">Düzeltme</span> Telefon kontrolleri artık ayarların dışa/içe aktarımına dahil",
     "pl": "<span class=\"tag tag-fix\">Poprawka</span> Sterowanie na telefonie jest teraz uwzględniane w eksporcie/imporcie ustawień",
     "nl": "<span class=\"tag tag-fix\">Fix</span> Telefoonbediening zit nu in de export/import van instellingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-fix\">Correção</span> Os controles de celular agora entram na exportação/importação das configurações",
+    "id": "<span class=\"tag tag-fix\">Perbaikan</span> Kontrol HP kini ikut disertakan dalam ekspor/impor pengaturan",
+    "ja": "<span class=\"tag tag-fix\">修正</span> スマートフォン用の操作設定も設定のエクスポート/インポートに含まれるように",
+    "it": "<span class=\"tag tag-fix\">Fix</span> I controlli per telefono ora sono inclusi nell'esportazione/importazione delle impostazioni"
   },
   "site.changelog.fixParseintRadixParameter": {
     "en": "<span class=\"tag tag-fix\">Fix</span> <code>parseInt</code> radix parameter, style-in-body, lang/charset corrections",
@@ -750,10 +750,10 @@
     "tr": "<span class=\"tag tag-fix\">Düzeltme</span> <code>parseInt</code> taban parametresi, body içinde style, lang/charset düzeltmeleri",
     "pl": "<span class=\"tag tag-fix\">Poprawka</span> Parametr podstawy w <code>parseInt</code>, style w body, poprawki lang/charset",
     "nl": "<span class=\"tag tag-fix\">Fix</span> Radix-parameter van <code>parseInt</code>, style in de body, lang/charset-correcties",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-fix\">Correção</span> Parâmetro radix do <code>parseInt</code>, style dentro do body, correções de lang/charset",
+    "id": "<span class=\"tag tag-fix\">Perbaikan</span> Parameter radix <code>parseInt</code>, style di dalam body, perbaikan lang/charset",
+    "ja": "<span class=\"tag tag-fix\">修正</span> <code>parseInt</code>の基数パラメーター、body内のstyle、lang/charsetの修正",
+    "it": "<span class=\"tag tag-fix\">Fix</span> Parametro radix di <code>parseInt</code>, stili nel body, correzioni di lang/charset"
   },
   "site.changelog.fixGamepadFocusHandling": {
     "en": "<span class=\"tag tag-fix\">Fix</span> Gamepad focus handling, dead-zone reset, disconnected pad cleanup",
@@ -768,10 +768,10 @@
     "tr": "<span class=\"tag tag-fix\">Düzeltme</span> Gamepad odak yönetimi, ölü bölge sıfırlama, bağlantısı kesilen gamepad'lerin temizlenmesi",
     "pl": "<span class=\"tag tag-fix\">Poprawka</span> Obsługa fokusu pada, reset martwej strefy, sprzątanie po odłączonych padach",
     "nl": "<span class=\"tag tag-fix\">Fix</span> Afhandeling van gamepadfocus, reset van de dode zone, opruimen van losgekoppelde pads",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-fix\">Correção</span> Tratamento do foco do gamepad, reset da zona morta, limpeza de controles desconectados",
+    "id": "<span class=\"tag tag-fix\">Perbaikan</span> Penanganan fokus gamepad, reset dead-zone, pembersihan pad yang terputus",
+    "ja": "<span class=\"tag tag-fix\">修正</span> ゲームパッドのフォーカス処理、デッドゾーンのリセット、切断されたパッドの後処理",
+    "it": "<span class=\"tag tag-fix\">Fix</span> Gestione del focus del gamepad, reset della zona morta, pulizia dei pad disconnessi"
   },
   "site.changelog.fixDrawtextalongarcUsesPassed": {
     "en": "<span class=\"tag tag-fix\">Fix</span> <code>drawTextAlongArc</code> uses passed ctx parameter correctly",
@@ -786,10 +786,10 @@
     "tr": "<span class=\"tag tag-fix\">Düzeltme</span> <code>drawTextAlongArc</code> kendisine verilen ctx parametresini doğru kullanıyor",
     "pl": "<span class=\"tag tag-fix\">Poprawka</span> <code>drawTextAlongArc</code> poprawnie używa przekazanego parametru ctx",
     "nl": "<span class=\"tag tag-fix\">Fix</span> <code>drawTextAlongArc</code> gebruikt de meegegeven ctx-parameter nu correct",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-fix\">Correção</span> <code>drawTextAlongArc</code> agora usa corretamente o parâmetro ctx recebido",
+    "id": "<span class=\"tag tag-fix\">Perbaikan</span> <code>drawTextAlongArc</code> kini memakai parameter ctx yang diberikan dengan benar",
+    "ja": "<span class=\"tag tag-fix\">修正</span> <code>drawTextAlongArc</code>が渡されたctxパラメーターを正しく使うように",
+    "it": "<span class=\"tag tag-fix\">Fix</span> <code>drawTextAlongArc</code> ora usa correttamente il parametro ctx ricevuto"
   },
   "site.changelog.fix182DuplicateHtml": {
     "en": "<span class=\"tag tag-fix\">Fix</span> 182 duplicate HTML element IDs renamed",
@@ -804,10 +804,10 @@
     "tr": "<span class=\"tag tag-fix\">Düzeltme</span> Yinelenen 182 HTML öğe ID'si yeniden adlandırıldı",
     "pl": "<span class=\"tag tag-fix\">Poprawka</span> Zmieniono nazwy 182 zduplikowanych ID elementów HTML",
     "nl": "<span class=\"tag tag-fix\">Fix</span> 182 dubbele HTML-element-ID's hernoemd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<span class=\"tag tag-fix\">Correção</span> 182 IDs duplicados de elementos HTML renomeados",
+    "id": "<span class=\"tag tag-fix\">Perbaikan</span> 182 ID elemen HTML ganda diganti namanya",
+    "ja": "<span class=\"tag tag-fix\">修正</span> 重複していた182個のHTML要素IDの名前を変更",
+    "it": "<span class=\"tag tag-fix\">Fix</span> Rinominati 182 ID duplicati di elementi HTML"
   },
   "site.changelog.rss": {
     "en": "📡 RSS",
@@ -822,9 +822,9 @@
     "tr": "📡 RSS",
     "pl": "📡 RSS",
     "nl": "📡 RSS",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "📡 RSS",
+    "id": "📡 RSS",
+    "ja": "📡 RSS",
+    "it": "📡 RSS"
   }
 }

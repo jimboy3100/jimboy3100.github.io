@@ -30,7 +30,7 @@
 "site.compare.skinRotator": "مبدّل السكنات",
 "site.compare.customThemes": "سمات مخصصة",
 "site.compare.virusColorCustomization": "تخصيص لون الفيروسات",
-"site.compare.jellyPhysics": "فيزياء الهلام",
+"site.compare.jellyPhysics": "فيزياء الجيلي",
 "site.compare.teamWaves": "موجات الفريق",
 "site.compare.performance": "الأداء",
 "site.compare.antiLagFpsBoost": "مضاد التأخير / تعزيز FPS",

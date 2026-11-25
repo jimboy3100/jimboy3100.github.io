@@ -6,7 +6,7 @@
 "site.lc.rules.legendAgarIoClan": "Klan Legend agar.io",
 "site.lc.rules.theseAreTheGolden": "Oto złote zasady Lc",
 "site.lc.rules.timeWasUsedAs": "Czas posłużył za filtr, który pokazał, kto był prawdziwy - to nasi bohaterowie. <s>Kto raz opuścił Lc</s><sup>Prawdziwi z Lc zostali i walczyli</sup>, ten nie ma powrotu. Nazywamy ich „zdrajcami” i pożegnaliśmy się z nimi na zawsze.",
-"site.lc.rules.modWeAllUse": "Modem, którego WSZYSCY używamy w agar.io, jest Legend Mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, w przeglądarce Google Chrome. Jest niezbędny do komunikacji w grze. Używaj w modzie tagu naszego klanu.",
+"site.lc.rules.modWeAllUse": "Mod, którego WSZYSCY używamy w agar.io, to Legend Mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, w przeglądarce Google Chrome. Jest niezbędny do komunikacji w grze. Używaj w modzie tagu naszego klanu.",
 "site.lc.rules.clanWebsiteIsHttp": "Strona klanu to <a href=\"http://legendclan.ml\">http://legendclan.ml</a> . Przyjrzyj się jej dobrze - MUSISZ znać podstawową strategię, naszych adminów i ich zadania.",
 "site.lc.rules.communicationIsOnDiscord": "Komunikujemy się na <a href=\"https://discord.com/invite/z9cykqMk\">Discordzie</a>.",
 "site.lc.rules.noRandomFriendsPolicy": "<mark>Zakaz przypadkowych znajomych</mark>. Gracze z ℄ zabijają wszystkich, także przypadkowych znajomych.",

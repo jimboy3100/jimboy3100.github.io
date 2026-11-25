@@ -12,14 +12,14 @@
     "tr": "<span class=\"accent\">Agar.io Mod</span> Karşılaştırması — 2026",
     "pl": "Porównanie <span class=\"accent\">modów Agar.io</span> — 2026",
     "nl": "<span class=\"accent\">Agar.io Mod</span>-vergelijking — 2026",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Comparação de <span class=\"accent\">mods de Agar.io</span> — 2026",
+    "id": "Perbandingan <span class=\"accent\">Mod Agar.io</span> — 2026",
+    "ja": "<span class=\"accent\">Agar.io Mod</span>比較 — 2026",
+    "it": "Confronto tra le <span class=\"accent\">mod di Agar.io</span> — 2026"
   },
   "site.compare.sideBySideComparison": {
     "en": "Side-by-side comparison of every major agar.io extension. Which one has the most features, best performance, and widest server support?",
-    "el": "Σύγκριση δίπλα-δίπλα όλων των μεγάλων επεκτάσεων του agar.io. Ποια έχει τις περισσότερες λειτουργίες, την καλύτερη απόδοση και την ευρύτερη υποστήριξη διακομιστών;",
+    "el": "Σύγκριση δίπλα-δίπλα όλων των μεγάλων επεκτάσεων του agar.io. Ποια έχει τις περισσότερες λειτουργίες, την καλύτερη απόδοση και την ευρύτερη υποστήριξη servers;",
     "es": "Comparativa lado a lado de todas las grandes extensiones de agar.io. ¿Cuál tiene más funciones, mejor rendimiento y mayor compatibilidad con servidores?",
     "bg": "Сравнение едно до друго на всички големи разширения за agar.io. Кое има най-много функции, най-добра производителност и най-широка поддръжка на сървъри?",
     "fr": "Comparatif côte à côte de toutes les grandes extensions agar.io. Laquelle a le plus de fonctionnalités, les meilleures performances et la plus large compatibilité serveurs ?",
@@ -30,10 +30,10 @@
     "tr": "Tüm büyük agar.io eklentilerinin yan yana karşılaştırması. Hangisinde en çok özellik, en iyi performans ve en geniş sunucu desteği var?",
     "pl": "Porównanie obok siebie wszystkich głównych rozszerzeń agar.io. Które ma najwięcej funkcji, najlepszą wydajność i najszerszą obsługę serwerów?",
     "nl": "Vergelijking naast elkaar van alle grote agar.io-extensies. Welke heeft de meeste functies, de beste prestaties en de breedste serverondersteuning?",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Comparação lado a lado de todas as principais extensões de agar.io. Qual tem mais recursos, o melhor desempenho e o maior suporte a servidores?",
+    "id": "Perbandingan langsung semua ekstensi agar.io utama. Mana yang punya fitur paling banyak, performa terbaik, dan dukungan server paling luas?",
+    "ja": "主要なagar.io拡張機能をすべて並べて比較しました。機能が最も多いのは？パフォーマンスが最も良いのは？対応サーバーが最も多いのはどれでしょうか？",
+    "it": "Tutte le principali estensioni per agar.io a confronto, una accanto all'altra. Quale ha più funzioni, le prestazioni migliori e il supporto server più ampio?"
   },
   "site.compare.featureComparisonTable": {
     "en": "Feature Comparison Table",
@@ -48,10 +48,10 @@
     "tr": "Özellik karşılaştırma tablosu",
     "pl": "Tabela porównania funkcji",
     "nl": "Functievergelijkingstabel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tabela comparativa de recursos",
+    "id": "Tabel Perbandingan Fitur",
+    "ja": "機能比較表",
+    "it": "Tabella di confronto delle funzioni"
   },
   "site.compare.supportedNotSupportedPartial": {
     "en": "✓ = Supported ✗ = Not supported ~ = Partial",
@@ -66,10 +66,10 @@
     "tr": "✓ = Destekleniyor ✗ = Desteklenmiyor ~ = Kısmen",
     "pl": "✓ = Obsługiwane ✗ = Nieobsługiwane ~ = Częściowo",
     "nl": "✓ = Ondersteund ✗ = Niet ondersteund ~ = Gedeeltelijk",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "✓ = Suportado ✗ = Não suportado ~ = Parcial",
+    "id": "✓ = Didukung ✗ = Tidak didukung ~ = Sebagian",
+    "ja": "✓ = 対応 ✗ = 非対応 ~ = 一部対応",
+    "it": "✓ = Supportato ✗ = Non supportato ~ = Parziale"
   },
   "site.compare.feature": {
     "en": "Feature",
@@ -80,14 +80,14 @@
     "ar": "الميزة",
     "zh": "功能",
     "ru": "Функция",
-    "de": "Feature",
+    "de": "Funktion",
     "tr": "Özellik",
     "pl": "Funkcja",
     "nl": "Functie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recurso",
+    "id": "Fitur",
+    "ja": "機能",
+    "it": "Funzione"
   },
   "site.compare.ogario": {
     "en": "Ogario",
@@ -102,10 +102,10 @@
     "tr": "Ogario",
     "pl": "Ogario",
     "nl": "Ogario",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ogario",
+    "id": "Ogario",
+    "ja": "Ogario",
+    "it": "Ogario"
   },
   "site.compare.macrosControls": {
     "en": "Macros & Controls",
@@ -120,14 +120,14 @@
     "tr": "Makrolar ve kontroller",
     "pl": "Makra i sterowanie",
     "nl": "Macro's & besturing",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Macros e controles",
+    "id": "Macro & Kontrol",
+    "ja": "マクロと操作",
+    "it": "Macro e controlli"
   },
   "site.compare.tricksplitMacro": {
     "en": "Tricksplit macro",
-    "el": "Μακροεντολή tricksplit",
+    "el": "Macro tricksplit",
     "es": "Macro de tricksplit",
     "bg": "Макро за tricksplit",
     "fr": "Macro tricksplit",
@@ -138,14 +138,14 @@
     "tr": "Tricksplit makrosu",
     "pl": "Makro tricksplit",
     "nl": "Tricksplit-macro",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Macro de tricksplit",
+    "id": "Macro tricksplit",
+    "ja": "トリックスプリットのマクロ",
+    "it": "Macro tricksplit"
   },
   "site.compare.doublesplitMacro": {
     "en": "Doublesplit macro",
-    "el": "Μακροεντολή doublesplit",
+    "el": "Macro doublesplit",
     "es": "Macro de doublesplit",
     "bg": "Макро за doublesplit",
     "fr": "Macro doublesplit",
@@ -156,14 +156,14 @@
     "tr": "Doublesplit makrosu",
     "pl": "Makro doublesplit",
     "nl": "Doublesplit-macro",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Macro de doublesplit",
+    "id": "Macro double split",
+    "ja": "ダブル分裂のマクロ",
+    "it": "Macro double split"
   },
   "site.compare.popsplitMacro": {
     "en": "Popsplit macro",
-    "el": "Μακροεντολή popsplit",
+    "el": "Macro popsplit",
     "es": "Macro de popsplit",
     "bg": "Макро за popsplit",
     "fr": "Macro popsplit",
@@ -174,32 +174,32 @@
     "tr": "Popsplit makrosu",
     "pl": "Makro popsplit",
     "nl": "Popsplit-macro",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Macro de popsplit",
+    "id": "Macro popsplit",
+    "ja": "ポップスプリットのマクロ",
+    "it": "Macro popsplit"
   },
   "site.compare.quickFeedingMacro": {
     "en": "Quick feeding macro",
-    "el": "Μακροεντολή γρήγορου ταΐσματος",
-    "es": "Macro de alimentación rápida",
+    "el": "Macro γρήγορου feed",
+    "es": "Macro de feed rápido",
     "bg": "Макро за бързо хранене",
     "fr": "Macro de feed rapide",
     "ar": "ماكرو الإطعام السريع",
-    "zh": "快速餵食巨集",
+    "zh": "快速吐球巨集",
     "ru": "Макрос быстрой кормёжки",
     "de": "Schnell-Feed-Makro",
     "tr": "Hızlı besleme makrosu",
     "pl": "Makro szybkiego karmienia",
-    "nl": "Snel-voeren-macro",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "nl": "Macro voor snel feeden",
+    "pt": "Macro de feed rápido",
+    "id": "Macro feed cepat",
+    "ja": "高速質量放出のマクロ",
+    "it": "Macro feed rapido"
   },
   "site.compare.cannonSplit": {
     "en": "Cannon split",
-    "el": "Διάσπαση cannon",
+    "el": "Cannon split",
     "es": "Cannon split",
     "bg": "Cannon split",
     "fr": "Cannon split",
@@ -210,14 +210,14 @@
     "tr": "Cannon split",
     "pl": "Cannon split",
     "nl": "Cannon split",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Cannon split",
+    "id": "Cannon split",
+    "ja": "キャノンスプリット",
+    "it": "Cannon split"
   },
   "site.compare.splitMacro": {
     "en": "16-split macro",
-    "el": "Μακροεντολή 16-split",
+    "el": "Macro 16-split",
     "es": "Macro de 16-split",
     "bg": "Макро за 16-split",
     "fr": "Macro 16-split",
@@ -228,10 +228,10 @@
     "tr": "16-split makrosu",
     "pl": "Makro 16-split",
     "nl": "16-split-macro",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Macro de 16 splits",
+    "id": "Macro 16-split",
+    "ja": "16分裂のマクロ",
+    "it": "Macro 16-split"
   },
   "site.compare.freezeCell": {
     "en": "Freeze cell",
@@ -246,14 +246,14 @@
     "tr": "Hücreyi dondurma",
     "pl": "Zamrożenie komórki",
     "nl": "Cel bevriezen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Congelar célula",
+    "id": "Bekukan sel",
+    "ja": "セルの固定",
+    "it": "Blocca cellula"
   },
   "site.compare.autoRespawn": {
     "en": "Auto respawn",
-    "el": "Αυτόματη επανεμφάνιση",
+    "el": "Αυτόματο respawn",
     "es": "Reaparición automática",
     "bg": "Автоматично съживяване",
     "fr": "Réapparition automatique",
@@ -282,10 +282,10 @@
     "tr": "Ters hareket",
     "pl": "Odwrócony ruch",
     "nl": "Omgekeerde beweging",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Movimento invertido",
+    "id": "Gerakan terbalik",
+    "ja": "逆方向移動",
+    "it": "Movimento inverso"
   },
   "site.compare.totalHotkeys": {
     "en": "Total hotkeys",
@@ -300,10 +300,10 @@
     "tr": "Toplam kısayol",
     "pl": "Liczba skrótów",
     "nl": "Totaal aantal sneltoetsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Total de atalhos",
+    "id": "Total hotkey",
+    "ja": "ショートカットキーの総数",
+    "it": "Tasti rapidi totali"
   },
   "site.compare.gamepadSupport": {
     "en": "Gamepad support",
@@ -318,10 +318,10 @@
     "tr": "Gamepad desteği",
     "pl": "Obsługa pada",
     "nl": "Gamepad-ondersteuning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Suporte a gamepad",
+    "id": "Dukungan gamepad",
+    "ja": "ゲームパッド対応",
+    "it": "Supporto gamepad"
   },
   "site.compare.multiboxDualTab": {
     "en": "Multibox (dual tab)",
@@ -336,10 +336,10 @@
     "tr": "Multibox (çift sekme)",
     "pl": "Multibox (dwie karty)",
     "nl": "Multibox (twee tabbladen)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Multibox (duas abas)",
+    "id": "Multibox (dua tab)",
+    "ja": "マルチボックス（2タブ）",
+    "it": "Multibox (due schede)"
   },
   "site.compare.rebindableHotkeys": {
     "en": "Rebindable hotkeys",
@@ -354,10 +354,10 @@
     "tr": "Değiştirilebilir kısayollar",
     "pl": "Zmiana przypisania skrótów",
     "nl": "Aanpasbare sneltoetsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atalhos configuráveis",
+    "id": "Hotkey bisa diatur ulang",
+    "ja": "ショートカットキーの変更",
+    "it": "Tasti rapidi riassegnabili"
   },
   "site.compare.aiMinionBots": {
     "en": "AI minion bots",
@@ -372,10 +372,10 @@
     "tr": "Yapay zekâlı minion botları",
     "pl": "Boty minionów z AI",
     "nl": "AI-minionbots",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Bots minion com IA",
+    "id": "Bot minion AI",
+    "ja": "AIミニオンボット",
+    "it": "Bot minion con IA"
   },
   "site.compare.visualsSkins": {
     "en": "Visuals & Skins",
@@ -390,10 +390,10 @@
     "tr": "Görseller ve skinler",
     "pl": "Grafika i skiny",
     "nl": "Uiterlijk & skins",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Visual e skins",
+    "id": "Visual & Skin",
+    "ja": "見た目とスキン",
+    "it": "Grafica e skin"
   },
   "site.compare.customSkins": {
     "en": "Custom skins",
@@ -408,10 +408,10 @@
     "tr": "Özel skinler",
     "pl": "Własne skiny",
     "nl": "Eigen skins",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins personalizadas",
+    "id": "Skin kustom",
+    "ja": "カスタムスキン",
+    "it": "Skin personalizzate"
   },
   "site.compare.animatedGifSkins": {
     "en": "Animated GIF skins",
@@ -426,17 +426,17 @@
     "tr": "Animasyonlu GIF skinler",
     "pl": "Animowane skiny GIF",
     "nl": "Geanimeerde GIF-skins",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins animadas em GIF",
+    "id": "Skin GIF animasi",
+    "ja": "GIFアニメーションスキン",
+    "it": "Skin GIF animate"
   },
   "site.compare.videoSkinsMp4Webm": {
     "en": "Video skins (MP4/WebM)",
     "el": "Skins βίντεο (MP4/WebM)",
-    "es": "Video skins (MP4/WebM)",
+    "es": "Skins de vídeo (MP4/WebM)",
     "bg": "Видео скинове (MP4/WebM)",
-    "fr": "Video skins (MP4/WebM)",
+    "fr": "Skins vidéo (MP4/WebM)",
     "ar": "سكنات فيديو (MP4/WebM)",
     "zh": "影片造型 (MP4/WebM)",
     "ru": "Видеоскины (MP4/WebM)",
@@ -444,10 +444,10 @@
     "tr": "Video skinler (MP4/WebM)",
     "pl": "Video skiny (MP4/WebM)",
     "nl": "Videoskins (MP4/WebM)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Skins em vídeo (MP4/WebM)",
+    "id": "Skin video (MP4/WebM)",
+    "ja": "動画スキン（MP4/WebM）",
+    "it": "Skin video (MP4/WebM)"
   },
   "site.compare.skinRotator": {
     "en": "Skin rotator",
@@ -480,10 +480,10 @@
     "tr": "Özel temalar",
     "pl": "Własne motywy",
     "nl": "Eigen thema's",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Temas personalizados",
+    "id": "Tema kustom",
+    "ja": "カスタムテーマ",
+    "it": "Temi personalizzati"
   },
   "site.compare.virusColorCustomization": {
     "en": "Virus color customization",
@@ -498,10 +498,10 @@
     "tr": "Virüs rengi özelleştirme",
     "pl": "Zmiana koloru wirusów",
     "nl": "Aanpasbare viruskleur",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Personalização da cor dos vírus",
+    "id": "Kustomisasi warna virus",
+    "ja": "ウイルスの色のカスタマイズ",
+    "it": "Colore dei virus personalizzabile"
   },
   "site.compare.jellyPhysics": {
     "en": "Jelly physics",
@@ -509,17 +509,17 @@
     "es": "Física de gelatina",
     "bg": "Желе физика",
     "fr": "Physique gélatine",
-    "ar": "فيزياء الهلام",
-    "zh": "果凍物理",
+    "ar": "فيزياء الجيلي",
+    "zh": "果凍效果",
     "ru": "Физика желе",
     "de": "Jelly-Physik",
     "tr": "Jöle fiziği",
     "pl": "Fizyka galaretki",
     "nl": "Jelly-fysica",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Física de gelatina",
+    "id": "Fisika jelly",
+    "ja": "ゼリー物理",
+    "it": "Fisica gelatina"
   },
   "site.compare.teamWaves": {
     "en": "Team waves",
@@ -534,10 +534,10 @@
     "tr": "Takım dalgaları",
     "pl": "Fale drużyny",
     "nl": "Teamgolven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ondas da equipe",
+    "id": "Gelombang tim",
+    "ja": "チームウェーブ",
+    "it": "Onde di squadra"
   },
   "site.compare.performance": {
     "en": "Performance",
@@ -570,10 +570,10 @@
     "tr": "Anti-lag / FPS artışı",
     "pl": "Anti-lag / zwiększenie FPS",
     "nl": "Anti-lag / FPS-boost",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Anti-lag / boost de FPS",
+    "id": "Anti-lag / boost FPS",
+    "ja": "ラグ対策 / FPS向上",
+    "it": "Anti-lag / boost FPS"
   },
   "site.compare.wasmAcceleration": {
     "en": "WASM acceleration",
@@ -588,10 +588,10 @@
     "tr": "WASM hızlandırma",
     "pl": "Akceleracja WASM",
     "nl": "WASM-versnelling",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aceleração WASM",
+    "id": "Akselerasi WASM",
+    "ja": "WASMによる高速化",
+    "it": "Accelerazione WASM"
   },
   "site.compare.webglRendering": {
     "en": "WebGL rendering",
@@ -606,10 +606,10 @@
     "tr": "WebGL ile çizim",
     "pl": "Renderowanie WebGL",
     "nl": "WebGL-rendering",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Renderização WebGL",
+    "id": "Rendering WebGL",
+    "ja": "WebGL描画",
+    "it": "Rendering WebGL"
   },
   "site.compare.renderers": {
     "en": "✓ (3 renderers)",
@@ -624,10 +624,10 @@
     "tr": "✓ (3 çizim motoru)",
     "pl": "✓ (3 renderery)",
     "nl": "✓ (3 renderers)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "✓ (3 renderizadores)",
+    "id": "✓ (3 renderer)",
+    "ja": "✓（3種類のレンダラー）",
+    "it": "✓ (3 renderer)"
   },
   "site.compare.customShaders": {
     "en": "Custom shaders",
@@ -642,14 +642,14 @@
     "tr": "Özel shader'lar",
     "pl": "Własne shadery",
     "nl": "Eigen shaders",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Shaders personalizados",
+    "id": "Shader kustom",
+    "ja": "カスタムシェーダー",
+    "it": "Shader personalizzati"
   },
   "site.compare.serverSupport": {
     "en": "Server Support",
-    "el": "Υποστήριξη διακομιστών",
+    "el": "Υποστήριξη servers",
     "es": "Compatibilidad con servidores",
     "bg": "Поддръжка на сървъри",
     "fr": "Compatibilité serveurs",
@@ -660,10 +660,10 @@
     "tr": "Sunucu desteği",
     "pl": "Obsługa serwerów",
     "nl": "Serverondersteuning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Suporte a servidores",
+    "id": "Dukungan Server",
+    "ja": "サーバー対応",
+    "it": "Supporto server"
   },
   "site.compare.officialAgarIo": {
     "en": "Official agar.io",
@@ -678,10 +678,10 @@
     "tr": "Resmî agar.io",
     "pl": "Oficjalne agar.io",
     "nl": "Officieel agar.io",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "agar.io oficial",
+    "id": "agar.io resmi",
+    "ja": "公式agar.io",
+    "it": "agar.io ufficiale"
   },
   "site.compare.sigmallySupport": {
     "en": "Sigmally support",
@@ -696,10 +696,10 @@
     "tr": "Sigmally desteği",
     "pl": "Obsługa Sigmally",
     "nl": "Sigmally-ondersteuning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Suporte ao Sigmally",
+    "id": "Dukungan Sigmally",
+    "ja": "Sigmally対応",
+    "it": "Supporto Sigmally"
   },
   "site.compare.senpaIoSupport": {
     "en": "Senpa.io support",
@@ -714,10 +714,10 @@
     "tr": "Senpa.io desteği",
     "pl": "Obsługa Senpa.io",
     "nl": "Senpa.io-ondersteuning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Suporte ao Senpa.io",
+    "id": "Dukungan Senpa.io",
+    "ja": "Senpa.io対応",
+    "it": "Supporto Senpa.io"
   },
   "site.compare.gotaIoSupport": {
     "en": "Gota.io support",
@@ -732,14 +732,14 @@
     "tr": "Gota.io desteği",
     "pl": "Obsługa Gota.io",
     "nl": "Gota.io-ondersteuning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Suporte ao Gota.io",
+    "id": "Dukungan Gota.io",
+    "ja": "Gota.io対応",
+    "it": "Supporto Gota.io"
   },
   "site.compare.ownPrivateServers": {
     "en": "Own private servers",
-    "el": "Δικοί του ιδιωτικοί διακομιστές",
+    "el": "Δικοί του ιδιωτικοί servers",
     "es": "Servidores privados propios",
     "bg": "Собствени частни сървъри",
     "fr": "Serveurs privés propres",
@@ -750,10 +750,10 @@
     "tr": "Kendi özel sunucuları",
     "pl": "Własne prywatne serwery",
     "nl": "Eigen privéservers",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Servidores privados próprios",
+    "id": "Server privat sendiri",
+    "ja": "独自のプライベートサーバー",
+    "it": "Server privati propri"
   },
   "site.compare.multipleGameModes": {
     "en": "Multiple game modes",
@@ -768,10 +768,10 @@
     "tr": "Birden çok oyun modu",
     "pl": "Wiele trybów gry",
     "nl": "Meerdere spelmodi",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vários modos de jogo",
+    "id": "Banyak mode game",
+    "ja": "複数のゲームモード",
+    "it": "Più modalità di gioco"
   },
   "site.compare.ffaPartyArcade": {
     "en": "FFA, Party, Arcade+",
@@ -786,14 +786,14 @@
     "tr": "FFA, Party, Arcade+",
     "pl": "FFA, Party, Arcade+",
     "nl": "FFA, Party, Arcade+",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "FFA, Party, Arcade+",
+    "id": "FFA, Party, Arcade+",
+    "ja": "FFA、パーティー、アーケードなど",
+    "it": "FFA, Party, Arcade+"
   },
   "site.compare.customServerAddress": {
     "en": "Custom server address",
-    "el": "Προσαρμοσμένη διεύθυνση διακομιστή",
+    "el": "Προσαρμοσμένη διεύθυνση server",
     "es": "Dirección de servidor personalizada",
     "bg": "Собствен адрес на сървър",
     "fr": "Adresse de serveur personnalisée",
@@ -804,10 +804,10 @@
     "tr": "Özel sunucu adresi",
     "pl": "Własny adres serwera",
     "nl": "Eigen serveradres",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Endereço de servidor personalizado",
+    "id": "Alamat server kustom",
+    "ja": "カスタムサーバーアドレス",
+    "it": "Indirizzo server personalizzato"
   },
   "site.compare.socialCommunity": {
     "en": "Social & Community",
@@ -818,14 +818,14 @@
     "ar": "التواصل والمجتمع",
     "zh": "社交與社群",
     "ru": "Общение и сообщество",
-    "de": "Social & Community",
+    "de": "Soziales & Community",
     "tr": "Sosyal ve topluluk",
     "pl": "Społeczność",
     "nl": "Sociaal & community",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Social e comunidade",
+    "id": "Sosial & Komunitas",
+    "ja": "ソーシャルとコミュニティ",
+    "it": "Social e community"
   },
   "site.compare.teamChat": {
     "en": "Team chat",
@@ -847,10 +847,10 @@
   },
   "site.compare.minimapTeammates": {
     "en": "Minimap teammates",
-    "el": "Συμπαίκτες στον μικροχάρτη",
+    "el": "Συμπαίκτες στο minimap",
     "es": "Compañeros en el minimapa",
     "bg": "Съотборници на мини картата",
-    "fr": "Coéquipiers sur la minicarte",
+    "fr": "Coéquipiers sur la mini-carte",
     "ar": "زملاء الفريق على الخريطة المصغرة",
     "zh": "小地圖顯示隊友",
     "ru": "Тиммейты на миникарте",
@@ -858,10 +858,10 @@
     "tr": "Mini haritada takım arkadaşları",
     "pl": "Członkowie drużyny na minimapie",
     "nl": "Teamgenoten op de minimap",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aliados no minimapa",
+    "id": "Rekan tim di minimap",
+    "ja": "ミニマップに味方を表示",
+    "it": "Compagni di squadra sulla minimappa"
   },
   "site.compare.teamQuadrantSystem": {
     "en": "Team quadrant system",
@@ -876,10 +876,10 @@
     "tr": "Takım çeyrek sistemi",
     "pl": "System ćwiartek drużyny",
     "nl": "Team-kwadrantsysteem",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sistema de quadrantes da equipe",
+    "id": "Sistem kuadran tim",
+    "ja": "チームのエリア分担システム",
+    "it": "Sistema a quadranti per la squadra"
   },
   "site.compare.accountSystem": {
     "en": "Account system",
@@ -894,10 +894,10 @@
     "tr": "Hesap sistemi",
     "pl": "System kont",
     "nl": "Accountsysteem",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sistema de contas",
+    "id": "Sistem akun",
+    "ja": "アカウントシステム",
+    "it": "Sistema di account"
   },
   "site.compare.profile": {
     "en": "~ (profile)",
@@ -912,10 +912,10 @@
     "tr": "~ (profil)",
     "pl": "~ (profil)",
     "nl": "~ (profiel)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "~ (perfil)",
+    "id": "~ (profil)",
+    "ja": "~（プロフィール）",
+    "it": "~ (profilo)"
   },
   "site.compare.googleFb": {
     "en": "✓ (Google/FB)",
@@ -930,10 +930,10 @@
     "tr": "✓ (Google/FB)",
     "pl": "✓ (Google/FB)",
     "nl": "✓ (Google/FB)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "✓ (Google/FB)",
+    "id": "✓ (Google/FB)",
+    "ja": "✓（Google/FB）",
+    "it": "✓ (Google/FB)"
   },
   "site.compare.freeSpectate": {
     "en": "Free spectate",
@@ -948,10 +948,10 @@
     "tr": "Serbest izleme",
     "pl": "Swobodne obserwowanie",
     "nl": "Vrij toekijken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Espectar livre",
+    "id": "Spectate bebas",
+    "ja": "自由観戦",
+    "it": "Spettatore libero"
   },
   "site.compare.multiViewportSpectate": {
     "en": "Multi-viewport spectate",
@@ -966,10 +966,10 @@
     "tr": "Çoklu görünümde izleme",
     "pl": "Obserwowanie w wielu widokach",
     "nl": "Toekijken met meerdere beelden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Espectar com várias telas",
+    "id": "Spectate multi-viewport",
+    "ja": "マルチ画面観戦",
+    "it": "Spettatore multi-visuale"
   },
   "site.compare.platform": {
     "en": "Platform",
@@ -984,10 +984,10 @@
     "tr": "Platform",
     "pl": "Platforma",
     "nl": "Platform",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Plataforma",
+    "id": "Platform",
+    "ja": "プラットフォーム",
+    "it": "Piattaforma"
   },
   "site.compare.chromeExtension": {
     "en": "Chrome extension",
@@ -1002,14 +1002,14 @@
     "tr": "Chrome eklentisi",
     "pl": "Rozszerzenie Chrome",
     "nl": "Chrome-extensie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Extensão do Chrome",
+    "id": "Ekstensi Chrome",
+    "ja": "Chrome拡張機能",
+    "it": "Estensione di Chrome"
   },
   "site.compare.userscriptTampermonkey": {
     "en": "Userscript (Tampermonkey)",
-    "el": "Σενάριο χρήστη (Tampermonkey)",
+    "el": "Userscript (Tampermonkey)",
     "es": "Userscript (Tampermonkey)",
     "bg": "Userscript (Tampermonkey)",
     "fr": "Userscript (Tampermonkey)",
@@ -1020,10 +1020,10 @@
     "tr": "Userscript (Tampermonkey)",
     "pl": "Userscript (Tampermonkey)",
     "nl": "Userscript (Tampermonkey)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Userscript (Tampermonkey)",
+    "id": "Userscript (Tampermonkey)",
+    "ja": "ユーザースクリプト（Tampermonkey）",
+    "it": "Userscript (Tampermonkey)"
   },
   "site.compare.firefoxSupport": {
     "en": "Firefox support",
@@ -1038,10 +1038,10 @@
     "tr": "Firefox desteği",
     "pl": "Obsługa Firefox",
     "nl": "Firefox-ondersteuning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Suporte ao Firefox",
+    "id": "Dukungan Firefox",
+    "ja": "Firefox対応",
+    "it": "Supporto Firefox"
   },
   "site.compare.viaUserscript": {
     "en": "✓ (via userscript)",
@@ -1056,10 +1056,10 @@
     "tr": "✓ (userscript ile)",
     "pl": "✓ (przez userscript)",
     "nl": "✓ (via userscript)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "✓ (por userscript)",
+    "id": "✓ (lewat userscript)",
+    "ja": "✓（ユーザースクリプト経由）",
+    "it": "✓ (tramite userscript)"
   },
   "site.compare.mobileSupport": {
     "en": "Mobile support",
@@ -1074,10 +1074,10 @@
     "tr": "Mobil destek",
     "pl": "Obsługa urządzeń mobilnych",
     "nl": "Mobiele ondersteuning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Suporte a celular",
+    "id": "Dukungan HP",
+    "ja": "モバイル対応",
+    "it": "Supporto mobile"
   },
   "site.compare.limited": {
     "en": "~ (limited)",
@@ -1092,10 +1092,10 @@
     "tr": "~ (sınırlı)",
     "pl": "~ (ograniczona)",
     "nl": "~ (beperkt)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "~ (limitado)",
+    "id": "~ (terbatas)",
+    "ja": "~（制限あり）",
+    "it": "~ (limitato)"
   },
   "site.compare.openSource": {
     "en": "Open source",
@@ -1110,10 +1110,10 @@
     "tr": "Açık kaynak",
     "pl": "Otwarty kod źródłowy",
     "nl": "Open source",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Código aberto",
+    "id": "Sumber terbuka",
+    "ja": "オープンソース",
+    "it": "Open source"
   },
   "site.compare.free": {
     "en": "Free",
@@ -1128,10 +1128,10 @@
     "tr": "Ücretsiz",
     "pl": "Darmowy",
     "nl": "Gratis",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Grátis",
+    "id": "Gratis",
+    "ja": "無料",
+    "it": "Gratis"
   },
   "site.compare.p2pWebrtc": {
     "en": "P2P / WebRTC",
@@ -1146,10 +1146,10 @@
     "tr": "P2P / WebRTC",
     "pl": "P2P / WebRTC",
     "nl": "P2P / WebRTC",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "P2P / WebRTC",
+    "id": "P2P / WebRTC",
+    "ja": "P2P / WebRTC",
+    "it": "P2P / WebRTC"
   },
   "site.compare.moddingApi": {
     "en": "Modding API",
@@ -1164,16 +1164,16 @@
     "tr": "Modding API",
     "pl": "API do modowania",
     "nl": "Modding-API",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "API de mods",
+    "id": "API modding",
+    "ja": "Mod用API",
+    "it": "API di modding"
   },
   "site.compare.verdict": {
     "en": "📊 Verdict",
     "el": "📊 Ετυμηγορία",
     "es": "📊 Veredicto",
-    "bg": "📊 Присъда",
+    "bg": "📊 Заключение",
     "fr": "📊 Verdict",
     "ar": "📊 الحكم",
     "zh": "📊 結論",
@@ -1182,14 +1182,14 @@
     "tr": "📊 Sonuç",
     "pl": "📊 Werdykt",
     "nl": "📊 Oordeel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "📊 Veredito",
+    "id": "📊 Kesimpulan",
+    "ja": "📊 結論",
+    "it": "📊 Verdetto"
   },
   "site.compare.legendModAndDelta": {
     "en": "<strong>Legend Mod</strong> and <strong>Delta</strong> are the two most feature-rich agar.io mods available today, both far ahead of Ogario and HSLO. Legend Mod stands out with its gamepad support, skin rotator, WASM acceleration, reverse movement macro, and being fully open source. It's also the only mod with native mobile support and runs its own private server (Expanding Land).",
-    "el": "<strong>Legend Mod</strong> και <strong>Delta</strong> είναι τα δύο πλουσιότερα σε λειτουργίες mods του agar.io σήμερα, και τα δύο πολύ μπροστά από τα Ogario και HSLO. Το Legend Mod ξεχωρίζει με την υποστήριξη χειριστηρίου, την εναλλαγή skins, την επιτάχυνση WASM, το macro αντίστροφης κίνησης και τον πλήρως ανοιχτό κώδικα. Είναι επίσης το μόνο mod με εγγενή υποστήριξη κινητών και έχει δικό του ιδιωτικό διακομιστή (Expanding Land).",
+    "el": "<strong>Legend Mod</strong> και <strong>Delta</strong> είναι τα δύο πλουσιότερα σε λειτουργίες mods του agar.io σήμερα, και τα δύο πολύ μπροστά από τα Ogario και HSLO. Το Legend Mod ξεχωρίζει με την υποστήριξη χειριστηρίου, την εναλλαγή skins, την επιτάχυνση WASM, το macro αντίστροφης κίνησης και τον πλήρως ανοιχτό κώδικα. Είναι επίσης το μόνο mod με εγγενή υποστήριξη κινητών και έχει δικό του ιδιωτικό server (Expanding Land).",
     "es": "<strong>Legend Mod</strong> y <strong>Delta</strong> son hoy los dos mods de agar.io con más funciones, ambos muy por delante de Ogario y HSLO. Legend Mod destaca por su compatibilidad con mando, el rotador de skins, la aceleración WASM, la macro de movimiento inverso y por ser totalmente de código abierto. Además, es el único mod con compatibilidad nativa con móviles y tiene su propio servidor privado (Expanding Land).",
     "bg": "<strong>Legend Mod</strong> и <strong>Delta</strong> са двата мода за agar.io с най-много функции днес, и двата далеч пред Ogario и HSLO. Legend Mod се отличава с поддръжка на геймпад, ротатор на скинове, WASM ускорение, макро за обратно движение и напълно отворен код. Освен това е единственият мод с вградена поддръжка на мобилни и има собствен частен сървър (Expanding Land).",
     "fr": "<strong>Legend Mod</strong> et <strong>Delta</strong> sont aujourd'hui les deux mods agar.io les plus complets, tous deux loin devant Ogario et HSLO. Legend Mod se distingue par sa prise en charge de la manette, son rotateur de skins, l'accélération WASM, la macro de mouvement inversé et le fait d'être entièrement open source. C'est aussi le seul mod avec une prise en charge native du mobile, et il fait tourner son propre serveur privé (Expanding Land).",
@@ -1200,14 +1200,14 @@
     "tr": "<strong>Legend Mod</strong> ve <strong>Delta</strong>, bugün mevcut en çok özelliğe sahip iki agar.io modu; ikisi de Ogario ve HSLO'nun çok önünde. Legend Mod; gamepad desteği, skin döndürücüsü, WASM hızlandırması, ters hareket makrosu ve tamamen açık kaynak olmasıyla öne çıkıyor. Ayrıca yerel mobil desteğe sahip tek mod ve kendi özel sunucusunu (Expanding Land) çalıştırıyor.",
     "pl": "<strong>Legend Mod</strong> i <strong>Delta</strong> to dwa najbogatsze w funkcje mody agar.io dostępne obecnie, oba daleko przed Ogario i HSLO. Legend Mod wyróżnia się obsługą pada, rotatorem skinów, akceleracją WASM, makrem odwróconego ruchu i w pełni otwartym kodem źródłowym. To także jedyny mod z natywną obsługą urządzeń mobilnych, który ma własny prywatny serwer (Expanding Land).",
     "nl": "<strong>Legend Mod</strong> en <strong>Delta</strong> zijn de twee agar.io-mods met de meeste functies die er vandaag zijn, allebei ver voor op Ogario en HSLO. Legend Mod valt op door gamepad-ondersteuning, de skin-rotator, WASM-versnelling, een macro voor omgekeerde beweging en doordat het volledig open source is. Het is ook de enige mod met native mobiele ondersteuning en draait een eigen privéserver (Expanding Land).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Legend Mod</strong> e <strong>Delta</strong> são os dois mods de agar.io com mais recursos disponíveis hoje, ambos muito à frente do Ogario e do HSLO. O Legend Mod se destaca pelo suporte a gamepad, rotador de skins, aceleração WASM, macro de movimento invertido e por ser totalmente open source. Ele também é o único mod com suporte nativo a celular e tem o seu próprio servidor privado (Expanding Land).",
+    "id": "<strong>Legend Mod</strong> dan <strong>Delta</strong> adalah dua mod agar.io dengan fitur terlengkap saat ini, jauh di depan Ogario dan HSLO. Legend Mod unggul dengan dukungan gamepad, skin rotator, akselerasi WASM, macro gerakan terbalik, dan kode yang sepenuhnya open source. Legend Mod juga satu-satunya mod dengan dukungan HP bawaan dan punya server privat sendiri (Expanding Land).",
+    "ja": "<strong>Legend Mod</strong>と<strong>Delta</strong>は、現在利用できるagar.io Modの中で最も機能が充実した2つで、どちらもOgarioやHSLOを大きく引き離しています。Legend Modの強みは、ゲームパッド対応、スキンローテーター、WASMによる高速化、逆方向移動のマクロ、そして完全なオープンソースであることです。ネイティブのモバイル対応を備え、独自のプライベートサーバー（Expanding Land）を運営している唯一のModでもあります。",
+    "it": "<strong>Legend Mod</strong> e <strong>Delta</strong> sono oggi le due mod per agar.io con più funzioni, entrambe molto più avanti di Ogario e HSLO. Legend Mod si distingue per il supporto gamepad, il rotatore di skin, l'accelerazione WASM, la macro di movimento inverso e per essere completamente open source. È anche l'unica mod con supporto mobile nativo e ha un proprio server privato (Expanding Land)."
   },
   "site.compare.deltaIsAPowerhouse": {
     "en": "<strong>Delta</strong> is a powerhouse with its own impressive strengths: three separate rendering engines (Canvas, Pixi, WebGL) with custom shaders, video skins (MP4/WebM), AI minion bots, multi-viewport spectating (1×/4×/16×), a full account system with Google/Facebook login, P2P WebRTC support, a modding API, and its own private servers at delt.io with multiple game modes. Both mods support Sigmally and Senpa.io.",
-    "el": "Το <strong>Delta</strong> είναι πανίσχυρο με τα δικά του σημαντικά πλεονεκτήματα: τρεις ξεχωριστές μηχανές σχεδίασης (Canvas, Pixi, WebGL) με προσαρμοσμένους shaders, video skins (MP4/WebM), bots minion με AI, παρακολούθηση σε πολλές προβολές (1×/4×/16×), πλήρες σύστημα λογαριασμών με σύνδεση Google/Facebook, υποστήριξη P2P WebRTC, API για modding και δικούς του ιδιωτικούς διακομιστές στο delt.io με πολλά είδη παιχνιδιού. Και τα δύο mods υποστηρίζουν Sigmally και Senpa.io.",
+    "el": "Το <strong>Delta</strong> είναι πανίσχυρο με τα δικά του σημαντικά πλεονεκτήματα: τρεις ξεχωριστές μηχανές σχεδίασης (Canvas, Pixi, WebGL) με προσαρμοσμένους shaders, video skins (MP4/WebM), bots minion με AI, παρακολούθηση σε πολλές προβολές (1×/4×/16×), πλήρες σύστημα λογαριασμών με σύνδεση Google/Facebook, υποστήριξη P2P WebRTC, API για modding και δικούς του ιδιωτικούς servers στο delt.io με πολλά είδη παιχνιδιού. Και τα δύο mods υποστηρίζουν Sigmally και Senpa.io.",
     "es": "<strong>Delta</strong> es una bestia con sus propios puntos fuertes: tres motores de renderizado distintos (Canvas, Pixi, WebGL) con shaders personalizados, video skins (MP4/WebM), bots minion con IA, espectador con varias vistas (1×/4×/16×), un sistema de cuentas completo con inicio de sesión de Google/Facebook, compatibilidad con P2P WebRTC, una API de modding y sus propios servidores privados en delt.io con varios modos de juego. Ambos mods son compatibles con Sigmally y Senpa.io.",
     "bg": "<strong>Delta</strong> е истинска сила със свои впечатляващи предимства: три отделни двигателя за рендиране (Canvas, Pixi, WebGL) със собствени шейдъри, видео скинове (MP4/WebM), AI ботове миньони, наблюдение в няколко изгледа (1×/4×/16×), пълна система с акаунти с вход през Google/Facebook, поддръжка на P2P WebRTC, API за модинг и собствени частни сървъри на delt.io с няколко режима на игра. И двата мода поддържат Sigmally и Senpa.io.",
     "fr": "<strong>Delta</strong> est un poids lourd avec ses propres atouts impressionnants : trois moteurs de rendu distincts (Canvas, Pixi, WebGL) avec shaders personnalisés, video skins (MP4/WebM), bots minion avec IA, mode spectateur multi-vues (1×/4×/16×), un système de comptes complet avec connexion Google/Facebook, la prise en charge P2P WebRTC, une API de modding et ses propres serveurs privés sur delt.io avec plusieurs modes de jeu. Les deux mods sont compatibles avec Sigmally et Senpa.io.",
@@ -1218,10 +1218,10 @@
     "tr": "<strong>Delta</strong> kendine has etkileyici güçlü yanlarıyla tam bir canavar: özel shader'larla üç ayrı çizim motoru (Canvas, Pixi, WebGL), video skinler (MP4/WebM), yapay zekâlı minion botları, çoklu görünümde izleme (1×/4×/16×), Google/Facebook girişli eksiksiz bir hesap sistemi, P2P WebRTC desteği, bir modding API'si ve delt.io'da birden çok oyun modu sunan kendi özel sunucuları. İki mod da Sigmally ve Senpa.io'yu destekliyor.",
     "pl": "<strong>Delta</strong> to potęga z własnymi imponującymi atutami: trzy oddzielne silniki renderowania (Canvas, Pixi, WebGL) z własnymi shaderami, video skiny (MP4/WebM), boty minionów z AI, obserwowanie w wielu widokach (1×/4×/16×), pełny system kont z logowaniem przez Google/Facebook, obsługa P2P WebRTC, API do modowania oraz własne prywatne serwery na delt.io z wieloma trybami gry. Oba mody obsługują Sigmally i Senpa.io.",
     "nl": "<strong>Delta</strong> is een krachtpatser met eigen indrukwekkende sterke punten: drie aparte rendering-engines (Canvas, Pixi, WebGL) met eigen shaders, videoskins (MP4/WebM), AI-minionbots, toekijken met meerdere beelden (1×/4×/16×), een volledig accountsysteem met Google/Facebook-login, P2P WebRTC-ondersteuning, een modding-API en eigen privéservers op delt.io met meerdere spelmodi. Beide mods ondersteunen Sigmally en Senpa.io.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O <strong>Delta</strong> é um mod poderoso com pontos fortes impressionantes: três motores de renderização separados (Canvas, Pixi, WebGL) com shaders personalizados, skins em vídeo (MP4/WebM), bots minion com IA, espectar com várias telas (1×/4×/16×), um sistema de contas completo com login pelo Google/Facebook, suporte a P2P WebRTC, uma API de mods e os seus próprios servidores privados em delt.io com vários modos de jogo. Os dois mods funcionam no Sigmally e no Senpa.io.",
+    "id": "<strong>Delta</strong> juga sangat kuat dengan keunggulannya sendiri: tiga mesin rendering terpisah (Canvas, Pixi, WebGL) dengan shader kustom, skin video (MP4/WebM), bot minion AI, spectate multi-viewport (1×/4×/16×), sistem akun lengkap dengan login Google/Facebook, dukungan P2P WebRTC, API modding, dan server privat sendiri di delt.io dengan banyak mode game. Kedua mod ini mendukung Sigmally dan Senpa.io.",
+    "ja": "<strong>Delta</strong>も独自の強みを持つ強力なModです。カスタムシェーダー対応の3つの描画エンジン（Canvas、Pixi、WebGL）、動画スキン（MP4/WebM）、AIミニオンボット、マルチ画面観戦（1×/4×/16×）、Google/Facebookログインに対応した本格的なアカウントシステム、P2P WebRTC対応、Mod用API、そして複数のゲームモードを備えたdelt.ioの独自プライベートサーバーがあります。どちらのModもSigmallyとSenpa.ioに対応しています。",
+    "it": "<strong>Delta</strong> è una potenza con i suoi notevoli punti di forza: tre motori di rendering separati (Canvas, Pixi, WebGL) con shader personalizzati, skin video (MP4/WebM), bot minion con IA, modalità spettatore multi-visuale (1×/4×/16×), un sistema di account completo con accesso Google/Facebook, supporto P2P WebRTC, un'API di modding e i propri server privati su delt.io con più modalità di gioco. Entrambe le mod supportano Sigmally e Senpa.io."
   },
   "site.compare.bottomLineBothLegend": {
     "en": "<strong>Bottom line:</strong> Both Legend Mod and Delta are excellent choices. Legend Mod is the best pick if you want open source, gamepad, and mobile support. Delta is the best pick if you want video skins, AI bots, multi-viewport spectating, and an account system. Either way, you're getting a top-tier mod.",
@@ -1236,9 +1236,9 @@
     "tr": "<strong>Özetle:</strong> Legend Mod da Delta da mükemmel seçimler. Açık kaynak, gamepad ve mobil destek istiyorsan en iyi seçim Legend Mod. Video skinler, yapay zekâ botları, çoklu görünümde izleme ve hesap sistemi istiyorsan en iyi seçim Delta. Hangisini seçersen seç, üst düzey bir mod elde ediyorsun.",
     "pl": "<strong>Podsumowanie:</strong> Zarówno Legend Mod, jak i Delta to świetne wybory. Legend Mod to najlepszy wybór, jeśli chcesz otwartego kodu, obsługi pada i urządzeń mobilnych. Delta to najlepszy wybór, jeśli chcesz video skinów, botów AI, obserwowania w wielu widokach i systemu kont. Tak czy inaczej, dostajesz mod najwyższej klasy.",
     "nl": "<strong>Conclusie:</strong> Legend Mod en Delta zijn allebei uitstekende keuzes. Legend Mod is de beste keuze als je open source, gamepad- en mobiele ondersteuning wilt. Delta is de beste keuze als je videoskins, AI-bots, toekijken met meerdere beelden en een accountsysteem wilt. Hoe dan ook krijg je een topmod.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<strong>Resumindo:</strong> tanto o Legend Mod quanto o Delta são ótimas escolhas. O Legend Mod é a melhor opção se você quer open source, gamepad e suporte a celular. O Delta é a melhor opção se você quer skins em vídeo, bots com IA, espectar com várias telas e um sistema de contas. De qualquer jeito, você vai ter um mod de primeira linha.",
+    "id": "<strong>Intinya:</strong> Legend Mod dan Delta sama-sama pilihan yang sangat bagus. Pilih Legend Mod kalau kamu mau open source, gamepad, dan dukungan HP. Pilih Delta kalau kamu mau skin video, bot AI, spectate multi-viewport, dan sistem akun. Mana pun pilihannya, kamu dapat mod kelas atas.",
+    "ja": "<strong>まとめ：</strong>Legend ModもDeltaも、どちらも優れた選択肢です。オープンソース、ゲームパッド、モバイル対応を重視するならLegend Modが最適です。動画スキン、AIボット、マルチ画面観戦、アカウントシステムを重視するならDeltaが最適です。どちらを選んでも、トップクラスのModが手に入ります。",
+    "it": "<strong>In sintesi:</strong> sia Legend Mod che Delta sono ottime scelte. Legend Mod è la migliore se vuoi open source, gamepad e supporto mobile. Delta è la migliore se vuoi skin video, bot con IA, modalità spettatore multi-visuale e un sistema di account. In ogni caso, avrai una mod di altissimo livello."
   }
 }

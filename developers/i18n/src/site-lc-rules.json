@@ -8,14 +8,14 @@
     "ar": "الأصلي",
     "zh": "元祖",
     "ru": "Оригинальный",
-    "de": "Der originale",
+    "de": "Das Original",
     "tr": "Orijinal",
     "pl": "Oryginalny",
     "nl": "De originele",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O original",
+    "id": "Yang asli",
+    "ja": "元祖",
+    "it": "L'originale"
   },
   "site.lc.rules.legendAgarIoClan": {
     "en": "Legend agar.io clan",
@@ -30,10 +30,10 @@
     "tr": "Legend agar.io klanı",
     "pl": "Klan Legend agar.io",
     "nl": "Legend Agar.io-clan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Clã Legend de agar.io",
+    "id": "Klan agar.io Legend",
+    "ja": "Legend agar.io クラン",
+    "it": "Clan Legend di agar.io"
   },
   "site.lc.rules.theseAreTheGolden": {
     "en": "These are the golden rules of Lc",
@@ -48,10 +48,10 @@
     "tr": "Bunlar Lc'nin altın kuralları",
     "pl": "Oto złote zasady Lc",
     "nl": "Dit zijn de gouden regels van Lc",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Estas são as regras de ouro do Lc",
+    "id": "Inilah aturan emas Lc",
+    "ja": "これがLcの鉄の掟です",
+    "it": "Queste sono le regole d'oro dei Lc"
   },
   "site.lc.rules.timeWasUsedAs": {
     "en": "Time was used as a filter, to prove who were the real, they are our heroes. <s>Once left Lc</s><sup>Real Lc stayed and fighted</sup>, there is no coming back. We call them \"traitors\" and said goodbye forever.",
@@ -66,10 +66,10 @@
     "tr": "Gerçek olanları kanıtlamak için zaman bir filtre olarak kullanıldı; onlar bizim kahramanlarımız. <s>Lc'den bir kez ayrılan</s><sup>Gerçek Lc kaldı ve savaştı</sup> için geri dönüş yok. Onlara \"hain\" diyor ve sonsuza dek veda ediyoruz.",
     "pl": "Czas posłużył za filtr, który pokazał, kto był prawdziwy - to nasi bohaterowie. <s>Kto raz opuścił Lc</s><sup>Prawdziwi z Lc zostali i walczyli</sup>, ten nie ma powrotu. Nazywamy ich „zdrajcami” i pożegnaliśmy się z nimi na zawsze.",
     "nl": "De tijd was het filter dat bewees wie echt was; zij zijn onze helden. <s>Wie Lc eenmaal verliet</s><sup>Echte Lc bleef en vocht</sup>, kan nooit meer terug. We noemen hen \"verraders\" en namen voorgoed afscheid.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O tempo serviu de filtro para provar quem era de verdade, e esses são os nossos heróis. <s>Saiu do Lc uma vez</s><sup>Os verdadeiros Lc ficaram e lutaram</sup>, não tem volta. Chamamos esses de \"traidores\" e demos adeus para sempre.",
+    "id": "Waktu jadi penyaring untuk membuktikan siapa yang benar-benar setia, dan merekalah pahlawan kami. <s>Sekali keluar dari Lc</s><sup>Lc sejati tetap bertahan dan berjuang</sup>, tidak ada jalan kembali. Kami menyebut mereka \"pengkhianat\" dan mengucapkan selamat tinggal untuk selamanya.",
+    "ja": "本物が誰なのかは、時間がふるいにかけて証明してくれました。残った彼らこそ私たちのヒーローです。<s>一度Lcを抜けた者</s><sup>本物のLcは残って戦い続けました</sup>に、戻る道はありません。私たちは彼らを「裏切り者」と呼び、永遠に別れを告げました。",
+    "it": "Il tempo ha fatto da filtro e ha mostrato chi erano quelli veri: sono loro i nostri eroi. <s>Chi ha lasciato i Lc</s><sup>I veri Lc sono rimasti a combattere</sup> non può più tornare. Li chiamiamo \"traditori\" e gli abbiamo detto addio per sempre."
   },
   "site.lc.rules.modWeAllUse": {
     "en": "Mod we ALL use for agar.io is Legend mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, on google chrome browser. It is essential for in-game communication. Use our clan’s Tag in the mod.",
@@ -82,12 +82,12 @@
     "ru": "Мод, которым мы ВСЕ пользуемся в agar.io, — Legend mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, в браузере google chrome. Он необходим для связи внутри игры. Используйте в моде тег нашего клана.",
     "de": "Der Mod, den wir ALLE für agar.io nutzen, ist Legend Mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, im Browser Google Chrome. Er ist unverzichtbar für die Kommunikation im Spiel. Nutze im Mod den Tag unseres Clans.",
     "tr": "agar.io için HEPİMİZİN kullandığı mod, Google Chrome tarayıcısında Legend Mod: <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>. Oyun içi iletişim için şart. Modda klanımızın Tag'ini kullan.",
-    "pl": "Modem, którego WSZYSCY używamy w agar.io, jest Legend Mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, w przeglądarce Google Chrome. Jest niezbędny do komunikacji w grze. Używaj w modzie tagu naszego klanu.",
+    "pl": "Mod, którego WSZYSCY używamy w agar.io, to Legend Mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, w przeglądarce Google Chrome. Jest niezbędny do komunikacji w grze. Używaj w modzie tagu naszego klanu.",
     "nl": "De mod die we ALLEMAAL gebruiken voor Agar.io is Legend Mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, in de browser Google Chrome. Die is onmisbaar voor communicatie in de game. Gebruik de Tag van onze clan in de mod.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O mod que TODOS nós usamos no agar.io é o Legend mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, no navegador Google Chrome. Ele é essencial para a comunicação dentro do jogo. Use a tag do nosso clã no mod.",
+    "id": "Mod yang KITA SEMUA pakai untuk agar.io adalah Legend mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, di browser Google Chrome. Mod ini wajib untuk komunikasi di dalam game. Pakai tag klan kita di mod.",
+    "ja": "agar.ioでは全員がLegend mod（<a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>）をGoogle Chromeブラウザで使います。ゲーム内のコミュニケーションに欠かせません。Modではクランのタグを使ってください。",
+    "it": "La mod che usiamo TUTTI per agar.io è Legend Mod, <a href=\"http://jimboy3100.github.io\">http://jimboy3100.github.io</a>, su Google Chrome. È fondamentale per comunicare in gioco. Nella mod usa il tag del nostro clan."
   },
   "site.lc.rules.clanWebsiteIsHttp": {
     "en": "Clan website is <a href=\"http://legendclan.ml\">http://legendclan.ml</a> . Take a good look at it, you MUST know basic strategy, our admins and their tasks.",
@@ -102,10 +102,10 @@
     "tr": "Klan sitesi <a href=\"http://legendclan.ml\">http://legendclan.ml</a> . İyice incele; temel stratejiyi, adminlerimizi ve görevlerini BİLMELİSİN.",
     "pl": "Strona klanu to <a href=\"http://legendclan.ml\">http://legendclan.ml</a> . Przyjrzyj się jej dobrze - MUSISZ znać podstawową strategię, naszych adminów i ich zadania.",
     "nl": "De clanwebsite is <a href=\"http://legendclan.ml\">http://legendclan.ml</a> . Bekijk hem goed: je MOET de basisstrategie, onze admins en hun taken kennen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O site do clã é <a href=\"http://legendclan.ml\">http://legendclan.ml</a> . Dê uma boa olhada nele: você PRECISA conhecer a estratégia básica, os nossos admins e as funções deles.",
+    "id": "Website klan ada di <a href=\"http://legendclan.ml\">http://legendclan.ml</a> . Pelajari baik-baik, kamu WAJIB tahu strategi dasar, admin kita, dan tugas mereka.",
+    "ja": "クランのWebサイトは<a href=\"http://legendclan.ml\">http://legendclan.ml</a>です。しっかり目を通してください。基本的な戦略、管理者とその役割は必ず知っておく必要があります。",
+    "it": "Il sito del clan è <a href=\"http://legendclan.ml\">http://legendclan.ml</a> . Guardalo bene: DEVI conoscere la strategia di base, i nostri admin e i loro compiti."
   },
   "site.lc.rules.communicationIsOnDiscord": {
     "en": "Communication is on <a href=\"https://discord.com/invite/z9cykqMk\">discord</a>.",
@@ -120,10 +120,10 @@
     "tr": "İletişim <a href=\"https://discord.com/invite/z9cykqMk\">Discord</a> üzerinden.",
     "pl": "Komunikujemy się na <a href=\"https://discord.com/invite/z9cykqMk\">Discordzie</a>.",
     "nl": "Communicatie gaat via <a href=\"https://discord.com/invite/z9cykqMk\">Discord</a>.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A comunicação é pelo <a href=\"https://discord.com/invite/z9cykqMk\">discord</a>.",
+    "id": "Komunikasi dilakukan di <a href=\"https://discord.com/invite/z9cykqMk\">Discord</a>.",
+    "ja": "連絡は<a href=\"https://discord.com/invite/z9cykqMk\">Discord</a>で行います。",
+    "it": "Comunichiamo su <a href=\"https://discord.com/invite/z9cykqMk\">Discord</a>."
   },
   "site.lc.rules.noRandomFriendsPolicy": {
     "en": "<mark>No random friends policy</mark>. Players using ℄ are killing everyone, including random friends.",
@@ -138,10 +138,10 @@
     "tr": "<mark>Random arkadaş yasağı</mark>. ℄ kullanan oyuncular random arkadaşlar dahil herkesi öldürür.",
     "pl": "<mark>Zakaz przypadkowych znajomych</mark>. Gracze z ℄ zabijają wszystkich, także przypadkowych znajomych.",
     "nl": "<mark>Geen random vrienden</mark>. Spelers met ℄ killen iedereen, ook random vrienden.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<mark>Política de zero amigos aleatórios</mark>. Quem usa ℄ come todo mundo, inclusive amigos aleatórios.",
+    "id": "<mark>Tidak ada teman acak</mark>. Pemain yang memakai ℄ memakan semua orang, termasuk teman acak.",
+    "ja": "<mark>野良との協力は禁止</mark>。℄を付けたプレイヤーは、野良の味方も含めて全員を倒します。",
+    "it": "<mark>Niente amici a caso</mark>. Chi usa ℄ mangia tutti, compresi gli amici trovati a caso."
   },
   "site.lc.rules.clanHasHierocracyThat": {
     "en": "Clan has hierocracy that all recruits and members shall respect. Follow the commands of the Admins.",
@@ -156,10 +156,10 @@
     "tr": "Klanın tüm acemilerin ve üyelerin saygı göstermesi gereken bir hiyerarşisi var. Adminlerin komutlarına uy.",
     "pl": "Klan ma hierarchię, którą muszą szanować wszyscy rekruci i członkowie. Wykonuj polecenia adminów.",
     "nl": "De clan heeft een hiërarchie die alle recruits en leden moeten respecteren. Volg de commando's van de admins.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O clã tem uma hierarquia que todos os recrutas e membros devem respeitar. Siga as ordens dos admins.",
+    "id": "Klan punya hierarki yang wajib dihormati semua rekrutan dan member. Ikuti perintah para Admin.",
+    "ja": "クランには上下関係があり、新人もメンバーも全員がそれを尊重しなければなりません。管理者の指示に従ってください。",
+    "it": "Il clan ha una gerarchia che tutte le reclute e tutti i membri devono rispettare. Segui gli ordini degli admin."
   },
   "site.lc.rules.clanPlayersShouldNot": {
     "en": "Clan players should not be on another agar.io group / clan.",
@@ -174,14 +174,14 @@
     "tr": "Klan oyuncuları başka bir agar.io grubunda / klanında olmamalı.",
     "pl": "Gracze klanu nie powinni należeć do innej grupy / klanu agar.io.",
     "nl": "Clanspelers mogen niet in een andere Agar.io-groep / clan zitten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Jogadores do clã não devem fazer parte de outro grupo / clã de agar.io.",
+    "id": "Pemain klan tidak boleh ikut grup / klan agar.io lain.",
+    "ja": "クランのプレイヤーは、ほかのagar.ioグループやクランに所属してはいけません。",
+    "it": "I giocatori del clan non devono far parte di un altro gruppo o clan di agar.io."
   },
   "site.lc.rules.playerCandidatesOfClan": {
     "en": "<em>player</em><br> Candidates of Clan use ℄🔥 before their name. If player Level is below 70, use ℄⚽ before your name. Don't keep much mass, until you gradually learn to play",
-    "el": "<em>παίκτης</em><br> Οι υποψήφιοι του clan βάζουν ℄🔥 μπροστά από το όνομά τους. Αν το level σου είναι κάτω από 70, βάλε ℄⚽ μπροστά από το όνομά σου. Μην κρατάς πολύ mass μέχρι να μάθεις σιγά σιγά να παίζεις",
+    "el": "<em>παίκτης</em><br> Οι υποψήφιοι του clan βάζουν ℄🔥 μπροστά από το όνομά τους. Αν το level σου είναι κάτω από 70, βάλε ℄⚽ μπροστά από το όνομά σου. Μην κρατάς πολλή μάζα μέχρι να μάθεις σιγά σιγά να παίζεις",
     "es": "<em>jugador</em><br> Los candidatos del clan usan ℄🔥 delante de su nombre. Si tu nivel es inferior a 70, usa ℄⚽ delante de tu nombre. No acumules mucha masa hasta que aprendas a jugar poco a poco",
     "bg": "<em>играч</em><br> Кандидатите на клана слагат ℄🔥 пред името си. Ако нивото ти е под 70, слагай ℄⚽ пред името си. Не трупай много маса, докато постепенно не се научиш да играеш",
     "fr": "<em>joueur</em><br> Les candidats du clan mettent ℄🔥 devant leur pseudo. Si votre niveau est inférieur à 70, mettez ℄⚽ devant votre pseudo. Ne gardez pas trop de masse tant que vous n'avez pas appris à jouer petit à petit",
@@ -192,10 +192,10 @@
     "tr": "<em>oyuncu</em><br> Klan adayları isimlerinin önünde ℄🔥 kullanır. Oyuncu seviyen 70'in altındaysa isminin önünde ℄⚽ kullan. Yavaş yavaş oynamayı öğrenene kadar fazla mass tutma",
     "pl": "<em>gracz</em><br> Kandydaci klanu używają ℄🔥 przed nickiem. Jeśli twój poziom jest niższy niż 70, używaj ℄⚽ przed nickiem. Nie trzymaj dużo masy, dopóki stopniowo nie nauczysz się grać",
     "nl": "<em>speler</em><br> Kandidaten van de clan zetten ℄🔥 voor hun naam. Is je level lager dan 70, zet dan ℄⚽ voor je naam. Houd niet te veel mass vast, tot je stap voor stap hebt leren spelen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<em>jogador</em><br> Os candidatos do clã usam ℄🔥 antes do nome. Se o seu nível for abaixo de 70, use ℄⚽ antes do nome. Não segure muita massa até ir aprendendo a jogar aos poucos",
+    "id": "<em>pemain</em><br> Calon anggota klan memakai ℄🔥 di depan nick. Kalau Level kamu masih di bawah 70, pakai ℄⚽ di depan nick. Jangan menahan massa terlalu banyak sampai kamu pelan-pelan belajar bermain",
+    "ja": "<em>プレイヤー</em><br>クランの候補者は名前の前に℄🔥を付けます。レベルが70未満の場合は、名前の前に℄⚽を付けてください。少しずつプレイを覚えるまでは、質量を多く抱えすぎないようにしましょう。",
+    "it": "<em>player</em><br> I candidati del clan mettono ℄🔥 davanti al nome. Se il tuo livello è sotto il 70, metti ℄⚽ davanti al nome. Non tenere troppa massa finché non impari a giocare un po' alla volta"
   },
   "site.lc.rules.playerElitePlayersThose": {
     "en": "<em>player</em><br> Elite players (those chosen as members) use ℄🌀. To become a member you must be a good player and be part of the group. It takes a while to get there, just enjoy the clan as a recruit.",
@@ -210,10 +210,10 @@
     "tr": "<em>oyuncu</em><br> Elit oyuncular (üye olarak seçilenler) ℄🌀 kullanır. Üye olmak için iyi bir oyuncu olmalı ve grubun bir parçası olmalısın. Oraya ulaşmak zaman alır; şimdilik acemi olarak klanın tadını çıkar.",
     "pl": "<em>gracz</em><br> Elitarni gracze (wybrani na członków) używają ℄🌀. Aby zostać członkiem, musisz dobrze grać i być częścią grupy. Dojście do tego zajmuje trochę czasu, po prostu ciesz się klanem jako rekrut.",
     "nl": "<em>speler</em><br> Elitespelers (wie als lid gekozen is) gebruiken ℄🌀. Om lid te worden moet je een goede speler zijn en bij de groep horen. Dat duurt even; geniet gewoon van de clan als recruit.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<em>jogador</em><br> Os jogadores de elite (os escolhidos como membros) usam ℄🌀. Para virar membro, você precisa ser um bom jogador e fazer parte do grupo. Leva um tempo para chegar lá, então curta o clã como recruta.",
+    "id": "<em>pemain</em><br> Pemain elite (yang terpilih jadi member) memakai ℄🌀. Untuk jadi member kamu harus jago dan benar-benar jadi bagian dari grup. Butuh waktu untuk sampai ke sana, jadi nikmati saja klan ini sebagai rekrutan.",
+    "ja": "<em>プレイヤー</em><br>エリートプレイヤー（メンバーに選ばれた人）は℄🌀を使います。メンバーになるには、上手なプレイヤーであり、グループの一員であることが必要です。そこまでには時間がかかるので、まずは新人としてクランを楽しんでください。",
+    "it": "<em>player</em><br> I giocatori élite (quelli scelti come membri) usano ℄🌀. Per diventare membro devi essere un buon giocatore e far parte del gruppo. Ci vuole un po' per arrivarci: intanto goditi il clan da recluta."
   },
   "site.lc.rules.playerSquadPlayersThose": {
     "en": "<em>player</em><br> Squad players (those chosen as members) use ℄🌀. Elder members of Lc who are selected of their skills to win difficult servers with small amount of numbers (1-4), under hidden names ℄🌟ᔕɊᑌᗩᗪ1, ℄🌟ᔕɊᑌᗩᗪ2...",
@@ -228,10 +228,10 @@
     "tr": "<em>oyuncu</em><br> Squad oyuncuları (üye olarak seçilenler) ℄🌀 kullanır. Zor sunucuları az sayıyla (1-4) kazanmak için becerilerine göre seçilen kıdemli Lc üyeleri, gizli isimler altında oynar: ℄🌟ᔕɊᑌᗩᗪ1, ℄🌟ᔕɊᑌᗩᗪ2...",
     "pl": "<em>gracz</em><br> Gracze squadu (wybrani na członków) używają ℄🌀. To starsi członkowie Lc, wybrani za umiejętności, by w małej liczbie (1-4) wygrywać trudne serwery pod ukrytymi nickami ℄🌟ᔕɊᑌᗩᗪ1, ℄🌟ᔕɊᑌᗩᗪ2...",
     "nl": "<em>speler</em><br> Squadspelers (wie als lid gekozen is) gebruiken ℄🌀. Dit zijn oudere leden van Lc, gekozen om hun skills, die moeilijke servers winnen met een klein aantal (1-4), onder verborgen namen ℄🌟ᔕɊᑌᗩᗪ1, ℄🌟ᔕɊᑌᗩᗪ2...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<em>jogador</em><br> Os jogadores do squad (os escolhidos como membros) usam ℄🌀. São membros veteranos do Lc, selecionados pela habilidade de vencer servidores difíceis com poucos jogadores (1-4), com nomes ocultos ℄🌟ᔕɊᑌᗩᗪ1, ℄🌟ᔕɊᑌᗩᗪ2...",
+    "id": "<em>pemain</em><br> Pemain squad (yang terpilih jadi member) memakai ℄🌀. Mereka adalah member senior Lc yang dipilih karena skill-nya untuk memenangkan server sulit dengan jumlah pemain sedikit (1-4), dengan nama samaran ℄🌟ᔕɊᑌᗩᗪ1, ℄🌟ᔕɊᑌᗩᗪ2...",
+    "ja": "<em>プレイヤー</em><br>スクワッドのプレイヤー（メンバーに選ばれた人）は℄🌀を使います。少人数（1〜4人）で厳しいサーバーを制する腕を見込まれて選ばれたLcの古参メンバーで、℄🌟ᔕɊᑌᗩᗪ1、℄🌟ᔕɊᑌᗩᗪ2…といった隠し名でプレイします。",
+    "it": "<em>player</em><br> I giocatori della squad (quelli scelti come membri) usano ℄🌀. Sono membri storici dei Lc, selezionati per la loro abilità nel vincere server difficili in pochi (1-4), con nomi nascosti ℄🌟ᔕɊᑌᗩᗪ1, ℄🌟ᔕɊᑌᗩᗪ2..."
   },
   "site.lc.rules.clanPlayersMustBeActive": {
     "en": "Clan players <mark class=\"blue\">must be active</mark> (as possible), and must read all announcements. Be kind to all in our clan and respect all players. Clan members come first, next come recruits.",
@@ -246,9 +246,9 @@
     "tr": "Klan oyuncuları (olabildiğince) <mark class=\"blue\">aktif olmalı</mark> ve tüm duyuruları okumalı. Klanımızdaki herkese nazik ol ve tüm oyunculara saygı göster. Önce klan üyeleri, sonra acemiler gelir.",
     "pl": "Gracze klanu <mark class=\"blue\">muszą być aktywni</mark> (na ile to możliwe) i muszą czytać wszystkie ogłoszenia. Bądź miły dla wszystkich w naszym klanie i szanuj wszystkich graczy. Najpierw członkowie klanu, potem rekruci.",
     "nl": "Clanspelers <mark class=\"blue\">moeten actief zijn</mark> (zoveel mogelijk) en alle aankondigingen lezen. Wees aardig tegen iedereen in onze clan en respecteer alle spelers. Clanleden gaan voor, daarna komen de recruits.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os jogadores do clã <mark class=\"blue\">devem ser ativos</mark> (o máximo possível) e devem ler todos os avisos. Seja gentil com todos do nosso clã e respeite todos os jogadores. Os membros do clã vêm primeiro, depois os recrutas.",
+    "id": "Pemain klan <mark class=\"blue\">wajib aktif</mark> (sebisa mungkin) dan wajib membaca semua pengumuman. Bersikap baiklah pada semua orang di klan kita dan hormati semua pemain. Member klan didahulukan, setelah itu rekrutan.",
+    "ja": "クランのプレイヤーは（できる限り）<mark class=\"blue\">アクティブでなければならず</mark>、お知らせはすべて読む必要があります。クランの全員に親切にし、すべてのプレイヤーを尊重してください。優先されるのはまずクランメンバー、次に新人です。",
+    "it": "I giocatori del clan <mark class=\"blue\">devono essere attivi</mark> (per quanto possibile) e devono leggere tutti gli annunci. Sii gentile con tutti nel clan e rispetta tutti i giocatori. Prima vengono i membri del clan, poi le reclute."
   }
 }

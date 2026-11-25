@@ -31,7 +31,7 @@
 "site.lc.projetox.moddersDevelopers": "Modder und Entwickler",
 "site.lc.projetox.clickToViewProjects": "Klicke hier, um die Projekte anzusehen",
 "site.lc.projetox.redFireImage": "Bild mit rotem Feuer",
-"site.lc.projetox.newMemberPromotion": "Neue Mitglieder-Beförderungen",
+"site.lc.projetox.newMemberPromotion": "Beförderung neuer Mitglieder",
 "site.lc.projetox.clickToSeeMore": "Klicke hier für mehr",
 "site.lc.projetox.clanLoyalty": "Clan-Loyalität",
 "site.lc.projetox.senpaiRule": "Senpai-Regel",

@@ -12,7 +12,7 @@
 "site.compare.tricksplitMacro": "Tricksplit-macro",
 "site.compare.doublesplitMacro": "Doublesplit-macro",
 "site.compare.popsplitMacro": "Popsplit-macro",
-"site.compare.quickFeedingMacro": "Snel-voeren-macro",
+"site.compare.quickFeedingMacro": "Macro voor snel feeden",
 "site.compare.cannonSplit": "Cannon split",
 "site.compare.splitMacro": "16-split-macro",
 "site.compare.freezeCell": "Cel bevriezen",
