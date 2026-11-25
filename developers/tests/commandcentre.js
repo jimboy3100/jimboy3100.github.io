@@ -2,10 +2,12 @@
  * ogario/modules/commandcentre.js, loaded in a vm without a document).
  * node developers/tests/commandcentre.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'commandcentre.js'), 'utf8');
 const ctx = { console };
 ctx.window = ctx;
 vm.createContext(ctx);
+i18n(ctx);
 vm.runInContext(src, ctx);
 const C = ctx.LMCommandCentre && ctx.LMCommandCentre._core;
 let fail = 0;
@@ -159,6 +161,23 @@ check('bar: row wider than the screen -> column', p.dir === 'col');
     tap('hk-macroFeed'); tap('hk-macroFeed'); /* two quick bar presses overlap */
     flush();
     check('tap: overlapping presses: one down, one up', log.join() === 'down,up');
+  }
+}
+
+// texts come from the language packs and follow a language change
+{
+  check('text: helper exported', typeof C.t === 'function');
+  if (typeof C.t === 'function') {
+    const en = i18n.t('modules.commandcentre.title');
+    check('text: English title from the packs', en === 'Command Centre' && C.t('title') === en);
+    check('text: placeholder from the packs', C.t('ph') === i18n.t('modules.commandcentre.ph'));
+    check('text: English label of another area (the core matchHistory key)', C.enOf('matchHistory') === i18n.t('matchHistory') && C.enOf('settings.exportImport') === i18n.t('settings.exportImport'));
+    ctx.LMi18n.setLang('el', { save: false });
+    const el = i18n.t('modules.commandcentre.title', null, 'el');
+    check('text: Greek after a language change', C.t('title') === el && el !== en);
+    check('text: the English label for searching stays English', C.enOf('modules.commandcentre.replays') === i18n.t('modules.commandcentre.replays'));
+    ctx.LMi18n.setLang('en', { save: false });
+    check('text: back to English', C.t('title') === en);
   }
 }
 

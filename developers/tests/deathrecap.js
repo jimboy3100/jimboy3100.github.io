@@ -1,6 +1,13 @@
 /* Death recap checks: step summarising, loss detection and attribution in ogario/modules/deathrecap.js.
  * node developers/tests/deathrecap.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
+/* texts of the language packs (English unless code is given) */
+const T = (k, v, code) => i18n.t('modules.deathrecap.' + k, v, code);
+const cells = (n, code) => (n === 1 ? T('cell', null, code) : T('cells', [n], code));
+/* a pack text as a regex: {0} {1} ... match the given patterns */
+const esc = (x) => x.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&');
+const tplRe = (k, pats, whole) => new RegExp((whole ? '^' : '') + T(k).split(/(\{\d+\})/).map(p => { const m = /^\{(\d+)\}$/.exec(p); return m ? pats[+m[1]] : esc(p); }).join('') + (whole ? '$' : ''));
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'deathrecap.js'), 'utf8');
 
 let now = 1000000, listeners = {}, intervals = 0;
@@ -33,6 +40,7 @@ ctx.window = ctx;
 ctx.legendmod5 = { deathRecap: false, killFeed: false, massLossAlert: false, massLossPct: 30, recordReplays: true };
 ctx.legendmod = { play: false, playerCells: [], cells: [], playerMass: 0, ws: 'wss://x' };
 vm.createContext(ctx);
+i18n(ctx);
 vm.runInContext(src, ctx);
 
 let fail = 0;
@@ -86,25 +94,25 @@ const ev = [
   { type: 'eaten', t: death - 200, t2: death, a: 2000, peak: 0, nick: 'PlayerX', near: null, v: false }
 ];
 let steps = P.summarise(R, ev, death, { nick: 'PlayerX', virus: false, exact: true });
-let texts = steps.map(s => P.stepLabel(s) + ': ' + P.stepText(s, 'en'));
+let texts = steps.map(s => P.stepLabel(s) + ': ' + P.stepText(s));
 console.log('     ' + texts.join(' | '));
 check('3-6 steps', steps.length >= 3 && steps.length <= 6, texts);
-check('starts 20 s before with mass and cells', texts[0] === '-20 s: 24,500 mass, 4 cells', texts[0]);
-check('split step with the cell count after it', texts.includes('-12 s: split into 8 cells'), texts);
-check('loss with exact attribution (eat events)', texts.includes('-7 s: lost ~9,200 mass to PlayerX'), texts);
+check('starts 20 s before with mass and cells', texts[0] === '-20 s: ' + T('mass', ['24,500', cells(4)]), texts[0]);
+check('split step with the cell count after it', texts.includes('-12 s: ' + T('split', [cells(8)])), texts);
+check('loss with exact attribution (eat events)', texts.includes('-7 s: ' + T('lossTo', ['9,200', 'PlayerX'])), texts);
 check('the eat inside the loss is not listed twice', steps.filter(s => s.kind === 'eaten').length === 0, texts);
-check('ends with the killer', texts[texts.length - 1] === '☠: eaten by PlayerX', texts);
+check('ends with the killer', texts[texts.length - 1] === '\u2620: ' + T('eatenBy', ['PlayerX']), texts);
 check('chronological', steps.every((s, i) => !i || s.t >= steps[i - 1].t));
 
 // --- no eat events: only "near"
 const ev2 = ev.filter(e => e.type !== 'eaten');
 steps = P.summarise(R, ev2, death, { nick: 'PlayerX', virus: false, exact: false });
-texts = steps.map(s => P.stepText(s, 'en'));
-check('loss without eat data says near', texts.includes('lost ~9,200 mass near PlayerX'), texts);
-check('death without exact data says near', texts[texts.length - 1] === 'eaten near PlayerX', texts);
+texts = steps.map(s => P.stepText(s));
+check('loss without eat data says near', texts.includes(T('lossNear', ['9,200', 'PlayerX'])), texts);
+check('death without exact data says near', texts[texts.length - 1] === T('eatenNear', ['PlayerX']), texts);
 steps = P.summarise(R, ev2.map(e => Object.assign({}, e, { near: null })), death, null);
-texts = steps.map(s => P.stepText(s, 'en'));
-check('nobody known: no name at all', texts.includes('lost ~9,200 mass') && texts[texts.length - 1] === 'eaten', texts);
+texts = steps.map(s => P.stepText(s));
+check('nobody known: no name at all', texts.includes(T('loss', ['9,200'])) && texts[texts.length - 1] === T('eatenNone'), texts);
 
 // --- many events: capped at 6 steps, the biggest loss is kept
 const many = [];
@@ -119,11 +127,17 @@ R = ring();
 for (let t = t0; t <= t0 + 15000; t += 250) P.ringPush(R, t, 500 + (t - t0) / 100, 1, -1, null, 0);
 steps = P.summarise(R, [], t0 + 15000, null);
 check('quiet short life: 3 steps from spawn', steps.length === 3 && steps[0].s === -15 && steps[1].kind === 'mass', steps.map(s => s.s + ' ' + s.kind));
-check('1 cell wording', P.stepText(steps[0], 'en') === '500 mass, 1 cell', P.stepText(steps[0], 'en'));
-check('Greek text', P.stepText({ kind: 'split', c: 8 }, 'el') === 'χωρίστηκες σε 8 κύτταρα');
-check('unnamed and virus wording', P.stepText({ kind: 'death', nick: '', exact: true }, 'en') === 'eaten by an unnamed cell' &&
-  P.stepText({ kind: 'loss', a: 100, virus: true, exact: true }, 'en') === 'lost ~100 mass to a virus');
-check('long nicks are cut', P.stepText({ kind: 'death', nick: 'x'.repeat(80), exact: true }, 'en').length === 'eaten by '.length + 40);
+check('1 cell wording', P.stepText(steps[0]) === T('mass', ['500', T('cell')]), P.stepText(steps[0]));
+check('English pack texts reach the steps', P.stepText({ kind: 'split', c: 8 }) === 'split into 8 cells');
+/* the language follows the runtime live: no reload */
+ctx.LMi18n.setLang('el', { save: false });
+check('Greek text after a language change', P.stepText({ kind: 'split', c: 8 }) === 'χωρίστηκες σε 8 κύτταρα' &&
+  P.stepText({ kind: 'split', c: 8 }) === T('split', [cells(8, 'el')], 'el'));
+ctx.LMi18n.setLang('en', { save: false });
+check('back to English', P.stepText({ kind: 'split', c: 8 }) === T('split', [cells(8)]));
+check('unnamed and virus wording', P.stepText({ kind: 'death', nick: '', exact: true }) === T('eatenBy', [T('unnamed')]) &&
+  P.stepText({ kind: 'loss', a: 100, virus: true, exact: true }) === T('lossTo', ['100', T('virusCell')]));
+check('long nicks are cut', P.stepText({ kind: 'death', nick: 'x'.repeat(80), exact: true }) === T('eatenBy', ['x'.repeat(40)]));
 
 // --- live: options on, sampling, eat hooks, loss detection, recap
 ctx.legendmod5.deathRecap = true;
@@ -162,17 +176,17 @@ now += 100; D.eat(enemy, lm.playerCells[0], false, true, 600); D.eat(enemy, lm.p
 lm.playerCells = []; lm.play = false;
 listeners.death[0]({ time: now });
 const rc = D.last();
-texts = rc ? rc.steps.map(s => P.stepLabel(s) + ': ' + P.stepText(s, 'en')) : [];
+texts = rc ? rc.steps.map(s => P.stepLabel(s) + ': ' + P.stepText(s)) : [];
 console.log('     ' + texts.join(' | '));
 check('live recap built on death', !!rc && rc.steps.length >= 3 && rc.steps.length <= 6, texts);
-check('live: virus step', texts.some(t => /hit a virus \(6 cells\)/.test(t)), texts);
-check('live: split step', texts.some(t => /split into 2 cells/.test(t)), texts);
-check('live: loss attributed exactly to Eater', texts.some(t => /lost ~11,700 mass to Eater/.test(t)), texts);
-check('live: killer from the eat events', /eaten by Eater$/.test(texts[texts.length - 1]), texts);
+check('live: virus step', texts.some(t => t.endsWith(': ' + T('virus', [cells(6)]))), texts);
+check('live: split step', texts.some(t => t.endsWith(': ' + T('split', [cells(2)]))), texts);
+check('live: loss attributed exactly to Eater', texts.some(t => t.endsWith(': ' + T('lossTo', ['11,700', 'Eater']))), texts);
+check('live: killer from the eat events', texts[texts.length - 1].endsWith(': ' + T('eatenBy', ['Eater'])), texts);
 check('live: sparkline samples', rc && rc.spark.length > 20);
 check('live: no replay links when not recording', rc && rc.slot === null);
-check('mass-loss alert line (30 %), exact eater', feedLines().some(t => /^Lost \d+% mass \(~[\d,]+\) to Eater$/.test(t)), feedLines());
-check('kill feed off: no eat or death lines', !feedLines().some(t => /You ate|Eaten by/.test(t)), feedLines());
+check('mass-loss alert line (30 %), exact eater', feedLines().some(t => tplRe('alertTo', ['\\d+', '[\\d,]+', 'Eater'], true).test(t)), feedLines());
+check('kill feed off: no eat or death lines', !feedLines().some(t => tplRe('feedAte', ['.*', '.*']).test(t) || tplRe('feedDied', ['.*']).test(t) || t === T('feedDiedNone')), feedLines());
 
 // --- "near" nick comes only from a close, bigger, visible enemy
 listeners.spawn[0]({ time: now });

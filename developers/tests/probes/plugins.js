@@ -35,7 +35,7 @@
       var r = ext.getBoundingClientRect();
       info.view = Math.round(r.width) + 'x' + Math.round(r.height) + ' in ' + innerWidth + 'x' + innerHeight;
       if (r.width > 0 && (r.left < 0 || r.right > innerWidth + 1)) fail.push('plugin view wider than the screen: ' + info.view);
-      if (!/full access/.test(ext.textContent)) fail.push('no full access warning');
+      if (ext.textContent.indexOf(lmT('modules.plugins.warn')) < 0) fail.push('no full access warning');
     }
     if (row && free) {
       row.querySelector('[data-act=install]').click();
@@ -48,7 +48,7 @@
       var p = LMPlugins.list()[n - 1];
       info.slot = n + ': ' + (p.name || '?') + ', ' + p.status + (p.registered ? ', registered' : '');
       if (p.id !== 'mass-milestones' || !p.enabled || p.status !== 'running' || !p.registered) fail.push('catalogue plugin not running in slot ' + info.slot);
-      if (!asked.some(function (m) { return /declares/.test(m) && /reads the game/.test(m); })) fail.push('no confirmation listing the permissions');
+      if (!asked.some(function (m) { return m.indexOf(lmT('modules.plugins.confirmPerms')) >= 0 && m.indexOf(lmT('modules.plugins.permGameRead')) >= 0; })) fail.push('no confirmation listing the permissions');
       if (localStorage.getItem('Userscript' + n) !== 'https://www.legendmod.ml/extras/plugins/mass-milestones.js') fail.push('slot URL not stored');
       if (!LMEvents._has('massUpdate')) fail.push('plugin did not add its massUpdate listener');
       /* Plugins view: settings, then the switch */

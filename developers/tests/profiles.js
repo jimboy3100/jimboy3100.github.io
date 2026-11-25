@@ -2,6 +2,7 @@
  * ogario/modules/profiles.js, against the real setting schemas of ogario/ogario.v4.js.
  * node developers/tests/profiles.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const root = path.join(__dirname, '..', '..');
 const main = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
 const mod = fs.readFileSync(path.join(root, 'ogario', 'modules', 'profiles.js'), 'utf8');
@@ -23,6 +24,7 @@ ctx.window = ctx;
 ctx.localStorage = makeStorage(0);
 ctx.hotkeysCommand = { 'hk-feed': { defaultKey: 'W' }, 'hk-split': { defaultKey: 'SPACE' }, 'hk-newThing': { defaultKey: 'N' }, 'hk-noKey': { defaultKey: '' } };
 vm.createContext(ctx);
+i18n(ctx);
 /* the real schemas and validators (defaultSettings + LM_THEME_DEFAULTS + lmThemeValue, defaultmapsettings + LM_SETTINGS_DEFAULTS + lmSettingValue) */
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
@@ -213,6 +215,7 @@ function bootApply() {
   c.LMGamepad = { release() { calls.push('gp-release'); }, _reload() { calls.push('gp-reload'); } };
   c.LMMobileEditor = { reload() { calls.push('ml-reload'); } };
   vm.createContext(c);
+  i18n(c);
   vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), c);
   vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), c);
   vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'hudeditor.js'), 'utf8'), c);
@@ -321,7 +324,7 @@ check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of 
   check('phone preferences: a change keeps the others and is applied at once', mp.btnScale === 0.8 && mp.btnOpacity === 0.5 && e.calls.indexOf('m-reload') >= 0);
   delete e.c._lmMobileHost.reloadPrefs;
   e.P.applySet({ m: { btnScale: 1.1 } }, 'old-host');
-  check('phone controls without the live call (older cached file): a reload is asked for', e.toasts.some(t => /reload/i.test(t[1])));
+  check('phone controls without the live call (older cached file): a reload is asked for', e.toasts.some(t => t[1].includes(i18n.t('modules.profiles.reloadSome'))));
 }
 {
   // gamepad buttons have their own switch: a desktop player has no phone preferences
@@ -396,6 +399,18 @@ check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of 
     listen(false);
     check('auto off: no listeners left', !e.c.LMEvents._has('gameModeChange') && !e.c.LMEvents._has('death') && !e.c.LMEvents._has('serverChange'));
   }
+}
+
+{
+  // texts from the language packs, and a language change shows the next message in that language
+  const e = bootApply();
+  e.P.undo();
+  const en = e.toasts.pop();
+  check('texts: English message and tag from the packs', en && en[1].includes(i18n.t('modules.profiles.nothingUndo')) && en[1].includes('[' + i18n.t('modules.profiles.tag') + ']'));
+  e.c.LMi18n.setLang('el');
+  e.P.undo();
+  const el = e.toasts.pop();
+  check('texts: after switching to Greek the message is Greek', el && el[1].includes(i18n.t('modules.profiles.nothingUndo', null, 'el')) && i18n.t('modules.profiles.nothingUndo', null, 'el') !== i18n.t('modules.profiles.nothingUndo'));
 }
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');

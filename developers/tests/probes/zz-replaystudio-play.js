@@ -13,7 +13,8 @@
   var RS = window.LMReplayStudio;
   if (!RS || !RS.run) return { fail: ['module did not load'] };
   if (window.legendmod.play) { info.skipped = 'playing'; return { fail: fail, info: info }; }
-  var playB = document.querySelector('#lm-rs .lm-rs-b[title="Play"]');
+  /* the play button: its title, and the play sign (in Greek the Player tab has the same title) */
+  var playB = Array.prototype.filter.call(document.querySelectorAll('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.play')) + '"]'), function (b) { return b.textContent === '▶'; })[0];
   if (!playB) return { fail: ['no play button'] };
   playB.click();
   for (w = 0; w < 40 && !RS.state().driving; w++) await sleep(100);
@@ -26,10 +27,10 @@
   if (!(st.pos > 0)) fail.push('playback did not advance');
   RS.command('pause');
   var p0 = RS.state().pos;
-  document.querySelector('#lm-rs .lm-rs-b[title="Next packet"]').click();
+  document.querySelector('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.stepF')) + '"]').click();
   await sleep(50);
   if (RS.state().pos !== Math.min(p0 + 1, st.n)) fail.push('step forward: ' + p0 + ' -> ' + RS.state().pos);
-  document.querySelector('#lm-rs .lm-rs-b[title="Previous packet"]').click();
+  document.querySelector('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.stepB')) + '"]').click();
   for (w = 0; w < 50 && RS.state().pos !== p0; w++) await sleep(100);
   if (RS.state().pos !== p0) fail.push('step back: ' + RS.state().pos + ' != ' + p0);
   RS.command('seek', -100000);

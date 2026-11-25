@@ -26,7 +26,7 @@
     };
     var ACTIONS = ['split', 'feed', 'wait', 'mouse'];
 
-    /* ═══ Pure helpers (unit tested in developers/tests/skinmacro.js) ═══ */
+    /* === Pure helpers (unit tested in developers/tests/skinmacro.js) === */
 
     function int(v, a, b, d) {
         v = Math.round(Number(v));
@@ -35,7 +35,8 @@
     }
     function cleanName(n, i) {
         var s = String(n == null ? '' : n).replace(/[\u0000-\u001f\u007f<>]/g, '').trim().slice(0, LIMITS.nameLen);
-        return s || ('Macro ' + (i + 1));
+        /* the default name is stored with the macro, in the language of that moment */
+        return s || t('defaultName', i + 1);
     }
     function cleanStep(s) {
         if (!s || typeof s !== 'object' || ACTIONS.indexOf(s.a) < 0) return null;
@@ -89,50 +90,17 @@
     }
     var core = { LIMITS: LIMITS, ACTIONS: ACTIONS, cleanStep: cleanStep, cleanMacro: cleanMacro, cleanData: cleanData, compile: compile, minGap: minGap, KEY: KEY };
 
-    /* ═══ Text ═══ */
+    /* === Text: developers/i18n/src (modules.macroeditor.*); t('key', a, b) fills {0} {1} === */
 
-    var STR = {
-        title: ['Custom macros', 'Προσαρμοσμένα macro'],
-        close: ['Close', 'Κλείσιμο'],
-        slot: ['Slot', 'Θέση'],
-        namePh: ['Macro name', 'Όνομα macro'],
-        split: ['Split', 'Split'],
-        feed: ['Feed', 'Feed'],
-        wait: ['Wait', 'Αναμονή'],
-        mouse: ['Move to mouse', 'Κίνηση στο ποντίκι'],
-        times: ['times', 'φορές'],
-        ms: ['ms', 'ms'],
-        add: ['Add', 'Προσθήκη'],
-        up: ['Move up', 'Πάνω'],
-        down: ['Move down', 'Κάτω'],
-        del: ['Remove', 'Αφαίρεση'],
-        clear: ['Clear slot', 'Καθαρισμός θέσης'],
-        clearSure: ['Clear? Tap again', 'Καθαρισμός; Πάτα ξανά'],
-        test: ['Test (dry run)', 'Δοκιμή (χωρίς αποστολή)'],
-        stop: ['Stop', 'Διακοπή'],
-        dry: ['Dry run: nothing is sent to the server.', 'Δοκιμή: δεν στέλνεται τίποτα στον διακομιστή.'],
-        empty: ['No steps yet: add split, feed, wait or move to mouse.', 'Κανένα βήμα ακόμα: πρόσθεσε split, feed, αναμονή ή κίνηση στο ποντίκι.'],
-        limits: ['Up to {0} steps and {1} s. Splits are at least {2} ms apart and feeds {3} ms (the fastest the existing macros allow): an action that comes sooner is moved later.',
-            'Έως {0} βήματα και {1} δ. Τα split απέχουν τουλάχιστον {2} ms και τα feed {3} ms (όσο γρήγορα επιτρέπουν τα υπάρχοντα macro): μια ενέργεια που έρχεται νωρίτερα μετατίθεται.'],
-        sum: ['{0} actions in {1} ms', '{0} ενέργειες σε {1} ms'],
-        movedN: ['{0} moved later to keep the minimum gap', '{0} μετατέθηκαν για το ελάχιστο κενό'],
-        droppedN: ['{0} dropped (over {1} s or {2} actions)', '{0} αφαιρέθηκαν (πάνω από {1} δ. ή {2} ενέργειες)'],
-        key: ['Hotkey', 'Πλήκτρο'],
-        noKey: ['not set: Settings > Hotkeys > "Custom macro {0}"', 'δεν έχει οριστεί: Ρυθμίσεις > Πλήκτρα > "Custom macro {0}"'],
-        full: ['Steps are full ({0} at most).', 'Τα βήματα είναι γεμάτα (έως {0}).'],
-        saveFail: ['Browser storage is full or blocked: the macro was not saved.', 'Ο χώρος του browser είναι γεμάτος ή μπλοκαρισμένος: το macro δεν αποθηκεύτηκε.'],
-        noSteps: ['Custom macro {0} has no steps: open Custom macros to make one.', 'Το custom macro {0} δεν έχει βήματα: άνοιξε τα Προσαρμοσμένα macro για να φτιάξεις ένα.']
-    };
-    function lang() { try { return W.localStorage.getItem('languagemod') === '2' ? 1 : 0; } catch (e) { return 0; } }
+    var P = 'modules.macroeditor.';
     function t(k) {
-        var r = STR[k], s = r ? (r[lang()] || r[0]) : k;
-        for (var i = 1; i < arguments.length; i++) s = s.split('{' + (i - 1) + '}').join(String(arguments[i]));
-        return s;
+        var v = Array.prototype.slice.call(arguments, 1);
+        return typeof W.lmT === 'function' ? W.lmT(P + k, v.length ? v : undefined) : k;
     }
     function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
     function toast(kind, text) { try { if (W.toastr) W.toastr[kind](esc(text)); } catch (e) { } }
 
-    /* ═══ Storage ═══ */
+    /* === Storage === */
 
     var data = load();
     function load() { try { return cleanData(W.localStorage.getItem(KEY)); } catch (e) { return cleanData(null); } }
@@ -146,7 +114,7 @@
         } catch (e) { toast('warning', t('saveFail')); return false; }
     }
 
-    /* ═══ Running (the same send functions as the split / feed hotkeys) ═══ */
+    /* === Running (the same send functions as the split / feed hotkeys) === */
 
     var running = null;
     function activeUnit() {
@@ -237,7 +205,7 @@
         return true;
     }
 
-    /* ═══ Editor window ═══ */
+    /* === Editor window === */
 
     var root = null, panel = null, slot = 0, listEl = null, nameIn = null, tlEl = null, infoEl = null, keyEl = null;
     var testBtn = null, clearBtn = null, clearArm = 0, dryRun = null, slotBtns = [];
@@ -318,7 +286,7 @@
             row.appendChild(mk('span', 'ix', String(i + 1)));
             var sel = D.createElement('select');
             sel.className = 'nm';
-            sel.setAttribute('aria-label', t('add'));
+            sel.setAttribute('aria-label', t('action'));
             ACTIONS.forEach(function (a) {
                 var o = D.createElement('option');
                 o.value = a; o.textContent = t(a);
@@ -339,24 +307,24 @@
                 num.max = String(isWait ? LIMITS.maxWait : LIMITS.maxRepeat);
                 num.step = isWait ? '10' : '1';
                 num.value = String(isWait ? s.ms : s.n);
-                num.setAttribute('aria-label', isWait ? t('ms') : t('times'));
+                num.setAttribute('aria-label', isWait ? 'ms' : t('times'));
                 num.addEventListener('keydown', function (e) { e.stopPropagation(); });
                 num.addEventListener('change', function () {
                     m.steps[i] = cleanStep(isWait ? { a: 'wait', ms: num.value } : { a: s.a, n: num.value });
                     changed();
                 });
                 row.appendChild(num);
-                row.appendChild(mk('span', 'lm-me-note', isWait ? t('ms') : t('times')));
+                row.appendChild(mk('span', 'lm-me-note', isWait ? 'ms' : t('times')));
             }
-            var up = btn('↑', t('up'), function () { if (i > 0) { var x = m.steps[i - 1]; m.steps[i - 1] = m.steps[i]; m.steps[i] = x; changed(); } });
-            var dn = btn('↓', t('down'), function () { if (i < m.steps.length - 1) { var x = m.steps[i + 1]; m.steps[i + 1] = m.steps[i]; m.steps[i] = x; changed(); } });
+            var up = btn('\u2191', t('up'), function () { if (i > 0) { var x = m.steps[i - 1]; m.steps[i - 1] = m.steps[i]; m.steps[i] = x; changed(); } });
+            var dn = btn('\u2193', t('down'), function () { if (i < m.steps.length - 1) { var x = m.steps[i + 1]; m.steps[i + 1] = m.steps[i]; m.steps[i] = x; changed(); } });
             up.disabled = i === 0; dn.disabled = i === m.steps.length - 1;
             row.appendChild(up); row.appendChild(dn);
-            row.appendChild(btn('×', t('del'), function () { m.steps.splice(i, 1); changed(); }, 'warn'));
+            row.appendChild(btn('\u00d7', t('del'), function () { m.steps.splice(i, 1); changed(); }, 'warn'));
             listEl.appendChild(row);
         });
         slotBtns.forEach(function (b, i) { b.classList.toggle('on', i === slot); });
-        if (keyEl) { var k = boundKey(slot + 1); keyEl.textContent = t('key') + ': ' + (k || t('noKey', slot + 1)); }
+        if (keyEl) { var k = boundKey(slot + 1); keyEl.textContent = k ? t('key', k) : t('noKey', slot + 1); }
     }
     function renderTimeline() {
         if (!tlEl) return;
@@ -366,7 +334,7 @@
         plan.events.forEach(function (ev, k) {
             var m = mk('div', 'lm-me-ev ' + ev.a);
             m.style.left = (3 + 94 * ev.t / span) + '%';
-            m.title = ev.t + ' ms: ' + t(ev.a);
+            m.title = t('at', ev.t, t(ev.a));
             m.setAttribute('data-k', String(k));
             tlEl.appendChild(m);
         });
@@ -376,7 +344,7 @@
             var parts = [t('sum', plan.events.length, plan.total)];
             if (plan.moved) parts.push(t('movedN', plan.moved));
             if (plan.dropped) parts.push(t('droppedN', plan.dropped, LIMITS.maxTotal / 1000, LIMITS.maxEvents));
-            infoEl.textContent = parts.join(' · ');
+            infoEl.textContent = parts.join(' \u00b7 ');
         }
         if (testBtn) testBtn.disabled = !plan.events.length;
     }
@@ -424,9 +392,10 @@
         panel.id = 'lm-me-p';
         panel.setAttribute('role', 'dialog');
         panel.setAttribute('aria-label', t('title'));
+        try { if (W.LMi18n && W.LMi18n.dir) panel.setAttribute('dir', W.LMi18n.dir()); } catch (e) { }
         var head = mk('div', 'lm-me-h');
         head.appendChild(mk('div', 'lm-me-t', t('title')));
-        head.appendChild(btn('✕', t('close'), close, 'lm-me-x'));
+        head.appendChild(btn('\u2715', t('close'), close, 'lm-me-x'));
         panel.appendChild(head);
         var body = mk('div', 'lm-me-body');
 
@@ -434,7 +403,7 @@
         slotBtns = [];
         for (var i = 0; i < LIMITS.slots; i++) {
             (function (n) {
-                var b = btn(t('slot') + ' ' + (n + 1), t('slot') + ' ' + (n + 1), function () { slot = n; clearArm = 0; if (clearBtn) clearBtn.textContent = t('clear'); renderSteps(); renderTimeline(); }, 'lm-me-slot');
+                var b = btn(t('slot', n + 1), t('slot', n + 1), function () { slot = n; clearArm = 0; if (clearBtn) clearBtn.textContent = t('clear'); renderSteps(); renderTimeline(); }, 'lm-me-slot');
                 slotBtns.push(b);
                 r1.appendChild(b);
             })(i);
@@ -450,6 +419,7 @@
 
         /* timeline and dry run first: on a phone they stay in view above a long step list */
         tlEl = mk('div', 'lm-me-tl');
+        tlEl.setAttribute('dir', 'ltr');
         body.appendChild(tlEl);
         var lg = mk('div', 'lm-me-lg');
         [['split', '#01d9cc'], ['feed', '#ffd200'], ['mouse', '#e0605c']].forEach(function (p) {
@@ -479,8 +449,8 @@
         body.appendChild(listEl);
 
         var r2 = mk('div', 'lm-me-row');
-        r2.appendChild(mk('span', 'lm-me-note', t('add') + ':'));
-        ACTIONS.forEach(function (a) { r2.appendChild(btn('+ ' + t(a), t('add') + ': ' + t(a), function () { addStep(a); }, 'lm-me-add-' + a)); });
+        r2.appendChild(mk('span', 'lm-me-note', t('addTo')));
+        ACTIONS.forEach(function (a) { r2.appendChild(btn('+ ' + t(a), t('addStep', t(a)), function () { addStep(a); }, 'lm-me-add-' + a)); });
         body.appendChild(r2);
 
         body.appendChild(mk('div', 'lm-me-note', t('limits', LIMITS.maxSteps, LIMITS.maxTotal / 1000, LIMITS.gapSplit, LIMITS.gapFeed)));
@@ -512,6 +482,13 @@
         slotBtns = [];
     }
     function toggle() { if (isOpen()) close(); else open(); }
+    /* a language change while the editor is open: build it again in the new language */
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {
+        if (!isOpen()) return;
+        var at = slot;
+        close();
+        open(at + 1);
+    });
     function run(action, arg) {
         if (action === 'run') return runSlot(arg);
         if (action === 'close') return close();

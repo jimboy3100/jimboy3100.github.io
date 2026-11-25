@@ -28,7 +28,7 @@
         q.dispatchEvent(new Event('input', { bubbles: true }));
         await sleep(150);
         var txt = (document.getElementById('lm-cc-list') || {}).textContent || '';
-        if (!/Spectator director/i.test(txt)) fail.push('Command Centre does not list the director');
+        if (txt.indexOf(lmT('modules.commandcentre.director')) < 0) fail.push('Command Centre does not list the director');
       }
       if (typeof CC.close === 'function') CC.close();
       else document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));

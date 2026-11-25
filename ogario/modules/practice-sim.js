@@ -30,6 +30,9 @@
     var HUMAN = 0;
     var K_PLAYER = 0, K_FOOD = 1, K_VIRUS = 2, K_EJECT = 3;
 
+    /* names shown on the cells, from the language packs of the page (lmT); in Node the key */
+    function nameT(k, v) { return root && typeof root.lmT === 'function' ? root.lmT('modules.practicesim.' + k, v) : k; }
+
     /* ------------------------------------------------------------------ */
     /* Random numbers (mulberry32): the only source of randomness          */
     /* ------------------------------------------------------------------ */
@@ -165,7 +168,7 @@
         var area = cfg.mapSize * cfg.mapSize;
         w.foodMax = opts.bare ? 0 : Math.round(clamp(area / 64e6 * 1200, 100, 2400));
         w.virusMax = opts.bare ? 0 : Math.round(area / 36e6 * 15 * [0, 0.5, 1, 2, 4][cfg.viruses]);
-        newPlayer(w, { human: true, name: cfg.name || 'You', color: cfg.color });
+        newPlayer(w, { human: true, name: cfg.name || nameT('you'), color: cfg.color });
         if (!opts.bare) {
             (EXERCISE_IMPL[cfg.exercise] || EXERCISE_IMPL.free).setup(w);
             spawnFood(w, w.foodMax);
@@ -432,7 +435,7 @@
     function addBots(w, n, mass, lvl, extra) {
         var hc = centre(human(w)) || { x: 0, y: 0 };
         for (var i = 0; i < n; i++) {
-            var p = newPlayer(w, { name: 'Bot ' + (i + 1), ai: { lvl: lvl, mode: 'bot', hunt: !!(extra && extra.hunt) }, respawnMass: mass });
+            var p = newPlayer(w, { name: nameT('bot', [i + 1]), ai: { lvl: lvl, mode: 'bot', hunt: !!(extra && extra.hunt) }, respawnMass: mass });
             var s = freeSpot(w, extra && extra.minDist || 1000, hc, 12);
             /* opponents of mixed size around the chosen mass (seeded) */
             var m = extra && extra.exact ? mass : clamp(mass * (0.5 + w.rnd()), 10, MAX_MASS);
@@ -763,7 +766,7 @@
     EXERCISE_IMPL.split = {
         setup: function (w) {
             w.ex = { round: 0, phase: 'gap', until: 0, log: [], cur: null, target: null, allowDeath: false };
-            w.ex.targetP = newPlayer(w, { name: 'Target', ai: { lvl: 1, mode: 'dummy' }, passive: true, noLb: true });
+            w.ex.targetP = newPlayer(w, { name: nameT('target'), ai: { lvl: 1, mode: 'dummy' }, passive: true, noLb: true });
             resetHuman(w, w.cfg.startMass, 0, 0);
             w.ex.onSplit = function (w2, p, n) {
                 if (!p.human || !w2.ex.cur) return;
@@ -831,7 +834,7 @@
     EXERCISE_IMPL.virus = {
         setup: function (w) {
             w.ex = { round: 0, phase: 'gap', until: 0, log: [], cur: null };
-            w.ex.targetP = newPlayer(w, { name: 'Target', ai: { lvl: 1, mode: 'dummy' }, passive: true, noLb: true });
+            w.ex.targetP = newPlayer(w, { name: nameT('target'), ai: { lvl: 1, mode: 'dummy' }, passive: true, noLb: true });
             resetHuman(w, w.cfg.startMass, 0, 0);
             w.ex.onEject = function (w2, p) { if (p.human && w2.ex.cur) w2.ex.cur.ejects++; };
             w.ex.onPop = function (w2, A, V) {
@@ -951,7 +954,7 @@
     };
     EXERCISE_IMPL.feed = {
         setup: function (w) {
-            var mate = newPlayer(w, { name: 'Teammate', ai: { lvl: 1, mode: 'dummy' }, passive: true, shield: true, color: [120, 230, 90] });
+            var mate = newPlayer(w, { name: nameT('teammate'), ai: { lvl: 1, mode: 'dummy' }, passive: true, shield: true, color: [120, 230, 90] });
             w.ex = { mate: mate, got: 0, shots: 0, moveAt: 0 };
             addCell(w, K_PLAYER, human(w), 0, 0, w.cfg.startMass);
             var a = w.rnd() * Math.PI * 2;

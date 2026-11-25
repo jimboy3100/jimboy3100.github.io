@@ -3,6 +3,7 @@
  * never published), the throttling and the URL parameters of companion.html.
  * node developers/tests/companion.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const repo = path.join(__dirname, '..', '..');
 const src = fs.readFileSync(process.argv[2] || path.join(repo, 'ogario', 'modules', 'companion.js'), 'utf8');
 
@@ -197,6 +198,40 @@ check('companion.html loads the module as a page', page.indexOf('window.LMCompan
 check('companion.html loads nothing from other sites', !/<script[^>]+src="https?:/i.test(page) && !/<link[^>]+href="https?:/i.test(page));
 check('companion.html never uses innerHTML', page.indexOf('innerHTML') < 0 && src.indexOf('innerHTML') < 0);
 check('companion.html mentions WebRTC pairing as not supported', /WebRTC/.test(page));
+
+/* ── texts: from the language packs (modules.companion.*), in every language ── */
+{
+  check('companion.html loads the page translation runtime before the module', page.indexOf('src="lib/lm-i18n.js" data-areas="mod"') > 0 &&
+    page.indexOf('src="lib/lm-i18n.js"') < page.indexOf('src="ogario/modules/companion.js"'));
+  check('companion.html loads the English pack (the page runtime loads only the other languages)', page.indexOf('src="languages/lm-en.js"') > 0 &&
+    page.indexOf('src="languages/lm-en.js"') < page.indexOf('src="lib/lm-i18n.js"'));
+  check('companion.html has a language picker', /data-lm-lang-picker/.test(page));
+  check('companion.html follows a language change', /onChange\(/.test(page));
+  const P = 'modules.companion.';
+  const keys = new Set();
+  const grab = (text, re, prefix) => { let m; while ((m = re.exec(text))) keys.add(prefix + m[1]); };
+  grab(page, /data-i18n(?:-html)?="([^"]+)"/g, '');
+  grab(page, /\bt\('([A-Za-z][A-Za-z.]*[A-Za-z])'/g, P);
+  grab(page, /setText\([^,()]+(?:\([^)]*\))?, '([A-Za-z.]+)'\)/g, P);
+  grab(src, /\bt\('([A-Za-z]+)'/g, P);
+  grab(src, /i18nText\([^,]+, '([A-Za-z]+)'\)/g, P);
+  C.WIDGETS.forEach(w => keys.add(P + 'names.' + w));
+  ['mass', 'rank', 'time', 'minimap', 'leaderboard', 'match', 'events', 'chat'].forEach(w => keys.add(P + 'w.' + w));
+  ['open', 'mapLive', 'mapDelay', 'mapHide'].forEach(k => keys.add(P + k));
+  const missing = [...keys].filter(k => i18n.t(k) === k || i18n.t(k, null, 'el') === k);
+  check('every text of companion.html and companion.js is in the packs (' + keys.size + ' keys)' + (missing.length ? ': missing ' + missing.join(', ') : ''), keys.size > 60 && missing.length === 0);
+  check('Greek differs from English', i18n.t(P + 'w.leaderboard', null, 'el') !== i18n.t(P + 'w.leaderboard') && i18n.t(P + 'page.waiting', null, 'el') !== i18n.t(P + 'page.waiting'));
+  check('event texts take their values', i18n.t(P + 'ev.death', ['1,234', '1:05']) === 'Died at 1,234 mass after 1:05' && i18n.t(P + 'ev.kill').indexOf('{0}') >= 0);
+  /* the English kept in the HTML (shown before the runtime runs) is the English of the packs */
+  const html = page.replace(/&rsaquo;/g, '\u203a').replace(/&hellip;/g, '\u2026');
+  const re = /<([a-z0-9]+)[^>]* data-i18n(-html)?="([^"]+)"[^>]*>([\s\S]*?)<\/\1>/g;
+  let m, diff = [];
+  while ((m = re.exec(html))) if (m[4] !== i18n.t(m[3])) diff.push(m[3]);
+  check('the English in companion.html is the English of the packs' + (diff.length ? ': ' + diff.join(', ') : ''), diff.length === 0);
+  /* the module defines no English texts of its own any more */
+  check('companion.js has no text table left', !/\bSTR\s*=|languagemod/.test(src));
+  check('companion.js is ASCII', !/[^\x00-\x7f]/.test(src.replace(/\/\*[\s\S]*?\*\//g, '')));
+}
 const v4 = fs.readFileSync(path.join(repo, 'ogario', 'ogario.v4.js'), 'utf8');
 check('option off by default', /companionLive: false,/.test(v4) && /companionChat: false,/.test(v4));
 check('loader entry', v4.indexOf("ogario/modules/companion.js?v=") >= 0);

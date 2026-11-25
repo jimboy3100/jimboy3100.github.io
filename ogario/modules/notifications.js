@@ -86,7 +86,7 @@
             .replace(/</g, ' ');
         s = decodeEntities(s).replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim();
         max = max || MAX_TEXT;
-        return s.length > max ? s.slice(0, max - 1) + '…' : s;
+        return s.length > max ? s.slice(0, max - 1) + '\u2026' : s;
     }
 
     /* Category of a toast: chat popups by their markup, then the "[TAG]:" prefix, then words. */
@@ -111,7 +111,7 @@
         var msg = stripHtml(message);
         var ttl = typeof title === 'string' ? stripHtml(title, 80) : '';
         var text = ttl && msg ? ttl + ': ' + msg : (ttl || msg);
-        if (text.length > MAX_TEXT) text = text.slice(0, MAX_TEXT - 1) + '…';
+        if (text.length > MAX_TEXT) text = text.slice(0, MAX_TEXT - 1) + '\u2026';
         return {
             id: id,
             t: now,
@@ -382,30 +382,18 @@
 
     /* ── UI: bell + panel ── */
 
-    var CAT_LABELS = {
-        achievements: ['lmNotifCatAchievements', 'Achievements / badges'],
-        bests: ['lmNotifCatBests', 'Personal bests'],
-        party: ['lmNotifCatParty', 'Party / team invitations'],
-        replay: ['lmNotifCatReplay', 'Replay'],
-        connection: ['lmNotifCatConnection', 'Connection'],
-        settings: ['lmNotifCatSettings', 'Settings'],
-        chat: ['lmNotifCatChat', 'Chat popups'],
-        other: ['lmNotifCatOther', 'Other']
+    /* texts: the settings keys of the language packs (developers/i18n/src/settings.json), the same
+     * labels the menu shows */
+    var CAT_KEYS = {
+        achievements: 'lmNotifCatAchievements', bests: 'lmNotifCatBests', party: 'lmNotifCatParty', replay: 'lmNotifCatReplay',
+        connection: 'lmNotifCatConnection', settings: 'lmNotifCatSettings', chat: 'lmNotifCatChat', other: 'lmNotifCatOther'
     };
-    var TYPE_LABELS = {
-        success: ['lmNotifTypeSuccess', 'Success'],
-        info: ['lmNotifTypeInfo', 'Info'],
-        warning: ['lmNotifTypeWarning', 'Warning'],
-        error: ['lmNotifTypeError', 'Error']
-    };
+    var TYPE_KEYS = { success: 'lmNotifTypeSuccess', info: 'lmNotifTypeInfo', warning: 'lmNotifTypeWarning', error: 'lmNotifTypeError' };
     var TYPE_COLORS = { success: '#51a351', info: '#2f96b4', warning: '#f89406', error: '#bd362f' };
 
-    function L(key, en) {
-        var t = root.textLanguage;
-        return (t && typeof t[key] === 'string' && t[key]) || en;
-    }
-    function catLabel(c) { var l = CAT_LABELS[c] || CAT_LABELS.other; return L(l[0], l[1]); }
-    function typeLabel(ty) { var l = TYPE_LABELS[ty] || TYPE_LABELS.info; return L(l[0], l[1]); }
+    function L(key) { return typeof root.lmT === 'function' ? root.lmT('settings.' + key) : key; }
+    function catLabel(c) { return L(CAT_KEYS[c] || CAT_KEYS.other); }
+    function typeLabel(ty) { return L(TYPE_KEYS[ty] || TYPE_KEYS.info); }
 
     var CSS = '' +
         '#lm-notif-bell{position:fixed;z-index:99;width:32px;height:32px;padding:0;margin:0;border:0;border-radius:50%;' +
@@ -469,7 +457,7 @@
                 var b = d.createElement('button');
                 b.id = 'lm-notif-bell';
                 b.type = 'button';
-                b.textContent = '🔔';
+                b.textContent = '\uD83D\uDD14';
                 var c = d.createElement('span');
                 c.className = 'lmn-count';
                 c.style.display = 'none';
@@ -494,7 +482,7 @@
             var n = unreadCount(state.items, prefs.readId);
             this.count.style.display = n ? '' : 'none';
             this.count.textContent = n > 99 ? '99+' : String(n);
-            var title = L('lmNotifTitle', 'Notifications') + (n ? ' (' + n + ')' : '');
+            var title = L('lmNotifTitle') + (n ? ' (' + n + ')' : '');
             this.bell.title = title;
             this.bell.setAttribute('aria-label', title);
         },
@@ -532,39 +520,41 @@
             var p = d.createElement('div');
             p.id = 'lm-notif-panel';
             p.setAttribute('role', 'dialog');
-            p.setAttribute('aria-label', L('lmNotifTitle', 'Notifications'));
+            p.setAttribute('aria-label', L('lmNotifTitle'));
+            /* Arabic reads right to left (the panel, not the game) */
+            try { if (root.LMi18n && root.LMi18n.dir) p.setAttribute('dir', root.LMi18n.dir()); } catch (e) { }
             p.style.display = 'none';
 
             var head = el('div', 'lmn-head');
-            head.appendChild(el('span', 'lmn-title', L('lmNotifTitle', 'Notifications')));
-            head.appendChild(btn(L('lmNotifMarkRead', 'Mark all read'), function () { markAllRead(); }));
-            head.appendChild(btn(L('lmNotifClear', 'Clear'), function () { clearAll(); }));
-            var close = btn('×', function () { ui.close(); });
+            head.appendChild(el('span', 'lmn-title', L('lmNotifTitle')));
+            head.appendChild(btn(L('lmNotifMarkRead'), function () { markAllRead(); }));
+            head.appendChild(btn(L('lmNotifClear'), function () { clearAll(); }));
+            var close = btn('\u00d7', function () { ui.close(); });
             close.className = 'lmn-close';
-            close.title = L('close', 'Close');
-            close.setAttribute('aria-label', L('close', 'Close'));
+            close.title = L('close');
+            close.setAttribute('aria-label', L('close'));
             head.appendChild(close);
             p.appendChild(head);
 
             var bar = el('div', 'lmn-bar');
             var cat = d.createElement('select');
             cat.className = 'lmn-cat';
-            cat.setAttribute('aria-label', L('lmNotifCategory', 'Category'));
-            addOpt(cat, 'all', L('lmNotifAllCats', 'All categories'));
+            cat.setAttribute('aria-label', L('lmNotifCategory'));
+            addOpt(cat, 'all', L('lmNotifAllCats'));
             CATEGORIES.forEach(function (c) { addOpt(cat, c, catLabel(c)); });
             cat.value = prefs.cat;
             cat.addEventListener('change', function () { prefs.cat = cat.value; saveSoon(); ui.renderList(); });
             var type = d.createElement('select');
             type.className = 'lmn-type';
-            type.setAttribute('aria-label', L('lmNotifType', 'Type'));
-            addOpt(type, 'all', L('lmNotifAllTypes', 'All types'));
+            type.setAttribute('aria-label', L('lmNotifType'));
+            addOpt(type, 'all', L('lmNotifAllTypes'));
             TYPES.forEach(function (t) { addOpt(type, t, typeLabel(t)); });
             type.value = prefs.type;
             type.addEventListener('change', function () { prefs.type = type.value; saveSoon(); ui.renderList(); });
-            var mutesBtn = btn(L('lmNotifMutesBtn', 'Toasts…'), function () {
+            var mutesBtn = btn(L('lmNotifMutesBtn'), function () {
                 mutes.style.display = mutes.style.display === 'none' ? '' : 'none';
             });
-            mutesBtn.title = L('lmNotifMutesTitle', 'Don’t show the toasts of a category (they are still recorded here)');
+            mutesBtn.title = L('lmNotifMutesTitle');
             bar.appendChild(cat);
             bar.appendChild(type);
             bar.appendChild(mutesBtn);
@@ -572,7 +562,7 @@
 
             var mutes = el('div', 'lmn-mutes');
             mutes.style.display = 'none';
-            mutes.appendChild(el('div', 'lmn-meta', L('lmNotifMutesTitle', 'Don’t show the toasts of a category (they are still recorded here)')));
+            mutes.appendChild(el('div', 'lmn-meta', L('lmNotifMutesTitle')));
             CATEGORIES.forEach(function (c) {
                 var lab = d.createElement('label');
                 var cb = d.createElement('input');
@@ -588,7 +578,7 @@
             });
             p.appendChild(mutes);
 
-            this.note = el('div', 'lmn-note', L('lmNotifOffNote', 'Recording is off: turn on “Notification centre” in Settings.'));
+            this.note = el('div', 'lmn-note', L('lmNotifOffNote'));
             p.appendChild(this.note);
             this.list = el('ul', 'lmn-list');
             p.appendChild(this.list);
@@ -609,7 +599,7 @@
             this.note.style.display = enabled() ? 'none' : '';
             var items = filterItems(state.items, prefs.cat, prefs.type);
             if (!items.length) {
-                list.appendChild(el('li', 'lmn-empty', L('lmNotifEmpty', 'No notifications')));
+                list.appendChild(el('li', 'lmn-empty', L('lmNotifEmpty')));
                 return;
             }
             var frag = d.createDocumentFragment();
@@ -617,7 +607,7 @@
                 var li = d.createElement('li');
                 if (it.id > prefs.readId) li.className = 'lmn-unread';
                 li.style.borderLeftColor = TYPE_COLORS[it.ty] || '#888';
-                li.appendChild(el('div', 'lmn-meta', fmtTime(it.t) + ' · ' + typeLabel(it.ty) + ' · ' + catLabel(it.c)));
+                li.appendChild(el('div', 'lmn-meta', fmtTime(it.t) + ' \u00b7 ' + typeLabel(it.ty) + ' \u00b7 ' + catLabel(it.c)));
                 li.appendChild(el('div', 'lmn-text', it.m)); /* textContent: stored text is never HTML */
                 frag.appendChild(li);
             });
@@ -637,6 +627,17 @@
         },
         toggle: function () {
             if (this.panel && this.panel.style.display !== 'none') this.close(); else this.open();
+        },
+        /* another language: the panel is built again (open again if it was open), the bell retitled */
+        relabel: function () {
+            if (this.panel) {
+                var wasOpen = this.panel.style.display !== 'none';
+                if (this.panel.parentNode) this.panel.parentNode.removeChild(this.panel);
+                this.panel = null;
+                this.list = null;
+                if (wasOpen) this.open();
+            }
+            this.updateCount();
         }
     };
 
@@ -786,12 +787,15 @@
             stripHtml: stripHtml, decodeEntities: decodeEntities, detectCategory: detectCategory, makeItem: makeItem,
             sanitizeItems: sanitizeItems, parseStore: parseStore, serializeStore: serializeStore, parsePrefs: parsePrefs,
             unreadCount: unreadCount, filterItems: filterItems, mixVolume: mixVolume, vol: vol, candidateSpots: candidateSpots,
-            wrapToastr: wrapToastr, saveNow: saveNow, MAX_ITEMS: MAX_ITEMS, MAX_TEXT: MAX_TEXT, MAX_BYTES: MAX_BYTES,
+            wrapToastr: wrapToastr, saveNow: saveNow, catLabel: catLabel, typeLabel: typeLabel, MAX_ITEMS: MAX_ITEMS, MAX_TEXT: MAX_TEXT, MAX_BYTES: MAX_BYTES,
             DUCK_LEVEL: DUCK_LEVEL, DUCK_MS: DUCK_MS, DUCK_MAX_MS: DUCK_MAX_MS
         }
     };
     root.LMNotifications = api;
 
+    if (root.LMi18n && typeof root.LMi18n.onChange === 'function') {
+        root.LMi18n.onChange(function () { try { ui.relabel(); } catch (e) { } });
+    }
     if (root.addEventListener) {
         root.addEventListener('pagehide', function () { if (saveTimer) saveNow(); });
         root.addEventListener('resize', function () { if (ui.bell) { ui.placedAt = null; refresh(); } });

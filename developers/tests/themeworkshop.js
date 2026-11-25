@@ -3,6 +3,7 @@
  * ogario/modules/themeworkshop.js, against the real theme schema of ogario/ogario.v4.js.
  * node developers/tests/themeworkshop.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const root = path.join(__dirname, '..', '..');
 const main = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
 const mod = fs.readFileSync(path.join(root, 'ogario', 'modules', 'themeworkshop.js'), 'utf8');
@@ -24,6 +25,7 @@ ctx.window = ctx;
 ctx.localStorage = makeStorage(0);
 ctx.textLanguage = { bgColor: 'Background', hudScale: '<b>HUD</b> scale', messageSound: 'Message notification sound' };
 vm.createContext(ctx);
+i18n(ctx);
 /* the real schema: preset maps, defaultSettings + LM_THEME_DEFAULTS + lmThemeValue, the gameplay settings validator */
 vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
@@ -75,7 +77,10 @@ check('https URL with query accepted', C.cleanUrl('https://i.imgur.com/abc.png?x
 r = C.parsePackage(pkg({ name: '<img src=x onerror=alert(1)>Cool<script>alert(2)</script>', author: 'A\u0000B‮C<b>x</b>', description: 'd'.repeat(5000) }));
 check('HTML and control characters removed from texts', r.ok && !/[<>]/.test(r.pkg.name) && r.pkg.name.includes('Cool') && !/[\u0000‮<>]/.test(r.pkg.author));
 check('texts capped (name 40, description 200)', r.ok && Array.from(r.pkg.name).length <= 40 && r.pkg.description.length === 200);
-check('empty name becomes "Theme"', C.parsePackage(pkg({ name: '<b></b>' })).pkg.name === 'Theme');
+check('empty name becomes "Theme"', C.parsePackage(pkg({ name: '<b></b>' })).pkg.name === i18n.t('modules.themeworkshop.defaultName'));
+ctx.LMi18n.setLang('el');
+check('empty name in Greek after a language change', C.parsePackage(pkg({ name: '<b></b>' })).pkg.name === i18n.t('modules.themeworkshop.defaultName', null, 'el') && i18n.t('modules.themeworkshop.defaultName', null, 'el') !== 'Theme');
+ctx.LMi18n.setLang('en');
 r = C.parsePackage(pkg({ theme: { bgColor: 'red;background:url(javascript:x)', mainColor: '#12345g', hudColor: 'rgba(0,0,0,0.4)', borderGlowColor: 'expression(alert(1))', virusColor: 'blue' } }));
 check('colour check: CSS injection refused, plain colours kept', r.ok && !('bgColor' in r.pkg.body.theme) && !('mainColor' in r.pkg.body.theme) && !('borderGlowColor' in r.pkg.body.theme) && r.pkg.body.theme.hudColor === 'rgba(0,0,0,0.4)' && r.pkg.body.theme.virusColor === 'blue');
 r = C.parsePackage(pkg({ theme: { bgColor: '#000', namesFont: 'Comic Sans; }', namesFontFamily: 'x}*{display:none', chatPos: '__proto__', preset: 'constructor', menuPreset: 'legendv2', sectorsSymbol: '<b>☆☆☆☆☆', graphics: 'high' } }));

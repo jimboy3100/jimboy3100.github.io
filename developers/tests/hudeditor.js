@@ -3,6 +3,7 @@
  * stylesheet and the layouts API can be tested without a browser.
  * node developers/tests/hudeditor.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'hudeditor.js'), 'utf8');
 
 let fail = 0;
@@ -70,6 +71,7 @@ function boot(opts) {
   };
   ctx.window = ctx;
   vm.createContext(ctx);
+  i18n(ctx);
   vm.runInContext(src, ctx);
   const css = () => { const s = fake.head.children.find(e => e.id === 'lm-hud-layout'); return s ? s.textContent : null; };
   return { ctx, api: ctx.LMHudEditor, core: ctx.LMHudEditor.core, storage, css, els: fake.els, intervals };
@@ -288,6 +290,15 @@ const J = o => JSON.parse(JSON.stringify(o));
   check('storage back: apply works again', api.applyLayout('B', true) === true && api.active() === 'B');
   const txt = typeof api.storeText === 'function' ? api.storeText('a') : undefined;
   check('storeText: the stored layouts with another active one, nothing changed', typeof txt === 'string' && JSON.parse(txt).active === 'A' && api.active() === 'B' && api.storeText('Nope') === null && JSON.parse(api.storeText('')).active === '');
+}
+
+/* ── texts: the box names come from the language packs and follow a language change ── */
+{
+  const b = boot();
+  const lb = b.core.COMPONENTS.filter(c => c.id === 'leaderboard')[0];
+  check('box names from the packs, every box has one', b.api.compLabel(lb) === i18n.t('modules.hudeditor.comp.leaderboard') && b.core.COMPONENTS.every(c => b.api.compLabel(c) !== 'modules.hudeditor.comp.' + c.id));
+  b.ctx.LMi18n.setLang('el');
+  check('box names in Greek after a language change', b.api.compLabel(lb) === i18n.t('modules.hudeditor.comp.leaderboard', null, 'el') && b.api.compLabel(lb) !== i18n.t('modules.hudeditor.comp.leaderboard'));
 }
 
 console.log(fail ? fail + ' FAILED' : 'all ok');

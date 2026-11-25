@@ -6,6 +6,7 @@
  * stored theme over a newer one. The preview's own auto-save is still blocked.
  * node developers/tests/themepreview.js [themeworkshop.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const root = path.join(__dirname, '..', '..');
 const main = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
 const mod = fs.readFileSync(process.argv[2] || path.join(root, 'ogario', 'modules', 'themeworkshop.js'), 'utf8');
@@ -16,7 +17,7 @@ let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 
 function boot() {
-  const m = new Map();
+  const m = new Map(), toasts = [];
   const clock = { now: 1e6, timers: [] };
   /* a chainable jQuery stand-in: every call gives the same empty selection */
   const el = () => ({ style: {}, appendChild() { }, addEventListener() { }, removeEventListener() { }, setAttribute() { } });
@@ -35,11 +36,12 @@ function boot() {
     document: { createElement: el, getElementById: () => null, querySelector: () => null, head: el(), body: el(), documentElement: { clientWidth: 1200, clientHeight: 800 } },
     innerWidth: 1200, innerHeight: 800, addEventListener() { }, removeEventListener() { },
     jQuery: $, $: $,
-    toastr: { info() { }, success() { }, warning() { }, error() { } },
+    toastr: { info(m) { toasts.push(m); }, success(m) { toasts.push(m); }, warning(m) { toasts.push(m); }, error(m) { toasts.push(m); } },
     textLanguage: {}
   };
   ctx.window = ctx;
   vm.createContext(ctx);
+  i18n(ctx);
   vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
   vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
   vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
@@ -58,7 +60,7 @@ function boot() {
     }
     clock.now = to;
   };
-  return { ctx, m, clock, advance, TW: ctx.LMThemeWorkshop };
+  return { ctx, m, clock, advance, toasts, TW: ctx.LMThemeWorkshop };
 }
 
 /* 1. the player edits the theme during a preview (the Theme tab saves it) */
@@ -120,6 +122,14 @@ function boot() {
 /* 5. Keep, then the timer: nothing rolled back */
 {
   const b = boot(), d = b.ctx.defaultSettings;
+  b.TW.preview({ theme: { bgColor: '#010203' } }, 'probe');
+  b.TW.keep();
+  b.advance(b.clock.now + 20000);
+  check('Keep: the message from the packs', b.toasts.some(t => t.includes(i18n.t('modules.themeworkshop.kept', 'probe'))));
+  b.ctx.LMi18n.setLang('el');
+  b.TW.preview({ theme: { bgColor: '#020304' } }, 'probe2');
+  b.TW.keep();
+  check('Keep after switching to Greek: the message is Greek', b.toasts.some(t => t.includes(i18n.t('modules.themeworkshop.kept', 'probe2', 'el'))));
   b.TW.preview({ theme: { bgColor: '#010203' } }, 'probe');
   b.TW.keep();
   b.advance(b.clock.now + 20000);

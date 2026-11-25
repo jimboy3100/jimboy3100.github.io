@@ -27,77 +27,15 @@
     /* ------------------------------------------------------------------ */
     /* Text                                                                */
     /* ------------------------------------------------------------------ */
-    var GR = false;
-    try { GR = localStorage.getItem('languagemod') === '2'; } catch (e) { }
-    var TXT = {
-        title: ['Practice arena', 'Αρένα εξάσκησης'],
-        close: ['Close', 'Κλείσιμο'],
-        exercise: ['Exercise', 'Άσκηση'],
-        start: ['Start', 'Έναρξη'],
-        restart: ['Restart', 'Από την αρχή'],
-        stop: ['Stop', 'Διακοπή'],
-        backGame: ['Back to game', 'Πίσω στο παιχνίδι'],
-        settings: ['Settings', 'Ρυθμίσεις'],
-        defaults: ['Defaults', 'Προεπιλογές'],
-        randomSeed: ['New seed', 'Νέος σπόρος'],
-        results: ['Results', 'Αποτελέσματα'],
-        best: ['Personal best', 'Προσωπικό ρεκόρ'],
-        newBest: ['New personal best!', 'Νέο προσωπικό ρεκόρ!'],
-        score: ['Score', 'Σκορ'],
-        noBest: ['No run yet with these settings.', 'Καμία προσπάθεια ακόμα με αυτές τις ρυθμίσεις.'],
-        recent: ['Recent runs', 'Πρόσφατες προσπάθειες'],
-        ghost: ['Ghost of the personal best', 'Φάντασμα του ρεκόρ'],
-        paused: ['Paused', 'Παύση'],
-        finished: ['Finished', 'Τέλος'],
-        running: ['Running', 'Σε εξέλιξη'],
-        leave: ['Starting leaves the server you are playing on. Press Start again to practise.', 'Η έναρξη σε βγάζει από τον διακομιστή όπου παίζεις. Πάτησε ξανά Έναρξη.'],
-        offline: ['Runs only in this browser: nothing is sent to a server. Keyboard, mouse, touch controls and gamepad work as in a game. The arena pauses while this window is open.', 'Τρέχει μόνο σε αυτόν τον browser: τίποτα δεν στέλνεται σε διακομιστή. Πληκτρολόγιο, ποντίκι, κουμπιά αφής και gamepad δουλεύουν όπως στο παιχνίδι. Η αρένα σταματά όσο είναι ανοιχτό αυτό το παράθυρο.'],
-        failed: ['Practice stopped: the game could not read the practice world.', 'Η εξάσκηση σταμάτησε: το παιχνίδι δεν μπόρεσε να διαβάσει τον κόσμο της εξάσκησης.'],
-        ok: ['Passed', 'Επιτυχία'],
-        notOk: ['Not passed', 'Αποτυχία'],
-        eaten: ['You were eaten', 'Σε έφαγαν'],
-        later: ['later', 'αργότερα'],
-        seed: ['Seed', 'Σπόρος'],
-        startMass: ['Your mass', 'Η μάζα σου'],
-        oppMass: ['Opponent mass', 'Μάζα αντιπάλων'],
-        bots: ['Bots', 'Bots'],
-        difficulty: ['Difficulty', 'Δυσκολία'],
-        viruses: ['Viruses', 'Ιοί'],
-        mapSize: ['Map size', 'Μέγεθος χάρτη'],
-        latency: ['Latency (ms)', 'Καθυστέρηση (ms)'],
-        duration: ['Time (s)', 'Χρόνος (s)'],
-        mergeSecs: ['Merge time (s)', 'Χρόνος ένωσης (s)'],
-        rounds: ['Rounds', 'Γύροι'],
-        splitMode: ['Split', 'Διαίρεση'],
-        lv1: ['Easy', 'Εύκολο'], lv2: ['Normal', 'Κανονικό'], lv3: ['Hard', 'Δύσκολο'], lv4: ['Expert', 'Ειδικός'],
-        vd0: ['None', 'Κανένας'], vd1: ['Few', 'Λίγοι'], vd2: ['Normal', 'Κανονικά'], vd3: ['Many', 'Πολλοί'], vd4: ['Dense', 'Πυκνά'],
-        sm_single: ['Single split', 'Μονή διαίρεση'], sm_double: ['Double split', 'Διπλή διαίρεση'], sm_pop: ['Popsplit', 'Popsplit'], sm_trick: ['Tricksplit (16)', 'Tricksplit (16)'],
-        ex_free: ['Free play', 'Ελεύθερο παιχνίδι'],
-        ex_split: ['Split drill', 'Άσκηση διαίρεσης'],
-        ex_virus: ['Virus shooting', 'Ρίψη ιών'],
-        ex_dodge: ['Virus avoidance', 'Αποφυγή ιών'],
-        ex_path: ['Precise movement', 'Ακριβής κίνηση'],
-        ex_escape: ['Escape', 'Διαφυγή'],
-        ex_feed: ['Feeding', 'Τάισμα'],
-        ex_merge: ['Merging', 'Ένωση'],
-        ex_multibox: ['Multibox coordination', 'Συντονισμός multibox'],
-        d_free: ['Bots, food and viruses. Grow as big as you can until the time runs out; kills count too.', 'Bots, τροφή και ιοί. Μεγάλωσε όσο μπορείς μέχρι να τελειώσει ο χρόνος· μετράνε και τα φαγωμένα.'],
-        d_split: ['A target appears at the range of the chosen split. Split onto it: scored on hits, speed and using the right number of splits (popsplit: second split 80-240 ms after the first). From Normal on, the target runs when you walk at it.', 'Ένας στόχος εμφανίζεται στην απόσταση της διαίρεσης που διάλεξες. Χτύπησέ τον με διαίρεση: μετράνε οι επιτυχίες, η ταχύτητα και ο σωστός αριθμός διαιρέσεων (popsplit: δεύτερη διαίρεση 80-240 ms μετά την πρώτη). Από το Κανονικό, ο στόχος φεύγει αν πας προς αυτόν.'],
-        d_virus: ['Feed the virus 7 times so the new virus flies into the target behind it and pops it. Do not touch the virus yourself. Harder levels put the target off the line.', 'Τάισε τον ιό 7 φορές ώστε ο νέος ιός να χτυπήσει τον στόχο πίσω του. Μην αγγίξεις τον ιό. Στα δυσκολότερα επίπεδα ο στόχος δεν είναι στην ευθεία.'],
-        d_dodge: ['Reach the 6 goals in order through a virus field. Every pop costs points.', 'Φτάσε τους 6 στόχους με τη σειρά μέσα από ιούς. Κάθε σκάσιμο κοστίζει πόντους.'],
-        d_path: ['Eat the line of gold pellets: faster and closer to the line is better.', 'Φάε τη γραμμή με τα χρυσά σφαιρίδια: όσο πιο γρήγορα και πιο κοντά στη γραμμή, τόσο καλύτερα.'],
-        d_escape: ['Bigger hunters chase you. Survive until the time runs out.', 'Μεγαλύτεροι κυνηγοί σε κυνηγούν. Επίζησε μέχρι να τελειώσει ο χρόνος.'],
-        d_feed: ['Feed your teammate (green, it cannot be eaten): mass delivered and accuracy count. From Normal on it moves.', 'Τάισε τον συμπαίκτη σου (πράσινος, δεν τρώγεται): μετράνε η μάζα που έφτασε και η ευστοχία. Από το Κανονικό και πάνω μετακινείται.'],
-        d_merge: ['You start in 8 pieces. Become one cell as soon as the merge timer allows.', 'Ξεκινάς σε 8 κομμάτια. Γίνε ένα κύτταρο μόλις το επιτρέψει ο χρόνος ένωσης.'],
-        d_multibox: ['Two local players need a second simulated connection: planned for later.', 'Δύο τοπικοί παίκτες χρειάζονται δεύτερη προσομοιωμένη σύνδεση: θα έρθει αργότερα.'],
-        r_peak: ['Peak mass', 'Μέγιστη μάζα'], r_kills: ['Kills', 'Φαγωμένοι'], r_mass: ['Mass', 'Μάζα'], r_time: ['Time', 'Χρόνος'],
-        r_survived: ['Survived', 'Επιβίωση'], r_hits: ['Hits', 'Επιτυχίες'], r_avgTime: ['Average time to hit', 'Μέσος χρόνος'],
-        r_technique: ['Right technique', 'Σωστή τεχνική'], r_feedsPerShot: ['Feeds per hit', 'Ταΐσματα ανά επιτυχία'], r_selfPops: ['Popped yourself', 'Έσκασες εσύ'],
-        r_goals: ['Goals', 'Στόχοι'], r_pops: ['Pops', 'Σκασίματα'], r_pellets: ['Pellets', 'Σφαιρίδια'], r_deviation: ['Distance from the line', 'Απόσταση από τη γραμμή'],
-        r_fed: ['Mass fed', 'Μάζα που δόθηκε'], r_accuracy: ['Accuracy', 'Ευστοχία'], r_shots: ['Feeds', 'Ταΐσματα'], r_mergeTime: ['Merge time', 'Χρόνος ένωσης'], r_cells: ['Cells', 'Κύτταρα'],
-        h_round: ['Round', 'Γύρος'], h_goal: ['Goal', 'Στόχος'], h_mergeIn: ['Merge in', 'Ένωση σε'], h_mergeNow: ['Merge now!', 'Ένωσε τώρα!']
-    };
-    function T(k) { var v = TXT[k]; return v ? v[GR ? 1 : 0] : k; }
+    /* texts come from the language packs (developers/i18n/src/modules*.json) */
+    var TK = 'modules.practice.';
+    function T(k, v) { return typeof window.lmT === 'function' ? window.lmT(TK + k, v) : k; }
+    /* K('stop'): a label read again after a language change (see relabels) */
+    function K(k) { return function () { return T(k); }; }
+    function dirNow() { return window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr'; }
+    /* setters of the fixed labels of the window and the HUD (both built once), run again on a change */
+    var relabels = [];
+    function L(fn) { relabels.push(fn); fn(); }
     function toast(kind, text) { if (window.toastr) toastr[kind](String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')); }
     function LM() { return window.legendmod || null; }
     function accent() { var c = window.defaultSettings && defaultSettings.menuMainColor; return typeof c === 'string' && /^#[0-9a-f]{3,8}$/i.test(c) ? c : '#01d9cc'; }
@@ -135,7 +73,7 @@
     function playerName() {
         var l = LM(), n = l && l.playerNick;
         if (!n) { try { n = document.getElementById('nick').value; } catch (e) { } }
-        return String(n || '').slice(0, 30) || 'You';
+        return String(n || '').slice(0, 30) || (typeof window.lmT === 'function' ? window.lmT('modules.practicesim.you') : 'You');
     }
     /* alive in the live game: the main player or a multibox unit (main dead, a unit still plays) */
     function livePlaying(l) {
@@ -434,7 +372,7 @@
                 ctx.fillStyle = 'rgba(255,255,255,0.75)';
                 ctx.font = 'bold ' + Math.round(12 * dpr) + 'px sans-serif';
                 ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText('PB ' + Math.round(g.m), sx(g.x), sy(g.y));
+                ctx.fillText(T('pbShort', [Math.round(g.m)]), sx(g.x), sy(g.y));
             }
         }
         ovRaf = requestAnimationFrame(drawOverlay);
@@ -451,8 +389,13 @@
         if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
         return e;
     }
+    /* label and title: text, or a function (K) for labels that follow the language */
+    function val(v) { return typeof v === 'function' ? v() : v; }
     function btn(label, title, fn, css) {
-        var b = el('button', css || '', label, { type: 'button', title: title || label, 'class': 'lm-pr-b' });
+        var b = el('button', css || '', null, { type: 'button', 'class': 'lm-pr-b' });
+        var setL = function () { var l = val(label); b.textContent = l; b.setAttribute('title', val(title) || l); };
+        if (typeof label === 'function' || typeof title === 'function') relabels.push(setL);
+        setL();
         b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fn(e); });
         return b;
     }
@@ -475,8 +418,8 @@
             '#lm-pr{color:var(--lm-tc,#e8e8e8);}#lm-pr-hud{color:var(--lm-hud-tc,#e8e8e8);}' +
             '#lm-pr *,#lm-pr-hud *{box-sizing:border-box;}' +
             /* above the phone controls (LMmobile z-index 100000-100004) so its buttons take the taps */
-            '#lm-pr{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(660px,calc(100vw - 12px));max-height:calc(100vh - 12px);z-index:100005;display:flex;flex-direction:column;' +
-            'background:var(--lm-pc,rgba(14,17,23,.96));border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid var(--lm-pr-a,#01d9cc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;}' +
+            '#lm-pr{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(660px,calc(100vw - 12px));max-height:calc(100vh - 12px);z-index:100005;display:flex;flex-direction:column;' + // i18n-ok: CSS
+            'background:var(--lm-pc,rgba(14,17,23,.96));border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid var(--lm-pr-a,#01d9cc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;}' + // i18n-ok: CSS
             '#lm-pr .lm-pr-head{border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.15));background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%);}' +
             '#lm-pr .lm-pr-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 10px 8px;display:flex;flex-wrap:wrap;gap:8px 14px;}' +
             '#lm-pr .lm-pr-col{flex:1 1 280px;min-width:0;}' +
@@ -507,6 +450,7 @@
         css();
         if (!H) {
             H = el('div', '', null, { id: 'lm-pr-hud' });
+            L(function () { H.dir = dirNow(); });
             H.style.setProperty('--lm-pr-a', 'var(--lm-hud-mc,' + accent() + ')');
             shield(H);
             var t = H.txt = el('div', '', null, { 'class': 'lm-pr-t' });
@@ -514,12 +458,13 @@
             H.l2 = el('span', 'font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;');
             t.appendChild(H.l1); t.appendChild(H.l2);
             H.appendChild(t);
-            H.graph = el('canvas', 'width:120px;height:34px;flex:0 0 auto;', null, { width: '240', height: '68', title: T('ghost') });
+            H.graph = el('canvas', 'width:120px;height:34px;flex:0 0 auto;', null, { width: '240', height: '68' });
+            L(function () { H.graph.title = T('ghost'); });
             H.appendChild(H.graph);
-            H.appendChild(btn('⚙', T('settings'), function () { toggle(); }));
-            H.appendChild(btn('↻', T('restart'), function () { restart(); }));
-            H.appendChild(btn('⏏', T('backGame'), function () { stop(true); }));
-            H.appendChild(btn('✕', T('stop'), function () { stop(false); }, 'min-width:34px;'));
+            H.appendChild(btn('\u2699', K('settings'), function () { toggle(); }));
+            H.appendChild(btn('\u21bb', K('restart'), function () { restart(); }));
+            H.appendChild(btn('\u23cf', K('backGame'), function () { stop(true); }));
+            H.appendChild(btn('\u2715', K('stop'), function () { stop(false); }, 'min-width:34px;'));
             document.body.appendChild(H);
         }
         H.style.display = 'flex';
@@ -532,21 +477,21 @@
         switch (c.exercise) {
             case 'split': case 'virus':
                 var hits = (ex.log || []).filter(function (r) { return r.ok; }).length;
-                return T('h_round') + ' ' + (ex.round || 0) + '/' + c.rounds + ' · ' + T('r_hits') + ' ' + hits + (c.exercise === 'virus' && ex.cur ? ' · ' + T('r_shots') + ' ' + ex.cur.ejects : '');
-            case 'dodge': return T('h_goal') + ' ' + Math.min(ex.next + 1, ex.goals.length) + '/' + ex.goals.length + ' · ' + T('r_pops') + ' ' + ex.pops + ' · ' + fmtS(t);
-            case 'path': return T('r_pellets') + ' ' + ex.eaten + '/' + ex.total + ' · ' + fmtS(t);
-            case 'escape': return T('r_survived') + ' ' + Math.floor(t) + '/' + c.duration + ' s · ' + T('r_mass') + ' ' + (m ? Math.round(m.m) : 0);
-            case 'feed': return T('r_fed') + ' ' + Math.round(ex.got) + ' · ' + T('r_accuracy') + ' ' + (ex.shots ? Math.round(ex.got / (ex.shots * 14) * 100) : 0) + '%';
+                return T('h_round') + ' ' + (ex.round || 0) + '/' + c.rounds + ' \u00b7 ' + T('r_hits') + ' ' + hits + (c.exercise === 'virus' && ex.cur ? ' \u00b7 ' + T('r_shots') + ' ' + ex.cur.ejects : '');
+            case 'dodge': return T('h_goal') + ' ' + Math.min(ex.next + 1, ex.goals.length) + '/' + ex.goals.length + ' \u00b7 ' + T('r_pops') + ' ' + ex.pops + ' \u00b7 ' + fmtS(t);
+            case 'path': return T('r_pellets') + ' ' + ex.eaten + '/' + ex.total + ' \u00b7 ' + fmtS(t);
+            case 'escape': return T('r_survived') + ' ' + Math.floor(t) + '/' + c.duration + ' s \u00b7 ' + T('r_mass') + ' ' + (m ? Math.round(m.m) : 0);
+            case 'feed': return T('r_fed') + ' ' + Math.round(ex.got) + ' \u00b7 ' + T('r_accuracy') + ' ' + (ex.shots ? Math.round(ex.got / (ex.shots * 14) * 100) : 0) + '%';
             case 'merge':
                 var left = (ex.ready - w.tick) * S.TICK_MS / 1000;
                 return left > 0 ? T('h_mergeIn') + ' ' + fmtS(left) : T('h_mergeNow') + ' ' + T('r_cells') + ' ' + h.cells.length;
-            default: return T('r_mass') + ' ' + (m ? Math.round(m.m) : 0) + ' · ' + T('r_kills') + ' ' + h.kills + ' · ' + Math.floor(t) + '/' + c.duration + ' s';
+            default: return T('r_mass') + ' ' + (m ? Math.round(m.m) : 0) + ' \u00b7 ' + T('r_kills') + ' ' + h.kills + ' \u00b7 ' + Math.floor(t) + '/' + c.duration + ' s';
         }
     }
     function hudTick() {
         if (!ses || !H) return;
         var w = ses.w;
-        H.l1.textContent = T('ex_' + ses.cfg.exercise) + ' · ' + (ses.done ? T('finished') + (w.result ? ' ' + w.result.score : '') : ses.paused ? T('paused') : T('running'));
+        H.l1.textContent = T('ex_' + ses.cfg.exercise) + ' \u00b7 ' + (ses.done ? T('finished') + (w.result ? ' ' + w.result.score : '') : ses.paused ? T('paused') : T('running'));
         H.l2.textContent = hudLine(w);
         drawGraph(H.graph, w.samples, ses.best && ses.best.g);
     }
@@ -582,7 +527,9 @@
     function isOpen() { return !!(Wn && Wn.style.display !== 'none'); }
     function field(key, node) {
         var lab = el('label', '', null);
-        lab.appendChild(el('span', '', T(key)));
+        var sp = el('span');
+        L(function () { sp.textContent = T(key); });
+        lab.appendChild(sp);
         lab.appendChild(node);
         lab.dataset.k = key;
         return lab;
@@ -598,7 +545,8 @@
     }
     function selInput(key, opts) {
         var s = el('select');
-        opts.forEach(function (o) { var op = el('option', '', o[1]); op.value = String(o[0]); s.appendChild(op); });
+        /* opts: [value, text key] */
+        opts.forEach(function (o) { var op = el('option'); op.value = String(o[0]); s.appendChild(op); L(function () { op.textContent = T(o[1]); }); });
         s.addEventListener('change', function () { var o = {}; o[key] = key === 'splitMode' ? s.value : +s.value; setCfg(o); });
         return s;
     }
@@ -613,14 +561,18 @@
     function build() {
         if (Wn) return Wn;
         css();
-        Wn = el('div', '', null, { id: 'lm-pr', role: 'dialog', 'aria-label': T('title') });
+        Wn = el('div', '', null, { id: 'lm-pr', role: 'dialog' });
+        L(function () { Wn.setAttribute('aria-label', T('title')); Wn.dir = dirNow(); });
         Wn.style.setProperty('--lm-pr-a', 'var(--lm-mc,' + accent() + ')');
         shield(Wn);
-        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 4px 10px;gap:6px;flex:0 0 auto;', null, { 'class': 'lm-pr-head' });
-        head.appendChild(el('b', 'color:var(--lm-pr-a);white-space:nowrap;flex:1 1 auto;text-transform:uppercase;letter-spacing:1px;', T('title')));
+        /* the header stays left-to-right in Arabic too (close button on the right) */
+        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 4px 10px;gap:6px;flex:0 0 auto;', null, { 'class': 'lm-pr-head', dir: 'ltr' });
+        var hb = el('b', 'color:var(--lm-pr-a);white-space:nowrap;flex:1 1 auto;text-transform:uppercase;letter-spacing:1px;');
+        L(function () { hb.textContent = T('title'); });
+        head.appendChild(hb);
         Wn.status = el('span', '', '', { 'class': 'lm-pr-dim' });
         head.appendChild(Wn.status);
-        head.appendChild(btn('✕', T('close'), close, 'min-width:38px;font-size:15px;margin:0;color:var(--lm-tc2,#eee);'));
+        head.appendChild(btn('\u2715', K('close'), close, 'min-width:38px;font-size:15px;margin:0;color:var(--lm-tc2,#eee);'));
         Wn.appendChild(head);
         var body = el('div', '', null, { 'class': 'lm-pr-body' });
         var left = el('div', '', null, { 'class': 'lm-pr-col' }), right = el('div', '', null, { 'class': 'lm-pr-col' });
@@ -628,8 +580,9 @@
         Wn.appendChild(body);
         /* exercise */
         var ex = Wn.ex = el('select');
-        S.EX_IDS.forEach(function (id) { var o = el('option', '', T('ex_' + id)); o.value = id; ex.appendChild(o); });
-        var mb = el('option', '', T('ex_multibox') + ' (' + T('later') + ')'); mb.value = 'multibox'; mb.disabled = true; ex.appendChild(mb);
+        S.EX_IDS.forEach(function (id) { var o = el('option'); o.value = id; ex.appendChild(o); L(function () { o.textContent = T('ex_' + id); }); });
+        var mb = el('option'); mb.value = 'multibox'; mb.disabled = true; ex.appendChild(mb);
+        L(function () { mb.textContent = T('exLater', [T('ex_multibox')]); });
         ex.addEventListener('change', function () { if (S.EXERCISES[ex.value]) setCfg({ exercise: ex.value }); });
         left.appendChild(field('exercise', ex));
         Wn.desc = el('div', 'margin:4px 0;', '', { 'class': 'lm-pr-dim' });
@@ -637,39 +590,43 @@
         /* settings */
         var grid = Wn.grid = el('div', '', null, { 'class': 'lm-pr-grid' });
         Wn.inputs = {};
-        var lv = [1, 2, 3, 4].map(function (v) { return [v, T('lv' + v)]; });
-        var vd = [0, 1, 2, 3, 4].map(function (v) { return [v, T('vd' + v)]; });
+        var lv = [1, 2, 3, 4].map(function (v) { return [v, 'lv' + v]; });
+        var vd = [0, 1, 2, 3, 4].map(function (v) { return [v, 'vd' + v]; });
         var add = function (key, node) { Wn.inputs[key] = node; grid.appendChild(field(key, node)); };
-        add('splitMode', selInput('splitMode', S.SPLIT_MODES.map(function (m) { return [m, T('sm_' + m)]; })));
+        add('splitMode', selInput('splitMode', S.SPLIT_MODES.map(function (m) { return [m, 'sm_' + m]; })));
         add('difficulty', selInput('difficulty', lv));
         ['startMass', 'oppMass', 'bots'].forEach(function (k) { add(k, numInput(k)); });
         add('viruses', selInput('viruses', vd));
         ['mapSize', 'duration', 'rounds', 'mergeSecs', 'latency', 'seed'].forEach(function (k) { add(k, numInput(k)); });
         left.appendChild(grid);
         var row = el('div', 'display:flex;flex-wrap:wrap;');
-        row.appendChild(btn(T('randomSeed'), '', function () { setCfg({ seed: 1 + Math.floor(Math.random() * 999998) }); }));
-        row.appendChild(btn(T('defaults'), '', function () { cfg = S.withDefaults(cfg, cfg.exercise); saveCfg(cfg); ui(); }));
+        row.appendChild(btn(K('randomSeed'), '', function () { setCfg({ seed: 1 + Math.floor(Math.random() * 999998) }); }));
+        row.appendChild(btn(K('defaults'), '', function () { cfg = S.withDefaults(cfg, cfg.exercise); saveCfg(cfg); ui(); }));
         left.appendChild(row);
         /* actions */
         var act = el('div', 'display:flex;flex-wrap:wrap;margin-top:4px;');
-        Wn.startB = btn(T('start'), '', function () { if (ses) start(cfg, { confirm: true }); else start(cfg); }, '');
+        Wn.startB = btn(function () { return ses ? T('restart') : T('start'); }, '', function () { if (ses) start(cfg, { confirm: true }); else start(cfg); }, '');
         Wn.startB.classList.add('main');
-        Wn.stopB = btn(T('stop'), '', function () { stop(false); });
-        Wn.backB = btn(T('backGame'), '', function () { stop(true); });
+        Wn.stopB = btn(K('stop'), '', function () { stop(false); });
+        Wn.backB = btn(K('backGame'), '', function () { stop(true); });
         act.appendChild(Wn.startB); act.appendChild(Wn.stopB); act.appendChild(Wn.backB);
         right.appendChild(act);
-        Wn.warn = el('div', 'color:#ffb020;margin:2px 0 4px;display:none;', T('leave'));
+        Wn.warn = el('div', 'color:#ffb020;margin:2px 0 4px;display:none;');
+        L(function () { Wn.warn.textContent = T('leave'); });
         right.appendChild(Wn.warn);
-        right.appendChild(el('h4', '', T('results')));
+        var h4 = function (k) { var h = el('h4'); L(function () { h.textContent = T(k); }); right.appendChild(h); };
+        h4('results');
         Wn.res = el('div', '', null, { 'class': 'lm-pr-res' });
         right.appendChild(Wn.res);
-        right.appendChild(el('h4', '', T('best')));
+        h4('best');
         Wn.best = el('div', '', null, { 'class': 'lm-pr-res' });
         right.appendChild(Wn.best);
-        right.appendChild(el('h4', '', T('recent')));
+        h4('recent');
         Wn.hist = el('div', '', null, { 'class': 'lm-pr-res' });
         right.appendChild(Wn.hist);
-        right.appendChild(el('div', 'margin-top:8px;', T('offline'), { 'class': 'lm-pr-dim' }));
+        var off = el('div', 'margin-top:8px;', null, { 'class': 'lm-pr-dim' });
+        L(function () { off.textContent = T('offline'); });
+        right.appendChild(off);
         document.body.appendChild(Wn);
         return Wn;
     }
@@ -677,7 +634,7 @@
         while (box.firstChild) box.removeChild(box.firstChild);
         if (!r) return;
         var row = function (a, b) { var d = el('div'); d.appendChild(el('span', '', a)); d.appendChild(el('b', '', String(b))); box.appendChild(d); };
-        row(T('score'), r.score + (ses && ses.lastRun && ses.lastRun.r === r && ses.lastRun.best ? ' ★' : ''));
+        row(T('score'), r.score + (ses && ses.lastRun && ses.lastRun.r === r && ses.lastRun.best ? ' \u2605' : ''));
         row(r.ok ? T('ok') : T('notOk'), r.reason === 'eaten' ? T('eaten') : '');
         (r.lines || []).forEach(function (l) { row(T('r_' + l[0]), l[1]); });
     }
@@ -696,16 +653,16 @@
         Wn.startB.textContent = ses ? T('restart') : T('start');
         Wn.stopB.disabled = !ses;
         Wn.warn.style.display = !ses && leaveArmed && Date.now() - leaveArmed < 6000 ? '' : 'none';
-        Wn.status.textContent = ses ? (ses.done ? T('finished') : T('paused')) + ' · ' + T('ex_' + ses.cfg.exercise) : '';
+        Wn.status.textContent = ses ? (ses.done ? T('finished') : T('paused')) + ' \u00b7 ' + T('ex_' + ses.cfg.exercise) : '';
         var key = S.bestKey(c), st = loadStore(), b = st.best[key];
         resLines(Wn.res, ses && ses.done ? ses.w.result : (ses && ses.lastRun ? ses.lastRun.r : null));
         while (Wn.best.firstChild) Wn.best.removeChild(Wn.best.firstChild);
         if (b) {
-            var d = el('div'); d.appendChild(el('span', '', fmtDate(b.t))); d.appendChild(el('b', '', b.s + (b.ok ? ' ✓' : ''))); Wn.best.appendChild(d);
+            var d = el('div'); d.appendChild(el('span', '', fmtDate(b.t))); d.appendChild(el('b', '', b.s + (b.ok ? ' \u2713' : ''))); Wn.best.appendChild(d);
         } else Wn.best.appendChild(el('div', '', T('noBest'), { 'class': 'lm-pr-dim' }));
         while (Wn.hist.firstChild) Wn.hist.removeChild(Wn.hist.firstChild);
         st.hist.filter(function (h) { return h.k === key; }).slice(-5).reverse().forEach(function (h) {
-            var d = el('div'); d.appendChild(el('span', '', fmtDate(h.t))); d.appendChild(el('b', '', h.s + (h.ok ? ' ✓' : ''))); Wn.hist.appendChild(d);
+            var d = el('div'); d.appendChild(el('span', '', fmtDate(h.t))); d.appendChild(el('b', '', h.s + (h.ok ? ' \u2713' : ''))); Wn.hist.appendChild(d);
         });
     }
     function open() {
@@ -722,6 +679,13 @@
         hudTick();
     }
     function toggle() { if (isOpen()) close(); else open(); }
+
+    /* a language change: the fixed labels, then what ui() and the HUD draw */
+    if (window.LMi18n && window.LMi18n.onChange) window.LMi18n.onChange(function () {
+        relabels.forEach(function (f) { try { f(); } catch (e) { } });
+        ui();
+        hudTick();
+    });
 
     P.open = open; P.close = close; P.toggle = toggle; P.isOpen = isOpen;
     P.start = start; P.stop = stop; P.restart = restart; P.state = state;

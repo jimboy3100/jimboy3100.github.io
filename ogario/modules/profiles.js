@@ -38,128 +38,17 @@
     function num(v) { return typeof v === 'number' && isFinite(v) && v > 0 ? Math.floor(v) : 0; }
     function clone(v) { return v == null ? v : JSON.parse(JSON.stringify(v)); }
 
-    /* ── Texts (English, Greek; other languages show English) ── */
-    var TEXT = {
-        title: ['Settings profiles', 'Προφίλ ρυθμίσεων'],
-        tabProfiles: ['Profiles', 'Προφίλ'],
-        tabCompare: ['Compare', 'Σύγκριση'],
-        tabAuto: ['Auto', 'Αυτόματα'],
-        tabBackups: ['Backups', 'Αντίγραφα'],
-        close: ['Close', 'Κλείσιμο'],
-        namePh: ['Profile name', 'Όνομα προφίλ'],
-        saveCurrent: ['Save current', 'Αποθήκευση τρεχόντων'],
-        include: ['Include:', 'Περιλαμβάνει:'],
-        partS: ['Settings', 'Ρυθμίσεις'],
-        partT: ['Theme', 'Θέμα'],
-        partH: ['Hotkeys', 'Πλήκτρα'],
-        partM: ['Phone controls', 'Χειριστήρια κινητού'],
-        template: ['Template:', 'Πρότυπο:'],
-        create: ['Create', 'Δημιουργία'],
-        tplNote: ['A template is your current settings with a few changes for that use.', 'Ένα πρότυπο είναι οι τρέχουσες ρυθμίσεις σου με λίγες αλλαγές για αυτή τη χρήση.'],
-        empty: ['No profiles yet. Save the current settings or start from a template.', 'Δεν υπάρχουν προφίλ. Αποθήκευσε τις τρέχουσες ρυθμίσεις ή ξεκίνα από πρότυπο.'],
-        apply: ['Apply', 'Εφαρμογή'],
-        update: ['Update', 'Ενημέρωση'],
-        rename: ['Rename', 'Μετονομασία'],
-        duplicate: ['Copy', 'Αντίγραφο'],
-        compare: ['Compare', 'Σύγκριση'],
-        del: ['Delete', 'Διαγραφή'],
-        restore: ['Restore', 'Επαναφορά'],
-        undo: ['Undo', 'Αναίρεση'],
-        undoLast: ['Undo last profile change', 'Αναίρεση τελευταίας αλλαγής προφίλ'],
-        lastApplied: ['last applied', 'τελευταίο'],
-        needName: ['Type a name first.', 'Γράψε πρώτα ένα όνομα.'],
-        tooMany: ['You have the maximum number of profiles (30). Delete one first.', 'Έχεις τον μέγιστο αριθμό προφίλ (30). Διάγραψε ένα πρώτα.'],
-        storageFull: ['The browser storage is full: nothing was changed.', 'Ο χώρος αποθήκευσης είναι γεμάτος: δεν άλλαξε τίποτα.'],
-        tooBig: ['The profiles are too large to save. Delete one first.', 'Τα προφίλ είναι πολύ μεγάλα για αποθήκευση. Διάγραψε ένα πρώτα.'],
-        saved: ['Profile saved: {0}', 'Το προφίλ αποθηκεύτηκε: {0}'],
-        created: ['Profile created: {0} ({1} changes from the current settings). Apply it to use it.', 'Δημιουργήθηκε: {0} ({1} αλλαγές από τις τρέχουσες). Εφάρμοσέ το για να το χρησιμοποιήσεις.'],
-        confirmApply: ['Apply the profile "{0}"? {1} settings change (Undo puts them back).', 'Εφαρμογή του προφίλ "{0}"; Αλλάζουν {1} ρυθμίσεις (η Αναίρεση τις επαναφέρει).'],
-        confirmUpdate: ['Replace the profile "{0}" with the current settings?', 'Αντικατάσταση του προφίλ "{0}" με τις τρέχουσες ρυθμίσεις;'],
-        confirmDelete: ['Delete the profile "{0}"?', 'Διαγραφή του προφίλ "{0}";'],
-        confirmRestore: ['Restore the backup from {0}? {1} settings change (Undo puts them back).', 'Επαναφορά του αντιγράφου από {0}; Αλλάζουν {1} ρυθμίσεις (η Αναίρεση τις επαναφέρει).'],
-        renamePrompt: ['New name:', 'Νέο όνομα:'],
-        copySuffix: [' (copy)', ' (αντίγραφο)'],
-        same: ['"{0}": the settings already match.', '"{0}": οι ρυθμίσεις είναι ήδη ίδιες.'],
-        applied: ['"{0}" applied: {1}.', 'Εφαρμόστηκε το "{0}": {1}.'],
-        autoApplied: ['Auto ({0}): "{1}" applied: {2}.', 'Αυτόματα ({0}): εφαρμόστηκε το "{1}": {2}.'],
-        undone: ['Profile change undone: {0}.', 'Η αλλαγή προφίλ αναιρέθηκε: {0}.'],
-        nothingUndo: ['Nothing to undo.', 'Δεν υπάρχει κάτι για αναίρεση.'],
-        noProfiles: ['No settings profiles yet: open Settings > Settings profiles.', 'Δεν υπάρχουν προφίλ ρυθμίσεων: άνοιξε Ρυθμίσεις > Προφίλ ρυθμίσεων.'],
-        cntS: ['{0} settings', '{0} ρυθμίσεις'],
-        cntT: ['{0} theme options', '{0} επιλογές θέματος'],
-        cntH: ['{0} hotkeys', '{0} πλήκτρα'],
-        cntM: ['{0} phone controls', '{0} χειριστήρια κινητού'],
-        reloadSome: ['Some changes apply after a reload.', 'Κάποιες αλλαγές ισχύουν μετά από επαναφόρτωση.'],
-        current: ['Current settings', 'Τρέχουσες ρυθμίσεις'],
-        backupOf: ['Backup {0}', 'Αντίγραφο {0}'],
-        diffNone: ['No differences.', 'Καμία διαφορά.'],
-        diffCount: ['{0} differences', '{0} διαφορές'],
-        colPart: ['Part', 'Μέρος'],
-        colSetting: ['Setting', 'Ρύθμιση'],
-        autoEnable: ['Switch profiles automatically', 'Αυτόματη αλλαγή προφίλ'],
-        autoNote: ['Off by default. When you join a server or connect a gamepad, the profile of the first matching rule is applied (server type, then game mode, then input device). Only settings change: the game keeps running. While you are playing, the switch waits until that life ends (or Apply now). Each switch shows what changed, with Undo.', 'Ανενεργό από προεπιλογή. Όταν μπαίνεις σε διακομιστή ή συνδέεις χειριστήριο, εφαρμόζεται το προφίλ του πρώτου κανόνα που ταιριάζει (τύπος διακομιστή, μετά λειτουργία παιχνιδιού, μετά συσκευή). Αλλάζουν μόνο ρυθμίσεις: το παιχνίδι συνεχίζει. Όσο παίζεις, η αλλαγή περιμένει να τελειώσει η ζωή (ή Εφαρμογή τώρα). Κάθε αλλαγή δείχνει τι άλλαξε, με Αναίρεση.'],
-        autoServer: ['Server type', 'Τύπος διακομιστή'],
-        autoMode: ['Game mode', 'Λειτουργία παιχνιδιού'],
-        autoDevice: ['Input device', 'Συσκευή εισόδου'],
-        none: ['(none)', '(κανένα)'],
-        devGamepad: ['Gamepad connected', 'Συνδεδεμένο χειριστήριο'],
-        devTouch: ['Touch screen', 'Οθόνη αφής'],
-        devDesktop: ['Mouse and keyboard', 'Ποντίκι και πληκτρολόγιο'],
-        backupNow: ['Back up now', 'Αντίγραφο τώρα'],
-        backupNote: ['The last 5 backups of the settings, theme, hotkeys and phone controls: made on settings changes (at most every 10 minutes) and before a profile, a restore, an import or a reset. Kept in this browser only.', 'Τα 5 τελευταία αντίγραφα ρυθμίσεων, θέματος, πλήκτρων και χειριστηρίων κινητού: γίνονται σε αλλαγές ρυθμίσεων (το πολύ κάθε 10 λεπτά) και πριν από προφίλ, επαναφορά, εισαγωγή ή μηδενισμό. Μόνο σε αυτόν τον browser.'],
-        noBackups: ['No backups yet.', 'Δεν υπάρχουν αντίγραφα ακόμη.'],
-        backupDone: ['Backup made.', 'Το αντίγραφο έγινε.'],
-        backupSame: ['The newest backup already has these settings.', 'Το νεότερο αντίγραφο έχει ήδη αυτές τις ρυθμίσεις.'],
-        r_change: ['settings change', 'αλλαγή ρυθμίσεων'],
-        r_profile: ['before a profile', 'πριν από προφίλ'],
-        r_import: ['before an import', 'πριν από εισαγωγή'],
-        r_reset: ['before a reset', 'πριν από μηδενισμό'],
-        r_restore: ['before a restore', 'πριν από επαναφορά'],
-        r_undo: ['before an undo', 'πριν από αναίρεση'],
-        r_manual: ['manual', 'χειροκίνητο'],
-        chatKey: ['Chat key', 'Πλήκτρο συνομιλίας'],
-        loading: ['Settings profiles are loading, try again in a moment.', 'Τα προφίλ ρυθμίσεων φορτώνουν, δοκίμασε σε λίγο.'],
-        on: ['ON', 'ΝΑΙ'],
-        off: ['OFF', 'ΟΧΙ'],
-        unbound: ['(none)', '(κανένα)'],
-        m_jsSensitivity: ['Joystick sensitivity', 'Ευαισθησία joystick'],
-        m_btnOpacity: ['Button opacity', 'Διαφάνεια κουμπιών'],
-        m_btnScale: ['Button size', 'Μέγεθος κουμπιών'],
-        m_hudFade: ['HUD fade', 'Ξεθώριασμα HUD'],
-        m_targetMode: ['Target mode', 'Λειτουργία στόχου'],
-        m_swipeSplit: ['Swipe to split', 'Σύρσιμο για διαίρεση'],
-        m_muteVibration: ['Mute vibration', 'Χωρίς δόνηση'],
-        m_tapHaptic: ['Tap vibration', 'Δόνηση στο άγγιγμα'],
-        m_quickCmds: ['Quick commands', 'Γρήγορες εντολές'],
-        m_mbButton: ['Multibox button', 'Κουμπί multibox'],
-        m_stopOnRelease: ['Stop on release', 'Στάση όταν αφήνεις'],
-        m_pingBtn: ['Ping button', 'Κουμπί ping'],
-        m_netGraph: ['Net graph', 'Γράφημα δικτύου'],
-        partHL: ['HUD layout', 'Διάταξη HUD'],
-        partZB: ['Zoom bookmarks', 'Σελιδοδείκτες ζουμ'],
-        partML: ['Phone control layout', 'Διάταξη χειριστηρίων κινητού'],
-        partGP: ['Gamepad buttons', 'Κουμπιά χειριστηρίου'],
-        partPB: ['Performance mode backup', 'Αντίγραφο λειτουργίας απόδοσης'],
-        defaultHud: ['Default HUD', 'Προεπιλεγμένο HUD'],
-        cntHL: ['HUD layout {0}', 'διάταξη HUD {0}'],
-        cntZB: ['zoom bookmarks', 'σελιδοδείκτες ζουμ'],
-        cntML: ['phone control layout', 'διάταξη χειριστηρίων κινητού'],
-        cntGP: ['gamepad buttons', 'κουμπιά χειριστηρίου'],
-        cntPB: ['Performance mode backup', 'αντίγραφο της λειτουργίας απόδοσης'],
-        autoLater: ['Auto ({0}): "{1}" is applied when this life ends.', 'Αυτόματα ({0}): το "{1}" εφαρμόζεται όταν τελειώσει αυτή η ζωή.'],
-        applyNow: ['Apply now', 'Εφαρμογή τώρα'],
-        perfBackupFail: ['The browser storage is full: Performance mode could not keep the effect settings of this profile.', 'Ο χώρος αποθήκευσης είναι γεμάτος: η Λειτουργία απόδοσης δεν κράτησε τις ρυθμίσεις εφέ αυτού του προφίλ.']
-    };
-    function lang() {
-        var l = null;
-        try { l = window.localStorage.getItem('languagemod'); } catch (e) { }
-        return l === '2' ? 1 : 0;
-    }
+    /* ── Texts: the shared language packs (developers/i18n/src) ── */
+    var P = 'modules.profiles.';
+    /* tx('key', a, b): the text in the chosen language with {0} = a, {1} = b */
     function tx(key) {
-        var row = TEXT[key];
-        var s = row ? (row[lang()] || row[0]) : key;
-        for (var i = 1; i < arguments.length; i++) s = s.split('{' + (i - 1) + '}').join(String(arguments[i]));
-        return s;
+        var vars = Array.prototype.slice.call(arguments, 1);
+        return typeof window.lmT === 'function' ? window.lmT(P + key, vars) : key;
+    }
+    /* dates in the chosen language (zh is Traditional Chinese) */
+    function locale() {
+        var c = window.LMi18n && typeof window.LMi18n.lang === 'function' ? window.LMi18n.lang() : '';
+        return c === 'zh' ? 'zh-TW' : c || undefined;
     }
     function esc(s) {
         return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -456,14 +345,14 @@
     /* ── Templates: the current settings with a few changes for that use. Only keys that exist
      * in the shipped gameplay defaults are used (checked again when a template is applied). ── */
     var TEMPLATES = {
-        ffa: { name: ['FFA', 'FFA'], set: { oppColors: true, oppRings: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showTop5: false, showTargeting: false } },
-        teams: { name: ['Teams', 'Ομάδες'], set: { showTop5: true, teammatesInd: true, showTargeting: true, showMiniMap: true, showMiniMapGhostCells: true, hideTeammatesNames: false, oneColoredTeammates: false, showChat: true } },
-        multibox: { name: ['Multibox', 'Multibox'], set: { mbRingsP1: true, mbRingsP2: true, mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true } },
-        streaming: { name: ['Streaming', 'Streaming'], set: { streamMode: true, hideSkinUrl: true, hidecountry: true, showChatImages: false, showChatVideos: false, showDevConsole: false } },
-        mobile: { name: ['Mobile', 'Κινητό'], set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, highDPI: false, showGhostCells: false, borderGlow: false, virusGlow: false, suckAnimation: false, showBgSectors: false, hudBlur: 0 } },
-        competitive: { name: ['Competitive', 'Ανταγωνιστικό'], set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, splitPrediction: true, showStatsFPS: true, showStatsPPS: true } }
+        ffa: { set: { oppColors: true, oppRings: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showTop5: false, showTargeting: false } },
+        teams: { set: { showTop5: true, teammatesInd: true, showTargeting: true, showMiniMap: true, showMiniMapGhostCells: true, hideTeammatesNames: false, oneColoredTeammates: false, showChat: true } },
+        multibox: { set: { mbRingsP1: true, mbRingsP2: true, mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true } },
+        streaming: { set: { streamMode: true, hideSkinUrl: true, hidecountry: true, showChatImages: false, showChatVideos: false, showDevConsole: false } },
+        mobile: { set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, highDPI: false, showGhostCells: false, borderGlow: false, virusGlow: false, suckAnimation: false, showBgSectors: false, hudBlur: 0 } },
+        competitive: { set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, splitPrediction: true, showStatsFPS: true, showStatsPPS: true } }
     };
-    function templateName(id) { var t = TEMPLATES[id]; return t ? (t.name[lang()] || t.name[0]) : id; }
+    function templateName(id) { return has(TEMPLATES, id) ? tx('tpl.' + id) : id; }
     /* a set based on `base` with the template's gameplay changes on top: { data, keys } */
     function applyTemplate(base, id) {
         var t = TEMPLATES[id];
@@ -482,9 +371,11 @@
     }
 
     /* ── Automatic switching rules ── */
-    var SERVER_TYPES = [['agario', 'Agar.io'], ['expandingland', 'Expanding Land'], ['deltio', 'Delt.io'], ['agar2', 'Agar2'], ['imsolo', 'Imsolo'], ['garix', 'Garix'], ['sigmally', 'Sigmally'], ['senpa', 'Senpa'], ['private', 'Private server']];
-    var GAME_MODES = [[':ffa', 'FFA'], [':teams', 'Teams'], [':experimental', 'Experimental'], [':party', 'Party'], [':battleroyale', 'Battle royale'], [':expandingland', 'Expanding Land']];
-    var DEVICES = [['gamepad', 'devGamepad'], ['touch', 'devTouch'], ['desktop', 'devDesktop']];
+    var SERVER_TYPES = [['agario', 'Agar.io'], ['expandingland', 'Expanding Land'], ['deltio', 'Delt.io'], ['agar2', 'Agar2'], ['imsolo', 'Imsolo'], ['garix', 'Garix'], ['sigmally', 'Sigmally'], ['senpa', 'Senpa'], ['private', 'serverPrivate', 1]];
+    var GAME_MODES = [[':ffa', 'mode.ffa', 1], [':teams', 'mode.teams', 1], [':experimental', 'mode.experimental', 1], [':party', 'mode.party', 1], [':battleroyale', 'mode.battleroyale', 1], [':expandingland', 'Expanding Land']];
+    var DEVICES = [['gamepad', 'devGamepad', 1], ['touch', 'devTouch', 1], ['desktop', 'devDesktop', 1]];
+    /* [value, label, 1 when the label is a text key] (server names are proper names) */
+    function ruleLabel(v) { return v[2] ? tx(v[1]) : v[1]; }
     var RULE_GROUPS = [['server', SERVER_TYPES], ['mode', GAME_MODES], ['device', DEVICES]];
     function cleanRules(raw, profiles) {
         var out = { enabled: false, server: {}, mode: {}, device: {} };
@@ -654,7 +545,7 @@
         if (EXTRA_PARTS.indexOf(part) >= 0 || part === 'pb') return tx(PART_NAMES[part]);
         var tl = window.textLanguage || {};
         if (part === 's' || part === 't') return stripTags(tl[key]) || key;
-        if (part === 'm') return TEXT['m_' + key] ? tx('m_' + key) : key;
+        if (part === 'm') return has(MOBILE_SCHEMA, key) ? tx('m_' + key) : key;
         if (key === 'spec-messageKey') return tx('chatKey');
         var c = window.hotkeysCommand && window.hotkeysCommand[key], l = '';
         try { l = c && c.label; } catch (e) { }
@@ -667,7 +558,7 @@
     function fmt(v, part) {
         if (v === true) return tx('on');
         if (v === false) return tx('off');
-        if (part === 'h' && v === '') return tx('unbound');
+        if (part === 'h' && v === '') return tx('none');
         if (part === 'hl') return v ? String(v) : tx('defaultHud');
         if (v == null || isAbsent(v) || noZoomMarks(v)) return tx('none');
         var s = Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : String(v);
@@ -676,7 +567,7 @@
     function toast(kind, html) {
         var t = window.toastr;
         if (!t) return;
-        try { (t[kind] || t.info).call(t, '<b>[PROFILES]:</b> ' + html); } catch (e) { }
+        try { (t[kind] || t.info).call(t, '<b>[' + esc(tx('tag')) + ']:</b> ' + html); } catch (e) { }
     }
     /* "3 settings (Opponent colours, Split range, Show mass), 1 hotkeys" */
     function summary(c, rows) {
@@ -1023,7 +914,7 @@
     }
     function ruleName(pick) {
         var list = pick.group === 'server' ? SERVER_TYPES : pick.group === 'mode' ? GAME_MODES : DEVICES;
-        for (var i = 0; i < list.length; i++) if (list[i][0] === pick.value) return pick.group === 'device' ? tx(list[i][1]) : list[i][1];
+        for (var i = 0; i < list.length; i++) if (list[i][0] === pick.value) return ruleLabel(list[i]);
         return pick.value;
     }
     /* alive in a game (the main player or a multibox unit) */
@@ -1102,6 +993,7 @@
 
     /* ── Window ── */
     var tab = 'profiles';
+    var TABS = { profiles: 'tabProfiles', compare: 'tabCompare', auto: 'tabAuto', backups: 'tabBackups' };
     var cmpA = 'cur', cmpB = '';
     function isOpen() { return !!document.getElementById('lm-sp-overlay'); }
     function css() {
@@ -1146,13 +1038,13 @@
         css();
         var $ = jq();
         var ov = $('<div id="lm-sp-overlay"></div>');
-        var win = $('<div class="lm-sp-win" role="dialog" aria-modal="true"></div>').attr('aria-label', tx('title')).appendTo(ov);
+        var win = $('<div class="lm-sp-win" role="dialog" aria-modal="true"></div>').attr('aria-label', tx('title')).attr('dir', dir()).appendTo(ov);
         var head = $('<div class="lm-sp-head"></div>').appendTo(win);
         $('<b></b>').text(tx('title')).appendTo(head);
         $('<button type="button" class="lm-sp-x">&times;</button>').attr('aria-label', tx('close')).attr('title', tx('close')).appendTo(head);
         var tabs = $('<div class="lm-sp-tabs"></div>').appendTo(win);
-        [['profiles', 'tabProfiles'], ['compare', 'tabCompare'], ['auto', 'tabAuto'], ['backups', 'tabBackups']].forEach(function (t) {
-            $('<button type="button"></button>').attr('data-tab', t[0]).text(tx(t[1])).appendTo(tabs);
+        Object.keys(TABS).forEach(function (t) {
+            $('<button type="button"></button>').attr('data-tab', t).text(tx(TABS[t])).appendTo(tabs);
         });
         $('<div class="lm-sp-body"></div>').appendTo(win);
         /* a tap outside the window or on x closes it */
@@ -1167,6 +1059,18 @@
         $('body').append(ov);
         render();
     }
+    function dir() { return window.LMi18n && typeof window.LMi18n.dir === 'function' ? window.LMi18n.dir() : 'ltr'; }
+    /* a language change while the window is open: its title, tabs and the open tab again */
+    function relabel() {
+        if (!isOpen()) return;
+        var $ = jq(), ov = $('#lm-sp-overlay');
+        ov.find('.lm-sp-win').attr('aria-label', tx('title')).attr('dir', dir());
+        ov.find('.lm-sp-head b').text(tx('title'));
+        ov.find('.lm-sp-x').attr('aria-label', tx('close')).attr('title', tx('close'));
+        ov.find('.lm-sp-tabs button').each(function () { $(this).text(tx(TABS[$(this).attr('data-tab')])); });
+        render();
+    }
+    if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(relabel);
     function close() { var el = document.getElementById('lm-sp-overlay'); if (el) el.parentNode.removeChild(el); }
     function toggle() { if (isOpen()) close(); else open(); }
     function partsBadge(d) {
@@ -1179,7 +1083,7 @@
     }
     function when(t) {
         if (!t) return '';
-        try { return new Date(t).toLocaleString(); } catch (e) { return String(t); }
+        try { return new Date(t).toLocaleString(locale()); } catch (e) { return String(t); }
     }
     var includeOpts = null;
     function includes() {
@@ -1235,7 +1139,7 @@
             var it = $('<div class="lm-sp-item"></div>').appendTo(body);
             var nm = $('<div class="lm-sp-name"></div>').appendTo(it);
             $('<b></b>').text(p.name).appendTo(nm);
-            $('<small></small>').text(partsBadge(p.data) + (p.updated ? ' · ' + when(p.updated) : '') + (p.id === last ? ' · ' + tx('lastApplied') : '')).appendTo(nm);
+            $('<small></small>').text(partsBadge(p.data) + (p.updated ? ' \u00b7 ' + when(p.updated) : '') + (p.id === last ? ' \u00b7 ' + tx('lastApplied') : '')).appendTo(nm);
             var acts = $('<div class="lm-sp-acts"></div>').appendTo(it);
             btn(tx('apply'), 'apply', p.id, 'lm-sp-go').appendTo(acts);
             btn(tx('update'), 'update', p.id).appendTo(acts);
@@ -1304,7 +1208,7 @@
             var grid = $('<div class="lm-sp-grid"></div>').appendTo(body);
             g[1].forEach(function (v) {
                 var cell = $('<div></div>').appendTo(grid);
-                $('<span></span>').text(g[0] === 'device' ? tx(v[1]) : v[1]).appendTo(cell);
+                $('<span></span>').text(ruleLabel(v)).appendTo(cell);
                 var sel = $('<select></select>').attr('data-rule', g[0]).attr('data-value', v[0]).appendTo(cell);
                 $('<option value=""></option>').text(tx('none')).appendTo(sel);
                 list.forEach(function (p) { $('<option></option>').val(p.id).text(p.name).appendTo(sel); });
@@ -1323,7 +1227,7 @@
             var it = $('<div class="lm-sp-item"></div>').appendTo(body);
             var nm = $('<div class="lm-sp-name"></div>').appendTo(it);
             $('<b></b>').text(when(b.t)).appendTo(nm);
-            $('<small></small>').text(tx('r_' + b.reason) + (b.label ? ' (' + b.label + ')' : '') + ' · ' + partsBadge(b.data)).appendTo(nm);
+            $('<small></small>').text(tx('r_' + b.reason) + (b.label ? ' (' + b.label + ')' : '') + ' \u00b7 ' + partsBadge(b.data)).appendTo(nm);
             var acts = $('<div class="lm-sp-acts"></div>').appendTo(it);
             btn(tx('restore'), 'restore', String(b.t), 'lm-sp-go').appendTo(acts);
             btn(tx('compare'), 'cmp', 'b:' + b.t).appendTo(acts);
@@ -1466,7 +1370,7 @@
         list: function () { return loadProfiles().map(function (p) { return { id: p.id, name: p.name }; }); },
         applyById: function (id) { var p = findProfile(id); return p ? applyProfile(p) : null; },
         /* applies a set { s, t, h, m } like a profile (with backup and Undo); for scripts and the smoke test */
-        applySet: function (data, name) { return applyBundle(data, { name: cleanName(name) || 'Script', reason: 'profile' }); },
+        applySet: function (data, name) { return applyBundle(data, { name: cleanName(name) || tx('script'), reason: 'profile' }); },
         /* pure parts, used by developers/tests/profiles.js */
         core: {
             cleanBundle: cleanBundle, cleanProfiles: cleanProfiles, cleanBackups: cleanBackups, cleanRules: cleanRules,

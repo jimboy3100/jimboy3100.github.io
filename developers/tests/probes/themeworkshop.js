@@ -52,7 +52,7 @@
     for (i = 0; i < 40 && !$('#lm-tw .lm-tw-gitem').length; i++) await wait(200);
     info.gallery = $('#lm-tw .lm-tw-gitem').length;
     if (info.gallery < 4) fail.push('gallery shows ' + info.gallery + ' themes');
-    if (!/no upload service/i.test($('#lm-tw .lm-tw-body').text())) fail.push('gallery does not say how to publish');
+    if ($('#lm-tw .lm-tw-body').text().indexOf(lmT('modules.themeworkshop.publishNote')) < 0) fail.push('gallery does not say how to publish');
     $('#lm-tw [data-act=ginstall][data-id=neon]').trigger('click');
     var mine = TW.list().filter(function (t) { return t.src === 'g:neon'; })[0];
     if (!mine) fail.push('Neon not installed');

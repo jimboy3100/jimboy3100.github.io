@@ -151,62 +151,34 @@
         return steps;
     }
 
-    var TEXT = {
-        en: {
-            title: 'Death recap', cells: '{0} cells', cell: '1 cell', mass: '{0} mass, {1}',
-            split: 'split into {0}', virus: 'hit a virus ({0})', merge: 'merged into {0}',
-            lossTo: 'lost ~{0} mass to {1}', lossNear: 'lost ~{0} mass near {1}', loss: 'lost ~{0} mass',
-            eaten: 'lost {0} mass to {1}', ate: 'ate {0} mass of {1}', virusCell: 'a virus',
-            eatenBy: 'eaten by {0}', eatenNear: 'eaten near {0}', eatenNone: 'eaten', unnamed: 'an unnamed cell',
-            watch: 'Watch this moment in the replay (leaves the server)',
-            hint: 'Tip: Death recap shows how you died (the last 20 s).', turnOn: 'Turn on',
-            feedAte: 'You ate {0} ({1})', feedDied: 'Eaten by {0}', feedDiedNone: 'You were eaten',
-            alertTo: 'Lost {0}% mass (~{1}) to {2}', alertNear: 'Lost {0}% mass (~{1}) near {2}', alert: 'Lost {0}% mass (~{1})'
-        },
-        el: {
-            title: 'Ανασκόπηση θανάτου', cells: '{0} κύτταρα', cell: '1 κύτταρο', mass: '{0} μάζα, {1}',
-            split: 'χωρίστηκες σε {0}', virus: 'χτύπησες ιό ({0})', merge: 'ενώθηκες σε {0}',
-            lossTo: 'έχασες ~{0} μάζα από {1}', lossNear: 'έχασες ~{0} μάζα κοντά σε {1}', loss: 'έχασες ~{0} μάζα',
-            eaten: 'έχασες {0} μάζα από {1}', ate: 'έφαγες {0} μάζα από {1}', virusCell: 'έναν ιό',
-            eatenBy: 'σε έφαγε: {0}', eatenNear: 'σε έφαγαν κοντά σε {0}', eatenNone: 'σε έφαγαν', unnamed: 'ανώνυμο κύτταρο',
-            watch: 'Δες αυτή τη στιγμή στην επανάληψη (φεύγεις από τον διακομιστή)',
-            hint: 'Συμβουλή: η Ανασκόπηση θανάτου δείχνει πώς πέθανες (τα τελευταία 20 δ.).', turnOn: 'Ενεργοποίηση',
-            feedAte: 'Έφαγες {0} ({1})', feedDied: 'Σε έφαγε: {0}', feedDiedNone: 'Σε έφαγαν',
-            alertTo: 'Έχασες {0}% μάζας (~{1}) από {2}', alertNear: 'Έχασες {0}% μάζας (~{1}) κοντά σε {2}', alert: 'Έχασες {0}% μάζας (~{1})'
-        }
-    };
-    function lang() {
-        try { return window.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
-    }
-    function tr(key, args, code) {
-        var s = (TEXT[code || lang()] || TEXT.en)[key] || TEXT.en[key] || key;
-        for (var i = 0; args && i < args.length; i++) s = s.split('{' + i + '}').join(String(args[i]));
-        return s;
-    }
-    function who(nick, virus, code) {
-        if (virus) return tr('virusCell', null, code);
-        return nick ? String(nick).slice(0, 40) : tr('unnamed', null, code);
+    /* texts come from the language packs (developers/i18n/src/modules*.json): {0} {1} are filled in by lmT */
+    var TK = 'modules.deathrecap.';
+    function tr(key, args) { return typeof window.lmT === 'function' ? window.lmT(TK + key, args) : key; }
+    function dir() { return window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr'; }
+    function who(nick, virus) {
+        if (virus) return tr('virusCell');
+        return nick ? String(nick).slice(0, 40) : tr('unnamed');
     }
     /* plain text of one step (insert with textContent: nicks come from players) */
-    function stepText(st, code) {
-        var cells = function (c) { return c === 1 ? tr('cell', null, code) : tr('cells', [c], code); };
+    function stepText(st) {
+        var cells = function (c) { return c === 1 ? tr('cell') : tr('cells', [c]); };
         switch (st.kind) {
-            case 'mass': return tr('mass', [fmtNum(st.m), cells(st.c)], code);
-            case 'split': return tr('split', [cells(st.c)], code);
-            case 'virus': return tr('virus', [cells(st.c)], code);
-            case 'merge': return tr('merge', [cells(st.c)], code);
+            case 'mass': return tr('mass', [fmtNum(st.m), cells(st.c)]);
+            case 'split': return tr('split', [cells(st.c)]);
+            case 'virus': return tr('virus', [cells(st.c)]);
+            case 'merge': return tr('merge', [cells(st.c)]);
             case 'loss':
-                if (st.nick == null && !st.virus) return tr('loss', [fmtNum(st.a)], code);
-                return tr(st.exact ? 'lossTo' : 'lossNear', [fmtNum(st.a), who(st.nick, st.virus, code)], code);
-            case 'eaten': return tr('eaten', [fmtNum(st.a), who(st.nick, st.virus, code)], code);
-            case 'ate': return tr('ate', [fmtNum(st.a), who(st.nick, false, code)], code);
+                if (st.nick == null && !st.virus) return tr('loss', [fmtNum(st.a)]);
+                return tr(st.exact ? 'lossTo' : 'lossNear', [fmtNum(st.a), who(st.nick, st.virus)]);
+            case 'eaten': return tr('eaten', [fmtNum(st.a), who(st.nick, st.virus)]);
+            case 'ate': return tr('ate', [fmtNum(st.a), who(st.nick, false)]);
             case 'death':
-                if (st.nick == null && !st.virus) return tr('eatenNone', null, code);
-                return tr(st.exact ? 'eatenBy' : 'eatenNear', [who(st.nick, st.virus, code)], code);
+                if (st.nick == null && !st.virus) return tr('eatenNone');
+                return tr(st.exact ? 'eatenBy' : 'eatenNear', [who(st.nick, st.virus)]);
         }
         return '';
     }
-    function stepLabel(st) { return st.kind === 'death' ? '☠' : (st.s === 0 ? '-0 s' : st.s + ' s'); }
+    function stepLabel(st) { return st.kind === 'death' ? '\u2620' : (st.s === 0 ? '-0 s' : st.s + ' s'); }
 
     /* ---------- live state ---------- */
 
@@ -302,7 +274,7 @@
         }
         prevCells = n;
         /* quick mass loss (one episode until 2.5 s without a further drop).
-         * P1 fix: check for W-macro ejection — if we have recent 'ate' events by us
+         * P1 fix: check for W-macro ejection - if we have recent 'ate' events by us
          * (eject mass is tracked as small eats on the other side) or no 'eaten' events
          * exist in the loss window, attribute() will return null and we fall back to
          * the nearest visible enemy (which is an inexact attribution, not a confident one). */
@@ -452,6 +424,7 @@
         } else {
             row = document.createElement('div');
             row._lmKind = kind; row._lmKey = key;
+            row.dir = dir();
             var col = kind === 'ate' ? '#7dff8a' : (kind === 'alert' ? '#ffb347' : '#ff6b6b');
             row.style.cssText = 'margin-top:2px;padding:1px 8px;border-radius:var(--lm-radius-s,4px);background:var(--lm-hud-bg,rgba(0,0,0,.55));color:' + col +
                 ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-shadow:0 1px 2px #000;transition:opacity .6s;';
@@ -518,15 +491,17 @@
         g.lineTo(w - 1, h - 1); g.lineTo(1, h - 1); g.closePath();
         g.globalAlpha = 0.18; g.fillStyle = th.mc; g.fill(); g.globalAlpha = 1;
     }
-    function renderPanel() {
+    /* again: the same recap in the new language (no rebuild: the killer info may have expired since) */
+    function renderPanel(again) {
         if (!recapEl || !recapEl.parentNode || !document.body.contains(recapEl)) { recapEl = null; return; }
-        var rc = buildRecap();
+        var rc = again && recap ? recap : buildRecap();
         recap = rc || recap;
-        var th = cardTheme, code = lang();
+        var th = cardTheme;
+        recapEl.dir = dir();
         while (recapEl.firstChild) recapEl.removeChild(recapEl.firstChild);
         var title = document.createElement('div');
         title.style.cssText = 'font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:' + th.v.mc + ';margin-bottom:4px;';
-        title.textContent = '⏱ ' + tr('title', null, code);
+        title.textContent = '\u23f1 ' + tr('title');
         recapEl.appendChild(title);
         if (!rc) return;
         var cv = document.createElement('canvas');
@@ -539,17 +514,18 @@
             var st = rc.steps[i], row = document.createElement('div');
             row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:2px 2px;font-size:11px;line-height:1.3;';
             var lb = document.createElement('span');
+            lb.dir = 'ltr';
             lb.style.cssText = 'flex:0 0 34px;text-align:right;color:' + th.v.tc2 + ';font-variant-numeric:tabular-nums;';
             lb.textContent = stepLabel(st);
             var tx = document.createElement('span');
             tx.style.cssText = 'flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:' + (st.kind === 'death' || (st.kind === 'loss' && st.exact) ? th.v.mc : th.v.tc) + ';' + (st.kind === 'death' ? 'font-weight:700;' : '');
-            tx.textContent = stepText(st, code);
+            tx.textContent = stepText(st);
             tx.title = tx.textContent;
             row.appendChild(lb); row.appendChild(tx);
             if (rc.slot && st.pkt >= 0) {
                 var a = document.createElement('span');
-                a.textContent = '▶';
-                a.title = tr('watch', null, code);
+                a.textContent = '\u25b6';
+                a.title = tr('watch');
                 a.setAttribute('role', 'button');
                 a.style.cssText = 'flex:0 0 auto;cursor:pointer;color:' + th.v.mc + ';padding:0 4px;min-width:18px;text-align:center;border-radius:var(--lm-radius-s,3px);background:rgba(255,255,255,0.06);';
                 (function (slot, pkt) {
@@ -599,18 +575,22 @@
         var th = cardTheme, row = document.createElement('div');
         row.id = 'lm-go-recap-hint';
         row.style.cssText = 'padding:0 12px 10px;font-size:11px;text-align:center;color:' + th.v.tc2 + ';';
+        /* data-i18n: LMi18n.apply() puts the new language in while the card stays open */
+        row.dir = dir();
         var t = document.createElement('span');
-        t.textContent = tr('hint') + ' ';
+        t.textContent = tr('hint');
+        t.setAttribute('data-i18n', TK + 'hint');
         var b = document.createElement('button');
         b.type = 'button';
         b.textContent = tr('turnOn');
+        b.setAttribute('data-i18n', TK + 'turnOn');
         b.style.cssText = 'background:' + th.v.mc + ';color:' + th.v.pc + ';border:0;font-family:inherit;border-radius:var(--lm-radius-s,4px);padding:3px 10px;margin-top:4px;font-size:11px;font-weight:700;cursor:pointer;min-height:26px;';
         b.addEventListener('click', function (ev) {
             ev.stopPropagation();
             setOption('deathRecap', true);
             if (row.parentNode) row.parentNode.removeChild(row);
         });
-        row.appendChild(t); row.appendChild(b);
+        row.appendChild(t); row.appendChild(document.createTextNode(' ')); row.appendChild(b);
         c.appendChild(row);
     }
     function setOption(k, v) {
@@ -696,5 +676,7 @@
             reset: function () { ringClear(R); evClear(); prevCells = 0; recSlot = null; lastAlive = 0; recapEl = null; recap = null; }
         }
     };
+    /* a language change redraws the open recap panel (the hint follows by its data-i18n marks) */
+    if (window.LMi18n && window.LMi18n.onChange) window.LMi18n.onChange(function () { if (recapEl) renderPanel(true); });
     sync();
 })();

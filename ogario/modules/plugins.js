@@ -46,16 +46,17 @@
     /* the Legend Mod sites: plugins from there are not "third-party" */
     var OFFICIAL_HOSTS = ['www.legendmod.ml', 'legendmod.ml', 'jimboy3100.github.io'];
 
-    /* known permissions; a header may use the id or one of the plain words */
+    /* a header may use a permission id or one of the plain words */
+    /* known permissions -> the key of their label (modules.plugins.<key>) */
     var PERMS = {
-        'game.read': { en: 'reads the game (mass, cells, leaderboard)', el: 'διαβάζει το παιχνίδι (μάζα, κύτταρα, κατάταξη)' },
-        'chat.read': { en: 'reads chat', el: 'διαβάζει τη συνομιλία' },
-        'chat.send': { en: 'sends chat messages', el: 'στέλνει μηνύματα στη συνομιλία' },
-        'settings': { en: 'changes settings', el: 'αλλάζει ρυθμίσεις' },
-        'network': { en: 'network (talks to other sites)', el: 'δίκτυο (επικοινωνεί με άλλες σελίδες)' },
-        'ui': { en: 'shows messages or adds to the screen', el: 'εμφανίζει μηνύματα ή προσθέτει στην οθόνη' },
-        'storage': { en: 'stores data in this browser', el: 'αποθηκεύει δεδομένα σε αυτόν τον browser' },
-        'controls': { en: 'presses game keys (split, feed...)', el: 'πατάει πλήκτρα του παιχνιδιού (split, feed...)' }
+        'game.read': 'permGameRead',
+        'chat.read': 'permChatRead',
+        'chat.send': 'permChatSend',
+        'settings': 'permSettings',
+        'network': 'permNetwork',
+        'ui': 'permUi',
+        'storage': 'permStorage',
+        'controls': 'permControls'
     };
     var PERM_WORDS = {
         'reads game': 'game.read', 'reads game state': 'game.read', 'reads the game': 'game.read', 'game': 'game.read',
@@ -320,68 +321,18 @@
     var CATALOGUE_URL = 'https://www.legendmod.ml/extras/plugins/catalogue.json';
     var LETTERS = ['', 'A', 'B', 'C', 'D', 'E'];
 
-    var STR = {
-        editor: { en: 'Editor', el: 'Επεξεργασία' },
-        plugins: { en: 'Plugins', el: 'Plugins' },
-        catalogue: { en: 'Catalogue', el: 'Κατάλογος' },
-        warn: {
-            en: 'User scripts and plugins run inside Legend Mod with full access to this page: your login, chat, settings and everything on screen. Legend Mod cannot isolate them. The permissions a plugin declares are shown to you, but they are not limits that Legend Mod enforces. Load only scripts from people you trust.',
-            el: 'Τα user scripts και τα plugins τρέχουν μέσα στο Legend Mod με πλήρη πρόσβαση σε αυτή τη σελίδα: τη σύνδεσή σου, τη συνομιλία, τις ρυθμίσεις και ό,τι υπάρχει στην οθόνη. Το Legend Mod δεν μπορεί να τα απομονώσει. Τα δικαιώματα που δηλώνει ένα plugin σού εμφανίζονται, αλλά δεν είναι όρια που επιβάλλει το Legend Mod. Φόρτωνε scripts μόνο από ανθρώπους που εμπιστεύεσαι.'
-        },
-        offNote: { en: 'A slot turned off does not run at the next start; code already running stays loaded until you reload the page.', el: 'Μια θέση που απενεργοποιείς δεν τρέχει στην επόμενη εκκίνηση· κώδικας που ήδη τρέχει μένει φορτωμένος μέχρι να ανανεώσεις τη σελίδα.' },
-        slot: { en: 'User Script {0}', el: 'User Script {0}' },
-        empty: { en: 'empty', el: 'κενή' },
-        atStart: { en: 'Runs at start', el: 'Τρέχει στην εκκίνηση' },
-        settings: { en: 'Settings', el: 'Ρυθμίσεις' },
-        edit: { en: 'Edit', el: 'Επεξεργασία' },
-        by: { en: 'by', el: 'από' },
-        perms: { en: 'Declares', el: 'Δηλώνει' },
-        noPerms: { en: 'no permissions', el: 'κανένα δικαίωμα' },
-        unknownPerm: { en: 'not a known permission', el: 'άγνωστο δικαίωμα' },
-        noHeader: { en: 'plain user script (no ==LMPlugin== header)', el: 'απλό user script (χωρίς κεφαλίδα ==LMPlugin==)' },
-        stRunning: { en: 'running', el: 'τρέχει' },
-        stOff: { en: 'off', el: 'ανενεργό' },
-        stStopped: { en: 'off (reload the page to unload it fully)', el: 'ανενεργό (ανανέωσε τη σελίδα για να αφαιρεθεί πλήρως)' },
-        stReloadOn: { en: 'on at the next start (reload the page)', el: 'ενεργό από την επόμενη εκκίνηση (ανανέωσε τη σελίδα)' },
-        stNotRun: { en: 'on, runs at the next start', el: 'ενεργό, τρέχει στην επόμενη εκκίνηση' },
-        stOld: { en: 'not started: needs Legend Mod {0} or newer', el: 'δεν ξεκίνησε: χρειάζεται Legend Mod {0} ή νεότερο' },
-        stNew: { en: 'not started: made for Legend Mod up to {0}', el: 'δεν ξεκίνησε: φτιάχτηκε για Legend Mod έως {0}' },
-        compatAny: { en: 'no version limits', el: 'χωρίς όρια έκδοσης' },
-        official: { en: 'from Legend Mod', el: 'από το Legend Mod' },
-        thirdParty: { en: 'from {0} (third-party)', el: 'από {0} (τρίτου)' },
-        pasted: { en: 'pasted code', el: 'επικολλημένος κώδικας' },
-        catLoading: { en: 'Loading the catalogue...', el: 'Φόρτωση καταλόγου...' },
-        catFail: { en: 'The catalogue could not be loaded.', el: 'Ο κατάλογος δεν φορτώθηκε.' },
-        catNote: { en: 'Small example plugins made with Legend Mod; Install puts one into the first empty slot. They also show how to write your own (developers/LMEvents.md).', el: 'Μικρά παραδείγματα plugins του Legend Mod· η Εγκατάσταση το βάζει στην πρώτη κενή θέση. Δείχνουν και πώς να γράψεις δικά σου (developers/LMEvents.md).' },
-        install: { en: 'Install', el: 'Εγκατάσταση' },
-        installed: { en: 'In slot {0}', el: 'Στη θέση {0}' },
-        noSlot: { en: 'All 5 slots are in use: erase one first (Editor, Erase Script).', el: 'Και οι 5 θέσεις χρησιμοποιούνται: σβήσε πρώτα μία (Επεξεργασία, Erase Script).' },
-        confirmRun: { en: 'Run the plugin "{0}"?', el: 'Εκτέλεση του plugin "{0}";' },
-        confirmScript: { en: 'Run this user script?', el: 'Εκτέλεση αυτού του user script;' },
-        confirmPerms: { en: 'It declares that it:', el: 'Δηλώνει ότι:' },
-        confirmNoPerms: { en: 'It declares no permissions.', el: 'Δεν δηλώνει δικαιώματα.' },
-        confirmFull: { en: 'User scripts and plugins run with full access to this page (your login, chat and settings) and on every start while the slot is on; the permissions are only what the author declares.', el: 'Τα user scripts και τα plugins τρέχουν με πλήρη πρόσβαση σε αυτή τη σελίδα (σύνδεση, συνομιλία, ρυθμίσεις) και σε κάθε εκκίνηση όσο η θέση είναι ενεργή· τα δικαιώματα είναι μόνο ό,τι δηλώνει ο δημιουργός.' },
-        confirmThird: { en: 'This script comes from {0}, not from Legend Mod. Continue only if you trust its author.', el: 'Αυτό το script έρχεται από {0}, όχι από το Legend Mod. Συνέχισε μόνο αν εμπιστεύεσαι τον δημιουργό του.' },
-        notCompat: { en: '"{0}" was not started: {1}.', el: 'Το "{0}" δεν ξεκίνησε: {1}.' },
-        needOld: { en: 'it needs Legend Mod {0} or newer', el: 'χρειάζεται Legend Mod {0} ή νεότερο' },
-        needNew: { en: 'it was made for Legend Mod up to {0}', el: 'φτιάχτηκε για Legend Mod έως {0}' },
-        offToast: { en: 'User Script {0} is off. Reload the page to unload it fully.', el: 'Το User Script {0} απενεργοποιήθηκε. Ανανέωσε τη σελίδα για να αφαιρεθεί πλήρως.' },
-        readFail: { en: 'The script could not be read.', el: 'Το script δεν διαβάστηκε.' },
-        save: { en: 'Save', el: 'Αποθήκευση' },
-        back: { en: 'Back', el: 'Πίσω' },
-        allSlots: { en: '← All slots', el: '← Όλες οι θέσεις' },
-        saved: { en: 'Saved', el: 'Αποθηκεύτηκε' },
-        storeFail: { en: 'Could not save (browser storage is full or blocked).', el: 'Δεν αποθηκεύτηκε (ο χώρος του browser είναι γεμάτος ή μπλοκαρισμένος).' }
-    };
-    function lang() {
-        try { return window.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
-    }
+    /* texts: developers/i18n/src (modules.plugins.*); tx('key', a, b) fills {0} {1} */
+    var P = 'modules.plugins.';
     function tx(k) {
-        var r = STR[k], s = r ? (r[lang()] || r.en) : k;
-        for (var i = 1; i < arguments.length; i++) s = s.split('{' + (i - 1) + '}').join(String(arguments[i]));
-        return s;
+        var v = Array.prototype.slice.call(arguments, 1);
+        return typeof window.lmT === 'function' ? window.lmT(P + k, v.length ? v : undefined) : k;
     }
-    function permLabel(id) { var p = PERMS[id]; return p ? (p[lang()] || p.en) : id; }
+    function permLabel(id) { return hasOwn(PERMS, id) ? tx(PERMS[id]) : id; }
+    /* the label of the panel's own Erase button (language pack) */
+    function eraseLabel() { return typeof window.lmT === 'function' ? window.lmT('pack.eraseScript') : 'pack.eraseScript'; }
+    function setDir(e) {
+        try { if (e && window.LMi18n && window.LMi18n.dir) e.setAttribute('dir', window.LMi18n.dir()); } catch (er) { }
+    }
     function toast(type, text) {
         try { if (window.toastr) window.toastr[type](escapeHtml(text)); } catch (e) { }
     }
@@ -402,6 +353,7 @@
         return v || lsGet('Userscripttexture' + n) || '';
     }
     function slot(n) {
+        // i18n-ok: localStorage key
         return slotEntry(n, { url: lsGet('Userscript' + n), code: slotCode(n), name: lsGet('Userscripttext1' + n), enabled: slotEnabled(n) });
     }
     function slots() { var out = []; for (var n = 1; n <= SLOTS; n++) out.push(slot(n)); return out; }
@@ -567,7 +519,7 @@
         var $ = jq();
         if (!m || !$) return 0;
         var n = firstEmptySlot(slots());
-        if (!n) { toast('warning', tx('noSlot')); return 0; }
+        if (!n) { toast('warning', tx('noSlot', tx('editor'), eraseLabel())); return 0; }
         var c = compat(m, ogVer());
         if (!c.ok) { toast('warning', tx('notCompat', m.name, needText(c))); return 0; }
         if (!skipConfirm && !window.confirm(confirmText(m, m.url))) return 0;
@@ -662,8 +614,8 @@
     function versionLine(meta) {
         if (meta.minVersion == null && meta.maxVersion == null) return tx('compatAny');
         var r = [];
-        if (meta.minVersion != null) r.push('≥ ' + meta.minVersion);
-        if (meta.maxVersion != null) r.push('≤ ' + meta.maxVersion);
+        if (meta.minVersion != null) r.push('\u2265 ' + meta.minVersion);
+        if (meta.maxVersion != null) r.push('\u2264 ' + meta.maxVersion);
         return 'Legend Mod ' + r.join(', ');
     }
     function sourceText(s) {
@@ -677,7 +629,7 @@
         if (withName) {
             var name = el('div', 'lm-us-name', (s.n ? s.n + '. ' : '') + (m ? m.name : (s.name || tx('slot', s.n))));
             if (m && m.version) name.appendChild(el('small', '', 'v' + m.version));
-            if (m && m.author) name.appendChild(el('small', '', tx('by') + ' ' + m.author));
+            if (m && m.author) name.appendChild(el('small', '', tx('by', m.author)));
             box.appendChild(name);
         }
         if (s.empty) { box.appendChild(el('div', 'lm-us-meta', tx('empty'))); return; }
@@ -685,8 +637,8 @@
         if (m) { var p = el('div', 'lm-us-meta'); chips(p, m); box.appendChild(p); }
         var st = statusOf(s), info = el('div', 'lm-us-meta');
         info.appendChild(el('span', st.bad ? 'lm-us-bad' : st.good ? 'lm-us-good' : '', st.t));
-        var rest = [m ? versionLine(m) : tx('noHeader'), sourceText(s)].filter(Boolean).join(' · ');
-        info.appendChild(document.createTextNode(' · ' + rest));
+        var rest = [m ? versionLine(m) : tx('noHeader'), sourceText(s)].filter(Boolean).join(' \u00b7 ');
+        info.appendChild(document.createTextNode(' \u00b7 ' + rest));
         box.appendChild(info);
     }
 
@@ -706,8 +658,8 @@
         if (m) {
             line.appendChild(el('b', '', m.name + (m.version ? ' v' + m.version : '')));
             var np = m.permissions.length + m.unknownPermissions.length;
-            line.appendChild(document.createTextNode(' · ' + tx('perms') + ': ' + (np ? m.permissions.map(permLabel).concat(m.unknownPermissions).join(', ') : tx('noPerms')) + ' · '));
-        } else line.appendChild(document.createTextNode(tx('noHeader') + ' · '));
+            line.appendChild(document.createTextNode(' \u00b7 ' + tx('perms') + ': ' + (np ? m.permissions.map(permLabel).concat(m.unknownPermissions).join(', ') : tx('noPerms')) + ' \u00b7 '));
+        } else line.appendChild(document.createTextNode(tx('noHeader') + ' \u00b7 '));
         line.appendChild(el('span', st.bad ? 'lm-us-bad' : st.good ? 'lm-us-good' : '', st.t));
         acts.appendChild(line);
         acts.appendChild(toggleFor(s));
@@ -756,7 +708,7 @@
             row.setAttribute('data-cat', m.id);
             var name = el('div', 'lm-us-name', m.name);
             if (m.version) name.appendChild(el('small', '', 'v' + m.version));
-            if (m.author) name.appendChild(el('small', '', tx('by') + ' ' + m.author));
+            if (m.author) name.appendChild(el('small', '', tx('by', m.author)));
             main.appendChild(name);
             if (m.description) main.appendChild(el('div', 'lm-us-desc', m.description));
             var p = el('div', 'lm-us-meta');
@@ -777,7 +729,7 @@
     function renderSettings(body) {
         var n = settingsFor, r = rt[n], s = slot(n);
         if (!r || !r.schema.length || !r.id) { settingsFor = 0; render(); return; }
-        body.appendChild(el('div', 'lm-us-name', (s.meta ? s.meta.name : tx('slot', n)) + ' · ' + tx('settings')));
+        body.appendChild(el('div', 'lm-us-name', (s.meta ? s.meta.name : tx('slot', n)) + ' \u00b7 ' + tx('settings')));
         var vals = cleanValues(r.schema, lsGet(SET_KEY + r.id));
         r.schema.forEach(function (f) {
             var box = el('div', 'lm-us-field');
@@ -886,10 +838,13 @@
         bar.insertBefore(all, bar.firstChild);
         var ext = el('div');
         ext.id = 'lm-us-ext';
+        setDir(bar);
+        setDir(ext);
         if (h5 && h5.nextSibling) { hud.insertBefore(bar, h5.nextSibling); hud.insertBefore(ext, bar.nextSibling); }
         else { hud.appendChild(bar); hud.appendChild(ext); }
         var info = el('div');
         info.id = 'lm-us-info';
+        setDir(info);
         var sel = document.getElementById('Userscriptpages3');
         var box = sel && sel.closest ? sel.closest('.input-box') : null;
         if (box && box.parentNode) box.parentNode.insertBefore(info, box.nextSibling);
@@ -912,6 +867,12 @@
         /* the menu's User Scripts button opens the list of slots again (not the last slot edited) */
         var ob = document.getElementById('OpenuserScripts');
         if (ob) ob.addEventListener('click', function () { if (!opening && view === 'editor') { view = 'plugins'; settingsFor = 0; render(); } });
+        /* a language change: the views and the header line again in the new language */
+        if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
+            setDir(bar); setDir(ext); setDir(info);
+            for (var i = 0; i < bar.children.length; i++) bar.children[i].textContent = bar.children[i].id === 'lm-us-allslots' ? tx('allSlots') : tx(bar.children[i].getAttribute('data-view'));
+            render();
+        });
         var eb = document.getElementById('EraseScripter');
         if (eb) eb.addEventListener('click', function () { setTimeout(refresh, 50); });
         render();

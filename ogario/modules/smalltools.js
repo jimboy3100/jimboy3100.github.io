@@ -23,6 +23,14 @@
         return s.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
     }
 
+    /* Texts from the language packs (developers/i18n/src, keys modules.smalltools.*): the chosen
+     * language, else English. vars fill {0} {1}. A few labels are the same as settings / hotkey labels
+     * and use those keys. */
+    var TP = 'modules.smalltools.';
+    var SHARED = { close: 'settings.close', conflictsTitle: 'settings.hk-hotkeyConflicts', shotStart: 'settings.hk-screenshotMode', skinsTitle: 'settings.hk-skinCollections' };
+    function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(own(SHARED, k) ? SHARED[k] : TP + k, vars) : k; }
+    function langDir() { return W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'; }
+
     /* ═══ Pure helpers (developers/tests/smalltools.js) ═══ */
 
     var HK_RE = /^hk-[A-Za-z0-9_-]{1,40}$/;
@@ -65,25 +73,32 @@
      * 'info': the game takes the key while it is bound (its keydown cancels the shortcut), but the
      * browser acts while typing in a text field or before the page has focus. */
     var BROWSER_KEYS = {
-        'CTRL+W': ['block', 'closes the tab'], 'CTRL+T': ['block', 'opens a new tab'], 'CTRL+N': ['block', 'opens a new window'],
-        'CTRL+TAB': ['block', 'switches tabs'], 'ALT+TAB': ['block', 'switches windows'], 'ALT+F4': ['block', 'closes the window'],
-        'CTRL+Q': ['warn', 'quits the browser on some systems (Linux, macOS Firefox)'], 'CTRL+SHIFT': ['warn', 'switches the keyboard layout on some systems'],
-        'F11': ['warn', 'toggles full screen'], 'F12': ['warn', 'opens the developer tools'],
-        'ALT': ['warn', 'shows the menu bar (some browsers)'], 'META': ['warn', 'opens the system menu'], 'MENU': ['warn', 'opens the context menu'],
-        'ALT+D': ['warn', 'focuses the address bar'], 'ALT+F': ['warn', 'opens the browser menu'], 'ALT+E': ['warn', 'opens the browser menu'],
-        'F5': ['info', 'reloads the page'], 'CTRL+R': ['info', 'reloads the page'], 'CTRL+F5': ['info', 'reloads the page'],
-        'F1': ['info', 'opens browser help'], 'F3': ['info', 'opens find'], 'F6': ['info', 'focuses the address bar'], 'F7': ['info', 'caret browsing (some browsers)'],
-        'CTRL+L': ['info', 'focuses the address bar'], 'CTRL+D': ['info', 'bookmarks the page'], 'CTRL+F': ['info', 'opens find'],
-        'CTRL+P': ['info', 'prints'], 'CTRL+S': ['info', 'saves the page'], 'CTRL+O': ['info', 'opens a file'],
-        'CTRL+H': ['info', 'opens history'], 'CTRL+J': ['info', 'opens downloads'], 'CTRL+U': ['info', 'shows the page source'],
-        'CTRL+E': ['info', 'focuses search (some browsers)'], 'CTRL+K': ['warn', 'also opens the Command Centre'],
-        'CTRL+=': ['info', 'zooms the page'], 'CTRL+-': ['info', 'zooms the page'], 'CTRL+0': ['info', 'resets page zoom'],
-        'CTRL+PGUP': ['info', 'switches tabs'], 'CTRL+PGDN': ['info', 'switches tabs'],
-        'ALT+LEFT': ['info', 'goes back'], 'ALT+RIGHT': ['info', 'goes forward'], 'ALT+HOME': ['info', 'opens the home page']
+        'CTRL+W': ['block', 'closeTab'], 'CTRL+T': ['block', 'newTab'], 'CTRL+N': ['block', 'newWindow'],
+        'CTRL+TAB': ['block', 'switchTabs'], 'ALT+TAB': ['block', 'switchWindows'], 'ALT+F4': ['block', 'closeWindow'],
+        'CTRL+Q': ['warn', 'quit'], 'CTRL+SHIFT': ['warn', 'layout'],
+        'F11': ['warn', 'fullscreen'], 'F12': ['warn', 'devtools'],
+        'ALT': ['warn', 'menuBar'], 'META': ['warn', 'systemMenu'], 'MENU': ['warn', 'contextMenu'],
+        'ALT+D': ['warn', 'addressBar'], 'ALT+F': ['warn', 'browserMenu'], 'ALT+E': ['warn', 'browserMenu'],
+        'F5': ['info', 'reload'], 'CTRL+R': ['info', 'reload'], 'CTRL+F5': ['info', 'reload'],
+        'F1': ['info', 'help'], 'F3': ['info', 'find'], 'F6': ['info', 'addressBar'], 'F7': ['info', 'caret'],
+        'CTRL+L': ['info', 'addressBar'], 'CTRL+D': ['info', 'bookmark'], 'CTRL+F': ['info', 'find'],
+        'CTRL+P': ['info', 'print'], 'CTRL+S': ['info', 'save'], 'CTRL+O': ['info', 'openFile'],
+        'CTRL+H': ['info', 'history'], 'CTRL+J': ['info', 'downloads'], 'CTRL+U': ['info', 'source'],
+        'CTRL+E': ['info', 'search'], 'CTRL+K': ['warn', 'commandCentre'],
+        'CTRL+=': ['info', 'zoom'], 'CTRL+-': ['info', 'zoom'], 'CTRL+0': ['info', 'zoomReset'],
+        'CTRL+PGUP': ['info', 'switchTabs'], 'CTRL+PGDN': ['info', 'switchTabs'],
+        'ALT+LEFT': ['info', 'back'], 'ALT+RIGHT': ['info', 'forward'], 'ALT+HOME': ['info', 'home']
     };
-    for (var _bk = 1; _bk <= 9; _bk++) BROWSER_KEYS['CTRL+' + _bk] = ['info', 'switches to tab ' + _bk];
-    /* keys Legend Mod itself uses outside the hotkeys list */
-    var BUILTIN_KEYS = { 'ESC': 'Menu (Esc)' };
+    for (var _bk = 1; _bk <= 9; _bk++) BROWSER_KEYS['CTRL+' + _bk] = ['info', 'tabN', _bk];
+    /* what the browser does with a key of BROWSER_KEYS, in the chosen language ("closes the tab") */
+    function browserWhat(b) { return t('bk.' + b[1], b.length > 2 ? b[2] : undefined); }
+    /* keys Legend Mod itself uses outside the hotkeys list (name of their use: a text key) */
+    var BUILTIN_KEYS = { 'ESC': 'menuEsc' };
+    function builtinKeys() {
+        var o = {};
+        for (var k in BUILTIN_KEYS) if (own(BUILTIN_KEYS, k)) o[k] = t(BUILTIN_KEYS[k]);
+        return o;
+    }
     /* the gamepad's own actions and the hotkey that does the same */
     var PAD_SAME = { split: 'hk-split', doubleSplit: 'hk-doubleSplit', split16: 'hk-split16', feed: 'hk-macroFeed', multiboxSwap: 'hk-multiboxswap' };
 
@@ -109,14 +124,14 @@
             if (byKey[nk].indexOf(c) < 0) byKey[nk].push(c);
             if (!own(keyOfCmd, c)) keyOfCmd[c] = nk;
         }
-        var builtin = isObj(inp.builtin) ? inp.builtin : BUILTIN_KEYS;
+        var builtin = isObj(inp.builtin) ? inp.builtin : builtinKeys();
         order.forEach(function (key) {
             var cmds = byKey[key];
             if (cmds.length > 1) out.push({ kind: 'dup', level: 'error', key: key, cmds: cmds.slice() });
             if (own(builtin, key)) out.push({ kind: 'dup', level: 'error', key: key, cmds: cmds.slice(), builtin: builtin[key] });
             if (own(BROWSER_KEYS, key)) {
                 var b = BROWSER_KEYS[key];
-                out.push({ kind: 'browser', level: b[0] === 'block' ? 'error' : b[0], key: key, cmds: cmds.slice(), what: b[1] });
+                out.push({ kind: 'browser', level: b[0] === 'block' ? 'error' : b[0], key: key, cmds: cmds.slice(), what: browserWhat(b) });
             }
         });
         var mouse = Array.isArray(inp.mouse) ? inp.mouse : [];
@@ -131,7 +146,7 @@
                 if (typeof a !== 'string') return;
                 var cmd = HK_RE.test(a) ? a : (own(PAD_SAME, a) ? PAD_SAME[a] : null);
                 if (!cmd || !own(keyOfCmd, cmd)) return;
-                out.push({ kind: 'pad', level: 'info', key: keyOfCmd[cmd], cmds: [cmd], button: +bi, name: names[bi] || ('Button ' + bi), padOn: !!inp.padOn });
+                out.push({ kind: 'pad', level: 'info', key: keyOfCmd[cmd], cmds: [cmd], button: +bi, name: names[bi] || t('padButton', bi), padOn: !!inp.padOn });
             });
         }
         return out;
@@ -239,67 +254,6 @@
 
     /* ═══ Shared bits ═══ */
 
-    var STR = {
-        close: { en: 'Close', el: 'Κλείσιμο' },
-        save: { en: 'Save', el: 'Αποθήκευση' },
-        reset: { en: 'Clear', el: 'Καθαρισμός' },
-        none: { en: '(empty)', el: '(κενό)' },
-        radialTitle: { en: 'Radial menu', el: 'Κυκλικό μενού' },
-        radialHelp: { en: 'Hold the radial menu hotkey (set it in Hotkeys), move the mouse towards a command and release the key. A short press keeps the ring open: then click a command. With a controller, bind a button to the radial menu hotkey and point with the right stick. Desktop only: on phones open it from the Command Centre and tap a command.', el: 'Κράτα το πλήκτρο του κυκλικού μενού (όρισέ το στα Πλήκτρα), κίνησε το ποντίκι προς μια εντολή και άφησε το πλήκτρο. Με σύντομο πάτημα ο κύκλος μένει ανοιχτός: κάνε κλικ σε μια εντολή. Με χειριστήριο, όρισε ένα κουμπί στο πλήκτρο του κυκλικού μενού και δείξε με το δεξί μοχλό. Μόνο σε υπολογιστή: στο κινητό άνοιξέ το από το Κέντρο εντολών και πάτησε μια εντολή.' },
-        slot: { en: 'Slot', el: 'Θέση' },
-        radialEmpty: { en: 'The radial menu has no commands yet: choose them first.', el: 'Το κυκλικό μενού δεν έχει ακόμα εντολές: διάλεξέ τες πρώτα.' },
-        radialSaved: { en: 'Radial menu saved', el: 'Το κυκλικό μενού αποθηκεύτηκε' },
-        storageFull: { en: 'Could not save: browser storage is full or blocked.', el: 'Δεν αποθηκεύτηκε: ο χώρος του browser είναι γεμάτος ή μπλοκαρισμένος.' },
-        quickChat: { en: 'Quick chat', el: 'Γρήγορη συνομιλία' },
-        conflicts: { en: 'Conflicts', el: 'Συγκρούσεις' },
-        conflictsTitle: { en: 'Hotkey conflicts', el: 'Συγκρούσεις πλήκτρων' },
-        noConflicts: { en: 'No conflicts found.', el: 'Δεν βρέθηκαν συγκρούσεις.' },
-        jump: { en: 'Jump to', el: 'Μετάβαση' },
-        cDup: { en: 'is bound to more than one command:', el: 'είναι ορισμένο σε περισσότερες από μία εντολές:' },
-        cBuiltin: { en: 'is also used by Legend Mod for', el: 'χρησιμοποιείται επίσης από το Legend Mod για' },
-        cBrowserBlock: { en: 'is kept by the browser (it never reaches the game):', el: 'το κρατά ο browser (δεν φτάνει ποτέ στο παιχνίδι):' },
-        cBrowserWarn: { en: 'may also trigger the browser:', el: 'μπορεί να ενεργοποιήσει και τον browser:' },
-        cBrowserInfo: { en: 'is a browser shortcut (the game takes it while bound; it still works in text fields):', el: 'είναι συντόμευση του browser (το παιχνίδι την παίρνει όσο είναι ορισμένη· λειτουργεί ακόμα στα πεδία κειμένου):' },
-        cMouse: { en: 'runs the same command as key', el: 'εκτελεί την ίδια εντολή με το πλήκτρο' },
-        cPad: { en: 'Gamepad', el: 'Χειριστήριο' },
-        padOff: { en: '(gamepad support is off)', el: '(η υποστήριξη χειριστηρίου είναι ανενεργή)' },
-        shotTitle: { en: 'Screenshot', el: 'Στιγμιότυπο' },
-        shotStart: { en: 'Screenshot mode (hide the HUD)', el: 'Λειτουργία στιγμιότυπου (κρύβει το HUD)' },
-        shotCapture: { en: 'Capture PNG', el: 'Λήψη PNG' },
-        shotLb: { en: 'Include the leaderboard', el: 'Με τον πίνακα κατάταξης' },
-        shotMap: { en: 'Include the minimap', el: 'Με τον μικρό χάρτη' },
-        shotHelp: { en: 'Screenshot mode hides Legend Mod\'s HUD until you press its hotkey again, Esc or the x in the corner. Capture saves the game view as a PNG.', el: 'Η λειτουργία στιγμιότυπου κρύβει το HUD του Legend Mod μέχρι να πατήσεις ξανά το πλήκτρο της, το Esc ή το x στη γωνία. Η λήψη αποθηκεύει την εικόνα του παιχνιδιού ως PNG.' },
-        shotHint: { en: 'HUD hidden: Esc or x shows it again', el: 'Το HUD κρύφτηκε: Esc ή x για να ξαναφανεί' },
-        shotSaved: { en: 'Screenshot saved', el: 'Το στιγμιότυπο αποθηκεύτηκε' },
-        shotTainted: { en: 'This browser blocks the capture because some skins come from sites that do not allow it. Turn on "No skins" for the capture, or use your system screenshot while screenshot mode hides the HUD.', el: 'Ο browser μπλοκάρει τη λήψη επειδή κάποια skins προέρχονται από sites που δεν το επιτρέπουν. Άνοιξε το "Χωρίς skins" για τη λήψη ή χρησιμοποίησε το στιγμιότυπο του συστήματος όσο η λειτουργία στιγμιότυπου κρύβει το HUD.' },
-        shotFailed: { en: 'The screenshot could not be made.', el: 'Το στιγμιότυπο δεν έγινε.' },
-        shotPreview: { en: 'Press and hold the image to save it, or use Save.', el: 'Κράτα πατημένη την εικόνα για να την αποθηκεύσεις ή πάτα Αποθήκευση.' },
-        skinsTitle: { en: 'Skin collections', el: 'Συλλογές skins' },
-        skinsBtn: { en: 'Collections', el: 'Συλλογές' },
-        search: { en: 'Search (words, #tag)', el: 'Αναζήτηση (λέξεις, #ετικέτα)' },
-        all: { en: 'All skins', el: 'Όλα τα skins' },
-        favs: { en: 'Favourites', el: 'Αγαπημένα' },
-        unfiled: { en: 'No folder', el: 'Χωρίς φάκελο' },
-        newFolder: { en: 'New folder', el: 'Νέος φάκελος' },
-        delFolder: { en: 'Delete folder', el: 'Διαγραφή φακέλου' },
-        folderName: { en: 'Folder name', el: 'Όνομα φακέλου' },
-        addUrl: { en: 'Skin URL to keep', el: 'URL skin για φύλαξη' },
-        add: { en: 'Add', el: 'Προσθήκη' },
-        tags: { en: 'tags, comma separated', el: 'ετικέτες, με κόμμα' },
-        use: { en: 'Use', el: 'Χρήση' },
-        profileBtn: { en: 'Profile', el: 'Προφίλ' },
-        remove: { en: 'Remove', el: 'Αφαίρεση' },
-        saved: { en: 'saved here', el: 'φυλαγμένο εδώ' },
-        profile: { en: 'Profile', el: 'Προφίλ' },
-        noSkinsFound: { en: 'No skins match.', el: 'Κανένα skin δεν ταιριάζει.' },
-        skinSet: { en: 'Skin set on the current profile', el: 'Το skin ορίστηκε στο τρέχον προφίλ' },
-        skinLater: { en: 'The skin can be changed after this game.', el: 'Το skin μπορεί να αλλάξει μετά από αυτό το παιχνίδι.' },
-        skinsHelp: { en: 'Skins of your profiles plus the ones you keep here. Folders, tags and favourites are stored only in this browser; the profiles are not changed until you press Use.', el: 'Τα skins των προφίλ σου και όσα φυλάς εδώ. Φάκελοι, ετικέτες και αγαπημένα αποθηκεύονται μόνο σε αυτόν τον browser· τα προφίλ δεν αλλάζουν μέχρι να πατήσεις Χρήση.' }
-    };
-    function lang() {
-        try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
-    }
-    function t(k) { var r = STR[k]; return r ? (r[lang()] || r.en) : k; }
     function plain(s) {
         if (s == null) return '';
         return String(s).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').trim();
@@ -337,7 +291,7 @@
         if (!c) return id;
         if (c.type === 'command') {
             var txt = plain((W.chatCommand || {})[id.replace(/^hk-/, '')]);
-            return t('quickChat') + ' ' + id.replace(/^hk-comm/, '') + (txt ? ': ' + txt : '');
+            return t('quickChat', id.replace(/^hk-comm/, '')) + (txt ? ': ' + txt : '');
         }
         var l = '';
         try { l = plain(c.label); } catch (e) { }
@@ -369,12 +323,16 @@
         var s = D.createElement('style');
         s.id = 'lm-st-style';
         s.textContent =
+            // i18n-ok: CSS
             '.lm-st-win select,.lm-st-win input[type=text],.lm-st-win input[type=search]{background:' + c.pc2 + ';color:' + c.tc + ';border:1px solid rgba(255,255,255,0.18);border-radius:var(--lm-radius-s,4px);height:30px;font-size:12px;padding:0 6px;min-width:0;box-sizing:border-box;}' +
             '.lm-st-win input[type=checkbox]{width:18px;height:18px;margin:0 8px 0 0;flex:none;}' +
             '.lm-st-win label{font-weight:400;margin:0;display:flex;align-items:center;min-height:30px;cursor:pointer;}' +
+            // i18n-ok: CSS
             '.lm-st-win .lm-st-btn{flex:none;cursor:pointer;min-height:30px;padding:0 12px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + c.pc2 + ';background:rgba(255,255,255,0.05);color:inherit;font-size:12px;font-family:inherit;}' +
+            // i18n-ok: CSS
             '.lm-st-win .lm-st-btn.main{background:' + c.mc + ';color:' + c.pc + ';border-color:' + c.mc + ';font-weight:700;}' +
             '.lm-st-win .lm-st-help{opacity:.8;font-size:11px;line-height:1.45;margin:0 0 8px;}' +
+            // i18n-ok: CSS
             '.lm-st-win a.lm-st-link{color:' + c.mc + ';cursor:pointer;text-decoration:underline;white-space:nowrap;}' +
             '.lm-st-row{display:flex;align-items:center;gap:8px;margin:0 0 6px;}' +
             '.lm-st-flash{outline:3px solid ' + c.mc + ' !important;outline-offset:1px;}' +
@@ -426,6 +384,7 @@
             'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
         root.id = id;
         root.className = 'lm-st-win';
+        root.dir = langDir();
         var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:4px 6px 4px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
         head.appendChild(el('div', 'flex:1;min-width:0;font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', title));
         var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.06);', '✕');
@@ -578,7 +537,7 @@
             var row = el('div');
             row.className = 'lm-st-row';
             row.style.margin = '0';
-            row.appendChild(el('span', 'flex:none;width:52px;opacity:.8;', t('slot') + ' ' + (i + 1)));
+            row.appendChild(el('span', 'flex:none;width:52px;opacity:.8;', t('slot', i + 1)));
             var s = el('select', 'flex:1;');
             s.id = 'lm-st-radial-' + i;
             var o0 = el('option', '', t('none'));
@@ -621,7 +580,7 @@
             exists: hkExists,
             mouse: MOUSE.map(function (m) { return { id: m[0], name: plain(tl[m[1]]) || m[1], on: !!s[m[1]], cmd: s[m[0]], opt: m[1] }; }),
             pad: padMap(),
-            padNames: g && g.BUTTON_NAMES ? g.BUTTON_NAMES : ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'LS', 'RS', 'D-pad up', 'D-pad down', 'D-pad left', 'D-pad right'],
+            padNames: g && g.BUTTON_NAMES ? g.BUTTON_NAMES : ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'LS', 'RS', t('dpadUp'), t('dpadDown'), t('dpadLeft'), t('dpadRight')],
             padOn: !!s.gamepadEnabled
         });
     }
@@ -664,11 +623,11 @@
     }
     function conflictText(c) {
         var labels = c.cmds.map(hkLabel).join(', ');
-        if (c.kind === 'dup' && c.builtin) return [c.key, t('cBuiltin') + ' ' + c.builtin + ' + ' + labels];
-        if (c.kind === 'dup') return [c.key, t('cDup') + ' ' + labels];
-        if (c.kind === 'browser') return [c.key, t(c.level === 'error' ? 'cBrowserBlock' : c.level === 'warn' ? 'cBrowserWarn' : 'cBrowserInfo') + ' ' + c.what + ' (' + labels + ')'];
-        if (c.kind === 'mouse') return [c.name, t('cMouse') + ' ' + c.key + ': ' + labels];
-        return [t('cPad') + ' ' + c.name, t('cMouse') + ' ' + c.key + ': ' + labels + (c.padOn ? '' : ' ' + t('padOff'))];
+        if (c.kind === 'dup' && c.builtin) return [c.key, t('cBuiltin', [c.builtin, labels])];
+        if (c.kind === 'dup') return [c.key, t('cDup', labels)];
+        if (c.kind === 'browser') return [c.key, t(c.level === 'error' ? 'cBrowserBlock' : c.level === 'warn' ? 'cBrowserWarn' : 'cBrowserInfo', [c.what, labels])];
+        if (c.kind === 'mouse') return [c.name, t('cMouse', [c.key, labels])];
+        return [t('padName', c.name), t('cMouse', [c.key, labels]) + (c.padOn ? '' : ' ' + t('padOff'))];
     }
     function openConflicts() {
         var w = openWin('lm-st-conflicts', t('conflictsTitle'), 620);
@@ -686,7 +645,7 @@
             row.appendChild(el('kbd', 'margin-right:6px;', tx[0]));
             row.appendChild(D.createTextNode(tx[1] + ' '));
             c.cmds.forEach(function (cmd) {
-                var a = el('a', 'margin-right:8px;', t('jump') + (c.cmds.length > 1 ? ': ' + hkLabel(cmd) : ''));
+                var a = el('a', 'margin-right:8px;', c.cmds.length > 1 ? t('jumpTo', hkLabel(cmd)) : t('jump'));
                 a.className = 'lm-st-link';
                 a.href = '#';
                 a.addEventListener('click', function (e) { e.preventDefault(); jumpHotkey(cmd); });
@@ -694,14 +653,14 @@
             });
             if (c.kind === 'mouse') {
                 var opt = MOUSE.filter(function (m) { return m[0] === c.button; })[0];
-                var am = el('a', '', t('jump') + ': ' + c.name);
+                var am = el('a', '', t('jumpTo', c.name));
                 am.className = 'lm-st-link';
                 am.href = '#';
                 am.addEventListener('click', function (e) { e.preventDefault(); jumpSetting(MOUSE_SELECT[opt[1]] || opt[1]); });
                 row.appendChild(am);
             }
             if (c.kind === 'pad' && W.LMGamepad && typeof W.LMGamepad.openWindow === 'function') {
-                var ap = el('a', '', t('jump') + ': ' + t('cPad'));
+                var ap = el('a', '', t('jumpTo', t('cPad')));
                 ap.className = 'lm-st-link';
                 ap.href = '#';
                 ap.addEventListener('click', function (e) { e.preventDefault(); closeWin(); W.LMGamepad.openWindow(); });
@@ -759,8 +718,10 @@
         chip.appendChild(hint);
         setTimeout(function () { if (hint.parentNode) hint.parentNode.removeChild(hint); }, 3500);
         var cap = el('div', '', t('shotCapture'));
+        cap.id = 'lm-shot-cap';
         cap.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); capture(); });
         var x = el('div', '', '✕');
+        x.id = 'lm-shot-x';
         x.title = t('close');
         x.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); shotOff(); });
         chip.appendChild(cap);
@@ -969,6 +930,7 @@
         var p = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483650;background:rgba(0,0,0,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;box-sizing:border-box;color:#fff;font:12px sans-serif;');
         p.id = 'lm-st-shot-preview';
         p.className = 'lm-st-win';
+        p.dir = langDir();
         var img = el('img', 'max-width:100%;max-height:calc(100% - 60px);object-fit:contain;border:1px solid rgba(255,255,255,0.3);');
         img.src = url;
         img.alt = name;
@@ -1015,9 +977,9 @@
             list.push({ url: url, label: label, profile: prof });
         };
         var pr = Array.isArray(W.profiles) ? W.profiles : [];
-        pr.forEach(function (p, i) { if (p && typeof p.skinURL === 'string') add(p.skinURL, t('profile') + ' ' + (i + 1) + (p.nick ? ': ' + cleanText(p.nick, 30) : ''), i); });
+        pr.forEach(function (p, i) { if (p && typeof p.skinURL === 'string') add(p.skinURL, t('profile', i + 1) + (p.nick ? ': ' + cleanText(p.nick, 30) : ''), i); });
         var extra = lsGet('ogarioPlayerProfilesExtra');
-        if (Array.isArray(extra)) extra.forEach(function (p, i) { if (p && typeof p.skinURL === 'string') add(p.skinURL, t('profile') + ' ' + (pr.length + i + 1) + (p.nick ? ': ' + cleanText(p.nick, 30) : ''), null); });
+        if (Array.isArray(extra)) extra.forEach(function (p, i) { if (p && typeof p.skinURL === 'string') add(p.skinURL, t('profile', pr.length + i + 1) + (p.nick ? ': ' + cleanText(p.nick, 30) : ''), null); });
         Object.keys(col.items).forEach(function (u) { add(u, t('saved'), null); });
         return list;
     }
@@ -1163,11 +1125,12 @@
         w.foot.appendChild(button(t('close'), false, closeWin));
     }
     /* the "Collections" button of the skins panel, only with the option on */
+    var SKINS_ICON = '\u2605 ';
     function syncSkinsButton() {
         var on = !!settings().skinCollections, b = D.getElementById('lm-skin-collections'), panel = D.getElementById('skins-panel');
         if (!on) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }
         if (b || !panel) return;
-        b = el('a', 'margin-bottom:6px;', '★ ' + t('skinsBtn'));
+        b = el('a', 'margin-bottom:6px;', SKINS_ICON + t('skinsBtn'));
         b.id = 'lm-skin-collections';
         b.className = 'btn btn-block btn-info';
         b.href = '#';
@@ -1216,11 +1179,12 @@
      * { level: 'warn' } = allowed, but the browser may still act on it. */
     api.keyCheck = function (key) {
         key = String(key || '');
-        if (own(BUILTIN_KEYS, key)) return { level: 'block', what: 'is used by ' + BUILTIN_KEYS[key] };
+        /* what: the reason in the chosen language; msg: the whole message for the toast */
+        var res = function (level, what) { return { level: level, what: what, msg: t(level === 'block' ? 'kcBlock' : 'kcWarn', [key, what]) }; };
+        if (own(BUILTIN_KEYS, key)) return res('block', t('usedBy', t(BUILTIN_KEYS[key])));
         if (own(BROWSER_KEYS, key)) {
             var b = BROWSER_KEYS[key];
-            if (b[0] === 'block') return { level: 'block', what: b[1] };
-            if (b[0] === 'warn') return { level: 'warn', what: b[1] };
+            if (b[0] === 'block' || b[0] === 'warn') return res(b[0], browserWhat(b));
         }
         return null;
     };
@@ -1234,4 +1198,16 @@
     })();
     /* the option can also change through profiles or an import */
     setInterval(syncSkinsButton, 2000);
+
+    /* Language change: an open window is built again in the new language (the skins window keeps
+     * its search and folder), the screenshot chip and the skins panel button follow. */
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {
+        try {
+            if (win) for (var n in WIN_IDS) if (own(WIN_IDS, n) && WIN_IDS[n] === win.id) { WINS[n](); break; }
+            var cap = D.getElementById('lm-shot-cap'), sx = D.getElementById('lm-shot-x'), sb = D.getElementById('lm-skin-collections');
+            if (cap) cap.textContent = t('shotCapture');
+            if (sx) sx.title = t('close');
+            if (sb) sb.textContent = SKINS_ICON + t('skinsBtn');
+        } catch (e) { }
+    });
 })();

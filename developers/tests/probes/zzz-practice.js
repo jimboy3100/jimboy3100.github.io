@@ -17,7 +17,7 @@
     var r = win.getBoundingClientRect();
     info.win = [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)];
     if (r.left < 0 || r.top < 0 || r.right > innerWidth + 1 || r.bottom > innerHeight + 1) fail.push('window outside the viewport: ' + info.win.join(','));
-    var x = win.querySelector('button[title="Close"]');
+    var x = win.querySelector('button[title="' + CSS.escape(lmT('modules.practice.close')) + '"]');
     if (!x || x.getBoundingClientRect().width < 28) fail.push('no touch-sized close button');
   }
   var sent = 0, realSend = null;

@@ -24,12 +24,12 @@
         q.dispatchEvent(new Event('input', { bubbles: true }));
         await sleep(150);
         var txt = (document.getElementById('lm-cc-list') || {}).textContent || '';
-        if (!/Discover features/i.test(txt)) fail.push('Command Centre does not list Discover features');
+        if (txt.indexOf(lmT('modules.commandcentre.discover')) < 0 && txt.indexOf(lmT('modules.discovery.title')) < 0) fail.push('Command Centre does not list Discover features');
         q.value = 'what works on this server';
         q.dispatchEvent(new Event('input', { bubbles: true }));
         await sleep(150);
         txt = (document.getElementById('lm-cc-list') || {}).textContent || '';
-        if (!/What works on this server/i.test(txt)) fail.push('Command Centre does not list the server capabilities');
+        if (txt.indexOf(lmT('modules.commandcentre.serverCaps')) < 0 && txt.indexOf(lmT('modules.discovery.serverTitle')) < 0) fail.push('Command Centre does not list the server capabilities');
       }
       if (typeof CC.close === 'function') CC.close();
       await sleep(100);

@@ -253,64 +253,35 @@
         };
     }
 
+    /* ═══ Text ═══ */
+
+    var P = 'modules.commandcentre.';
+    function lang() {
+        try { return W.LMi18n && typeof W.LMi18n.lang === 'function' ? W.LMi18n.lang() : 'en'; } catch (e) { return 'en'; }
+    }
+    /* texts from the language packs (developers/i18n/src) */
+    function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(P + k, vars) : k; }
+    /* the English text of a full key (searching finds items by their English label too) */
+    var enCache = {};
+    function enOf(key) {
+        if (own(enCache, key)) return enCache[key];
+        var s;
+        try { s = W.LMi18n && typeof W.LMi18n.prefixed === 'function' ? W.LMi18n.prefixed(key, 'en')[''] : undefined; } catch (e) { s = undefined; }
+        if (typeof s !== 'string') return typeof W.lmT === 'function' ? W.lmT(key) : key;
+        return (enCache[key] = s);
+    }
+    function tEn(k) { return enOf(P + k); }
+
     var core = {
         normalize: normalize, splitKey: splitKey, scoreText: scoreText, scoreItem: scoreItem, rank: rank,
         parseStore: parseStore, withRecent: withRecent, withFav: withFav, placeBar: placeBar, ID_RE: ID_RE,
-        locked: locked, toggleOpt: toggleOpt, makeTapper: makeTapper
+        locked: locked, toggleOpt: toggleOpt, makeTapper: makeTapper, t: t, enOf: enOf
     };
     var api = W.LMCommandCentre = { _core: core };
 
     var D = W.document;
     if (!D || typeof D.addEventListener !== 'function' || typeof D.createElement !== 'function') return;
 
-    /* ═══ Text ═══ */
-
-    var STR = {
-        title: { en: 'Command Centre', el: 'Κέντρο εντολών' },
-        ph: { en: 'Search commands, settings, windows...', el: 'Αναζήτηση εντολών, ρυθμίσεων, παραθύρων...' },
-        none: { en: 'Nothing found', el: 'Δεν βρέθηκε τίποτα' },
-        fav: { en: 'Favourites', el: 'Αγαπημένα' },
-        recent: { en: 'Recent', el: 'Πρόσφατα' },
-        all: { en: 'Everything', el: 'Όλα' },
-        on: { en: 'ON', el: 'ΝΑΙ' },
-        off: { en: 'OFF', el: 'ΟΧΙ' },
-        hold: { en: 'hold', el: 'κράτημα' },
-        locked: { en: 'This setting cannot be changed now.', el: 'Αυτή η ρύθμιση δεν αλλάζει τώρα.' },
-        holdTip: { en: 'Hold command: from here it is pressed briefly. Bind a key to hold it.', el: 'Εντολή κρατήματος: από εδώ πατιέται για λίγο. Όρισε πλήκτρο για να την κρατάς.' },
-        hk: { en: 'Hotkey', el: 'Πλήκτρο' },
-        opt: { en: 'Setting', el: 'Ρύθμιση' },
-        set: { en: 'Setting', el: 'Ρύθμιση' },
-        sec: { en: 'Section', el: 'Ενότητα' },
-        tab: { en: 'Menu', el: 'Μενού' },
-        win: { en: 'Window', el: 'Παράθυρο' },
-        theme: { en: 'Theme', el: 'Θέμα' },
-        star: { en: 'Favourite (also on the quick bar)', el: 'Αγαπημένο (και στη γρήγορη μπάρα)' },
-        help: { en: '\u2191\u2193 choose \u00b7 Enter run \u00b7 Esc close \u00b7 \u2605 favourite', el: '\u2191\u2193 επιλογή \u00b7 Enter εκτέλεση \u00b7 Esc κλείσιμο \u00b7 \u2605 αγαπημένο' },
-        close: { en: 'Close', el: 'Κλείσιμο' },
-        quickChat: { en: 'Quick chat', el: 'Γρήγορο μήνυμα' },
-        matchHistory: { en: 'Match history', el: 'Ιστορικό αγώνων' },
-        replays: { en: 'Replays', el: 'Επαναλήψεις' },
-        exportImport: { en: 'Export / import settings', el: 'Εξαγωγή / εισαγωγή ρυθμίσεων' },
-        searchSettings: { en: 'Search settings', el: 'Αναζήτηση ρυθμίσεων' },
-        friends: { en: 'Friends', el: 'Φίλοι' },
-        mobileControls: { en: 'Edit touch controls', el: 'Επεξεργασία κουμπιών αφής' },
-        companion: { en: 'Open companion (stream overlay)', el: 'Άνοιγμα companion (επικάλυψη stream)' },
-        director: { en: 'Spectator director', el: 'Σκηνοθέτης θέασης' },
-        hudEditor: { en: 'Edit HUD (move and resize the HUD boxes, layouts)', el: 'Επεξεργασία HUD (μετακίνηση και μέγεθος πλαισίων, διατάξεις)' },
-        practice: { en: 'Practice arena (offline drills, bots, ghost)', el: 'Αρένα εξάσκησης (εκτός σύνδεσης, bots, φάντασμα)' },
-        plugins: { en: 'User Scripts (plugins, catalogue)', el: 'User Scripts (plugins, κατάλογος)' },
-        lab: { en: 'Lab (experimental)', el: 'Lab (πειραματικά)' },
-        /* skinEditor removed — use the standalone Skin Checker & Editor at legendmod.ml/skins/skinchecker.html */
-        macroEditor: { en: 'Custom macros (split, feed, wait, move to mouse)', el: 'Προσαρμοσμένα macro (split, feed, αναμονή, κίνηση στο ποντίκι)' },
-        discover: { en: 'Discover features (what is new, turn on, open)', el: 'Ανακάλυψε λειτουργίες (νέα, ενεργοποίηση, άνοιγμα)' },
-        serverCaps: { en: 'What works on this server', el: 'Τι λειτουργεί σε αυτόν τον διακομιστή' },
-        themeWorkshop: { en: 'Theme workshop', el: 'Εργαστήριο θεμάτων' }
-    };
-    function lang() {
-        try { return W.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
-    }
-    function t(k) { var r = STR[k]; return r ? (r[lang()] || r.en) : k; }
-    function tEn(k) { var r = STR[k]; return r ? r.en : k; }
     /* label text without markup, for textContent */
     function plain(s) {
         if (s == null) return '';
@@ -388,7 +359,7 @@
         WINDOWS.forEach(function (w) {
             var ok = false;
             try { ok = w.avail(); } catch (e) { }
-            if (ok) add({ id: 'win:' + w.id, kind: 'win', label: w.label(), en: w.en, key: w.id, section: t('win'), win: w });
+            if (ok) add({ id: 'win:' + w.id, kind: 'win', label: winLabel(w), en: plain(enOf(winKey(w))), key: w.id, section: t('win'), win: w });
         });
         /* hotkey commands */
         var hc = W.hotkeysCommand, keyOf = hotkeyKeys();
@@ -457,26 +428,29 @@
         el.click();
         return true;
     }
+    /* the label of a window: its own text, or the existing key of the window it opens (key) */
+    function winKey(w) { return w.key || P + w.id; }
+    function winLabel(w) { return plain(typeof W.lmT === 'function' ? W.lmT(winKey(w)) : w.id); }
     var WINDOWS = [
-        { id: 'matchHistory', en: tEn('matchHistory'), label: function () { var s = W.lmT && W.lmT('matchHistory'); return s && s !== 'matchHistory' ? s : t('matchHistory'); }, avail: function () { return typeof W._lmMatchHistoryOpen === 'function'; }, run: function () { W._lmMatchHistoryOpen(); } },
-        { id: 'replays', en: tEn('replays'), label: function () { return t('replays'); }, avail: function () { return typeof W.BeforeReplay === 'function'; }, run: function () { W.BeforeReplay(); } },
-        { id: 'exportImport', en: tEn('exportImport'), label: function () { return plain(TL().exportImport) || t('exportImport'); }, avail: function () { return !!D.querySelector('#og-settings .btn-export'); }, run: function () { clickEl('#og-settings .btn-export'); } },
-        { id: 'searchSettings', en: tEn('searchSettings'), label: function () { return t('searchSettings'); }, avail: function () { return !!D.getElementById('lm-settings-search'); }, run: function () { openTab('og-settings'); setTimeout(function () { var s = D.getElementById('lm-settings-search'); if (s) s.focus(); }, 250); } },
-        { id: 'friends', en: tEn('friends'), label: function () { return t('friends'); }, avail: function () { var b = D.getElementById('lm-friends-btn'); return !!(b && !b.disabled); }, run: function () { clickEl('#lm-friends-btn'); } },
+        { id: 'matchHistory', key: 'matchHistory', avail: function () { return typeof W._lmMatchHistoryOpen === 'function'; }, run: function () { W._lmMatchHistoryOpen(); } },
+        { id: 'replays', avail: function () { return typeof W.BeforeReplay === 'function'; }, run: function () { W.BeforeReplay(); } },
+        { id: 'exportImport', key: 'settings.exportImport', avail: function () { return !!D.querySelector('#og-settings .btn-export'); }, run: function () { clickEl('#og-settings .btn-export'); } },
+        { id: 'searchSettings', avail: function () { return !!D.getElementById('lm-settings-search'); }, run: function () { openTab('og-settings'); setTimeout(function () { var s = D.getElementById('lm-settings-search'); if (s) s.focus(); }, 250); } },
+        { id: 'friends', avail: function () { var b = D.getElementById('lm-friends-btn'); return !!(b && !b.disabled); }, run: function () { clickEl('#lm-friends-btn'); } },
         /* phones only: the touch control editor of LMmobile.js */
-        { id: 'mobileControls', en: tEn('mobileControls'), label: function () { return t('mobileControls'); }, avail: function () { return !!(W._lmMobileHost && typeof W._lmMobileHost.openEditor === 'function'); }, run: function () { W._lmMobileHost.openEditor(); } },
-        { id: 'companion', en: tEn('companion'), label: function () { return t('companion'); }, avail: function () { return !!(W.LMCompanion && W.LMCompanion.open); }, run: function () { W.LMCompanion.open(); } },
-        { id: 'director', en: tEn('director'), label: function () { return t('director'); }, avail: function () { return !!(W.LMDirector && typeof W.LMDirector.open === 'function'); }, run: function () { W.LMDirector.open(); } },
-        { id: 'hudEditor', en: tEn('hudEditor'), label: function () { return t('hudEditor'); }, avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } },
+        { id: 'mobileControls', avail: function () { return !!(W._lmMobileHost && typeof W._lmMobileHost.openEditor === 'function'); }, run: function () { W._lmMobileHost.openEditor(); } },
+        { id: 'companion', avail: function () { return !!(W.LMCompanion && W.LMCompanion.open); }, run: function () { W.LMCompanion.open(); } },
+        { id: 'director', avail: function () { return !!(W.LMDirector && typeof W.LMDirector.open === 'function'); }, run: function () { W.LMDirector.open(); } },
+        { id: 'hudEditor', avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } },
         /* ogario/modules/practice.js (loaded on first use by lmPractice in ogario.v4.js) */
-        { id: 'practice', en: tEn('practice'), label: function () { return t('practice'); }, avail: function () { return typeof W.lmPractice === 'function'; }, run: function () { W.lmPractice('open'); } },
-        { id: 'plugins', en: tEn('plugins'), label: function () { return t('plugins'); }, avail: function () { return !!(W.LMPlugins && typeof W.LMPlugins.open === 'function'); }, run: function () { W.LMPlugins.open('plugins'); } },
-        { id: 'lab', en: tEn('lab'), label: function () { return t('lab'); }, avail: function () { return !!(W.LMLab && typeof W.LMLab.open === 'function'); }, run: function () { W.LMLab.open(); } },
+        { id: 'practice', avail: function () { return typeof W.lmPractice === 'function'; }, run: function () { W.lmPractice('open'); } },
+        { id: 'plugins', avail: function () { return !!(W.LMPlugins && typeof W.LMPlugins.open === 'function'); }, run: function () { W.LMPlugins.open('plugins'); } },
+        { id: 'lab', avail: function () { return !!(W.LMLab && typeof W.LMLab.open === 'function'); }, run: function () { W.LMLab.open(); } },
         /* skinEditor removed — macroeditor.js still loads on first use */
-        { id: 'macroEditor', en: tEn('macroEditor'), label: function () { return t('macroEditor'); }, avail: function () { return typeof W.lmMacroEditor === 'function'; }, run: function () { W.lmMacroEditor('open'); } },
-        { id: 'discover', en: tEn('discover'), label: function () { return t('discover'); }, avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.open); }, run: function () { W.LMDiscovery.open(); } },
-        { id: 'serverCaps', en: tEn('serverCaps'), label: function () { return t('serverCaps'); }, avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.openServer); }, run: function () { W.LMDiscovery.openServer(); } },
-        { id: 'themeWorkshop', en: tEn('themeWorkshop'), label: function () { return t('themeWorkshop'); }, avail: function () { return !!(W.LMThemeWorkshop && typeof W.LMThemeWorkshop.open === 'function'); }, run: function () { W.LMThemeWorkshop.open(); } }
+        { id: 'macroEditor', avail: function () { return typeof W.lmMacroEditor === 'function'; }, run: function () { W.lmMacroEditor('open'); } },
+        { id: 'discover', avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.open); }, run: function () { W.LMDiscovery.open(); } },
+        { id: 'serverCaps', avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.openServer); }, run: function () { W.LMDiscovery.openServer(); } },
+        { id: 'themeWorkshop', avail: function () { return !!(W.LMThemeWorkshop && typeof W.LMThemeWorkshop.open === 'function'); }, run: function () { W.LMThemeWorkshop.open(); } }
     ];
 
     /* ═══ Running items ═══ */
@@ -592,7 +566,7 @@
 
     /* ═══ Palette ═══ */
 
-    var root = null, input = null, list = null, rows = [], sel = 0, lastFocus = null;
+    var root = null, input = null, list = null, rows = [], sel = 0, lastFocus = null, closeBtn = null, foot = null;
     function injectStyle() {
         if (D.getElementById('lm-cc-style')) return;
         var st = D.createElement('style');
@@ -601,6 +575,7 @@
             '#lm-cc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;display:flex;align-items:flex-start;justify-content:center;' +
             'background:rgba(0,0,0,.55);padding:10vh 16px 16px;box-sizing:border-box;font-family:inherit}' +
             '#lm-cc *{box-sizing:border-box}' +
+            // i18n-ok: CSS
             '#lm-cc .lm-cc-panel{width:640px;max-width:100%;max-height:100%;display:flex;flex-direction:column;background:var(--cc-bg);color:var(--cc-tx);' +
             'border:1px solid var(--cc-bg2);border-top:3px solid var(--cc-mc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden}' +
             '#lm-cc .lm-cc-head{display:flex;gap:6px;padding:8px;border-bottom:1px solid var(--cc-bg2);background:linear-gradient(180deg,var(--cc-bg2) 0%,var(--cc-bg) 100%);flex:0 0 auto}' +
@@ -655,7 +630,6 @@
         root.id = 'lm-cc';
         root.setAttribute('role', 'dialog');
         root.setAttribute('aria-modal', 'true');
-        root.setAttribute('aria-label', t('title'));
         var panel = mk('div', 'lm-cc-panel');
         var head = mk('div', 'lm-cc-head');
         input = mk('input');
@@ -664,21 +638,20 @@
         input.setAttribute('autocomplete', 'off');
         input.setAttribute('spellcheck', 'false');
         input.setAttribute('aria-controls', 'lm-cc-list');
-        var x = mk('button', 'lm-cc-x', '\u00d7');
+        var x = closeBtn = mk('button', 'lm-cc-x', '\u00d7');
         x.type = 'button';
-        x.setAttribute('aria-label', t('close'));
-        x.title = t('close');
         head.appendChild(input);
         head.appendChild(x);
         list = mk('div', 'lm-cc-list');
         list.id = 'lm-cc-list';
         list.setAttribute('role', 'listbox');
-        var foot = mk('div', 'lm-cc-foot', t('help'));
+        foot = mk('div', 'lm-cc-foot');
         panel.appendChild(head);
         panel.appendChild(list);
         panel.appendChild(foot);
         root.appendChild(panel);
         shield(root);
+        applyTexts();
         input.addEventListener('input', function () { sel = 0; render(); });
         root.addEventListener('keydown', onKey, false);
         root.addEventListener('keyup', stopGame, false);
@@ -708,6 +681,16 @@
             var i = +row.getAttribute('data-i');
             if (i !== sel) { sel = i; mark(false); }
         });
+    }
+    /* the palette's own texts (again after a language change); Arabic reads right to left */
+    function applyTexts() {
+        if (!root) return;
+        root.setAttribute('aria-label', t('title'));
+        try { root.setAttribute('dir', W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'); } catch (e) { }
+        closeBtn.setAttribute('aria-label', t('close'));
+        closeBtn.title = t('close');
+        foot.textContent = t('help');
+        input.placeholder = t('ph');
     }
     function onKey(e) {
         e.stopPropagation();
@@ -744,7 +727,8 @@
             }
         }
     }
-    function kindLabel(it) { return it.theme ? t('theme') : t(it.kind); }
+    /* 'set' (sliders, colours...) shows as "Setting" like the switches */
+    function kindLabel(it) { return it.theme ? t('theme') : t(it.kind === 'set' ? 'opt' : it.kind); }
     function rowEl(r, i) {
         var it = r.item;
         var row = mk('div', 'lm-cc-row');
@@ -845,7 +829,7 @@
         state = load();
         lastFocus = D.activeElement;
         themeVars();
-        input.placeholder = t('ph');
+        applyTexts();
         if (!isOpen()) D.body.appendChild(root);
         input.value = typeof query === 'string' ? query : '';
         sel = 0;
@@ -900,13 +884,18 @@
         if (D.getElementById('lm-cc-open')) return true;
         var row = D.querySelector('.lm-settings-search-wrap .lm-presets-row') || D.querySelector('.lm-settings-search-wrap');
         if (!row) return false;
-        var b = mk('button', 'btn btn-xs lm-cc-open-btn', '\u2318 ' + t('title'));
+        var b = mk('button', 'btn btn-xs lm-cc-open-btn');
         b.id = 'lm-cc-open';
         b.type = 'button';
-        b.title = t('title') + ' (Ctrl+K)';
+        menuButtonTexts(b);
         b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open(); });
         row.appendChild(b);
         return true;
+    }
+
+    function menuButtonTexts(b) {
+        b.textContent = '\u2318 ' + t('title');
+        b.title = t('title') + ' (Ctrl+K)';
     }
 
     /* ═══ Quick bar with the favourites (option commandCentreBar) ═══ */
@@ -997,7 +986,6 @@
             bar = mk('div');
             bar.id = 'lm-cc-bar';
             bar.setAttribute('role', 'toolbar');
-            bar.setAttribute('aria-label', t('title'));
             shield(bar);
             bar.addEventListener('click', function (e) {
                 var b = closest(e.target, '.lm-cc-bb');
@@ -1008,6 +996,7 @@
                 if (it) run(it, true);
             });
         }
+        bar.setAttribute('aria-label', t('title'));
         var sig = lang() + '|' + favs.map(function (f) { return f.id + '=' + f.label; }).join('|');
         if (force || sig !== barSig || !bar.childNodes.length) {
             barSig = sig;
@@ -1054,6 +1043,19 @@
         else if (bar && bar.parentNode && e.target && e.target.type === 'checkbox') setTimeout(function () { syncBar(false); }, 0);
     }, false);
     W.addEventListener('resize', function () { if (bar && bar.parentNode) { barPos = null; setTimeout(placeNow, 50); } });
+    /* another language: the labels are read again (after the menu got its new texts) */
+    if (W.LMi18n && typeof W.LMi18n.onChange === 'function') {
+        W.LMi18n.onChange(function () {
+            setTimeout(function () {
+                cache = null;
+                var mb = D.getElementById('lm-cc-open');
+                if (mb) menuButtonTexts(mb);
+                if (root) applyTexts();
+                if (isOpen()) { items(true); render(); }
+                if (bar && bar.parentNode) syncBar(true);
+            }, 0);
+        });
+    }
 
     api.open = open;
     api.close = close;

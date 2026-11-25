@@ -6,6 +6,7 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const root = path.join(__dirname, '..', '..');
 const P = require(path.join(root, 'ogario', 'modules', 'plugins.js'));
 const L = require(path.join(root, 'ogario', 'modules', 'lab.js'));
+const i18n = require('./lib/i18n-env');
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 
@@ -143,6 +144,28 @@ check('catalogue rejects bad entries', P.validateCatalogue({ plugins: [{ name: '
     check('chat highlighter: nick used when no words are set', toasts[toasts.length - 1] === 'A: hi jim <b>');
 })();
 
+/* ---- the confirm text of a plugin comes from the language pack and follows a language change ---- */
+(function () {
+    const store = {};
+    let asked = '';
+    const ctx = {
+        console, setTimeout: () => 0, clearTimeout: () => { }, JSON, URL,
+        localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => { delete store[k]; } },
+        document: { getElementById: () => null, querySelector: () => null, querySelectorAll: () => [], currentScript: null },
+        confirm: t => { asked = t; return false; }
+    };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    i18n(ctx);
+    vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'plugins.js'), 'utf8'), ctx);
+    const ok = ctx._lmUsGate(1, HEAD, true);
+    check('plugins: a refused confirm does not run the plugin', ok === false);
+    check('plugins: confirm text from the language pack', asked.indexOf(i18n.t('modules.plugins.confirmRun', ['Kill counter'])) === 0 && asked.indexOf('- ' + i18n.t('modules.plugins.permChatRead')) !== -1 && asked.indexOf(i18n.t('modules.plugins.confirmFull')) !== -1);
+    ctx.LMi18n.setLang('el', { save: false });
+    ctx._lmUsGate(1, HEAD, true);
+    check('plugins: confirm text follows a language change', asked.indexOf(i18n.t('modules.plugins.confirmRun', ['Kill counter'], 'el')) === 0 && asked.indexOf(i18n.t('modules.plugins.permChatRead', null, 'el')) !== -1 && asked.indexOf(i18n.t('modules.plugins.confirmFull')) === -1);
+})();
+
 /* ---- Lab storage ---- */
 check('lab store: only valid ids that are on', JSON.stringify(L.validateStore('{"v":1,"on":{"a":true,"b":false,"c":"true","bad id":true,"__proto__":true,"x.y-z_1":true}}').on) === JSON.stringify({ a: true, 'x.y-z_1': true }));
 check('lab store: broken values give an empty store', Object.keys(L.validateStore('{').on).length === 0 && Object.keys(L.validateStore({ on: [] }).on).length === 0 && Object.keys(L.validateStore(null).on).length === 0);
@@ -159,9 +182,15 @@ check('lab experiment needs an id and a name', !L.validateExperiment({ id: '1a',
         confirm: () => true
     };
     ctx.window = ctx;
-    vm.runInNewContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'lab.js'), 'utf8'), ctx);
+    vm.createContext(ctx);
+    i18n(ctx);
+    vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'lab.js'), 'utf8'), ctx);
     const Lab = ctx.LMLab;
     check('lab: built-in demo registered, off', Lab.list().length === 1 && Lab.list()[0].id === 'frameTime' && !Lab.isEnabled('frameTime') && !ctx._lmLabFrameTime);
+    check('lab: built-in name from the language pack', Lab.list()[0].name === i18n.t('modules.lab.frameTime') && Lab.list()[0].description === i18n.t('modules.lab.frameTimeDesc'));
+    ctx.LMi18n.setLang('el', { save: false });
+    check('lab: built-in name follows a language change', Lab.list()[0].name === i18n.t('modules.lab.frameTime', null, 'el') && Lab.list()[0].name !== i18n.t('modules.lab.frameTime'));
+    ctx.LMi18n.setLang('en', { save: false });
     let on = 0, off = 0;
     check('lab: register', Lab.register({ id: 'demo', name: 'Demo', onEnable: () => on++, onDisable: () => off++ }) === true);
     check('lab: same id twice is refused', Lab.register({ id: 'demo', name: 'Again' }) === false);
