@@ -25,7 +25,8 @@ ctx.localStorage = makeStorage(0);
 ctx.hotkeysCommand = { 'hk-feed': { defaultKey: 'W' }, 'hk-split': { defaultKey: 'SPACE' }, 'hk-newThing': { defaultKey: 'N' }, 'hk-noKey': { defaultKey: '' } };
 vm.createContext(ctx);
 i18n(ctx);
-/* the real schemas and validators (defaultSettings + LM_THEME_DEFAULTS + lmThemeValue, defaultmapsettings + LM_SETTINGS_DEFAULTS + lmSettingValue) */
+/* the real schemas and validators (the preset maps, defaultSettings + LM_THEME_SCHEMA + lmThemeValue, defaultmapsettings + LM_SETTINGS_DEFAULTS + lmSettingValue) */
+vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
 vm.runInContext(mod, ctx);
@@ -216,6 +217,7 @@ function bootApply() {
   c.LMMobileEditor = { reload() { calls.push('ml-reload'); } };
   vm.createContext(c);
   i18n(c);
+  vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), c);
   vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), c);
   vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), c);
   vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'hudeditor.js'), 'utf8'), c);

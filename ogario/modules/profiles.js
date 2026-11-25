@@ -58,20 +58,12 @@
     function stripTags(s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim(); }
 
     /* ── Validation (the same schema checks as the settings import) ── */
-    var COLOR_DEFAULT = /^(#|rgba?\()/i;
-    var COLOR_VALUE = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|[a-z]+)$/i;
     function settingValue(k, v) {
         return typeof window.lmSettingValue === 'function' ? window.lmSettingValue(k, v) : undefined;
     }
+    /* the theme schema of the core (LM_THEME_SCHEMA: ranges, steps, choices, colour format) */
     function themeValue(k, v) {
-        if (typeof window.lmThemeValue !== 'function') return undefined;
-        var t = window.lmThemeValue(k, v);
-        if (t === undefined) return undefined;
-        /* the colour check of Settings.loadThemeSettings: colours end up in CSS and style attributes */
-        var defs = window.LM_THEME_DEFAULTS;
-        if (k !== 'lbTeammateColor' && defs && typeof defs[k] === 'string' && COLOR_DEFAULT.test(defs[k]) &&
-            !(typeof t === 'string' && COLOR_VALUE.test(t))) return undefined;
-        return t;
+        return typeof window.lmThemeValue === 'function' ? window.lmThemeValue(k, v) : undefined;
     }
     /* LMmobile's phone controls and their slider ranges (LMmobile checks them again on load) */
     var MOBILE_SCHEMA = {

@@ -10,10 +10,10 @@
  *   { format: "lm-theme", version: 1, name, author, description, created,
  *     theme: { theme settings }, sounds: { messageSound, commandSound, virusSoundurl },
  *     cursor: url, background: url, hudLayout: "name" }
- * Every value is checked against the shipped theme schema (LM_THEME_DEFAULTS, lmThemeValue)
- * plus the colour check of Settings.loadThemeSettings; strings that are not colours must be a
- * known preset / font name or an https URL. Unknown keys are dropped, sizes are capped. URLs are
- * shown to the player before a theme that uses them is applied.
+ * Every value is checked against the shipped theme schema (LM_THEME_SCHEMA, lmThemeValue: ranges,
+ * steps, preset / font names, colour format); other strings must be an https URL. Unknown keys
+ * are dropped, sizes are capped. URLs are shown to the player before a theme that uses them is
+ * applied.
  * A theme stands for the whole look: settings it leaves out get their shipped defaults, except
  * the cursor, the background and the sounds, which stay as they are.
  */
@@ -74,21 +74,6 @@
     var URL_KEYS = { menuBg: 1, customBackground: 1, customCursor: 1 };
     /* kept as they are when a theme leaves them out (optional parts of a package) */
     var KEEP_KEYS = { customBackground: 1, customCursor: 1 };
-    var ENUMS = { chatPos: 'chatPositions', preset: 'themePresets', menuPreset: 'themeMenus', graphics: 'graphicMenus', indicators: 'indicatorMenus' };
-    var FONTS = ['ubuntu', 'ubuntu-bold', 'roboto', 'roboto-bold', 'oswald', 'oswald-bold', 'shojumaru', 'shojumaru-bold', 'allura', 'allura-bold'];
-    var FAMILIES = ['Ubuntu', 'Roboto', 'Oswald', 'Shojumaru', 'Allura'];
-    /* the slider ranges of the Theme tab (Settings.setThemeMenu) */
-    var RANGES = {
-        sectorsX: [2, 10], sectorsY: [2, 10], sectorsFontSize: [200, 2000], namesScale: [0.5, 2], massScale: [1, 5],
-        virMassScale: [1, 5], strokeScale: [1, 4], foodSize: [1, 50], virusSpikesRatio: [0.03, 0.8], virusSpikesSize: [1, 60],
-        gameBrightness: [50, 150], gameSaturation: [0, 200], virusStrokeSize: [2, 40], bordersWidth: [2, 200],
-        borderGlowSize: [0, 40], virusGlowSize: [0, 40], sectorsWidth: [2, 200], cellsAlpha: [0.01, 1], skinsAlpha: [0.01, 1],
-        virusAlpha: [0, 1], textAlpha: [0.1, 1], ghostCellsAlpha: [0.01, 1], menuOpacity: [0.1, 1], hudScale: [0.5, 1.5],
-        chatScale: [1, 2], miniMapWidth: [120, 400], miniMapSectorsOpacity: [0, 1], miniMapNickSize: [8, 16],
-        miniMapNickStrokeSize: [0, 6], miniMapMyCellSize: [4, 10], miniMapMyCellStrokeSize: [0, 10], miniMapTeammatesSize: [4, 10],
-        miniMapGhostCellsAlpha: [0.01, 1], backgroundAlpha: [0, 1], miniMapTop: [0, 200], cellShadowBlur: [0, 100],
-        cellShadowOffsetX: [-50, 50], cellShadowOffsetY: [-50, 50]
-    };
     var SOUND_KEYS = ['messageSound', 'commandSound', 'virusSoundurl'];
     var SOUND_SETTERS = { messageSound: 'setMessageSound', commandSound: 'setCommandSound', virusSoundurl: 'setvirusSound' };
 
@@ -116,27 +101,18 @@
     function themeValue(k, v) {
         var defs = schema();
         if (!defs || typeof k !== 'string' || !own.call(defs, k) || excluded(k)) return undefined;
-        if (typeof W.lmThemeValue !== 'function') return undefined;
+        var rules = W.LM_THEME_SCHEMA;
+        if (typeof W.lmThemeValue !== 'function' || !rules) return undefined;
+        /* the core's theme schema: type, slider range and step, preset / font lists, colour format */
         var t = W.lmThemeValue(k, v);
         if (t === undefined) return undefined;
-        var d = defs[k];
-        if (typeof d === 'number') {
-            if (typeof t !== 'number' || !isFinite(t)) return undefined;
-            var r = RANGES[k] || (/FontWeight$/.test(k) ? [100, 900] : [-10000, 100000]);
-            return Math.min(r[1], Math.max(r[0], t));
-        }
+        var d = defs[k], rule = own.call(rules, k) ? rules[k] : null;
+        if (typeof d === 'number') return typeof t === 'number' && isFinite(t) ? t : undefined;
         if (typeof d === 'boolean') return typeof t === 'boolean' ? t : undefined;
         if (typeof d !== 'string' || typeof t !== 'string') return undefined;
-        /* the colour check of Settings.loadThemeSettings: colours end up in CSS and style attributes */
-        if (COLOR_DEFAULT.test(d)) return t.length <= 60 && COLOR_VALUE.test(t) ? t : undefined;
+        if (rule && rule.choices) return t;
+        if (rule && rule.color) return t.length <= 60 ? t : undefined;
         if (own.call(URL_KEYS, k)) return cleanUrl(t);
-        if (own.call(ENUMS, k)) {
-            var m = W[ENUMS[k]];
-            if (isObj(m)) return own.call(m, t) ? t : undefined;
-            return /^[A-Za-z0-9_-]{1,30}$/.test(t) ? t : undefined;
-        }
-        if (/FontFamily$/.test(k)) return FAMILIES.indexOf(t) >= 0 ? t : undefined;
-        if (/Font$/.test(k)) return FONTS.indexOf(t) >= 0 ? t : undefined;
         /* drawn on the canvas, at most 4 characters (_lmSectorLabel) */
         if (k === 'sectorsSymbol') return t === '' ? '' : (cleanText(t, 4) || undefined);
         /* any other text setting is left out: only values of a known kind are accepted */

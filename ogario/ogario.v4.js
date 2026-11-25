@@ -18719,14 +18719,99 @@ var defaultSettings = {
 /* The shipped theme defaults, frozen before the stored theme is loaded: the schema for
  * stored and imported theme values (see LM_SETTINGS_DEFAULTS for the gameplay ones). */
 var LM_THEME_DEFAULTS = Object.freeze(Object.assign({}, defaultSettings));
-/* A stored/imported theme value of the setting's type (numeric strings converted, NaN and
- * Infinity refused), or undefined when it cannot be used. Colours are checked separately. */
+/* A colour value as the colour boxes store it (#hex, rgb()/rgba() or a colour name): colours end
+ * up in CSS and in inline style attributes of HTML strings (shop, chat, extended UI). */
+var LM_THEME_COLOR = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|[a-z]+)$/i;
+/* The valid theme values, as LM_SETTINGS_SCHEMA is for the gameplay settings: [min, max, step]
+ * (step 0 = any value in the range), { choices: [...] } or { color: true }. It is the one schema
+ * for loading, importing, settings profiles, the Theme Workshop, the theme presets and the Theme
+ * tab sliders (Settings.addSliderBox builds its range from it). Ranges and steps are those of the
+ * Theme tab sliders, the lists those of its selects. */
+var LM_THEME_SCHEMA = (function () {
+    var fonts = Object.freeze(['ubuntu', 'ubuntu-bold', 'roboto', 'roboto-bold', 'oswald', 'oswald-bold', 'shojumaru', 'shojumaru-bold', 'allura', 'allura-bold']);
+    var families = Object.freeze(['Ubuntu', 'Roboto', 'Oswald', 'Shojumaru', 'Allura']);
+    var keys = function (m) { return Object.freeze(Object.keys(m)); };
+    var s = {
+        sectorsX: [2, 10, 1],
+        sectorsY: [2, 10, 1],
+        sectorsFontSize: [200, 2000, 10],
+        namesScale: [0.5, 2, 0.1],
+        massScale: [1, 5, 1],
+        virMassScale: [1, 5, 1],
+        strokeScale: [1, 4, 0.1],
+        foodSize: [1, 50, 1],
+        virusSpikesRatio: [0.03, 0.8, 0.01],
+        virusSpikesSize: [1, 60, 1],
+        gameBrightness: [50, 150, 5],
+        gameSaturation: [0, 200, 5],
+        virusStrokeSize: [2, 40, 1],
+        bordersWidth: [2, 200, 2],
+        borderGlowSize: [0, 40, 1],
+        virusGlowSize: [0, 40, 1],
+        sectorsWidth: [2, 200, 2],
+        cellsAlpha: [0.01, 1, 0.01],
+        skinsAlpha: [0.01, 1, 0.01],
+        virusAlpha: [0, 1, 0.01],
+        textAlpha: [0.1, 1, 0.01],
+        ghostCellsAlpha: [0.01, 1, 0.01],
+        menuOpacity: [0.1, 1, 0.01],
+        /* the Theme tab slider shows 0.5 up to a top that is lower on small screens (setThemeMenu),
+         * in 0.01 steps; the phone's two-finger HUD zoom (LMmobile.js) sets any value from 0.3, and
+         * a larger value saved on another device stays */
+        hudScale: [0.3, 1.5, 0],
+        chatScale: [1, 2, 0.01],
+        miniMapWidth: [120, 400, 2],
+        miniMapSectorsOpacity: [0, 1, 0.01],
+        miniMapNickSize: [8, 16, 1],
+        miniMapNickStrokeSize: [0, 6, 1],
+        miniMapMyCellSize: [4, 10, 0.5],
+        miniMapMyCellStrokeSize: [0, 10, 1],
+        miniMapTeammatesSize: [4, 10, 0.5],
+        miniMapGhostCellsAlpha: [0.01, 1, 0.01],
+        backgroundAlpha: [0, 1, 0.01],
+        /* no slider: it follows the minimap width (setMiniMapWidth); the cell shadow */
+        miniMapTop: [0, 200, 0],
+        cellShadowBlur: [0, 100, 0],
+        cellShadowOffsetX: [-50, 50, 0],
+        cellShadowOffsetY: [-50, 50, 0],
+        chatPos: { choices: keys(chatPositions) },
+        preset: { choices: keys(themePresets) },
+        menuPreset: { choices: keys(themeMenus) },
+        graphics: { choices: keys(graphicMenus) },
+        indicators: { choices: keys(indicatorMenus) }
+    };
+    /* the font selects (addFontBox) and what setFont derives from them */
+    ['names', 'mass', 'sectors', 'hud', 'miniMap', 'miniMapNick'].forEach(function (p) {
+        s[p + 'Font'] = { choices: fonts };
+        s[p + 'FontFamily'] = { choices: families };
+        s[p + 'FontWeight'] = [100, 900, 100];
+    });
+    /* lbTeammateColor is not drawn (LMexpress reads its stored value as a marker): left as stored */
+    for (var k in LM_THEME_DEFAULTS) {
+        var d = LM_THEME_DEFAULTS[k];
+        if (k !== 'lbTeammateColor' && typeof d === 'string' && /^(#|rgba?\()/i.test(d)) s[k] = { color: true };
+    }
+    for (k in s) Object.freeze(s[k]);
+    return Object.freeze(s);
+})();
+/* A stored/imported theme value made to fit the setting (LM_THEME_SCHEMA), or undefined when it
+ * cannot be used (the default stays): numeric strings converted, NaN and Infinity refused, a
+ * number outside its range or between steps brought onto it (lmSchemaFit, as for the gameplay
+ * settings), a value outside a list of choices or a colour that is not a plain colour refused. */
 function lmThemeValue(key, value) {
     if (!Object.prototype.hasOwnProperty.call(LM_THEME_DEFAULTS, key)) return undefined;
     var def = LM_THEME_DEFAULTS[key];
+    var rule = Object.prototype.hasOwnProperty.call(LM_THEME_SCHEMA, key) ? LM_THEME_SCHEMA[key] : null;
     if (typeof def === 'number') {
         var n = typeof value === 'number' ? value : (typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN);
-        return Number.isFinite(n) ? n : undefined;
+        if (!Number.isFinite(n)) return undefined;
+        return Array.isArray(rule) ? lmSchemaFit(rule, n) : n;
+    }
+    if (typeof def === 'string') {
+        if (typeof value !== 'string') return undefined;
+        if (rule && rule.choices) return rule.choices.indexOf(value) >= 0 ? value : undefined;
+        if (rule && rule.color) return LM_THEME_COLOR.test(value) ? value : undefined;
+        return value;
     }
     if (typeof def === 'boolean') {
         if (typeof value === 'boolean') return value;
@@ -20717,18 +20802,13 @@ function thelegendmodproject() {
             ) {
                 storage = null;
             }
-            /* Colour settings end up in CSS and in inline style attributes of HTML strings
-             * (shop, chat, extended UI): a stored (e.g. imported) colour that is not a plain
-             * colour value keeps the default. lbTeammateColor is not rendered (LMexpress uses
-             * its stored value as a marker), so it is left as stored. */
-            var colorDefault = /^(#|rgba?\()/i;
-            var colorValue = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|[a-z]+)$/i;
             for (const setup in defaultSettings) {
                 if (defaultSettings.hasOwnProperty(setup)) {
-                    if (storage && Object.prototype.hasOwnProperty.call(storage, setup) &&
-                        !(setup !== 'lbTeammateColor' && typeof defaultSettings[setup] === 'string' && colorDefault.test(defaultSettings[setup]) &&
-                            !(typeof storage[setup] === 'string' && colorValue.test(storage[setup])))) {
-                        /* and of the setting's type (a NaN size or a "12" string broke the layout maths) */
+                    if (storage && Object.prototype.hasOwnProperty.call(storage, setup)) {
+                        /* a stored (e.g. imported) value that does not fit its setting keeps the
+                         * default; a number is put on its slider's range and step, a colour must be
+                         * a plain colour value (LM_THEME_SCHEMA; a NaN size or a "12" string broke
+                         * the layout maths) */
                         var _lmThemeLoaded = lmThemeValue(setup, storage[setup]);
                         if (_lmThemeLoaded !== undefined) defaultSettings[setup] = _lmThemeLoaded;
                     }
@@ -20873,6 +20953,16 @@ function thelegendmodproject() {
             }
         },
         addSliderBox(id, name, min, max, step, callback) {
+            /* the range and step come from the theme schema, not from the call; a call may only
+             * narrow the range (hudScale: its top for the screen), and gives the step of a setting
+             * that takes any value in its range */
+            var _lmRule = Object.prototype.hasOwnProperty.call(LM_THEME_SCHEMA, name) && Array.isArray(LM_THEME_SCHEMA[name]) ? LM_THEME_SCHEMA[name] : null;
+            if (_lmRule) {
+                var _lmLo = Number(min), _lmTop = Number(max), _lmStep = Number(step);
+                min = Number.isFinite(_lmLo) && _lmLo > _lmRule[0] && _lmLo <= _lmRule[1] ? _lmLo : _lmRule[0];
+                max = Number.isFinite(_lmTop) && _lmTop >= min && _lmTop < _lmRule[1] ? _lmTop : _lmRule[1];
+                step = _lmRule[2] > 0 ? _lmRule[2] : (_lmStep > 0 ? _lmStep : 'any');
+            }
             // $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\">' + defaultSettings[name] + '</span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\" value=\"' + defaultSettings[name] + '\"></div>');
             $(id).append(`<div class="slider-box">
                               <div class="box-label">
@@ -20887,24 +20977,19 @@ function thelegendmodproject() {
             /* Values set as text/property: imported theme values must not be parsed as HTML. */
             $('#' + name + '-value').text(defaultSettings[name]);
             $('#' + name + '-slider').val(defaultSettings[name]);
-            if (callback) {
-                var app = this;
-                $('#' + name + '-slider').on('input', function () {
-                    var t = parseFloat($(this).val());
-                    $('#' + name + '-value').text(t);
-                    defaultSettings[name] = t;
-                    if (ogario.hasOwnProperty(name)) {
-                        ogario[name] = t;
-                    }
-                    app[callback]();
-                });
-            } else $('#' + name + '-slider').on('input', function () {
+            var app = this;
+            $('#' + name + '-slider').on('input', function () {
+                /* the schema again: a value set from a script (val() + input) may be off the steps */
                 var t = parseFloat($(this).val());
+                var fit = Object.prototype.hasOwnProperty.call(LM_THEME_DEFAULTS, name) ? lmThemeValue(name, t) : (Number.isFinite(t) ? t : undefined);
+                if (fit === undefined) return;
+                t = fit;
                 $('#' + name + '-value').text(t);
                 defaultSettings[name] = t;
                 if (ogario.hasOwnProperty(name)) {
                     ogario[name] = t;
                 }
+                if (callback) app[callback]();
             });
         },
         /*
@@ -21296,7 +21381,10 @@ function thelegendmodproject() {
             }
             for (const name in names) {
                 if (names.hasOwnProperty(name) && defaultSettings.hasOwnProperty(name)) {
-                    defaultSettings[name] = names[name];
+                    /* a preset value goes through the theme schema like a stored one */
+                    var _lmPv = lmThemeValue(name, names[name]);
+                    if (_lmPv === undefined) continue;
+                    defaultSettings[name] = _lmPv;
                     if (ogario.hasOwnProperty(name)) {
                         ogario[name] = defaultSettings[name];
                     }
@@ -23759,7 +23847,8 @@ function thelegendmodproject() {
                 /* Values are checked against the frozen shipped defaults (the schema), not against
                  * the settings loaded now. A key the version does not know is dropped; a value
                  * that does not fit its setting is dropped too, so the default applies; a number
-                 * is put on its range and step (LM_SETTINGS_SCHEMA) before it is stored. */
+                 * is put on its range and step (LM_SETTINGS_SCHEMA, LM_THEME_SCHEMA) before it is
+                 * stored. */
                 if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioSettings') && importValue.ogarioSettings && typeof importValue.ogarioSettings === 'object') {
                     var _impS = importValue.ogarioSettings;
                     for (var _impK in _impS) {

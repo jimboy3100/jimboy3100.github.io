@@ -23,6 +23,7 @@ const events = [];
 ctx.LMEvents = { listen: true, _has(n) { return this.listen && n === 'settingsChange'; }, emit(n, d) { events.push([n, d.key, d.value]); if (ctx._onEmit) ctx._onEmit(d); } };
 vm.createContext(ctx);
 vm.runInContext(cut('function readLocalStorageJSON(key, fallbackValue) {', '/* ─── Persistent Skin & Audio Storage'), ctx);
+vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
 vm.runInContext('var profiles = [];', ctx);
