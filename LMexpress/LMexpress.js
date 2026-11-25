@@ -7623,26 +7623,26 @@ function initializeLM(modVersion) {
             localStorage.setItem("MAINBTBtn", true);
             var headID = document.getElementsByTagName("head")[0];
             $('#RNCN').remove(); /* one style tag, not one more per toggle */
-            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
-                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel{border-radius: 10px;}.menu-tabs,' +
-                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0;} #hotkeys {border-radius: 10px;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0;}  ' +
-                '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%; }.agario-profile-picture { border-radius: 32px;}' +
-                '#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 0 0 15px 15px;}' +
-                '#top5-hud{ border-radius: 15px; } #target-hud{ border-radius: 15px; } #legendAdImg, #stats-hud { border-radius: 10px; } ' +
-                '#time-hud { border-radius: 10px; } </style>');
+            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, #main-menu, .center-container, .btn, .form-control, ' +
+                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, #skins-panel, #quick-menu, #exp-bar, #exp-bar .progress{border-radius: 10px!important;}.menu-tabs,' +
+                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0!important;} #hotkeys {border-radius: 10px!important;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0!important;}  ' +
+                '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%!important; }.agario-profile-picture { border-radius: 32px!important;}' +
+                '#menu-footer { border-radius: 0 0 10px 10px!important; } #leaderboard-hud { border-radius: 15px!important;} #dropDown, #dropDown2 { border-radius: 15px!important;} #minimap-hud { border-radius: 0 0 15px 15px!important;}' +
+                '#top5-hud{ border-radius: 15px!important; } #target-hud{ border-radius: 15px!important; } #legendAdImg, #stats-hud { border-radius: 10px!important; } ' +
+                '#time-hud, #timertools-hud { border-radius: 10px!important; } </style>');
             _lmHudCornersWin();
             $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45b);
         } else {
             localStorage.setItem("MAINBTBtn", false);
             var headID = document.getElementsByTagName("head")[0];
             $('#RNCN').remove(); /* one style tag, not one more per toggle */
-            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
-                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, .menu-tabs,' +
-                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys,  #hotkeys, .skin, .input-group-btn, .input-group.nick,  ' +
+            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, #main-menu, .center-container, .btn, .form-control, ' +
+                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, #skins-panel, #quick-menu, #exp-bar, #exp-bar .progress, .menu-tabs,' +
+                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys, .skin, .input-group-btn, .input-group.nick,  ' +
                 '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i, .agario-profile-picture,' +
                 '#menu-footer, #leaderboard-hud, #dropDown, #dropDown2, #minimap-hud,' +
                 '#top5-hud, #target-hud, #legendAdImg, #stats-hud, ' +
-                '#time-hud { border-radius: 0 0 0 0 } </style>');
+                '#time-hud, #timertools-hud { border-radius: 0!important; } </style>');
             _lmHudCornersWin();
             $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45a);
         }
