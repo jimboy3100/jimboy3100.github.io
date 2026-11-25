@@ -80,30 +80,32 @@
         ]
     }
     </script>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-lc-articles" charset="utf-8"></script>
 </head>
 
 <div class="input-box" style="text-align: center; font-size: 18px; margin-top: 0px; padding: 0px 0 0px 0;">
-<h1> Join Party mode Legend clan </h1>
+<h1 data-i18n="site.lc.articles.joinPartyModeLegend"> Join Party mode Legend clan </h1>
 <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2FLcclan%2Fvideos%2F486833118770903%2F&autoplay=1&show_text=0&width=560" width="560" height="315" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true" allowFullScreen="true"></iframe>
 	<br>
-	<u style="color:black; font-size:22px"><i>Add <b>live:jan_3828</b> on SKYPE for Instant JOIN</i></u>
+	<u style="color:black; font-size:22px"><i data-i18n-html="site.lc.articles.addLiveJan3828">Add <b>live:jan_3828</b> on SKYPE for Instant JOIN</i></u>
 <br>	
 	</div>
 	<div class="input-box" style="text-align: center; font-size: 18px; margin-top: 0px; padding: 0px 0 0px 0;"></div>
 	<p align="middle">
-	<div class="column" style="background-color:#aaa;">
+	<div data-i18n-html="site.lc.articles.legendClanFacebookWww" class="column" style="background-color:#aaa;">
 	Legend Clan facebook:
 	<br>
 	<a href="https://www.facebook.com/Lcclan/" target="_blank" id= "TermsOfUseLicence" class="title" style="" rel="noopener"><br>
 	<u style="color:black; font-size:22px"><i>www.facebook.com/Lcclan/</i></u></a>		
 	</div>
-	<div class="column" style="background-color:#bbb;">
+	<div data-i18n-html="site.lc.articles.legendClanWebsiteWww" class="column" style="background-color:#bbb;">
 	Legend Clan website:	
 	<br>
 	<a href="http://legendclan.ml" target="_blank" id= "TermsOfUseLicence" class="title" style="" rel="noopener"><br>
 	<u style="color:black; font-size:22px"><i>www.legendclan.ml</i></u></a>
 	</div>
-	<div class="column" style="background-color:#ccc;">
+	<div data-i18n-html="site.lc.articles.legendModProjectWebsite" class="column" style="background-color:#ccc;">
 	Legend Mod Project website:
 	<br>
 	<a href="http://www.jimboy3100.github.io" target="_blank" id= "TermsOfUseLicence" class="title" style="" rel="noopener"><br>
@@ -112,7 +114,7 @@
 	</p>
 	<script>
 	setTimeout(function(){
-	document.title = "Legend ℄ Clan"; 
+	document.title = "Legend ℄ Clan"; // i18n-ok: brand name in the tab title
 	(function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -122,5 +124,6 @@
 	})();
 	}, 2000);
 	</script>
-	</body>
+	<div style="text-align:center;margin:16px 0"><span data-lm-lang-picker></span></div>
+</body>
 </html>

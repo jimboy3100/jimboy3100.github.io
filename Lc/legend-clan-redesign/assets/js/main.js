@@ -304,7 +304,7 @@
         this.fileInput.addEventListener("change", () => {
           this.fileLabel.textContent = this.fileInput.files.length
             ? this.fileInput.files[0].name
-            : "Nenhum arquivo escolhido";
+            : lmT("site.lc.noFileChosen");
         });
       }
     },

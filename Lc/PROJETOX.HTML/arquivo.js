@@ -14,13 +14,13 @@ document.getElementById("contactForm").addEventListener("submit", async function
         });
 
         if (response.ok) {
-            alert("Mensagem enviada com sucesso!");
+            alert(lmT("site.lc.projetox.messageSent"));
             form.reset();
-            document.getElementById("nome-arquivo").textContent = "Nenhum arquivo escolhido";
+            document.getElementById("nome-arquivo").textContent = lmT("site.lc.projetox.noFileChosen");
         } else {
-            alert("Erro ao enviar o formulário.");
+            alert(lmT("site.lc.projetox.sendError"));
         }
     } catch (error) {
-        alert("Erro de conexão.");
+        alert(lmT("site.lc.projetox.connectionError"));
     }
 });

@@ -120,7 +120,43 @@
     "skins/skinchecker.html",
     "skins/skins.html",
     "skins/skins3.html",
-    "skins/skinsworking.html"
+    "skins/skinsworking.html",
+    "Lc/Afewthings.html",
+    "Lc/Lc.html",
+    "Lc/index.html",
+    "Lc/LcPartyMode.html",
+    "Lc/PROJETOX.HTML/index.html",
+    "Lc/PROJETOX.HTML/original/lc.html",
+    "Lc/articles/aboutrandomsquote.html",
+    "Lc/articles/announcement-1-2-2018.html",
+    "Lc/articles/announcement-18-10-2017.html",
+    "Lc/articles/announcement-24-2-2018.html",
+    "Lc/articles/announcement-26-10-2017.html",
+    "Lc/articles/announcement-27-12-2025.html",
+    "Lc/articles/announcement-29-12-2025.html",
+    "Lc/articles/announcement-29a-12-2025.html",
+    "Lc/articles/announcement-4-12-2017.html",
+    "Lc/articles/announcement-5-10-2017.html",
+    "Lc/articles/announcement4-11-2017.html",
+    "Lc/articles/article69closed.html",
+    "Lc/articles/article69legend.html",
+    "Lc/articles/articleeuenemies.html",
+    "Lc/articles/articlemod.html",
+    "Lc/articles/assistants.html",
+    "Lc/articles/eatensions.html",
+    "Lc/articles/elite-players.html",
+    "Lc/articles/enemyallies.html",
+    "Lc/articles/lc-abandons-discord.html",
+    "Lc/articles/lc-senpai.html",
+    "Lc/articles/modders.html",
+    "Lc/articles/websites-updated.html",
+    "Lc/articles/whylc.html",
+    "Lc/auth/discord/relay.html",
+    "Lc/legend-clan-redesign/index.html",
+    "Lc/members.html",
+    "Lc/rules.html",
+    "Lc/legend-clan-redesign/assets/js/main.js",
+    "Lc/PROJETOX.HTML/arquivo.js"
   ],
   "groups": {
     "a: ogario/modules": [
@@ -179,7 +215,9 @@
     ],
     "skinrotator.html": [
       "/clearInterval\\(tamp\\)|var exp = 0; var d = |skinWrapper\"\\)\\[0\\]\\.children/",
-      "/^\";var speed=$|^;var images=\\[$|^\\]; var skins=\\[$/"
+      "/^\";var speed=$|^;var images=\\[$|^\\]; var skins=\\[$/",
+    "Lc/articles/announcement-29a-12-2025.html": [
+      "alt=\"Legend Clan\""
     ]
   }
 }

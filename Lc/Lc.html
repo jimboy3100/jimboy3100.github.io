@@ -607,6 +607,8 @@
 		]
 	}
 	</script>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-lc" charset="utf-8"></script>
 </head>
 
 <body>
@@ -622,24 +624,25 @@
 	<div id="navbar">
 		<div id="nav">
 			<ul>
-				<li><a name="Clan" href="#Clan" class="active">Clan</a></li>
-				<li><a name="Members" href="#Members">Members</a></li>
-				<li><a name="Policies" href="#Policies">Policies</a></li>
-				<li><a name="Videos" href="#Videos">Videos</a></li>
-				<li><a name="Gallery" href="#Gallery">Gallery</a></li>
-				<li><a name="Joinus" href="#Welcometolc" onclick="window.open('https://discord.com/invite/JUfpR9k');"
+				<li><a data-i18n="site.lc.clan" name="Clan" href="#Clan" class="active">Clan</a></li>
+				<li><a data-i18n="site.lc.members" name="Members" href="#Members">Members</a></li>
+				<li><a data-i18n="site.lc.policies" name="Policies" href="#Policies">Policies</a></li>
+				<li><a data-i18n="site.lc.videos" name="Videos" href="#Videos">Videos</a></li>
+				<li><a data-i18n="site.lc.gallery" name="Gallery" href="#Gallery">Gallery</a></li>
+				<li><a data-i18n="site.lc.joinUs" data-i18n-title="site.lc.clickHereToJoin" name="Joinus" href="#Welcometolc" onclick="window.open('https://discord.com/invite/JUfpR9k');"
 						title="click here to join the Discord server" target="_blank" rel="noopener">Join us</a></li>
-				<li><a name="Friendship" href="#Friendship" style="display: none;">Friendship</a></li>
-				<li><a name="BasicStrategy" href="#BasicStrategy" style="display: none;">Basic Strategy</a></li>
-				<li><a name="Diplomacy" href="#Diplomacy" style="display: none;">Diplomacy</a></li>
-				<li><a name="History" href="#History" style="display: none;">History</a></li>
-				<li><a name="Welcometolc" href="#Welcometolc" style="display: none;">Welcome Message</a></li>
+				<li><a data-i18n="site.lc.friendship" name="Friendship" href="#Friendship" style="display: none;">Friendship</a></li>
+				<li><a data-i18n="site.lc.basicStrategy" name="BasicStrategy" href="#BasicStrategy" style="display: none;">Basic Strategy</a></li>
+				<li><a data-i18n="site.lc.diplomacy" name="Diplomacy" href="#Diplomacy" style="display: none;">Diplomacy</a></li>
+				<li><a data-i18n="site.lc.history" name="History" href="#History" style="display: none;">History</a></li>
+				<li><a data-i18n="site.lc.welcomeMessage" name="Welcometolc" href="#Welcometolc" style="display: none;">Welcome Message</a></li>
 				<li>
-					<button id="theme-toggle" class="theme-toggle" title="Toggle Theme">
+					<button data-i18n-title="site.lc.toggleTheme" id="theme-toggle" class="theme-toggle" title="Toggle Theme">
 						<i class="fas fa-sun light-theme-icon"></i>
 						<i class="fas fa-moon dark-theme-icon"></i>
 					</button>
 				</li>
+				<li><span data-lm-lang-picker style="display:inline-flex;align-items:center;height:100%"></span></li>
 			</ul>
 		</div>
 	</div>
@@ -658,38 +661,38 @@
 					allowfullscreen="allowfullscreen"></iframe></p>
 
 			<div style="text-align: center; margin-top: 40px;">
-				<h3 class="project-tagline" style="display: inline-block;">About Us</h3>
+				<h3 data-i18n="site.lc.aboutUs" class="project-tagline" style="display: inline-block;">About Us</h3>
 			</div>
 			<section class="boxes">
 				<div class="custom first span3">
 					<i class="fas fa-users fa-3x"></i>
-					<h3 class="text-center">Member's Friendship</h3>
-					<p>Friendship between our members</p>
-					<p><a onclick="document.getElementsByName('Friendship')[0].click();"><strong>Read</strong>
+					<h3 data-i18n="site.lc.memberSFriendship" class="text-center">Member's Friendship</h3>
+					<p data-i18n="site.lc.friendshipBetweenOurMembers">Friendship between our members</p>
+					<p><a data-i18n-html="site.lc.readMore" onclick="document.getElementsByName('Friendship')[0].click();"><strong>Read</strong>
 							More</a></p>
 				</div>
 
 				<div class="custom span3">
 					<i class="fas fa-chess fa-3x"></i>
-					<h3 class="text-center">Basic Strategy</h3>
-					<p>FFA/PARTY/EXPERIMENTAL</p>
-					<p><a onclick="document.getElementsByName('BasicStrategy')[0].click();"><strong>Read</strong>
+					<h3 data-i18n="site.lc.basicStrategy" class="text-center">Basic Strategy</h3>
+					<p data-i18n="site.lc.ffaPartyExperimental">FFA/PARTY/EXPERIMENTAL</p>
+					<p><a data-i18n-html="site.lc.readMore" onclick="document.getElementsByName('BasicStrategy')[0].click();"><strong>Read</strong>
 							More</a></p>
 				</div>
 
 				<div class="custom span3">
 					<i class="fas fa-globe fa-3x"></i>
-					<h3 class="text-center">Diplomacy</h3>
-					<p>Ally and Enemy Clans</p>
-					<p><a onclick="document.getElementsByName('Diplomacy')[0].click();"><strong>Read</strong>
+					<h3 data-i18n="site.lc.diplomacy" class="text-center">Diplomacy</h3>
+					<p data-i18n="site.lc.allyAndEnemyClans">Ally and Enemy Clans</p>
+					<p><a data-i18n-html="site.lc.readMore" onclick="document.getElementsByName('Diplomacy')[0].click();"><strong>Read</strong>
 							More</a></p>
 				</div>
 
 				<div class="custom span3">
 					<i class="fas fa-code fa-3x"></i>
-					<h3 class="text-center">The LM Project</h3>
-					<p>Tools, mods and scripts, provided by our clan</p>
-					<p><a href="https://www.legendmod.ml/" style="cursor:pointer;"><strong>Read</strong> More</a></p>
+					<h3 data-i18n="site.lc.theLmProject" class="text-center">The LM Project</h3>
+					<p data-i18n="site.lc.toolsModsAndScripts">Tools, mods and scripts, provided by our clan</p>
+					<p><a data-i18n-html="site.lc.readMore" href="https://www.legendmod.ml/" style="cursor:pointer;"><strong>Read</strong> More</a></p>
 				</div>
 			</section>
 			<div style="margin: 40px 0;"></div>
@@ -698,18 +701,18 @@
 				style="width: 100%; margin-top: 64px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
 				<div class="custom span6"
 					style="padding: 0; background: none; border: none; overflow: hidden; border-radius: var(--radius-sm);">
-					<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc1.jpg"
+					<img data-i18n-alt="site.lc.clanGathering" src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc1.jpg"
 						alt="Clan Gathering"
 						style="width: 100%; height: 280px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: var(--shadow-md); transition: transform 0.3s ease;">
-					<p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">Legend
+					<p data-i18n="site.lc.legendClanGathering" style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">Legend
 						Clan Gathering</p>
 				</div>
 				<div class="custom span6"
 					style="padding: 0; background: none; border: none; overflow: hidden; border-radius: var(--radius-sm);">
-					<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc2.jpg"
+					<img data-i18n-alt="site.lc.legendTakeover" src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc2.jpg"
 						alt="Legend TakeOver"
 						style="width: 100%; height: 280px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: var(--shadow-md); transition: transform 0.3s ease;">
-					<p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+					<p data-i18n="site.lc.legendaryTakeover" style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
 						Legendary Takeover</p>
 				</div>
 			</div>
@@ -719,8 +722,8 @@
 				<!-- Newsfeed Column -->
 				<div class="custom span6"
 					style="text-align: left; background: var(--bg-card); padding: 24px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
-					<h3 class="project-tagline" style="margin-top: 0; text-align: center;"><b
-							style="color:var(--accent);">Clan</b> <b
+					<h3 class="project-tagline" style="margin-top: 0; text-align: center;"><b data-i18n="site.lc.clan"
+							style="color:var(--accent);">Clan</b> <b data-i18n="site.lc.latest"
 							style="background-color:var(--accent); color:White; padding: 2px 8px; border-radius: 4px;">Latest</b>
 					</h3>
 					<div
@@ -729,176 +732,176 @@
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a onclick="pop('articles/websites-updated.html');"
+									<a data-i18n="site.lc.legendClanModWebsites" onclick="pop('articles/websites-updated.html');"
 										style="color: var(--accent); font-weight: 600;">Legend Clan & Mod Websites
 										Updated</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">25/2/2026</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Major professional
+								<p data-i18n="site.lc.majorProfessionalRevampOf" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Major professional
 									revamp of Legend Mod & Legend Clan websites, featuring a modern design system and
 									cinematic animations.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a onclick="pop('https://www.facebook.com/Lcclan/');"
+									<a data-i18n="site.lc.stayTunedOnLc" onclick="pop('https://www.facebook.com/Lcclan/');"
 										style="color: var(--accent); font-weight: 600;">Stay tuned on Lc facebook</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">3/3/2020</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Legend clan
+								<p data-i18n="site.lc.legendClanFacebookHttps" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Legend clan
 									facebook - https://www.facebook.com/Lcclan/, a vivid community with the latest news
 									about Lc and LM.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a onclick="pop('https://discord.com/invite/JUfpR9k');"
+									<a data-i18n="site.lc.activeUsersOfLc" onclick="pop('https://discord.com/invite/JUfpR9k');"
 										style="color: var(--accent); font-weight: 600;">Active users of Lc exceed 60</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">3/3/2020</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc Skype and
+								<p data-i18n="site.lc.lcSkypeAndDiscord" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc Skype and
 									Discord are very active. Lc players are everywhere.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a onclick="pop('https://jimboy3100.github.io/extras/banneranimatedLegendmod2020.html');"
+									<a data-i18n="site.lc.legendModUpcomingUpdates" onclick="pop('https://jimboy3100.github.io/extras/banneranimatedLegendmod2020.html');"
 										style="color: var(--accent); font-weight: 600;">Legend mod upcoming updates</a>
-									<span style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">Feb
+									<span data-i18n="site.lc.feb2020" style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">Feb
 										2020</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Click here to for
+								<p data-i18n="site.lc.clickHereToFor" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Click here to for
 									the updates of Legend mod that will take place on 2020.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a onclick="pop('https://jimboy3100.github.io/Lc/articles/lc-abandons-discord.html');"
+									<a data-i18n="site.lc.lcOpensDiscordAgain" onclick="pop('https://jimboy3100.github.io/Lc/articles/lc-abandons-discord.html');"
 										style="color: var(--accent); font-weight: 600;">Lc opens Discord again</a>
-									<span style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">Nov
+									<span data-i18n="site.lc.nov2019" style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">Nov
 										2019</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc opens Discord
+								<p data-i18n="site.lc.lcOpensDiscordAgain2" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc opens Discord
 									again. Click here to join</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">New Pro Room for Lc</a>
+									<a data-i18n="site.lc.newProRoomFor" style="color: var(--accent); font-weight: 600;">New Pro Room for Lc</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">17/4/2018</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Been tested for
+								<p data-i18n="site.lc.beenTestedForLoyalty" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Been tested for
 									loyalty and skill. Member room is our new Pro Room.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">Lc abandons Discord</a>
+									<a data-i18n="site.lc.lcAbandonsDiscord" style="color: var(--accent); font-weight: 600;">Lc abandons Discord</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">8/3/2018</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc closes its
+								<p data-i18n="site.lc.lcClosesItsDiscord" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc closes its
 									Discord Server.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">Tensions with ✵ΕΛ✵</a>
+									<a data-i18n="site.lc.tensionsWith" style="color: var(--accent); font-weight: 600;">Tensions with ✵ΕΛ✵</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">7/2/2018</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">✵ΕΛ✵ is considered
+								<p data-i18n="site.lc.isConsideredNeutralClan" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">✵ΕΛ✵ is considered
 									"neutral" clan to us.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">Quote - About Randoms</a>
+									<a data-i18n="site.lc.quoteAboutRandoms" style="color: var(--accent); font-weight: 600;">Quote - About Randoms</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">16/11/2017</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Simple quote by
+								<p data-i18n="site.lc.simpleQuoteBySakis" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Simple quote by
 									Sakis leader of EA that also applies to Lc.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">1 YEAR OF ℄Legend Clan</a>
+									<a data-i18n="site.lc.yearOfLegendClan" style="color: var(--accent); font-weight: 600;">1 YEAR OF ℄Legend Clan</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">12/11/2017</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">℄Legend clan
+								<p data-i18n="site.lc.legendClanOriginsCelebration" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">℄Legend clan
 									origins celebration.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">WAR vs ƖƦ FFA CLAN</a>
+									<a data-i18n="site.lc.warVsFfaClan" style="color: var(--accent); font-weight: 600;">WAR vs ƖƦ FFA CLAN</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">26/9/2017</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc and Ir are
+								<p data-i18n="site.lc.lcAndIrAre" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc and Ir are
 									official enemies.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a onclick="pop('https://jimboy3100.github.io/Lc/articles/whylc.html');"
+									<a data-i18n="site.lc.theEthicalValuesOf" onclick="pop('https://jimboy3100.github.io/Lc/articles/whylc.html');"
 										style="color: var(--accent); font-weight: 600;">THE ETHICAL VALUES OF OUR
 										CLAN</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">24/9/2017</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">What ℄ means to us,
+								<p data-i18n="site.lc.whatMeansToUs" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">What ℄ means to us,
 									why ℄...</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">DECLARED PL, BOB, ATA, PAK AS
+									<a data-i18n="site.lc.declaredPlBobAta" style="color: var(--accent); font-weight: 600;">DECLARED PL, BOB, ATA, PAK AS
 										ENEMIES</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">24/9/2017</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Not a war we
+								<p data-i18n="site.lc.notAWarWe" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Not a war we
 									sought, but ATA are now official enemies.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">TENSIONS OCCURED BETWEEN IR AND
+									<a data-i18n="site.lc.tensionsOccuredBetweenIr" style="color: var(--accent); font-weight: 600;">TENSIONS OCCURED BETWEEN IR AND
 										Lc</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">24/9/2017</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Previous attacks
+								<p data-i18n="site.lc.previousAttacksFromPl" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Previous attacks
 									from Pl, Pak, Bob and some players of Ir, united against EA corrupted relations
 									between Ir and Lc.</p>
 							</li>
 							<li
 								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a onclick="pop('https://jimboy3100.github.io/Lc/articles/article69legend.html');"
+									<a data-i18n="site.lc.andAreOfficialBrothers" onclick="pop('https://jimboy3100.github.io/Lc/articles/article69legend.html');"
 										style="color: var(--accent); font-weight: 600;">℄ AND ✵ΕΛ✵ ARE OFFICIAL
 										BROTHERS</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">24/9/2017</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Established
+								<p data-i18n="site.lc.establishedAllianceWithGreek" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Established
 									alliance with ✵ΕΛ✵ Greek Clan proved to be a real brotherhood between members.</p>
 							</li>
 							<li style="margin-bottom: 20px; padding-bottom: 16px;">
 								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a style="color: var(--accent); font-weight: 600;">℄ ♋ TEACHING & FRIENDS ROOM
+									<a data-i18n="site.lc.teachingFriendsRoomClosed" style="color: var(--accent); font-weight: 600;">℄ ♋ TEACHING & FRIENDS ROOM
 										CLOSED</a>
 									<span
 										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">OLD</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">There is no more
+								<p data-i18n="site.lc.thereIsNoMore" style="font-size: 1rem; color: var(--text-secondary); margin: 0;">There is no more
 									friends room. Education continues in candidates room by admin Hakem on private
 									servers.</p>
 							</li>
@@ -908,8 +911,8 @@
 
 				<!-- Details Column -->
 				<div style="display: flex; flex-direction: column; gap: 24px;">
-					<h3 class="project-tagline" style="margin-top: 0; text-align: center;"><b
-							style="color:var(--accent);">Clan</b> <b
+					<h3 class="project-tagline" style="margin-top: 0; text-align: center;"><b data-i18n="site.lc.clan"
+							style="color:var(--accent);">Clan</b> <b data-i18n="site.lc.details"
 							style="background-color:var(--accent); color:White; padding: 2px 8px; border-radius: 4px;">Details</b>
 					</h3>
 
@@ -923,11 +926,11 @@
 								<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc3.png"
 									style="width: 120px; height: 120px; object-fit: contain;">
 							</div>
-							<h4 style="margin-bottom: 12px; font-size: 1.125rem;">Who we are</h4>
-							<p style="font-size: 1rem; line-height: 1.4; margin-bottom: 8px;"><a
+							<h4 data-i18n="site.lc.whoWeAre" style="margin-bottom: 12px; font-size: 1.125rem;">Who we are</h4>
+							<p style="font-size: 1rem; line-height: 1.4; margin-bottom: 8px;"><a data-i18n="site.lc.ourRootsGoals"
 									onclick="document.getElementsByName('History')[0].click();">Our Roots & Goals</a>
 							</p>
-							<p style="font-size: 1rem; line-height: 1.4;"><a
+							<p style="font-size: 1rem; line-height: 1.4;"><a data-i18n="site.lc.welcomeMessage"
 									onclick="document.getElementsByName('Welcometolc')[0].click();">Welcome Message</a>
 							</p>
 						</div>
@@ -940,11 +943,10 @@
 								<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc4.png"
 									style="width: 120px; height: 120px; object-fit: contain;">
 							</div>
-							<h4 style="margin-bottom: 12px; font-size: 1.125rem;">We Need</h4>
-							<p style="font-size: 1rem; line-height: 1.4; margin-bottom: 8px;"><a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/elite-players.html');">Elite
-									Players</a></p>
-							<p style="font-size: 1rem; line-height: 1.4;"><a
+							<h4 data-i18n="site.lc.weNeed" style="margin-bottom: 12px; font-size: 1.125rem;">We Need</h4>
+							<p style="font-size: 1rem; line-height: 1.4; margin-bottom: 8px;"><a data-i18n="site.lc.elitePlayers"
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/elite-players.html');">Elite Players</a></p>
+							<p style="font-size: 1rem; line-height: 1.4;"><a data-i18n="site.lc.recruitersStaff"
 									onclick="pop('https://jimboy3100.github.io/Lc/articles/assistants.html');">Recruiters
 									& Staff</a></p>
 						</div>
@@ -959,7 +961,7 @@
 									<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLcForCanvas.png"
 										style="width: 100px; height: 100px; border-radius: 50%; object-fit: contain;">
 								</div>
-								<h4 style="margin: 0; font-size: 1.125rem; text-align: center;">Announcement Archive
+								<h4 data-i18n="site.lc.announcementArchive" style="margin: 0; font-size: 1.125rem; text-align: center;">Announcement Archive
 								</h4>
 							</div>
 							<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 1rem;">
@@ -972,7 +974,7 @@
 								<a
 									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-27-12-2025.html');">•
 									27.12.2025</a>
-								<a onclick="document.getElementsByName('BasicStrategy')[0].click();">• New Pro Room</a>
+								<a data-i18n="site.lc.newProRoom" onclick="document.getElementsByName('BasicStrategy')[0].click();">• New Pro Room</a>
 								<a
 									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-24-2-2018.html');">•
 									24.2.2018</a>
@@ -1006,7 +1008,7 @@
 
 	<div id="Members" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Legend Clan Heroes</h2>
+			<h2 data-i18n="site.lc.legendClanHeroes">Legend Clan Heroes</h2>
 			<div style="margin-bottom: 24px;">
 				<iframe id="LegendClanIframe1" class="result-iframe"
 					style="border: none; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);"
@@ -1021,34 +1023,34 @@
 				<div class="custom span3"
 					style="background: var(--bg-card); padding: 24px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
 					<i class="fas fa-user-plus fa-2x"></i>
-					<h3>Recruits</h3>
-					<p style="font-size: 1rem; margin-bottom: 20px;">20 recruits following the path of Legends.</p>
+					<h3 data-i18n="site.lc.recruits">Recruits</h3>
+					<p data-i18n="site.lc.recruitsFollowingThePath" style="font-size: 1rem; margin-bottom: 20px;">20 recruits following the path of Legends.</p>
 					<p style="margin-top: 8px;">
-						<strong style="font-size: 1.125rem; font-weight: 600;">SᗩᗰᗩᑎTᕼᗩ👻NL</strong><br>
-						<span style="font-size: 0.9rem; color: var(--text-muted);">Lead Recruiter</span>
+						<strong data-i18n="site.lc.sTNl" style="font-size: 1.125rem; font-weight: 600;">SᗩᗰᗩᑎTᕼᗩ👻NL</strong><br>
+						<span data-i18n="site.lc.leadRecruiter" style="font-size: 0.9rem; color: var(--text-muted);">Lead Recruiter</span>
 					</p>
 				</div>
 				<div class="custom span3"
 					style="grid-column: span 2; background: var(--bg-card); padding: 24px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
 					<i class="fas fa-crown fa-2x"></i>
-					<h3>Admins</h3>
+					<h3 data-i18n="site.lc.admins">Admins</h3>
 					<ul
 						style="list-style: none; padding: 0; margin-top: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center;">
 						<li><strong style="font-size: 1.125rem; font-weight: 600;">Jimboy3100</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Founder, Peripheral
+							<span data-i18n="site.lc.founderPeripheralSupport" style="font-size: 0.9rem; color: var(--text-muted);">Founder, Peripheral
 								support</span>
 						</li>
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">Hany ElGohary</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Counselor, Diplomat</span>
+						<li><strong data-i18n="site.lc.hanyElgohary" style="font-size: 1.125rem; font-weight: 600;">Hany ElGohary</strong><br>
+							<span data-i18n="site.lc.counselorDiplomat" style="font-size: 0.9rem; color: var(--text-muted);">Counselor, Diplomat</span>
 						</li>
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">AnotherZone</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Admin of Members</span>
+						<li><strong data-i18n="site.lc.anotherzone" style="font-size: 1.125rem; font-weight: 600;">AnotherZone</strong><br>
+							<span data-i18n="site.lc.adminOfMembers" style="font-size: 0.9rem; color: var(--text-muted);">Admin of Members</span>
 						</li>
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">Junky</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Admin of Candidates</span>
+						<li><strong data-i18n="site.lc.junky" style="font-size: 1.125rem; font-weight: 600;">Junky</strong><br>
+							<span data-i18n="site.lc.adminOfCandidates" style="font-size: 0.9rem; color: var(--text-muted);">Admin of Candidates</span>
 						</li>
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">Andrea</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Admin of Friendship</span>
+						<li><strong data-i18n="site.lc.andrea" style="font-size: 1.125rem; font-weight: 600;">Andrea</strong><br>
+							<span data-i18n="site.lc.adminOfFriendship" style="font-size: 0.9rem; color: var(--text-muted);">Admin of Friendship</span>
 						</li>
 					</ul>
 				</div>
@@ -1058,7 +1060,7 @@
 
 	<div id="Policies" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Clan Policies</h2>
+			<h2 data-i18n="site.lc.clanPolicies">Clan Policies</h2>
 			<div style="margin-bottom: 24px; min-height: 2000px;">
 				<iframe id="LegendClanIframePolicies" class="result-iframe"
 					style="border: none; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); min-height: 2000px;"
@@ -1071,33 +1073,33 @@
 	</div>
 	<div id="Welcometolc" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Welcome to Legend Clan</h2>
+			<h2 data-i18n="site.lc.welcomeToLegendClan">Welcome to Legend Clan</h2>
 			<div class="content-body" style="text-align: left; padding: 20px;">
-				<p>Legend Clan is more to us than just a meeting of teamers - rather ℄ is a kind of family to us.</p>
-				<p>For a good and trouble-free start, we summarized some important information:</p>
+				<p data-i18n="site.lc.legendClanIsMore">Legend Clan is more to us than just a meeting of teamers - rather ℄ is a kind of family to us.</p>
+				<p data-i18n="site.lc.forAGoodAnd">For a good and trouble-free start, we summarized some important information:</p>
 				<ul style="list-style-type: disc; padding-left: 20px; margin-top: 16px;">
-					<li><strong>Identity:</strong> Use the ℄ symbol in front of your name.</li>
-					<li><strong>Communication:</strong> Let us know which tool you use (Legend Mod, Agar Tool, etc.).
+					<li data-i18n-html="site.lc.identityUseTheSymbol"><strong>Identity:</strong> Use the ℄ symbol in front of your name.</li>
+					<li data-i18n-html="site.lc.communicationLetUsKnow"><strong>Communication:</strong> Let us know which tool you use (Legend Mod, Agar Tool, etc.).
 					</li>
-					<li><strong>Skin:</strong> Share your official skin with us.</li>
+					<li data-i18n-html="site.lc.skinShareYourOfficial"><strong>Skin:</strong> Share your official skin with us.</li>
 				</ul>
-				<p style="margin-top: 20px;"><strong>Recruit Symbol:</strong> ℄🔥</p>
-				<p>Respect is mutual. A polite attitude even if you are angry is a <strong>MUST</strong>. Clan goes
+				<p style="margin-top: 20px;"><strong data-i18n="site.lc.recruitSymbol">Recruit Symbol:</strong> ℄🔥</p>
+				<p data-i18n-html="site.lc.respectIsMutualA">Respect is mutual. A polite attitude even if you are angry is a <strong>MUST</strong>. Clan goes
 					first - we accept no random friends over clan family.</p>
 			</div>
 		</section>
 	</div>
 	<div id="Friendship" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Clan Friendship</h2>
+			<h2 data-i18n="site.lc.clanFriendship">Clan Friendship</h2>
 			<div style="display: flex; flex-direction: column; align-items: center; gap: 24px;">
 				<img src="https://jimboy3100.github.io/banners/Lcclan21.jpg"
 					style="max-width: 400px; border-radius: var(--radius-sm); border: 2px solid var(--border);">
 				<div style="text-align: left;">
-					<p>Clan for us means friendship; we are like a family, we support each other and help. There are no
+					<p data-i18n="site.lc.clanForUsMeans">Clan for us means friendship; we are like a family, we support each other and help. There are no
 						"egos" between elite players. We respect friendship for particular members and we respect
 						allies.</p>
-					<p>We are united, and we all know that clan goes first. This means we support family more than other
+					<p data-i18n="site.lc.weAreUnitedAnd">We are united, and we all know that clan goes first. This means we support family more than other
 						friends.</p>
 				</div>
 			</div>
@@ -1106,208 +1108,208 @@
 
 	<div id="Videos" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Legendary Videos</h2>
+			<h2 data-i18n="site.lc.legendaryVideos">Legendary Videos</h2>
 			<div class="video-grid">
 				<div class="video-card" onclick="openVideo('PsF_0B4SlPA')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/PsF_0B4SlPA/mqdefault.jpg" alt="℄ Senpai 4">
+						<img data-i18n-alt="site.lc.senpai4" src="https://img.youtube.com/vi/PsF_0B4SlPA/mqdefault.jpg" alt="℄ Senpai 4">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ Senpai 4</h4>
+						<h4 data-i18n="site.lc.senpai4">℄ Senpai 4</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('SeNMGagfRSQ')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/SeNMGagfRSQ/mqdefault.jpg" alt="℄ Senpai 5">
+						<img data-i18n-alt="site.lc.senpai5" src="https://img.youtube.com/vi/SeNMGagfRSQ/mqdefault.jpg" alt="℄ Senpai 5">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ Senpai 5</h4>
+						<h4 data-i18n="site.lc.senpai5">℄ Senpai 5</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('xu79WtNs7j4')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/xu79WtNs7j4/mqdefault.jpg" alt="℄ Senpai 6">
+						<img data-i18n-alt="site.lc.senpai6" src="https://img.youtube.com/vi/xu79WtNs7j4/mqdefault.jpg" alt="℄ Senpai 6">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ Senpai 6</h4>
+						<h4 data-i18n="site.lc.senpai6">℄ Senpai 6</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('gzEObW4cSco')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/gzEObW4cSco/mqdefault.jpg" alt="℄ Senpai 7">
+						<img data-i18n-alt="site.lc.senpai7" src="https://img.youtube.com/vi/gzEObW4cSco/mqdefault.jpg" alt="℄ Senpai 7">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ Senpai 7</h4>
+						<h4 data-i18n="site.lc.senpai7">℄ Senpai 7</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('bloeBz4OsTw')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/bloeBz4OsTw/mqdefault.jpg" alt="℄ Senpai 8">
+						<img data-i18n-alt="site.lc.senpai8" src="https://img.youtube.com/vi/bloeBz4OsTw/mqdefault.jpg" alt="℄ Senpai 8">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ Senpai 8</h4>
+						<h4 data-i18n="site.lc.senpai8">℄ Senpai 8</h4>
 					</div>
 				</div>
 			</div>
 
-			<h2 class="project-tagline">Schramm's Videos</h2>
+			<h2 data-i18n="site.lc.schrammSVideos" class="project-tagline">Schramm's Videos</h2>
 			<div class="video-grid">
 				<div class="video-card" onclick="openVideo('Y5rTLGBFZPw')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/Y5rTLGBFZPw/mqdefault.jpg" alt="℄ Schramm 1">
+						<img data-i18n-alt="site.lc.schramm1" src="https://img.youtube.com/vi/Y5rTLGBFZPw/mqdefault.jpg" alt="℄ Schramm 1">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ Schramm 1</h4>
+						<h4 data-i18n="site.lc.schramm1">℄ Schramm 1</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('vuRK1qUnSKY')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/vuRK1qUnSKY/mqdefault.jpg" alt="How to install Legend Mod">
+						<img data-i18n-alt="site.lc.howToInstallLegend" src="https://img.youtube.com/vi/vuRK1qUnSKY/mqdefault.jpg" alt="How to install Legend Mod">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>How to install Legend Mod</h4>
+						<h4 data-i18n="site.lc.howToInstallLegend">How to install Legend Mod</h4>
 					</div>
 				</div>
 			</div>
-			<h2 class="project-tagline">βurNouT's Videos</h2>
+			<h2 data-i18n="site.lc.urnoutSVideos" class="project-tagline">βurNouT's Videos</h2>
 			<div class="video-grid">
 				<div class="video-card" onclick="openVideo('de2Py76yIkM')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/de2Py76yIkM/mqdefault.jpg" alt="℄ βurNouT 1">
+						<img data-i18n-alt="site.lc.urnout1" src="https://img.youtube.com/vi/de2Py76yIkM/mqdefault.jpg" alt="℄ βurNouT 1">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ βurNouT 1</h4>
+						<h4 data-i18n="site.lc.urnout1">℄ βurNouT 1</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('d5MGzoamZK4')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/d5MGzoamZK4/mqdefault.jpg" alt="℄ βurNouT 2">
+						<img data-i18n-alt="site.lc.urnout2" src="https://img.youtube.com/vi/d5MGzoamZK4/mqdefault.jpg" alt="℄ βurNouT 2">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ βurNouT 2</h4>
+						<h4 data-i18n="site.lc.urnout2">℄ βurNouT 2</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('hernda0kU0c')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/hernda0kU0c/mqdefault.jpg" alt="℄ βurNouT 6">
+						<img data-i18n-alt="site.lc.urnout6" src="https://img.youtube.com/vi/hernda0kU0c/mqdefault.jpg" alt="℄ βurNouT 6">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ βurNouT 6</h4>
+						<h4 data-i18n="site.lc.urnout6">℄ βurNouT 6</h4>
 					</div>
 				</div>
 			</div>
-			<h2 class="project-tagline">Polska's Videos</h2>
+			<h2 data-i18n="site.lc.polskaSVideos" class="project-tagline">Polska's Videos</h2>
 			<div class="video-grid">
 				<div class="video-card" onclick="openVideo('32wK9tc7Ng4')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/32wK9tc7Ng4/mqdefault.jpg" alt="℄ Polska 1 Year Lc">
+						<img data-i18n-alt="site.lc.polska1YearLc" src="https://img.youtube.com/vi/32wK9tc7Ng4/mqdefault.jpg" alt="℄ Polska 1 Year Lc">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ Polska 1 Year Lc</h4>
+						<h4 data-i18n="site.lc.polska1YearLc">℄ Polska 1 Year Lc</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('9KWfb_oK73w')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/9KWfb_oK73w/mqdefault.jpg" alt="℄ Polska's Birthday">
+						<img data-i18n-alt="site.lc.polskaSBirthday" src="https://img.youtube.com/vi/9KWfb_oK73w/mqdefault.jpg" alt="℄ Polska's Birthday">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ Polska's Birthday</h4>
+						<h4 data-i18n="site.lc.polskaSBirthday">℄ Polska's Birthday</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('vtZdVtjoLXU')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/vtZdVtjoLXU/mqdefault.jpg" alt="You are not Alone :)">
+						<img data-i18n-alt="site.lc.youAreNotAlone" src="https://img.youtube.com/vi/vtZdVtjoLXU/mqdefault.jpg" alt="You are not Alone :)">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>You are not Alone :)</h4>
+						<h4 data-i18n="site.lc.youAreNotAlone">You are not Alone :)</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('Lhrg0SsIdiE')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/Lhrg0SsIdiE/mqdefault.jpg" alt="Machouil with Aladdin">
+						<img data-i18n-alt="site.lc.machouilWithAladdin" src="https://img.youtube.com/vi/Lhrg0SsIdiE/mqdefault.jpg" alt="Machouil with Aladdin">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>Machouil with Aladdin</h4>
+						<h4 data-i18n="site.lc.machouilWithAladdin">Machouil with Aladdin</h4>
 					</div>
 				</div>
 			</div>
-			<h2 class="project-tagline">Jimboy's Videos</h2>
+			<h2 data-i18n="site.lc.jimboySVideos" class="project-tagline">Jimboy's Videos</h2>
 			<div class="video-grid">
 				<div class="video-card" onclick="openVideo('VBXu-nLjMXo')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/VBXu-nLjMXo/mqdefault.jpg" alt="Response to Jumbo">
+						<img data-i18n-alt="site.lc.responseToJumbo" src="https://img.youtube.com/vi/VBXu-nLjMXo/mqdefault.jpg" alt="Response to Jumbo">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>Response to Jumbo</h4>
+						<h4 data-i18n="site.lc.responseToJumbo">Response to Jumbo</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('aBgkvPczn-A')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/aBgkvPczn-A/mqdefault.jpg" alt="℄ trolling ℄">
+						<img data-i18n-alt="site.lc.trolling" src="https://img.youtube.com/vi/aBgkvPczn-A/mqdefault.jpg" alt="℄ trolling ℄">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>℄ trolling ℄</h4>
+						<h4 data-i18n="site.lc.trolling">℄ trolling ℄</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('-OHbflAMDiU')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/-OHbflAMDiU/mqdefault.jpg" alt="Video Skin Script">
+						<img data-i18n-alt="site.lc.videoSkinScript" src="https://img.youtube.com/vi/-OHbflAMDiU/mqdefault.jpg" alt="Video Skin Script">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>Video Skin Script</h4>
+						<h4 data-i18n="site.lc.videoSkinScript">Video Skin Script</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('cAGjWeDaVX8')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/cAGjWeDaVX8/mqdefault.jpg" alt="Cancer Script">
+						<img data-i18n-alt="site.lc.cancerScript" src="https://img.youtube.com/vi/cAGjWeDaVX8/mqdefault.jpg" alt="Cancer Script">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>Cancer Script</h4>
+						<h4 data-i18n="site.lc.cancerScript">Cancer Script</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('xrVRDYwdhGM')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/xrVRDYwdhGM/mqdefault.jpg" alt="LM troll video">
+						<img data-i18n-alt="site.lc.lmTrollVideo" src="https://img.youtube.com/vi/xrVRDYwdhGM/mqdefault.jpg" alt="LM troll video">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>LM troll video</h4>
+						<h4 data-i18n="site.lc.lmTrollVideo">LM troll video</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('B87655tH0Lg')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/B87655tH0Lg/mqdefault.jpg" alt="LM cool stuff">
+						<img data-i18n-alt="site.lc.lmCoolStuff" src="https://img.youtube.com/vi/B87655tH0Lg/mqdefault.jpg" alt="LM cool stuff">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>LM cool stuff</h4>
+						<h4 data-i18n="site.lc.lmCoolStuff">LM cool stuff</h4>
 					</div>
 				</div>
 				<div class="video-card" onclick="openVideo('JOAPoEXXRYw')">
 					<div class="thumbnail-wrapper">
-						<img src="https://img.youtube.com/vi/JOAPoEXXRYw/mqdefault.jpg" alt="LM Agario Mobile">
+						<img data-i18n-alt="site.lc.lmAgarioMobile" src="https://img.youtube.com/vi/JOAPoEXXRYw/mqdefault.jpg" alt="LM Agario Mobile">
 						<div class="play-overlay"><i class="fas fa-play"></i></div>
 					</div>
 					<div class="video-info">
-						<h4>LM Agario Mobile</h4>
+						<h4 data-i18n="site.lc.lmAgarioMobile">LM Agario Mobile</h4>
 					</div>
 				</div>
 			</div>
@@ -1316,8 +1318,8 @@
 	</div>
 	<div id="Gallery" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Clan Gallery</h2>
-			<p>Responsible playing. It's more about friends than the actual game.</p>
+			<h2 data-i18n="site.lc.clanGallery">Clan Gallery</h2>
+			<p data-i18n="site.lc.responsiblePlayingItS">Responsible playing. It's more about friends than the actual game.</p>
 			<div class="gallery-grid"
 				style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 32px;">
 				<img src="https://jimboy3100.github.io/banners/Lcclan5.gif" class="gallery-item"
@@ -1334,7 +1336,7 @@
 	<div id="Friendship2" class="skins-wrapper" style="display: none;">
 		<section height="100px"
 			style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
-			<strong>Lc is a group of friends</strong>
+			<strong data-i18n="site.lc.lcIsAGroup">Lc is a group of friends</strong>
 			<br>
 			<br>
 			<iframe id="LegendClanIframe1b" class="result-iframe" style="border: none;"
@@ -1344,40 +1346,40 @@
 				allowfullscreen="allowfullscreen"></iframe>
 			<img style="display: block; margin-left: auto; margin-right: auto;"
 				src="https://jimboy3100.github.io/banners/Lcclan21.jpg" alt="" width="305" height="244">
-			<h3 class="project-tagline">Friendship</h3>
-			Clan for us means friendship, we are like a family, we support each other and help.
-			<br>There are no "egos" between elite players. We respect friendship for particular members (not as a clan)
-			and we respect allies.
-			<br>We are united, and we all know that clan goes first. This means we support family more than other
-			friends.
-			<br>We offer our best to all players, but if a person leaves us after our offer to him/her, he will always
-			be a betrayer.
-			<br>Despite being an elite clan, recruits and members have to be reasonable and understand the reasons we do
-			this.
-			<br>On the other hand, clan is more than simply a game for us, we are real friends to each other. Many are
-			the members that have met to each other.
+			<h3 data-i18n="site.lc.friendship" class="project-tagline">Friendship</h3>
+			<span data-i18n="site.lc.clanForUsMeans2">Clan for us means friendship, we are like a family, we support each other and help.</span>
+			<br><span data-i18n="site.lc.thereAreNoEgos">There are no "egos" between elite players. We respect friendship for particular members (not as a clan)
+			and we respect allies.</span>
+			<br><span data-i18n="site.lc.weAreUnitedAnd">We are united, and we all know that clan goes first. This means we support family more than other
+			friends.</span>
+			<br><span data-i18n="site.lc.weOfferOurBest">We offer our best to all players, but if a person leaves us after our offer to him/her, he will always
+			be a betrayer.</span>
+			<br><span data-i18n="site.lc.despiteBeingAnElite">Despite being an elite clan, recruits and members have to be reasonable and understand the reasons we do
+			this.</span>
+			<br><span data-i18n="site.lc.onTheOtherHand">On the other hand, clan is more than simply a game for us, we are real friends to each other. Many are
+			the members that have met to each other.</span>
 		</section>
 	</div>
 	<div id="BasicStrategy" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Strategic Guides</h2>
+			<h2 data-i18n="site.lc.strategicGuides">Strategic Guides</h2>
 			<div class="strategy-card">
-				<h3>Basic Strategy</h3>
+				<h3 data-i18n="site.lc.basicStrategy">Basic Strategy</h3>
 				<img src="https://jimboy3100.github.io/banners/Lcclan22.jpg"
 					style="max-width: 400px; margin: 16px auto; border-radius: var(--radius-sm); border: 2px solid var(--border); display: block;">
-				<p>FFA has a SOLO-like gameplay; players must not W, split, or merge with other players frequently. Help
+				<p data-i18n="site.lc.ffaHasASolo">FFA has a SOLO-like gameplay; players must not W, split, or merge with other players frequently. Help
 					all Clan members to avoid anti-team penalties.</p>
 				<img src="https://jimboy3100.github.io/banners/Lcclan27.png"
 					style="max-width: 400px; margin: 16px auto; border-radius: var(--radius-sm); border: 2px solid var(--border); display: block;">
 
-				<h3>Pro Strategy FFA</h3>
-				<p>Play like party, but you need a full understanding of the anti-team that will occur. Assist all Clan
+				<h3 data-i18n="site.lc.proStrategyFfa">Pro Strategy FFA</h3>
+				<p data-i18n="site.lc.playLikePartyBut">Play like party, but you need a full understanding of the anti-team that will occur. Assist all Clan
 					members to avoid anti-team penalties.</p>
 				<img src="https://jimboy3100.github.io/banners/Lcclan28.jpg"
 					style="max-width: 400px; margin: 16px auto; border-radius: var(--radius-sm); border: 2px solid var(--border); display: block;">
 
-				<h3>Elite Play (Members Only)</h3>
-				<p>Dominate servers with coordination. Use undercover tactics and team communication to overcome even
+				<h3 data-i18n="site.lc.elitePlayMembersOnly">Elite Play (Members Only)</h3>
+				<p data-i18n="site.lc.dominateServersWithCoordination">Dominate servers with coordination. Use undercover tactics and team communication to overcome even
 					the
 					strongest opposition.</p>
 				<img src="https://jimboy3100.github.io/banners/Lcclan29.jpg"
@@ -1388,40 +1390,40 @@
 
 	<div id="Diplomacy" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Diplomacy</h2>
+			<h2 data-i18n="site.lc.diplomacy">Diplomacy</h2>
 			<div class="strategy-card" style="text-align: left;">
-				<h3>Brother Clans</h3>
-				<p>ঌۣۜ💮COCAINE (Europe Experimental)</p>
-				<h3>Status</h3>
-				<p>New friends acceptance: <strong>CLOSED</strong></p>
-				<h3>Enemies</h3>
-				<p>Everyone else. We have a dedicated ban list for hostile players.</p>
+				<h3 data-i18n="site.lc.brotherClans">Brother Clans</h3>
+				<p data-i18n="site.lc.cocaineEuropeExperimental">ঌۣۜ💮COCAINE (Europe Experimental)</p>
+				<h3 data-i18n="site.lc.status">Status</h3>
+				<p data-i18n-html="site.lc.newFriendsAcceptanceClosed">New friends acceptance: <strong>CLOSED</strong></p>
+				<h3 data-i18n="site.lc.enemies">Enemies</h3>
+				<p data-i18n="site.lc.everyoneElseWeHave">Everyone else. We have a dedicated ban list for hostile players.</p>
 			</div>
 		</section>
 	</div>
 
 	<div id="History" class="skins-wrapper" style="display: none;">
 		<section>
-			<h2>Clan History</h2>
+			<h2 data-i18n="site.lc.clanHistory">Clan History</h2>
 			<div class="content-body" style="text-align: left; padding: 20px;">
 				<img src="https://jimboy3100.github.io/banners/Lcclan30.jpg"
 					style="max-width: 400px; margin-bottom: 24px; border-radius: var(--radius-sm); display: block; margin-left: auto; margin-right: auto;">
-				<h3>Our Roots</h3>
-				<p>Our roots came from the remnants of PZA AGAR, FUN, CRAZINESS, FRIENDSHIP communication groups. Strike
+				<h3 data-i18n="site.lc.ourRoots">Our Roots</h3>
+				<p data-i18n="site.lc.ourRootsCameFrom">Our roots came from the remnants of PZA AGAR, FUN, CRAZINESS, FRIENDSHIP communication groups. Strike
 					was immediate by Clan EU. We made peace after a while, but it did not last for long.</p>
 				<blockquote
 					style="margin: 24px 0; padding: 16px; border-left: 4px solid var(--accent); background: var(--bg-card);">
-					"Can we have a special symbol in front of our name to show that we are a team?"
-					<footer style="margin-top: 8px; font-style: italic;">— IamLegend, Nov 11, 2016</footer>
+					<span data-i18n="site.lc.canWeHaveA">"Can we have a special symbol in front of our name to show that we are a team?"</span>
+					<footer data-i18n="site.lc.iamlegendNov112016" style="margin-top: 8px; font-style: italic;">— IamLegend, Nov 11, 2016</footer>
 				</blockquote>
-				<p>Nov 12, 2016: Used ♋ symbol for the first time. Later officially named Legend Clan.</p>
+				<p data-i18n="site.lc.nov122016Used">Nov 12, 2016: Used ♋ symbol for the first time. Later officially named Legend Clan.</p>
 				<img src="https://jimboy3100.github.io/banners/Lcclan31.jpg"
 					style="max-width: 400px; margin: 24px auto; border-radius: var(--radius-sm); display: block;">
-				<h3>Who We Are</h3>
-				<p>We are ℄ Clan. Elite Members and Recruits united as a family. We invade and dominate servers across
+				<h3 data-i18n="site.lc.whoWeAre2">Who We Are</h3>
+				<p data-i18n="site.lc.weAreClanElite">We are ℄ Clan. Elite Members and Recruits united as a family. We invade and dominate servers across
 					Europe, Russia, and Turkey.</p>
-				<h3>Our Goals</h3>
-				<p>To grow the Elite Clan across all Agar.io modes and ensure fairness through strength.</p>
+				<h3 data-i18n="site.lc.ourGoals">Our Goals</h3>
+				<p data-i18n="site.lc.toGrowTheElite">To grow the Elite Clan across all Agar.io modes and ensure fairness through strength.</p>
 				<img src="https://jimboy3100.github.io/banners/Lcclan32.jpg"
 					style="max-width: 400px; margin: 24px auto; border-radius: var(--radius-sm); display: block;">
 			</div>
@@ -1464,7 +1466,7 @@
 		});
 
 		setTimeout(function () {
-			document.title = "Legend Clan | Legend Mod";
+			document.title = "Legend Clan | Legend Mod"; // i18n-ok: brand names in the tab title
 			(function () {
 				var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
 				link.type = 'image/x-icon';
@@ -1504,7 +1506,7 @@
 		gtag('config', 'UA-92655864-2');
 	</script>
 
-	<footer class="lm-footer">
+	<footer data-i18n="site.lc.theLegendClan" class="lm-footer">
 		© 2026 The Legend Clan
 	</footer>
 	</section>
@@ -1575,7 +1577,7 @@
 	</script>
 	<!-- Gallery Lightbox -->
 	<div id="gallery-lightbox" class="gallery-lightbox" onclick="closeGalleryImage()">
-		<img src="" alt="Enlarged gallery image">
+		<img data-i18n-alt="site.lc.enlargedGalleryImage" src="" alt="Enlarged gallery image">
 	</div>
 </body>
 

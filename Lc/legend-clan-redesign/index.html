@@ -55,6 +55,8 @@
             
           ...">
     <meta name="twitter:image" content="https://jimboy3100.github.io/banners/agario1200x630.png">
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-lc" charset="utf-8"></script>
 </head>
   <body data-theme="dark">
     <!-- ============== LOADER ============== -->
@@ -70,17 +72,18 @@
           <span class="tag">•℄C</span>
         </a> -->
 
-        <nav class="nav-links" aria-label="Navegação principal">
-          <a href="#topo">Início</a>
-          <a href="#sobre">Sobre</a>
-          <a href="#membros">Membros</a>
-          <a href="#projetos">Projetos</a>
-          <a href="#galeria">Galeria</a>
-          <a href="#atualizacoes">Atualizações</a>
-          <a href="#contato">Contato</a>
+        <nav data-i18n-aria-label="site.lc.mainNavigation" class="nav-links" aria-label="Main navigation">
+          <a data-i18n="site.lc.home" href="#topo">Home</a>
+          <a data-i18n="site.lc.about" href="#sobre">About</a>
+          <a data-i18n="site.lc.members" href="#membros">Members</a>
+          <a data-i18n="site.lc.projects" href="#projetos">Projects</a>
+          <a data-i18n="site.lc.gallery" href="#galeria">Gallery</a>
+          <a data-i18n="site.lc.updates" href="#atualizacoes">Updates</a>
+          <a data-i18n="site.lc.contact" href="#contato">Contact</a>
         </nav>
 
         <div class="nav-actions">
+          <span data-lm-lang-picker></span>
           <a
             href="https://discord.gg/2n9Hvcw9c3"
             class="btn btn-primary btn-sm"
@@ -99,12 +102,12 @@
                 d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5-.4-.6-.8-1.2-1.1-1.9M6.5 17.5c1.6.8 3.5 1.3 5.5 1.3s3.9-.5 5.5-1.3M6.5 17.5c.4-.6.8-1.3 1.1-1.9"
               />
             </svg>
-            Entrar no Discord
+            <span data-i18n="site.lc.joinDiscord">Join Discord</span>
           </a>
-          <button
+          <button data-i18n-aria-label="site.lc.toggleLightDark"
             class="theme-toggle"
             data-theme-toggle
-            aria-label="Alternar tema claro/escuro"
+            aria-label="Toggle light/dark theme"
           >
             <svg
               class="moon"
@@ -128,7 +131,7 @@
               />
             </svg>
           </button>
-          <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+          <button data-i18n-aria-label="site.lc.openMenu" class="menu-toggle" id="menuToggle" aria-label="Open menu">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -148,7 +151,7 @@
         <a href="#topo" class="brand"
           ><img src="assets/img/logo.png" alt="" /><span>Legend Clan</span></a
         >
-        <button id="menuClose" class="menu-toggle" aria-label="Fechar menu">
+        <button data-i18n-aria-label="site.lc.closeMenu" id="menuClose" class="menu-toggle" aria-label="Close menu">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -160,20 +163,20 @@
         </button>
       </div>
       <nav>
-        <a href="#topo">Início</a>
-        <a href="#sobre">Sobre</a>
-        <a href="#membros">Membros</a>
-        <a href="#projetos">Projetos</a>
-        <a href="#galeria">Galeria</a>
-        <a href="#atualizacoes">Atualizações</a>
-        <a href="#contato">Contato</a>
+        <a data-i18n="site.lc.home" href="#topo">Home</a>
+        <a data-i18n="site.lc.about" href="#sobre">About</a>
+        <a data-i18n="site.lc.members" href="#membros">Members</a>
+        <a data-i18n="site.lc.projects" href="#projetos">Projects</a>
+        <a data-i18n="site.lc.gallery" href="#galeria">Gallery</a>
+        <a data-i18n="site.lc.updates" href="#atualizacoes">Updates</a>
+        <a data-i18n="site.lc.contact" href="#contato">Contact</a>
       </nav>
-      <a
+      <a data-i18n="site.lc.joinDiscord"
         href="https://discord.gg/2n9Hvcw9c3"
         class="btn btn-primary btn-block"
         target="_blank"
         rel="noopener"
-        >Entrar no Discord</a
+        >Join Discord</a
       >
     </div>
 
@@ -184,22 +187,16 @@
         <div class="hero-fade"></div>
         <div class="container">
           <div class="hero-inner">
-            <span class="hero-badge"
-              ><span class="dot"></span> Discord online agora</span
+            <span data-i18n-html="site.lc.discordOnlineNow" class="hero-badge"
+              ><span class="dot"></span> Discord online now</span
             >
             <!-- <img
               src="assets/img/logo.png"
               alt="Emblema Legend Clan"
               class="hero-logo"
             /> -->
-            <h1>
-              Somos o <span class="grad">Legend Clan</span><br />desde 2017
-            </h1>
-            <p class="lead">
-              Clã oficial de Agar.io. Comunidade, estratégia e absorção total um
-              espaço para jogar em equipe, subir de nível junto e fazer parte de
-              uma história que já dura anos.
-            </p>
+            <h1 data-i18n-html="site.lc.heroTitle">We are the <span class="grad">Legend Clan</span><br />since 2017</h1>
+            <p data-i18n="site.lc.heroText" class="lead">The official Agar.io clan. Community, strategy and total absorption: a place to play as a team, level up together and be part of a story that has lasted for years.</p>
             <div class="hero-actions">
               <a
                 href="https://discord.gg/2n9Hvcw9c3"
@@ -219,24 +216,24 @@
                     d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5-.4-.6-.8-1.2-1.1-1.9M6.5 17.5c1.6.8 3.5 1.3 5.5 1.3s3.9-.5 5.5-1.3M6.5 17.5c.4-.6.8-1.3 1.1-1.9"
                   />
                 </svg>
-                Entrar no Discord
+                <span data-i18n="site.lc.joinDiscord">Join Discord</span>
               </a>
-              <a href="#membros" class="btn btn-outline">Conhecer os membros</a>
-              <a href="#projetos" class="btn btn-ghost">Ver projetos</a>
+              <a data-i18n="site.lc.meetTheMembers" href="#membros" class="btn btn-outline">Meet the members</a>
+              <a data-i18n="site.lc.viewProjects" href="#projetos" class="btn btn-ghost">View projects</a>
             </div>
 
             <div class="hero-stats">
-              <div class="stat"><b>2017</b><span>Fundação</span></div>
-              <div class="stat"><b>Agar.io</b><span>Jogo principal</span></div>
+              <div class="stat"><b>2017</b><span data-i18n="site.lc.founded">Founded</span></div>
+              <div class="stat"><b>Agar.io</b><span data-i18n="site.lc.mainGame">Main game</span></div>
               <div class="stat">
-                <b>Discord</b><span>Base da comunidade</span>
+                <b>Discord</b><span data-i18n="site.lc.communityBase">Community base</span>
               </div>
-              <div class="stat"><b>EN-US</b><span>Idioma oficial</span></div>
+              <div class="stat"><b data-i18n="site.lc.enUs">EN-US</b><span data-i18n="site.lc.officialLanguage">Official language</span></div>
             </div>
           </div>
         </div>
         <div class="scroll-cue">
-          <span>ROLE</span><span class="line"></span>
+          <span data-i18n="site.lc.scroll">SCROLL</span><span class="line"></span>
         </div>
       </section>
 
@@ -245,33 +242,17 @@
         <div class="container">
           <div class="grid about-grid">
             <div class="about-text reveal">
-              <span class="eyebrow">Quem somos</span>
-              <h2 class="section-title">
-                Uma comunidade construída partida após partida
-              </h2>
-              <p>
-                O Legend Clan nasceu dentro do Agar.io e cresceu para além do
-                jogo: hoje reunimos jogadores, moderadores e criadores de
-                conteúdo em um único servidor, com histórico público de
-                conquistas, regras e comunicados desde 2017.
-              </p>
-              <p>
-                Prezamos por jogo limpo, espírito de equipe e respeito entre
-                membros. Violações às regras internas podem resultar em
-                advertência ou expulsão mantemos o clã sério sem perder a
-                diversão.
-              </p>
-              <p>
-                Tudo o que você precisa histórico, artigos, contratos com
-                jogadores de elite e a lista de moderadores está documentado e
-                acessível a qualquer membro.
-              </p>
-              <a
+              <span data-i18n="site.lc.whoWeAre" class="eyebrow">Who we are</span>
+              <h2 data-i18n="site.lc.builtMatchByMatch" class="section-title">A community built match after match</h2>
+              <p data-i18n="site.lc.aboutText1">Legend Clan was born inside Agar.io and grew beyond the game: today we bring players, moderators and content creators together on one server, with a public record of achievements, rules and announcements since 2017.</p>
+              <p data-i18n="site.lc.aboutText2">We value fair play, team spirit and respect between members. Breaking the internal rules can lead to a warning or expulsion: we keep the clan serious without losing the fun.</p>
+              <p data-i18n="site.lc.aboutText3">Everything you need (history, articles, contracts with elite players and the list of moderators) is documented and open to every member.</p>
+              <a data-i18n="site.lc.readRulesOnDiscord"
                 href="https://discord.gg/2n9Hvcw9c3"
                 class="btn btn-outline mt-3"
                 target="_blank"
                 rel="noopener"
-                >Ler as regras no Discord</a
+                >Read the rules on Discord</a
               >
             </div>
 
@@ -289,11 +270,8 @@
                     />
                   </svg>
                 </div>
-                <h3>Jogadores de elite</h3>
-                <p>
-                  Perfis e contratos dos membros que já provaram valor em
-                  partidas oficiais.
-                </p>
+                <h3 data-i18n="site.lc.elitePlayers">Elite Players</h3>
+                <p data-i18n="site.lc.elitePlayersText">Profiles and contracts of the members who have already proven their worth in official matches.</p>
               </div>
               <div class="card about-card reveal reveal-delay-2">
                 <div class="icon-badge">
@@ -308,11 +286,8 @@
                     />
                   </svg>
                 </div>
-                <h3>Assistentes</h3>
-                <p>
-                  Time de apoio que orienta novos membros em suas primeiras
-                  semanas.
-                </p>
+                <h3 data-i18n="site.lc.assistants">Assistants</h3>
+                <p data-i18n="site.lc.assistantsText">The support team that guides new members through their first weeks.</p>
               </div>
               <div class="card about-card reveal reveal-delay-3">
                 <div class="icon-badge">
@@ -325,11 +300,8 @@
                     <path d="M4 17l6-6-4-4M12 19h8" />
                   </svg>
                 </div>
-                <h3>Modders &amp; devs</h3>
-                <p>
-                  Comunidade técnica que constrói ferramentas, mods e este
-                  próprio site.
-                </p>
+                <h3 data-i18n="site.lc.moddersDevs">Modders &amp; devs</h3>
+                <p data-i18n="site.lc.moddersText">The technical community that builds tools, mods and this very site.</p>
               </div>
               <div class="card about-card reveal">
                 <div class="icon-badge">
@@ -342,11 +314,8 @@
                     <path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z" />
                   </svg>
                 </div>
-                <h3>Ética e jogo limpo</h3>
-                <p>
-                  Regras claras, aplicadas com consistência para proteger a
-                  comunidade.
-                </p>
+                <h3 data-i18n="site.lc.ethicsFairPlay">Ethics and fair play</h3>
+                <p data-i18n="site.lc.ethicsText">Clear rules, applied consistently to protect the community.</p>
               </div>
             </div>
           </div>
@@ -357,12 +326,9 @@
       <section class="section section-alt" id="membros">
         <div class="container">
           <div class="section-head reveal">
-            <span class="eyebrow">Comunidade</span>
-            <h2 class="section-title">Membros &amp; Discord</h2>
-            <p class="section-sub">
-              Acompanhe quem está online agora no nosso Discord e conheça a
-              estrutura de cargos do clã.
-            </p>
+            <span data-i18n="site.lc.community" class="eyebrow">Community</span>
+            <h2 data-i18n="site.lc.membersDiscord" class="section-title">Members &amp; Discord</h2>
+            <p data-i18n="site.lc.membersIntro" class="section-sub">See who is online on our Discord right now and get to know the clan's roles.</p>
           </div>
 
           <div class="grid members-layout">
@@ -383,28 +349,25 @@
                   </svg>
                 </div>
                 <div>
-                  <h3>Servidor oficial</h3>
+                  <h3 data-i18n="site.lc.officialServer">Official server</h3>
                 </div>
               </div>
-              <p class="small">
-                Veja em tempo real quem está online e entre para conversar com o
-                clã.
-              </p>
+              <p data-i18n="site.lc.officialServerText" class="small">See in real time who is online and join to chat with the clan.</p>
               <div class="discord-frame-wrap">
                 <iframe
                   src="https://discord.com/widget?id=655133130373726219&theme=dark"
                   allowtransparency="true"
                   frameborder="0"
-                  title="Widget do Discord — Legend Clan"
+                  data-i18n-title="site.lc.discordWidget" title="Legend Clan Discord widget"
                   loading="lazy"
                 ></iframe>
               </div>
-              <a
+              <a data-i18n="site.lc.joinServer"
                 href="https://discord.gg/2n9Hvcw9c3"
                 class="btn btn-primary btn-block"
                 target="_blank"
                 rel="noopener"
-                >Entrar no servidor</a
+                >Join the server</a
               >
             </aside>
 
@@ -420,32 +383,20 @@
                     <circle cx="11" cy="11" r="7" />
                     <path d="m21 21-4.3-4.3" />
                   </svg>
-                  <input
+                  <input data-i18n-aria-label="site.lc.searchMember" data-i18n-placeholder="site.lc.searchByNickname"
                     type="text"
                     id="memberSearch"
-                    placeholder="Buscar por nickname..."
+                    placeholder="Search by nickname..."
                     aria-label="Buscar membro"
-                  />
+                  />    />
                 </div>
                 <div class="filter-chips">
-                  <button class="filter-chip active" data-role="all">
-                    Todos
-                  </button>
-                  <button class="filter-chip" data-role="fundador">
-                    Fundação
-                  </button>
-                  <button class="filter-chip" data-role="lider">
-                    Liderança
-                  </button>
-                  <button class="filter-chip" data-role="moderador">
-                    Moderação
-                  </button>
-                  <button class="filter-chip" data-role="membro">
-                    Membros
-                  </button>
-                  <button class="filter-chip" data-role="devjunior">
-                    Programador
-                  </button>
+                  <button data-i18n="site.lc.all" class="filter-chip active" data-role="all">All</button>
+                  <button data-i18n="site.lc.founded" class="filter-chip" data-role="fundador">Founded</button>
+                  <button data-i18n="site.lc.leadership" class="filter-chip" data-role="lider">Leadership</button>
+                  <button data-i18n="site.lc.moderation" class="filter-chip" data-role="moderador">Moderation</button>
+                  <button data-i18n="site.lc.members" class="filter-chip" data-role="membro">Members</button>
+                  <button data-i18n="site.lc.programmer" class="filter-chip" data-role="devjunior">Programmer</button>
                 </div>
               </div>
 
@@ -461,13 +412,13 @@
                       N<span class="status-dot online"></span>
                     </div>
                     <div>
-                      <div class="member-name">Jimboy</div>
-                      <div class="member-role">Admin</div>
+                      <div data-i18n="site.lc.jimboy" class="member-name">Jimboy</div>
+                      <div data-i18n="site.lc.admin" class="member-role">Admin</div>
                     </div>
                   </div>
-                  <p class="member-desc">Adminitrador & Programador.</p>
+                  <p data-i18n="site.lc.adminProgrammer" class="member-desc">Administrator &amp; Programmer</p>
                   <div class="member-meta">
-                    <span class="member-country">GR GRÉCIA</span>
+                    <span data-i18n="site.lc.countryGreece" class="member-country">GR GREECE</span>
                     <div class="member-social">
                       <a
                         href="https://discord.gg/2n9Hvcw9c3"
@@ -503,13 +454,13 @@
                       N<span class="status-dot online"></span>
                     </div>
                     <div>
-                      <div class="member-name">Junkys</div>
-                      <div class="member-role">Admin</div>
+                      <div data-i18n="site.lc.junkys" class="member-name">Junkys</div>
+                      <div data-i18n="site.lc.admin" class="member-role">Admin</div>
                     </div>
                   </div>
-                  <p class="member-desc">Administrador & Programador</p>
+                  <p data-i18n="site.lc.adminProgrammer" class="member-desc">Administrator &amp; Programmer</p>
                   <div class="member-meta">
-                    <span class="member-country">BE BELGICA</span>
+                    <span data-i18n="site.lc.countryBelgium" class="member-country">BE BELGIUM</span>
                     <div class="member-social">
                       <a
                         href="https://discord.gg/2n9Hvcw9c3"
@@ -546,13 +497,13 @@
                       S<span class="status-dot online"></span>
                     </div>
                     <div>
-                      <div class="member-name">Samantha</div>
-                      <div class="member-role">Membro</div>
+                      <div data-i18n="site.lc.samantha" class="member-name">Samantha</div>
+                      <div data-i18n="site.lc.member" class="member-role">Member</div>
                     </div>
                   </div>
-                  <p class="member-desc">Membro.</p>
+                  <p data-i18n="site.lc.member" class="member-desc">Member</p>
                   <div class="member-meta">
-                    <span class="member-country">EU EUROPA</span>
+                    <span data-i18n="site.lc.countryEurope" class="member-country">EU EUROPE</span>
                     <div class="member-social">
                       <a
                         href="https://discord.gg/2n9Hvcw9c3"
@@ -589,13 +540,13 @@
                       A<span class="status-dot online"></span>
                     </div>
                     <div>
-                      <div class="member-name">AnotherZ.</div>
-                      <div class="member-role">Admin</div>
+                      <div data-i18n="site.lc.anotherz" class="member-name">AnotherZ.</div>
+                      <div data-i18n="site.lc.admin" class="member-role">Admin</div>
                     </div>
                   </div>
-                  <p class="member-desc">Administrador.</p>
+                  <p data-i18n="site.lc.administrator" class="member-desc">Administrator</p>
                   <div class="member-meta">
-                    <span class="member-country">DZA ARGÉLIA</span>
+                    <span data-i18n="site.lc.countryAlgeria" class="member-country">DZA ALGERIA</span>
                     <div class="member-social">
                       <a
                         href="https://discord.gg/2n9Hvcw9c3"
@@ -632,13 +583,13 @@
                       Z<span class="status-dot online"></span>
                     </div>
                     <div>
-                      <div class="member-name">Andy</div>
-                      <div class="member-role">Admin</div>
+                      <div data-i18n="site.lc.andy" class="member-name">Andy</div>
+                      <div data-i18n="site.lc.admin" class="member-role">Admin</div>
                     </div>
                   </div>
-                  <p class="member-desc">Administrador.</p>
+                  <p data-i18n="site.lc.administrator" class="member-desc">Administrator</p>
                   <div class="member-meta">
-                    <span class="member-country">EN AUSTRÁLIA</span>
+                    <span data-i18n="site.lc.countryAustralia" class="member-country">EN AUSTRALIA</span>
                     <div class="member-social">
                       <a
                         href="https://discord.gg/2n9Hvcw9c3"
@@ -675,15 +626,13 @@
                       P<span class="status-dot online"></span>
                     </div>
                     <div>
-                      <div class="member-name">Júnior Code</div>
-                      <div class="member-role">Programmer</div>
+                      <div data-i18n="site.lc.jNiorCode" class="member-name">Júnior Code</div>
+                      <div data-i18n="site.lc.programmer" class="member-role">Programmer</div>
                     </div>
                   </div>
-                  <p class="member-desc">
-                    Programador FullStack do Clan Legends.
-                  </p>
+                  <p data-i18n="site.lc.fullstackProgrammer" class="member-desc">Full-stack programmer of the Legends clan.</p>
                   <div class="member-meta">
-                    <span class="member-country">🇧🇷 Brasil</span>
+                    <span data-i18n="site.lc.countryBrazil" class="member-country">🇧🇷 Brazil</span>
                     <div class="member-social">
                       <a
                         href="https://discord.gg/2n9Hvcw9c3"
@@ -756,9 +705,7 @@
                   </div>
                 </article> -->
               </div>
-              <p class="no-results" id="membersEmpty" style="display: none">
-                Nenhum membro encontrado para essa busca.
-              </p>
+              <p data-i18n="site.lc.noMemberFound" class="no-results" id="membersEmpty" style="display: none">No member matches this search.</p>
             </div>
           </div>
         </div>
@@ -768,12 +715,9 @@
       <section class="section" id="projetos">
         <div class="container">
           <div class="section-head center reveal">
-            <span class="eyebrow">Trabalho da comunidade</span>
-            <h2 class="section-title">Projetos</h2>
-            <p class="section-sub">
-              Sites, painéis e ferramentas mantidos pelo clã e por seus
-              desenvolvedores.
-            </p>
+            <span data-i18n="site.lc.communityWork" class="eyebrow">Community work</span>
+            <h2 data-i18n="site.lc.projects" class="section-title">Projects</h2>
+            <p data-i18n="site.lc.projectsIntro" class="section-sub">Sites, panels and tools maintained by the clan and its developers.</p>
           </div>
 
           <div class="grid projects-grid">
@@ -800,22 +744,19 @@
                 </svg>
               </div>
               <div class="project-body">
-                <h3>Legend Mod — Base de Artigos</h3>
-                <p>
-                  Hub com artigos oficiais: perfis de jogadores de elite,
-                  assistentes e a lista de modders/desenvolvedores do clã.
-                </p>
+                <h3 data-i18n="site.lc.articleBase">Legend Mod — Article base</h3>
+                <p data-i18n="site.lc.articleBaseText">A hub of official articles: profiles of elite players, assistants and the clan's list of modders/developers.</p>
                 <div class="tech-tags">
                   <span class="chip">HTML</span
-                  ><span class="chip">Documentação</span>
+                  ><span data-i18n="site.lc.documentation" class="chip">Documentation</span>
                 </div>
                 <div class="project-actions">
-                  <a
+                  <a data-i18n="site.lc.viewArticles"
                     class="btn btn-outline btn-sm"
                     href="https://www.legendmod.ml/Lc/articles/elite-players.html"
                     target="_blank"
                     rel="noopener"
-                    >Ver artigos</a
+                    >View articles</a
                   >
                 </div>
               </div>
@@ -844,22 +785,19 @@
                 </svg>
               </div>
               <div class="project-body">
-                <h3>Portal de Projetos LC</h3>
-                <p>
-                  Vitrine com outros projetos e ferramentas construídos pela
-                  comunidade ao redor do clã.
-                </p>
+                <h3 data-i18n="site.lc.projectsPortal">LC Projects Portal</h3>
+                <p data-i18n="site.lc.projectsPortalText">A showcase of other projects and tools built by the community around the clan.</p>
                 <div class="tech-tags">
-                  <span class="chip">Web</span
-                  ><span class="chip">Comunidade</span>
+                  <span data-i18n="site.lc.web" class="chip">Web</span
+                  ><span data-i18n="site.lc.community" class="chip">Community</span>
                 </div>
                 <div class="project-actions">
-                  <a
+                  <a data-i18n="site.lc.view"
                     class="btn btn-outline btn-sm"
                     href="http://jimboy3100.github.io/"
                     target="_blank"
                     rel="noopener"
-                    >Visualizar</a
+                    >View</a
                   >
                 </div>
               </div>
@@ -888,22 +826,19 @@
                 </svg>
               </div>
               <div class="project-body">
-                <h3>Portfólio do Desenvolvedor</h3>
-                <p>
-                  Site pessoal de Júnior devTI, responsável pelo desenvolvimento
-                  e redesign deste site.
-                </p>
+                <h3 data-i18n="site.lc.developerPortfolio">Developer's portfolio</h3>
+                <p data-i18n="site.lc.developerPortfolioText">The personal site of Júnior devTI, who developed and redesigned this site.</p>
                 <div class="tech-tags">
-                  <span class="chip">React</span
+                  <span data-i18n="site.lc.react" class="chip">React</span
                   ><span class="chip">Next.js</span>
                 </div>
                 <div class="project-actions">
-                  <a
+                  <a data-i18n="site.lc.visitPortfolio"
                     class="btn btn-outline btn-sm"
                     href="https://projetoperfil.vercel.app/"
                     target="_blank"
                     rel="noopener"
-                    >Visitar portfólio</a
+                    >Visit portfolio</a
                   >
                   <a
                     class="btn btn-ghost btn-sm"
@@ -923,109 +858,107 @@
       <section class="section section-alt" id="galeria">
         <div class="container">
           <div class="section-head center reveal">
-            <span class="eyebrow">Registros</span>
-            <h2 class="section-title">Galeria</h2>
-            <p class="section-sub">
-              Momentos, conquistas e capturas de gameplay da comunidade.
-            </p>
+            <span data-i18n="site.lc.records" class="eyebrow">Records</span>
+            <h2 data-i18n="site.lc.gallery" class="section-title">Gallery</h2>
+            <p data-i18n="site.lc.galleryIntro" class="section-sub">Moments, achievements and gameplay captures from the community.</p>
           </div>
 
           <div class="gallery-grid reveal" id="galleryGrid">
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryNuc"
                 src="assets/img/nuc.jpg"
-                alt="Gameplay Legend Clan — Nuc"
+                alt="Legend Clan gameplay — Nuc"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Gameplay</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.gameplay">Gameplay</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryGameplay"
                 src="assets/img/junk1.jpg"
-                alt="Gameplay Legend Clan"
+                alt="Legend Clan gameplay"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Gameplay</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.gameplay">Gameplay</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryDragon"
                 src="assets/img/dragon.jpg"
-                alt="Gameplay Legend Clan — Dragon"
+                alt="Legend Clan gameplay — Dragon"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Conquista</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.achievement">Achievement</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.gallerySamantha"
                 src="assets/img/samantha.jpg"
-                alt="Gameplay Legend Clan — Samantha"
+                alt="Legend Clan gameplay — Samantha"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Gameplay</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.gameplay">Gameplay</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryTeam"
                 src="assets/img/sam-nuc.jpg"
-                alt="Gameplay Legend Clan em equipe"
+                alt="Legend Clan team gameplay"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Equipe</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.team">Team</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryGameplay"
                 src="assets/img/nuc2.jpg"
-                alt="Gameplay Legend Clan"
+                alt="Legend Clan gameplay"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Gameplay</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.gameplay">Gameplay</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryCommunity"
                 src="assets/img/weare.jpg"
-                alt="Comunidade Legend Clan"
+                alt="Legend Clan community"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Comunidade</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.community">Community</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryGameplay"
                 src="assets/img/prod.jpg"
-                alt="Gameplay Legend Clan"
+                alt="Legend Clan gameplay"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Gameplay</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.gameplay">Gameplay</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryWs"
                 src="assets/img/ws.jpg"
-                alt="Gameplay Legend Clan — WS"
+                alt="Legend Clan gameplay — WS"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Conquista</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.achievement">Achievement</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryZone"
                 src="assets/img/zone.jpg"
-                alt="Gameplay Legend Clan — Zone"
+                alt="Legend Clan gameplay — Zone"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Gameplay</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.gameplay">Gameplay</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryGameplay"
                 src="assets/img/nuc5.jpg"
-                alt="Gameplay Legend Clan"
+                alt="Legend Clan gameplay"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Gameplay</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.gameplay">Gameplay</span></div>
             </div>
             <div class="gallery-item">
-              <img
+              <img data-i18n-alt="site.lc.galleryEvent"
                 src="assets/img/mido.jpg"
-                alt="Evento Legend Clan"
+                alt="Legend Clan event"
                 loading="lazy"
               />
-              <div class="g-overlay"><span>Evento</span></div>
+              <div class="g-overlay"><span data-i18n="site.lc.event">Event</span></div>
             </div>
           </div>
         </div>
@@ -1035,31 +968,25 @@
       <section class="section" id="atualizacoes">
         <div class="container">
           <div class="section-head reveal">
-            <span class="eyebrow">Histórico</span>
-            <h2 class="section-title">Atualizações &amp; comunicados</h2>
-            <p class="section-sub">
-              Registro público de anúncios, conquistas e mudanças de regras ao
-              longo da trajetória do clã.
-            </p>
+            <span data-i18n="site.lc.history" class="eyebrow">History</span>
+            <h2 data-i18n="site.lc.updatesAnnouncements" class="section-title">Updates &amp; announcements</h2>
+            <p data-i18n="site.lc.updatesIntro" class="section-sub">A public record of announcements, achievements and rule changes throughout the clan's history.</p>
           </div>
 
           <div class="grid updates-grid">
             <article class="card update-card reveal">
               <div class="update-top">
-                <span class="chip">Comunidade</span
+                <span data-i18n="site.lc.community" class="chip">Community</span
                 ><span class="update-date">27/12/2025</span>
               </div>
-              <h3>Promoção de novos membros</h3>
-              <p>
-                Novo ciclo de promoções internas reconhece jogadores que se
-                destacaram nos últimos meses.
-              </p>
+              <h3 data-i18n="site.lc.newMemberPromotion">New member promotion</h3>
+              <p data-i18n="site.lc.newMemberPromotionText">A new round of internal promotions recognises players who stood out in recent months.</p>
               <a
                 class="update-link"
                 href="https://www.legendmod.ml/Lc/articles/announcement-27-12-2025.html"
                 target="_blank"
                 rel="noopener"
-                >Ler comunicado
+                ><span data-i18n="site.lc.readAnnouncement">Read announcement</span>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -1072,20 +999,17 @@
 
             <article class="card update-card reveal reveal-delay-1">
               <div class="update-top">
-                <span class="chip">Regras</span
+                <span data-i18n="site.lc.rules" class="chip">Rules</span
                 ><span class="update-date">24/02/2018</span>
               </div>
-              <h3>Lealdade do clã</h3>
-              <p>
-                Diretrizes reforçando o compromisso esperado de cada membro com
-                a comunidade.
-              </p>
+              <h3 data-i18n="site.lc.clanLoyalty">Clan loyalty</h3>
+              <p data-i18n="site.lc.clanLoyaltyText">Guidelines reinforcing the commitment expected of every member towards the community.</p>
               <a
                 class="update-link"
                 href="https://www.legendmod.ml/Lc/articles/announcement-24-2-2018.html"
                 target="_blank"
                 rel="noopener"
-                >Ler comunicado
+                ><span data-i18n="site.lc.readAnnouncement">Read announcement</span>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -1098,20 +1022,17 @@
 
             <article class="card update-card reveal reveal-delay-2">
               <div class="update-top">
-                <span class="chip">Regras</span
+                <span data-i18n="site.lc.rules" class="chip">Rules</span
                 ><span class="update-date">01/02/2018</span>
               </div>
-              <h3>Regra Senpai</h3>
-              <p>
-                Atualização das diretrizes internas de conduta entre membros
-                mais e menos experientes.
-              </p>
+              <h3 data-i18n="site.lc.senpaiRule">Senpai rule</h3>
+              <p data-i18n="site.lc.senpaiRuleText">An update of the internal guidelines on conduct between more and less experienced members.</p>
               <a
                 class="update-link"
                 href="https://www.legendmod.ml/Lc/articles/announcement-1-2-2018.html"
                 target="_blank"
                 rel="noopener"
-                >Ler comunicado
+                ><span data-i18n="site.lc.readAnnouncement">Read announcement</span>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -1124,20 +1045,17 @@
 
             <article class="card update-card reveal">
               <div class="update-top">
-                <span class="chip">Regras</span
+                <span data-i18n="site.lc.rules" class="chip">Rules</span
                 ><span class="update-date">12/04/2017</span>
               </div>
-              <h3>Regras sobre o clã</h3>
-              <p>
-                Documento fundacional com as regras gerais que orientam a
-                comunidade desde o início.
-              </p>
+              <h3 data-i18n="site.lc.clanRules">Rules about the clan</h3>
+              <p data-i18n="site.lc.clanRulesText">The founding document with the general rules that have guided the community from the start.</p>
               <a
                 class="update-link"
                 href="https://www.legendmod.ml/Lc/articles/announcement-4-12-2017.html"
                 target="_blank"
                 rel="noopener"
-                >Ler comunicado
+                ><span data-i18n="site.lc.readAnnouncement">Read announcement</span>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -1150,20 +1068,17 @@
 
             <article class="card update-card reveal reveal-delay-1">
               <div class="update-top">
-                <span class="chip">Estratégia</span
+                <span data-i18n="site.lc.strategy" class="chip">Strategy</span
                 ><span class="update-date">26/10/2017</span>
               </div>
-              <h3>Dicas estratégicas</h3>
-              <p>
-                Coletânea de estratégias avançadas para partidas competitivas em
-                Agar.io.
-              </p>
+              <h3 data-i18n="site.lc.strategyTips">Strategy tips</h3>
+              <p data-i18n="site.lc.strategyTipsText">A collection of advanced strategies for competitive Agar.io matches.</p>
               <a
                 class="update-link"
                 href="https://www.legendmod.ml/Lc/articles/announcement-26-10-2017.html"
                 target="_blank"
                 rel="noopener"
-                >Ler comunicado
+                ><span data-i18n="site.lc.readAnnouncement">Read announcement</span>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -1176,20 +1091,17 @@
 
             <article class="card update-card reveal reveal-delay-2">
               <div class="update-top">
-                <span class="chip">Comunidade</span
+                <span data-i18n="site.lc.community" class="chip">Community</span
                 ><span class="update-date">05/10/2017</span>
               </div>
-              <h3>Regras para membros da LC</h3>
-              <p>
-                Guia completo destinado a novos integrantes sobre convivência e
-                expectativas do clã.
-              </p>
+              <h3 data-i18n="site.lc.lcMemberRules">Rules for LC members</h3>
+              <p data-i18n="site.lc.lcMemberRulesText">A complete guide for new members on getting along in the clan and what it expects.</p>
               <a
                 class="update-link"
                 href="https://www.legendmod.ml/Lc/articles/announcement-5-10-2017.html"
                 target="_blank"
                 rel="noopener"
-                >Ler comunicado
+                ><span data-i18n="site.lc.readAnnouncement">Read announcement</span>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -1207,20 +1119,17 @@
       <section class="section">
         <div class="container">
           <div class="cta-band reveal">
-            <h2>Pronto para entrar na disputa?</h2>
-            <p>
-              Junte-se ao Discord do Legend Clan, conheça a comunidade e comece
-              sua trajetória com a gente ainda hoje.
-            </p>
+            <h2 data-i18n="site.lc.ctaTitle">Ready to join the fight?</h2>
+            <p data-i18n="site.lc.ctaText">Join the Legend Clan Discord, meet the community and start your journey with us today.</p>
             <div class="cta-actions">
-              <a
+              <a data-i18n="site.lc.joinDiscord"
                 href="https://discord.gg/2n9Hvcw9c3"
                 class="btn btn-primary"
                 target="_blank"
                 rel="noopener"
-                >Entrar no Discord</a
+                >Join Discord</a
               >
-              <a href="#contato" class="btn btn-outline">Falar com a gente</a>
+              <a data-i18n="site.lc.talkToUs" href="#contato" class="btn btn-outline">Talk to us</a>
             </div>
           </div>
         </div>
@@ -1231,12 +1140,9 @@
         <div class="container">
           <div class="grid contact-grid">
             <div class="contact-info reveal">
-              <span class="eyebrow">Fale conosco</span>
-              <h2 class="section-title">Contato</h2>
-              <p class="section-sub">
-                Prefere falar direto? Use o Discord para resposta rápida, ou
-                envie uma mensagem pelo formulário.
-              </p>
+              <span data-i18n="site.lc.contactUs" class="eyebrow">Contact us</span>
+              <h2 data-i18n="site.lc.contact" class="section-title">Contact</h2>
+              <p data-i18n="site.lc.contactIntro" class="section-sub">Prefer to talk directly? Use Discord for a quick answer, or send a message with the form.</p>
 
               <div class="contact-row">
                 <div class="icon-badge">
@@ -1251,8 +1157,8 @@
                   </svg>
                 </div>
                 <div>
-                  <h4>E-mail</h4>
-                  <a href="mailto:legendclanOficial@Gmail.com"
+                  <h4 data-i18n="site.lc.email">E-mail</h4>
+                  <a data-i18n="site.lc.legendclanoficialGmailCom" href="mailto:legendclanOficial@Gmail.com"
                     >legendclanOficial@Gmail.com</a
                   >
                 </div>
@@ -1274,7 +1180,7 @@
                 </div>
                 <div>
                   <h4>Discord</h4>
-                  <a
+                  <a data-i18n="site.lc.discordGg2n9hvcw9c3"
                     href="https://discord.gg/2n9Hvcw9c3"
                     target="_blank"
                     rel="noopener"
@@ -1294,8 +1200,8 @@
                   </svg>
                 </div>
                 <div>
-                  <h4>Resposta da equipe</h4>
-                  <p>Moderadores costumam responder dentro de 24h.</p>
+                  <h4 data-i18n="site.lc.teamReply">Team reply</h4>
+                  <p data-i18n="site.lc.teamReplyText">Moderators usually reply within 24h.</p>
                 </div>
               </div>
             </div>
@@ -1308,32 +1214,32 @@
               enctype="multipart/form-data"
             >
               <div class="field">
-                <label for="nome">Nome</label>
-                <input
+                <label data-i18n="site.lc.name" for="nome">Name</label>
+                <input data-i18n-placeholder="site.lc.namePlaceholder"
                   type="text"
                   id="nome"
                   name="nome"
                   required
-                  placeholder="Seu nickname ou nome"
+                  placeholder="Your nickname or name"
                 />
               </div>
               <div class="field">
-                <label for="email">E-mail</label>
-                <input
+                <label data-i18n="site.lc.email" for="email">E-mail</label>
+                <input data-i18n-placeholder="site.lc.emailPlaceholder"
                   type="email"
                   id="email"
                   name="email"
                   required
-                  placeholder="voce@email.com"
+                  placeholder="you@email.com"
                 />
               </div>
               <div class="field">
-                <label for="mensagem">Mensagem</label>
+                <label data-i18n="site.lc.message" for="mensagem">Message</label>
                 <textarea
                   id="mensagem"
                   name="mensagem"
                   required
-                  placeholder="Digite sua mensagem..."
+                  data-i18n-placeholder="site.lc.messagePlaceholder" placeholder="Type your message..."
                 ></textarea>
               </div>
               <!-- <div class="file-field">
@@ -1351,15 +1257,10 @@
                 >
               </div> -->
               <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
-                  Enviar mensagem
-                </button>
-                <button type="reset" class="btn btn-ghost">Limpar</button>
+                <button data-i18n="site.lc.sendMessage" type="submit" class="btn btn-primary">Send message</button>
+                <button data-i18n="site.lc.clear" type="reset" class="btn btn-ghost">Clear</button>
               </div>
-              <p class="form-note">
-                Ao enviar, você concorda em ser contatado pela equipe do Legend
-                Clan.
-              </p>
+              <p data-i18n="site.lc.formConsent" class="form-note">By sending, you agree to be contacted by the Legend Clan team.</p>
             </form>
           </div>
         </div>
@@ -1372,14 +1273,11 @@
         <div class="grid footer-grid">
           <div class="footer-brand">
             <a href="#topo" class="brand"
-              ><img src="assets/img/logo.png" alt="" /><span
+              ><img src="assets/img/logo.png" alt="" /><span data-i18n="site.lc.legendClanC"
                 >Legend Clan ℄C</span
               ></a
             >
-            <p>
-              Clã oficial de Agar.io. Comunidade ativa desde 2017, construída
-              por e para os membros.
-            </p>
+            <p data-i18n="site.lc.footerText">The official Agar.io clan. An active community since 2017, built by and for its members.</p>
             <div class="footer-social">
               <a
                 href="https://www.facebook.com/Lcclan/"
@@ -1396,7 +1294,7 @@
                     d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h3l1-3h-4v-2c0-.5.5-1 1-1Z"
                   /></svg
               ></a>
-              <a
+              <a data-i18n-aria-label="site.lc.instagram"
                 href="https://www.instagram.com/legendclanmod/"
                 target="_blank"
                 rel="noopener"
@@ -1446,20 +1344,20 @@
           </div>
 
           <div class="footer-col">
-            <h4>Navegação</h4>
+            <h4 data-i18n="site.lc.navigation">Navigation</h4>
             <ul>
-              <li><a href="#topo">Início</a></li>
-              <li><a href="#sobre">Sobre</a></li>
-              <li><a href="#membros">Membros</a></li>
-              <li><a href="#projetos">Projetos</a></li>
+              <li><a data-i18n="site.lc.home" href="#topo">Home</a></li>
+              <li><a data-i18n="site.lc.about" href="#sobre">About</a></li>
+              <li><a data-i18n="site.lc.members" href="#membros">Members</a></li>
+              <li><a data-i18n="site.lc.projects" href="#projetos">Projects</a></li>
             </ul>
           </div>
           <div class="footer-col">
-            <h4>Comunidade</h4>
+            <h4 data-i18n="site.lc.community">Community</h4>
             <ul>
-              <li><a href="#galeria">Galeria</a></li>
-              <li><a href="#atualizacoes">Atualizações</a></li>
-              <li><a href="#contato">Contato</a></li>
+              <li><a data-i18n="site.lc.gallery" href="#galeria">Gallery</a></li>
+              <li><a data-i18n="site.lc.updates" href="#atualizacoes">Updates</a></li>
+              <li><a data-i18n="site.lc.contact" href="#contato">Contact</a></li>
               <li>
                 <a
                   href="https://discord.gg/2n9Hvcw9c3"
@@ -1471,19 +1369,19 @@
             </ul>
           </div>
           <div class="footer-col">
-            <h4>Contato</h4>
+            <h4 data-i18n="site.lc.contact">Contact</h4>
             <ul>
               <li>
-                <a href="mailto:legendclanOficial@Gmail.com"
+                <a data-i18n="site.lc.legendclanoficialGmailCom" href="mailto:legendclanOficial@Gmail.com"
                   >legendclanOficial@Gmail.com</a
                 >
               </li>
               <li>
-                <a
+                <a data-i18n="site.lc.devPortfolio"
                   href="https://projetoperfil.vercel.app/"
                   target="_blank"
                   rel="noopener"
-                  >Portfólio do dev</a
+                  >Dev's portfolio</a
                 >
               </li>
             </ul>
@@ -1491,28 +1389,18 @@
         </div>
 
         <div class="footer-bottom">
-          <p>
-            The Legend Clan LC Agar.io — © 2026, todos os direitos reservados.
-          </p>
-          <p>
-            Desenvolvido por
-            <a
-              href="https://www.youtube.com/@Junior_TI"
-              target="_blank"
-              rel="noopener"
-              >Júnior devTI 💎</a
-            >
-          </p>
+          <p data-i18n="site.lc.copyrightRedesign">The Legend Clan LC Agar.io — © 2026, all rights reserved.</p>
+          <p data-i18n-html="site.lc.developedBy">Developed by <a href="https://www.youtube.com/@Junior_TI" target="_blank" rel="noopener" >Júnior devTI 💎</a ></p>
         </div>
       </div>
     </footer>
 
     <!-- ============== LIGHTBOX ============== -->
     <div class="lightbox" id="lightbox">
-      <button
+      <button data-i18n-aria-label="site.lc.closeImage"
         class="lightbox-close"
         id="lightboxClose"
-        aria-label="Fechar imagem"
+        aria-label="Close image"
       >
         <svg
           viewBox="0 0 24 24"
@@ -1527,7 +1415,7 @@
     </div>
 
     <!-- ============== BACK TO TOP ============== -->
-    <button class="back-to-top" id="backToTop" aria-label="Voltar ao topo">
+    <button data-i18n-aria-label="site.lc.backToTop" class="back-to-top" id="backToTop" aria-label="Back to top">
       <svg
         viewBox="0 0 24 24"
         fill="none"
