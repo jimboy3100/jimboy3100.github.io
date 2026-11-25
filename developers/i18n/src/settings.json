@@ -49,8 +49,8 @@
     "pl": "Przywroc ustawienia domyslne",
     "nl": "Standaardinstellingen herstellen",
     "pt": "Restaurar configurações padrão",
-    "id": "Pulihkan pengaturan bawaan",
-    "ja": "既定の設定に戻す",
+    "id": "Pulihkan pengaturan default",
+    "ja": "初期設定に戻す",
     "it": "Ripristina impostazioni predefinite"
   },
   "settings.animationGroup": {
@@ -139,7 +139,7 @@
     "pl": "Zoom",
     "nl": "Zoom",
     "pt": "Zoom",
-    "id": "Zum",
+    "id": "Zoom",
     "ja": "ズーム",
     "it": "Zoom"
   },
@@ -174,8 +174,8 @@
     "tr": "Yeniden doğma",
     "pl": "Odrodzenie",
     "nl": "Opnieuw spelen",
-    "pt": "Renascimento",
-    "id": "Muncul kembali",
+    "pt": "Respawn",
+    "id": "Respawn",
     "ja": "リスポーン",
     "it": "Respawn"
   },
@@ -301,7 +301,7 @@
     "pl": "Minimapa",
     "nl": "Minikaart",
     "pt": "Minimapa",
-    "id": "Peta mini",
+    "id": "Minimap",
     "ja": "ミニマップ",
     "it": "Minimappa"
   },
@@ -391,7 +391,7 @@
     "pl": "Czat",
     "nl": "Chat",
     "pt": "Chat",
-    "id": "Obrolan",
+    "id": "Chat",
     "ja": "チャット",
     "it": "Chat"
   },
@@ -680,7 +680,7 @@
     "nl": "Geschiedenis netwerkkwaliteit (ping, jitter, verbroken verbindingen)",
     "pt": "Histórico da qualidade da conexão (ping, jitter, quedas)",
     "id": "Riwayat kualitas jaringan (ping, jitter, putus)",
-    "ja": "通信品質の履歴（ping、ジッター、切断）",
+    "ja": "通信品質の履歴（Ping、ジッター、切断）",
     "it": "Cronologia qualità di rete (ping, jitter, disconnessioni)"
   },
   "settings.lmPerfDiag": {
@@ -823,7 +823,7 @@
     "pl": "Pokaż czat na komórkach",
     "nl": "Chat op cellen tonen",
     "pt": "Mostrar chat nas células",
-    "id": "Tampilkan obrolan pada sel",
+    "id": "Tampilkan chat pada sel",
     "ja": "セル上にチャットを表示",
     "it": "Mostra chat sulle cellule"
   },
@@ -841,7 +841,7 @@
     "pl": "Pokaż czat na moich komórkach",
     "nl": "Chat op mijn cellen tonen",
     "pt": "Mostrar chat nas minhas células",
-    "id": "Tampilkan obrolan pada sel saya",
+    "id": "Tampilkan chat pada sel saya",
     "ja": "自分のセル上にチャットを表示",
     "it": "Mostra chat sulle mie cellule"
   },
@@ -913,7 +913,7 @@
     "pl": "Widok na środek obu (wyłącza się, gdy blisko)",
     "nl": "Beeld in het midden van beide (uit als dichtbij)",
     "pt": "Visão no meio dos dois (desativa quando perto)",
-    "id": "Tampilan di tengah keduanya (mati saat dekat)",
+    "id": "Tampilan di tengah keduanya (nonaktif saat dekat)",
     "ja": "両方の中間を表示（近いと解除）",
     "it": "Visuale al centro di entrambe (si disattiva da vicino)"
   },
@@ -1093,7 +1093,7 @@
     "pl": "Auto zoom",
     "nl": "Automatisch zoomen",
     "pt": "Zoom automático",
-    "id": "Zum otomatis",
+    "id": "Zoom otomatis",
     "ja": "自動ズーム",
     "it": "Zoom automatico"
   },
@@ -1148,7 +1148,7 @@
     "nl": "Macro-feed (ms)",
     "pt": "Macro de feed (ms)",
     "id": "Makro feed (ms)",
-    "ja": "フィードマクロ（ms）",
+    "ja": "質量放出マクロ（ms）",
     "it": "Macro feed (ms)"
   },
   "settings.macroSplitDelay": {
@@ -1202,7 +1202,7 @@
     "nl": "Aantal profielen",
     "pt": "Número de perfis",
     "id": "Jumlah profil",
-    "ja": "プロフィール数",
+    "ja": "プロファイル数",
     "it": "Numero di profili"
   },
   "settings.suckAnimation": {
@@ -1291,7 +1291,7 @@
     "pl": "Szybkosc zoomu",
     "nl": "Zoomsnelheid",
     "pt": "Velocidade do zoom",
-    "id": "Kecepatan zum",
+    "id": "Kecepatan zoom",
     "ja": "ズーム速度",
     "it": "Velocità zoom"
   },
@@ -1309,7 +1309,7 @@
     "pl": "Plynnosc zoomu (szybkosc dojscia)",
     "nl": "Zoom-glijsnelheid",
     "pt": "Suavidade do zoom",
-    "id": "Kehalusan zum",
+    "id": "Kehalusan zoom",
     "ja": "ズームの滑らかさ",
     "it": "Fluidità dello zoom"
   },
@@ -1345,7 +1345,7 @@
     "pl": "Gracze w topce",
     "nl": "Spelers in het klassement",
     "pt": "Jogadores no ranking",
-    "id": "Pemain di papan peringkat",
+    "id": "Pemain di leaderboard",
     "ja": "ランキングの表示人数",
     "it": "Giocatori in classifica"
   },
@@ -1362,7 +1362,7 @@
     "tr": "Takım oyuncuları",
     "pl": "Gracze w drużynie",
     "nl": "Teamspelers",
-    "pt": "Jogadores do time",
+    "pt": "Jogadores da equipe",
     "id": "Pemain tim",
     "ja": "チームの表示人数",
     "it": "Giocatori della squadra"
@@ -1381,7 +1381,7 @@
     "pl": "Szybkie odrodzenie (klawisz)",
     "nl": "Snelle respawn (sneltoets)",
     "pt": "Respawn rápido (atalho)",
-    "id": "Respawn cepat (tombol pintas)",
+    "id": "Respawn cepat (hotkey)",
     "ja": "クイックリスポーン（ショートカット）",
     "it": "Respawn rapido (tasto)"
   },
@@ -1398,8 +1398,8 @@
     "tr": "Otomatik yeniden doğma",
     "pl": "Auto odrodzenie",
     "nl": "Automatische respawn",
-    "pt": "Renascimento automático",
-    "id": "Muncul kembali otomatis",
+    "pt": "Respawn automático",
+    "id": "Respawn otomatis",
     "ja": "自動リスポーン",
     "it": "Respawn automatico"
   },
@@ -1525,7 +1525,7 @@
     "pl": "Autoukrywanie pokarmu - zoom",
     "nl": "Voedsel automatisch verbergen - zoom",
     "pt": "Ocultar comida automaticamente - zoom",
-    "id": "Sembunyikan makanan otomatis - zum",
+    "id": "Sembunyikan makanan otomatis - zoom",
     "ja": "エサを自動で隠す - ズーム",
     "it": "Nascondi cibo automaticamente - zoom"
   },
@@ -1578,7 +1578,7 @@
     "tr": "Takım arkadaşlarının isimlerini gizle",
     "pl": "Ukryj nazwy graczy teamu",
     "nl": "Namen van teamgenoten verbergen",
-    "pt": "Ocultar nomes dos companheiros de time",
+    "pt": "Ocultar nomes dos aliados",
     "id": "Sembunyikan nama rekan tim",
     "ja": "味方の名前を隠す",
     "it": "Nascondi i nomi dei compagni"
@@ -1687,7 +1687,7 @@
     "pl": "Podstawowe skiny",
     "nl": "Standaard skins",
     "pt": "Skins originais",
-    "id": "Skin bawaan",
+    "id": "Skin asli",
     "ja": "標準スキン",
     "it": "Skin originali"
   },
@@ -1705,7 +1705,7 @@
     "pl": "Wlasny skin gdy brak custom",
     "nl": "Eigen standaard skin als er geen eigen is",
     "pt": "Minha skin original quando não houver personalizada",
-    "id": "Skin bawaan saya jika tidak ada skin kustom",
+    "id": "Skin asli saya jika tidak ada skin kustom",
     "ja": "カスタムがないときは自分の標準スキン",
     "it": "La mia skin originale se non ce n'è una personalizzata"
   },
@@ -1939,7 +1939,7 @@
     "pl": "Sektory w tle",
     "nl": "Achtergrondsectoren tonen",
     "pt": "Mostrar setores no fundo",
-    "id": "Tampilkan sektor latar",
+    "id": "Tampilkan sektor latar belakang",
     "ja": "背景にセクターを表示",
     "it": "Mostra settori sullo sfondo"
   },
@@ -2066,7 +2066,7 @@
     "nl": "Gamepad: knoppen, gevoeligheid, profielen, test",
     "pt": "Gamepad: botões, sensibilidade, perfis, teste",
     "id": "Gamepad: tombol, sensitivitas, profil, tes",
-    "ja": "ゲームパッド：ボタン、感度、プロフィール、テスト",
+    "ja": "ゲームパッド：ボタン、感度、プロファイル、テスト",
     "it": "Gamepad: tasti, sensibilità, profili, test"
   },
   "settings.rotateMap": {
@@ -2101,7 +2101,7 @@
     "pl": "Pokaz minimape",
     "nl": "Minikaart tonen",
     "pt": "Mostrar minimapa",
-    "id": "Tampilkan peta mini",
+    "id": "Tampilkan minimap",
     "ja": "ミニマップを表示",
     "it": "Mostra minimappa"
   },
@@ -2119,7 +2119,7 @@
     "pl": "Pokaz siatke minimapy",
     "nl": "Raster op minikaart tonen",
     "pt": "Mostrar grade do minimapa",
-    "id": "Tampilkan kisi peta mini",
+    "id": "Tampilkan kisi minimap",
     "ja": "ミニマップのグリッドを表示",
     "it": "Mostra griglia della minimappa"
   },
@@ -2137,7 +2137,7 @@
     "pl": "Pokaz prowadnice na minimapie",
     "nl": "Hulplijnen op minikaart tonen",
     "pt": "Mostrar guias do minimapa",
-    "id": "Tampilkan garis bantu peta mini",
+    "id": "Tampilkan garis bantu minimap",
     "ja": "ミニマップのガイドを表示",
     "it": "Mostra guide della minimappa"
   },
@@ -2155,7 +2155,7 @@
     "pl": "Pokaż dodatkowe linie na minimapie",
     "nl": "Extra hulplijnen op minikaart tonen",
     "pt": "Mostrar guias extras do minimapa",
-    "id": "Tampilkan garis bantu tambahan peta mini",
+    "id": "Tampilkan garis bantu tambahan minimap",
     "ja": "ミニマップの追加ガイドを表示",
     "it": "Mostra guide extra della minimappa"
   },
@@ -2191,7 +2191,7 @@
     "pl": "Pokaz wlasny slad na minimapie",
     "nl": "Eigen spoor op de minikaart tonen",
     "pt": "Mostrar meu rastro no minimapa",
-    "id": "Tampilkan jejak saya di peta mini",
+    "id": "Tampilkan jejak saya di minimap",
     "ja": "ミニマップに自分の軌跡を表示",
     "it": "Mostra la mia scia sulla minimappa"
   },
@@ -2208,7 +2208,7 @@
     "tr": "Tek renkli takım arkadaşları",
     "pl": "Jednokolorowi gracze",
     "nl": "Teamgenoten in één kleur",
-    "pt": "Companheiros de time de uma cor só",
+    "pt": "Aliados de uma cor só",
     "id": "Rekan tim satu warna",
     "ja": "味方を単色で表示",
     "it": "Compagni di squadra a un colore"
@@ -2460,7 +2460,7 @@
     "tr": "Ekran kenarlarında takım arkadaşlarına oklar",
     "pl": "Strzalki do graczy teamu na krawedzi ekranu",
     "nl": "Pijlen naar teamgenoten aan de schermranden",
-    "pt": "Setas para companheiros nas bordas da tela",
+    "pt": "Setas para aliados nas bordas da tela",
     "id": "Panah ke rekan tim di tepi layar",
     "ja": "画面端に味方への矢印",
     "it": "Frecce verso i compagni ai bordi dello schermo"
@@ -2533,7 +2533,7 @@
     "pl": "Przytrzymaj: precyzyjny zoom (przybliża, puść, by wrócić)",
     "nl": "Ingedrukt: precisiezoom (zoomt in, loslaten om terug te gaan)",
     "pt": "Segurar: zoom de precisão (aproxima, solte para voltar)",
-    "id": "Tahan: zum presisi (memperbesar, lepas untuk kembali)",
+    "id": "Tahan: zoom presisi (memperbesar, lepas untuk kembali)",
     "ja": "長押し：精密ズーム（拡大、離すと戻る）",
     "it": "Tieni premuto: zoom di precisione (avvicina, rilascia per tornare)"
   },
@@ -2551,7 +2551,7 @@
     "pl": "Zapisz zakładkę zoomu 1",
     "nl": "Zoombladwijzer 1 opslaan",
     "pt": "Salvar favorito de zoom 1",
-    "id": "Simpan penanda zum 1",
+    "id": "Simpan penanda zoom 1",
     "ja": "ズーム位置1を保存",
     "it": "Salva segnalibro zoom 1"
   },
@@ -2569,7 +2569,7 @@
     "pl": "Zapisz zakładkę zoomu 2",
     "nl": "Zoombladwijzer 2 opslaan",
     "pt": "Salvar favorito de zoom 2",
-    "id": "Simpan penanda zum 2",
+    "id": "Simpan penanda zoom 2",
     "ja": "ズーム位置2を保存",
     "it": "Salva segnalibro zoom 2"
   },
@@ -2587,7 +2587,7 @@
     "pl": "Zapisz zakładkę zoomu 3",
     "nl": "Zoombladwijzer 3 opslaan",
     "pt": "Salvar favorito de zoom 3",
-    "id": "Simpan penanda zum 3",
+    "id": "Simpan penanda zoom 3",
     "ja": "ズーム位置3を保存",
     "it": "Salva segnalibro zoom 3"
   },
@@ -2605,7 +2605,7 @@
     "pl": "Przejdź do zakładki zoomu 1",
     "nl": "Naar zoombladwijzer 1",
     "pt": "Ir para o favorito de zoom 1",
-    "id": "Ke penanda zum 1",
+    "id": "Ke penanda zoom 1",
     "ja": "ズーム位置1に戻す",
     "it": "Vai al segnalibro zoom 1"
   },
@@ -2623,7 +2623,7 @@
     "pl": "Przejdź do zakładki zoomu 2",
     "nl": "Naar zoombladwijzer 2",
     "pt": "Ir para o favorito de zoom 2",
-    "id": "Ke penanda zum 2",
+    "id": "Ke penanda zoom 2",
     "ja": "ズーム位置2に戻す",
     "it": "Vai al segnalibro zoom 2"
   },
@@ -2641,7 +2641,7 @@
     "pl": "Przejdź do zakładki zoomu 3",
     "nl": "Naar zoombladwijzer 3",
     "pt": "Ir para o favorito de zoom 3",
-    "id": "Ke penanda zum 3",
+    "id": "Ke penanda zoom 3",
     "ja": "ズーム位置3に戻す",
     "it": "Vai al segnalibro zoom 3"
   },
@@ -2749,7 +2749,7 @@
     "pl": "Śledzenie bąbelkiem (wyłącza śledzenie kursora)",
     "nl": "Bubbeltracker (schakelt cursorvolging uit)",
     "pt": "Rastreador de bolha (desativa o rastreio do cursor)",
-    "id": "Pelacak gelembung (mematikan pelacakan kursor)",
+    "id": "Pelacak gelembung (menonaktifkan pelacakan kursor)",
     "ja": "バブルトラッカー（カーソル追跡を無効化）",
     "it": "Tracciamento a bolla (disattiva il tracciamento del cursore)"
   },
@@ -2767,7 +2767,7 @@
     "pl": "Wskaźniki bąbelkowe (wyłącza pierścienie przeciwników)",
     "nl": "Bubbelindicatoren (schakelt ringen van tegenstanders uit)",
     "pt": "Indicadores de bolha (desativa os anéis dos oponentes)",
-    "id": "Indikator gelembung (mematikan cincin lawan)",
+    "id": "Indikator gelembung (menonaktifkan cincin lawan)",
     "ja": "バブル表示（敵のリングを無効化）",
     "it": "Indicatori a bolla (disattiva gli anelli degli avversari)"
   },
@@ -2802,7 +2802,7 @@
     "tr": "Takım arkadaşı göstergeleri",
     "pl": "Wskazniki graczy teamu",
     "nl": "Indicatoren voor teamgenoten",
-    "pt": "Indicadores dos companheiros de time",
+    "pt": "Indicadores dos aliados",
     "id": "Indikator rekan tim",
     "ja": "味方の表示",
     "it": "Indicatori dei compagni"
@@ -2965,7 +2965,7 @@
     "pl": "Wylacz czat",
     "nl": "Chat uitschakelen",
     "pt": "Desativar chat",
-    "id": "Matikan chat",
+    "id": "Nonaktifkan chat",
     "ja": "チャットを無効化",
     "it": "Disattiva chat"
   },
@@ -3001,7 +3001,7 @@
     "pl": "Ukryj czat",
     "nl": "Chat verbergen",
     "pt": "Ocultar chat",
-    "id": "Sembunyikan obrolan",
+    "id": "Sembunyikan chat",
     "ja": "チャットを非表示",
     "it": "Nascondi chat"
   },
@@ -3487,7 +3487,7 @@
     "pl": "Reżyser obserwacji: auto kamera wł. / wył.",
     "nl": "Kijkregie: autocamera aan / uit",
     "pt": "Diretor de espectador: câmera automática liga / desliga",
-    "id": "Sutradara spectate: kamera otomatis nyala / mati",
+    "id": "Sutradara spectate: kamera otomatis aktif / nonaktif",
     "ja": "観戦ディレクター：自動カメラのオン / オフ",
     "it": "Regia spettatore: telecamera automatica on / off"
   },
@@ -3505,7 +3505,7 @@
     "pl": "Reżyser obserwacji: HUD transmisji wł. / wył.",
     "nl": "Kijkregie: uitzend-HUD aan / uit",
     "pt": "Diretor de espectador: HUD de transmissão liga / desliga",
-    "id": "Sutradara spectate: HUD siaran nyala / mati",
+    "id": "Sutradara spectate: HUD siaran aktif / nonaktif",
     "ja": "観戦ディレクター：配信用HUDのオン / オフ",
     "it": "Regia spettatore: HUD trasmissione on / off"
   },
@@ -3721,7 +3721,7 @@
     "pl": "Fizyka galaretki",
     "nl": "Gelei-fysica",
     "pt": "Física de gelatina",
-    "id": "Fisika jeli",
+    "id": "Fisika jelly",
     "ja": "ゼリー物理",
     "it": "Fisica gelatina"
   },
@@ -3738,9 +3738,9 @@
     "tr": "Takım tablosunu göster",
     "pl": "Pokaz top 5 teamu",
     "nl": "Teambord tonen",
-    "pt": "Mostrar ranking do time",
-    "id": "Tampilkan papan tim",
-    "ja": "チームボードを表示",
+    "pt": "Mostrar ranking da equipe",
+    "id": "Tampilkan leaderboard tim",
+    "ja": "チームランキングを表示",
     "it": "Mostra classifica squadra"
   },
   "settings.showTargeting": {
@@ -3811,7 +3811,7 @@
     "pl": "Pokaz mase w topce",
     "nl": "Massa in het klassement tonen",
     "pt": "Mostrar massa no ranking",
-    "id": "Tampilkan massa di papan peringkat",
+    "id": "Tampilkan massa di leaderboard",
     "ja": "ランキングに質量を表示",
     "it": "Mostra massa in classifica"
   },
@@ -3829,7 +3829,7 @@
     "pl": "Zwin powtarzajace sie nicki (boty) w topce",
     "nl": "Klassement: herhaalde (bot)namen samenvoegen",
     "pt": "Ranking: agrupar nomes repetidos (bots)",
-    "id": "Papan peringkat: ringkas nama berulang (bot)",
+    "id": "Leaderboard: ringkas nama berulang (bot)",
     "ja": "ランキング：重複した名前（ボット）をまとめる",
     "it": "Classifica: raggruppa i nomi ripetuti (bot)"
   },
@@ -3847,7 +3847,7 @@
     "pl": "Powiadomienie gdy awansujesz w topce",
     "nl": "Klassement: melding als je stijgt",
     "pt": "Ranking: avisar quando você subir",
-    "id": "Papan peringkat: beri tahu saat kamu naik",
+    "id": "Leaderboard: beri tahu saat kamu naik",
     "ja": "ランキング：順位が上がったら通知",
     "it": "Classifica: avvisa quando sali"
   },
@@ -3864,9 +3864,9 @@
     "tr": "Serbest izleme: oyuncuyu takip etmek için sıralamadaki kütleye tıkla",
     "pl": "Wolna obserwacja: klik w mase w topce sledzi gracza",
     "nl": "Vrij toekijken: klik op een massa in het klassement om die speler te volgen",
-    "pt": "Espectador livre: clique numa massa do ranking para seguir esse jogador",
-    "id": "Spectate bebas: klik massa di papan peringkat untuk mengikuti pemain itu",
-    "ja": "フリー観戦：ランキングの質量をクリックでそのプレイヤーを追跡",
+    "pt": "Espectar livre: clique numa massa do ranking para seguir esse jogador",
+    "id": "Spectate bebas: klik massa di leaderboard untuk mengikuti pemain itu",
+    "ja": "自由観戦：ランキングの質量をクリックでそのプレイヤーを追跡",
     "it": "Spettatore libero: clicca una massa in classifica per seguire quel giocatore"
   },
   "settings.clickSpectate": {
@@ -3882,9 +3882,9 @@
     "tr": "Serbest izleme: takip etmek için bir oyuncunun hücresine tıkla (durdurmak için boş bir yere tıkla)",
     "pl": "Wolna obserwacja: klik w komorke gracza sledzi go (klik w puste miejsce konczy)",
     "nl": "Vrij toekijken: klik op een cel van een speler om die te volgen (klik op een lege plek om te stoppen)",
-    "pt": "Espectador livre: clique na célula de um jogador para segui-la (clique no vazio para parar)",
+    "pt": "Espectar livre: clique na célula de um jogador para segui-la (clique no vazio para parar)",
     "id": "Spectate bebas: klik sel pemain untuk mengikutinya (klik area kosong untuk berhenti)",
-    "ja": "フリー観戦：プレイヤーのセルをクリックで追跡（何もない所をクリックで停止）",
+    "ja": "自由観戦：プレイヤーのセルをクリックで追跡（何もない所をクリックで停止）",
     "it": "Spettatore libero: clicca la cellula di un giocatore per seguirla (clicca uno spazio vuoto per fermarti)"
   },
   "settings.minimapClickSpectate": {
@@ -3901,7 +3901,7 @@
     "pl": "Expanding Land, obserwacja swiata: klik w minimape przenosi tam kamere",
     "nl": "Expanding Land, wereld toekijken: klik op de minikaart om de camera daarheen te verplaatsen",
     "pt": "Espectador do mundo no Expanding Land: clique no minimapa para mover a câmera até lá",
-    "id": "Spectate dunia Expanding Land: klik peta mini untuk memindahkan kamera ke sana",
+    "id": "Spectate dunia Expanding Land: klik minimap untuk memindahkan kamera ke sana",
     "ja": "Expanding Land ワールド観戦：ミニマップをクリックでカメラを移動",
     "it": "Spettatore del mondo Expanding Land: clicca la minimappa per spostare lì la telecamera"
   },
@@ -3955,7 +3955,7 @@
     "pl": "Wysrodkowana topka",
     "nl": "Gecentreerd klassement",
     "pt": "Ranking centralizado",
-    "id": "Papan peringkat di tengah",
+    "id": "Leaderboard di tengah",
     "ja": "ランキングを中央に",
     "it": "Classifica centrata"
   },
@@ -4026,9 +4026,9 @@
     "tr": "Takım tablosunda skinler",
     "pl": "Skiny w tablicy drużyny",
     "nl": "Skins op het teambord",
-    "pt": "Skins no ranking do time",
-    "id": "Skin di papan tim",
-    "ja": "チームボードにスキンを表示",
+    "pt": "Skins no ranking da equipe",
+    "id": "Skin di leaderboard tim",
+    "ja": "チームランキングにスキンを表示",
     "it": "Skin nella classifica squadra"
   },
   "settings.showStats": {
@@ -4152,7 +4152,7 @@
     "tr": "TTE: tricksplit için takım arkadaşının en düşük kütlesi",
     "pl": "TTE: min. masa sojusznika do tricksplitu",
     "nl": "TTE: minimale massa teamgenoot voor tricksplit",
-    "pt": "TTE: massa mínima do companheiro para tricksplit",
+    "pt": "TTE: massa mínima do aliado para tricksplit",
     "id": "TTE: massa minimum rekan tim untuk tricksplit",
     "ja": "TTE：トリックスプリットに必要な味方の最小質量",
     "it": "TTE: massa minima del compagno per il tricksplit"
@@ -4387,7 +4387,7 @@
     "pl": "Rozmycie tla HUD (0 = wylaczone)",
     "nl": "Vervaging HUD-achtergrond (0 = uit)",
     "pt": "Desfoque do fundo do HUD (0 = desligado)",
-    "id": "Blur latar HUD (0 = mati)",
+    "id": "Blur latar belakang HUD (0 = nonaktif)",
     "ja": "HUD背景のぼかし（0 = オフ）",
     "it": "Sfocatura sfondo HUD (0 = off)"
   },
@@ -4460,7 +4460,7 @@
     "nl": "Ping-jitter (+/- ms, naast PING)",
     "pt": "Jitter do ping (+/- ms, ao lado do PING)",
     "id": "Jitter ping (+/- ms, di samping PING)",
-    "ja": "pingのジッター（±ms、PINGの横）",
+    "ja": "Pingのジッター（±ms、PINGの横）",
     "it": "Jitter del ping (+/- ms, accanto a PING)"
   },
   "settings.showStatsServerHz": {
@@ -4604,7 +4604,7 @@
     "nl": "Wie jou opat, op de game-over-kaart",
     "pt": "Quem te comeu, no card de Game Over",
     "id": "Siapa yang memakanmu, di kartu Game Over",
-    "ja": "ゲームオーバー画面に倒した相手を表示",
+    "ja": "ゲームオーバー画面に食べた相手を表示",
     "it": "Chi ti ha mangiato, nella scheda Game Over"
   },
   "settings.deathRecap": {
@@ -4622,7 +4622,7 @@
     "nl": "Doodsoverzicht op de Game Over-kaart (de laatste 20 s)",
     "pt": "Resumo da morte no card de Game Over (últimos 20 s)",
     "id": "Rekap kematian di kartu Game Over (20 dtk terakhir)",
-    "ja": "ゲームオーバー画面に死亡リキャップ（直前20秒）",
+    "ja": "ゲームオーバー画面に死亡レポート（直前20秒）",
     "it": "Riepilogo della morte nella scheda Game Over (ultimi 20 s)"
   },
   "settings.killFeed": {
@@ -4639,7 +4639,7 @@
     "pl": "Kill feed (twoje zjedzenia i śmierci, obok topki)",
     "nl": "Kill-feed (wat je at en je doden, naast het klassement)",
     "pt": "Kill feed (o que você comeu e suas mortes, ao lado do ranking)",
-    "id": "Kill feed (yang kamu makan dan kematianmu, di samping papan peringkat)",
+    "id": "Kill feed (yang kamu makan dan kematianmu, di samping leaderboard)",
     "ja": "キルフィード（食べた相手と死亡、ランキングの横）",
     "it": "Kill feed (chi mangi e le tue morti, accanto alla classifica)"
   },
@@ -4711,7 +4711,7 @@
     "pl": "Pasek szybkiego dostępu Centrum komend w grze (oznaczone gwiazdką; Ctrl+K otwiera Centrum komend)",
     "nl": "Snelbalk van het Commandocentrum in het spel (items met ster; Ctrl+K opent het Commandocentrum)",
     "pt": "Barra rápida da Central de comandos no jogo (os itens com estrela; Ctrl+K abre a Central de comandos)",
-    "id": "Bilah cepat Pusat Perintah di game (item berbintang; Ctrl+K membuka Pusat Perintah)",
+    "id": "Bilah cepat Pusat Komando di game (item berbintang; Ctrl+K membuka Pusat Komando)",
     "ja": "ゲーム内コマンドセンターのクイックバー（星付きの項目。Ctrl+K でコマンドセンターを開く）",
     "it": "Barra rapida del Centro comandi in partita (gli elementi con la stella; Ctrl+K apre il Centro comandi)"
   },
@@ -4729,7 +4729,7 @@
     "pl": "Centrum komend (szukaj komend, ustawień i okien)",
     "nl": "Commandocentrum (commando's, instellingen en vensters zoeken)",
     "pt": "Central de comandos (buscar comandos, configurações e janelas)",
-    "id": "Pusat Perintah (cari perintah, pengaturan, dan jendela)",
+    "id": "Pusat Komando (cari perintah, pengaturan, dan jendela)",
     "ja": "コマンドセンター（コマンド、設定、ウィンドウを検索）",
     "it": "Centro comandi (cerca comandi, impostazioni e finestre)"
   },
@@ -4963,9 +4963,9 @@
     "pl": "Klawiatura: skróty klawiszowe",
     "nl": "Toetsenbord: sneltoetsen",
     "pt": "Teclado: atalhos",
-    "id": "Keyboard: tombol pintas",
+    "id": "Keyboard: hotkey",
     "ja": "キーボード：ショートカット",
-    "it": "Tastiera: scorciatoie"
+    "it": "Tastiera: tasti rapidi"
   },
   "settings.spectateGroup": {
     "en": "Spectating and streaming",
@@ -5018,7 +5018,7 @@
     "nl": "Configuratie (profielen, presets, back-up)",
     "pt": "Configuração (perfis, predefinições, backup)",
     "id": "Konfigurasi (profil, preset, cadangan)",
-    "ja": "構成（プロフィール、プリセット、バックアップ）",
+    "ja": "構成（プロファイル、プリセット、バックアップ）",
     "it": "Configurazione (profili, preset, backup)"
   },
   "settings.configNote": {
@@ -5035,8 +5035,8 @@
     "pl": "Presety i profile ustawień: przyciski nad polem wyszukiwania. Eksport / import i przywracanie ustawień domyślnych: przyciski pod ustawieniami.",
     "nl": "Presets en instellingsprofielen: de knoppen boven het zoekvak. Export / import en Standaardinstellingen herstellen: de knoppen onder de instellingen.",
     "pt": "Predefinições e perfis de configurações: os botões acima da caixa de busca. Exportar / importar e Restaurar configurações padrão: os botões abaixo das configurações.",
-    "id": "Preset dan profil pengaturan: tombol di atas kotak pencarian. Ekspor / impor dan Pulihkan pengaturan bawaan: tombol di bawah pengaturan.",
-    "ja": "プリセットと設定プロフィール：検索欄の上のボタン。エクスポート / インポートと既定の設定に戻す：設定の下のボタン。",
+    "id": "Preset dan profil pengaturan: tombol di atas kotak pencarian. Ekspor / impor dan Pulihkan pengaturan default: tombol di bawah pengaturan.",
+    "ja": "プリセットと設定プロファイル：検索欄の上のボタン。エクスポート / インポートと初期設定に戻す：設定の下のボタン。",
     "it": "Preset e profili di impostazioni: i pulsanti sopra la casella di ricerca. Esporta / importa e Ripristina impostazioni predefinite: i pulsanti sotto le impostazioni."
   },
   "settings.lmDepNeeds": {
@@ -5161,9 +5161,9 @@
     "pl": "Konflikty skrótów",
     "nl": "Sneltoetsconflicten",
     "pt": "Conflitos de atalhos",
-    "id": "Konflik tombol pintas",
+    "id": "Konflik hotkey",
     "ja": "ショートカットの重複",
-    "it": "Conflitti tra scorciatoie"
+    "it": "Conflitti tra tasti rapidi"
   },
   "settings.hk-screenshotMode": {
     "en": "Screenshot mode (hide the HUD)",
@@ -5269,9 +5269,9 @@
     "pl": "Skroty klawiszowe",
     "nl": "Sneltoetsen",
     "pt": "Atalhos",
-    "id": "Tombol pintas",
+    "id": "Hotkey",
     "ja": "ショートカット",
-    "it": "Scorciatoie"
+    "it": "Tasti rapidi"
   },
   "settings.hk-inst-assign": {
     "en": "To assign a hotkey click on the input field and press your chosen key.",
@@ -5287,9 +5287,9 @@
     "pl": "Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.",
     "nl": "Om een sneltoets toe te wijzen, klik je op het invoerveld en druk je op de gewenste toets.",
     "pt": "Para definir um atalho, clique no campo e pressione a tecla escolhida.",
-    "id": "Untuk mengatur tombol pintas, klik kolom input lalu tekan tombol pilihanmu.",
+    "id": "Untuk mengatur hotkey, klik kolom input lalu tekan tombol pilihanmu.",
     "ja": "ショートカットを割り当てるには、入力欄をクリックして使いたいキーを押してください。",
-    "it": "Per assegnare una scorciatoia clicca sul campo e premi il tasto scelto."
+    "it": "Per assegnare un tasto rapido clicca sul campo e premi il tasto scelto."
   },
   "settings.hk-inst-delete": {
     "en": "To delete a hotkey click on the input field and press the DELETE key.",
@@ -5304,10 +5304,10 @@
     "tr": "Kısayolu silmek için giriş alanına tıklayıp DELETE tuşuna bas.",
     "pl": "Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.",
     "nl": "Om een sneltoets te verwijderen, klik je op het invoerveld en druk je op de toets DELETE.",
-    "pt": "Para apagar um atalho, clique no campo e pressione a tecla DELETE.",
-    "id": "Untuk menghapus tombol pintas, klik kolom input lalu tekan tombol DELETE.",
+    "pt": "Para excluir um atalho, clique no campo e pressione a tecla DELETE.",
+    "id": "Untuk menghapus hotkey, klik kolom input lalu tekan tombol DELETE.",
     "ja": "ショートカットを削除するには、入力欄をクリックして DELETE キーを押してください。",
-    "it": "Per eliminare una scorciatoia clicca sul campo e premi il tasto DELETE."
+    "it": "Per eliminare un tasto rapido clicca sul campo e premi il tasto DELETE."
   },
   "settings.hk-inst-keys": {
     "en": "Possible key combinations with the CTRL and ALT keys.",
@@ -5360,7 +5360,7 @@
     "nl": "Bots feeden",
     "pt": "Feed dos bots",
     "id": "Feed bot",
-    "ja": "ボットのフィード",
+    "ja": "ボットの質量放出",
     "it": "Feed dei bot"
   },
   "settings.hk-bots-macrofeed": {
@@ -5378,7 +5378,7 @@
     "nl": "Bots macro-feed",
     "pt": "Macro feed dos bots",
     "id": "Makro feed bot",
-    "ja": "ボットのマクロフィード",
+    "ja": "ボットのマクロ質量放出",
     "it": "Macro feed dei bot"
   },
   "settings.hk-feed": {
@@ -5394,10 +5394,10 @@
     "tr": "Feed",
     "pl": "Feed",
     "nl": "Feed",
-    "pt": "Alimentar",
-    "id": "Beri makan",
-    "ja": "エサを与える",
-    "it": "Nutri"
+    "pt": "Feed",
+    "id": "Feed",
+    "ja": "質量放出",
+    "it": "Feed"
   },
   "settings.hk-macroFeed": {
     "en": "Macro feed",
@@ -5414,7 +5414,7 @@
     "nl": "Macro-feed",
     "pt": "Macro feed",
     "id": "Makro feed",
-    "ja": "マクロフィード",
+    "ja": "マクロ質量放出",
     "it": "Macro feed"
   },
   "settings.hk-macroFeedPerm": {
@@ -5432,7 +5432,7 @@
     "nl": "Permanente feed",
     "pt": "Feed permanente",
     "id": "Feed permanen",
-    "ja": "連続フィード",
+    "ja": "連続質量放出",
     "it": "Feed permanente"
   },
   "settings.hk-split": {
@@ -5448,10 +5448,10 @@
     "tr": "Split",
     "pl": "Podzial",
     "nl": "Split",
-    "pt": "Dividir",
-    "id": "Membelah",
+    "pt": "Split",
+    "id": "Split",
     "ja": "分裂",
-    "it": "Dividi"
+    "it": "Split"
   },
   "settings.hk-doubleSplit": {
     "en": "Double split",
@@ -5593,7 +5593,7 @@
     "pl": "Multibox: podążanie za myszą wł./wył.",
     "nl": "Multibox: muis volgen aan/uit",
     "pt": "Multibox: seguir o mouse liga / desliga",
-    "id": "Multibox: ikuti mouse nyala / mati",
+    "id": "Multibox: ikuti mouse aktif / nonaktif",
     "ja": "マルチボックス：マウス追従の切り替え",
     "it": "Multibox: segui il mouse on / off"
   },
@@ -5610,9 +5610,9 @@
     "tr": "Takım tablosunu göster/gizle",
     "pl": "Pokaz/ukryj top 5 teamu",
     "nl": "Teambord tonen/verbergen",
-    "pt": "Mostrar/ocultar ranking do time",
-    "id": "Tampilkan/sembunyikan papan tim",
-    "ja": "チームボードの表示/非表示",
+    "pt": "Mostrar/ocultar ranking da equipe",
+    "id": "Tampilkan/sembunyikan leaderboard tim",
+    "ja": "チームランキングの表示/非表示",
     "it": "Mostra/nascondi classifica squadra"
   },
   "settings.hk-dance": {
@@ -5736,7 +5736,7 @@
     "tr": "Takım arkadaşı göstergelerini göster/gizle",
     "pl": "Pokaz/ukryj wskazniki graczy teamu",
     "nl": "Indicatoren teamgenoten tonen/verbergen",
-    "pt": "Mostrar/ocultar indicadores dos companheiros",
+    "pt": "Mostrar/ocultar indicadores dos aliados",
     "id": "Tampilkan/sembunyikan indikator rekan tim",
     "ja": "味方表示の表示/非表示",
     "it": "Mostra/nascondi indicatori dei compagni"
@@ -5773,7 +5773,7 @@
     "pl": "Przelacz skiny (wlasne/standardowe)",
     "nl": "Skins wisselen (eigen/standaard)",
     "pt": "Alternar skins (personalizadas/padrão)",
-    "id": "Ganti skin (kustom/bawaan)",
+    "id": "Ganti skin (kustom/default)",
     "ja": "スキン切り替え（カスタム/標準）",
     "it": "Cambia skin (personalizzate/predefinite)"
   },
@@ -5808,10 +5808,10 @@
     "tr": "Saydam skinleri aç/kapat",
     "pl": "Wlacz/wylacz przezroczyste skiny",
     "nl": "Transparante skins aan/uit",
-    "pt": "Liga/desliga skins transparentes",
-    "id": "Skin transparan nyala/mati",
+    "pt": "Ativar/desativar skins transparentes",
+    "id": "Aktifkan/nonaktifkan skin transparan",
     "ja": "透明スキンの切り替え",
-    "it": "Skin trasparenti on/off"
+    "it": "Attiva/disattiva skin trasparenti"
   },
   "settings.hk-showStats": {
     "en": "Show/hide game stats",
@@ -5899,7 +5899,7 @@
     "pl": "Pokaz/ukryj prowadnice na minimapie",
     "nl": "Hulplijnen minikaart tonen/verbergen",
     "pt": "Mostrar/ocultar guias do minimapa",
-    "id": "Tampilkan/sembunyikan garis bantu peta mini",
+    "id": "Tampilkan/sembunyikan garis bantu minimap",
     "ja": "ミニマップガイドの表示/非表示",
     "it": "Mostra/nascondi guide della minimappa"
   },
@@ -5953,7 +5953,7 @@
     "pl": "Kopiuj topke",
     "nl": "Klassement kopiëren",
     "pt": "Copiar ranking",
-    "id": "Salin papan peringkat",
+    "id": "Salin leaderboard",
     "ja": "ランキングをコピー",
     "it": "Copia classifica"
   },
@@ -5971,7 +5971,7 @@
     "pl": "Pokaz/ukryj topke",
     "nl": "Klassement tonen/verbergen",
     "pt": "Mostrar/ocultar ranking",
-    "id": "Tampilkan/sembunyikan papan peringkat",
+    "id": "Tampilkan/sembunyikan leaderboard",
     "ja": "ランキングの表示/非表示",
     "it": "Mostra/nascondi classifica"
   },
@@ -5988,10 +5988,10 @@
     "tr": "Otomatik yakınlaştırmayı aç/kapat",
     "pl": "Wlacz/wylacz auto zoom",
     "nl": "Automatisch zoomen aan/uit",
-    "pt": "Liga/desliga zoom automático",
-    "id": "Zum otomatis nyala/mati",
+    "pt": "Ativar/desativar zoom automático",
+    "id": "Aktifkan/nonaktifkan zoom otomatis",
     "ja": "自動ズームの切り替え",
-    "it": "Zoom automatico on/off"
+    "it": "Attiva/disattiva zoom automatico"
   },
   "settings.hk-resetZoom": {
     "en": "Reset zoom",
@@ -6007,7 +6007,7 @@
     "pl": "Reset zoomu",
     "nl": "Zoom resetten",
     "pt": "Redefinir zoom",
-    "id": "Atur ulang zum",
+    "id": "Reset zoom",
     "ja": "ズームをリセット",
     "it": "Ripristina zoom"
   },
@@ -6025,7 +6025,7 @@
     "pl": "Zoom - poziom",
     "nl": "Zoomniveau",
     "pt": "Nível de zoom",
-    "id": "Tingkat zum",
+    "id": "Tingkat zoom",
     "ja": "ズームレベル",
     "it": "Livello di zoom"
   },
@@ -6042,10 +6042,10 @@
     "tr": "Ölüm konumunu aç/kapat",
     "pl": "Przelacz miejsce smierci",
     "nl": "Plaats van dood aan/uit",
-    "pt": "Liga/desliga local da morte",
-    "id": "Lokasi kematian nyala/mati",
+    "pt": "Ativar/desativar local da morte",
+    "id": "Aktifkan/nonaktifkan lokasi kematian",
     "ja": "死亡地点の表示切り替え",
-    "it": "Punto della morte on/off"
+    "it": "Attiva/disattiva punto della morte"
   },
   "settings.hk-clearChat": {
     "en": "Show chat history / Clear chat",
@@ -6079,7 +6079,7 @@
     "pl": "Pokaz/ukryj sektory w tle",
     "nl": "Achtergrondsectoren tonen/verbergen",
     "pt": "Mostrar/ocultar setores no fundo",
-    "id": "Tampilkan/sembunyikan sektor latar",
+    "id": "Tampilkan/sembunyikan sektor latar belakang",
     "ja": "背景セクターの表示/非表示",
     "it": "Mostra/nascondi settori sullo sfondo"
   },
@@ -6132,7 +6132,7 @@
     "tr": "Takım arkadaşlarının isimlerini göster/gizle",
     "pl": "Pokaz/ukryj nazwy graczy teamu",
     "nl": "Namen teamgenoten tonen/verbergen",
-    "pt": "Mostrar/ocultar nomes dos companheiros",
+    "pt": "Mostrar/ocultar nomes dos aliados",
     "id": "Tampilkan/sembunyikan nama rekan tim",
     "ja": "味方の名前の表示/非表示",
     "it": "Mostra/nascondi nomi dei compagni"
@@ -6169,7 +6169,7 @@
     "pl": "Pokaz/ukryj minimape",
     "nl": "Minikaart tonen/verbergen",
     "pt": "Mostrar/ocultar minimapa",
-    "id": "Tampilkan/sembunyikan peta mini",
+    "id": "Tampilkan/sembunyikan minimap",
     "ja": "ミニマップの表示/非表示",
     "it": "Mostra/nascondi minimappa"
   },
@@ -6222,10 +6222,10 @@
     "tr": "Otomatik yeniden doğmayı aç/kapat",
     "pl": "Wlacz/wylacz auto odrodzenie",
     "nl": "Automatische respawn aan/uit",
-    "pt": "Liga/desliga respawn automático",
-    "id": "Respawn otomatis nyala/mati",
+    "pt": "Ativar/desativar respawn automático",
+    "id": "Aktifkan/nonaktifkan respawn otomatis",
     "ja": "自動リスポーンの切り替え",
-    "it": "Respawn automatico on/off"
+    "it": "Attiva/disattiva respawn automatico"
   },
   "settings.hk-quitGame": {
     "en": "Quit game (Expanding Land)",
@@ -6258,7 +6258,7 @@
     "tr": "Takım arkadaşlarına el salla (Delta uyumlu)",
     "pl": "Pomachaj drużynie (zgodne z Delta)",
     "nl": "Zwaaien naar teamgenoten (Delta-compatibel)",
-    "pt": "Acenar para os companheiros (compatível com Delta)",
+    "pt": "Acenar para os aliados (compatível com Delta)",
     "id": "Lambaikan tangan ke rekan tim (kompatibel Delta)",
     "ja": "味方に手を振る（Delta対応）",
     "it": "Saluta i compagni (compatibile con Delta)"
@@ -6276,7 +6276,7 @@
     "tr": "Takım pingi: Yardım",
     "pl": "Ping druzyny: Pomoc",
     "nl": "Teamping: Hulp",
-    "pt": "Ping do time: Ajuda",
+    "pt": "Ping da equipe: Ajuda",
     "id": "Ping tim: Bantuan",
     "ja": "チームピン：助けて",
     "it": "Ping squadra: Aiuto"
@@ -6294,7 +6294,7 @@
     "tr": "Takım pingi: Tehlike",
     "pl": "Ping druzyny: Niebezpieczenstwo",
     "nl": "Teamping: Gevaar",
-    "pt": "Ping do time: Perigo",
+    "pt": "Ping da equipe: Perigo",
     "id": "Ping tim: Bahaya",
     "ja": "チームピン：危険",
     "it": "Ping squadra: Pericolo"
@@ -6312,7 +6312,7 @@
     "tr": "Takım pingi: Buraya git",
     "pl": "Ping druzyny: Idz tutaj",
     "nl": "Teamping: Ga hierheen",
-    "pt": "Ping do time: Vá para cá",
+    "pt": "Ping da equipe: Vá para cá",
     "id": "Ping tim: Ke sini",
     "ja": "チームピン：ここへ",
     "it": "Ping squadra: Vai qui"
@@ -6330,7 +6330,7 @@
     "tr": "Takım pingi: Burada virüs var",
     "pl": "Ping druzyny: Tu jest wirus",
     "nl": "Teamping: Virus hier",
-    "pt": "Ping do time: Vírus aqui",
+    "pt": "Ping da equipe: Vírus aqui",
     "id": "Ping tim: Virus di sini",
     "ja": "チームピン：ここにウイルス",
     "it": "Ping squadra: Virus qui"
@@ -6348,9 +6348,9 @@
     "tr": "Serbest izleme: sıralamadaki sonraki oyuncuyu takip et",
     "pl": "Wolna obserwacja: sledz nastepnego gracza z topki",
     "nl": "Vrij toekijken: volgende speler uit het klassement volgen",
-    "pt": "Espectador livre: seguir o próximo jogador do ranking",
-    "id": "Spectate bebas: ikuti pemain berikutnya di papan peringkat",
-    "ja": "フリー観戦：ランキングの次のプレイヤーを追跡",
+    "pt": "Espectar livre: seguir o próximo jogador do ranking",
+    "id": "Spectate bebas: ikuti pemain berikutnya di leaderboard",
+    "ja": "自由観戦：ランキングの次のプレイヤーを追跡",
     "it": "Spettatore libero: segui il prossimo giocatore in classifica"
   },
   "settings.hk-prevServer": {
@@ -6421,7 +6421,7 @@
     "pl": "Powieksz / przywroc minimape",
     "nl": "Minikaart vergroten / herstellen",
     "pt": "Ampliar / restaurar minimapa",
-    "id": "Perbesar / kembalikan peta mini",
+    "id": "Perbesar / kembalikan minimap",
     "ja": "ミニマップを拡大 / 元に戻す",
     "it": "Ingrandisci / ripristina minimappa"
   },
@@ -6458,7 +6458,7 @@
     "nl": "Instellingsprofielen: venster openen / sluiten",
     "pt": "Perfis de configurações: abrir / fechar janela",
     "id": "Profil pengaturan: buka / tutup jendela",
-    "ja": "設定プロフィール：ウィンドウを開く / 閉じる",
+    "ja": "設定プロファイル：ウィンドウを開く / 閉じる",
     "it": "Profili di impostazioni: apri / chiudi finestra"
   },
   "settings.hk-lmProfileNext": {
@@ -6476,7 +6476,7 @@
     "nl": "Instellingsprofielen: volgend profiel toepassen",
     "pt": "Perfis de configurações: aplicar o próximo perfil",
     "id": "Profil pengaturan: terapkan profil berikutnya",
-    "ja": "設定プロフィール：次のプロフィールを適用",
+    "ja": "設定プロファイル：次のプロファイルを適用",
     "it": "Profili di impostazioni: applica il profilo successivo"
   },
   "settings.hk-lmProfilePrev": {
@@ -6494,7 +6494,7 @@
     "nl": "Instellingsprofielen: vorig profiel toepassen",
     "pt": "Perfis de configurações: aplicar o perfil anterior",
     "id": "Profil pengaturan: terapkan profil sebelumnya",
-    "ja": "設定プロフィール：前のプロフィールを適用",
+    "ja": "設定プロファイル：前のプロファイルを適用",
     "it": "Profili di impostazioni: applica il profilo precedente"
   },
   "settings.hk-lmProfileUndo": {
@@ -6512,7 +6512,7 @@
     "nl": "Instellingsprofielen: laatste profielwijziging ongedaan maken",
     "pt": "Perfis de configurações: desfazer a última troca de perfil",
     "id": "Profil pengaturan: batalkan perubahan profil terakhir",
-    "ja": "設定プロフィール：最後の変更を元に戻す",
+    "ja": "設定プロファイル：最後の変更を元に戻す",
     "it": "Profili di impostazioni: annulla l'ultimo cambio di profilo"
   },
   "settings.hk-copyServerLink": {
@@ -6548,7 +6548,7 @@
     "nl": "Netwerkgrafiek tonen / verbergen (FPS, ping)",
     "pt": "Mostrar / ocultar gráfico de rede (FPS, ping)",
     "id": "Tampilkan / sembunyikan grafik jaringan (FPS, ping)",
-    "ja": "ネットグラフの表示 / 非表示（FPS、ping）",
+    "ja": "ネットグラフの表示 / 非表示（FPS、Ping）",
     "it": "Mostra / nascondi grafico di rete (FPS, ping)"
   },
   "settings.hk-chatSounds": {
@@ -6727,7 +6727,7 @@
     "pl": "Pokaz cel na minimapie",
     "nl": "Doel op de minikaart tonen",
     "pt": "Mostrar alvo no minimapa",
-    "id": "Tampilkan target di peta mini",
+    "id": "Tampilkan target di minimap",
     "ja": "ミニマップにターゲットを表示",
     "it": "Mostra bersaglio sulla minimappa"
   },
@@ -7843,8 +7843,8 @@
     "pl": "Przywroc ustawienia domyslne wygladu",
     "nl": "Standaard thema-instellingen herstellen",
     "pt": "Restaurar configurações padrão do tema",
-    "id": "Pulihkan pengaturan bawaan tema",
-    "ja": "テーマを既定の設定に戻す",
+    "id": "Pulihkan pengaturan default tema",
+    "ja": "テーマを初期設定に戻す",
     "it": "Ripristina impostazioni predefinite del tema"
   },
   "settings.basicTheming": {
@@ -8599,7 +8599,7 @@
     "pl": "Symbol sektora tła (puste = A1..E5)",
     "nl": "Symbool achtergrondsectoren (leeg = A1..E5)",
     "pt": "Símbolo dos setores no fundo (vazio = A1..E5)",
-    "id": "Simbol sektor latar (kosong = A1..E5)",
+    "id": "Simbol sektor latar belakang (kosong = A1..E5)",
     "ja": "背景セクターの記号（空欄 = A1..E5）",
     "it": "Simbolo dei settori sullo sfondo (vuoto = A1..E5)"
   },
@@ -8689,7 +8689,7 @@
     "pl": "Przezroczystosc background",
     "nl": "Transparantie achtergrond",
     "pt": "Transparência do fundo",
-    "id": "Transparansi latar",
+    "id": "Transparansi latar belakang",
     "ja": "背景の透明度",
     "it": "Trasparenza dello sfondo"
   },
@@ -8724,7 +8724,7 @@
     "tr": "Takım arkadaşı göstergesi",
     "pl": "Wskaznik gracza",
     "nl": "Indicator teamgenoot",
-    "pt": "Indicador de companheiro",
+    "pt": "Indicador de aliado",
     "id": "Indikator rekan tim",
     "ja": "味方の表示",
     "it": "Indicatore compagno"
@@ -9247,7 +9247,7 @@
     "pl": "Grafika tla panelu",
     "nl": "Achtergrondafbeelding paneel",
     "pt": "Imagem de fundo do painel",
-    "id": "Gambar latar panel",
+    "id": "Gambar latar belakang panel",
     "ja": "パネルの背景画像",
     "it": "Immagine di sfondo del pannello"
   },
@@ -9409,7 +9409,7 @@
     "pl": "Topka - ja",
     "nl": "Klassement - ik",
     "pt": "Ranking - eu",
-    "id": "Papan peringkat - saya",
+    "id": "Leaderboard - saya",
     "ja": "ランキング - 自分",
     "it": "Classifica - io"
   },
@@ -9426,8 +9426,8 @@
     "tr": "Sıralama - takım arkadaşı",
     "pl": "Topka - team",
     "nl": "Klassement - teamgenoot",
-    "pt": "Ranking - companheiro",
-    "id": "Papan peringkat - rekan tim",
+    "pt": "Ranking - aliado",
+    "id": "Leaderboard - rekan tim",
     "ja": "ランキング - 味方",
     "it": "Classifica - compagno"
   },
@@ -9444,8 +9444,8 @@
     "tr": "Sıralama - takım arkadaşı",
     "pl": "Topka - team",
     "nl": "Klassement - teamgenoot",
-    "pt": "Ranking - companheiro",
-    "id": "Papan peringkat - rekan tim",
+    "pt": "Ranking - aliado",
+    "id": "Leaderboard - rekan tim",
     "ja": "ランキング - 味方",
     "it": "Classifica - compagno"
   },
@@ -9499,7 +9499,7 @@
     "pl": "Czat",
     "nl": "Chat",
     "pt": "Chat",
-    "id": "Obrolan",
+    "id": "Chat",
     "ja": "チャット",
     "it": "Chat"
   },
@@ -9517,7 +9517,7 @@
     "pl": "Tlo wiadomosci",
     "nl": "Achtergrond bericht",
     "pt": "Fundo da mensagem",
-    "id": "Latar pesan",
+    "id": "Latar belakang pesan",
     "ja": "メッセージの背景",
     "it": "Sfondo dei messaggi"
   },
@@ -9589,7 +9589,7 @@
     "pl": "Tlo komendy",
     "nl": "Achtergrond commando",
     "pt": "Fundo do comando",
-    "id": "Latar perintah",
+    "id": "Latar belakang perintah",
     "ja": "コマンドの背景",
     "it": "Sfondo dei comandi"
   },
@@ -9697,7 +9697,7 @@
     "pl": "Minimapa",
     "nl": "Minikaart",
     "pt": "Minimapa",
-    "id": "Peta mini",
+    "id": "Minimap",
     "ja": "ミニマップ",
     "it": "Minimappa"
   },
@@ -9877,7 +9877,7 @@
     "pl": "Czcionka minimapy",
     "nl": "Lettertype minikaart",
     "pt": "Fonte do minimapa",
-    "id": "Font peta mini",
+    "id": "Font minimap",
     "ja": "ミニマップのフォント",
     "it": "Font della minimappa"
   },
@@ -9913,7 +9913,7 @@
     "pl": "Szerokosc minimapy",
     "nl": "Breedte minikaart",
     "pt": "Largura do minimapa",
-    "id": "Lebar peta mini",
+    "id": "Lebar minimap",
     "ja": "ミニマップの幅",
     "it": "Larghezza della minimappa"
   },
@@ -10020,7 +10020,7 @@
     "tr": "Takım arkadaşı boyutu",
     "pl": "Wielkosc graczy",
     "nl": "Grootte teamgenoten",
-    "pt": "Tamanho dos companheiros",
+    "pt": "Tamanho dos aliados",
     "id": "Ukuran rekan tim",
     "ja": "味方の大きさ",
     "it": "Dimensione dei compagni"
@@ -10093,7 +10093,7 @@
     "pl": "Grafika tla",
     "nl": "Eigen achtergrondafbeelding",
     "pt": "Imagem de fundo personalizada",
-    "id": "Gambar latar kustom",
+    "id": "Gambar latar belakang kustom",
     "ja": "カスタム背景画像",
     "it": "Immagine di sfondo personalizzata"
   },
@@ -10237,7 +10237,7 @@
     "pl": "Auto odrodzenie zostalo wlaczone!",
     "nl": "Automatische respawn staat aan!",
     "pt": "Respawn automático ligado!",
-    "id": "Respawn otomatis nyala!",
+    "id": "Respawn otomatis aktif!",
     "ja": "自動リスポーン：オン！",
     "it": "Respawn automatico attivo!"
   },
@@ -10255,7 +10255,7 @@
     "pl": "Auto odrodzenie zostalo wylaczone!",
     "nl": "Automatische respawn staat uit!",
     "pt": "Respawn automático desligado!",
-    "id": "Respawn otomatis mati!",
+    "id": "Respawn otomatis nonaktif!",
     "ja": "自動リスポーン：オフ！",
     "it": "Respawn automatico disattivato!"
   },
@@ -10273,7 +10273,7 @@
     "pl": "Auto zoom zostal wlaczony!",
     "nl": "Automatisch zoomen staat aan!",
     "pt": "Zoom automático ligado!",
-    "id": "Zum otomatis nyala!",
+    "id": "Zoom otomatis aktif!",
     "ja": "自動ズーム：オン！",
     "it": "Zoom automatico attivo!"
   },
@@ -10291,7 +10291,7 @@
     "pl": "Auto zoom zostal wylaczony!",
     "nl": "Automatisch zoomen staat uit!",
     "pt": "Zoom automático desligado!",
-    "id": "Zum otomatis mati!",
+    "id": "Zoom otomatis nonaktif!",
     "ja": "自動ズーム：オフ！",
     "it": "Zoom automatico disattivato!"
   },
@@ -10511,7 +10511,7 @@
     "nl": "Profiel",
     "pt": "Perfil",
     "id": "Profil",
-    "ja": "プロフィール",
+    "ja": "プロファイル",
     "it": "Profilo"
   },
   "settings.profiles": {
@@ -10529,7 +10529,7 @@
     "nl": "Profielen",
     "pt": "Perfis",
     "id": "Profil",
-    "ja": "プロフィール",
+    "ja": "プロファイル",
     "it": "Profili"
   },
   "settings.skins": {
@@ -10636,8 +10636,8 @@
     "pl": "Resetuj ustawienia",
     "nl": "Standaard herstellen",
     "pt": "Restaurar padrão",
-    "id": "Kembalikan ke bawaan",
-    "ja": "既定に戻す",
+    "id": "Kembalikan ke default",
+    "ja": "初期設定に戻す",
     "it": "Ripristina predefiniti"
   },
   "settings.close": {
@@ -10870,7 +10870,7 @@
     "pl": "Topka",
     "nl": "Klassement",
     "pt": "Classificação",
-    "id": "Papan peringkat",
+    "id": "Leaderboard",
     "ja": "ランキング",
     "it": "Classifica"
   },
@@ -11627,7 +11627,7 @@
     "nl": "Eigen macro's (split, feed, wachten, naar muis bewegen)",
     "pt": "Macros personalizadas (split, feed, esperar, ir até o mouse)",
     "id": "Makro kustom (split, feed, tunggu, gerak ke mouse)",
-    "ja": "カスタムマクロ（分裂、フィード、待機、マウスへ移動）",
+    "ja": "カスタムマクロ（分裂、質量放出、待機、マウスへ移動）",
     "it": "Macro personalizzate (split, feed, attesa, vai verso il mouse)"
   },
   "settings.hk-customMacro1": {
@@ -11932,7 +11932,7 @@
     "pl": "Adaptacyjna wydajność: poziom 1 (efekty ozdobne na razie wył.)",
     "nl": "Adaptieve prestaties: niveau 1 (decoratieve effecten tijdelijk uit)",
     "pt": "Desempenho adaptativo: nível 1 (efeitos decorativos desligados por enquanto)",
-    "id": "Performa adaptif: level 1 (efek dekoratif dimatikan sementara)",
+    "id": "Performa adaptif: level 1 (efek dekoratif dinonaktifkan sementara)",
     "ja": "自動パフォーマンス調整：レベル1（装飾エフェクトを一時オフ）",
     "it": "Prestazioni adattive: livello 1 (effetti decorativi disattivati per ora)"
   },
@@ -11950,7 +11950,7 @@
     "pl": "Adaptacyjna wydajność: poziom 2 (fizyka galaretki i video skiny na razie wył.)",
     "nl": "Adaptieve prestaties: niveau 2 (gelei-fysica en videoskins tijdelijk uit)",
     "pt": "Desempenho adaptativo: nível 2 (física de gelatina e skins de vídeo desligadas por enquanto)",
-    "id": "Performa adaptif: level 2 (fisika jeli dan skin video dimatikan sementara)",
+    "id": "Performa adaptif: level 2 (fisika jelly dan skin video dinonaktifkan sementara)",
     "ja": "自動パフォーマンス調整：レベル2（ゼリー物理と動画スキンを一時オフ）",
     "it": "Prestazioni adattive: livello 2 (fisica gelatina e skin video disattivate per ora)"
   },
@@ -12453,7 +12453,7 @@
     "tr": "Parti / takım davetleri",
     "pl": "Zaproszenia do party / drużyny",
     "nl": "Party- / teamuitnodigingen",
-    "pt": "Convites de party / time",
+    "pt": "Convites de party / equipe",
     "id": "Undangan party / tim",
     "ja": "パーティー / チームの招待",
     "it": "Inviti a party / squadra"
@@ -12633,10 +12633,10 @@
     "tr": "Performans modunu aç/kapat",
     "pl": "Przełącz tryb wydajności",
     "nl": "Prestatiemodus aan/uit",
-    "pt": "Liga/desliga modo desempenho",
-    "id": "Mode performa nyala/mati",
+    "pt": "Ativar/desativar modo desempenho",
+    "id": "Aktifkan/nonaktifkan mode performa",
     "ja": "パフォーマンスモードの切り替え",
-    "it": "Modalità prestazioni on/off"
+    "it": "Attiva/disattiva modalità prestazioni"
   },
   "settings.hk-mergeRings": {
     "en": "Show/hide merge rings",
@@ -12849,10 +12849,10 @@
     "tr": "Multibox orta görünümünü aç/kapat",
     "pl": "Przełącz widok środka multiboxa",
     "nl": "Multibox-middenbeeld aan/uit",
-    "pt": "Liga/desliga visão central do multibox",
-    "id": "Tampilan tengah multibox nyala/mati",
+    "pt": "Ativar/desativar visão central do multibox",
+    "id": "Aktifkan/nonaktifkan tampilan tengah multibox",
     "ja": "マルチボックスの中間表示を切り替え",
-    "it": "Visuale centrale multibox on/off"
+    "it": "Attiva/disattiva visuale centrale multibox"
   },
   "settings.hk-mbRings": {
     "en": "Show/hide multibox rings",
@@ -12886,7 +12886,7 @@
     "pl": "HUD o wysokim kontraście (pełne tło, obrysy)",
     "nl": "HUD met hoog contrast (effen achtergrond, contouren)",
     "pt": "HUD de alto contraste (fundo sólido, contornos)",
-    "id": "HUD kontras tinggi (latar solid, garis tepi)",
+    "id": "HUD kontras tinggi (latar belakang solid, garis tepi)",
     "ja": "高コントラストHUD（不透明な背景、輪郭）",
     "it": "HUD ad alto contrasto (sfondo pieno, contorni)"
   },
