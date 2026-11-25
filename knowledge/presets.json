@@ -1,0 +1,163 @@
+{
+  "entity": "https://www.legendmod.ml/#app",
+  "updated": "2026-11-25",
+  "presets": {
+    "game": [
+      {
+        "id": "legend-v2",
+        "name": "Legend v2",
+        "description": "Default Legend Mod theme. Teal accent (#01d9cc), modern dark interface.",
+        "type": "game",
+        "isDefault": true
+      },
+      {
+        "id": "legend-v1",
+        "name": "Legend v1",
+        "description": "Classic Legend Mod theme. Orange accent (#ff7800).",
+        "type": "game"
+      },
+      {
+        "id": "legend-original",
+        "name": "Legend Original",
+        "description": "Original legacy theme. Gold accent (#b5a642).",
+        "type": "game"
+      },
+      {
+        "id": "crazy-style-2",
+        "name": "Crazy Style 2",
+        "description": "Pink/purple vibrant theme.",
+        "type": "game"
+      },
+      {
+        "id": "crazy-style-1",
+        "name": "Crazy Style 1",
+        "description": "Purple accent (#651fff).",
+        "type": "game"
+      },
+      {
+        "id": "agario-light",
+        "name": "Agar.io Light",
+        "description": "Light theme matching Agar.io's default appearance.",
+        "type": "game"
+      },
+      {
+        "id": "agario-dark",
+        "name": "Agar.io Dark",
+        "description": "Dark variant of the Agar.io theme.",
+        "type": "game"
+      },
+      {
+        "id": "colourblind-safe",
+        "name": "Colour-blind Safe",
+        "description": "Okabe-Ito palette with opaque HUD, bigger minimap marks. High contrast for accessibility.",
+        "type": "game"
+      }
+    ],
+    "menu": [
+      {
+        "id": "menu-legend-v2",
+        "name": "Legend v2",
+        "description": "Modern teal menu styling.",
+        "type": "menu"
+      },
+      {
+        "id": "menu-legend-v1",
+        "name": "Legend v1",
+        "description": "Classic orange menu styling.",
+        "type": "menu"
+      },
+      {
+        "id": "menu-agario",
+        "name": "Agar.io",
+        "description": "Agar.io-style menu appearance.",
+        "type": "menu"
+      }
+    ],
+    "graphics": [
+      {
+        "id": "graphics-high",
+        "name": "High",
+        "description": "All visual effects enabled. Best visual quality.",
+        "type": "graphics"
+      },
+      {
+        "id": "graphics-medium",
+        "name": "Medium",
+        "description": "Moderate visual quality. Some effects reduced.",
+        "type": "graphics"
+      },
+      {
+        "id": "graphics-low",
+        "name": "Low",
+        "description": "Reduced effects for better performance.",
+        "type": "graphics"
+      },
+      {
+        "id": "graphics-verylow",
+        "name": "Very Low",
+        "description": "Minimal effects. Maximum performance.",
+        "type": "graphics"
+      }
+    ],
+    "quick": [
+      {
+        "id": "competitive",
+        "name": "Competitive",
+        "description": "Enables opponent colours, rings, virus colours, split range, merge rings, mass, FPS/PPS stats for competitive play.",
+        "type": "quick"
+      },
+      {
+        "id": "battery-saver",
+        "name": "Battery Saver",
+        "description": "FPS cap 60, no jelly physics, no video skins, no animated rainbow colour. Saves battery on laptops and phones.",
+        "type": "quick"
+      },
+      {
+        "id": "streamer",
+        "name": "Streamer",
+        "description": "Hides country, chat, chat images/videos, dev console. Privacy-friendly for broadcasting.",
+        "type": "quick"
+      },
+      {
+        "id": "reduced-motion",
+        "name": "Reduced Motion",
+        "description": "No motion effects, no jelly, no suck animation. Accessibility preset for motion sensitivity.",
+        "type": "quick"
+      },
+      {
+        "id": "clean-hud",
+        "name": "Clean HUD",
+        "description": "Strips non-essential HUD elements for a minimal interface.",
+        "type": "quick"
+      }
+    ]
+  },
+  "themeProperties": {
+    "count": "~160",
+    "categories": [
+      "Background and borders",
+      "Grid and sectors",
+      "Cell colours (6 enemy size tiers)",
+      "Names and mass text",
+      "Virus appearance",
+      "Food pellets",
+      "Teammates",
+      "Cursor tracking",
+      "Split range indicators",
+      "Ghost cells",
+      "Safe and danger areas",
+      "Border glow",
+      "Cell shadow",
+      "HUD elements",
+      "Chat messages and commands",
+      "Minimap elements",
+      "Fonts (ubuntu, roboto, oswald, shojumaru, allura)",
+      "Sizing (namesScale, massScale, foodSize, etc.)",
+      "Alpha values (cellsAlpha, skinsAlpha, backgroundAlpha)",
+      "Menu theming",
+      "Custom background image URL",
+      "Custom cursor URL",
+      "Brightness and saturation"
+    ]
+  }
+}

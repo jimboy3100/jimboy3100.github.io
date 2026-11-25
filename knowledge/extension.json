@@ -1,0 +1,66 @@
+{
+  "entity": "https://www.legendmod.ml/#extension",
+  "updated": "2026-11-25",
+  "name": "Legend Express Agar.io Extension",
+  "manifestVersion": 3,
+  "version": "1.8.4",
+  "author": "Jimboy3100",
+  "description": "Legend Express is the Chrome extension component of Legend Mod. It injects Legend Mod features into supported game websites.",
+  "installUrl": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja",
+  "permissions": ["storage", "declarativeNetRequest"],
+  "hostPermissions": [
+    "agar.io",
+    "jimboy3100.github.io",
+    "legendmod.ml",
+    "sigmally.com",
+    "senpa.io",
+    "mi.com"
+  ],
+  "contentScripts": {
+    "runAt": "document_start",
+    "matches": ["agar.io"]
+  },
+  "background": "service_worker",
+  "privacy": {
+    "collectsPersonalData": false,
+    "transmitsDataExternally": false,
+    "storesDataExternally": false,
+    "policyUrl": "https://www.legendmod.ml/privacy.html"
+  },
+  "supportedGames": [
+    {
+      "name": "Agar.io",
+      "domain": "agar.io",
+      "injectionMethod": "content_script"
+    },
+    {
+      "name": "Expanding Land",
+      "domain": "expanding.land",
+      "injectionMethod": "web_client"
+    },
+    {
+      "name": "Sigmally",
+      "domain": "sigmally.com",
+      "injectionMethod": "content_script"
+    },
+    {
+      "name": "Senpa.io",
+      "domain": "senpa.io",
+      "injectionMethod": "content_script"
+    }
+  ],
+  "features": [
+    "Custom skins and video skins",
+    "Theme customization (160+ properties)",
+    "Configurable controls and hotkeys (146+ bindings)",
+    "Multiboxing (up to 4 connections)",
+    "Replay Studio with timeline and bookmarks",
+    "Command Centre fuzzy search palette",
+    "Settings profiles (up to 30)",
+    "Gamepad support (16 buttons)",
+    "Second-screen companion",
+    "Performance diagnostics",
+    "Accessibility options",
+    "16 languages"
+  ]
+}

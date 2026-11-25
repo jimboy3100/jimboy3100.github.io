@@ -642,4 +642,6 @@ Legend Mod supports 5 user script slots for custom JavaScript extensions. Plugin
 - [Embed widget](https://help.expanding.land/embed.html) — embed the game
 - [Knowledge API](https://www.legendmod.ml/knowledge/api.json) — public read-only JSON resources
 - [Knowledge graph (JSON-LD)](https://www.legendmod.ml/knowledge/graph.jsonld) — structured data
+- [Extension metadata (JSON)](https://www.legendmod.ml/knowledge/extension.json) — Chrome extension details
+- [Presets (JSON)](https://www.legendmod.ml/knowledge/presets.json) — theme and settings presets
 - [Discord](https://discord.com/invite/JUfpR9k)

@@ -43,6 +43,12 @@
     },
     {
       "url": "https://www.legendmod.ml/knowledge/vocabulary.ttl"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/extension.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/presets.json"
     }
   ]
 }

@@ -19,6 +19,8 @@
 - [Game (JSON)](https://www.legendmod.ml/knowledge/game.json): game entity data.
 - [Mechanics (JSON)](https://www.legendmod.ml/knowledge/mechanics.json): 12 core game mechanics.
 - [Resources (JSON)](https://www.legendmod.ml/knowledge/resources.json): 35+ official page links.
+- [Extension (JSON)](https://www.legendmod.ml/knowledge/extension.json): Chrome extension metadata.
+- [Presets (JSON)](https://www.legendmod.ml/knowledge/presets.json): theme and settings presets.
 
 - [Consolidated documentation](https://www.legendmod.ml/llms-full.txt): verified core facts, features, controls, FAQ and links.
 - [Knowledge API](https://www.legendmod.ml/knowledge/api.json): public read-only JSON resources.
