@@ -393,7 +393,8 @@
             el = document.createElement('div');
             el.id = 'lm-killfeed';
             el.style.cssText = 'position:fixed;top:8px;right:8px;z-index:120;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;' +
-                'max-width:min(220px,40vw);font-weight:600;font-size:12px;line-height:1.35;font-family:inherit;';
+                /* HUD font weight and scale (Theme > HUD) */
+                'max-width:min(calc(220px * var(--lm-hud-scale,1)),40vw);font-weight:var(--lm-hud-fw,600);font-size:calc(12px * var(--lm-hud-scale,1));line-height:1.35;font-family:inherit;';
             document.body.appendChild(el);
         }
         /* left of the leaderboard (top right), never over it; the minimap and chat are at the bottom */
@@ -512,7 +513,7 @@
         try { drawSpark(cv, rc, th); } catch (e) { }
         for (var i = 0; i < rc.steps.length; i++) {
             var st = rc.steps[i], row = document.createElement('div');
-            row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:2px 2px;font-size:11px;line-height:1.3;';
+            row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:2px 2px;font-size:var(--lm-w-fs-s,11px);line-height:1.3;';
             var lb = document.createElement('span');
             lb.dir = 'ltr';
             lb.style.cssText = 'flex:0 0 34px;text-align:right;color:' + th.v.tc2 + ';font-variant-numeric:tabular-nums;';
@@ -542,6 +543,8 @@
     }
     /* Called by showSessionStats after the card is in the page. */
     function card(modal, theme) {
+        /* the shared window sizes (LMexpress.js) */
+        if (typeof window.lmUiKit === 'function') window.lmUiKit();
         if (!modal) return;
         var o = opts();
         cardTheme = themeOf(theme);
@@ -553,7 +556,7 @@
         if (wide) {
             /* beside the card (a 915x412 phone has room for both; the card alone is already tall) */
             el.style.cssText = 'position:absolute;left:calc(100% + 8px);top:0;width:252px;box-sizing:border-box;max-height:calc(100vh - 8px);overflow-y:auto;' +
-                'background:' + th.v.pc + ';border:1px solid ' + th.v.pc2 + ';border-top:3px solid ' + th.v.mc + ';border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);padding:8px 10px;color:' + th.v.tc + ';';
+                'background:var(--lm-w-bg,' + th.v.pc + ');border:1px solid ' + th.v.pc2 + ';border-top:3px solid ' + th.v.mc + ';border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);padding:var(--lm-w-pad,8px 10px);color:' + th.v.tc + ';';
             modal.style.marginLeft = '-130px';
             modal.appendChild(el);
             try {
@@ -584,7 +587,7 @@
         b.type = 'button';
         b.textContent = tr('turnOn');
         b.setAttribute('data-i18n', TK + 'turnOn');
-        b.style.cssText = 'background:' + th.v.mc + ';color:' + th.v.pc + ';border:0;font-family:inherit;border-radius:var(--lm-radius-s,4px);padding:3px 10px;margin-top:4px;font-size:11px;font-weight:700;cursor:pointer;min-height:26px;';
+        b.style.cssText = 'background:' + th.v.mc + ';color:' + th.v.pc + ';border:0;font-family:inherit;border-radius:var(--lm-radius-s,4px);padding:3px 10px;margin-top:4px;font-size:var(--lm-w-fs,11px);font-weight:700;cursor:pointer;min-height:var(--lm-w-ctl,26px);';
         b.addEventListener('click', function (ev) {
             ev.stopPropagation();
             setOption('deathRecap', true);

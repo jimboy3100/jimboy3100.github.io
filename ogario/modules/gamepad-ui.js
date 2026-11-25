@@ -85,17 +85,19 @@
     }
 
     function addStyle(c) {
+        /* the shared window look (LMexpress.js) */
+        if (typeof window.lmUiKit === 'function') window.lmUiKit();
         if (document.getElementById('lm-gp-style')) return;
         var s = document.createElement('style');
         s.id = 'lm-gp-style';
         s.textContent =
             // i18n-ok: CSS
-            '#lm-gp-modal select,#lm-gp-modal input[type=text]{background:' + c.pc2 + ';color:' + c.tc + ';border:1px solid rgba(255,255,255,0.15);border-radius:var(--lm-radius-s,4px);height:30px;font-size:12px;padding:0 6px;min-width:0;}' +
+            '#lm-gp-modal select,#lm-gp-modal input[type=text]{background:var(--lm-w-field,' + c.pc2 + ');color:' + c.tc + ';border:1px solid ' + c.pc2 + ';border-radius:var(--lm-radius-s,4px);height:var(--lm-w-ctl,30px);font-size:var(--lm-w-fs,12px);padding:0 6px;min-width:0;}' +
             '#lm-gp-modal input[type=range]{width:100%;height:28px;margin:0;}' +
             '#lm-gp-modal input[type=checkbox]{width:18px;height:18px;margin:0 8px 0 0;flex:none;}' +
-            '#lm-gp-modal .btn{min-height:30px;}' +
+            '#lm-gp-modal .btn{min-height:var(--lm-w-ctl,30px);font-size:var(--lm-w-fs,12px);}' +
             '#lm-gp-modal label{font-weight:400;margin:0;}' +
-            '#lm-gp-modal .lm-gp-chip{flex:none;min-width:62px;box-sizing:border-box;padding:0 6px;height:26px;line-height:26px;border-radius:var(--lm-radius-s,4px);text-align:center;font-size:11px;font-weight:700;background:rgba(255,255,255,0.08);transition:background .05s;}' +
+            '#lm-gp-modal .lm-gp-chip{flex:none;min-width:62px;box-sizing:border-box;padding:0 6px;height:26px;line-height:26px;border-radius:var(--lm-radius-s,4px);text-align:center;font-size:var(--lm-w-fs-s,11px);font-weight:700;background:var(--lm-w-btn-h,rgba(255,255,255,0.08));transition:background .05s;}' +
             // i18n-ok: CSS
             '#lm-gp-modal .lm-gp-chip.on{background:' + c.mc + ';color:' + c.pc + ';}';
         document.head.appendChild(s);
@@ -553,23 +555,23 @@
         backdrop.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); close(); });
         modal = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:720px;max-width:calc(100vw - 16px);' +
             'height:auto;max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-sizing:border-box;z-index:999995;' +
-            'background:' + c.pc + ';border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
-            'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
+            'background:var(--lm-w-bg,' + c.pc + ');border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
+            'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:var(--lm-w-fs,12px);overflow:hidden;text-align:left;');
         modal.id = 'lm-gp-modal';
-        modal.className = 'lm-modal-container';
+        modal.classList.add('lm-modal-container', 'lm-w');
         setDir(modal);
-        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
-        head.appendChild(el('div', 'font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;flex:none;', '\ud83c\udfae ' + t('title')));
+        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:var(--lm-w-hpad,6px 8px 6px 12px);border-bottom:1px solid ' + c.pc2 + ';background:var(--lm-w-head,linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%));');
+        head.appendChild(el('div', 'font-size:var(--lm-w-title,15px);font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;flex:none;', '\ud83c\udfae ' + t('title')));
         tabsEl = el('div', 'flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;');
         [['buttons', t('tabButtons')], ['tuning', t('tabTuning')], ['profiles', t('tabProfiles')], ['test', t('tabTest')]].forEach(function (d) {
-            var b = el('div', 'flex:none;cursor:pointer;font-size:12px;padding:0 10px;height:30px;line-height:30px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + c.pc2 + ';', d[1]);
+            var b = el('div', 'flex:none;cursor:pointer;font-size:var(--lm-w-fs,12px);padding:0 10px;height:var(--lm-w-ctl,30px);line-height:var(--lm-w-ctl,30px);border-radius:var(--lm-radius-s,4px);border:1px solid ' + c.pc2 + ';', d[1]);
             b.id = 'lm-gp-tab-' + d[0];
             b.setAttribute('data-tab', d[0]);
             b.addEventListener('click', function (e) { e.stopPropagation(); show(d[0]); });
             tabsEl.appendChild(b);
         });
         head.appendChild(tabsEl);
-        var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.06);', '\u2715');
+        var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:var(--lm-w-x,34px);height:var(--lm-w-x,34px);display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:var(--lm-w-btn,rgba(255,255,255,0.06));', '\u2715');
         x.id = 'lm-gp-close';
         x.title = t('close');
         x.setAttribute('role', 'button');
@@ -580,7 +582,7 @@
         msgEl.id = 'lm-gp-msg';
         msgEl.style.display = 'none';
         modal.appendChild(msgEl);
-        body = el('div', 'flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:8px 12px 12px;');
+        body = el('div', 'flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:var(--lm-w-pad,8px 12px 12px);');
         modal.appendChild(body);
         document.body.appendChild(backdrop);
         document.body.appendChild(modal);

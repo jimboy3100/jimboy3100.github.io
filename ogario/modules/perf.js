@@ -1557,6 +1557,8 @@
 
     function openDiag() {
         if (diag) { closeDiag(); return; }
+        /* the shared window look (LMexpress.js) */
+        if (typeof window.lmUiKit === 'function') window.lmUiKit();
         var ds = window.defaultSettings || {};
         /* var(--lm-*) so the open window follows a theme change; the saved value is the fallback */
         var V = function (n, v, d) { return 'var(--lm-' + n + ',' + (v || d) + ')'; };
@@ -1566,15 +1568,15 @@
         var box = 'background:rgba(0,0,0,0.25);border:1px solid ' + pc2 + ';border-radius:var(--lm-radius-s,3px);padding:4px 6px;word-break:normal;';
         /* fits a 915x412 phone: narrow, scrolls inside, the close cross is a large tap target */
         var md = el('div', 'position:fixed;top:8px;left:8px;width:380px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
-            'display:flex;flex-direction:column;z-index:999992;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
-            'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:11px;line-height:1.35;overflow:hidden;');
+            'display:flex;flex-direction:column;z-index:999992;background:var(--lm-w-bg,' + pc + ');border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
+            'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:var(--lm-w-fs,11px);line-height:1.35;overflow:hidden;');
         md.id = 'lm-perf-diag';
-        md.className = 'lm-modal-container';
-        var head = el('div', 'padding:7px 44px 6px 10px;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
-        var title = el('div', 'font-size:13px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;');
+        md.classList.add('lm-modal-container', 'lm-w');
+        var head = el('div', 'display:flex;align-items:center;min-height:calc(var(--lm-w-x,30px) + 8px);box-sizing:border-box;padding:4px calc(var(--lm-w-x,34px) + 10px) 4px 12px;position:relative;border-bottom:1px solid ' + pc2 + ';background:var(--lm-w-head,linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%));');
+        var title = el('div', 'font-size:var(--lm-w-title,13px);font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;');
         head.appendChild(title);
         /* the close cross stays at the right (also in Arabic): the head keeps room for it there */
-        var x = el('div', 'position:absolute;top:2px;right:4px;cursor:pointer;font-size:18px;color:' + tc2 + ';width:34px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', '\u2715');
+        var x = el('div', 'position:absolute;top:4px;right:6px;cursor:pointer;font-size:18px;color:' + tc2 + ';width:var(--lm-w-x,34px);height:var(--lm-w-x,30px);display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:var(--lm-w-btn,rgba(255,255,255,0.05));', '\u2715');
         x.id = 'lm-perf-diag-close';
         var stop = function (e) { e.preventDefault(); e.stopPropagation(); };
         x.addEventListener('click', function (e) { stop(e); closeDiag(); });
@@ -1582,7 +1584,7 @@
         head.appendChild(x);
         md.appendChild(head);
         makeDraggable(md, head, x);
-        var body = el('div', 'padding:6px 10px 8px;overflow:auto;-webkit-overflow-scrolling:touch;');
+        var body = el('div', 'padding:var(--lm-w-pad,6px 10px 8px);overflow:auto;-webkit-overflow-scrolling:touch;');
         md.appendChild(body);
         var cv = el('canvas', 'display:block;width:100%;height:64px;background:rgba(0,0,0,0.35);border-radius:var(--lm-radius-s,3px);');
         cv.width = 360; cv.height = 64;
@@ -1608,7 +1610,7 @@
         body.appendChild(hist);
         var row = el('div', 'display:flex;gap:6px;flex-wrap:wrap;');
         var btn = function (id, text, fn) {
-            var b = el('button', 'cursor:pointer;font-family:inherit;font-size:11px;padding:5px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + pc2 + ';background:rgba(255,255,255,0.05);color:' + tc + ';', text);
+            var b = el('button', 'cursor:pointer;font-family:inherit;font-size:var(--lm-w-fs,11px);min-height:var(--lm-w-ctl,26px);padding:3px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + pc2 + ';background:var(--lm-w-btn,rgba(255,255,255,0.05));color:' + tc + ';', text);
             b.type = 'button';
             b.id = id;
             b.addEventListener('click', function (e) { stop(e); fn(); });

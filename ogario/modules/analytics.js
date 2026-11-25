@@ -695,7 +695,7 @@
         return e;
     }
     function btn(label, css, on) {
-        var b = el('button', 'cursor:pointer;font:inherit;font-size:12px;min-height:28px;padding:3px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid var(--lm-pc2,rgba(255,255,255,0.15));background:rgba(255,255,255,0.06);color:inherit;touch-action:manipulation;' + (css || ''), label);
+        var b = el('button', 'cursor:pointer;font:inherit;font-size:var(--lm-w-fs,12px);min-height:var(--lm-w-ctl,28px);padding:3px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid var(--lm-pc2,rgba(255,255,255,0.15));background:var(--lm-w-btn,rgba(255,255,255,0.06));color:inherit;touch-action:manipulation;' + (css || ''), label);
         b.type = 'button';
         b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); on(e); });
         return b;
@@ -717,17 +717,19 @@
         if (which && ['dash', 'heat', 'coach', 'goals'].indexOf(which) !== -1) tab = which;
         if (which === 'coach') coachIdx = -1;
         if (md) { paint(); return; }
+        /* the shared window look (LMexpress.js) */
+        if (typeof window.lmUiKit === 'function') window.lmUiKit();
         var t = theme();
         md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:720px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
-            'display:flex;flex-direction:column;z-index:999992;background:' + t.pc + ';border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';' +
-            'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + t.tc + ';font-family:inherit;font-size:12px;overflow:hidden;box-sizing:border-box;');
+            'display:flex;flex-direction:column;z-index:999992;background:var(--lm-w-bg,' + t.pc + ');border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';' +
+            'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + t.tc + ';font-family:inherit;font-size:var(--lm-w-fs,12px);overflow:hidden;box-sizing:border-box;');
         md.id = 'lm-analytics';
-        md.className = 'lm-modal-container';
+        md.classList.add('lm-modal-container', 'lm-w');
         md.setAttribute('role', 'dialog');
         md.setAttribute('aria-label', T('title'));
         md.dir = langDir();
-        var head = el('div', 'display:flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-bottom:1px solid ' + t.pc2 + ';background:linear-gradient(180deg,' + t.pc2 + ' 0%,' + t.pc + ' 100%);flex:0 0 auto;');
-        var ttl = el('div', 'font-size:14px;font-weight:700;color:' + t.mc + ';letter-spacing:1px;text-transform:uppercase;white-space:nowrap;', T('title'));
+        var head = el('div', 'display:flex;align-items:center;gap:6px;padding:var(--lm-w-hpad,4px 6px 4px 10px);border-bottom:1px solid ' + t.pc2 + ';background:var(--lm-w-head,linear-gradient(180deg,' + t.pc2 + ' 0%,' + t.pc + ' 100%));flex:0 0 auto;');
+        var ttl = el('div', 'font-size:var(--lm-w-title,14px);font-weight:700;color:' + t.mc + ';letter-spacing:1px;text-transform:uppercase;white-space:nowrap;', T('title'));
         ttl.id = 'lm-analytics-title';
         head.appendChild(ttl);
         var tabs = el('div', 'display:flex;gap:4px;flex:1 1 auto;overflow-x:auto;-webkit-overflow-scrolling:touch;');
@@ -740,13 +742,13 @@
         });
         head.appendChild(tabs);
         /* 36 px close target for touch */
-        var x = btn('✕', 'flex:0 0 auto;width:36px;height:36px;padding:0;font-size:16px;line-height:1;color:' + t.tc2 + ';background:rgba(255,255,255,0.05);', close);
+        var x = btn('✕', 'flex:0 0 auto;width:var(--lm-w-x,36px);height:var(--lm-w-x,36px);padding:0;font-size:18px;line-height:1;color:' + t.tc2 + ';background:var(--lm-w-btn,rgba(255,255,255,0.05));border:0;', close);
         x.id = 'lm-analytics-close';
         x.title = closeText();
         x.setAttribute('aria-label', closeText());
         head.appendChild(x);
         md.appendChild(head);
-        var body = el('div', 'padding:6px 10px 10px;overflow:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0;');
+        var body = el('div', 'padding:var(--lm-w-pad,6px 10px 10px);overflow:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0;');
         body.id = 'lm-analytics-body';
         md.appendChild(body);
         /* typing a number must not trigger game hotkeys */
@@ -910,7 +912,7 @@
         });
         side.appendChild(lrow);
         var sel = function (label, opts, val, on) {
-            var r = el('label', 'display:flex;gap:6px;align-items:center;'), s = el('select', 'font:inherit;font-size:12px;min-height:28px;max-width:180px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:var(--lm-radius-s,4px);');
+            var r = el('label', 'display:flex;gap:6px;align-items:center;'), s = el('select', 'font:inherit;font-size:var(--lm-w-fs,12px);min-height:var(--lm-w-ctl,28px);max-width:180px;color:var(--lm-tc,#000);background:var(--lm-w-field,var(--lm-pc2,#fff));border:1px solid var(--lm-pc2,rgba(255,255,255,0.2));border-radius:var(--lm-radius-s,4px);');
             r.appendChild(el('span', 'color:' + t.tc2 + ';', label));
             opts.forEach(function (o) { var op = el('option', null, o[1]); op.value = String(o[0]); if (o[0] === val) op.selected = true; s.appendChild(op); });
             s.addEventListener('change', function () { on(+s.value); paint(); });
@@ -1066,12 +1068,12 @@
         });
         body.appendChild(custom);
         var form = el('div', 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;');
-        var type = el('select', 'font:inherit;font-size:12px;min-height:28px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:var(--lm-radius-s,4px);');
+        var type = el('select', 'font:inherit;font-size:var(--lm-w-fs,12px);min-height:var(--lm-w-ctl,28px);color:var(--lm-tc,#000);background:var(--lm-w-field,var(--lm-pc2,#fff));border:1px solid var(--lm-pc2,rgba(255,255,255,0.2));border-radius:var(--lm-radius-s,4px);');
         type.id = 'lm-analytics-goal-type';
         [['mass', 'tMass'], ['survive', 'tSurvive'], ['top', 'tTop'], ['games', 'tGames'], ['beatAvg', 'tBeatAvg']].forEach(function (o) {
             var op = el('option', null, T(o[1])); op.value = o[0]; type.appendChild(op);
         });
-        var inp = el('input', 'font:inherit;font-size:12px;min-height:28px;width:90px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:var(--lm-radius-s,4px);padding:0 6px;box-sizing:border-box;');
+        var inp = el('input', 'font:inherit;font-size:var(--lm-w-fs,12px);min-height:var(--lm-w-ctl,28px);width:90px;color:var(--lm-tc,#000);background:var(--lm-w-field,var(--lm-pc2,#fff));border:1px solid var(--lm-pc2,rgba(255,255,255,0.2));border-radius:var(--lm-radius-s,4px);padding:0 6px;box-sizing:border-box;');
         inp.id = 'lm-analytics-goal-target';
         inp.type = 'number';
         inp.min = '1';

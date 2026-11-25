@@ -319,19 +319,22 @@
     function addStyle() {
         if (styleDone) return;
         styleDone = true;
+        /* the shared window look (LMexpress.js) */
+        if (typeof W.lmUiKit === 'function') W.lmUiKit();
         var c = colors();
         var s = D.createElement('style');
         s.id = 'lm-st-style';
         s.textContent =
             // i18n-ok: CSS
-            '.lm-st-win select,.lm-st-win input[type=text],.lm-st-win input[type=search]{background:' + c.pc2 + ';color:' + c.tc + ';border:1px solid rgba(255,255,255,0.18);border-radius:var(--lm-radius-s,4px);height:30px;font-size:12px;padding:0 6px;min-width:0;box-sizing:border-box;}' +
+            '.lm-st-win select,.lm-st-win input[type=text],.lm-st-win input[type=search]{background:var(--lm-w-field,' + c.pc2 + ');color:' + c.tc + ';border:1px solid ' + c.pc2 + ';border-radius:var(--lm-radius-s,4px);height:var(--lm-w-ctl,30px);font-size:var(--lm-w-fs,12px);padding:0 6px;min-width:0;box-sizing:border-box;}' +
             '.lm-st-win input[type=checkbox]{width:18px;height:18px;margin:0 8px 0 0;flex:none;}' +
-            '.lm-st-win label{font-weight:400;margin:0;display:flex;align-items:center;min-height:30px;cursor:pointer;}' +
+            '.lm-st-win label{font-weight:400;margin:0;display:flex;align-items:center;min-height:var(--lm-w-ctl,30px);cursor:pointer;}' +
             // i18n-ok: CSS
-            '.lm-st-win .lm-st-btn{flex:none;cursor:pointer;min-height:30px;padding:0 12px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + c.pc2 + ';background:rgba(255,255,255,0.05);color:inherit;font-size:12px;font-family:inherit;}' +
+            '.lm-st-win .lm-st-btn{flex:none;cursor:pointer;min-height:var(--lm-w-ctl,30px);padding:0 12px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + c.pc2 + ';background:var(--lm-w-btn,rgba(255,255,255,0.05));color:inherit;font-size:var(--lm-w-fs,12px);font-family:inherit;}' +
+            '.lm-st-win .lm-st-btn:hover{background:var(--lm-w-btn-h,rgba(255,255,255,0.12));}' +
             // i18n-ok: CSS
             '.lm-st-win .lm-st-btn.main{background:' + c.mc + ';color:' + c.pc + ';border-color:' + c.mc + ';font-weight:700;}' +
-            '.lm-st-win .lm-st-help{opacity:.8;font-size:11px;line-height:1.45;margin:0 0 8px;}' +
+            '.lm-st-win .lm-st-help{opacity:.8;font-size:var(--lm-w-fs-s,11px);line-height:1.45;margin:0 0 8px;}' +
             // i18n-ok: CSS
             '.lm-st-win a.lm-st-link{color:' + c.mc + ';cursor:pointer;text-decoration:underline;white-space:nowrap;}' +
             '.lm-st-row{display:flex;align-items:center;gap:8px;margin:0 0 6px;}' +
@@ -339,11 +342,12 @@
             /* screenshot mode: only the game view and the exit chip stay visible */
             '.lm-shot-hide{visibility:hidden !important;}' +
             'body.lm-shot-on #toast-container{visibility:hidden !important;}' +
-            '#lm-shot-chip{position:fixed;right:8px;bottom:8px;z-index:999996;display:flex;gap:6px;transition:opacity .4s;font:12px sans-serif;}' +
-            '#lm-shot-chip div{cursor:pointer;min-width:34px;height:34px;line-height:34px;padding:0 10px;border-radius:17px;text-align:center;background:rgba(0,0,0,0.55);color:#fff;border:1px solid rgba(255,255,255,0.35);box-sizing:border-box;}' +
+            /* HUD font, weight and scale (Theme > HUD); the tap targets stay at least 30 px */
+            '#lm-shot-chip{position:fixed;right:8px;bottom:8px;z-index:999996;display:flex;gap:6px;transition:opacity .4s;font-size:calc(12px * var(--lm-hud-scale,1));}' +
+            '#lm-shot-chip div{cursor:pointer;min-width:max(30px,calc(34px * var(--lm-hud-scale,1)));height:max(30px,calc(34px * var(--lm-hud-scale,1)));line-height:max(30px,calc(34px * var(--lm-hud-scale,1)));padding:0 10px;border-radius:17px;text-align:center;background:rgba(0,0,0,0.55);color:#fff;border:1px solid rgba(255,255,255,0.35);box-sizing:border-box;}' +
             '#lm-shot-chip.idle{opacity:.18;}' +
             '#lm-radial{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999994;cursor:crosshair;touch-action:none;}' +
-            '#lm-radial .lm-rd-item{position:absolute;transform:translate(-50%,-50%);max-width:120px;padding:4px 8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.72);color:#fff;font:600 12px sans-serif;text-align:center;border:2px solid rgba(255,255,255,0.25);white-space:normal;line-height:1.25;pointer-events:none;}' +
+            '#lm-radial .lm-rd-item{position:absolute;transform:translate(-50%,-50%);max-width:calc(120px * var(--lm-hud-scale,1));padding:4px 8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.72);color:#fff;font-family:inherit;font-weight:var(--lm-hud-fw,600);font-size:calc(12px * var(--lm-hud-scale,1));text-align:center;border:2px solid rgba(255,255,255,0.25);white-space:normal;line-height:1.25;pointer-events:none;}' +
             '#lm-radial .lm-rd-item.on{background:' + c.mc + ';color:' + c.pc + ';border-color:#fff;}' +
             '#lm-radial .lm-rd-ring{position:absolute;border-radius:50%;border:2px dashed rgba(255,255,255,0.35);pointer-events:none;box-sizing:border-box;}' +
             '#lm-radial .lm-rd-dot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;pointer-events:none;}' +
@@ -380,23 +384,23 @@
         backdrop.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); closeWin(); });
         var root = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:' + (width || 560) + 'px;max-width:calc(100vw - 16px);' +
             'max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-sizing:border-box;z-index:999992;' +
-            'background:' + c.pc + ';border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
-            'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
+            'background:var(--lm-w-bg,' + c.pc + ');border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
+            'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:var(--lm-w-fs,12px);overflow:hidden;text-align:left;');
         root.id = id;
-        root.className = 'lm-modal-container lm-st-win';
+        root.classList.add('lm-modal-container', 'lm-w', 'lm-st-win');
         root.dir = langDir();
-        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:4px 6px 4px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
-        head.appendChild(el('div', 'flex:1;min-width:0;font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', title));
-        var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.06);', '✕');
+        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:var(--lm-w-hpad,4px 6px 4px 12px);border-bottom:1px solid ' + c.pc2 + ';background:var(--lm-w-head,linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%));');
+        head.appendChild(el('div', 'flex:1;min-width:0;font-size:var(--lm-w-title,15px);font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', title));
+        var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:var(--lm-w-x,36px);height:var(--lm-w-x,36px);display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:var(--lm-w-btn,rgba(255,255,255,0.06));', '✕');
         x.className = 'lm-st-close';
         x.title = t('close');
         x.setAttribute('role', 'button');
         x.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); closeWin(); });
         head.appendChild(x);
         root.appendChild(head);
-        var body = el('div', 'flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:8px 12px 12px;');
+        var body = el('div', 'flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:var(--lm-w-pad,8px 12px 12px);');
         root.appendChild(body);
-        var foot = el('div', 'flex:none;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;padding:6px 12px;border-top:1px solid ' + c.pc2 + ';');
+        var foot = el('div', 'flex:none;display:flex;flex-wrap:wrap;gap:var(--lm-w-gap,6px);justify-content:flex-end;padding:6px 12px;border-top:1px solid ' + c.pc2 + ';');
         root.appendChild(foot);
         /* clicks inside must not reach the game (mouse split / feed) */
         ['mousedown', 'pointerdown', 'touchstart', 'wheel'].forEach(function (ev) {
@@ -929,7 +933,9 @@
         var c = colors();
         var p = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:999997;background:rgba(0,0,0,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;box-sizing:border-box;color:#fff;font:12px sans-serif;');
         p.id = 'lm-st-shot-preview';
-        p.className = 'lm-modal-container lm-st-win';
+        /* full screen: not a window (.lm-modal-container would give it a window's border and corners);
+         * lm-st-win only for the button style */
+        p.classList.add('lm-st-win');
         p.dir = langDir();
         var img = el('img', 'max-width:100%;max-height:calc(100% - 60px);object-fit:contain;border:1px solid rgba(255,255,255,0.3);');
         img.src = url;

@@ -262,7 +262,7 @@ const sizeOf = m => Math.sqrt(m * 100);
   const listeners = {};
   const doc = {
     addEventListener() {}, removeEventListener() {},
-    createElement() { return { style: {}, setAttribute() {}, appendChild() {}, classList: { toggle() {} } }; },
+    createElement() { return { style: {}, setAttribute() {}, appendChild() {}, classList: { toggle() {}, add() {} } }; },
     getElementById() { return null; }, querySelectorAll() { return []; },
     body: { classList: { toggle() {} }, appendChild() {}, contains() { return false; } }, head: null
   };
@@ -404,7 +404,7 @@ const sizeOf = m => Math.sqrt(m * 100);
       get textContent() { return e._t + e.children.map(c => c.textContent).join(''); },
       set textContent(v) { e._t = String(v); e.children = []; },
       get firstChild() { return e.children[0] || null; },
-      classList: { toggle(c, on) { const l = e.className.split(' ').filter(Boolean).filter(x => x !== c); if (on) l.push(c); e.className = l.join(' '); }, contains(c) { return e.className.split(' ').indexOf(c) >= 0; } },
+      classList: { add(...cs) { cs.forEach(c => e.classList.toggle(c, true)); }, toggle(c, on) { const l = e.className.split(' ').filter(Boolean).filter(x => x !== c); if (on) l.push(c); e.className = l.join(' '); }, contains(c) { return e.className.split(' ').indexOf(c) >= 0; } },
       appendChild(c) { if (c.parentNode) c.parentNode.removeChild(c); c.parentNode = e; e.children.push(c); return c; },
       removeChild(c) { e.children = e.children.filter(x => x !== c); c.parentNode = null; return c; },
       addEventListener() { }, setAttribute(k, v) { e.attrs[k] = String(v); }, getAttribute(k) { return k in e.attrs ? e.attrs[k] : null; },

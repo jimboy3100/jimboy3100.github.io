@@ -637,7 +637,8 @@ check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')'
             appendChild(c) { c.parentNode = e; e.children.push(c); return c; },
             removeChild(c) { e.children = e.children.filter(x => x !== c); c.parentNode = null; },
             addEventListener() { }, setAttribute(k, v) { e.attrs[k] = String(v); }, getAttribute(k) { return e.attrs[k]; },
-            getBoundingClientRect: () => ({ left: 8, top: 8, width: 380, height: 300 }) };
+            getBoundingClientRect: () => ({ left: 8, top: 8, width: 380, height: 300 }),
+            classList: { add() { } } };
         if (tag === 'canvas') {
             const c2 = { fillText(t) { e.fills.push(t); } };
             ['clearRect', 'fillRect', 'beginPath', 'moveTo', 'lineTo', 'stroke', 'setLineDash'].forEach(n => { c2[n] = () => { }; });

@@ -129,16 +129,18 @@
         return e;
     }
     function css() {
+        /* the shared sizes (LMexpress.js) */
+        if (typeof window.lmUiKit === 'function') window.lmUiKit();
         if (document.getElementById('lm-lab-style')) return;
         var st = document.createElement('style');
         st.id = 'lm-lab-style';
         st.textContent =
-            '.lmLabGroup .lm-lab-note{font-size:11px;opacity:.75;line-height:1.4;margin:2px 0 6px}' +
+            '.lmLabGroup .lm-lab-note{font-size:var(--lm-w-fs-s,11px);opacity:.75;line-height:1.4;margin:2px 0 6px}' +
             '.lmLabGroup label.lm-lab-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;font-weight:normal;cursor:pointer;padding:3px 0}' +
             '.lmLabGroup label.lm-lab-row input{width:18px;height:18px;margin:2px 0 0;flex:none}' +
-            '.lmLabGroup .lm-lab-desc{display:block;font-size:11px;opacity:.7;line-height:1.35}' +
+            '.lmLabGroup .lm-lab-desc{display:block;font-size:var(--lm-w-fs-s,11px);opacity:.7;line-height:1.35}' +
             '.lmLabGroup .lm-lab-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}' +
-            '.lmLabGroup .lm-lab-acts .btn{min-height:28px}';
+            '.lmLabGroup .lm-lab-acts .btn{min-height:var(--lm-w-ctl,28px)}';
         document.head.appendChild(st);
     }
     /* builds the section content (again after a registration); the switches are plain

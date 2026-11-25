@@ -1186,21 +1186,24 @@
     function cssMc() { return 'var(--lm-mc,' + accent() + ')'; }
     function build() {
         if (W) return W;
+        /* the shared window look (LMexpress.js) */
+        if (typeof window.lmUiKit === 'function') window.lmUiKit();
         /* above the phone controls (LMmobile z-index 100000-100004) so its buttons take the taps */
         var st = el('style');
         st.textContent =
             '#lm-rs{position:fixed;left:50%;transform:translateX(-50%);bottom:30px;width:min(760px,calc(100vw - 12px));max-height:calc(100vh - 40px);' + // i18n-ok: CSS
-            'z-index:100005;display:flex;flex-direction:column;background:var(--lm-pc,rgba(14,17,23,.95));color:var(--lm-tc,#e8e8e8);font-size:12px;line-height:1.3;font-family:inherit;overflow:hidden;' +
+            'z-index:100005;display:flex;flex-direction:column;background:var(--lm-w-bg,var(--lm-pc,rgba(14,17,23,.95)));color:var(--lm-tc,#e8e8e8);font-size:var(--lm-w-fs,12px);line-height:1.3;font-family:inherit;overflow:hidden;' +
             'border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid ' + cssMc() + ';border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);touch-action:manipulation;user-select:none;-webkit-user-select:none;}' + // i18n-ok: CSS
             '#lm-rs *{box-sizing:border-box;}' +
-            '#lm-rs .lm-rs-hd{border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.15));background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%);}' +
-            '#lm-rs .lm-rs-b{min-height:30px;min-width:30px;padding:2px 8px;margin:0 3px 0 0;border:1px solid var(--lm-pc2,rgba(255,255,255,.18));border-radius:var(--lm-radius-s,5px);background:rgba(255,255,255,.05);color:var(--lm-tc,#eee);font:inherit;cursor:pointer;white-space:nowrap;flex:0 0 auto;}' +
-            '#lm-rs .lm-rs-b:hover{background:rgba(255,255,255,.16);}' +
+            '#lm-rs .lm-rs-hd{border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.15));background:var(--lm-w-head,linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%));}' +
+            '#lm-rs .lm-rs-hd>b{font-size:var(--lm-w-title,12px);}' +
+            '#lm-rs .lm-rs-b{min-height:var(--lm-w-ctl,30px);min-width:var(--lm-w-ctl,30px);padding:2px 8px;margin:0 3px 0 0;border:1px solid var(--lm-pc2,rgba(255,255,255,.18));border-radius:var(--lm-radius-s,5px);background:var(--lm-w-btn,rgba(255,255,255,.05));color:var(--lm-tc,#eee);font:inherit;cursor:pointer;white-space:nowrap;flex:0 0 auto;}' +
+            '#lm-rs .lm-rs-b:hover{background:var(--lm-w-btn-h,rgba(255,255,255,.16));}' +
             '#lm-rs .lm-rs-b.on{border-color:' + cssMc() + ';color:' + cssMc() + ';}' + // i18n-ok: CSS
             '#lm-rs .lm-rs-b:disabled{opacity:.4;cursor:default;}' +
             '#lm-rs .lm-rs-row{display:flex;align-items:center;padding:3px 8px;gap:2px;}' +
             '#lm-rs .lm-rs-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}' +
-            '#lm-rs select,#lm-rs input[type=text],#lm-rs input[type=search]{min-height:30px;background:var(--lm-pc2,#1d222b);color:var(--lm-tc,#eee);border:1px solid rgba(255,255,255,.2);border-radius:var(--lm-radius-s,5px);font:inherit;padding:2px 6px;}' +
+            '#lm-rs select,#lm-rs input[type=text],#lm-rs input[type=search]{min-height:var(--lm-w-ctl,30px);background:var(--lm-w-field,var(--lm-pc2,#1d222b));color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,rgba(255,255,255,.2));border-radius:var(--lm-radius-s,5px);font:inherit;padding:2px 6px;}' +
             '#lm-rs label{display:inline-flex;align-items:center;gap:3px;margin-right:8px;white-space:nowrap;cursor:pointer;}' +
             '#lm-rs .lm-rs-track{position:relative;height:26px;margin:2px 8px;background:rgba(255,255,255,.08);border-radius:var(--lm-radius-s,5px);cursor:pointer;touch-action:none;}' +
             '#lm-rs .lm-rs-fill{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,.12);border-radius:5px 0 0 5px;pointer-events:none;}' +
@@ -1210,12 +1213,13 @@
             '#lm-rs .lm-rs-mk i{display:block;width:4px;height:16px;border-radius:2px;pointer-events:none;}' +
             '#lm-rs .lm-rs-chip{display:inline-flex;align-items:center;gap:4px;min-height:26px;padding:1px 8px;margin-right:4px;border-radius:13px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);cursor:pointer;white-space:nowrap;flex:0 0 auto;}' +
             '#lm-rs .lm-rs-item{padding:5px 8px;border-top:1px solid var(--lm-pc2,rgba(255,255,255,.08));}' +
-            '#lm-rs .lm-rs-tag{display:inline-block;padding:0 6px;margin:0 3px 0 0;border-radius:8px;background:rgba(255,255,255,.1);font-size:11px;}' +
+            '#lm-rs .lm-rs-tag{display:inline-block;padding:0 6px;margin:0 3px 0 0;border-radius:8px;background:var(--lm-w-btn-h,rgba(255,255,255,.1));font-size:var(--lm-w-fs-s,11px);}' +
             '#lm-rs .lm-rs-dim{opacity:.7;}' +
             '#lm-rs.min .lm-rs-full{display:none!important;}' +
             '@media (max-height:460px){#lm-rs{bottom:4px;max-height:calc(100vh - 8px);font-size:11px;}#lm-rs .lm-rs-b{min-height:28px;}}';
         document.head.appendChild(st);
         W = el('div', '', null, { id: 'lm-rs', role: 'dialog' });
+        W.classList.add('lm-modal-container', 'lm-w');
         L(function () { W.setAttribute('aria-label', T('title')); W.dir = dirNow(); });
         /* clicks and taps on the window are not game input */
         ['mousedown', 'mouseup', 'pointerdown', 'touchstart', 'touchend', 'wheel', 'contextmenu', 'dblclick'].forEach(function (t) {
@@ -1237,7 +1241,7 @@
         }, true);
         /* header */
         /* header, timeline and transport stay left-to-right in Arabic too (close button on the right) */
-        var head = el('div', 'display:flex;align-items:center;padding:4px 4px 4px 10px;gap:4px;', null, { 'class': 'lm-rs-hd', dir: 'ltr' });
+        var head = el('div', 'display:flex;align-items:center;padding:var(--lm-w-hpad,4px 4px 4px 10px);gap:4px;', null, { 'class': 'lm-rs-hd', dir: 'ltr' });
         var hb = el('b', 'margin-right:6px;color:' + cssMc() + ';white-space:nowrap;text-transform:uppercase;letter-spacing:1px;');
         L(function () { hb.textContent = T('title'); });
         head.appendChild(hb);
