@@ -51,7 +51,7 @@ hr {
 }
 
 #link1 {
-      display:block;width:100%;-webkit-transition: all 0.5s ease-in-out;-moz-transition: all 0.5s ease-in-out;-o-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;
+      display:block;width:100%;margin:10px auto;-webkit-transition: all 0.5s ease-in-out;-moz-transition: all 0.5s ease-in-out;-o-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;
 }
 #link1 img {
       width:100%;height:auto;
@@ -64,9 +64,11 @@ hr {
     width:100%;
     margin: 10px auto;
 }
-  .my-img a img {
+  .my-img a img,
+  .my-img .img-responsive {
     width:100%;
     height:auto;
+    max-width:none;
 }
 .modal-lg {
     width: 70%;

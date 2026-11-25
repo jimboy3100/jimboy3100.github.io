@@ -34,6 +34,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '</div>' +
     '</div>' +
     '</div>');
+if (typeof lmPromoChrome === 'function') lmPromoChrome('#replayModal');
 $("#replayModal").draggable()	
 $("#stopReplaybtn").prop('disabled', true);
 if (window.replayGreyScale){

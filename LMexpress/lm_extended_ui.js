@@ -236,10 +236,10 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 width: 620px;
                 max-width: 94vw;
                 max-height: 85vh;
-                border-radius: 6px;
+                border-radius: 6px !important;
                 box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-                border: 1px solid var(--lm-pc2, rgba(255,255,255,0.12));
-                border-top: 3px solid var(--lm-mc, #01d9cc);
+                border: 1px solid var(--lm-pc2, rgba(255,255,255,0.12)) !important;
+                border-top: 3px solid var(--lm-mc, #01d9cc) !important;
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
@@ -2638,7 +2638,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         modal.id = 'lm-leagues-modal';
         modal.className = 'lm-modal-overlay';
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 680px;">
+            <div class="lm-modal-container" style="background: ${t.pc}; width: 680px;">
                 <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <div style="width: 100%; text-align: center; position: relative;">
                         <span style="font-size: 18px; font-weight: 800; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">${(window.lmT ? window.lmT('leaderboards') : 'Leaderboards').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
@@ -3217,9 +3217,6 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 'background:' +
                     theme.pc +
                 ';' +
-                'border-color:' +
-                    theme.b2 +
-                ';' +
                 'width:480px;' +
             '">' +
 
@@ -3396,7 +3393,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         var gradient = myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)';
 
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b1}; width: 520px;">
+            <div class="lm-modal-container" style="background: ${t.pc}; width: 520px;">
                 <div class="lm-modal-header" style="background: ${gradient}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);">
                     <div style="width: 100%; text-align: center; position: relative;">
                         <span style="font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${title}</span>
@@ -3758,7 +3755,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 480px;">
+            <div class="lm-modal-container" style="background: ${t.pc}; width: 480px;">
                 <div class="lm-modal-header" style="background: ${t.pc2}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <div style="width: 100%; text-align: center; position: relative;">
                         <span style="font-size: 17px; font-weight: 900; color: ${t.tc};">World Information</span>
@@ -3841,7 +3838,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         modal.innerHTML =
-            '<div class="lm-modal-container" style="background: ' + t.pc + '; border-color: ' + t.b2 + '; width: 420px;">' +
+            '<div class="lm-modal-container" style="background: ' + t.pc + '; width: 420px;">' +
                 '<div class="lm-modal-header" style="background: ' + t.pc2 + '; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">' +
                     '<div style="width: 100%; text-align: center; position: relative;">' +
                         '<span style="font-size: 17px; font-weight: 900; color: ' + t.tc + ';"><i class="fa fa-users"></i> ' + (window.lmT ? window.lmT('friends') : 'Friends').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' +
@@ -4298,7 +4295,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         };
 
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 640px;">
+            <div class="lm-modal-container" style="background: ${t.pc}; width: 640px;">
                 <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <span style="font-size: 18px; font-weight: 900; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">${(window.lmT ? window.lmT('help') : 'Help').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
@@ -6451,7 +6448,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         modal.id = 'lm-friends-modal';
         modal.className = 'lm-modal-overlay';
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b1};">
+            <div class="lm-modal-container" style="background: ${t.pc};">
                 <div class="lm-modal-header" style="background: ${t.pc2};">
                     <div class="lm-modal-title" style="color: ${t.b1};">
                         <span>👥</span> Friends & Party Rooms
@@ -10401,7 +10398,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         var shell = document.createElement('div');
         shell.className = 'lm-modal-container';
-        shell.style.cssText = 'background:' + t.pc + ';border-color:' + t.mc + ';width:380px;max-width:90vw;text-align:center;';
+        shell.style.cssText = 'background:' + t.pc + ';width:380px;max-width:90vw;text-align:center;';
 
         /* Header */
         var header = document.createElement('div');
@@ -10677,7 +10674,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         var shell = document.createElement('div');
         shell.className = 'lm-modal-container';
-        shell.style.cssText = 'background:' + t.pc + ';border-color:' + t.mc + ';width:680px;max-width:94vw;';
+        shell.style.cssText = 'background:' + t.pc + ';width:680px;max-width:94vw;';
 
         /* ─── HEADER ─── */
         var header = document.createElement('div');
@@ -10941,7 +10938,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         modal.id = 'lm-stats-modal';
         modal.className = 'lm-modal-overlay';
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 500px;">
+            <div class="lm-modal-container" style="background: ${t.pc}; width: 500px;">
                 <div class="lm-modal-header" style="background: ${t.pc2};">
                     <div class="lm-modal-title" style="color: ${t.mc};">
                         <span>👤</span> ${_lmUE('statsTitle', 'Player Profile Stats')}
