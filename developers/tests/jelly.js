@@ -6,7 +6,8 @@
  *   quadtree.wasm silently dropped points / results;
  * - whole frames give bit-identical points to the previous code (the quadtree.wasm wrapper
  *   with the generic some(box, test) path, and the code of 5583d10f from git when available)
- *   on the same seeded scene.
+ *   on the same seeded scene;
+ * - cells that are not drawn (invisible multibox copies, hideSmallBots) get no physics.
  * Uses developers/tests/bench-dense.js as the loader. Usage: node developers/tests/jelly.js */
 'use strict';
 const fs = require('fs');
@@ -372,6 +373,35 @@ function maxDiff(a, b) {
         } else {
             console.log('skip 5583d10f comparison (git history not available)');
         }
+    }
+
+    /* ---- 7. cells that are not drawn get no physics ---- */
+    {
+        const J = B.loadJelly();
+        const cells = B.makeScene(J, 200, 50, 4);
+        runFrames(J, cells, 3);
+        const hidden = cells.filter((c) => !c.isFood && c.isInView()).slice(0, 10);
+        hidden.forEach((c) => (c.invisible = true));
+        const small = cells.find((c) => !c.isFood && !c.invisible && c.size <= 36 && c.isInView());
+        const jc = J.LM.prepareJellyCells(J.LM.cells, []);
+        check('invisible cells are not prepared and their points are dropped', hidden.every((c) => jc.indexOf(c) < 0 && c.points.length === 0 && c.pointsVel.length === 0));
+        const inline = B.prepareInline(J.LM, []).filter((c) => !c.invisible);
+        check('the other cells are the ones the previous inline pass prepared', inline.length === jc.length && inline.every((c, i) => c === jc[i]));
+        J.LM.updateQuadtree(jc);
+        check('hidden cells are no colliders', hidden.every((c) => J.LM.quadtree.ordOf(c) === -1));
+        if (small) {
+            J.LM.hideSmallBots = true;
+            const jc2 = J.LM.prepareJellyCells(J.LM.cells, []);
+            check('hideSmallBots: cells of size <= 36 are not prepared', jc2.indexOf(small) < 0 && jc2.every((c) => c.size > 36));
+            J.LM.hideSmallBots = false;
+        } else check('scene has a small bot to hide', false);
+        hidden.forEach((c) => (c.invisible = false));
+        const jc3 = J.LM.prepareJellyCells(J.LM.cells, []);
+        const c0 = hidden[0];
+        check('shown again: a fresh round perimeter at the current size', jc3.indexOf(c0) >= 0 && c0.points.length >= 5 && c0.points.every((p) => p.rl === c0.size && p.x === c0.x && p.y === c0.y));
+        J.LM.updateQuadtree(jc3);
+        c0.movePoints();
+        check('  and it moves normally on the next frame', c0.points.every((p) => isFinite(p.x) && Math.abs(Math.hypot(p.x - c0.x, p.y - c0.y) - c0.size) < 3));
     }
 
     if (failed) {

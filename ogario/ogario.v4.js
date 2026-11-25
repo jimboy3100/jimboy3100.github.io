@@ -40691,15 +40691,27 @@ function thelegendmodproject() {
          * JELLY PHYSICS — FRAME PREPARATION (pass 1 of the frame)
          * ═══════════════════════════════════════════════════════════
          *
-         * Build/resize the perimeter of every jelly cell in view and
-         * collect them in out (reused array) for updateQuadtree() and
+         * Build/resize the perimeter of every jelly cell drawn this frame
+         * and collect them in out (reused array) for updateQuadtree() and
          * movePoints().
+         *
+         * Cells neither renderer draws (the skip rules of Cell.draw and
+         * drawWebGLCellBatch: multibox copies hidden as invisible, small
+         * bots while hideSmallBots is on) get no physics and are no
+         * colliders: they used to be simulated every frame and dented the
+         * drawn cells they overlap (a hidden multibox copy sits exactly on
+         * the shown one). Their points are dropped, so a cell shown again
+         * starts from a round perimeter like a new cell instead of one left
+         * from long ago.
          */
         prepareJellyCells: function (
             cells,
             out
         ) {
             out.length = 0;
+
+            var hideSmall =
+                !!this.hideSmallBots;
 
             for (
                 var i = 0;
@@ -40719,6 +40731,28 @@ function thelegendmodproject() {
                 ) {
                     continue;
                 }
+
+                if (
+                    cell.invisible === true ||
+                    (
+                        hideSmall &&
+                        cell.size <= 36
+                    )
+                ) {
+                    if (
+                        cell.points &&
+                        cell.points.length
+                    ) {
+                        cell.points.length = 0;
+
+                        if (cell.pointsVel) {
+                            cell.pointsVel.length = 0;
+                        }
+                    }
+
+                    continue;
+                }
+
 
                 var inView =
                     true;
@@ -78326,7 +78360,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     /*
                      * ───────────────────────────────────────────────────
                      * PASS 1
-                     * Build/resize every visible jelly perimeter.
+                     * Build/resize every drawn jelly perimeter.
                      * ───────────────────────────────────────────────────
                      */
                     LM.prepareJellyCells(
