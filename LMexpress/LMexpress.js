@@ -7395,7 +7395,7 @@ function initializeLM(modVersion) {
             if (fancyCount2($("#nick").val()) >= 16) {
                 //if ($("#nick").val().length >= 16) {
                 //toastr.warning("<b>[SERVER]:</b> " + Premadeletter2 + ':<br>' + $('#nick').val());
-                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter2 + ':<br>' + $('#nick').val());
+                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter2 + ':<br>' + _lmEscHtml($('#nick').val())); /* the nick is the player's own text: escaped */
             }
         }
         if ($("#nick").val() == "EasterEgg1") {

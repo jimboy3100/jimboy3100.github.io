@@ -97,6 +97,7 @@
     "nicks/nicknamechars.js",
     "nicks/emoji/DisMojiPicker[1].js",
     "languages/LanguagePackHandler.js",
+    "ogario/ogario.v4.js",
     "ogario/hotkeysCommand.js",
     "ogario/spect.js",
     "ogario/gamepad.js",
