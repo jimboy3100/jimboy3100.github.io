@@ -1,0 +1,58 @@
+{
+  "site.nicks.comboName": {
+    "en": "Combo Name",
+    "el": "Συνδυαστικό όνομα",
+    "es": "Nombre combinado",
+    "bg": "Комбо ник",
+    "fr": "Nom combiné",
+    "ar": "اسم مركّب",
+    "zh": "組合名稱",
+    "ru": "Комбо-ник",
+    "de": "Kombi-Name",
+    "tr": "Kombo isim",
+    "pl": "Nick łączony",
+    "nl": "Combinatienaam"
+  },
+  "site.nicks.urbanName": {
+    "en": "Urban Name",
+    "el": "Urban όνομα",
+    "es": "Nombre urbano",
+    "bg": "Urban ник",
+    "fr": "Nom urbain",
+    "ar": "اسم Urban",
+    "zh": "Urban 名稱",
+    "ru": "Urban-ник",
+    "de": "Urban-Name",
+    "tr": "Urban isim",
+    "pl": "Nick w stylu urban",
+    "nl": "Urban naam"
+  },
+  "site.nicks.startTypingYourNick": {
+    "en": "Start typing your Nick...",
+    "el": "Άρχισε να γράφεις το ψευδώνυμό σου...",
+    "es": "Empieza a escribir tu nick...",
+    "bg": "Започни да пишеш ника си...",
+    "fr": "Commence à taper ton pseudo...",
+    "ar": "ابدأ بكتابة لقبك...",
+    "zh": "開始輸入你的暱稱...",
+    "ru": "Начни вводить свой ник...",
+    "de": "Fang an, deinen Nick zu tippen...",
+    "tr": "Takma adını yazmaya başla...",
+    "pl": "Zacznij wpisywać swój nick...",
+    "nl": "Begin met het typen van je nick..."
+  },
+  "site.nicks.failedToGenerateName": {
+    "en": "Failed to generate name",
+    "el": "Η δημιουργία ονόματος απέτυχε",
+    "es": "No se pudo generar el nombre",
+    "bg": "Неуспешно генериране на ник",
+    "fr": "Impossible de générer le nom",
+    "ar": "تعذّر إنشاء اسم",
+    "zh": "無法產生名稱",
+    "ru": "Не удалось сгенерировать ник",
+    "de": "Name konnte nicht erzeugt werden",
+    "tr": "İsim oluşturulamadı",
+    "pl": "Nie udało się wygenerować nicku",
+    "nl": "Naam genereren mislukt"
+  }
+}

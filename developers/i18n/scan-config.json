@@ -17,7 +17,20 @@
     "developers/i18n/runtime.js",
     "index.html",
     "features.html",
-    "faq.html"
+    "faq.html",
+    "changelog.html",
+    "compare.html",
+    "privacy.html",
+    "terms.html",
+    "skinrotator.html",
+    "404.html",
+    "themes/index.html",
+    "nicks/index.html",
+    "skins/index.html",
+    "skins/skinchecker.html",
+    "skins/skins.html",
+    "skins/skins3.html",
+    "skins/skinsworking.html"
   ],
   "groups": {
     "a: ogario/modules": [
@@ -70,6 +83,10 @@
     ],
     "index.html": [
       "setTimeout(function() {drawRender.render()}, 0)"
+    ],
+    "skinrotator.html": [
+      "/clearInterval\\(tamp\\)|var exp = 0; var d = |skinWrapper\"\\)\\[0\\]\\.children/",
+      "/^\";var speed=$|^;var images=\\[$|^\\]; var skins=\\[$/"
     ]
   }
 }

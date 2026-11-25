@@ -87,121 +87,124 @@
         @media(max-width:800px){.container{padding:2rem 1rem}th,td{padding:.5rem .4rem;font-size:.75rem}td:first-child,th:first-child{min-width:120px}}
         @media(max-width:600px){.nav{padding:.6rem 1rem;gap:1rem}.hero{padding:2.5rem 1rem 2rem}table{font-size:.7rem}th,td{padding:.4rem .3rem}}
     </style>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-compare" charset="utf-8"></script>
 </head>
 <body>
 <nav class="nav">
     <a href="/" class="nav-logo">℄ <span>Legend Mod</span></a>
-    <a href="/features.html">Features</a>
-    <a href="/compare.html" class="nav-active">Compare</a>
-    <a href="/#Features">Macro Guide</a>
+    <a data-i18n="site.features" href="/features.html">Features</a>
+    <a data-i18n="site.compare" href="/compare.html" class="nav-active">Compare</a>
+    <a data-i18n="site.macroGuide" href="/#Features">Macro Guide</a>
     <a href="/faq.html">FAQ</a>
-    <a href="/#Changelog">Changelog</a>
+    <a data-i18n="site.changelog" href="/#Changelog">Changelog</a>
+    <span data-lm-lang-picker></span>
 </nav>
 
 <header class="hero">
-    <h1><span class="accent">Agar.io Mod</span> Comparison — 2026</h1>
-    <p>Side-by-side comparison of every major agar.io extension. Which one has the most features, best performance, and widest server support?</p>
+    <h1 data-i18n-html="site.compare.agarIoModComparison"><span class="accent">Agar.io Mod</span> Comparison — 2026</h1>
+    <p data-i18n="site.compare.sideBySideComparison">Side-by-side comparison of every major agar.io extension. Which one has the most features, best performance, and widest server support?</p>
 </header>
 
 <main class="container">
-    <h2 class="section-title">Feature Comparison Table</h2>
-    <p class="section-sub">✓ = Supported &nbsp; ✗ = Not supported &nbsp; ~ = Partial</p>
+    <h2 data-i18n="site.compare.featureComparisonTable" class="section-title">Feature Comparison Table</h2>
+    <p data-i18n="site.compare.supportedNotSupportedPartial" class="section-sub">✓ = Supported &nbsp; ✗ = Not supported &nbsp; ~ = Partial</p>
 
     <table>
         <thead>
             <tr>
-                <th>Feature</th>
+                <th data-i18n="site.compare.feature">Feature</th>
                 <th style="color:var(--accent2)">Legend Mod</th>
                 <th>Delta</th>
-                <th>Ogario</th>
+                <th data-i18n="site.compare.ogario">Ogario</th>
                 <th>HSLO</th>
             </tr>
         </thead>
         <tbody>
             <!-- Macros & Controls -->
-            <tr><td colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Macros & Controls</td></tr>
-            <tr><td>Tricksplit macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Doublesplit macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Popsplit macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="partial">~</td></tr>
-            <tr><td>Quick feeding macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Cannon split</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>16-split macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Freeze cell</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Auto respawn</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
-            <tr><td>Reverse movement</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Total hotkeys</td><td class="yes">60+</td><td class="yes">70+</td><td class="partial">20+</td><td class="partial">15+</td></tr>
-            <tr><td>Gamepad support</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Multibox (dual tab)</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Rebindable hotkeys</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">~</td><td class="no">✗</td></tr>
-            <tr><td>AI minion bots</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.macrosControls" colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Macros & Controls</td></tr>
+            <tr><td data-i18n="site.compare.tricksplitMacro">Tricksplit macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.doublesplitMacro">Doublesplit macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.popsplitMacro">Popsplit macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="partial">~</td></tr>
+            <tr><td data-i18n="site.compare.quickFeedingMacro">Quick feeding macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.cannonSplit">Cannon split</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.splitMacro">16-split macro</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.freezeCell">Freeze cell</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.autoRespawn">Auto respawn</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.reverseMovement">Reverse movement</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.totalHotkeys">Total hotkeys</td><td class="yes">60+</td><td class="yes">70+</td><td class="partial">20+</td><td class="partial">15+</td></tr>
+            <tr><td data-i18n="site.compare.gamepadSupport">Gamepad support</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.multiboxDualTab">Multibox (dual tab)</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.rebindableHotkeys">Rebindable hotkeys</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">~</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.aiMinionBots">AI minion bots</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
 
             <!-- Visuals & Skins -->
-            <tr><td colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Visuals & Skins</td></tr>
-            <tr><td>Custom skins</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Animated GIF skins</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Video skins (MP4/WebM)</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Skin rotator</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Custom themes</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Virus color customization</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Jelly physics</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Team waves</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.visualsSkins" colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Visuals & Skins</td></tr>
+            <tr><td data-i18n="site.compare.customSkins">Custom skins</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.animatedGifSkins">Animated GIF skins</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.videoSkinsMp4Webm">Video skins (MP4/WebM)</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.skinRotator">Skin rotator</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.customThemes">Custom themes</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.virusColorCustomization">Virus color customization</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.jellyPhysics">Jelly physics</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.teamWaves">Team waves</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
 
             <!-- Performance -->
-            <tr><td colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Performance</td></tr>
-            <tr><td>Anti-lag / FPS boost</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>WASM acceleration</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>WebGL rendering</td><td class="yes">✓</td><td class="yes">✓ (3 renderers)</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Custom shaders</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.performance" colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Performance</td></tr>
+            <tr><td data-i18n="site.compare.antiLagFpsBoost">Anti-lag / FPS boost</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.wasmAcceleration">WASM acceleration</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.webglRendering">WebGL rendering</td><td class="yes">✓</td><td data-i18n="site.compare.renderers" class="yes">✓ (3 renderers)</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.customShaders">Custom shaders</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
 
             <!-- Server Support -->
-            <tr><td colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Server Support</td></tr>
-            <tr><td>Official agar.io</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Sigmally support</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Senpa.io support</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Gota.io support</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Own private servers</td><td class="yes">Expanding Land</td><td class="yes">delt.io</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Multiple game modes</td><td class="yes">✓</td><td class="yes">FFA, Party, Arcade+</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Custom server address</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">~</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.serverSupport" colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Server Support</td></tr>
+            <tr><td data-i18n="site.compare.officialAgarIo">Official agar.io</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.sigmallySupport">Sigmally support</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.senpaIoSupport">Senpa.io support</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.gotaIoSupport">Gota.io support</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.ownPrivateServers">Own private servers</td><td class="yes">Expanding Land</td><td class="yes">delt.io</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.multipleGameModes">Multiple game modes</td><td class="yes">✓</td><td data-i18n="site.compare.ffaPartyArcade" class="yes">FFA, Party, Arcade+</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.customServerAddress">Custom server address</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">~</td><td class="no">✗</td></tr>
 
             <!-- Social -->
-            <tr><td colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Social & Community</td></tr>
-            <tr><td>Team chat</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Minimap teammates</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Team quadrant system</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Account system</td><td class="partial">~ (profile)</td><td class="yes">✓ (Google/FB)</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Free spectate</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">~</td></tr>
-            <tr><td>Multi-viewport spectate</td><td class="no">✗</td><td class="yes">✓ (1×/4×/16×)</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.socialCommunity" colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Social & Community</td></tr>
+            <tr><td data-i18n="site.compare.teamChat">Team chat</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.minimapTeammates">Minimap teammates</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.teamQuadrantSystem">Team quadrant system</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.accountSystem">Account system</td><td data-i18n="site.compare.profile" class="partial">~ (profile)</td><td data-i18n="site.compare.googleFb" class="yes">✓ (Google/FB)</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.freeSpectate">Free spectate</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">~</td></tr>
+            <tr><td data-i18n="site.compare.multiViewportSpectate">Multi-viewport spectate</td><td class="no">✗</td><td class="yes">✓ (1×/4×/16×)</td><td class="no">✗</td><td class="no">✗</td></tr>
 
             <!-- Platform -->
-            <tr><td colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Platform</td></tr>
-            <tr><td>Chrome extension</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>Userscript (Tampermonkey)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">~</td></tr>
-            <tr><td>Firefox support</td><td class="yes">✓</td><td class="yes">✓ (via userscript)</td><td class="partial">~</td><td class="no">✗</td></tr>
-            <tr><td>Mobile support</td><td class="yes">✓</td><td class="partial">~ (limited)</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Open source</td><td class="yes">✓</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td></tr>
-            <tr><td>Free</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-            <tr><td>P2P / WebRTC</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-            <tr><td>Modding API</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.platform" colspan="5" style="background:var(--bg3);font-weight:700;color:var(--accent2);text-align:left">Platform</td></tr>
+            <tr><td data-i18n="site.compare.chromeExtension">Chrome extension</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.userscriptTampermonkey">Userscript (Tampermonkey)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="partial">~</td></tr>
+            <tr><td data-i18n="site.compare.firefoxSupport">Firefox support</td><td class="yes">✓</td><td data-i18n="site.compare.viaUserscript" class="yes">✓ (via userscript)</td><td class="partial">~</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.mobileSupport">Mobile support</td><td class="yes">✓</td><td data-i18n="site.compare.limited" class="partial">~ (limited)</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.openSource">Open source</td><td class="yes">✓</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.free">Free</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td data-i18n="site.compare.p2pWebrtc">P2P / WebRTC</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+            <tr><td data-i18n="site.compare.moddingApi">Modding API</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
         </tbody>
     </table>
 
     <div class="verdict">
-        <h3>📊 Verdict</h3>
-        <p><strong>Legend Mod</strong> and <strong>Delta</strong> are the two most feature-rich agar.io mods available today, both far ahead of Ogario and HSLO. Legend Mod stands out with its gamepad support, skin rotator, WASM acceleration, reverse movement macro, and being fully open source. It's also the only mod with native mobile support and runs its own private server (Expanding Land).</p>
-        <p style="margin-top:.8rem"><strong>Delta</strong> is a powerhouse with its own impressive strengths: three separate rendering engines (Canvas, Pixi, WebGL) with custom shaders, video skins (MP4/WebM), AI minion bots, multi-viewport spectating (1×/4×/16×), a full account system with Google/Facebook login, P2P WebRTC support, a modding API, and its own private servers at delt.io with multiple game modes. Both mods support Sigmally and Senpa.io.</p>
-        <p style="margin-top:.8rem"><strong>Bottom line:</strong> Both Legend Mod and Delta are excellent choices. Legend Mod is the best pick if you want open source, gamepad, and mobile support. Delta is the best pick if you want video skins, AI bots, multi-viewport spectating, and an account system. Either way, you're getting a top-tier mod.</p>
+        <h3 data-i18n="site.compare.verdict">📊 Verdict</h3>
+        <p data-i18n-html="site.compare.legendModAndDelta"><strong>Legend Mod</strong> and <strong>Delta</strong> are the two most feature-rich agar.io mods available today, both far ahead of Ogario and HSLO. Legend Mod stands out with its gamepad support, skin rotator, WASM acceleration, reverse movement macro, and being fully open source. It's also the only mod with native mobile support and runs its own private server (Expanding Land).</p>
+        <p data-i18n-html="site.compare.deltaIsAPowerhouse" style="margin-top:.8rem"><strong>Delta</strong> is a powerhouse with its own impressive strengths: three separate rendering engines (Canvas, Pixi, WebGL) with custom shaders, video skins (MP4/WebM), AI minion bots, multi-viewport spectating (1×/4×/16×), a full account system with Google/Facebook login, P2P WebRTC support, a modding API, and its own private servers at delt.io with multiple game modes. Both mods support Sigmally and Senpa.io.</p>
+        <p data-i18n-html="site.compare.bottomLineBothLegend" style="margin-top:.8rem"><strong>Bottom line:</strong> Both Legend Mod and Delta are excellent choices. Legend Mod is the best pick if you want open source, gamepad, and mobile support. Delta is the best pick if you want video skins, AI bots, multi-viewport spectating, and an account system. Either way, you're getting a top-tier mod.</p>
     </div>
 
-    <a href="/" class="cta">⬇ Download Legend Mod — Free</a>
+    <a data-i18n="site.downloadFree" href="/" class="cta">⬇ Download Legend Mod — Free</a>
 </main>
 
 <footer class="footer">
     <nav class="footer-links">
-        <a href="/">Home</a><a href="/features.html">Features</a><a href="/compare.html">Compare</a>
-        <a href="/#Features">Macro Guide</a><a href="/faq.html">FAQ</a><a href="/#Changelog">Changelog</a><a href="/privacy.html">Privacy</a>
+        <a data-i18n="site.home" href="/">Home</a><a data-i18n="site.features" href="/features.html">Features</a><a data-i18n="site.compare" href="/compare.html">Compare</a>
+        <a data-i18n="site.macroGuide" href="/#Features">Macro Guide</a><a href="/faq.html">FAQ</a><a data-i18n="site.changelog" href="/#Changelog">Changelog</a><a data-i18n="site.privacy" href="/privacy.html">Privacy</a>
         <a href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener">Discord</a>
     </nav>
-    <p>© 2024–2026 Legend Mod by ℄ Legend Clan. Free and open source.</p>
+    <p data-i18n="site.copyright">© 2024–2026 Legend Mod by ℄ Legend Clan. Free and open source.</p>
 </footer>
 </body>
 </html>

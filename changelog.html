@@ -155,14 +155,17 @@
             .version-date { margin-left: 0; }
         }
     </style>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-changelog" charset="utf-8"></script>
 </head>
 
 <body>
 <div class="container">
-    <a href="/" class="back-link">← Back to Legend Mod</a>
+    <div class="lm-lang-row" style="text-align:end;margin:0 0 .6rem"><span data-lm-lang-picker></span></div>
+    <a data-i18n="site.changelog.backToLegendMod" href="/" class="back-link">← Back to Legend Mod</a>
 
-    <h1>📋 Changelog</h1>
-    <p class="subtitle">
+    <h1 data-i18n="site.changelog.changelog">📋 Changelog</h1>
+    <p data-i18n-html="site.changelog.allLegendModUpdates" class="subtitle">
         All Legend Mod updates — latest on top.
         <a href="/rss.xml" class="rss-link">📡 RSS Feed</a>
     </p>
@@ -170,101 +173,101 @@
     <div class="version" id="v3569">
         <div class="version-header">
             <span class="version-number">v3.569</span>
-            <span class="version-title">Death Recap, Kill Feed &amp; Mass-Loss Alert</span>
-            <span class="version-date">November 2026</span>
+            <span data-i18n="site.changelog.deathRecapKillFeed" class="version-title">Death Recap, Kill Feed &amp; Mass-Loss Alert</span>
+            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
         </div>
         <ul>
-            <li><span class="tag tag-new">New</span> <strong>Death recap</strong> on the Game Over card — the last 20 seconds as 3-6 steps: mass &amp; cells, splits, viruses, merges, quick mass losses, who ate you — with a mass sparkline</li>
-            <li><span class="tag tag-new">New</span> <strong>Kill feed</strong> — live log of your eats and deaths, left of the leaderboard</li>
-            <li><span class="tag tag-new">New</span> <strong>Mass-loss alert</strong> with configurable threshold slider</li>
-            <li><span class="tag tag-new">New</span> Steps link to that moment in the replay when the life was recorded</li>
-            <li><span class="tag tag-new">New</span> Exact names from eat events and the Expanding Land killer info</li>
+            <li data-i18n-html="site.changelog.newDeathRecapOn"><span class="tag tag-new">New</span> <strong>Death recap</strong> on the Game Over card — the last 20 seconds as 3-6 steps: mass &amp; cells, splits, viruses, merges, quick mass losses, who ate you — with a mass sparkline</li>
+            <li data-i18n-html="site.changelog.newKillFeedLive"><span class="tag tag-new">New</span> <strong>Kill feed</strong> — live log of your eats and deaths, left of the leaderboard</li>
+            <li data-i18n-html="site.changelog.newMassLossAlert"><span class="tag tag-new">New</span> <strong>Mass-loss alert</strong> with configurable threshold slider</li>
+            <li data-i18n-html="site.changelog.newStepsLinkTo"><span class="tag tag-new">New</span> Steps link to that moment in the replay when the life was recorded</li>
+            <li data-i18n-html="site.changelog.newExactNamesFrom"><span class="tag tag-new">New</span> Exact names from eat events and the Expanding Land killer info</li>
         </ul>
     </div>
 
     <div class="version" id="v3568">
         <div class="version-header">
             <span class="version-number">v3.568</span>
-            <span class="version-title">Adaptive Performance &amp; Network Diagnostics</span>
-            <span class="version-date">November 2026</span>
+            <span data-i18n="site.changelog.adaptivePerformanceNetworkDiagnostics" class="version-title">Adaptive Performance &amp; Network Diagnostics</span>
+            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
         </div>
         <ul>
-            <li><span class="tag tag-perf">Perf</span> <strong>Adaptive performance</strong> — auto-optimizes when FPS drops: effects → jelly physics → resolution, restores when stable</li>
-            <li><span class="tag tag-new">New</span> <strong>Performance diagnostics window</strong> — frame time graph, p50/p95/p99, long frames, render vs other time, copy report</li>
-            <li><span class="tag tag-new">New</span> <strong>Network quality history</strong> — ping, jitter, packets/s and disconnects across sessions</li>
+            <li data-i18n-html="site.changelog.perfAdaptivePerformanceAuto"><span class="tag tag-perf">Perf</span> <strong>Adaptive performance</strong> — auto-optimizes when FPS drops: effects → jelly physics → resolution, restores when stable</li>
+            <li data-i18n-html="site.changelog.newPerformanceDiagnosticsWindow"><span class="tag tag-new">New</span> <strong>Performance diagnostics window</strong> — frame time graph, p50/p95/p99, long frames, render vs other time, copy report</li>
+            <li data-i18n-html="site.changelog.newNetworkQualityHistory"><span class="tag tag-new">New</span> <strong>Network quality history</strong> — ping, jitter, packets/s and disconnects across sessions</li>
         </ul>
     </div>
 
     <div class="version" id="v3567">
         <div class="version-header">
             <span class="version-number">v3.567</span>
-            <span class="version-title">Command Centre, Notifications &amp; Sound Mixer</span>
-            <span class="version-date">November 2026</span>
+            <span data-i18n="site.changelog.commandCentreNotificationsSound" class="version-title">Command Centre, Notifications &amp; Sound Mixer</span>
+            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
         </div>
         <ul>
-            <li><span class="tag tag-new">New</span> <strong>Command Centre (Ctrl+K)</strong> — search every hotkey, switch, slider, theme setting and menu window; recent &amp; starred items</li>
-            <li><span class="tag tag-new">New</span> <strong>Quick bar</strong> — starred commands shown in-game (optional)</li>
-            <li><span class="tag tag-new">New</span> <strong>Notification centre</strong> — last 200 toasts with filters, mark read, clear and per-category toast control</li>
-            <li><span class="tag tag-new">New</span> <strong>Sound mixer</strong> — master + per-channel volumes (chat, commands, gameplay, video skins) with audio ducking</li>
+            <li data-i18n-html="site.changelog.newCommandCentreCtrl"><span class="tag tag-new">New</span> <strong>Command Centre (Ctrl+K)</strong> — search every hotkey, switch, slider, theme setting and menu window; recent &amp; starred items</li>
+            <li data-i18n-html="site.changelog.newQuickBarStarred"><span class="tag tag-new">New</span> <strong>Quick bar</strong> — starred commands shown in-game (optional)</li>
+            <li data-i18n-html="site.changelog.newNotificationCentreLast"><span class="tag tag-new">New</span> <strong>Notification centre</strong> — last 200 toasts with filters, mark read, clear and per-category toast control</li>
+            <li data-i18n-html="site.changelog.newSoundMixerMaster"><span class="tag tag-new">New</span> <strong>Sound mixer</strong> — master + per-channel volumes (chat, commands, gameplay, video skins) with audio ducking</li>
         </ul>
     </div>
 
     <div class="version" id="v3566">
         <div class="version-header">
             <span class="version-number">v3.566</span>
-            <span class="version-title">HUD Helpers &amp; Settings Profiles</span>
-            <span class="version-date">November 2026</span>
+            <span data-i18n="site.changelog.hudHelpersSettingsProfiles" class="version-title">HUD Helpers &amp; Settings Profiles</span>
+            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
         </div>
         <ul>
-            <li><span class="tag tag-new">New</span> <strong>Movement direction arrow</strong> from how your cells really move (also multibox)</li>
-            <li><span class="tag tag-new">New</span> <strong>Merge countdown</strong> in seconds on your cells with optional sound</li>
-            <li><span class="tag tag-new">New</span> <strong>Enemy mass ratio</strong> relative to your biggest cell</li>
-            <li><span class="tag tag-new">New</span> <strong>Screen-edge arrows</strong> to teammates and threats that left the screen</li>
-            <li><span class="tag tag-new">New</span> <strong>Cell panel</strong> — masses, count/16, largest, smallest, total</li>
-            <li><span class="tag tag-new">New</span> <strong>Settings profiles</strong> — named sets with templates (FFA, Teams, Multibox, Streaming, Mobile, Competitive), auto-switching per server type</li>
-            <li><span class="tag tag-new">New</span> <strong>Analytics dashboard</strong> — games, peak mass, top-10 rate, mass/min, heatmaps, coaching report with scores and suggestions</li>
-            <li><span class="tag tag-new">New</span> <strong>Daily objectives</strong> from your history with progress bars and completion toasts</li>
+            <li data-i18n-html="site.changelog.newMovementDirectionArrow"><span class="tag tag-new">New</span> <strong>Movement direction arrow</strong> from how your cells really move (also multibox)</li>
+            <li data-i18n-html="site.changelog.newMergeCountdownIn"><span class="tag tag-new">New</span> <strong>Merge countdown</strong> in seconds on your cells with optional sound</li>
+            <li data-i18n-html="site.changelog.newEnemyMassRatio"><span class="tag tag-new">New</span> <strong>Enemy mass ratio</strong> relative to your biggest cell</li>
+            <li data-i18n-html="site.changelog.newScreenEdgeArrows"><span class="tag tag-new">New</span> <strong>Screen-edge arrows</strong> to teammates and threats that left the screen</li>
+            <li data-i18n-html="site.changelog.newCellPanelMasses"><span class="tag tag-new">New</span> <strong>Cell panel</strong> — masses, count/16, largest, smallest, total</li>
+            <li data-i18n-html="site.changelog.newSettingsProfilesNamed"><span class="tag tag-new">New</span> <strong>Settings profiles</strong> — named sets with templates (FFA, Teams, Multibox, Streaming, Mobile, Competitive), auto-switching per server type</li>
+            <li data-i18n-html="site.changelog.newAnalyticsDashboardGames"><span class="tag tag-new">New</span> <strong>Analytics dashboard</strong> — games, peak mass, top-10 rate, mass/min, heatmaps, coaching report with scores and suggestions</li>
+            <li data-i18n-html="site.changelog.newDailyObjectivesFrom"><span class="tag tag-new">New</span> <strong>Daily objectives</strong> from your history with progress bars and completion toasts</li>
         </ul>
     </div>
 
     <div class="version" id="v3565">
         <div class="version-header">
             <span class="version-number">v3.565</span>
-            <span class="version-title">Gamepad Customization &amp; Badges</span>
-            <span class="version-date">November 2026</span>
+            <span data-i18n="site.changelog.gamepadCustomizationBadges" class="version-title">Gamepad Customization &amp; Badges</span>
+            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
         </div>
         <ul>
-            <li><span class="tag tag-new">New</span> <strong>Gamepad button mapping</strong> — any pad button can run any hotkey command; hold commands stay held</li>
-            <li><span class="tag tag-new">New</span> Movement range, curve tuning, LT/RT threshold, inverted axes, vibration on split/death</li>
-            <li><span class="tag tag-new">New</span> Named gamepad profiles with live stick test and drift measurement</li>
-            <li><span class="tag tag-new">New</span> <strong>18 achievement badges</strong> with tiers from your account stats</li>
-            <li><span class="tag tag-new">New</span> <strong>Share button</strong> on Game Over card</li>
-            <li><span class="tag tag-new">New</span> Hotkey to reconnect to previous server (last 10 remembered)</li>
-            <li><span class="tag tag-new">New</span> <strong>Direction on touch</strong> — cell moves toward your finger instead of joystick</li>
+            <li data-i18n-html="site.changelog.newGamepadButtonMapping"><span class="tag tag-new">New</span> <strong>Gamepad button mapping</strong> — any pad button can run any hotkey command; hold commands stay held</li>
+            <li data-i18n-html="site.changelog.newMovementRangeCurve"><span class="tag tag-new">New</span> Movement range, curve tuning, LT/RT threshold, inverted axes, vibration on split/death</li>
+            <li data-i18n-html="site.changelog.newNamedGamepadProfiles"><span class="tag tag-new">New</span> Named gamepad profiles with live stick test and drift measurement</li>
+            <li data-i18n-html="site.changelog.new18AchievementBadges"><span class="tag tag-new">New</span> <strong>18 achievement badges</strong> with tiers from your account stats</li>
+            <li data-i18n-html="site.changelog.newShareButtonOn"><span class="tag tag-new">New</span> <strong>Share button</strong> on Game Over card</li>
+            <li data-i18n-html="site.changelog.newHotkeyToReconnect"><span class="tag tag-new">New</span> Hotkey to reconnect to previous server (last 10 remembered)</li>
+            <li data-i18n-html="site.changelog.newDirectionOnTouch"><span class="tag tag-new">New</span> <strong>Direction on touch</strong> — cell moves toward your finger instead of joystick</li>
         </ul>
     </div>
 
     <div class="version" id="v3564">
         <div class="version-header">
             <span class="version-number">v3.564</span>
-            <span class="version-title">Protocol Hardening &amp; Bug Fixes</span>
-            <span class="version-date">November 2026</span>
+            <span data-i18n="site.changelog.protocolHardeningBugFixes" class="version-title">Protocol Hardening &amp; Bug Fixes</span>
+            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
         </div>
         <ul>
-            <li><span class="tag tag-fix">Fix</span> Truncated packets dropped with a warning instead of uncaught RangeError</li>
-            <li><span class="tag tag-fix">Fix</span> Friend list, leaderboard, and private leaderboard bounds checking</li>
-            <li><span class="tag tag-fix">Fix</span> Settings export: Performance mode backup and preset undo scoped correctly</li>
-            <li><span class="tag tag-fix">Fix</span> Phone controls now included in settings export/import</li>
-            <li><span class="tag tag-fix">Fix</span> <code>parseInt</code> radix parameter, style-in-body, lang/charset corrections</li>
-            <li><span class="tag tag-fix">Fix</span> Gamepad focus handling, dead-zone reset, disconnected pad cleanup</li>
-            <li><span class="tag tag-fix">Fix</span> <code>drawTextAlongArc</code> uses passed ctx parameter correctly</li>
-            <li><span class="tag tag-fix">Fix</span> 182 duplicate HTML element IDs renamed</li>
+            <li data-i18n-html="site.changelog.fixTruncatedPacketsDropped"><span class="tag tag-fix">Fix</span> Truncated packets dropped with a warning instead of uncaught RangeError</li>
+            <li data-i18n-html="site.changelog.fixFriendListLeaderboard"><span class="tag tag-fix">Fix</span> Friend list, leaderboard, and private leaderboard bounds checking</li>
+            <li data-i18n-html="site.changelog.fixSettingsExportPerformance"><span class="tag tag-fix">Fix</span> Settings export: Performance mode backup and preset undo scoped correctly</li>
+            <li data-i18n-html="site.changelog.fixPhoneControlsNow"><span class="tag tag-fix">Fix</span> Phone controls now included in settings export/import</li>
+            <li data-i18n-html="site.changelog.fixParseintRadixParameter"><span class="tag tag-fix">Fix</span> <code>parseInt</code> radix parameter, style-in-body, lang/charset corrections</li>
+            <li data-i18n-html="site.changelog.fixGamepadFocusHandling"><span class="tag tag-fix">Fix</span> Gamepad focus handling, dead-zone reset, disconnected pad cleanup</li>
+            <li data-i18n-html="site.changelog.fixDrawtextalongarcUsesPassed"><span class="tag tag-fix">Fix</span> <code>drawTextAlongArc</code> uses passed ctx parameter correctly</li>
+            <li data-i18n-html="site.changelog.fix182DuplicateHtml"><span class="tag tag-fix">Fix</span> 182 duplicate HTML element IDs renamed</li>
         </ul>
     </div>
 
     <p style="text-align:center; margin-top:40px; color:#666;">
-        <a href="/" style="color:#7c3aed;">← Back to Legend Mod</a> ·
-        <a href="/rss.xml" style="color:#f59e0b;">📡 RSS</a> ·
+        <a data-i18n="site.changelog.backToLegendMod" href="/" style="color:#7c3aed;">← Back to Legend Mod</a> ·
+        <a data-i18n="site.changelog.rss" href="/rss.xml" style="color:#f59e0b;">📡 RSS</a> ·
         <a href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank" rel="noopener" style="color:#888;">GitHub</a>
     </p>
 </div>

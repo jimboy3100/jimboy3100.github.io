@@ -56,6 +56,9 @@
             padding-bottom: 10px;
             margin-top: 30px;
         }
+        /* the note that the English text is the binding one: only shown in the other languages */
+        html[lang="en"] .lm-binding { display: none; }
+        .lm-binding { font-style: italic; opacity: .85; }
     </style>
     <script type="application/ld+json">
     {
@@ -87,67 +90,71 @@
         ]
     }
     </script>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-terms" charset="utf-8"></script>
 </head>
 
 <body>
-    <h1>Terms of Service</h1>
-    <p>Last updated: March 18, 2026</p>
+    <div class="lm-lang-row" style="text-align:end;margin:0 0 .6rem"><span data-lm-lang-picker></span></div>
+    <h1 data-i18n="site.terms.termsOfService">Terms of Service</h1>
+    <p data-i18n="site.terms.lastUpdatedMarch18">Last updated: March 18, 2026</p>
+    <p class="lm-binding" data-i18n="site.terms.bindingNote">This is a translation for your convenience. The English version of these Terms is the binding one.</p>
 
-    <h2>1. Acceptance of Terms</h2>
-    <p>By accessing or using Expanding Land (<a href="https://expanding.land">expanding.land</a>),
+    <h2 data-i18n="site.terms.acceptanceOfTerms">1. Acceptance of Terms</h2>
+    <p data-i18n-html="site.terms.byAccessingOrUsing">By accessing or using Expanding Land (<a href="https://expanding.land">expanding.land</a>),
     Legend Mod (<a href="https://legendmod.ml">legendmod.ml</a>), or the Legend Express Chrome extension,
     you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
 
-    <h2>2. Description of Service</h2>
-    <p>We provide:</p>
+    <h2 data-i18n="site.terms.descriptionOfService">2. Description of Service</h2>
+    <p data-i18n="site.terms.weProvide">We provide:</p>
     <ul>
-        <li><strong>Expanding Land</strong> — an online multiplayer browser game.</li>
-        <li><strong>Legend Mod</strong> — an online multiplayer browser game and modding platform.</li>
-        <li><strong>Legend Express</strong> — a Chrome extension that enhances the Agar.io gameplay experience.</li>
+        <li data-i18n-html="site.terms.expandingLandAnOnline"><strong>Expanding Land</strong> — an online multiplayer browser game.</li>
+        <li data-i18n-html="site.terms.legendModAnOnline"><strong>Legend Mod</strong> — an online multiplayer browser game and modding platform.</li>
+        <li data-i18n-html="site.terms.legendExpressAChrome"><strong>Legend Express</strong> — a Chrome extension that enhances the Agar.io gameplay experience.</li>
     </ul>
-    <p>Our services are provided free of charge and on an "as-is" basis.</p>
+    <p data-i18n="site.terms.ourServicesAreProvided">Our services are provided free of charge and on an "as-is" basis.</p>
 
-    <h2>3. User Conduct</h2>
-    <p>You agree not to:</p>
+    <h2 data-i18n="site.terms.userConduct">3. User Conduct</h2>
+    <p data-i18n="site.terms.youAgreeNotTo">You agree not to:</p>
     <ul>
-        <li>Use cheats, hacks, exploits, or unauthorized third-party software to gain an unfair advantage.</li>
-        <li>Harass, abuse, or threaten other players through in-game chat or any related communication channel.</li>
-        <li>Attempt to disrupt, overload, or interfere with our game servers or infrastructure.</li>
-        <li>Impersonate other players, moderators, or administrators.</li>
-        <li>Use our services for any illegal or unauthorized purpose.</li>
+        <li data-i18n="site.terms.useCheatsHacksExploits">Use cheats, hacks, exploits, or unauthorized third-party software to gain an unfair advantage.</li>
+        <li data-i18n="site.terms.harassAbuseOrThreaten">Harass, abuse, or threaten other players through in-game chat or any related communication channel.</li>
+        <li data-i18n="site.terms.attemptToDisruptOverload">Attempt to disrupt, overload, or interfere with our game servers or infrastructure.</li>
+        <li data-i18n="site.terms.impersonateOtherPlayersModerators">Impersonate other players, moderators, or administrators.</li>
+        <li data-i18n="site.terms.useOurServicesFor">Use our services for any illegal or unauthorized purpose.</li>
     </ul>
 
-    <h2>4. Accounts</h2>
-    <p>You may sign in using Google OAuth. You are responsible for maintaining the security of your account.
+    <h2 data-i18n="site.terms.accounts">4. Accounts</h2>
+    <p data-i18n="site.terms.youMaySignIn">You may sign in using Google OAuth. You are responsible for maintaining the security of your account.
     We reserve the right to suspend or terminate accounts that violate these terms.</p>
 
-    <h2>5. Intellectual Property</h2>
-    <p>All game assets, code, and content associated with Expanding Land, Legend Mod, and Legend Express
+    <h2 data-i18n="site.terms.intellectualProperty">5. Intellectual Property</h2>
+    <p data-i18n="site.terms.allGameAssetsCode">All game assets, code, and content associated with Expanding Land, Legend Mod, and Legend Express
     are the property of their respective creators. You may not copy, modify, distribute, or reverse-engineer
     our software without permission.</p>
 
-    <h2>6. Moderation & Bans</h2>
-    <p>We reserve the right to moderate in-game chat, mute or ban players, and take any action necessary
+    <h2 data-i18n="site.terms.moderationBans">6. Moderation & Bans</h2>
+    <p data-i18n="site.terms.weReserveTheRight">We reserve the right to moderate in-game chat, mute or ban players, and take any action necessary
     to maintain a fair and enjoyable experience for all users. Bans may be issued for violations of these
     terms or at the discretion of our moderation team.</p>
 
-    <h2>7. Disclaimer of Warranties</h2>
-    <p>Our services are provided "as is" without warranties of any kind, either express or implied.
+    <h2 data-i18n="site.terms.disclaimerOfWarranties">7. Disclaimer of Warranties</h2>
+    <p data-i18n="site.terms.ourServicesAreProvided2">Our services are provided "as is" without warranties of any kind, either express or implied.
     We do not guarantee that the services will be uninterrupted, error-free, or free of harmful components.</p>
 
-    <h2>8. Limitation of Liability</h2>
-    <p>In no event shall we be liable for any indirect, incidental, special, or consequential damages
+    <h2 data-i18n="site.terms.limitationOfLiability">8. Limitation of Liability</h2>
+    <p data-i18n="site.terms.inNoEventShall">In no event shall we be liable for any indirect, incidental, special, or consequential damages
     arising out of or in connection with your use of our services.</p>
 
-    <h2>9. Changes to Terms</h2>
-    <p>We may update these Terms of Service at any time. Changes will be posted on this page with an
+    <h2 data-i18n="site.terms.changesToTerms">9. Changes to Terms</h2>
+    <p data-i18n="site.terms.weMayUpdateThese">We may update these Terms of Service at any time. Changes will be posted on this page with an
     updated revision date. Continued use of our services after changes constitutes acceptance of the new terms.</p>
 
-    <h2>10. Contact</h2>
-    <p>If you have questions about these Terms, contact: <a href="mailto:jimboy3100@gmail.com">jimboy3100@gmail.com</a>
+    <h2 data-i18n="site.terms.contact">10. Contact</h2>
+    <p data-i18n-html="site.terms.ifYouHaveQuestions">If you have questions about these Terms, contact: <a href="mailto:jimboy3100@gmail.com">jimboy3100@gmail.com</a>
     or via GitHub: <a href="https://github.com/jimboy3100">github.com/jimboy3100</a></p>
 
-    <p><a href="/">← Back to Expanding Land</a> | <a href="/privacy.html">Privacy Policy</a></p>
+    <p><a data-i18n="site.terms.backToExpandingLand" href="/">← Back to Expanding Land</a> | <a data-i18n="site.terms.privacyPolicy" href="/privacy.html">Privacy Policy</a></p>
 </body>
 
 </html>
